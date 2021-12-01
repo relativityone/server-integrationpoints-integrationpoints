@@ -23,7 +23,9 @@ using kCura.IntegrationPoints.RelativitySync;
 using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.IntegrationPoints.Web.Controllers.API;
+using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings;
 using kCura.IntegrationPoints.Web.Helpers;
+using kCura.Relativity.ImportAPI;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -32,11 +34,15 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.IntegrationPoints.Contracts.Provider;
+using Relativity.IntegrationPoints.FieldsMapping;
+using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
+using Relativity.IntegrationPoints.FieldsMapping.Metrics;
 using Relativity.IntegrationPoints.Services;
 using Relativity.IntegrationPoints.Services.Helpers;
 using Relativity.IntegrationPoints.Services.Repositories;
 using Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpers;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
+using Relativity.IntegrationPoints.Tests.Integration.Mocks.ImportApi;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi;
@@ -153,6 +159,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		private void RegisterAPIControllers()
 		{
 			Container.Register(Component.For<JobController>().ImplementedBy<JobController>());
+			Container.Register(Component.For<FieldMappingsController>().ImplementedBy<FieldMappingsController>());
 			Container.Register(Component.For<LdapController>().ImplementedBy<LdapController>());
 			Container.Register(Component.For<IntegrationPointProfilesAPIController>().ImplementedBy<IntegrationPointProfilesAPIController>());
 		}
@@ -174,6 +181,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		{
 			Container.Register(Component.For<IHelper, IAgentHelper, ICPHelper>().Instance(Helper));
 			Container.Register(Component.For<IAPILog>().Instance(new ConsoleLogger()).LifestyleSingleton());
+			Container.Register(Component.For<IServicesMgr>().ImplementedBy<FakeServiceManager>());
 		}
 
 		private void RegisterScheduleAgentBase()
@@ -223,6 +231,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			
 				return jobContextProvider;
 			}).LifestyleSingleton().Named(nameof(FakeJobContextProvider)).IsDefault());
+
+			// FieldMappingsController
+            Container.Register(Component.For<IFieldsClassifyRunnerFactory>().ImplementedBy<FieldsClassifyRunnerFactory>());
+            Container.Register(Component.For<IAutomapRunner>().ImplementedBy<AutomapRunner>());
+            Container.Register(Component.For<IMetricsSender>().ImplementedBy<MetricsSender>());
+            Container.Register(Component.For<IMetricsSink>().ImplementedBy<SplunkMetricsSink>());
+			Container.Register(Component.For<IMetricBucketNameGenerator>().ImplementedBy<MetricBucketNameGenerator>());
+			Container.Register(Component.For<IFieldsMappingValidator>().ImplementedBy<FieldsMappingValidator>());
 		}
 
 		private void RegisterFakeRipServices()
@@ -236,17 +252,19 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 				new FakeRepositoryFactory(kernel.Resolve<RelativityInstanceTest>(), new RepositoryFactory(kernel.Resolve<IHelper>(), kernel.Resolve<IServicesMgr>()))).IsDefault());
 			Container.Register(Component.For<IJobStatisticsQuery>().ImplementedBy<FakeJobStatisticsQuery>().IsDefault());
 			Container.Register(Component.For<IRelativityUrlHelper>().ImplementedBy<FakeRelativityUrlHelper>());
+            Container.Register(Component.For<IFieldsRepository>().ImplementedBy<FakeFieldsRepository>());
 
-			// LDAP Entity
+            // LDAP Entity
 			Container.Register(Component.For<IEntityManagerLinksSanitizer>().ImplementedBy<OpenLDAPEntityManagerLinksSanitizer>().IsDefault());
 
 			// IAPI
 			Container.Register(Component.For<IImportJobFactory>().ImplementedBy<FakeImportApiJobFactory>().LifestyleTransient().IsDefault());
 			Container.Register(Component.For<kCura.IntegrationPoints.Synchronizers.RDO.IImportApiFactory>().ImplementedBy<FakeImportApiFactory>().IsDefault());
 			Container.Register(Component.For<kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI.IImportApiFacade>().ImplementedBy<FakeImportApiFacade>().IsDefault());
-			Container.Register(Component.For<IWebApiConfig>().UsingFactoryMethod(c => new FakeWebApiConfig()).LifestyleTransient().IsDefault());
+			Container.Register(Component.For<IFieldsMappingImportApiFacade>().ImplementedBy<FakeFieldsMappingImportApiFacade>().LifestyleSingleton());
+            Container.Register(Component.For<IWebApiConfig>().UsingFactoryMethod(c => new FakeWebApiConfig()).LifestyleTransient().IsDefault());
 			Container.Register(Component.For<IWinEddsBasicLoadFileFactory>().UsingFactoryMethod(c => new FakeWinEddsBasicLoadFileFactory()).LifestyleTransient().IsDefault());
-		}
+        }
 
         private void RegisterKeplerServices()
         {
