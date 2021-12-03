@@ -138,7 +138,7 @@ namespace kCura.IntegrationPoints.Domain
 			_logger.LogInformation("Deploying library files for domain {domainName} to path {domainPath}.", domainName, domainPath);
 
 
-            if (_toggleProvider.IsEnabled<EnableKubernetesMode>())
+            if (_toggleProvider.IsEnabled<EnableKubernetesMode>() || _toggleProvider.IsEnabledByName("Relativity.ADS.Agents.Toggles.ApplicationInstallationWorkerIsActivetoggle"))
             {
                 _logger.LogInformation("Required Assemblies Loading in Kubernetes Mode");
                 CopyLibraryFilesFromWorkingDirectory(domainPath);
