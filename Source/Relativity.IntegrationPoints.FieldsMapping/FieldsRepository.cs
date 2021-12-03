@@ -19,24 +19,24 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			_servicesMgr = servicesMgr;
 		}
 
-		public async Task<IEnumerable<DocumentFieldInfo>> GetAllDocumentFieldsAsync(int workspaceID)
+		public async Task<IEnumerable<DocumentFieldInfo>> GetAllDocumentFieldsAsync(int workspaceId)
 		{
 			QueryRequest queryRequest = PrepareFieldsQueryRequest($"'FieldArtifactTypeID' == {_DOCUMENT_ARTIFACT_TYPE_ID}");
-			IEnumerable<RelativityObject> fieldObjects = await GetFieldsByQueryAsync(workspaceID, queryRequest).ConfigureAwait(false);
+			IEnumerable<RelativityObject> fieldObjects = await GetFieldsByQueryAsync(workspaceId, queryRequest).ConfigureAwait(false);
 
 			return fieldObjects.Select(f => FieldConvert.ToDocumentFieldInfo(f));
 		}
 
-		public async Task<IEnumerable<DocumentFieldInfo>> GetFieldsByArtifactsIdAsync(IEnumerable<string> artifactIDs, int workspaceID)
+		public async Task<IEnumerable<DocumentFieldInfo>> GetFieldsByArtifactsIdAsync(IEnumerable<string> artifactIds, int workspaceId)
 		{
-			artifactIDs = artifactIDs?.Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
-			if(artifactIDs == null || !artifactIDs.Any())
+			artifactIds = artifactIds?.Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
+			if(artifactIds == null || !artifactIds.Any())
 			{
 				return Enumerable.Empty<DocumentFieldInfo>();
 			}
 
-			QueryRequest queryRequest = PrepareFieldsQueryRequest($"'ArtifactID' IN [{string.Join(",", artifactIDs)}]");
-			IEnumerable<RelativityObject> fieldObjects = await GetFieldsByQueryAsync(workspaceID, queryRequest).ConfigureAwait(false);
+			QueryRequest queryRequest = PrepareFieldsQueryRequest($"'ArtifactID' IN [{string.Join(",", artifactIds)}]");
+			IEnumerable<RelativityObject> fieldObjects = await GetFieldsByQueryAsync(workspaceId, queryRequest).ConfigureAwait(false);
 
 			return fieldObjects.Select(f => FieldConvert.ToDocumentFieldInfo(f));
 		}

@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using FluentAssertions;
 using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings;
+using Relativity.IntegrationPoints.FieldsMapping;
+using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
@@ -14,6 +17,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
     public class FieldMappingsControllerTests : TestsBase
     {
         private WorkspaceTest _destinationWorkspace;
+        private const string FIXED_LENGTH_TEXT_NAME = "Fixed-Length Text";
+        private const string LONG_TEXT_NAME = "Long Text";
+        private FakeFieldsRepository _fakeFieldsRepository;
 
         private static readonly List<Tuple<string, string>> DefaultFieldsMapping = new List<Tuple<string, string>>
         {
@@ -29,52 +35,29 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             int destinationWorkspaceArtifactId = ArtifactProvider.NextId();
             _destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspaceWithIntegrationPointsApp(destinationWorkspaceArtifactId);
 
-            CreateFieldsWithSpecialCharactersAsync(SourceWorkspace);
-            CreateFieldsWithSpecialCharactersAsync(_destinationWorkspace);
-            SourceWorkspace.Helpers.FieldsMappingHelper.PrepareLongTextFieldsMapping();
-            SourceWorkspace.Helpers.FieldsMappingHelper.PrepareFixedLengthTextFieldsMapping();
+            _fakeFieldsRepository = Container.Resolve<IFieldsRepository>() as FakeFieldsRepository;
+            
         }
 
         [IdentifiedTest("AE9E4DD3-6E12-4000-BDE7-6CFDAE14F1EB")]
         public async Task GetMappableFieldsFromSourceWorkspace_SampleTest()
         {
             // Arrange
+            IEnumerable<RelativityObject> fixedLengthTextFields =
+                CreateFieldsWithSpecialCharactersAsync(FIXED_LENGTH_TEXT_NAME);
+            IEnumerable<RelativityObject> longTextFields =
+                CreateFieldsWithSpecialCharactersAsync(LONG_TEXT_NAME);
+            _fakeFieldsRepository.WorkspacesFields = new List<Tuple<int, IEnumerable<RelativityObject>>>
+            {
+                new Tuple<int, IEnumerable<RelativityObject>>(SourceWorkspace.ArtifactId, fixedLengthTextFields)
+            };
             FieldMappingsController sut = PrepareSut(HttpMethod.Get, "/GetMappableFieldsFromSourceWorkspace");
-            //SourceWorkspace.Fields
 
             // Act
             HttpResponseMessage result = await sut.GetMappableFieldsFromDestinationWorkspace(SourceWorkspace.ArtifactId);
 
             // Assert
             result.IsSuccessStatusCode.Should().BeTrue();
-        }
-
-        private void CreateFieldsWithSpecialCharactersAsync(WorkspaceTest workspace)
-        {
-            char[] specialCharacters = @"!@#$%^&*()-_+= {}|\/;'<>,.?~`".ToCharArray();
-
-            for (int i = 0; i < specialCharacters.Length; i++)
-            {
-                char special = specialCharacters[i];
-                string generatedFieldName = $"aaaaa{special}{i}";
-                var fixedLengthTextFieldRequest = new FieldTest
-                {
-                    ObjectTypeId = Const.FIXED_LENGTH_TEXT_TYPE_ARTIFACT_ID,
-                    Name = $"{generatedFieldName} Fixed-Length Text",
-                    IsIdentifier = false
-                };
-
-                workspace.Fields.Add(fixedLengthTextFieldRequest);
-
-                var longTextFieldRequest = new FieldTest
-                {
-                    ObjectTypeId = Const.LONG_TEXT_TYPE_ARTIFACT_ID,
-                    Name = $"{generatedFieldName} Long Text",
-                    IsIdentifier = false
-                };
-
-                workspace.Fields.Add(longTextFieldRequest);
-            }
         }
 
         private FieldMappingsController PrepareSut(HttpMethod method, string requestUri)
@@ -88,6 +71,46 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             sut.Request = request;
 
             return sut;
+        }
+
+        private IEnumerable<RelativityObject> CreateFieldsWithSpecialCharactersAsync(string fieldType)
+        {
+            char[] specialCharacters = @"!@#$%^&*()-_+= {}|\/;'<>,.?~`".ToCharArray();
+
+            var fieldObjects = new List<RelativityObject>();
+
+            for (int i = 0; i < specialCharacters.Length; i++)
+            {
+                char special = specialCharacters[i];
+                string generatedFieldName = $"aaaaa{special}{i}";
+
+                fieldObjects.Add(new RelativityObject
+                    {
+                        ArtifactID = ArtifactProvider.NextId(),
+                        Name = generatedFieldName,
+                        FieldValues = new List<FieldValuePair>
+                        {
+                            new FieldValuePair()
+                            {
+                                Field = new Field()
+                                {
+                                    Name = "Is Identifier"
+                                },
+                                Value = i == 0
+                            },
+                            new FieldValuePair()
+                            {
+                                Field = new Field()
+                                {
+                                    Name = "Field Type",
+                                },
+                                Value = fieldType
+                            }
+                        }
+                    }
+                );
+            }
+            return fieldObjects;
         }
 
         private ClaimsPrincipal GetUserClaimsPrincipal()

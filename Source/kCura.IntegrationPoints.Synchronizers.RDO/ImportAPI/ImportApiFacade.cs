@@ -66,6 +66,5 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 				throw exc;
 			}
 		}
-
 	}
 }
