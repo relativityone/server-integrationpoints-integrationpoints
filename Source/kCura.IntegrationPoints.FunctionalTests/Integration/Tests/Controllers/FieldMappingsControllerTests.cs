@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using FluentAssertions;
 using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings;
-using Relativity.IntegrationPoints.FieldsMapping;
-using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
@@ -19,7 +17,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         private WorkspaceTest _destinationWorkspace;
         private const string FIXED_LENGTH_TEXT_NAME = "Fixed-Length Text";
         private const string LONG_TEXT_NAME = "Long Text";
-        private FakeFieldsRepository _fakeFieldsRepository;
 
         private static readonly List<Tuple<string, string>> DefaultFieldsMapping = new List<Tuple<string, string>>
         {
@@ -35,8 +32,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             int destinationWorkspaceArtifactId = ArtifactProvider.NextId();
             _destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspaceWithIntegrationPointsApp(destinationWorkspaceArtifactId);
 
-            _fakeFieldsRepository = Container.Resolve<IFieldsRepository>() as FakeFieldsRepository;
-            
         }
 
         [IdentifiedTest("AE9E4DD3-6E12-4000-BDE7-6CFDAE14F1EB")]
@@ -47,10 +42,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
                 CreateFieldsWithSpecialCharactersAsync(FIXED_LENGTH_TEXT_NAME);
             IEnumerable<RelativityObject> longTextFields =
                 CreateFieldsWithSpecialCharactersAsync(LONG_TEXT_NAME);
-            _fakeFieldsRepository.WorkspacesFields = new List<Tuple<int, IEnumerable<RelativityObject>>>
-            {
-                new Tuple<int, IEnumerable<RelativityObject>>(SourceWorkspace.ArtifactId, fixedLengthTextFields)
-            };
+            
             FieldMappingsController sut = PrepareSut(HttpMethod.Get, "/GetMappableFieldsFromSourceWorkspace");
 
             // Act

@@ -7,6 +7,7 @@ using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using kCura.Relativity.ImportAPI.Enumeration;
 using Relativity.API;
+using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {
@@ -50,7 +51,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			return _importApi.Value.Workspaces().ToDictionary(x => x.ArtifactID, x => x.Name);
 		}
 
-		private IEnumerable<Field> GetWorkspaceFields(int workspaceArtifactID, int artifactTypeID)
+		public IEnumerable<Field> GetWorkspaceFields(int workspaceArtifactID, int artifactTypeID)
 		{
 			try
 			{

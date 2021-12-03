@@ -6,13 +6,13 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 {
 	public class FieldsClassifyRunnerFactory : IFieldsClassifyRunnerFactory
 	{
-		private readonly IFieldsMappingImportApiFacade _importApiFacade;
+		private readonly IImportApiFacade _importApiFacade;
 		private readonly IFieldsRepository _fieldsRepository;
 
 		private readonly IList<IFieldsClassifier> _defaultSourceFieldsClassifiers;
 		private readonly IList<IFieldsClassifier> _defaultDestinationFieldsClassifiers;
 
-		public FieldsClassifyRunnerFactory(IFieldsMappingImportApiFacade importApiFacade, IFieldsRepository fieldsRepository)
+		public FieldsClassifyRunnerFactory(IImportApiFacade importApiFacade, IFieldsRepository fieldsRepository)
 		{
 			_importApiFacade = importApiFacade;
 			_fieldsRepository = fieldsRepository;

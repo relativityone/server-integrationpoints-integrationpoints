@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
+using kCura.Relativity.ImportAPI.Data;
+using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi
