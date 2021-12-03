@@ -19,6 +19,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 		private ILog _logger;
 		private IWindsorContainer _container;
 		private IAPM _apmClient;
+        private IHealthMeasure _healthMeasure;
 
 		private const int _WORKSPACE_ID = 819434;
 
@@ -34,20 +35,32 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 			_apmClient = Substitute.For<IAPM>();
 			Client.LazyAPMClient = new Lazy<IAPM>(() => _apmClient);
 
+            _healthMeasure = Substitute.For<IHealthMeasure>();
+
+            _apmClient.HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK,
+                Arg.Any<Func<HealthCheckOperationResult>>()).Returns(_healthMeasure);
+
 			_integrationPointHealthCheckManager = new IntegrationPointHealthCheckManager(_logger, permissionRepositoryFactory, _container);
 		}
 
 		[Test]
 		public void ShouldWriteHealthMeasure()
 		{
-			IHealthMeasure healthMeasure = Substitute.For<IHealthMeasure>();
-			_apmClient.HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK, Arg.Any<Func<HealthCheckOperationResult>>()).Returns(healthMeasure);
-
 			// Act
 			_integrationPointHealthCheckManager.RunHealthChecksAsync().Wait();
 
 			// Assert
-			healthMeasure.Received().Write();
+            _healthMeasure.Received().Write();
 		}
+
+        [Test]
+        public void ShouldBeHealthyByDefault()
+        {
+			// Act
+            HealthCheckOperationResult result = _integrationPointHealthCheckManager.RunHealthChecksAsync().Result;
+
+			// Assert
+            Assert.IsTrue(result.IsHealthy);
+        }
 	}
 }

@@ -41,11 +41,9 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
         {
             try
             {
-                long memoryUsage = _processMemoryHelper.GetCurrentProcessMemoryUsage();
 
                 Dictionary<string, object> customData = new Dictionary<string, object>()
                 {
-                    { "MemoryUsage", memoryUsage },
                     { "JobId", jobId },
                     { "JobType", jobType },
                     { "WorkflowId", workflowId}
