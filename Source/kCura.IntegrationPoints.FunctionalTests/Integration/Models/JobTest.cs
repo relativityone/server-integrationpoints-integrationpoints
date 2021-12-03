@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
 using kCura.IntegrationPoints.Data;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
