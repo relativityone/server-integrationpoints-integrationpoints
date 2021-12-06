@@ -24,7 +24,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			QueryRequest queryRequest = PrepareFieldsQueryRequest($"'FieldArtifactTypeID' == {_DOCUMENT_ARTIFACT_TYPE_ID}");
 			IEnumerable<RelativityObject> fieldObjects = await GetFieldsByQueryAsync(workspaceId, queryRequest).ConfigureAwait(false);
 
-			return fieldObjects.Select(f => FieldConvert.ToDocumentFieldInfo(f));
+			return fieldObjects.Select(FieldConvert.ToDocumentFieldInfo);
 		}
 
 		public async Task<IEnumerable<DocumentFieldInfo>> GetFieldsByArtifactsIdAsync(IEnumerable<string> artifactIds, int workspaceId)
@@ -38,7 +38,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			QueryRequest queryRequest = PrepareFieldsQueryRequest($"'ArtifactID' IN [{string.Join(",", artifactIds)}]");
 			IEnumerable<RelativityObject> fieldObjects = await GetFieldsByQueryAsync(workspaceId, queryRequest).ConfigureAwait(false);
 
-			return fieldObjects.Select(f => FieldConvert.ToDocumentFieldInfo(f));
+			return fieldObjects.Select(FieldConvert.ToDocumentFieldInfo);
 		}
 
 		private QueryRequest PrepareFieldsQueryRequest(string query)

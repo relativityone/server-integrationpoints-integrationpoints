@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.Relativity.ImportAPI;
 using Moq;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers;
+using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 using Field = kCura.Relativity.ImportAPI.Data.Field;
 
 namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
@@ -14,14 +14,14 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 	[TestFixture, Category("Unit")]
 	public class NotSupportedByIAPIFieldsClassifierTests
 	{
-		private Mock<IImportAPI> _importApiFake;
+		private Mock<IImportApiFacade> _importApiFacadeFake;
 		private NotSupportedByIAPIFieldsClassifier _sut;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_importApiFake = new Mock<IImportAPI>();
-			_sut = new NotSupportedByIAPIFieldsClassifier(_importApiFake.Object);
+			_importApiFacadeFake = new Mock<IImportApiFacade>();
+			_sut = new NotSupportedByIAPIFieldsClassifier(_importApiFacadeFake.Object);
 		}
 
 		[Test]
@@ -33,8 +33,8 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 				name: $"Field {x}",
 				type: "Fixed-Length Text(250)")).ToList();
 
-			IEnumerable<Field> iapiFields = allFields.Where(x => x.FieldIdentifier == "1").Select(x => CreateIAPIField(int.Parse(x.FieldIdentifier), x.Name));
-			_importApiFake.Setup(x => x.GetWorkspaceFields(It.IsAny<int>(), (int) ArtifactType.Document)).Returns(iapiFields);
+            Dictionary<int, string> iapiFields = allFields.Where(x => x.FieldIdentifier == "1").ToDictionary(x => int.Parse(x.FieldIdentifier), x => x.Name);
+			_importApiFacadeFake.Setup(x => x.GetWorkspaceFieldsNames(It.IsAny<int>(), (int) ArtifactType.Document)).Returns(iapiFields);
 
 			// Act
 			List<FieldClassificationResult> fields = (await _sut.ClassifyAsync(allFields, 0).ConfigureAwait(false)).ToList();
@@ -60,7 +60,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 		public void ClassifyAsync_ShouldRethrowExceptionWhenGettingFieldsFromIapiFails()
 		{
 			// Arrange
-			_importApiFake.Setup(x => x.GetWorkspaceFields(It.IsAny<int>(), It.IsAny<int>())).Throws<InvalidOperationException>();
+			_importApiFacadeFake.Setup(x => x.GetWorkspaceFieldsNames(It.IsAny<int>(), It.IsAny<int>())).Throws<InvalidOperationException>();
 
 			// Act
 			Func<Task> action = () => _sut.ClassifyAsync(Mock.Of<ICollection<DocumentFieldInfo>>(), 0);

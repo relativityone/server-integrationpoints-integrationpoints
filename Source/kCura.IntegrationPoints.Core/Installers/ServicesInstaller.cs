@@ -56,6 +56,7 @@ using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Common.Metrics.Sink;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
+using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {

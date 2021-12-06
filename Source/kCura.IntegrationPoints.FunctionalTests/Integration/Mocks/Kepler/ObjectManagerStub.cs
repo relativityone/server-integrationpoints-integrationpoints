@@ -15,70 +15,70 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
     public partial class ObjectManagerStub : KeplerStubBase<IObjectManager>
     {
         public void Setup()
-       {
+        {
             Mock.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<CreateRequest>()))
                 .Returns((int workspaceId, CreateRequest request) =>
-                {
-                    RelativityObject createdObject = GetRelativityObject(request);
-                    AddObjectToDatabase(new ObjectCreationInfo(workspaceId, createdObject, request.ObjectType.Guid));
+            {
+                RelativityObject createdObject = GetRelativityObject(request);
+                AddObjectToDatabase(new ObjectCreationInfo(workspaceId, createdObject, request.ObjectType.Guid));
 
-                    return Task.FromResult(new CreateResult()
-                    {
-                        Object = createdObject
-                    });
+                return Task.FromResult(new CreateResult()
+                {
+                    Object = createdObject
                 });
+            });
 
             Mock.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<MassCreateRequest>()))
                 .Returns((int workspaceId, MassCreateRequest request) =>
+            {
+                List<RelativityObject> createdObjects = GetRelativityObjects(request);
+
+                createdObjects.ForEach(x =>
+                    AddObjectToDatabase(new ObjectCreationInfo(workspaceId, x, request.ObjectType.Guid)));
+
+                return Task.FromResult(new MassCreateResult
                 {
-                    List<RelativityObject> createdObjects = GetRelativityObjects(request);
-
-                    createdObjects.ForEach(x =>
-                        AddObjectToDatabase(new ObjectCreationInfo(workspaceId, x, request.ObjectType.Guid)));
-
-                    return Task.FromResult(new MassCreateResult
-                    {
-                        Success = true,
-                        Objects = createdObjects.Select(x => new RelativityObjectRef {ArtifactID = x.ArtifactID})
-                            .ToList()
-                    });
+                    Success = true,
+                    Objects = createdObjects.Select(x => new RelativityObjectRef {ArtifactID = x.ArtifactID})
+                        .ToList()
                 });
+            });
 
             Mock.Setup(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<UpdateRequest>()))
                 .Returns((int workspaceId, UpdateRequest request) =>
+            {
+                try
+                {
+                    WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
+                    RdoTestBase foundRdo = workspace.ReadArtifact(request.Object.ArtifactID);
+
+                    if (foundRdo != null)
                     {
-                        try
-                        {
-                            WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
-                            RdoTestBase foundRdo = workspace.ReadArtifact(request.Object.ArtifactID);
+	                    RelativityObject relativityObject = GetRelativityObject(request, foundRdo);
 
-                            if (foundRdo != null)
-                            {
-	                            RelativityObject relativityObject = GetRelativityObject(request, foundRdo);
-
-	                            if (relativityObject.FieldValues.Any(x => x.Field.Name == null))
-	                            {
-                                    foundRdo.LoadRelativityObjectByGuid(foundRdo.GetType(), relativityObject);
-								}
-	                            else
-	                            {
-		                            foundRdo.LoadRelativityObjectByName(foundRdo.GetType(),
-			                            relativityObject);
-                                }
-                            }
-
-                            return Task.FromResult(new UpdateResult()
-                            {
-                                EventHandlerStatuses = new List<EventHandlerStatus>()
-                            });
-                        }
-                        catch (Exception)
-                        {
-                            Debugger.Break();
-                            return null;
+	                    if (relativityObject.FieldValues.Any(x => x.Field.Name == null))
+	                    {
+                            foundRdo.LoadRelativityObjectByGuid(foundRdo.GetType(), relativityObject);
+						}
+	                    else
+	                    {
+		                    foundRdo.LoadRelativityObjectByName(foundRdo.GetType(),
+			                    relativityObject);
                         }
                     }
-                );
+
+                    return Task.FromResult(new UpdateResult()
+                    {
+                        EventHandlerStatuses = new List<EventHandlerStatus>()
+                    });
+                }
+                catch (Exception)
+                {
+                    Debugger.Break();
+                    return null;
+                }
+            }
+            );
 
             SetupRead();
             SetupJobHistory();

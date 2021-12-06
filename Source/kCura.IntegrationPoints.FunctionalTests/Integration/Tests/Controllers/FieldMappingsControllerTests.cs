@@ -8,7 +8,9 @@ using FluentAssertions;
 using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Testing.Framework.Models;
 using Relativity.Testing.Identification;
+using Field = Relativity.Services.Objects.DataContracts.Field;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 {
@@ -31,7 +33,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 
             int destinationWorkspaceArtifactId = ArtifactProvider.NextId();
             _destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspaceWithIntegrationPointsApp(destinationWorkspaceArtifactId);
-
+            CreateFieldsWithSpecialCharactersAsync(SourceWorkspace);
+            CreateFieldsWithSpecialCharactersAsync(_destinationWorkspace);
+            SourceWorkspace.Helpers.FieldsMappingHelper.PrepareFixedLengthTextFieldsMapping();
+            SourceWorkspace.Helpers.FieldsMappingHelper.PrepareLongTextFieldsMapping();
         }
 
         [IdentifiedTest("AE9E4DD3-6E12-4000-BDE7-6CFDAE14F1EB")]
@@ -42,11 +47,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
                 CreateFieldsWithSpecialCharactersAsync(FIXED_LENGTH_TEXT_NAME);
             IEnumerable<RelativityObject> longTextFields =
                 CreateFieldsWithSpecialCharactersAsync(LONG_TEXT_NAME);
-            
+
             FieldMappingsController sut = PrepareSut(HttpMethod.Get, "/GetMappableFieldsFromSourceWorkspace");
 
             // Act
-            HttpResponseMessage result = await sut.GetMappableFieldsFromDestinationWorkspace(SourceWorkspace.ArtifactId);
+            HttpResponseMessage result = await sut.GetMappableFieldsFromSourceWorkspace(SourceWorkspace.ArtifactId);
 
             // Assert
             result.IsSuccessStatusCode.Should().BeTrue();
@@ -109,6 +114,39 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         {
             return new ClaimsPrincipal(new[]
                 {new ClaimsIdentity(new[] {new Claim("rel_uai", User.ArtifactId.ToString())})});
-        } 
+        }
+
+        private void CreateFieldsWithSpecialCharactersAsync(WorkspaceTest workspace)
+        {
+            char[] specialCharacters = @"!@#$%^&*()-_+= {}|\/;'<>,.?~`".ToCharArray();
+
+            for (int i = 0; i < specialCharacters.Length; i++)
+            {
+                char special = specialCharacters[i];
+                string generatedFieldName = $"aaaaa{special}{i}";
+                var fixedLengthTextFieldRequest = new FieldTest
+                {
+                    ObjectTypeId = Const.FIXED_LENGTH_TEXT_TYPE_ARTIFACT_ID,
+                    Name = $"{generatedFieldName} Fixed-Length Text",
+                    IsIdentifier = false,
+                };
+
+                workspace.Fields.Add(fixedLengthTextFieldRequest);
+
+                var longTextFieldRequest = new FieldTest
+                {
+                    ObjectTypeId = Const.LONG_TEXT_TYPE_ARTIFACT_ID,
+                    Name = $"{generatedFieldName} Long Text",
+                    IsIdentifier = false,
+                };
+
+                workspace.Fields.Add(longTextFieldRequest);
+                //fieldManager.CreateLongTextFieldAsync(workspaceId, longTextFieldRequest).ConfigureAwait(false);
+                //fieldManager.CreateFixedLengthFieldAsync(workspaceId, fixedLengthTextFieldRequest).ConfigureAwait(false);
+            }
+
+            SourceWorkspace.Helpers.FieldsMappingHelper.PrepareLongTextFieldsMapping();
+            SourceWorkspace.Helpers.FieldsMappingHelper.PrepareFixedLengthTextFieldsMapping();
+        }
     }
 }

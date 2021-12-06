@@ -179,7 +179,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		{
 			Container.Register(Component.For<IHelper, IAgentHelper, ICPHelper>().Instance(Helper));
 			Container.Register(Component.For<IAPILog>().Instance(new ConsoleLogger()).LifestyleSingleton());
-			Container.Register(Component.For<IServicesMgr>().ImplementedBy<FakeServiceManager>());
 		}
 
 		private void RegisterScheduleAgentBase()

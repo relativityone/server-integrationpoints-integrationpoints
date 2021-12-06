@@ -237,14 +237,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
                         FieldType = FieldType.String,
                         IsIdentifier = false,
                         IsRequired = false,
-                        Type = null
+                        Type = null,
                     },
                     DestinationField = new FieldEntry()
                     {
                         DisplayName = field.Value.Name,
                         FieldIdentifier = field.Value.ArtifactId.ToString(),
                         FieldType = FieldType.String,
-                        IsIdentifier = true,
+                        IsIdentifier = false,
                         IsRequired = true,
                         Type = fieldType
                     },

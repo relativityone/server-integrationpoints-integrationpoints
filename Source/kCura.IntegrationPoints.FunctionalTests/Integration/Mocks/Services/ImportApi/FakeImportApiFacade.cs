@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using kCura.Relativity.ImportAPI.Data;
 using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 
