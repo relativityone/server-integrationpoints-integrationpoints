@@ -1,6 +1,7 @@
 framework: net462
 strategy: min
 source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
+source C:\_Work\_Nuget
 
 //RIP packages
 nuget Relativity.IntegrationPoints.Services.Interfaces.Private 1.2.1
@@ -31,26 +32,26 @@ nuget Relativity.DataTransfer.MessageService ~> 10.2.0
 nuget Relativity.Kepler 2.15.3
 nuget Relativity.Kepler.Service
 nuget Relativity.Kepler.Client 2.15.3
-nuget Relativity.Logging 3000.0.1
-nuget Relativity.Logging.Interfaces 3000.0.1
+nuget Relativity.Logging 2019.5.1
+nuget Relativity.Logging.Interfaces 2019.5.1
 nuget Relativity.OAuth2Client 1.5.2
 nuget Relativity.OAuth2Client.Interfaces 1.5.2
 nuget Relativity.Platform.Agent.WorkloadDiscovery.SDK
 nuget Relativity.Productions.Services.Interfaces 11.1.0
 nuget Relativity.Telemetry.APM 2019.1.1 
 nuget Relativity.Telemetry.MetricsCollection 2018.12.2
-nuget Relativity.Telemetry.Services.Interface 3000.0.1
+nuget Relativity.Telemetry.Services.Interface 3003.0.1
 nuget Relativity.Toggles 1.0.1
 nuget Relativity.AutomatedWorkflows.Services.Interfaces 0.10.0-pre.1
 nuget Relativity.AutomatedWorkflows.SDK 0.10.0-pre.1
 
 // Import API packages
-nuget Relativity.DataExchange.Client.SDK 1.14.3
+nuget Relativity.DataExchange.Client.SDK 1.15.29
 nuget Relativity.DataTransfer.Legacy.SDK
 
 //Relativity transient packages
 nuget kCura.OutsideIn.FI.Win32 2020.7.0 content: none 		//Relativity.DataExchange.Client.SDK
-nuget Relativity.OutsideIn 2021.3.1 content: none 			//Relativity.DataExchange.Client.SDK
+nuget Relativity.OutsideIn 2021.8.0 content: none 			//Relativity.DataExchange.Client.SDK
 
 //Other packages
 nuget Newtonsoft.Json 6.0.8 redirects: force
@@ -97,6 +98,7 @@ group Tests
 	framework: auto-detect
 	strategy: min
 	source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
+	source C:\_Work\_Nuget
 	
 	nuget kCura 14.2.5
 	nuget kCura.Agent ~> 17.1
@@ -107,7 +109,7 @@ group Tests
 	nuget Relativity.Services.Interfaces.Private ~> 14.0.1
 	nuget Relativity.DataTransfer.MessageService ~> 10.2.0
 	nuget Relativity.IntegrationPoints.Contracts 1.0.8-pre.3
-	nuget Relativity.OutsideIn 2021.3.1 content: none 			//Relativity.DataExchange.Client.SDK
+	nuget Relativity.OutsideIn 2021.8.0 content: none 			//Relativity.DataExchange.Client.SDK
 	nuget FluentAssertions 4.19.4
 	nuget Polly 5.9
 	nuget Moq 4.5.3
@@ -120,8 +122,8 @@ group Tests
 	nuget NUnit3TestAdapter 3.13
 	nuget Relativity.Kepler 2.15.3
 	nuget Relativity.Kepler.Client 2.15.3
-	nuget Relativity.Logging.Interfaces 3000.0.1
-	nuget Relativity.Telemetry.Services.Interface 3000.0.1
+	nuget Relativity.Logging.Interfaces 2019.5.1
+	nuget Relativity.Telemetry.Services.Interface 3003.0.1
 	nuget Relativity.Services.Interfaces 13.5.0
 	nuget Relativity.Testing.Framework 4.11.0
 	nuget Relativity.Testing.Framework.Api 3.21.0
@@ -129,7 +131,7 @@ group Tests
 	nuget Relativity.Testing.Framework.RingSetup 0.11.0
 	nuget Selenium.Support 4.0.0-beta4
 	nuget IntegrationPoints.MyFirstProvider 11.1.0-pre.9
-	nuget Relativity.Sync 0.8.0-pre.87
+	nuget Relativity.Sync 0.1.5-local
 	nuget SystemWrapper.Interfaces 0.25.0.186
 	nuget Relativity.AutomatedWorkflows.Services.Interfaces 0.10.0-pre.1
 	nuget Relativity.AutomatedWorkflows.SDK 0.10.0-pre.1
@@ -138,8 +140,9 @@ group Sync
 	framework: auto-detect
 	strategy: min
 	source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
+	source C:\_Work\_Nuget
 	
-    nuget Relativity.Sync 0.8.0-pre.87
+    nuget Relativity.Sync 0.1.5-local
 	nuget Newtonsoft.Json 6.0.8
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
