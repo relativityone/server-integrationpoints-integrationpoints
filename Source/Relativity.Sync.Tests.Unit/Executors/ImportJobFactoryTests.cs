@@ -33,6 +33,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepository;
 		private Mock<IJobProgressHandlerFactory> _jobProgressHandlerFactory;
 		private Mock<ISourceWorkspaceDataReaderFactory> _dataReaderFactory;
+		private Mock<IItemLevelErrorLogAggregator> _itemLevelErrorLogAggregator;
 		private SyncJobParameters _syncJobParameters;
 		private const string _IMAGE_IDENTIFIER_DISPLAY_NAME = "ImageIdentifier";
 		private const int _DEST_RDO_ARTIFACT_TYPE = 1234567;
@@ -56,6 +57,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_instanceSettings.Setup(x => x.GetWebApiPathAsync(default(string))).ReturnsAsync("http://fake.uri");
 			_syncJobParameters = FakeHelper.CreateSyncJobParameters();
 			_logger = new EmptyLogger();
+            _itemLevelErrorLogAggregator = new Mock<IItemLevelErrorLogAggregator>();
 
 			_batch = new Mock<IBatch>(MockBehavior.Loose);
 

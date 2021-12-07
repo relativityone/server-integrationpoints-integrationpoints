@@ -15,7 +15,5 @@ namespace Relativity.Sync.Configuration
 		int[] ProductionImagePrecedence { get; }
 
 		bool IncludeOriginalImageIfNotFoundInProductions { get; }
-
-        Guid ExportRunId { get; }
-	}
+    }
 }

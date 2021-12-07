@@ -184,7 +184,9 @@ namespace Relativity.Sync.Tests.Common
 
 		public int JobHistoryArtifactId { get; set; }
 
-		public bool IsSourceJobTagSet { get; set; }
+        Guid? IJobStatusConsolidationConfiguration.ExportRunId { get; }
+
+        public bool IsSourceJobTagSet { get; set; }
 
 		public Task SetSourceJobTagAsync(int artifactId, string name)
 		{
