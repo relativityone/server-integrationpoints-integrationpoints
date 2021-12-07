@@ -22,13 +22,15 @@ namespace Relativity.Sync.Executors
 		private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
 		private readonly SyncJobParameters _syncJobParameters;
 		private readonly ISyncLog _logger;
+        private readonly IItemLevelErrorLogAggregator _itemLevelErrorLogAggregator;
 
-		public ImportJobFactory(IImportApiFactory importApiFactory, ISourceWorkspaceDataReaderFactory dataReaderFactory,
+		public ImportJobFactory(IImportApiFactory importApiFactory, ISourceWorkspaceDataReaderFactory dataReaderFactory, IItemLevelErrorLogAggregator itemLevelErrorLogAggregator,
 			IJobHistoryErrorRepository jobHistoryErrorRepository, IInstanceSettings instanceSettings, SyncJobParameters syncJobParameters, ISyncLog logger)
 		{
 			_importApiFactory = importApiFactory;
 			_dataReaderFactory = dataReaderFactory;
 			_jobHistoryErrorRepository = jobHistoryErrorRepository;
+            _itemLevelErrorLogAggregator = itemLevelErrorLogAggregator;
 			_instanceSettings = instanceSettings;
 			_syncJobParameters = syncJobParameters;
 			_logger = logger;
@@ -62,7 +64,7 @@ namespace Relativity.Sync.Executors
 			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);
 
             ImportJob job = new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
-                configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
+                _itemLevelErrorLogAggregator, configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
 
             _logger.LogInformation("Import Settings: {@settings}",
                 NonDocumentImportSettingsForLogging.CreateWithoutSensitiveData(importJob.Settings));
