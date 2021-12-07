@@ -31,7 +31,7 @@ namespace Relativity.Sync.Executors
 		private readonly ISemaphoreSlim _semaphoreSlim;
 		private readonly ISyncLog _logger;
 
-		public ImportJob(ISyncImportBulkArtifactJob syncImportBulkArtifactJob, ISemaphoreSlim semaphoreSlim, IJobHistoryErrorRepository jobHistoryErrorRepository, , int sourceWorkspaceArtifactId, int jobHistoryArtifactId, ISyncLog syncLog)
+		public ImportJob(ISyncImportBulkArtifactJob syncImportBulkArtifactJob, ISemaphoreSlim semaphoreSlim, IJobHistoryErrorRepository jobHistoryErrorRepository, int sourceWorkspaceArtifactId, int jobHistoryArtifactId, ISyncLog syncLog)
 		{
 			_lockObject = new object();
 			_importApiFatalExceptionOccurred = false;

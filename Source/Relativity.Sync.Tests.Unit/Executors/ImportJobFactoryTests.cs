@@ -457,7 +457,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private ImportJobFactory GetTestInstance(Mock<IImportApiFactory> importApiFactory)
 		{
-			var instance = new ImportJobFactory(importApiFactory.Object, _dataReaderFactory.Object, _itemLevelErrorLogAggregator.Object,
+			var instance = new ImportJobFactory(importApiFactory.Object, _dataReaderFactory.Object,
 				_jobHistoryErrorRepository.Object, _instanceSettings.Object, _syncJobParameters, _logger);
 			return instance;
 		}
