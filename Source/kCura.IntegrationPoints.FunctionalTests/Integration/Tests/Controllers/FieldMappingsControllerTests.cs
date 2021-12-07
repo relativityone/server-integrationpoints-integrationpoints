@@ -1,19 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Web.Helpers;
 using System.Web.Http;
 using FluentAssertions;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings;
 using kCura.IntegrationPoints.Web.Models;
 using Relativity.IntegrationPoints.FieldsMapping;
-using Relativity.IntegrationPoints.FieldsMapping.Helpers;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
-using Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelpers;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
-using Relativity.Testing.Framework.Models;
 using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
@@ -78,13 +76,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             ((List<FieldTest>)SourceWorkspace.Fields).AddRange(_fields);
 
             DocumentFieldInfo[] documentsFieldInfo = ConvertFieldTestListToDocumentFieldInfoArray(_fields);
-
-            AutomapRequest request = new AutomapRequest
-            {
-                SourceFields = documentsFieldInfo,
-                DestinationFields = documentsFieldInfo,
-                MatchOnlyIdentifiers = false
-            };
+            AutomapRequest request = CreateAutomapRequest(documentsFieldInfo);
 
             // Act
             HttpResponseMessage result = await sut.AutoMapFields(request, SourceWorkspace.ArtifactId, DESTINATION_PROVIDER_GUID);
@@ -106,16 +98,24 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             IList<SavedSearchTest> savedSearches = SourceWorkspace.SavedSearches;
 
             DocumentFieldInfo[] documentsFieldInfo = ConvertFieldTestListToDocumentFieldInfoArray(_fields);
+            AutomapRequest request = CreateAutomapRequest(documentsFieldInfo);
 
-            AutomapRequest request = new AutomapRequest
+            SavedSearchTest savedSearch = new SavedSearchTest
             {
-                SourceFields = documentsFieldInfo,
-                DestinationFields = documentsFieldInfo,
-                MatchOnlyIdentifiers = false
+                Name = "Source Saved Search",
+                Owner = "Adler Sieben",
+                Artifact = { ArtifactId = ArtifactProvider.NextId() }
             };
 
+            foreach (var field in _fields)
+            {
+                savedSearch.Values.Add(Guid.NewGuid(), field);
+            }
+
+            savedSearches.Add(savedSearch);
+
             // Act
-            HttpResponseMessage result = await sut.AutoMapFieldsFromSavedSearch(request, SourceWorkspace.ArtifactId, savedSearches[0].ArtifactId, DESTINATION_PROVIDER_GUID);
+            HttpResponseMessage result = await sut.AutoMapFieldsFromSavedSearch(request, SourceWorkspace.ArtifactId, savedSearch.ArtifactId, DESTINATION_PROVIDER_GUID);
             List<FieldMap> fieldsMaps = await result.Content.ReadAsAsync<List<FieldMap>>();
 
             // Assert
@@ -125,25 +125,28 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             fieldsMaps.Select(x => x.DestinationField.DisplayName).ShouldBeEquivalentTo(_fields.Select(x => x.Name));
         }
 
-        private DocumentFieldInfo[] ConvertFieldTestListToDocumentFieldInfoArray(List<FieldTest> fields)
+        [IdentifiedTest("2210FA46-0247-4F80-AB0D-311713979628")]
+        public async Task ValidateAsync_ShouldMapAllFixedLengthTextFields()
         {
-            DocumentFieldInfo[] documentsFieldInfo = new DocumentFieldInfo[fields.Count];
-            for (int i = 0; i < fields.Count; i++)
-            {
-                FieldTest field = fields[i];
+            // Arrange
+            FieldMappingsController sut = PrepareSut(HttpMethod.Post, "/ValidateAsync");
+            _fields[0].IsIdentifier = true;
+            ((List<FieldTest>)SourceWorkspace.Fields).AddRange(_fields);
+            ((List<FieldTest>)_destinationWorkspace.Fields).AddRange(_fields);
 
-                DocumentFieldInfo documentFieldInfo = new DocumentFieldInfo(
-                    field.ArtifactId.ToString(),
-                    field.Name,
-                    FIXED_LENGTH_TEXT_NAME)
-                {
-                    IsIdentifier = false,
-                    IsRequired = false,
-                };
-                documentsFieldInfo[i] = documentFieldInfo;
-            }
+            IEnumerable<FieldMap> mappedFields = SourceWorkspace.Helpers.FieldsMappingHelper.PrepareFixedLengthTextFieldsMapping();
+            mappedFields.First().SourceField.IsIdentifier = true;
+            mappedFields.First().FieldMapType = FieldMapTypeEnum.Identifier;
+            mappedFields.First().DestinationField.IsIdentifier = true;
 
-            return documentsFieldInfo;
+            // Act
+            HttpResponseMessage result = await sut.ValidateAsync(mappedFields, SourceWorkspace.ArtifactId, _destinationWorkspace.ArtifactId, DESTINATION_PROVIDER_GUID);
+            FieldMappingValidationResult fieldMappingValidationResult = await result.Content.ReadAsAsync<FieldMappingValidationResult>();
+
+            // Assert
+            result.IsSuccessStatusCode.Should().BeTrue();
+            fieldMappingValidationResult.InvalidMappedFields.Should().BeEmpty();
+            fieldMappingValidationResult.IsObjectIdentifierMapValid.ShouldBeEquivalentTo(true);
         }
 
         private IEnumerable<FieldTest> CreateFixedLengthTextFieldsWithSpecialCharactersAsync()
@@ -181,6 +184,38 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         {
             return new ClaimsPrincipal(new[]
                 {new ClaimsIdentity(new[] {new Claim("rel_uai", User.ArtifactId.ToString())})});
+        }
+
+        private DocumentFieldInfo[] ConvertFieldTestListToDocumentFieldInfoArray(List<FieldTest> fields)
+        {
+            DocumentFieldInfo[] documentsFieldInfo = new DocumentFieldInfo[fields.Count];
+            for (int i = 0; i < fields.Count; i++)
+            {
+                FieldTest field = fields[i];
+
+                DocumentFieldInfo documentFieldInfo = new DocumentFieldInfo(
+                    field.ArtifactId.ToString(),
+                    field.Name,
+                    FIXED_LENGTH_TEXT_NAME)
+                {
+                    IsIdentifier = false,
+                    IsRequired = false,
+                };
+                documentsFieldInfo[i] = documentFieldInfo;
+            }
+
+            return documentsFieldInfo;
+        }
+
+        private AutomapRequest CreateAutomapRequest(DocumentFieldInfo[] documentsFieldInfo)
+        {
+            AutomapRequest request = new AutomapRequest
+            {
+                SourceFields = documentsFieldInfo,
+                DestinationFields = documentsFieldInfo,
+                MatchOnlyIdentifiers = false
+            };
+            return request;
         }
     }
 }
