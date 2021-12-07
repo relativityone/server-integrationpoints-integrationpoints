@@ -710,5 +710,21 @@
 	{
 		"Jira": "REL-609880",
 		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*Index was out of range.*LongTextFieldSanitizer.<GetItemArtifactIdAsync>*"
+	},
+	{
+		"Jira": "REL-623899",
+		"Exception": "*System.AggregateException*System.Net.WebException*The operation has timed out*kCura.EDDS.WebAPI.CodeManagerBase.CodeManager.GetAllForHierarchical*"
+	},
+	{
+		"Jira": "REL-623912",
+		"Exception": "*System.AggregateException*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*System.NullReferenceException: Object reference not set to an instance of an object*kCura.WinEDDS.ImportExtension.DataReaderImageImporter.get_TotalRecords*"
+	}	,
+	{
+		"Jira": "REL-609259",
+		"Exception": "*Relativity.Sync.SyncException: Maximum number of retries * has been reached for Mass creation of item level errors*"
+	},
+	{
+		"Jira": "REL-624181",
+		"Exception": "*Failed to retrieve data on choice*Relativity.Services.Exceptions.NotFoundException: Not Found*"
 	}
 ]
