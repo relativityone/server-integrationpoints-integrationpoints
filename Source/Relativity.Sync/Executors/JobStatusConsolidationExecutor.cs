@@ -31,16 +31,22 @@ namespace Relativity.Sync.Executors
 			UpdateResult updateResult;
 			try
 			{
-				List<IBatch> batches = (await _batchRepository
-					.GetAllAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, configuration.ExportRunId)
-					.ConfigureAwait(false)).ToList();
+                int completedItemsCount = 0;
+                int totalItemsCount = 0;
+                int failedItemsCount = 0;
+                var exportRunId = configuration.ExportRunId;
+                if (exportRunId.HasValue)
+                {
+                    List<IBatch> batches = (await _batchRepository
+                        .GetAllAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, exportRunId.Value)
+                        .ConfigureAwait(false)).ToList();
 
-				int completedItemsCount = batches.Sum(batch => batch.TransferredItemsCount);
-				int totalItemsCount = await GetTotalItemsCountAsync(batches).ConfigureAwait(false);
-				int failedItemsCount = batches.Sum(batch => batch.FailedItemsCount);
-
-				updateResult = await UpdateJobHistoryAsync(configuration, completedItemsCount, failedItemsCount, totalItemsCount).ConfigureAwait(false);
-			}
+                    completedItemsCount = batches.Sum(batch => batch.TransferredItemsCount);
+                    totalItemsCount = await GetTotalItemsCountAsync(batches).ConfigureAwait(false);
+                    failedItemsCount = batches.Sum(batch => batch.FailedItemsCount);
+                }
+                updateResult = await UpdateJobHistoryAsync(configuration, completedItemsCount, failedItemsCount, totalItemsCount).ConfigureAwait(false);
+            }
 			catch (Exception e)
 			{
 				return ExecutionResult.Failure("Failed to update Job History object.", e);

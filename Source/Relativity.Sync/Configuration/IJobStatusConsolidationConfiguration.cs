@@ -10,6 +10,6 @@ namespace Relativity.Sync.Configuration
 
 		int JobHistoryArtifactId { get; }
 
-        Guid ExportRunId { get; }
+        Guid? ExportRunId { get; }
 	}
 }
