@@ -70,7 +70,7 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<ImageSynchronizationExecutionConstrains>().As<IExecutionConstrains<IImageSynchronizationConfiguration>>();
 			builder.RegisterType<DocumentSynchronizationExecutor>().As<IExecutor<IDocumentSynchronizationConfiguration>>();
 			builder.RegisterType<ImageSynchronizationExecutor>().As<IExecutor<IImageSynchronizationConfiguration>>();
-			
+
 			builder.RegisterType<DataDestinationInitializationExecutor>().As<IExecutor<IDataDestinationInitializationConfiguration>>();
 			builder.RegisterType<DataDestinationInitializationExecutionConstrains>().As<IExecutionConstrains<IDataDestinationInitializationConfiguration>>();
 			builder.RegisterType<DataDestinationFinalizationExecutor>().As<IExecutor<IDataDestinationFinalizationConfiguration>>();

@@ -14,7 +14,7 @@ namespace Relativity.Sync.Tests.Common
 		IJobStatusConsolidationConfiguration, INotificationConfiguration, IPermissionsCheckConfiguration, ISnapshotPartitionConfiguration, IObjectLinkingSnapshotPartitionConfiguration,
 		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration, IFieldConfiguration, IImageRetrieveConfiguration,
 		IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration, IRetryDataSourceSnapshotConfiguration, IPipelineSelectorConfiguration,
-		IDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, IPreValidationConfiguration, IRdoGuidConfiguration,
+		IDocumentSynchronizationConfiguration, INonDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, IPreValidationConfiguration, IRdoGuidConfiguration,
 		IImageJobStartMetricsConfiguration, IDocumentJobStartMetricsConfiguration, ISnapshotQueryConfiguration, IMetricsConfiguration, IStatisticsConfiguration
 	{
 		private IList<FieldMap> _fieldMappings = new List<FieldMap>();
@@ -101,6 +101,8 @@ namespace Relativity.Sync.Tests.Common
 		public bool MoveExistingDocuments { get; set; }
 
 		public int RdoArtifactTypeId { get; set; } = (int)ArtifactType.Document;
+
+		public int DestinationRdoArtifactTypeId { get; set; } = (int)ArtifactType.Document;
 
 		public string GetSourceWorkspaceTag() => string.Empty;
 
