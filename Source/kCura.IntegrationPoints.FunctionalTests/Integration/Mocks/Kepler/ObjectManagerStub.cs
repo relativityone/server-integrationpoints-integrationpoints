@@ -9,6 +9,7 @@ using Moq;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Match = System.Text.RegularExpressions.Match;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
@@ -225,33 +226,42 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
         private bool IsArtifactIdCondition(string condition, out int artifactId)
         {
-            var match = Regex.Match(condition,
-                @"'Artifact[ ]?ID' == (\d+)");
-
-            if (match.Success && int.TryParse(match.Groups[1].Value, out int extractedArtifactId))
+            try
             {
-                artifactId = extractedArtifactId;
-                return true;
+                Match match = Regex.Match(condition, @"'Artifact[ ]?ID' == (\d+)");
+                if (match.Success && int.TryParse(match.Groups[1].Value, out int extractedArtifactId))
+                {
+                    artifactId = extractedArtifactId;
+                    return true;
+                }
             }
-
-            artifactId = -1;
+            catch { }
+            finally
+            {
+                artifactId = -1;
+            }
             return false;
         }
 
         private bool IsArtifactIdListCondition(string condition, out int[] artifactId)
         {
-            var match = Regex.Match(condition,
-                @"'Artifact[ ]?ID' in \[(.*)\]");
-
-            if (match.Success)
+            try
             {
-                artifactId = match.Groups[1].Value.Split(',').Select(x => int.TryParse(x, out int r) ? r : -1)
-                    .Where(x => x > 0)
-                    .ToArray();
-                return true;
-            }
+                Match match = Regex.Match(condition, @"'Artifact[ ]?ID' in \[(.*)\]");
 
-            artifactId = new int[0];
+                if (match.Success)
+                {
+                    artifactId = match.Groups[1].Value.Split(',').Select(x => int.TryParse(x, out int r) ? r : -1)
+                        .Where(x => x > 0)
+                        .ToArray();
+                    return true;
+                }
+            }
+            catch { }
+            finally
+            {
+                artifactId = new int[0];
+            }
             return false;
         }
 

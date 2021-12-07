@@ -29,7 +29,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             }
 
             Mock.Setup(x => x.QueryAsync(It.IsAny<int>(), 
-                    It.Is<QueryRequest>(r => IsFieldQuery(r) & !IsFieldNamePresent(r)), It.IsAny<int>(), It.IsAny<int>()))
+                    It.Is<QueryRequest>(r => IsFieldQuery(r) & !HasFieldName(r)), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns((int workspaceId, QueryRequest request, int start, int length) =>
             {
                 QueryResult result = GetRelativityObjectsForRequest(x => x.Fields, FieldsByObjectTypeFilter, workspaceId, request, length);
@@ -38,7 +38,26 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             );
 
             Mock.Setup(x => x.QueryAsync(It.IsAny<int>(), 
-                    It.Is<QueryRequest>(r => IsFieldQuery(r) & IsFieldNamePresent(r)),
+                    It.Is<QueryRequest>(r => IsFieldQuery(r) & HasFieldName(r)),
+                    It.IsAny<int>(), It.IsAny<int>()))
+                .Returns((int workspaceId, QueryRequest request, int start, int length) =>
+            {
+                QueryResult result = GetRelativityObjectsForRequest(x => x.Fields, (queryRequest, list) =>
+                {
+                    List<FieldTest> fields = list.Where(x => x.ObjectTypeId == Const.FIXED_LENGTH_TEXT_TYPE_ARTIFACT_ID).Skip(start - 1).ToList();
+                    return fields;
+                }, workspaceId, request, length);
+                foreach (var relativityObject in result.Objects)
+                {
+                    relativityObject.Name = relativityObject.FieldValues[1].Value.ToString();
+                }
+
+                return Task.FromResult(result);
+            }
+            );
+
+            Mock.Setup(x => x.QueryAsync(It.IsAny<int>(),
+                    It.Is<QueryRequest>(r => HasObjectTypeRefWithGuid(r)),
                     It.IsAny<int>(), It.IsAny<int>()))
                 .Returns((int workspaceId, QueryRequest request, int start, int length) =>
             {
@@ -86,9 +105,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 	        return r.ObjectType.ArtifactTypeID == (int) ArtifactType.Field;
         }
 
-        private bool IsFieldNamePresent(QueryRequest r)
+        private bool HasFieldName(QueryRequest r)
         {
             return r.Fields.Count(x => x.Name == "*") > 0;
+        } 
+        
+        private bool HasObjectTypeRefWithGuid(QueryRequest r)
+        {
+            return r.ObjectType.Guid.HasValue;
         }
     }
 }
