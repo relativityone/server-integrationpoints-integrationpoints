@@ -13,9 +13,5 @@ namespace Relativity.Sync.Logging
 		{
 			return new NonDocumentImportSettingsForLogging(settings);
 		}
-
-		#region Properties
-
-		#endregion
-	}
+    }
 }

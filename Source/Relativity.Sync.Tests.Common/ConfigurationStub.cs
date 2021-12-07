@@ -11,7 +11,7 @@ namespace Relativity.Sync.Tests.Common
 	[ExcludeFromCodeCoverage]
 	internal sealed class ConfigurationStub : IDataDestinationFinalizationConfiguration, IDataDestinationInitializationConfiguration, IDataSourceSnapshotConfiguration,
 		IDestinationWorkspaceObjectTypesCreationConfiguration, IDestinationWorkspaceSavedSearchCreationConfiguration, IDestinationWorkspaceTagsCreationConfiguration, IJobCleanupConfiguration,
-		IJobStatusConsolidationConfiguration, INotificationConfiguration, IPermissionsCheckConfiguration, ISnapshotPartitionConfiguration, IObjectLinkingSnapshotPartitionConfiguration,
+		INotificationConfiguration, IPermissionsCheckConfiguration, ISnapshotPartitionConfiguration, IObjectLinkingSnapshotPartitionConfiguration,
 		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration, IFieldConfiguration, IImageRetrieveConfiguration,
 		IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration, IRetryDataSourceSnapshotConfiguration, IPipelineSelectorConfiguration,
 		IDocumentSynchronizationConfiguration, INonDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, IPreValidationConfiguration, IRdoGuidConfiguration,
@@ -183,9 +183,7 @@ namespace Relativity.Sync.Tests.Common
 		public Guid JobHistoryObjectTypeGuid => JobHistory.TypeGuid;
 
 		public int JobHistoryArtifactId { get; set; }
-
-        Guid? IJobStatusConsolidationConfiguration.ExportRunId { get; }
-
+		
         public bool IsSourceJobTagSet { get; set; }
 
 		public Task SetSourceJobTagAsync(int artifactId, string name)

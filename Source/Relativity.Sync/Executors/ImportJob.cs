@@ -31,8 +31,7 @@ namespace Relativity.Sync.Executors
 		private readonly ISemaphoreSlim _semaphoreSlim;
 		private readonly ISyncLog _logger;
 
-		public ImportJob(ISyncImportBulkArtifactJob syncImportBulkArtifactJob, ISemaphoreSlim semaphoreSlim, IJobHistoryErrorRepository jobHistoryErrorRepository,
-			IItemLevelErrorLogAggregator itemLevelErrorLogAggregator, int sourceWorkspaceArtifactId, int jobHistoryArtifactId, ISyncLog syncLog)
+		public ImportJob(ISyncImportBulkArtifactJob syncImportBulkArtifactJob, ISemaphoreSlim semaphoreSlim, IJobHistoryErrorRepository jobHistoryErrorRepository, , int sourceWorkspaceArtifactId, int jobHistoryArtifactId, ISyncLog syncLog)
 		{
 			_lockObject = new object();
 			_importApiFatalExceptionOccurred = false;
@@ -44,7 +43,7 @@ namespace Relativity.Sync.Executors
 			_syncImportBulkArtifactJob = syncImportBulkArtifactJob;
 			_semaphoreSlim = semaphoreSlim;
 			_jobHistoryErrorRepository = jobHistoryErrorRepository;
-			_itemLevelErrorLogAggregator = itemLevelErrorLogAggregator;
+			_itemLevelErrorLogAggregator = new ItemLevelErrorLogAggregator(syncLog);
 			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
 			_jobHistoryArtifactId = jobHistoryArtifactId;
 			_logger = syncLog;

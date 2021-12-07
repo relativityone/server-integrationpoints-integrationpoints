@@ -45,7 +45,6 @@ namespace Relativity.Sync
 			containerBuilder.RegisterType<ProgressStateCounter>().As<IProgressStateCounter>();
 			containerBuilder.RegisterType<SyncJobProgress>().As<IProgress<SyncJobState>>();
 			containerBuilder.RegisterType<JobEndMetricsServiceFactory>().As<IJobEndMetricsServiceFactory>();
-			containerBuilder.RegisterType<ItemLevelErrorLogAggregator>().As<IItemLevelErrorLogAggregator>();
 
 			containerBuilder.RegisterInstance(ToggleProvider.Current).As<IToggleProvider>().SingleInstance();
 
