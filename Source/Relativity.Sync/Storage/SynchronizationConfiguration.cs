@@ -3,7 +3,7 @@ using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Storage
 {
-	internal sealed class SynchronizationConfiguration : ISynchronizationConfiguration, IDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration
+	internal sealed class SynchronizationConfiguration : ISynchronizationConfiguration, IDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, INonDocumentSynchronizationConfiguration
 	{
 		private const int _ASCII_GROUP_SEPARATOR = 29;
 		private const int _ASCII_RECORD_SEPARATOR = 30;
@@ -46,6 +46,7 @@ namespace Relativity.Sync.Storage
 
 		public int DataSourceArtifactId => _cache.GetFieldValue(x => x.DataSourceArtifactId);
 		public int RdoArtifactTypeId => _cache.GetFieldValue(x => x.RdoArtifactTypeId);
+		public int DestinationRdoArtifactTypeId => _cache.GetFieldValue(x => x.DestinationRdoArtifactTypeId);
 
 		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior =>_cache.GetFieldValue(x => x.DestinationFolderStructureBehavior);
 		public ImportOverwriteMode ImportOverwriteMode => _cache.GetFieldValue(x => x.ImportOverwriteMode);

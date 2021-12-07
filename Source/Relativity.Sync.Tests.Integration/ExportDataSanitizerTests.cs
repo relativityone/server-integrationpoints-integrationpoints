@@ -29,6 +29,7 @@ namespace Relativity.Sync.Tests.Integration
 
 		private IContainer _container;
 
+		private const int _CHOICE_ARTIFACT_TYPE_ID = 7;
 		private const int _ITEM_ARTIFACT_ID = 1012323;
 		private const int _SOURCE_WORKSPACE_ID = 1014023;
 		private const string _IDENTIFIER_FIELD_NAME = "blech";
@@ -182,7 +183,7 @@ namespace Relativity.Sync.Tests.Integration
 					}
 				};
 				_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(r =>
-						r.ObjectType.ArtifactID == choice.ArtifactID), It.IsAny<int>(), It.IsAny<int>()))
+						r.ObjectType.ArtifactTypeID == _CHOICE_ARTIFACT_TYPE_ID), It.IsAny<int>(), It.IsAny<int>()))
 						.ReturnsAsync(queryResult);
 			}
 
@@ -238,7 +239,7 @@ namespace Relativity.Sync.Tests.Integration
 				}
 			};
 			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(r =>
-					r.ObjectType.ArtifactID == parentArtifactId), It.IsAny<int>(), It.IsAny<int>()))
+                    r.Condition == $"'Artifact ID' == {parentArtifactId}"), It.IsAny<int>(), It.IsAny<int>()))
 					.ReturnsAsync(queryResultForParent);
 
 			QueryResult queryResultForNested = new QueryResult
@@ -258,7 +259,7 @@ namespace Relativity.Sync.Tests.Integration
                 }
 			};
 			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(r =>
-					r.ObjectType.ArtifactID == nestedArtifactId), It.IsAny<int>(), It.IsAny<int>()))
+					r.Condition == $"'Artifact ID' == {nestedArtifactId}" ), It.IsAny<int>(), It.IsAny<int>()))
 					.ReturnsAsync(queryResultForNested);
 
 			string expectedResult = $"{parentChoice.Name}{_NESTED_DELIM}{nestedChoice.Name}{_MULTI_DELIM}";

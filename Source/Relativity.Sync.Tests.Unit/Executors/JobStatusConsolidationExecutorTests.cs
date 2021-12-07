@@ -54,6 +54,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_batchRepositoryStub = new Mock<IBatchRepository>();
 			_jobStatisticsContainerStub = new Mock<IJobStatisticsContainer>();
 			_configurationStub = new Mock<IJobStatusConsolidationConfiguration>();
+            _configurationStub.Setup(x => x.ExportRunId).Returns(new Guid("286E0000-479B-4752-B95A-C818A3974495"));
 
 			_serviceFactoryStub = new Mock<ISourceServiceFactoryForAdmin>();
 			_serviceFactoryStub

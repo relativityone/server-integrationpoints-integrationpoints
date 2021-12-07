@@ -14,7 +14,7 @@ namespace Relativity.Sync.Tests.Common
 		IJobStatusConsolidationConfiguration, INotificationConfiguration, IPermissionsCheckConfiguration, ISnapshotPartitionConfiguration, IObjectLinkingSnapshotPartitionConfiguration,
 		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration, IFieldConfiguration, IImageRetrieveConfiguration,
 		IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration, IRetryDataSourceSnapshotConfiguration, IPipelineSelectorConfiguration,
-		IDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, IPreValidationConfiguration, IRdoGuidConfiguration,
+		IDocumentSynchronizationConfiguration, INonDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, IPreValidationConfiguration, IRdoGuidConfiguration,
 		IImageJobStartMetricsConfiguration, IDocumentJobStartMetricsConfiguration, ISnapshotQueryConfiguration, IMetricsConfiguration, IStatisticsConfiguration
 	{
 		private IList<FieldMap> _fieldMappings = new List<FieldMap>();
@@ -102,6 +102,8 @@ namespace Relativity.Sync.Tests.Common
 
 		public int RdoArtifactTypeId { get; set; } = (int)ArtifactType.Document;
 
+		public int DestinationRdoArtifactTypeId { get; set; } = (int)ArtifactType.Document;
+
 		public string GetSourceWorkspaceTag() => string.Empty;
 
 		public char MultiValueDelimiter => (char)_ASCII_RECORD_SEPARATOR;
@@ -182,7 +184,9 @@ namespace Relativity.Sync.Tests.Common
 
 		public int JobHistoryArtifactId { get; set; }
 
-		public bool IsSourceJobTagSet { get; set; }
+        Guid? IJobStatusConsolidationConfiguration.ExportRunId { get; }
+
+        public bool IsSourceJobTagSet { get; set; }
 
 		public Task SetSourceJobTagAsync(int artifactId, string name)
 		{

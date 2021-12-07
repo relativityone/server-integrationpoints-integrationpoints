@@ -12,6 +12,8 @@ namespace Relativity.Sync.Transfer
 {
 	internal sealed class ChoiceCache : IChoiceCache
 	{
+        private const int _CHOICE_ARTIFACT_TYPE_ID = 7;
+
 		private readonly ISynchronizationConfiguration _configuration;
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
 		private readonly IDictionary<int, ChoiceWithParentInfo> _cache;
@@ -53,10 +55,9 @@ namespace Relativity.Sync.Transfer
 		{
 			var request = new QueryRequest
 			{
-				ObjectType = new ObjectTypeRef
-				{
-					ArtifactID = choice.ArtifactID
-				}
+                ObjectType = new ObjectTypeRef { ArtifactTypeID = _CHOICE_ARTIFACT_TYPE_ID },
+                Fields = new FieldRef[0],
+                Condition = $"'Artifact ID' == {choice.ArtifactID}"
 			};
 			QueryResult queryResult;
 			try

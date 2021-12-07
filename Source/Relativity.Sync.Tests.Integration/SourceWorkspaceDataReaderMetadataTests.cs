@@ -18,6 +18,9 @@ namespace Relativity.Sync.Tests.Integration
 	[TestFixture]
 	internal sealed class SourceWorkspaceDataReaderMetadataTests : SourceWorkspaceDataReaderTestsBase
 	{
+
+        private const int _CHOICE_ARTIFACT_TYPE_ID = 7;
+
 		[Test]
 		public async Task Read_ShouldReturnLongTextStream_WhenGivenShibboleth()
 		{
@@ -111,7 +114,7 @@ namespace Relativity.Sync.Tests.Integration
 					int artifactId = value.ArtifactID;
 					int parentArtifactId = value.Parent;
 					objectManager
-						.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(r => r.ObjectType.ArtifactID == artifactId), It.IsAny<int>(), It.IsAny<int>()))
+						.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(r => r.Condition == $"'Artifact ID' == {artifactId}"), It.IsAny<int>(), It.IsAny<int>()))
 						.ReturnsAsync(new QueryResult { Objects = new List<RelativityObject> {new RelativityObject { ParentObject = new RelativityObjectRef { ArtifactID = parentArtifactId } } } });
 
 					registered.Add(value.ArtifactID);
