@@ -7,7 +7,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <OutputPath>bin\</OutputPath>
-        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DefineConstants>TIME_MACHINE,$(Injections)</DefineConstants>
