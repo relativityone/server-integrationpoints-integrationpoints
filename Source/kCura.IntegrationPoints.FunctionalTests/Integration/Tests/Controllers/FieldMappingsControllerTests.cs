@@ -341,7 +341,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             fieldMappingValidationResult.IsObjectIdentifierMapValid.ShouldBeEquivalentTo(false);
         }
 
-        [IdentifiedTest("093C93AA-9A4C-4ED8-AB50-131D76722176")]
+        [IdentifiedTest("79BCB223-DC6D-4D2C-B04A-2532CDFC28D3")]
         public async Task ValidateAsync_ShouldHaveInvalidMappedFieldsWhenNotAllSourceWorkspaceFieldsCanBeMappedToDestinationWorkspace()
         {
             // Arrange
