@@ -15,11 +15,11 @@
     <dependency id="kCura.Apps.Common.Config" version="2.1.9"/>
     <dependency id="kCura.Apps.Common.Data" version="2.1.9"/>
     <dependency id="kCura.Apps.Common.Utils" version="2.1.9"/>
-    <dependency id="kCura.EventHandler" version="11.0.105.1"/>
+    <dependency id="kCura.EventHandler" version="17.1.9"/>
     <dependency id="Newtonsoft.Json" version="6.0.1"/>
-    <dependency id="Relativity.API" version="12.0.0"/>
+    <dependency id="Relativity.API" version="17.1.9"/>
     <dependency id="Relativity.DataTransfer.MessageService" version="10.2.0"/>
-    <dependency id="Relativity.IntegrationPoints.SDK" version="1.0.7"/>
+    <dependency id="Relativity.IntegrationPoints.SDK" version="1.0.9"/>
     <dependency id="Relativity.IntegrationPoints.Services.Interfaces.Private" version="11.1.0"/>
     <dependency id="Relativity.Kepler" version="2.0.7"/>
     <dependency id="Relativity.Kepler.Client" version="1.0.1.445"/>

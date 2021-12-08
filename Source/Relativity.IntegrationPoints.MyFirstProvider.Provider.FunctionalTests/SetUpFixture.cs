@@ -1,70 +1,59 @@
-﻿using System.Collections.Generic;
-using System.Configuration;
-using System.Threading.Tasks;
+﻿using System.Configuration;
 using NUnit.Framework;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api;
-using Relativity.Testing.Framework.Orchestrators;
+using Relativity.Testing.Framework.Api.Services;
+using Relativity.Testing.Framework.Models;
 
 namespace Relativity.IntegrationPoints.MyFirstProvider.Provider.FunctionalTests
 {
 	[SetUpFixture]
 	public class SetUpFixture
 	{
-		public static Testing.Framework.Models.Workspace Workspace;
+		public static Workspace Workspace;
 
 		public static IRelativityFacade Relativity => RelativityFacade.Instance;
-		public static ApiComponent ApiComponent => Relativity.GetComponent<ApiComponent>();
-
-		private static IOrchestrateWorkspaces _workspaceOrchestrator;
 
 		[OneTimeSetUp]
-		public async Task OneTimeSetupAsync()
+		public void OneTimeSetupAsync()
 		{
+			Relativity.RelyOn<CoreComponent>();
 			Relativity.RelyOn<ApiComponent>();
-			_workspaceOrchestrator = ApiComponent
-				.OrchestratorFactory
-				.Create<IOrchestrateWorkspaces>();
-			QueryResult results;
+
 			string templateName = ConfigurationManager.AppSettings["WorkspaceTemplateName"];
 
-			using (IObjectManager manager = ApiComponent.ServiceFactory.GetAdminServiceProxy<IObjectManager>())
+			IWorkspaceService service = Relativity.Resolve<IWorkspaceService>();
+
+			Workspace response = service.Get(templateName);
+
+			if (response != null)
 			{
-				QueryRequest workspaceTemplateRequest = new QueryRequest
-				{
-					Condition = $"'Name' == '{templateName}'",
-					Fields = new List<FieldRef> { new FieldRef { Name = "ArtifactID" } },
-					ObjectType = new ObjectTypeRef { Name = "Workspace" }
-				};
-				results = await manager.QueryAsync(-1, workspaceTemplateRequest, 1, 1).ConfigureAwait(false);
-			}
-			if (results.Objects.Count > 0)
-			{
-				Testing.Framework.Models.Workspace template = new Testing.Framework.Models.Workspace
+				Workspace template = new Workspace
 				{
 					Name = templateName,
-					ArtifactID = results.Objects[0].ArtifactID
+					ArtifactID = response.ArtifactID
 				};
-				Workspace = _workspaceOrchestrator.GetBasicWorkspace(
-					new Testing.Framework.Models.Workspace
+
+				Workspace = service.Create(
+					new Workspace
 					{
 						TemplateWorkspace = template
-					},
-					ensureNew: true);
+					});
 			}
 			else
 			{
-				Workspace = ApiComponent.OrchestratorFactory.Create<IOrchestrateWorkspaces>().GetBasicWorkspace(true);
+				Workspace = service.Create(
+					new Workspace
+					{
+						Name = Randomizer.GetString()
+					});
 			}
 		}
 
 		[OneTimeTearDown]
 		public void OneTimeTearDown()
 		{
-			_workspaceOrchestrator.DeleteExistingWorkspace(Workspace);
-			_workspaceOrchestrator.Dispose();
+			Relativity.Resolve<IWorkspaceService>().Delete(Workspace.ArtifactID);
 		}
 	}
 }
