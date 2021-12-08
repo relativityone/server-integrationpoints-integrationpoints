@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 		{
 			// arrange
 			var fieldManagerMock = new Mock<IFieldManager>();
-			_webApiServiceFactoryMock.Setup(x => x.CreateFieldManager(() => string.Empty)).Returns(fieldManagerMock.Object);
+			_webApiServiceFactoryMock.Setup(x => x.CreateFieldManager(It.IsAny<Func<string>>())).Returns(fieldManagerMock.Object);
 
 			// act
 			IFieldManager actualFieldManager = _sut.CreateFieldManager(() => string.Empty);
@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			}
 
 			// assert
-			_webApiServiceFactoryMock.Verify(x => x.CreateFieldManager(() => string.Empty), Times.Exactly(numberOfCalls));
+			_webApiServiceFactoryMock.Verify(x => x.CreateFieldManager(It.IsAny<Func<string>>()), Times.Exactly(numberOfCalls));
 		}
 
 		[Test]
@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 		{
 			// arrange
 			var searchManagerMock = new Mock<ISearchManager>();
-			_webApiServiceFactoryMock.Setup(x => x.CreateSearchManager(() => string.Empty)).Returns(searchManagerMock.Object);
+			_webApiServiceFactoryMock.Setup(x => x.CreateSearchManager(It.IsAny<Func<string>>())).Returns(searchManagerMock.Object);
 
 			// act
 			ISearchManager actualSearchManager = _sut.CreateSearchManager(() => string.Empty);
@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			}
 
 			// assert
-			_webApiServiceFactoryMock.Verify(x => x.CreateSearchManager(() => string.Empty), Times.Exactly(numberOfCalls));
+			_webApiServiceFactoryMock.Verify(x => x.CreateSearchManager(It.IsAny<Func<string>>()), Times.Exactly(numberOfCalls));
 		}
 
 		[Test]
@@ -119,7 +119,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			//arrange
 			var exportManagerMock = new Mock<IExportManager>();
 			_webApiServiceFactoryMock
-				.Setup(x => x.CreateExportManager(() => string.Empty))
+				.Setup(x => x.CreateExportManager(It.IsAny<Func<string>>()))
 				.Returns(exportManagerMock.Object);
 
 			//act & assert
@@ -143,7 +143,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 
 			// assert
 			_webApiServiceFactoryMock.Verify(
-				x => x.CreateExportManager(() => string.Empty), 
+				x => x.CreateExportManager(It.IsAny<Func<string>>()), 
 				Times.Exactly(numberOfCalls)
 			);
 		}
@@ -153,7 +153,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 		{
 			//arrange
 			var productionManagerMock = new Mock<IProductionManager>();
-			_webApiServiceFactoryMock.Setup(x => x.CreateProductionManager(() => string.Empty)).Returns(productionManagerMock.Object);
+			_webApiServiceFactoryMock.Setup(x => x.CreateProductionManager(It.IsAny<Func<string>>())).Returns(productionManagerMock.Object);
 
 			//act & assert
 			IProductionManager actualProductionManager = _sut.CreateProductionManager(() => string.Empty);
@@ -175,7 +175,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
 			}
 
 			// assert
-			_webApiServiceFactoryMock.Verify(x => x.CreateProductionManager(() => string.Empty), Times.Exactly(numberOfCalls));
+			_webApiServiceFactoryMock.Verify(x => x.CreateProductionManager(It.IsAny<Func<string>>()), Times.Exactly(numberOfCalls));
 		}
 
 		private CoreServiceFactory CreateCoreServiceFactory()

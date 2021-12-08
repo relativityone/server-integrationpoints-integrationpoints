@@ -55,8 +55,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 		[SetUp]
 		public override void SetUp()
 		{
-			Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(new TestHelper());
-
 			_objectTypeRepository = new Mock<IObjectTypeRepository>();
 			_relativityFieldQuery = new Mock<IRelativityFieldQuery>();
 			_importJobFactory = new Mock<IImportJobFactory>();
