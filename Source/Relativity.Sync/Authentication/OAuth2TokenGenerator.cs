@@ -33,7 +33,7 @@ namespace Relativity.Sync.Authentication
 
 			public async Task<NetworkCredential> GetCredentialsAsync(CancellationToken cancellationToken = default)
 			{
-				string accessToken = await _tokenProvider.GetAccessTokenAsync(cancellationToken).ConfigureAwait(false);
+				string accessToken = await _tokenProvider.GetAccessTokenAsync().ConfigureAwait(false);
 
 				return new NetworkCredential(AuthConstants._RELATIVITY_BEARER_USERNAME, accessToken);
 			}
