@@ -18,14 +18,13 @@ module.exports = {
   },
   output: {
     filename: 'integration-point-event-handler.js',
-    path: path.resolve(__dirname),
+    path: path.resolve(__dirname + "/dist"),
     library: 'extension',
     libraryTarget: 'var',
     libraryExport: 'default'
   },
   optimization: {
     minimize: true,
-    
   },
   plugins: [new CleanWebpackPlugin(), new FormsExtensionPlugin()],
 };

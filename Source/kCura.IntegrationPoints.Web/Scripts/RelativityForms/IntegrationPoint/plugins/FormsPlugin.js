@@ -13,7 +13,7 @@ class FormsExtensionPlugin {
 		// Hooks on compilation time
 		compiler.hooks.compilation.tap(EXTENSION_NAME, (compilation) => {
 			this.validateOptions(compilation.options);
-
+            console.log(compilation.options.output.path);
 			this._filename = compilation.options.output.filename;
 			this._library = compilation.options.output.library;
 
