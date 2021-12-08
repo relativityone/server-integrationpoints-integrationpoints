@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using LanguageExt;
 using Moq;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Services.Field;
@@ -18,10 +19,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
         private KeywordSearch GetKeywordSearch(int workspaceArtifactId, int searchArtifactId)
         {
-            WorkspaceTest workspace = Relativity.Workspaces.Single(x => x.ArtifactId == workspaceArtifactId);
-            SavedSearchTest savedSearch = workspace.SavedSearches.Single(x => x.ArtifactId == searchArtifactId);
+            SavedSearchTest savedSearch;
+            try
+            {
+                WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceArtifactId);
+                savedSearch = workspace.SavedSearches.First(x => x.ArtifactId == searchArtifactId);
+            }
+            catch
+            {
+                return new KeywordSearch();
+            }
 
-            var keywordSearch = new KeywordSearch
+            KeywordSearch keywordSearch = new KeywordSearch
             {
                 ArtifactID = searchArtifactId,
                 Name = savedSearch.Name,
