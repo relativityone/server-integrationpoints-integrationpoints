@@ -55,7 +55,6 @@
     <Compile Include="AutomapRunner.cs" />
     <Compile Include="ClassificationLevel.cs" />
     <Compile Include="Const.cs" />
-    <Compile Include="ImportApi\IImportApiFacade.cs" />
     <Compile Include="Metrics\MetricBucketNameGenerator.cs" />
     <Compile Include="DocumentFieldInfo.cs" />
     <Compile Include="FieldClassificationResult.cs" />
@@ -91,7 +90,6 @@
   <ItemGroup>
     <None Include="paket.references" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">

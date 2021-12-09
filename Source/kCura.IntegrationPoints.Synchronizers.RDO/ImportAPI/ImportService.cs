@@ -12,7 +12,6 @@ using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
 using kCura.Relativity.ImportAPI;
 using Relativity.API;
-using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {

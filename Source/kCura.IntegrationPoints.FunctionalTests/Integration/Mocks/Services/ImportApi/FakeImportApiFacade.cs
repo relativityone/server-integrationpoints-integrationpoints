@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
+using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi
@@ -19,9 +19,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
             throw new System.NotImplementedException();
         }
 
-        public Dictionary<int, string> GetWorkspaceFieldsNames(int workspaceArtifactId, int artifactTypeId)
+        public Dictionary<int, string> GetWorkspaceFieldsNames(int workspaceArtifactID, int artifactTypeID)
         {
-            return _instance.Workspaces.First(x => x.ArtifactId == workspaceArtifactId).Fields
+            return _instance.Workspaces.First(x => x.ArtifactId == workspaceArtifactID).Fields
                 .ToDictionary(x => x.ArtifactId, x => x.Name);
         }
 
