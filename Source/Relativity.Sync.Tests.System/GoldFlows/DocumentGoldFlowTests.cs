@@ -10,6 +10,8 @@ using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using NUnit.Framework;
 using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
+using Relativity.Sync.Toggles;
+using Relativity.Toggles;
 
 namespace Relativity.Sync.Tests.System.GoldFlows
 {
@@ -32,10 +34,13 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 		[IdentifiedTest("25b723da-82fe-4f56-ae9f-4a8b2a4d60f4")]
 		[TestType.MainFlow]
-		public async Task SyncJob_Should_SyncDocuments()
+		[TestCase(true)]
+		[TestCase(false)]
+		public async Task SyncJob_Should_SyncDocuments(bool enableKeplerizedImportAPIToggle)
 		{
 			// Arrange
 			GoldFlowTestSuite.IGoldFlowTestRun goldFlowTestRun = await _goldFlowTestSuite.CreateTestRunAsync(ConfigureTestRunAsync).ConfigureAwait(false);
+			await goldFlowTestRun.ToggleProvider.SetAsync<EnableKeplerizedImportAPIToggle>(enableKeplerizedImportAPIToggle);
 
 			// Act
 			SyncJobState result = await goldFlowTestRun.RunAsync().ConfigureAwait(false);
