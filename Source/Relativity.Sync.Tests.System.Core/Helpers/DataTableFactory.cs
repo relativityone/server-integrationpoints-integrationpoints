@@ -10,7 +10,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 	{
 		public static ImportDataTableWrapper GenerateDocumentsWithExtractedText(int numDocuments, string controlNumberPrefix = "RND")
 		{
-			var documentData = new ImportDataTableWrapper(true, false, false, false);
+			var documentData = new ImportDataTableWrapper(extractedText: true, natives: false, user: false, images: false, multiChoice: false);
 
 			Func<string> generateExtractedText = () => Guid.NewGuid().ToString();
 			Func<int, string> getControlNumber = number => string.Format(CultureInfo.InvariantCulture, "{0}{1:D6}", controlNumberPrefix, number);
@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 		public static ImportDataTableWrapper GenerateDocumentWithNoFields(string controlNumberPrefix = "RND", int documentsCount = 1)
 		{
-			var documentData = new ImportDataTableWrapper(false, false, true, false);
+			var documentData = new ImportDataTableWrapper(extractedText: false, natives: false, user: true, images: false, multiChoice: false);
 
 			Enumerable.Range(0, documentsCount).ForEach(documentNumber => documentData.AddDocument(
 				string.Format(CultureInfo.InvariantCulture, "{0}{1:D6}", controlNumberPrefix, documentNumber),
@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 		public static ImportDataTableWrapper GenerateDocumentWithUserField(string controlNumberPrefix = "RND")
 		{
-			var documentData = new ImportDataTableWrapper(false, false, true, false);
+			var documentData = new ImportDataTableWrapper(extractedText: false, natives: false, user: true, images: false, multiChoice: false);
 
 			documentData.AddDocument(
 				string.Format(CultureInfo.InvariantCulture, "{0}{1:D6}", controlNumberPrefix, 0),
@@ -86,7 +86,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 			IEnumerable<string> validControlNumbers = GetIntersectionOfEnumerables(groupsOfControlNumbers);
 
-			ImportDataTableWrapper dataTableWrapper = new ImportDataTableWrapper(true, true, false, false);
+			ImportDataTableWrapper dataTableWrapper = new ImportDataTableWrapper(extractedText: true, natives: true, user: false, images: false, multiChoice: true);
 			foreach (string controlNumber in validControlNumbers)
 			{
 				var columnValuePairs = new List<Tuple<string, string>>();
@@ -98,6 +98,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					columnValuePairs.Add(
 						Tuple.Create(ImportDataTableWrapper.ExtractedTextFilePath, extractedTextFile.FullName)
 					);
+					columnValuePairs.Add(Tuple.Create(ImportDataTableWrapper.SyncMultiChoice, "Choice 1"));
 				}
 
 				// Fill native file columns
@@ -113,7 +114,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					columnValuePairs.AddRange(nativeColumnValuePairs);
 				}
 
-				dataTableWrapper.AddDocument(controlNumber, columnValuePairs);
+                dataTableWrapper.AddDocument(controlNumber, columnValuePairs);
 			}
 
 			return dataTableWrapper;
@@ -123,7 +124,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 		{
 			IEnumerable<FileInfo> images = dataset.GetFiles();
 			
-			ImportDataTableWrapper dataTableWrapper = new ImportDataTableWrapper(true, true, false, true);
+			ImportDataTableWrapper dataTableWrapper = new ImportDataTableWrapper(extractedText: true, natives: true, user: false, images: true, multiChoice: false);
 
 			foreach (FileInfo imageFile in images)
 			{

@@ -21,6 +21,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 		public static string RelativitySyncTestUser => "Relativity Sync Test User";
 		public static string ImageFile => "File";
 		public static string BegBates => "Bates Beg";
+        public static string SyncMultiChoice => "SyncMultiChoice";
 
 		private static IEnumerable<DataColumn> DefaultColumns => new[]
 		{
@@ -50,9 +51,14 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			new DataColumn(RelativitySyncTestUser, typeof(string))
 		};
 
+        private static IEnumerable<DataColumn> SyncMultiChoiceColumns => new[]
+        {
+            new DataColumn(SyncMultiChoice, typeof(string))
+        };
+
 		public IDataReader DataReader => Data.CreateDataReader();
 
-		public ImportDataTableWrapper(bool extractedText, bool natives, bool user, bool images)
+		public ImportDataTableWrapper(bool extractedText, bool natives, bool user, bool images, bool multiChoice)
 		{
 			ExtractedText = extractedText;
 			Natives = natives;
@@ -80,6 +86,11 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			if (user)
 			{
 				dataColumns = dataColumns.Concat(UserColumns);
+			}
+
+            if (multiChoice)
+            {
+                dataColumns = dataColumns.Concat(SyncMultiChoiceColumns);
 			}
 
 			Data.Columns.AddRange(dataColumns.ToArray());

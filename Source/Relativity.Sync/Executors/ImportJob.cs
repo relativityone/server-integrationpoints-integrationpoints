@@ -2,8 +2,8 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Transfer.ImportAPI;
@@ -27,11 +27,11 @@ namespace Relativity.Sync.Executors
 
 		private readonly ISyncImportBulkArtifactJob _syncImportBulkArtifactJob;
 		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
+		private readonly IItemLevelErrorLogAggregator _itemLevelErrorLogAggregator;
 		private readonly ISemaphoreSlim _semaphoreSlim;
 		private readonly ISyncLog _logger;
 
-		public ImportJob(ISyncImportBulkArtifactJob syncImportBulkArtifactJob, ISemaphoreSlim semaphoreSlim, IJobHistoryErrorRepository jobHistoryErrorRepository,
-			int sourceWorkspaceArtifactId, int jobHistoryArtifactId, ISyncLog syncLog)
+		public ImportJob(ISyncImportBulkArtifactJob syncImportBulkArtifactJob, ISemaphoreSlim semaphoreSlim, IJobHistoryErrorRepository jobHistoryErrorRepository, int sourceWorkspaceArtifactId, int jobHistoryArtifactId, ISyncLog syncLog)
 		{
 			_lockObject = new object();
 			_importApiFatalExceptionOccurred = false;
@@ -43,6 +43,7 @@ namespace Relativity.Sync.Executors
 			_syncImportBulkArtifactJob = syncImportBulkArtifactJob;
 			_semaphoreSlim = semaphoreSlim;
 			_jobHistoryErrorRepository = jobHistoryErrorRepository;
+			_itemLevelErrorLogAggregator = new ItemLevelErrorLogAggregator(syncLog);
 			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
 			_jobHistoryArtifactId = jobHistoryArtifactId;
 			_logger = syncLog;
@@ -102,9 +103,8 @@ namespace Relativity.Sync.Executors
 		{
 			_itemLevelErrorExists = true;
 			
-			_logger.LogWarning("Item level error occurred. ArtifactId: {itemArtifactId} Message: {errorMessage}",
-				_syncImportBulkArtifactJob.ItemStatusMonitor.GetArtifactId(itemLevelError.Identifier), itemLevelError.Message);
-
+			_itemLevelErrorLogAggregator.AddItemLevelError(itemLevelError, _syncImportBulkArtifactJob.ItemStatusMonitor.GetArtifactId(itemLevelError.Identifier));
+			
 			_syncImportBulkArtifactJob.ItemStatusMonitor.MarkItemAsFailed(itemLevelError.Identifier);
 			AddItemLevelError(itemLevelError.Identifier, itemLevelError.Message);
 		}
@@ -167,12 +167,15 @@ namespace Relativity.Sync.Executors
 			{
 				const string message = "Failed to start executing import job.";
 				_logger.LogError(ex, message);
+				await _itemLevelErrorLogAggregator.LogAllItemLevelErrorsAsync().ConfigureAwait(false);
 				throw new ImportFailedException(message, ex);
 			}
 
 			// Since the import job doesn't support cancellation, we also don't want to cancel waiting for the job to finish.
 			// If it's started, we have to wait and release the semaphore as needed in the IAPI events.
 			await _semaphoreSlim.WaitAsync().ConfigureAwait(false);
+			
+			await _itemLevelErrorLogAggregator.LogAllItemLevelErrorsAsync().ConfigureAwait(false);
 
 			if (_importApiFatalExceptionOccurred)
 			{
