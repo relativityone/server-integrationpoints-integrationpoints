@@ -7,6 +7,7 @@ using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using kCura.Relativity.ImportAPI.Enumeration;
 using Relativity.API;
+using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {
@@ -14,7 +15,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 	{
 		private const string _IAPI_GET_WORKSPACE_FIELDS_EXC = "EC: 4.1 There was an error in Import API when fetching workspace fields.";
 		private const string _IAPI_GET_WORKSPACE_FIELDS_ERR =
-			"EC: 4.1 There was an error in Import API when fetching workspace fields. workspaceArtifactID: {WorkspaceArtifactId}, artifactTypeID: {artifactTypeID}";
+			"EC: 4.1 There was an error in Import API when fetching workspace fields. workspaceArtifactId: {WorkspaceArtifactId}, artifactTypeID: {artifactTypeId}";
 
 		private readonly Lazy<IImportAPI> _importApi;
 		private readonly IAPILog _logger;
@@ -39,9 +40,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			return new HashSet<int>(fields);
 		}
 
-		public Dictionary<int, string> GetWorkspaceFieldsNames(int workspaceArtifactID, int artifactTypeID)
+		public Dictionary<int, string> GetWorkspaceFieldsNames(int workspaceArtifactId, int artifactTypeId)
 		{
-			return GetWorkspaceFields(workspaceArtifactID, artifactTypeID)
+			return GetWorkspaceFields(workspaceArtifactId, artifactTypeId)
 				.ToDictionary(x => x.ArtifactID, x => x.Name);
 		}
 
@@ -50,7 +51,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			return _importApi.Value.Workspaces().ToDictionary(x => x.ArtifactID, x => x.Name);
 		}
 
-		private IEnumerable<Field> GetWorkspaceFields(int workspaceArtifactID, int artifactTypeID)
+		public IEnumerable<Field> GetWorkspaceFields(int workspaceArtifactID, int artifactTypeID)
 		{
 			try
 			{

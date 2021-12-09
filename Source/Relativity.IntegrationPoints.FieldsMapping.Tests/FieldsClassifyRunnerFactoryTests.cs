@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
-using kCura.Relativity.ImportAPI;
 using Moq;
 using NUnit.Framework;
+using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 
 namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 {
@@ -10,16 +10,16 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 	{
 		private IFieldsClassifyRunnerFactory _sut;
 
-        private Mock<IImportAPI> _importApiFake;
+		private Mock<IImportApiFacade> _importApiFacadeFake;
 		private Mock<IFieldsRepository> _fieldsRepositoryFake;
 
 		[SetUp]
 		public void SetUp()
 		{
-            _importApiFake = new Mock<IImportAPI>();
+			_importApiFacadeFake = new Mock<IImportApiFacade>();
 			_fieldsRepositoryFake = new Mock<IFieldsRepository>();
 
-            _sut = new FieldsClassifyRunnerFactory(_importApiFake.Object, _fieldsRepositoryFake.Object);
+			_sut = new FieldsClassifyRunnerFactory(_importApiFacadeFake.Object, _fieldsRepositoryFake.Object);
 		}
 
 		[Test]

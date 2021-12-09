@@ -19,6 +19,7 @@ using kCura.IntegrationPoints.Core.Queries;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.DestinationTypes;
 using kCura.IntegrationPoints.Core.Services.Domain;
+using kCura.IntegrationPoints.Core.Services.EntityManager;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -53,7 +54,9 @@ using Relativity.IntegrationPoints.Contracts;
 using IFederatedInstanceManager = kCura.IntegrationPoints.Domain.Managers.IFederatedInstanceManager;
 using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Common.Metrics.Sink;
+using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
+using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {

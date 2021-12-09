@@ -34,6 +34,7 @@ using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using Relativity.IntegrationPoints.FieldsMapping;
+using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 using Relativity.IntegrationPoints.FieldsMapping.Metrics;
 using Relativity.IntegrationPoints.Services;
 using Relativity.IntegrationPoints.Services.Helpers;
@@ -235,6 +236,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
             Container.Register(Component.For<IMetricsSink>().ImplementedBy<SplunkMetricsSink>());
 			Container.Register(Component.For<IMetricBucketNameGenerator>().ImplementedBy<MetricBucketNameGenerator>());
 			Container.Register(Component.For<IFieldsMappingValidator>().ImplementedBy<FieldsMappingValidator>());
+            Container.Register(Component.For<IFieldsRepository>().ImplementedBy<FieldsRepository>());
 		}
 
 		private void RegisterFakeRipServices()
@@ -248,7 +250,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 				new FakeRepositoryFactory(kernel.Resolve<RelativityInstanceTest>(), new RepositoryFactory(kernel.Resolve<IHelper>(), kernel.Resolve<IServicesMgr>()))).IsDefault());
 			Container.Register(Component.For<IJobStatisticsQuery>().ImplementedBy<FakeJobStatisticsQuery>().IsDefault());
 			Container.Register(Component.For<IRelativityUrlHelper>().ImplementedBy<FakeRelativityUrlHelper>());
-            Container.Register(Component.For<IFieldsRepository>().ImplementedBy<FakeFieldsRepository>());
 
             // LDAP Entity
 			Container.Register(Component.For<IEntityManagerLinksSanitizer>().ImplementedBy<OpenLDAPEntityManagerLinksSanitizer>().IsDefault());
@@ -256,7 +257,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			// IAPI
 			Container.Register(Component.For<IImportJobFactory>().ImplementedBy<FakeImportApiJobFactory>().LifestyleTransient().IsDefault());
 			Container.Register(Component.For<kCura.IntegrationPoints.Synchronizers.RDO.IImportApiFactory>().ImplementedBy<FakeImportApiFactory>().IsDefault());
-			Container.Register(Component.For<kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI.IImportApiFacade>().ImplementedBy<FakeImportApiFacade>().IsDefault());
+			Container.Register(Component.For<IImportApiFacade>().ImplementedBy<FakeImportApiFacade>().IsDefault());
             Container.Register(Component.For<IWebApiConfig>().UsingFactoryMethod(c => new FakeWebApiConfig()).LifestyleTransient().IsDefault());
 			Container.Register(Component.For<IWinEddsBasicLoadFileFactory>().UsingFactoryMethod(c => new FakeWinEddsBasicLoadFileFactory()).LifestyleTransient().IsDefault());
         }
