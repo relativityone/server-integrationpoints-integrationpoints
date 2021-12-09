@@ -9,7 +9,6 @@ using Moq;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Match = System.Text.RegularExpressions.Match;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
@@ -165,13 +164,48 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             return result;
         }
 
+        private QueryResultSlim GetQuerySlimsForRequest<T>(Func<WorkspaceTest, IList<T>> collectionGetter,
+            Func<QueryRequest, IList<T>, int, IList<T>> customFilter, int workspaceId,
+            QueryRequest request, int start, int length) where T : RdoTestBase
+        {
+            WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
+
+            List<RelativityObject> foundObjects = FindObjects(collectionGetter, customFilter, request, workspace, start);
+
+            QueryResultSlim result = new QueryResultSlim();
+            result.Objects = foundObjects.Take(length).Select(x => ToSlim(x, request.Fields)).ToList();
+            result.TotalCount = result.ResultCount = result.Objects.Count;
+            return result;
+        }
+
         private QueryResult GetRelativityObjectsForRequest<T>(Func<WorkspaceTest, IList<T>> collectionGetter,
             Func<QueryRequest, IList<T>, IList<T>> customFilter, int workspaceId,
             QueryRequest request, int length) where T : RdoTestBase
         {
             WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
 
-            var foundObjects = FindObjects(collectionGetter, customFilter, request, workspace);
+            List<RelativityObject> foundObjects = FindObjects(collectionGetter, customFilter, request, workspace);
+
+            QueryResult result = new QueryResult();
+            result.Objects = foundObjects.Take(length).ToList();
+            result.TotalCount = result.ResultCount = result.Objects.Count;
+
+            return result;
+        }
+
+        private QueryResult GetRelativityObjectsForRequest<T>(Func<WorkspaceTest, IList<T>> collectionGetter,
+            Func<QueryRequest, IList<T>, int, IList<T>> customFilter, int workspaceId,
+            QueryRequest request, int start, int length) where T : RdoTestBase
+        {
+            WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
+
+            List<RelativityObject> foundObjects = FindObjects(collectionGetter, customFilter, request, workspace, start);
+
+            foundObjects = foundObjects.Select(x =>
+            {
+                x.Name = x.FieldValues[1].Value.ToString();
+                return x;
+            }).ToList();
 
             QueryResult result = new QueryResult();
             result.Objects = foundObjects.Take(length).ToList();
@@ -218,6 +252,33 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             return foundObjects;
         }
 
+        private List<RelativityObject> FindObjects<T>(Func<WorkspaceTest, IList<T>> collectionGetter,
+            Func<QueryRequest, IList<T>, int, IList<T>> customFilter, QueryRequest request, WorkspaceTest workspace, int start)
+            where T : RdoTestBase
+        {
+            List<RelativityObject> foundObjects = new List<RelativityObject>();
+            if (customFilter != null)
+            {
+                foundObjects.AddRange(customFilter(request, collectionGetter(workspace), start)
+                    .Select(x => x.ToRelativityObject()));
+            }
+
+            if (IsArtifactIdCondition(request.Condition, out int artifactId))
+            {
+                AddRelativityObjectsToResult(
+                    collectionGetter(workspace).Where(x => x.ArtifactId == artifactId)
+                    , foundObjects);
+            }
+            else if (IsArtifactIdListCondition(request.Condition, out int[] artifactIds))
+            {
+                AddRelativityObjectsToResult(
+                    collectionGetter(workspace).Where(x => artifactIds.Contains(x.ArtifactId))
+                    , foundObjects);
+            }
+
+            return foundObjects;
+        }
+
         private static void AddRelativityObjectsToResult<T>(IEnumerable<T> objectsToAdd,
             List<RelativityObject> resultList) where T : RdoTestBase
         {
@@ -226,42 +287,33 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
         private bool IsArtifactIdCondition(string condition, out int artifactId)
         {
-            try
+            var match = Regex.Match(condition,
+                @"'Artifact[ ]?ID' == (\d+)");
+
+            if (match.Success && int.TryParse(match.Groups[1].Value, out int extractedArtifactId))
             {
-                Match match = Regex.Match(condition, @"'Artifact[ ]?ID' == (\d+)");
-                if (match.Success && int.TryParse(match.Groups[1].Value, out int extractedArtifactId))
-                {
-                    artifactId = extractedArtifactId;
-                    return true;
-                }
+                artifactId = extractedArtifactId;
+                return true;
             }
-            catch { }
-            finally
-            {
-                artifactId = -1;
-            }
+
+            artifactId = -1;
             return false;
         }
 
         private bool IsArtifactIdListCondition(string condition, out int[] artifactId)
         {
-            try
-            {
-                Match match = Regex.Match(condition, @"'Artifact[ ]?ID' in \[(.*)\]");
+            var match = Regex.Match(condition,
+                @"'Artifact[ ]?ID' in \[(.*)\]");
 
-                if (match.Success)
-                {
-                    artifactId = match.Groups[1].Value.Split(',').Select(x => int.TryParse(x, out int r) ? r : -1)
-                        .Where(x => x > 0)
-                        .ToArray();
-                    return true;
-                }
-            }
-            catch { }
-            finally
+            if (match.Success)
             {
-                artifactId = new int[0];
+                artifactId = match.Groups[1].Value.Split(',').Select(x => int.TryParse(x, out int r) ? r : -1)
+                    .Where(x => x > 0)
+                    .ToArray();
+                return true;
             }
+
+            artifactId = new int[0];
             return false;
         }
 
