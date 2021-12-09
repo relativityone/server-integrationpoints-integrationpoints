@@ -1641,6 +1641,12 @@
       <Notes />
     </Assembly>
     <Assembly>
+      <ArtifactId>4499256</ArtifactId>
+      <Keywords />
+      <Name>System.Threading.Tasks.Extensions.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
       <ArtifactId>4663381</ArtifactId>
       <Keywords />
       <Name>kCura.IntegrationPoints.RelativitySync.dll</Name>
@@ -11835,7 +11841,7 @@
   <ParentTabs />
   <RelativityVersion>16.0.30.0</RelativityVersion>
   <Version>12.2.15.16</Version>
-  <SchemaVersion>11.3.10.14</SchemaVersion>
+  <SchemaVersion>11.3.10.16</SchemaVersion>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>5e8b02a8-6e33-4426-a0f0-3594d83725d0</OriginSignature>
   <MasterScripts />

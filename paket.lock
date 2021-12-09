@@ -364,7 +364,7 @@ NUGET
     System.ValueTuple (4.5.0)
     SystemWrapper.Interfaces (0.25.0.186)
   remote: C:\_Work\_Nuget
-    Relativity.Sync (0.1.5-local)
+    Relativity.Sync (0.1.22-local)
       Autofac (>= 4.9.4 < 5.0)
       Banzai.Autofac (>= 3.0.3 < 4.0)
       Castle.Core (>= 3.3)
@@ -583,7 +583,7 @@ NUGET
       Antlr (>= 3.4.1.9004)
       Newtonsoft.Json (>= 5.0.4)
   remote: C:\_Work\_Nuget
-    Relativity.Sync (0.1.5-local)
+    Relativity.Sync (0.1.22-local)
       Autofac (>= 4.9.4 < 5.0)
       Banzai.Autofac (>= 3.0.3 < 4.0)
       Castle.Core (>= 3.3)
