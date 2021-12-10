@@ -12,6 +12,3 @@ Moq
 NUnit
 NSubstitute
 
-Relativity.Kepler.Service
-    exclude kCura.Vendor.Castle.Core.dll
-    exclude kCura.Vendor.Castle.Windsor.dll

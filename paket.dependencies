@@ -29,7 +29,6 @@ nuget kCura.LongPath 1.0.20
 nuget Relativity.DataGrid 14.0.0
 nuget Relativity.DataTransfer.MessageService ~> 10.2.0
 nuget Relativity.Kepler 2.15.3
-nuget Relativity.Kepler.Service
 nuget Relativity.Kepler.Client 2.15.3
 nuget Relativity.Logging 2019.5.1
 nuget Relativity.Logging.Interfaces 2019.5.1
