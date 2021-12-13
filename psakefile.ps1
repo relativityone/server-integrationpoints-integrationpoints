@@ -40,10 +40,10 @@ Task Compile -Depends NugetRestore -Description "Compile code for this repo" {
         ("/fileloggerparameters2:errorsonly;LogFile=`"$ErrorLogFilePath`""))
     }
 
-    $publishPath = "$Source\CustomPages\IntegrationPoints"
+    $publishPath = "$SourceDir\CustomPages\IntegrationPoints"
     if(Test-Path $publishPath) {
         Write-Host "Update web.config file"
-        Copy-Item -Path "$Source\kCura.IntegrationPoints.Web\Web.Config" -Destination "$publishPath\Web.Config" 
+        Copy-Item -Path "$SourceDir\kCura.IntegrationPoints.Web\Web.Config" -Destination "$publishPath\Web.Config" 
     }
 }
 
