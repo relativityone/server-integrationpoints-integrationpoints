@@ -39,6 +39,12 @@ Task Compile -Depends NugetRestore -Description "Compile code for this repo" {
         ("/fileloggerparameters1:LogFile=`"$LogFilePath`""),
         ("/fileloggerparameters2:errorsonly;LogFile=`"$ErrorLogFilePath`""))
     }
+
+    $publishPath = "$Source\CustomPages\IntegrationPoints"
+    if(Test-Path $publishPath) {
+        Write-Host "Update web.config file"
+        Copy-Item -Path "$Source\kCura.IntegrationPoints.Web\Web.Config" -Destination "$publishPath\Web.Config" 
+    }
 }
 
 Task Test -Description "Run tests that don't require a deployed environment." {
