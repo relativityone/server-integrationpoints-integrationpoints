@@ -239,7 +239,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         }
 
         [IdentifiedTest("8D1BE3D3-0BC1-48B4-AFB6-D3E6F040B041")]
-        public async Task AutoMapFieldsFromSavedSearch_ShouldThrowExceptionWhenAutomapRequestIsEmpty()
+        public void AutoMapFieldsFromSavedSearch_ShouldThrowExceptionWhenAutomapRequestIsEmpty()
         {
             // Arrange
             FieldMappingsController sut = PrepareSut(HttpMethod.Post, "/AutoMapFieldsFromSavedSearch");
@@ -247,17 +247,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             SavedSearchTest savedSearch = CreateSavedSearchTest(_fields);
 
             // Act
-            try
-            {
-                await sut.AutoMapFieldsFromSavedSearch(request, SourceWorkspace.ArtifactId,
+            Func<Task> function = async () => await sut.AutoMapFieldsFromSavedSearch(request, SourceWorkspace.ArtifactId,
                     savedSearch.ArtifactId, DESTINATION_PROVIDER_GUID);
+
             // Assert
-                Assert.Fail("AutoMapFieldsFromSavedSearch method should throw the ArgumentNullException");
-            }
-            catch (Exception ex)
-            {
-                ex.GetType().ShouldBeEquivalentTo(typeof(ArgumentNullException));
-            }
+            function.ShouldThrow<ArgumentNullException>();
         }
 
         [IdentifiedTest("2210FA46-0247-4F80-AB0D-311713979628")]
