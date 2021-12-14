@@ -204,10 +204,17 @@ namespace Relativity.Sync.Tests.Common
 			SourceWorkspaceTagName = name;
 		}
 
-		public Task SetObjectLinkingSnapshotDataAsync(Guid objectLinkingSnapshotId)
+		public Task SetObjectLinkingSnapshotDataAsync(Guid objectLinkingSnapshotId, int objectLinkingRecordsCount)
 		{
-			throw new NotImplementedException();
+			ObjectLinkingSnapshotRecordsCount = objectLinkingRecordsCount;
+			ObjectLinkingSnapshotId = objectLinkingSnapshotId;
+			
+			return Task.CompletedTask;
 		}
+
+		public Guid ObjectLinkingSnapshotId { get; set; }
+
+		public int ObjectLinkingSnapshotRecordsCount { get; set; }
 
 		public int ExecutingUserId { get; set; } = _ADMIN_ID;
 

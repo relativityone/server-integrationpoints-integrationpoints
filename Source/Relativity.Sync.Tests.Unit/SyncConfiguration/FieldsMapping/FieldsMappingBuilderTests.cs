@@ -38,7 +38,8 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration.FieldsMapping
 			syncServicesMgrFake.Setup(x => x.CreateProxy<IFieldManager>(It.IsAny<ExecutionIdentity>()))
 				.Returns(_fieldManagerFake.Object);
 
-			_sut = new FieldsMappingBuilder(_SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID, _rdoArtifactTypeId,
+			_sut = new FieldsMappingBuilder(_SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID, 
+				_rdoArtifactTypeId, _rdoArtifactTypeId,
 				syncServicesMgrFake.Object);
 		}
 

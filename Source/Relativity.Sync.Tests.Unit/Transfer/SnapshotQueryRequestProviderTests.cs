@@ -269,6 +269,30 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			SyncException syncException = Assert.ThrowsAsync<SyncException>(async () => await _sut.GetRequestForCurrentPipelineAsync(CancellationToken.None).ConfigureAwait(false));
 			syncException.Message.Should().Be("Unable to find choice with \"Yes\" name for \"Has Images\" field - this system field is in invalid state");
 		}
+		
+		[Test]
+		public async Task GetRequestForCurrentPipelineAsync_ShouldPrepareQueryRequest_WhenNonDocumentFlowIsSelected()
+		{
+			// Arrange
+			const int dataSourceArtifactId = 10;
+
+			_configurationFake.SetupGet(x => x.DataSourceArtifactId).Returns(dataSourceArtifactId);
+			_configurationFake.SetupGet(x => x.RdoArtifactTypeId).Returns(420);
+			
+			_pipelineSelectorFake.Setup(x => x.GetPipeline())
+				.Returns((ISyncPipeline) Activator.CreateInstance(typeof(SyncNonDocumentRunPipeline)));
+
+			string expectedDocumentCondition = $"('ArtifactId' IN VIEW {dataSourceArtifactId})";
+
+			IEnumerable<FieldRef> expectedFieldRefs =
+				_expectedDocumentTypeFields.Select(x => new FieldRef {Name = x.SourceFieldName});
+
+			// Act
+			QueryRequest request = await _sut.GetRequestForCurrentPipelineAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			VerifyQueryRequest(request, expectedDocumentCondition, expectedFieldRefs);
+		}
 
 		private void VerifyQueryRequest(QueryRequest actualRequest, 
 			string expectedCondition, IEnumerable<FieldRef> expectedFields)

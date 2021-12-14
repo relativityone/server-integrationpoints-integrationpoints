@@ -8,7 +8,6 @@ using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.Options;
-using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
@@ -20,7 +19,6 @@ using Relativity.Testing.Identification;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -82,7 +80,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			ISyncJobFactory syncJobFactory = new SyncJobFactory();
 
 			ContainerBuilder containerBuilder = new ContainerBuilder();
-			containerBuilder.RegisterInstance(new SyncDataAndUserConfiguration(executingUserId: 9)).As<IUserContextConfiguration>();
+			containerBuilder.RegisterInstance(new SyncDataAndUserConfiguration(User.ArtifactID)).As<IUserContextConfiguration>();
 
 			SyncJobParameters syncJobParameters = new SyncJobParameters(syncConfigurationId, _sourceWorkspace.ArtifactID, Guid.NewGuid());
 			IRelativityServices relativityServices = new RelativityServices(new NullAPM(), new ServicesManagerStub(), AppSettings.RelativityUrl, new TestHelper());

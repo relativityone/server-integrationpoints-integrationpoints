@@ -45,9 +45,10 @@ namespace Relativity.Sync.Storage
 			await Cache.UpdateFieldValueAsync(x => x.SnapshotRecordsCount, totalRecordsCount).ConfigureAwait(false);
 		}
 
-		public async Task SetObjectLinkingSnapshotDataAsync(Guid objectLinkingSnapshotId)
+		public async Task SetObjectLinkingSnapshotDataAsync(Guid objectLinkingSnapshotId, int objectLinkingRecordsCount)
 		{
 			await Cache.UpdateFieldValueAsync(x => x.ObjectLinkingSnapshotId, objectLinkingSnapshotId).ConfigureAwait(false);
+			await Cache.UpdateFieldValueAsync(x => x.ObjectLinkingSnapshotRecordsCount, objectLinkingRecordsCount).ConfigureAwait(false);
 		}
 	}
 }

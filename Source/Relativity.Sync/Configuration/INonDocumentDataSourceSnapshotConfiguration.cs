@@ -19,6 +19,6 @@ namespace Relativity.Sync.Configuration
 
 		Task SetSnapshotDataAsync(Guid runId, int totalRecordsCount);
 
-		Task SetObjectLinkingSnapshotDataAsync(Guid objectLinkingSnapshotId);
+		Task SetObjectLinkingSnapshotDataAsync(Guid objectLinkingSnapshotId, int objectLinkingRecordsCount);
 	}
 }

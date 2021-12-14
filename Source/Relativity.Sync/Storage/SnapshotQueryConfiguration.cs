@@ -25,5 +25,7 @@ namespace Relativity.Sync.Storage
 		public int[] ProductionImagePrecedence => _serializer.Deserialize<int[]>(_cache.GetFieldValue(x => x.ProductionImagePrecedence));
 
 		public bool IncludeOriginalImageIfNotFoundInProductions => _cache.GetFieldValue(x => x.IncludeOriginalImages);
+
+		public int RdoArtifactTypeId => _cache.GetFieldValue(x => x.RdoArtifactTypeId);
 	}
 }
