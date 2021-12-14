@@ -143,13 +143,15 @@ namespace Relativity.Sync.Transfer
 
             if (pipeline.IsNonDocumentPipeline())
             {
-                return CreateNonDocumentQueryRequest();
+                IList<FieldInfoDto> fields = await _fieldManager.GetMappedFieldsAsync(token).ConfigureAwait(false);
+                
+                return CreateNonDocumentQueryRequest(fields);
             }
             
             throw new SyncException("Unable to determine Sync flow type. Snapshot query request creation failed");
         }
 
-        private QueryRequest CreateNonDocumentQueryRequest()
+        private QueryRequest CreateNonDocumentQueryRequest(IEnumerable<FieldInfoDto> fields)
         {
             return new QueryRequest()
             {
@@ -158,6 +160,7 @@ namespace Relativity.Sync.Transfer
                     ArtifactTypeID = _configuration.RdoArtifactTypeId
                 },
                 Condition = $"('ArtifactId' IN VIEW {_configuration.DataSourceArtifactId})",
+                Fields = fields.Select(f => new FieldRef { Name = f.SourceFieldName }).ToList(),
                 IncludeNameInQueryResult = true
             };
         }

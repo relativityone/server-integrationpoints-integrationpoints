@@ -14,7 +14,6 @@ using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Transfer;
-using NotImplementedException = System.NotImplementedException;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
@@ -30,7 +29,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		private SnapshotQueryRequestProvider _sut;
 
-		private readonly IEnumerable<FieldInfoDto> _expectedDocumentTypeFields = new[]
+		private readonly IEnumerable<FieldInfoDto> _expectedFields = new[]
 		{
 			FieldInfoDto.DocumentField("Field1", null, false),
 			FieldInfoDto.DocumentField("Field2", null, false),
@@ -43,6 +42,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public void SetUp()
 		{
 			_configurationFake = new Mock<ISnapshotQueryConfiguration>();
+			_configurationFake.SetupGet(x => x.RdoArtifactTypeId).Returns((int)ArtifactType.Document);
 
 			_pipelineSelectorFake = new Mock<IPipelineSelector>();
 
@@ -55,9 +55,12 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			_fieldManagerFake = new Mock<IFieldManager>();
 			_fieldManagerFake.Setup(x => x.GetDocumentTypeFieldsAsync(It.IsAny<CancellationToken>()))
-				.ReturnsAsync(_expectedDocumentTypeFields.ToList());
+				.ReturnsAsync(_expectedFields.ToList());
 			_fieldManagerFake.Setup(x => x.GetObjectIdentifierFieldAsync(It.IsAny<CancellationToken>()))
 				.ReturnsAsync(_expectedIdentifierField);
+
+			_fieldManagerFake.Setup(x => x.GetMappedFieldsAsync(It.IsAny<CancellationToken>()))
+				.ReturnsAsync(_expectedFields.ToList());
 
 			_sut = new SnapshotQueryRequestProvider(
 				_configurationFake.Object,
@@ -82,7 +85,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			string expectedDocumentCondition = $"('ArtifactId' IN SAVEDSEARCH {dataSourceArtifactId})";
 
 			IEnumerable<FieldRef> expectedFieldRefs =
-				_expectedDocumentTypeFields.Select(x => new FieldRef {Name = x.SourceFieldName});
+				_expectedFields.Select(x => new FieldRef {Name = x.SourceFieldName});
 
 			// Act
 			QueryRequest request = await _sut.GetRequestForCurrentPipelineAsync(CancellationToken.None).ConfigureAwait(false);
@@ -108,7 +111,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			                                        $"('ArtifactId' IN SAVEDSEARCH {dataSourceArtifactId})";
 
 			IEnumerable<FieldRef> expectedFieldRefs =
-				_expectedDocumentTypeFields.Select(x => new FieldRef { Name = x.SourceFieldName });
+				_expectedFields.Select(x => new FieldRef { Name = x.SourceFieldName });
 
 			// Act
 			QueryRequest request = await _sut.GetRequestForCurrentPipelineAsync(CancellationToken.None).ConfigureAwait(false);
@@ -285,7 +288,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			string expectedDocumentCondition = $"('ArtifactId' IN VIEW {dataSourceArtifactId})";
 
 			IEnumerable<FieldRef> expectedFieldRefs =
-				_expectedDocumentTypeFields.Select(x => new FieldRef {Name = x.SourceFieldName});
+				_expectedFields.Select(x => new FieldRef {Name = x.SourceFieldName});
 
 			// Act
 			QueryRequest request = await _sut.GetRequestForCurrentPipelineAsync(CancellationToken.None).ConfigureAwait(false);
@@ -297,7 +300,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		private void VerifyQueryRequest(QueryRequest actualRequest, 
 			string expectedCondition, IEnumerable<FieldRef> expectedFields)
 		{
-			actualRequest.ObjectType.ArtifactTypeID.Should().Be((int) ArtifactType.Document);
+			actualRequest.ObjectType.ArtifactTypeID.Should().Be(_configurationFake.Object.RdoArtifactTypeId);
 			actualRequest.Condition.Should().Be(expectedCondition);
 			actualRequest.Fields.Should().BeEquivalentTo(expectedFields);
 		}
