@@ -6,6 +6,7 @@ using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Tests.System.Core.Helpers.APIHelper;
 using Relativity.Telemetry.APM;
+using Relativity.Toggles;
 
 namespace Relativity.Sync.Tests.System.Core.Runner
 {
@@ -17,6 +18,7 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 		private readonly ISyncServiceManager _serviceManager;
 		private readonly Uri _relativityUri;
 		private readonly ISyncLog _logger;
+		private readonly IToggleProvider _toggleProvider;
 		private readonly IAPM _apmClient;
 		private readonly IHelper _helper;
 
@@ -27,13 +29,13 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 		/// <param name="relativityUri">Host name of relativity - no suffixes</param>
 		/// <param name="apmClient">APM implementation</param>
 		/// <param name="logger">Logger</param>
-		public SyncRunner(ISyncServiceManager serviceManager, Uri relativityUri, IAPM apmClient, ISyncLog logger)
+		public SyncRunner(ISyncServiceManager serviceManager, Uri relativityUri, IAPM apmClient, ISyncLog logger, IToggleProvider toggleProvider = null)
 		{
 			_serviceManager = serviceManager;
 			_relativityUri = relativityUri;
 			_logger = logger;
+			_toggleProvider = toggleProvider;
 			_apmClient = apmClient;
-
 			_helper = new TestHelper();
 		}
 
@@ -101,6 +103,11 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 				.As<IExecutor<IDataDestinationFinalizationConfiguration>>()
 				.As<IExecutionConstrains<IDataDestinationFinalizationConfiguration>>();
 
+			if (_toggleProvider != null)
+			{
+				containerBuilder.RegisterInstance(_toggleProvider).As<IToggleProvider>();
+			}
+			
 			var jobFactory = new SyncJobFactory();
 			var relativityServices = new RelativityServices(_apmClient, _serviceManager, relativityUri, _helper);
 

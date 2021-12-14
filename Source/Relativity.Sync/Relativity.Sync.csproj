@@ -45,13 +45,14 @@
   <ItemGroup>
     <PackageReference Include="Relativity.API" Version="17.1.9" />
     <PackageReference Include="Relativity.Kepler.Client" Version="2.15.3" />
-    <PackageReference Include="Relativity.OAuth2Client" Version="[1.0.27,1.5.2]" />
+    <PackageReference Include="Relativity.OAuth2Client" Version="1.5.2" />
+    <PackageReference Include="Relativity.OAuth2Client.Interfaces" Version="1.5.2" />
     <PackageReference Include="Relativity.Telemetry.APM" Version="[2019.1.1,2019.2.0)" />
-    <PackageReference Include="Relativity.Telemetry.DataContracts.Shared" Version="3000.0.1" />
-    <PackageReference Include="Relativity.Telemetry.Services.Interface" Version="[3000.0.1]" />
+    <PackageReference Include="Relativity.Telemetry.DataContracts.Shared" Version="3003.1.0" />
+    <PackageReference Include="Relativity.Telemetry.Services.Interface" Version="[3003.0.1]" />
     <PackageReference Include="Relativity.AutomatedWorkflows.Services.Interfaces" Version="0.10.0-pre.1" />
     <PackageReference Include="Relativity.AutomatedWorkflows.SDK" Version="0.10.0-pre.1" />
-    <PackageReference Include="Relativity.DataTransfer.Legacy.SDK" Version="0.1.30" />
+    <PackageReference Include="Relativity.DataTransfer.Legacy.SDK" Version="0.2.0" />
   </ItemGroup>
   <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
   <ItemGroup>
@@ -65,7 +66,7 @@
     <PackageReference Include="Banzai.Autofac" Version="[3.0.3,4.0.0)" />
     <PackageReference Include="Newtonsoft.Json" Version="[6.0.8,13.0.0)" />
     <PackageReference Include="Relativity.Toggles" Version="1.0.1" />
-    <PackageReference Include="System.Reactive.Linq" Version="[4.0.0]" />
+    <PackageReference Include="System.Reactive.Linq" Version="[4.4.1]" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Runtime.Caching" />

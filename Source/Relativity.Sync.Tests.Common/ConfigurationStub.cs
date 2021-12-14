@@ -21,6 +21,7 @@ namespace Relativity.Sync.Tests.Common
 		private string _jobName = String.Empty;
 		private string _sourceJobTagName = String.Empty;
 		private string _emailNotificationRecipients;
+        private Guid? _jobStatusConsolidationConfigurationExportRunId;
 
 		private const int _ADMIN_ID = 9;
 		private const int _ASCII_GROUP_SEPARATOR = 29;
@@ -29,7 +30,7 @@ namespace Relativity.Sync.Tests.Common
 
 		private readonly IEnumerable<string> _emailRecipients = new List<string>();
 
-		public string DataDestinationName { get; set; }
+        public string DataDestinationName { get; set; }
 
 		public bool IsDataDestinationArtifactIdSet { get; set; }
 
@@ -184,7 +185,12 @@ namespace Relativity.Sync.Tests.Common
 
 		public int JobHistoryArtifactId { get; set; }
 
-        Guid? IJobStatusConsolidationConfiguration.ExportRunId { get; }
+        Guid? IJobStatusConsolidationConfiguration.ExportRunId => _jobStatusConsolidationConfigurationExportRunId;
+
+		public void SetJobStatusConsolidationConfigurationExportRunId(Guid? exportRunId)
+        {
+            _jobStatusConsolidationConfigurationExportRunId = exportRunId;
+        }
 
         public bool IsSourceJobTagSet { get; set; }
 
