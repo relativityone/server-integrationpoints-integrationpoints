@@ -62,6 +62,7 @@
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.Productions.Services.Interfaces.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\LanguageExt.Core.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\System.ValueTuple.dll</Assembly>
+          <Assembly>Source\kCura.IntegrationPoints.Core\bin\System.Threading.Tasks.Extensions.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\itextsharp.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\System.Reactive.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Agent\bin\Relativity.AutomatedWorkflows.Services.Interfaces.dll</Assembly>

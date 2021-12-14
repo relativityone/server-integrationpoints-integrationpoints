@@ -31,7 +31,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
 			// Assert
 			VerifyJobHasBeenCompleted();
 		}
-
+		
 		[IdentifiedTest("947DBE0E-032B-4A54-A5C0-1B87361FDF65")]
 		public void Agent_ShouldSuccessfullyProcessSyncJob_WhenJobWasDrainStoppedAndResumed()
 		{

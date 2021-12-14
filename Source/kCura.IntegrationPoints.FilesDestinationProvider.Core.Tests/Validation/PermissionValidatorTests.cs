@@ -4,10 +4,9 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity;
 using System;
 using Relativity.API;
-using Relativity.DataExchange.Service;
+using ArtifactType = Relativity.ArtifactType;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 {
