@@ -214,7 +214,7 @@ function Invoke-Tests
     }
 }
 function Set-NodePath {
-    $pathToNode = [System.IO.Path]::Combine("buildtools", 'Portable.NodeJS', 'tools', 'win-x64', 'node_modules', 'npm', 'bin')
+    $pathToNode = [System.IO.Path]::Combine("buildtools", 'Portable.NodeJS', 'tools', 'win-x64')
     $resolvedPathToNode = Resolve-Path "$pathToNode" | Select-Object -ExpandProperty Path
     
     if (-Not ($env:Path -like "*$resolvedPathToNode*")) {
