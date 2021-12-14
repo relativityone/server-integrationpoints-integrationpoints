@@ -10,9 +10,7 @@ Relativity.DataExchange.Client.SDK
 Relativity.DataTransfer.Legacy.SDK
 iTextSharp
 
-Relativity.Kepler.Service
-    exclude kCura.Vendor.Castle.Core.dll
-    exclude kCura.Vendor.Castle.Windsor.dll
+
 
 FluentAssertions
 Moq

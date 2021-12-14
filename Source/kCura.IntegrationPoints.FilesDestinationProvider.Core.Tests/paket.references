@@ -13,9 +13,7 @@ Relativity.DataTransfer.MessageService
 Relativity.Toggles
 iTextSharp
 
-Relativity.Kepler.Service
-    exclude kCura.Vendor.Castle.Core.dll
-    exclude kCura.Vendor.Castle.Windsor.dll
+
 
 FluentAssertions
 Moq

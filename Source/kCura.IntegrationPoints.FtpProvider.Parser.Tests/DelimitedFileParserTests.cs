@@ -5,8 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.FtpProvider.Helpers;
-using kCura.IntegrationPoints.FtpProvider.Parser.Interfaces;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
@@ -91,7 +89,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
 		{
 			string location = GenerateTempLocation();
 
-			Assert.Throws<Exceptions.CantAccessSourceException>(
+			Assert.Throws<Helpers.Exceptions.CantAccessSourceException>(
 				() => new DelimitedFileParser(location, new ParserOptions() { Delimiters = new[] { "," } }));
 		}
 
@@ -142,7 +140,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
 			using (var parser = new DelimitedFileParser(streamInput, new ParserOptions() {Delimiters = new[] {","}}))
 			{
 				//Assert
-				Assert.Throws<Exceptions.NoColumnsException>(() => parser.ParseColumns());
+				Assert.Throws<Helpers.Exceptions.NoColumnsException>(() => parser.ParseColumns());
 			}
 		}
 
@@ -170,7 +168,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
 			{
 				string[] columns = {"Column1", "", "COlumn2"};
 
-				Assert.Throws<Exceptions.BlankColumnException>(() => parser.ValidateColumns(columns));
+				Assert.Throws<Helpers.Exceptions.BlankColumnException>(() => parser.ValidateColumns(columns));
 			}
 		}
 
@@ -183,7 +181,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
 			{
 				string[] columns = {"Column1", "Column1", "Column2"};
 
-				Assert.Throws<Exceptions.DuplicateColumnsExistException>(() => parser.ValidateColumns(columns));
+				Assert.Throws<Helpers.Exceptions.DuplicateColumnsExistException>(() => parser.ValidateColumns(columns));
 			}
 		}
 
@@ -255,7 +253,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
 			using (var dataReader = new DelimitedFileParser(streamInput,
 				new ParserOptions() {FirstLineContainsColumnNames = true, Delimiters = new[] {","}}))
 			{
-				Assert.Throws<Exceptions.NumberOfColumnsNotEqualToNumberOfDataValuesException>(() => dataReader.Read());
+				Assert.Throws<Helpers.Exceptions.NumberOfColumnsNotEqualToNumberOfDataValuesException>(() => dataReader.Read());
 			}
 		}
 

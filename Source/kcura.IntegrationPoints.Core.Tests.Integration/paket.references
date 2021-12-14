@@ -20,6 +20,3 @@ relativity.testing.identification
 Selenium.WebDriver
 Relativity.Telemetry.DataContracts.Shared
 
-Relativity.Kepler.Service
-    exclude kCura.Vendor.Castle.Core.dll
-    exclude kCura.Vendor.Castle.Windsor.dll
