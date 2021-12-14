@@ -99,12 +99,12 @@ namespace Relativity.Sync.Transfer
 
 		public async Task<IReadOnlyList<FieldInfoDto>> GetNonDocumentAllFieldsAsync(CancellationToken token)
 		{
-			if (_nonDocAllFields == null)
+			if (_nonDocumentAllFields == null)
 			{
 				var result = await GetMappedFieldsAsync(token).ConfigureAwait(false);
-				_nonDocAllFields = EnrichFieldsWithIndex(result.ToList());
+				_nonDocumentAllFields = EnrichFieldsWithIndex(result.ToList());
 			}
-			return _nonDocAllFields;
+			return _nonDocumentAllFields;
 		}
 
 		public async Task<IList<FieldInfoDto>> GetDocumentTypeFieldsAsync(CancellationToken token)
