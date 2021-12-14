@@ -18,7 +18,7 @@ namespace Relativity.Sync.Transfer
 		private List<FieldInfoDto> _mappedDocumentFields;
 		private IReadOnlyList<FieldInfoDto> _imageAllFields;
 		private IReadOnlyList<FieldInfoDto> _nativeAllFields;
-		private IReadOnlyList<FieldInfoDto> _nonDocAllFields;
+		private IReadOnlyList<FieldInfoDto> _nonDocumentAllFields;
 
 		private readonly IFieldConfiguration _configuration;
 		private readonly IDocumentFieldRepository _documentFieldRepository;
