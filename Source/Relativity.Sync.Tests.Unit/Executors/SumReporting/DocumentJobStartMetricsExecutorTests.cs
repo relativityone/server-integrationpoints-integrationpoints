@@ -143,7 +143,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		public async Task ExecuteAsync_ShouldLogFieldsMappingDetails()
 		{
 			// Arrange
-			_fieldManagerFake.Setup(x => x.GetMappedDocumentFieldsAsync(It.IsAny<CancellationToken>()))
+			_fieldManagerFake.Setup(x => x.GetMappedFieldsAsync(It.IsAny<CancellationToken>()))
 				.ReturnsAsync(new List<FieldInfoDto>());
 
 			// Act
@@ -173,7 +173,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		public void ExecuteAsync_ShouldComplete_WhenFieldManagerThrows()
 		{
 			// Arrange
-			_fieldManagerFake.Setup(x => x.GetMappedDocumentFieldsAsync(It.IsAny<CancellationToken>()))
+			_fieldManagerFake.Setup(x => x.GetMappedFieldsAsync(It.IsAny<CancellationToken>()))
 				.ThrowsAsync(new Exception());
 
 			// Act
@@ -787,7 +787,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 				});
 
 
-			_fieldManagerFake.Setup(x => x.GetMappedDocumentFieldsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(mapping.Select(x =>
+			_fieldManagerFake.Setup(x => x.GetMappedFieldsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(mapping.Select(x =>
 					new FieldInfoDto(x.SpecialFieldType, x.SourceFieldName, x.DestinationFieldName, true, true) { RelativityDataType = x.DataType }
 				).ToList);
 		}

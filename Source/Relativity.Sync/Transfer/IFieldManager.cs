@@ -16,7 +16,7 @@ namespace Relativity.Sync.Transfer
 
 		Task<IList<FieldInfoDto>> GetDocumentTypeFieldsAsync(CancellationToken token);
 
-		Task<IList<FieldInfoDto>> GetMappedDocumentFieldsAsync(CancellationToken token);
+		Task<IList<FieldInfoDto>> GetMappedFieldsAsync(CancellationToken token);
 		
 		IEnumerable<FieldInfoDto> GetNativeSpecialFields();
 		
