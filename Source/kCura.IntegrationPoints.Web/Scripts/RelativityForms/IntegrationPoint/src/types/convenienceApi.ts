@@ -1,0 +1,1 @@
+export type IConvenienceApi = Record<string, any>;
