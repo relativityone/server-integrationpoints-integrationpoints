@@ -8,6 +8,7 @@ using Relativity;
 using System;
 using Relativity.API;
 using Relativity.DataExchange.Service;
+using ArtifactType = Relativity.ArtifactType;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 {

@@ -213,7 +213,6 @@
     <Content Include="LogConfig.xml">
       <Paket>True</Paket>
     </Content>
-    <Content Include="Scripts\RelativityForms\IntegrationPoint\integration-point-event-handler.js" />
     <Content Include="Scripts\RelativityForms\IntegrationPointProfile\integration-point-profile-event-handler.js" />
     <Content Include="web.config">
       <Paket>True</Paket>
@@ -669,6 +668,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Scripts\RelativityForms\IntegrationPoint\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="paket.references">

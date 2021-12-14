@@ -21,7 +21,24 @@ Task NugetRestore -Description "Restore the packages needed for this build" {
     exec { dotnet restore $Solution }
 }
 
-Task Compile -Depends NugetRestore -Description "Compile code for this repo" {
+Task BuildLiquidFormsJS {   
+    Set-NodePath
+    $liquidFormsJSDir = Join-Path $PSScriptRoot "Source\kCura.IntegrationPoints.Web\Scripts\RelativityForms\IntegrationPoint"
+
+    Invoke-NpmCommand {
+        npx @('npm', '-v')
+    } -workingDirectory $liquidFormsJSDir
+
+    Invoke-NpmCommand {
+        npx @('npm', 'install', '--registry', 'https://relativity.jfrog.io/relativity/api/npm/npm-anthology/')
+    } -workingDirectory $liquidFormsJSDir
+   
+    Invoke-NpmCommand {
+        npm @('run', 'build')
+    } -workingDirectory $liquidFormsJSDir
+}
+
+Task Compile -Depends NugetRestore,BuildLiquidFormsJS -Description "Compile code for this repo" {
     Initialize-Folder $ArtifactsDir -Safe
     Initialize-Folder $LogsDir -Safe
 
@@ -193,6 +210,17 @@ function Invoke-Tests
             "--skipnontestassemblies" `
             "--result=$OutputFile" `
             $settings
+        }
+    }
+}
+function Set-NodePath {
+    $pathToNode = [System.IO.Path]::Combine("buildtools", 'Portable.NodeJS.*', 'tools', 'win-x64')
+    $resolvedPathToNode = Resolve-Path "$pathToNode" | Select-Object -ExpandProperty Path
+    
+    if (-Not ($env:Path -like "*$resolvedPathToNode*")) {
+        Write-Output "Append PATH with $resolvedPathToNode"
+        exec {
+            $env:Path += ';' + $resolvedPathToNode
         }
     }
 }
