@@ -56,6 +56,12 @@ Task Compile -Depends NugetRestore,BuildLiquidFormsJS -Description "Compile code
         ("/fileloggerparameters1:LogFile=`"$LogFilePath`""),
         ("/fileloggerparameters2:errorsonly;LogFile=`"$ErrorLogFilePath`""))
     }
+
+    $publishPath = "$SourceDir\CustomPages\IntegrationPoints"
+    if(Test-Path $publishPath) {
+        Write-Host "Update web.config file"
+        Copy-Item -Path "$SourceDir\kCura.IntegrationPoints.Web\Web.Config" -Destination "$publishPath\Web.Config" 
+    }
 }
 
 Task Test -Description "Run tests that don't require a deployed environment." {

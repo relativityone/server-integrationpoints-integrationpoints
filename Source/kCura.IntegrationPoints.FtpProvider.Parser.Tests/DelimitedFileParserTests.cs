@@ -5,8 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.FtpProvider.Helpers;
-using kCura.IntegrationPoints.FtpProvider.Parser.Interfaces;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests

@@ -15,6 +15,3 @@ Relativity.Toggles
 Polly
 Relativity.Logging.Interfaces
 
-Relativity.Kepler.Service
-    exclude kCura.Vendor.Castle.Core.dll
-    exclude kCura.Vendor.Castle.Windsor.dll

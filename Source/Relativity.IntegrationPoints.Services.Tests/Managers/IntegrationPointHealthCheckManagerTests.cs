@@ -8,7 +8,6 @@ using Relativity.API;
 using Relativity.IntegrationPoints.Services.Helpers;
 using Relativity.Logging;
 using Relativity.Telemetry.APM;
-using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Managers
 {
