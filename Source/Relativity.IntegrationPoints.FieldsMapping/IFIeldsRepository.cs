@@ -5,7 +5,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 {
 	public interface IFieldsRepository
 	{
-		Task<IEnumerable<DocumentFieldInfo>> GetAllDocumentFieldsAsync(int workspaceID);
-		Task<IEnumerable<DocumentFieldInfo>> GetFieldsByArtifactsIdAsync(IEnumerable<string> artifactIDs, int workspaceID);
+		Task<IEnumerable<DocumentFieldInfo>> GetAllDocumentFieldsAsync(int workspaceId);
+		Task<IEnumerable<DocumentFieldInfo>> GetFieldsByArtifactsIdAsync(IEnumerable<string> artifactIds, int workspaceId);
 	}
 }

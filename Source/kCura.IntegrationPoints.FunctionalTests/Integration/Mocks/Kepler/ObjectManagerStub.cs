@@ -15,70 +15,70 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
     public partial class ObjectManagerStub : KeplerStubBase<IObjectManager>
     {
         public void Setup()
-       {
+        {
             Mock.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<CreateRequest>()))
                 .Returns((int workspaceId, CreateRequest request) =>
-                {
-                    RelativityObject createdObject = GetRelativityObject(request);
-                    AddObjectToDatabase(new ObjectCreationInfo(workspaceId, createdObject, request.ObjectType.Guid));
+            {
+                RelativityObject createdObject = GetRelativityObject(request);
+                AddObjectToDatabase(new ObjectCreationInfo(workspaceId, createdObject, request.ObjectType.Guid));
 
-                    return Task.FromResult(new CreateResult()
-                    {
-                        Object = createdObject
-                    });
+                return Task.FromResult(new CreateResult()
+                {
+                    Object = createdObject
                 });
+            });
 
             Mock.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<MassCreateRequest>()))
                 .Returns((int workspaceId, MassCreateRequest request) =>
+            {
+                List<RelativityObject> createdObjects = GetRelativityObjects(request);
+
+                createdObjects.ForEach(x =>
+                    AddObjectToDatabase(new ObjectCreationInfo(workspaceId, x, request.ObjectType.Guid)));
+
+                return Task.FromResult(new MassCreateResult
                 {
-                    List<RelativityObject> createdObjects = GetRelativityObjects(request);
-
-                    createdObjects.ForEach(x =>
-                        AddObjectToDatabase(new ObjectCreationInfo(workspaceId, x, request.ObjectType.Guid)));
-
-                    return Task.FromResult(new MassCreateResult
-                    {
-                        Success = true,
-                        Objects = createdObjects.Select(x => new RelativityObjectRef {ArtifactID = x.ArtifactID})
-                            .ToList()
-                    });
+                    Success = true,
+                    Objects = createdObjects.Select(x => new RelativityObjectRef {ArtifactID = x.ArtifactID})
+                        .ToList()
                 });
+            });
 
             Mock.Setup(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<UpdateRequest>()))
                 .Returns((int workspaceId, UpdateRequest request) =>
+            {
+                try
+                {
+                    WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
+                    RdoTestBase foundRdo = workspace.ReadArtifact(request.Object.ArtifactID);
+
+                    if (foundRdo != null)
                     {
-                        try
-                        {
-                            WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
-                            RdoTestBase foundRdo = workspace.ReadArtifact(request.Object.ArtifactID);
+	                    RelativityObject relativityObject = GetRelativityObject(request, foundRdo);
 
-                            if (foundRdo != null)
-                            {
-	                            RelativityObject relativityObject = GetRelativityObject(request, foundRdo);
-
-	                            if (relativityObject.FieldValues.Any(x => x.Field.Name == null))
-	                            {
-                                    foundRdo.LoadRelativityObjectByGuid(foundRdo.GetType(), relativityObject);
-								}
-	                            else
-	                            {
-		                            foundRdo.LoadRelativityObjectByName(foundRdo.GetType(),
-			                            relativityObject);
-                                }
-                            }
-
-                            return Task.FromResult(new UpdateResult()
-                            {
-                                EventHandlerStatuses = new List<EventHandlerStatus>()
-                            });
-                        }
-                        catch (Exception)
-                        {
-                            Debugger.Break();
-                            return null;
+	                    if (relativityObject.FieldValues.Any(x => x.Field.Name == null))
+	                    {
+                            foundRdo.LoadRelativityObjectByGuid(foundRdo.GetType(), relativityObject);
+						}
+	                    else
+	                    {
+		                    foundRdo.LoadRelativityObjectByName(foundRdo.GetType(),
+			                    relativityObject);
                         }
                     }
-                );
+
+                    return Task.FromResult(new UpdateResult()
+                    {
+                        EventHandlerStatuses = new List<EventHandlerStatus>()
+                    });
+                }
+                catch (Exception)
+                {
+                    Debugger.Break();
+                    return null;
+                }
+            }
+            );
 
             SetupRead();
             SetupJobHistory();
@@ -164,13 +164,48 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             return result;
         }
 
+        private QueryResultSlim GetQuerySlimsForRequest<T>(Func<WorkspaceTest, IList<T>> collectionGetter,
+            Func<QueryRequest, IList<T>, int, IList<T>> customFilter, int workspaceId,
+            QueryRequest request, int start, int length) where T : RdoTestBase
+        {
+            WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
+
+            List<RelativityObject> foundObjects = FindObjects(collectionGetter, customFilter, request, workspace, start);
+
+            QueryResultSlim result = new QueryResultSlim();
+            result.Objects = foundObjects.Take(length).Select(x => ToSlim(x, request.Fields)).ToList();
+            result.TotalCount = result.ResultCount = result.Objects.Count;
+            return result;
+        }
+
         private QueryResult GetRelativityObjectsForRequest<T>(Func<WorkspaceTest, IList<T>> collectionGetter,
             Func<QueryRequest, IList<T>, IList<T>> customFilter, int workspaceId,
             QueryRequest request, int length) where T : RdoTestBase
         {
             WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
 
-            var foundObjects = FindObjects(collectionGetter, customFilter, request, workspace);
+            List<RelativityObject> foundObjects = FindObjects(collectionGetter, customFilter, request, workspace);
+
+            QueryResult result = new QueryResult();
+            result.Objects = foundObjects.Take(length).ToList();
+            result.TotalCount = result.ResultCount = result.Objects.Count;
+
+            return result;
+        }
+
+        private QueryResult GetRelativityObjectsForRequest<T>(Func<WorkspaceTest, IList<T>> collectionGetter,
+            Func<QueryRequest, IList<T>, int, IList<T>> customFilter, int workspaceId,
+            QueryRequest request, int start, int length) where T : RdoTestBase
+        {
+            WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
+
+            List<RelativityObject> foundObjects = FindObjects(collectionGetter, customFilter, request, workspace, start);
+
+            foundObjects = foundObjects.Select(x =>
+            {
+                x.Name = x.FieldValues[1].Value.ToString();
+                return x;
+            }).ToList();
 
             QueryResult result = new QueryResult();
             result.Objects = foundObjects.Take(length).ToList();
@@ -198,6 +233,33 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             if (customFilter != null)
             {
                 foundObjects.AddRange(customFilter(request, collectionGetter(workspace))
+                    .Select(x => x.ToRelativityObject()));
+            }
+
+            if (IsArtifactIdCondition(request.Condition, out int artifactId))
+            {
+                AddRelativityObjectsToResult(
+                    collectionGetter(workspace).Where(x => x.ArtifactId == artifactId)
+                    , foundObjects);
+            }
+            else if (IsArtifactIdListCondition(request.Condition, out int[] artifactIds))
+            {
+                AddRelativityObjectsToResult(
+                    collectionGetter(workspace).Where(x => artifactIds.Contains(x.ArtifactId))
+                    , foundObjects);
+            }
+
+            return foundObjects;
+        }
+
+        private List<RelativityObject> FindObjects<T>(Func<WorkspaceTest, IList<T>> collectionGetter,
+            Func<QueryRequest, IList<T>, int, IList<T>> customFilter, QueryRequest request, WorkspaceTest workspace, int start)
+            where T : RdoTestBase
+        {
+            List<RelativityObject> foundObjects = new List<RelativityObject>();
+            if (customFilter != null)
+            {
+                foundObjects.AddRange(customFilter(request, collectionGetter(workspace), start)
                     .Select(x => x.ToRelativityObject()));
             }
 

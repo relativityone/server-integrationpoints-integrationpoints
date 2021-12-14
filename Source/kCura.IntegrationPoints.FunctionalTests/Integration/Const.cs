@@ -10,6 +10,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		public const string INTEGRATION_POINTS_APP_GUID = "DCF6E9D1-22B6-4DA3-98F6-41381E93C30C";
 
 		public static int OVERWRITE_FIELD_ARTIFACT_ID = ArtifactProvider.NextId();
+        public static int FIXED_LENGTH_TEXT_TYPE_ARTIFACT_ID = ArtifactProvider.NextId();
+		public static int LONG_TEXT_TYPE_ARTIFACT_ID = ArtifactProvider.NextId();
 
 		public static class Agent
 		{

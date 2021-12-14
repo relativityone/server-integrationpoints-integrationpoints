@@ -1,5 +1,5 @@
-﻿using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
-using kCura.Relativity.ImportAPI;
+﻿using kCura.Relativity.ImportAPI;
+using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {

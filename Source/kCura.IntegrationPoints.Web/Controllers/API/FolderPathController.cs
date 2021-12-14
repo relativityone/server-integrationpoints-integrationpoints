@@ -6,10 +6,10 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Common.Context;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Web.Attributes;
 using Relativity;
 using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
