@@ -8,7 +8,10 @@ using Relativity.IntegrationPoints.Tests.Integration.Models;
 namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelpers
 {
 	public class FieldsMappingHelper : WorkspaceHelperBase
-	{	
+    {
+        private const string FIXED_LENGTH_TEXT_NAME = "Fixed-Length Text";
+        private const string LONG_TEXT_NAME = "Long Text";
+
 		public FieldsMappingHelper(WorkspaceTest workspace) : base(workspace)
 		{
 		}
@@ -54,7 +57,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			{
 				new FieldMap
 				{
-					SourceField =new FieldEntry
+					SourceField = new FieldEntry
 					{
 						DisplayName = identifierFieldName,
 						FieldIdentifier = identifierFieldName,
@@ -85,7 +88,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			{
 				new FieldMap
 				{
-					SourceField =new FieldEntry
+					SourceField = new FieldEntry
 					{
 						DisplayName = identifierFieldName,
 						FieldIdentifier = "0",
@@ -117,7 +120,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			{
 				new FieldMap
 				{
-					SourceField =new FieldEntry
+					SourceField = new FieldEntry
 					{
 						DisplayName = "uid",
 						FieldIdentifier = "uid",
@@ -133,13 +136,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 						FieldType = FieldType.String,
 						IsIdentifier = true,
 						IsRequired = true,
-						Type = "Fixed-Length Text"
+						Type = FIXED_LENGTH_TEXT_NAME
 					},
 					FieldMapType = FieldMapTypeEnum.Identifier
 				},
 				new FieldMap
 				{
-					SourceField =new FieldEntry
+					SourceField = new FieldEntry
 					{
 						DisplayName = "sn",
 						FieldIdentifier = "sn",
@@ -155,13 +158,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 						FieldType = FieldType.String,
 						IsIdentifier = false,
 						IsRequired = false,
-						Type = "Fixed-Length Text"
+						Type = FIXED_LENGTH_TEXT_NAME
 					},
 					FieldMapType = FieldMapTypeEnum.None
 				},
 				new FieldMap
 				{
-					SourceField =new FieldEntry
+					SourceField = new FieldEntry
 					{
 						DisplayName = "givenname",
 						FieldIdentifier = "givenname",
@@ -177,13 +180,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 						FieldType = FieldType.String,
 						IsIdentifier = false,
 						IsRequired = false,
-						Type = "Fixed-Length Text"
+						Type = FIXED_LENGTH_TEXT_NAME
 					},
 					FieldMapType = FieldMapTypeEnum.None
 				},
 				new FieldMap
 				{
-					SourceField =new FieldEntry
+					SourceField = new FieldEntry
 					{
 						DisplayName = "manager",
 						FieldIdentifier = "manager",
@@ -205,5 +208,54 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 				}
 			};
 		}
+
+		public List<FieldMap> PrepareLongTextFieldsMapping()
+		{
+            return AddFieldEntriesToFieldsMap(Const.LONG_TEXT_TYPE_ARTIFACT_ID, LONG_TEXT_NAME);
+        }
+
+        public List<FieldMap> PrepareFixedLengthTextFieldsMapping()
+        {
+            return AddFieldEntriesToFieldsMap(Const.FIXED_LENGTH_TEXT_TYPE_ARTIFACT_ID, FIXED_LENGTH_TEXT_NAME);
+        }
+
+        private List<FieldMap> AddFieldEntriesToFieldsMap(int objectTypeId, string fieldType)
+        {
+            Dictionary<string, FieldTest> fields = Workspace.Fields.Where(x => x.ObjectTypeId == objectTypeId)
+                .ToDictionary(x => x.Name, x => x);
+
+            List<FieldMap> fieldsMap = new List<FieldMap>();
+
+            foreach (var field in fields)
+            {
+                fieldsMap.Add(new FieldMap
+                {
+                    SourceField = new FieldEntry
+                    {
+                        DisplayName = field.Value.Name,
+                        FieldIdentifier = field.Value.ArtifactId.ToString(),
+                        FieldType = FieldType.String,
+                        IsIdentifier = false,
+                        IsRequired = false,
+                        Type = null,
+                    },
+                    DestinationField = new FieldEntry()
+                    {
+                        DisplayName = field.Value.Name,
+                        FieldIdentifier = field.Value.ArtifactId.ToString(),
+                        FieldType = FieldType.String,
+                        IsIdentifier = false,
+                        IsRequired = true,
+                        Type = fieldType
+                    },
+                    FieldMapType = FieldMapTypeEnum.None
+                }
+                );
+            }
+
+            return fieldsMap;
+        }
 	}
+
+
 }

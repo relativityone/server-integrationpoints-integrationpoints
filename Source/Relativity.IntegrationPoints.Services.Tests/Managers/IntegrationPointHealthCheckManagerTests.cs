@@ -8,7 +8,6 @@ using Relativity.API;
 using Relativity.IntegrationPoints.Services.Helpers;
 using Relativity.Logging;
 using Relativity.Telemetry.APM;
-using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Managers
 {
@@ -37,7 +36,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 
             _healthMeasure = Substitute.For<IHealthMeasure>();
 
-            _apmClient.HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK,
+            _apmClient.HealthCheckOperation(kCura.IntegrationPoints.Core.Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK,
                 Arg.Any<Func<HealthCheckOperationResult>>()).Returns(_healthMeasure);
 
 			_integrationPointHealthCheckManager = new IntegrationPointHealthCheckManager(_logger, permissionRepositoryFactory, _container);

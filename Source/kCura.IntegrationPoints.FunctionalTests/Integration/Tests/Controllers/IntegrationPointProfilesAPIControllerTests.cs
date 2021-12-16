@@ -1,12 +1,9 @@
-﻿using Castle.MicroKernel.Registration;
-using Castle.Windsor;
-using FluentAssertions;
+﻿using FluentAssertions;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
-using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
 using System;

@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using kCura.IntegrationPoints.Common.Context;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 using Field = kCura.Relativity.ImportAPI.Data.Field;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers

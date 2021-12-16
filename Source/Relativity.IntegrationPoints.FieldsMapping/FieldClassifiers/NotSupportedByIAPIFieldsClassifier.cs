@@ -1,25 +1,25 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.Relativity.ImportAPI;
+using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 using Field = kCura.Relativity.ImportAPI.Data.Field;
 
 namespace Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers
 {
 	public class NotSupportedByIAPIFieldsClassifier : IFieldsClassifier
 	{
-		private readonly IImportAPI _importApi;
+		private readonly IImportApiFacade _importApiFacade;
 		private const int DocumentArtifactTypeID = (int)ArtifactType.Document;
 
 
-		public NotSupportedByIAPIFieldsClassifier(IImportAPI importApi)
+		public NotSupportedByIAPIFieldsClassifier(IImportApiFacade importApiFacade)
 		{
-			_importApi = importApi;
+			_importApiFacade = importApiFacade;
 		}
 
 		public Task<IEnumerable<FieldClassificationResult>> ClassifyAsync(ICollection<DocumentFieldInfo> fields, int workspaceID)
 		{
-			HashSet<string> fieldsSupportedByIAPI = new HashSet<string>(GetFieldsSupportedByIAPIAsync(workspaceID).Select(x => x.Name));
+			HashSet<string> fieldsSupportedByIAPI = new HashSet<string>(GetFieldsSupportedByIAPIAsync(workspaceID));
 
 			IEnumerable<FieldClassificationResult> filteredOutFields = fields
 				.Where(field => !fieldsSupportedByIAPI.Contains(field.Name))
@@ -32,9 +32,9 @@ namespace Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers
 			return Task.FromResult(filteredOutFields);
 		}
 
-		private IEnumerable<Field> GetFieldsSupportedByIAPIAsync(int workspaceId)
+		private IEnumerable<string> GetFieldsSupportedByIAPIAsync(int workspaceId)
 		{
-			IEnumerable<Field> workspaceFields = _importApi.GetWorkspaceFields(workspaceId, DocumentArtifactTypeID);
+			IEnumerable<string> workspaceFields = _importApiFacade.GetWorkspaceFieldsNames(workspaceId, DocumentArtifactTypeID).Values;
 			return workspaceFields;
 		}
 	}

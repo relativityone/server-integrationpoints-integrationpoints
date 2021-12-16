@@ -14,6 +14,3 @@ Relativity.AutomatedWorkflows.Services.Interfaces
 Relativity.AutomatedWorkflows.SDK
 iTextSharp
 
-Relativity.Kepler.Service
-    exclude kCura.Vendor.Castle.Core.dll
-    exclude kCura.Vendor.Castle.Windsor.dll

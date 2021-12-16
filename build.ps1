@@ -73,6 +73,8 @@ Write-Progress "Importing required Powershell modules..."
 $ToolsDir = Join-Path $PSScriptRoot "buildtools"
 Import-Module (Join-Path $ToolsDir "psake\tools\psake\psake.psd1") -ErrorAction Stop
 Import-Module (Join-Path $ToolsDir "kCura.PSBuildTools\PSBuildTools.psd1") -ErrorAction Stop
+Import-Module -Force "$ToolsDir\NpmBuildHelpers.psm1" -ErrorAction Stop
+
 Install-Module VSSetup -Scope CurrentUser -Force
 
 $Params = @{
@@ -109,6 +111,7 @@ Finally
 
 	Remove-Module PSake -Force -ErrorAction SilentlyContinue
 	Remove-Module PSBuildTools -Force -ErrorAction SilentlyContinue
+	Remove-Module NpmBuildHelpers -Force -ErrorAction SilentlyContinue
 }
 
 Exit $ExitCode

@@ -10,6 +10,3 @@ Relativity.Services.Interfaces
 Relativity.Toggles
 Relativity.Logging.Interfaces
 
-Relativity.Kepler.Service
-    exclude kCura.Vendor.Castle.Core.dll
-    exclude kCura.Vendor.Castle.Windsor.dll
