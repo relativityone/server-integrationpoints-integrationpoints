@@ -24,6 +24,11 @@
     <PostBuildEvent />
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="oi\**" />
+    <EmbeddedResource Remove="oi\**" />
+    <None Remove="oi\**" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
     <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
@@ -48,7 +53,7 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="oi\unmanaged\cmmap000.bin" />
+    <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" Link="app.config" />
     <None Include="paket.references" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
