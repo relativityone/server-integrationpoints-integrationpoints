@@ -11,9 +11,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
-using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factories

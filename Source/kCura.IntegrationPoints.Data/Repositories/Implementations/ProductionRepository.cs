@@ -16,6 +16,30 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_servicesMgr = servicesMgr;
 		}
 
+        public IEnumerable<ProductionDTO> RetrieveAllProductions(int workspaceArtifactId)
+        {
+            IEnumerable<ProductionDTO> productionDtos;
+			using (var productionManager = _servicesMgr.CreateProxy<IProductionManager>(ExecutionIdentity.CurrentUser))
+            {
+                try
+                {
+                    List<Production> productions = productionManager.GetAllAsync(workspaceArtifactId).Result;
+
+                    productionDtos = productions.Select(x => new ProductionDTO
+                    {
+                        ArtifactID = x.ArtifactID.ToString(),
+                        DisplayName = x.Name
+                    });
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Unable to retrieve productions for workspaceId: {workspaceArtifactId}", ex);
+                }
+            }
+
+            return productionDtos;
+        }
+
 		public ProductionDTO RetrieveProduction(int workspaceArtifactId, int productionArtifactId)
 		{
 			ProductionDTO productionDto;

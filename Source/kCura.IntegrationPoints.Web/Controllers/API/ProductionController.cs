@@ -6,9 +6,11 @@ using System.Web.Http;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Toggles;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
 using Relativity;
+using Relativity.Toggles;
 using PageLevelNumbering = Relativity.Productions.Services.PageLevelNumbering;
 using Production = Relativity.Productions.Services.Production;
 
@@ -30,10 +32,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[HttpGet]
 		[LogApiExceptionFilter(Message = "Unable to retrieve export production list.")]
 		public HttpResponseMessage GetProductionsForExport(int sourceWorkspaceArtifactId)
-		{
-			IEnumerable<ProductionDTO> productions = _productionManager.GetProductionsForExport(sourceWorkspaceArtifactId);
-
-			return Request.CreateResponse(HttpStatusCode.OK, productions.OrderBy(x => x.DisplayName));
+        {
+            IEnumerable<ProductionDTO> productions;
+            if (ToggleProvider.Current.IsEnabled<EnableKeplerizedImportAPIToggle>())
+            {
+                productions = _productionManager.RetrieveAllProductions(sourceWorkspaceArtifactId);
+			}
+            else
+            {
+                productions = _productionManager.GetProductionsForExport(sourceWorkspaceArtifactId);
+			}
+            return Request.CreateResponse(HttpStatusCode.OK, productions.OrderBy(x => x.DisplayName));
 		}
 
 		[HttpPost]
