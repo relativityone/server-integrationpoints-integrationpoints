@@ -23,6 +23,7 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" Link="app.config" />
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
