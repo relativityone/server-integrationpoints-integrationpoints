@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				try { 
 					Production production = productionManager.ReadSingleAsync(workspaceArtifactId, productionArtifactId).Result;
 
-					productionDto = new ProductionDTO()
+					productionDto = new ProductionDTO
 					{
 						ArtifactID = production.ArtifactID.ToString(),
 						DisplayName = production.Name

@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using FluentAssertions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
@@ -61,7 +64,57 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Assert.Throws<Exception>(() => _instance.RetrieveProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID), "Unable to retrieve production");
 		}
 
-		[Test]
+        [Test]
+        public void RetrieveAllProductions_ItShouldRetrieveAllExistingProduction()
+        {
+            // Arrange 
+            List<Production> productions = new List<Production>
+            {
+                new Production
+                {
+                    ArtifactID = 4321,
+                    Name = "Production 4321"
+                },
+                new Production
+                {
+                    ArtifactID = 4322,
+                    Name = "Production 4322"
+                },
+                new Production
+                {
+                    ArtifactID = 4323,
+                    Name = "Production 4323"
+                },
+                new Production
+                {
+                    ArtifactID = 4324,
+                    Name = "Production 4324"
+                },
+            };
+            _productionManager.GetAllAsync(_WORKSPACE_ARTIFACT_ID).Returns(productions);
+
+            // Act
+            IEnumerable<ProductionDTO> actualResults = _instance.RetrieveAllProductions(_WORKSPACE_ARTIFACT_ID);
+
+            // Assert
+            actualResults.Select(x => x.DisplayName).ShouldAllBeEquivalentTo(productions.Select(x => x.Name));
+            actualResults.Select(x => x.ArtifactID).ShouldAllBeEquivalentTo(productions.Select(x => x.ArtifactID));
+        }
+
+        [Test]
+        public void RetrieveAllProductions_ItShouldThrowExceptionWhenExceptionIsThrown()
+        {
+            // Arrange 
+            _productionManager.GetAllAsync(_WORKSPACE_ARTIFACT_ID).Throws<Exception>();
+
+            // Act
+            Action action = () => _instance.RetrieveAllProductions(_WORKSPACE_ARTIFACT_ID);
+
+            // Assert
+            action.ShouldThrow<Exception>($"Unable to retrieve productions for workspaceId: {_WORKSPACE_ARTIFACT_ID}");
+        }
+
+        [Test]
 		public void ItShouldCreateSingleProduction()
 		{
 			// Arrange
