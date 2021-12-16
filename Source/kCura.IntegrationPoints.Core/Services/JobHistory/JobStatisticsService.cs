@@ -1,6 +1,7 @@
 ﻿using System;
 using kCura.IntegrationPoints.Common.Monitoring;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
@@ -108,9 +109,18 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		{
 			Guid batchInstance = _helper.GetBatchInstance(_job);
 			string tableName = JobTracker.GenerateJobTrackerTempTableName(_job, batchInstance.ToString());
-			long totalSize = _fileSizeStatisticsService.CalculatePushedFilesSizeForJobHistory((int)_job.JobId, IntegrationPointImportSettings, IntegrationPointSourceConfiguration);
 
-			lock(_lockToken)
+            long totalSize;
+            if (_job.TaskType == TaskType.ImportService.ToString())
+            {
+                totalSize = 0; // No way to get this from JobMessageBase and reading it from Db will be to expensive
+            }
+            else
+            {
+                totalSize = _fileSizeStatisticsService.CalculatePushedFilesSizeForJobHistory((int)_job.JobId, IntegrationPointImportSettings, IntegrationPointSourceConfiguration);
+			}
+
+            lock(_lockToken)
 			{ 
 				using (new JobHistoryMutex(_context, batchInstance))
 				{
