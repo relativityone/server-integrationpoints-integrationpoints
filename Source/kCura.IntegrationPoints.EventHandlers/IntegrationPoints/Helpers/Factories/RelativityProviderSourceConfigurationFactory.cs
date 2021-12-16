@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using kCura.ScheduleQueue.Core.Data;
 using Relativity.API;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factories
 {
@@ -27,10 +28,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 			IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider, sqlServiceFactory);
 			IQueueQueryManager queryManager = new QueueQueryManager(helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
+			IToggleProvider toggleProvider = ToggleProvider.Current;
 
 			IManagerFactory managerFactory = new ManagerFactory(helper, new FakeNonRemovableAgent(), jobServiceDataProvider);
 			var repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
-			Func<IProductionManager> productionManagerFactory = () => new ProductionManager(logger, repositoryFactory, serviceManagerProvider);
+            IProductionManagerWrapper productionManagerWrapper =
+                new ProductionManagerWrapper(toggleProvider, repositoryFactory.GetProductionRepository(0),
+                    serviceManagerProvider, logger);
+			Func<IProductionManager> productionManagerFactory = () => new ProductionManager(logger, repositoryFactory, productionManagerWrapper);
 
 			return new RelativityProviderSourceConfiguration(helper, productionManagerFactory, managerFactory, federatedInstanceManager);
 		}

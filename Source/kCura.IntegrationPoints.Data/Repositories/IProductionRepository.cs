@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.Productions.Services;
 
@@ -22,7 +23,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
         /// </summary>
         /// <param name="workspaceArtifactId">Workspace Artifact ID.</param>
         /// <returns>Production DTO</returns>
-        IEnumerable<ProductionDTO> RetrieveAllProductions(int workspaceArtifactId);
+        Task<IEnumerable<ProductionDTO>> RetrieveAllProductionsAsync(int workspaceArtifactId);
 
 		/// <summary>
 		/// Creates a production in the workspace.

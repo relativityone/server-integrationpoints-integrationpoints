@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models;
 using Relativity.Productions.Services;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
@@ -16,20 +20,31 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_servicesMgr = servicesMgr;
 		}
 
-        public IEnumerable<ProductionDTO> RetrieveAllProductions(int workspaceArtifactId)
+        public async Task<IEnumerable<ProductionDTO>> RetrieveAllProductionsAsync(int workspaceArtifactId)
         {
             IEnumerable<ProductionDTO> productionDtos;
-			using (var productionManager = _servicesMgr.CreateProxy<IProductionManager>(ExecutionIdentity.CurrentUser))
+			using (var productionService = _servicesMgr.CreateProxy<IProductionService>(ExecutionIdentity.CurrentUser))
             {
                 try
                 {
-                    List<Production> productions = productionManager.GetAllAsync(workspaceArtifactId).Result;
+                    DataSetWrapper dataSetWrapper = await productionService.RetrieveProducedByContextArtifactIDAsync(workspaceArtifactId, String.Empty)
+                        .ConfigureAwait(false);
 
-                    productionDtos = productions.Select(x => new ProductionDTO
+                    DataSet dataSet = dataSetWrapper.Unwrap();
+
+                    if (dataSet != null && dataSet.Tables.Count > 0)
                     {
-                        ArtifactID = x.ArtifactID.ToString(),
-                        DisplayName = x.Name
-                    });
+                        productionDtos = dataSet.Tables[0].AsEnumerable().Select(item => new ProductionDTO
+                        {
+                            ArtifactID = item.Field<string>("ArtifactID"),
+                            DisplayName = item.Field<string>("Name"),
+						}
+                        );
+                    }
+                    else
+                    {
+                        throw new Exception($"No result returned when call to {nameof(IProductionService.RetrieveProducedByContextArtifactIDAsync)} method!");
+                    }
                 }
                 catch (Exception ex)
                 {

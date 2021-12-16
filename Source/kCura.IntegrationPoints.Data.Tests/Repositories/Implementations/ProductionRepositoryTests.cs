@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
@@ -65,7 +66,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		}
 
         [Test]
-        public void RetrieveAllProductions_ItShouldRetrieveAllExistingProduction()
+        public async Task RetrieveAllProductions_ItShouldRetrieveAllExistingProduction()
         {
             // Arrange 
             List<Production> productions = new List<Production>
@@ -94,7 +95,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             _productionManager.GetAllAsync(_WORKSPACE_ARTIFACT_ID).Returns(productions);
 
             // Act
-            IEnumerable<ProductionDTO> actualResults = _instance.RetrieveAllProductions(_WORKSPACE_ARTIFACT_ID);
+            IEnumerable<ProductionDTO> actualResults = await _instance.RetrieveAllProductionsAsync(_WORKSPACE_ARTIFACT_ID);
 
             // Assert
             actualResults.Select(x => x.DisplayName).ShouldAllBeEquivalentTo(productions.Select(x => x.Name));
@@ -108,7 +109,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             _productionManager.GetAllAsync(_WORKSPACE_ARTIFACT_ID).Throws<Exception>();
 
             // Act
-            Action action = () => _instance.RetrieveAllProductions(_WORKSPACE_ARTIFACT_ID);
+            Action action = () => _instance.RetrieveAllProductionsAsync(_WORKSPACE_ARTIFACT_ID);
 
             // Assert
             action.ShouldThrow<Exception>($"Unable to retrieve productions for workspaceId: {_WORKSPACE_ARTIFACT_ID}");

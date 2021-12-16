@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using kCura.EDDS.WebAPI.ProductionManagerBase;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -12,6 +13,7 @@ using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Productions.Services;
+using Relativity.Toggles;
 using IProductionManager = kCura.IntegrationPoints.Core.Managers.IProductionManager;
 using ProductionManager = kCura.IntegrationPoints.Core.Managers.Implementations.ProductionManager;
 
@@ -25,6 +27,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		private IProductionManager _sut;
 		private IServiceManagerProvider _serviceManagerProvider;
 		private WinEDDS.Service.Export.IProductionManager _productionManagerService;
+        private IProductionManagerWrapper _productionManagerWrapper;
 
 		private const int _WORKSPACE_ARTIFACT_ID = 101810;
 		private const int _PRODUCTION_ARTIFACT_ID = 987654;
@@ -36,9 +39,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_productionRepository = Substitute.For<IProductionRepository>();
 			_productionManagerService = Substitute.For<WinEDDS.Service.Export.IProductionManager>();
 			_serviceManagerProvider = Substitute.For<IServiceManagerProvider>();
+            _productionManagerWrapper = Substitute.For<IProductionManagerWrapper>();
 			IAPILog logger = Substitute.For<IAPILog>();
 
-			_sut = new ProductionManager(logger, _repositoryFactory, _serviceManagerProvider);
+			_sut = new ProductionManager(logger, _repositoryFactory, _productionManagerWrapper);
 		}
 
 		[Test]

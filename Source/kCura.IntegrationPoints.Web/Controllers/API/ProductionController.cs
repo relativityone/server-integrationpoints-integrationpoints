@@ -33,15 +33,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to retrieve export production list.")]
 		public HttpResponseMessage GetProductionsForExport(int sourceWorkspaceArtifactId)
         {
-            IEnumerable<ProductionDTO> productions;
-            if (ToggleProvider.Current.IsEnabled<EnableKeplerizedImportAPIToggle>())
-            {
-                productions = _productionManager.RetrieveAllProductions(sourceWorkspaceArtifactId);
-			}
-            else
-            {
-                productions = _productionManager.GetProductionsForExport(sourceWorkspaceArtifactId);
-			}
+            IEnumerable<ProductionDTO> productions = _productionManager.GetProductionsForExport(sourceWorkspaceArtifactId);
             return Request.CreateResponse(HttpStatusCode.OK, productions.OrderBy(x => x.DisplayName));
 		}
 
