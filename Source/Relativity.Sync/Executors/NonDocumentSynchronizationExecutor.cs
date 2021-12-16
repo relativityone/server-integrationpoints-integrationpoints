@@ -40,5 +40,13 @@ namespace Relativity.Sync.Executors
 		{
 			throw new NotImplementedException();
 		}
+
+		protected override Task<TaggingExecutionResult> TagDocumentsAsync(IImportJob importJob, ISynchronizationConfiguration configuration, CompositeCancellationToken token)
+		{
+			var dummyResult = TaggingExecutionResult.Success();
+			dummyResult.TaggedDocumentsCount = 0;
+			
+			return Task.FromResult(dummyResult);
+		}
 	}
 }
