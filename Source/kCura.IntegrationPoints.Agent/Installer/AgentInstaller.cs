@@ -29,6 +29,10 @@ using kCura.IntegrationPoints.Core.Factories.Implementations;
 using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
 using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
+using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Managers.Implementations;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using Relativity.AutomatedWorkflows.SDK;
 
 namespace kCura.IntegrationPoints.Agent.Installer
@@ -114,6 +118,8 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<SyncManager>().ImplementedBy<SyncManager>().LifestyleTransient());
 			container.Register(Component.For<ExportServiceManager>().ImplementedBy<ExportServiceManager>().LifestyleTransient());
 			container.Register(Component.For<ImportServiceManager>().ImplementedBy<ImportServiceManager>().LifestyleTransient());
+			container.Register(Component.For<IProductionManagerWrapper>().ImplementedBy<ProductionManagerWrapper>().LifestyleTransient());
+			container.Register(Component.For<IProductionRepository>().ImplementedBy<ProductionRepository>().LifestyleTransient());
 			container.Register(Component.For<SyncEntityManagerWorker>().ImplementedBy<SyncEntityManagerWorker>().LifestyleTransient());
 			container.Register(Component.For<ITaskExceptionService>().ImplementedBy<TaskExceptionService>().LifestyleTransient());
 			container.Register(Component.For<ITaskExceptionMediator>().ImplementedBy<TaskExceptionMediator>().LifestyleTransient());

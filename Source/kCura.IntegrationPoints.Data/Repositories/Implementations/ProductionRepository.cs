@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_servicesMgr = servicesMgr;
 		}
 
-        public async Task<IEnumerable<ProductionDTO>> RetrieveAllProductionsAsync(int workspaceArtifactId)
+        public async Task<IEnumerable<ProductionDTO>> GetProductionsForExport(int workspaceArtifactId)
         {
             IEnumerable<ProductionDTO> productionDtos;
 			using (var productionService = _servicesMgr.CreateProxy<IProductionService>(ExecutionIdentity.CurrentUser))
@@ -55,7 +55,42 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return productionDtos;
         }
 
-		public ProductionDTO RetrieveProduction(int workspaceArtifactId, int productionArtifactId)
+        public async Task<IEnumerable<ProductionDTO>> GetProductionsForImport(int workspaceArtifactId)
+        {
+            IEnumerable<ProductionDTO> productionDtos;
+            using (var productionService = _servicesMgr.CreateProxy<IProductionService>(ExecutionIdentity.CurrentUser))
+            {
+                try
+                {
+                    DataSetWrapper dataSetWrapper = await productionService.RetrieveImportEligibleByContextArtifactIDAsync(workspaceArtifactId, String.Empty)
+                        .ConfigureAwait(false);
+
+                    DataSet dataSet = dataSetWrapper.Unwrap();
+
+                    if (dataSet != null && dataSet.Tables.Count > 0)
+                    {
+                        productionDtos = dataSet.Tables[0].AsEnumerable().Select(item => new ProductionDTO
+                            {
+                                ArtifactID = item.Field<string>("ArtifactID"),
+                                DisplayName = item.Field<string>("Name"),
+                            }
+                        );
+                    }
+                    else
+                    {
+                        throw new Exception($"No result returned when call to {nameof(IProductionService.RetrieveProducedByContextArtifactIDAsync)} method!");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Unable to retrieve productions for workspaceId: {workspaceArtifactId}", ex);
+                }
+            }
+
+            return productionDtos;
+        }
+
+        public ProductionDTO RetrieveProduction(int workspaceArtifactId, int productionArtifactId)
 		{
 			ProductionDTO productionDto;
 			using (var productionManager = _servicesMgr.CreateProxy<IProductionManager>(ExecutionIdentity.CurrentUser))

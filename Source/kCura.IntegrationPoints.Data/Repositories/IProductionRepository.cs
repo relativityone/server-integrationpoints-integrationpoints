@@ -18,12 +18,19 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <returns>Production DTO</returns>
 		ProductionDTO RetrieveProduction(int workspaceArtifactId, int productionArtifactId);
 
+		/// <summary>
+		/// Retrieves all export productions a user has access to in a workspace
+		/// </summary>
+		/// <param name="workspaceArtifactId">Workspace Artifact ID.</param>
+		/// <returns>List of Production DTOs</returns>
+		Task<IEnumerable<ProductionDTO>> GetProductionsForExport(int workspaceArtifactId);
+
         /// <summary>
-        /// Retrieves all productions a user has access to in a workspace
+        /// Retrieves all import productions a user has access to in a workspace
         /// </summary>
         /// <param name="workspaceArtifactId">Workspace Artifact ID.</param>
-        /// <returns>Production DTO</returns>
-        Task<IEnumerable<ProductionDTO>> RetrieveAllProductionsAsync(int workspaceArtifactId);
+        /// <returns>List of Production DTOs</returns>
+        Task<IEnumerable<ProductionDTO>> GetProductionsForImport(int workspaceArtifactId);
 
 		/// <summary>
 		/// Creates a production in the workspace.
