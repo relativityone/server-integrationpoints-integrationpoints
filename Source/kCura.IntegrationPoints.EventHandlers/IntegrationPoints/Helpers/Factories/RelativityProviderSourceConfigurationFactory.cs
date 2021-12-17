@@ -15,6 +15,7 @@ using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factories
 {
@@ -26,7 +27,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 			IAPILog logger = helper.GetLoggerFactory().GetLogger();
 			IWebApiLoginService credentialProvider = WebApiLoginServiceFactoryDeprecated.Create(logger);
 			ISqlServiceFactory sqlServiceFactory = new HelperConfigSqlServiceFactory(helper);
-			IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(configFactory, credentialProvider, sqlServiceFactory);
+			IServiceManagerProvider serviceManagerProvider = new ServiceManagerProvider(
+				configFactory, credentialProvider, sqlServiceFactory, ToggleProvider.Current);
 			IQueueQueryManager queryManager = new QueueQueryManager(helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
 
