@@ -33,6 +33,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IJobProgressUpdaterFactory> _jobProgressUpdaterFactoryStub;
 		private Mock<IJobProgressHandler> _jobProgressHandlerFake;
 		private Mock<IJobProgressUpdater> _jobProgressUpdaterFake;
+		private Mock<ITaggingProvider> _taggingProviderFake;
 		private Mock<IAutomatedWorkflowTriggerConfiguration> _automatedWorkflowTriggerConfigurationFake;
 		private Mock<Func<IStopwatch>> _stopwatchFactoryFake;
 		private Mock<IStopwatch> _stopwatchFake;
@@ -96,6 +97,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_jobCleanupConfigurationMock = new Mock<IJobCleanupConfiguration>();
 			_automatedWorkflowTriggerConfigurationFake = new Mock<IAutomatedWorkflowTriggerConfiguration>();
 			_jobProgressUpdaterFactoryStub = new Mock<IJobProgressUpdaterFactory>();
+			_taggingProviderFake = new Mock<ITaggingProvider>();
 			_stopwatchFactoryFake = new Mock<Func<IStopwatch>>();
 			_stopwatchFake = new Mock<IStopwatch>();
 			_stopwatchFactoryFake.Setup(x => x.Invoke()).Returns(_stopwatchFake.Object);
@@ -139,7 +141,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				_jobProgressHandlerFactoryStub.Object,
 				_documentTagRepositoryFake.Object, _fieldManagerFake.Object, _fakeFieldMappings.Object, _jobStatisticsContainerFake.Object,
 				_jobCleanupConfigurationMock.Object,_automatedWorkflowTriggerConfigurationFake.Object,
-				_stopwatchFactoryFake.Object, _syncMetricsMock.Object, new EmptyLogger(), _userContextConfigurationStub.Object);
+				_stopwatchFactoryFake.Object, _syncMetricsMock.Object, _taggingProviderFake.Object, new EmptyLogger(), _userContextConfigurationStub.Object);
 		}
 
 		[Test]

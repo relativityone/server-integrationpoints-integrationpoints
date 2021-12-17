@@ -3,11 +3,8 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Transfer;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors
@@ -19,9 +16,9 @@ namespace Relativity.Sync.Executors
 			IFieldManager fieldManager, IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer,
 			IJobCleanupConfiguration jobCleanupConfiguration,
 			IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
-			Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics, ISyncLog logger,
+			Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics,ITaggingProvider taggingProvider, ISyncLog logger,
 			IUserContextConfiguration userContextConfiguration) : base(importJobFactory, BatchRecordType.Documents, batchRepository, jobProgressHandlerFactory, documentsTagRepository, fieldManager,
-			fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics,userContextConfiguration, logger)
+			fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics, userContextConfiguration, logger)
 		{
 		}
 
@@ -41,11 +38,12 @@ namespace Relativity.Sync.Executors
 			throw new NotImplementedException();
 		}
 
-		protected override Task<TaggingExecutionResult> TagDocumentsAsync(IImportJob importJob, ISynchronizationConfiguration configuration, CompositeCancellationToken token)
+		protected override Task<TaggingExecutionResult> TagDocumentsAsync(IImportJob importJob, ISynchronizationConfiguration configuration,
+			CompositeCancellationToken token, IDocumentTagRepository documentTagRepository, ISyncLog logger)
 		{
 			var dummyResult = TaggingExecutionResult.Success();
 			dummyResult.TaggedDocumentsCount = 0;
-			
+
 			return Task.FromResult(dummyResult);
 		}
 	}

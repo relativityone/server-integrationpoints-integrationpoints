@@ -13,19 +13,19 @@ using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors
 {
-	internal abstract class SynchronizationExecutorBase<TConfiguration> : IExecutor<TConfiguration>
-		where TConfiguration : ISynchronizationConfiguration
+	internal abstract class SynchronizationExecutorBase<TConfiguration> : IExecutor<TConfiguration> where TConfiguration : ISynchronizationConfiguration
 	{
 		private readonly IBatchRepository _batchRepository;
 		private readonly IJobProgressHandlerFactory _jobProgressHandlerFactory;
 		private readonly IFieldMappings _fieldMappings;
-		protected readonly IDocumentTagRepository _documentsTagRepository;
+		private readonly IDocumentTagRepository _documentsTagRepository;
 		private readonly IJobCleanupConfiguration _jobCleanupConfiguration;
 		private readonly IAutomatedWorkflowTriggerConfiguration _automatedWorkflowTriggerConfiguration;
 		private readonly Func<IStopwatch> _stopwatchFactory;
 
 		protected readonly ISyncMetrics _syncMetrics;
 		private readonly IUserContextConfiguration _userContextConfiguration;
+		private readonly ITaggingProvider _taggingProvider;
 		protected readonly IJobStatisticsContainer _jobStatisticsContainer;
 		protected readonly IImportJobFactory _importJobFactory;
 		protected readonly BatchRecordType _recordType;
@@ -71,8 +71,7 @@ namespace Relativity.Sync.Executors
 
 		protected abstract Task<TaggingExecutionResult> TagDocumentsAsync(IImportJob importJob,
 			ISynchronizationConfiguration configuration,
-			CompositeCancellationToken token);
-
+			CompositeCancellationToken token, IDocumentTagRepository documentTagRepository, ISyncLog logger);
 
 		protected void ReportBatchMetrics(int batchId, int savedSearchId, BatchProcessResult batchProcessResult, TimeSpan batchTime,
 			TimeSpan importApiTimer)
@@ -151,13 +150,12 @@ namespace Relativity.Sync.Executors
 								IStopwatch importApiTimer = GetStartedTimer();
 								BatchProcessResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token).ConfigureAwait(false);
 								importApiTimer.Stop();
-
-
-								TaggingExecutionResult taggingResult = await TagDocumentsAsync(importJob, configuration, token).ConfigureAwait(false);
+								
+								TaggingExecutionResult taggingResult = await TagDocumentsAsync(importJob, configuration, token, _documentsTagRepository, _logger).ConfigureAwait(false);
 								int documentsTaggedCount = taggingResult.TaggedDocumentsCount;
 								await batch.SetTaggedDocumentsCountAsync(batch.TaggedDocumentsCount + documentsTaggedCount).ConfigureAwait(false);
 								batchProcessingResult.TotalRecordsTagged = documentsTaggedCount;
-
+								
 								if (batchProcessingResult.ExecutionResult.Status == ExecutionStatus.CompletedWithErrors)
 								{
 									batchesCompletedWithErrors[batch.ArtifactId] = batchProcessingResult.ExecutionResult;
