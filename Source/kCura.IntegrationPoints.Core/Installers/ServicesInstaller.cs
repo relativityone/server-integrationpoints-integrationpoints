@@ -167,8 +167,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IIntegrationPointProviderTypeService>()
 				.ImplementedBy<CachedIntegrationPointProviderTypeService>()
 				.DependsOn(Dependency.OnValue<TimeSpan>(TimeSpan.FromMinutes(2))).LifestyleTransient());
-			
-			container.Register(Component.For<IToggleProvider>().Instance(ToggleProvider.Current).LifestyleSingleton());
+
+			container.Register(Component.For<IToggleProvider>().UsingFactoryMethod(k => ToggleProvider.Current).LifestyleSingleton());
 
 			container.Register(Component.For<IFederatedInstanceManager>().ImplementedBy<FederatedInstanceManager>().LifestyleTransient());
 
