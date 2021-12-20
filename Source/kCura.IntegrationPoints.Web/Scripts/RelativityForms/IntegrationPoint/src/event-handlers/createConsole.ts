@@ -61,6 +61,23 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
         return convenienceApi.relativityHttpClient.post(request.url, request.payload, request.options)
     }
 
+    function postCreateIntegrationPointProfileRequest(workspaceId, integrationPointId, integrationPointProfileName) {
+        var request = {
+            options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
+                headers: {
+                    "content-type": "application/json; charset=utf-8"
+                }
+            }),
+            payload: {
+                integrationPointArtifactId: integrationPointId,
+                profileName: integrationPointProfileName
+            },
+            url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/" + workspaceId + "/api/IntegrationPointProfilesAPI/SaveAsProfile/"
+        }
+
+        return convenienceApi.relativityHttpClient.post(request.url, request.payload, request.options)
+    }
+
     function prepareGetImportProviderDocumentAPIRequest(workspaceId, integrationPointId, action) {
         return {
             options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
@@ -165,7 +182,53 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
     function createSaveAsProfileButton() {
         return consoleApi.generate.button({
             innerText: "Save as a Profile",
-            onclick: function (e) { console.log("Save as Profile Clicked!"); }
+            onclick: function (e) {
+
+                // this content container should be edited, right now its not looking great - but works
+                var contentContainer = document.createElement("div");
+                contentContainer.innerHTML = "<input type='text' value='' id='inputIntegrationPointProfileName'/>";
+
+                var model = {
+                    title: "Save Integration Point as Profile",
+                    theme: "confirmation",
+                    contentElement: contentContainer,
+                    actions: [
+                        {
+                            text: "Ok",
+                            click: function click() {
+                                // @ts-ignore
+                                model.accept("Accept payload");
+                            }
+                        },
+                        {
+                            text: "Cancel",
+                            click: function click() {
+                                // @ts-ignore
+                                model.cancel("Cancel payload");
+                            }
+                        }
+                    ],
+                    acceptAction: function () {
+                         var name = (<HTMLInputElement>document.getElementById('inputIntegrationPointProfileName')).value;
+                         return postCreateIntegrationPointProfileRequest(workspaceId, integrationPointId, name)
+                             .then(function (result) {
+                                 if (!result.ok) {
+                                     console.log(result);
+                                     return ctx.setErrorSummary(["Failed to create integration profile, try again or lose hope"]);
+                                 }
+                             });
+                    }
+                };
+
+                return convenienceApi.modalService.openCustomModal(model).then(function (closeResult) {
+                    if (closeResult.wasCancelled) {
+                        console.log("Create integration point profile modal was cancelled");
+                    } else {
+                        console.log("Create integration point profile modal was accepted");
+                    }
+                    console.log(closeResult);
+                });
+            }
         });
     }
 
