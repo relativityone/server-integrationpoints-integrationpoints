@@ -274,7 +274,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		{
 			// Arrange
             List<ProductionDTO> productionDtos = GetProductionDtos();
-            _productionRepository.GetProductionsForExportAsync(_WORKSPACE_ARTIFACT_ID).Returns(productionDtos);
+            _productionRepository.GetProductionsForExport(_WORKSPACE_ARTIFACT_ID).Returns(productionDtos);
             ProductionManager sut = GetSut(true);
 
 			// Act
@@ -291,7 +291,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		{
             // Arrange
             List<ProductionDTO> productionDtos = GetProductionDtos();
-            _productionRepository.GetProductionsForImportAsync(_WORKSPACE_ARTIFACT_ID).Returns(productionDtos);
+            _productionRepository.GetProductionsForImport(_WORKSPACE_ARTIFACT_ID).Returns(productionDtos);
             ProductionManager sut = GetSut(true);
 
             // Act

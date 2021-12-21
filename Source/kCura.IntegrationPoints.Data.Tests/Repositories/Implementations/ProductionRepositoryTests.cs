@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             _productionService.RetrieveProducedByContextArtifactIDAsync(_WORKSPACE_ARTIFACT_ID, String.Empty).Returns(new DataSetWrapper(productionsDataSet));
 
             // Act
-            IEnumerable<ProductionDTO> actualResults = await _instance.GetProductionsForExportAsync(_WORKSPACE_ARTIFACT_ID)
+            IEnumerable<ProductionDTO> actualResults = await _instance.GetProductionsForExport(_WORKSPACE_ARTIFACT_ID)
                 .ConfigureAwait(false);
 
             // Assert
@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             _productionService.RetrieveProducedByContextArtifactIDAsync(_WORKSPACE_ARTIFACT_ID, String.Empty).Throws<Exception>();
 
             // Act
-            Func<Task> function = async () => await _instance.GetProductionsForExportAsync(_WORKSPACE_ARTIFACT_ID);
+            Func<Task> function = async () => await _instance.GetProductionsForExport(_WORKSPACE_ARTIFACT_ID);
 
             // Assert
             function.ShouldThrow<Exception>($"Unable to retrieve productions for workspaceId: {_WORKSPACE_ARTIFACT_ID}");
@@ -111,7 +111,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             _productionService.RetrieveImportEligibleByContextArtifactIDAsync(_WORKSPACE_ARTIFACT_ID, String.Empty).Returns(new DataSetWrapper(productionsDataSet));
 
             // Act
-            IEnumerable<ProductionDTO> actualResults = await _instance.GetProductionsForImportAsync(_WORKSPACE_ARTIFACT_ID)
+            IEnumerable<ProductionDTO> actualResults = await _instance.GetProductionsForImport(_WORKSPACE_ARTIFACT_ID)
                 .ConfigureAwait(false);
 
             // Assert
@@ -126,7 +126,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             _productionService.RetrieveImportEligibleByContextArtifactIDAsync(_WORKSPACE_ARTIFACT_ID, String.Empty).Throws<Exception>();
 
             // Act
-            Func<Task> function = async () => await _instance.GetProductionsForImportAsync(_WORKSPACE_ARTIFACT_ID);
+            Func<Task> function = async () => await _instance.GetProductionsForImport(_WORKSPACE_ARTIFACT_ID);
 
             // Assert
             function.ShouldThrow<Exception>($"Unable to retrieve productions for workspaceId: {_WORKSPACE_ARTIFACT_ID}");

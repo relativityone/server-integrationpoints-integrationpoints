@@ -337,15 +337,15 @@ namespace kCura.IntegrationPoints.Web
 
 			config.Routes.MapHttpRoute(
 				name: "ProductionGetProductionsForImport",
-				routeTemplate: "{workspaceID}/api/Production/GetProductionsForImportAsync/{workspaceArtifactId}/{federatedInstanceId}",
+				routeTemplate: "{workspaceID}/api/Production/GetProductionsForImport/{workspaceArtifactId}/{federatedInstanceId}",
 				defaults:
-				new {controller = "Production", action = "GetProductionsForImportAsync", federatedInstanceId = RouteParameter.Optional}
+				new {controller = "Production", action = "GetProductionsForImport", federatedInstanceId = RouteParameter.Optional}
 			);
 
 			config.Routes.MapHttpRoute(
 				name: "ProductionGetProductionsForExport",
-				routeTemplate: "{workspaceID}/api/Production/GetProductionsForExportAsync",
-				defaults: new {controller = "Production", action = "GetProductionsForExportAsync"}
+				routeTemplate: "{workspaceID}/api/Production/GetProductionsForExport",
+				defaults: new {controller = "Production", action = "GetProductionsForExport"}
 			);
 
 			config.Routes.MapHttpRoute(

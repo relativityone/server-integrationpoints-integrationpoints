@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Domain.Models;
 using Relativity.API;
@@ -20,7 +19,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_servicesMgr = servicesMgr;
 		}
 
-        public async Task<IEnumerable<ProductionDTO>> GetProductionsForExportAsync(int workspaceArtifactId)
+        public async Task<IEnumerable<ProductionDTO>> GetProductionsForExport(int workspaceArtifactId)
         {
             IEnumerable<ProductionDTO> productionDtos;
 			using (var productionService = _servicesMgr.CreateProxy<IProductionService>(ExecutionIdentity.CurrentUser))
@@ -33,7 +32,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return productionDtos;
         }
 
-        public async Task<IEnumerable<ProductionDTO>> GetProductionsForImportAsync(int workspaceArtifactId)
+        public async Task<IEnumerable<ProductionDTO>> GetProductionsForImport(int workspaceArtifactId)
         {
             IEnumerable<ProductionDTO> productionDtos;
             using (var productionService = _servicesMgr.CreateProxy<IProductionService>(ExecutionIdentity.CurrentUser))
