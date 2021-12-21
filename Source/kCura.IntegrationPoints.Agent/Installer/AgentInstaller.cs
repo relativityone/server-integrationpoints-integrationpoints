@@ -118,8 +118,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<SyncManager>().ImplementedBy<SyncManager>().LifestyleTransient());
 			container.Register(Component.For<ExportServiceManager>().ImplementedBy<ExportServiceManager>().LifestyleTransient());
 			container.Register(Component.For<ImportServiceManager>().ImplementedBy<ImportServiceManager>().LifestyleTransient());
-			container.Register(Component.For<IProductionManagerWrapper>().ImplementedBy<ProductionManagerWrapper>().LifestyleTransient());
-			container.Register(Component.For<IProductionRepository>().ImplementedBy<ProductionRepository>().LifestyleTransient());
 			container.Register(Component.For<SyncEntityManagerWorker>().ImplementedBy<SyncEntityManagerWorker>().LifestyleTransient());
 			container.Register(Component.For<ITaskExceptionService>().ImplementedBy<TaskExceptionService>().LifestyleTransient());
 			container.Register(Component.For<ITaskExceptionMediator>().ImplementedBy<TaskExceptionMediator>().LifestyleTransient());
