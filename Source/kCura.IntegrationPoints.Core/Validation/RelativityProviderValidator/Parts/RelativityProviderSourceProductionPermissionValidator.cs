@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			var result = new ValidationResult();
 		    try
 		    {
-		        _productionRepository.RetrieveProduction(sourceWorkspaceId, sourceProductionArtifactId);;
+		        _productionRepository.GetProduction(sourceWorkspaceId, sourceProductionArtifactId);;
 		    }
 		    catch (Exception ex)
 		    {
@@ -30,7 +30,6 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 		        result.Add(message);
 		        LogUnableToRetrieveProduction(ex);
 		    }
-
 
 		    return result;
 		}

@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.DTO;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models;
 using Relativity.Productions.Services;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
@@ -21,18 +25,21 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		private const int _PRODUCTION_ARTIFACT_ID = 1234;
 		private IServicesMgr _servicesMgr;
 		private IProductionManager _productionManager;
+		private IProductionService _productionService;
 		private IProductionRepository _instance;
 
-		[SetUp]
+        [SetUp]
 		public void SetUp()
 		{
 			_productionManager = Substitute.For<IProductionManager>();
+            _productionService = Substitute.For<IProductionService>();
 
 			_servicesMgr = Substitute.For<IServicesMgr>();
 			_servicesMgr.CreateProxy<IProductionManager>(ExecutionIdentity.CurrentUser).Returns(_productionManager);
+			_servicesMgr.CreateProxy<IProductionService>(ExecutionIdentity.CurrentUser).Returns(_productionService);
 
 			_instance = new ProductionRepository(_servicesMgr);
-		}
+        }
 
 		[Test]
 		public void ItShouldRetrieveExistingProduction()
@@ -48,7 +55,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			_productionManager.ReadSingleAsync(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Returns(production);
 
 			// Act
-			ProductionDTO actualResult = _instance.RetrieveProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
+			ProductionDTO actualResult = _instance.GetProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
 
 			// Assert
 			Assert.That(actualResult.ArtifactID, Is.EqualTo(expectedArtifactId.ToString()));
@@ -62,57 +69,67 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			_productionManager.ReadSingleAsync(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Result.Throws(new Exception());
 
 			// Act & Assert
-			Assert.Throws<Exception>(() => _instance.RetrieveProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID), "Unable to retrieve production");
+			Assert.Throws<Exception>(() => _instance.GetProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID), "Unable to retrieve production");
 		}
 
         [Test]
-        public async Task RetrieveAllProductions_ItShouldRetrieveAllExistingProduction()
+        public async Task GetProductionsForExportAsync_ItShouldRetrieveAllAvailableProductions()
         {
-            // Arrange 
-            List<Production> productions = new List<Production>
-            {
-                new Production
-                {
-                    ArtifactID = 4321,
-                    Name = "Production 4321"
-                },
-                new Production
-                {
-                    ArtifactID = 4322,
-                    Name = "Production 4322"
-                },
-                new Production
-                {
-                    ArtifactID = 4323,
-                    Name = "Production 4323"
-                },
-                new Production
-                {
-                    ArtifactID = 4324,
-                    Name = "Production 4324"
-                },
-            };
-            _productionManager.GetAllAsync(_WORKSPACE_ARTIFACT_ID).Returns(productions);
+            // Arrange
+            List<ProductionDTO> productionsDtos = GetProductionDtos();
+            DataSet productionsDataSet = CreateDataSet(productionsDtos);
+            _productionService.RetrieveProducedByContextArtifactIDAsync(_WORKSPACE_ARTIFACT_ID, String.Empty).Returns(new DataSetWrapper(productionsDataSet));
 
             // Act
-            IEnumerable<ProductionDTO> actualResults = await _instance.GetProductionsForExport(_WORKSPACE_ARTIFACT_ID);
+            IEnumerable<ProductionDTO> actualResults = await _instance.GetProductionsForExportAsync(_WORKSPACE_ARTIFACT_ID)
+                .ConfigureAwait(false);
 
             // Assert
-            actualResults.Select(x => x.DisplayName).ShouldAllBeEquivalentTo(productions.Select(x => x.Name));
-            actualResults.Select(x => x.ArtifactID).ShouldAllBeEquivalentTo(productions.Select(x => x.ArtifactID));
+            actualResults.Select(x => x.DisplayName).ShouldAllBeEquivalentTo(productionsDtos.Select(x => x.DisplayName));
+            actualResults.Select(x => x.ArtifactID).ShouldAllBeEquivalentTo(productionsDtos.Select(x => x.ArtifactID));
+        }
+		
+		[Test]
+        public void GetProductionsForExportAsync_ItShouldThrowExceptionWhenExceptionIsThrown()
+        {
+			// Arrange 
+            _productionService.RetrieveProducedByContextArtifactIDAsync(_WORKSPACE_ARTIFACT_ID, String.Empty).Throws<Exception>();
+
+            // Act
+            Func<Task> function = async () => await _instance.GetProductionsForExportAsync(_WORKSPACE_ARTIFACT_ID);
+
+            // Assert
+            function.ShouldThrow<Exception>($"Unable to retrieve productions for workspaceId: {_WORKSPACE_ARTIFACT_ID}");
         }
 
         [Test]
-        public void RetrieveAllProductions_ItShouldThrowExceptionWhenExceptionIsThrown()
+        public async Task GetProductionsForImportAsync_ItShouldRetrieveAllAvailableProductions()
         {
-            // Arrange 
-            _productionManager.GetAllAsync(_WORKSPACE_ARTIFACT_ID).Throws<Exception>();
+            // Arrange
+            List<ProductionDTO> productionsDtos = GetProductionDtos();
+            DataSet productionsDataSet = CreateDataSet(productionsDtos);
+            _productionService.RetrieveImportEligibleByContextArtifactIDAsync(_WORKSPACE_ARTIFACT_ID, String.Empty).Returns(new DataSetWrapper(productionsDataSet));
 
             // Act
-            Action action = () => _instance.GetProductionsForExport(_WORKSPACE_ARTIFACT_ID);
+            IEnumerable<ProductionDTO> actualResults = await _instance.GetProductionsForImportAsync(_WORKSPACE_ARTIFACT_ID)
+                .ConfigureAwait(false);
 
             // Assert
-            action.ShouldThrow<Exception>($"Unable to retrieve productions for workspaceId: {_WORKSPACE_ARTIFACT_ID}");
+            actualResults.Select(x => x.DisplayName).ShouldAllBeEquivalentTo(productionsDtos.Select(x => x.DisplayName));
+            actualResults.Select(x => x.ArtifactID).ShouldAllBeEquivalentTo(productionsDtos.Select(x => x.ArtifactID));
+        }
+
+        [Test]
+        public void GetProductionsForImportAsync_ItShouldThrowExceptionWhenExceptionIsThrown()
+        {
+            // Arrange 
+            _productionService.RetrieveImportEligibleByContextArtifactIDAsync(_WORKSPACE_ARTIFACT_ID, String.Empty).Throws<Exception>();
+
+            // Act
+            Func<Task> function = async () => await _instance.GetProductionsForImportAsync(_WORKSPACE_ARTIFACT_ID);
+
+            // Assert
+            function.ShouldThrow<Exception>($"Unable to retrieve productions for workspaceId: {_WORKSPACE_ARTIFACT_ID}");
         }
 
         [Test]
@@ -141,5 +158,54 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			Assert.Throws<Exception>(() => _instance.CreateSingle(_WORKSPACE_ARTIFACT_ID, production),
 				"Unable to create production");
 		}
-	}
+
+        private static DataSet CreateDataSet(IEnumerable<ProductionDTO> productionDtos)
+        {
+            DataTable dataTable = new DataTable();
+            dataTable.Columns.Add("ArtifactId", typeof(int));
+            dataTable.Columns.Add("Name", typeof(string));
+            DataSet filesDataSet = new DataSet();
+            foreach (var fileDto in productionDtos)
+            {
+                AddFileDtoToDataTable(dataTable, fileDto);
+            }
+            filesDataSet.Tables.Add(dataTable);
+            return filesDataSet;
+        }
+
+        private static void AddFileDtoToDataTable(DataTable dataTable, ProductionDTO productionDto)
+        {
+            object[] values = { productionDto.ArtifactID, productionDto.DisplayName };
+            dataTable.Rows.Add(values);
+        }
+
+        private List<ProductionDTO> GetProductionDtos()
+        {
+            List<ProductionDTO> productionsDtos = new List<ProductionDTO>
+            {
+                new ProductionDTO
+                {
+                    ArtifactID = "4321",
+                    DisplayName = "Production 4321"
+                },
+                new ProductionDTO
+                {
+                    ArtifactID = "4322",
+                    DisplayName = "Production 4322"
+                },
+                new ProductionDTO
+                {
+                    ArtifactID = "4323",
+                    DisplayName = "Production 4323"
+                },
+                new ProductionDTO
+                {
+                    ArtifactID = "4324",
+                    DisplayName = "Production 4324"
+                }
+            };
+
+            return productionsDtos;
+        }
+    }
 }

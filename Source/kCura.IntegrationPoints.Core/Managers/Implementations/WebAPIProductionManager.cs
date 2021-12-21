@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             catch (Exception ex)
             {
                 var parametersToLog = new { workspaceArtifactId, productionId, federatedInstanceId };
-                _logger?.LogWarning(ex, "Error occured while verifying if production is available in destination workspace. Parameters: {@parametersToLog}", parametersToLog);
+                _logger?.LogWarning(ex, "Error occurred while verifying if production is available in destination workspace. Parameters: {@parametersToLog}", parametersToLog);
                 return false;
             }
         }

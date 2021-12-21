@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		public ProductionDTO RetrieveProduction(int workspaceArtifactId, int productionArtifactId)
 		{
 			IProductionRepository productionRepository = _repositoryFactory.GetProductionRepository(workspaceArtifactId);
-			return productionRepository.RetrieveProduction(workspaceArtifactId, productionArtifactId);
+			return productionRepository.GetProduction(workspaceArtifactId, productionArtifactId);
 		}
 
         public int CreateSingle(int workspaceArtifactId, Production production)

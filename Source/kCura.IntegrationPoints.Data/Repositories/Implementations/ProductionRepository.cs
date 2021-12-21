@@ -20,77 +20,33 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_servicesMgr = servicesMgr;
 		}
 
-        public async Task<IEnumerable<ProductionDTO>> GetProductionsForExport(int workspaceArtifactId)
+        public async Task<IEnumerable<ProductionDTO>> GetProductionsForExportAsync(int workspaceArtifactId)
         {
             IEnumerable<ProductionDTO> productionDtos;
 			using (var productionService = _servicesMgr.CreateProxy<IProductionService>(ExecutionIdentity.CurrentUser))
             {
-                try
-                {
-                    DataSetWrapper dataSetWrapper = await productionService.RetrieveProducedByContextArtifactIDAsync(workspaceArtifactId, String.Empty)
-                        .ConfigureAwait(false);
-
-                    DataSet dataSet = dataSetWrapper.Unwrap();
-
-                    if (dataSet != null && dataSet.Tables.Count > 0)
-                    {
-                        productionDtos = dataSet.Tables[0].AsEnumerable().Select(item => new ProductionDTO
-                        {
-                            ArtifactID = item.Field<string>("ArtifactID"),
-                            DisplayName = item.Field<string>("Name"),
-						}
-                        );
-                    }
-                    else
-                    {
-                        throw new Exception($"No result returned when call to {nameof(IProductionService.RetrieveProducedByContextArtifactIDAsync)} method!");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception($"Unable to retrieve productions for workspaceId: {workspaceArtifactId}", ex);
-                }
+                productionDtos = await GetProductionsAsync(async (i, s) => 
+                await productionService.RetrieveProducedByContextArtifactIDAsync(workspaceArtifactId, String.Empty), workspaceArtifactId)
+                    .ConfigureAwait(false);
             }
 
             return productionDtos;
         }
 
-        public async Task<IEnumerable<ProductionDTO>> GetProductionsForImport(int workspaceArtifactId)
+        public async Task<IEnumerable<ProductionDTO>> GetProductionsForImportAsync(int workspaceArtifactId)
         {
             IEnumerable<ProductionDTO> productionDtos;
             using (var productionService = _servicesMgr.CreateProxy<IProductionService>(ExecutionIdentity.CurrentUser))
             {
-                try
-                {
-                    DataSetWrapper dataSetWrapper = await productionService.RetrieveImportEligibleByContextArtifactIDAsync(workspaceArtifactId, String.Empty)
-                        .ConfigureAwait(false);
-
-                    DataSet dataSet = dataSetWrapper.Unwrap();
-
-                    if (dataSet != null && dataSet.Tables.Count > 0)
-                    {
-                        productionDtos = dataSet.Tables[0].AsEnumerable().Select(item => new ProductionDTO
-                            {
-                                ArtifactID = item.Field<string>("ArtifactID"),
-                                DisplayName = item.Field<string>("Name"),
-                            }
-                        );
-                    }
-                    else
-                    {
-                        throw new Exception($"No result returned when call to {nameof(IProductionService.RetrieveProducedByContextArtifactIDAsync)} method!");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception($"Unable to retrieve productions for workspaceId: {workspaceArtifactId}", ex);
-                }
+                productionDtos = await GetProductionsAsync(async (i, s) => 
+                        await productionService.RetrieveImportEligibleByContextArtifactIDAsync(workspaceArtifactId, String.Empty), workspaceArtifactId)
+                    .ConfigureAwait(false);
             }
 
             return productionDtos;
         }
 
-        public ProductionDTO RetrieveProduction(int workspaceArtifactId, int productionArtifactId)
+        public ProductionDTO GetProduction(int workspaceArtifactId, int productionArtifactId)
 		{
 			ProductionDTO productionDto;
 			using (var productionManager = _servicesMgr.CreateProxy<IProductionManager>(ExecutionIdentity.CurrentUser))
@@ -129,5 +85,36 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			return result;
 		}
-	}
+
+        private async Task<IEnumerable<ProductionDTO>> GetProductionsAsync(Func<int, string, Task<DataSetWrapper>> function, int workspaceArtifactId)
+        {
+            IEnumerable<ProductionDTO> productionDtos;
+
+            try
+            {
+                DataSetWrapper dataSetWrapper = await function(workspaceArtifactId, String.Empty).ConfigureAwait(false);
+
+                DataSet dataSet = dataSetWrapper.Unwrap();
+
+                if (dataSet != null && dataSet.Tables.Count > 0)
+                {
+                    productionDtos = dataSet.Tables[0].AsEnumerable().Select(item => new ProductionDTO
+                    {
+                        ArtifactID = item.Field<int>("ArtifactID").ToString(),
+                        DisplayName = item.Field<string>("Name"),
+                    }
+                    );
+                }
+                else
+                {
+                    throw new Exception($"No result returned when call to {nameof(function)} method!");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Unable to retrieve productions for workspaceId: {workspaceArtifactId}", ex);
+            }
+            return productionDtos;
+        }
+    }
 }

@@ -37,14 +37,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         public void ShouldReturnSuccessfulValidationResultWhenThereIsNoAccessToProduction()
         {
             //arrange
-            _productionRepository.RetrieveProduction(_workspaceId, _productionId).Returns(new ProductionDTO() { ArtifactID = _productionId.ToString(), DisplayName = "Test Production"});
+            _productionRepository.GetProduction(_workspaceId, _productionId).Returns(new ProductionDTO() { ArtifactID = _productionId.ToString(), DisplayName = "Test Production"});
             RelativityProviderSourceProductionPermissionValidator validator = new RelativityProviderSourceProductionPermissionValidator(_productionRepository, _logger);
 
             //act
             var result = validator.Validate(_workspaceId, _productionId);
 
             //assert
-            _productionRepository.Received(1).RetrieveProduction(_workspaceId, _productionId);
+            _productionRepository.Received(1).GetProduction(_workspaceId, _productionId);
             Assert.True(result.IsValid);
             Assert.False(result.Messages.Any());
         }
@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
         public void ShouldReturnFailedValidationResultWhenThereIsNoAccessToProduction()
         {
             //arrange
-            _productionRepository.RetrieveProduction(_workspaceId, _productionId)
+            _productionRepository.GetProduction(_workspaceId, _productionId)
                 .Throws(new Exception("Unable to retrieve production"));
             RelativityProviderSourceProductionPermissionValidator validator = new RelativityProviderSourceProductionPermissionValidator(_productionRepository, _logger);
 
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
             var result = validator.Validate(_workspaceId, _productionId);
 
             //assert
-            _productionRepository.Received(1).RetrieveProduction(_workspaceId, _productionId);
+            _productionRepository.Received(1).GetProduction(_workspaceId, _productionId);
 
             Assert.False(result.IsValid);
             Assert.True(result.Messages.Count() == 1);
