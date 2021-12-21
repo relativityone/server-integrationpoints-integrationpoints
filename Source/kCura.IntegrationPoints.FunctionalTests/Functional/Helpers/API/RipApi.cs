@@ -87,15 +87,15 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
             }
         }
 
-        public Task WaitForJobToFinishSuccessfullyAsync(int integrationPointId, int workspaceId, int checkDelayInMs = 500)
+        public Task WaitForJobToFinishAsync(int jobHistoryId, int workspaceId, int checkDelayInMs = 500, string expectedStatus = "Completed")
         {
-            Task waitForJobStatus = Task.Run(() => WaitForJobStatus(integrationPointId, workspaceId, status =>
-                status == JobStatusChoices.JobHistoryCompleted.Name, checkDelayInMs));
+            Task waitForJobStatus = Task.Run(() => WaitForJobStatus(jobHistoryId, workspaceId, status =>
+                status == expectedStatus, checkDelayInMs));
             
             int waitingTimeout = 300;
             if (!waitForJobStatus.Wait(TimeSpan.FromSeconds(waitingTimeout)))
             {
-                throw new Exception($"Waiting for job to finish importing successfully timeout ({waitingTimeout}) exceeded.");
+                throw new TimeoutException($"Waiting for job to finish timeout ({waitingTimeout}) exceeded.");
             }
             else
             {
@@ -110,6 +110,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
             {
                 await Task.Delay(checkDelayInMs);
                 status = await GetJobHistoryStatus(jobHistoryId, workspaceId).ConfigureAwait(false);
+
+                if(status == JobStatusChoices.JobHistoryErrorJobFailed.Name 
+                    || status == JobStatusChoices.JobHistoryValidationFailed.Name)
+                {
+                    throw new InvalidOperationException($"Job failed with status {status}");
+                }
             }
         }
     }
