@@ -17,7 +17,6 @@ using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.WinEDDS.Service.Export;
 using Relativity.API;
@@ -29,10 +28,6 @@ using kCura.IntegrationPoints.Core.Factories.Implementations;
 using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
 using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
-using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Managers.Implementations;
-using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using Relativity.AutomatedWorkflows.SDK;
 
 namespace kCura.IntegrationPoints.Agent.Installer
