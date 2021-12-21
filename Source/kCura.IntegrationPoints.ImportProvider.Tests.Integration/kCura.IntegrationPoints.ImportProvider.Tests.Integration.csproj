@@ -141,6 +141,7 @@
     <Content Include="TestDataForImport\ConcordanceWithMetadata.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" Link="app.config" />
     <None Include="paket.references" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
