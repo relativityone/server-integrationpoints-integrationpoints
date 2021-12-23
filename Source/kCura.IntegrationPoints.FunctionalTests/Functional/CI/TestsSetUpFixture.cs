@@ -77,12 +77,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 		{
 			RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
 				.Require(new Testing.Framework.Models.InstanceSetting
-				{
-					Name = "DevelopmentMode",
-					Section = "kCura.ARM",
-					Value = "True",
-					ValueType = InstanceSettingValueType.TrueFalse
-				});
+			{
+				Name = "DevelopmentMode",
+				Section = "kCura.ARM",
+				Value = "True",
+				ValueType = InstanceSettingValueType.TrueFalse
+			}
+            );
 		}
 
 		private static void InstallDataTransferLegacy()

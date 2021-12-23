@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
         public IEnumerable<ProductionDTO> GetProductionsForExport(int workspaceArtifactId)
         {
-            IEnumerable<ProductionDTO> productions = _productionRepository.GetProductionsForExport(workspaceArtifactId)
+            IEnumerable<ProductionDTO> productions = Task.Run(() => _productionRepository.GetProductionsForExport(workspaceArtifactId))
                 .ConfigureAwait(false).GetAwaiter().GetResult();
             return productions;
         }
@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
         public IEnumerable<ProductionDTO> GetProductionsForImport(int workspaceArtifactId, int? federatedInstanceId = null,
             string federatedInstanceCredentials = null)
         {
-            IEnumerable<ProductionDTO> productions = _productionRepository.GetProductionsForImport(workspaceArtifactId)
+            IEnumerable<ProductionDTO> productions = Task.Run(() => _productionRepository.GetProductionsForImport(workspaceArtifactId))
                 .ConfigureAwait(false).GetAwaiter().GetResult();
             return productions;
         }
