@@ -1,5 +1,4 @@
-﻿using System;
-using Atata;
+﻿using Atata;
 using System.IO;
 using NUnit.Framework;
 using Relativity.Testing.Framework;

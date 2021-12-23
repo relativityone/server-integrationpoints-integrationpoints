@@ -1,8 +1,12 @@
 ﻿using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Toggles;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.Testing.Identification;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
+using Relativity.Testing.Framework;
+using Relativity.Testing.Framework.Api.Services;
+using Relativity.Testing.Framework.Models;
 using Relativity.Toggles;
 
 
@@ -51,7 +55,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 		{
 			IToggleProvider toggleProvider = SqlToggleProvider.Create();
 			try
-			{
+            {
+                SetIAPICommunicationMode(IAPICommunicationMode.ForceKepler);
 				await toggleProvider.SetAsync<EnableKeplerizedImportAPIToggle>(true).ConfigureAwait(false);
 
 				_testsImplementation.ProductionImagesGoldFlow();
@@ -59,7 +64,21 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			finally
 			{
 				await toggleProvider.SetAsync<EnableKeplerizedImportAPIToggle>(false).ConfigureAwait(false);
+                SetIAPICommunicationMode(IAPICommunicationMode.ForceWebAPI);
 			}
 		}
-	}
+
+        private void SetIAPICommunicationMode(IAPICommunicationMode iapiCommunicationModeValue)
+        {
+            RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
+                .Require(new Testing.Framework.Models.InstanceSetting
+            {
+                Name = "IAPICommunicationMode",
+                Section = "DataTransfer.Legacy",
+                Value = iapiCommunicationModeValue.ToString(),
+                ValueType = InstanceSettingValueType.Text
+            }
+            );
+        }
+    }
 }
