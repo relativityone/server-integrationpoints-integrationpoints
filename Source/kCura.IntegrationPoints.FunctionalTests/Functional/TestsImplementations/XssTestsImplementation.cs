@@ -132,19 +132,19 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			_testsImplementationTestFixture.LoginAsStandardUser();
 
 			// Act
-			var exportToLoadFilePage =
+			ExportToLoadFileDestinationInformationPage exportToLoadFilePage =
 				Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID)
 					.NewIntegrationPoint.ClickAndGo()
 					.ApplyModel(new IntegrationPointEditExport
-					{
-						Name = nameof(IntegrationPointExportToLoadFilePreventXssInjection),
-						Destination = IntegrationPointDestinations.LoadFile
-					}).ExportToLoadFileNext.ClickAndGo()
-					.ApplyModel(new ExportToLoadFileConnectToSavedSearchSource()
-					{
-						StartExportAtRecord = 1,
-						SavedSearch = _savedSearch
-					}).Next.ClickAndGo();
+			{
+				Name = nameof(IntegrationPointExportToLoadFilePreventXssInjection),
+				Destination = IntegrationPointDestinations.LoadFile
+			}).ExportToLoadFileNext.ClickAndGo()
+			.ApplyModel(new ExportToLoadFileConnectToSavedSearchSource()
+			{
+				StartExportAtRecord = 1,
+				SavedSearch = _savedSearch
+			}).Next.ClickAndGo();
 
 			exportToLoadFilePage.Natives.Check();
 			exportToLoadFilePage.Images.Check();
