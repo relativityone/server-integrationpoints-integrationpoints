@@ -47,7 +47,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             {
                 Name = "IAPICommunicationMode",
                 Section = "DataTransfer.Legacy",
-                Value = IAPICommunicationMode.WebAPI.ToString(),
+                Value = IAPICommunicationMode.ForceWebAPI.ToString(),
                 ValueType = InstanceSettingValueType.Text
             }
             );
