@@ -95,9 +95,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 		private IEnumerable<SearchResult> FetchItems(DirectoryEntry searchRoot, string filter, int? overrideSizeLimit)
 		{
-			LogFetchingItems();
-
-			using (DirectorySearcher searcher = new DirectorySearcher(searchRoot, filter))
+            using (DirectorySearcher searcher = new DirectorySearcher(searchRoot, filter))
 			{
 				searcher.AttributeScopeQuery = _settings.AttributeScopeQuery;
 				searcher.ExtendedDN = _settings.ExtendedDN;
@@ -157,20 +155,15 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 #region Logging
 
-		private void LogFetchingItems()
-		{
-			_logger.LogInformation("Attempting to fetch items in LDAP Service.");
-		}
-
 	    private void LogFetchItemsUpTheTreeError()
 	    {
-	        _logger.LogInformation("Attempting to fetch items in LDAP Service.");
+	        _logger.LogInformation("Attempting to fetch items in LDAP Service Failed.");
 	    }
         
 
         private void LogAuthenticationError(Exception ex)
 		{
-			_logger.LogError(ex, "Error occured during LDAP Service authentication");
+			_logger.LogError(ex, "Error occurred during LDAP Service authentication");
 		}
 
 		public void Dispose()

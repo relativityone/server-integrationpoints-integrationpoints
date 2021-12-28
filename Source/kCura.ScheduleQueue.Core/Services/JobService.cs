@@ -36,9 +36,7 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		public Job GetNextQueueJob(IEnumerable<int> resourceGroupIds, int agentID)
 		{
-			_log.LogInformation("Get next job from the queue for Agent {agentId}.", agentID);
-
-			DataRow row;
+            DataRow row;
 
 			if (_toggleProvider.IsEnabled<EnableKubernetesMode>())
 			{
@@ -326,13 +324,9 @@ namespace kCura.ScheduleQueue.Core.Services
 
 			DataProvider.CleanupScheduledJobsQueue();
 
-			if (_toggleProvider.IsEnabled<EnableKubernetesMode>())
+			if (!_toggleProvider.IsEnabled<EnableKubernetesMode>())
 			{
-				_log.LogInformation($"Queue table won't be cleaned up because {nameof(EnableKubernetesMode)} is toggled on.");
-			}
-			else
-			{
-				DataProvider.CleanupJobQueueTable();
+                DataProvider.CleanupJobQueueTable();
 			}
 		}
 
