@@ -23,5 +23,5 @@ namespace Relativity.Sync.Storage
 				return snapshotId ?? throw new ArgumentException($"ObjectLinkingSnapshotId needs to be valid GUID, but null found.");
 			}
 		}
-	}
+    }
 }
