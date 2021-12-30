@@ -10,7 +10,7 @@ using Relativity.Sync.Storage;
 namespace Relativity.Sync.Tests.Unit.Executors
 {
 	[TestFixture]
-	internal class SnapshotPartitionExecutorTestsBase<T> where T: ISnapshotPartitionConfiguration
+	internal abstract class SnapshotPartitionExecutorTestsBase<T> where T: ISnapshotPartitionConfiguration
 	{
 		protected SnapshotPartitionExecutorBase<T> Instance;
 
