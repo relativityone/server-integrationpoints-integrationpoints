@@ -19,6 +19,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         protected override IObjectLinkingSnapshotPartitionConfiguration GetConfiguration()
         {
             Mock<IObjectLinkingSnapshotPartitionConfiguration> configuration = new Mock<IObjectLinkingSnapshotPartitionConfiguration>();
+            
             configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
             configuration.Setup(x => x.SyncConfigurationArtifactId).Returns(_SYNC_CONF_ID);
 

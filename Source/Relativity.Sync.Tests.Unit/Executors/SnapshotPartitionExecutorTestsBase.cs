@@ -83,8 +83,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			const int lastStartingIndex = 5;
 			const int lastBatchSize = 10;
-			
-
 			const int indexToStartFrom = 15;
 			const int itemsLeft = 25;
 
@@ -133,6 +131,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		protected virtual T GetConfiguration()
         {
             Mock<ISnapshotPartitionConfiguration> configuration = new Mock<ISnapshotPartitionConfiguration>();
+            
             configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
             configuration.Setup(x => x.SyncConfigurationArtifactId).Returns(_SYNC_CONF_ID);
 			
