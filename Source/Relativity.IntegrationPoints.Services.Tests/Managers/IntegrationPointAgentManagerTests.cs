@@ -68,7 +68,6 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 		[TestCase(28, WorkloadSize.XL)]
 		[TestCase(31, WorkloadSize.XL)]
 		[TestCase(32, WorkloadSize.XXL)]
-		[TestCase(9999, WorkloadSize.XXL)]
 		public async Task GetWorkloadAsync_ShouldReturnProperWorkloadSize_WhenUsingDefaultSettings(int pendingJobsCount, WorkloadSize expectedWorkloadSize)
 		{
 			// Arrange
