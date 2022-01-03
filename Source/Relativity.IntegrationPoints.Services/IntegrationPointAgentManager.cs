@@ -20,11 +20,13 @@ namespace Relativity.IntegrationPoints.Services
 
 		private readonly List<WorkloadSizeDefinition> _workloadSizeDefaultSettings = new List<WorkloadSizeDefinition>()
 		{
-			new WorkloadSizeDefinition(minJobsCount: 0, maxJobsCount: 0, workloadSize: WorkloadSize.None),
-			new WorkloadSizeDefinition(minJobsCount: 1, maxJobsCount: 1, workloadSize: WorkloadSize.One),
-			new WorkloadSizeDefinition(minJobsCount: 2, maxJobsCount: 2, workloadSize: WorkloadSize.S),
-			new WorkloadSizeDefinition(minJobsCount: 3, maxJobsCount: 4, workloadSize: WorkloadSize.M),
-			new WorkloadSizeDefinition(minJobsCount: 5, maxJobsCount: int.MaxValue, workloadSize: WorkloadSize.L),
+            new WorkloadSizeDefinition(minJobsCount: 0, maxJobsCount: 0, workloadSize: WorkloadSize.None),
+            new WorkloadSizeDefinition(minJobsCount: 1, maxJobsCount: 1, workloadSize: WorkloadSize.One),
+            new WorkloadSizeDefinition(minJobsCount: 2, maxJobsCount: 3, workloadSize: WorkloadSize.S),
+            new WorkloadSizeDefinition(minJobsCount: 4, maxJobsCount: 7, workloadSize: WorkloadSize.M),
+            new WorkloadSizeDefinition(minJobsCount: 8, maxJobsCount: 23, workloadSize: WorkloadSize.L),
+            new WorkloadSizeDefinition(minJobsCount: 24, maxJobsCount: 31, workloadSize: WorkloadSize.XL),
+            new WorkloadSizeDefinition(minJobsCount: 32, maxJobsCount: int.MaxValue, workloadSize: WorkloadSize.XXL)
 		};
 
 		protected override Installer Installer => _installer ?? (_installer = new IntegrationPointAgentManagerInstaller());
