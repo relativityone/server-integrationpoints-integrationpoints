@@ -5,7 +5,7 @@ using Relativity.Toggles;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 {
-	public class SqlToggleProvider : IToggleProvider
+	public class SqlToggleProvider : IToggleProviderExtended
 	{
 		private readonly Func<SqlConnection> _connectionFunc;
 
@@ -23,20 +23,25 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 
 		public Task SetAsync<T>(bool enabled) where T : IToggle
 		{
+			string toggleName = typeof(T).FullName;
+
+			return SetAsync(toggleName, enabled);
+		}
+
+		public Task SetAsync(string name, bool enabled)
+		{
 			using (SqlConnection connection = _connectionFunc())
 			{
 				connection.Open();
 
-				string toggleName = typeof(T).FullName;
-
 				int value = enabled ? 1 : 0;
 
-				string sqlStatement = 
+				string sqlStatement =
 					 "BEGIN" +
-					$"  IF EXISTS (SELECT * FROM [ToggleDefault] WHERE [Name] = '{toggleName}')" +
-					$"    UPDATE [ToggleDefault] SET [Default] = {value} WHERE [Name] = '{toggleName}'" +
+					$"  IF EXISTS (SELECT * FROM [ToggleDefault] WHERE [Name] = '{name}')" +
+					$"    UPDATE [ToggleDefault] SET [Default] = {value} WHERE [Name] = '{name}'" +
 					 "  ELSE" +
-					$"    INSERT [ToggleDefault] ([Name], [Default]) VALUES ('{toggleName}', {value})" +
+					$"    INSERT [ToggleDefault] ([Name], [Default]) VALUES ('{name}', {value})" +
 					 "END";
 
 				SqlCommand command = new SqlCommand(sqlStatement, connection);
