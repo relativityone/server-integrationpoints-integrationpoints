@@ -3,7 +3,7 @@ using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Executors
 {
-    internal sealed class ObjectLinkingSnapshotPartitionExecutor : SnapshotPartitionExecutorBase<IObjectLinkingSnapshotPartitionConfiguration>
+    internal sealed class ObjectLinkingSnapshotPartitionExecutor : SnapshotPartitionExecutorBase
     {
         private readonly ISyncLog _logger;
 
@@ -13,7 +13,7 @@ namespace Relativity.Sync.Executors
             _logger = logger;
         }
 
-        protected override void LogSnapshotPartitionsInformation(IObjectLinkingSnapshotPartitionConfiguration configuration)
+        protected override void LogSnapshotPartitionsInformation(ISnapshotPartitionConfiguration configuration)
         {
             _logger.LogInformation(
                 "Creating object linking snapshot partitions for source workspace (workspace artifact id: {sourceWorkspaceArtifactId})",

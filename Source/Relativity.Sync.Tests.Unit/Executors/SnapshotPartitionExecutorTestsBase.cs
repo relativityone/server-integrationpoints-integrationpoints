@@ -12,7 +12,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	[TestFixture]
 	internal abstract class SnapshotPartitionExecutorTestsBase<T> where T: ISnapshotPartitionConfiguration
 	{
-		protected SnapshotPartitionExecutorBase<T> Instance;
+		protected SnapshotPartitionExecutorBase Instance;
 
         protected Mock<IBatchRepository> BatchRepository;
 

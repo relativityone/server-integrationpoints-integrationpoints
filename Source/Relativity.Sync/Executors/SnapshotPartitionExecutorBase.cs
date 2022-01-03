@@ -5,18 +5,18 @@ using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Executors
 {
-    internal abstract class SnapshotPartitionExecutorBase<T>: IExecutor<T> where T : ISnapshotPartitionConfiguration
+    internal abstract class SnapshotPartitionExecutorBase: IExecutor<ISnapshotPartitionConfiguration>
     {
-        private readonly SnapshotBatchHelper<T> _snapshotBatchHelper;
         private readonly ISyncLog _logger;
+        private readonly IBatchRepository _batchRepository;
 
         protected SnapshotPartitionExecutorBase(IBatchRepository batchRepository, ISyncLog logger)
         {
+            _batchRepository = batchRepository;
             _logger = logger;
-            _snapshotBatchHelper = new SnapshotBatchHelper<T>(batchRepository, logger);
         }
 
-        public async Task<ExecutionResult> ExecuteAsync(T configuration, CompositeCancellationToken token)
+        public async Task<ExecutionResult> ExecuteAsync(ISnapshotPartitionConfiguration configuration, CompositeCancellationToken token)
         {
             LogSnapshotPartitionsInformation(configuration);
             IBatch batch;
@@ -35,27 +35,72 @@ namespace Relativity.Sync.Executors
             return executionResult;
         }
 
-        protected virtual void LogSnapshotPartitionsInformation(T configuration)
+        protected virtual void LogSnapshotPartitionsInformation(ISnapshotPartitionConfiguration configuration)
         {
             _logger.LogInformation(
                 "Creating snapshot partitions for source workspace (workspace artifact id: {sourceWorkspaceArtifactId})",
                 configuration.SourceWorkspaceArtifactId);
         }
 
-        private async Task<IBatch> GetLastBatchAsync(T configuration)
+        private async Task<IBatch> GetLastBatchAsync(ISnapshotPartitionConfiguration configuration)
         {
-            return await _snapshotBatchHelper.GetLastBatchAsync(configuration);
+            IBatch batch;
+            try
+            {
+                batch = await _batchRepository.GetLastAsync(configuration.SourceWorkspaceArtifactId,
+                    configuration.SyncConfigurationArtifactId, configuration.ExportRunId).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Unable to retrieve last batch for sync configuration {artifactId}.",
+                    configuration.SyncConfigurationArtifactId);
+                throw;
+            }
+
+            return batch;
         }
 
         private int GetNumberOfRecordsIncludedInBatches(IBatch batch)
         {
-            return _snapshotBatchHelper.GetNumberOfRecordsIncludedInBatches(batch);
+            int numberOfRecordsIncludedInBatches = 0;
+            if (batch != null)
+            {
+                numberOfRecordsIncludedInBatches = batch.StartingIndex + batch.TotalDocumentsCount;
+                _logger.LogInformation("Last batch was not null. Starting partitioning at index {index}",
+                    numberOfRecordsIncludedInBatches);
+            }
+            else
+            {
+                _logger.LogInformation("Partitioning from start");
+            }
+
+            return numberOfRecordsIncludedInBatches;
         }
 
-        private async Task<ExecutionResult> CreateBatchesAsync(T configuration,
+        public async Task<ExecutionResult> CreateBatchesAsync(ISnapshotPartitionConfiguration configuration,
             int numberOfRecordsIncludedInBatches)
         {
-            return await _snapshotBatchHelper.CreateBatchesAsync(configuration, numberOfRecordsIncludedInBatches);
+            Snapshot snapshot = new Snapshot(configuration.TotalRecordsCount, configuration.BatchSize,
+                numberOfRecordsIncludedInBatches);
+
+            try
+            {
+                foreach (SnapshotPart snapshotPart in snapshot.GetSnapshotParts())
+                {
+                    await _batchRepository.CreateAsync(configuration.SourceWorkspaceArtifactId,
+                            configuration.SyncConfigurationArtifactId, configuration.ExportRunId, snapshotPart.NumberOfRecords,
+                            snapshotPart.StartingIndex)
+                        .ConfigureAwait(false);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Unable to create batch for sync configuration {artifactId}.",
+                    configuration.SyncConfigurationArtifactId);
+                return ExecutionResult.Failure("Unable to create batches.", e);
+            }
+
+            return ExecutionResult.Success();
         }
     }
 }
