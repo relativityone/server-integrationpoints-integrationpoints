@@ -18,14 +18,12 @@ namespace Relativity.Sync.Executors
 		private readonly IBatchRepository _batchRepository;
 		private readonly IJobProgressHandlerFactory _jobProgressHandlerFactory;
 		private readonly IFieldMappings _fieldMappings;
-		private readonly IDocumentTagRepository _documentsTagRepository;
 		private readonly IJobCleanupConfiguration _jobCleanupConfiguration;
 		private readonly IAutomatedWorkflowTriggerConfiguration _automatedWorkflowTriggerConfiguration;
 		private readonly Func<IStopwatch> _stopwatchFactory;
 
 		protected readonly ISyncMetrics _syncMetrics;
 		private readonly IUserContextConfiguration _userContextConfiguration;
-		private readonly ITaggingProvider _taggingProvider;
 		protected readonly IJobStatisticsContainer _jobStatisticsContainer;
 		protected readonly IImportJobFactory _importJobFactory;
 		protected readonly BatchRecordType _recordType;
@@ -36,7 +34,6 @@ namespace Relativity.Sync.Executors
 			BatchRecordType recordType,
 			IBatchRepository batchRepository,
 			IJobProgressHandlerFactory jobProgressHandlerFactory,
-			IDocumentTagRepository documentsTagRepository,
 			IFieldManager fieldManager,
 			IFieldMappings fieldMappings,
 			IJobStatisticsContainer jobStatisticsContainer,
@@ -54,7 +51,6 @@ namespace Relativity.Sync.Executors
 			_fieldManager = fieldManager;
 			_fieldMappings = fieldMappings;
 			_jobStatisticsContainer = jobStatisticsContainer;
-			_documentsTagRepository = documentsTagRepository;
 			_jobCleanupConfiguration = jobCleanupConfiguration;
 			_automatedWorkflowTriggerConfiguration = automatedWorkflowTriggerConfiguration;
 			_stopwatchFactory = stopwatchFactory;
@@ -69,9 +65,7 @@ namespace Relativity.Sync.Executors
 
 		protected abstract void ChildReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime, TimeSpan importApiTimer);
 
-		protected abstract Task<TaggingExecutionResult> TagDocumentsAsync(IImportJob importJob,
-			ISynchronizationConfiguration configuration,
-			CompositeCancellationToken token, IDocumentTagRepository documentTagRepository, ISyncLog logger);
+		protected abstract Task<TaggingExecutionResult> TagDocumentsAsync(IImportJob importJob, ISynchronizationConfiguration configuration, CompositeCancellationToken token);
 
 		protected void ReportBatchMetrics(int batchId, int savedSearchId, BatchProcessResult batchProcessResult, TimeSpan batchTime,
 			TimeSpan importApiTimer)
@@ -151,7 +145,7 @@ namespace Relativity.Sync.Executors
 								BatchProcessResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token).ConfigureAwait(false);
 								importApiTimer.Stop();
 								
-								TaggingExecutionResult taggingResult = await TagDocumentsAsync(importJob, configuration, token, _documentsTagRepository, _logger).ConfigureAwait(false);
+								TaggingExecutionResult taggingResult = await TagDocumentsAsync(importJob, configuration, token).ConfigureAwait(false);
 								int documentsTaggedCount = taggingResult.TaggedDocumentsCount;
 								await batch.SetTaggedDocumentsCountAsync(batch.TaggedDocumentsCount + documentsTaggedCount).ConfigureAwait(false);
 								batchProcessingResult.TotalRecordsTagged = documentsTaggedCount;

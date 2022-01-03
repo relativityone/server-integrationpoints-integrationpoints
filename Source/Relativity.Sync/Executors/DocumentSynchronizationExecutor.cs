@@ -17,12 +17,12 @@ namespace Relativity.Sync.Executors
 		private readonly ITaggingProvider _taggingProvider;
 
 		public DocumentSynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
-			IJobProgressHandlerFactory jobProgressHandlerFactory, IDocumentTagRepository documentsTagRepository,
+			IJobProgressHandlerFactory jobProgressHandlerFactory, 
 			IFieldManager fieldManager, IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer,
 			IJobCleanupConfiguration jobCleanupConfiguration,
 			IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
 			Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics, ITaggingProvider taggingProvider, ISyncLog logger,
-			IUserContextConfiguration userContextConfiguration) : base(importJobFactory, BatchRecordType.Documents, batchRepository, jobProgressHandlerFactory, documentsTagRepository, fieldManager,
+			IUserContextConfiguration userContextConfiguration) : base(importJobFactory, BatchRecordType.Documents, batchRepository, jobProgressHandlerFactory, fieldManager,
 			fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics,userContextConfiguration, logger)
 		{
 			_taggingProvider = taggingProvider;
@@ -114,10 +114,9 @@ namespace Relativity.Sync.Executors
 			_jobStatisticsContainer.LongTextStatistics.Clear();
 		}
 
-		protected override Task<TaggingExecutionResult> TagDocumentsAsync(IImportJob importJob, ISynchronizationConfiguration configuration,
-			CompositeCancellationToken token, IDocumentTagRepository documentTagRepository, ISyncLog logger)
+		protected override Task<TaggingExecutionResult> TagDocumentsAsync(IImportJob importJob, ISynchronizationConfiguration configuration, CompositeCancellationToken token)
 		{
-			return _taggingProvider.TagDocumentsAsync(importJob, configuration, token, documentTagRepository, logger);
+			return _taggingProvider.TagDocumentsAsync(importJob, configuration, token);
 		}
 	}
 }

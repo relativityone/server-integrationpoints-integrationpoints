@@ -11,11 +11,15 @@ namespace Relativity.Sync.Executors.TaggingProviders
 	    private ISyncLog _logger;
 	    private IDocumentTagRepository _documentsTagRepository;
 
-	    public async Task<TaggingExecutionResult> TagDocumentsAsync(IImportJob importJob, ISynchronizationConfiguration configuration, CompositeCancellationToken token, IDocumentTagRepository documentTagRepository, ISyncLog logger)
+	    public DocumentObjectBasedTaggingProvider(IDocumentTagRepository documentTagRepository, ISyncLog logger)
 	    {
-		    _logger = logger;
 		    _documentsTagRepository = documentTagRepository;
-			Task<TaggingExecutionResult> destinationDocumentsTaggingTask = TagDestinationDocumentsAsync(importJob, configuration, token.StopCancellationToken);
+		    _logger = logger;
+	    }
+
+	    public async Task<TaggingExecutionResult> TagDocumentsAsync(IImportJob importJob, ISynchronizationConfiguration configuration, CompositeCancellationToken token)
+	    {
+		    Task<TaggingExecutionResult> destinationDocumentsTaggingTask = TagDestinationDocumentsAsync(importJob, configuration, token.StopCancellationToken);
 			Task<TaggingExecutionResult> sourceDocumentsTaggingTask = TagSourceDocumentsAsync(importJob, configuration, token.StopCancellationToken);
 
 			TaggingExecutionResult sourceTaggingResult = await sourceDocumentsTaggingTask.ConfigureAwait(false);

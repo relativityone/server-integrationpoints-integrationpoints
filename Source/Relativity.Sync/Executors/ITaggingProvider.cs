@@ -7,6 +7,6 @@ namespace Relativity.Sync.Executors
 	{
 		Task<TaggingExecutionResult> TagDocumentsAsync(IImportJob importJob,
 			ISynchronizationConfiguration configuration,
-			CompositeCancellationToken token, IDocumentTagRepository documentTagRepository, ISyncLog logger);
+			CompositeCancellationToken token);
 	}
 }
