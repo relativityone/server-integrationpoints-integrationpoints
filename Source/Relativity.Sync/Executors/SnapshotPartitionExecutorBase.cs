@@ -77,7 +77,7 @@ namespace Relativity.Sync.Executors
             return numberOfRecordsIncludedInBatches;
         }
 
-        public async Task<ExecutionResult> CreateBatchesAsync(ISnapshotPartitionConfiguration configuration,
+        private async Task<ExecutionResult> CreateBatchesAsync(ISnapshotPartitionConfiguration configuration,
             int numberOfRecordsIncludedInBatches)
         {
             Snapshot snapshot = new Snapshot(configuration.TotalRecordsCount, configuration.BatchSize,
