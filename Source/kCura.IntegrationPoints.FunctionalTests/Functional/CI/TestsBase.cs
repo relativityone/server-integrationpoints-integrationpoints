@@ -1,14 +1,12 @@
 ﻿using System.Net.Http;
 using Polly;
 using Polly.Retry;
-using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Web;
 using Relativity.Testing.Framework.Models;
 using Relativity.Testing.Identification;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
-using Relativity.Testing.Framework.Api.Services;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
@@ -36,21 +34,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 				: RelativityFacade.Instance.CreateWorkspace(_workspaceName, TestsSetUpFixture.WORKSPACE_TEMPLATE_NAME);
 
 			RelativityFacade.Instance.RequireAgent(Const.INTEGRATION_POINTS_AGENT_TYPE_NAME, Const.INTEGRATION_POINTS_AGENT_RUN_INTERVAL);
-		}
-
-        protected override void OnSetUpTest()
-        {
-            base.OnSetUpTest();
-
-            RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
-                .Require(new Testing.Framework.Models.InstanceSetting
-            {
-                Name = "IAPICommunicationMode",
-                Section = "DataTransfer.Legacy",
-                Value = IAPICommunicationMode.WebAPI.ToString(),
-                ValueType = InstanceSettingValueType.Text
-            }
-            );
 		}
 
         protected override void OnTearDownFixture()
