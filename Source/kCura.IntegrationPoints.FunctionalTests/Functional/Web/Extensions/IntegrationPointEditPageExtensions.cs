@@ -16,13 +16,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 			RelativityProviderOverwrite overwriteMode = RelativityProviderOverwrite.AppendOnly,
 			YesNo copyImages = YesNo.No, RelativityProviderCopyNativeFiles copyNativesMode = RelativityProviderCopyNativeFiles.No)
 		{
-			var relativityProviderConnectToSourcePage = FillOutIntegrationPointEditPageForRelativityProvider(integrationPointEditPage, integrationPointName);
+			RelativityProviderConnectToSourcePage relativityProviderConnectToSourcePage = FillOutIntegrationPointEditPageForRelativityProvider(integrationPointEditPage, integrationPointName);
 
-			var relativityProviderMapFieldsPage = FillOutRelativityProviderConnectToSourcePage(
+			RelativityProviderMapFieldsPage relativityProviderMapFieldsPage = FillOutRelativityProviderConnectToSourcePage(
 				relativityProviderConnectToSourcePage, destinationWorkspace,
 				RelativityProviderSources.SavedSearch, savedSearchName);
 
-			var integrationPointViewPage = relativityProviderMapFieldsPage.MapAllFields
+			IntegrationPointViewPage integrationPointViewPage = relativityProviderMapFieldsPage.MapAllFields
 				.Click().ApplyModel(new RelativityProviderMapFields
 				{
 					Overwrite = overwriteMode,

@@ -36,7 +36,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			RelativityFacade.Instance.RequireAgent(Const.INTEGRATION_POINTS_AGENT_TYPE_NAME, Const.INTEGRATION_POINTS_AGENT_RUN_INTERVAL);
 		}
 
-		protected override void OnTearDownFixture()
+        protected override void OnTearDownFixture()
 		{
 			base.OnTearDownFixture();
 			if (_existingWorkspaceArtifactID == 0)

@@ -64,7 +64,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			finally
 			{
 				await toggleProvider.SetAsync<EnableKeplerizedImportAPIToggle>(false).ConfigureAwait(false);
-                SetIAPICommunicationMode(IAPICommunicationMode.ForceWebAPI);
+                SetIAPICommunicationMode(IAPICommunicationMode.WebAPI);
 			}
 		}
 
