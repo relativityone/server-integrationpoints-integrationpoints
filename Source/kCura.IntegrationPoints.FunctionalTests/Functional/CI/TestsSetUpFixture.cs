@@ -1,5 +1,4 @@
-﻿using System;
-using Atata;
+﻿using Atata;
 using System.IO;
 using NUnit.Framework;
 using Relativity.Testing.Framework;
@@ -39,6 +38,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			InstallARMTestServices();
 
 			InstallDataTransferLegacy();
+
+			InstallLegalHoldToWorkspace(workspaceId);
 		}
 
 		[OneTimeTearDown]
@@ -57,10 +58,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 
             var applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
 
-            int appId = applicationService.InstallToLibrary(rapFileLocation, new LibraryApplicationInstallOptions
-            {
-                IgnoreVersion = true
-            });
+            int appId = applicationService.InstallToLibrary(rapFileLocation, 
+				new LibraryApplicationInstallOptions { IgnoreVersion = true});
 
             applicationService.InstallToWorkspace(workspaceId, appId);
         }
@@ -71,22 +70,20 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 
 			RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
 				.InstallToLibrary(TestConfig.ARMTestServicesRapFileLocation, 
-					new LibraryApplicationInstallOptions
-					{
-						CreateIfMissing = true
-					});
+					new LibraryApplicationInstallOptions { CreateIfMissing = true });
 		}
 
 		private static void SetDevelopmentModeToTrue()
 		{
 			RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
 				.Require(new Testing.Framework.Models.InstanceSetting
-				{
-					Name = "DevelopmentMode",
-					Section = "kCura.ARM",
-					Value = "True",
-					ValueType = InstanceSettingValueType.TrueFalse
-				});
+			{
+				Name = "DevelopmentMode",
+				Section = "kCura.ARM",
+				Value = "True",
+				ValueType = InstanceSettingValueType.TrueFalse
+			}
+            );
 		}
 
 		private static void InstallDataTransferLegacy()
@@ -94,6 +91,15 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
 				.InstallToLibrary(TestConfig.DataTransferLegacyRapFileLocation,
 					new LibraryApplicationInstallOptions { IgnoreVersion = true });
+		}
+
+		private void InstallLegalHoldToWorkspace(int workspaceId)
+		{
+			var applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
+
+			LibraryApplication app = applicationService.Get("Relativity Legal Hold");
+
+			applicationService.InstallToWorkspace(workspaceId, app.ArtifactID);
 		}
 
 		private static void CopyScreenshotsToBase()

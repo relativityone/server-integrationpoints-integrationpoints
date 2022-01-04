@@ -142,6 +142,7 @@ namespace kCura.IntegrationPoints.Domain
             {
                 _logger.LogInformation("Required Assemblies Loading in Kubernetes Mode");
                 CopyLibraryFilesFromWorkingDirectory(domainPath);
+				LoadRequiredAssemblies(newDomain);
 			}
             else
             {

@@ -6,7 +6,6 @@ using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Managers;
-using kCura.ScheduleQueue.Core.Data;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -58,11 +57,17 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 		[TestCase(0, WorkloadSize.None)]
 		[TestCase(1, WorkloadSize.One)]
 		[TestCase(2, WorkloadSize.S)]
-		[TestCase(3, WorkloadSize.M)]
+		[TestCase(3, WorkloadSize.S)]
 		[TestCase(4, WorkloadSize.M)]
-		[TestCase(5, WorkloadSize.L)]
-		[TestCase(6, WorkloadSize.L)]
-		[TestCase(9999, WorkloadSize.L)]
+		[TestCase(5, WorkloadSize.M)]
+		[TestCase(7, WorkloadSize.M)]
+		[TestCase(8, WorkloadSize.L)]
+		[TestCase(15, WorkloadSize.L)]
+		[TestCase(23, WorkloadSize.L)]
+		[TestCase(24, WorkloadSize.XL)]
+		[TestCase(28, WorkloadSize.XL)]
+		[TestCase(31, WorkloadSize.XL)]
+		[TestCase(32, WorkloadSize.XXL)]
 		public async Task GetWorkloadAsync_ShouldReturnProperWorkloadSize_WhenUsingDefaultSettings(int pendingJobsCount, WorkloadSize expectedWorkloadSize)
 		{
 			// Arrange

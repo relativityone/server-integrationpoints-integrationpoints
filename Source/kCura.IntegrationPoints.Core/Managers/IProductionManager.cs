@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 		/// <returns>Productions DTO</returns>
 		ProductionDTO RetrieveProduction(int workspaceArtifactId, int productionArtifactId);
 
-		/// <summary>
+        /// <summary>
 		/// Creates a production in the workspace.
 		/// </summary>
 		/// <param name="workspaceArtifactId">Workspace artifact ID.</param>

@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.EDDS.WebAPI.ProductionManagerBase;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
+using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -12,6 +15,7 @@ using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Productions.Services;
+using Relativity.Toggles;
 using IProductionManager = kCura.IntegrationPoints.Core.Managers.IProductionManager;
 using ProductionManager = kCura.IntegrationPoints.Core.Managers.Implementations.ProductionManager;
 
@@ -25,6 +29,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		private IProductionManager _sut;
 		private IServiceManagerProvider _serviceManagerProvider;
 		private WinEDDS.Service.Export.IProductionManager _productionManagerService;
+        private IProductionManagerWrapper _productionManagerWrapper;
+        private IAPILog _logger;
 
 		private const int _WORKSPACE_ARTIFACT_ID = 101810;
 		private const int _PRODUCTION_ARTIFACT_ID = 987654;
@@ -36,9 +42,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			_productionRepository = Substitute.For<IProductionRepository>();
 			_productionManagerService = Substitute.For<WinEDDS.Service.Export.IProductionManager>();
 			_serviceManagerProvider = Substitute.For<IServiceManagerProvider>();
-			IAPILog logger = Substitute.For<IAPILog>();
+            _logger = Substitute.For<IAPILog>();
 
-			_sut = new ProductionManager(logger, _repositoryFactory, _serviceManagerProvider);
+            _sut = GetSut(false);
 		}
 
 		[Test]
@@ -52,7 +58,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 				ArtifactID = expectedArtifactId,
 				DisplayName = expectedDisplayName
 			};
-			_productionRepository.RetrieveProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Returns(production);
+			_productionRepository.GetProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Returns(production);
 			_repositoryFactory.GetProductionRepository(_WORKSPACE_ARTIFACT_ID).Returns(_productionRepository);
 
 			// Act 
@@ -68,7 +74,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		public void ItShouldNotRetrieveAndThrowException()
 		{
 			// Arrange
-			_productionRepository.RetrieveProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Throws(new Exception());
+			_productionRepository.GetProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Throws(new Exception());
 			_repositoryFactory.GetProductionRepository(_WORKSPACE_ARTIFACT_ID).Returns(_productionRepository);
 
 			// Act & Assert
@@ -105,7 +111,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		}
 
 		[Test]
-		public void ItShouldGetProductionsForExport()
+		public void ItShouldGetProductionsForExportForWebApi()
 		{
 			// Arrange
 			const string expectedArtifactId = "123456";
@@ -126,7 +132,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		}
 
 		[Test]
-		public void ItShouldGetProductionsForImport()
+		public void ItShouldGetProductionsForImportForWebApi()
 		{
 			// Arrange
 			const string expectedArtifactId = "123456";
@@ -148,7 +154,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		}
 
 		[Test]
-		public void IsProductionInDestinationWorkspaceAvailable_ShouldReturnTrue_WhenProductionManagerReturnsNonNullObject()
+		public void IsProductionInDestinationWorkspaceAvailable_ShouldReturnTrue_WhenProductionManagerReturnsNonNullObjectForWebApi()
 		{
 			// arrange
 			var productionInfo = new ProductionInfo();
@@ -165,7 +171,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		}
 
 		[Test]
-		public void IsProductionInDestinationWorkspaceAvailable_ShouldReturnFalse_WhenProductionManagerReturnsNonNullObject()
+		public void IsProductionInDestinationWorkspaceAvailable_ShouldReturnFalse_WhenProductionManagerReturnsNullObjectForWebApi()
 		{
 			// arrange
 			ProductionInfo productionInfo = null;
@@ -197,7 +203,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		}
 
 		[Test]
-		public void IsProductionEligibleForImport_ShouldReturnTrue_WhenProductionManagerReturnsThisProduction()
+		public void IsProductionEligibleForImport_ShouldReturnTrue_WhenProductionManagerReturnsThisProductionForWebApi()
 		{
 			// Arrange
 			DataSet expectedResult = CreateNewProductionDataTable(_PRODUCTION_ARTIFACT_ID);
@@ -206,7 +212,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>()
 				.Returns(_productionManagerService);
 
-			// Act
+            // Act
 			bool result = _sut.IsProductionEligibleForImport(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
 
 			// Assert
@@ -263,7 +269,95 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			Assert.IsFalse(result);
 		}
 
-		private DataSet CreateNewProductionDataTable(int expectedArtifactId, string expectedDisplayName = null)
+		[Test]
+		public void ItShouldGetProductionsForExportForKeplerizedIApi()
+		{
+			// Arrange
+            List<ProductionDTO> productionDtos = GetProductionDtos();
+            _productionRepository.GetProductionsForExport(_WORKSPACE_ARTIFACT_ID).Returns(productionDtos);
+            ProductionManager sut = GetSut(true);
+
+			// Act
+			List<ProductionDTO> actualProductionDto = sut.GetProductionsForExport(_WORKSPACE_ARTIFACT_ID).ToList();
+
+			// Assert
+			Assert.That(actualProductionDto.Count, Is.EqualTo(productionDtos.Count));
+			Assert.That(actualProductionDto.Select(x => x.ArtifactID), Is.EqualTo(productionDtos.Select(x => x.ArtifactID)));
+			Assert.That(actualProductionDto.Select(x => x.ArtifactID), Is.EqualTo(productionDtos.Select(x => x.ArtifactID)));
+		}
+
+		[Test]
+		public void ItShouldGetProductionsForImportForKeplerizedIApi()
+		{
+            // Arrange
+            List<ProductionDTO> productionDtos = GetProductionDtos();
+            _productionRepository.GetProductionsForImport(_WORKSPACE_ARTIFACT_ID).Returns(productionDtos);
+            ProductionManager sut = GetSut(true);
+
+            // Act
+            List<ProductionDTO> actualProductionDto = sut.GetProductionsForImport(_WORKSPACE_ARTIFACT_ID).ToList();
+
+            // Assert
+            Assert.That(actualProductionDto.Count, Is.EqualTo(productionDtos.Count));
+            Assert.That(actualProductionDto.Select(x => x.ArtifactID), Is.EqualTo(productionDtos.Select(x => x.ArtifactID)));
+            Assert.That(actualProductionDto.Select(x => x.ArtifactID), Is.EqualTo(productionDtos.Select(x => x.ArtifactID)));
+		}
+
+		[Test]
+		public void IsProductionInDestinationWorkspaceAvailable_ShouldReturnTrue_WhenProductionManagerReturnsNonNullObjectForKeplerizedIApi()
+		{
+			// Arrange
+            ProductionDTO productionDto = new ProductionDTO();
+            _productionRepository.GetProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Returns(productionDto);
+            ProductionManager sut = GetSut(true);
+
+			// Act
+			bool result = sut.IsProductionInDestinationWorkspaceAvailable(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
+
+			// Assert
+			Assert.IsTrue(result);
+		}
+
+        [Test]
+        public void IsProductionEligibleForImport_ShouldReturnTrue_WhenProductionManagerReturnsThisProductionForKeplerizedIApi()
+        {
+			// Arrange
+            ProductionDTO productionDto = GetProductionDtos().First();
+            _productionRepository.GetProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Returns(productionDto);
+            ProductionManager sut = GetSut(true);
+
+            // Act
+            bool result = sut.IsProductionInDestinationWorkspaceAvailable(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
+
+            // Assert
+            Assert.IsTrue(result);
+		}
+
+        [Test]
+        public void IsProductionInDestinationWorkspaceAvailable_ShouldReturnFalse_WhenProductionManagerReturnsNullObjectForKeplerizedIApi()
+        {
+			// Arrange
+            ProductionDTO productionDto = null;
+            _productionRepository.GetProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Returns(productionDto);
+            ProductionManager sut = GetSut(true);
+
+            // Act
+            bool result = sut.IsProductionInDestinationWorkspaceAvailable(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
+
+			// assert
+			Assert.IsFalse(result);
+        }
+
+		private ProductionManager GetSut(bool enableKeplerizedImportAPIToggleValue)
+        {
+            IToggleProvider toggleProvider = new ToggleProviderFake(enableKeplerizedImportAPIToggleValue);
+            _productionManagerWrapper = new ProductionManagerWrapper(toggleProvider, _productionRepository, _serviceManagerProvider, _logger);
+
+            ProductionManager sut = new ProductionManager(_logger, _repositoryFactory, _productionManagerWrapper);
+            return sut;
+        }
+
+        private DataSet CreateNewProductionDataTable(int expectedArtifactId, string expectedDisplayName = null)
 		{
 			return CreateNewProductionDataTable(expectedArtifactId.ToString(), expectedDisplayName ?? string.Empty);
 		}
@@ -293,5 +387,75 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 
 			return dataSet;
 		}
-	}
+
+        private List<ProductionDTO> GetProductionDtos()
+        {
+            List<ProductionDTO> productionsDtos = new List<ProductionDTO>
+            {
+                new ProductionDTO
+                {
+                    ArtifactID = "4321",
+                    DisplayName = "Production 4321"
+                },
+                new ProductionDTO
+                {
+                    ArtifactID = "4322",
+                    DisplayName = "Production 4322"
+                },
+                new ProductionDTO
+                {
+                    ArtifactID = "4323",
+                    DisplayName = "Production 4323"
+                },
+                new ProductionDTO
+                {
+                    ArtifactID = "4324",
+                    DisplayName = "Production 4324"
+                }
+            };
+
+            return productionsDtos;
+        }
+
+		private class ToggleProviderFake : IToggleProvider
+        {
+            private bool _toggleValue;
+
+            public ToggleProviderFake(bool toggleValue)
+            {
+                _toggleValue = toggleValue;
+            }
+
+            public bool IsEnabled<T>() where T : IToggle
+            {
+                return _toggleValue;
+            }
+
+            public Task<bool> IsEnabledAsync<T>() where T : IToggle
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool IsEnabledByName(string toggleName)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task<bool> IsEnabledByNameAsync(string toggleName)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Task SetAsync<T>(bool enabled) where T : IToggle
+            {
+                _toggleValue = enabled;
+
+				return Task.CompletedTask;
+            }
+
+            public MissingFeatureBehavior DefaultMissingFeatureBehavior { get; }
+            public bool CacheEnabled { get; set; }
+            public int CacheTimeoutInSeconds { get; set; }
+        }
+    }
 }
