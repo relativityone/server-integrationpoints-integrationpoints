@@ -1,0 +1,533 @@
+{
+    "name": "[SYNC] Job Size Analysis",
+    "description": null,
+    "permissions": "PUBLIC_READ_WRITE",
+    "pages": [
+      {
+        "name": "Document Job Size Analysis",
+        "description": null,
+        "widgets": [
+          {
+            "visualization": {
+              "id": "viz.pie"
+            },
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "height": 3,
+              "width": 4
+            },
+            "title": "Total Jobs Count per Client Instance",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 1414003,
+                  "query": "SELECT count(*) FROM Counter WHERE Name = 'Relativity.Sync' AND CustomData_Name = 'DocumentJobEndMetric' LIMIT MAX FACET SourceName"
+                }
+              ]
+            },
+            "linkedEntityGuids": [
+              "MTQxNDAwM3xWSVp8REFTSEJPQVJEfDMxODIwMjI"
+            ]
+          },
+          {
+            "visualization": {
+              "id": "viz.pie"
+            },
+            "layout": {
+              "column": 5,
+              "row": 1,
+              "height": 3,
+              "width": 4
+            },
+            "title": "Total Jobs Count per End Status",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 1414003,
+                  "query": "SELECT count(*) as 'Jobs Count by End Status' FROM Counter WHERE Name = 'Relativity.Sync' AND CustomData_Name = 'DocumentJobEndMetric' LIMIT MAX FACET CustomData_JobEndStatus "
+                }
+              ]
+            },
+            "linkedEntityGuids": [
+              "MTQxNDAwM3xWSVp8REFTSEJPQVJEfDMxODIwMjI"
+            ]
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 9,
+              "row": 1,
+              "height": 1,
+              "width": 2
+            },
+            "title": "Total GB Transferred",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 1414003,
+                  "query": "SELECT SUM(CustomData_BytesTransferred) as 'Total GB Transferred' FROM Counter WHERE Name = 'Relativity.Sync' AND CustomData_Name = 'DocumentJobEndMetric' LIMIT MAX"
+                }
+              ],
+              "thresholds": []
+            },
+            "linkedEntityGuids": null
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 11,
+              "row": 1,
+              "height": 1,
+              "width": 2
+            },
+            "title": "",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 1414003,
+                  "query": "SELECT SUM(CustomData_BytesTransferred) as 'Total Data Transferred [IAPI]' FROM Counter WHERE Name = 'Relativity.Sync' AND CustomData_Name = 'DocumentBatchEndMetric' LIMIT MAX"
+                }
+              ],
+              "thresholds": []
+            },
+            "linkedEntityGuids": null
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 9,
+              "row": 2,
+              "height": 1,
+              "width": 2
+            },
+            "title": "",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 1414003,
+                  "query": "SELECT SUM(CustomData_BytesNativesTransferred) as 'Total Natives Transferred' FROM Counter WHERE Name = 'Relativity.Sync' AND CustomData_Name = 'DocumentJobEndMetric' LIMIT MAX"
+                }
+              ],
+              "thresholds": []
+            },
+            "linkedEntityGuids": null
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 11,
+              "row": 2,
+              "height": 1,
+              "width": 2
+            },
+            "title": "",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 1414003,
+                  "query": "SELECT SUM(CustomData_BytesNativesTransferred) as 'Total Natives Transferred [IAPI]' FROM Counter WHERE Name = 'Relativity.Sync' AND CustomData_Name = 'DocumentBatchEndMetric' LIMIT MAX"
+                }
+              ],
+              "thresholds": []
+            },
+            "linkedEntityGuids": null
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 9,
+              "row": 3,
+              "height": 1,
+              "width": 2
+            },
+            "title": "",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 1414003,
+                  "query": "SELECT SUM(CustomData_BytesMetadataTransferred) as 'Total Metadata Transferred' FROM Counter WHERE Name = 'Relativity.Sync' AND CustomData_Name = 'DocumentJobEndMetric' LIMIT MAX"
+                }
+              ],
+              "thresholds": []
+            },
+            "linkedEntityGuids": null
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 11,
+              "row": 3,
+              "height": 1,
+              "width": 2
+            },
+            "title": "",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 1414003,
+                  "query": "SELECT SUM(CustomData_BytesMetadataTransferred) as 'Total Metadata Transferred [IAPI]' FROM Counter WHERE Name = 'Relativity.Sync' AND CustomData_Name = 'DocumentBatchEndMetric' LIMIT MAX"
+                }
+              ],
+              "thresholds": []
+            },
+            "linkedEntityGuids": null
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 1,
+              "row": 4,
+              "height": 1,
+              "width": 4
+            },
+            "title": "Total Jobs Count",
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "Total Jobs Count",
+                  "precision": null,
+                  "type": "decimal"
+                }
+              ],
+              "nrqlQueries": [
+                {
+                  "accountId": 1414003,
+                  "query": "SELECT COUNT(*) as 'Total Jobs Count' FROM Counter WHERE Name = 'Relativity.Sync' AND CustomData_Name = 'DocumentJobEndMetric' LIMIT MAX"
+                }
+              ],
+              "thresholds": []
+            },
+            "linkedEntityGuids": null
+          },
+          {
+            "visualization": {
+              "id": "viz.markdown"
+            },
+            "layout": {
+              "column": 1,
+              "row": 5,
+              "height": 1,
+              "width": 12
+            },
+            "title": "",
+            "rawConfiguration": {
+              "text": "# Aggregated Jobs Count Data"
+            },
+            "linkedEntityGuids": null
+          },
+          {
+            "visualization": {
+              "id": "viz.pie"
+            },
+            "layout": {
+              "column": 1,
+              "row": 6,
+              "height": 3,
+              "width": 4
+            },
+            "title": "Aggregated Jobs by File Copy Mode",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 1414003,
+                  "query": "SELECT COUNT(*) as 'File Copy Mode' FROM Counter WHERE Name = 'Relativity.Sync' AND CustomData_Name = 'DocumentJobEndMetric' LIMIT MAX FACET CustomData_NativeFileCopyMode"
+                }
+              ]
+            },
+            "linkedEntityGuids": [
+              "MTQxNDAwM3xWSVp8REFTSEJPQVJEfDMxODIwMjI"
+            ]
+          },
+          {
+            "visualization": {
+              "id": "viz.pie"
+            },
+            "layout": {
+              "column": 5,
+              "row": 6,
+              "height": 3,
+              "width": 4
+            },
+            "title": "Aggregated Jobs by Run Type",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 1414003,
+                  "query": "SELECT COUNT(*) as 'Run Type' FROM Counter WHERE Name = 'Relativity.Sync' AND CustomData_Name = 'DocumentJobEndMetric' LIMIT MAX FACET CASES(where CustomData_IsRetry IS TRUE as 'Retry', where CustomData_IsRetry IS FALSE as 'Run')"
+                }
+              ]
+            },
+            "linkedEntityGuids": [
+              "MTQxNDAwM3xWSVp8REFTSEJPQVJEfDMxODIwMjI"
+            ]
+          },
+          {
+            "visualization": {
+              "id": "viz.pie"
+            },
+            "layout": {
+              "column": 9,
+              "row": 6,
+              "height": 3,
+              "width": 4
+            },
+            "title": "Aggregated Jobs by Overwrite Mode",
+            "rawConfiguration": {
+              "facet": {
+                "showOtherSeries": true
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 1414003,
+                  "query": "SELECT COUNT(*) as 'Overwrite Mode' FROM Counter WHERE Name = 'Relativity.Sync' AND CustomData_Name = 'DocumentJobEndMetric' LIMIT MAX FACET CustomData_OverwriteMode "
+                }
+              ]
+            },
+            "linkedEntityGuids": [
+              "MTQxNDAwM3xWSVp8REFTSEJPQVJEfDMxODIwMjI"
+            ]
+          },
+          {
+            "visualization": {
+              "id": "viz.markdown"
+            },
+            "layout": {
+              "column": 1,
+              "row": 9,
+              "height": 1,
+              "width": 12
+            },
+            "title": "",
+            "rawConfiguration": {
+              "text": "# Jobs Duration"
+            },
+            "linkedEntityGuids": null
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 1,
+              "row": 10,
+              "height": 1,
+              "width": 2
+            },
+            "title": "0 - 5 minutes",
+            "rawConfiguration": {
+              "dataFormatters": [
+                {
+                  "name": "0 - 5 minutes",
+                  "precision": null,
+                  "type": "decimal"
+                }
+              ],
+              "nrqlQueries": [
+                {
+                  "accountId": 1414003,
+                  "query": "SELECT COUNT(*) as '0 - 5 minutes' FROM (SELECT SUM(CustomData_Duration/1000/60) as DurationInMin FROM Counter WHERE Name = 'Relativity.Sync' AND CustomData_Name LIKE 'I%Configuration%' LIMIT MAX FACET CustomData_CorrelationId) WHERE DurationInMin > 0 AND DurationInMin <= 5 "
+                }
+              ],
+              "thresholds": []
+            },
+            "linkedEntityGuids": null
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 3,
+              "row": 10,
+              "height": 1,
+              "width": 2
+            },
+            "title": "5 - 10 minutes",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 1414003,
+                  "query": "SELECT COUNT(*) as '5 - 10 minutes' FROM (SELECT SUM(CustomData_Duration/1000/60) as DurationInMin FROM Counter WHERE Name = 'Relativity.Sync' AND CustomData_Name LIKE 'I%Configuration%' LIMIT MAX FACET CustomData_CorrelationId) WHERE DurationInMin > 5 AND DurationInMin <= 10 "
+                }
+              ],
+              "thresholds": []
+            },
+            "linkedEntityGuids": null
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 5,
+              "row": 10,
+              "height": 1,
+              "width": 2
+            },
+            "title": "10 - 30 minutes",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 1414003,
+                  "query": "SELECT COUNT(*) as '10 - 30 minutes' FROM (SELECT SUM(CustomData_Duration/1000/60) as DurationInMin FROM Counter WHERE Name = 'Relativity.Sync' AND CustomData_Name LIKE 'I%Configuration%' LIMIT MAX FACET CustomData_CorrelationId) WHERE DurationInMin > 10 AND DurationInMin <= 30"
+                }
+              ],
+              "thresholds": []
+            },
+            "linkedEntityGuids": null
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 7,
+              "row": 10,
+              "height": 1,
+              "width": 2
+            },
+            "title": "30 - 60 minutes",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 1414003,
+                  "query": "SELECT COUNT(*) as '30 - 60 minutes' FROM (SELECT SUM(CustomData_Duration/1000/60) as DurationInMin FROM Counter WHERE Name = 'Relativity.Sync' AND CustomData_Name LIKE 'I%Configuration%' LIMIT MAX FACET CustomData_CorrelationId) WHERE DurationInMin > 30 AND DurationInMin <= 60"
+                }
+              ],
+              "thresholds": []
+            },
+            "linkedEntityGuids": null
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 9,
+              "row": 10,
+              "height": 1,
+              "width": 2
+            },
+            "title": "60 - 120 minutes",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 1414003,
+                  "query": "SELECT COUNT(*) as '60 - 120 minutes' FROM (SELECT SUM(CustomData_Duration/1000/60) as DurationInMin FROM Counter WHERE Name = 'Relativity.Sync' AND CustomData_Name LIKE 'I%Configuration%' LIMIT MAX FACET CustomData_CorrelationId) WHERE DurationInMin > 60 AND DurationInMin <= 120"
+                }
+              ],
+              "thresholds": []
+            },
+            "linkedEntityGuids": null
+          },
+          {
+            "visualization": {
+              "id": "viz.billboard"
+            },
+            "layout": {
+              "column": 11,
+              "row": 10,
+              "height": 1,
+              "width": 2
+            },
+            "title": "120+ minutes",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "nrqlQueries": [
+                {
+                  "accountId": 1414003,
+                  "query": "SELECT COUNT(*) as '120+ minutes' FROM (SELECT SUM(CustomData_Duration/1000/60) as DurationInMin FROM Counter WHERE Name = 'Relativity.Sync' AND CustomData_Name LIKE 'I%Configuration%' LIMIT MAX FACET CustomData_CorrelationId) WHERE DurationInMin > 120"
+                }
+              ],
+              "thresholds": []
+            },
+            "linkedEntityGuids": null
+          },
+          {
+            "visualization": {
+              "id": "viz.table"
+            },
+            "layout": {
+              "column": 1,
+              "row": 11,
+              "height": 5,
+              "width": 12
+            },
+            "title": "Job Statistics Details",
+            "rawConfiguration": {
+              "dataFormatters": [],
+              "facet": {
+                "showOtherSeries": false
+              },
+              "nrqlQueries": [
+                {
+                  "accountId": 1414003,
+                  "query": "SELECT SourceName as 'Instance Name', CustomData_CorrelationId as 'Correlation ID', CustomData_JobEndStatus as 'End Status', CASES(where CustomData_IsRetry IS TRUE as 'Retry', where CustomData_IsRetry IS FALSE as 'Run'), CustomData_OverwriteMode as 'Overwrite Mode', CustomData_NativeFileCopyMode as 'File Copy Mode', CustomData_TotalMappedFields as 'Total Mapped Fields', CustomData_TotalRecordsRequested as 'Records Requested', CustomData_TotalRecordsTransferred as 'Records Transferred', CustomData_TotalRecordsFailed as 'Records Failed', CustomData_BytesTransferred/1024/1024 as 'Total Transferred [MB]', CustomData_BytesMetadataTransferred/1024/1024 as 'Metadata Transferred [MB]', CustomData_BytesNativesTransferred/1024/1024 as 'Natives Transferred [MB]', CustomData_ExecutingApplicationVersion as 'Integration Points Version', CustomData_SyncVersion as 'Sync Version' FROM Counter WHERE Name = 'Relativity.Sync' AND CustomData_Name = 'DocumentJobEndMetric' LIMIT MAX "
+                }
+              ]
+            },
+            "linkedEntityGuids": null
+          }
+        ]
+      },
+      {
+        "name": "Image Job Size Analysis",
+        "description": null,
+        "widgets": [
+          {
+            "visualization": {
+              "id": "viz.markdown"
+            },
+            "layout": {
+              "column": 1,
+              "row": 1,
+              "height": 1,
+              "width": 1
+            },
+            "title": "",
+            "rawConfiguration": {
+              "text": "# TBD\n"
+            },
+            "linkedEntityGuids": null
+          }
+        ]
+      }
+    ]
+  }
