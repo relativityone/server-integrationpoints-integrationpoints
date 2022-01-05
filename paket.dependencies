@@ -38,13 +38,13 @@ nuget Relativity.Platform.Agent.WorkloadDiscovery.SDK
 nuget Relativity.Productions.Services.Interfaces 11.1.0
 nuget Relativity.Telemetry.APM 2019.1.1 
 nuget Relativity.Telemetry.MetricsCollection 2018.12.2
-nuget Relativity.Telemetry.Services.Interface 3003.0.1
+nuget Relativity.Telemetry.Services.Interface 3003.0.2
 nuget Relativity.Toggles 1.0.1
 nuget Relativity.AutomatedWorkflows.Services.Interfaces 0.10.0-pre.1
 nuget Relativity.AutomatedWorkflows.SDK 0.10.0-pre.1
 
 // Import API packages
-nuget Relativity.DataExchange.Client.SDK 1.15.29
+nuget Relativity.DataExchange.Client.SDK 1.15.30
 nuget Relativity.DataTransfer.Legacy.SDK 0.2.0
 
 //Relativity transient packages
@@ -119,12 +119,12 @@ group Tests
 	nuget Relativity.Kepler 2.15.3
 	nuget Relativity.Kepler.Client 2.15.3
 	nuget Relativity.Logging.Interfaces 2019.5.1
-	nuget Relativity.Telemetry.Services.Interface 3003.0.1
+	nuget Relativity.Telemetry.Services.Interface 3003.0.2
 	nuget Relativity.Services.Interfaces 13.5.0
-	nuget Relativity.Testing.Framework 4.11.0
-	nuget Relativity.Testing.Framework.Api 3.21.0
-	nuget Relativity.Testing.Framework.Web 1.1.0
-	nuget Relativity.Testing.Framework.RingSetup 0.11.0
+	nuget Relativity.Testing.Framework 7.1.0
+	nuget Relativity.Testing.Framework.Api 6.0.1
+	nuget Relativity.Testing.Framework.Web 1.2.0
+	nuget Relativity.Testing.Framework.RingSetup 0.17.0
 	nuget Selenium.Support 4.0.0-beta4
 	nuget SystemWrapper.Interfaces 0.25.0.186
 	nuget Relativity.AutomatedWorkflows.Services.Interfaces 0.10.0-pre.1
@@ -133,7 +133,7 @@ group Tests
 	nuget Relativity.OAuth2Client 1.5.2
 	nuget Relativity.OAuth2Client.Interfaces 1.5.2
 
-	nuget Relativity.Sync 0.8.0-pre.101
+	nuget Relativity.Sync 0.8.0-pre.105
 
 	//RIP packages
 	nuget IntegrationPoints.MyFirstProvider 12.3.2
@@ -145,7 +145,7 @@ group Sync
 	strategy: min
 	source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 	
-    nuget Relativity.Sync 0.8.0-pre.101
+    nuget Relativity.Sync 0.8.0-pre.105
 	nuget Newtonsoft.Json 6.0.8
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
