@@ -19,7 +19,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
 		private Mock<IKeywordSearchManager> _keywordSearchManagerFake;
 		private Mock<IViewManager> _viewManager;
 		private Mock<IServicesMgr> _servicesMgrFake;
-		private Mock<IServiceManagerProvider> _serviceManagerProvider;
 
 		private const int _WORKSPACE_ID = 111;
 		private const int _SAVED_SEACH_ID = 222;
@@ -39,9 +38,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Helpers
 			_servicesMgrFake.Setup(x => x.CreateProxy<IViewManager>(It.IsAny<ExecutionIdentity>()))
 				.Returns(_viewManager.Object);
 
-			_serviceManagerProvider = new Mock<IServiceManagerProvider>();
-
-			_sut = new ExportedArtifactNameRepository(_servicesMgrFake.Object, _serviceManagerProvider.Object);
+			_sut = new ExportedArtifactNameRepository(_servicesMgrFake.Object);
 		}
 
 		[Test]
