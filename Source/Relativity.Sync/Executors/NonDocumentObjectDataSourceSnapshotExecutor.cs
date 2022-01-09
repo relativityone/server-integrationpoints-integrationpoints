@@ -85,8 +85,6 @@ namespace Relativity.Sync.Executors
                             await configuration
                                 .SetObjectLinkingSnapshotDataAsync(exportResults.RunID, (int)exportResults.RecordCount)
                                 .ConfigureAwait(false);
-
-                            // TODO handle linking job status update
                         }
                         else
                         {
