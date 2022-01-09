@@ -144,7 +144,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(_EXPECTED_VALUE_FOR_DOCUMENT);
 			actualResult.Messages.First().ShortMessage.Should().Be(
-				$"User does not have permission to Edit objects of type {_RDO_ARTIFACT_TYPE_ID} in the destination workspace.");
+				$"User does not have permission to edit objects of type {_RDO_ARTIFACT_TYPE_ID} in the destination workspace.");
 		}
 
 		[Test]
@@ -226,6 +226,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			configuration.Setup(x => x.DestinationWorkspaceArtifactId).Returns(_TEST_WORKSPACE_ARTIFACT_ID);
 			configuration.Setup(x => x.DestinationFolderArtifactId).Returns(_TEST_FOLDER_ARTIFACT_ID);
 			configuration.SetupGet(x => x.RdoArtifactTypeId).Returns(_RDO_ARTIFACT_TYPE_ID);
+			configuration.SetupGet(x => x.DestinationRdoArtifactTypeId).Returns(_RDO_ARTIFACT_TYPE_ID);
 			configuration.SetupGet(x => x.ImportOverwriteMode).Returns(importMode);
 			
 			return configuration;
