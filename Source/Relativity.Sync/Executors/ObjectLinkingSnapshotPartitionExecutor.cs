@@ -1,17 +1,23 @@
 ﻿using Relativity.Sync.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Executors
 {
-	internal class ObjectLinkingSnapshotPartitionExecutor : IExecutor<IObjectLinkingSnapshotPartitionConfiguration>
-	{
-		public Task<ExecutionResult> ExecuteAsync(IObjectLinkingSnapshotPartitionConfiguration configuration, CompositeCancellationToken token)
-		{
-			return Task.FromResult(ExecutionResult.Success());
-		}
-	}
+    internal sealed class ObjectLinkingSnapshotPartitionExecutor : SnapshotPartitionExecutorBase
+    {
+        private readonly ISyncLog _logger;
+
+        public ObjectLinkingSnapshotPartitionExecutor(IBatchRepository batchRepository, ISyncLog logger)
+            : base(batchRepository, logger)
+        {
+            _logger = logger;
+        }
+
+        protected override void LogSnapshotPartitionsInformation(ISnapshotPartitionConfiguration configuration)
+        {
+            _logger.LogInformation(
+                "Creating object linking snapshot partitions for source workspace (workspace artifact id: {sourceWorkspaceArtifactId})",
+                configuration.SourceWorkspaceArtifactId);
+        }
+    }
 }
