@@ -371,7 +371,7 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		public void LogOnGetJob(long jobId)
 		{
-			_log.LogVerbose("Attempting to retrieve Job with ID: ({JobId}) in {TypeName}", jobId, nameof(JobService));
+			_log.LogInformation ("Attempting to retrieve Job with ID: ({JobId}) in {TypeName}", jobId, nameof(JobService));
 		}
 
 		public void LogOnGetScheduledJob(int workspaceId, int relatedObjectArtifactID, List<string> taskTypes)
