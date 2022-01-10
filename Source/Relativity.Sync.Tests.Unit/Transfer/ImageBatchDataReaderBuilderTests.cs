@@ -57,6 +57,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Assert
 			_fieldManagerMock.Verify(x => x.GetNativeAllFieldsAsync(It.IsAny<CancellationToken>()), Times.Never);
+			_fieldManagerMock.Verify(x => x.GetNonDocumentAllFieldsAsync(It.IsAny<CancellationToken>()), Times.Never);
 			_fieldManagerMock.Verify(x => x.GetImageAllFieldsAsync(It.IsAny<CancellationToken>()));
 			dataReader.Should().BeOfType<ImageBatchDataReader>();
 		}

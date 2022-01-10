@@ -18,6 +18,7 @@ namespace Relativity.Sync.Transfer
 		private List<FieldInfoDto> _mappedDocumentFields;
 		private IReadOnlyList<FieldInfoDto> _imageAllFields;
 		private IReadOnlyList<FieldInfoDto> _nativeAllFields;
+		private IReadOnlyList<FieldInfoDto> _nonDocumentAllFields;
 
 		private readonly IFieldConfiguration _configuration;
 		private readonly IDocumentFieldRepository _documentFieldRepository;
@@ -96,6 +97,16 @@ namespace Relativity.Sync.Transfer
 			return _imageAllFields;
 		}
 
+		public async Task<IReadOnlyList<FieldInfoDto>> GetNonDocumentAllFieldsAsync(CancellationToken token)
+		{
+			if (_nonDocumentAllFields == null)
+			{
+				var result = await GetMappedFieldsAsync(token).ConfigureAwait(false);
+				_nonDocumentAllFields = EnrichFieldsWithIndex(result.ToList());
+			}
+			return _nonDocumentAllFields;
+		}
+
 		public async Task<IList<FieldInfoDto>> GetDocumentTypeFieldsAsync(CancellationToken token)
 		{
 			IReadOnlyList<FieldInfoDto> fields = await GetNativeAllFieldsAsync(token).ConfigureAwait(false);
@@ -105,7 +116,7 @@ namespace Relativity.Sync.Transfer
 
 		public async Task<FieldInfoDto> GetObjectIdentifierFieldAsync(CancellationToken token)
 		{
-			IEnumerable<FieldInfoDto> mappedFields = await GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
+			IEnumerable<FieldInfoDto> mappedFields = await GetMappedFieldsAsync(token).ConfigureAwait(false);
 
 			FieldInfoDto identifierField = mappedFields.First(f => f.IsIdentifier);
 			identifierField.DocumentFieldIndex = 0;
@@ -113,12 +124,12 @@ namespace Relativity.Sync.Transfer
 			return identifierField;
 		}
 
-		public async Task<IList<FieldInfoDto>> GetMappedDocumentFieldsAsync(CancellationToken token)
+		public async Task<IList<FieldInfoDto>> GetMappedFieldsAsync(CancellationToken token)
 		{
 			if (_mappedDocumentFields == null)
 			{
 				List<FieldInfoDto> fieldInfos = _configuration.GetFieldMappings().Select(CreateFieldInfoFromFieldMap).ToList();
-				_mappedDocumentFields = await EnrichDocumentFieldsWithRelativityDataTypesAsync(fieldInfos, token).ConfigureAwait(false);
+				_mappedDocumentFields = await EnrichFieldsWithRelativityDataTypesAsync(fieldInfos, token).ConfigureAwait(false);
 			}
 			return _mappedDocumentFields;
 		}
@@ -136,9 +147,9 @@ namespace Relativity.Sync.Transfer
 		private async Task<IReadOnlyList<FieldInfoDto>> GetAllFieldsInternalAsync(Func<IEnumerable<FieldInfoDto>> specialFieldsProvider, CancellationToken token)
 		{
 			IList<FieldInfoDto> specialFields = specialFieldsProvider().ToList();
-			IList<FieldInfoDto> mappedDocumentFields = await GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
+			IList<FieldInfoDto> mappedDocumentFields = await GetMappedFieldsAsync(token).ConfigureAwait(false);
 			List<FieldInfoDto> allFields = MergeFieldCollections(specialFields, mappedDocumentFields);
-			return EnrichDocumentFieldsWithIndex(allFields);
+			return EnrichFieldsWithIndex(allFields);
 		}
 
 		private List<FieldInfoDto> MergeFieldCollections(IList<FieldInfoDto> specialFields, IList<FieldInfoDto> mappedDocumentFields)
@@ -198,7 +209,7 @@ namespace Relativity.Sync.Transfer
 				   && first.DestinationFieldName.Equals(second.DestinationFieldName, StringComparison.InvariantCultureIgnoreCase);
 		}
 
-		private List<FieldInfoDto> EnrichDocumentFieldsWithIndex(List<FieldInfoDto> fields)
+		private List<FieldInfoDto> EnrichFieldsWithIndex(List<FieldInfoDto> fields)
 		{
 			int currentIndex = 0;
 			foreach (var field in fields)
@@ -213,7 +224,7 @@ namespace Relativity.Sync.Transfer
 			return fields;
 		}
 
-		private async Task<List<FieldInfoDto>> EnrichDocumentFieldsWithRelativityDataTypesAsync(List<FieldInfoDto> fields, CancellationToken token)
+		private async Task<List<FieldInfoDto>> EnrichFieldsWithRelativityDataTypesAsync(List<FieldInfoDto> fields, CancellationToken token)
 		{
 			if (fields.Count != 0)
 			{
