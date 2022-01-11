@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.Attributes;
@@ -51,7 +52,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                              + $"&JobHistoryArtifactViewFieldID={jobHistoryArtifactViewFieldId}&JobHistoryInstanceArtifactId={jobHistoryInstanceArtifactId}";
 
             List<KeyValuePair<string, string>> result = new List<KeyValuePair<string, string>>();
-            result.Add(new KeyValuePair<string, string>("ErrorViewRedirect", newLocation));
+            result.Add(new KeyValuePair<string, string>("ErrorViewRedirect", UrlVersionDecorator.AppendVersion(newLocation)));
             return Ok(result);
 		}
 	}

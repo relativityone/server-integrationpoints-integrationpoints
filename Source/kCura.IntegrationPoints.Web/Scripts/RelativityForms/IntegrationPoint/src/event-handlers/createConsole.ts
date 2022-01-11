@@ -216,9 +216,9 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
             innerText: "Save as a Profile",
             onclick: function (e) {
 
-                // this content container should be edited, right now its not looking great - but works
                 var contentContainer = document.createElement("div");
                 contentContainer.innerHTML = "<input type='text' value='' id='inputIntegrationPointProfileName'/>";
+                contentContainer.innerHTML = "<rwc-text-input-field id='inputIntegrationPointProfileName' label='Integration point profile name: ' validation-message='You have to provide a propper integration point profile name' required edit-mode></rwc-text-input-field>"
 
                 var model = {
                     title: "Save Integration Point as Profile",
