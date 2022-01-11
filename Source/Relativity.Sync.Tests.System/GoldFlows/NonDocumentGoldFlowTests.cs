@@ -38,12 +38,6 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 		protected override async Task ChildSuiteSetup()
 		{
-			//const int sourceWorkspaceId = 1018642;
-			//const int destinationWorkspaceId = 1018645;
-
-			//_sourceWorkspace = await Environment.GetWorkspaceAsync(sourceWorkspaceId).ConfigureAwait(false);
-			//_destinationWorkspace = await Environment.GetWorkspaceAsync(destinationWorkspaceId).ConfigureAwait(false);
-
 			_sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 			_destinationWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
 
@@ -59,11 +53,11 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			await PrepareSourceDataEntitiesAsync(5, _sourceEntityArtifactTypeId).ConfigureAwait(false);
 		}
 
+		[Ignore("Flow is not complete yet, but test is useful to have for debuging")]
 		[IdentifiedTest("C721DA78-1D27-4463-B49C-9A9E9E65F700")]
 		public async Task SyncJob_Should_SyncEntities()
 		{
 			// Arrange
-
 			int jobHistoryId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _sourceWorkspace.ArtifactID, $"Sync Job {DateTime.Now:yyyy MMMM dd HH.mm.ss.fff}", CustomAppGuids.JobHistory.TypeGuid).ConfigureAwait(false);
 
 			SyncConfigurationBuilder builder = new SyncConfigurationBuilder(
@@ -92,7 +86,6 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 				Logger);
 
 			// Act
-
 			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
@@ -109,7 +102,6 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 				};
 
 				// Create Manager Entity
-
 				const string managerName = "My Manager";
 				int managerArtifactId;
 
@@ -145,7 +137,6 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 				}
 
 				// Create Entities linked to Manager
-
 				FieldRef[] fields = new[]
 				{
 					new FieldRef()

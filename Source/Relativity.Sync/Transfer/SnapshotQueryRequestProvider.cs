@@ -94,6 +94,13 @@ namespace Relativity.Sync.Transfer
 
                 QueryResult result =
                     await objectManager.QueryAsync(workspaceArtifactId, query, 0, 1).ConfigureAwait(false);
+
+                if (result.Objects.Count != 1)
+                {
+                    _logger.LogError("Rdo with ArtifactTypeId {artifactTypeId} does not exist", rdoArtifactTypeId);
+                    throw new SyncException($"Rdo with ArtifactTypeId {rdoArtifactTypeId} does not exist");
+                }
+                
                 return result.Objects.Single().Name;
             }
         }
