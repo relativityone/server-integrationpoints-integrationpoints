@@ -3,7 +3,10 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const FormsExtensionPlugin = require("./plugins/FormsPlugin");
 
 module.exports = {
-  entry: './src/index.ts',
+  entry: {
+      "integration-point-event-handler": './src/integration-point-event-handler.ts',
+      "integration-point-event-handler-profile": './src/integration-point-event-handler-profile.ts'
+  },
   module: {
     rules: [
       {
@@ -17,7 +20,7 @@ module.exports = {
     extensions: ['.ts', '.js'],
   },
   output: {
-    filename: 'integration-point-event-handler.js',
+    filename: '[name].js',
     path: path.resolve(__dirname + "/dist"),
     library: 'extension',
     libraryTarget: 'var',

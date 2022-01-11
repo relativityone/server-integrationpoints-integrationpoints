@@ -8,36 +8,40 @@ const EXTENSION_NAME = "FormsExtensionPlugin"
 class FormsExtensionPlugin {
 	_filename = "";
 	_library = {};
+    _entry = {};
 
 	apply(compiler) {
 		// Hooks on compilation time
 		compiler.hooks.compilation.tap(EXTENSION_NAME, (compilation) => {
 			this.validateOptions(compilation.options);
-            console.log(compilation.options.output.path);
 			this._filename = compilation.options.output.filename;
 			this._library = compilation.options.output.library;
+            this._entry = compilation.options.entry;
 
             compilation.hooks.afterProcessAssets.tap({
                 name: EXTENSION_NAME
-            }, () => { this.processAsset(compilation); })
+            }, (assets) => { this.processAsset(compilation, assets); })
 		});
 	}
 
 	// Wraps output file with self-called function. This shape is expected to properly handle page interaction event handler.
 	// The function accepts event names and convenienceApi as agruments.
-	processAsset(compilation) {
-		const output = compilation.getAsset(this._filename);
-		let wrappedWithForm = `
-			(function(eventNames, convenienceApi) {
-				${output.source.source()}
-				return ${this._library.name} (eventNames, convenienceApi); }
-			(eventNames, convenienceApi))
-		`;
+	processAsset(compilation, assets) {
+        Object.keys(assets).forEach((key) => {
+            const asset = assets[key];
 
-		compilation.updateAsset(
-			this._filename,
-			new sources.RawSource(wrappedWithForm)
-		);
+            let wrappedWithForm = `
+                (function(eventNames, convenienceApi) {
+                    ${asset.source()}
+                    return ${this._library.name} (eventNames, convenienceApi); }
+                (eventNames, convenienceApi))
+            `;
+
+            compilation.updateAsset(
+                key,
+                new sources.RawSource(wrappedWithForm)
+            );
+        });
 	}
 
 	// Validates webpack configuration
