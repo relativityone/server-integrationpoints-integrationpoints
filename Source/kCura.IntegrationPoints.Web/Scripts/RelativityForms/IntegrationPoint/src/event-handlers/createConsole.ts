@@ -205,7 +205,8 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
                     });
 
                 resp.then(function (result) {
-                    window.location.assign(result[0].value)
+                    var relativityWindow = convenienceApi.utilities.getRelativityPageBaseWindow();
+                    relativityWindow.location = result[0].value;
                 })
             }
         });
@@ -215,10 +216,8 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
         return consoleApi.generate.button({
             innerText: "Save as a Profile",
             onclick: function (e) {
-
                 var contentContainer = document.createElement("div");
-                contentContainer.innerHTML = "<input type='text' value='' id='inputIntegrationPointProfileName'/>";
-                contentContainer.innerHTML = "<rwc-text-input-field id='inputIntegrationPointProfileName' label='Integration point profile name: ' validation-message='You have to provide a propper integration point profile name' required edit-mode></rwc-text-input-field>"
+                contentContainer.innerHTML = `<rwc-text-input-field id='inputIntegrationPointProfileName' label='Integration point profile name: ' value='${integrationPoint['Name']}' validation-message='You have to provide a propper integration point profile name' required edit-mode></rwc-text-input-field>`;
 
                 var model = {
                     title: "Save Integration Point as Profile",
@@ -246,7 +245,7 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
                              .then(function (result) {
                                  if (!result.ok) {
                                      console.log(result);
-                                     return ctx.setErrorSummary(["Failed to create integration profile, try again or lose hope"]);
+                                     return ctx.setErrorSummary(["Failed to create integration point profile"]);
                                  }
                              });
                     }
