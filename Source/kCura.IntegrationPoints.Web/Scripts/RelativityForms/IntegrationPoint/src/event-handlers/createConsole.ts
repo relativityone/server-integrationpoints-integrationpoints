@@ -78,6 +78,19 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
         return convenienceApi.relativityHttpClient.post(request.url, request.payload, request.options)
     }
 
+    function  prepareGetViewErrorsPath(workspaceId, integrationPointId) {
+        var request = {
+            options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
+                headers: {
+                    "content-type": "application/json; charset=utf-8"
+                }
+            }),
+            url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/" + workspaceId + "/api/Error/GetViewErrorsLink" + '?integrationPointId=' + integrationPointId + '&workspaceId=' + workspaceId
+        }
+
+        return request;
+    }
+
     function prepareGetImportProviderDocumentAPIRequest(workspaceId, integrationPointId, action) {
         return {
             options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
@@ -175,7 +188,26 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
         return consoleApi.generate.buttonStyledAsLink({
             innerText: "View Errors",
             disabled: !enabled,
-            onclick: function () { console.log("View Errors Clicked!"); }
+            onclick: function () {
+                console.log("View Errors Clicked!");
+
+                var request = prepareGetViewErrorsPath(workspaceId, integrationPointId);
+                console.log(request);
+
+                var resp = convenienceApi.relativityHttpClient.get(request.url, request.options)
+                    .then(function (result) {
+                        if (!result.ok) {
+                            console.log(result);
+                            return ctx.setErrorSummary(["Ah shit, here we go again!"]);
+                        } else if (result.ok) {
+                            return result.json();
+                        }
+                    });
+
+                resp.then(function (result) {
+                    window.location.assign(result[0].value)
+                })
+            }
         });
     }
 

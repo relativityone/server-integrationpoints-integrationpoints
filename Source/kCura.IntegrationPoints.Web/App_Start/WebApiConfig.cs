@@ -292,6 +292,12 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "ErrorGetViewErrorsLink",
+				routeTemplate: "{workspaceID}/api/Error/GetViewErrorsLink",
+				defaults: new { controller = "Error", action = "GetViewErrorsLink" }
+			);
+
+			config.Routes.MapHttpRoute(
 				name: "ImportProviderGetOverlayIdentifierFields",
 				routeTemplate: "{workspaceID}/api/ImportProviderImage/GetOverlayIdentifierFields",
 				defaults: new {controller = "ImportProviderImage", action = "GetOverlayIdentifierFields"}
@@ -380,7 +386,7 @@ namespace kCura.IntegrationPoints.Web
 				routeTemplate: "{workspaceID}/api/ToggleAPI/{toggleName}",
 				defaults: new {controller = "ToggleAPI", action = "Get"}
 			);
-			
+
 			config.Routes.MapHttpRoute(
 				name: "DefaultApi",
 				routeTemplate: "{workspaceID}/api/{controller}/{id}",
