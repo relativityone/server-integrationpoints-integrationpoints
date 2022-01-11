@@ -71,7 +71,7 @@
         </Assemblies>
         <ResourceFiles>
 		  <ResourceFile>ApplicationsXML\deploy.yaml</ResourceFile>
-          <ResourceFile>Source\kCura.IntegrationPoints.Web\Scripts\RelativityForms\IntegrationPointProfile\integration-point-profile-event-handler.js</ResourceFile>
+          <ResourceFile>Source\kCura.IntegrationPoints.Web\Scripts\RelativityForms\IntegrationPoint\dist\integration-point-event-handler-profile.js</ResourceFile>
           <ResourceFile>Source\kCura.IntegrationPoints.Web\Scripts\RelativityForms\IntegrationPoint\dist\integration-point-event-handler.js</ResourceFile>          
         </ResourceFiles>
         <CustomPages>
