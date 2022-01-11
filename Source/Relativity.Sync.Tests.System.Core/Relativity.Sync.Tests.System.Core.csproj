@@ -38,13 +38,13 @@
   </ItemGroup>
   <!-- Third Party Packages -->
   <ItemGroup>
-    <PackageReference Include="Castle.Windsor" Version="4.0.0" />
+    <PackageReference Include="Castle.Windsor" Version="3.3.0" />
   </ItemGroup>
   <!-- Relativity Packages with Unknown Versioning Schema -->
   <ItemGroup>
-    <PackageReference Include="Relativity.Testing.Framework" Version="0.29.0" />
-    <PackageReference Include="Relativity.Testing.Framework.Api" Version="0.29.0" />
-    <PackageReference Include="Relativity.Testing.Identification" Version="3.5.0" />
+    <PackageReference Include="Relativity.Testing.Framework" Version="7.1.0" />
+    <PackageReference Include="Relativity.Testing.Framework.Api" Version="6.0.1" />
+    <PackageReference Include="Relativity.Testing.Identification" Version="3.12.0" />
     <PackageReference Include="Relativity.Productions.Services.Interfaces" Version="11.2.13" />
   </ItemGroup>
 	<ItemGroup>
