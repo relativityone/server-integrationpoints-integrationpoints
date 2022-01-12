@@ -192,7 +192,7 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
                 var resp = convenienceApi.relativityHttpClient.get(request.url, request.options)
                     .then(function (result) {
                         if (!result.ok) {
-                            return ctx.setErrorSummary(["Failed to create Integration Point Profile."]);
+                            return ctx.setErrorSummary(["Failed to navigate to view error page."]);
                         } else if (result.ok) {
                             return result.json();
                         }
