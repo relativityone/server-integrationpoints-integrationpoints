@@ -1,12 +1,13 @@
-﻿using Relativity.Services.Interfaces.LibraryApplication.Models;
-using System;
+﻿using System;
 using System.IO;
 using ARMTestServices.Services.Interfaces;
 using Relativity.Kepler.Transport;
 using System.Threading.Tasks;
-using Relativity.Services.Interfaces.InstanceSetting.Model;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api;
+using Relativity.Testing.Framework.Api.Kepler;
+using Relativity.Testing.Framework.Api.Services;
+using Relativity.Testing.Framework.Models;
 
 namespace Relativity.Sync.Tests.Performance.Helpers
 {
@@ -57,7 +58,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 			var developmentModeSetting = instanceSettingsService.Get("DevelopmentMode", "kCura.ARM");
 			if (developmentModeSetting == null)
 			{
-				instanceSettingsService.Create(new Testing.Framework.InstanceSetting
+				instanceSettingsService.Create(new Testing.Framework.Models.InstanceSetting
 				{
 					Name = "DevelopmentMode",
 					Section = "kCura.ARM",
