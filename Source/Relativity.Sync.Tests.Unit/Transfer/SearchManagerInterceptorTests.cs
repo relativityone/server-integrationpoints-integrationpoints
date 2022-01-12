@@ -65,7 +65,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			factorySearchManager = factorySearchManager ?? new Mock<ISearchManager>();
 
 			Mock<Func<Task<ISearchManager>>> searchManagerFactoryStub = new Mock<Func<Task<ISearchManager>>>();
-			searchManagerFactoryStub.Setup(x => x.Invoke()).Returns(Task.FromResult(factorySearchManager.Object));
+			searchManagerFactoryStub.Setup(x => x()).Returns(Task.FromResult(factorySearchManager.Object));
 
 			SearchManagerInterceptor searchManagerInterceptor = new SearchManagerInterceptor(searchManagerFactoryStub.Object);
 
