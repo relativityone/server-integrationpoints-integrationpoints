@@ -159,8 +159,6 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
             innerText: "Retry Errors",
             disabled: !enabled,
             onclick: function () { 
-                console.log("Retry Errors Clicked!");
-
                 function generateRunMessage() {
                     return "Are you sure you want to run this job now?";
                 }
@@ -189,10 +187,7 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
             innerText: "View Errors",
             disabled: !enabled,
             onclick: function () {
-                console.log("View Errors Clicked!");
-
                 var request = prepareGetViewErrorsPath(workspaceId, integrationPointId);
-                console.log(request);
 
                 var resp = convenienceApi.relativityHttpClient.get(request.url, request.options)
                     .then(function (result) {
