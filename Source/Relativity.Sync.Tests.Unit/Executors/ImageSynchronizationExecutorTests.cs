@@ -98,7 +98,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_jobProgressUpdaterFactoryStub = new Mock<IJobProgressUpdaterFactory>();
 			_stopwatchFactoryFake = new Mock<Func<IStopwatch>>();
 			_stopwatchFake = new Mock<IStopwatch>();
-			_stopwatchFactoryFake.Setup(x => x.Invoke()).Returns(_stopwatchFake.Object);
+			_stopwatchFactoryFake.Setup(x => x()).Returns(_stopwatchFake.Object);
 			_syncMetricsMock = new Mock<ISyncMetrics>();
 
 			_jobProgressHandlerFake = new Mock<IJobProgressHandler>();
@@ -155,7 +155,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			Mock<IStopwatch> batchTimer = CreateFakeStopwatch(batchTime);
 			Mock<IStopwatch> iapiTimer = CreateFakeStopwatch(iapiTime);
-			_stopwatchFactoryFake.SetupSequence(x => x.Invoke())
+			_stopwatchFactoryFake.SetupSequence(x => x())
 				.Returns(batchTimer.Object)
 				.Returns(iapiTimer.Object);
 
@@ -207,7 +207,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			Mock<IStopwatch> batchTimer = CreateFakeStopwatch(batchTime);
 			Mock<IStopwatch> iapiTimer = CreateFakeStopwatch(iapiTime);
-			_stopwatchFactoryFake.SetupSequence(x => x.Invoke())
+			_stopwatchFactoryFake.SetupSequence(x => x())
 				.Returns(batchTimer.Object)
 				.Returns(iapiTimer.Object);
 
@@ -677,12 +677,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			_importJobFake.SetupSequence(x => x.RunAsync(It.IsAny<CompositeCancellationToken>()))
 				.Returns(Task.FromResult(CreateJobResult()))
-				.Returns(() =>
+				.Returns(Task.Run(() =>
 				{
 					drainStopCancellationTokenSource.Cancel();
 					return Task.FromResult(CreatePausedResult());
-				});
-				
+				}));				
 
 			// Act
 			ExecutionResult result = await _sut

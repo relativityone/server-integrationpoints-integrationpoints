@@ -44,7 +44,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 
 			_fieldManagerFake = new Mock<IFieldManager>();
 
-			_objectManagerFake = new Mock<IObjectManager>();
+			_objectManagerFake = new Mock<IObjectManager>(MockBehavior.Strict);
+			_objectManagerFake.Setup(x => x.Dispose());
 
 			Mock<ISourceServiceFactoryForUser> serviceFactory = new Mock<ISourceServiceFactoryForUser>();
 			serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>())
@@ -188,9 +189,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		{
 			// Act
 			await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
-
-			// Assert
-			_objectManagerFake.VerifyNoOtherCalls();
 		}
 
 		[TestCaseSource(nameof(FieldsMappingTestCaseSource))]
