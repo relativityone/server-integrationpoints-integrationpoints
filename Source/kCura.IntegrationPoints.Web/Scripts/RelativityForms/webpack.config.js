@@ -5,7 +5,7 @@ const FormsExtensionPlugin = require("./plugins/FormsPlugin");
 module.exports = {
   entry: {
       "integration-point-event-handler": './src/integration-point-event-handler.ts',
-      "integration-point-event-handler-profile": './src/integration-point-profile-event-handler.ts'
+      "integration-point-profile-event-handler": './src/integration-point-profile-event-handler.ts'
   },
   module: {
     rules: [
