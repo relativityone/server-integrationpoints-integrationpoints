@@ -1769,7 +1769,7 @@
     </ResourceFile>
     <ResourceFile>
       <ArtifactID>5511251</ArtifactID>
-      <Name>integration-point-event-handler-profile.js</Name>
+      <Name>integration-point-profile-event-handler.js</Name>
       <FileType>1</FileType>
     </ResourceFile>
     <ResourceFile>
