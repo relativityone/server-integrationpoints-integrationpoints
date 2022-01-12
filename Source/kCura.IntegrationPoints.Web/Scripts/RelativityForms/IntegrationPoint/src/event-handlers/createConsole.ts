@@ -61,6 +61,36 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
         return convenienceApi.relativityHttpClient.post(request.url, request.payload, request.options)
     }
 
+    function postCreateIntegrationPointProfileRequest(workspaceId, integrationPointId, integrationPointProfileName) {
+        var request = {
+            options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
+                headers: {
+                    "content-type": "application/json; charset=utf-8"
+                }
+            }),
+            payload: {
+                integrationPointArtifactId: integrationPointId,
+                profileName: integrationPointProfileName
+            },
+            url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/" + workspaceId + "/api/IntegrationPointProfilesAPI/SaveAsProfile/"
+        }
+
+        return convenienceApi.relativityHttpClient.post(request.url, request.payload, request.options)
+    }
+
+    function  prepareGetViewErrorsPath(workspaceId, integrationPointId) {
+        var request = {
+            options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
+                headers: {
+                    "content-type": "application/json; charset=utf-8"
+                }
+            }),
+            url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/" + workspaceId + "/api/Error/GetViewErrorsLink" + '?integrationPointId=' + integrationPointId + '&workspaceId=' + workspaceId
+        }
+
+        return request;
+    }
+
     function prepareGetImportProviderDocumentAPIRequest(workspaceId, integrationPointId, action) {
         return {
             options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
@@ -129,8 +159,6 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
             innerText: "Retry Errors",
             disabled: !enabled,
             onclick: function () { 
-                console.log("Retry Errors Clicked!");
-
                 function generateRunMessage() {
                     return "Are you sure you want to run this job now?";
                 }
@@ -158,14 +186,66 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
         return consoleApi.generate.buttonStyledAsLink({
             innerText: "View Errors",
             disabled: !enabled,
-            onclick: function () { console.log("View Errors Clicked!"); }
+            onclick: function () {
+                var request = prepareGetViewErrorsPath(workspaceId, integrationPointId);
+
+                var resp = convenienceApi.relativityHttpClient.get(request.url, request.options)
+                    .then(function (result) {
+                        if (!result.ok) {
+                            return ctx.setErrorSummary(["Failed to navigate to view error page."]);
+                        } else if (result.ok) {
+                            return result.json();
+                        }
+                    });
+
+                resp.then(function (result) {
+                    var relativityWindow = convenienceApi.utilities.getRelativityPageBaseWindow();
+                    relativityWindow.location = result[0].value;
+                })
+            }
         });
     }
 
     function createSaveAsProfileButton() {
         return consoleApi.generate.button({
             innerText: "Save as a Profile",
-            onclick: function (e) { console.log("Save as Profile Clicked!"); }
+            onclick: function (e) {
+                var contentContainer = document.createElement("div");
+                contentContainer.innerHTML = `<rwc-text-input-field id='inputIntegrationPointProfileName' label='Integration point profile name: ' value='${integrationPoint['Name']}' validation-message='You have to provide a propper integration point profile name' required edit-mode></rwc-text-input-field>`;
+
+                var model = {
+                    title: "Save Integration Point as Profile",
+                    theme: "confirmation",
+                    contentElement: contentContainer,
+                    actions: [
+                        {
+                            text: "Ok",
+                            click: function click() {
+                                // @ts-ignore
+                                model.accept("Accept payload");
+                            }
+                        },
+                        {
+                            text: "Cancel",
+                            click: function click() {
+                                // @ts-ignore
+                                model.cancel("Cancel payload");
+                            }
+                        }
+                    ],
+                    acceptAction: function () {
+                         var name = (<HTMLInputElement>document.getElementById('inputIntegrationPointProfileName')).value;
+                         return postCreateIntegrationPointProfileRequest(workspaceId, integrationPointId, name)
+                             .then(function (result) {
+                                 if (!result.ok) {
+                                     return ctx.setErrorSummary(["Failed to create integration point profile"]);
+                                 }
+                             });
+                    }
+                };
+
+                return convenienceApi.modalService.openCustomModal(model);
+            }
         });
     }
 
