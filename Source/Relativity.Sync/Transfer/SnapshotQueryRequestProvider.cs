@@ -49,14 +49,10 @@ namespace Relativity.Sync.Transfer
         {
             string transferredRdoTypeNameInSourceWorkspace =
                 await GetRdoTypeNameAsync(_configuration.SourceWorkspaceArtifactId, _configuration.RdoArtifactTypeId);
-            
-            token.ThrowIfCancellationRequested();
-            
+
             string[] fieldsOfTheSameType =
                 await GetSameTypeFieldNamesAsync(transferredRdoTypeNameInSourceWorkspace, _configuration.SourceWorkspaceArtifactId).ConfigureAwait(false);
             
-            token.ThrowIfCancellationRequested();
-
             if (fieldsOfTheSameType.Any())
             {
                 return new QueryRequest

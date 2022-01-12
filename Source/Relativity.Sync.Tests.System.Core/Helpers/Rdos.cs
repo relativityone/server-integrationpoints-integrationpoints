@@ -385,13 +385,15 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				ImportOverwriteMode = configurationStub.ImportOverwriteMode,
 				MoveExistingDocuments = configurationStub.MoveExistingDocuments,
 				NativesBehavior = configurationStub.ImportNativeFileCopyMode,
-				RdoArtifactTypeId = (int)ArtifactType.Document,
+				RdoArtifactTypeId = configurationStub.RdoArtifactTypeId,
+				DestinationRdoArtifactTypeId = configurationStub.DestinationRdoArtifactTypeId,
 				JobHistoryId = configurationStub.JobHistoryArtifactId,
 				JobHistoryToRetryId = configurationStub.JobHistoryToRetryId,
 				ImageImport = configurationStub.ImageImport,
 				IncludeOriginalImages = configurationStub.ProductionImagePrecedence is null || configurationStub.IncludeOriginalImageIfNotFoundInProductions,
 				ImageFileCopyMode = configurationStub.ImportImageFileCopyMode,
 				ProductionImagePrecedence = configurationStub.ProductionImagePrecedence is null ? String.Empty : serializer.Serialize(configurationStub.ProductionImagePrecedence),
+				
 
 				//Drain-Stop
 				SyncStatisticsId = configurationStub.SyncStatisticsId,

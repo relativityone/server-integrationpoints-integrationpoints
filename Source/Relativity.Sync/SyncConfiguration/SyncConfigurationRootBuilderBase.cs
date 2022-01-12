@@ -42,7 +42,9 @@ namespace Relativity.Sync.SyncConfiguration
                 DestinationWorkspaceArtifactId = syncContext.DestinationWorkspaceId,
                 JobHistoryId =  syncContext.JobHistoryId,
                 ImportOverwriteMode = ImportOverwriteMode.AppendOnly,
-                FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings
+                FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings,
+                RdoArtifactTypeId = (int)ArtifactType.Document,
+                DestinationRdoArtifactTypeId = (int)ArtifactType.Document
             };
             SetRdoFields();
         }
