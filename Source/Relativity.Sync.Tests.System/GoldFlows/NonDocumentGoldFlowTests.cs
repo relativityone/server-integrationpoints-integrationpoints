@@ -53,7 +53,6 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			await PrepareSourceDataEntitiesAsync(5, _sourceEntityArtifactTypeId).ConfigureAwait(false);
 		}
 
-		[Ignore("Flow is not complete yet, but test is useful to have for debuging")]
 		[IdentifiedTest("C721DA78-1D27-4463-B49C-9A9E9E65F700")]
 		public async Task SyncJob_Should_SyncEntities()
 		{

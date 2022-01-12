@@ -20,9 +20,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	[TestFixture]
 	public class DocumentFieldRepositoryTests
 	{
-		private DocumentFieldRepository _instance;
+		private ObjectFieldTypeRepository _instance;
 		private Mock<IObjectManager> _objectManager;
 		private readonly int _sourceWorkspaceArtifactId = 1234;
+		private const int _RDO_ARTIFACT_TYPE_ID = 420;
 
 		[SetUp]
 		public void SetUp()
@@ -31,7 +32,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			var serviceFactory = new Mock<ISourceServiceFactoryForUser>();
 			serviceFactory.Setup(f => f.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-			_instance = new DocumentFieldRepository(serviceFactory.Object, new EmptyLogger());
+			_instance = new ObjectFieldTypeRepository(serviceFactory.Object, new EmptyLogger());
 		}
 
 		[Test]
@@ -59,7 +60,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Act
 			IDictionary<string, RelativityDataType> result = await _instance
-				.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, fieldNames, CancellationToken.None).ConfigureAwait(false);
+				.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, _RDO_ARTIFACT_TYPE_ID, fieldNames, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Count.Should().Be(fieldNames.Count);
@@ -87,7 +88,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				.ReturnsAsync(queryResult);
 
 			// Act
-			await _instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, requestedFieldNames, CancellationToken.None)
+			await _instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, _RDO_ARTIFACT_TYPE_ID, requestedFieldNames, CancellationToken.None)
 				.ConfigureAwait(false);
 
 			// Assert
@@ -114,7 +115,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			// Act
 			IDictionary<string, RelativityDataType> result =
-				await _instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, fieldNames, CancellationToken.None).ConfigureAwait(false);
+				await _instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, _RDO_ARTIFACT_TYPE_ID, fieldNames, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			result.Should().BeEmpty();
@@ -131,7 +132,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Act
 			Func<Task<IDictionary<string, RelativityDataType>>> action = () =>
-				_instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, fieldNames, CancellationToken.None);
+				_instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, _RDO_ARTIFACT_TYPE_ID, fieldNames, CancellationToken.None);
 
 			// Assert
 			await action.Should().ThrowAsync<SyncKeplerException>().ConfigureAwait(false);
@@ -150,7 +151,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Act
 			Func<Task<IDictionary<string, RelativityDataType>>> action = () =>
-				_instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, requestedFieldNames, CancellationToken.None);
+				_instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, _RDO_ARTIFACT_TYPE_ID, requestedFieldNames, CancellationToken.None);
 
 			// Assert
 			(await action.Should().ThrowAsync<FieldNotFoundException>().ConfigureAwait(false))
@@ -170,7 +171,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Act
 			Func<Task<IDictionary<string, RelativityDataType>>> action = () =>
-				_instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, requestedFieldNames, CancellationToken.None);
+				_instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, _RDO_ARTIFACT_TYPE_ID, requestedFieldNames, CancellationToken.None);
 
 			// Assert
 			(await action.Should().ThrowAsync<FieldNotFoundException>().ConfigureAwait(false))
@@ -191,7 +192,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Act
 			Func<Task<IDictionary<string, RelativityDataType>>> action = () =>
-				_instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, requestedFieldNames, CancellationToken.None);
+				_instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, _RDO_ARTIFACT_TYPE_ID, requestedFieldNames, CancellationToken.None);
 
 			// Assert
 			(await action.Should().ThrowAsync<FieldNotFoundException>().ConfigureAwait(false))
@@ -211,7 +212,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				.ReturnsAsync(queryResult);
 
 			// Act
-			await _instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, requestedFieldNames, CancellationToken.None)
+			await _instance.GetRelativityDataTypesForFieldsByFieldNameAsync(_sourceWorkspaceArtifactId, _RDO_ARTIFACT_TYPE_ID, requestedFieldNames, CancellationToken.None)
 				.ConfigureAwait(false);
 
 			// Assert

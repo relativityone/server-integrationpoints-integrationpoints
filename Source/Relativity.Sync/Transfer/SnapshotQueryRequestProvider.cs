@@ -84,7 +84,7 @@ namespace Relativity.Sync.Transfer
                     {
                         ArtifactTypeID = (int)ArtifactType.ObjectType
                     },
-                    Condition = $"'Artifact Type ID == {rdoArtifactTypeId}",
+                    Condition = $"'Artifact Type ID' == {rdoArtifactTypeId}",
                     IncludeNameInQueryResult = true
                 };
 
