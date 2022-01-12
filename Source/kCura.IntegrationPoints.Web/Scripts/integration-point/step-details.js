@@ -272,6 +272,9 @@ var IP = IP || {};
 		};
 
 		this.setTypeVisibility = function (type) {
+
+			var enableSyncNonDocumentFlow = IP.data.params['EnableSyncNonDocumentFlowToggleValue'];
+
 			var exportGuid = "dbb2860a-5691-449b-bc4a-e18d8519eb3a";
 			if (type === undefined || type === 0) {
 				type = self.getSelectedType(exportGuid, function (item, guid) { return item.value === guid }).artifactID;
@@ -300,7 +303,8 @@ var IP = IP || {};
 					var relativitySourceProviderGuid = "423b4d43-eae9-4e14-b767-17d629de4bb2";
 					self.source.selectedType(relativitySourceProviderGuid);
 				}
-				self.destination.isDestinationObjectDisabled(isExportType);
+				var disableRdoSelection = isExportType && !enableSyncNonDocumentFlow;
+				self.destination.isDestinationObjectDisabled(disableRdoSelection);
 			}
 		};
 	};

@@ -24,10 +24,17 @@
 
 	this.selectedDestinationType.subscribe(function (selectedValue) {
 		var destType = self.selectedDestinationTypeGuid();
-		var isRelativityProvider = destType === relativityProviderGuid;
-		self.isDestinationObjectDisabled(isRelativityProvider);
-		if (destType === "1D3AD995-32C5-48FE-BAA5-5D97089C8F18"
-		|| (typeof parentModel.source.SourceProviderConfiguration.compatibleRdoTypes === 'undefined' || parentModel.source.SourceProviderConfiguration.compatibleRdoTypes === null)
+		var enableSyncNonDocumentFlow = IP.data.params['EnableSyncNonDocumentFlowToggleValue'];
+		var disableRdoSelection = destType === relativityProviderGuid && enableSyncNonDocumentFlow == false;
+
+		self.isDestinationObjectDisabled(disableRdoSelection);
+		
+		if (
+			destType === "1D3AD995-32C5-48FE-BAA5-5D97089C8F18" ||
+			(typeof parentModel.source.SourceProviderConfiguration.compatibleRdoTypes === 'undefined' ||
+			parentModel.source.SourceProviderConfiguration.compatibleRdoTypes === null ||
+			enableSyncNonDocumentFlow
+			)
 		) {
 			self.rdoTypes(self.allRdoTypes());
 			if (typeof self.artifactTypeID() === 'undefined') {
