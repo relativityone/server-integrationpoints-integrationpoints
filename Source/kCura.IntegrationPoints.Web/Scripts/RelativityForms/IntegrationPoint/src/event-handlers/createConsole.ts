@@ -197,8 +197,7 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
                 var resp = convenienceApi.relativityHttpClient.get(request.url, request.options)
                     .then(function (result) {
                         if (!result.ok) {
-                            console.log(result);
-                            return ctx.setErrorSummary(["Ah shit, here we go again!"]);
+                            return ctx.setErrorSummary(["Failed to create Integration Point Profile."]);
                         } else if (result.ok) {
                             return result.json();
                         }
@@ -244,21 +243,13 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
                          return postCreateIntegrationPointProfileRequest(workspaceId, integrationPointId, name)
                              .then(function (result) {
                                  if (!result.ok) {
-                                     console.log(result);
                                      return ctx.setErrorSummary(["Failed to create integration point profile"]);
                                  }
                              });
                     }
                 };
 
-                return convenienceApi.modalService.openCustomModal(model).then(function (closeResult) {
-                    if (closeResult.wasCancelled) {
-                        console.log("Create integration point profile modal was cancelled");
-                    } else {
-                        console.log("Create integration point profile modal was accepted");
-                    }
-                    console.log(closeResult);
-                });
+                return convenienceApi.modalService.openCustomModal(model);
             }
         });
     }
