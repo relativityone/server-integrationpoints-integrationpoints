@@ -165,26 +165,13 @@ namespace Relativity.Sync.Tests.Common
 				new[] {typeof(IDestinationWorkspaceObjectTypesCreationConfiguration)},
 				new[] {typeof(IPermissionsCheckConfiguration)},
 				new[] {typeof(IValidationConfiguration)},
-				new[] {typeof(IDataSourceSnapshotConfiguration)},
+				new[] {typeof(INonDocumentDataSourceSnapshotConfiguration)},
 				new[]
 				{
-					typeof(IDocumentJobStartMetricsConfiguration),
-					typeof(ISourceWorkspaceTagsCreationConfiguration),
-					typeof(IDestinationWorkspaceTagsCreationConfiguration),
-					typeof(IDataDestinationInitializationConfiguration)
+					typeof(INonDocumentJobStartMetricsConfiguration)
 				},
-				new[] {typeof(IDestinationWorkspaceSavedSearchCreationConfiguration)},
 				new[] {typeof(ISnapshotPartitionConfiguration)},
 				new[] {typeof(IObjectLinkingSnapshotPartitionConfiguration)},
-				new[] {typeof(IDocumentSynchronizationConfiguration)},
-				new[] {typeof(IDataDestinationFinalizationConfiguration)},
-				new[] {typeof(IJobStatusConsolidationConfiguration)},
-				new[]
-				{
-					typeof(INotificationConfiguration),
-					typeof(IAutomatedWorkflowTriggerConfiguration)
-				},
-				new[] {typeof(IJobCleanupConfiguration)}
 			};
 		}
 	}

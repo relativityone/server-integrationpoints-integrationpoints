@@ -265,6 +265,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			return new SyncConfigurationRdo
 			{
 				RdoArtifactTypeId = 10,
+				DestinationRdoArtifactTypeId = 10,
 				DataSourceType = DataSourceType.SavedSearch,
 				DataSourceArtifactId = _savedSearchId,
 				DestinationWorkspaceArtifactId = DestinationWorkspaceId,

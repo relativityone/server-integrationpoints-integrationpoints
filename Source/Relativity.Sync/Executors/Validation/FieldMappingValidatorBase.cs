@@ -104,7 +104,7 @@ namespace Relativity.Sync.Executors.Validation
 			ValidationMessage validationMessage = null;
 
 			IDictionary<int, string> mappedFieldIdNames = fieldMaps.ToDictionary(x => x.DestinationField.FieldIdentifier, x => x.DestinationField.DisplayName);
-			IDictionary<int, string> missingFields = await GetMissingFieldsAsync(_destinationServiceFactoryForUser, mappedFieldIdNames, configuration.DestinationWorkspaceArtifactId, configuration.RdoArtifactTypeId, token).ConfigureAwait(false);
+			IDictionary<int, string> missingFields = await GetMissingFieldsAsync(_destinationServiceFactoryForUser, mappedFieldIdNames, configuration.DestinationWorkspaceArtifactId, configuration.DestinationRdoArtifactTypeId, token).ConfigureAwait(false);
 			if (missingFields.Count > 0)
 			{
 				validationMessage =

@@ -202,7 +202,7 @@ namespace Relativity.Sync.Tests.System.Core
 		{
 			await InstallHelperAppIfNeededAsync(_RELATIVITY_SYNC_TEST_HELPER_RAP, _HELPER_APP_GUID).ConfigureAwait(false);
 			await InstallApplicationFromLibraryToWorkspaceAsync(workspaceArtifactId, _HELPER_APP_GUID);
-			
+
 			await EnsureRdosExistsAsync(workspaceArtifactId).ConfigureAwait(false);
 		}
 
@@ -210,10 +210,16 @@ namespace Relativity.Sync.Tests.System.Core
 		{
 			await InstallHelperAppIfNeededAsync(_CUSTOM_RELATIVITY_SYNC_TEST_HELPER_RAP, _CUSTOM_HELPER_APP_GUID).ConfigureAwait(false);
 			await InstallApplicationFromLibraryToWorkspaceAsync(workspaceArtifactId, _CUSTOM_HELPER_APP_GUID);
-			
+
 			await EnsureRdosExistsAsync(workspaceArtifactId).ConfigureAwait(false);
 		}
-		
+
+		public async Task InstallLegalHoldToWorkspaceAsync(int workspaceArtifactId)
+		{
+			Guid legalHoldGuid = new Guid("98f31698-90a0-4ead-87e3-dac723fed2a6");
+			await InstallApplicationFromLibraryToWorkspaceAsync(workspaceArtifactId, legalHoldGuid).ConfigureAwait(false);
+		}
+
 		private async Task InstallApplicationFromLibraryToWorkspaceAsync(int workspaceArtifactId, Guid appGuid)
 		{
 			using (var applicationInstallManager =
@@ -221,7 +227,7 @@ namespace Relativity.Sync.Tests.System.Core
 			{
 				var installApplicationRequest = new InstallApplicationRequest
 				{
-					WorkspaceIDs = new List<int> {workspaceArtifactId}
+					WorkspaceIDs = new List<int> { workspaceArtifactId }
 				};
 				InstallApplicationResponse install = await applicationInstallManager
 					.InstallApplicationAsync(-1, appGuid, installApplicationRequest).ConfigureAwait(false);

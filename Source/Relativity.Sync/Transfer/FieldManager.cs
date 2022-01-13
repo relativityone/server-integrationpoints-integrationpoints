@@ -21,16 +21,16 @@ namespace Relativity.Sync.Transfer
 		private IReadOnlyList<FieldInfoDto> _nonDocumentAllFields;
 
 		private readonly IFieldConfiguration _configuration;
-		private readonly IDocumentFieldRepository _documentFieldRepository;
+		private readonly IObjectFieldTypeRepository _objectFieldTypeRepository;
 
 		private readonly IList<INativeSpecialFieldBuilder> _nativeSpecialFieldBuilders;
 		private readonly IList<IImageSpecialFieldBuilder> _imageSpecialFieldBuilders;
 
-		public FieldManager(IFieldConfiguration configuration, IDocumentFieldRepository documentFieldRepository,
+		public FieldManager(IFieldConfiguration configuration, IObjectFieldTypeRepository objectFieldTypeRepository,
 			IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders, IEnumerable<IImageSpecialFieldBuilder> imageSpecialFieldBuilders)
 		{
 			_configuration = configuration;
-			_documentFieldRepository = documentFieldRepository;
+			_objectFieldTypeRepository = objectFieldTypeRepository;
 			_nativeSpecialFieldBuilders = OmitNativeInfoFieldsBuildersIfNotNeeded(configuration, nativeSpecialFieldBuilders).OrderBy(b => b.GetType().FullName).ToList();
 			_imageSpecialFieldBuilders = imageSpecialFieldBuilders.ToList();
 		}
@@ -241,7 +241,7 @@ namespace Relativity.Sync.Transfer
 		private Task<IDictionary<string, RelativityDataType>> GetRelativityDataTypesForFieldsAsync(IEnumerable<FieldInfoDto> fields, CancellationToken token)
 		{
 			ICollection<string> fieldNames = fields.Select(f => f.SourceFieldName).ToArray();
-			return _documentFieldRepository.GetRelativityDataTypesForFieldsByFieldNameAsync(_configuration.SourceWorkspaceArtifactId, fieldNames, token);
+			return _objectFieldTypeRepository.GetRelativityDataTypesForFieldsByFieldNameAsync(_configuration.SourceWorkspaceArtifactId, _configuration.RdoArtifactTypeId, fieldNames, token);
 		}
 
 		private FieldInfoDto CreateFieldInfoFromFieldMap(FieldMap fieldMap)

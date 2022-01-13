@@ -19,16 +19,18 @@ namespace Relativity.Sync.Executors.PermissionCheck.NonDocumentPermissionChecks
 
         protected override async Task ValidateAsync(ValidationResult validationResult, IPermissionsCheckConfiguration configuration)
         {
-            validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, configuration.RdoArtifactTypeId,new []{ PermissionType.Add }, TransferredObjectNoAdd(configuration.RdoArtifactTypeId)).ConfigureAwait(false));
+			int destinationRdoArtifactTypeId = configuration.DestinationRdoArtifactTypeId;
+
+			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, destinationRdoArtifactTypeId, new []{ PermissionType.Add }, TransferredObjectNoAdd(destinationRdoArtifactTypeId)).ConfigureAwait(false));
             
             if (configuration.ImportOverwriteMode == ImportOverwriteMode.AppendOverlay ||
                 configuration.ImportOverwriteMode == ImportOverwriteMode.OverlayOnly)
             {
-                validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, configuration.RdoArtifactTypeId,new []{ PermissionType.Edit }, TransferredObjectNoEdit(configuration.RdoArtifactTypeId)).ConfigureAwait(false));
+                validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, destinationRdoArtifactTypeId, new []{ PermissionType.Edit }, TransferredObjectNoEdit(destinationRdoArtifactTypeId)).ConfigureAwait(false));
             }
         }
 
         private static string TransferredObjectNoAdd(int objectTypeArtifactId) => $"User does not have permission to add objects of type {objectTypeArtifactId} in the destination workspace.";
-        private static string TransferredObjectNoEdit(int objectTypeArtifactId) => $"User does not have permission to Edit objects of type {objectTypeArtifactId} in the destination workspace.";
+        private static string TransferredObjectNoEdit(int objectTypeArtifactId) => $"User does not have permission to edit objects of type {objectTypeArtifactId} in the destination workspace.";
     }
 }

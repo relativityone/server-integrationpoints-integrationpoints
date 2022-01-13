@@ -25,13 +25,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		private Mock<IImageSpecialFieldRowValuesBuilder> _imageSpecialFieldRowValuesBuilderFake;
 
 		private Mock<IFieldConfiguration> _configuration;
-		private Mock<IDocumentFieldRepository> _documentFieldRepository;
+		private Mock<IObjectFieldTypeRepository> _documentFieldRepository;
 
 		private FieldManager _sut;
 
 		#region Test Data
 
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 123;
+
+		private const int _RDO_ARTIFACT_TYPE_ID = 420;
 
 		private const string _FOLDER_PATH_FIELD_NAME = "Folder Path Field";
 
@@ -88,9 +90,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_configuration = new Mock<IFieldConfiguration>();
 			_configuration.Setup(c => c.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ARTIFACT_ID);
 			_configuration.Setup(c => c.GetFieldMappings()).Returns(_MAPPED_FIELDS);
+			_configuration.SetupGet(c => c.RdoArtifactTypeId).Returns(_RDO_ARTIFACT_TYPE_ID);
 
-			_documentFieldRepository = new Mock<IDocumentFieldRepository>();
-			_documentFieldRepository.Setup(r => r.GetRelativityDataTypesForFieldsByFieldNameAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<string>>(), CancellationToken.None))
+			_documentFieldRepository = new Mock<IObjectFieldTypeRepository>();
+			_documentFieldRepository.Setup(r => r.GetRelativityDataTypesForFieldsByFieldNameAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _RDO_ARTIFACT_TYPE_ID, It.IsAny<ICollection<string>>(), CancellationToken.None))
 				.ReturnsAsync(_FIELD_TYPES);
 
 			var nativeSpecialFieldBuilders = SetupNativeSpecialFieldBuilders();
@@ -477,7 +480,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			_configuration.Setup(c => c.GetFieldMappings()).Returns(mappedFields);
 
-			_documentFieldRepository.Setup(r => r.GetRelativityDataTypesForFieldsByFieldNameAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<string>>(), CancellationToken.None))
+			_documentFieldRepository.Setup(r => r.GetRelativityDataTypesForFieldsByFieldNameAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _RDO_ARTIFACT_TYPE_ID, It.IsAny<ICollection<string>>(), CancellationToken.None))
 				.ReturnsAsync(new Dictionary<string, RelativityDataType>
 				{
 					{ mappedField.SourceFieldName, RelativityDataType.FixedLengthText }

@@ -3,7 +3,7 @@
 namespace Relativity.Sync.Transfer
 {
 	/// <summary>
-	/// Exception thrown by <see cref="IDocumentFieldRepository"/> when a given field is not found in a workspace.
+	/// Exception thrown by <see cref="IObjectFieldTypeRepository"/> when a given field is not found in a workspace.
 	/// </summary>
 	[Serializable]
 	public sealed class FieldNotFoundException : Exception
