@@ -57,7 +57,7 @@ namespace Relativity.Sync.Executors
             try
             {
                 _logger.LogInformation(
-                    "Initializing export of non-document objects in workspace {workspaceId} with view {viewId}",
+                    "Initializing export of non-document objects for linking in workspace {workspaceId} with view {viewId}",
                     configuration.SourceWorkspaceArtifactId, configuration.DataSourceArtifactId);
 
                 QueryRequest queryRequest = await _snapshotQueryRequestProvider
