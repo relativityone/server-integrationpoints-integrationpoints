@@ -59,10 +59,25 @@
 		IP.data.params['URL'] = "@Html.Raw(@Model.URL)";
 		IP.data.params['apiControllerName'] = '@Model.APIControllerName';
 
+		var getEnableSyncNonDocumentFlowToggleValue = function() {
+            var enableSyncNonDocumentFlowToggleValue = IP.data.ajax({
+                url: IP.utils.generateWebAPIURL('ToggleAPI', 'kCura.IntegrationPoints.Agent.Toggles.EnableSyncNonDocumentFlowToggle'),
+                type: 'get'
+            }).fail(function (error) {
+                console.log(error);
+            });
+            return enableSyncNonDocumentFlowToggleValue;
+        }
+
+        var promise = getEnableSyncNonDocumentFlowToggleValue();
+        promise.then(function (result) {
+            IP.data.params['EnableSyncNonDocumentFlowToggleValue'] = result;
+        });
+
 		IP.unsavedChangesHandler = new UnsavedChangesHandler();
 		IP.unsavedChangesHandler.register();
 
-		$("#cancel").on("click", function() {
+        $("#cancel").on("click", function() {
 			IP.unsavedChangesHandler.unregister();
 			var getBasePath = IP.utils.getBasePath();
 			var route = IP.redirect.get();
@@ -71,7 +86,8 @@
 			}
 			window.top.location =route;
 		});
-	</script>
+
+    </script>
 	<script src="~/Scripts/Import/import-preview-options-btn.js"></script>
 
 	@Scripts.Render("~/bundles/ipEdit")
