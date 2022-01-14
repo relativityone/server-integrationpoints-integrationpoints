@@ -134,6 +134,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			List<FieldEntry> sourceFields = GetSourceFields(fieldMaps);
 			if (JobStopManager?.ShouldDrainStop != true)
 			{
+				//Workaround to enable Managers linking in Azure AD Provider. Should be removed when REL-634949 will be released
+				if (Guid.Parse(SourceProvider.ApplicationIdentifier) == new Guid("8C8D2241-706A-47E1-B0C1-DB3F4F990DC5"))
+				{
+					_logger.LogInformation("[Workaround] Run IDataSourceProvider.GetBatchableIds method to initialize AADProvider");
+					sourceProvider.GetBatchableIds(sourceFields.Single(x => x.IsIdentifier), configuration);
+				}
+
 				using (IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, configuration))
 				{
 					SetupSubscriptions(dataSynchronizer, job);

@@ -24,7 +24,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional
 
 		public static string DataTransferLegacyRapFileLocation => Path.Combine(GetConfigValue("BuildToolsDirectory"), "DataTransfer.Legacy\\lib\\DataTransfer.Legacy.rap");
 
-		public static string AzureADProviderRapFileLocation => @"\\bld-pkgs\Release\AADProvider\Golden\12.1 - Osier-1\12.1.1\AADProvider.rap";
+		public static string AzureADProviderRapFileLocation => Path.Combine(GetConfigValue("BuildToolsDirectory"), "RIP_AAD_Provider\\lib\\AADProvider.rap");
 
 		public static int ExistingWorkspaceArtifactId => int.Parse(GetConfigValue("ExistingWorkspaceArtifactId"));
 
