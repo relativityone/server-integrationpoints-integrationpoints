@@ -5,12 +5,13 @@ using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core.Helpers.APIHelper;
 using Relativity.Sync.Tests.System.Core.Stubs;
 using Relativity.Telemetry.APM;
+using Relativity.Toggles;
 
 namespace Relativity.Sync.Tests.System.Core.Helpers
 {
 	internal static class ContainerHelper
 	{
-		public static IContainer Create(ConfigurationStub configuration, params Action<ContainerBuilder>[] mockActions)
+		public static IContainer Create(ConfigurationStub configuration, TestSyncToggleProvider toggleProvider = null, params Action<ContainerBuilder>[] mockActions)
 		{
 			ContainerBuilder containerBuilder = new ContainerBuilder();
 
@@ -32,6 +33,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			}
 
 			containerBuilder.RegisterInstance(configuration).AsImplementedInterfaces();
+			containerBuilder.RegisterInstance(toggleProvider ?? new TestSyncToggleProvider()).As<IToggleProvider>();
 
 			return containerBuilder.Build();
 		}

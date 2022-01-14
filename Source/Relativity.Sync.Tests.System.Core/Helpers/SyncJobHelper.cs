@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Autofac;
 using Moq;
 using Relativity.Sync.Tests.Common;
@@ -10,12 +9,12 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 	{
 		public static ISyncJob CreateWithMockedProgressAndContainerExceptProvidedType<TStepConfiguration>(ConfigurationStub configuration)
 		{
-			return Create(configuration, IntegrationTestsContainerBuilder.MockStepsExcept<TStepConfiguration>, MockProgress);
+			return Create(configuration, null, IntegrationTestsContainerBuilder.MockStepsExcept<TStepConfiguration>, MockProgress);
 		}
 
 		public static ISyncJob CreateWithMockedProgressAndAllSteps(ConfigurationStub configuration)
 		{
-			return Create(configuration, IntegrationTestsContainerBuilder.MockAllSteps, MockProgress);
+			return Create(configuration, null, IntegrationTestsContainerBuilder.MockAllSteps, MockProgress);
 		}
 
 		/// <summary>
@@ -23,12 +22,12 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 		/// </summary>
 		public static ISyncJob CreateWithMockedAllSteps(ConfigurationStub configuration)
 		{
-			return Create(configuration, IntegrationTestsContainerBuilder.MockAllSteps);
+			return Create(configuration, null, IntegrationTestsContainerBuilder.MockAllSteps);
 		}
 
-		private static ISyncJob Create(ConfigurationStub configuration, params Action<ContainerBuilder>[] mockActions)
+		private static ISyncJob Create(ConfigurationStub configuration, TestSyncToggleProvider toggleProvider, params Action<ContainerBuilder>[] mockActions)
 		{
-			IContainer container = ContainerHelper.Create(configuration, mockActions);
+			IContainer container = ContainerHelper.Create(configuration, toggleProvider, mockActions);
 
 			return container.Resolve<ISyncJob>();
 		}
