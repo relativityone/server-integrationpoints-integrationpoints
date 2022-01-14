@@ -44,7 +44,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             applicationService.InstallToWorkspace(Workspace.ArtifactID, appId);
         }
 
-        public async Task ImportEntityWithAzureADProvider()
+        public async Task ImportEntityWithAzureADProviderAsync()
         {
             // Arrange
             AzureADIntegrationPointModelProvider modelProvider = new AzureADIntegrationPointModelProvider(_serviceFactory, Workspace);
@@ -60,7 +60,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
                 expectedStatus: JobStatusChoices.JobHistoryCompletedWithErrors.Name).ConfigureAwait(false);
 
             // Assert
-            int transferredItemsCount = await GetTransferredItems(jobHistoryId).ConfigureAwait(false);
+            int transferredItemsCount = await GetTransferredItemsAsync(jobHistoryId).ConfigureAwait(false);
 
             Entity[] entities = RelativityFacade.Instance.Resolve<IEntityService>().GetAll(Workspace.ArtifactID);
 
@@ -71,7 +71,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             managers.Should().Contain(x => x != null);
         }
 
-        private async Task<int> GetTransferredItems(int jobHistoryId)
+        private async Task<int> GetTransferredItemsAsync(int jobHistoryId)
         {
             using(IObjectManager objectManager = _serviceFactory.GetServiceProxy<IObjectManager>())
             {

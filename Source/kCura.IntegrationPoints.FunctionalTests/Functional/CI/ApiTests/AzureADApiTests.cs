@@ -31,7 +31,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI.ApiTests
             try
             {
                 await toggleProvider.SetAsync(_ADS_IN_K8S_TOGGLE, true).ConfigureAwait(false);
-                await _testImplementation.ImportEntityWithAzureADProvider().ConfigureAwait(false);
+                await _testImplementation.ImportEntityWithAzureADProviderAsync().ConfigureAwait(false);
             }
             finally
             {
