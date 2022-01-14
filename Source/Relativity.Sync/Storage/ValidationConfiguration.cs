@@ -41,6 +41,8 @@ namespace Relativity.Sync.Storage
         public int DestinationFolderArtifactId => _cache.GetFieldValue(x => x.DataDestinationArtifactId);
         public int RdoArtifactTypeId => _cache.GetFieldValue(x => x.RdoArtifactTypeId);
 
+        public int DestinationRdoArtifactTypeId => _cache.GetFieldValue(x => x.DestinationRdoArtifactTypeId);
+
         public Guid JobHistoryObjectTypeGuid => _cache.GetFieldValue(x => x.JobHistoryType);
 
         public ImportOverwriteMode ImportOverwriteMode => _cache.GetFieldValue(x => x.ImportOverwriteMode);

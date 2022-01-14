@@ -406,8 +406,10 @@ namespace Relativity.Sync.Tests.Integration
 
 		private void SetupGuidAssociationWithArtifact(int artifactId, Guid artifactGuid, string parametersListForMessage)
 		{
-			_artifactGuidManager.Setup(m => m.CreateSingleAsync(_WORKSPACE_ID, artifactId, It.Is<List<Guid>>(g => g.Contains(artifactGuid)))).Verifiable(
-				$"Service '{nameof(IArtifactGuidManager)}.{nameof(IArtifactGuidManager.CreateSingleAsync)}' did not receive expected call to associate field with GUID. {parametersListForMessage}");
+			_artifactGuidManager
+				.Setup(m => m.CreateSingleAsync(_WORKSPACE_ID, artifactId, It.Is<List<Guid>>(g => g.Contains(artifactGuid))))
+				.Returns(Task.CompletedTask)
+				.Verifiable($"Service '{nameof(IArtifactGuidManager)}.{nameof(IArtifactGuidManager.CreateSingleAsync)}' did not receive expected call to associate field with GUID. {parametersListForMessage}");
 		}
 
 		private void SetupForWholeNumberField(int fieldArtifactId, string fieldName, int containingObjectTypeArtifactId, string parametersListForMessage)

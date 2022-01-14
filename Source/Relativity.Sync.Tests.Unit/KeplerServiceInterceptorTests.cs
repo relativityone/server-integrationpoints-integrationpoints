@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			_stubForInterceptionMock = new Mock<IStubForInterception>();
 			_stubForInterceptionFactoryFake = new Mock<Func<Task<IStubForInterception>>>();
-			_stubForInterceptionFactoryFake.Setup(x => x.Invoke()).Returns(Task.FromResult(_stubForInterceptionMock.Object));
+			_stubForInterceptionFactoryFake.Setup(x => x()).Returns(Task.FromResult(_stubForInterceptionMock.Object));
 			
 			_syncMetricsMock = new Mock<ISyncMetrics>();
 			_syncLogMock = new Mock<ISyncLog>();

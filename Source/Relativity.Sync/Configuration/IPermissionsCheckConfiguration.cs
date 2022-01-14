@@ -17,6 +17,8 @@ namespace Relativity.Sync.Configuration
 		Guid JobHistoryObjectTypeGuid { get; }
 		
 		int RdoArtifactTypeId { get; }
+
+		int DestinationRdoArtifactTypeId { get; }
 		
 		ImportOverwriteMode ImportOverwriteMode { get; }
 	}

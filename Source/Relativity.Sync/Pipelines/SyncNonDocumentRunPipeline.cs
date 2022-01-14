@@ -13,18 +13,13 @@ namespace Relativity.Sync.Pipelines
                 .AddChild<DestinationWorkspaceObjectTypesCreationNode>()
                 .AddChild<PermissionsCheckNode>()
                 .AddChild<ValidationNode>()
-                .AddChild<DataSourceSnapshotNode>()
+                .AddChild<NonDocumentObjectDataSourceSnapshotNode>()
                 .AddChild<SyncMultiNode>()
                 .ForLastChild()
-                .AddChild<DocumentJobStartMetricsNode>()
-                .AddChild<DestinationWorkspaceTagsCreationNode>()
-                .AddChild<SourceWorkspaceTagsCreationNode>()
-                .AddChild<DataDestinationInitializationNode>()
+                .AddChild<NonDocumentJobStartMetricsNode>()
                 .ForParent()
-                .AddChild<DestinationWorkspaceSavedSearchCreationNode>()
                 .AddChild<SnapshotPartitionNode>()
-                .AddChild<ObjectLinkingSnapshotPartitionNode>()
-                .AddChild<NonDocumentSynchronizationNode>();
+                .AddChild<ObjectLinkingSnapshotPartitionNode>();
         }
     }
 }

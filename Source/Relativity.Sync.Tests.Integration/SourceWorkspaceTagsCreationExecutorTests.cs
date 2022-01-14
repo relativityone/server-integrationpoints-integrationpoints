@@ -192,6 +192,7 @@ namespace Relativity.Sync.Tests.Integration
 			_sourceObjectManagerMock.Setup(x => x.UpdateAsync(
 				_TEST_SOURCE_CASE_ARTIFACT_ID,
 				It.Is<UpdateRequest>(y =>
+					y.FieldValues.Any(fv => fv.Field.Guid == _destinationInstanceNameFieldGuid) &&
 					y.FieldValues.First(fv => fv.Field.Guid == _destinationWorkspaceNameFieldGuid).Value.Equals(expectedDestinationWorkspaceName)))
 				).ReturnsAsync(new UpdateResult()
 				).Verifiable();
@@ -235,12 +236,13 @@ namespace Relativity.Sync.Tests.Integration
 			}
 					);
 
-			_sourceObjectManagerMock.Setup(x => x.UpdateAsync(
-				_TEST_SOURCE_CASE_ARTIFACT_ID,
-				It.Is<UpdateRequest>(y =>
-					y.FieldValues.First(fv => fv.Field.Guid == _destinationInstanceNameFieldGuid).Value.Equals(_TEST_INSTANCE_NAME)))
-				).ReturnsAsync(new UpdateResult()
-				).Verifiable();
+			_sourceObjectManagerMock
+				.Setup(x => x.UpdateAsync(_TEST_SOURCE_CASE_ARTIFACT_ID, It.Is<UpdateRequest>(y =>
+					y.FieldValues.Any(fv => fv.Field.Guid == _destinationInstanceNameFieldGuid) &&
+					y.FieldValues.FirstOrDefault(fv => fv.Field.Guid == _destinationInstanceNameFieldGuid).Value.Equals(_TEST_INSTANCE_NAME)))
+				)
+				.ReturnsAsync(new UpdateResult())
+				.Verifiable();
 
 			_sourceObjectManagerMock.Setup(x => x.UpdateAsync(
 				_TEST_SOURCE_CASE_ARTIFACT_ID,

@@ -5,6 +5,11 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 	internal sealed class SyncDataAndUserConfiguration : IDataDestinationFinalizationConfiguration, IDataDestinationInitializationConfiguration,
 		IUserContextConfiguration
 	{
+		public SyncDataAndUserConfiguration(int executingUserId)
+		{
+			ExecutingUserId = executingUserId;
+		}
+
 		public SyncDataAndUserConfiguration(int submittedBy, int destinationFolderArtifactId)
 		{
 			DataDestinationArtifactId = destinationFolderArtifactId;

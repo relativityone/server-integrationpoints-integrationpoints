@@ -24,6 +24,7 @@
     <PackageIconUrl>https://www.relativity.com/images/relativity-nuget-logo.png</PackageIconUrl>
     <RepositoryUrl>https://platform.relativity.com</RepositoryUrl>
     <PackageReleaseNotes>https://platform.relativity.com</PackageReleaseNotes>
+    <LangVersion>8</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <CodeAnalysisRuleSet />

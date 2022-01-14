@@ -35,7 +35,6 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.FlowType));
 
 			metricsManagerMock.Verify(x => x.Dispose());
-			metricsManagerMock.VerifyNoOtherCalls();
 		}
 
 		protected override void VerifyApmSink(Mock<IAPMClient> apmMock)

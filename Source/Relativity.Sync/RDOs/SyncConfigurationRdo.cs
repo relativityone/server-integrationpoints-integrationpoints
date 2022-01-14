@@ -96,6 +96,9 @@ namespace Relativity.Sync.RDOs
 
         [RdoField(SyncRdoGuids.SnapshotRecordsCountGuid, RdoFieldType.WholeNumber)]
         public int SnapshotRecordsCount { get; set; }
+        
+        [RdoField(SyncRdoGuids.ObjectLinkingSnapshotRecordsCountGuid, RdoFieldType.WholeNumber)]
+        public int ObjectLinkingSnapshotRecordsCount { get; set; }
 
         [RdoField(SyncRdoGuids.SourceJobTagArtifactIdGuid, RdoFieldType.WholeNumber)]
         public int SourceJobTagArtifactId { get; set; }

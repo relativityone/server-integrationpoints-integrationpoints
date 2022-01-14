@@ -8,7 +8,7 @@ using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync.Tests.System.Core.Helpers
 {
-	internal class ContainerHelper
+	internal static class ContainerHelper
 	{
 		public static IContainer Create(ConfigurationStub configuration, params Action<ContainerBuilder>[] mockActions)
 		{

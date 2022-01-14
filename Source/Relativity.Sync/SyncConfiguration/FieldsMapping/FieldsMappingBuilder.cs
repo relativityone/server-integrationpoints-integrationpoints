@@ -14,13 +14,15 @@ namespace Relativity.Sync.SyncConfiguration.FieldsMapping
 		private readonly int _sourceWorkspaceId;
 		private readonly int _destinationWorkspaceId;
 		private readonly int _rdoArtifactTypeId;
+		private readonly int _destinationRdoArtifactTypeId;
 		private readonly ISyncServiceManager _servicesMgr;
 
-		public FieldsMappingBuilder(int sourceWorkspaceId, int destinationWorkspaceId, int rdoArtifactTypeId, ISyncServiceManager servicesMgr)
+		public FieldsMappingBuilder(int sourceWorkspaceId, int destinationWorkspaceId, int rdoArtifactTypeId, int destinationRdoArtifactTypeId, ISyncServiceManager servicesMgr)
 		{
 			_sourceWorkspaceId = sourceWorkspaceId;
 			_destinationWorkspaceId = destinationWorkspaceId;
 			_rdoArtifactTypeId = rdoArtifactTypeId;
+			_destinationRdoArtifactTypeId = destinationRdoArtifactTypeId;
 			_servicesMgr = servicesMgr;
 
 			FieldsMapping = new List<FieldMap>();
@@ -37,8 +39,8 @@ namespace Relativity.Sync.SyncConfiguration.FieldsMapping
 
 			using (var objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
-				FieldEntry sourceField = ReadIdentifierFieldAsync(_sourceWorkspaceId, objectManager).GetAwaiter().GetResult();
-				FieldEntry destinationField = ReadIdentifierFieldAsync(_destinationWorkspaceId, objectManager).GetAwaiter().GetResult();
+				FieldEntry sourceField = ReadIdentifierFieldAsync(_sourceWorkspaceId, _rdoArtifactTypeId, objectManager).GetAwaiter().GetResult();
+				FieldEntry destinationField = ReadIdentifierFieldAsync(_destinationWorkspaceId, _destinationRdoArtifactTypeId, objectManager).GetAwaiter().GetResult();
 
 				FieldsMapping.Add(new FieldMap
 				{
@@ -87,7 +89,7 @@ namespace Relativity.Sync.SyncConfiguration.FieldsMapping
 			}
 		}
 
-		private async Task<FieldEntry> ReadIdentifierFieldAsync(int workspaceId, IObjectManager objectManager)
+		private async Task<FieldEntry> ReadIdentifierFieldAsync(int workspaceId, int artifactTypeId, IObjectManager objectManager)
 		{
 			QueryRequest request = new QueryRequest()
 			{
@@ -95,7 +97,7 @@ namespace Relativity.Sync.SyncConfiguration.FieldsMapping
 				{
 					ArtifactTypeID = (int)ArtifactType.Field
 				},
-				Condition = $"'FieldArtifactTypeID' == {_rdoArtifactTypeId} AND 'Is Identifier' == true",
+				Condition = $"'FieldArtifactTypeID' == {artifactTypeId} AND 'Is Identifier' == true",
 				IncludeNameInQueryResult = true
 			};
 

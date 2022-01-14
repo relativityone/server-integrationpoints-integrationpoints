@@ -10,6 +10,8 @@ namespace Relativity.Sync.Storage
 
 		public int SourceWorkspaceArtifactId { get; }
 
+		public int RdoArtifactTypeId => _cache.GetFieldValue(x => x.RdoArtifactTypeId);
+
 		public DestinationFolderStructureBehavior DestinationFolderStructureBehavior =>_cache.GetFieldValue(x => x.DestinationFolderStructureBehavior);
 		
 		public string GetFolderPathSourceFieldName() => _cache.GetFieldValue(x => x.FolderPathSourceFieldName);

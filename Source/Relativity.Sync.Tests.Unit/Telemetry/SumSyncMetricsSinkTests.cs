@@ -26,7 +26,8 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 		{
 			_syncJobParamters = FakeHelper.CreateSyncJobParameters();
 
-			_metricsManagerMock = new Mock<IMetricsManager>();
+			_metricsManagerMock = new Mock<IMetricsManager>(MockBehavior.Strict);
+			_metricsManagerMock.Setup(x => x.Dispose());
 
 			Mock<ISyncServiceManager> syncServiceManager = new Mock<ISyncServiceManager>();
 			syncServiceManager.Setup(x => x.CreateProxy<IMetricsManager>(It.IsAny<ExecutionIdentity>()))
@@ -87,7 +88,6 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 
 			// Assert
 			_metricsManagerMock.Verify(x => x.Dispose());
-			_metricsManagerMock.VerifyNoOtherCalls();
 		}
 
 		[Test]
@@ -120,7 +120,6 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 			action.Should().NotThrow();
 
 			_metricsManagerMock.Verify(x => x.Dispose());
-			_metricsManagerMock.VerifyNoOtherCalls();
 		}
 
 		internal class TestMetric : MetricBase<TestMetric>

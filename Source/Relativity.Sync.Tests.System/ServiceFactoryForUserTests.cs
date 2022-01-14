@@ -17,6 +17,8 @@ using Relativity.Sync.Utils;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api;
 using Relativity.Testing.Identification;
+using Relativity.Testing.Framework.Api.Services;
+using Relativity.Testing.Framework.Models;
 
 namespace Relativity.Sync.Tests.System
 {
