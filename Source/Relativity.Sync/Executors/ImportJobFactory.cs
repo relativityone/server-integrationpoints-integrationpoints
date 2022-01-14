@@ -34,7 +34,7 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 
-        public async Task<IImportJob> CreateRdoImportJobAsync(INonDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
+        public async Task<IImportJob> CreateRdoImportJobAsync(INonDocumentSynchronizationConfiguration configuration, IBatch batch, string identifierFieldName, CancellationToken token)
         {
             ISourceWorkspaceDataReader sourceWorkspaceDataReader = _dataReaderFactory.CreateNonDocumentSourceWorkspaceDataReader(batch, token);
             IImportAPI importApi = await GetImportApiAsync().ConfigureAwait(false);
@@ -57,7 +57,8 @@ namespace Relativity.Sync.Executors
 			importJob.Settings.LoadImportedFullTextFromServer = false;
 			importJob.Settings.MultiValueDelimiter = ';';
 			importJob.Settings.NativeFileCopyMode = kCura.Relativity.DataReaderClient.NativeFileCopyModeEnum.DoNotImportNativeFiles;
-			importJob.Settings.SelectedIdentifierFieldName = "identifierFieldName";
+			importJob.Settings.SelectedIdentifierFieldName = identifierFieldName;
+			importJob.Settings.IdentityFieldId = 0;
 
 			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);
 

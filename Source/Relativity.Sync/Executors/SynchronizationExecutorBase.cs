@@ -17,7 +17,6 @@ namespace Relativity.Sync.Executors
 	{
 		private readonly IBatchRepository _batchRepository;
 		private readonly IJobProgressHandlerFactory _jobProgressHandlerFactory;
-		private readonly IFieldMappings _fieldMappings;
 		private readonly IJobCleanupConfiguration _jobCleanupConfiguration;
 		private readonly IAutomatedWorkflowTriggerConfiguration _automatedWorkflowTriggerConfiguration;
 		private readonly Func<IStopwatch> _stopwatchFactory;
@@ -28,6 +27,7 @@ namespace Relativity.Sync.Executors
 		protected readonly IImportJobFactory _importJobFactory;
 		protected readonly BatchRecordType _recordType;
 		protected readonly IFieldManager _fieldManager;
+		protected readonly IFieldMappings _fieldMappings;
 		protected readonly ISyncLog _logger;
 
 		protected SynchronizationExecutorBase(IImportJobFactory importJobFactory,

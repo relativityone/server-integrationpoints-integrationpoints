@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
@@ -24,12 +25,18 @@ namespace Relativity.Sync.Executors
 
 		protected override Task<IImportJob> CreateImportJobAsync(INonDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
 		{
-			return _importJobFactory.CreateRdoImportJobAsync(configuration, batch, token);
+			string identifierFieldName = GetIdentifierFieldName(_fieldMappings);
+			return _importJobFactory.CreateRdoImportJobAsync(configuration, batch, identifierFieldName, token);
+		}
+
+		private string GetIdentifierFieldName(IFieldMappings fieldMappings)
+		{
+			return fieldMappings.GetFieldMappings().First(x => x.FieldMapType == FieldMapType.Identifier).DestinationField.DisplayName;
 		}
 
 		protected override void UpdateImportSettings(INonDocumentSynchronizationConfiguration configuration)
 		{
-			throw new NotImplementedException();
+			configuration.IdentityFieldId = GetDestinationIdentityFieldId();
 		}
 
 		protected override void ChildReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime,
