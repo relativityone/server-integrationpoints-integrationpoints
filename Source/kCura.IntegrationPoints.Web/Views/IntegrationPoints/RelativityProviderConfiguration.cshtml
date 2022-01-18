@@ -15,7 +15,7 @@
 						<div class="field-row">
 							<div class="field-label required">Source:</div>
 							<div class="field-value">
-								<select id="sourceSelector" data-bind="options: SourceOptions , optionsText: 'key', optionsValue: 'value', value: TypeOfExport, select2: {}"></select>
+								<select id="sourceSelector" data-bind="options: SourceOptions , optionsText: 'key', optionsValue: 'value', value: TypeOfExport, select2: {}, disable: EnableSyncNonDocumentFlowToggleValue()"></select>
 							</div>
 						</div>
 					</td>
@@ -37,6 +37,16 @@
 							<div class="field-label required">Production Set:</div>
 							<div class="field-value">
 								<select id="sourceProductionSetsSelector" data-bind="options: SourceProductionSets, optionsText: 'displayName', optionsValue: 'artifactID', optionsCaption: 'Select...', value: SourceProductionId, select2searchable: {}"></select>
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="width: 48%;">
+						<div class="field-row" data-bind="visible: EnableSyncNonDocumentFlowToggleValue()">
+							<div class="field-label required">View:</div>
+							<div class="field-value">
+								<input type="hidden" id="viewSelector" data-bind="value: SourceViewId, select2lazySearchable: {}, optionsUrl: ViewUrl, textPropertyName: 'displayName', valuePropertyName: 'value', itemDetailsIdParameterName: 'viewId', optionsCaption: 'Select...'" />
 							</div>
 						</div>
 					</td>

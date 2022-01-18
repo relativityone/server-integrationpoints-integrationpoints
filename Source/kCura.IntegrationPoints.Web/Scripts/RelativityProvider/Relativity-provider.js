@@ -113,6 +113,9 @@
 		var self = this;
 		self.SavedSearchService = new SavedSearchService();
 
+		self.EnableSyncNonDocumentFlowToggleValue = ko.observable();
+		self.EnableSyncNonDocumentFlowToggleValue(window.parent.IP.data.params['EnableSyncNonDocumentFlowToggleValue']);
+
 		self.workspaces = ko.observableArray(state.workspaces);
 		self.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId);
 		self.DestinationFolder = ko.observable(state.DestinationFolder);
@@ -163,10 +166,19 @@
 				}
 			}
 		});
-		self.SourceOptions = [
-			{ value: 3, key: "Saved Search" },
-			{ value: 2, key: "Production" }
-		];
+
+		self.SourceViewId = ko.observable();
+
+		self.SourceOptions = ko.observableArray();
+		
+		if (self.EnableSyncNonDocumentFlowToggleValue) {
+			self.SourceOptions.push({ value: 4, key: "View" });
+		}
+		else {
+			self.SourceOptions.push({ value: 3, key: "Saved Search" });
+			self.SourceOptions.push({ value: 2, key: "Production" });
+		}
+
 		self.TypeOfExport.subscribe(function (value) {
 			if (value === ExportEnums.SourceOptionsEnum.Production) {
 
@@ -305,6 +317,7 @@
 		};
 
 		self.SavedSearchUrl = IP.utils.generateWebAPIURL('SavedSearchFinder', IP.utils.getParameterByName("AppID", window.top));
+		self.ViewUrl = IP.utils.generateWebAPIURL('ViewFinder', IP.utils.getParameterByName("AppID", window.top));
 
 		self.updateWorkspaces = function () {
 			var stateLocal = state;
