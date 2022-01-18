@@ -55,7 +55,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
                 {
                     ArtifactTypeId = entityType.ObjectType,
                     DestinationProviderType = DestinationProviders.RELATIVITY,
-                    EntityManagerFieldContainsLink = false,
+                    EntityManagerFieldContainsLink = true,
                     CaseArtifactId = _sourceWorkspace.ArtifactID,
                     ImportOverwriteMode = ImportOverwriteModeEnum.AppendOverlay.ToString(),
                     FieldOverlayBehavior = "Use Field Settings",
