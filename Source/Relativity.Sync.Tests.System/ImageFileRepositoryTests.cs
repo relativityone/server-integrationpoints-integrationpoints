@@ -33,6 +33,7 @@ namespace Relativity.Sync.Tests.System
 				{
 					SourceWorkspaceArtifactId = _workspace.ArtifactID
 				},
+				toggleProvider: null,
 				cb => cb.RegisterInstance(Logger).As<ISyncLog>()
 			);
 

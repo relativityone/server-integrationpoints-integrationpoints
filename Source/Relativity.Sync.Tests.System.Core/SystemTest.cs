@@ -185,7 +185,7 @@ namespace Relativity.Sync.Tests.System.Core
 
 		private static async Task SetRelativityWebApiCredentialsProviderAsync()
 		{
-			IContainer container = ContainerHelper.Create(new ConfigurationStub());
+			IContainer container = ContainerHelper.Create(new ConfigurationStub(), null);
 			IAuthTokenGenerator authTokenGenerator = container.Resolve<IAuthTokenGenerator>();
 			await authTokenGenerator.GetAuthTokenAsync(userId: 9);
 		}
