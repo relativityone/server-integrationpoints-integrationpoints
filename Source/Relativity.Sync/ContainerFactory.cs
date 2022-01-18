@@ -6,9 +6,7 @@ using Autofac;
 using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.DbContext;
-using Relativity.Sync.Executors;
 using Relativity.Sync.Executors.SumReporting;
-using Relativity.Sync.Executors.TaggingProviders;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Pipelines;
@@ -48,8 +46,7 @@ namespace Relativity.Sync
 			containerBuilder.RegisterType<SyncJobProgress>().As<IProgress<SyncJobState>>();
 			containerBuilder.RegisterType<JobEndMetricsServiceFactory>().As<IJobEndMetricsServiceFactory>();
 
-			containerBuilder.RegisterInstance(ToggleProvider.Current).As<IToggleProvider>().SingleInstance();
-			containerBuilder.RegisterType<DocumentObjectBasedTaggingProvider>().As<ITaggingProvider>();
+			containerBuilder.RegisterInstance(ToggleProvider.Current).As<IToggleProvider>().SingleInstance().PreserveExistingDefaults();
 
 			containerBuilder.Register(c =>
 			{
