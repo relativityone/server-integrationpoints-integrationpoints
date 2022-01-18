@@ -317,7 +317,7 @@
 		};
 
 		self.SavedSearchUrl = IP.utils.generateWebAPIURL('SavedSearchFinder', IP.utils.getParameterByName("AppID", window.top));
-		self.ViewUrl = IP.utils.generateWebAPIURL('ViewFinder', IP.utils.getParameterByName("AppID", window.top));
+		self.ViewUrl = IP.utils.generateWebAPIURL('ViewFinder', IP.utils.getParameterByName("AppID", window.top), window.parent.IP.data.params['TransferredRDOArtifactTypeID']);
 
 		self.updateWorkspaces = function () {
 			var stateLocal = state;
