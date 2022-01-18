@@ -87,7 +87,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             ImportJobFactory instance = GetTestInstance(GetNonDocumentImportAPIFactoryMock());
 
             // Act
-            Sync.Executors.IImportJob result = await instance.CreateRdoImportJobAsync(_nonDocumentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+            Sync.Executors.IImportJob result = await instance.CreateRdoImportJobAsync(_nonDocumentConfigurationMock.Object, _batch.Object, It.IsAny<string>(), CancellationToken.None).ConfigureAwait(false);
             result.Dispose();
 
             // Assert

@@ -6,6 +6,7 @@ using Relativity.Sync.Telemetry;
 using Relativity.Sync.Transfer;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors
@@ -17,7 +18,8 @@ namespace Relativity.Sync.Executors
 			IFieldManager fieldManager, IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer,
 			IJobCleanupConfiguration jobCleanupConfiguration,
 			IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
-			Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics, ISyncLog logger,
+			Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics,
+			ISyncLog logger,
 			IUserContextConfiguration userContextConfiguration) : base(importJobFactory, BatchRecordType.Documents, batchRepository, jobProgressHandlerFactory, fieldManager,
 			fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics, userContextConfiguration, logger)
 		{
@@ -42,7 +44,16 @@ namespace Relativity.Sync.Executors
 		protected override void ChildReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime,
 			TimeSpan importApiTimer)
 		{
-			throw new NotImplementedException();
+			_syncMetrics.Send(new NonDocumentBatchEndMetric()
+			{
+				TotalRecordsRequested = batchProcessResult.TotalRecordsRequested,
+				TotalRecordsTransferred = batchProcessResult.TotalRecordsTransferred,
+				TotalRecordsFailed = batchProcessResult.TotalRecordsFailed,
+				BytesMetadataTransferred = batchProcessResult.MetadataBytesTransferred,
+				BytesTransferred = batchProcessResult.BytesTransferred,
+				BatchImportAPITime = importApiTimer.TotalMilliseconds,
+				BatchTotalTime = batchTime.TotalMilliseconds,
+			});
 		}
 
 		protected override Task<TaggingExecutionResult> TagDocumentsAsync(IImportJob importJob, ISynchronizationConfiguration configuration,
