@@ -172,6 +172,12 @@ namespace kCura.IntegrationPoints.Agent
 		protected TaskResult GetTaskResult(long jobId)
 		{
 			Job job = _jobService.GetJob(jobId);
+
+			if (job == null)
+			{
+				throw new InvalidOperationException($"Cannot find job with ID: {jobId}");
+			}
+
 			if (job.StopState.HasFlag(StopState.DrainStopping) || job.StopState.HasFlag(StopState.DrainStopped))
             {
 				return new TaskResult { Status = TaskStatusEnum.DrainStopped, Exceptions = null };

@@ -10,7 +10,7 @@
 	this.profileTypes = ko.observableArray();
 	this.profiles = [];
 
-	const PROFILE_ERR_PREFIX = 'Issue(s) occured while loading the profile.';
+	const PROFILE_ERR_PREFIX = 'Issue(s) occurred while loading the profile.';
 
 	this.getSelectedProfilePromise = function (artifactId) {
 		var validatedProfileModelPromise = IP.data.ajax({

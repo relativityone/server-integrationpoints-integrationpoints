@@ -37,7 +37,7 @@ namespace kCura.ScheduleQueue.Core.Services
 		public Job GetNextQueueJob(IEnumerable<int> resourceGroupIds, int agentID)
 		{
             DataRow row;
-
+			
 			if (_toggleProvider.IsEnabled<EnableKubernetesMode>())
 			{
 				row = DataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID);
@@ -48,7 +48,8 @@ namespace kCura.ScheduleQueue.Core.Services
 
 				if (resurceGroupIdsArray.Length == 0)
 				{
-					throw new ArgumentException($"Did not find any resource group ids for agent with id '{agentID}'");
+					throw new ArgumentException($"Did not find any resource group ids for agent with id '{agentID}'." +
+                                                        " Please validate EnableKubernetesMode toggle value, current value: False");
 				}
 
 				row = DataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID, resurceGroupIdsArray);
@@ -371,7 +372,7 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		public void LogOnGetJob(long jobId)
 		{
-			_log.LogVerbose("Attempting to retrieve Job with ID: ({JobId}) in {TypeName}", jobId, nameof(JobService));
+			_log.LogInformation ("Attempting to retrieve Job with ID: ({JobId}) in {TypeName}", jobId, nameof(JobService));
 		}
 
 		public void LogOnGetScheduledJob(int workspaceId, int relatedObjectArtifactID, List<string> taskTypes)

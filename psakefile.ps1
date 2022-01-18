@@ -23,7 +23,7 @@ Task NugetRestore -Description "Restore the packages needed for this build" {
 
 Task BuildLiquidFormsJS {   
     Set-NodePath
-    $liquidFormsJSDir = Join-Path $PSScriptRoot "Source\kCura.IntegrationPoints.Web\Scripts\RelativityForms\IntegrationPoint"
+    $liquidFormsJSDir = Join-Path $PSScriptRoot "Source\kCura.IntegrationPoints.Web\Scripts\RelativityForms"
 
     Invoke-NpmCommand {
         npx @('npm', '-v')

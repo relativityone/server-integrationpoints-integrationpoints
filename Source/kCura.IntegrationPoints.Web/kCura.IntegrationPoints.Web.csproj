@@ -90,7 +90,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Scripts\RelativityForms\IntegrationPointProfile\integration-point-profile-event-handler.js" />
     <Content Include="..\Dependencies\kCura.FluidUI.Widgets.1.1.306\css\fonts\fluid-ui.svg">
       <Link>Content\fonts\fluid-ui.svg</Link>
     </Content>

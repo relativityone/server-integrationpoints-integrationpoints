@@ -43,6 +43,12 @@ namespace kCura.IntegrationPoints.Core.Services
 			if (jobId.HasValue)
 			{
 				Job batchJob = _jobService.GetJob(jobId.Value);
+
+				if (batchJob == null)
+				{
+					throw new InvalidOperationException($"Cannot find job with ID: {jobId}");
+				}
+
 				if (batchJob.StopState.HasFlag(StopState.DrainStopping) || batchJob.StopState.HasFlag(StopState.DrainStopped))
 				{
 					return JobStatusChoices.JobHistorySuspended;

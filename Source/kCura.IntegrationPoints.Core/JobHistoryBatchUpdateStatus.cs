@@ -46,6 +46,11 @@ namespace kCura.IntegrationPoints.Core
 		{
 			Job updatedJob = _jobService.GetJob(job.JobId);
 
+			if (updatedJob == null)
+			{
+				throw new InvalidOperationException($"Cannot find job with ID: {job.JobId}");
+			}
+
 			if (updatedJob.StopState == StopState.Stopping)
 			{
 				return;
