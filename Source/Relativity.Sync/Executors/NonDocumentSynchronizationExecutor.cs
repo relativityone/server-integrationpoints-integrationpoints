@@ -20,7 +20,7 @@ namespace Relativity.Sync.Executors
 			IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
 			Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics,
 			ISyncLog logger,
-			IUserContextConfiguration userContextConfiguration) : base(importJobFactory, BatchRecordType.Documents, batchRepository, jobProgressHandlerFactory, fieldManager,
+			IUserContextConfiguration userContextConfiguration) : base(importJobFactory, BatchRecordType.NonDocuments, batchRepository, jobProgressHandlerFactory, fieldManager,
 			fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics, userContextConfiguration, logger)
 		{
 		}

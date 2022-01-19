@@ -25,5 +25,8 @@ namespace Relativity.Sync.Transfer
 		Task<IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder>> CreateNativeSpecialFieldRowValueBuildersAsync(int sourceWorkspaceArtifactId, int[] documentArtifactIds);
 		
 		Task<IDictionary<SpecialFieldType, IImageSpecialFieldRowValuesBuilder>> CreateImageSpecialFieldRowValueBuildersAsync(int sourceWorkspaceArtifactId, int[] documentArtifactIds);
+		Task<IReadOnlyList<FieldInfoDto>> GetMappedFieldNonDocumentLinklessAsync(CancellationToken token);
+		Task<string> GetRdoTypeNameAsync(int configurationSourceWorkspaceArtifactId, int configurationRdoArtifactTypeId);
+		Task<string[]> GetSameTypeFieldNamesAsync(string transferredRdoTypeNameInSourceWorkspace, int configurationSourceWorkspaceArtifactId);
 	}
 }
