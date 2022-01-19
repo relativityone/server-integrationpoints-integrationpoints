@@ -3,6 +3,7 @@
 	var message = IP.frameMessaging(); // handle into the global Integration point framework
 	var savedSearchService = new SavedSearchService();
 	const thisInstanceArtifactId = 0;
+	const documentArtifactTypeId = 10;
 
 	ko.validation.configure({
 		registerExtenders: true,
@@ -113,8 +114,9 @@
 		var self = this;
 		self.SavedSearchService = new SavedSearchService();
 
-		self.EnableSyncNonDocumentFlowToggleValue = ko.observable();
-		self.EnableSyncNonDocumentFlowToggleValue(window.parent.IP.data.params['EnableSyncNonDocumentFlowToggleValue']);
+		var isNonDocumentObjectFlow = window.parent.IP.data.params['EnableSyncNonDocumentFlowToggleValue'] && window.parent.IP.data.params['TransferredRDOArtifactTypeID'] != documentArtifactTypeId;
+		self.IsNonDocumentObjectSelected = ko.observable();
+		self.IsNonDocumentObjectSelected(isNonDocumentObjectFlow);
 
 		self.workspaces = ko.observableArray(state.workspaces);
 		self.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId);
@@ -171,7 +173,7 @@
 
 		self.SourceOptions = ko.observableArray();
 		
-		if (self.EnableSyncNonDocumentFlowToggleValue) {
+		if (self.IsNonDocumentObjectSelected()) {
 			self.SourceOptions.push({ value: 4, key: "View" });
 		}
 		else {
