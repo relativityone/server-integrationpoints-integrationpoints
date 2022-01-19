@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Web.Http;
 using ArtifactType = Relativity.ArtifactType;
@@ -18,6 +19,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class ViewFinderController : ApiController
 	{
+		private const int _DEFAULT_PAGE_SIZE = 100;
 		private readonly ICPHelper _helper;
 
 		public ViewFinderController(ICPHelper helper)
@@ -27,7 +29,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		[HttpGet]
 		[LogApiExceptionFilter(Message = "Unable to retrieve view list.")]
-		public async Task<HttpResponseMessage> GetViews(int workspaceId, int rdoArtifactTypeId)
+		public async Task<HttpResponseMessage> GetViews(int workspaceId, int rdoArtifactTypeId, string search = "", int page = 1, int pageSize = _DEFAULT_PAGE_SIZE)
 		{
 			using (IObjectManager objectManager = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser))
 			{
@@ -39,19 +41,19 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 					{
 						ArtifactTypeID = (int)ArtifactType.View
 					},
-					Condition = $"'Object Type' == '{rdoName}'",
+					Condition = $"'Object Type' == '{rdoName}' AND 'Name' LIKE '%{search}%'",
 					IncludeNameInQueryResult = true
 				};
 
-				QueryResult queryResult = await objectManager.QueryAsync(workspaceId, request, 0, int.MaxValue).ConfigureAwait(false);
+				QueryResult queryResult = await objectManager.QueryAsync(workspaceId, request, (page - 1) * pageSize, pageSize).ConfigureAwait(false);
 
-				List<ViewModel> views =  queryResult.Objects.Select(x => new ViewModel(x)).ToList();
+				List<ViewModel> views = queryResult.Objects.Select(x => new ViewModel(x)).ToList();
 
 				var response = new ViewResultsModel
 				{
 					Results = views,
-					TotalResults = views.Count,
-					HasMoreResults = false
+					TotalResults = queryResult.TotalCount,
+					HasMoreResults = page * pageSize < queryResult.TotalCount
 				};
 
 				return Request.CreateResponse(HttpStatusCode.OK, response);
