@@ -2,6 +2,8 @@
 using kCura.IntegrationPoints.Data;
 using Relativity.IntegrationPoints.Services;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers.API;
+using Relativity.Services.Interfaces.ObjectType;
+using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Framework;
@@ -9,6 +11,8 @@ using Relativity.Testing.Framework.Api;
 using Relativity.Testing.Framework.Api.Kepler;
 using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Models;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.ApiTests
@@ -40,7 +44,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             applicationService.InstallToWorkspace(Workspace.ArtifactID, appId);
         }
 
-        public async Task ImportEntityWithAzureADProvider()
+        public async Task ImportEntityWithAzureADProviderAsync()
         {
             // Arrange
             AzureADIntegrationPointModelProvider modelProvider = new AzureADIntegrationPointModelProvider(_serviceFactory, Workspace);
@@ -56,14 +60,18 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
                 expectedStatus: JobStatusChoices.JobHistoryCompletedWithErrors.Name).ConfigureAwait(false);
 
             // Assert
-            int transferredItemsCount = await GetTransferredItems(jobHistoryId).ConfigureAwait(false);
+            int transferredItemsCount = await GetTransferredItemsAsync(jobHistoryId).ConfigureAwait(false);
 
             Entity[] entities = RelativityFacade.Instance.Resolve<IEntityService>().GetAll(Workspace.ArtifactID);
 
             entities.Should().HaveCount(transferredItemsCount);
+
+            IEnumerable<object> managers = await GetManagersAsync().ConfigureAwait(false);
+
+            managers.Should().Contain(x => x != null);
         }
 
-        private async Task<int> GetTransferredItems(int jobHistoryId)
+        private async Task<int> GetTransferredItemsAsync(int jobHistoryId)
         {
             using(IObjectManager objectManager = _serviceFactory.GetServiceProxy<IObjectManager>())
             {
@@ -76,6 +84,26 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
                 ReadResult jobHistory = await objectManager.ReadAsync(Workspace.ArtifactID, request).ConfigureAwait(false);
 
                 return (int)jobHistory.Object.FieldValues[0].Value;
+            }
+        }
+
+        private async Task<IEnumerable<object>> GetManagersAsync()
+        {
+            using(IObjectTypeManager objectTypeManager = _serviceFactory.GetServiceProxy<IObjectTypeManager>())
+            using(IObjectManager objectManager = _serviceFactory.GetServiceProxy<IObjectManager>())
+            {
+                List<ObjectTypeIdentifier> artifactTypes = await objectTypeManager.GetAvailableParentObjectTypesAsync(Workspace.ArtifactID).ConfigureAwait(false);
+                ObjectTypeIdentifier artifactType = artifactTypes.Single(x => x.Name == "Entity");
+
+                QueryRequest request = new QueryRequest
+                {
+                    ObjectType = new ObjectTypeRef { ArtifactID = artifactType.ArtifactID },
+                    Fields = new[] { new FieldRef { Name = "Manager" } }
+                };
+
+                QueryResult result = await objectManager.QueryAsync(Workspace.ArtifactID, request, 0, int.MaxValue).ConfigureAwait(false);
+
+                return result.Objects.Select(x => x.FieldValues.Single().Value);
             }
         }
     }

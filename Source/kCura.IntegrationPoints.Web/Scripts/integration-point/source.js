@@ -4,6 +4,8 @@
 	var self = this;
 	self.disable = parentModel.hasBeenRun();
 
+	var loadFileProviderGuid = "1D3AD995-32C5-48FE-BAA5-5D97089C8F18";
+
 	this.sourceTypes = ko.observableArray();
 	this.selectedType = ko.observable().extend({ required: true });
 	this.isSourceProviderDisabled = ko.observable(false);
@@ -62,8 +64,12 @@
 		$.each(self.sourceTypes(), function () {
 			if (this.value === selectedValue) {
 				self.sourceProvider = this.artifactID;
-				if (typeof this.model.config.compatibleRdoTypes === 'undefined' || this.model.config.compatibleRdoTypes === null
-				|| parentModel.destination.selectedDestinationTypeGuid() === "1D3AD995-32C5-48FE-BAA5-5D97089C8F18") {
+				if (
+					typeof this.model.config.compatibleRdoTypes === 'undefined' ||
+					this.model.config.compatibleRdoTypes === null ||
+					parentModel.destination.selectedDestinationTypeGuid() === loadFileProviderGuid ||
+					IP.data.params['EnableSyncNonDocumentFlowToggleValue'] === true
+					) {
 					parentModel.destination.rdoTypes(parentModel.destination.allRdoTypes());
 				}
 				else {
