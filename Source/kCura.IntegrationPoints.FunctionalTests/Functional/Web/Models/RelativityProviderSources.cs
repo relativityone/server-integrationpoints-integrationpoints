@@ -5,6 +5,7 @@
 		SavedSearch,
 		Production,
 		Folder,
-		FolderAndSubfolders
+		FolderAndSubfolders,
+		View
 	}
 }
