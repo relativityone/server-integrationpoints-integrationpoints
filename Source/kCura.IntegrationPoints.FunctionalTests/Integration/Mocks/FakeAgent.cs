@@ -24,6 +24,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		private readonly IWindsorContainer _container;
 
 		public Func<Job, TaskResult> ProcessJobMockFunc { get; set; }
+
+		public Func<IEnumerable<int>> GetResourceGroupIDsMockFunc { get; set; }
+
 		public List<long> ProcessedJobIds { get; } = new List<long>();
 
 		public FakeAgent(IWindsorContainer container, AgentTest agent, IAgentHelper helper, IAgentService agentService = null, IJobService jobService = null,
@@ -46,6 +49,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			//'Enabled = true' triggered Execute() immediately. I needed to set the field only to enable getting job from the queue
 			typeof(kCura.Agent.AgentBase).GetField("_enabled", BindingFlags.NonPublic | BindingFlags.Instance)
 				.SetValue(this, true);
+
+			GetResourceGroupIDsFunc = GetResourceGroupIDsMockFunc != null
+				? GetResourceGroupIDsMockFunc
+				: () => Const.Agent.RESOURCE_GROUP_IDS;
 		}
 
 		public static FakeAgent Create(RelativityInstanceTest instance, IWindsorContainer container, bool shouldRunOnce = true)
@@ -54,7 +61,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
 			var fakeAgent = new FakeAgent(container, agent,
 				container.Resolve<IAgentHelper>(),
+				toggleProvider: container.Resolve<IToggleProvider>(),
 				queryManager: container.Resolve<IQueueQueryManager>(),
+				jobService: container.Resolve<IJobService>(),
 				shouldRunOnce: shouldRunOnce);
 
 			container
@@ -68,15 +77,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		public static FakeAgent CreateWithEmptyProcessJob(RelativityInstanceTest instance, IWindsorContainer container, bool shouldRunOnce = true)
 		{
 			FakeAgent agent = Create(instance, container, shouldRunOnce);
-			
+
 			agent.ProcessJobMockFunc = (Job job) => new TaskResult { Status = TaskStatusEnum.Success };
 
 			return agent;
-		}
-
-		protected override IEnumerable<int> GetListOfResourceGroupIDs()
-		{
-			return Const.Agent.RESOURCE_GROUP_IDS;
 		}
 
 		protected override IWindsorContainer CreateAgentLevelContainer()

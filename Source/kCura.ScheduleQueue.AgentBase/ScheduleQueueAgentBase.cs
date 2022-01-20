@@ -30,6 +30,10 @@ namespace kCura.ScheduleQueue.AgentBase
 		private readonly Lazy<int> _agentId;
 		private readonly Lazy<IAPILog> _loggerLazy;
 
+		protected Func<IEnumerable<int>> GetResourceGroupIDsFunc { get; set; }
+
+		private bool IsKubernetesMode => _toggleProvider != null && _toggleProvider.IsEnabled<EnableKubernetesMode>();
+
 		private static readonly Dictionary<LogCategory, int> _logCategoryToLogLevelMapping = new Dictionary<LogCategory, int>
 		{
 			[LogCategory.Debug] = 20,
@@ -76,9 +80,14 @@ namespace kCura.ScheduleQueue.AgentBase
 				_agentService = new AgentService(Helper, _queryManager, _agentGuid);
 			}
 
+			if (_toggleProvider == null)
+			{
+				_toggleProvider = ToggleProvider.Current;
+			}
+
 			if (_jobService == null)
 			{
-				_jobService = new JobService(_agentService, new JobServiceDataProvider(_queryManager), ToggleProvider.Current, Helper);
+				_jobService = new JobService(_agentService, new JobServiceDataProvider(_queryManager), _toggleProvider, Helper);
 			}
 
 			if (_queueJobValidator == null)
@@ -86,14 +95,14 @@ namespace kCura.ScheduleQueue.AgentBase
 				_queueJobValidator = new QueueJobValidator(Helper);
 			}
 
-			if (_toggleProvider == null)
-			{
-				_toggleProvider = ToggleProvider.Current;
-			}
-
 			if (_dateTime == null)
 			{
 				_dateTime = new DateTimeWrapper();
+			}
+
+			if(GetResourceGroupIDsFunc == null)
+            {
+				GetResourceGroupIDsFunc = () => GetResourceGroupIDs();
 			}
 		}
 
@@ -112,7 +121,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 				if (isPreExecuteSuccessful)
 				{
-                    if (_toggleProvider != null && _toggleProvider.IsEnabled<EnableKubernetesMode>())
+                    if (IsKubernetesMode)
                     {
                         ProcessQueueJobsInKubernetesMode();
                     }
@@ -120,6 +129,7 @@ namespace kCura.ScheduleQueue.AgentBase
                     {
                         ProcessQueueJobs();
                     }
+
                     CleanupQueueJobs();
 				}
 
@@ -168,7 +178,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected virtual IEnumerable<int> GetListOfResourceGroupIDs() // this method was added for unit testing purpose
 		{
-			return GetResourceGroupIDs();
+			return IsKubernetesMode ? Array.Empty<int>() : GetResourceGroupIDsFunc();
 		}
 
         private void ProcessQueueJobs()
@@ -179,7 +189,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
                 while (nextJob != null)
                 {
-                    nextJob = RunFullJobProcessingPath(nextJob, k8sMode: false);
+                    nextJob = RunFullJobProcessingPath(nextJob, runOnce: false);
                 }
 
                 if (ToBeRemoved)
@@ -202,7 +212,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 				if (nextJob != null)
 				{
-					RunFullJobProcessingPath(nextJob, k8sMode: true);
+					RunFullJobProcessingPath(nextJob, runOnce: true);
 				}
 
 				// Agent after finishing single job is being removed
@@ -225,7 +235,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			return nextJob;
 		}
 
-		private Job RunFullJobProcessingPath(Job nextJob, bool k8sMode)
+		private Job RunFullJobProcessingPath(Job nextJob, bool runOnce)
 		{
 			LogJobInformation(nextJob);
 
@@ -235,7 +245,7 @@ namespace kCura.ScheduleQueue.AgentBase
 				Logger.LogInformation("Deleting invalid Job {jobId}...", nextJob.JobId);
 
 				_jobService.DeleteJob(nextJob.JobId);
-				nextJob = !k8sMode ? GetNextQueueJob() : null;
+				nextJob = !runOnce ? GetNextQueueJob() : null;
 				
 				return nextJob;
 			}
@@ -257,7 +267,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			else
 			{
 				FinalizeJobExecution(nextJob, jobResult);
-				nextJob = !k8sMode ? GetNextQueueJob() : null; // assumptions: it will not throws exception
+				nextJob = !runOnce ? GetNextQueueJob() : null; // assumptions: it will not throws exception
 			}
 			return nextJob;
 		}
@@ -369,7 +379,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected int GetAgentID()
 		{
-			if (_toggleProvider != null && _toggleProvider.IsEnabled<EnableKubernetesMode>())
+			if (IsKubernetesMode)
 			{
 				// we can omit some less relevant bits representing years (https://stackoverflow.com/a/2695525/1579824)
 				return Math.Abs((int)(_dateTime.UtcNow.Ticks >> 23));
