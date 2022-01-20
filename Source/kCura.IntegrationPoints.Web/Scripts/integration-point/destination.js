@@ -7,6 +7,7 @@
 	var self = this;
 	self.disable = parentModel.hasBeenRun();
 	var relativityProviderGuid = "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
+	var loadFileProviderGuid = "1D3AD995-32C5-48FE-BAA5-5D97089C8F18";
 
 	this.loadSettings = function (settings) {
 		self.settings = settings;
@@ -24,10 +25,17 @@
 
 	this.selectedDestinationType.subscribe(function (selectedValue) {
 		var destType = self.selectedDestinationTypeGuid();
-		var isRelativityProvider = destType === relativityProviderGuid;
-		self.isDestinationObjectDisabled(isRelativityProvider);
-		if (destType === "1D3AD995-32C5-48FE-BAA5-5D97089C8F18"
-		|| (typeof parentModel.source.SourceProviderConfiguration.compatibleRdoTypes === 'undefined' || parentModel.source.SourceProviderConfiguration.compatibleRdoTypes === null)
+		var enableSyncNonDocumentFlow = IP.data.params['EnableSyncNonDocumentFlowToggleValue'];
+		var disableRdoSelection = destType === relativityProviderGuid && enableSyncNonDocumentFlow === false;
+
+		self.isDestinationObjectDisabled(disableRdoSelection);
+		
+		if (
+			destType === loadFileProviderGuid ||
+			(typeof parentModel.source.SourceProviderConfiguration.compatibleRdoTypes === 'undefined' ||
+			parentModel.source.SourceProviderConfiguration.compatibleRdoTypes === null ||
+			enableSyncNonDocumentFlow
+			)
 		) {
 			self.rdoTypes(self.allRdoTypes());
 			if (typeof self.artifactTypeID() === 'undefined') {

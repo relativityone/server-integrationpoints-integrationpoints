@@ -6,8 +6,21 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 {
 	public class FakeToggleProviderWithDefaultValue : IToggleProvider
 	{
+        private readonly TestContext _testCtx;
+
+        public FakeToggleProviderWithDefaultValue(TestContext testCtx)
+        {
+			_testCtx = testCtx;
+        }
+
 		public bool IsEnabled<T>() where T : IToggle
 		{
+			bool? value = _testCtx.ToggleValues.GetValue<T>();
+			if(value.HasValue)
+            {
+				return value.Value;
+            }
+
 			DefaultValueAttribute attribute = typeof(T).GetCustomAttribute(typeof(DefaultValueAttribute)) as DefaultValueAttribute;
 			return attribute.Value;
 		}
