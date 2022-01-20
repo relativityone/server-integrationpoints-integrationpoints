@@ -71,7 +71,7 @@
 
         var promise = getEnableSyncNonDocumentFlowToggleValue();
         promise.then(function (result) {
-            IP.data.params['EnableSyncNonDocumentFlowToggleValue'] = true;
+            IP.data.params['EnableSyncNonDocumentFlowToggleValue'] = result;
         });
 
 		IP.unsavedChangesHandler = new UnsavedChangesHandler();
