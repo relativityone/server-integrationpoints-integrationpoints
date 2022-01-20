@@ -38,11 +38,11 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 		protected override async Task ChildSuiteSetup()
 		{
-			_sourceWorkspace = await Environment.GetWorkspaceAsync(1018612).ConfigureAwait(false);
-			_destinationWorkspace = await Environment.GetWorkspaceAsync(1018614).ConfigureAwait(false);
+			//_sourceWorkspace = await Environment.GetWorkspaceAsync(1018612).ConfigureAwait(false);
+			//_destinationWorkspace = await Environment.GetWorkspaceAsync(1018614).ConfigureAwait(false);
 
-			// _sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
-			// _destinationWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
+			_sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
+			_destinationWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
 
 			await Environment.InstallCustomHelperAppAsync(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
 			Task installLegalHoldToSourceWorkspaceTask = Environment.InstallLegalHoldToWorkspaceAsync(_sourceWorkspace.ArtifactID);

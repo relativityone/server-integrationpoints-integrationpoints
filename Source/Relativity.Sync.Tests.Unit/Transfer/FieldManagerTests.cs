@@ -7,6 +7,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
 
@@ -26,6 +27,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		private Mock<IFieldConfiguration> _configuration;
 		private Mock<IObjectFieldTypeRepository> _documentFieldRepository;
+		private ISourceServiceFactoryForAdmin _sourceServiceFactoryForAdminFake;
+		private ISyncLog _syncLogFake;
 
 		private FieldManager _sut;
 
@@ -45,6 +48,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		private static readonly FieldInfoDto _DOCUMENT_MAPPED_FIELD =
 			FieldInfoDto.DocumentField("Mapped Source Field", "Mapped Destination Field", false);
+		
+		private static readonly FieldInfoDto _MANAGER_MAPPED_FIELD =
+			FieldInfoDto.DocumentField("Manager", "Manager", false);
 
 		private static readonly FieldInfoDto _FOLDER_PATH_STRUCTURE_FIELD =
 			FieldInfoDto.FolderPathFieldFromDocumentField(_FOLDER_PATH_FIELD_NAME);
@@ -82,6 +88,13 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			CreateFieldMap(_DOCUMENT_MAPPED_FIELD)
 		};
 
+		private static readonly FieldMap[] _MAPPED_FIELDS_WITH_MANAGER =
+		{
+			CreateFieldMap(_DOCUMENT_IDENTIFIER_FIELD, true),
+			CreateFieldMap(_DOCUMENT_MAPPED_FIELD),
+			CreateFieldMap(_MANAGER_MAPPED_FIELD)
+		};
+
 		#endregion
 
 		[SetUp]
@@ -98,8 +111,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			var nativeSpecialFieldBuilders = SetupNativeSpecialFieldBuilders();
 			var imageSpecialFieldBuilders = SetupImageSpecialFieldBuilders();
+			_sourceServiceFactoryForAdminFake = new Mock<ISourceServiceFactoryForAdmin>().Object;
+			_syncLogFake = new Mock<ISyncLog>().Object;
 
-			_sut = new FieldManager(_configuration.Object, _documentFieldRepository.Object, nativeSpecialFieldBuilders, imageSpecialFieldBuilders);
+			_sut = new FieldManager(_configuration.Object, _documentFieldRepository.Object, nativeSpecialFieldBuilders, imageSpecialFieldBuilders, _sourceServiceFactoryForAdminFake, _syncLogFake);
 		}
 
 		[Test]
@@ -292,7 +307,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			// Arrange
 			_sut = new FieldManager(_configuration.Object, _documentFieldRepository.Object,
-				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>());
+				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>(), _sourceServiceFactoryForAdminFake, _syncLogFake);
 
 			// Act
 			Func<Task<IReadOnlyList<FieldInfoDto>>> action = () => _sut.GetNativeAllFieldsAsync(CancellationToken.None);
@@ -402,7 +417,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_configuration.Setup(c => c.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ARTIFACT_ID);
 
 			_sut = new FieldManager(_configuration.Object, _documentFieldRepository.Object,
-				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>());
+				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>(), _sourceServiceFactoryForAdminFake, _syncLogFake);
 
 			// Act
 			IReadOnlyList<FieldInfoDto> result = await _sut.GetNativeAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
@@ -416,7 +431,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			// Arrange
 			_sut = new FieldManager(_configuration.Object, _documentFieldRepository.Object,
-				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>());
+				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>(), _sourceServiceFactoryForAdminFake, _syncLogFake);
 
 			// Act
 			Func<IEnumerable<FieldInfoDto>> action = () => _sut.GetNativeSpecialFields();
@@ -430,7 +445,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			// Arrange
 			_sut = new FieldManager(_configuration.Object, _documentFieldRepository.Object,
-				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>());
+				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>(), _sourceServiceFactoryForAdminFake, _syncLogFake);
 
 			// Act
 			Func<IEnumerable<FieldInfoDto>> action = () => _sut.GetImageSpecialFields();
@@ -444,7 +459,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			// Arrange
 			_sut = new FieldManager(_configuration.Object, _documentFieldRepository.Object,
-				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>());
+				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>(), _sourceServiceFactoryForAdminFake, _syncLogFake);
 
 			// Act
 			Func<Task<IList<FieldInfoDto>>> action = () => _sut.GetDocumentTypeFieldsAsync(CancellationToken.None);
@@ -453,6 +468,19 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			await action.Should().NotThrowAsync().ConfigureAwait(false);
 		}
 
+		[Test]
+		public async Task GetMappedFieldNonDocumentLinklessAsync_ShouldRetrieveApplicableFields()
+		{
+			_configuration.Setup(c => c.GetFieldMappings()).Returns(_MAPPED_FIELDS_WITH_MANAGER);
+			//I need to mock call for GetRdoTypeNameAsync to return "Manager"
+			//I need to mock GetSameTypeFieldNamesAsync to filter _MAPPED_FIELDS_WITH_MANAGER with "Manager"
+			// OPTION 1: Move them outside the class so I can more easily mock their behviour
+			// OPTION 2: Mock calls to ObjectManager under _sourceServiceFactoryForAdmin
+			//string rdoTypeForLinkingName = "Manager";
+			
+			var actualResults = await _sut.GetMappedFieldNonDocumentLinklessAsync(CancellationToken.None).ConfigureAwait(false);
+		}
+		
 		private static FieldMap CreateFieldMap(FieldInfoDto fieldInfo, bool isIdentifier = false)
 			=> new FieldMap
 			{
@@ -485,6 +513,11 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				{
 					{ mappedField.SourceFieldName, RelativityDataType.FixedLengthText }
 				});
+		}
+
+		private void SetupCustomNonDocumentFieldsForNonDocumentLinkless()
+		{
+			
 		}
 
 		private INativeSpecialFieldBuilder[] SetupNativeSpecialFieldBuilders()
