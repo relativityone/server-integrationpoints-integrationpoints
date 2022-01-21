@@ -1,6 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
@@ -111,10 +112,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 		{
 			var agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
-			FakeAgent fakeAgent = new FakeAgent(Container, agent,
-				Container.Resolve<IAgentHelper>(),
+            FakeAgent fakeAgent = new FakeAgent(Container, agent,
+                Container.Resolve<IAgentHelper>(),
 				scheduleRuleFactory: Container.Resolve<IScheduleRuleFactory>(),
-				queryManager: Container.Resolve<IQueueQueryManager>());
+				queryManager: Container.Resolve<IQueueQueryManager>(),
+                kubernetesMode: Container.Resolve<IKubernetesMode>());
 
 			fakeAgent.ProcessJobMockFunc = (job) =>
 			{

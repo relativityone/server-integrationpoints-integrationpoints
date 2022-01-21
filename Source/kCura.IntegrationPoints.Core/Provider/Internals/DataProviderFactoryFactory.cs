@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Domain;
 using LanguageExt;
 using Relativity.API;
 using System;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Provider.Internals
@@ -16,12 +17,14 @@ namespace kCura.IntegrationPoints.Core.Provider.Internals
         private readonly IAPILog _logger;
         private readonly IHelper _helper;
         private readonly IToggleProvider _toggleProvider;
+        private readonly IKubernetesMode _kubernetesMode;
 
-        public DataProviderFactoryFactory(IAPILog logger, IHelper helper, IToggleProvider toggleProvider)
+        public DataProviderFactoryFactory(IAPILog logger, IHelper helper, IToggleProvider toggleProvider, IKubernetesMode kubernetesMode)
         {
             _logger = logger;
             _helper = helper;
             _toggleProvider = toggleProvider;
+            _kubernetesMode = kubernetesMode;
         }
 
         public Either<string, ProviderFactoryVendor> CreateProviderFactoryVendor()
@@ -48,7 +51,7 @@ namespace kCura.IntegrationPoints.Core.Provider.Internals
                 var getAppBinaries = new GetApplicationBinaries(adminCaseDbContext);
                 IPluginProvider pluginProvider = new DefaultSourcePluginProvider(getAppBinaries);
                 var relativityFeaturePathService = new RelativityFeaturePathService();
-                var domainHelper = new AppDomainHelper(pluginProvider, _helper, relativityFeaturePathService, _toggleProvider);
+                var domainHelper = new AppDomainHelper(pluginProvider, _helper, relativityFeaturePathService, _toggleProvider, _kubernetesMode);
                 var strategy = new AppDomainIsolatedFactoryLifecycleStrategy(domainHelper);
                 return strategy;
             }

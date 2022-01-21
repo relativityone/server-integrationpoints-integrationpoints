@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Castle.Core.Internal;
-using kCura.IntegrationPoints.Domain.Toggles;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using Polly;
 using Relativity.API;
 using Relativity.Toggles;
@@ -22,8 +22,10 @@ namespace kCura.IntegrationPoints.Domain
 		private readonly IAPILog _logger;
 		private readonly RelativityFeaturePathService _relativityFeaturePathService;
 		private readonly IToggleProvider _toggleProvider;
+        private readonly IKubernetesMode _kubernetesMode;
 
-        public AppDomainHelper(IPluginProvider pluginProvider, IHelper helper, RelativityFeaturePathService relativityFeaturePathService, IToggleProvider toggleProvider)
+        public AppDomainHelper(IPluginProvider pluginProvider, IHelper helper, RelativityFeaturePathService relativityFeaturePathService, 
+            IToggleProvider toggleProvider, IKubernetesMode kubernetesMode)
 		{
 
 			_pluginProvider = pluginProvider;
@@ -31,6 +33,7 @@ namespace kCura.IntegrationPoints.Domain
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<AppDomainHelper>();
 			_relativityFeaturePathService = relativityFeaturePathService;
             _toggleProvider = toggleProvider;
+            _kubernetesMode = kubernetesMode;
         }
 
         public virtual void LoadClientLibraries(AppDomain domain, Guid applicationGuid)
@@ -136,9 +139,8 @@ namespace kCura.IntegrationPoints.Domain
 			AppDomain newDomain = AppDomain.CreateDomain(domainName, null, domainInfo);
 
 			_logger.LogInformation("Deploying library files for domain {domainName} to path {domainPath}.", domainName, domainPath);
-
-
-            if (_toggleProvider.IsEnabled<EnableKubernetesMode>() || _toggleProvider.IsEnabledByName("Relativity.ADS.Agents.Toggles.ApplicationInstallationWorkerIsActive"))
+			
+			if (_kubernetesMode.Value || _toggleProvider.IsEnabledByName("Relativity.ADS.Agents.Toggles.ApplicationInstallationWorkerIsActive"))
             {
                 _logger.LogInformation("Required Assemblies Loading in Kubernetes Mode");
                 CopyLibraryFilesFromWorkingDirectory(domainPath);

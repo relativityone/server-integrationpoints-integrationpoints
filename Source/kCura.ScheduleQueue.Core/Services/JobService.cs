@@ -4,28 +4,27 @@ using System.Data;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.IntegrationPoints.Domain.Toggles;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
 using Relativity.API;
-using Relativity.Toggles;
 
 namespace kCura.ScheduleQueue.Core.Services
 {
 	public class JobService : IJobService
 	{
-		private readonly IToggleProvider _toggleProvider;
+        private readonly IKubernetesMode _kubernetesMode;
 		private readonly IAPILog _log;
 
-		public JobService(IAgentService agentService, IJobServiceDataProvider dataProvider, IToggleProvider toggleProvider, IHelper dbHelper)
+		public JobService(IAgentService agentService, IJobServiceDataProvider dataProvider, IKubernetesMode kubernetesMode, IHelper dbHelper)
 		{
-			AgentService = agentService;
+            _kubernetesMode = kubernetesMode;
+            AgentService = agentService;
 			_log = dbHelper.GetLoggerFactory().GetLogger().ForContext<JobService>();
 			DataProvider = dataProvider;
-			_toggleProvider = toggleProvider;
 		}
 
 		protected IJobServiceDataProvider DataProvider { get; set; }
@@ -38,7 +37,7 @@ namespace kCura.ScheduleQueue.Core.Services
 		{
             DataRow row;
 			
-			if (_toggleProvider.IsEnabled<EnableKubernetesMode>())
+			if (_kubernetesMode.Value)
 			{
 				row = DataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID);
 			}
@@ -325,7 +324,7 @@ namespace kCura.ScheduleQueue.Core.Services
 
 			DataProvider.CleanupScheduledJobsQueue();
 
-			if (!_toggleProvider.IsEnabled<EnableKubernetesMode>())
+			if (!_kubernetesMode.Value)
 			{
                 DataProvider.CleanupJobQueueTable();
 			}
