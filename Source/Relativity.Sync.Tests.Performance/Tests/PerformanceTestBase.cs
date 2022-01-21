@@ -190,7 +190,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 					Guid.NewGuid());
 
 				SyncRunner syncRunner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl,
-					new NullAPM(), Logger);
+					new NullAPM(), Logger, new TestSyncToggleProvider());
 
 				Logger.LogInformation("Staring the job");
 
