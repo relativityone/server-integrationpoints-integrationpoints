@@ -1,8 +1,8 @@
-﻿using kCura.IntegrationPoints.Domain.Toggles;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using System;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 {
@@ -12,7 +12,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
         public void Agent_ShouldNotCallGetListOfResourceGroupIDs_WhenKubernetesModeIsEnabled()
         {
             // Arrange
-            Context.ToggleValues.SetValue<EnableKubernetesMode>(true);
+            IKubernetesMode kubernetesMode = Container.Resolve<IKubernetesMode>();
+            kubernetesMode.Value = true;
 
             JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleBasicJob(SourceWorkspace);
 

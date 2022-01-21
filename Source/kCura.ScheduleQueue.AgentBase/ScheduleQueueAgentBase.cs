@@ -4,14 +4,13 @@ using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain.Toggles;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Services;
 using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
-using Relativity.Toggles;
 
 namespace kCura.ScheduleQueue.AgentBase
 {
@@ -19,9 +18,9 @@ namespace kCura.ScheduleQueue.AgentBase
 	{
 		private IAgentService _agentService;
 		private IQueueQueryManager _queryManager;
-		private IJobService _jobService;
+        
+        private IJobService _jobService;
 		private IQueueJobValidator _queueJobValidator;
-		private IToggleProvider _toggleProvider;
 		private IDateTime _dateTime;
 
 		private const int _MAX_MESSAGE_LENGTH = 10000;
@@ -29,10 +28,11 @@ namespace kCura.ScheduleQueue.AgentBase
 		private readonly Guid _agentGuid;
 		private readonly Lazy<int> _agentId;
 		private readonly Lazy<IAPILog> _loggerLazy;
+        private readonly IKubernetesMode _kubernetesMode;
 
 		protected Func<IEnumerable<int>> GetResourceGroupIDsFunc { get; set; }
 
-		private bool IsKubernetesMode => _toggleProvider != null && _toggleProvider.IsEnabled<EnableKubernetesMode>();
+		private bool IsKubernetesMode => _kubernetesMode.Value;
 
 		private static readonly Dictionary<LogCategory, int> _logCategoryToLogLevelMapping = new Dictionary<LogCategory, int>
 		{
@@ -46,16 +46,16 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected ScheduleQueueAgentBase(Guid agentGuid, IAgentService agentService = null, IJobService jobService = null,
 			IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null, 
-			IQueueQueryManager queryManager = null, IToggleProvider toggleProvider = null, IDateTime dateTime = null, IAPILog logger = null)
+			IQueueQueryManager queryManager = null, IKubernetesMode kubernetesMode = null, IDateTime dateTime = null, IAPILog logger = null)
 		{
 			_agentGuid = agentGuid;
 			_agentService = agentService;
 			_jobService = jobService;
 			_queueJobValidator = queueJobValidator;
-			_toggleProvider = toggleProvider;
 			_dateTime = dateTime;
 			_queryManager = queryManager;
-			ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
+            _kubernetesMode = kubernetesMode;
+            ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
 
 			_agentId = new Lazy<int>(GetAgentID);
 
@@ -80,14 +80,9 @@ namespace kCura.ScheduleQueue.AgentBase
 				_agentService = new AgentService(Helper, _queryManager, _agentGuid);
 			}
 
-			if (_toggleProvider == null)
-			{
-				_toggleProvider = ToggleProvider.Current;
-			}
-
 			if (_jobService == null)
 			{
-				_jobService = new JobService(_agentService, new JobServiceDataProvider(_queryManager), _toggleProvider, Helper);
+				_jobService = new JobService(_agentService, new JobServiceDataProvider(_queryManager), _kubernetesMode, Helper);
 			}
 
 			if (_queueJobValidator == null)

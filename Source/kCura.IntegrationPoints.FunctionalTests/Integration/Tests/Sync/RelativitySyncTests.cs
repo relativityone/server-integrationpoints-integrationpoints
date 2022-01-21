@@ -9,6 +9,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using NUnit.Framework;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
 {
@@ -16,7 +17,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
 	{
 		private const int _STOP_MANAGER_TIMEOUT = 10;
 
-		[IdentifiedTest("1228BB49-8C07-4DAA-818F-1D736BDD8243")]
+        [IdentifiedTest("1228BB49-8C07-4DAA-818F-1D736BDD8243")]
 		public void Agent_ShouldSuccessfullyProcessSyncJob()
 		{
 			// Arrange
@@ -25,7 +26,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
 			var sut = FakeAgent.Create(FakeRelativityInstance, Container);
 
 			// Act
-
 			sut.Execute();
 
 			// Assert

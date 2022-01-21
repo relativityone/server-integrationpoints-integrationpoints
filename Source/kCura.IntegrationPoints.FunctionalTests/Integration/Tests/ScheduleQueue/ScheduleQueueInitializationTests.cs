@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries;
@@ -18,8 +19,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			QueueQueryManagerMock queryManagerMock = (QueueQueryManagerMock)Container.Resolve<IQueueQueryManager>();
 			
 			FakeAgent sut = new FakeAgent(Container, agent,
-				Container.Resolve<IAgentHelper>(),
-				queryManager: queryManagerMock);
+                Container.Resolve<IAgentHelper>(),
+				queryManager: queryManagerMock,
+                kubernetesMode: Container.Resolve<IKubernetesMode>());
 
 			// Act
 			sut.Execute();
