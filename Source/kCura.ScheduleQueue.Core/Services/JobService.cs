@@ -37,7 +37,7 @@ namespace kCura.ScheduleQueue.Core.Services
 		{
             DataRow row;
 			
-			if (_kubernetesMode.Value)
+			if (_kubernetesMode.IsEnabled)
 			{
 				row = DataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID);
 			}
@@ -324,7 +324,7 @@ namespace kCura.ScheduleQueue.Core.Services
 
 			DataProvider.CleanupScheduledJobsQueue();
 
-			if (!_kubernetesMode.Value)
+			if (!_kubernetesMode.IsEnabled)
 			{
                 DataProvider.CleanupJobQueueTable();
 			}

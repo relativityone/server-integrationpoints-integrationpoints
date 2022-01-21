@@ -56,7 +56,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		{
 			_dataProviderMock = Substitute.For<IJobServiceDataProvider>();
 			_kubernetesModeMock = Substitute.For<IKubernetesMode>();
-			_kubernetesModeMock.Value.Returns(false);
+			_kubernetesModeMock.IsEnabled.Returns(false);
 		}
 
 		[Test]
@@ -99,7 +99,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		{
 			// arrange
 			const int agentId = 1;
-			_kubernetesModeMock.Value.Returns(true);
+			_kubernetesModeMock.IsEnabled.Returns(true);
 			JobService sut = PrepareSut();
 
 			// act
@@ -448,7 +448,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void CleanupJobQueueTable_ShouldAlwaysCleanupScheduledJobsQueue(bool enableKubernetesMode)
 		{
 			// arrange
-			_kubernetesModeMock.Value.Returns(enableKubernetesMode);
+			_kubernetesModeMock.IsEnabled.Returns(enableKubernetesMode);
 			JobService sut = PrepareSut();
 
 			// act
@@ -462,7 +462,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void CleanupJobQueueTable_ShouldNotCleanupJobQueueTable_WhenInKubernetesMode()
 		{
 			// arrange
-			_kubernetesModeMock.Value.Returns(true);
+			_kubernetesModeMock.IsEnabled.Returns(true);
 			JobService sut = PrepareSut();
 
 			// act
@@ -476,7 +476,7 @@ namespace kCura.ScheduleQueue.Core.Tests
 		public void CleanupJobQueueTable_ShouldCleanupJobQueueTable_WhenNotInKubernetesMode()
 		{
 			// arrange
-			_kubernetesModeMock.Value.Returns(false);
+			_kubernetesModeMock.IsEnabled.Returns(false);
 			JobService sut = PrepareSut();
 
 			// act

@@ -32,7 +32,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected Func<IEnumerable<int>> GetResourceGroupIDsFunc { get; set; }
 
-		private bool IsKubernetesMode => _kubernetesMode.Value;
+		private bool IsKubernetesMode => _kubernetesMode.IsEnabled;
 
 		private static readonly Dictionary<LogCategory, int> _logCategoryToLogLevelMapping = new Dictionary<LogCategory, int>
 		{
