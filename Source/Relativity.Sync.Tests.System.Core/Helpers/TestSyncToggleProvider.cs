@@ -9,7 +9,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 {
     public class TestSyncToggleProvider : IToggleProvider
     {
-        public Dictionary<Type, bool> _overridenToggles = new Dictionary<Type, bool>();
+        private readonly Dictionary<Type, bool> _overridenToggles = new Dictionary<Type, bool>();
 
         public bool IsEnabled<T>() where T : IToggle
         {

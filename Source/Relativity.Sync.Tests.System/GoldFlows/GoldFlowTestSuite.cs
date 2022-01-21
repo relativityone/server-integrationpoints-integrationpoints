@@ -25,6 +25,7 @@ using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 using Relativity.Sync.Tests.System.Core.Extensions;
 using Relativity.Toggles;
 using AppSettings = Relativity.Sync.Tests.System.Core.AppSettings;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
 
 namespace Relativity.Sync.Tests.System.GoldFlows
 {
@@ -181,30 +182,33 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 					return $"{controlNumber}_{index}";
 				}
 
-				CookieContainer cookieContainer = new CookieContainer();
-				IRunningContext runningContext = new RunningContext
-				{
-					ApplicationName = "Relativity.Sync.Tests.System.GoldFlows"
-				};
-				NetworkCredential credentials = LoginHelper.LoginUsernamePassword(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword, cookieContainer, runningContext, () => string.Empty);
-				kCura.WinEDDS.Config.ProgrammaticServiceURL = AppSettings.RelativityWebApiUrl.ToString();
-
 				ILookup<int, TestImageFile> sourceWorkspaceFiles;
 				Dictionary<string, TestImageFile> destinationWorkspaceFiles;
 
-				Dictionary<int, string> sourceWorkspaceDocumentNames = sourceWorkspaceDocuments.ToDictionary(x => x.ArtifactID, x => x.Name);
-
-				using (ISearchManager searchManager = new SearchManager(credentials, cookieContainer))
+				using (ISearchService searchManager = _goldFlowTestSuite.ServiceFactory.CreateProxy<ISearchService>())
 				{
-					DataTable dataTable = searchManager.RetrieveImagesForDocuments(sourceWorkspaceId, sourceWorkspaceDocuments.Select(x => x.ArtifactID).ToArray()).Tables[0];
-					sourceWorkspaceFiles = dataTable.AsEnumerable()
+					DataTable dataTable = searchManager
+						.RetrieveImagesForSearchAsync(sourceWorkspaceId, sourceWorkspaceDocuments.Select(x => x.ArtifactID).ToArray(), string.Empty)
+						.GetAwaiter().GetResult()
+						.Unwrap()
+						.Tables[0];
+
+					sourceWorkspaceFiles = dataTable
+						.AsEnumerable()
 						.Select(TestImageFile.GetFile)
 						.ToLookup(x => x.DocumentArtifactId, x => x);
 
-					destinationWorkspaceFiles = searchManager.RetrieveImagesForDocuments(destinationWorkspaceId, destinationWorkspaceDocumentIds.Select(x => x.ArtifactID).ToArray()).Tables[0].AsEnumerable()
+					destinationWorkspaceFiles = searchManager
+						.RetrieveImagesForSearchAsync(destinationWorkspaceId, destinationWorkspaceDocumentIds.Select(x => x.ArtifactID).ToArray(), string.Empty)
+						.GetAwaiter().GetResult()
+						.Unwrap()
+						.Tables[0]
+						.AsEnumerable()
 						.Select(TestImageFile.GetFile)
 						.ToDictionary(x => x.Identifier, x => x);
 				}
+
+				Dictionary<int, string> sourceWorkspaceDocumentNames = sourceWorkspaceDocuments.ToDictionary(x => x.ArtifactID, x => x.Name);
 
 				foreach (IGrouping<int, TestImageFile> sourceDocumentImages in sourceWorkspaceFiles)
 				{
