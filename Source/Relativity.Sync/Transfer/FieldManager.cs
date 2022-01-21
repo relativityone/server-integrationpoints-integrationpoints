@@ -21,9 +21,8 @@ namespace Relativity.Sync.Transfer
 		private List<FieldInfoDto> _mappedDocumentFields;
 		private IReadOnlyList<FieldInfoDto> _imageAllFields;
 		private IReadOnlyList<FieldInfoDto> _nativeAllFields;
-		private IReadOnlyList<FieldInfoDto> _nonDocumentLinklessFields;
-		//private IReadOnlyList<FieldInfoDto> _nonDocumentForLinkingFields;
-
+		private IReadOnlyList<FieldInfoDto> _nonDocumentWithoutLinksFields;
+		
 		private readonly IFieldConfiguration _configuration;
 		private readonly IObjectFieldTypeRepository _objectFieldTypeRepository;
 		private readonly ISourceServiceFactoryForAdmin _sourceServiceFactoryForAdmin;
@@ -132,23 +131,22 @@ namespace Relativity.Sync.Transfer
 			return _mappedDocumentFields;
 		}
 
-		public async Task<IReadOnlyList<FieldInfoDto>> GetMappedFieldNonDocumentLinklessAsync(CancellationToken token)
+		public async Task<IReadOnlyList<FieldInfoDto>> GetMappedFieldNonDocumentWithoutLinksAsync(
+			CancellationToken token)
 		{
 			IList<FieldInfoDto> fieldInfos = await GetMappedFieldsAsync(token).ConfigureAwait(false);
-			
-			string transferredRdoTypeNameInSourceWorkspace =
-				await GetRdoTypeNameAsync(_configuration.SourceWorkspaceArtifactId, _configuration.RdoArtifactTypeId);
 
-			string[] namesOfFieldsOfTheSameType =
-				await GetSameTypeFieldNamesAsync(transferredRdoTypeNameInSourceWorkspace, _configuration.SourceWorkspaceArtifactId).ConfigureAwait(false);
+			string[] namesOfFieldsOfTheSameType = await GetSameTypeFieldNamesAsync(_configuration.SourceWorkspaceArtifactId).ConfigureAwait(false);
 			
-			_nonDocumentLinklessFields = fieldInfos.Where(f => !namesOfFieldsOfTheSameType.Any( n => n == f.SourceFieldName)).ToList();
+			_nonDocumentWithoutLinksFields = fieldInfos.Where(f => !namesOfFieldsOfTheSameType.Any( n => n == f.SourceFieldName)).ToList();
 			
-			return _nonDocumentLinklessFields;
+			return _nonDocumentWithoutLinksFields;
 		}
 		
-		public async Task<string[]> GetSameTypeFieldNamesAsync(string rdoTypeName, int workspaceId)
+		public async Task<string[]> GetSameTypeFieldNamesAsync(int workspaceId)
 		{
+			string rdoTypeName = await GetRdoTypeNameAsync(_configuration.SourceWorkspaceArtifactId, _configuration.RdoArtifactTypeId);
+			
 			using (var objectManager =
 				await _sourceServiceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
@@ -169,7 +167,7 @@ namespace Relativity.Sync.Transfer
 			}
 		}
 
-		public async Task<string> GetRdoTypeNameAsync(int workspaceArtifactId, int rdoArtifactTypeId)
+		private async Task<string> GetRdoTypeNameAsync(int workspaceArtifactId, int rdoArtifactTypeId)
 		{
 			using (var objectManager =
 				await _sourceServiceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
@@ -196,7 +194,6 @@ namespace Relativity.Sync.Transfer
 				return result.Objects.Single().Name;
 			}
 		}
-
 
 		private static IEnumerable<INativeSpecialFieldBuilder> OmitNativeInfoFieldsBuildersIfNotNeeded(IFieldConfiguration configuration, IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders)
 		{

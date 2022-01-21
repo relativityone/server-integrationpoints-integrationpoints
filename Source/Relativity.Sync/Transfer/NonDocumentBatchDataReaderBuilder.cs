@@ -18,7 +18,7 @@ namespace Relativity.Sync.Transfer
 
 		protected override Task<IReadOnlyList<FieldInfoDto>> GetAllFieldsAsync(CancellationToken token)
 		{
-			return _fieldManager.GetMappedFieldNonDocumentLinklessAsync(token);
+			return _fieldManager.GetMappedFieldNonDocumentWithoutLinksAsync(token);
 		}
 
 		protected override async Task<IBatchDataReader> CreateDataReaderAsync(DataTable templateDataTable, int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token)

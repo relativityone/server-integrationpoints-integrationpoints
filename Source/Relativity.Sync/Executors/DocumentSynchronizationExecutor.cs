@@ -114,9 +114,9 @@ namespace Relativity.Sync.Executors
 			_jobStatisticsContainer.LongTextStatistics.Clear();
 		}
 
-		protected override Task<TaggingExecutionResult> TagDocumentsAsync(IImportJob importJob, ISynchronizationConfiguration configuration, CompositeCancellationToken token)
+		protected override Task<TaggingExecutionResult> TagObjectsAsync(IImportJob importJob, ISynchronizationConfiguration configuration, CompositeCancellationToken token)
 		{
-			return _taggingProvider.TagDocumentsAsync(importJob, configuration, token);
+			return _taggingProvider.TagObjectsAsync(importJob, configuration, token);
 		}
 	}
 }

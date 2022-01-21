@@ -92,7 +92,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_configFake = new Mock<IImageSynchronizationConfiguration>();
 			_taggingProviderFake = new Mock<ITaggingProvider>();
 			_taggingProviderFake
-				.Setup(x => x.TagDocumentsAsync(It.IsAny<Sync.Executors.IImportJob>(), It.IsAny<ISynchronizationConfiguration>(), It.IsAny<CompositeCancellationToken>()))
+				.Setup(x => x.TagObjectsAsync(It.IsAny<Sync.Executors.IImportJob>(), It.IsAny<ISynchronizationConfiguration>(), It.IsAny<CompositeCancellationToken>()))
 				.ReturnsAsync(TaggingExecutionResult.Success);
 			_jobProgressHandlerFactoryStub = new Mock<IJobProgressHandlerFactory>();
 			_jobCleanupConfigurationMock = new Mock<IJobCleanupConfiguration>();
@@ -302,7 +302,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			ImportJobResult importJob = new ImportJobResult(ExecutionResult.Success(), _METADATA_SIZE, _FILES_SIZE, _JOB_SIZE);
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CompositeCancellationToken>())).ReturnsAsync(importJob);
 
-			_taggingProviderFake.Setup(x => x.TagDocumentsAsync(It.IsAny<Sync.Executors.IImportJob>(),
+			_taggingProviderFake.Setup(x => x.TagObjectsAsync(It.IsAny<Sync.Executors.IImportJob>(),
 				It.IsAny<ISynchronizationConfiguration>(), It.IsAny<CompositeCancellationToken>())).Throws<OperationCanceledException>();
 
 			// Act
@@ -468,7 +468,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			result.Status.Should().BeEquivalentTo(expectedExecutionResult.Status);
 
 			_taggingProviderFake
-				.Verify(x => x.TagDocumentsAsync(_importJobFake.Object,
+				.Verify(x => x.TagObjectsAsync(_importJobFake.Object,
 					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<CompositeCancellationToken>()), Times.Once);
 		}
 
@@ -910,7 +910,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private void SetUpDocumentsTagRepository(TaggingExecutionResult executionResult)
 		{
 			_taggingProviderFake
-				.Setup(x => x.TagDocumentsAsync(It.IsAny<Sync.Executors.IImportJob>(), It.IsAny<ISynchronizationConfiguration>(), It.IsAny<CompositeCancellationToken>()))
+				.Setup(x => x.TagObjectsAsync(It.IsAny<Sync.Executors.IImportJob>(), It.IsAny<ISynchronizationConfiguration>(), It.IsAny<CompositeCancellationToken>()))
 				.ReturnsAsync(executionResult);
 		}
 

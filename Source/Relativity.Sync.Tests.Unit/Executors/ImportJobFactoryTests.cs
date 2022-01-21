@@ -34,9 +34,21 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IJobProgressHandlerFactory> _jobProgressHandlerFactory;
 		private Mock<ISourceWorkspaceDataReaderFactory> _dataReaderFactory;
 		private Mock<IItemLevelErrorLogAggregator> _itemLevelErrorLogAggregator;
+		private Mock<IFieldMappings> _fieldMappingsMock;
 		private SyncJobParameters _syncJobParameters;
 		private const string _IMAGE_IDENTIFIER_DISPLAY_NAME = "ImageIdentifier";
 		private const int _DEST_RDO_ARTIFACT_TYPE = 1234567;
+		
+		private static readonly FieldInfoDto _DOCUMENT_IDENTIFIER_FIELD =
+			new FieldInfoDto(SpecialFieldType.None, "Control Number Source [Identifier]", "Control Number Destination [Identifier]", true, true)
+			{
+				RelativityDataType = RelativityDataType.FixedLengthText
+			};
+		
+		private static readonly FieldMap[] _MAPPED_FIELDS = new FieldMap[]
+		{
+			CreateFieldMap(_DOCUMENT_IDENTIFIER_FIELD, true),
+		};
 
 		[SetUp]
 		public void SetUp()
@@ -53,6 +65,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_dataReaderFactory.Setup(x => x.CreateImageSourceWorkspaceDataReader(It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).Returns(dataReader.Object);
 			_dataReaderFactory.Setup(x => x.CreateNonDocumentSourceWorkspaceDataReader(It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).Returns(dataReader.Object);
 			_jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
+			_fieldMappingsMock = new Mock<IFieldMappings>();
+			_fieldMappingsMock.Setup(x => x.GetFieldMappings()).Returns(_MAPPED_FIELDS);
 			_instanceSettings = new Mock<IInstanceSettings>();
 			_instanceSettings.Setup(x => x.GetWebApiPathAsync(default(string))).ReturnsAsync("http://fake.uri");
 			_syncJobParameters = FakeHelper.CreateSyncJobParameters();
@@ -87,7 +101,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             ImportJobFactory instance = GetTestInstance(GetNonDocumentImportAPIFactoryMock());
 
             // Act
-            Sync.Executors.IImportJob result = await instance.CreateRdoImportJobAsync(_nonDocumentConfigurationMock.Object, _batch.Object, It.IsAny<string>(), CancellationToken.None).ConfigureAwait(false);
+            Sync.Executors.IImportJob result = await instance.CreateRdoImportJobAsync(_nonDocumentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
             result.Dispose();
 
             // Assert
@@ -458,8 +472,25 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private ImportJobFactory GetTestInstance(Mock<IImportApiFactory> importApiFactory)
 		{
 			var instance = new ImportJobFactory(importApiFactory.Object, _dataReaderFactory.Object,
-				_jobHistoryErrorRepository.Object, _instanceSettings.Object, _syncJobParameters, _logger);
+				_jobHistoryErrorRepository.Object, _instanceSettings.Object, _syncJobParameters, _fieldMappingsMock.Object, _logger);
 			return instance;
 		}
+
+		private static FieldMap CreateFieldMap(FieldInfoDto fieldInfo, bool isIdentifier = false)
+			=> new FieldMap
+			{
+				SourceField = new FieldEntry
+				{
+					DisplayName = fieldInfo.SourceFieldName,
+					IsIdentifier = fieldInfo.IsIdentifier
+				},
+				DestinationField = new FieldEntry
+				{
+					DisplayName = fieldInfo.DestinationFieldName,
+					IsIdentifier = fieldInfo.IsIdentifier
+				},
+				FieldMapType = isIdentifier ? FieldMapType.Identifier : FieldMapType.None
+			};
+ 
 	}
 }

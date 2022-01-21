@@ -5,7 +5,7 @@ namespace Relativity.Sync.Executors
 {
 	internal interface ITaggingProvider
 	{
-		Task<TaggingExecutionResult> TagDocumentsAsync(IImportJob importJob,
+		Task<TaggingExecutionResult> TagObjectsAsync(IImportJob importJob,
 			ISynchronizationConfiguration configuration,
 			CompositeCancellationToken token);
 	}

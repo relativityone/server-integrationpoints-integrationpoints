@@ -65,7 +65,7 @@ namespace Relativity.Sync.Executors
 
 		protected abstract void ChildReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime, TimeSpan importApiTimer);
 
-		protected abstract Task<TaggingExecutionResult> TagDocumentsAsync(IImportJob importJob, ISynchronizationConfiguration configuration, CompositeCancellationToken token);
+		protected abstract Task<TaggingExecutionResult> TagObjectsAsync(IImportJob importJob, ISynchronizationConfiguration configuration, CompositeCancellationToken token);
 
 		protected void ReportBatchMetrics(int batchId, int savedSearchId, BatchProcessResult batchProcessResult, TimeSpan batchTime,
 			TimeSpan importApiTimer)
@@ -145,7 +145,7 @@ namespace Relativity.Sync.Executors
 								BatchProcessResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token).ConfigureAwait(false);
 								importApiTimer.Stop();
 								
-								TaggingExecutionResult taggingResult = await TagDocumentsAsync(importJob, configuration, token).ConfigureAwait(false);
+								TaggingExecutionResult taggingResult = await TagObjectsAsync(importJob, configuration, token).ConfigureAwait(false);
 								int documentsTaggedCount = taggingResult.TaggedDocumentsCount;
 								await batch.SetTaggedDocumentsCountAsync(batch.TaggedDocumentsCount + documentsTaggedCount).ConfigureAwait(false);
 								batchProcessingResult.TotalRecordsTagged = documentsTaggedCount;

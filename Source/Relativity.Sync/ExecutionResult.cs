@@ -87,7 +87,7 @@ namespace Relativity.Sync
 		/// <summary>
 		/// Exception from the failed execution.
 		/// </summary>
-		public Exception Exception { get;  }
+		public Exception Exception { get; }
 
 		internal ExecutionResult(ExecutionStatus status, string message, Exception exception)
 		{

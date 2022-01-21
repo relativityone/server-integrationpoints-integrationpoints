@@ -27,15 +27,9 @@ namespace Relativity.Sync.Executors
 
 		protected override Task<IImportJob> CreateImportJobAsync(INonDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
 		{
-			string identifierFieldName = GetIdentifierFieldName(_fieldMappings);
-			return _importJobFactory.CreateRdoImportJobAsync(configuration, batch, identifierFieldName, token);
+			return _importJobFactory.CreateRdoImportJobAsync(configuration, batch, token);
 		}
-
-		private string GetIdentifierFieldName(IFieldMappings fieldMappings)
-		{
-			return fieldMappings.GetFieldMappings().First(x => x.FieldMapType == FieldMapType.Identifier).DestinationField.DisplayName;
-		}
-
+		
 		protected override void UpdateImportSettings(INonDocumentSynchronizationConfiguration configuration)
 		{
 			configuration.IdentityFieldId = GetDestinationIdentityFieldId();
@@ -56,7 +50,7 @@ namespace Relativity.Sync.Executors
 			});
 		}
 
-		protected override Task<TaggingExecutionResult> TagDocumentsAsync(IImportJob importJob, ISynchronizationConfiguration configuration,
+		protected override Task<TaggingExecutionResult> TagObjectsAsync(IImportJob importJob, ISynchronizationConfiguration configuration,
 			CompositeCancellationToken token)
 		{
 			var dummyResult = TaggingExecutionResult.Success();

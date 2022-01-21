@@ -91,7 +91,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_configFake = new Mock<INonDocumentSynchronizationConfiguration>();
 			_taggingProviderFake = new Mock<ITaggingProvider>();
 			_taggingProviderFake
-				.Setup(x => x.TagDocumentsAsync(It.IsAny<Sync.Executors.IImportJob>(), It.IsAny<ISynchronizationConfiguration>(), It.IsAny<CompositeCancellationToken>()))
+				.Setup(x => x.TagObjectsAsync(It.IsAny<Sync.Executors.IImportJob>(), It.IsAny<ISynchronizationConfiguration>(), It.IsAny<CompositeCancellationToken>()))
 				.ReturnsAsync(TaggingExecutionResult.Success);
 			_jobProgressHandlerFactoryStub = new Mock<IJobProgressHandlerFactory>();
 			_jobCleanupConfigurationMock = new Mock<IJobCleanupConfiguration>();
@@ -131,7 +131,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			_importJobFake = new Mock<Sync.Executors.IImportJob>();
 			_importJobFake.SetupGet(x => x.SyncImportBulkArtifactJob).Returns(_syncImportBulkArtifactJobFake.Object);
-			_importJobFactoryFake.Setup(x => x.CreateRdoImportJobAsync(It.IsAny<INonDocumentSynchronizationConfiguration>(), It.IsAny<IBatch>(),It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(_importJobFake.Object);
+			_importJobFactoryFake.Setup(x => x.CreateRdoImportJobAsync(It.IsAny<INonDocumentSynchronizationConfiguration>(), It.IsAny<IBatch>(),It.IsAny<CancellationToken>())).ReturnsAsync(_importJobFake.Object);
 
 			_userContextConfigurationStub = new Mock<IUserContextConfiguration>();
 

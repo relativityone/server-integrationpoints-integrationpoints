@@ -8,7 +8,7 @@ using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.ExecutionConstrains
 {
-    internal abstract class BaseSynchronizationExecutionConstrains : IExecutionConstrains<ISynchronizationConfiguration>
+    internal abstract class BaseSynchronizationExecutionConstrains<T> : IExecutionConstrains<T> where T : ISynchronizationConfiguration
     {
         private readonly IBatchRepository _batchRepository;
         private readonly ISyncLog _syncLog;
@@ -19,7 +19,7 @@ namespace Relativity.Sync.ExecutionConstrains
             _syncLog = syncLog;
         }
 
-        public async Task<bool> CanExecuteAsync(ISynchronizationConfiguration configuration, CancellationToken token)
+        public async Task<bool> CanExecuteAsync(T configuration, CancellationToken token)
         {
             bool canExecute = true;
             try

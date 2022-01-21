@@ -24,7 +24,7 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
             //Arrange
             var fakeBatchRepository = new Mock<IBatchRepository>();
             var fakeSyncLog = new Mock<ISyncLog>();
-            var fakeConfiguration = new Mock<ISynchronizationConfiguration>();
+            var fakeConfiguration = new Mock<INonDocumentSynchronizationConfiguration>();
 
             fakeBatchRepository
                 .Setup(x => x.GetAllBatchesIdsToExecuteAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>()))

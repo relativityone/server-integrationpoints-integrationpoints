@@ -105,7 +105,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_jobProgressUpdaterFactoryStub = new Mock<IJobProgressUpdaterFactory>();
 			_taggingProviderFake = new Mock<ITaggingProvider>();
 			_taggingProviderFake
-				.Setup(x => x.TagDocumentsAsync(It.IsAny<Sync.Executors.IImportJob>(), It.IsAny<ISynchronizationConfiguration>(), It.IsAny<CompositeCancellationToken>()))
+				.Setup(x => x.TagObjectsAsync(It.IsAny<Sync.Executors.IImportJob>(), It.IsAny<ISynchronizationConfiguration>(), It.IsAny<CompositeCancellationToken>()))
 				.ReturnsAsync(TaggingExecutionResult.Success);
 			_stopwatchFactoryFake = new Mock<Func<IStopwatch>>();
 			_stopwatchFake = new Mock<IStopwatch>();
@@ -370,7 +370,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			SetupImportJob();
 
-			_taggingProviderFake.Setup(x => x.TagDocumentsAsync(It.IsAny<Sync.Executors.IImportJob>(),
+			_taggingProviderFake.Setup(x => x.TagObjectsAsync(It.IsAny<Sync.Executors.IImportJob>(),
 				It.IsAny<ISynchronizationConfiguration>(), It.IsAny<CompositeCancellationToken>())).Throws<OperationCanceledException>();
 
 			// Act
@@ -622,7 +622,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			result.Status.Should().BeEquivalentTo(expectedExecutionResult.Status);
 
 			_taggingProviderFake
-				.Verify(x => x.TagDocumentsAsync(_importJobFake.Object,
+				.Verify(x => x.TagObjectsAsync(_importJobFake.Object,
 					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<CompositeCancellationToken>()), Times.Once);
 		}
 
@@ -1059,7 +1059,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private void SetUpDocumentsTagRepository(TaggingExecutionResult executionResult)
 		{
 			_taggingProviderFake
-				.Setup(x => x.TagDocumentsAsync(It.IsAny<Sync.Executors.IImportJob>(), It.IsAny<ISynchronizationConfiguration>(), It.IsAny<CompositeCancellationToken>()))
+				.Setup(x => x.TagObjectsAsync(It.IsAny<Sync.Executors.IImportJob>(), It.IsAny<ISynchronizationConfiguration>(), It.IsAny<CompositeCancellationToken>()))
 				.ReturnsAsync(executionResult);
 		}
 

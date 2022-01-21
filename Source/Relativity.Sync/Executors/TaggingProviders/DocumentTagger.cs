@@ -6,18 +6,19 @@ using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Executors.TaggingProviders
 {
-    internal class DocumentObjectBasedTaggingProvider : ITaggingProvider
+    internal class DocumentTagger : ITaggingProvider
     {
-	    private ISyncLog _logger;
-	    private IDocumentTagRepository _documentsTagRepository;
+	    private readonly ISyncLog _logger;
+	    private readonly IDocumentTagRepository _documentsTagRepository;
 
-	    public DocumentObjectBasedTaggingProvider(IDocumentTagRepository documentTagRepository, ISyncLog logger)
+	    public DocumentTagger(IDocumentTagRepository documentTagRepository, ISyncLog logger)
 	    {
 		    _documentsTagRepository = documentTagRepository;
 		    _logger = logger;
 	    }
 
-	    public async Task<TaggingExecutionResult> TagDocumentsAsync(IImportJob importJob, ISynchronizationConfiguration configuration, CompositeCancellationToken token)
+	    public async Task<TaggingExecutionResult> TagObjectsAsync(IImportJob importJob,
+		    ISynchronizationConfiguration configuration, CompositeCancellationToken token)
 	    {
 		    Task<TaggingExecutionResult> destinationDocumentsTaggingTask = TagDestinationDocumentsAsync(importJob, configuration, token.StopCancellationToken);
 			Task<TaggingExecutionResult> sourceDocumentsTaggingTask = TagSourceDocumentsAsync(importJob, configuration, token.StopCancellationToken);

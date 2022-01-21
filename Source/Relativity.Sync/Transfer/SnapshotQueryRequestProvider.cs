@@ -47,11 +47,8 @@ namespace Relativity.Sync.Transfer
         /// <inheritdoc/>
         public async Task<QueryRequest> GetRequestForLinkingNonDocumentObjectsAsync(CancellationToken token)
         {
-            string transferredRdoTypeNameInSourceWorkspace =
-                await _fieldManager.GetRdoTypeNameAsync(_configuration.SourceWorkspaceArtifactId, _configuration.RdoArtifactTypeId);
-
             string[] fieldsOfTheSameType =
-                await _fieldManager.GetSameTypeFieldNamesAsync(transferredRdoTypeNameInSourceWorkspace, _configuration.SourceWorkspaceArtifactId).ConfigureAwait(false);
+                await _fieldManager.GetSameTypeFieldNamesAsync(_configuration.SourceWorkspaceArtifactId).ConfigureAwait(false);
             
             if (fieldsOfTheSameType.Any())
             {
