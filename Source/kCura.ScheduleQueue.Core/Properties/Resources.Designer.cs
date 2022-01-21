@@ -90,14 +90,11 @@ namespace kCura.ScheduleQueue.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to UPDATE 
-        ///				[eddsdbo].[{0}]
-        ///SET
-        ///				[LockedByAgentID] = NULL
-        ///FROM 
-        ///				[eddsdbo].[{0}] WITH (UPDLOCK, ROWLOCK)
-        ///WHERE
-        ///				[JobID] = @JobID.
+        ///   Looks up a localized string similar to DECLARE @tasksFinished BIT SELECT @tasksFinished = 1
+        ///IF EXISTS(SELECT * FROM [eddsdbo].[{0}] WHERE [RootJobID] = @RootJobID AND [TaskType] = &apos;SyncWorker&apos;) BEGIN
+        ///	SET @tasksFinished = 0
+        ///END
+        ///SELECT @tasksFinished.
         /// </summary>
         internal static string CheckAllSyncWorkerBatchesAreFinished {
             get {
@@ -392,12 +389,25 @@ namespace kCura.ScheduleQueue.Core.Properties {
         ///			INSERTED.[ScheduleRule],
         ///			INSERTED.[JobDetails],
         ///			INSERTED.[JobFlags],
-        ///			INSERTED.[SubmittedDate],
-        ///		 [rest of string was truncated]&quot;;.
+        ///			INSERTED [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GetNextJobWithoutResourceGroup {
             get {
                 return ResourceManager.GetString("GetNextJobWithoutResourceGroup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT 
+        ///			COUNT(*)
+        ///FROM
+        ///			[eddsdbo].[{0}] WITH(NOLOCK)
+        ///WHERE
+        ///            [NextRunTime] &lt;= GETUTCDATE().
+        /// </summary>
+        internal static string GetWorkload {
+            get {
+                return ResourceManager.GetString("GetWorkload", resourceCulture);
             }
         }
         
