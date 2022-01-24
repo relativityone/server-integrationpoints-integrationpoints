@@ -4,6 +4,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
     public class FakeKubernetesMode : IKubernetesMode
     {
-        public bool IsEnabled { get; set; } = false;
+        private bool _isEnabled  = false;
+
+        public bool IsEnabled()
+        {
+            return _isEnabled;
+        }
+
+        public void SetIsEnabled(bool isEnabled)
+        {
+            _isEnabled = isEnabled;
+        }
     }
 }

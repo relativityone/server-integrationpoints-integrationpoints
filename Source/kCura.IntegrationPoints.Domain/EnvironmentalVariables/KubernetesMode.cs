@@ -1,5 +1,6 @@
 ﻿using System;
 using Castle.Core.Internal;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Domain.EnvironmentalVariables
 {
@@ -7,23 +8,25 @@ namespace kCura.IntegrationPoints.Domain.EnvironmentalVariables
     {
         private bool? _isEnabled;
 
-        public bool IsEnabled
+        private readonly IAPILog _logger;
+
+        public KubernetesMode(IAPILog logger)
         {
-            get
+            _logger = logger;
+        }
+
+        public bool IsEnabled()
+        {
+            if (_isEnabled != null)
             {
-                string kubernetesModeEnabled = "";
-                if (_isEnabled == null)
-                {
-                    kubernetesModeEnabled = Environment.GetEnvironmentVariable("C4.ADS.AGENT")?.ToLower();
-                }
-
-                if (!kubernetesModeEnabled.IsNullOrEmpty())
-                {
-                    _isEnabled = kubernetesModeEnabled == "true";
-                }
-
-                return _isEnabled != null && (bool)_isEnabled;
+                return (bool)_isEnabled;
             }
+
+            string kubernetesModeEnabled = Environment.GetEnvironmentVariable("C4.ADS.AGENT")?.ToLower();
+            _isEnabled = kubernetesModeEnabled == "true";
+            _logger.LogInformation($"Agent is {((bool)_isEnabled ? "" : "not ")}running in Kubernetes Mode");
+
+            return (bool)_isEnabled;
         }
     }
 }

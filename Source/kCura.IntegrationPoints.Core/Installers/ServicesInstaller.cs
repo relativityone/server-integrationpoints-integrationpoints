@@ -53,7 +53,6 @@ using Relativity.IntegrationPoints.Contracts;
 using IFederatedInstanceManager = kCura.IntegrationPoints.Domain.Managers.IFederatedInstanceManager;
 using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Common.Metrics.Sink;
-using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
 using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 
@@ -203,9 +202,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 				.LifestyleTransient());
 
 			container.Register(Component.For<ICryptographyHelper>().ImplementedBy<CryptographyHelper>().LifestyleTransient());
-            container.Register(Component.For<IKubernetesMode>().ImplementedBy<KubernetesMode>().LifestyleSingleton());
 
-			container.AddRetryingMechanism();
+            container.AddRetryingMechanism();
 			container.AddHelpers();
 			container.AddRepositories();
 			container.AddExportSanitizer();

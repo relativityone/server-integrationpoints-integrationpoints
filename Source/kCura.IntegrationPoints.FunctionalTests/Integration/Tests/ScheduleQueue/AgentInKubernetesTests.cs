@@ -13,7 +13,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
         {
             // Arrange
             FakeKubernetesMode kubernetesMode = (FakeKubernetesMode)Container.Resolve<IKubernetesMode>();
-            kubernetesMode.IsEnabled = true;
+            kubernetesMode.SetIsEnabled(true);
 
             JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleBasicJob(SourceWorkspace);
 

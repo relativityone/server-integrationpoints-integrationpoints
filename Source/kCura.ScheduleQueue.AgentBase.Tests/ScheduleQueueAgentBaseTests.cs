@@ -51,7 +51,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 			Job expectedJob2 = new JobBuilder().WithJobId(2).Build();
 
 			TestAgent sut = GetSut();
-            _kubernetesModeFake.Setup(x => x.IsEnabled).Returns(true);
+            _kubernetesModeFake.Setup(x => x.IsEnabled()).Returns(true);
 
 			SetupJobQueue(expectedJob1, expectedJob2);
 
@@ -177,7 +177,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 			// Arrange
 			TestAgent sut = GetSut();
 			_dateTime.SetupGet(x => x.UtcNow).Returns(new DateTime(2021, 10, 13));
-			_kubernetesModeFake.Setup(x => x.IsEnabled).Returns(false);
+			_kubernetesModeFake.Setup(x => x.IsEnabled()).Returns(false);
 
 			// Act
 			int agentId = sut.GetAgentIDTest();
@@ -192,7 +192,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 			// Arrange
 			TestAgent sut = GetSut();
 			_dateTime.SetupGet(x => x.UtcNow).Returns(new DateTime(2021, 10, 13));
-            _kubernetesModeFake.Setup(x => x.IsEnabled).Returns(true);
+            _kubernetesModeFake.Setup(x => x.IsEnabled()).Returns(true);
 
 			// Act
 			int agentId = sut.GetAgentIDTest();
