@@ -175,6 +175,24 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			transferredItemsCount.Should().Be(workspaceDocumentCount).And.Be(productionDocumentsCount);
 		}
 
+		public void EntitiesPushGoldFlow()
+		{
+			// Arrange
+			_testsImplementationTestFixture.LoginAsStandardUser();
+
+			Workspace destinationWorkspace = CreateDestinationWorkspace();
+
+			string integrationPointName = nameof(EntitiesPushGoldFlow);
+
+			// Act
+			IntegrationPointListPage integrationPointListPage = Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID);
+			IntegrationPointEditPage integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
+
+			integrationPointEditPage.CreateSyncRdoIntegrationPoint(integrationPointName, destinationWorkspace, IntegrationPointTransferredObjects.Entity, "Entities - Legal Hold View");
+
+			// Assert
+		}
+
 		private Workspace CreateDestinationWorkspace()
 		{
 			string workspaceName = $"SYNC - {Guid.NewGuid()}";

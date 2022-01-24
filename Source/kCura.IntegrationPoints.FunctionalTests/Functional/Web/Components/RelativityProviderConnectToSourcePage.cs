@@ -30,13 +30,19 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		[FindByPrecedingDivContent]
 		[SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
 		[WaitFor(Until.Visible, TriggerEvents.BeforeAccess, AbsenceTimeout = 20)]
-		[InvokeMethod(nameof(WaitSavedSearchToLoad), TriggerEvents.AfterClick)]
+		[InvokeMethod(nameof(WaitForListToLoad), TriggerEvents.AfterClick)]
 		public Select2<string, _> SavedSearch { get; private set; }
 
 		[FindByPrecedingDivContent]
 		[SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
 		[WaitFor(Until.Visible, TriggerEvents.BeforeAccess, AbsenceTimeout = 20)]
 		public Select2<string, _> ProductionSet { get; private set; }
+
+		[FindByPrecedingDivContent]
+		[SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
+		[WaitFor(Until.Visible, TriggerEvents.BeforeAccess, AbsenceTimeout = 20)]
+		[InvokeMethod(nameof(WaitForListToLoad), TriggerEvents.AfterClick)]
+		public Select2<string, _> View { get; private set; }
 
 		[FindByPrecedingDivContent]
 		[SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
@@ -58,10 +64,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		[SwitchToFrame(nameof(ConfigurationFrame), TriggerEvents.BeforeAccess)]
 		public Clickable<_> DestinationWorkspaceDropDown { get; private set; }
 
-		private void WaitSavedSearchToLoad()
+		private void WaitForListToLoad()
 		{
 			Thread.Sleep(TimeSpan.FromSeconds(2));
-			this.Log.Info("Wait for SavedSearch list to load.");
+			this.Log.Info("Wait for list to load.");
 		}
 	}
 }
