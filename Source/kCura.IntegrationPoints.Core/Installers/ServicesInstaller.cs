@@ -203,7 +203,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 				.LifestyleTransient());
 
 			container.Register(Component.For<ICryptographyHelper>().ImplementedBy<CryptographyHelper>().LifestyleTransient());
-            container.Register(Component.For<IKubernetesMode>().ImplementedBy<KubernetesMode>().LifestyleTransient());
+            container.Register(Component.For<IKubernetesMode>().ImplementedBy<KubernetesMode>().LifestyleSingleton());
 
 			container.AddRetryingMechanism();
 			container.AddHelpers();
