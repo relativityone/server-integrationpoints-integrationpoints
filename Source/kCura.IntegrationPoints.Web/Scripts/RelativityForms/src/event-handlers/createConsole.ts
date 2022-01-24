@@ -7,28 +7,44 @@ export function createConsole(convenienceApi: IConvenienceApi): void {
         var integrationPointId = ctx.artifactId;
         var workspaceId = ctx.workspaceId;
 
-        var consoleContent = generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integrationPointId);
+        var buttonState = generateInitialButtonStateObject(convenienceApi, ctx, workspaceId, integrationPointId);
+        buttonState.then(function (btnStateObj) {
+            var consoleContent = generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integrationPointId, btnStateObj);
 
-        return consoleApi.destroy().then(function () {
-            return consoleApi.containersPromise;
-        }).then(function (containers) {
-            containers.rootElement.appendChild(consoleContent);
-        });
+            return consoleApi.destroy().then(function () {
+                return consoleApi.containersPromise;
+            }).then(function (containers) {
+                containers.rootElement.appendChild(consoleContent);
+            });
+        })
     })
 }
 
-function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integrationPointId) {
-    var buttonState = {
-        runButtonEnabled: true,
-        stopButtonEnabled: true,
-        retryErrorsButtonEnabled: true,
-        retryErrorsButtonVisible: true,
-        viewErrorsLinkEnabled: true,
-        viewErrorsLinkVisible: true,
-        saveAsProfileButtonVisible: true,
-        downloadErrorFileLinkEnabled: true,
-        downloadErrorFileLinkVisible: true
-    };
+async function generateInitialButtonStateObject(convenienceApi, ctx, workspaceId, integrationPointId) {
+        var request = {
+            options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
+                headers: {
+                    "content-type": "application/json; charset=utf-8"
+                }
+            }),
+            url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/" + workspaceId + "/api/ButtonState/GetUserPermissionsCheck" + '?workspaceId=' + workspaceId + '&integrationPointArtifactId=' + integrationPointId
+        };
+
+        var resp = await convenienceApi.relativityHttpClient.get(request.url, request.options)
+            .then(function (result) {
+                if (!result.ok) {
+                    return ctx.setErrorSummary(["Failed to get permissions."]);
+                } else if (result.ok) {
+                    return result.json();
+                }
+            });
+    return resp;
+}
+
+function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integrationPointId, btnStateObj) {
+
+    console.log("btn state obj: ", btnStateObj);
+    var buttonState = btnStateObj
 
     var consoleApi = convenienceApi.console;
 
@@ -43,6 +59,8 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
        }
        integrationPoint[trimmedKey] = val;
     });
+
+    console.log(integrationPoint);
 
     function postJobAPIRequest(workspaceId, integrationPointId, action = "") {
         var request = {
@@ -101,6 +119,32 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
             url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/" + workspaceId + "/api/ImportProviderDocument/" + action + '?artifactId=' + integrationPointId + '&workspaceId=' + workspaceId
         };
     }
+
+    //function getUserPermissionsCheck(workspaceId, integrationPointId) {
+    //    var request =  {
+    //        options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
+    //            headers: {
+    //                "content-type": "application/json; charset=utf-8"
+    //            }
+    //        }),
+    //        url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/" + workspaceId + "/api/ButtonState/GetUserPermissionsCheck" + '?workspaceId=' + workspaceId + '&integrationPointArtifactId=' + integrationPointId
+    //    };
+
+    //    var resp = convenienceApi.relativityHttpClient.get(request.url, request.options)
+    //        .then(function (result) {
+    //            if (!result.ok) {
+    //                return ctx.setErrorSummary(["Failed to get permissions."]);
+    //            } else if (result.ok) {
+    //                return result.json();
+    //            }
+    //        });
+
+    //    resp.then(function (result) {
+    //        console.log(result)
+    //    })
+    //}
+
+    //getUserPermissionsCheck(workspaceId, integrationPointId);
 
     function createRunButton(enabled) {
         return consoleApi.generate.button({
