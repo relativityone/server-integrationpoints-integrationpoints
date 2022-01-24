@@ -99,14 +99,16 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			CreateFieldMap(_MANAGER_MAPPED_FIELD)
 		};
 		
-		private static string _LINKED_FIELD_NAME = "Manager";
-		private static string _NORMAL_FIELD_NAME = "Field1";
-		
-		private QueryResultSlim queryResultSlimForGetSameTypeFieldNames = new QueryResultSlim
+		private QueryResult queryResultForGetSameTypeFieldNames = new QueryResult
 		{
-			Objects = new List<RelativityObjectSlim>
+			Objects = new List<RelativityObject>
 			{
-				new RelativityObjectSlim { Values = new List<object> { _NORMAL_FIELD_NAME, _LINKED_FIELD_NAME } }
+				new RelativityObject
+				{
+					ArtifactID = 2,
+					Name = _MANAGER_MAPPED_FIELD.SourceFieldName,
+					ParentObject = new RelativityObjectRef()
+				}
 			}
 		};
 
@@ -114,9 +116,16 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			Objects = new List<RelativityObject>
 			{
-				new RelativityObject { Name = _LINKED_FIELD_NAME}
+				new RelativityObject
+				{
+					ArtifactID = 1,
+					Name = _MANAGER_MAPPED_FIELD.SourceFieldName,
+					ParentObject = new RelativityObjectRef()
+				}
 			}
 		};
+
+		private QueryResult queryResultsForGetTypeNameEmpty = new QueryResult{ Objects =  new List<RelativityObject>()};
 
 		#endregion
 
@@ -139,12 +148,19 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_objectManagerFake = new Mock<IObjectManager>();
 			_sourceServiceFactoryForAdminFake.Setup(x => x.CreateProxyAsync<IObjectManager>())
 				.ReturnsAsync(_objectManagerFake.Object);
-			_objectManagerFake.Setup(x => x.QuerySlimAsync(It.IsAny<int>(), It.Is<QueryRequest>( y => y.ObjectType == new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field }), It.IsAny<int>(),
-				It.IsAny<int>(), It.IsAny<CancellationToken>(),
-				It.IsAny<IProgress<ProgressReport>>())).ReturnsAsync(queryResultSlimForGetSameTypeFieldNames);
-			_objectManagerFake.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(),
-				It.IsAny<int>(), It.IsAny<CancellationToken>(),
-				It.IsAny<IProgress<ProgressReport>>())).ReturnsAsync(queryResultForGetRdoTypeName);
+			
+			_objectManagerFake.Setup(x => x.QueryAsync(
+				It.IsAny<int>(),
+				It.Is<QueryRequest>( r => r.ObjectType.ArtifactTypeID == (int)ArtifactType.Field ),
+				It.IsAny<int>(),
+				It.IsAny<int>()
+				)).ReturnsAsync(queryResultForGetSameTypeFieldNames);
+			
+			_objectManagerFake.Setup(x => x.QueryAsync(
+				It.IsAny<int>(),
+				It.Is<QueryRequest>( r => r.ObjectType.ArtifactTypeID == (int)ArtifactType.ObjectType),
+				It.IsAny<int>(),
+				It.IsAny<int>())).ReturnsAsync(queryResultForGetRdoTypeName);
 			
 			_syncLogFake = new Mock<ISyncLog>();
 
@@ -509,7 +525,24 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			var sameTypeFields = await _sut.GetSameTypeFieldNamesAsync(It.IsAny<int>()).ConfigureAwait(false);
 			
 			//Assert
-			sameTypeFields.Single().Should().Be(_NORMAL_FIELD_NAME);
+			sameTypeFields.Single().Should().Be(_MANAGER_MAPPED_FIELD.SourceFieldName);
+		}
+		
+		[Test]
+		public async Task GetSameTypeFieldNamesAsync_ShouldThrowWhenNoObjectsFound()
+		{
+			//Arrange
+			_objectManagerFake.Setup(x => x.QueryAsync(
+				It.IsAny<int>(),
+				It.Is<QueryRequest>( r => r.ObjectType.ArtifactTypeID == (int)ArtifactType.ObjectType),
+				It.IsAny<int>(),
+				It.IsAny<int>())).ReturnsAsync(queryResultsForGetTypeNameEmpty);
+			
+			//Act
+			Func<Task> action = () => _sut.GetSameTypeFieldNamesAsync(It.IsAny<int>());
+			
+			//Assert
+			await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false);
 		}
 		
 		private static FieldMap CreateFieldMap(FieldInfoDto fieldInfo, bool isIdentifier = false)

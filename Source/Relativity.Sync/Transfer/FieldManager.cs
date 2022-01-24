@@ -157,13 +157,12 @@ namespace Relativity.Sync.Transfer
 						$"('Associative Object Type' == '{rdoTypeName}') AND ('Object Type' == '{rdoTypeName}')" +
 						$" AND (NOT ('Name' LIKE ['::']))" +
 						$" AND ('Field Type' IN ['Multiple Object', 'Single Object'])",
-					Fields = new[] { new FieldRef { Name = "Name" } }
+					IncludeNameInQueryResult = true
 				};
 
-				QueryResultSlim result = await objectManager.QuerySlimAsync(workspaceId, request, 0, Int32.MaxValue)
+				QueryResult result = await objectManager.QueryAsync(workspaceId, request, 0, Int32.MaxValue)
 					.ConfigureAwait(false);
-
-				return result.Objects.SelectMany(x => x.Values.Select(v => v.ToString())).ToArray();
+				return result.Objects.Select(x => x.Name).ToArray();
 			}
 		}
 
