@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Domain.EnvironmentalVariables
 
             string kubernetesModeEnabled = Environment.GetEnvironmentVariable("C4.ADS.AGENT")?.ToLower();
             _isEnabled = kubernetesModeEnabled == "true";
-            _logger.LogInformation($"Agent is {((bool)_isEnabled ? "" : "not ")}running in Kubernetes Mode");
+            _logger.LogInformation("Agent is running in Kubernetes Mode - {kubernetesMode}", _isEnabled);
 
             return (bool)_isEnabled;
         }
