@@ -39,15 +39,10 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 
 		private IntegrationPointAgentManager PrepareSut(int jobsCount = 0, string workloadSizeInstanceSettingValue = "")
 		{
-			Mock<IQuery<DataTable>> fakeGetAllJobs = new Mock<IQuery<DataTable>>();
-			DataTable allJobs = new DataTable();
-			for (int i = 0; i < jobsCount; i++)
-			{
-				allJobs.Rows.Add(allJobs.NewRow());
-			}
-
-			fakeGetAllJobs.Setup(x => x.Execute()).Returns(allJobs);
-			_queueQueryManagerFake.Setup(x => x.GetAllJobs()).Returns(fakeGetAllJobs.Object);
+			Mock<IQuery<int>> fakeGetWorkload = new Mock<IQuery<int>>();
+			
+			fakeGetWorkload.Setup(x => x.Execute()).Returns(jobsCount);
+			_queueQueryManagerFake.Setup(x => x.GetWorkload()).Returns(fakeGetWorkload.Object);
 
 			_instanceSettingsManagerFake.Setup(x => x.GetWorkloadSizeSettings()).Returns(workloadSizeInstanceSettingValue);
 
