@@ -388,6 +388,13 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "GetRdoViews",
+				routeTemplate:
+				"{workspaceID}/api/ViewFinder/{destinationWorkspaceId}/{rdoArtifactTypeId}",
+				defaults: new { controller = "ViewFinder", action = "GetViews" }
+			);
+
+			config.Routes.MapHttpRoute(
 				name: "DefaultApi",
 				routeTemplate: "{workspaceID}/api/{controller}/{id}",
 				defaults: new {id = RouteParameter.Optional}

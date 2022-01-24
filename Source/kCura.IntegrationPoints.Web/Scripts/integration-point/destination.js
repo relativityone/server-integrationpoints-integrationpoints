@@ -88,6 +88,7 @@
 	this.artifactTypeID = ko.observable().extend({ required: true });
 	this.artifactTypeID.subscribe(function(value) {
 		IP.messaging.publish("TransferedObjectChanged", value);
+		IP.data.params['TransferredRDOArtifactTypeID'] = value;
 	});
 	this.UpdateSelectedItem = function () {
 

@@ -8,7 +8,7 @@ using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Models;
 using Relativity.Toggles;
-
+using kCura.IntegrationPoints.Agent.Toggles;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
@@ -68,17 +68,34 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			}
 		}
 
-        private void SetIAPICommunicationMode(IAPICommunicationMode iapiCommunicationModeValue)
-        {
-            RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
-                .Require(new Testing.Framework.Models.InstanceSetting
-            {
-                Name = "IAPICommunicationMode",
-                Section = "DataTransfer.Legacy",
-                Value = iapiCommunicationModeValue.ToString(),
-                ValueType = InstanceSettingValueType.Text
-            }
-            );
-        }
+		[IdentifiedTest("6E4C0033-D728-4C20-95ED-023527B598DE")]
+		public async Task Entities_GoldFlow()
+		{
+			IToggleProvider toggleProvider = SqlToggleProvider.Create();
+			try
+			{
+				await toggleProvider.SetAsync<EnableSyncNonDocumentFlowToggle>(true).ConfigureAwait(false);
+				_testsImplementation.EntitiesPushGoldFlow();
+			}
+			finally
+			{
+				await toggleProvider.SetAsync<EnableSyncNonDocumentFlowToggle>(false).ConfigureAwait(false);
+			}
+		}
+
+		private void SetIAPICommunicationMode(IAPICommunicationMode iapiCommunicationModeValue)
+		{
+			RelativityFacade
+				.Instance
+				.Resolve<IInstanceSettingsService>()
+				.Require(new Testing.Framework.Models.InstanceSetting
+					{
+						Name = "IAPICommunicationMode",
+						Section = "DataTransfer.Legacy",
+						Value = iapiCommunicationModeValue.ToString(),
+						ValueType = InstanceSettingValueType.Text
+					}
+				);
+		}
     }
 }
