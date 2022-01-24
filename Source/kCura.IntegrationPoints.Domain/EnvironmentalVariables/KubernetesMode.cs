@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.Domain.EnvironmentalVariables
 
                 return false;
             }
-            set => throw new InvalidOperationException("Kubernetes mode can't be set. Use dedicated mechanism to change it");
         }
     }
 }
