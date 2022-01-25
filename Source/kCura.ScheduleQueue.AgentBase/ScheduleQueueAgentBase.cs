@@ -32,7 +32,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected Func<IEnumerable<int>> GetResourceGroupIDsFunc { get; set; }
 
-		private bool IsKubernetesMode => _kubernetesMode.IsEnabled;
+		private bool IsKubernetesMode => _kubernetesMode.IsEnabled();
 
 		private static readonly Dictionary<LogCategory, int> _logCategoryToLogLevelMapping = new Dictionary<LogCategory, int>
 		{
@@ -54,7 +54,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			_queueJobValidator = queueJobValidator;
 			_dateTime = dateTime;
 			_queryManager = queryManager;
-            _kubernetesMode = kubernetesMode;
+            _kubernetesMode = kubernetesMode ?? new KubernetesMode(logger);
             ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
 
 			_agentId = new Lazy<int>(GetAgentID);

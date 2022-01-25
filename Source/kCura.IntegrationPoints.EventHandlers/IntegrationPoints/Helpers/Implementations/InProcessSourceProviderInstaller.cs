@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			_logger = logger.ForContext<InProcessSourceProviderInstaller>();
 			_helper = helper;
 			_ripProviderInstaller = ripProviderInstaller;
-            _kubernetesMode = kubernetesMode;
+            _kubernetesMode = kubernetesMode ?? new KubernetesMode(logger);
             _toggleProvider = toggleProvider;
 		}
 
@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		{
 			_logger.LogInformation("Installing internal RIP source providers, providers: {@sourceProviders}", sourceProviders);
 
-			// we are not using EitherAsync, because language-ext in version 3.1.15 does not call ConfigureAwait(false)
+            // we are not using EitherAsync, because language-ext in version 3.1.15 does not call ConfigureAwait(false)
 			GetProviderInstaller(workspaceID)
 				.Bind(providerInstaller => InstallProviders(providerInstaller, sourceProviders))
 				.Match(

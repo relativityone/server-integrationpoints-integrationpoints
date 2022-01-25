@@ -18,7 +18,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
 			IQueueQueryManager queryManager = new QueueQueryManager(helper, _agentGuid);
 			IAgentService agentService = new AgentService(helper, queryManager, _agentGuid);
 			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
-			IKubernetesMode kubernetesMode = new KubernetesMode();
+            IAPILog logger = helper.GetLoggerFactory().GetLogger();
+			IKubernetesMode kubernetesMode = new KubernetesMode(logger);
 			IJobService jobService = new JobService(agentService, jobServiceDataProvider, kubernetesMode, helper);
 			return new CorrespondingJobDelete(jobService);
 		}

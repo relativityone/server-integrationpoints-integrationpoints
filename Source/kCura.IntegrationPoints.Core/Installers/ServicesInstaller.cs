@@ -162,6 +162,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IDataTransferLocationService>().ImplementedBy<DataTransferLocationService>().LifestyleTransient());
 			container.Register(Component.For<IDataTransferLocationServiceFactory>().ImplementedBy<DataTransferLocationServiceFactory>().DependsOn(new { container = container }).LifestyleTransient());
 			container.Register(Component.For<IFolderPathReaderFactory>().ImplementedBy<FolderPathReaderFactory>().LifestyleTransient());
+            container.Register(Component.For<IKubernetesMode>().ImplementedBy<KubernetesMode>().LifestyleSingleton());
 
 			container.Register(Component.For<ITaskParametersBuilder>().ImplementedBy<TaskParametersBuilder>().LifestyleTransient());
 
@@ -203,9 +204,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 				.LifestyleTransient());
 
 			container.Register(Component.For<ICryptographyHelper>().ImplementedBy<CryptographyHelper>().LifestyleTransient());
-            container.Register(Component.For<IKubernetesMode>().ImplementedBy<KubernetesMode>().LifestyleTransient());
 
-			container.AddRetryingMechanism();
+            container.AddRetryingMechanism();
 			container.AddHelpers();
 			container.AddRepositories();
 			container.AddExportSanitizer();

@@ -1,22 +1,32 @@
 ﻿using System;
+using Castle.Core.Internal;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Domain.EnvironmentalVariables
 {
     public sealed class KubernetesMode : IKubernetesMode
     {
-        public bool IsEnabled
-        {
-            get
-            {
-                string kubernetesModeEnabled = Environment.GetEnvironmentVariable("C4.ADS.AGENT")?.ToLower();
-                if (kubernetesModeEnabled != null)
-                {
-                    return kubernetesModeEnabled == "true";
-                }
+        private bool? _isEnabled;
 
-                return false;
+        private readonly IAPILog _logger;
+
+        public KubernetesMode(IAPILog logger)
+        {
+            _logger = logger;
+        }
+
+        public bool IsEnabled()
+        {
+            if (_isEnabled != null)
+            {
+                return (bool)_isEnabled;
             }
-            set => throw new InvalidOperationException("Kubernetes mode can't be set. Use dedicated mechanism to change it");
+
+            string kubernetesModeEnabled = Environment.GetEnvironmentVariable("C4.ADS.AGENT")?.ToLower();
+            _isEnabled = kubernetesModeEnabled == "true";
+            _logger.LogInformation("Agent is running in Kubernetes Mode - {kubernetesMode}", _isEnabled);
+
+            return (bool)_isEnabled;
         }
     }
 }

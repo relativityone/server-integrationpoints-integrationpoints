@@ -263,7 +263,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IWinEddsBasicLoadFileFactory>().UsingFactoryMethod(c => new FakeWinEddsBasicLoadFileFactory()).LifestyleTransient().IsDefault());
 
 			// Kubernetes
-            Container.Register(Component.For<IKubernetesMode>().ImplementedBy<FakeKubernetesMode>().LifestyleTransient().IsDefault());
+            Container.Register(Component.For<IKubernetesMode>().ImplementedBy<FakeKubernetesMode>().LifestyleSingleton().IsDefault());
 		}
 
         private void RegisterKeplerServices()

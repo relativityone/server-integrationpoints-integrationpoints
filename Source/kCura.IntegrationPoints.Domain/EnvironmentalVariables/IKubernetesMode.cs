@@ -2,6 +2,6 @@
 {
     public interface IKubernetesMode
     {
-        bool IsEnabled { get; set; }
+        bool IsEnabled();
     }
 }

@@ -7,10 +7,10 @@ using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
 using Relativity.API;
+using IKubernetesMode = kCura.IntegrationPoints.Domain.EnvironmentalVariables.IKubernetesMode;
 
 namespace kCura.ScheduleQueue.Core.Services
 {
@@ -37,7 +37,7 @@ namespace kCura.ScheduleQueue.Core.Services
 		{
             DataRow row;
 			
-			if (_kubernetesMode.IsEnabled)
+			if (_kubernetesMode.IsEnabled())
 			{
 				row = DataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID);
 			}
@@ -324,7 +324,7 @@ namespace kCura.ScheduleQueue.Core.Services
 
 			DataProvider.CleanupScheduledJobsQueue();
 
-			if (!_kubernetesMode.IsEnabled)
+			if (!_kubernetesMode.IsEnabled())
 			{
                 DataProvider.CleanupJobQueueTable();
 			}
