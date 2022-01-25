@@ -14,6 +14,7 @@ using System.Linq;
 using System.Reflection;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using Relativity.Toggles;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
@@ -29,11 +30,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
 		public List<long> ProcessedJobIds { get; } = new List<long>();
 
-		public FakeAgent(IWindsorContainer container, AgentTest agent, IAgentHelper helper, IAgentService agentService = null, IJobService jobService = null,
+		public FakeAgent(IWindsorContainer container,  AgentTest agent, IAgentHelper helper, IAgentService agentService = null, IJobService jobService = null,
 				IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
-				IQueueQueryManager queryManager = null, IToggleProvider toggleProvider = null, IAPILog logger = null, IDateTime dateTime = null, bool shouldRunOnce = true)
+				IQueueQueryManager queryManager = null, IKubernetesMode kubernetesMode = null, IAPILog logger = null, IDateTime dateTime = null, bool shouldRunOnce = true)
 			: base(agent.AgentGuid, agentService, jobService, scheduleRuleFactory,
-				queueJobValidator, queryManager, toggleProvider, dateTime, logger)
+				queueJobValidator, queryManager, kubernetesMode, dateTime, logger)
 		{
 			_shouldRunOnce = shouldRunOnce;
 			_container = container;
@@ -57,14 +58,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
 		public static FakeAgent Create(RelativityInstanceTest instance, IWindsorContainer container, bool shouldRunOnce = true)
 		{
-			var agent = instance.Helpers.AgentHelper.CreateIntegrationPointAgent();
+			AgentTest agent = instance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
 			var fakeAgent = new FakeAgent(container, agent,
-				container.Resolve<IAgentHelper>(),
-				toggleProvider: container.Resolve<IToggleProvider>(),
-				queryManager: container.Resolve<IQueueQueryManager>(),
+                container.Resolve<IAgentHelper>(),
+                queryManager: container.Resolve<IQueueQueryManager>(),
 				jobService: container.Resolve<IJobService>(),
-				shouldRunOnce: shouldRunOnce);
+				shouldRunOnce: shouldRunOnce,
+                kubernetesMode: container.Resolve<IKubernetesMode>()
+                );
 
 			container
 				.Register(Component.For<IRemovableAgent>().UsingFactoryMethod(c => fakeAgent)

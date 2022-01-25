@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Provider;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts;
 using Relativity.IntegrationPoints.SourceProviderInstaller;
@@ -17,22 +18,25 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
     public class SourceProvidersMigrationEventHandler : IntegrationPointMigrationEventHandlerBase
     {
         private readonly IRipProviderInstaller _ripProviderInstaller;
+        private readonly IKubernetesMode _kubernetesMode;
 
         public SourceProvidersMigrationEventHandler()
         { }
 
         public SourceProvidersMigrationEventHandler(IErrorService errorService,
-            IRipProviderInstaller ripProviderInstaller)
+            IRipProviderInstaller ripProviderInstaller,
+            IKubernetesMode kubernetesMode)
             : base(errorService)
         {
             _ripProviderInstaller = ripProviderInstaller;
+            _kubernetesMode = kubernetesMode;
         }
 
         protected override void Run()
         {
             Logger.LogInformation($"Running {nameof(SourceProvidersMigrationEventHandler)}");
             List<SourceProvider> sourceProviders = GetSourceProvidersToInstall();
-            var migrationJob = new SourceProvidersMigration(sourceProviders, Helper, _ripProviderInstaller, TemplateWorkspaceID, Logger);
+            var migrationJob = new SourceProvidersMigration(sourceProviders, Helper, _ripProviderInstaller, TemplateWorkspaceID, Logger, _kubernetesMode);
             Logger.LogInformation("Executing Source Providers migration job");
             Response migrationJobResult = migrationJob.Execute();
             Logger.LogInformation("Source Providers migration job execution result success: {result}", migrationJobResult.Success);
@@ -94,8 +98,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		        IEHHelper helper, 
 		        IRipProviderInstaller providerInstaller,
 		        int templateWorkspaceId,
-		        IAPILog logger)
-		        : base(providerInstaller)
+		        IAPILog logger,
+                IKubernetesMode kubernetesMode)
+		        : base(providerInstaller, kubernetesMode)
 	        {
 		        _sourceProviders = sourceProvidersToMigrate;
 		        _templateWorkspaceId = templateWorkspaceId;
