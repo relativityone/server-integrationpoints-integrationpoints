@@ -28,7 +28,6 @@ using kCura.IntegrationPoints.Core.Factories.Implementations;
 using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
 using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
-using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using Relativity.AutomatedWorkflows.SDK;
 
 namespace kCura.IntegrationPoints.Agent.Installer
@@ -127,8 +126,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 
 			container.Register(Component.For<IJobSynchronizationChecker>().ImplementedBy<JobSynchronizationChecker>().LifestyleTransient());
 			container.Register(Component.For<ITaskFactoryJobHistoryServiceFactory>().ImplementedBy<TaskFactoryJobHistoryServiceFactory>().LifestyleTransient());
-			container.Register(Component.For<IKubernetesMode>().ImplementedBy<KubernetesMode>().LifestyleSingleton());
-			container.Register(Component.For<ITaskFactory>().ImplementedBy<TaskFactory.TaskFactory>().DependsOn(new { container }).LifestyleTransient());
+            container.Register(Component.For<ITaskFactory>().ImplementedBy<TaskFactory.TaskFactory>().DependsOn(new { container }).LifestyleTransient());
 
 
 			container.Register(Component

@@ -53,6 +53,7 @@ using Relativity.IntegrationPoints.Contracts;
 using IFederatedInstanceManager = kCura.IntegrationPoints.Domain.Managers.IFederatedInstanceManager;
 using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Common.Metrics.Sink;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
 using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 
@@ -161,6 +162,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IDataTransferLocationService>().ImplementedBy<DataTransferLocationService>().LifestyleTransient());
 			container.Register(Component.For<IDataTransferLocationServiceFactory>().ImplementedBy<DataTransferLocationServiceFactory>().DependsOn(new { container = container }).LifestyleTransient());
 			container.Register(Component.For<IFolderPathReaderFactory>().ImplementedBy<FolderPathReaderFactory>().LifestyleTransient());
+            container.Register(Component.For<IKubernetesMode>().ImplementedBy<KubernetesMode>().LifestyleSingleton());
 
 			container.Register(Component.For<ITaskParametersBuilder>().ImplementedBy<TaskParametersBuilder>().LifestyleTransient());
 
