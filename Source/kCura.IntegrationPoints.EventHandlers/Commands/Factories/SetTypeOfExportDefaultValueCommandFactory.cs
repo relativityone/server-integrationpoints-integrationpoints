@@ -47,8 +47,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 			IQueueQueryManager queryManager = new QueueQueryManager(helper, agentGuid);
 			IAgentService agentService = new AgentService(helper, queryManager, agentGuid);
 			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
-			IKubernetesMode kubernetesMode = new KubernetesMode(logger);
-			IJobService jobService = new JobService(agentService, jobServiceDataProvider, kubernetesMode, helper);
+            IJobService jobService = new JobService(agentService, jobServiceDataProvider, new KubernetesMode(logger), helper);
 			IEddsServiceContext eddsServiceContext = new EddsServiceContext(serviceContextHelper);
 			IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
 			IDBContext dbContext = helper.GetDBContext(helper.GetActiveCaseID());
