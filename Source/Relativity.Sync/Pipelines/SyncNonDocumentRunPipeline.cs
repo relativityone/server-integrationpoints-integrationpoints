@@ -19,7 +19,8 @@ namespace Relativity.Sync.Pipelines
                 .AddChild<NonDocumentJobStartMetricsNode>()
                 .ForParent()
                 .AddChild<SnapshotPartitionNode>()
-                .AddChild<ObjectLinkingSnapshotPartitionNode>();
+                .AddChild<ObjectLinkingSnapshotPartitionNode>()
+                .AddChild<NonDocumentSynchronizationNode>();
         }
     }
 }

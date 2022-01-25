@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Transfer
@@ -18,21 +21,25 @@ namespace Relativity.Sync.Transfer
 		private List<FieldInfoDto> _mappedDocumentFields;
 		private IReadOnlyList<FieldInfoDto> _imageAllFields;
 		private IReadOnlyList<FieldInfoDto> _nativeAllFields;
-		private IReadOnlyList<FieldInfoDto> _nonDocumentAllFields;
-
+		private IReadOnlyList<FieldInfoDto> _nonDocumentWithoutLinksFields;
+		
 		private readonly IFieldConfiguration _configuration;
 		private readonly IObjectFieldTypeRepository _objectFieldTypeRepository;
+		private readonly ISourceServiceFactoryForAdmin _sourceServiceFactoryForAdmin;
 
 		private readonly IList<INativeSpecialFieldBuilder> _nativeSpecialFieldBuilders;
 		private readonly IList<IImageSpecialFieldBuilder> _imageSpecialFieldBuilders;
+		private readonly ISyncLog _logger;
 
 		public FieldManager(IFieldConfiguration configuration, IObjectFieldTypeRepository objectFieldTypeRepository,
-			IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders, IEnumerable<IImageSpecialFieldBuilder> imageSpecialFieldBuilders)
+			IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders, IEnumerable<IImageSpecialFieldBuilder> imageSpecialFieldBuilders, ISourceServiceFactoryForAdmin sourceServiceFactoryForAdmin, ISyncLog logger)
 		{
 			_configuration = configuration;
 			_objectFieldTypeRepository = objectFieldTypeRepository;
 			_nativeSpecialFieldBuilders = OmitNativeInfoFieldsBuildersIfNotNeeded(configuration, nativeSpecialFieldBuilders).OrderBy(b => b.GetType().FullName).ToList();
 			_imageSpecialFieldBuilders = imageSpecialFieldBuilders.ToList();
+			_sourceServiceFactoryForAdmin = sourceServiceFactoryForAdmin;
+			_logger = logger;
 		}
 
 		public IEnumerable<FieldInfoDto> GetNativeSpecialFields()
@@ -96,17 +103,7 @@ namespace Relativity.Sync.Transfer
 
 			return _imageAllFields;
 		}
-
-		public async Task<IReadOnlyList<FieldInfoDto>> GetNonDocumentAllFieldsAsync(CancellationToken token)
-		{
-			if (_nonDocumentAllFields == null)
-			{
-				var result = await GetMappedFieldsAsync(token).ConfigureAwait(false);
-				_nonDocumentAllFields = EnrichFieldsWithIndex(result.ToList());
-			}
-			return _nonDocumentAllFields;
-		}
-
+		
 		public async Task<IList<FieldInfoDto>> GetDocumentTypeFieldsAsync(CancellationToken token)
 		{
 			IReadOnlyList<FieldInfoDto> fields = await GetNativeAllFieldsAsync(token).ConfigureAwait(false);
@@ -132,6 +129,69 @@ namespace Relativity.Sync.Transfer
 				_mappedDocumentFields = await EnrichFieldsWithRelativityDataTypesAsync(fieldInfos, token).ConfigureAwait(false);
 			}
 			return _mappedDocumentFields;
+		}
+
+		public async Task<IReadOnlyList<FieldInfoDto>> GetMappedFieldNonDocumentWithoutLinksAsync(
+			CancellationToken token)
+		{
+			IList<FieldInfoDto> fieldInfos = await GetMappedFieldsAsync(token).ConfigureAwait(false);
+
+			string[] namesOfFieldsOfTheSameType = await GetSameTypeFieldNamesAsync(_configuration.SourceWorkspaceArtifactId).ConfigureAwait(false);
+			
+			_nonDocumentWithoutLinksFields = fieldInfos.Where(f => !namesOfFieldsOfTheSameType.Any( n => n == f.SourceFieldName)).ToList();
+			
+			return _nonDocumentWithoutLinksFields;
+		}
+		
+		public async Task<string[]> GetSameTypeFieldNamesAsync(int workspaceId)
+		{
+			string rdoTypeName = await GetRdoTypeNameAsync(_configuration.SourceWorkspaceArtifactId, _configuration.RdoArtifactTypeId);
+			
+			using (var objectManager =
+				await _sourceServiceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			{
+				var request = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field },
+					Condition =
+						$"('Associative Object Type' == '{rdoTypeName}') AND ('Object Type' == '{rdoTypeName}')" +
+						$" AND (NOT ('Name' LIKE ['::']))" +
+						$" AND ('Field Type' IN ['Multiple Object', 'Single Object'])",
+					IncludeNameInQueryResult = true
+				};
+
+				QueryResult result = await objectManager.QueryAsync(workspaceId, request, 0, Int32.MaxValue)
+					.ConfigureAwait(false);
+				return result.Objects.Select(x => x.Name).ToArray();
+			}
+		}
+
+		private async Task<string> GetRdoTypeNameAsync(int workspaceArtifactId, int rdoArtifactTypeId)
+		{
+			using (var objectManager =
+				await _sourceServiceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			{
+				var query = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef
+					{
+						ArtifactTypeID = (int)ArtifactType.ObjectType
+					},
+					Condition = $"'Artifact Type ID' == {rdoArtifactTypeId}",
+					IncludeNameInQueryResult = true
+				};
+
+				QueryResult result =
+					await objectManager.QueryAsync(workspaceArtifactId, query, 0, 1).ConfigureAwait(false);
+
+				if (result.Objects.Count != 1)
+				{
+					_logger.LogError("Rdo with ArtifactTypeId {artifactTypeId} does not exist", rdoArtifactTypeId);
+					throw new SyncException($"Rdo with ArtifactTypeId {rdoArtifactTypeId} does not exist");
+				}
+                
+				return result.Objects.Single().Name;
+			}
 		}
 
 		private static IEnumerable<INativeSpecialFieldBuilder> OmitNativeInfoFieldsBuildersIfNotNeeded(IFieldConfiguration configuration, IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders)

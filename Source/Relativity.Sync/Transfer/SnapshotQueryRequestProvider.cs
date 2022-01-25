@@ -47,11 +47,8 @@ namespace Relativity.Sync.Transfer
         /// <inheritdoc/>
         public async Task<QueryRequest> GetRequestForLinkingNonDocumentObjectsAsync(CancellationToken token)
         {
-            string transferredRdoTypeNameInSourceWorkspace =
-                await GetRdoTypeNameAsync(_configuration.SourceWorkspaceArtifactId, _configuration.RdoArtifactTypeId);
-
             string[] fieldsOfTheSameType =
-                await GetSameTypeFieldNamesAsync(transferredRdoTypeNameInSourceWorkspace, _configuration.SourceWorkspaceArtifactId).ConfigureAwait(false);
+                await _fieldManager.GetSameTypeFieldNamesAsync(_configuration.SourceWorkspaceArtifactId).ConfigureAwait(false);
             
             if (fieldsOfTheSameType.Any())
             {
@@ -72,57 +69,7 @@ namespace Relativity.Sync.Transfer
         {
             return string.Join(" OR ", fieldNames.Select(name => $"('{name}' ISSET)"));
         }
-
-        private async Task<string> GetRdoTypeNameAsync(int workspaceArtifactId, int rdoArtifactTypeId)
-        {
-            using (var objectManager =
-                   await _sourceServiceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-            {
-                var query = new QueryRequest
-                {
-                    ObjectType = new ObjectTypeRef
-                    {
-                        ArtifactTypeID = (int)ArtifactType.ObjectType
-                    },
-                    Condition = $"'Artifact Type ID' == {rdoArtifactTypeId}",
-                    IncludeNameInQueryResult = true
-                };
-
-                QueryResult result =
-                    await objectManager.QueryAsync(workspaceArtifactId, query, 0, 1).ConfigureAwait(false);
-
-                if (result.Objects.Count != 1)
-                {
-                    _logger.LogError("Rdo with ArtifactTypeId {artifactTypeId} does not exist", rdoArtifactTypeId);
-                    throw new SyncException($"Rdo with ArtifactTypeId {rdoArtifactTypeId} does not exist");
-                }
-                
-                return result.Objects.Single().Name;
-            }
-        }
-
-        private async Task<string[]> GetSameTypeFieldNamesAsync(string rdoTypeName, int workspaceId)
-        {
-            using (var objectManager =
-                   await _sourceServiceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-            {
-                var request = new QueryRequest
-                {
-                    ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field },
-                    Condition =
-                        $"('Associative Object Type' == '{rdoTypeName}') AND ('Object Type' == '{rdoTypeName}')" +
-                        $" AND (NOT ('Name' LIKE ['::']))" +
-                        $" AND ('Field Type' IN ['Multiple Object', 'Single Object'])",
-                    Fields = new[] { new FieldRef { Name = "Name" } }
-                };
-
-                QueryResultSlim result = await objectManager.QuerySlimAsync(workspaceId, request, 0, Int32.MaxValue)
-                    .ConfigureAwait(false);
-
-                return result.Objects.SelectMany(x => x.Values.Select(v => v.ToString())).ToArray();
-            }
-        }
-
+        
         private async Task<QueryRequest> GetRequestForCurrentPipelineInternalAsync(bool withIdentifierOnly,
             CancellationToken token)
         {

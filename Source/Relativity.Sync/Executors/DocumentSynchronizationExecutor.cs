@@ -14,15 +14,18 @@ namespace Relativity.Sync.Executors
 {
 	internal class DocumentSynchronizationExecutor : SynchronizationExecutorBase<IDocumentSynchronizationConfiguration>
 	{
+		private readonly ITaggingProvider _taggingProvider;
+
 		public DocumentSynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
-			IJobProgressHandlerFactory jobProgressHandlerFactory, IDocumentTagRepository documentsTagRepository,
+			IJobProgressHandlerFactory jobProgressHandlerFactory, 
 			IFieldManager fieldManager, IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer,
 			IJobCleanupConfiguration jobCleanupConfiguration,
 			IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
-			Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics, ISyncLog logger,
-			IUserContextConfiguration userContextConfiguration) : base(importJobFactory, BatchRecordType.Documents, batchRepository, jobProgressHandlerFactory, documentsTagRepository, fieldManager,
+			Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics, ITaggingProvider taggingProvider, ISyncLog logger,
+			IUserContextConfiguration userContextConfiguration) : base(importJobFactory, BatchRecordType.Documents, batchRepository, jobProgressHandlerFactory, fieldManager,
 			fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics,userContextConfiguration, logger)
 		{
+			_taggingProvider = taggingProvider;
 		}
 
 		protected override Task<IImportJob> CreateImportJobAsync(IDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
@@ -109,6 +112,11 @@ namespace Relativity.Sync.Executors
 			_syncMetrics.Send(documentBatchEndMetric);
 			
 			_jobStatisticsContainer.LongTextStatistics.Clear();
+		}
+
+		protected override Task<TaggingExecutionResult> TagObjectsAsync(IImportJob importJob, ISynchronizationConfiguration configuration, CompositeCancellationToken token)
+		{
+			return _taggingProvider.TagObjectsAsync(importJob, configuration, token);
 		}
 	}
 }

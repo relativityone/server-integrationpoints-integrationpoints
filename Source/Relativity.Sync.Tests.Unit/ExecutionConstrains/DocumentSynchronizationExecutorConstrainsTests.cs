@@ -26,7 +26,7 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 			_token = CancellationToken.None;
 			_syncLog = new EmptyLogger();
 
-			_synchronizationConfiguration = new Mock<IDocumentSynchronizationConfiguration>(MockBehavior.Loose);
+			_synchronizationConfiguration = new Mock<IDocumentSynchronizationConfiguration>();
 		}
 
 		[Test]
