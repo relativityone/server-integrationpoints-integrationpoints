@@ -52,7 +52,7 @@ namespace Relativity.IntegrationPoints.Services
 				
 				WorkloadSizeDefinition workloadSizeDefinition = SelectMatchingWorkloadSize(workloadSizeDefinitions, jobsCount);
 				
-				Logger.LogInformation("Selected workload size: {size} for jobs count: {count}", workloadSizeDefinition.WorkloadSize, jobsCount);
+				Logger.LogInformation("Selected workload size: {workloadSize} for jobs count: {jobsCount}", workloadSizeDefinition.WorkloadSize, jobsCount);
 
 				return Task.FromResult(new Workload()
 				{
