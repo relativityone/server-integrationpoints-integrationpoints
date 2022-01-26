@@ -54,6 +54,11 @@ namespace kCura.IntegrationPoints.Core.Validation
 			{
 				result.Add(validator.Validate(validationModel));
 			}
+			
+			foreach (IValidator validator in _validatorsMap[objectTypeGuid.ToString()])
+			{
+				result.Add(validator.Validate(validationModel));
+			}			
 
 			return result;
 		}

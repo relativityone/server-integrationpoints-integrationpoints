@@ -23,5 +23,7 @@
 		public static readonly string ERROR_SCHEDULER_END_DATE_BEFORE_START_DATE = "The start date must come before the end date.";
 
 		public static readonly string ERROR_INTEGRATION_POINT_TYPE_INVALID = "Invalid integration point type for given source provider.";
+		public static readonly string ERROR_MISSING_FIRST_NAME_FIELD_MAP = "\"First Name\"  field should be mapped in Destination";
+		public static readonly string ERROR_MISSING_LAST_NAME_FIELD_MAP = "\"Last Name\" field should be mapped in Destination";
 	}
 }
