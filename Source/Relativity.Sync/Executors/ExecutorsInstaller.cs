@@ -6,6 +6,7 @@ using Relativity.Sync.ExecutionConstrains.SumReporting;
 using Relativity.Sync.Executors.PermissionCheck;
 using Relativity.Sync.Executors.PreValidation;
 using Relativity.Sync.Executors.SumReporting;
+using Relativity.Sync.Executors.TaggingProviders;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Extensions;
 using Relativity.Sync.Storage;
@@ -33,6 +34,7 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<WorkspaceNameValidator>().As<IWorkspaceNameValidator>();
 			builder.RegisterType<TagSavedSearch>().As<ITagSavedSearch>();
 			builder.RegisterType<TagSavedSearchFolder>().As<ITagSavedSearchFolder>();
+			builder.RegisterType<DocumentTagger>().As<ITaggingProvider>();
 			builder.RegisterType<ImportJobFactory>().As<IImportJobFactory>();
 			builder.RegisterType<ImportApiFactory>().As<IImportApiFactory>();
 			builder.RegisterType<AutomatedWorkflowsManager>().As<IAutomatedWorkflowsManager>();
