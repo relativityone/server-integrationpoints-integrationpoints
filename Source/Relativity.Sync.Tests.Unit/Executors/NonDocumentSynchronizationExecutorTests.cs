@@ -32,7 +32,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IJobProgressUpdaterFactory> _jobProgressUpdaterFactoryStub;
 		private Mock<IJobProgressHandler> _jobProgressHandlerFake;
 		private Mock<IJobProgressUpdater> _jobProgressUpdaterFake;
-		private Mock<ITaggingProvider> _taggingProviderFake;
+		private Mock<IDocumentTagger> _documentTaggerFake;
 		private Mock<IAutomatedWorkflowTriggerConfiguration> _automatedWorkflowTriggerConfigurationFake;
 		private Mock<Func<IStopwatch>> _stopwatchFactoryFake;
 		private Mock<IStopwatch> _stopwatchFake;
@@ -89,8 +89,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_fieldManagerFake = new Mock<IFieldManager>();
 			_fakeFieldMappings = new Mock<IFieldMappings>();
 			_configFake = new Mock<INonDocumentSynchronizationConfiguration>();
-			_taggingProviderFake = new Mock<ITaggingProvider>();
-			_taggingProviderFake
+			_documentTaggerFake = new Mock<IDocumentTagger>();
+			_documentTaggerFake
 				.Setup(x => x.TagObjectsAsync(It.IsAny<Sync.Executors.IImportJob>(), It.IsAny<ISynchronizationConfiguration>(), It.IsAny<CompositeCancellationToken>()))
 				.ReturnsAsync(TaggingExecutionResult.Success);
 			_jobProgressHandlerFactoryStub = new Mock<IJobProgressHandlerFactory>();

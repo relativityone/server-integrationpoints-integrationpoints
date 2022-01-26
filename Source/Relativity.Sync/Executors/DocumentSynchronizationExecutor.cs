@@ -14,18 +14,18 @@ namespace Relativity.Sync.Executors
 {
 	internal class DocumentSynchronizationExecutor : SynchronizationExecutorBase<IDocumentSynchronizationConfiguration>
 	{
-		private readonly ITaggingProvider _taggingProvider;
+		private readonly IDocumentTagger _documentTagger;
 
 		public DocumentSynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
 			IJobProgressHandlerFactory jobProgressHandlerFactory, 
 			IFieldManager fieldManager, IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer,
 			IJobCleanupConfiguration jobCleanupConfiguration,
 			IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
-			Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics, ITaggingProvider taggingProvider, ISyncLog logger,
+			Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics, IDocumentTagger documentTagger, ISyncLog logger,
 			IUserContextConfiguration userContextConfiguration) : base(importJobFactory, BatchRecordType.Documents, batchRepository, jobProgressHandlerFactory, fieldManager,
 			fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics,userContextConfiguration, logger)
 		{
-			_taggingProvider = taggingProvider;
+			_documentTagger = documentTagger;
 		}
 
 		protected override Task<IImportJob> CreateImportJobAsync(IDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
@@ -116,7 +116,7 @@ namespace Relativity.Sync.Executors
 
 		protected override Task<TaggingExecutionResult> TagObjectsAsync(IImportJob importJob, ISynchronizationConfiguration configuration, CompositeCancellationToken token)
 		{
-			return _taggingProvider.TagObjectsAsync(importJob, configuration, token);
+			return _documentTagger.TagObjectsAsync(importJob, configuration, token);
 		}
 	}
 }

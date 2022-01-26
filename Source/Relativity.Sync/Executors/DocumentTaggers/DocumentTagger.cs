@@ -4,9 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 
-namespace Relativity.Sync.Executors.TaggingProviders
+namespace Relativity.Sync.Executors.DocumentTaggers
 {
-    internal class DocumentTagger : ITaggingProvider
+    internal class DocumentTagger : IDocumentTagger
     {
 	    private readonly ISyncLog _logger;
 	    private readonly IDocumentTagRepository _documentsTagRepository;

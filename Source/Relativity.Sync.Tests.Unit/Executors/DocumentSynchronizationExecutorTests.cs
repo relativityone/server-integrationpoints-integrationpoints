@@ -32,7 +32,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IJobProgressUpdaterFactory> _jobProgressUpdaterFactoryStub;
 		private Mock<IJobProgressHandler> _jobProgressHandlerFake;
 		private Mock<IJobProgressUpdater> _jobProgressUpdaterFake;
-		private Mock<ITaggingProvider> _taggingProviderFake;
+		private Mock<IDocumentTagger> _documentTaggerFake;
 		private Mock<IAutomatedWorkflowTriggerConfiguration> _automatedWorkflowTriggerConfigurationFake;
 		private Mock<Func<IStopwatch>> _stopwatchFactoryFake;
 		private Mock<IStopwatch> _stopwatchFake;
@@ -103,8 +103,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_jobCleanupConfigurationMock = new Mock<IJobCleanupConfiguration>();
 			_automatedWorkflowTriggerConfigurationFake = new Mock<IAutomatedWorkflowTriggerConfiguration>();
 			_jobProgressUpdaterFactoryStub = new Mock<IJobProgressUpdaterFactory>();
-			_taggingProviderFake = new Mock<ITaggingProvider>();
-			_taggingProviderFake
+			_documentTaggerFake = new Mock<IDocumentTagger>();
+			_documentTaggerFake
 				.Setup(x => x.TagObjectsAsync(It.IsAny<Sync.Executors.IImportJob>(), It.IsAny<ISynchronizationConfiguration>(), It.IsAny<CompositeCancellationToken>()))
 				.ReturnsAsync(TaggingExecutionResult.Success);
 			_stopwatchFactoryFake = new Mock<Func<IStopwatch>>();
@@ -153,7 +153,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				_jobProgressHandlerFactoryStub.Object,
 				_fieldManagerFake.Object, _fakeFieldMappings.Object, _jobStatisticsContainerFake.Object,
 				_jobCleanupConfigurationMock.Object, _automatedWorkflowTriggerConfigurationFake.Object,
-				_stopwatchFactoryFake.Object, _syncMetricsMock.Object, _taggingProviderFake.Object, new EmptyLogger(), _userContextConfigurationStub.Object);
+				_stopwatchFactoryFake.Object, _syncMetricsMock.Object, _documentTaggerFake.Object, new EmptyLogger(), _userContextConfigurationStub.Object);
 		}
 
 
@@ -370,7 +370,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			SetupImportJob();
 
-			_taggingProviderFake.Setup(x => x.TagObjectsAsync(It.IsAny<Sync.Executors.IImportJob>(),
+			_documentTaggerFake.Setup(x => x.TagObjectsAsync(It.IsAny<Sync.Executors.IImportJob>(),
 				It.IsAny<ISynchronizationConfiguration>(), It.IsAny<CompositeCancellationToken>())).Throws<OperationCanceledException>();
 
 			// Act
@@ -621,7 +621,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			// Assert
 			result.Status.Should().BeEquivalentTo(expectedExecutionResult.Status);
 
-			_taggingProviderFake
+			_documentTaggerFake
 				.Verify(x => x.TagObjectsAsync(_importJobFake.Object,
 					It.IsAny<ISynchronizationConfiguration>(), It.IsAny<CompositeCancellationToken>()), Times.Once);
 		}
@@ -1058,7 +1058,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		private void SetUpDocumentsTagRepository(TaggingExecutionResult executionResult)
 		{
-			_taggingProviderFake
+			_documentTaggerFake
 				.Setup(x => x.TagObjectsAsync(It.IsAny<Sync.Executors.IImportJob>(), It.IsAny<ISynchronizationConfiguration>(), It.IsAny<CompositeCancellationToken>()))
 				.ReturnsAsync(executionResult);
 		}
