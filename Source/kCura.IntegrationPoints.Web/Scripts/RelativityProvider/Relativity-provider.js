@@ -431,7 +431,7 @@
 		this.TargetFolder.extend({
 			required: {
 				onlyIf: function () {
-					return self.LocationFolderChecked() === "true";
+					return self.LocationFolderChecked() === "true" && !self.IsNonDocumentObjectSelected();
 				}
 			}
 		});
@@ -504,6 +504,14 @@
 			checkSavedSearch: {
 				onlyIf: function () {
 					return (self.IsSavedSearchSelected());
+				}
+			}
+		});
+
+		this.SourceViewId.extend({
+			required: {
+				onlyIf: function () {
+					return self.IsNonDocumentObjectSelected();
 				}
 			}
 		});
