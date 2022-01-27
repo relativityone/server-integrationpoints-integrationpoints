@@ -48,6 +48,27 @@
 		},
 		message: 'The saved search is no longer accessible. Please verify your settings or create a new Integration Point.'
 	};
+	ko.validation.rules['checkWorkspaceForObjectType'] = {
+		async: true,
+		validator: function(value, params, callback) {
+			var sourceObjectTypeArtifactId = window.parent.IP.data.params['TransferredRDOArtifactTypeID'];
+			IP.data.ajax({
+				contentType: "application/json",
+				dataType: "json",
+				headers: { "X-CSRF-Header": "-" },
+				type: "GET",
+				url: IP.utils.generateWebAPIURL("ObjectType/Exists", value, sourceObjectTypeArtifactId),
+				async: true
+			})
+			.then(function(objectTypeExistsInDestination) {
+				callback(objectTypeExistsInDestination);
+			})
+			.fail(function(error){
+				console.error("Failed to check if Object Type exists in workspace: " + error);
+			});
+		},
+		message: 'Selected Object Type does not exist in this workspace.'
+	};
 	ko.validation.registerExtenders();
 
 	var viewModel;
@@ -169,7 +190,7 @@
 			}
 		});
 
-		self.SourceViewId = ko.observable();
+		self.SourceViewId = ko.observable(state.SourceViewId);
 
 		self.SourceOptions = ko.observableArray();
 		
@@ -261,25 +282,6 @@
 			self.locationSelector.reloadWithRootWithData(reloadTree);
 		};
 
-		self.checkWorkspaceForObjectTypeExistance = function(destinationWorkspaceId, callback) {
-			var sourceObjectTypeArtifactId = window.parent.IP.data.params['TransferredRDOArtifactTypeID'];
-			IP.data.ajax({
-				contentType: "application/json",
-				dataType: "json",
-				headers: { "X-CSRF-Header": "-" },
-				type: "GET",
-				url: IP.utils.generateWebAPIURL("ObjectType/Exists", destinationWorkspaceId, sourceObjectTypeArtifactId),
-				async: true,
-				data: self.SecuredConfiguration()
-			})
-			.then(function(objectTypeExistsInDestination) {
-				callback(objectTypeExistsInDestination);
-			})
-			.fail(function(error){
-				console.error("Failed to check if Object Type exists in workspace: " + error);
-			});
-		}
-
 		self.LocationFolderChecked.subscribe(function (value) {
 			if (value === "true") {
 				self.ProductionArtifactId(null);
@@ -330,7 +332,7 @@
 
 			var workspacesUpgradedPromise = self.updateWorkspaces();
 			workspacesUpgradedPromise.then(function () {
-				if (self.FolderArtifactId() && self.TargetWorkspaceArtifactId() && self.TargetWorkspaceArtifactId.isValid()) {
+				if (self.FolderArtifactId() && self.TargetWorkspaceArtifactId() && self.TargetWorkspaceArtifactId.isValid() && !self.IsNonDocumentObjectSelected()) {
 					self.getFolderAndSubFolders(self.TargetWorkspaceArtifactId(), self.FolderArtifactId());
 				}
 				self.locationSelector.toggle(self.TargetWorkspaceArtifactId.isValid());
@@ -358,8 +360,8 @@
 						item.displayName = IP.utils.decode(item.displayName);
 					});
 				self.workspaces(result);
-				self.TargetWorkspaceArtifactId(stateLocal.TargetWorkspaceArtifactId);
 				self.getDestinationProductionSets(self.TargetWorkspaceArtifactId());
+				self.TargetWorkspaceArtifactId(stateLocal.TargetWorkspaceArtifactId);
 				self.TargetWorkspaceArtifactId.subscribe(function (value) {
 
 					if (self.IsNonDocumentObjectSelected()){
@@ -494,17 +496,10 @@
 				message: "Source workspace name contains an invalid character. Please remove before continuing."
 			}
 		}).extend({
-			validation: {
-				async: true,
-				required: {
-					onlyIf: function() {
-						return self.IsNonDocumentObjectSelected();
-					}
-				},
-				validator: function(value, params, callback) {
-					self.checkWorkspaceForObjectTypeExistance(value, callback);
-				},
-				message: 'Selected Object Type does not exist in this workspace.'
+			checkWorkspaceForObjectType: {
+				onlyIf: function() {
+					return self.IsNonDocumentObjectSelected();
+				}
 			}
 		}).extend({
 			checkWorkspace: {
