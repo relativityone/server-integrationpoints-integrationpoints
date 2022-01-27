@@ -1,6 +1,5 @@
 import { createConsole } from "./event-handlers/createConsole";
 import { EventNames } from "./types/eventNames";
-import { EventHandlers } from "./types/eventHandlers";
 import { IConvenienceApi } from "./types/convenienceApi";
 
 export default function (eventNames: typeof EventNames, convenienceApi: IConvenienceApi) {
@@ -12,19 +11,7 @@ export default function (eventNames: typeof EventNames, convenienceApi: IConveni
 
     eventHandlers[eventNames.CREATE_CONSOLE] = createConsole(convenienceApi);
 
-    eventHandlers[eventNames.UPDATE_CONSOLE] = function () {
-        console.log("Update console complete!");
-    }
-
-    // [eventNames.CREATE_CONSOLE] = createConsole(convenienceApi);
-
-    //const eventHandlers: EventHandlers = {
-    //    [eventNames.CREATE_CONSOLE]: createConsole(convenienceApi),
-    //};
-
-    //eventHandlers[eventNames.HYDRATE_LAYOUT_COMPLETE] = function () {
-    //    console.log("in hydrate");
-    //}();
+    eventHandlers[eventNames.UPDATE_CONSOLE] = createConsole(convenienceApi);
 
     return eventHandlers;
 };

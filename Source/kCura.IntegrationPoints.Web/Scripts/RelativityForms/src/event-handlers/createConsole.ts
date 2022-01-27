@@ -1,5 +1,6 @@
 import { contextProvider } from "../helpers/contextProvider";
 import { IConvenienceApi } from "../types/convenienceApi";
+import { ButtonState } from "../types/buttonState";
 
 export function createConsole(convenienceApi: IConvenienceApi): void {
     return contextProvider((ctx) => {
@@ -7,57 +8,89 @@ export function createConsole(convenienceApi: IConvenienceApi): void {
         var integrationPointId = ctx.artifactId;
         var workspaceId = ctx.workspaceId;
 
-        var buttonState = generateInitialButtonStateObject(convenienceApi, ctx, workspaceId, integrationPointId);
-        buttonState.then(function (btnStateObj) {
-            var consoleContent = generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integrationPointId, btnStateObj);
+        var buttonState = getButtonStateObject(convenienceApi, ctx, workspaceId, integrationPointId);
+        buttonState.then(function (btnStateObj: ButtonState) {
+            var consoleContent = generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPointId, btnStateObj);
 
             return consoleApi.destroy().then(function () {
                 return consoleApi.containersPromise;
             }).then(function (containers) {
                 containers.rootElement.appendChild(consoleContent);
+                let relativityWindow = convenienceApi.utilities.getRelativityPageBaseWindow();
+                checkIfRefreshIsNeeded(btnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, relativityWindow.location.href);
             });
         })
     })
 }
 
-async function generateInitialButtonStateObject(convenienceApi, ctx, workspaceId, integrationPointId) {
-        var request = {
-            options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
-                headers: {
-                    "content-type": "application/json; charset=utf-8"
-                }
-            }),
-            url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/" + workspaceId + "/api/ButtonState/GetUserPermissionsCheck" + '?workspaceId=' + workspaceId + '&integrationPointArtifactId=' + integrationPointId
-        };
+export function checkIfRefreshIsNeeded(btnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, currentPage): void {
+    var buttonState = getButtonStateObject(convenienceApi, ctx, workspaceId, integrationPointId);
+    buttonState.then(function (newBtnStateObj: ButtonState) {
+        let relativityWindow = convenienceApi.utilities.getRelativityPageBaseWindow();
+        if (compareButtonStates(btnStateObj, newBtnStateObj)) {
+            if (currentPage === relativityWindow.location.href) {
+                setTimeout(checkIfRefreshIsNeeded, 5000, newBtnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, relativityWindow.location.href);
+            }
+        } else {
+            var consoleContent = generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPointId, newBtnStateObj);
 
-        var resp = await convenienceApi.relativityHttpClient.get(request.url, request.options)
-            .then(function (result) {
-                if (!result.ok) {
-                    return ctx.setErrorSummary(["Failed to get permissions."]);
-                } else if (result.ok) {
-                    return result.json();
+            return convenienceApi.console.destroy().then(function () {
+                return convenienceApi.console.containersPromise;
+            }).then(function (containers) {
+                containers.rootElement.appendChild(consoleContent);
+                if (currentPage === relativityWindow.location.href) {
+                    setTimeout(checkIfRefreshIsNeeded, 5000, newBtnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, relativityWindow.location.href);
                 }
             });
+        }
+    })
+}
+
+function compareButtonStates(previousState: ButtonState, newState: ButtonState): boolean {
+    for (const [key, value] of Object.entries(previousState)) {
+        if (value != newState[key]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+async function getButtonStateObject(convenienceApi, ctx, workspaceId, integrationPointId) {
+    var request = {
+        options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
+            headers: {
+                "content-type": "application/json; charset=utf-8"
+            }
+        }),
+        url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/" + workspaceId + "/api/ButtonState/GetUserPermissionsCheck" + '?workspaceId=' + workspaceId + '&integrationPointArtifactId=' + integrationPointId
+    };
+
+    var resp = await convenienceApi.relativityHttpClient.get(request.url, request.options)
+        .then(function (result) {
+            if (!result.ok) {
+                return ctx.setErrorSummary(["Failed to get permissions."]);
+            } else if (result.ok) {
+                return result.json();
+            }
+        });
     return resp;
 }
 
-function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integrationPointId, btnStateObj) {
+function generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPointId, btnStateObj) {
 
-    console.log("btn state obj: ", btnStateObj);
-    var buttonState = btnStateObj
+    var buttonState: ButtonState = btnStateObj
 
     var consoleApi = convenienceApi.console;
 
     var integrationPoint = {};
-    ctx.fieldNameToFieldIdMap.forEach(function(value, key)
-    {
-       var trimmedKey = key.replaceAll(" ", "");
-       try {
-         var val = JSON.parse(ctx.backingModelData[value]);
-       } catch(e) {
-         var val = ctx.backingModelData[value];
-       }
-       integrationPoint[trimmedKey] = val;
+    ctx.fieldNameToFieldIdMap.forEach(function (value, key) {
+        var trimmedKey = key.replaceAll(" ", "");
+        try {
+            var val = JSON.parse(ctx.backingModelData[value]);
+        } catch (e) {
+            var val = ctx.backingModelData[value];
+        }
+        integrationPoint[trimmedKey] = val;
     });
 
     console.log(integrationPoint);
@@ -96,7 +129,7 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
         return convenienceApi.relativityHttpClient.post(request.url, request.payload, request.options)
     }
 
-    function  prepareGetViewErrorsPath(workspaceId, integrationPointId) {
+    function prepareGetViewErrorsPath(workspaceId, integrationPointId) {
         var request = {
             options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
                 headers: {
@@ -120,37 +153,11 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
         };
     }
 
-    //function getUserPermissionsCheck(workspaceId, integrationPointId) {
-    //    var request =  {
-    //        options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
-    //            headers: {
-    //                "content-type": "application/json; charset=utf-8"
-    //            }
-    //        }),
-    //        url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/" + workspaceId + "/api/ButtonState/GetUserPermissionsCheck" + '?workspaceId=' + workspaceId + '&integrationPointArtifactId=' + integrationPointId
-    //    };
-
-    //    var resp = convenienceApi.relativityHttpClient.get(request.url, request.options)
-    //        .then(function (result) {
-    //            if (!result.ok) {
-    //                return ctx.setErrorSummary(["Failed to get permissions."]);
-    //            } else if (result.ok) {
-    //                return result.json();
-    //            }
-    //        });
-
-    //    resp.then(function (result) {
-    //        console.log(result)
-    //    })
-    //}
-
-    //getUserPermissionsCheck(workspaceId, integrationPointId);
-
     function createRunButton(enabled) {
         return consoleApi.generate.button({
             innerText: "Run",
             disabled: !enabled,
-            onclick: function() {
+            onclick: function () {
                 function generateRunMessage() {
                     return "Are you sure you want to run this job now?";
                 }
@@ -162,8 +169,8 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
                     cancelText: "Cancel",
                     acceptAction: function () {
                         return postJobAPIRequest(workspaceId, integrationPointId)
-                            .then(function(result) {
-                                if(!result.ok) {
+                            .then(function (result) {
+                                if (!result.ok) {
                                     console.log(result);
                                     return ctx.setErrorSummary(["Failed to submit integration job. Check Errors tab for details."]);
                                 }
@@ -186,8 +193,8 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
                     cancelText: "Cancel",
                     acceptAction: function () {
                         return postJobAPIRequest(workspaceId, integrationPointId, "Stop")
-                            .then(function(result) {
-                                if(!result.ok) {
+                            .then(function (result) {
+                                if (!result.ok) {
                                     console.log(result);
                                     return ctx.setErrorSummary(["Failed to stop the job. Check Errors tab for details."]);
                                 }
@@ -202,7 +209,7 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
         return consoleApi.generate.button({
             innerText: "Retry Errors",
             disabled: !enabled,
-            onclick: function () { 
+            onclick: function () {
                 function generateRunMessage() {
                     return "Are you sure you want to run this job now?";
                 }
@@ -213,9 +220,9 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
                     acceptText: "Ok",
                     cancelText: "Cancel",
                     acceptAction: function () {
-                         return postJobAPIRequest(workspaceId, integrationPointId, "Retry")
-                            .then(function(result) {
-                                if(!result.ok) {
+                        return postJobAPIRequest(workspaceId, integrationPointId, "Retry")
+                            .then(function (result) {
+                                if (!result.ok) {
                                     console.log(result);
                                     return ctx.setErrorSummary(["Failed to submit retry job. Check Errors tab for details."]);
                                 }
@@ -278,13 +285,13 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
                         }
                     ],
                     acceptAction: function () {
-                         var name = (<HTMLInputElement>document.getElementById('inputIntegrationPointProfileName')).value;
-                         return postCreateIntegrationPointProfileRequest(workspaceId, integrationPointId, name)
-                             .then(function (result) {
-                                 if (!result.ok) {
-                                     return ctx.setErrorSummary(["Failed to create integration point profile"]);
-                                 }
-                             });
+                        var name = (<HTMLInputElement>document.getElementById('inputIntegrationPointProfileName')).value;
+                        return postCreateIntegrationPointProfileRequest(workspaceId, integrationPointId, name)
+                            .then(function (result) {
+                                if (!result.ok) {
+                                    return ctx.setErrorSummary(["Failed to create integration point profile"]);
+                                }
+                            });
                     }
                 };
 
@@ -301,8 +308,8 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
                 var request = prepareGetImportProviderDocumentAPIRequest(workspaceId, integrationPointId, "CheckErrorFile");
 
                 return convenienceApi.relativityHttpClient.get(request.url, request.options)
-                    .then(function(result) {
-                        if(!result.ok) {
+                    .then(function (result) {
+                        if (!result.ok) {
                             console.log(result);
                             return ctx.setErrorSummary(["The error file could not be found for download. Check Errors tab for details."]);
                         }
@@ -315,7 +322,8 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
     }
 
     var transferOptionsTitle = consoleApi.generate.sectionTitle({
-        innerText: "Transfer Options"
+        innerText: "Transfer Options",
+        id: "transferOptionsUniqueId"
     });
 
     var transferSection = [transferOptionsTitle];
@@ -326,7 +334,7 @@ function generateDefaultConsoleContent(convenienceApi, ctx, workspaceId, integra
     }
 
     if (buttonState.stopButtonEnabled) {
-        var stopButton = createStopButton(buttonState.runButtonEnabled);
+        var stopButton = createStopButton(buttonState.stopButtonEnabled);
         transferSection.push(stopButton);
     }
 
