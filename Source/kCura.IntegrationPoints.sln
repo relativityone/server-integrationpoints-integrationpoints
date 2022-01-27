@@ -1,96 +1,97 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29503.13
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{A7EC186E-BC93-4A69-92F7-778E2206D33F}"
 	ProjectSection(SolutionItems) = preProject
 		..\paket.dependencies = ..\paket.dependencies
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Web", "kCura.IntegrationPoints.Web\kCura.IntegrationPoints.Web.csproj", "{05724E56-C325-4CA2-9122-50A41411B691}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.Web", "kCura.IntegrationPoints.Web\kCura.IntegrationPoints.Web.csproj", "{05724E56-C325-4CA2-9122-50A41411B691}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Web.Tests", "kCura.IntegrationPoints.Web.Tests\kCura.IntegrationPoints.Web.Tests.csproj", "{C355B68A-5EA2-4BDA-8898-C84049D664DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.Web.Tests", "kCura.IntegrationPoints.Web.Tests\kCura.IntegrationPoints.Web.Tests.csproj", "{C355B68A-5EA2-4BDA-8898-C84049D664DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Core", "kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj", "{A1AE667B-1B6E-4BB9-AF1D-912620292283}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.Core", "kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj", "{A1AE667B-1B6E-4BB9-AF1D-912620292283}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Core.Tests", "kCura.IntegrationPoints.Core.Tests\kCura.IntegrationPoints.Core.Tests.csproj", "{81CAAB75-DFDA-4EFB-980C-9FEE0D9F359A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.Core.Tests", "kCura.IntegrationPoints.Core.Tests\kCura.IntegrationPoints.Core.Tests.csproj", "{81CAAB75-DFDA-4EFB-980C-9FEE0D9F359A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Data.Tests", "kCura.IntegrationPoints.Data.Tests\kCura.IntegrationPoints.Data.Tests.csproj", "{8918AEA8-619B-4AA0-AF98-AA0F8DA4131A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.Data.Tests", "kCura.IntegrationPoints.Data.Tests\kCura.IntegrationPoints.Data.Tests.csproj", "{8918AEA8-619B-4AA0-AF98-AA0F8DA4131A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Data", "kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj", "{599D771D-2AE7-4321-9BAC-BE06F827CE0A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.Agent", "kCura.IntegrationPoints.Agent\kCura.IntegrationPoints.Agent.csproj", "{BFA5641B-AA6F-4FA5-A20D-6F42B484CAE4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Agent.Tests", "kCura.IntegrationPoints.Agent.Tests\kCura.IntegrationPoints.Agent.Tests.csproj", "{9F8F3789-4523-4C2F-BE74-ED7DF7A51D81}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.Agent.Tests", "kCura.IntegrationPoints.Agent.Tests\kCura.IntegrationPoints.Agent.Tests.csproj", "{9F8F3789-4523-4C2F-BE74-ED7DF7A51D81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.EventHandlers", "kCura.IntegrationPoints.EventHandlers\kCura.IntegrationPoints.EventHandlers.csproj", "{6571B092-1582-4FEC-9101-F510E7E573BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.EventHandlers", "kCura.IntegrationPoints.EventHandlers\kCura.IntegrationPoints.EventHandlers.csproj", "{6571B092-1582-4FEC-9101-F510E7E573BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.EventHandlers.Tests", "kCura.IntegrationPoints.EventHandlers.Tests\kCura.IntegrationPoints.EventHandlers.Tests.csproj", "{8966DE8D-89D0-4F63-B514-7C1F4E94AA89}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.EventHandlers.Tests", "kCura.IntegrationPoints.EventHandlers.Tests\kCura.IntegrationPoints.EventHandlers.Tests.csproj", "{8966DE8D-89D0-4F63-B514-7C1F4E94AA89}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.ScheduleQueue.Core", "kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj", "{C831C856-E74F-48B4-AEBC-1CF15576E082}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.ScheduleQueue.Core", "kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj", "{C831C856-E74F-48B4-AEBC-1CF15576E082}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.ScheduleQueue.Core.Tests", "kCura.ScheduleQueue.Core.Tests\kCura.ScheduleQueue.Core.Tests.csproj", "{B14533FD-8C47-4292-8C01-2FB008FBF76E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.ScheduleQueue.Core.Tests", "kCura.ScheduleQueue.Core.Tests\kCura.ScheduleQueue.Core.Tests.csproj", "{B14533FD-8C47-4292-8C01-2FB008FBF76E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Config", "kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj", "{DEF928B5-37CE-4BF3-B663-F0B8912C9C3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.Config", "kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj", "{DEF928B5-37CE-4BF3-B663-F0B8912C9C3F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Synchronizers.RDO", "kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj", "{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.Synchronizers.RDO", "kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj", "{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Synchronizers.RDO.Tests", "kCura.IntegrationPoints.Synchronizers.RDO.Tests\kCura.IntegrationPoints.Synchronizers.RDO.Tests.csproj", "{3E549337-A9B9-4C77-8B12-4E31EFAA53F8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.Synchronizers.RDO.Tests", "kCura.IntegrationPoints.Synchronizers.RDO.Tests\kCura.IntegrationPoints.Synchronizers.RDO.Tests.csproj", "{3E549337-A9B9-4C77-8B12-4E31EFAA53F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.LDAPProvider", "kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj", "{8398B06F-3716-4834-9593-A017F2714261}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.LDAPProvider", "kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj", "{8398B06F-3716-4834-9593-A017F2714261}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.ScheduleQueue.AgentBase", "kCura.ScheduleQueue.AgentBase\kCura.ScheduleQueue.AgentBase.csproj", "{6E7E31EA-393B-4B70-AA8F-51B12A7CA211}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.ScheduleQueue.AgentBase", "kCura.ScheduleQueue.AgentBase\kCura.ScheduleQueue.AgentBase.csproj", "{6E7E31EA-393B-4B70-AA8F-51B12A7CA211}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Core.Contracts", "kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj", "{30503682-E18D-49DF-A308-FE7996C4108E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.Core.Contracts", "kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj", "{30503682-E18D-49DF-A308-FE7996C4108E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Email", "kCura.IntegrationPoints.Email\kCura.IntegrationPoints.Email.csproj", "{07EC646A-D785-421E-B0F5-70D256A1E1CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.Email", "kCura.IntegrationPoints.Email\kCura.IntegrationPoints.Email.csproj", "{07EC646A-D785-421E-B0F5-70D256A1E1CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.DocumentTransferProvider", "kCura.IntegrationPoints.DocumentTransferProvider\kCura.IntegrationPoints.DocumentTransferProvider.csproj", "{CA3D5B8B-B99C-4BA5-BB8B-44A0BA9AA0F7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.DocumentTransferProvider", "kCura.IntegrationPoints.DocumentTransferProvider\kCura.IntegrationPoints.DocumentTransferProvider.csproj", "{CA3D5B8B-B99C-4BA5-BB8B-44A0BA9AA0F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.DocumentTransferProvider.Tests", "kCura.IntegrationPoints.DocumentTransferProvider.Tests\kCura.IntegrationPoints.DocumentTransferProvider.Tests.csproj", "{75B57398-7E27-4DF2-BF9F-A7E4A46E898E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.DocumentTransferProvider.Tests", "kCura.IntegrationPoints.DocumentTransferProvider.Tests\kCura.IntegrationPoints.DocumentTransferProvider.Tests.csproj", "{75B57398-7E27-4DF2-BF9F-A7E4A46E898E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.FilesDestinationProvider.Core", "kCura.IntegrationPoints.FilesDestinationProvider.Core\kCura.IntegrationPoints.FilesDestinationProvider.Core.csproj", "{1FC70536-A8EF-48CE-B20A-E5C5C6723F23}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.FilesDestinationProvider.Core", "kCura.IntegrationPoints.FilesDestinationProvider.Core\kCura.IntegrationPoints.FilesDestinationProvider.Core.csproj", "{1FC70536-A8EF-48CE-B20A-E5C5C6723F23}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests", "kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests\kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.csproj", "{CACFB723-C66D-47AD-882F-28F35A5C890C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests", "kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests\kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.csproj", "{CACFB723-C66D-47AD-882F-28F35A5C890C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D0393643-06E2-4470-96B7-E1153FE4FF69}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		Performance1.psess = Performance1.psess
 		Performance2.psess = Performance2.psess
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoint.Tests.Core", "kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj", "{AD3E5540-FA39-4983-8A23-FCC756D51A32}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoint.Tests.Core", "kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj", "{AD3E5540-FA39-4983-8A23-FCC756D51A32}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Providers", "Providers", "{E4D200F1-55C2-42C4-A54B-3AE21F0443DF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FTPProvider", "FTPProvider", "{33333F4D-C9D1-4794-ABC1-F395DA548A50}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.FtpProvider.Helpers", "kCura.IntegrationPoints.FtpProvider.Helpers\kCura.IntegrationPoints.FtpProvider.Helpers.csproj", "{3E33DD7E-266F-48F8-86A2-3CDB836F2947}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.FtpProvider.Helpers", "kCura.IntegrationPoints.FtpProvider.Helpers\kCura.IntegrationPoints.FtpProvider.Helpers.csproj", "{3E33DD7E-266F-48F8-86A2-3CDB836F2947}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.FtpProvider.Connection", "kCura.IntegrationPoints.FtpProvider.Connection\kCura.IntegrationPoints.FtpProvider.Connection.csproj", "{FB8830AE-7369-44D1-80F7-D61760F050A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.FtpProvider.Connection", "kCura.IntegrationPoints.FtpProvider.Connection\kCura.IntegrationPoints.FtpProvider.Connection.csproj", "{FB8830AE-7369-44D1-80F7-D61760F050A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.FtpProvider.Parser", "kCura.IntegrationPoints.FtpProvider.Parser\kCura.IntegrationPoints.FtpProvider.Parser.csproj", "{F49B9FFA-F3EF-4870-9E78-FED4C72B3249}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.FtpProvider.Parser", "kCura.IntegrationPoints.FtpProvider.Parser\kCura.IntegrationPoints.FtpProvider.Parser.csproj", "{F49B9FFA-F3EF-4870-9E78-FED4C72B3249}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.FtpProvider.Parser.Tests", "kCura.IntegrationPoints.FtpProvider.Parser.Tests\kCura.IntegrationPoints.FtpProvider.Parser.Tests.csproj", "{256264D0-D420-4E00-A830-FBDAE8FA977C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.FtpProvider.Parser.Tests", "kCura.IntegrationPoints.FtpProvider.Parser.Tests\kCura.IntegrationPoints.FtpProvider.Parser.Tests.csproj", "{256264D0-D420-4E00-A830-FBDAE8FA977C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.FtpProvider.Helpers.Tests", "kCura.IntegrationPoints.FtpProvider.Helpers.Tests\kCura.IntegrationPoints.FtpProvider.Helpers.Tests.csproj", "{2023373D-AEED-4F56-B882-07FB7AF6FB23}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.FtpProvider.Helpers.Tests", "kCura.IntegrationPoints.FtpProvider.Helpers.Tests\kCura.IntegrationPoints.FtpProvider.Helpers.Tests.csproj", "{2023373D-AEED-4F56-B882-07FB7AF6FB23}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.FtpProvider", "kCura.IntegrationPoints.FtpProvider\kCura.IntegrationPoints.FtpProvider.csproj", "{8A61BE46-3C1D-4D31-91F0-2731A01860FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.FtpProvider", "kCura.IntegrationPoints.FtpProvider\kCura.IntegrationPoints.FtpProvider.csproj", "{8A61BE46-3C1D-4D31-91F0-2731A01860FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.FtpProvider.Tests", "kCura.IntegrationPoints.FtpProvider.Tests\kCura.IntegrationPoints.FtpProvider.Tests.csproj", "{F5EDCEF8-3F00-47DC-B711-DA6B8E21C987}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.FtpProvider.Tests", "kCura.IntegrationPoints.FtpProvider.Tests\kCura.IntegrationPoints.FtpProvider.Tests.csproj", "{F5EDCEF8-3F00-47DC-B711-DA6B8E21C987}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Domain", "kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj", "{5D5B52B4-8769-431A-9743-B96F15FED5FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.Domain", "kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj", "{5D5B52B4-8769-431A-9743-B96F15FED5FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Core.Contracts.Tests", "kCura.IntegrationPoints.Core.Contracts.Tests\kCura.IntegrationPoints.Core.Contracts.Tests.csproj", "{A6490515-F92D-4157-BF25-5DCC481AA14D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.Core.Contracts.Tests", "kCura.IntegrationPoints.Core.Contracts.Tests\kCura.IntegrationPoints.Core.Contracts.Tests.csproj", "{A6490515-F92D-4157-BF25-5DCC481AA14D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.IntegrationPoints.Services", "Relativity.IntegrationPoints.Services\Relativity.IntegrationPoints.Services.csproj", "{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.IntegrationPoints.Services", "Relativity.IntegrationPoints.Services\Relativity.IntegrationPoints.Services.csproj", "{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ImportProvider", "ImportProvider", "{16E36871-2EC6-48BB-ADAA-A9CD481F3337}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.ImportProvider", "kCura.IntegrationPoints.ImportProvider\kCura.IntegrationPoints.ImportProvider.csproj", "{835F7005-E106-4C29-AD9C-FE8BD5CF8280}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.ImportProvider", "kCura.IntegrationPoints.ImportProvider\kCura.IntegrationPoints.ImportProvider.csproj", "{835F7005-E106-4C29-AD9C-FE8BD5CF8280}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.ImportProvider.Parser", "kCura.IntegrationPoints.ImportProvider.Parser\kCura.IntegrationPoints.ImportProvider.Parser.csproj", "{180650D2-1EEA-4242-949D-7BDE78EECCB4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.ImportProvider.Parser", "kCura.IntegrationPoints.ImportProvider.Parser\kCura.IntegrationPoints.ImportProvider.Parser.csproj", "{180650D2-1EEA-4242-949D-7BDE78EECCB4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{0F6F16A2-C14A-412E-B399-3DCDF8DBEA96}"
 EndProject
@@ -98,33 +99,33 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unit", "Unit", "{1CF9A281-4
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integration", "Integration", "{5E44277B-5C51-4367-874B-EFA44EB2B956}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Core.Tests.Integration", "kcura.IntegrationPoints.Core.Tests.Integration\kCura.IntegrationPoints.Core.Tests.Integration.csproj", "{8DB72A8A-8638-469E-A2AA-992A728637F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.Core.Tests.Integration", "kcura.IntegrationPoints.Core.Tests.Integration\kCura.IntegrationPoints.Core.Tests.Integration.csproj", "{8DB72A8A-8638-469E-A2AA-992A728637F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.EventHandlers.Tests.Integration", "kCura.IntegrationPoints.EventHandlers.Tests.Integration\kCura.IntegrationPoints.EventHandlers.Tests.Integration.csproj", "{F983176A-DE11-4328-AEDA-81630DD0D587}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.EventHandlers.Tests.Integration", "kCura.IntegrationPoints.EventHandlers.Tests.Integration\kCura.IntegrationPoints.EventHandlers.Tests.Integration.csproj", "{F983176A-DE11-4328-AEDA-81630DD0D587}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.IntegrationPoints.Services.Tests", "Relativity.IntegrationPoints.Services.Tests\Relativity.IntegrationPoints.Services.Tests.csproj", "{B8C13A63-EFC0-49F9-9691-E1C8A85DB150}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.IntegrationPoints.Services.Tests", "Relativity.IntegrationPoints.Services.Tests\Relativity.IntegrationPoints.Services.Tests.csproj", "{B8C13A63-EFC0-49F9-9691-E1C8A85DB150}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.ImportProvider.Parser.Tests", "kCura.IntegrationPoints.ImportProvider.Parser.Tests\kCura.IntegrationPoints.ImportProvider.Parser.Tests.csproj", "{9320AF0B-6B17-4FB2-A8E0-BF6393FF3F91}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.ImportProvider.Parser.Tests", "kCura.IntegrationPoints.ImportProvider.Parser.Tests\kCura.IntegrationPoints.ImportProvider.Parser.Tests.csproj", "{9320AF0B-6B17-4FB2-A8E0-BF6393FF3F91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.ImportProvider.Tests", "kCura.IntegrationPoints.ImportProvider.Tests\kCura.IntegrationPoints.ImportProvider.Tests.csproj", "{F556FF4E-5F7D-46D6-A343-A21ED5169F44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.ImportProvider.Tests", "kCura.IntegrationPoints.ImportProvider.Tests\kCura.IntegrationPoints.ImportProvider.Tests.csproj", "{F556FF4E-5F7D-46D6-A343-A21ED5169F44}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.IntegrationPoints.Services.Tests.Integration", "Relativity.IntegrationPoints.Services.Tests.Integration\Relativity.IntegrationPoints.Services.Tests.Integration.csproj", "{11643FBD-9006-4CEE-83DB-AEB9517C008E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.IntegrationPoints.Services.Tests.Integration", "Relativity.IntegrationPoints.Services.Tests.Integration\Relativity.IntegrationPoints.Services.Tests.Integration.csproj", "{11643FBD-9006-4CEE-83DB-AEB9517C008E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.ImportProvider.Tests.Integration", "kCura.IntegrationPoints.ImportProvider.Tests.Integration\kCura.IntegrationPoints.ImportProvider.Tests.Integration.csproj", "{42F2E23D-2412-4A1B-897E-6C931BD09B29}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.ImportProvider.Tests.Integration", "kCura.IntegrationPoints.ImportProvider.Tests.Integration\kCura.IntegrationPoints.ImportProvider.Tests.Integration.csproj", "{42F2E23D-2412-4A1B-897E-6C931BD09B29}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.LDAPProvider.Tests", "kCura.IntegrationPoints.LDAPProvider.Tests\kCura.IntegrationPoints.LDAPProvider.Tests.csproj", "{2034058F-F57F-411A-9699-87BBD72F1598}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.LDAPProvider.Tests", "kCura.IntegrationPoints.LDAPProvider.Tests\kCura.IntegrationPoints.LDAPProvider.Tests.csproj", "{2034058F-F57F-411A-9699-87BBD72F1598}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Domain.Tests", "kCura.IntegrationPoints.Domain.Tests\kCura.IntegrationPoints.Domain.Tests.csproj", "{16F7FFEC-DE2D-4656-BA37-65A854EBEFCE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.Domain.Tests", "kCura.IntegrationPoints.Domain.Tests\kCura.IntegrationPoints.Domain.Tests.csproj", "{16F7FFEC-DE2D-4656-BA37-65A854EBEFCE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Email.Tests", "kCura.IntegrationPoints.Email.Tests\kCura.IntegrationPoints.Email.Tests.csproj", "{4A7CFCBE-998F-4161-8072-3F5609BBD629}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.Email.Tests", "kCura.IntegrationPoints.Email.Tests\kCura.IntegrationPoints.Email.Tests.csproj", "{4A7CFCBE-998F-4161-8072-3F5609BBD629}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Common", "kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj", "{32BCB03B-4980-4434-9392-F72334E6E348}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.Common", "kCura.IntegrationPoints.Common\kCura.IntegrationPoints.Common.csproj", "{32BCB03B-4980-4434-9392-F72334E6E348}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rip.TestUtilities", "Rip.TestUtilities\Rip.TestUtilities.csproj", "{88F9B589-2AA4-4609-AF61-E0BADB5DE82E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rip.TestUtilities", "Rip.TestUtilities\Rip.TestUtilities.csproj", "{88F9B589-2AA4-4609-AF61-E0BADB5DE82E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Common.Tests", "kCura.IntegrationPoints.Common.Tests\kCura.IntegrationPoints.Common.Tests.csproj", "{92381E05-24E9-46F2-9D95-8B41518CD69C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.Common.Tests", "kCura.IntegrationPoints.Common.Tests\kCura.IntegrationPoints.Common.Tests.csproj", "{92381E05-24E9-46F2-9D95-8B41518CD69C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.IntegrationPoints.FunctionalTests", "Relativity.IntegrationPoints.FunctionalTests\Relativity.IntegrationPoints.FunctionalTests.csproj", "{C06A564D-5A92-4E12-AE32-ABBD197A45AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.IntegrationPoints.FunctionalTests", "Relativity.IntegrationPoints.FunctionalTests\Relativity.IntegrationPoints.FunctionalTests.csproj", "{C06A564D-5A92-4E12-AE32-ABBD197A45AD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Version", "Version", "{1CDA4D8E-DA67-4862-BB0A-515E158FFAAC}"
 	ProjectSection(SolutionItems) = preProject
@@ -132,15 +133,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Version", "Version", "{1CDA
 		Version\AssemblyInfo.Custom.cs = Version\AssemblyInfo.Custom.cs
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.IntegrationPoints.FieldsMapping", "Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj", "{FAFF9DBE-B607-45B3-8392-469B5EEC5259}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.IntegrationPoints.FieldsMapping", "Relativity.IntegrationPoints.FieldsMapping\Relativity.IntegrationPoints.FieldsMapping.csproj", "{FAFF9DBE-B607-45B3-8392-469B5EEC5259}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Relativity.IntegrationPoints.FieldsMapping.Tests", "Relativity.IntegrationPoints.FieldsMapping.Tests\Relativity.IntegrationPoints.FieldsMapping.Tests.csproj", "{94473025-8D25-4B5A-928B-A8208C0C79B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Relativity.IntegrationPoints.FieldsMapping.Tests", "Relativity.IntegrationPoints.FieldsMapping.Tests\Relativity.IntegrationPoints.FieldsMapping.Tests.csproj", "{94473025-8D25-4B5A-928B-A8208C0C79B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.RelativitySync", "kCura.IntegrationPoints.RelativitySync\kCura.IntegrationPoints.RelativitySync.csproj", "{C2AADDB6-21AC-4372-924C-5B82ED014313}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.RelativitySync", "kCura.IntegrationPoints.RelativitySync\kCura.IntegrationPoints.RelativitySync.csproj", "{C2AADDB6-21AC-4372-924C-5B82ED014313}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.RelativitySync.Tests", "kCura.IntegrationPoints.RelativitySync.Tests\kCura.IntegrationPoints.RelativitySync.Tests.csproj", "{B5ED99A1-318E-4A34-9C2C-89564B04E493}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.RelativitySync.Tests", "kCura.IntegrationPoints.RelativitySync.Tests\kCura.IntegrationPoints.RelativitySync.Tests.csproj", "{B5ED99A1-318E-4A34-9C2C-89564B04E493}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.ScheduleQueue.AgentBase.Tests", "kCura.ScheduleQueue.AgentBase.Tests\kCura.ScheduleQueue.AgentBase.Tests.csproj", "{B98DF39A-AD93-4A78-8B26-26170D9F3C6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.ScheduleQueue.AgentBase.Tests", "kCura.ScheduleQueue.AgentBase.Tests\kCura.ScheduleQueue.AgentBase.Tests.csproj", "{B98DF39A-AD93-4A78-8B26-26170D9F3C6D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "kCura.IntegrationPoints.FunctionalTests", "kCura.IntegrationPoints.FunctionalTests\kCura.IntegrationPoints.FunctionalTests.csproj", "{9D87DE97-6533-4034-9B3E-FACCE4F1A9E4}"
 EndProject

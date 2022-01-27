@@ -17,6 +17,7 @@ using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Statistics;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.LDAPProvider.Installers;
 using kCura.IntegrationPoints.RelativitySync;
@@ -260,7 +261,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IImportApiFacade>().ImplementedBy<FakeImportApiFacade>().IsDefault());
             Container.Register(Component.For<IWebApiConfig>().UsingFactoryMethod(c => new FakeWebApiConfig()).LifestyleTransient().IsDefault());
 			Container.Register(Component.For<IWinEddsBasicLoadFileFactory>().UsingFactoryMethod(c => new FakeWinEddsBasicLoadFileFactory()).LifestyleTransient().IsDefault());
-        }
+
+			// Kubernetes
+            Container.Register(Component.For<IKubernetesMode>().ImplementedBy<FakeKubernetesMode>().LifestyleSingleton().IsDefault());
+		}
 
         private void RegisterKeplerServices()
         {
@@ -286,11 +290,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration
             Container.Register(Component.For<IImageTotalStatistics>().ImplementedBy<FakeDocumentStatistics>().Named("IImageTotalStatistics").LifestyleTransient().IsDefault());
             Container.Register(Component.For<IImageFileSizeStatistics>().ImplementedBy<FakeDocumentStatistics>().Named("IImageFileSizeStatistics").LifestyleTransient().IsDefault());
             Container.Register(Component.For<INativeFileSizeStatistics>().ImplementedBy<FakeDocumentStatistics>().Named("INativeFileSizeStatistics").LifestyleTransient().IsDefault());
-		}
+        }
 
 		private void SetupGlobalSettings()
 		{
 			Config.Instance.InstanceSettingsProvider = new FakeInstanceSettingsProvider();
-		}
+        }
 	}
 }

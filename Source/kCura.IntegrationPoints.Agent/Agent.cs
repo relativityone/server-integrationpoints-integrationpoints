@@ -21,6 +21,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Logging;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Logging;
@@ -72,8 +73,8 @@ namespace kCura.IntegrationPoints.Agent
 
 		protected Agent(Guid agentGuid, IAgentService agentService = null, IJobService jobService = null,
 				IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
-				IQueueQueryManager queryManager = null, IToggleProvider toggleProvider = null, IDateTime dateTime = null, IAPILog logger = null) 
-			: base(agentGuid, agentService, jobService, scheduleRuleFactory, queueJobValidator, queryManager, toggleProvider, dateTime, logger)
+				IQueueQueryManager queryManager = null, IKubernetesMode kubernetesMode = null, IDateTime dateTime = null, IAPILog logger = null) 
+			: base(agentGuid, agentService, jobService, scheduleRuleFactory, queueJobValidator, queryManager, kubernetesMode, dateTime, logger)
 		{
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);

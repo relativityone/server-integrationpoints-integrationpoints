@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using LanguageExt;
 using Relativity.API;
 using Relativity.IntegrationPoints.SourceProviderInstaller;
@@ -21,18 +22,21 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		private readonly IAPILog _logger;
 		private readonly IEHHelper _helper;
 		private readonly IRipProviderInstaller _ripProviderInstaller;
-		private readonly IToggleProvider _toggleProvider;
+        private readonly IKubernetesMode _kubernetesMode;
+        private readonly IToggleProvider _toggleProvider;
 
 		public InProcessSourceProviderInstaller(
 			IAPILog logger,
 			IEHHelper helper,
+            IKubernetesMode kubernetesMode,
             IToggleProvider toggleProvider,
-			IRipProviderInstaller ripProviderInstaller
-            )
+			IRipProviderInstaller ripProviderInstaller 
+        )
 		{
 			_logger = logger.ForContext<InProcessSourceProviderInstaller>();
 			_helper = helper;
 			_ripProviderInstaller = ripProviderInstaller;
+            _kubernetesMode = kubernetesMode ?? new KubernetesMode(logger);
             _toggleProvider = toggleProvider;
 		}
 
@@ -40,7 +44,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		{
 			_logger.LogInformation("Installing internal RIP source providers, providers: {@sourceProviders}", sourceProviders);
 
-			// we are not using EitherAsync, because language-ext in version 3.1.15 does not call ConfigureAwait(false)
+            // we are not using EitherAsync, because language-ext in version 3.1.15 does not call ConfigureAwait(false)
 			GetProviderInstaller(workspaceID)
 				.Bind(providerInstaller => InstallProviders(providerInstaller, sourceProviders))
 				.Match(
@@ -108,7 +112,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 		private IDataProviderFactoryFactory CreateDataProviderFactoryFactory()
 		{
-			return new DataProviderFactoryFactory(_logger, _helper, _toggleProvider);
+			return new DataProviderFactoryFactory(_logger, _helper, _toggleProvider, _kubernetesMode);
 		}
 	}
 }
