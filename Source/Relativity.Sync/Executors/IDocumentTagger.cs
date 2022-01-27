@@ -3,7 +3,7 @@ using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Executors
 {
-	internal interface ITaggingProvider
+	internal interface IDocumentTagger
 	{
 		Task<TaggingExecutionResult> TagObjectsAsync(IImportJob importJob,
 			ISynchronizationConfiguration configuration,
