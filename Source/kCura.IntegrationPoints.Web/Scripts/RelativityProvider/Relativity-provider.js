@@ -261,6 +261,25 @@
 			self.locationSelector.reloadWithRootWithData(reloadTree);
 		};
 
+		self.checkWorkspaceForObjectTypeExistance = function(destinationWorkspaceId, callback) {
+			var sourceObjectTypeArtifactId = window.parent.IP.data.params['TransferredRDOArtifactTypeID'];
+			IP.data.ajax({
+				contentType: "application/json",
+				dataType: "json",
+				headers: { "X-CSRF-Header": "-" },
+				type: "GET",
+				url: IP.utils.generateWebAPIURL("ObjectType/Exists", destinationWorkspaceId, sourceObjectTypeArtifactId),
+				async: true,
+				data: self.SecuredConfiguration()
+			})
+			.then(function(objectTypeExistsInDestination) {
+				callback(objectTypeExistsInDestination);
+			})
+			.fail(function(error){
+				console.error("Failed to check if Object Type exists in workspace: " + error);
+			});
+		}
+
 		self.LocationFolderChecked.subscribe(function (value) {
 			if (value === "true") {
 				self.ProductionArtifactId(null);
@@ -319,7 +338,7 @@
 		};
 
 		self.SavedSearchUrl = IP.utils.generateWebAPIURL('SavedSearchFinder', IP.utils.getParameterByName("AppID", window.top));
-		self.ViewUrl = IP.utils.generateWebAPIURL('ViewFinder', IP.utils.getParameterByName("AppID", window.top), window.parent.IP.data.params['TransferredRDOArtifactTypeID']);
+		self.ViewUrl = IP.utils.generateWebAPIURL('ObjectType/Views', window.parent.IP.data.params['TransferredRDOArtifactTypeID']);
 
 		self.updateWorkspaces = function () {
 			var stateLocal = state;
@@ -342,6 +361,11 @@
 				self.TargetWorkspaceArtifactId(stateLocal.TargetWorkspaceArtifactId);
 				self.getDestinationProductionSets(self.TargetWorkspaceArtifactId());
 				self.TargetWorkspaceArtifactId.subscribe(function (value) {
+
+					if (self.IsNonDocumentObjectSelected()){
+						return;
+					}
+
 					if (value) {
 						self.EnableLocationRadio(true);
 						self.TargetFolder("");
@@ -435,7 +459,8 @@
 				}
 			}
 		});
-		this.TargetWorkspaceArtifactId.extend({
+		this.TargetWorkspaceArtifactId
+		.extend({
 			required: true
 		}).extend({
 			validation: {
@@ -469,6 +494,19 @@
 				message: "Source workspace name contains an invalid character. Please remove before continuing."
 			}
 		}).extend({
+			validation: {
+				async: true,
+				required: {
+					onlyIf: function() {
+						return self.IsNonDocumentObjectSelected();
+					}
+				},
+				validator: function(value, params, callback) {
+					self.checkWorkspaceForObjectTypeExistance(value, callback);
+				},
+				message: 'Selected Object Type does not exist in this workspace.'
+			}
+		}).extend({
 			checkWorkspace: {
 				onlyIf: function () {
 					return (typeof self.workspaces()) !== "undefined";
@@ -479,6 +517,10 @@
 
 		self.TargetWorkspaceArtifactId.subscribe(function (value) {
 			if (value) {
+				if (self.IsNonDocumentObjectSelected()){
+					return;
+				}
+
 				if (self.TargetWorkspaceArtifactId() && self.TargetWorkspaceArtifactId.isValid()) {
 					self.validateProductionAddPermissions(self.TargetWorkspaceArtifactId());
 					self.getFolderAndSubFolders(value);
@@ -486,7 +528,7 @@
 					self.ShowProductionAddButton(false);
 				}
 				self.EnableLocationRadio(true);
-				self.LocationFolderChecked((state.ProductionArtifactId != undefined && state.ProductionArtifactId > 0) ? 'false' : 'true');
+				self.LocationFolderChecked((state.ProductionArtifactId != undefined && state.ProductionArtifactId > 0) ? 'false' : 'true');			
 			} else {
 				self.ShowProductionAddButton(false);
 				self.EnableLocationRadio(false);
@@ -520,6 +562,7 @@
 		this.getSelectedOption = function () {
 			return {
 				"SavedSearchArtifactId": self.SavedSearchArtifactId(),
+				"SourceViewId": self.SourceViewId(),
 				"TypeOfExport": self.TypeOfExport(),
 				"ProductionImport": self.ProductionImport(),
 				"ProductionArtifactId": self.ProductionArtifactId(),

@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private Mock<ICPHelper> _helperMock;
 		private Mock<IObjectManager> _objectManagerMock;
 
-		private ViewFinderController _sut;
+		private ObjectTypeController _sut;
 
 		[SetUp]
 		public void SetUp()
@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_objectManagerMock = new Mock<IObjectManager>();
 			_helperMock = new Mock<ICPHelper>();
 			_helperMock.Setup(x => x.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser)).Returns(_objectManagerMock.Object);
-			_sut = new ViewFinderController(_helperMock.Object)
+			_sut = new ObjectTypeController(_helperMock.Object)
 			{
 				Request = new HttpRequestMessage()
 			};

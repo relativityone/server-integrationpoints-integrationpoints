@@ -388,10 +388,15 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
-				name: "GetRdoViews",
-				routeTemplate:
-				"{workspaceID}/api/ViewFinder/{destinationWorkspaceId}/{rdoArtifactTypeId}",
-				defaults: new { controller = "ViewFinder", action = "GetViews" }
+				name: "GetObjectTypeViews",
+				routeTemplate: "{workspaceID}/api/ObjectType/Views/{artifactTypeId}",
+				defaults: new { controller = "ObjectType", action = "GetViews" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "GetObjectTypeExists",
+				routeTemplate: "{sourceWorkspaceId}/api/ObjectType/Exists/{destinationWorkspaceId}/{sourceObjectTypeArtifactId}",
+				defaults: new { controller = "ObjectType", action = "ObjectTypeExists" }
 			);
 
 			config.Routes.MapHttpRoute(
