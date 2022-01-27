@@ -21,16 +21,18 @@ namespace Relativity.Sync.Executors
 		private readonly IInstanceSettings _instanceSettings;
 		private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
 		private readonly SyncJobParameters _syncJobParameters;
+		private readonly IFieldMappings _fieldMappings;
 		private readonly ISyncLog _logger;
 
 		public ImportJobFactory(IImportApiFactory importApiFactory, ISourceWorkspaceDataReaderFactory dataReaderFactory,
-			IJobHistoryErrorRepository jobHistoryErrorRepository, IInstanceSettings instanceSettings, SyncJobParameters syncJobParameters, ISyncLog logger)
+			IJobHistoryErrorRepository jobHistoryErrorRepository, IInstanceSettings instanceSettings, SyncJobParameters syncJobParameters, IFieldMappings fieldMappings, ISyncLog logger)
 		{
 			_importApiFactory = importApiFactory;
 			_dataReaderFactory = dataReaderFactory;
 			_jobHistoryErrorRepository = jobHistoryErrorRepository;
 			_instanceSettings = instanceSettings;
 			_syncJobParameters = syncJobParameters;
+			_fieldMappings = fieldMappings;
 			_logger = logger;
 		}
 
@@ -57,7 +59,8 @@ namespace Relativity.Sync.Executors
 			importJob.Settings.LoadImportedFullTextFromServer = false;
 			importJob.Settings.MultiValueDelimiter = ';';
 			importJob.Settings.NativeFileCopyMode = kCura.Relativity.DataReaderClient.NativeFileCopyModeEnum.DoNotImportNativeFiles;
-			importJob.Settings.SelectedIdentifierFieldName = "identifierFieldName";
+			importJob.Settings.SelectedIdentifierFieldName = GetIdentifierFieldName();
+			importJob.Settings.IdentityFieldId = 0;
 
 			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);
 
@@ -103,7 +106,7 @@ namespace Relativity.Sync.Executors
 			return job;
 		}
 
-		public async Task<IImportJob> CreateNativeImportJobAsync(IDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
+        public async Task<IImportJob> CreateNativeImportJobAsync(IDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
 		{
 			ISourceWorkspaceDataReader sourceWorkspaceDataReader = _dataReaderFactory.CreateNativeSourceWorkspaceDataReader(batch, token);
 			IImportAPI importApi = await GetImportApiAsync().ConfigureAwait(false);
@@ -193,5 +196,11 @@ namespace Relativity.Sync.Executors
 			Field identityField = workspaceFields.First(x => x.ArtifactID == identityFieldArtifactId);
 			return identityField.Name;
 		}
+		
+		private string GetIdentifierFieldName()
+		{
+			return _fieldMappings.GetFieldMappings().First(x => x.FieldMapType == FieldMapType.Identifier).DestinationField.DisplayName;
+		}
+		
 	}
 }

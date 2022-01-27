@@ -29,7 +29,8 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 		public void SetUp()
 		{
 			_syncLogMock = new Mock<ISyncLog>();
-			_metricsManagerMock = new Mock<IMetricsManager>();
+			_metricsManagerMock = new Mock<IMetricsManager>(MockBehavior.Strict);
+			_metricsManagerMock.Setup(x => x.Dispose());
 			_apmMock = new Mock<IAPMClient>();
 
 			ISyncMetricsSink splunkSink = new SplunkSyncMetricsSink(_syncLogMock.Object);
@@ -86,7 +87,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 
 			// Assert
 			_metricsManagerMock.Verify(x => x.Dispose());
-			_metricsManagerMock.VerifyNoOtherCalls();
+			//_metricsManagerMock.VerifyNoOtherCalls();
 		}
 		
 		[Test]

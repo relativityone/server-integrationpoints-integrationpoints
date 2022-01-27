@@ -42,6 +42,8 @@ namespace Relativity.Sync.Storage
 
 		public int RdoArtifactTypeId => _cache.GetFieldValue(x => x.RdoArtifactTypeId);
 
+		public int DestinationRdoArtifactTypeId => _cache.GetFieldValue(x => x.DestinationRdoArtifactTypeId);
+
 		public ImportOverwriteMode ImportOverwriteMode => _cache.GetFieldValue(x => x.ImportOverwriteMode);
 
 		private async Task<int> GetSourceProviderArtifactIdAsync()

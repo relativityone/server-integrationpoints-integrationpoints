@@ -44,7 +44,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 
 			_fieldManagerFake = new Mock<IFieldManager>();
 
-			_objectManagerFake = new Mock<IObjectManager>();
+			_objectManagerFake = new Mock<IObjectManager>(MockBehavior.Strict);
+			_objectManagerFake.Setup(x => x.Dispose());
 
 			Mock<ISourceServiceFactoryForUser> serviceFactory = new Mock<ISourceServiceFactoryForUser>();
 			serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>())
@@ -143,7 +144,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		public async Task ExecuteAsync_ShouldLogFieldsMappingDetails()
 		{
 			// Arrange
-			_fieldManagerFake.Setup(x => x.GetMappedDocumentFieldsAsync(It.IsAny<CancellationToken>()))
+			_fieldManagerFake.Setup(x => x.GetMappedFieldsAsync(It.IsAny<CancellationToken>()))
 				.ReturnsAsync(new List<FieldInfoDto>());
 
 			// Act
@@ -173,7 +174,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		public void ExecuteAsync_ShouldComplete_WhenFieldManagerThrows()
 		{
 			// Arrange
-			_fieldManagerFake.Setup(x => x.GetMappedDocumentFieldsAsync(It.IsAny<CancellationToken>()))
+			_fieldManagerFake.Setup(x => x.GetMappedFieldsAsync(It.IsAny<CancellationToken>()))
 				.ThrowsAsync(new Exception());
 
 			// Act
@@ -188,9 +189,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		{
 			// Act
 			await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
-
-			// Assert
-			_objectManagerFake.VerifyNoOtherCalls();
 		}
 
 		[TestCaseSource(nameof(FieldsMappingTestCaseSource))]
@@ -787,7 +785,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 				});
 
 
-			_fieldManagerFake.Setup(x => x.GetMappedDocumentFieldsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(mapping.Select(x =>
+			_fieldManagerFake.Setup(x => x.GetMappedFieldsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(mapping.Select(x =>
 					new FieldInfoDto(x.SpecialFieldType, x.SourceFieldName, x.DestinationFieldName, true, true) { RelativityDataType = x.DataType }
 				).ToList);
 		}

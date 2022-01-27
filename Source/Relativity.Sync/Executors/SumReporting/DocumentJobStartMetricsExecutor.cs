@@ -91,7 +91,7 @@ namespace Relativity.Sync.Executors.SumReporting
 
 		private async Task LogFieldsMappingDetailsAsync(IDocumentJobStartMetricsConfiguration configuration, CancellationToken token)
 		{
-			IList<FieldInfoDto> documentFields = await _fieldManager.GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
+			IList<FieldInfoDto> documentFields = await _fieldManager.GetMappedFieldsAsync(token).ConfigureAwait(false);
 
 			Task<Dictionary<string, RelativityObjectSlim>> sourceFieldsDetailsTask = GetFieldsDetailsAsync(configuration.SourceWorkspaceArtifactId,
 				documentFields.Where(x => x.RelativityDataType == RelativityDataType.LongText)

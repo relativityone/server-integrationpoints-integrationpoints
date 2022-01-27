@@ -14,7 +14,7 @@ namespace Relativity.Sync.Transfer
 
 		Task<IList<FieldInfoDto>> GetDocumentTypeFieldsAsync(CancellationToken token);
 
-		Task<IList<FieldInfoDto>> GetMappedDocumentFieldsAsync(CancellationToken token);
+		Task<IList<FieldInfoDto>> GetMappedFieldsAsync(CancellationToken token);
 		
 		IEnumerable<FieldInfoDto> GetNativeSpecialFields();
 		
@@ -23,5 +23,7 @@ namespace Relativity.Sync.Transfer
 		Task<IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder>> CreateNativeSpecialFieldRowValueBuildersAsync(int sourceWorkspaceArtifactId, int[] documentArtifactIds);
 		
 		Task<IDictionary<SpecialFieldType, IImageSpecialFieldRowValuesBuilder>> CreateImageSpecialFieldRowValueBuildersAsync(int sourceWorkspaceArtifactId, int[] documentArtifactIds);
+		Task<IReadOnlyList<FieldInfoDto>> GetMappedFieldNonDocumentWithoutLinksAsync(CancellationToken token);
+		Task<string[]> GetSameTypeFieldNamesAsync(int configurationSourceWorkspaceArtifactId);
 	}
 }

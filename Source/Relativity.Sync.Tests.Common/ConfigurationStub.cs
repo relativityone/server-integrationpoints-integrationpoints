@@ -9,13 +9,13 @@ using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 namespace Relativity.Sync.Tests.Common
 {
 	[ExcludeFromCodeCoverage]
-	internal sealed class ConfigurationStub : IDataDestinationFinalizationConfiguration, IDataDestinationInitializationConfiguration, IDataSourceSnapshotConfiguration,
+	internal sealed class ConfigurationStub : IDataDestinationFinalizationConfiguration, IDataDestinationInitializationConfiguration, IDataSourceSnapshotConfiguration, INonDocumentDataSourceSnapshotConfiguration,
 		IDestinationWorkspaceObjectTypesCreationConfiguration, IDestinationWorkspaceSavedSearchCreationConfiguration, IDestinationWorkspaceTagsCreationConfiguration, IJobCleanupConfiguration,
 		IJobStatusConsolidationConfiguration, INotificationConfiguration, IPermissionsCheckConfiguration, ISnapshotPartitionConfiguration, IObjectLinkingSnapshotPartitionConfiguration,
 		ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration, IFieldConfiguration, IImageRetrieveConfiguration,
 		IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration, IRetryDataSourceSnapshotConfiguration, IPipelineSelectorConfiguration,
 		IDocumentSynchronizationConfiguration, INonDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, IPreValidationConfiguration, IRdoGuidConfiguration,
-		IImageJobStartMetricsConfiguration, IDocumentJobStartMetricsConfiguration, ISnapshotQueryConfiguration, IMetricsConfiguration, IStatisticsConfiguration
+		IImageJobStartMetricsConfiguration, IDocumentJobStartMetricsConfiguration, ISnapshotQueryConfiguration, IMetricsConfiguration, IStatisticsConfiguration, INonDocumentJobStartMetricsConfiguration
 	{
 		private IList<FieldMap> _fieldMappings = new List<FieldMap>();
 		private string _jobName = String.Empty;
@@ -210,6 +210,18 @@ namespace Relativity.Sync.Tests.Common
 			SourceWorkspaceTagName = name;
 		}
 
+		public Task SetObjectLinkingSnapshotDataAsync(Guid objectLinkingSnapshotId, int objectLinkingRecordsCount)
+		{
+			ObjectLinkingSnapshotRecordsCount = objectLinkingRecordsCount;
+			ObjectLinkingSnapshotId = objectLinkingSnapshotId;
+			
+			return Task.CompletedTask;
+		}
+
+		public Guid ObjectLinkingSnapshotId { get; set; }
+
+		public int ObjectLinkingSnapshotRecordsCount { get; set; }
+
 		public int ExecutingUserId { get; set; } = _ADMIN_ID;
 
 		public bool SendEmails { get; set; }
@@ -243,6 +255,7 @@ namespace Relativity.Sync.Tests.Common
 
 		public string ExecutingApplication { get; set; }
 
-		public string ExecutingApplicationVersion { get; set; } 
+		public string ExecutingApplicationVersion { get; set; }
+
 	}
 }

@@ -203,7 +203,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			reader.Read();
 
 			// Assert
-			itemLevelErrorHandlerMock.Verify(x => x.Invoke(It.IsAny<string>(), It.IsAny<string>()));
+			itemLevelErrorHandlerMock.Verify(x => x(It.IsAny<string>(), It.IsAny<string>()));
 		}
 
 		[Test]

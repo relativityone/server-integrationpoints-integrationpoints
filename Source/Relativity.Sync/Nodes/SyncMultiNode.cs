@@ -10,7 +10,7 @@ namespace Relativity.Sync.Nodes
 		private IExecutionContext<SyncExecutionContext> _childrenExecutionContext;
 		private readonly ISyncExecutionContextFactory _contextFactory;
 		private readonly string _parallelGroupName = string.Empty;
-		
+
 		public SyncMultiNode(ISyncExecutionContextFactory contextFactory)
 		{
 			_contextFactory = contextFactory;

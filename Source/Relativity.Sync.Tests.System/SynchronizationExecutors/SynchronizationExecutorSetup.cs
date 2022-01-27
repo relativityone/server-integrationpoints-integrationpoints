@@ -173,7 +173,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 			Configuration.SyncConfigurationArtifactId = Rdos.CreateSyncConfigurationRdoAsync(SourceWorkspace.ArtifactID,
 				Configuration, TestLogHelper.GetLogger()).GetAwaiter().GetResult();
 			
-			Container = ContainerHelper.Create(Configuration, containerBuilder =>
+			Container = ContainerHelper.Create(Configuration, toggleProvider: null, containerBuilder =>
 			{
 				containerBuilder.RegisterInstance(new ImportApiFactoryStub()).As<IImportApiFactory>();
 			});

@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Services.DataContracts.DTOs;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
 
@@ -23,15 +27,20 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		private Mock<INativeSpecialFieldRowValuesBuilder> _emptySpecialFieldRowValuesBuilderFake;
 
 		private Mock<IImageSpecialFieldRowValuesBuilder> _imageSpecialFieldRowValuesBuilderFake;
+		private Mock<IObjectManager> _objectManagerFake;
 
 		private Mock<IFieldConfiguration> _configuration;
-		private Mock<IDocumentFieldRepository> _documentFieldRepository;
+		private Mock<IObjectFieldTypeRepository> _documentFieldRepository;
+		private Mock<ISourceServiceFactoryForAdmin> _sourceServiceFactoryForAdminFake;
+		private Mock<ISyncLog> _syncLogFake;
 
 		private FieldManager _sut;
 
 		#region Test Data
 
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 123;
+
+		private const int _RDO_ARTIFACT_TYPE_ID = 420;
 
 		private const string _FOLDER_PATH_FIELD_NAME = "Folder Path Field";
 
@@ -43,6 +52,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		private static readonly FieldInfoDto _DOCUMENT_MAPPED_FIELD =
 			FieldInfoDto.DocumentField("Mapped Source Field", "Mapped Destination Field", false);
+		
+		private static readonly FieldInfoDto _MANAGER_MAPPED_FIELD =
+			FieldInfoDto.DocumentField("Manager", "Manager", false);
 
 		private static readonly FieldInfoDto _FOLDER_PATH_STRUCTURE_FIELD =
 			FieldInfoDto.FolderPathFieldFromDocumentField(_FOLDER_PATH_FIELD_NAME);
@@ -80,6 +92,41 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			CreateFieldMap(_DOCUMENT_MAPPED_FIELD)
 		};
 
+		private static readonly FieldMap[] _MAPPED_FIELDS_WITH_MANAGER =
+		{
+			CreateFieldMap(_DOCUMENT_IDENTIFIER_FIELD, true),
+			CreateFieldMap(_DOCUMENT_MAPPED_FIELD),
+			CreateFieldMap(_MANAGER_MAPPED_FIELD)
+		};
+		
+		private QueryResult queryResultForGetSameTypeFieldNames = new QueryResult
+		{
+			Objects = new List<RelativityObject>
+			{
+				new RelativityObject
+				{
+					ArtifactID = 2,
+					Name = _MANAGER_MAPPED_FIELD.SourceFieldName,
+					ParentObject = new RelativityObjectRef()
+				}
+			}
+		};
+
+		private QueryResult queryResultForGetRdoTypeName = new QueryResult
+		{
+			Objects = new List<RelativityObject>
+			{
+				new RelativityObject
+				{
+					ArtifactID = 1,
+					Name = _MANAGER_MAPPED_FIELD.SourceFieldName,
+					ParentObject = new RelativityObjectRef()
+				}
+			}
+		};
+
+		private QueryResult queryResultsForGetTypeNameEmpty = new QueryResult{ Objects =  new List<RelativityObject>()};
+
 		#endregion
 
 		[SetUp]
@@ -88,15 +135,36 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_configuration = new Mock<IFieldConfiguration>();
 			_configuration.Setup(c => c.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ARTIFACT_ID);
 			_configuration.Setup(c => c.GetFieldMappings()).Returns(_MAPPED_FIELDS);
+			_configuration.SetupGet(c => c.RdoArtifactTypeId).Returns(_RDO_ARTIFACT_TYPE_ID);
 
-			_documentFieldRepository = new Mock<IDocumentFieldRepository>();
-			_documentFieldRepository.Setup(r => r.GetRelativityDataTypesForFieldsByFieldNameAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<string>>(), CancellationToken.None))
+			_documentFieldRepository = new Mock<IObjectFieldTypeRepository>();
+			_documentFieldRepository.Setup(r => r.GetRelativityDataTypesForFieldsByFieldNameAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _RDO_ARTIFACT_TYPE_ID, It.IsAny<ICollection<string>>(), CancellationToken.None))
 				.ReturnsAsync(_FIELD_TYPES);
 
 			var nativeSpecialFieldBuilders = SetupNativeSpecialFieldBuilders();
 			var imageSpecialFieldBuilders = SetupImageSpecialFieldBuilders();
+			
+			_sourceServiceFactoryForAdminFake = new Mock<ISourceServiceFactoryForAdmin>();
+			_objectManagerFake = new Mock<IObjectManager>();
+			_sourceServiceFactoryForAdminFake.Setup(x => x.CreateProxyAsync<IObjectManager>())
+				.ReturnsAsync(_objectManagerFake.Object);
+			
+			_objectManagerFake.Setup(x => x.QueryAsync(
+				It.IsAny<int>(),
+				It.Is<QueryRequest>( r => r.ObjectType.ArtifactTypeID == (int)ArtifactType.Field ),
+				It.IsAny<int>(),
+				It.IsAny<int>()
+				)).ReturnsAsync(queryResultForGetSameTypeFieldNames);
+			
+			_objectManagerFake.Setup(x => x.QueryAsync(
+				It.IsAny<int>(),
+				It.Is<QueryRequest>( r => r.ObjectType.ArtifactTypeID == (int)ArtifactType.ObjectType),
+				It.IsAny<int>(),
+				It.IsAny<int>())).ReturnsAsync(queryResultForGetRdoTypeName);
+			
+			_syncLogFake = new Mock<ISyncLog>();
 
-			_sut = new FieldManager(_configuration.Object, _documentFieldRepository.Object, nativeSpecialFieldBuilders, imageSpecialFieldBuilders);
+			_sut = new FieldManager(_configuration.Object, _documentFieldRepository.Object, nativeSpecialFieldBuilders, imageSpecialFieldBuilders, _sourceServiceFactoryForAdminFake.Object, _syncLogFake.Object);
 		}
 
 		[Test]
@@ -289,7 +357,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			// Arrange
 			_sut = new FieldManager(_configuration.Object, _documentFieldRepository.Object,
-				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>());
+				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>(), _sourceServiceFactoryForAdminFake.Object, _syncLogFake.Object);
 
 			// Act
 			Func<Task<IReadOnlyList<FieldInfoDto>>> action = () => _sut.GetNativeAllFieldsAsync(CancellationToken.None);
@@ -399,7 +467,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_configuration.Setup(c => c.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ARTIFACT_ID);
 
 			_sut = new FieldManager(_configuration.Object, _documentFieldRepository.Object,
-				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>());
+				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>(), _sourceServiceFactoryForAdminFake.Object, _syncLogFake.Object);
 
 			// Act
 			IReadOnlyList<FieldInfoDto> result = await _sut.GetNativeAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
@@ -413,7 +481,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			// Arrange
 			_sut = new FieldManager(_configuration.Object, _documentFieldRepository.Object,
-				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>());
+				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>(), _sourceServiceFactoryForAdminFake.Object, _syncLogFake.Object);
 
 			// Act
 			Func<IEnumerable<FieldInfoDto>> action = () => _sut.GetNativeSpecialFields();
@@ -427,7 +495,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			// Arrange
 			_sut = new FieldManager(_configuration.Object, _documentFieldRepository.Object,
-				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>());
+				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>(), _sourceServiceFactoryForAdminFake.Object, _syncLogFake.Object);
 
 			// Act
 			Func<IEnumerable<FieldInfoDto>> action = () => _sut.GetImageSpecialFields();
@@ -441,7 +509,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			// Arrange
 			_sut = new FieldManager(_configuration.Object, _documentFieldRepository.Object,
-				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>());
+				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>(), _sourceServiceFactoryForAdminFake.Object, _syncLogFake.Object);
 
 			// Act
 			Func<Task<IList<FieldInfoDto>>> action = () => _sut.GetDocumentTypeFieldsAsync(CancellationToken.None);
@@ -450,6 +518,33 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			await action.Should().NotThrowAsync().ConfigureAwait(false);
 		}
 
+		[Test]
+		public async Task GetMappedFieldNonDocumentWithoutLinksAsync_ShouldRetrieveApplicableFields()
+		{
+			//Act
+			var sameTypeFields = await _sut.GetSameTypeFieldNamesAsync(It.IsAny<int>()).ConfigureAwait(false);
+			
+			//Assert
+			sameTypeFields.Single().Should().Be(_MANAGER_MAPPED_FIELD.SourceFieldName);
+		}
+		
+		[Test]
+		public async Task GetSameTypeFieldNamesAsync_ShouldThrowWhenNoObjectsFound()
+		{
+			//Arrange
+			_objectManagerFake.Setup(x => x.QueryAsync(
+				It.IsAny<int>(),
+				It.Is<QueryRequest>( r => r.ObjectType.ArtifactTypeID == (int)ArtifactType.ObjectType),
+				It.IsAny<int>(),
+				It.IsAny<int>())).ReturnsAsync(queryResultsForGetTypeNameEmpty);
+			
+			//Act
+			Func<Task> action = () => _sut.GetSameTypeFieldNamesAsync(It.IsAny<int>());
+			
+			//Assert
+			await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false);
+		}
+		
 		private static FieldMap CreateFieldMap(FieldInfoDto fieldInfo, bool isIdentifier = false)
 			=> new FieldMap
 			{
@@ -477,7 +572,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			_configuration.Setup(c => c.GetFieldMappings()).Returns(mappedFields);
 
-			_documentFieldRepository.Setup(r => r.GetRelativityDataTypesForFieldsByFieldNameAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<ICollection<string>>(), CancellationToken.None))
+			_documentFieldRepository.Setup(r => r.GetRelativityDataTypesForFieldsByFieldNameAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _RDO_ARTIFACT_TYPE_ID, It.IsAny<ICollection<string>>(), CancellationToken.None))
 				.ReturnsAsync(new Dictionary<string, RelativityDataType>
 				{
 					{ mappedField.SourceFieldName, RelativityDataType.FixedLengthText }

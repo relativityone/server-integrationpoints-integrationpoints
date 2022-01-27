@@ -60,7 +60,8 @@ namespace Relativity.Sync.Tests.Integration
 					int value) =>
 				{
 					rdo.JobHistoryId = value;
-				});
+				})
+				.Returns(Task.CompletedTask);
 			
 			Storage.IConfiguration cache = await Storage.Configuration.GetAsync(jobParameters, new EmptyLogger(), _semaphoreSlim, rdoManagerMock.Object).ConfigureAwait(false);
 

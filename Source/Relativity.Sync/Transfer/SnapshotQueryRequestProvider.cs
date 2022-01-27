@@ -13,151 +13,210 @@ using Relativity.Sync.Pipelines.Extensions;
 
 namespace Relativity.Sync.Transfer
 {
-	internal class SnapshotQueryRequestProvider : ISnapshotQueryRequestProvider
-	{
-		private readonly ISnapshotQueryConfiguration _configuration;
-		private readonly IPipelineSelector _pipelineSelector;
-		private readonly IFieldManager _fieldManager;
-		private readonly ISourceServiceFactoryForAdmin _sourceServiceFactoryForAdmin;
-		protected readonly ISyncLog _logger;
+    internal class SnapshotQueryRequestProvider : ISnapshotQueryRequestProvider
+    {
+        private readonly ISnapshotQueryConfiguration _configuration;
+        private readonly IPipelineSelector _pipelineSelector;
+        private readonly IFieldManager _fieldManager;
+        private readonly ISourceServiceFactoryForAdmin _sourceServiceFactoryForAdmin;
+        protected readonly ISyncLog _logger;
 
-		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
+        private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 
-		public SnapshotQueryRequestProvider(ISnapshotQueryConfiguration configuration, IPipelineSelector pipelineSelector, IFieldManager fieldManager, ISourceServiceFactoryForAdmin sourceServiceFactoryForAdmin, ISyncLog logger)
-		{
-			_configuration = configuration;
-			_pipelineSelector = pipelineSelector;
-			_fieldManager = fieldManager;
-			_sourceServiceFactoryForAdmin = sourceServiceFactoryForAdmin;
-			_logger = logger;
-		}
+        public SnapshotQueryRequestProvider(ISnapshotQueryConfiguration configuration,
+            IPipelineSelector pipelineSelector, IFieldManager fieldManager,
+            ISourceServiceFactoryForAdmin sourceServiceFactoryForAdmin, ISyncLog logger)
+        {
+            _configuration = configuration;
+            _pipelineSelector = pipelineSelector;
+            _fieldManager = fieldManager;
+            _sourceServiceFactoryForAdmin = sourceServiceFactoryForAdmin;
+            _logger = logger;
+        }
 
-		public Task<QueryRequest> GetRequestForCurrentPipelineAsync(CancellationToken token)
-		{
-			return GetRequestForCurrentPipelineInternalAsync(false, token);
-		}
+        public Task<QueryRequest> GetRequestForCurrentPipelineAsync(CancellationToken token)
+        {
+            return GetRequestForCurrentPipelineInternalAsync(false, token);
+        }
 
-		public Task<QueryRequest> GetRequestWithIdentifierOnlyForCurrentPipelineAsync(CancellationToken token)
-		{
-			return GetRequestForCurrentPipelineInternalAsync(true, token);
-		}
+        public Task<QueryRequest> GetRequestWithIdentifierOnlyForCurrentPipelineAsync(CancellationToken token)
+        {
+            return GetRequestForCurrentPipelineInternalAsync(true, token);
+        }
 
-		private async Task<QueryRequest> GetRequestForCurrentPipelineInternalAsync(bool withIdentifierOnly,
-			CancellationToken token)
-		{
-			var pipeline = _pipelineSelector.GetPipeline();
-			if (pipeline.IsDocumentPipeline())
-			{
-				IEnumerable<FieldInfoDto> fields = await GetDocumentFieldsAsync(withIdentifierOnly, token).ConfigureAwait(false);
+        /// <inheritdoc/>
+        public async Task<QueryRequest> GetRequestForLinkingNonDocumentObjectsAsync(CancellationToken token)
+        {
+            string[] fieldsOfTheSameType =
+                await _fieldManager.GetSameTypeFieldNamesAsync(_configuration.SourceWorkspaceArtifactId).ConfigureAwait(false);
+            
+            if (fieldsOfTheSameType.Any())
+            {
+                return new QueryRequest
+                {
+                    ObjectType = new ObjectTypeRef
+                    {
+                        ArtifactTypeID = _configuration.RdoArtifactTypeId
+                    },
+                    Condition = GetConditionForFieldsWithSetValue(fieldsOfTheSameType)
+                };
+            }
 
-				return pipeline.IsRetryPipeline()
-					? CreateDocumentRetryQueryRequest(fields)
-					: CreateDocumentQueryRequest(fields);
-			}
+            return null;
+        }
 
-			if (pipeline.IsImagePipeline())
-			{
-				return pipeline.IsRetryPipeline()
-					? await CreateImageRetryQueryRequestAsync(token).ConfigureAwait(false)
-					: await CreateImageQueryRequestAsync(token).ConfigureAwait(false);
-			}
+        private string GetConditionForFieldsWithSetValue(string[] fieldNames)
+        {
+            return string.Join(" OR ", fieldNames.Select(name => $"('{name}' ISSET)"));
+        }
+        
+        private async Task<QueryRequest> GetRequestForCurrentPipelineInternalAsync(bool withIdentifierOnly,
+            CancellationToken token)
+        {
+            var pipeline = _pipelineSelector.GetPipeline();
+            if (pipeline.IsDocumentPipeline())
+            {
+                IEnumerable<FieldInfoDto> fields =
+                    await GetDocumentFieldsAsync(withIdentifierOnly, token).ConfigureAwait(false);
 
-			throw new SyncException("Unable to determine Sync flow type. Snapshot query request creation failed");
-		}
+                return pipeline.IsRetryPipeline()
+                    ? CreateDocumentRetryQueryRequest(fields)
+                    : CreateDocumentQueryRequest(fields);
+            }
 
-		private async Task<IEnumerable<FieldInfoDto>> GetDocumentFieldsAsync(bool withIdentifierOnly, CancellationToken token)
-		{
-			return withIdentifierOnly
-				? new[] { await _fieldManager.GetObjectIdentifierFieldAsync(token).ConfigureAwait(false) }
-				: await _fieldManager.GetDocumentTypeFieldsAsync(token).ConfigureAwait(false);
-		}
+            if (pipeline.IsImagePipeline())
+            {
+                return pipeline.IsRetryPipeline()
+                    ? await CreateImageRetryQueryRequestAsync(token).ConfigureAwait(false)
+                    : await CreateImageQueryRequestAsync(token).ConfigureAwait(false);
+            }
 
-		private QueryRequest CreateDocumentQueryRequest(IEnumerable<FieldInfoDto> fields)
-		{
-			return new QueryRequest
-			{
-				ObjectType = new ObjectTypeRef
-				{
-					ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
-				},
-				Condition = DocumentsInSavedSearch(),
-				Fields = fields.Select(f => new FieldRef { Name = f.SourceFieldName }).ToList()
-			};
-		}
+            if (pipeline.IsNonDocumentPipeline())
+            {
+                IList<FieldInfoDto> fields = await _fieldManager.GetMappedFieldsAsync(token).ConfigureAwait(false);
+                
+                return CreateNonDocumentQueryRequest(fields);
+            }
+            
+            throw new SyncException("Unable to determine Sync flow type. Snapshot query request creation failed");
+        }
 
-		private QueryRequest CreateDocumentRetryQueryRequest(IEnumerable<FieldInfoDto> fields)
-		{
-			return new QueryRequest
-			{
-				ObjectType = new ObjectTypeRef
-				{
-					ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
-				},
-				Condition = $"{DocumentsWithErrors()} AND {DocumentsInSavedSearch()}",
-				Fields = fields.Select(f => new FieldRef { Name = f.SourceFieldName }).ToList()
-			};
-		}
+        private QueryRequest CreateNonDocumentQueryRequest(IEnumerable<FieldInfoDto> fields)
+        {
+            return new QueryRequest()
+            {
+                ObjectType = new ObjectTypeRef()
+                {
+                    ArtifactTypeID = _configuration.RdoArtifactTypeId
+                },
+                Condition = $"('ArtifactId' IN VIEW {_configuration.DataSourceArtifactId})",
+                Fields = fields.Select(f => new FieldRef { Name = f.SourceFieldName }).ToList(),
+                IncludeNameInQueryResult = true
+            };
+        }
 
-		private async Task<QueryRequest> CreateImageQueryRequestAsync(CancellationToken token)
-		{
-			FieldInfoDto identifierField = await _fieldManager.GetObjectIdentifierFieldAsync(token).ConfigureAwait(false);
+        private async Task<IEnumerable<FieldInfoDto>> GetDocumentFieldsAsync(bool withIdentifierOnly,
+            CancellationToken token)
+        {
+            return withIdentifierOnly
+                ? new[] { await _fieldManager.GetObjectIdentifierFieldAsync(token).ConfigureAwait(false) }
+                : await _fieldManager.GetDocumentTypeFieldsAsync(token).ConfigureAwait(false);
+        }
 
-			QueryRequest queryRequest = new QueryRequest
-			{
-				ObjectType = new ObjectTypeRef
-				{
-					ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
-				},
-				Condition = $"{DocumentsInSavedSearch()} AND {await DocumentsWithImages()}",
-				Fields = new[]
-				{
-					new FieldRef { Name = identifierField.SourceFieldName }
-				}
-			};
-			return queryRequest;
-		}
+        private QueryRequest CreateDocumentQueryRequest(IEnumerable<FieldInfoDto> fields)
+        {
+            return new QueryRequest
+            {
+                ObjectType = new ObjectTypeRef
+                {
+                    ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
+                },
+                Condition = DocumentsInSavedSearch(),
+                Fields = fields.Select(f => new FieldRef { Name = f.SourceFieldName }).ToList()
+            };
+        }
 
-		private async Task<QueryRequest> CreateImageRetryQueryRequestAsync(CancellationToken token)
-		{
-			FieldInfoDto identifierField = await _fieldManager.GetObjectIdentifierFieldAsync(token).ConfigureAwait(false);
+        private QueryRequest CreateDocumentRetryQueryRequest(IEnumerable<FieldInfoDto> fields)
+        {
+            return new QueryRequest
+            {
+                ObjectType = new ObjectTypeRef
+                {
+                    ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
+                },
+                Condition = $"{DocumentsWithErrors()} AND {DocumentsInSavedSearch()}",
+                Fields = fields.Select(f => new FieldRef { Name = f.SourceFieldName }).ToList()
+            };
+        }
 
-			QueryRequest queryRequest = new QueryRequest
-			{
-				ObjectType = new ObjectTypeRef
-				{
-					ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
-				},
-				Condition = $"{DocumentsWithErrors()} AND {DocumentsInSavedSearch()} AND {await DocumentsWithImages()}",
-				Fields = new[]
-				{
-					new FieldRef { Name = identifierField.SourceFieldName }
-				}
-			};
-			return queryRequest;
-		}
+        private async Task<QueryRequest> CreateImageQueryRequestAsync(CancellationToken token)
+        {
+            FieldInfoDto identifierField =
+                await _fieldManager.GetObjectIdentifierFieldAsync(token).ConfigureAwait(false);
 
-        private async Task<int> GetGuidOfYesHoiceOnHasImagesAsync()
+            QueryRequest queryRequest = new QueryRequest
+            {
+                ObjectType = new ObjectTypeRef
+                {
+                    ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
+                },
+                Condition = $"{DocumentsInSavedSearch()} AND {await DocumentsWithImages()}",
+                Fields = new[]
+                {
+                    new FieldRef { Name = identifierField.SourceFieldName }
+                }
+            };
+            return queryRequest;
+        }
+
+        private async Task<QueryRequest> CreateImageRetryQueryRequestAsync(CancellationToken token)
+        {
+            FieldInfoDto identifierField =
+                await _fieldManager.GetObjectIdentifierFieldAsync(token).ConfigureAwait(false);
+
+            QueryRequest queryRequest = new QueryRequest
+            {
+                ObjectType = new ObjectTypeRef
+                {
+                    ArtifactTypeID = _DOCUMENT_ARTIFACT_TYPE_ID
+                },
+                Condition = $"{DocumentsWithErrors()} AND {DocumentsInSavedSearch()} AND {await DocumentsWithImages()}",
+                Fields = new[]
+                {
+                    new FieldRef { Name = identifierField.SourceFieldName }
+                }
+            };
+            return queryRequest;
+        }
+
+        private async Task<int> GetGuidOfYesChoiceOnHasImagesAsync()
         {
             int choiceYesArtifactId;
             int fieldArtifactID;
 
-            using (IObjectManager objectManager = await _sourceServiceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-			using (IChoiceQueryManager choiceQueryManager = await _sourceServiceFactoryForAdmin.CreateProxyAsync<IChoiceQueryManager>().ConfigureAwait(false))
-			{
-                QueryResult result = await objectManager.QueryAsync(_configuration.SourceWorkspaceArtifactId, new QueryRequest()
-                {
-                    ObjectType = new ObjectTypeRef() { ArtifactTypeID = (int)ArtifactType.Field },
-                    Condition = "'Name' == 'Has Images'",
-                }, 0, 1).ConfigureAwait(false);
-				fieldArtifactID = result.Objects.ToArray().First().ArtifactID;
+            using (IObjectManager objectManager =
+                   await _sourceServiceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+            using (IChoiceQueryManager choiceQueryManager = await _sourceServiceFactoryForAdmin
+                       .CreateProxyAsync<IChoiceQueryManager>().ConfigureAwait(false))
+            {
+                QueryResult result = await objectManager.QueryAsync(_configuration.SourceWorkspaceArtifactId,
+                    new QueryRequest()
+                    {
+                        ObjectType = new ObjectTypeRef() { ArtifactTypeID = (int)ArtifactType.Field },
+                        Condition = "'Name' == 'Has Images'",
+                    }, 0, 1).ConfigureAwait(false);
+                fieldArtifactID = result.Objects.ToArray().First().ArtifactID;
 
-                List<Services.ChoiceQuery.Choice> fieldChoicesList = await choiceQueryManager.QueryAsync(_configuration.SourceWorkspaceArtifactId, fieldArtifactID);
+                List<Services.ChoiceQuery.Choice> fieldChoicesList =
+                    await choiceQueryManager.QueryAsync(_configuration.SourceWorkspaceArtifactId, fieldArtifactID);
                 Services.ChoiceQuery.Choice yesChoice = fieldChoicesList.FirstOrDefault(choice => choice.Name == "Yes");
 
-				if(yesChoice == null)
+                if (yesChoice == null)
                 {
-					_logger.LogError("Unable to find choice with \"Yes\" name for \"Has Images\" field - this system field is in invalid state");
-					throw new SyncException("Unable to find choice with \"Yes\" name for \"Has Images\" field - this system field is in invalid state");
+                    _logger.LogError(
+                        "Unable to find choice with \"Yes\" name for \"Has Images\" field - this system field is in invalid state");
+                    throw new SyncException(
+                        "Unable to find choice with \"Yes\" name for \"Has Images\" field - this system field is in invalid state");
                 }
 
                 choiceYesArtifactId = yesChoice.ArtifactID;
@@ -168,24 +227,27 @@ namespace Relativity.Sync.Transfer
 
         private async Task<string> DocumentsWithImages()
         {
-			int choiceArtifactId = await GetGuidOfYesHoiceOnHasImagesAsync();
-			string documentsWithOriginalImages = DocumentsWithOriginalImages(choiceArtifactId);
-			if (_configuration.ProductionImagePrecedence.Any())
-			{
-				return _configuration.IncludeOriginalImageIfNotFoundInProductions
-					? $"({DocumentsWithProducedImages} OR {documentsWithOriginalImages})"
-					: DocumentsWithProducedImages;
-			}
+            int choiceArtifactId = await GetGuidOfYesChoiceOnHasImagesAsync();
+            string documentsWithOriginalImages = DocumentsWithOriginalImages(choiceArtifactId);
+            if (_configuration.ProductionImagePrecedence.Any())
+            {
+                return _configuration.IncludeOriginalImageIfNotFoundInProductions
+                    ? $"({DocumentsWithProducedImages} OR {documentsWithOriginalImages})"
+                    : DocumentsWithProducedImages;
+            }
 
-			return documentsWithOriginalImages;
-		}
+            return documentsWithOriginalImages;
+        }
 
-		private static string DocumentsWithProducedImages => "('Production::Image Count' > 0)";
+        private static string DocumentsWithProducedImages => "('Production::Image Count' > 0)";
 
-		private string DocumentsWithOriginalImages(int choiceArtifactId)  => $"('Has Images' == CHOICE {choiceArtifactId})"; // "Has Images" == "Yes"
+        private string DocumentsWithOriginalImages(int yesChoiceArtifactId) =>
+            $"('Has Images' == CHOICE {yesChoiceArtifactId})"; // "Has Images" == "Yes"
 
-		private string DocumentsInSavedSearch() => $"('ArtifactId' IN SAVEDSEARCH {_configuration.DataSourceArtifactId})";
+        private string DocumentsInSavedSearch() =>
+            $"('ArtifactId' IN SAVEDSEARCH {_configuration.DataSourceArtifactId})";
 
-		private string DocumentsWithErrors() => $"(NOT 'Job History' SUBQUERY ('Job History' INTERSECTS MULTIOBJECT [{_configuration.JobHistoryToRetryId}]))";
-	}
+        private string DocumentsWithErrors() =>
+            $"(NOT 'Job History' SUBQUERY ('Job History' INTERSECTS MULTIOBJECT [{_configuration.JobHistoryToRetryId}]))";
+    }
 }

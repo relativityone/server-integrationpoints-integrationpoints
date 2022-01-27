@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Transfer
@@ -18,20 +21,25 @@ namespace Relativity.Sync.Transfer
 		private List<FieldInfoDto> _mappedDocumentFields;
 		private IReadOnlyList<FieldInfoDto> _imageAllFields;
 		private IReadOnlyList<FieldInfoDto> _nativeAllFields;
-
+		private IReadOnlyList<FieldInfoDto> _nonDocumentWithoutLinksFields;
+		
 		private readonly IFieldConfiguration _configuration;
-		private readonly IDocumentFieldRepository _documentFieldRepository;
+		private readonly IObjectFieldTypeRepository _objectFieldTypeRepository;
+		private readonly ISourceServiceFactoryForAdmin _sourceServiceFactoryForAdmin;
 
 		private readonly IList<INativeSpecialFieldBuilder> _nativeSpecialFieldBuilders;
 		private readonly IList<IImageSpecialFieldBuilder> _imageSpecialFieldBuilders;
+		private readonly ISyncLog _logger;
 
-		public FieldManager(IFieldConfiguration configuration, IDocumentFieldRepository documentFieldRepository,
-			IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders, IEnumerable<IImageSpecialFieldBuilder> imageSpecialFieldBuilders)
+		public FieldManager(IFieldConfiguration configuration, IObjectFieldTypeRepository objectFieldTypeRepository,
+			IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders, IEnumerable<IImageSpecialFieldBuilder> imageSpecialFieldBuilders, ISourceServiceFactoryForAdmin sourceServiceFactoryForAdmin, ISyncLog logger)
 		{
 			_configuration = configuration;
-			_documentFieldRepository = documentFieldRepository;
+			_objectFieldTypeRepository = objectFieldTypeRepository;
 			_nativeSpecialFieldBuilders = OmitNativeInfoFieldsBuildersIfNotNeeded(configuration, nativeSpecialFieldBuilders).OrderBy(b => b.GetType().FullName).ToList();
 			_imageSpecialFieldBuilders = imageSpecialFieldBuilders.ToList();
+			_sourceServiceFactoryForAdmin = sourceServiceFactoryForAdmin;
+			_logger = logger;
 		}
 
 		public IEnumerable<FieldInfoDto> GetNativeSpecialFields()
@@ -95,7 +103,7 @@ namespace Relativity.Sync.Transfer
 
 			return _imageAllFields;
 		}
-
+		
 		public async Task<IList<FieldInfoDto>> GetDocumentTypeFieldsAsync(CancellationToken token)
 		{
 			IReadOnlyList<FieldInfoDto> fields = await GetNativeAllFieldsAsync(token).ConfigureAwait(false);
@@ -105,7 +113,7 @@ namespace Relativity.Sync.Transfer
 
 		public async Task<FieldInfoDto> GetObjectIdentifierFieldAsync(CancellationToken token)
 		{
-			IEnumerable<FieldInfoDto> mappedFields = await GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
+			IEnumerable<FieldInfoDto> mappedFields = await GetMappedFieldsAsync(token).ConfigureAwait(false);
 
 			FieldInfoDto identifierField = mappedFields.First(f => f.IsIdentifier);
 			identifierField.DocumentFieldIndex = 0;
@@ -113,14 +121,77 @@ namespace Relativity.Sync.Transfer
 			return identifierField;
 		}
 
-		public async Task<IList<FieldInfoDto>> GetMappedDocumentFieldsAsync(CancellationToken token)
+		public async Task<IList<FieldInfoDto>> GetMappedFieldsAsync(CancellationToken token)
 		{
 			if (_mappedDocumentFields == null)
 			{
 				List<FieldInfoDto> fieldInfos = _configuration.GetFieldMappings().Select(CreateFieldInfoFromFieldMap).ToList();
-				_mappedDocumentFields = await EnrichDocumentFieldsWithRelativityDataTypesAsync(fieldInfos, token).ConfigureAwait(false);
+				_mappedDocumentFields = await EnrichFieldsWithRelativityDataTypesAsync(fieldInfos, token).ConfigureAwait(false);
 			}
 			return _mappedDocumentFields;
+		}
+
+		public async Task<IReadOnlyList<FieldInfoDto>> GetMappedFieldNonDocumentWithoutLinksAsync(
+			CancellationToken token)
+		{
+			IList<FieldInfoDto> fieldInfos = await GetMappedFieldsAsync(token).ConfigureAwait(false);
+
+			string[] namesOfFieldsOfTheSameType = await GetSameTypeFieldNamesAsync(_configuration.SourceWorkspaceArtifactId).ConfigureAwait(false);
+			
+			_nonDocumentWithoutLinksFields = fieldInfos.Where(f => !namesOfFieldsOfTheSameType.Any( n => n == f.SourceFieldName)).ToList();
+			
+			return _nonDocumentWithoutLinksFields;
+		}
+		
+		public async Task<string[]> GetSameTypeFieldNamesAsync(int workspaceId)
+		{
+			string rdoTypeName = await GetRdoTypeNameAsync(_configuration.SourceWorkspaceArtifactId, _configuration.RdoArtifactTypeId);
+			
+			using (var objectManager =
+				await _sourceServiceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			{
+				var request = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field },
+					Condition =
+						$"('Associative Object Type' == '{rdoTypeName}') AND ('Object Type' == '{rdoTypeName}')" +
+						$" AND (NOT ('Name' LIKE ['::']))" +
+						$" AND ('Field Type' IN ['Multiple Object', 'Single Object'])",
+					IncludeNameInQueryResult = true
+				};
+
+				QueryResult result = await objectManager.QueryAsync(workspaceId, request, 0, Int32.MaxValue)
+					.ConfigureAwait(false);
+				return result.Objects.Select(x => x.Name).ToArray();
+			}
+		}
+
+		private async Task<string> GetRdoTypeNameAsync(int workspaceArtifactId, int rdoArtifactTypeId)
+		{
+			using (var objectManager =
+				await _sourceServiceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			{
+				var query = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef
+					{
+						ArtifactTypeID = (int)ArtifactType.ObjectType
+					},
+					Condition = $"'Artifact Type ID' == {rdoArtifactTypeId}",
+					IncludeNameInQueryResult = true
+				};
+
+				QueryResult result =
+					await objectManager.QueryAsync(workspaceArtifactId, query, 0, 1).ConfigureAwait(false);
+
+				if (result.Objects.Count != 1)
+				{
+					_logger.LogError("Rdo with ArtifactTypeId {artifactTypeId} does not exist", rdoArtifactTypeId);
+					throw new SyncException($"Rdo with ArtifactTypeId {rdoArtifactTypeId} does not exist");
+				}
+                
+				return result.Objects.Single().Name;
+			}
 		}
 
 		private static IEnumerable<INativeSpecialFieldBuilder> OmitNativeInfoFieldsBuildersIfNotNeeded(IFieldConfiguration configuration, IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders)
@@ -136,9 +207,9 @@ namespace Relativity.Sync.Transfer
 		private async Task<IReadOnlyList<FieldInfoDto>> GetAllFieldsInternalAsync(Func<IEnumerable<FieldInfoDto>> specialFieldsProvider, CancellationToken token)
 		{
 			IList<FieldInfoDto> specialFields = specialFieldsProvider().ToList();
-			IList<FieldInfoDto> mappedDocumentFields = await GetMappedDocumentFieldsAsync(token).ConfigureAwait(false);
+			IList<FieldInfoDto> mappedDocumentFields = await GetMappedFieldsAsync(token).ConfigureAwait(false);
 			List<FieldInfoDto> allFields = MergeFieldCollections(specialFields, mappedDocumentFields);
-			return EnrichDocumentFieldsWithIndex(allFields);
+			return EnrichFieldsWithIndex(allFields);
 		}
 
 		private List<FieldInfoDto> MergeFieldCollections(IList<FieldInfoDto> specialFields, IList<FieldInfoDto> mappedDocumentFields)
@@ -198,7 +269,7 @@ namespace Relativity.Sync.Transfer
 				   && first.DestinationFieldName.Equals(second.DestinationFieldName, StringComparison.InvariantCultureIgnoreCase);
 		}
 
-		private List<FieldInfoDto> EnrichDocumentFieldsWithIndex(List<FieldInfoDto> fields)
+		private List<FieldInfoDto> EnrichFieldsWithIndex(List<FieldInfoDto> fields)
 		{
 			int currentIndex = 0;
 			foreach (var field in fields)
@@ -213,7 +284,7 @@ namespace Relativity.Sync.Transfer
 			return fields;
 		}
 
-		private async Task<List<FieldInfoDto>> EnrichDocumentFieldsWithRelativityDataTypesAsync(List<FieldInfoDto> fields, CancellationToken token)
+		private async Task<List<FieldInfoDto>> EnrichFieldsWithRelativityDataTypesAsync(List<FieldInfoDto> fields, CancellationToken token)
 		{
 			if (fields.Count != 0)
 			{
@@ -230,7 +301,7 @@ namespace Relativity.Sync.Transfer
 		private Task<IDictionary<string, RelativityDataType>> GetRelativityDataTypesForFieldsAsync(IEnumerable<FieldInfoDto> fields, CancellationToken token)
 		{
 			ICollection<string> fieldNames = fields.Select(f => f.SourceFieldName).ToArray();
-			return _documentFieldRepository.GetRelativityDataTypesForFieldsByFieldNameAsync(_configuration.SourceWorkspaceArtifactId, fieldNames, token);
+			return _objectFieldTypeRepository.GetRelativityDataTypesForFieldsByFieldNameAsync(_configuration.SourceWorkspaceArtifactId, _configuration.RdoArtifactTypeId, fieldNames, token);
 		}
 
 		private FieldInfoDto CreateFieldInfoFromFieldMap(FieldMap fieldMap)

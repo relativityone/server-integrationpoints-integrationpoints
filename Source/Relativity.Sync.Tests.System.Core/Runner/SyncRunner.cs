@@ -105,7 +105,7 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 
 			if (_toggleProvider != null)
 			{
-				containerBuilder.RegisterInstance(_toggleProvider).As<IToggleProvider>();
+				containerBuilder.RegisterInstance(_toggleProvider).As<IToggleProvider>().SingleInstance();
 			}
 			
 			var jobFactory = new SyncJobFactory();

@@ -6,6 +6,7 @@ using Relativity.Sync.ExecutionConstrains.SumReporting;
 using Relativity.Sync.Executors.PermissionCheck;
 using Relativity.Sync.Executors.PreValidation;
 using Relativity.Sync.Executors.SumReporting;
+using Relativity.Sync.Executors.DocumentTaggers;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Extensions;
 using Relativity.Sync.Storage;
@@ -33,6 +34,7 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<WorkspaceNameValidator>().As<IWorkspaceNameValidator>();
 			builder.RegisterType<TagSavedSearch>().As<ITagSavedSearch>();
 			builder.RegisterType<TagSavedSearchFolder>().As<ITagSavedSearchFolder>();
+			builder.RegisterType<DocumentTagger>().As<IDocumentTagger>();
 			builder.RegisterType<ImportJobFactory>().As<IImportJobFactory>();
 			builder.RegisterType<ImportApiFactory>().As<IImportApiFactory>();
 			builder.RegisterType<AutomatedWorkflowsManager>().As<IAutomatedWorkflowsManager>();
@@ -65,7 +67,7 @@ namespace Relativity.Sync.Executors
 
 			builder.RegisterType<SnapshotPartitionExecutionConstrains>().As<IExecutionConstrains<ISnapshotPartitionConfiguration>>();
 			builder.RegisterType<SnapshotPartitionExecutor>().As<IExecutor<ISnapshotPartitionConfiguration>>();
-			
+
 			builder.RegisterType<DocumentSynchronizationExecutionConstrains>().As<IExecutionConstrains<IDocumentSynchronizationConfiguration>>();
 			builder.RegisterType<ImageSynchronizationExecutionConstrains>().As<IExecutionConstrains<IImageSynchronizationConfiguration>>();
 			builder.RegisterType<DocumentSynchronizationExecutor>().As<IExecutor<IDocumentSynchronizationConfiguration>>();
@@ -90,6 +92,23 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<BatchRepository>().As<IBatchRepository>();
 			builder.RegisterType<ProgressRepository>().As<IProgressRepository>();
 			builder.RegisterType<SemaphoreSlimWrapper>().As<ISemaphoreSlim>();
+
+			RegisterNonDocumentFlowComponents(builder);
+		}
+
+		private void RegisterNonDocumentFlowComponents(ContainerBuilder builder)
+		{
+			builder.RegisterType<NonDocumentObjectDataSourceSnapshotExecutionConstrains>().As<IExecutionConstrains<INonDocumentDataSourceSnapshotConfiguration>>();
+			builder.RegisterType<NonDocumentObjectDataSourceSnapshotExecutor>().As<IExecutor<INonDocumentDataSourceSnapshotConfiguration>>();
+
+			builder.RegisterType<ObjectLinkingSnapshotPartitionExecutionConstrains>().As<IExecutionConstrains<IObjectLinkingSnapshotPartitionConfiguration>>();
+			builder.RegisterType<ObjectLinkingSnapshotPartitionExecutor>().As<IExecutor<IObjectLinkingSnapshotPartitionConfiguration>>();
+			
+			builder.RegisterType<NonDocumentJobStartMetricsExecutorConstrains>().As<IExecutionConstrains<INonDocumentJobStartMetricsConfiguration>>();
+			builder.RegisterType<NonDocumentJobStartMetricsExecutor>().As<IExecutor<INonDocumentJobStartMetricsConfiguration>>();
+
+			builder.RegisterType<NonDocumentSynchronizationExecutionConstrains>().As<IExecutionConstrains<INonDocumentSynchronizationConfiguration>>();
+			builder.RegisterType<NonDocumentSynchronizationExecutor>().As<IExecutor<INonDocumentSynchronizationConfiguration>>();
 		}
 	}
 }

@@ -248,7 +248,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			if (pipelineType == typeof(SyncNonDocumentRunPipeline))
 			{
-				return typeof(DataSourceSnapshotNode);
+				return typeof(NonDocumentObjectDataSourceSnapshotNode);
 			}
 
 			throw new ArgumentException($"Pipeline {pipelineType.Name} not handled in tests");

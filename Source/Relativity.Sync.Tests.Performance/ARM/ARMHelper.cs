@@ -18,6 +18,9 @@ using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api;
+using Relativity.Testing.Framework.Api.Kepler;
+using Relativity.Testing.Framework.Api.Services;
+using Relativity.Testing.Framework.Models;
 
 namespace Relativity.Sync.Tests.Performance.ARM
 {
@@ -30,7 +33,6 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
 		private static readonly string _RELATIVE_ARCHIVES_LOCATION = AppSettings.RelativeArchivesLocation;
 		private readonly IKeplerServiceFactory _serviceFactory;
-
 
 		private ARMHelper(FileShareHelper fileShare, AzureStorageHelper storage)
 		{

@@ -12,6 +12,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
+using Relativity.Sync.Executors.DocumentTaggers;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.RDOs;
@@ -35,7 +36,6 @@ namespace Relativity.Sync.Tests.Integration
 		private Mock<IFolderManager> _folderManagerMock;
 		private Mock<ISyncImportBulkArtifactJob> _importBulkArtifactJob;
 		private Mock<IRdoManager> _rdoManagerMock;
-
 
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 10001;
 		private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 20002; 
@@ -108,6 +108,7 @@ namespace Relativity.Sync.Tests.Integration
 			containerBuilder.RegisterInstance(destinationServiceFactoryForUser.Object).As<IDestinationServiceFactoryForUser>();
 			containerBuilder.RegisterInstance(sourceServiceFactoryForUser.Object).As<ISourceServiceFactoryForUser>();
 			containerBuilder.RegisterInstance(sourceServiceFactoryForAdmin.Object).As<ISourceServiceFactoryForAdmin>();
+			containerBuilder.RegisterType<DocumentTagger>().As<IDocumentTagger>();
 			containerBuilder.RegisterType<DocumentSynchronizationExecutor>().As<IExecutor<IDocumentSynchronizationConfiguration>>();
 
 			containerBuilder.RegisterInstance(new EmptyLogger()).As<ISyncLog>();

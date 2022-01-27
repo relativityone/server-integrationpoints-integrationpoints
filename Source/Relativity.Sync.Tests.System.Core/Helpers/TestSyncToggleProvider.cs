@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 using Relativity.Services.Exceptions;
 using Relativity.Toggles;
@@ -8,21 +9,29 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 {
     public class TestSyncToggleProvider : IToggleProvider
     {
-        public Dictionary<Type, bool> _overridenToggles = new Dictionary<Type, bool>();
+        private readonly Dictionary<Type, bool> _overridenToggles = new Dictionary<Type, bool>();
 
         public bool IsEnabled<T>() where T : IToggle
         {
-            throw new NotImplementedException();
+            return IsEnabledAsync<T>().GetAwaiter().GetResult();
         }
 
         public Task<bool> IsEnabledAsync<T>() where T : IToggle
         {
-            if (_overridenToggles.ContainsKey(typeof(T)))
+            Type toggleType = typeof(T);
+            if (_overridenToggles.ContainsKey(toggleType))
             {
-                return Task.FromResult(_overridenToggles[typeof(T)]);
+                return Task.FromResult(_overridenToggles[toggleType]);
             }
-            
-            throw new NotFoundException($"Not found value for Key: {typeof(T)}");
+
+            return Task.FromResult(GetToggleDefaultValue(toggleType));
+        }
+
+        private bool GetToggleDefaultValue(Type toggleType)
+        {
+            DefaultValueAttribute attribute = toggleType.GetCustomAttribute(typeof(DefaultValueAttribute)) as DefaultValueAttribute;
+
+            return attribute != null && attribute.Value;
         }
 
         public bool IsEnabledByName(string toggleName)

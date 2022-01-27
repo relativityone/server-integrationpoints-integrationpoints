@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
-using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Integration
@@ -29,6 +28,12 @@ namespace Relativity.Sync.Tests.Integration
 		}
 
 		public Task<Executors.IImportJob> CreateImageImportJobAsync(IImageSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
+		{
+			return CreateImportJobAsync(configuration);
+		}
+
+		public Task<Executors.IImportJob> CreateRdoImportJobAsync(INonDocumentSynchronizationConfiguration configuration, IBatch batch,
+			string identifierFieldName, CancellationToken token)
 		{
 			return CreateImportJobAsync(configuration);
 		}

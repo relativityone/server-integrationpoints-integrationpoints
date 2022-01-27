@@ -11,6 +11,7 @@ using Relativity.Services.ArtifactGuid;
 using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.Options;
 using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
@@ -232,6 +233,53 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
 
             builder.SyncConfiguration.JobHistoryErrorJobHistoryRelation.Should()
                 .Be(rdoOptions.JobHistoryError.JobHistoryRelationGuid);
+        }
+
+        [Test]
+        public void SyncConfigurationRootBuilderBase_ShouldSetRdoTypeToDocument()
+        {
+            // Arrange
+            RdoOptions rdoOptions = DefaultGuids.DefaultRdoOptions;
+
+            // Act
+            SyncConfigurationRootBuilderBase builder = (SyncConfigurationRootBuilderBase) _sut.ConfigureRdos(rdoOptions)
+                .ConfigureDocumentSync(new DocumentSyncOptions(0, 0));
+            
+            // Assert
+            builder.SyncConfiguration.RdoArtifactTypeId.Should().Be((int)ArtifactType.Document);
+            builder.SyncConfiguration.DestinationRdoArtifactTypeId.Should().Be((int)ArtifactType.Document);
+        }
+        
+        [Test]
+        public void SyncConfigurationRootBuilderBase_ShouldSetRdoTypeToDocument_ForImageFlow()
+        {
+            // Arrange
+            RdoOptions rdoOptions = DefaultGuids.DefaultRdoOptions;
+
+            // Act
+            SyncConfigurationRootBuilderBase builder = (SyncConfigurationRootBuilderBase) _sut.ConfigureRdos(rdoOptions)
+                .ConfigureImageSync(new ImageSyncOptions(DataSourceType.Production, 0, DestinationLocationType.Folder, 0));
+            
+            // Assert
+            builder.SyncConfiguration.RdoArtifactTypeId.Should().Be((int)ArtifactType.Document);
+            builder.SyncConfiguration.DestinationRdoArtifactTypeId.Should().Be((int)ArtifactType.Document);
+        }
+
+        [Test]
+        public void SyncConfigurationRootBuilderBase_ShouldSetRdoType_ForNonDocumentFlow()
+        {
+            // Arrange
+            RdoOptions rdoOptions = DefaultGuids.DefaultRdoOptions;
+            const int rdoType = 69;
+            const int destinationRdoType = 420;
+
+            // Act
+            SyncConfigurationRootBuilderBase builder = (SyncConfigurationRootBuilderBase)_sut.ConfigureRdos(rdoOptions)
+                .ConfigureNonDocumentSync(new NonDocumentSyncOptions(0, rdoType, destinationRdoType));
+
+            // Assert
+            builder.SyncConfiguration.RdoArtifactTypeId.Should().Be(rdoType);
+            builder.SyncConfiguration.DestinationRdoArtifactTypeId.Should().Be(destinationRdoType);
         }
 
         static IEnumerable<TestCaseData> RdoOptionsMembers()
