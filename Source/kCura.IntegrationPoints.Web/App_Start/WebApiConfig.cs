@@ -1,4 +1,5 @@
 ﻿using System.Web.Http;
+using System.Web.Mvc;
 
 namespace kCura.IntegrationPoints.Web
 {
@@ -388,9 +389,15 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "GetView",
+				routeTemplate: "{workspaceID}/api/ObjectType/Views/{artifactTypeId}/{viewId}",
+				defaults: new { controller = "ObjectType", action = "GetView" }
+			);
+
+			config.Routes.MapHttpRoute(
 				name: "GetObjectTypeViews",
-				routeTemplate: "{workspaceID}/api/ObjectType/Views/{artifactTypeId}",
-				defaults: new { controller = "ObjectType", action = "GetViews" }
+				routeTemplate: "{workspaceID}/api/ObjectType/Views/{artifactTypeId}/{search}/{page}",
+				defaults: new { controller = "ObjectType", action = "GetViews", search = UrlParameter.Optional, page = UrlParameter.Optional }
 			);
 
 			config.Routes.MapHttpRoute(

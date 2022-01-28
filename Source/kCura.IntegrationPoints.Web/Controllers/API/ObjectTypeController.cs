@@ -73,6 +73,49 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpGet]
+		[LogApiExceptionFilter(Message = "Unable to retrieve view.")]
+		public async Task<HttpResponseMessage> GetView(int workspaceId, int artifactTypeId, int viewId)
+		{
+			_logger.LogInformation("Retrieving View Artifact ID: {viewId} from workspace {workspaceId}",
+				viewId, workspaceId);
+			try
+			{
+				string rdoName = await GetObjectTypeName(workspaceId, artifactTypeId).ConfigureAwait(false);
+
+				using (IObjectManager objectManager = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser))
+				{
+					QueryRequest request = new QueryRequest()
+					{
+						ObjectType = new ObjectTypeRef()
+						{
+							ArtifactTypeID = (int)ArtifactType.View
+						},
+						Condition = $"'Object Type' == '{rdoName}' AND 'Artifact ID' == {viewId}",
+						IncludeNameInQueryResult = true
+					};
+
+					QueryResult queryResult = await objectManager.QueryAsync(workspaceId, request, 0, 1).ConfigureAwait(false);
+
+					if (queryResult.Objects.Any())
+					{
+						ViewModel viewModel = new ViewModel(queryResult.Objects.First());
+
+						return Request.CreateResponse(HttpStatusCode.OK, viewModel);
+					}
+					else
+					{
+						return Request.CreateResponse(HttpStatusCode.NotFound);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error while retrieving view.");
+				throw;
+			}
+		}
+
+		[HttpGet]
 		[LogApiExceptionFilter(Message = "Unable to check if Object Type exists in workspace.")]
 		public async Task<bool> ObjectTypeExists(int sourceWorkspaceId, int destinationWorkspaceId, int sourceObjectTypeArtifactId)
 		{

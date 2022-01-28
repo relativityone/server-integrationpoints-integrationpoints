@@ -48,6 +48,19 @@
 		},
 		message: 'The saved search is no longer accessible. Please verify your settings or create a new Integration Point.'
 	};
+	ko.validation.rules['checkView'] = {
+		async: true,
+		validator: function (value, params, callback) {
+			var okCallback = function (result) {
+				callback(!!result);
+			};
+			var errorCallback = function () {
+				callback({ isValid: false, message: 'Unable to validate if the view is accessible. Please try again.' });
+			};
+			self.RetrieveView(value, okCallback, errorCallback);
+		},
+		message: 'The view is no longer accessible. Please verify your settings or create a new Integration Point.'
+	};
 	ko.validation.rules['checkWorkspaceForObjectType'] = {
 		async: true,
 		validator: function(value, params, callback) {
@@ -70,6 +83,27 @@
 		message: 'Selected Object Type does not exist in this workspace.'
 	};
 	ko.validation.registerExtenders();
+
+	self.RetrieveView = function(viewId, okCallback, errorCallback) {
+		IP.data.ajax({
+			type: 'GET',
+			url: IP.utils.generateWebAPIURL('ObjectType/Views'),
+			async: true,
+			data: {
+				artifactTypeId: window.parent.IP.data.params['TransferredRDOArtifactTypeID'],
+				viewId: viewId
+			},
+			success: okCallback,
+			error: function (err) {
+				if (err.status === 404) {
+					okCallback(null);
+				} else {
+					IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve the view. Please try again.");
+					errorCallback(err);
+				}
+			}
+		});
+	}
 
 	var viewModel;
 
@@ -136,8 +170,8 @@
 		self.SavedSearchService = new SavedSearchService();
 
 		var isNonDocumentObjectFlow = window.parent.IP.data.params['EnableSyncNonDocumentFlowToggleValue'] && window.parent.IP.data.params['TransferredRDOArtifactTypeID'] != documentArtifactTypeId;
-		self.IsNonDocumentObjectSelected = ko.observable();
-		self.IsNonDocumentObjectSelected(isNonDocumentObjectFlow);
+		self.IsNonDocumentObjectFlow = ko.observable();
+		self.IsNonDocumentObjectFlow(isNonDocumentObjectFlow);
 
 		self.workspaces = ko.observableArray(state.workspaces);
 		self.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId);
@@ -151,6 +185,7 @@
 		self.ShowProductionAddButton = ko.observable(state.ShowProductionAddButton);
 		self.LocationFolderChecked = ko.observable(state.LocationFolderChecked || "true");
 		self.DestinationProductionSets = ko.observableArray();
+
 		self.ProductionArtifactId = ko.observable().extend({
 			required: {
 				onlyIf: function () {
@@ -158,6 +193,7 @@
 				}
 			}
 		});
+
 		self.ProductionArtifactId.subscribe(function (value) {
 			self.ProductionImport(!!value);
 			if (value) {
@@ -165,13 +201,20 @@
 				self.locationSelector.toggle(false);
 			}
 		});
+
 		self.CreateSavedSearchForTagging = ko.observable(JSON.parse(IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination).CreateSavedSearchForTagging || "false");
 		self.TypeOfExport = ko.observable();//todo:self.TypeOfExport = ko.observable(initTypeOfExport);
+
 		self.IsSavedSearchSelected = function () {
 			return self.TypeOfExport() === ExportEnums.SourceOptionsEnum.SavedSearch;
 		};
+
 		self.IsProductionSelected = function () {
 			return self.TypeOfExport() === ExportEnums.SourceOptionsEnum.Production;
+		};
+
+		self.IsViewSelected = function() {
+			return self.TypeOfExport() === ExportEnums.SourceOptionsEnum.View;
 		};
 
 		self.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId === 0 ? null : state.SavedSearchArtifactId).extend({
@@ -190,11 +233,17 @@
 			}
 		});
 
-		self.SourceViewId = ko.observable(state.SourceViewId);
+		self.SourceViewId = ko.observable(state.SourceViewId).extend({
+			required: {
+				onlyIf: function () {
+					return self.IsViewSelected();
+				}
+			}
+		});
 
 		self.SourceOptions = ko.observableArray();
 		
-		if (self.IsNonDocumentObjectSelected()) {
+		if (self.IsNonDocumentObjectFlow()) {
 			self.SourceOptions.push({ value: 4, key: "View" });
 		}
 		else {
@@ -332,7 +381,7 @@
 
 			var workspacesUpgradedPromise = self.updateWorkspaces();
 			workspacesUpgradedPromise.then(function () {
-				if (self.FolderArtifactId() && self.TargetWorkspaceArtifactId() && self.TargetWorkspaceArtifactId.isValid() && !self.IsNonDocumentObjectSelected()) {
+				if (self.FolderArtifactId() && self.TargetWorkspaceArtifactId() && self.TargetWorkspaceArtifactId.isValid() && !self.IsNonDocumentObjectFlow()) {
 					self.getFolderAndSubFolders(self.TargetWorkspaceArtifactId(), self.FolderArtifactId());
 				}
 				self.locationSelector.toggle(self.TargetWorkspaceArtifactId.isValid());
@@ -364,7 +413,7 @@
 				self.TargetWorkspaceArtifactId(stateLocal.TargetWorkspaceArtifactId);
 				self.TargetWorkspaceArtifactId.subscribe(function (value) {
 
-					if (self.IsNonDocumentObjectSelected()){
+					if (self.IsNonDocumentObjectFlow()){
 						return;
 					}
 
@@ -457,7 +506,7 @@
 		this.TargetFolder.extend({
 			required: {
 				onlyIf: function () {
-					return self.LocationFolderChecked() === "true" && !self.IsNonDocumentObjectSelected();
+					return self.LocationFolderChecked() === "true" && !self.IsNonDocumentObjectFlow();
 				}
 			}
 		});
@@ -498,7 +547,7 @@
 		}).extend({
 			checkWorkspaceForObjectType: {
 				onlyIf: function() {
-					return self.IsNonDocumentObjectSelected();
+					return self.IsNonDocumentObjectFlow();
 				}
 			}
 		}).extend({
@@ -512,7 +561,7 @@
 
 		self.TargetWorkspaceArtifactId.subscribe(function (value) {
 			if (value) {
-				if (self.IsNonDocumentObjectSelected()){
+				if (self.IsNonDocumentObjectFlow()){
 					return;
 				}
 
@@ -546,9 +595,9 @@
 		});
 
 		this.SourceViewId.extend({
-			required: {
+			checkView: {
 				onlyIf: function () {
-					return self.IsNonDocumentObjectSelected();
+					return self.IsViewSelected();
 				}
 			}
 		});
