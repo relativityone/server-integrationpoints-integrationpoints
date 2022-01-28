@@ -383,6 +383,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				_jobHistoryErrorService.CommitErrors();
 				LogJobPostExecuteFinalize(job);
+				JobStopManager?.Dispose();
 			}
 		}
 

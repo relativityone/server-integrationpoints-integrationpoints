@@ -84,6 +84,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		public IJobStopManager CreateJobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, Guid jobIdentifier, long jobId, bool supportsDrainStop,
 			CancellationTokenSource stopCancellationTokenSource = null, CancellationTokenSource drainStopCancellationTokenSource = null)
 		{
+			_logger.LogInformation("Create JobStopManager for Job: {jobId}", jobId);
 			JobStopManager jobStopManager = new JobStopManager(jobService, jobHistoryService, _jobServiceDataProvider, _helper, jobIdentifier, jobId, _agent,
 				supportsDrainStop, stopCancellationTokenSource ?? new CancellationTokenSource(), drainStopCancellationTokenSource ?? new CancellationTokenSource());
 			jobStopManager.ActivateTimer();
