@@ -80,7 +80,7 @@
 				console.error("Failed to check if Object Type exists in workspace: " + error);
 			});
 		},
-		message: 'Selected Object Type does not exist in this workspace.'
+		message: 'Selected Transferred Object does not exist in this workspace.'
 	};
 	ko.validation.registerExtenders();
 
