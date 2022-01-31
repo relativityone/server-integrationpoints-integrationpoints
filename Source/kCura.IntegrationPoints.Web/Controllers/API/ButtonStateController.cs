@@ -34,50 +34,49 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         private readonly ICPHelper _helper;
         private readonly IAPILog _logger;
         private readonly IManagerFactory _managerFactory;
+        private readonly IRepositoryFactory _repositoryFactory;
 
         private readonly IJobHistoryManager _jobHistoryManager;
         private readonly IQueueManager _queueManager;
         private readonly IStateManager _stateManager;
         private readonly IIntegrationPointPermissionValidator _permissionValidator;
+        private readonly IIntegrationPointRepository _integrationPointRepository;
+        private readonly IProviderTypeService _providerTypeService;
 
 
-        public ButtonStateController(ICPHelper helper)
+        public ButtonStateController(
+            ICPHelper helper, 
+            IRepositoryFactory respositoryFactory, 
+            IManagerFactory managerFactory, 
+            IIntegrationPointRepository integrationPointRepository, 
+            IProviderTypeService providerTypeService, 
+            IRepositoryFactory repositoryFactory)
         {
             _helper = helper;
             _logger = _helper.GetLoggerFactory().GetLogger();
 
-            IQueueQueryManager queryManager = new QueueQueryManager(helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
-            IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
-            _managerFactory = new ManagerFactory(_helper, new FakeNonRemovableAgent(), jobServiceDataProvider);
+            _managerFactory = managerFactory;
             _queueManager = _managerFactory.CreateQueueManager();
             _jobHistoryManager = _managerFactory.CreateJobHistoryManager();
             _stateManager = _managerFactory.CreateStateManager();
-            IRepositoryFactory repositoryFactory = new RepositoryFactory(_helper, _helper.GetServicesManager());
-            _permissionValidator = new IntegrationPointPermissionValidator(new[] { new ViewErrorsPermissionValidator(repositoryFactory) }, new IntegrationPointSerializer(_logger));
+            _repositoryFactory = repositoryFactory;
+            _integrationPointRepository = integrationPointRepository;
+            _providerTypeService = providerTypeService;
+            
+            _permissionValidator = new IntegrationPointPermissionValidator(new[] { new ViewErrorsPermissionValidator(respositoryFactory) }, new IntegrationPointSerializer(_logger));
         }
 
         [HttpGet]
         [LogApiExceptionFilter(Message = "Unable to check permissions")]
-        public IHttpActionResult GetUserPermissionsCheck(int workspaceId, int integrationPointArtifactId)
+        public IHttpActionResult CheckPermissions(int workspaceId, int integrationPointArtifactId)
         {
             // prepare everything 
-            ICPHelper helper = ConnectionHelper.Helper();
-            var permissionRepository = new PermissionRepository(helper, workspaceId);
-            IRelativityObjectManager objectManager = new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(workspaceId);
-            IAPILog logger = ConnectionHelper.Helper().GetLoggerFactory().GetLogger();
-            IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer(logger);
-            ISecretsRepository secretsRepository = new SecretsRepository(
-                SecretStoreFacadeFactory_Deprecated.Create(helper.GetSecretStore, logger),
-                logger
-            );
-            IIntegrationPointRepository integrationPointRepository =
-                new IntegrationPointRepository(objectManager, integrationPointSerializer, secretsRepository, logger);
-            var providerTypeService = new ProviderTypeService(objectManager);
+            IPermissionRepository permissionRepository = _repositoryFactory.GetPermissionRepository(workspaceId);
 
             // logic from buttonstatebuilder recreated
             IntegrationPoint integrationPoint =
-                integrationPointRepository.ReadWithFieldMappingAsync(integrationPointArtifactId).GetAwaiter().GetResult();
-            ProviderType providerType = providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value,
+                _integrationPointRepository.ReadWithFieldMappingAsync(integrationPointArtifactId).GetAwaiter().GetResult();
+            ProviderType providerType = _providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value,
                 integrationPoint.DestinationProvider.Value);
 
             ValidationResult jobHistoryErrorViewPermissionCheck = _permissionValidator.ValidateViewErrors(workspaceId);

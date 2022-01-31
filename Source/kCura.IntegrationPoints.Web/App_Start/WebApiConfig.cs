@@ -292,9 +292,9 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
-				name: "ErrorGetViewErrorsLink",
-				routeTemplate: "{workspaceID}/api/ButtonState/GetUserPermissionsCheck",
-				defaults: new { controller = "ButtonState", action = "GetUserPermissionsCheck" }
+				name: "ButtonStateCheckPermissions",
+				routeTemplate: "{workspaceID}/api/ButtonState/CheckPermissions",
+				defaults: new { controller = "ButtonState", action = "CheckPermissions" }
 			);
 
 			config.Routes.MapHttpRoute(
