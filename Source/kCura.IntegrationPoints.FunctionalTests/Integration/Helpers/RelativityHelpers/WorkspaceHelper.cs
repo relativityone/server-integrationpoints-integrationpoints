@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
@@ -85,8 +86,37 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 				ParenObjectArtifactId = workspace.ArtifactId,
 				Name = "All Documents"
 			});
-		
-			return workspace;
+
+            FolderTest folder = workspace.Folders.First();
+            IList<FieldTest> fields = workspace.Fields;
+
+            workspace.Documents.Add(new DocumentTest(fields)
+            {
+				ParenObjectArtifactId = folder.ArtifactId,
+				FolderName = folder.Name,
+				HasImages = true,
+				HasNatives = true,
+				ImageCount = 1,
+            });
+
+            workspace.Documents.Add(new DocumentTest(fields)
+            {
+                ParenObjectArtifactId = folder.ArtifactId,
+                FolderName = folder.Name,
+                HasImages = true,
+                HasNatives = false,
+                ImageCount = 10,
+            });
+
+            workspace.Documents.Add(new DocumentTest(fields)
+            {
+                ParenObjectArtifactId = folder.ArtifactId,
+                FolderName = folder.Name,
+                HasImages = false,
+                HasNatives = true,
+            });
+			
+            return workspace;
 		}
 
 		public WorkspaceTest CreateWorkspaceWithIntegrationPointsApp(int? workspaceArtifactId)

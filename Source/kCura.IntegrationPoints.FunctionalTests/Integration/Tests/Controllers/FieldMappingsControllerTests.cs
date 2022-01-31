@@ -9,7 +9,6 @@ using FluentAssertions;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings;
 using kCura.IntegrationPoints.Web.Models;
-using NUnit.Framework;
 using Relativity.IntegrationPoints.FieldsMapping;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.IntegrationPoints.Tests.Integration.Models;

@@ -39,6 +39,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public IList<EntityTest> Entities { get; } = new List<EntityTest>();
 
+        public IList<DocumentTest> Documents { get; } = new List<DocumentTest>();
+
         public IList<ArtifactTest> Artifacts => GetAllArtifacts();
 
         private IList<ArtifactTest> GetAllArtifacts()
@@ -56,6 +58,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 .Concat(GetArtifacts(SavedSearches))
                 .Concat(GetArtifacts(SyncConfigurations))
                 .Concat(GetArtifacts(Fields))
+                .Concat(GetArtifacts(Documents))
                 .ToList();
         }
         
@@ -93,7 +96,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                    ?? TryFind(Folders)
                    ?? TryFind(SavedSearches)
                    ?? TryFind(Fields)
-                   ?? TryFind(SyncConfigurations);
+                   ?? TryFind(SyncConfigurations)
+                   ?? TryFind(Documents);
         }
 
         public override List<Guid> Guids => new List<Guid>();
@@ -128,6 +132,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             private IntegrationPointTypeHelper _integrationPointTypeHelper;
             private JobHistoryHelper _jobHistoryHelper;
             private FieldsMappingHelper _fieldsMappingHelper;
+            private DocumentHelper _documentHelper;
 
             internal WorkspaceHelpers(WorkspaceTest workspace, ISerializer serializer)
             {
@@ -163,6 +168,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             public FieldsMappingHelper FieldsMappingHelper => _fieldsMappingHelper ??
                                                               (_fieldsMappingHelper = 
                                                                   new FieldsMappingHelper(_workspace));
+
+            public DocumentHelper DocumentHelper => _documentHelper ??
+                                                    (_documentHelper =
+                                                        new DocumentHelper(_workspace));
         }
     }
 }
