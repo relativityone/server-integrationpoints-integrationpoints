@@ -11,6 +11,7 @@ using Relativity.IntegrationPoints.Tests.Functional.Web.Components;
 using FluentAssertions;
 using Relativity.IntegrationPoints.Tests.Common;
 using Relativity.IntegrationPoints.Tests.Common.LDAP.TestData;
+using Relativity.IntegrationPoints.Tests.Common.Extensions;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 {
@@ -29,7 +30,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 		public void OnSetUpFixture()
 		{
-			InstallLegalHoldToWorkspace(_testsImplementationTestFixture.Workspace.ArtifactID);
+			_testsImplementationTestFixture.Workspace.InstallLegalHold();
 		}
 
 		public void ImportFromLDAPGoldFlow()
@@ -56,12 +57,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			int workspaceEntityCount = RelativityFacade.Instance.Resolve<IEntityService>().GetAll(_testsImplementationTestFixture.Workspace.ArtifactID).Length;
 			transferredItemsCount.Should().Be(workspaceEntityCount)
 				.And.Be(_expectedTestData.EntryIds.Count());
-		}
-
-		private static void InstallLegalHoldToWorkspace(int workspaceId)
-		{
-			ILibraryApplicationService applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
-			applicationService.InstallToWorkspace(workspaceId, applicationService.Get(Const.Application.LEGAL_HOLD_APPLICATION_NAME).ArtifactID);
 		}
 
 		private static ImportFromLDAPConnectToSourcePage FillOutIntegrationPointEditPageForImportFromLDAP(IntegrationPointEditPage integrationPointEditPage, string integrationPointName)
