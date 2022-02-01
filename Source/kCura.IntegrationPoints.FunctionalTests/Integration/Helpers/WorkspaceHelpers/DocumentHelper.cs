@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
-using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelpers
 {
@@ -31,6 +30,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return Workspace.Documents.Where(x => x.HasNatives && x.HasImages).ToList();
         }
 
+        public IList<DocumentTest> GetDocumentsWithImagesAndFields()
+        {
+            return Workspace.Documents.Where(x => x.HasFields && x.HasImages).ToList();
+        }
+
         public IList<DocumentTest> GetDocumentsWithoutImages()
         {
             return Workspace.Documents.Where(x => !x.HasImages).ToList();
@@ -39,6 +43,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
         public IList<DocumentTest> GetDocumentsWithoutNatives()
         {
             return Workspace.Documents.Where(x => !x.HasNatives).ToList();
+        }
+
+        public IList<DocumentTest> GetDocumentsWithoutImagesNativesAndFields()
+        {
+            return Workspace.Documents.Where(x => !x.HasNatives && !x.HasImages && !x.HasFields).ToList();
         }
     }
 }

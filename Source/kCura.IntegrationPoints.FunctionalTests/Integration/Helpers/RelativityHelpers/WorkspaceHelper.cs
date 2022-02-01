@@ -115,8 +115,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                 HasImages = false,
                 HasNatives = true,
             });
-			
-            return workspace;
+
+            workspace.Documents.Add(new DocumentTest()
+            {
+                ParenObjectArtifactId = folder.ArtifactId,
+                FolderName = folder.Name,
+                HasImages = false,
+                HasNatives = false,
+            });
+
+			return workspace;
 		}
 
 		public WorkspaceTest CreateWorkspaceWithIntegrationPointsApp(int? workspaceArtifactId)

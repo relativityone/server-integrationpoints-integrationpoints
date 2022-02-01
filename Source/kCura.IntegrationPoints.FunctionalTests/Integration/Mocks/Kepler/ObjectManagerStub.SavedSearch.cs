@@ -28,7 +28,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
 	    private bool IsSavedSearchQuery(QueryRequest query)
 	    {
-		    return query.ObjectType.ArtifactTypeID == (int) ArtifactType.Search;
+            return query.ObjectType.ArtifactTypeID == (int) ArtifactType.Search;
 	    }
     }
 }

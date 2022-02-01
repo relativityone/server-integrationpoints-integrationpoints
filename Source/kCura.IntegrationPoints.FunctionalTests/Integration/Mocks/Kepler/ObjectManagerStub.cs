@@ -84,6 +84,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             SetupJobHistory();
             SetupDocumentFields();
             SetupSavedSearch();
+            SetupSavedSearchDocuments();
             SetupIntegrationPointLongTextStreaming();
             SetupIntegrationPointProfile();
             SetupIntegrationPointProfileLongTextStreaming();
@@ -235,7 +236,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 foundObjects.AddRange(customFilter(request, collectionGetter(workspace))
                     .Select(x => x.ToRelativityObject()));
             }
-
             if (IsArtifactIdCondition(request.Condition, out int artifactId))
             {
                 AddRelativityObjectsToResult(
@@ -248,7 +248,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     collectionGetter(workspace).Where(x => artifactIds.Contains(x.ArtifactId))
                     , foundObjects);
             }
-
+            
             return foundObjects;
         }
 

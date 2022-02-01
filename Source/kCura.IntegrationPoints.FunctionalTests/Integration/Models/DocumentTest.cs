@@ -19,6 +19,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public bool HasNatives { get; set; }
 
+        public bool HasFields => _fieldValues.Any();
+
         public int? ImageCount { get; set; }
 
         public string FolderName { get; set; }
@@ -28,6 +30,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
         public DocumentTest(RelativityObject relativityObject) : base(DOCUMENT_NAME)
         {
             _fieldValues = relativityObject.FieldValues.ToDictionary(x => x.Field.Name, x => x.Value);
+        }
+
+        public DocumentTest() : base(DOCUMENT_NAME)
+        {
+            _fieldValues = new Dictionary<string, object>();
         }
 
         public DocumentTest(IList<FieldTest> fields) : base(DOCUMENT_NAME)
