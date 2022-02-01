@@ -112,13 +112,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 
 		private static void FillOutRelativityProviderConnectToSourcePage(RelativityProviderConnectToSourcePage page, Workspace destinationWorkspace, string viewName = null)
 		{
-			RelativityProviderConnectToSource relativityProviderConnectToSource = new RelativityProviderConnectToViewSource
+			RelativityProviderConnectToViewSource model = new RelativityProviderConnectToViewSource
 			{
 				View = viewName,
 				DestinationWorkspace = $"{destinationWorkspace.Name} - {destinationWorkspace.ArtifactID}"
 			};
 
-			page.ApplyModel(relativityProviderConnectToSource);
+			page.ApplyModel(model);
 		}
 	}
 }
