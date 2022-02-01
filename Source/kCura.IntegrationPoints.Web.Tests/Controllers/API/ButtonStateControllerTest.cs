@@ -59,7 +59,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         }
 
         [Test]
-        public void CheckPermissionsShouldReturnButtonStateObject()
+        [TestCase(ProviderType.ImportLoadFile, false, true, false, false, false, true)]
+        [TestCase(ProviderType.Relativity, false, false, true, false, true, true)]
+        [TestCase(ProviderType.Relativity, true, false, false, false, false, true)]
+        public void CheckPermissionsShouldReturnButtonStateObject(ProviderType providerType, bool imageImport, bool hasErrors, bool hasJobsInQueue, 
+            bool hasErrorViewPermissions, bool hasStoppableJobs, bool hasProfileAddPermission)
         {
             //Arrange
             int workspaceId = 123456;
@@ -67,20 +71,20 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             int sourceProvider = 123;
             int destinationProvider = 456;
             
-            var importSettings = new ImportSettings { ImageImport = false };
+            var importSettings = new ImportSettings { ImageImport = imageImport };
             _integrationPointRepository.ReadWithFieldMappingAsync(integrationPointArtifactId).Returns(new Data.IntegrationPoint
             {
-                HasErrors = true,
+                HasErrors = hasErrors,
                 SourceProvider = sourceProvider,
                 DestinationProvider = destinationProvider,
                 DestinationConfiguration = JsonConvert.SerializeObject(importSettings)
             });
 
-            _providerTypeService.GetProviderType(sourceProvider, destinationProvider).Returns(ProviderType.ImportLoadFile);
+            _providerTypeService.GetProviderType(sourceProvider, destinationProvider).Returns(providerType);
 
             ValidationResult validationResult = new ValidationResult()
             {
-                IsValid = true
+                IsValid = hasErrorViewPermissions
             };
             _permissionValidator.ValidateViewErrors(workspaceId).Returns(validationResult);
 
@@ -88,25 +92,43 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _repositoryFactory.GetPermissionRepository(workspaceId).Returns(permissionRepository);
             permissionRepository.UserHasArtifactTypePermission(Guid.Parse(ObjectTypeGuids.IntegrationPointProfile), ArtifactPermission.Create).Returns(true);
 
-            _queueManager.HasJobsExecutingOrInQueue(workspaceId, integrationPointArtifactId).Returns(true);
-            StoppableJobCollection stoppableJobCollection = new StoppableJobCollection();
+            _queueManager.HasJobsExecutingOrInQueue(workspaceId, integrationPointArtifactId).Returns(hasJobsInQueue);
+            StoppableJobCollection stoppableJobCollection;
+            if (hasStoppableJobs)
+            {
+                stoppableJobCollection = new StoppableJobCollection()
+                {
+                    PendingJobArtifactIds = new[] { 123, 456 },
+                    ProcessingJobArtifactIds = new[] { 111 }
+                };
+            }
+            else
+            {
+                stoppableJobCollection = new StoppableJobCollection()
+                {
+                    PendingJobArtifactIds = new int[] { },
+                    ProcessingJobArtifactIds = new int[] { }
+                };
+            }
             _jobHistoryManager.GetStoppableJobCollection(123456, integrationPointArtifactId).Returns(stoppableJobCollection);
             ButtonStateDTO buttonState = new ButtonStateDTO
             {
                 RunButtonEnabled = true,
-                StopButtonEnabled = true,
-                RetryErrorsButtonEnabled = true,
-                RetryErrorsButtonVisible = true,
-                ViewErrorsLinkEnabled = true,
-                ViewErrorsLinkVisible = true,
-                SaveAsProfileButtonVisible = true,
+                StopButtonEnabled = hasStoppableJobs,
+                RetryErrorsButtonEnabled = false,
+                RetryErrorsButtonVisible = false,
+                ViewErrorsLinkEnabled = hasErrorViewPermissions,
+                ViewErrorsLinkVisible = hasErrors,
+                SaveAsProfileButtonVisible = hasProfileAddPermission,
                 DownloadErrorFileLinkEnabled = true,
                 DownloadErrorFileLinkVisible = true
             };
-            _stateManager.GetButtonState(ProviderType.ImportLoadFile, true, true, false, false, true).Returns(buttonState);
+            _stateManager.GetButtonState(providerType, hasJobsInQueue, hasErrors, hasErrorViewPermissions, hasStoppableJobs, hasProfileAddPermission).Returns(buttonState);
 
+            // Act
             IHttpActionResult response = _controller.CheckPermissions(workspaceId, integrationPointArtifactId);
 
+            // Assert
             Assert.AreEqual(typeof(OkNegotiatedContentResult<ButtonStateDTO>), response.GetType());
             Assert.AreEqual(buttonState, ((OkNegotiatedContentResult<ButtonStateDTO>)response).Content);
         }
