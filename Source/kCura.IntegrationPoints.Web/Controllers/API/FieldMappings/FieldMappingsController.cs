@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 
 		[HttpGet]
 		[LogApiExceptionFilter(Message = "Error while retrieving fields from source workspace.")]
-		public async Task<HttpResponseMessage> GetMappableFieldsFromSourceWorkspace(int workspaceID)
+		public async Task<HttpResponseMessage> GetMappableFieldsFromSourceWorkspace(int workspaceID, int artifactTypeId)
 		{
 			IFieldsClassifierRunner fieldsClassifierRunner = _fieldsClassifyRunnerFactory.CreateForSourceWorkspace();
 
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 
 		[HttpGet]
 		[LogApiExceptionFilter(Message = "Error while retrieving fields from destination workspace.")]
-		public async Task<HttpResponseMessage> GetMappableFieldsFromDestinationWorkspace(int workspaceID)
+		public async Task<HttpResponseMessage> GetMappableFieldsFromDestinationWorkspace(int workspaceID, int artifactTypeId)
 		{
 			IFieldsClassifierRunner fieldsClassifierRunner = _fieldsClassifyRunnerFactory.CreateForDestinationWorkspace();
 

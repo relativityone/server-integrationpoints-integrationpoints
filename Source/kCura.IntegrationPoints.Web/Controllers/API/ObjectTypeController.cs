@@ -3,6 +3,8 @@ using kCura.IntegrationPoints.Web.Models;
 using Relativity;
 using Relativity.API;
 using Relativity.Query;
+using Relativity.Services.Interfaces.ObjectType;
+using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using System;
@@ -116,34 +118,34 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpGet]
-		[LogApiExceptionFilter(Message = "Unable to check if Object Type exists in workspace.")]
-		public async Task<bool> ObjectTypeExists(int sourceWorkspaceId, int destinationWorkspaceId, int sourceObjectTypeArtifactId)
+		[LogApiExceptionFilter(Message = "Unable to check Object Type Artifact ID in the workspace.")]
+		public async Task<int> GetDestinationArtifactTypeID(int sourceWorkspaceId, int destinationWorkspaceId, int sourceArtifactTypeId)
 		{
-			string objectTypeName = await GetObjectTypeName(sourceWorkspaceId, sourceObjectTypeArtifactId).ConfigureAwait(false);
+			string sourceObjectTypeName = await GetObjectTypeName(sourceWorkspaceId, sourceArtifactTypeId).ConfigureAwait(false);
 
-			_logger.LogInformation("Checking if Object Type {objectTypeName} exists in destination workspae ID {destinationWorkspaceId}",
-				objectTypeName, destinationWorkspaceId);
+			_logger.LogInformation("Retrieving Object Type '{objectTypeName}' Artifact ID in destination workspae ID {destinationWorkspaceId}",
+				sourceObjectTypeName, destinationWorkspaceId);
 			try
 			{
-				using (IObjectManager objectManager = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser))
+				using (IObjectTypeManager objectManager = _helper.GetServicesManager().CreateProxy<IObjectTypeManager>(ExecutionIdentity.CurrentUser))
 				{
-					QueryRequest request = new QueryRequest()
+					List<ObjectTypeIdentifier> objectTypes = await objectManager.GetAvailableParentObjectTypesAsync(destinationWorkspaceId).ConfigureAwait(false);
+
+					ObjectTypeIdentifier objectType = objectTypes.FirstOrDefault(x => x.Name == sourceObjectTypeName);
+
+					if (objectType != null)
 					{
-						ObjectType = new ObjectTypeRef()
-						{
-							ArtifactTypeID = (int)ArtifactType.ObjectType
-						},
-						Condition = $"'Name' == '{objectTypeName}'"
-					};
-
-					QueryResult queryResult = await objectManager.QueryAsync(destinationWorkspaceId, request, 0, 1).ConfigureAwait(false);
-
-					return queryResult.Objects.Any();
+						return objectType.ArtifactTypeID;
+					}
+					else
+					{
+						return -1;
+					}
 				}
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Error while checking if Object Type exists in destination workspace");
+				_logger.LogError(ex, "Error while retrieving Object Type Artifact ID from destination workspace");
 				throw;
 			}
 		}

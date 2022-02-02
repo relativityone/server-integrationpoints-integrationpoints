@@ -174,7 +174,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 				});
 
 			// Act
-			bool response = await _sut.ObjectTypeExists(_WORKSPACE_ID, destinationWorkspaceId, rdoArtifactTypeId).ConfigureAwait(false);
+			bool response = await _sut.GetDestinationArtifactTypeID(_WORKSPACE_ID, destinationWorkspaceId, rdoArtifactTypeId).ConfigureAwait(false);
 
 			// Assert
 			response.Should().BeTrue();
@@ -213,7 +213,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 				});
 
 			// Act
-			bool response = await _sut.ObjectTypeExists(_WORKSPACE_ID, destinationWorkspaceId, rdoArtifactTypeId).ConfigureAwait(false);
+			bool response = await _sut.GetDestinationArtifactTypeID(_WORKSPACE_ID, destinationWorkspaceId, rdoArtifactTypeId).ConfigureAwait(false);
 
 			// Assert
 			response.Should().BeFalse();

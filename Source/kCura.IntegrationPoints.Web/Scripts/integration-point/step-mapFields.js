@@ -554,18 +554,31 @@ ko.validation.insertValidationMessage = function (element) {
 		function getSyncSourceFields() {
 			return root.data.ajax({
 				type: 'GET',
-				url: root.utils.generateWebAPIURL('FieldMappings/GetMappableFieldsFromSourceWorkspace')
+				url: root.utils.generateWebAPIURL('FieldMappings/GetMappableFieldsFromSourceWorkspace', root.data.params['TransferredRDOArtifactTypeID'])
 			});
 		}
 
 		function getSyncDestinationFields() {
-			return root.data.ajax({
-				type: 'GET',
-				url: root.utils.generateWebURL(JSON.parse(model.destination).CaseArtifactId +
-					'/api/FieldMappings/GetMappableFieldsFromDestinationWorkspace')
-			}).then(function (result) {
-				return result;
+
+			var sourceObjectTypeArtifactId = root.data.params['TransferredRDOArtifactTypeID'];
+			var destinationWorkspaceId = JSON.parse(model.destination).CaseArtifactId;
+
+			return IP.data.ajax({
+				type: "GET",
+				url: IP.utils.generateWebAPIURL("ObjectType/GetArtifactTypeId", destinationWorkspaceId, sourceObjectTypeArtifactId)
+			})
+			.then(function(destinationObjectTypeArtifactId) {
+				return root.data.ajax({
+					type: 'GET',
+					url: root.utils.generateWebURL(destinationWorkspaceId + '/api/FieldMappings/GetMappableFieldsFromDestinationWorkspace/' + destinationObjectTypeArtifactId)
+				}).then(function (result) {
+					return result;
+				});
+			})
+			.fail(function(error){
+				console.error("Failed to check if Object Type exists in workspace: " + error);
 			});
+			
 		}
 
 		var sourceFieldPromise =

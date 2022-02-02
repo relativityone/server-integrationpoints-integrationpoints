@@ -228,13 +228,13 @@ namespace kCura.IntegrationPoints.Web
 
 			config.Routes.MapHttpRoute(
 				name: "GetMappableFieldsFromSourceWorkspace",
-				routeTemplate: "{workspaceID}/api/FieldMappings/GetMappableFieldsFromSourceWorkspace",
+				routeTemplate: "{workspaceID}/api/FieldMappings/GetMappableFieldsFromSourceWorkspace/{artifactTypeId}",
 				defaults: new { controller = "FieldMappings", action = "GetMappableFieldsFromSourceWorkspace" }
 			);
 
 			config.Routes.MapHttpRoute(
 				name: "GetMappableFieldsFromDestinationWorkspace",
-				routeTemplate: "{workspaceID}/api/FieldMappings/GetMappableFieldsFromDestinationWorkspace",
+				routeTemplate: "{workspaceID}/api/FieldMappings/GetMappableFieldsFromDestinationWorkspace/{artifactTypeId}",
 				defaults: new { controller = "FieldMappings", action = "GetMappableFieldsFromDestinationWorkspace" }
 			);
 
@@ -401,9 +401,9 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
-				name: "GetObjectTypeExists",
-				routeTemplate: "{sourceWorkspaceId}/api/ObjectType/Exists/{destinationWorkspaceId}/{sourceObjectTypeArtifactId}",
-				defaults: new { controller = "ObjectType", action = "ObjectTypeExists" }
+				name: "GetDestinationArtifactTypeID",
+				routeTemplate: "{sourceWorkspaceId}/api/ObjectType/GetArtifactTypeId/{destinationWorkspaceId}/{sourceArtifactTypeId}",
+				defaults: new { controller = "ObjectType", action = "GetDestinationArtifactTypeID" }
 			);
 
 			config.Routes.MapHttpRoute(
