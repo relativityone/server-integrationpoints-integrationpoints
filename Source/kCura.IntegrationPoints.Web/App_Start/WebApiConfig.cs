@@ -246,7 +246,7 @@ namespace kCura.IntegrationPoints.Web
 
 			config.Routes.MapHttpRoute(
 				name: "ValidateFieldsMapping",
-				routeTemplate: "{workspaceID}/api/FieldMappings/Validate/{destinationWorkspaceID}/{destinationProviderGuid}",
+				routeTemplate: "{workspaceID}/api/FieldMappings/Validate/{destinationWorkspaceID}/{destinationProviderGuid}/{sourceArtifactTypeId}/{destinationArtifactTypeId}",
 				defaults: new { controller = "FieldMappings", action = "ValidateAsync" }
 			);
 			

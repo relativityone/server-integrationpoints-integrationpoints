@@ -24,7 +24,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			_fieldsClassifyRunnerFactory = fieldsClassifyRunnerFactory;
 		}
 
-		public async Task<FieldMappingValidationResult> ValidateAsync(IEnumerable<FieldMap> map, int sourceWorkspaceID, int destinationWorkspaceID)
+		public async Task<FieldMappingValidationResult> ValidateAsync(IEnumerable<FieldMap> map, int sourceWorkspaceID, int destinationWorkspaceID, int sourceArtifactTypeId, int destinationArtifactTypeId)
 		{
 			FieldMappingValidationResult result = new FieldMappingValidationResult();
 
@@ -36,12 +36,12 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			}
 
 			IList<string> sourceMappedArtifactsIDs = mappedFields.Select(x => x.SourceField?.FieldIdentifier).ToList();
-			IFieldsClassifierRunner sourceClassifierRunner = _fieldsClassifyRunnerFactory.CreateForSourceWorkspace((int)ArtifactType.Document); // TODO
+			IFieldsClassifierRunner sourceClassifierRunner = _fieldsClassifyRunnerFactory.CreateForSourceWorkspace(sourceArtifactTypeId);
 			Dictionary<string, FieldClassificationResult> sourceFields = (await sourceClassifierRunner.ClassifyFieldsAsync(sourceMappedArtifactsIDs, sourceWorkspaceID).ConfigureAwait(false))
 				.ToDictionary(f => f.FieldInfo.FieldIdentifier, f => f);
 
 			IList<string> destinationMappedArtifactsIDs = mappedFields.Select(x => x.DestinationField?.FieldIdentifier).ToList();
-			IFieldsClassifierRunner destinationClassifierRunner = _fieldsClassifyRunnerFactory.CreateForDestinationWorkspace((int)ArtifactType.Document); // TODO
+			IFieldsClassifierRunner destinationClassifierRunner = _fieldsClassifyRunnerFactory.CreateForDestinationWorkspace(destinationArtifactTypeId);
 			Dictionary<string, FieldClassificationResult> destinationFields = (await destinationClassifierRunner.ClassifyFieldsAsync(destinationMappedArtifactsIDs, destinationWorkspaceID).ConfigureAwait(false))
 				.ToDictionary(f => f.FieldInfo.FieldIdentifier, f => f);
 

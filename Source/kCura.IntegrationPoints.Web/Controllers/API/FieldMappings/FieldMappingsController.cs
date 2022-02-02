@@ -88,13 +88,14 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Error while validating mapped fields")]
-		public async Task<HttpResponseMessage> ValidateAsync([FromBody] IEnumerable<FieldMap> mappedFields, int workspaceID, int destinationWorkspaceID, string destinationProviderGuid)
+		public async Task<HttpResponseMessage> ValidateAsync([FromBody] IEnumerable<FieldMap> mappedFields, int workspaceID, int destinationWorkspaceID, string destinationProviderGuid,
+			int sourceArtifactTypeId, int destinationArtifactTypeId)
 		{
 			FieldMappingValidationResult fieldMappingValidationResult;
 
 			try
 			{
-				fieldMappingValidationResult = (await _fieldsMappingValidator.ValidateAsync(mappedFields, workspaceID, destinationWorkspaceID).ConfigureAwait(false));
+				fieldMappingValidationResult = (await _fieldsMappingValidator.ValidateAsync(mappedFields, workspaceID, destinationWorkspaceID, sourceArtifactTypeId, destinationArtifactTypeId).ConfigureAwait(false));
 			}
 			catch (Exception ex)
 			{

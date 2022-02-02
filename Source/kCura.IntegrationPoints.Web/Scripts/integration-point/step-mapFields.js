@@ -560,17 +560,18 @@ ko.validation.insertValidationMessage = function (element) {
 
 		function getSyncDestinationFields() {
 
-			var sourceObjectTypeArtifactId = root.data.params['TransferredRDOArtifactTypeID'];
-			var destinationWorkspaceId = JSON.parse(model.destination).CaseArtifactId;
+			var sourceArtifactTypeId = destinationModel.artifactTypeID;
+			var destinationWorkspaceId = destinationModel.CaseArtifactId;
 
 			return IP.data.ajax({
 				type: "GET",
-				url: IP.utils.generateWebAPIURL("ObjectType/GetArtifactTypeId", destinationWorkspaceId, sourceObjectTypeArtifactId)
+				url: IP.utils.generateWebAPIURL("ObjectType/GetArtifactTypeId", destinationWorkspaceId, sourceArtifactTypeId)
 			})
-			.then(function(destinationObjectTypeArtifactId) {
+			.then(function(destinationArtifactTypeIdValue) {
+				self.destinationArtifactTypeId = destinationArtifactTypeIdValue;
 				return root.data.ajax({
 					type: 'GET',
-					url: root.utils.generateWebURL(destinationWorkspaceId + '/api/FieldMappings/GetMappableFieldsFromDestinationWorkspace/' + destinationObjectTypeArtifactId)
+					url: root.utils.generateWebURL(destinationWorkspaceId + '/api/FieldMappings/GetMappableFieldsFromDestinationWorkspace/' + destinationArtifactTypeIdValue)
 				}).then(function (result) {
 					return result;
 				});
@@ -1302,7 +1303,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 					var validateMappedFields = root.data.ajax({
 						type: 'POST',
-						url: root.utils.generateWebAPIURL('FieldMappings/Validate', _destination.CaseArtifactId, this.returnModel.destinationProviderGuid),
+						url: root.utils.generateWebAPIURL('FieldMappings/Validate', _destination.CaseArtifactId, this.returnModel.destinationProviderGuid, this.returnModel.artifactTypeID, this.model.destinationArtifactTypeId),
 						data: JSON.stringify(map)
 					})
 						.fail(function (error) {
