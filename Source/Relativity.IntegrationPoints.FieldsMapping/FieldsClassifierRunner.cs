@@ -18,9 +18,9 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			_fieldsClassifiers = fieldsClassifiers ?? new List<IFieldsClassifier>();
 		}
 
-		public async Task<IList<FieldClassificationResult>> GetFilteredFieldsAsync(int workspaceID)
+		public async Task<IList<FieldClassificationResult>> GetFilteredFieldsAsync(int workspaceID, int artifactTypeId)
 		{
-			List<DocumentFieldInfo> fields = (await _fieldsRepository.GetAllDocumentFieldsAsync(workspaceID).ConfigureAwait(false)).ToList();
+			List<FieldInfo> fields = (await _fieldsRepository.GetAllFieldsAsync(workspaceID, artifactTypeId).ConfigureAwait(false)).ToList();
 
 			IEnumerable<FieldClassificationResult> classifiedFields = await ClassifyFieldsAsync(fields, workspaceID).ConfigureAwait(false);
 
@@ -42,7 +42,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			return await ClassifyFieldsAsync(fields, workspaceID).ConfigureAwait(false);
 		}
 
-		public async Task<IEnumerable<FieldClassificationResult>> ClassifyFieldsAsync(ICollection<DocumentFieldInfo> fields, int workspaceID)
+		public async Task<IEnumerable<FieldClassificationResult>> ClassifyFieldsAsync(ICollection<FieldInfo> fields, int workspaceID)
 		{
 			Dictionary<string, FieldClassificationResult> aggregatedFilteringResults = await _fieldsClassifiers
 				.Select(f => Observable.FromAsync(() => f.ClassifyAsync(fields, workspaceID)).Retry(2)) // retry each function once

@@ -28,7 +28,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 		public async Task ClassifyAsync_ShouldProperlyClassifyFieldsNotSupportedByIAPI()
 		{
 			// Arrange
-			List<DocumentFieldInfo> allFields = Enumerable.Range(1, 2).Select(x => new DocumentFieldInfo(
+			List<FieldInfo> allFields = Enumerable.Range(1, 2).Select(x => new FieldInfo(
 				fieldIdentifier: x.ToString(),
 				name: $"Field {x}",
 				type: "Fixed-Length Text(250)")).ToList();
@@ -63,7 +63,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 			_importApiFacadeFake.Setup(x => x.GetWorkspaceFieldsNames(It.IsAny<int>(), It.IsAny<int>())).Throws<InvalidOperationException>();
 
 			// Act
-			Func<Task> action = () => _sut.ClassifyAsync(Mock.Of<ICollection<DocumentFieldInfo>>(), 0);
+			Func<Task> action = () => _sut.ClassifyAsync(Mock.Of<ICollection<FieldInfo>>(), 0);
 
 			// Assert
 			action.ShouldThrow<InvalidOperationException>();

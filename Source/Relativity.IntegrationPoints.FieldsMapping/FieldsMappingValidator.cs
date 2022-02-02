@@ -36,12 +36,12 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			}
 
 			IList<string> sourceMappedArtifactsIDs = mappedFields.Select(x => x.SourceField?.FieldIdentifier).ToList();
-			IFieldsClassifierRunner sourceClassifierRunner = _fieldsClassifyRunnerFactory.CreateForSourceWorkspace();
+			IFieldsClassifierRunner sourceClassifierRunner = _fieldsClassifyRunnerFactory.CreateForSourceWorkspace((int)ArtifactType.Document); // TODO
 			Dictionary<string, FieldClassificationResult> sourceFields = (await sourceClassifierRunner.ClassifyFieldsAsync(sourceMappedArtifactsIDs, sourceWorkspaceID).ConfigureAwait(false))
 				.ToDictionary(f => f.FieldInfo.FieldIdentifier, f => f);
 
 			IList<string> destinationMappedArtifactsIDs = mappedFields.Select(x => x.DestinationField?.FieldIdentifier).ToList();
-			IFieldsClassifierRunner destinationClassifierRunner = _fieldsClassifyRunnerFactory.CreateForDestinationWorkspace();
+			IFieldsClassifierRunner destinationClassifierRunner = _fieldsClassifyRunnerFactory.CreateForDestinationWorkspace((int)ArtifactType.Document); // TODO
 			Dictionary<string, FieldClassificationResult> destinationFields = (await destinationClassifierRunner.ClassifyFieldsAsync(destinationMappedArtifactsIDs, destinationWorkspaceID).ConfigureAwait(false))
 				.ToDictionary(f => f.FieldInfo.FieldIdentifier, f => f);
 

@@ -9,7 +9,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers
 	{
 		private const string ApiDoesNotSupportAllObjectTypes = "API does not support all object types.";
 
-		public Task<IEnumerable<FieldClassificationResult>> ClassifyAsync(ICollection<DocumentFieldInfo> fields, int workspaceID)
+		public Task<IEnumerable<FieldClassificationResult>> ClassifyAsync(ICollection<FieldInfo> fields, int workspaceID)
 		{
 			IEnumerable<FieldClassificationResult> objectFields = fields
 				.Where(x => x.Type == FieldTypeName.SINGLE_OBJECT || x.Type == FieldTypeName.MULTIPLE_OBJECT)

@@ -59,7 +59,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 				.Verifiable();
 
 			// Act
-			await _sut.GetAllDocumentFieldsAsync(It.IsAny<int>()).ConfigureAwait(false);
+			await _sut.GetAllFieldsAsync(It.IsAny<int>()).ConfigureAwait(false);
 
 			// Assert
 			_objectManagerMock.Verify();
@@ -71,10 +71,10 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			// Arrange
 			const int count = 3;
 			SetupWorkspaceFields(Enumerable.Range(1, count).Select(x => CreateField($"Field {x}", x, "Some type")).ToList());
-			var fieldInfoRference = Enumerable.Range(1, count).Select(x => new DocumentFieldInfo($"{x}", $"Field {x}", "Some type"));
+			var fieldInfoRference = Enumerable.Range(1, count).Select(x => new FieldInfo($"{x}", $"Field {x}", "Some type"));
 
 			// Act
-			IList<DocumentFieldInfo> fields = (await _sut.GetAllDocumentFieldsAsync(It.IsAny<int>()).ConfigureAwait(false)).ToList();
+			IList<FieldInfo> fields = (await _sut.GetAllFieldsAsync(It.IsAny<int>()).ConfigureAwait(false)).ToList();
 
 			// Assert
 			fields.Should().HaveCount(3);
@@ -89,7 +89,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		public async Task GetFieldsByArtifactsIdAsync_ShouldReturnEmptyCollction_WhenArtifactsListIsNull()
 		{
 			// Act
-			IEnumerable<DocumentFieldInfo> fields = await _sut.GetFieldsByArtifactsIdAsync(null, It.IsAny<int>()).ConfigureAwait(false);
+			IEnumerable<FieldInfo> fields = await _sut.GetFieldsByArtifactsIdAsync(null, It.IsAny<int>()).ConfigureAwait(false);
 
 			// Assert
 			fields.Should().BeEmpty();
@@ -99,7 +99,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		public async Task GetFieldsByArtifactsIdAsync_ShouldReturnEmptyCollction_WhenArtifactsListIsEmpty()
 		{
 			// Act
-			IEnumerable<DocumentFieldInfo> fields = await _sut.GetFieldsByArtifactsIdAsync(Enumerable.Empty<string>(), It.IsAny<int>()).ConfigureAwait(false);
+			IEnumerable<FieldInfo> fields = await _sut.GetFieldsByArtifactsIdAsync(Enumerable.Empty<string>(), It.IsAny<int>()).ConfigureAwait(false);
 
 			// Assert
 			fields.Should().BeEmpty();
@@ -111,10 +111,10 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			// Arrange
 			const int count = 3;
 			SetupWorkspaceFields(Enumerable.Range(1, count).Select(x => CreateField($"Field {x}", x, "Some type")).ToList());
-			var fieldInfoRference = Enumerable.Range(1, count).Select(x => new DocumentFieldInfo($"{x}", $"Field {x}", "Some type"));
+			var fieldInfoRference = Enumerable.Range(1, count).Select(x => new FieldInfo($"{x}", $"Field {x}", "Some type"));
 
 			// Act
-			IList<DocumentFieldInfo> fields = (await _sut.GetFieldsByArtifactsIdAsync(new List<string> { "1", "2"},It.IsAny<int>()).ConfigureAwait(false)).ToList();
+			IList<FieldInfo> fields = (await _sut.GetFieldsByArtifactsIdAsync(new List<string> { "1", "2"},It.IsAny<int>()).ConfigureAwait(false)).ToList();
 
 			// Assert
 			fields.Should().HaveCount(3);

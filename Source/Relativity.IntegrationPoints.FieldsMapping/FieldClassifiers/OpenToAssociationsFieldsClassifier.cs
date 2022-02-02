@@ -6,7 +6,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers
 {
 	public class OpenToAssociationsFieldsClassifier : IFieldsClassifier
 	{
-		public Task<IEnumerable<FieldClassificationResult>> ClassifyAsync(ICollection<DocumentFieldInfo> fields, int workspaceID)
+		public Task<IEnumerable<FieldClassificationResult>> ClassifyAsync(ICollection<FieldInfo> fields, int workspaceID)
 		{
 			IEnumerable<FieldClassificationResult> fieldsWithOpenToAssociationsEnabled = fields
 				.Where(x => x.OpenToAssociations.HasValue && x.OpenToAssociations.Value)

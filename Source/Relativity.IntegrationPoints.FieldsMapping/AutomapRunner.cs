@@ -29,11 +29,11 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 			_metricBucketNameGenerator = metricBucketNameGenerator;
 		}
 
-		public IEnumerable<FieldMap> MapFields(IEnumerable<DocumentFieldInfo> sourceFields, IEnumerable<DocumentFieldInfo> destinationFields,
+		public IEnumerable<FieldMap> MapFields(IEnumerable<FieldInfo> sourceFields, IEnumerable<FieldInfo> destinationFields,
 			string destinationProviderGuid, int sourceWorkspaceArtifactId, bool matchOnlyIdentifiers = false)
 		{
-			List<DocumentFieldInfo> sourceFieldsList = sourceFields.ToList();
-			List<DocumentFieldInfo> destinationFieldsList = destinationFields.ToList();
+			List<FieldInfo> sourceFieldsList = sourceFields.ToList();
+			List<FieldInfo> destinationFieldsList = destinationFields.ToList();
 
 			AutomapBuilder mappingBuilder = new AutomapBuilder(sourceFieldsList, destinationFieldsList).MapByIsIdentifier();
 
@@ -57,11 +57,11 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 				.ThenBy(x => x.SourceField.DisplayName);
 		}
 
-		public async Task<IEnumerable<FieldMap>> MapFieldsFromSavedSearchAsync(IEnumerable<DocumentFieldInfo> sourceFields,
-			IEnumerable<DocumentFieldInfo> destinationFields, string destinationProviderGuid, int sourceWorkspaceArtifactId, int savedSearchArtifactId)
+		public async Task<IEnumerable<FieldMap>> MapFieldsFromSavedSearchAsync(IEnumerable<FieldInfo> sourceFields,
+			IEnumerable<FieldInfo> destinationFields, string destinationProviderGuid, int sourceWorkspaceArtifactId, int savedSearchArtifactId)
 		{
-			List<DocumentFieldInfo> sourceFieldsList = sourceFields.ToList();
-			List<DocumentFieldInfo> savedSearchFields;
+			List<FieldInfo> sourceFieldsList = sourceFields.ToList();
+			List<FieldInfo> savedSearchFields;
 
 			using (IKeywordSearchManager keywordSearchManager = _servicesMgr.CreateProxy<IKeywordSearchManager>(ExecutionIdentity.CurrentUser))
 			{
@@ -76,7 +76,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 
 			if (!savedSearchFields.Exists(x => x.IsIdentifier))
 			{
-				DocumentFieldInfo identifierField = sourceFieldsList.SingleOrDefault(x => x.IsIdentifier);
+				FieldInfo identifierField = sourceFieldsList.SingleOrDefault(x => x.IsIdentifier);
 				if (identifierField != null)
 				{
 					savedSearchFields.Add(identifierField);
@@ -90,18 +90,18 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 		private class AutomapBuilder
 		{
 			public IEnumerable<FieldMap> Mapping { get; }
-			private readonly IEnumerable<DocumentFieldInfo> _sourceFields;
-			private readonly IEnumerable<DocumentFieldInfo> _destinationFields;
+			private readonly IEnumerable<FieldInfo> _sourceFields;
+			private readonly IEnumerable<FieldInfo> _destinationFields;
 
-			public AutomapBuilder(IEnumerable<DocumentFieldInfo> sourceFields,
-				IEnumerable<DocumentFieldInfo> destinationFields, IEnumerable<FieldMap> mapping = null)
+			public AutomapBuilder(IEnumerable<FieldInfo> sourceFields,
+				IEnumerable<FieldInfo> destinationFields, IEnumerable<FieldMap> mapping = null)
 			{
 				Mapping = mapping ?? new FieldMap[0];
 				_sourceFields = sourceFields;
 				_destinationFields = destinationFields;
 			}
 
-			public AutomapBuilder MapBy<T>(Func<DocumentFieldInfo, T> selector, out int mappedCount, out int fixedLengthTextFieldsWithDifferentLengthCount)
+			public AutomapBuilder MapBy<T>(Func<FieldInfo, T> selector, out int mappedCount, out int fixedLengthTextFieldsWithDifferentLengthCount)
 			{
 				var fieldPairs = _sourceFields
 					.Join(_destinationFields, selector, selector, (SourceField, DestinationField) => new { SourceField, DestinationField })
@@ -126,8 +126,8 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 
 				mappedCount = newMappings.Length;
 
-				DocumentFieldInfo[] remainingSourceFields = _sourceFields.Where(x => newMappings.All(m => m.SourceField.FieldIdentifier != x.FieldIdentifier.ToString())).ToArray();
-				DocumentFieldInfo[] remainingDestinationFields = _destinationFields.Where(x => newMappings.All(m => m.DestinationField.FieldIdentifier != x.FieldIdentifier.ToString())).ToArray();
+				FieldInfo[] remainingSourceFields = _sourceFields.Where(x => newMappings.All(m => m.SourceField.FieldIdentifier != x.FieldIdentifier.ToString())).ToArray();
+				FieldInfo[] remainingDestinationFields = _destinationFields.Where(x => newMappings.All(m => m.DestinationField.FieldIdentifier != x.FieldIdentifier.ToString())).ToArray();
 
 				return new AutomapBuilder(
 					remainingSourceFields,
@@ -138,8 +138,8 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 
 			public AutomapBuilder MapByIsIdentifier()
 			{
-				DocumentFieldInfo sourceIdentifier = _sourceFields.FirstOrDefault(x => x.IsIdentifier);
-				DocumentFieldInfo destinationIdentifier = _destinationFields.FirstOrDefault(x => x.IsIdentifier);
+				FieldInfo sourceIdentifier = _sourceFields.FirstOrDefault(x => x.IsIdentifier);
+				FieldInfo destinationIdentifier = _destinationFields.FirstOrDefault(x => x.IsIdentifier);
 
 				if (sourceIdentifier == null || destinationIdentifier == null)
 				{

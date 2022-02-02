@@ -42,9 +42,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 		[LogApiExceptionFilter(Message = "Error while retrieving fields from source workspace.")]
 		public async Task<HttpResponseMessage> GetMappableFieldsFromSourceWorkspace(int workspaceID, int artifactTypeId)
 		{
-			IFieldsClassifierRunner fieldsClassifierRunner = _fieldsClassifyRunnerFactory.CreateForSourceWorkspace();
+			IFieldsClassifierRunner fieldsClassifierRunner = _fieldsClassifyRunnerFactory.CreateForSourceWorkspace(artifactTypeId);
 
-			IEnumerable<ClassifiedFieldDTO> filteredFields = (await fieldsClassifierRunner.GetFilteredFieldsAsync(workspaceID).ConfigureAwait(false))
+			IEnumerable<ClassifiedFieldDTO> filteredFields = (await fieldsClassifierRunner.GetFilteredFieldsAsync(workspaceID, artifactTypeId).ConfigureAwait(false))
 				.Select(x => new ClassifiedFieldDTO(x));
 
 			return Request.CreateResponse(HttpStatusCode.OK, filteredFields, Configuration.Formatters.JsonFormatter);
@@ -54,9 +54,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 		[LogApiExceptionFilter(Message = "Error while retrieving fields from destination workspace.")]
 		public async Task<HttpResponseMessage> GetMappableFieldsFromDestinationWorkspace(int workspaceID, int artifactTypeId)
 		{
-			IFieldsClassifierRunner fieldsClassifierRunner = _fieldsClassifyRunnerFactory.CreateForDestinationWorkspace();
+			IFieldsClassifierRunner fieldsClassifierRunner = _fieldsClassifyRunnerFactory.CreateForDestinationWorkspace(artifactTypeId);
 
-			IEnumerable<ClassifiedFieldDTO> filteredFields = (await fieldsClassifierRunner.GetFilteredFieldsAsync(workspaceID).ConfigureAwait(false))
+			IEnumerable<ClassifiedFieldDTO> filteredFields = (await fieldsClassifierRunner.GetFilteredFieldsAsync(workspaceID, artifactTypeId).ConfigureAwait(false))
 				.Select(x => new ClassifiedFieldDTO(x));
 
 			return Request.CreateResponse(HttpStatusCode.OK, filteredFields, Configuration.Formatters.JsonFormatter);

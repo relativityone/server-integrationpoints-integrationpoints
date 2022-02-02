@@ -46,8 +46,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			_metricBucketNameGeneratorFake = new Mock<IMetricBucketNameGenerator>();
 
 			_fieldsClassifierRunner = new Mock<IFieldsClassifierRunner>();
-			_sourceFieldClassificationResults = new List<FieldClassificationResult> { new FieldClassificationResult(new DocumentFieldInfo("1", "Name", "Type")) };
-			_destinationFieldClassificationResults = new List<FieldClassificationResult> { new FieldClassificationResult(new DocumentFieldInfo("2", "Name", "Type")) };
+			_sourceFieldClassificationResults = new List<FieldClassificationResult> { new FieldClassificationResult(new FieldInfo("1", "Name", "Type")) };
+			_destinationFieldClassificationResults = new List<FieldClassificationResult> { new FieldClassificationResult(new FieldInfo("2", "Name", "Type")) };
 
 			_sourceClassifiedFieldDTOs = _sourceFieldClassificationResults.Select(x => new ClassifiedFieldDTO(x));
 			_destinationClassifiedFieldDTOs = _destinationFieldClassificationResults.Select(x => new ClassifiedFieldDTO(x));

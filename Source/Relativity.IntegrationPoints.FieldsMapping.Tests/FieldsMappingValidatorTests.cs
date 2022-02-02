@@ -41,8 +41,8 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		public async Task ValidateAsync_ShouldValidateObjectIdentifier(int sourceLength, int destinationLength, bool expectValid)
 		{
 			var IDs = new List<string> { "1", "2" };
-			DocumentFieldInfo sourceControlNumber = CreateWithType(IDs[0], $"{FieldTypeName.FIXED_LENGTH_TEXT}({sourceLength})");
-			DocumentFieldInfo destinationControlNumber = CreateWithType(IDs[1], $"{FieldTypeName.FIXED_LENGTH_TEXT}({destinationLength})");
+			FieldInfo sourceControlNumber = CreateWithType(IDs[0], $"{FieldTypeName.FIXED_LENGTH_TEXT}({sourceLength})");
+			FieldInfo destinationControlNumber = CreateWithType(IDs[1], $"{FieldTypeName.FIXED_LENGTH_TEXT}({destinationLength})");
 
 			var sourceClassifiedFields = new List<FieldClassificationResult>()
 			{
@@ -265,25 +265,25 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		public static IEnumerable<TestCaseData> UnicodeDependentTestCaseSource()
 		{
 			yield return new TestCaseData(
-				new DocumentFieldInfo("1", "Field1", FieldTypeName.MULTIPLE_CHOICE) { Unicode = true },
-				new DocumentFieldInfo("1", "Field1", FieldTypeName.MULTIPLE_CHOICE) { Unicode = false }
+				new FieldInfo("1", "Field1", FieldTypeName.MULTIPLE_CHOICE) { Unicode = true },
+				new FieldInfo("1", "Field1", FieldTypeName.MULTIPLE_CHOICE) { Unicode = false }
 			);
 			yield return new TestCaseData(
-				new DocumentFieldInfo("1", "Field1", FieldTypeName.SINGLE_CHOICE) { Unicode = true },
-				new DocumentFieldInfo("1", "Field1", FieldTypeName.SINGLE_CHOICE) { Unicode = false }
+				new FieldInfo("1", "Field1", FieldTypeName.SINGLE_CHOICE) { Unicode = true },
+				new FieldInfo("1", "Field1", FieldTypeName.SINGLE_CHOICE) { Unicode = false }
 			);
 			yield return new TestCaseData(
-				new DocumentFieldInfo("1", "Field1", FieldTypeName.LONG_TEXT) { Unicode = true },
-				new DocumentFieldInfo("1", "Field1", FieldTypeName.LONG_TEXT) { Unicode = false }
+				new FieldInfo("1", "Field1", FieldTypeName.LONG_TEXT) { Unicode = true },
+				new FieldInfo("1", "Field1", FieldTypeName.LONG_TEXT) { Unicode = false }
 			);
 			yield return new TestCaseData(
-				new DocumentFieldInfo("1", "Field1", FieldTypeName.FIXED_LENGTH_TEXT) { Unicode = true },
-				new DocumentFieldInfo("1", "Field1", FieldTypeName.FIXED_LENGTH_TEXT) { Unicode = false }
+				new FieldInfo("1", "Field1", FieldTypeName.FIXED_LENGTH_TEXT) { Unicode = true },
+				new FieldInfo("1", "Field1", FieldTypeName.FIXED_LENGTH_TEXT) { Unicode = false }
 			);
 		}
 
 		[TestCaseSource(nameof(UnicodeDependentTestCaseSource))]
-		public async Task ValidateAsync_ShouldReturnInvalidFields_WhenUnicodeIsDifferentAndTypeIsUnicodeDependent(DocumentFieldInfo sourceField, DocumentFieldInfo destinationField)
+		public async Task ValidateAsync_ShouldReturnInvalidFields_WhenUnicodeIsDifferentAndTypeIsUnicodeDependent(FieldInfo sourceField, FieldInfo destinationField)
 		{
 			// Arrange
 			var sourceClassifiedFields = new List<FieldClassificationResult>()
@@ -866,19 +866,19 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			result.InvalidMappedFields.Should().BeEmpty();
 		}
 
-		private DocumentFieldInfo CreateWithSampleType(string id)
+		private FieldInfo CreateWithSampleType(string id)
 		{
-			return new DocumentFieldInfo(id, $"Field {id}", "Sample Type");
+			return new FieldInfo(id, $"Field {id}", "Sample Type");
 		}
 
-		private DocumentFieldInfo CreateWithType(string id, string type)
+		private FieldInfo CreateWithType(string id, string type)
 		{
-			return new DocumentFieldInfo(id, $"Field {id}", type);
+			return new FieldInfo(id, $"Field {id}", type);
 		}
 
-		private DocumentFieldInfo CreateWithIdentifier(string id)
+		private FieldInfo CreateWithIdentifier(string id)
 		{
-			return new DocumentFieldInfo(id, $"Field {id}", "Sample Type")
+			return new FieldInfo(id, $"Field {id}", "Sample Type")
 			{
 				IsIdentifier = true
 			};
