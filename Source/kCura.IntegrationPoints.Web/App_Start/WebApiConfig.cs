@@ -1,4 +1,5 @@
 ﻿using System.Web.Http;
+using System.Web.Mvc;
 
 namespace kCura.IntegrationPoints.Web
 {
@@ -394,10 +395,21 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
-				name: "GetRdoViews",
-				routeTemplate:
-				"{workspaceID}/api/ViewFinder/{destinationWorkspaceId}/{rdoArtifactTypeId}",
-				defaults: new { controller = "ViewFinder", action = "GetViews" }
+				name: "GetView",
+				routeTemplate: "{workspaceID}/api/ObjectType/Views/{artifactTypeId}/{viewId}",
+				defaults: new { controller = "ObjectType", action = "GetView" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "GetObjectTypeViews",
+				routeTemplate: "{workspaceID}/api/ObjectType/Views/{artifactTypeId}/{search}/{page}",
+				defaults: new { controller = "ObjectType", action = "GetViews", search = UrlParameter.Optional, page = UrlParameter.Optional }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "GetObjectTypeExists",
+				routeTemplate: "{sourceWorkspaceId}/api/ObjectType/Exists/{destinationWorkspaceId}/{sourceObjectTypeArtifactId}",
+				defaults: new { controller = "ObjectType", action = "ObjectTypeExists" }
 			);
 
 			config.Routes.MapHttpRoute(
