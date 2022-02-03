@@ -93,24 +93,24 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             permissionRepository.UserHasArtifactTypePermission(Guid.Parse(ObjectTypeGuids.IntegrationPointProfile), ArtifactPermission.Create).Returns(true);
 
             _queueManager.HasJobsExecutingOrInQueue(workspaceId, integrationPointArtifactId).Returns(hasJobsInQueue);
-            StoppableJobCollection stoppableJobCollection;
+            StoppableJobHistoryCollection stoppableJobCollection;
             if (hasStoppableJobs)
             {
-                stoppableJobCollection = new StoppableJobCollection()
+                stoppableJobCollection = new StoppableJobHistoryCollection()
                 {
-                    PendingJobArtifactIds = new[] { 123, 456 },
-                    ProcessingJobArtifactIds = new[] { 111 }
+                    PendingJobHistory = new[] { new JobHistory { ArtifactId = 123 }, new JobHistory { ArtifactId = 456 } },
+                    ProcessingJobHistory = new[] { new JobHistory { ArtifactId = 111 } }
                 };
             }
             else
             {
-                stoppableJobCollection = new StoppableJobCollection()
+                stoppableJobCollection = new StoppableJobHistoryCollection()
                 {
-                    PendingJobArtifactIds = new int[] { },
-                    ProcessingJobArtifactIds = new int[] { }
+                    PendingJobHistory = Array.Empty<JobHistory>(),
+                    ProcessingJobHistory = Array.Empty<JobHistory>()
                 };
             }
-            _jobHistoryManager.GetStoppableJobCollection(123456, integrationPointArtifactId).Returns(stoppableJobCollection);
+            _jobHistoryManager.GetStoppableJobHistory(123456, integrationPointArtifactId).Returns(stoppableJobCollection);
             ButtonStateDTO buttonState = new ButtonStateDTO
             {
                 RunButtonEnabled = true,

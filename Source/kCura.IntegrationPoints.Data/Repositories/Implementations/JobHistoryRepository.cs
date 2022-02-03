@@ -64,28 +64,28 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public IDictionary<Guid, int[]> GetStoppableJobHistoryArtifactIdsByStatus(int integrationPointArtifactId)
 		{
-			List<JobHistory> jobHistories = GetStoppableJobHistoriesForIntegrationPoint(integrationPointArtifactId);
+			IList<JobHistory> jobHistories = GetStoppableJobHistoriesForIntegrationPoint(integrationPointArtifactId);
 
-			var pendingJobArtifactIds = new List<int>();
-			var processingJobArtifactIds = new List<int>();
+			var jobHistoryIdsInPending = new List<int>();
+			var jobHistoryIdsinProcessing = new List<int>();
 
 			foreach (JobHistory jobHistory in jobHistories)
 			{
 				string statusName = jobHistory.JobStatus?.Name;
 				if (statusName == JobStatusChoices.JobHistoryPending.Name)
 				{
-					pendingJobArtifactIds.Add(jobHistory.ArtifactId);
+					jobHistoryIdsInPending.Add(jobHistory.ArtifactId);
 				}
 				else if (statusName == JobStatusChoices.JobHistoryProcessing.Name)
 				{
-					processingJobArtifactIds.Add(jobHistory.ArtifactId);
+					jobHistoryIdsinProcessing.Add(jobHistory.ArtifactId);
 				}
 			}
 
 			return new Dictionary<Guid, int[]>
 			{
-				[JobStatusChoices.JobHistoryPending.Guids.First()] = pendingJobArtifactIds.ToArray(),
-				[JobStatusChoices.JobHistoryProcessing.Guids.First()] = processingJobArtifactIds.ToArray()
+				[JobStatusChoices.JobHistoryPending.Guids.First()] = jobHistoryIdsInPending.ToArray(),
+				[JobStatusChoices.JobHistoryProcessing.Guids.First()] = jobHistoryIdsinProcessing.ToArray()
 			};
 		}
 
@@ -94,6 +94,19 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			IEnumerable<Guid> fieldsToRetrieve = new[] { Guid.Parse(JobHistoryFieldGuids.Name) };
 			JobHistory jobHistory = _relativityObjectManager.Read<JobHistory>(jobHistoryArtifactId, fieldsToRetrieve);
 			return jobHistory.Name;
+		}
+
+		public IList<JobHistory> GetStoppableJobHistoriesForIntegrationPoint(int integrationPointArtifactId)
+		{
+			string integrationPointCondition = CreateIntegrationPointCondition(integrationPointArtifactId);
+			string stoppableCondition = CreateStoppableCondition();
+
+			var queryRequest = new QueryRequest
+			{
+				Condition = $"{integrationPointCondition} AND {stoppableCondition}"
+			};
+
+			return _relativityObjectManager.Query<JobHistory>(queryRequest);
 		}
 
 		private void UpdateJobHistoryStatusField(int jobHistoryID, ChoiceRef status, DateTime jobEndTime)
@@ -144,20 +157,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 
 			_relativityObjectManager.Update(integrationPointID, fieldValues);
-		}
-
-		private List<JobHistory> GetStoppableJobHistoriesForIntegrationPoint(int integrationPointArtifactId)
-		{
-			string integrationPointCondition = CreateIntegrationPointCondition(integrationPointArtifactId);
-			string stoppableCondition = CreateStoppableCondition();
-
-			var queryRequest = new QueryRequest
-			{
-				Condition = $"{integrationPointCondition} AND {stoppableCondition}",
-				Fields = new[] { new FieldRef { Guid = Guid.Parse(JobHistoryFieldGuids.JobStatus) } }
-			};
-
-			return _relativityObjectManager.Query<JobHistory>(queryRequest);
 		}
 
 		private string CreateIntegrationPointCondition(int integrationPointArtifactId)

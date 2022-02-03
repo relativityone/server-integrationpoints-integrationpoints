@@ -159,7 +159,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_jobService.GetJobs(_integrationPointId).Returns(new List<Job>());
 
 			// act
-			IDictionary<Guid, List<Job>> batchInstanceToJob = _manager.GetScheduledAgentJobMapedByBatchInstance(_integrationPointId);
+			IDictionary<Guid, List<Job>> batchInstanceToJob = _manager.GetJobsByBatchInstanceId(_integrationPointId);
 
 			// assert
 			Assert.IsNotNull(batchInstanceToJob);
@@ -180,7 +180,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(parameter);
 
 			// act
-			IDictionary<Guid, List<Job>> batchInstanceToJob = _manager.GetScheduledAgentJobMapedByBatchInstance(_integrationPointId);
+			IDictionary<Guid, List<Job>> batchInstanceToJob = _manager.GetJobsByBatchInstanceId(_integrationPointId);
 
 			// assert
 			Assert.IsNotNull(batchInstanceToJob);
@@ -204,7 +204,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_serializer.Deserialize<TaskParameters>(job.JobDetails).Returns(parameter);
 
 			// act
-			IDictionary<Guid, List<Job>> batchInstanceToJob = _manager.GetScheduledAgentJobMapedByBatchInstance(_integrationPointId);
+			IDictionary<Guid, List<Job>> batchInstanceToJob = _manager.GetJobsByBatchInstanceId(_integrationPointId);
 
 			// assert
 			Assert.IsNotNull(batchInstanceToJob);
@@ -232,7 +232,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 
 
 			// act
-			IDictionary<Guid, List<Job>> batchInstanceToJob = _manager.GetScheduledAgentJobMapedByBatchInstance(_integrationPointId);
+			IDictionary<Guid, List<Job>> batchInstanceToJob = _manager.GetJobsByBatchInstanceId(_integrationPointId);
 
 			// assert
 			Assert.IsNotNull(batchInstanceToJob);
@@ -261,7 +261,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_serializer.Deserialize<TaskParameters>(job2.JobDetails).Throws(new Exception("blah"));
 
 			// act
-			IDictionary<Guid, List<Job>> batchInstanceToJob = _manager.GetScheduledAgentJobMapedByBatchInstance(_integrationPointId);
+			IDictionary<Guid, List<Job>> batchInstanceToJob = _manager.GetJobsByBatchInstanceId(_integrationPointId);
 
 			// assert
 			Assert.IsNotNull(batchInstanceToJob);

@@ -17,66 +17,66 @@ namespace kCura.IntegrationPoints.Core.Tests.Models
 		public void HasStoppableJobs_NullProperties_ReturnsFalse()
 		{
 			// Arrange
-			var instance = new StoppableJobCollection();
+			var instance = new StoppableJobHistoryCollection();
 
 			// Act & Assert
-			Assert.IsFalse(instance.HasStoppableJobs);
+			Assert.IsFalse(instance.HasStoppableJobHistory);
 		}
 
 		[Test]
 		public void HasStoppableJobs_EmptyProperties_ReturnsFalse()
 		{
 			// Arrange
-			var instance = new StoppableJobCollection()
+			var instance = new StoppableJobHistoryCollection()
 			{
-				PendingJobArtifactIds = new int[0],
-				ProcessingJobArtifactIds = new int[0]
+				PendingJobHistory = new Data.JobHistory[0],
+				ProcessingJobHistory = new Data.JobHistory[0]
 			};
 
 			// Act & Assert
-			Assert.IsFalse(instance.HasStoppableJobs);
+			Assert.IsFalse(instance.HasStoppableJobHistory);
 		}
 
 		[Test]
 		public void HasStoppableJobs_GoldFlow()
 		{
 			// Arrange
-			var instance = new StoppableJobCollection()
+			var instance = new StoppableJobHistoryCollection()
 			{
-				PendingJobArtifactIds = new [] {231},
-				ProcessingJobArtifactIds = new [] {95403}
+				PendingJobHistory = new [] { new Data.JobHistory { ArtifactId = 231 } },
+				ProcessingJobHistory = new [] { new Data.JobHistory { ArtifactId = 95403 } }
 			};
 
 			// Act & Assert
-			Assert.IsTrue(instance.HasStoppableJobs);
+			Assert.IsTrue(instance.HasStoppableJobHistory);
 		}
 
 		[Test]
 		public void HasStoppableJobs_NoPendingJobs_ReturnsTrue()
 		{
 			// Arrange
-			var instance = new StoppableJobCollection()
+			var instance = new StoppableJobHistoryCollection()
 			{
-				PendingJobArtifactIds = null,
-				ProcessingJobArtifactIds = new[] { 95403 }
+				PendingJobHistory = null,
+				ProcessingJobHistory = new[] { new Data.JobHistory { ArtifactId = 95403 } }
 			};
 
 			// Act & Assert
-			Assert.IsTrue(instance.HasStoppableJobs);
+			Assert.IsTrue(instance.HasStoppableJobHistory);
 		}
 
 		[Test]
 		public void HasStoppableJobs_NoProcessingJobs_ReturnsTrue()
 		{
 			// Arrange
-			var instance = new StoppableJobCollection()
+			var instance = new StoppableJobHistoryCollection()
 			{
-				PendingJobArtifactIds = new [] {904302},
-				ProcessingJobArtifactIds = null
+				PendingJobHistory = new[] { new Data.JobHistory { ArtifactId = 904302 } },
+				ProcessingJobHistory = null
 			};
 
 			// Act & Assert
-			Assert.IsTrue(instance.HasStoppableJobs);
+			Assert.IsTrue(instance.HasStoppableJobHistory);
 		}
 	}
 }

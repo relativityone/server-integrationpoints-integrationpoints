@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
@@ -35,21 +36,25 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return jobHistoryRepository.GetLastJobHistoryArtifactId(integrationPointArtifactId);
 		}
 
-		public StoppableJobCollection GetStoppableJobCollection(int workspaceArtifactId, int integrationPointArtifactId)
+		public StoppableJobHistoryCollection GetStoppableJobHistory(int workspaceArtifactId, int integrationPointArtifactId)
 		{
 			IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(workspaceArtifactId);
-			IDictionary<Guid, int[]> stoppableJobStatusDictionary = jobHistoryRepository.GetStoppableJobHistoryArtifactIdsByStatus(integrationPointArtifactId);
+			IList<JobHistory> stoppableJobHistories = jobHistoryRepository.GetStoppableJobHistoriesForIntegrationPoint(integrationPointArtifactId);
 
-			stoppableJobStatusDictionary.TryGetValue(JobStatusChoices.JobHistoryPendingGuid, out int[] pendingJobArtifactIDs);
-			stoppableJobStatusDictionary.TryGetValue(JobStatusChoices.JobHistoryProcessingGuid, out int[] processingJobArtifactIDs);
+			IDictionary<string, JobHistory[]> jobHistoriesByStatus = stoppableJobHistories
+				.GroupBy(x => x.JobStatus?.Name)
+				.Select(x => new { Key = x.Key, Values = x.ToArray() })
+				.ToDictionary(x => x.Key, x => x.Values);
 
-			var stoppableJobCollection = new StoppableJobCollection
+			return new StoppableJobHistoryCollection
 			{
-				PendingJobArtifactIds = pendingJobArtifactIDs ?? new int[0],
-				ProcessingJobArtifactIds = processingJobArtifactIDs ?? new int[0]
+				PendingJobHistory = jobHistoriesByStatus.ContainsKey(JobStatusChoices.JobHistoryPending.Name) 
+					? jobHistoriesByStatus[JobStatusChoices.JobHistoryPending.Name]
+					: Array.Empty<JobHistory>(),
+				ProcessingJobHistory = jobHistoriesByStatus.ContainsKey(JobStatusChoices.JobHistoryProcessing.Name)
+					? jobHistoriesByStatus[JobStatusChoices.JobHistoryProcessing.Name]
+					: Array.Empty<JobHistory>()
 			};
-
-			return stoppableJobCollection;
 		}
 
 		public void SetErrorStatusesToExpired(int workspaceArtifactID, int jobHistoryArtifactID)

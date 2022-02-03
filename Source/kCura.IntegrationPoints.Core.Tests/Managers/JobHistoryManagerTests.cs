@@ -84,12 +84,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		{
 			// ARRANGE
 			int integrationPointArtifactId = 1322131;
-			int[] pendingJobHistoryIDs = { 234323, 980934 };
-			int[] processingJobHistoryIDs = { 323, 9893 };
+			JobHistory[] pendingJobHistoryIDs = 
+			{ 
+				new JobHistory { ArtifactId = 234323 }, 
+				new JobHistory { ArtifactId = 980934 } 
+			};
+			JobHistory[] processingJobHistoryIDs = 
+			{
+				new JobHistory { ArtifactId = 323 },
+				new JobHistory { ArtifactId = 9893 }
+			};
+
 			IDictionary<Guid, int[]> artifactIdsByStatus = new Dictionary<Guid, int[]>()
 			{
-				{JobStatusChoices.JobHistoryPending.Guids.First(), pendingJobHistoryIDs},
-				{JobStatusChoices.JobHistoryProcessing.Guids.First(), processingJobHistoryIDs},
+				{JobStatusChoices.JobHistoryPending.Guids.First(), pendingJobHistoryIDs.Select(x => x.ArtifactId).ToArray()},
+				{JobStatusChoices.JobHistoryProcessing.Guids.First(), processingJobHistoryIDs.Select(x => x.ArtifactId).ToArray()},
 			};
 
 			_jobHistoryRepositoryMock
@@ -97,12 +106,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 				.Returns(artifactIdsByStatus);
 
 			// ACT
-			StoppableJobCollection result = _sut.GetStoppableJobCollection(_WORKSPACE_ID, integrationPointArtifactId);
+			StoppableJobHistoryCollection result = _sut.GetStoppableJobHistory(_WORKSPACE_ID, integrationPointArtifactId);
 
 			// ASSERT
-			Assert.IsTrue(pendingJobHistoryIDs.SequenceEqual(result.PendingJobArtifactIds),
+			Assert.IsTrue(pendingJobHistoryIDs.SequenceEqual(result.PendingJobHistory),
 				"The PendingJobArtifactIds should be correct");
-			Assert.IsTrue(processingJobHistoryIDs.SequenceEqual(result.ProcessingJobArtifactIds),
+			Assert.IsTrue(processingJobHistoryIDs.SequenceEqual(result.ProcessingJobHistory),
 				"The ProcessingJobArtifactIds should be correct");
 		}
 
@@ -118,13 +127,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 				.Returns(artifactIdsByStatus);
 
 			// ACT
-			StoppableJobCollection result = _sut.GetStoppableJobCollection(_WORKSPACE_ID, integrationPointArtifactId);
+			StoppableJobHistoryCollection result = _sut.GetStoppableJobHistory(_WORKSPACE_ID, integrationPointArtifactId);
 
 			// ASSERT
-			Assert.IsNotNull(result.PendingJobArtifactIds, $"The {nameof(StoppableJobCollection.PendingJobArtifactIds)} should not be null.");
-			Assert.IsNotNull(result.ProcessingJobArtifactIds, $"The {nameof(StoppableJobCollection.ProcessingJobArtifactIds)} should not be null.");
-			Assert.IsTrue(result.PendingJobArtifactIds.Length == 0, "There should be no results.");
-			Assert.IsTrue(result.ProcessingJobArtifactIds.Length == 0, "There should be no results.");
+			Assert.IsNotNull(result.PendingJobHistory, $"The {nameof(StoppableJobHistoryCollection.PendingJobHistory)} should not be null.");
+			Assert.IsNotNull(result.ProcessingJobHistory, $"The {nameof(StoppableJobHistoryCollection.ProcessingJobHistory)} should not be null.");
+			Assert.IsTrue(result.PendingJobHistory.Length == 0, "There should be no results.");
+			Assert.IsTrue(result.ProcessingJobHistory.Length == 0, "There should be no results.");
 		}
 
 		[Test]

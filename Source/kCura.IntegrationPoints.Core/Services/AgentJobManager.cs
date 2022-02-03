@@ -106,7 +106,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 		}
 
-		public IDictionary<Guid, List<Job>> GetScheduledAgentJobMapedByBatchInstance(long integrationPointId)
+		public IDictionary<Guid, List<Job>> GetJobsByBatchInstanceId(long integrationPointId)
 		{
 			IDictionary<Guid, List<Job>> results = new Dictionary<Guid, List<Job>>();
 			IList<Job> jobs = _jobService.GetJobs(integrationPointId);
@@ -135,7 +135,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public IList<Job> GetJobsByBatchInstanceId(long integrationPointId, Guid batchId)
 		{
-			IDictionary<Guid, List<Job>> bacthedAgentJobs = GetScheduledAgentJobMapedByBatchInstance(integrationPointId);
+			IDictionary<Guid, List<Job>> bacthedAgentJobs = GetJobsByBatchInstanceId(integrationPointId);
 			if (!bacthedAgentJobs.ContainsKey(batchId))
 			{
 				LogFailedToFindBatchInstance(integrationPointId, batchId);

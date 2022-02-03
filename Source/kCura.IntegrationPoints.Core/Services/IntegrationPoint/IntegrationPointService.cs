@@ -267,54 +267,22 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			CheckStopPermission(integrationPointArtifactId);
 
 			IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager();
-			StoppableJobCollection stoppableJobCollection = jobHistoryManager.GetStoppableJobCollection(workspaceArtifactId, integrationPointArtifactId);
-			IList<int> allStoppableJobArtifactIds = stoppableJobCollection.PendingJobArtifactIds.Concat(stoppableJobCollection.ProcessingJobArtifactIds).ToList();
-			IDictionary<Guid, List<Job>> jobs = _jobService.GetScheduledAgentJobMapedByBatchInstance(integrationPointArtifactId);
+			StoppableJobHistoryCollection stoppableJobHistories = jobHistoryManager.GetStoppableJobHistory(workspaceArtifactId, integrationPointArtifactId);
+			IDictionary<Guid, List<Job>> jobs = _jobService.GetJobsByBatchInstanceId(integrationPointArtifactId);
 
-			List<Exception> exceptions = new List<Exception>(); // Gotta Catch 'em All
-			HashSet<int> erroredPendingJobs = new HashSet<int>();
-
-			// Mark jobs to be stopped in queue table
-			foreach (int artifactID in allStoppableJobArtifactIds)
+			foreach (var jobHistory in stoppableJobHistories.ProcessingJobHistory)
 			{
-				try
-				{
-					StopScheduledAgentJobs(jobs, artifactID);
-				}
-				catch (Exception exception)
-				{
-					if (stoppableJobCollection.PendingJobArtifactIds.Contains(artifactID))
-					{
-						erroredPendingJobs.Add(artifactID);
-					}
-					exceptions.Add(exception);
-				}
+				IList<long> jobIdsForGivenJobHistory = jobs[Guid.Parse(jobHistory.BatchInstance)]
+					.Select(x => x.JobId).ToList();
+				_jobService.StopJobs(jobIdsForGivenJobHistory);
 			}
 
-			IEnumerable<int> pendingJobIdsMarkedToStop = stoppableJobCollection.PendingJobArtifactIds
-				.Where(x => !erroredPendingJobs.Contains(x));
-
-			// Update the status of the Pending jobs
-			foreach (int artifactId in pendingJobIdsMarkedToStop)
+			foreach(var jobHistory in stoppableJobHistories.PendingJobHistory)
 			{
-				try
-				{
-					var jobHistoryRdo = new Data.JobHistory()
-					{
-						ArtifactId = artifactId,
-						JobStatus = JobStatusChoices.JobHistoryStopping
-					};
-					_jobHistoryService.UpdateRdo(jobHistoryRdo);
-				}
-				catch (Exception exception)
-				{
-					exceptions.Add(exception);
-				}
-			}
+				jobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
+				_jobHistoryService.UpdateRdo(jobHistory);
 
-			if (exceptions.Any())
-			{
-				throw new AggregateException(exceptions);
+				jobs[Guid.Parse(jobHistory.BatchInstance)].ForEach(x => _jobService.DeleteJob(x.JobId));
 			}
 		}
 
@@ -384,29 +352,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 					Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
 					$"User is missing the following permissions:{Environment.NewLine}{String.Join(Environment.NewLine, ex.Message)}");
 				throw;
-			}
-		}
-
-		private void StopScheduledAgentJobs(IDictionary<Guid, List<Job>> agentJobsReference, int jobHistoryArtifactId)
-		{
-			Data.JobHistory jobHistory = _jobHistoryService.GetJobHistory(new List<int>() { jobHistoryArtifactId }).FirstOrDefault();
-			if (jobHistory != null)
-			{
-				Guid batchInstance = new Guid(jobHistory.BatchInstance);
-				if (agentJobsReference.ContainsKey(batchInstance))
-				{
-					List<long> jobIds = agentJobsReference[batchInstance].Select(job => job.JobId).ToList();
-					_jobService.StopJobs(jobIds);
-				}
-				else
-				{
-					throw new InvalidOperationException("Unable to retrieve job(s) in the queue. Please contact your system administrator.");
-				}
-			}
-			else
-			{
-				// I don't think this is currently possible. SAMO - 7/27/2016
-				throw new Exception("Failed to retrieve job history RDO. Please retry the operation.");
 			}
 		}
 

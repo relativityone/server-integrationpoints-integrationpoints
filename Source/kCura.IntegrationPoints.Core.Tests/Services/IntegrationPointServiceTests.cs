@@ -222,50 +222,50 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		public void MarkIntegrationPointToStopJobs_GoldFlow()
 		{
 			// arrange
-			int pendingJob1Id = 123;
-			int pendingJob2Id = 456;
+			var pendingJobHistory1 = new Data.JobHistory { ArtifactId = 123 };
+			var pendingJobHistory2 = new Data.JobHistory { ArtifactId = 456 };
 
-			int processingJob1Id = 5634;
-			int processingJob2Id = 9604;
+			var processingJobHistory1 = new Data.JobHistory { ArtifactId = 5634 };
+			var processingJobHistory2 = new Data.JobHistory { ArtifactId = 9604 };
 
-			var stoppableJobCollection = new StoppableJobCollection()
+			var stoppableJobCollection = new StoppableJobHistoryCollection()
 			{
-				PendingJobArtifactIds = new[] { pendingJob1Id, pendingJob2Id },
-				ProcessingJobArtifactIds = new[] { processingJob1Id, processingJob2Id }
+				PendingJobHistory = new[] { pendingJobHistory1, pendingJobHistory2 },
+				ProcessingJobHistory = new[] { processingJobHistory1, processingJobHistory2 }
 			};
 			_jobHistoryManager
-				.GetStoppableJobCollection(
+				.GetStoppableJobHistory(
 					Arg.Is(_sourceWorkspaceArtifactId),
 					Arg.Is(_integrationPointArtifactId))
 				.Returns(stoppableJobCollection);
 
 			Data.JobHistory pendingJob1 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJob1Id))).Returns(new List<Data.JobHistory>() { pendingJob1 });
+			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJobHistory1.ArtifactId))).Returns(new List<Data.JobHistory>() { pendingJobHistory1 });
 
 			Data.JobHistory pendingJob2 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJob2Id))).Returns(new List<Data.JobHistory>() { pendingJob2 });
+			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJobHistory2.ArtifactId))).Returns(new List<Data.JobHistory>() { pendingJob2 });
 
 			Data.JobHistory processingJob1 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJob1Id))).Returns(new List<Data.JobHistory>() { processingJob1 });
+			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJobHistory1.ArtifactId))).Returns(new List<Data.JobHistory>() { processingJob1 });
 
 			Data.JobHistory processingJob2 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJob2Id))).Returns(new List<Data.JobHistory>() { processingJob2 });
+			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJobHistory2.ArtifactId))).Returns(new List<Data.JobHistory>() { processingJob2 });
 
 			Job baseJob = JobExtensions.CreateJob();
 			IDictionary<Guid, List<Job>> jobs = new Dictionary<Guid, List<Job>>();
-			jobs[new Guid(pendingJob1.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(1) };
+			jobs[new Guid(pendingJobHistory1.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(1) };
 			jobs[new Guid(pendingJob2.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(2) };
 			jobs[new Guid(processingJob1.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(3) };
 			jobs[new Guid(processingJob2.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(4) };
 
-			_jobManager.GetScheduledAgentJobMapedByBatchInstance(_integrationPointArtifactId).Returns(jobs);
+			_jobManager.GetJobsByBatchInstanceId(_integrationPointArtifactId).Returns(jobs);
 
 			// act
 			_instance.MarkIntegrationPointToStopJobs(_sourceWorkspaceArtifactId, _integrationPointArtifactId);
 
 			// assert
 			_jobHistoryManager.Received(1)
-				.GetStoppableJobCollection(
+				.GetStoppableJobHistory(
 					Arg.Is(_sourceWorkspaceArtifactId),
 					Arg.Is(_integrationPointArtifactId));
 
@@ -273,14 +273,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				.UpdateRdo(
 					Arg.Is<Data.JobHistory>(
 						x =>
-							stoppableJobCollection.PendingJobArtifactIds.Contains(x.ArtifactId) &&
+							stoppableJobCollection.PendingJobHistory.Contains(x) &&
 							x.JobStatus.Name == JobStatusChoices.JobHistoryStopping.Name));
 
 			_jobHistoryService.DidNotReceive()
 				.UpdateRdo(
 					Arg.Is<Data.JobHistory>(
 						x =>
-							stoppableJobCollection.ProcessingJobArtifactIds.Contains(x.ArtifactId)));
+							stoppableJobCollection.ProcessingJobHistory.Contains(x)));
 
 			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(1)));
 			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(2)));
@@ -292,37 +292,37 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		public void MarkIntegrationPointToStopJobs_AllQueueUpdatesFail_NoJobStatusesUpdated()
 		{
 			// arrange
-			int pendingJob1Id = 123;
-			int pendingJob2Id = 456;
+			var pendingJobHistory1 = new Data.JobHistory { ArtifactId = 123 };
+			var pendingJobHistory2 = new Data.JobHistory { ArtifactId = 456 };
 
-			int processingJob1Id = 5634;
-			int processingJob2Id = 9604;
+			var processingJobHistory1 = new Data.JobHistory { ArtifactId = 5634 };
+			var processingJobHistory2 = new Data.JobHistory { ArtifactId = 9604 };
 
-			var stoppableJobCollection = new StoppableJobCollection()
+			var stoppableJobCollection = new StoppableJobHistoryCollection()
 			{
-				PendingJobArtifactIds = new[] { pendingJob1Id, pendingJob2Id },
-				ProcessingJobArtifactIds = new[] { processingJob1Id, processingJob2Id }
+				PendingJobHistory = new[] { pendingJobHistory1, pendingJobHistory2 },
+				ProcessingJobHistory = new[] { processingJobHistory1, processingJobHistory2 }
 			};
 			_jobHistoryManager
-				.GetStoppableJobCollection(
+				.GetStoppableJobHistory(
 					Arg.Is(_sourceWorkspaceArtifactId),
 					Arg.Is(_integrationPointArtifactId))
 				.Returns(stoppableJobCollection);
 
 			Data.JobHistory pendingJob1 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJob1Id)))
+			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJobHistory1.ArtifactId)))
 				.Returns(new List<Data.JobHistory>() { pendingJob1 });
 
 			Data.JobHistory pendingJob2 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJob2Id)))
+			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJobHistory2.ArtifactId)))
 				.Returns(new List<Data.JobHistory>() { pendingJob2 });
 
 			Data.JobHistory processingJob1 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJob1Id)))
+			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJobHistory1.ArtifactId)))
 				.Returns(new List<Data.JobHistory>() { processingJob1 });
 
 			Data.JobHistory processingJob2 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJob2Id)))
+			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJobHistory2.ArtifactId)))
 				.Returns(new List<Data.JobHistory>() { processingJob2 });
 
 			Job baseJob = JobExtensions.CreateJob();
@@ -332,7 +332,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			jobs[new Guid(processingJob1.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(3) };
 			jobs[new Guid(processingJob2.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(4) };
 
-			_jobManager.GetScheduledAgentJobMapedByBatchInstance(_integrationPointArtifactId).Returns(jobs);
+			_jobManager.GetJobsByBatchInstanceId(_integrationPointArtifactId).Returns(jobs);
 
 			const string errorMessageOne = "E1";
 			const string errorMessageTwo = "E2";
@@ -365,7 +365,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			// assert
 			_jobHistoryManager.Received(1)
-				.GetStoppableJobCollection(
+				.GetStoppableJobHistory(
 					Arg.Is(_sourceWorkspaceArtifactId),
 					Arg.Is(_integrationPointArtifactId));
 
@@ -383,37 +383,37 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		public void MarkIntegrationPointToStopJobs_SomeJobsNotMarkedToStop_OnlyMarkedJobsUpdated()
 		{
 			// arrange
-			int pendingJob1Id = 123;
-			int pendingJob2Id = 456;
+			var pendingJobHistory1 = new Data.JobHistory { ArtifactId = 123 };
+			var pendingJobHistory2 = new Data.JobHistory { ArtifactId = 456 };
 
-			int processingJob1Id = 5634;
-			int processingJob2Id = 9604;
+			var processingJobHistory1 = new Data.JobHistory { ArtifactId = 5634 };
+			var processingJobHistory2 = new Data.JobHistory { ArtifactId = 9604 };
 
-			var stoppableJobCollection = new StoppableJobCollection()
+			var stoppableJobCollection = new StoppableJobHistoryCollection()
 			{
-				PendingJobArtifactIds = new[] { pendingJob1Id, pendingJob2Id },
-				ProcessingJobArtifactIds = new[] { processingJob1Id, processingJob2Id }
+				PendingJobHistory = new[] { pendingJobHistory1, pendingJobHistory2 },
+				ProcessingJobHistory = new[] { processingJobHistory1, processingJobHistory2 }
 			};
 			_jobHistoryManager
-				.GetStoppableJobCollection(
+				.GetStoppableJobHistory(
 					Arg.Is(_sourceWorkspaceArtifactId),
 					Arg.Is(_integrationPointArtifactId))
 				.Returns(stoppableJobCollection);
 
 			Data.JobHistory pendingJob1 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJob1Id)))
+			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJobHistory1.ArtifactId)))
 				.Returns(new List<Data.JobHistory>() { pendingJob1 });
 
 			Data.JobHistory pendingJob2 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJob2Id)))
+			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJobHistory2.ArtifactId)))
 				.Returns(new List<Data.JobHistory>() { pendingJob2 });
 
 			Data.JobHistory processingJob1 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJob1Id)))
+			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJobHistory1.ArtifactId)))
 				.Returns(new List<Data.JobHistory>() { processingJob1 });
 
 			Data.JobHistory processingJob2 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJob2Id)))
+			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJobHistory2.ArtifactId)))
 				.Returns(new List<Data.JobHistory>() { processingJob2 });
 
 			Job baseJob = JobExtensions.CreateJob();
@@ -423,7 +423,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			jobs[new Guid(processingJob1.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(3) };
 			jobs[new Guid(processingJob2.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(4) };
 
-			_jobManager.GetScheduledAgentJobMapedByBatchInstance(_integrationPointArtifactId).Returns(jobs);
+			_jobManager.GetJobsByBatchInstanceId(_integrationPointArtifactId).Returns(jobs);
 
 			const string errorMessageOne = "E1";
 			const string errorMessageTwo = "E2";
@@ -447,7 +447,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			// assert
 			_jobHistoryManager.Received(1)
-				.GetStoppableJobCollection(
+				.GetStoppableJobHistory(
 					Arg.Is(_sourceWorkspaceArtifactId),
 					Arg.Is(_integrationPointArtifactId));
 
@@ -455,14 +455,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				.UpdateRdo(
 					Arg.Is<Data.JobHistory>(
 						x =>
-							x.ArtifactId == pendingJob2Id
+							x.ArtifactId == pendingJobHistory2.ArtifactId
 							&& x.JobStatus.Name == JobStatusChoices.JobHistoryStopping.Name));
 
 			_jobHistoryService.DidNotReceive()
 				.UpdateRdo(
 					Arg.Is<Data.JobHistory>(
 						x =>
-							stoppableJobCollection.ProcessingJobArtifactIds.Contains(x.ArtifactId)));
+							stoppableJobCollection.ProcessingJobHistory.Contains(x)));
 
 			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(1)));
 			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(2)));
@@ -476,37 +476,38 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		public void MarkIntegrationPointToStopJobs_OnePendingJobFailsToMarkOnePendingJobsFailsToUpdate_AllExceptionsCaught()
 		{
 			// arrange
-			int pendingJob1Id = 123;
-			int pendingJob2Id = 456;
+			var pendingJobHistory1 = new Data.JobHistory { ArtifactId = 123 };
+			var pendingJobHistory2 = new Data.JobHistory { ArtifactId = 456 };
 
-			int processingJob1Id = 5634;
-			int processingJob2Id = 9604;
+			var processingJobHistory1 = new Data.JobHistory { ArtifactId = 5634 };
+			var processingJobHistory2 = new Data.JobHistory { ArtifactId = 9604 };
 
-			var stoppableJobCollection = new StoppableJobCollection()
+			var stoppableJobCollection = new StoppableJobHistoryCollection()
 			{
-				PendingJobArtifactIds = new[] { pendingJob1Id, pendingJob2Id },
-				ProcessingJobArtifactIds = new[] { processingJob1Id, processingJob2Id }
+				PendingJobHistory = new[] { pendingJobHistory1, pendingJobHistory2 },
+				ProcessingJobHistory = new[] { processingJobHistory1, processingJobHistory2 }
 			};
+
 			_jobHistoryManager
-				.GetStoppableJobCollection(
+				.GetStoppableJobHistory(
 					Arg.Is(_sourceWorkspaceArtifactId),
 					Arg.Is(_integrationPointArtifactId))
 				.Returns(stoppableJobCollection);
 
 			Data.JobHistory pendingJob1 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJob1Id)))
+			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJobHistory1.ArtifactId)))
 				.Returns(new List<Data.JobHistory>() { pendingJob1 });
 
 			Data.JobHistory pendingJob2 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJob2Id)))
+			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJobHistory2.ArtifactId)))
 				.Returns(new List<Data.JobHistory>() { pendingJob2 });
 
 			Data.JobHistory processingJob1 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJob1Id)))
+			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJobHistory1.ArtifactId)))
 				.Returns(new List<Data.JobHistory>() { processingJob1 });
 
 			Data.JobHistory processingJob2 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJob2Id)))
+			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJobHistory2.ArtifactId)))
 				.Returns(new List<Data.JobHistory>() { processingJob2 });
 
 			Job baseJob = JobExtensions.CreateJob();
@@ -516,7 +517,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			jobs[new Guid(processingJob1.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(3) };
 			jobs[new Guid(processingJob2.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(4) };
 
-			_jobManager.GetScheduledAgentJobMapedByBatchInstance(_integrationPointArtifactId).Returns(jobs);
+			_jobManager.GetJobsByBatchInstanceId(_integrationPointArtifactId).Returns(jobs);
 
 			const string errorMessageOne = "E1";
 			const string errorMessageTwo = "E2";
@@ -530,7 +531,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				x.UpdateRdo(
 					Arg.Is<Data.JobHistory>(
 						y =>
-							y.ArtifactId == pendingJob2Id
+							y.ArtifactId == pendingJobHistory2.ArtifactId
 							&& y.JobStatus.Name == JobStatusChoices.JobHistoryStopping.Name)))
 				.Do(x => { throw new Exception(errorMessageThree); });
 
@@ -554,7 +555,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			// assert
 			_jobHistoryManager.Received(1)
-				.GetStoppableJobCollection(
+				.GetStoppableJobHistory(
 					Arg.Is(_sourceWorkspaceArtifactId),
 					Arg.Is(_integrationPointArtifactId));
 
@@ -562,14 +563,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				.UpdateRdo(
 					Arg.Is<Data.JobHistory>(
 						x =>
-							x.ArtifactId == pendingJob2Id
+							x.ArtifactId == pendingJobHistory2.ArtifactId
 							&& x.JobStatus.Name == JobStatusChoices.JobHistoryStopping.Name));
 
 			_jobHistoryService.DidNotReceive()
 				.UpdateRdo(
 					Arg.Is<Data.JobHistory>(
 						x =>
-							stoppableJobCollection.ProcessingJobArtifactIds.Contains(x.ArtifactId)));
+							stoppableJobCollection.ProcessingJobHistory.Contains(x)));
 
 			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(1)));
 			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(2)));

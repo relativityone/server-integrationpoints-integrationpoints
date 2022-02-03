@@ -28,6 +28,8 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <remarks>The only two statuses that should return are Pending and Processing.</remarks>
 		IDictionary<Guid, int[]> GetStoppableJobHistoryArtifactIdsByStatus(int integrationPointArtifactId);
 
+		IList<JobHistory> GetStoppableJobHistoriesForIntegrationPoint(int integrationPointArtifactId);
+
 		string GetJobHistoryName(int jobHistoryArtifactId);
 	}
 }

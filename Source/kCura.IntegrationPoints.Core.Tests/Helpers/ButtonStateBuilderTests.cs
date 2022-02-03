@@ -77,9 +77,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 
 			_queueManager.HasJobsExecutingOrInQueue(applicationArtifactId, integrationPointArtifactId).Returns(hasJobsExecutingOrInQueue);
 
-			_jobHistoryManager.GetStoppableJobCollection(applicationArtifactId, integrationPointArtifactId).Returns(new StoppableJobCollection
+			_jobHistoryManager.GetStoppableJobHistory(applicationArtifactId, integrationPointArtifactId).Returns(new StoppableJobHistoryCollection
 			{
-				PendingJobArtifactIds = hasStoppableJobs ? new[] {1, 2} : null
+				PendingJobHistory = hasStoppableJobs ? new[] { new JobHistory { ArtifactId = 1 }, new JobHistory { ArtifactId = 2 } } : null
 			});
 
 			_permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create).Returns(hasAddProfilePermission);
