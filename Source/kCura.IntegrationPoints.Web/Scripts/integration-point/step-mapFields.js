@@ -220,6 +220,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.selectedMappedSource = ko.observableArray([]);
 		this.IdentifierField = ko.observable(model.IPDestinationSettings.IdentifierField);
 		this.showMapSavedSearchButton = ko.observable(false);
+		this.showMapViewButton = ko.observable(false);
 
 		this.overlay = ko.observableArray([]);
 		this.nativeFilePathOption = ko.observableArray([]);
@@ -261,6 +262,7 @@ ko.validation.insertValidationMessage = function (element) {
 		var copyFileToRepositoryText = "Copy Files to Repository:";
 		this.copyNativeLabel = ko.observable(copyNativeFileText);
 		this.ImageImport = ko.observable(model.ImageImport || "false");
+
 		this.CheckRelativityProviderExportType = function (exportType) {
 			if (this.IsRelativityProvider()) {
 				var sourceModel = JSON.parse(model.sourceConfiguration);
@@ -270,11 +272,17 @@ ko.validation.insertValidationMessage = function (element) {
 			}
 			return false;
 		};
+
 		this.IsProductionExport = function () {
 			return this.CheckRelativityProviderExportType(ExportEnums.SourceOptionsEnum.Production);
 		};
+
 		this.IsSavedSearchExport = function () {
 			return this.CheckRelativityProviderExportType(ExportEnums.SourceOptionsEnum.SavedSearch);
+		};
+
+		this.IsViewExport = function () {
+			return this.CheckRelativityProviderExportType(ExportEnums.SourceOptionsEnum.View);
 		};
 
 		this.importNativeFile.subscribe(function (importNative) {
@@ -953,9 +961,11 @@ ko.validation.insertValidationMessage = function (element) {
 		this.autoFieldMap = function () {
 			self.autoFieldMapWithCustomOptions();
 		};
+
 		this.autoMapFieldsFromSavedSearch = function () {
 			self.autoMapFieldsFromSavedSearchWithCustomOptions();
 		};
+
 		this.autoFieldMapWithCustomOptions = function (matchOnlyIdentifierFields) {
 			//Remove current mappings first
 			const showErrors = self.showErrors();
@@ -982,6 +992,7 @@ ko.validation.insertValidationMessage = function (element) {
 				self.showErrors(showErrors);
 			});
 		};
+
 		this.autoMapFieldsFromSavedSearchWithCustomOptions = function () {
 			//Remove current mappings first
 			const showErrors = self.showErrors();
@@ -1010,6 +1021,40 @@ ko.validation.insertValidationMessage = function (element) {
 				self.showErrors(showErrors);
 			});
 		};
+
+		this.autoMapFieldsFromView = function () {
+			//Remove current mappings first
+			const showErrors = self.showErrors();
+			self.showErrors(false);
+			self.addAlltoSourceField();
+			self.addAlltoWorkspaceField();
+
+			var fieldForAutomap = function (field) {
+				return field.classificationLevel == 0;
+			};
+
+			const sourceConfig = JSON.parse(model.sourceConfiguration);
+			const viewArtifactID = sourceConfig.SourceViewId;
+
+			root.data.ajax({
+				type: 'POST', url: root.utils.generateWebAPIURL('/FieldMappings/AutomapFieldsFromView', viewArtifactID, model.destinationProviderGuid),
+				data: JSON.stringify({
+					SourceFields: this.sourceFields.filter(fieldForAutomap),
+					DestinationFields: this.destinationFields.filter(fieldForAutomap)
+				})
+			})
+			.then(function (mapping) {
+				self.applyMapping(mapping);
+				self.showErrors(showErrors);
+				return mapping;
+			})
+			.fail(function (error) {
+				console.log(error);
+				self.showErrors(showErrors);
+			});
+		};
+
+
 		/********** Tooltips  **********/
 		var settingsTooltipViewModel = new TooltipViewModel(TooltipDefs.RelativityProviderSettingsDetails, TooltipDefs.RelativityProviderSettingsDetailsTitle);
 
@@ -1018,8 +1063,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.openRelativityProviderSettingsTooltip = function (data, event) {
 			settingsTooltipViewModel.open(event);
 		};
-
-
+		
 	};// end of the viewmodel
 
 
@@ -1073,6 +1117,7 @@ ko.validation.insertValidationMessage = function (element) {
 			this.model.errors = ko.validation.group(this.model, { deep: true });
 
 			self.model.showMapSavedSearchButton(self.model.IsSavedSearchExport());
+			self.model.showMapViewButton(self.model.IsViewExport());
 		};
 
 		var relativityImportType;

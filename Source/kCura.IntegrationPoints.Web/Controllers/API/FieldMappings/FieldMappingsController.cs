@@ -18,6 +18,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 	{
 		private const string _AUTOMAP_ALL_METRIC_NAME = "AutoMapAll";
 		private const string _AUTOMAP_SAVED_SEARCH_METRIC_NAME = "AutoMapSavedSearch";
+		private const string _AUTOMAP_VIEW_METRIC_NAME = "AutoMapView";
 		private const string _INVALID_MAPPING_METRIC_NAME = "InvalidMapping";
 
 		private readonly IFieldsClassifyRunnerFactory _fieldsClassifyRunnerFactory;
@@ -77,12 +78,27 @@ namespace kCura.IntegrationPoints.Web.Controllers.API.FieldMappings
 		[LogApiExceptionFilter(Message = "Error while auto mapping fields from saved search")]
 		public async Task<HttpResponseMessage> AutoMapFieldsFromSavedSearch([FromBody] AutomapRequest request, int sourceWorkspaceID, int savedSearchID, string destinationProviderGuid)
 		{
-			string name = _metricBucketNameGenerator.GetAutoMapBucketNameAsync(_AUTOMAP_SAVED_SEARCH_METRIC_NAME, Guid.Parse(destinationProviderGuid), sourceWorkspaceID).GetAwaiter().GetResult();
+			string name = await _metricBucketNameGenerator.GetAutoMapBucketNameAsync(_AUTOMAP_SAVED_SEARCH_METRIC_NAME, Guid.Parse(destinationProviderGuid), sourceWorkspaceID).ConfigureAwait(false);
 			_metricsSender.CountOperation(name);
 
 			IEnumerable<FieldMap> fieldMap = await _automapRunner
 				.MapFieldsFromSavedSearchAsync(request.SourceFields, request.DestinationFields, destinationProviderGuid, sourceWorkspaceID, savedSearchID)
 				.ConfigureAwait(false);
+
+			return Request.CreateResponse(HttpStatusCode.OK, fieldMap, Configuration.Formatters.JsonFormatter);
+		}
+
+		[HttpPost]
+		[LogApiExceptionFilter(Message = "Error while auto mapping fields from view")]
+		public async Task<HttpResponseMessage> AutoMapFieldsFromView([FromBody] AutomapRequest request, int sourceWorkspaceID, int viewID, string destinationProviderGuid)
+		{
+			string name = await _metricBucketNameGenerator.GetAutoMapBucketNameAsync(_AUTOMAP_VIEW_METRIC_NAME, Guid.Parse(destinationProviderGuid), sourceWorkspaceID).ConfigureAwait(false);
+			_metricsSender.CountOperation(name);
+
+			IEnumerable<FieldMap> fieldMap = await _automapRunner
+				.MapFieldsFromViewAsync(request.SourceFields, request.DestinationFields, destinationProviderGuid, sourceWorkspaceID, viewID)
+				.ConfigureAwait(false);
+
 			return Request.CreateResponse(HttpStatusCode.OK, fieldMap, Configuration.Formatters.JsonFormatter);
 		}
 

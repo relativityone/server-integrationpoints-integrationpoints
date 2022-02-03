@@ -249,11 +249,17 @@ namespace kCura.IntegrationPoints.Web
 				routeTemplate: "{workspaceID}/api/FieldMappings/Validate/{destinationWorkspaceID}/{destinationProviderGuid}/{sourceArtifactTypeId}/{destinationArtifactTypeId}",
 				defaults: new { controller = "FieldMappings", action = "ValidateAsync" }
 			);
-			
+
 			config.Routes.MapHttpRoute(
 				name: "AutoMapFieldsFromSavedSearch",
 				routeTemplate: "{sourceWorkspaceID}/api/FieldMappings/AutomapFieldsFromSavedSearch/{savedSearchID}/{destinationProviderGuid}",
 				defaults: new { controller = "FieldMappings", action = "AutoMapFieldsFromSavedSearch" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "AutoMapFieldsFromView",
+				routeTemplate: "{sourceWorkspaceID}/api/FieldMappings/AutomapFieldsFromView/{viewID}/{destinationProviderGuid}",
+				defaults: new { controller = "FieldMappings", action = "AutoMapFieldsFromView" }
 			);
 
 			config.Routes.MapHttpRoute(

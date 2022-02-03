@@ -8,6 +8,8 @@ using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Metrics;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Search;
+using Relativity.Services.View;
+using Relativity.Services.Field;
 
 namespace Relativity.IntegrationPoints.FieldsMapping
 {
@@ -60,34 +62,44 @@ namespace Relativity.IntegrationPoints.FieldsMapping
 		public async Task<IEnumerable<FieldMap>> MapFieldsFromSavedSearchAsync(IEnumerable<FieldInfo> sourceFields,
 			IEnumerable<FieldInfo> destinationFields, string destinationProviderGuid, int sourceWorkspaceArtifactId, int savedSearchArtifactId)
 		{
-			List<FieldInfo> sourceFieldsList = sourceFields.ToList();
-			List<FieldInfo> savedSearchFields;
-
 			using (IKeywordSearchManager keywordSearchManager = _servicesMgr.CreateProxy<IKeywordSearchManager>(ExecutionIdentity.CurrentUser))
 			{
-				KeywordSearch savedSearch = await keywordSearchManager.ReadSingleAsync(sourceWorkspaceArtifactId, savedSearchArtifactId)
-					.ConfigureAwait(false);
-
-				savedSearchFields = sourceFieldsList
-					.Where(sourceField => savedSearch.Fields.Exists(savedSearchField =>
-						savedSearchField.ArtifactID.ToString() == sourceField.FieldIdentifier))
-					.ToList();
+				KeywordSearch savedSearch = await keywordSearchManager.ReadSingleAsync(sourceWorkspaceArtifactId, savedSearchArtifactId).ConfigureAwait(false);
+				return MapFields(sourceFields, destinationFields, destinationProviderGuid, sourceWorkspaceArtifactId, savedSearch.Fields);
 			}
+		}
 
-			if (!savedSearchFields.Exists(x => x.IsIdentifier))
+        public async Task<IEnumerable<FieldMap>> MapFieldsFromViewAsync(IEnumerable<FieldInfo> sourceFields, IEnumerable<FieldInfo> destinationFields, string destinationProviderGuid, int sourceWorkspaceArtifactId, int viewArtifactId)
+        {
+			using (IViewManager viewManager = _servicesMgr.CreateProxy<IViewManager>(ExecutionIdentity.CurrentUser))
+			{
+                View view = await viewManager.ReadSingleAsync(sourceWorkspaceArtifactId, viewArtifactId).ConfigureAwait(false);
+				return MapFields(sourceFields, destinationFields, destinationProviderGuid, sourceWorkspaceArtifactId, view.Fields);
+			}
+		}
+
+		private List<FieldMap> MapFields(IEnumerable<FieldInfo> sourceFields, IEnumerable<FieldInfo> destinationFields, string destinationProviderGuid, int sourceWorkspaceArtifactId, List<FieldRef> objectFields)
+        {
+			List<FieldInfo> sourceFieldsList = sourceFields.ToList();
+
+			List<FieldInfo> fields = sourceFieldsList
+				.Where(sourceField => objectFields.Exists(viewField => viewField.ArtifactID.ToString() == sourceField.FieldIdentifier))
+				.ToList();
+
+			if (!fields.Exists(x => x.IsIdentifier))
 			{
 				FieldInfo identifierField = sourceFieldsList.SingleOrDefault(x => x.IsIdentifier);
 				if (identifierField != null)
 				{
-					savedSearchFields.Add(identifierField);
+					fields.Add(identifierField);
 				}
 			}
 
-			List<FieldMap> mappedFields = MapFields(savedSearchFields, destinationFields, destinationProviderGuid, sourceWorkspaceArtifactId).ToList();
+			List<FieldMap> mappedFields = MapFields(fields, destinationFields, destinationProviderGuid, sourceWorkspaceArtifactId).ToList();
 			return mappedFields;
 		}
 
-		private class AutomapBuilder
+        private class AutomapBuilder
 		{
 			public IEnumerable<FieldMap> Mapping { get; }
 			private readonly IEnumerable<FieldInfo> _sourceFields;
