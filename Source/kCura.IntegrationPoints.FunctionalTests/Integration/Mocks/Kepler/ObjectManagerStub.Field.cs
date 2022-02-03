@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data;
 using Moq;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Services.Objects.DataContracts;
@@ -27,6 +28,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 if (HasFieldName(request) | HasObjectTypeRefWithGuid(request))
                 {
                     List<FieldTest> fields = list.Where(x => x.ObjectTypeId == Const.FIXED_LENGTH_TEXT_TYPE_ARTIFACT_ID).Skip(start - 1).ToList();
+                    return fields;
+                }
+                if (IsChoiceQuery(request))
+                {
+                    List<FieldTest> fields = list
+                        .Where(x => x.Guid == IntegrationPointProfileFieldGuids.OverwriteFieldsGuid).ToList();
                     return fields;
                 }
                 
@@ -78,6 +85,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
         private bool HasObjectTypeRefWithGuid(QueryRequest r)
         {
             return r.ObjectType.Guid.HasValue;
+        }
+
+        private bool IsChoiceQuery(QueryRequest query)
+        {
+            Match imageMatch = Regex.Match(query.Condition, $"'Name' == '{DocumentFieldsConstants.HasImagesFieldName}'");
+            return imageMatch.Success;
         }
     }
 }

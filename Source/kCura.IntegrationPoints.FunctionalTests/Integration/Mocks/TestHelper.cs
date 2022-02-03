@@ -17,7 +17,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 	public class TestHelper : IServiceHelper, IAgentHelper, ICPHelper
 	{
 		private readonly Mock<IServicesMgr> _serviceManager;
+        private readonly Mock<IDBContext> _dbContext;
 		private readonly FakeUser _user;
+
+        public Mock<IDBContext> DbContextMock => _dbContext;
 
 		public FakeSecretStore SecretStore { get; }
 
@@ -26,6 +29,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			SecretStore = new FakeSecretStore();
 
 			_serviceManager = new Mock<IServicesMgr>();
+            _dbContext = new Mock<IDBContext>();
 			_user = user;
 
 			RegisterProxyInServiceManagerMock<IObjectManager>(proxy.ObjectManager.Object);
@@ -74,7 +78,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
 		public IDBContext GetDBContext(int caseID)
 		{
-			return new Mock<IDBContext>().Object;
+            return _dbContext.Object;
 		}
 
 		public IUrlHelper GetUrlHelper()

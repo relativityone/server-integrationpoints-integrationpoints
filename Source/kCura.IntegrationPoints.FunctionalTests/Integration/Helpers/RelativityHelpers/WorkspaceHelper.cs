@@ -73,7 +73,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 				IsIdentifier = false,
 				Name = "Overwrite Fields"
 			});
-			workspace.Fields.Add(new FieldTest
+            workspace.Fields.Add(new FieldTest
 			{
 				ObjectTypeId = Const.LDAP._ENTITY_TYPE_ARTIFACT_ID,
 				Guid = new Guid(EntityFieldGuids.Manager),
@@ -104,8 +104,62 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                 ParenObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
                 HasImages = true,
+                HasNatives = true,
+                ImageCount = 1,
+            });
+
+
+            workspace.Documents.Add(new DocumentTest(fields)
+            {
+                ParenObjectArtifactId = folder.ArtifactId,
+                FolderName = folder.Name,
+                HasImages = true,
+                HasNatives = true,
+                ImageCount = 1,
+            });
+
+			workspace.Documents.Add(new DocumentTest(fields)
+            {
+                ParenObjectArtifactId = folder.ArtifactId,
+                FolderName = folder.Name,
+                HasImages = true,
+                HasNatives = true,
+                ImageCount = 1,
+            });
+
+            workspace.Documents.Add(new DocumentTest(fields)
+            {
+                ParenObjectArtifactId = folder.ArtifactId,
+                FolderName = folder.Name,
+                HasImages = true,
                 HasNatives = false,
                 ImageCount = 10,
+            });
+
+			workspace.Documents.Add(new DocumentTest(fields)
+			{
+				ParenObjectArtifactId = folder.ArtifactId,
+				FolderName = folder.Name,
+				HasImages = true,
+				HasNatives = false,
+				ImageCount = 12,
+			});
+
+            workspace.Documents.Add(new DocumentTest(fields)
+            {
+                ParenObjectArtifactId = folder.ArtifactId,
+                FolderName = folder.Name,
+                HasImages = true,
+                HasNatives = false,
+                ImageCount = 15,
+            });
+
+			workspace.Documents.Add(new DocumentTest(fields)
+            {
+                ParenObjectArtifactId = folder.ArtifactId,
+                FolderName = folder.Name,
+                HasImages = false,
+                HasNatives = true,
             });
 
             workspace.Documents.Add(new DocumentTest(fields)

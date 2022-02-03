@@ -42,14 +42,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             _fieldValues = new Dictionary<string, object>();
             foreach (FieldTest field in fields)
             {
-                new FieldValuePair
-                {
-                    Field = new Field
-                    {
-                        Name = field.Name,
-                    },
-                    Value = field
-                };
+                _fieldValues.Add(field.Name, field);
             }
         }
 

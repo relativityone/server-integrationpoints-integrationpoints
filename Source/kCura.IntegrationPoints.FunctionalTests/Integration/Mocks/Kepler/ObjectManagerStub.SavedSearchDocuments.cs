@@ -14,23 +14,23 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
     public partial class ObjectManagerStub
     {
-        private IList<DocumentTest> DocumentsFilter(QueryRequest request, IList<DocumentTest> list)
-        {
-            bool hasNatives = request.Condition.Contains($"'{DocumentFieldsConstants.HasNativeFieldGuid}' == true");
-            bool hasImages = request.Condition.Contains($"'{DocumentFieldsConstants.HasImagesFieldName}' == CHOICE");
-            bool hasFields = request.Fields.Any();
-
-            List<DocumentTest> documents = list.Where(x =>
-                x.HasNatives == hasNatives && 
-                x.HasImages == hasImages && 
-                x.HasFields == hasFields)
-                .ToList();
-            return documents;
-        }
-
-		private void SetupSavedSearchDocuments()
+        private void SetupSavedSearchDocuments()
 	    {
-		    Mock.Setup(x => x.QueryAsync(It.IsAny<int>(), 
+            IList<DocumentTest> DocumentsFilter(QueryRequest request, IList<DocumentTest> list)
+            {
+                bool hasNatives = request.Condition.Contains($"'{DocumentFieldsConstants.HasNativeFieldGuid}' == true");
+                bool hasImages = request.Condition.Contains($"'{DocumentFieldsConstants.HasImagesFieldName}' == CHOICE");
+                bool hasFields = request.Fields.Any();
+
+                List<DocumentTest> documents = list.Where(x =>
+                        x.HasNatives == hasNatives &&
+                        x.HasImages == hasImages &&
+                        x.HasFields == hasFields)
+                    .ToList();
+                return documents;
+            }
+
+			Mock.Setup(x => x.QueryAsync(It.IsAny<int>(), 
 				    It.Is<QueryRequest>(r => IsSavedSearchDocumentsQuery(r)), It.IsAny<int>(), It.IsAny<int>()))
 			    .Returns((int workspaceId, QueryRequest request, int start, int length) =>
 			{
@@ -51,8 +51,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
 	    private bool IsSavedSearchDocumentsQuery(QueryRequest query)
 	    {
-            Match match = Regex.Match(query.Condition, @"'ArtifactId' IN SAVEDSEARCH (\d+)");
-			return match.Success;
+            Match savedSearchMatch = Regex.Match(query.Condition, @"'ArtifactId' IN SAVEDSEARCH (\d+)");
+			return savedSearchMatch.Success;
 	    }
     }
 }
