@@ -49,6 +49,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
 	    private bool IsSavedSearchDocumentsQuery(QueryRequest query)
 	    {
+            if (query.Condition == null)
+            {
+                return false;
+            }
             Match savedSearchMatch = Regex.Match(query.Condition, @"'ArtifactId' IN SAVEDSEARCH (\d+).*");
 			return savedSearchMatch.Success;
 	    }

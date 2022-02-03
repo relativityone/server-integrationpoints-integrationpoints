@@ -18,7 +18,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
     {
         private IStatisticsManager _sut;
         private DocumentHelper _documentHelper;
-        private ProductionHelper _productionHelper;
 
         [SetUp]
         public override void SetUp()
@@ -26,8 +25,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             base.SetUp();
 
             _documentHelper = SourceWorkspace.Helpers.DocumentHelper;
-            _productionHelper = SourceWorkspace.Helpers.ProductionHelper;
-            Container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(() => Helper.GetServicesManager()).IsDefault().Named("ServicesManager"));
             _sut = Container.Resolve<IStatisticsManager>();
         }
 

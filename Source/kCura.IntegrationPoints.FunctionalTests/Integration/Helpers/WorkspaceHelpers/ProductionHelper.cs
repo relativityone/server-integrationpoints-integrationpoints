@@ -14,10 +14,5 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
         {
             return Workspace.Productions;
         }
-
-        public IList<ProductionTest> GetProductionsWithoutImagesNativesAndFields()
-        {
-            return Workspace.Productions.Where(x => !x.HasNatives && !x.HasImages && !x.HasFields).ToList();
-        }
     }
 }

@@ -51,6 +51,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
 	    private bool IsProductionDocumentsQuery(QueryRequest query)
 	    {
+            if (query.Condition == null)
+            {
+                return false;
+            }
             Match savedSearchMatch = Regex.Match(query.Condition, @"'ProductionSet' == OBJECT (\d+).*");
             return savedSearchMatch.Success;
         }

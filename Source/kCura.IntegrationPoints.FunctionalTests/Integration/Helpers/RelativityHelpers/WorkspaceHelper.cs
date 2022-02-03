@@ -159,7 +159,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                 HasNatives = true,
             });
 
-workspace.Documents.Add(new DocumentTest()
+            workspace.Documents.Add(new DocumentTest
             {
                 ParenObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
@@ -167,12 +167,7 @@ workspace.Documents.Add(new DocumentTest()
                 HasNatives = false,
             });
 
-            workspace.Productions.Add(new ProductionTest()
-            {
-                ParenObjectArtifactId = folder.ArtifactId,
-                HasImages = false,
-                HasNatives = false,
-            });
+            workspace.Productions.Add(new ProductionTest());
 
 			return workspace;
 		}

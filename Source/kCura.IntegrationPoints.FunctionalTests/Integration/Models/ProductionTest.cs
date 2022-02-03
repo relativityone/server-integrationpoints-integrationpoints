@@ -1,60 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
     public class ProductionTest : RdoTestBase
     {
-        private const string DOCUMENT_NAME = "Production";
+        private const string PRODUCTION_NAME = "Production";
 
-        private readonly Dictionary<string, object> _fieldValues;
-        
+        public ProductionTest() : base(PRODUCTION_NAME)
+        {
+        }
+
         public override List<Guid> Guids => new List<Guid>();
-
-        public bool HasImages { get; set; }
-
-        public bool HasNatives { get; set; }
-
-        public bool HasFields => _fieldValues.Any();
-
-        public int? ImageCount { get; set; }
-
-        public ProductionTest() : base(DOCUMENT_NAME)
-        {
-            _fieldValues = new Dictionary<string, object>();
-        }
-
-        public ProductionTest(IList<FieldTest> fields) : base(DOCUMENT_NAME)
-        {
-            _fieldValues = new Dictionary<string, object>();
-            foreach (FieldTest field in fields)
-            {
-                _fieldValues.Add(field.Name, field);
-            }
-        }
 
         public override RelativityObject ToRelativityObject()
         {
-            List<FieldValuePair> fieldValues = new List<FieldValuePair>();
-            foreach (KeyValuePair<string, object> fieldValue in _fieldValues)
-            {
-                fieldValues.Add(new FieldValuePair
-                {
-                    Field = new Field
-                    {
-                        Name = fieldValue.Key,
-                    },
-                    Value = fieldValue.Value
-                }
-                );
-            }
-
             RelativityObject relativityObject = new RelativityObject
             {
                 ArtifactID = ArtifactId,
-                FieldValues = fieldValues
             };
 
             return relativityObject;

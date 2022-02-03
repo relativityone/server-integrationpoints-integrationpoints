@@ -49,6 +49,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
 	    private bool IsFolderDocumentsQuery(QueryRequest query)
 	    {
+            if (query.Condition == null)
+            {
+                return false;
+            }
 			Match folderMatch = Regex.Match(query.Condition, @"'Folder Name' == OBJECT (\d+).*|'Folder Name' == OBJECT (\d+).*");
 			return folderMatch.Success;
 	    }
