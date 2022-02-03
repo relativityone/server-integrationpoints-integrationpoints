@@ -5,13 +5,14 @@ using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Validation
 {
 	public class IntegrationPointProviderValidator : BaseIntegrationPointValidator<IValidator>, IIntegrationPointProviderValidator
 	{
-		public IntegrationPointProviderValidator(IEnumerable<IValidator> validators, IIntegrationPointSerializer serializer)
-			: base(validators, serializer)
+		public IntegrationPointProviderValidator(IEnumerable<IValidator> validators, IIntegrationPointSerializer serializer, IServicesMgr servicesMgr)
+			: base(validators, serializer, servicesMgr)
 		{
 		}
 
@@ -55,10 +56,10 @@ namespace kCura.IntegrationPoints.Core.Validation
 				result.Add(validator.Validate(validationModel));
 			}
 			
-			foreach (IValidator validator in _validatorsMap[objectTypeGuid.ToString()])
-			{
-				result.Add(validator.Validate(validationModel));
-			}			
+			foreach (IValidator validator in _validatorsMap[GetTransferredObjectObjectTypeGuid(validationModel)])
+            {
+            	result.Add(validator.Validate(validationModel));
+            }
 
 			return result;
 		}

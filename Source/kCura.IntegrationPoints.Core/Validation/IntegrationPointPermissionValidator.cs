@@ -5,13 +5,14 @@ using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Validation
 {
 	public class IntegrationPointPermissionValidator : BaseIntegrationPointValidator<IPermissionValidator>, IIntegrationPointPermissionValidator
 	{
-		public IntegrationPointPermissionValidator(IEnumerable<IPermissionValidator> validators, IIntegrationPointSerializer serializer)
-			: base(validators, serializer)
+		public IntegrationPointPermissionValidator(IEnumerable<IPermissionValidator> validators, IIntegrationPointSerializer serializer, IServicesMgr servicesMgr)
+			: base(validators, serializer, servicesMgr)
 		{
 		}
 

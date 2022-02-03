@@ -40,7 +40,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 			IAPILog logger = helper.GetLoggerFactory().GetLogger();
 			IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer(logger);
 
-			IChoiceQuery choiceQuery = new ChoiceQuery(helper.GetServicesManager());
+			IServicesMgr destinationServiceMgr = helper.GetServicesManager();
+			IChoiceQuery choiceQuery = new ChoiceQuery(destinationServiceMgr);
 
 			Guid agentGuid = new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
 
@@ -49,7 +50,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
             IJobService jobService = new JobService(agentService, jobServiceDataProvider, new KubernetesMode(logger), helper);
 			IEddsServiceContext eddsServiceContext = new EddsServiceContext(serviceContextHelper);
-			IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
+			IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, destinationServiceMgr);
 			IDBContext dbContext = helper.GetDBContext(helper.GetActiveCaseID());
 			IWorkspaceDBContext workspaceDbContext = new WorkspaceDBContext(dbContext);
 			IJobTrackerQueryManager jobTrackerQueryManager = new JobTrackerQueryManager(repositoryFactory, workspaceDbContext);
@@ -72,9 +73,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 
 			IManagerFactory managerFactory = new ManagerFactory(helper, new FakeNonRemovableAgent(), jobServiceDataProvider);
 
-			IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), integrationPointSerializer);
+			IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), integrationPointSerializer, destinationServiceMgr);
 
-			IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), integrationPointSerializer);
+			IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), integrationPointSerializer, destinationServiceMgr);
 
 			IValidationExecutor validationExecutor = new ValidationExecutor(ipValidator, permissionValidator, helper);
 

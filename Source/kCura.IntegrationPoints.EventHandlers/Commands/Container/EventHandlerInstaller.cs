@@ -5,6 +5,7 @@ using Castle.Windsor;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Context;
 using kCura.IntegrationPoints.Core.Authentication;
+using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Installers.Registrations;
 using kCura.IntegrationPoints.Core.Services;
@@ -69,12 +70,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 			);
 
 			container.Register(Component.For<IIntegrationPointProviderValidator>().UsingFactoryMethod(k =>
-					new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), k.Resolve<IIntegrationPointSerializer>()))
+					new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), k.Resolve<IIntegrationPointSerializer>(),  k.Resolve<IServicesMgr>()))
 				.LifestyleSingleton());
 
 			container.Register(Component.For<IIntegrationPointPermissionValidator>().UsingFactoryMethod(k =>
 				new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(),
-					k.Resolve<IIntegrationPointSerializer>())).LifestyleSingleton());
+					k.Resolve<IIntegrationPointSerializer>(), k.Resolve<IServicesMgr>())).LifestyleSingleton());
 
 			container.Register(Component.For<IValidationExecutor>().ImplementedBy<ValidationExecutor>().LifestyleSingleton());
 
