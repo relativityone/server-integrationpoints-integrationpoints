@@ -139,11 +139,12 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		}
 
 		[Test]
-		public async Task ObjectTypeExists_ShouldReturnTrueWhenExistsInDestinationWorkspace()
+		public async Task GetDestinationArtifactTypeID_ShouldReturnArtifactIdWhenExistsInDestinationWorkspace()
 		{
 			// Arrange
 			const int destinationWorkspaceId = 222;
 			const int rdoArtifactTypeId = 333;
+			const int rdoArtifactId = 444;
 			const string rdoName = "My RDO";
 
 			_objectManagerMock
@@ -170,18 +171,21 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 					Objects = new List<RelativityObject>()
 					{
 						new RelativityObject()
+                        {
+							ArtifactID = rdoArtifactId
+                        }
 					}
 				});
 
 			// Act
-			bool response = await _sut.GetDestinationArtifactTypeID(_WORKSPACE_ID, destinationWorkspaceId, rdoArtifactTypeId).ConfigureAwait(false);
+			int response = await _sut.GetDestinationArtifactTypeID(_WORKSPACE_ID, destinationWorkspaceId, rdoArtifactTypeId).ConfigureAwait(false);
 
 			// Assert
-			response.Should().BeTrue();
+			response.Should().Be(rdoArtifactId);
 		}
 
 		[Test]
-		public async Task ObjectTypeExists_ShouldReturnFalseWhenDoesntExistsInDestinationWorkspace()
+		public async Task GetDestinationArtifactTypeID_ShouldNotReturnWhenDoesntExistsInDestinationWorkspace()
 		{
 			// Arrange
 			const int destinationWorkspaceId = 222;
@@ -213,10 +217,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 				});
 
 			// Act
-			bool response = await _sut.GetDestinationArtifactTypeID(_WORKSPACE_ID, destinationWorkspaceId, rdoArtifactTypeId).ConfigureAwait(false);
+			int response = await _sut.GetDestinationArtifactTypeID(_WORKSPACE_ID, destinationWorkspaceId, rdoArtifactTypeId).ConfigureAwait(false);
 
 			// Assert
-			response.Should().BeFalse();
+			response.Should().Be(-1);
 		}
 	}
 }
