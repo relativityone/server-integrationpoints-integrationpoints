@@ -89,6 +89,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             SetupDocumentFields();
             SetupSavedSearch();
             SetupSavedSearchDocuments();
+            SetupProductionDocuments();
             SetupIntegrationPointLongTextStreaming();
             SetupIntegrationPointProfile();
             SetupIntegrationPointProfileLongTextStreaming();
@@ -188,6 +189,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                             ProductionConsts.ImageCountFieldGuid
                         }
                     },
+                    new FieldMetadata
+                    {
+                        Name = "DocumentFieldGuid",
+                        ArtifactID = ArtifactProvider.NextId(),
+                        FieldType = FieldType.FixedLengthText,
+                        ViewFieldID = ArtifactProvider.NextId(),
+                        Guids = new List<Guid>
+                        {
+                            ProductionConsts.DocumentFieldGuid
+                        }
+                    },
                 }
             }
             ));
@@ -201,12 +213,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 new RelativityObjectSlim
                 {
                     ArtifactID = ArtifactProvider.NextId(),
-                    Values = new List<object> { "1234" }
+                    Values = new List<object> { "1234", "2222", new {ArtifactID = ArtifactProvider.NextId() } }
                 },
                 new RelativityObjectSlim
                 {
                     ArtifactID = ArtifactProvider.NextId(),
-                    Values = new List<object> { "4321" }
+                    Values = new List<object> { "4321", "1111", new { ArtifactID = ArtifactProvider.NextId() } }
                 }
             }
             .ToArray()

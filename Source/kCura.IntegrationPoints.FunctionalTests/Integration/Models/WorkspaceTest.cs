@@ -41,6 +41,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public IList<DocumentTest> Documents { get; } = new List<DocumentTest>();
 
+        public IList<ProductionTest> Productions { get; } = new List<ProductionTest>();
+
         public IList<ArtifactTest> Artifacts => GetAllArtifacts();
 
         private IList<ArtifactTest> GetAllArtifacts()
@@ -59,6 +61,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 .Concat(GetArtifacts(SyncConfigurations))
                 .Concat(GetArtifacts(Fields))
                 .Concat(GetArtifacts(Documents))
+                .Concat(GetArtifacts(Productions))
                 .ToList();
         }
         
@@ -97,7 +100,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                    ?? TryFind(SavedSearches)
                    ?? TryFind(Fields)
                    ?? TryFind(SyncConfigurations)
-                   ?? TryFind(Documents);
+                   ?? TryFind(Documents)
+                   ?? TryFind(Productions);
         }
 
         public override List<Guid> Guids => new List<Guid>();
@@ -133,6 +137,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             private JobHistoryHelper _jobHistoryHelper;
             private FieldsMappingHelper _fieldsMappingHelper;
             private DocumentHelper _documentHelper;
+            private ProductionHelper _productionHelper;
 
             internal WorkspaceHelpers(WorkspaceTest workspace, ISerializer serializer)
             {
@@ -172,6 +177,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             public DocumentHelper DocumentHelper => _documentHelper ??
                                                     (_documentHelper =
                                                         new DocumentHelper(_workspace));
+
+            public ProductionHelper ProductionHelper => _productionHelper ??
+                                                      (_productionHelper =
+                                                          new ProductionHelper(_workspace));
         }
     }
 }

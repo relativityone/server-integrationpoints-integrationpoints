@@ -12,5 +12,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
         JobHistoryHelper JobHistoryHelper { get; }
         FieldsMappingHelper FieldsMappingHelper { get; }
         DocumentHelper DocumentHelper { get; }
+        ProductionHelper ProductionHelper { get; }
     }
 }

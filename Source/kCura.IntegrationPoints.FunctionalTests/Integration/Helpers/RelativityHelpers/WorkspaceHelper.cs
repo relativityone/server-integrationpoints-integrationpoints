@@ -92,25 +92,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 
             workspace.Documents.Add(new DocumentTest(fields)
             {
-				ParenObjectArtifactId = folder.ArtifactId,
-				FolderName = folder.Name,
-				HasImages = true,
-				HasNatives = true,
-				ImageCount = 1,
-            });
-
-            workspace.Documents.Add(new DocumentTest(fields)
-            {
-                ParenObjectArtifactId = folder.ArtifactId,
-                FolderName = folder.Name,
-                HasImages = true,
-                HasNatives = true,
-                ImageCount = 1,
-            });
-
-
-            workspace.Documents.Add(new DocumentTest(fields)
-            {
                 ParenObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
                 HasImages = true,
@@ -162,7 +143,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                 HasNatives = true,
             });
 
-            workspace.Documents.Add(new DocumentTest(fields)
+            workspace.Documents.Add(new DocumentTest
             {
                 ParenObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
@@ -170,10 +151,25 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                 HasNatives = true,
             });
 
-            workspace.Documents.Add(new DocumentTest()
+            workspace.Documents.Add(new DocumentTest
             {
                 ParenObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
+                HasImages = false,
+                HasNatives = true,
+            });
+
+workspace.Documents.Add(new DocumentTest()
+            {
+                ParenObjectArtifactId = folder.ArtifactId,
+                FolderName = folder.Name,
+                HasImages = false,
+                HasNatives = false,
+            });
+
+            workspace.Productions.Add(new ProductionTest()
+            {
+                ParenObjectArtifactId = folder.ArtifactId,
                 HasImages = false,
                 HasNatives = false,
             });

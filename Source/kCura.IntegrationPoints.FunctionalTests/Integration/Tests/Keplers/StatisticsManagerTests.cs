@@ -18,6 +18,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
     {
         private IStatisticsManager _sut;
         private DocumentHelper _documentHelper;
+        private ProductionHelper _productionHelper;
 
         [SetUp]
         public override void SetUp()
@@ -25,6 +26,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             base.SetUp();
 
             _documentHelper = SourceWorkspace.Helpers.DocumentHelper;
+            _productionHelper = SourceWorkspace.Helpers.ProductionHelper;
             Container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(() => Helper.GetServicesManager()).IsDefault().Named("ServicesManager"));
             _sut = Container.Resolve<IStatisticsManager>();
         }
@@ -52,12 +54,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             int savedSearchArtifactId = SourceWorkspace.SavedSearches.First().ArtifactId;
 
             // Act 
-            long totalDocuments = await _sut
+            long totalImages = await _sut
                 .GetImagesTotalForSavedSearchAsync(SourceWorkspace.ArtifactId, savedSearchArtifactId)
                 .ConfigureAwait(false);
 
             // Assert
-            totalDocuments.ShouldBeEquivalentTo(5555);
+            totalImages.ShouldBeEquivalentTo(5555);
         }
 
         [IdentifiedTest("EA98BDC4-04A4-488B-AF00-260265D1F726")]
@@ -80,20 +82,123 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             returnedTotalFileSize.ShouldBeEquivalentTo(totalFileSize);
         }
 
+        [IdentifiedTest("DAF57246-9B0F-4FD0-9A56-052BD980D3F7")]
+        public async Task GetNativesTotalForSavedSearchAsync_ShouldReturnOnlyOneNative()
+        {
+            // Arrange
+            int savedSearchArtifactId = SourceWorkspace.SavedSearches.First().ArtifactId;
+
+            // Act 
+            long totalNatives = await _sut
+                .GetNativesTotalForSavedSearchAsync(SourceWorkspace.ArtifactId, savedSearchArtifactId)
+                .ConfigureAwait(false);
+
+            // Assert
+            totalNatives.ShouldBeEquivalentTo(1);
+        }
+
+        [IdentifiedTest("23511C10-BC47-45A9-B207-8461611F159E")]
+        public async Task GetNativesFileSizeForSavedSearchAsync_ShouldReturnValidFileSize()
+        {
+            // Arrange
+            int totalFileSize = 4444;
+            int savedSearchArtifactId = SourceWorkspace.SavedSearches.First().ArtifactId;
+            Helper.DbContextMock.Setup(x =>
+                    x.ExecuteSqlStatementAsScalar<long>(It.IsAny<string>(), It.IsAny<SqlParameter>(),
+                        It.IsAny<SqlParameter>()))
+                .Returns(totalFileSize);
+
+            // Act 
+            long returnedTotalFileSize = await _sut
+                .GetNativesFileSizeForSavedSearchAsync(SourceWorkspace.ArtifactId, savedSearchArtifactId)
+                .ConfigureAwait(false);
+
+            // Assert
+            returnedTotalFileSize.ShouldBeEquivalentTo(totalFileSize);
+        }
+
         [IdentifiedTest("CF5F893F-FF00-4083-9C4A-8858113A7210")]
         public async Task GetDocumentsTotalForProductionAsync_ShouldReturnAllDocumentsWithoutFieldsNativesAndImages()
         {
             // Arrange
-            int savedSearchArtifactId = SourceWorkspace.SavedSearches.First().ArtifactId;
+            int productionArtifactId = SourceWorkspace.Productions.First().ArtifactId;
             IList<DocumentTest> documents = _documentHelper.GetDocumentsWithoutImagesNativesAndFields();
 
             // Act 
             long totalDocuments = await _sut
-                .GetDocumentsTotalForProductionAsync(SourceWorkspace.ArtifactId, savedSearchArtifactId)
+                .GetDocumentsTotalForProductionAsync(SourceWorkspace.ArtifactId, productionArtifactId)
                 .ConfigureAwait(false);
 
             // Assert
             totalDocuments.ShouldBeEquivalentTo(documents.Count);
+        }
+
+        [IdentifiedTest("F17194A9-9C2F-4B85-8D56-72976E61BDD8")]
+        public async Task GetImagesTotalForProductionAsync_ShouldProperlySumAllDocumentImages()
+        {
+            // Arrange
+            int productionArtifactId = SourceWorkspace.Productions.First().ArtifactId;
+
+            // Act 
+            long totalDocuments = await _sut
+                .GetImagesTotalForProductionAsync(SourceWorkspace.ArtifactId, productionArtifactId)
+                .ConfigureAwait(false);
+
+            // Assert
+            totalDocuments.ShouldBeEquivalentTo(3333);
+        }
+
+        [IdentifiedTest("406519DF-5034-4856-872C-1F8A391CB084")]
+        public async Task GetImagesFileSizeForProductionAsync_ShouldReturnValidFileSize()
+        {
+            // Arrange
+            int totalFileSize = 3333;
+            int productionArtifactId = SourceWorkspace.SavedSearches.First().ArtifactId;
+            Helper.DbContextMock.Setup(x =>
+                    x.ExecuteSqlStatementAsScalar<long>(It.IsAny<string>()))
+                .Returns(totalFileSize);
+
+            // Act 
+            long returnedTotalFileSize = await _sut
+                .GetImagesFileSizeForProductionAsync(SourceWorkspace.ArtifactId, productionArtifactId)
+                .ConfigureAwait(false);
+
+            // Assert
+            returnedTotalFileSize.ShouldBeEquivalentTo(totalFileSize);
+        }
+
+        [IdentifiedTest("D8F3DFA4-6CEE-4050-8D41-79F1CEE85B6F")]
+        public async Task GetNativesTotalForProductionAsync_ShouldReturnOnlyOneNative()
+        {
+            // Arrange
+            int savedSearchArtifactId = SourceWorkspace.SavedSearches.First().ArtifactId;
+
+            // Act 
+            long totalNatives = await _sut
+                .GetNativesTotalForProductionAsync(SourceWorkspace.ArtifactId, savedSearchArtifactId)
+                .ConfigureAwait(false);
+
+            // Assert
+            totalNatives.ShouldBeEquivalentTo(1);
+        }
+
+        [IdentifiedTest("B720C668-3692-4479-911D-06B2F5AD88B2")]
+        public async Task GetNativesFileSizeForProductionAsync_ShouldReturnValidFileSize()
+        {
+            // Arrange
+            int totalFileSize = 3333;
+            int savedSearchArtifactId = SourceWorkspace.SavedSearches.First().ArtifactId;
+            Helper.DbContextMock.Setup(x =>
+                    x.ExecuteSqlStatementAsScalar<long>(It.IsAny<string>(), It.IsAny<SqlParameter[]>()))
+                .Returns(totalFileSize);
+
+            // Act 
+            long returnedTotalFileSize = await _sut
+                .GetNativesFileSizeForProductionAsync(SourceWorkspace.ArtifactId, savedSearchArtifactId)
+                .ConfigureAwait(false);
+
+            // Assert
+            returnedTotalFileSize.ShouldBeEquivalentTo(totalFileSize);
         }
     }
 }

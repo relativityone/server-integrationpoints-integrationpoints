@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data;
 using Moq;
-using OutsideIn;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Services.Objects.DataContracts;
 using Match = System.Text.RegularExpressions.Match;
@@ -51,7 +49,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
 	    private bool IsSavedSearchDocumentsQuery(QueryRequest query)
 	    {
-            Match savedSearchMatch = Regex.Match(query.Condition, @"'ArtifactId' IN SAVEDSEARCH (\d+)");
+            Match savedSearchMatch = Regex.Match(query.Condition, @"'ArtifactId' IN SAVEDSEARCH (\d+).*");
 			return savedSearchMatch.Success;
 	    }
     }

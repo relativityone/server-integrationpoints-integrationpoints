@@ -5,9 +5,9 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
-    public class DocumentTest : RdoTestBase
+    public class ProductionTest : RdoTestBase
     {
-        private const string DOCUMENT_NAME = "Document";
+        private const string DOCUMENT_NAME = "Production";
 
         private readonly Dictionary<string, object> _fieldValues;
         
@@ -21,14 +21,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public int? ImageCount { get; set; }
 
-        public string FolderName { get; set; }
-
-        public DocumentTest() : base(DOCUMENT_NAME)
+        public ProductionTest() : base(DOCUMENT_NAME)
         {
             _fieldValues = new Dictionary<string, object>();
         }
 
-        public DocumentTest(IList<FieldTest> fields) : base(DOCUMENT_NAME)
+        public ProductionTest(IList<FieldTest> fields) : base(DOCUMENT_NAME)
         {
             _fieldValues = new Dictionary<string, object>();
             foreach (FieldTest field in fields)
