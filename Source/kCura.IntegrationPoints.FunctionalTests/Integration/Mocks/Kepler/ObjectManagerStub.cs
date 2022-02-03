@@ -90,6 +90,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             SetupSavedSearch();
             SetupSavedSearchDocuments();
             SetupProductionDocuments();
+            SetupFolderDocuments();
             SetupIntegrationPointLongTextStreaming();
             SetupIntegrationPointProfile();
             SetupIntegrationPointProfileLongTextStreaming();
