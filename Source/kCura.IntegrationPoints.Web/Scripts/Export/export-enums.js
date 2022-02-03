@@ -72,7 +72,8 @@ ExportEnums.SourceOptionsEnum = {
 	Folder: 0,
 	FolderSubfolder: 1,
 	Production: 2,
-	SavedSearch: 3
+	SavedSearch: 3,
+	View: 4
 };
 
 ExportEnums.ExportNativeWithFilenameFromTypesEnum = {
