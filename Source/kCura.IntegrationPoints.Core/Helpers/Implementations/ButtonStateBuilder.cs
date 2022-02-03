@@ -66,11 +66,13 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			return _queueManager.HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
 		}
 
-		private bool IntegrationPointIsStoppable(ProviderType providerType, int applicationArtifactId, int integrationPointArtifactId, ImportSettings settings)
+		private bool IntegrationPointIsStoppable(ProviderType providerType, int workspaceArtifactId, int integrationPointArtifactId, ImportSettings settings)
 		{
-			StoppableJobHistoryCollection stoppableJobCollection = _jobHistoryManager.GetStoppableJobHistory(applicationArtifactId, integrationPointArtifactId);
+			StoppableJobHistoryCollection stoppableJobCollection = _jobHistoryManager.GetStoppableJobHistory(workspaceArtifactId, integrationPointArtifactId);
 
-			if(stoppableJobCollection.HasOnlyPendingJobHistory)
+			bool hasExecutingJobs = _queueManager.HasJobsExecuting(workspaceArtifactId, integrationPointArtifactId);
+
+			if(stoppableJobCollection.HasOnlyPendingJobHistory && !hasExecutingJobs)
             {
 				return true;
             }

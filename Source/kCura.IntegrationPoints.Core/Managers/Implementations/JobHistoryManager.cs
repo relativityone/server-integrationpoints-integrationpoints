@@ -41,10 +41,11 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(workspaceArtifactId);
 			IList<JobHistory> stoppableJobHistories = jobHistoryRepository.GetStoppableJobHistoriesForIntegrationPoint(integrationPointArtifactId);
 
-			IDictionary<string, JobHistory[]> jobHistoriesByStatus = stoppableJobHistories
-				.GroupBy(x => x.JobStatus?.Name)
-				.Select(x => new { Key = x.Key, Values = x.ToArray() })
-				.ToDictionary(x => x.Key, x => x.Values);
+            IDictionary<string, JobHistory[]> jobHistoriesByStatus = stoppableJobHistories
+				.Where(x => x.JobStatus != null)
+                .GroupBy(x => x.JobStatus?.Name)
+                .Select(x => new { Key = x.Key, Values = x.ToArray() })
+                .ToDictionary(x => x.Key, x => x.Values);
 
 			return new StoppableJobHistoryCollection
 			{

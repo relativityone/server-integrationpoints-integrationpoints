@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoint.Tests.Core;
+﻿using FluentAssertions;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Models;
 using NUnit.Framework;
 
@@ -7,76 +8,75 @@ namespace kCura.IntegrationPoints.Core.Tests.Models
 	[TestFixture, Category("Unit")]
 	public class StoppableJobCollectionTests : TestBase
 	{
-		[SetUp]
-		public override void SetUp()
-		{
-			
-		}
-
 		[Test]
-		public void HasStoppableJobs_NullProperties_ReturnsFalse()
+		public void StoppableJobCollection_ShouldReturn_WhenNullProperties()
 		{
 			// Arrange
-			var instance = new StoppableJobHistoryCollection();
+			var sut = new StoppableJobHistoryCollection();
 
 			// Act & Assert
-			Assert.IsFalse(instance.HasStoppableJobHistory);
+			sut.HasStoppableJobHistory.Should().BeFalse();
+			sut.HasOnlyPendingJobHistory.Should().BeFalse();
 		}
 
 		[Test]
-		public void HasStoppableJobs_EmptyProperties_ReturnsFalse()
+		public void StoppableJobCollection_ShouldReturn_WhenEmptyProperties()
 		{
 			// Arrange
-			var instance = new StoppableJobHistoryCollection()
+			var sut = new StoppableJobHistoryCollection()
 			{
 				PendingJobHistory = new Data.JobHistory[0],
 				ProcessingJobHistory = new Data.JobHistory[0]
 			};
 
 			// Act & Assert
-			Assert.IsFalse(instance.HasStoppableJobHistory);
+			sut.HasStoppableJobHistory.Should().BeFalse();
+			sut.HasOnlyPendingJobHistory.Should().BeFalse();
 		}
 
 		[Test]
-		public void HasStoppableJobs_GoldFlow()
+		public void StoppableJobCollection_GoldFlow()
 		{
 			// Arrange
-			var instance = new StoppableJobHistoryCollection()
+			var sut = new StoppableJobHistoryCollection()
 			{
 				PendingJobHistory = new [] { new Data.JobHistory { ArtifactId = 231 } },
 				ProcessingJobHistory = new [] { new Data.JobHistory { ArtifactId = 95403 } }
 			};
 
 			// Act & Assert
-			Assert.IsTrue(instance.HasStoppableJobHistory);
+			sut.HasStoppableJobHistory.Should().BeTrue();
+			sut.HasOnlyPendingJobHistory.Should().BeFalse();
 		}
 
 		[Test]
-		public void HasStoppableJobs_NoPendingJobs_ReturnsTrue()
+		public void StoppableJobCollection_ShouldReturn_WhenNoPendingJobs()
 		{
 			// Arrange
-			var instance = new StoppableJobHistoryCollection()
+			var sut = new StoppableJobHistoryCollection()
 			{
 				PendingJobHistory = null,
 				ProcessingJobHistory = new[] { new Data.JobHistory { ArtifactId = 95403 } }
 			};
 
 			// Act & Assert
-			Assert.IsTrue(instance.HasStoppableJobHistory);
+			sut.HasStoppableJobHistory.Should().BeTrue();
+			sut.HasOnlyPendingJobHistory.Should().BeFalse();
 		}
 
 		[Test]
-		public void HasStoppableJobs_NoProcessingJobs_ReturnsTrue()
+		public void StoppableJobCollection_ShouldReturne_WhenNoProcessingJobs()
 		{
 			// Arrange
-			var instance = new StoppableJobHistoryCollection()
+			var sut = new StoppableJobHistoryCollection()
 			{
 				PendingJobHistory = new[] { new Data.JobHistory { ArtifactId = 904302 } },
 				ProcessingJobHistory = null
 			};
 
 			// Act & Assert
-			Assert.IsTrue(instance.HasStoppableJobHistory);
+			sut.HasStoppableJobHistory.Should().BeTrue();
+			sut.HasOnlyPendingJobHistory.Should().BeTrue();
 		}
 	}
 }

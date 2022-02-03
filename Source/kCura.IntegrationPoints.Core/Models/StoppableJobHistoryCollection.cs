@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoints.Data;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace kCura.IntegrationPoints.Core.Models
@@ -8,10 +9,12 @@ namespace kCura.IntegrationPoints.Core.Models
 		public JobHistory[] PendingJobHistory { get; set; } 
 		public JobHistory[] ProcessingJobHistory { get; set; }
 
-		public bool HasStoppableJobHistory 
-			=> PendingJobHistory.Any() || ProcessingJobHistory.Any();
+		public bool HasStoppableJobHistory
+			=> HasAny(PendingJobHistory) || HasAny(ProcessingJobHistory);
 
 		public bool HasOnlyPendingJobHistory
-			=> PendingJobHistory.Any() && !ProcessingJobHistory.Any();
+			=> HasAny(PendingJobHistory) && !HasAny(ProcessingJobHistory);
+
+		private bool HasAny(IEnumerable<JobHistory> jobHistory) => jobHistory?.Any() ?? false;
 	}
 }

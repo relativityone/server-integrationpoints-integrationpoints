@@ -62,33 +62,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			UpdateIntegrationPointFields(integrationPointID, jobEndTime);
 		}
 
-		public IDictionary<Guid, int[]> GetStoppableJobHistoryArtifactIdsByStatus(int integrationPointArtifactId)
-		{
-			IList<JobHistory> jobHistories = GetStoppableJobHistoriesForIntegrationPoint(integrationPointArtifactId);
-
-			var jobHistoryIdsInPending = new List<int>();
-			var jobHistoryIdsinProcessing = new List<int>();
-
-			foreach (JobHistory jobHistory in jobHistories)
-			{
-				string statusName = jobHistory.JobStatus?.Name;
-				if (statusName == JobStatusChoices.JobHistoryPending.Name)
-				{
-					jobHistoryIdsInPending.Add(jobHistory.ArtifactId);
-				}
-				else if (statusName == JobStatusChoices.JobHistoryProcessing.Name)
-				{
-					jobHistoryIdsinProcessing.Add(jobHistory.ArtifactId);
-				}
-			}
-
-			return new Dictionary<Guid, int[]>
-			{
-				[JobStatusChoices.JobHistoryPending.Guids.First()] = jobHistoryIdsInPending.ToArray(),
-				[JobStatusChoices.JobHistoryProcessing.Guids.First()] = jobHistoryIdsinProcessing.ToArray()
-			};
-		}
-
 		public string GetJobHistoryName(int jobHistoryArtifactId)
 		{
 			IEnumerable<Guid> fieldsToRetrieve = new[] { Guid.Parse(JobHistoryFieldGuids.Name) };
