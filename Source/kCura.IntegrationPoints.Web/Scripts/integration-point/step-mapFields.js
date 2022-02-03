@@ -1,5 +1,7 @@
 ﻿var IP = IP || {};
 
+const documentArtifactTypeId = 10;
+
 ko.validation.rules.pattern.message = 'Invalid.';
 
 ko.validation.configure({
@@ -220,7 +222,10 @@ ko.validation.insertValidationMessage = function (element) {
 		this.selectedMappedSource = ko.observableArray([]);
 		this.IdentifierField = ko.observable(model.IPDestinationSettings.IdentifierField);
 		this.showMapSavedSearchButton = ko.observable(false);
-		this.showMapViewButton = ko.observable(false);
+
+		var isNonDocumentObjectFlow = IP.data.params['EnableSyncNonDocumentFlowToggleValue'] && IP.data.params['TransferredRDOArtifactTypeID'] != documentArtifactTypeId;
+		self.IsNonDocumentObjectFlow = ko.observable();
+		self.IsNonDocumentObjectFlow(isNonDocumentObjectFlow);
 
 		this.overlay = ko.observableArray([]);
 		this.nativeFilePathOption = ko.observableArray([]);
@@ -530,11 +535,14 @@ ko.validation.insertValidationMessage = function (element) {
 		});
 		this.showManager = ko.observable(false);
 		this.cacheMapped = ko.observableArray([]);
-		root.data.ajax({
-			type: 'GET', url: root.utils.generateWebAPIURL('Entity/' + artifactTypeId)
-		}).then(function (result) {
-			self.showManager(result);
-		});
+
+		if (!isNonDocumentObjectFlow){
+			root.data.ajax({
+				type: 'GET', url: root.utils.generateWebAPIURL('Entity/' + artifactTypeId)
+			}).then(function (result) {
+				self.showManager(result);
+			});
+		};
 
 		function getCustomProviderSourceFields() {
 			return root.data.ajax({
@@ -1117,7 +1125,6 @@ ko.validation.insertValidationMessage = function (element) {
 			this.model.errors = ko.validation.group(this.model, { deep: true });
 
 			self.model.showMapSavedSearchButton(self.model.IsSavedSearchExport());
-			self.model.showMapViewButton(self.model.IsViewExport());
 		};
 
 		var relativityImportType;

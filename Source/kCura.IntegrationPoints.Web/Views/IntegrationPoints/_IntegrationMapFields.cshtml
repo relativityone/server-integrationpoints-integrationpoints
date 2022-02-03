@@ -25,7 +25,7 @@
                 <div class="mapButtonsContainer">
                     <button class="button generic positive map-field-btn" id="mapFieldsBtn" data-bind="click: autoFieldMap">Map All Fields</button>
                     <button class="button generic positive map-field-btn" id="mapFieldsFromSavedSearchBtn" data-bind="click: autoMapFieldsFromSavedSearch, visible: showMapSavedSearchButton">Map Saved Search</button>
-                    <button class="button generic positive map-field-btn" id="mapFieldsFromViewBtn" data-bind="click: autoMapFieldsFromView, visible: showMapViewButton">Map View</button>
+                    <button class="button generic positive map-field-btn" id="mapFieldsFromViewBtn" data-bind="click: autoMapFieldsFromView, visible: IsNonDocumentObjectFlow()">Map View</button>
                 </div>
                 <div class="moveMappedFieldsButtons">
                     <div class="cell selection map-move">
@@ -78,7 +78,7 @@
                         <select id="overlay-field-behavior" data-bind="options: MultiSelectFieldOverlayBehaviors, value: FieldOverlayBehavior, select2: {}"></select>
                     </div>
                 </div>
-                <div class="field-row" id="copyImages" data-bind="visible: ImageImportVisible()  == true">
+                <div class="field-row" id="copyImages" data-bind="visible: ImageImportVisible() && !IsNonDocumentObjectFlow()">
                     <div class="field-label required">Copy Images:</div>
                     <div class="field-value">
                         <ul>
@@ -164,7 +164,7 @@
 								<select id="native-filePath" data-bind="options: nativeFilePathOption, value: nativeFilePathValue, optionsValue: 'displayName', optionsText: 'displayName', optionsCaption: 'Select...', select2: {}"></select>
 							</div>
 						</div>
-						<div class="field-row" data-bind="visible: showManager">
+						<div class="field-row" data-bind="visible: showManager() && !IsNonDocumentObjectFlow()">
 							<div class="field-label required ">
 								Entity Manager<br />
 								Contains Link:
