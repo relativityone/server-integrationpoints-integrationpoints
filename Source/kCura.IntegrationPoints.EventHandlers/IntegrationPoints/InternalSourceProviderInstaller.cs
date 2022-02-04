@@ -2,6 +2,7 @@
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using Relativity.API;
 using System;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using Relativity.IntegrationPoints.SourceProviderInstaller;
 using Relativity.IntegrationPoints.SourceProviderInstaller.Internals;
 using Relativity.Toggles;
@@ -11,6 +12,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
     public abstract class InternalSourceProviderInstaller : IntegrationPointSourceProviderInstaller
     {
         private readonly IRipProviderInstaller _ripProviderInstaller;
+        private readonly IKubernetesMode _kubernetesMode;
         private readonly Lazy<IAPILog> _logggerLazy;
         private readonly IToggleProvider _toggleProvider;
         
@@ -24,15 +26,16 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
             _toggleProvider = ToggleProvider.Current;
         }
 
-        protected InternalSourceProviderInstaller(IRipProviderInstaller ripProviderInstaller)
+        protected InternalSourceProviderInstaller(IRipProviderInstaller ripProviderInstaller, IKubernetesMode kubernetesMode)
 	        : this()
         {
             _ripProviderInstaller = ripProviderInstaller;
+            _kubernetesMode = kubernetesMode;
         }
 
         internal override ISourceProviderInstaller CreateSourceProviderInstaller()
         {
-            return new InProcessSourceProviderInstaller(Logger, Helper, _toggleProvider, _ripProviderInstaller );
+            return new InProcessSourceProviderInstaller(Logger, Helper, _kubernetesMode, _toggleProvider, _ripProviderInstaller);
         }
     }
 }

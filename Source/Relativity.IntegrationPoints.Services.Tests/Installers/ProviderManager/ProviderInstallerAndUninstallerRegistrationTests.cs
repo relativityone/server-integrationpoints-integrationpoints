@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Provider.Internals;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using Relativity.IntegrationPoints.Services.Installers.ProviderManager;
 using NUnit.Framework;
 using Relativity.API;
@@ -198,7 +199,8 @@ namespace Relativity.IntegrationPoints.Services.Tests.Installers.ProviderManager
 				CreateDummyObjectRegistration<IAPILog>(),
 				CreateDummyObjectRegistration<IHelper>(),
 				CreateDummyObjectRegistration<ISourceProviderRepository>(),
-				CreateDummyObjectRegistration<IToggleProvider>()
+				CreateDummyObjectRegistration<IToggleProvider>(),
+				CreateDummyObjectRegistration<IKubernetesMode>()
 			};
 
 			container.Register(dependencies);

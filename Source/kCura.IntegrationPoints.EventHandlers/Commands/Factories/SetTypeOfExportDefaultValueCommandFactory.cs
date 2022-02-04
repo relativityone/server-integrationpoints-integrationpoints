@@ -26,7 +26,7 @@ using System.Linq;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using Relativity.Toggles;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 {
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 			IQueueQueryManager queryManager = new QueueQueryManager(helper, agentGuid);
 			IAgentService agentService = new AgentService(helper, queryManager, agentGuid);
 			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
-			IJobService jobService = new JobService(agentService, jobServiceDataProvider, ToggleProvider.Current, helper);
+            IJobService jobService = new JobService(agentService, jobServiceDataProvider, new KubernetesMode(logger), helper);
 			IEddsServiceContext eddsServiceContext = new EddsServiceContext(serviceContextHelper);
 			IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
 			IDBContext dbContext = helper.GetDBContext(helper.GetActiveCaseID());

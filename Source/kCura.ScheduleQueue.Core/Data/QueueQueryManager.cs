@@ -119,5 +119,10 @@ namespace kCura.ScheduleQueue.Core.Data
 		{
 			return new CheckAllSyncWorkerBatchesAreFinished(_queueDbContext, rootJobId);
 		}
+
+		public IQuery<int> GetWorkload()
+		{
+			return new GetWorkload(_queueDbContext);
+		}
 	}
 }

@@ -22,4 +22,11 @@
 
 		public string ProductionSet { get; set; }
 	}
+
+	internal class RelativityProviderConnectToViewSource
+	{
+		public string View { get; set; }
+
+		public string DestinationWorkspace { get; set; }
+	}
 }

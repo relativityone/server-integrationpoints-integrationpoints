@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using Relativity.IntegrationPoints.Contracts;
 using static LanguageExt.Prelude;
 
@@ -20,6 +21,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
     {
         private Mock<IRipProviderInstaller> _ripProviderInstallerMock;
         private Mock<IEHHelper> _helperMock;
+        private Mock<IKubernetesMode> _kubernetesModeFake;
 
         private SourceProvider _sourceProvider;
 
@@ -39,6 +41,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
             };
 
             _ripProviderInstallerMock = new Mock<IRipProviderInstaller>();
+            _kubernetesModeFake = new Mock<IKubernetesMode>();
 
             _helperMock = new Mock<IEHHelper>
             {
@@ -53,7 +56,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
             _sut = new SubjectUnderTest(
                 _ripProviderInstallerMock.Object,
                 _helperMock.Object,
-                sourceProviders
+                sourceProviders,
+                _kubernetesModeFake.Object
             );
         }
 
@@ -113,8 +117,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
             public SubjectUnderTest(
                 IRipProviderInstaller ripProviderInstaller,
                 IEHHelper helper,
-                IEnumerable<SourceProvider> sourceProviders)
-            : base(ripProviderInstaller)
+                IEnumerable<SourceProvider> sourceProviders,
+                IKubernetesMode kubernetesMode)
+            : base(ripProviderInstaller, kubernetesMode)
             {
                 Helper = helper;
                 ApplicationArtifactId = _APPLICATION_ID;

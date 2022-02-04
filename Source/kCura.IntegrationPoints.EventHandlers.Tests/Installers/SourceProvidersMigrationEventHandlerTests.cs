@@ -8,6 +8,7 @@ using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Provider;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints;
 using LanguageExt;
 using Moq;
@@ -31,6 +32,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
         private Mock<IRipProviderInstaller> _providerInstallerMock;
         private Mock<IErrorService> _errorServiceMock;
         private Mock<IAPILog> _loggerMock;
+        private Mock<IKubernetesMode> _kubernetesModeMock;
 
         [OneTimeSetUp]
         public void Setup()
@@ -38,6 +40,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
 	        _loggerMock = new Mock<IAPILog>();
             _errorServiceMock = new Mock<IErrorService>();
             _providerInstallerMock = new Mock<IRipProviderInstaller>();
+            _kubernetesModeMock = new Mock<IKubernetesMode>();
             _providerInstallerMock.Setup(x => x.InstallProvidersAsync(It.IsAny<IEnumerable<SourceProvider>>()))
                 .Returns(Task.FromResult(Right<string, Unit>(Unit.Default)));
 
@@ -51,7 +54,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
             _sut = new SubjectUnderTests(
                 helper.Object,
                 _errorServiceMock.Object,
-                _providerInstallerMock.Object
+                _providerInstallerMock.Object,
+                _kubernetesModeMock.Object
             );
         }
 
@@ -226,8 +230,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
             public SubjectUnderTests(
                 IEHHelper helper,
                 IErrorService errorService,
-                IRipProviderInstaller ripProviderInstaller)
-            : base(errorService, ripProviderInstaller)
+                IRipProviderInstaller ripProviderInstaller,
+                IKubernetesMode kubernetesMode)
+            : base(errorService, ripProviderInstaller, kubernetesMode)
             {
                 Helper = helper;
             }

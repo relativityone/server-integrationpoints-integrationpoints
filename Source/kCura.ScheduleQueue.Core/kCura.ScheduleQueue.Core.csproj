@@ -42,6 +42,7 @@
     <Content Include="Data\Resources\GetJobByRelatedObjectIDandTaskType.sql" />
     <None Include="Data\Resources\GetNextJobWithoutResourceGroup.sql" />
     <Content Include="Data\Resources\GetPendingJobsCount.sql" />
+    <Content Include="Data\Resources\GetWorkload.sql" />
     <Content Include="Data\Resources\InsertJobLogEntry.sql" />
     <Content Include="Data\Resources\CreateJobLogTable.sql" />
     <Content Include="Data\Resources\CheckAllSyncWorkerBatchesAreFinished.sql" />

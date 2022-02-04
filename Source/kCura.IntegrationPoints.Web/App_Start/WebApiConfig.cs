@@ -1,4 +1,5 @@
 ﻿using System.Web.Http;
+using System.Web.Mvc;
 
 namespace kCura.IntegrationPoints.Web
 {
@@ -292,7 +293,13 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
-				name: "ErrorGetViewErrorsLink",
+				name: "ButtonStateCheckPermissions",
+				routeTemplate: "{workspaceID}/api/ButtonState/CheckPermissions",
+				defaults: new { controller = "ButtonState", action = "CheckPermissions" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "ButtonStateGetUserPermissionsCheck",
 				routeTemplate: "{workspaceID}/api/Error/GetViewErrorsLink",
 				defaults: new { controller = "Error", action = "GetViewErrorsLink" }
 			);
@@ -385,6 +392,24 @@ namespace kCura.IntegrationPoints.Web
 				name: "CheckToggle",
 				routeTemplate: "{workspaceID}/api/ToggleAPI/{toggleName}",
 				defaults: new {controller = "ToggleAPI", action = "Get"}
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "GetView",
+				routeTemplate: "{workspaceID}/api/ObjectType/Views/{artifactTypeId}/{viewId}",
+				defaults: new { controller = "ObjectType", action = "GetView" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "GetObjectTypeViews",
+				routeTemplate: "{workspaceID}/api/ObjectType/Views/{artifactTypeId}/{search}/{page}",
+				defaults: new { controller = "ObjectType", action = "GetViews", search = UrlParameter.Optional, page = UrlParameter.Optional }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "GetObjectTypeExists",
+				routeTemplate: "{sourceWorkspaceId}/api/ObjectType/Exists/{destinationWorkspaceId}/{sourceObjectTypeArtifactId}",
+				defaults: new { controller = "ObjectType", action = "ObjectTypeExists" }
 			);
 
 			config.Routes.MapHttpRoute(

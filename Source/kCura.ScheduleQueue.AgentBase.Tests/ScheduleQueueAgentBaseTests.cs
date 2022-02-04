@@ -6,7 +6,7 @@ using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain.Toggles;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Validation;
@@ -14,7 +14,6 @@ using Moq;
 using Moq.Language;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Toggles;
 
 namespace kCura.ScheduleQueue.AgentBase.Tests
 {
@@ -24,7 +23,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 		private Mock<IJobService> _jobServiceMock;
 		private Mock<IQueueJobValidator> _queueJobValidatorFake;
 		private Mock<IQueueQueryManager> _queryManager;
-		private Mock<IToggleProvider> _toggleProviderFake;
+		private Mock<IKubernetesMode> _kubernetesModeFake;
 		private Mock<IDateTime> _dateTime;
 
 		[Test]
@@ -42,27 +41,6 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 
 			// Assert
 			sut.ProcessedJobs.Single().ShouldBeEquivalentTo(expectedJob);
-		}
-
-		[Test]
-		public void Execute_ShouldProcessOnlyOneJobFromQueue_WhenInKubernetes()
-		{
-			// Arrange
-			Job expectedJob1 = new JobBuilder().WithJobId(1).Build();
-			Job expectedJob2 = new JobBuilder().WithJobId(2).Build();
-
-			TestAgent sut = GetSut();
-			_toggleProviderFake.Setup(x => x.IsEnabled<EnableKubernetesMode>()).Returns(true);
-
-			SetupJobQueue(expectedJob1, expectedJob2);
-
-			// Act
-			sut.Execute();
-
-			// Assert
-			sut.DidWork.Should().BeTrue();
-			sut.ProcessedJobs.Count.Should().Be(1);
-			sut.ProcessedJobs.Single().ShouldBeEquivalentTo(expectedJob1);
 		}
 
 		[Test]
@@ -160,10 +138,26 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 		}
 
 		[Test]
+		public void Execute_ShouldSetDidWorkToFalse_WhenQueueIsEmpty()
+		{
+			// Arrange
+			TestAgent sut = GetSut();
+
+			// Act
+			sut.Execute();
+
+			// Assert
+			sut.DidWork.Should().BeFalse();
+		}
+
+		[Test]
 		public void Execute_ShouldSetDidWorkToTrue_WhenFinishedExecution()
 		{
 			// Arrange
 			TestAgent sut = GetSut();
+
+			Job job = new JobBuilder().WithJobId(1).Build();
+			SetupJobQueue(job);
 
 			// Act
 			sut.Execute();
@@ -178,7 +172,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 			// Arrange
 			TestAgent sut = GetSut();
 			_dateTime.SetupGet(x => x.UtcNow).Returns(new DateTime(2021, 10, 13));
-			_toggleProviderFake.Setup(x => x.IsEnabled<EnableKubernetesMode>()).Returns(false);
+			_kubernetesModeFake.Setup(x => x.IsEnabled()).Returns(false);
 
 			// Act
 			int agentId = sut.GetAgentIDTest();
@@ -193,7 +187,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 			// Arrange
 			TestAgent sut = GetSut();
 			_dateTime.SetupGet(x => x.UtcNow).Returns(new DateTime(2021, 10, 13));
-			_toggleProviderFake.Setup(x => x.IsEnabled<EnableKubernetesMode>()).Returns(true);
+            _kubernetesModeFake.Setup(x => x.IsEnabled()).Returns(true);
 
 			// Act
 			int agentId = sut.GetAgentIDTest();
@@ -218,11 +212,11 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 				.ReturnsAsync(ValidationResult.Success);
 
 			_queryManager = new Mock<IQueueQueryManager>();
-			_toggleProviderFake = new Mock<IToggleProvider>();
+			_kubernetesModeFake = new Mock<IKubernetesMode>();
 			_dateTime = new Mock<IDateTime>();
 
 			return new TestAgent(agentService.Object, _jobServiceMock.Object,
-				scheduleRuleFactory.Object, _queueJobValidatorFake.Object, _queryManager.Object, _toggleProviderFake.Object, _dateTime.Object, emptyLog.Object)
+				scheduleRuleFactory.Object, _queueJobValidatorFake.Object, _queryManager.Object, _kubernetesModeFake.Object, _dateTime.Object, emptyLog.Object)
 			{
 				JobResult = jobStatus
 			};
@@ -249,8 +243,8 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 		{
 			public TestAgent(IAgentService agentService = null, IJobService jobService = null, 
 				IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
-				IQueueQueryManager queryManager = null, IToggleProvider toggleProvider = null, IDateTime dateTime = null, IAPILog log = null) 
-				: base(Guid.NewGuid(), agentService, jobService, scheduleRuleFactory, queueJobValidator, queryManager, toggleProvider, dateTime, log)
+				IQueueQueryManager queryManager = null, IKubernetesMode kubernetesMode = null, IDateTime dateTime = null, IAPILog log = null) 
+				: base(Guid.NewGuid(), agentService, jobService, scheduleRuleFactory, queueJobValidator, queryManager, kubernetesMode, dateTime, log)
 			{
 				//'Enabled = true' triggered Execute() immediately. I needed to set the field only to enable getting job from the queue
 				typeof(Agent.AgentBase).GetField("_enabled", BindingFlags.NonPublic | BindingFlags.Instance)

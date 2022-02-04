@@ -19,4 +19,9 @@
 		public IntegrationPointTypes Type { get; } = IntegrationPointTypes.Export;
 		public IntegrationPointDestinations Destination { get; set; }
 	}
+
+	internal class IntegrationPointEditRdoExport : IntegrationPointEditExport
+	{
+		public IntegrationPointTransferredObjects TransferredObject { get; set; }
+	}
 }

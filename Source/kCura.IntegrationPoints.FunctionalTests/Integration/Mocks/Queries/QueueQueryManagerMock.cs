@@ -252,6 +252,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 			return new ValueReturnQuery<bool>(tasksFinished);
 		}
 
+		public IQuery<int> GetWorkload()
+		{
+			int workloadCount = _db.JobsInQueue.Count(j => j.NextRunTime <= _context.CurrentDateTime);
+			return new kCura.IntegrationPoint.Tests.Core.Queries.ValueReturnQuery<int>(workloadCount);
+		}
+
 		#region Test Verification
 
 		public void ShouldCreateQueueTable()

@@ -53,6 +53,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 			return integrationPointViewPage;
 		}
 
+		public static void CreateSyncRdoIntegrationPoint(this IntegrationPointEditPage page, string integrationPointName, Workspace destinationWorkspace,
+			IntegrationPointTransferredObjects transferredObject, string viewName)
+		{
+			RelativityProviderConnectToSourcePage relativityProviderConnectToSourcePage = FillOutIntegrationPointEditPageForRelativityProvider(page, integrationPointName, transferredObject);
+			FillOutRelativityProviderConnectToSourcePage(relativityProviderConnectToSourcePage, destinationWorkspace, viewName);
+		}
+
 		private static RelativityProviderConnectToSourcePage FillOutIntegrationPointEditPageForRelativityProvider(IntegrationPointEditPage integrationPointEditPage, string integrationPointName)
 		{
 			return integrationPointEditPage.ApplyModel(new IntegrationPointEditExport
@@ -60,6 +67,19 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 				Name = integrationPointName,
 				Destination = IntegrationPointDestinations.Relativity
 			}).RelativityProviderNext.ClickAndGo();
+		}
+
+		private static RelativityProviderConnectToSourcePage FillOutIntegrationPointEditPageForRelativityProvider(IntegrationPointEditPage integrationPointEditPage, string integrationPointName, IntegrationPointTransferredObjects transferredObject)
+		{
+			return integrationPointEditPage
+				.ApplyModel(new IntegrationPointEditRdoExport
+				{
+					Name = integrationPointName,
+					Destination = IntegrationPointDestinations.Relativity,
+					TransferredObject = transferredObject
+				})
+				.RelativityProviderNext
+				.ClickAndGo();
 		}
 
 		private static RelativityProviderMapFieldsPage FillOutRelativityProviderConnectToSourcePage(RelativityProviderConnectToSourcePage relativityProviderConnectToSourcePage, Workspace destinationWorkspace, RelativityProviderSources source,
@@ -88,6 +108,17 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 				.ApplyModel(relativityProviderConnectToSource)
 				.SelectFolder.Click().SetTreeItem($"{destinationWorkspace.Name}")
 				.Next.ClickAndGo();
+		}
+
+		private static void FillOutRelativityProviderConnectToSourcePage(RelativityProviderConnectToSourcePage page, Workspace destinationWorkspace, string viewName = null)
+		{
+			RelativityProviderConnectToViewSource model = new RelativityProviderConnectToViewSource
+			{
+				View = viewName,
+				DestinationWorkspace = $"{destinationWorkspace.Name} - {destinationWorkspace.ArtifactID}"
+			};
+
+			page.ApplyModel(model);
 		}
 	}
 }

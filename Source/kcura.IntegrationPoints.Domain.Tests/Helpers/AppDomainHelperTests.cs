@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
-using kCura.IntegrationPoints.Domain.Toggles;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Tests.Core.Helpers;
 using Moq;
 using NUnit.Framework;
@@ -27,6 +27,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
 
         private Mock<IPluginProvider> _pluginProviderFake;
         private Mock<IToggleProvider> _toggleProviderFake;
+        private Mock<IKubernetesMode> _kubernetesModeFake;
 
         private readonly Guid _applicationGuid = Guid.NewGuid();
         
@@ -35,6 +36,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
         {
             _pluginProviderFake = new Mock<IPluginProvider>();
             _toggleProviderFake = new Mock<IToggleProvider>();
+            _kubernetesModeFake = new Mock<IKubernetesMode>();
 
             Mock<IAPILog> loggerFake = new Mock<IAPILog>();
             loggerFake.Setup(x => x.ForContext<AppDomainHelper>()).Returns(loggerFake.Object);
@@ -54,7 +56,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
             _appDomain = CreateDomain("AppDomainHelperTestsAppDomain");
             
             _sut = new AppDomainHelper(_pluginProviderFake.Object, _fakeHelper,
-                _relativityFeaturePathService, _toggleProviderFake.Object);
+                _relativityFeaturePathService, _toggleProviderFake.Object, _kubernetesModeFake.Object);
         }
 
         [TearDown]
@@ -105,7 +107,7 @@ namespace kCura.IntegrationPoints.Domain.Tests.Helpers
         public void CreateNewDomainShallRunInKubernetesModeWhenToggleIsTrue()
         {
             // Arrange
-            _toggleProviderFake.Setup(x => x.IsEnabled<EnableKubernetesMode>()).Returns(true);
+            _kubernetesModeFake.Setup(x => x.IsEnabled()).Returns(true);
             
             // Act
             AppDomain appDomain = _sut.CreateNewDomain();

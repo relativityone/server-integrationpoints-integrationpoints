@@ -4,24 +4,23 @@ using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain.Toggles;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Services;
 using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
-using Relativity.Toggles;
 
 namespace kCura.ScheduleQueue.AgentBase
 {
-	public abstract class ScheduleQueueAgentBase : Agent.AgentBase
+    public abstract class ScheduleQueueAgentBase : Agent.AgentBase
 	{
 		private IAgentService _agentService;
 		private IQueueQueryManager _queryManager;
+		private IKubernetesMode _kubernetesMode;
 		private IJobService _jobService;
 		private IQueueJobValidator _queueJobValidator;
-		private IToggleProvider _toggleProvider;
 		private IDateTime _dateTime;
 
 		private const int _MAX_MESSAGE_LENGTH = 10000;
@@ -29,6 +28,10 @@ namespace kCura.ScheduleQueue.AgentBase
 		private readonly Guid _agentGuid;
 		private readonly Lazy<int> _agentId;
 		private readonly Lazy<IAPILog> _loggerLazy;
+
+		protected Func<IEnumerable<int>> GetResourceGroupIDsFunc { get; set; }
+
+		private bool IsKubernetesMode => _kubernetesMode.IsEnabled();
 
 		private static readonly Dictionary<LogCategory, int> _logCategoryToLogLevelMapping = new Dictionary<LogCategory, int>
 		{
@@ -42,15 +45,15 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected ScheduleQueueAgentBase(Guid agentGuid, IAgentService agentService = null, IJobService jobService = null,
 			IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null, 
-			IQueueQueryManager queryManager = null, IToggleProvider toggleProvider = null, IDateTime dateTime = null, IAPILog logger = null)
+			IQueueQueryManager queryManager = null, IKubernetesMode kubernetesMode = null, IDateTime dateTime = null, IAPILog logger = null)
 		{
 			_agentGuid = agentGuid;
 			_agentService = agentService;
 			_jobService = jobService;
 			_queueJobValidator = queueJobValidator;
-			_toggleProvider = toggleProvider;
 			_dateTime = dateTime;
 			_queryManager = queryManager;
+			_kubernetesMode = kubernetesMode;
 			ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
 
 			_agentId = new Lazy<int>(GetAgentID);
@@ -76,9 +79,14 @@ namespace kCura.ScheduleQueue.AgentBase
 				_agentService = new AgentService(Helper, _queryManager, _agentGuid);
 			}
 
+			if(_kubernetesMode == null)
+            {
+				_kubernetesMode = new KubernetesMode(Logger);
+			}
+
 			if (_jobService == null)
 			{
-				_jobService = new JobService(_agentService, new JobServiceDataProvider(_queryManager), ToggleProvider.Current, Helper);
+				_jobService = new JobService(_agentService, new JobServiceDataProvider(_queryManager), _kubernetesMode, Helper);
 			}
 
 			if (_queueJobValidator == null)
@@ -86,14 +94,14 @@ namespace kCura.ScheduleQueue.AgentBase
 				_queueJobValidator = new QueueJobValidator(Helper);
 			}
 
-			if (_toggleProvider == null)
-			{
-				_toggleProvider = ToggleProvider.Current;
-			}
-
 			if (_dateTime == null)
 			{
 				_dateTime = new DateTimeWrapper();
+			}
+
+			if(GetResourceGroupIDsFunc == null)
+            {
+				GetResourceGroupIDsFunc = () => GetResourceGroupIDs();
 			}
 		}
 
@@ -106,44 +114,33 @@ namespace kCura.ScheduleQueue.AgentBase
 					Logger.LogInformation("Agent is marked to be removed. Job will not be processed.");
 					return;
 				}
-				bool isPreExecuteSuccessful = PreExecute();
 
 				NotifyAgentTab(LogCategory.Debug, "Started.");
 
-				if (isPreExecuteSuccessful)
+				try
 				{
-                    if (_toggleProvider != null && _toggleProvider.IsEnabled<EnableKubernetesMode>())
-                    {
-                        ProcessQueueJobsInKubernetesMode();
-                    }
-                    else
-                    {
-                        ProcessQueueJobs();
-                    }
-                    CleanupQueueJobs();
+					PreExecute();
+
+					ProcessQueueJobs();
+
+					CleanupQueueJobs();
+
+					CompleteExecution();
 				}
-
-				CompleteExecution();
-
-				DidWork = true;
+				catch (Exception ex)
+				{
+					Logger.LogError(ex, "Unhandled exception occurred while processing job from queue. Unlocking the job");
+					_jobService.UnlockJobs(_agentId.Value);
+					DidWork = false;
+				}
 			}
 		}
 		
-		private bool PreExecute()
+		private void PreExecute()
 		{
-			try
-			{
-				Initialize();
-				InitializeManagerConfigSettingsFactory();
-				CheckQueueTable();
-			}
-			catch (Exception ex)
-			{
-				NotifyAgentTab(LogCategory.Warn, $"{ex.Message} {ex.StackTrace}");
-				LogExecuteError(ex);
-				return false;
-			}
-			return true;
+			Initialize();
+			InitializeManagerConfigSettingsFactory();
+			CheckQueueTable();
 		}
 
 		private void CompleteExecution()
@@ -168,98 +165,69 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected virtual IEnumerable<int> GetListOfResourceGroupIDs() // this method was added for unit testing purpose
 		{
-			return GetResourceGroupIDs();
+			return IsKubernetesMode ? Array.Empty<int>() : GetResourceGroupIDsFunc();
 		}
 
-        private void ProcessQueueJobs()
-        {
-            try
-            {
-                Job nextJob = GetNextJobFromQueue();
-
-                while (nextJob != null)
-                {
-                    nextJob = RunFullJobProcessingPath(nextJob, k8sMode: false);
-                }
-
-                if (ToBeRemoved)
-                {
-                    _jobService.UnlockJobs(_agentId.Value); // what if exception
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Unhandled exception occurred while processing queue jobs. Unlocking the job");
-                _jobService.UnlockJobs(_agentId.Value);
-            }
-        }
-
-        private void ProcessQueueJobsInKubernetesMode()
+		private void ProcessQueueJobs()
 		{
 			try
 			{
-				Job nextJob = GetNextJobFromQueue();
-
-				if (nextJob != null)
+				Job nextJob = GetNextQueueJob();
+				if (nextJob == null)
 				{
-					RunFullJobProcessingPath(nextJob, k8sMode: true);
+					Logger.LogInformation("No active job found in Schedule Agent Queue table");
+					DidWork = false;
+					return;
 				}
 
-				// Agent after finishing single job is being removed
-				_jobService.UnlockJobs(_agentId.Value);
+				while (nextJob != null)
+				{
+					LogJobInformation(nextJob);
+
+					bool isJobValid = PreExecuteJobValidation(nextJob);
+					if (!isJobValid)
+					{
+						Logger.LogInformation("Deleting invalid Job {jobId}...", nextJob.JobId);
+
+						_jobService.DeleteJob(nextJob.JobId);
+						nextJob = GetNextQueueJob();
+						continue;
+					}
+
+					Logger.LogInformation("Starting Job {jobId} processing...", nextJob.JobId);
+
+					TaskResult jobResult = ProcessJob(nextJob);
+
+					Logger.LogInformation("Job {jobId} has been processed with status {status}", nextJob.JobId, jobResult.Status.ToString());
+
+					// If last job was drain-stopped, assign null to nextJob so it doesn't get executed on next loop iteration.
+					// Also do not finalize the job (i.e. do not remove it from the queue).
+					if (jobResult.Status == TaskStatusEnum.DrainStopped)
+					{
+						Logger.LogInformation("Job has been drain-stopped. No other jobs will be picked up.");
+						_jobService.FinalizeDrainStoppedJob(nextJob);
+						nextJob = null;
+					}
+					else
+					{
+						FinalizeJobExecution(nextJob, jobResult);
+						nextJob = GetNextQueueJob(); // assumptions: it will not throws exception
+					}
+				}
+
+				if (ToBeRemoved)
+				{
+					_jobService.UnlockJobs(_agentId.Value); // what if exception
+				}
+
+				DidWork = true;
 			}
 			catch (Exception ex)
 			{
-				Logger.LogError(ex, "Unhandled exception occurred while processing job from queue. Unlocking the job");
+				Logger.LogError(ex, "Unhandled exception occurred while processing queue jobs. Unlocking the job");
 				_jobService.UnlockJobs(_agentId.Value);
+				DidWork = false;
 			}
-		}
-
-		private Job GetNextJobFromQueue()
-        {
-			Job nextJob = GetNextQueueJob();
-			if (nextJob == null)
-			{
-				Logger.LogDebug("No active job found in Schedule Agent Queue table");
-			}
-			return nextJob;
-		}
-
-		private Job RunFullJobProcessingPath(Job nextJob, bool k8sMode)
-		{
-			LogJobInformation(nextJob);
-
-			bool isJobValid = PreExecuteJobValidation(nextJob);
-			if (!isJobValid)
-			{
-				Logger.LogInformation("Deleting invalid Job {jobId}...", nextJob.JobId);
-
-				_jobService.DeleteJob(nextJob.JobId);
-				nextJob = !k8sMode ? GetNextQueueJob() : null;
-				
-				return nextJob;
-			}
-
-			Logger.LogInformation("Starting Job {jobId} processing...", nextJob.JobId);
-
-			TaskResult jobResult = ProcessJob(nextJob);
-
-			Logger.LogInformation("Job {jobId} has been processed with status {status}", nextJob.JobId, jobResult.Status.ToString());
-
-			// If last job was drain-stopped, assign null to nextJob so it doesn't get executed on next loop iteration.
-			// Also do not finalize the job (i.e. do not remove it from the queue).
-			if (jobResult.Status == TaskStatusEnum.DrainStopped)
-			{
-				Logger.LogInformation("Job has been drain-stopped. No other jobs will be picked up.");
-				_jobService.FinalizeDrainStoppedJob(nextJob);
-				nextJob = null;
-			}
-			else
-			{
-				FinalizeJobExecution(nextJob, jobResult);
-				nextJob = !k8sMode ? GetNextQueueJob() : null; // assumptions: it will not throws exception
-			}
-			return nextJob;
 		}
 
 		private bool PreExecuteJobValidation(Job job)
@@ -286,16 +254,9 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void FinalizeJobExecution(Job job, TaskResult taskResult)
 		{
-			try
-			{
-				FinalizeJobResult result = _jobService.FinalizeJob(job, ScheduleRuleFactory, taskResult);
-				LogJobState(job, result.JobState, null, result.Details);
-				LogFinalizeJob(job, result);
-			}
-			catch (Exception ex)
-			{
-				LogFinalizeJobError(job, ex);
-			}
+			FinalizeJobResult result = _jobService.FinalizeJob(job, ScheduleRuleFactory, taskResult);
+			LogJobState(job, result.JobState, null, result.Details);
+			LogFinalizeJob(job, result);
 		}
 
 		private Job GetNextQueueJob()
@@ -314,16 +275,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 			NotifyAgentTab(LogCategory.Debug, "Checking for active jobs in Schedule Agent Queue table");
 
-			try
-			{
-				return _jobService.GetNextQueueJob(GetListOfResourceGroupIDs(), _agentId.Value);
-			}
-			catch (Exception ex)
-			{
-				LogGetNextQueueJobException(ex);
-				NotifyAgentTab(LogCategory.Exception, "Exception while getting next job from queue.");
-				return null;
-			}
+			return _jobService.GetNextQueueJob(GetListOfResourceGroupIDs(), _agentId.Value);
 		}
 
 		private void CleanupQueueJobs()
@@ -331,15 +283,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			NotifyAgentTab(LogCategory.Debug, "Cleanup jobs");
 			LogOnCleanupJobs();
 
-			try
-			{
-				_jobService.CleanupJobQueueTable();
-			}
-			catch (Exception ex)
-			{
-				NotifyAgentTab(LogCategory.Warn, $"An error occurred cleaning jobs queue. {ex.Message} {ex.StackTrace}");
-				LogCleanupError(ex);
-			}
+			_jobService.CleanupJobQueueTable();
 		}
 
 		protected void NotifyAgentTab(LogCategory category, string message, string detailmessage = null)
@@ -369,7 +313,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected int GetAgentID()
 		{
-			if (_toggleProvider != null && _toggleProvider.IsEnabled<EnableKubernetesMode>())
+			if (IsKubernetesMode)
 			{
 				// we can omit some less relevant bits representing years (https://stackoverflow.com/a/2695525/1579824)
 				return Math.Abs((int)(_dateTime.UtcNow.Ticks >> 23));

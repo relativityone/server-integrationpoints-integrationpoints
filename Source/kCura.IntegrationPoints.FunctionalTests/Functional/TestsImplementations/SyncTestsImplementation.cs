@@ -1,4 +1,4 @@
-﻿using Atata;
+using Atata;
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -12,6 +12,7 @@ using Relativity.IntegrationPoints.Tests.Functional.Web.Components;
 using FluentAssertions;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Extensions;
+using Relativity.IntegrationPoints.Tests.Common.Extensions;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 {
@@ -175,6 +176,24 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			transferredItemsCount.Should().Be(workspaceDocumentCount).And.Be(productionDocumentsCount);
 		}
 
+		public void EntitiesPushGoldFlow()
+		{
+			// Arrange
+			_testsImplementationTestFixture.LoginAsStandardUser();
+
+			Workspace destinationWorkspace = CreateDestinationWorkspace();
+
+			string integrationPointName = nameof(EntitiesPushGoldFlow);
+
+			// Act
+			IntegrationPointListPage integrationPointListPage = Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID);
+			IntegrationPointEditPage integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
+
+			integrationPointEditPage.CreateSyncRdoIntegrationPoint(integrationPointName, destinationWorkspace, IntegrationPointTransferredObjects.Entity, "Entities - Legal Hold View");
+
+			// Assert
+		}
+
 		private Workspace CreateDestinationWorkspace()
 		{
 			string workspaceName = $"SYNC - {Guid.NewGuid()}";
@@ -182,6 +201,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			Workspace workspace = RelativityFacade.Instance.CreateWorkspace(workspaceName, _testsImplementationTestFixture.Workspace.Name);
 
 			_destinationWorkspaces.Add(workspaceName, workspace);
+
+			workspace.InstallLegalHold();
 
 			return workspace;
 		}

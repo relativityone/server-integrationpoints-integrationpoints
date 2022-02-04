@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using Relativity.IntegrationPoints.Contracts;
 using Relativity.IntegrationPoints.SourceProviderInstaller;
 using static LanguageExt.Prelude;
@@ -21,6 +22,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
         private Mock<IAPILog> _loggerMock;
         private Mock<IRipProviderInstaller> _ripProviderInstallerMock;
         private Mock<IEHHelper> _helperMock;
+        private Mock<IKubernetesMode> _kubernetesModeFake;
 
         private SourceProvider _sourceProvider;
         private SourceProvider[] _sourceProviders;
@@ -45,6 +47,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
             };
 
             _ripProviderInstallerMock = new Mock<IRipProviderInstaller>();
+            _kubernetesModeFake = new Mock<IKubernetesMode>();
 
             _helperMock = new Mock<IEHHelper>
             {
@@ -59,9 +62,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
             _sut = new InProcessSourceProviderInstaller(
                 _loggerMock.Object,
                 _helperMock.Object,
+                _kubernetesModeFake.Object,
                 null,
                 _ripProviderInstallerMock.Object
-                
             );
         }
 
@@ -116,9 +119,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
             var sut = new InProcessSourceProviderInstaller(
                 _loggerMock.Object,
                 _helperMock.Object,
+                _kubernetesModeFake.Object,
                 null,
                 ripProviderInstaller: null
                 
+
             );
 
             // act
