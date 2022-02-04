@@ -270,20 +270,44 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			StoppableJobHistoryCollection stoppableJobHistories = jobHistoryManager.GetStoppableJobHistory(workspaceArtifactId, integrationPointArtifactId);
 			IDictionary<Guid, List<Job>> jobs = _jobService.GetJobsByBatchInstanceId(integrationPointArtifactId);
 
+			List<Exception> exceptions = new List<Exception>();
 			foreach (var jobHistory in stoppableJobHistories.ProcessingJobHistory)
 			{
-				IList<long> jobIdsForGivenJobHistory = jobs[Guid.Parse(jobHistory.BatchInstance)]
-					.Select(x => x.JobId).ToList();
-				_jobService.StopJobs(jobIdsForGivenJobHistory);
+				try
+                {
+					IList<long> jobIdsForGivenJobHistory = jobs[Guid.Parse(jobHistory.BatchInstance)]
+						.Select(x => x.JobId).ToList();
+					_jobService.StopJobs(jobIdsForGivenJobHistory);
+				}
+				catch(Exception ex)
+                {
+					exceptions.Add(ex);
+					_logger.LogError(ex, "Error occurred when stopping Jobs for Processing JobHistory {jobHistoryId}", jobHistory.ArtifactId);
+                }
 			}
 
 			foreach(var jobHistory in stoppableJobHistories.PendingJobHistory)
 			{
-				jobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
-				_jobHistoryService.UpdateRdo(jobHistory);
+				try
+                {
+					jobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
+					_jobHistoryService.UpdateRdo(jobHistory);
 
-				jobs[Guid.Parse(jobHistory.BatchInstance)].ForEach(x => _jobService.DeleteJob(x.JobId));
+					jobs[Guid.Parse(jobHistory.BatchInstance)].ForEach(x => _jobService.DeleteJob(x.JobId));
+				}
+				catch(Exception ex)
+                {
+					exceptions.Add(ex);
+					_logger.LogError(ex, "Error occurred when deleteing Jobs and updating JobHistory {jobHistoryId} to Stopped", jobHistory.ArtifactId);
+				}
 			}
+
+			if(exceptions.Any())
+            {
+				AggregateException stopActionException = new AggregateException(exceptions);
+				_logger.LogError(stopActionException, "Errors occurred when stopping Integration Point {integrationPointId}", integrationPointArtifactId);
+				throw stopActionException;
+            }
 		}
 
 		private void CheckPreviousJobHistoryStatusOnRetry(int workspaceArtifactId, int integrationPointArtifactId)

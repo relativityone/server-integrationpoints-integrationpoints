@@ -165,6 +165,20 @@ namespace kCura.IntegrationPoints.Core.Tests
 			Assert.IsNotNull(batchInstanceToJob);
 			Assert.IsEmpty(batchInstanceToJob);
 		}
+		
+		[Test]
+		public void GetJobsByBatchInstanceId_ReturnEmptyDictionary_WhenNullReturned()
+        {
+			// arrange
+			_jobService.GetJobs(_integrationPointId).Returns(null as List<Job>);
+
+			// act
+			IDictionary<Guid, List<Job>> batchInstanceToJob = _manager.GetJobsByBatchInstanceId(_integrationPointId);
+
+			// assert
+			Assert.IsNotNull(batchInstanceToJob);
+			Assert.IsEmpty(batchInstanceToJob);
+		}
 
 		[Test]
 		public void GetScheduledAgentJobMapedByBatchInstance_SingleJob()

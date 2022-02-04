@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
@@ -17,6 +19,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Tests.Helpers;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -221,363 +224,171 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 		[Test]
 		public void MarkIntegrationPointToStopJobs_GoldFlow()
 		{
-			// arrange
-			var pendingJobHistory1 = new Data.JobHistory { ArtifactId = 123 };
-			var pendingJobHistory2 = new Data.JobHistory { ArtifactId = 456 };
+			// Arrange
+			var pendingJobHistory1 = PrepareJobHistory(1, JobStatusChoices.JobHistoryPending);
+			var pendingJobHistory2 = PrepareJobHistory(2, JobStatusChoices.JobHistoryPending);
 
-			var processingJobHistory1 = new Data.JobHistory { ArtifactId = 5634 };
-			var processingJobHistory2 = new Data.JobHistory { ArtifactId = 9604 };
+			Data.JobHistory[] pendingJobHistories = new [] { pendingJobHistory1, pendingJobHistory2 };
 
-			var stoppableJobCollection = new StoppableJobHistoryCollection()
-			{
-				PendingJobHistory = new[] { pendingJobHistory1, pendingJobHistory2 },
-				ProcessingJobHistory = new[] { processingJobHistory1, processingJobHistory2 }
-			};
+			var processingJobHistory3 = PrepareJobHistory(3, JobStatusChoices.JobHistoryProcessing);
+			var processingJobHistory4 = PrepareJobHistory(4, JobStatusChoices.JobHistoryProcessing);
+
+			Data.JobHistory[] processingJobHistories = new[] { processingJobHistory3, processingJobHistory4 };
+
 			_jobHistoryManager
 				.GetStoppableJobHistory(
 					Arg.Is(_sourceWorkspaceArtifactId),
 					Arg.Is(_integrationPointArtifactId))
-				.Returns(stoppableJobCollection);
-
-			Data.JobHistory pendingJob1 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJobHistory1.ArtifactId))).Returns(new List<Data.JobHistory>() { pendingJobHistory1 });
-
-			Data.JobHistory pendingJob2 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJobHistory2.ArtifactId))).Returns(new List<Data.JobHistory>() { pendingJob2 });
-
-			Data.JobHistory processingJob1 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJobHistory1.ArtifactId))).Returns(new List<Data.JobHistory>() { processingJob1 });
-
-			Data.JobHistory processingJob2 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJobHistory2.ArtifactId))).Returns(new List<Data.JobHistory>() { processingJob2 });
+				.Returns(new StoppableJobHistoryCollection
+				{
+					PendingJobHistory = pendingJobHistories,
+					ProcessingJobHistory = processingJobHistories
+				});
 
 			Job baseJob = JobExtensions.CreateJob();
-			IDictionary<Guid, List<Job>> jobs = new Dictionary<Guid, List<Job>>();
-			jobs[new Guid(pendingJobHistory1.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(1) };
-			jobs[new Guid(pendingJob2.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(2) };
-			jobs[new Guid(processingJob1.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(3) };
-			jobs[new Guid(processingJob2.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(4) };
 
-			_jobManager.GetJobsByBatchInstanceId(_integrationPointArtifactId).Returns(jobs);
+			Job pendingJob1 = baseJob.CopyJobWithJobId(11);
+			Job pendingJob2 = baseJob.CopyJobWithJobId(22);
+			Job processingJob3 = baseJob.CopyJobWithJobId(33);
+			Job processingJob4 = baseJob.CopyJobWithJobId(44);
 
-			// act
+			_jobManager.GetJobsByBatchInstanceId(_integrationPointArtifactId).Returns(new Dictionary<Guid, List<Job>>
+            {
+                {
+					Guid.Parse(pendingJobHistory1.BatchInstance),
+					new List<Job> { pendingJob1 }
+                },
+				{
+					Guid.Parse(pendingJobHistory2.BatchInstance),
+					new List<Job> { pendingJob2 }
+				},
+				{
+					Guid.Parse(processingJobHistory3.BatchInstance),
+					new List<Job> { processingJob3 }
+				},
+				{
+					Guid.Parse(processingJobHistory4.BatchInstance),
+					new List<Job> { processingJob4 }
+				}
+			});
+
+			// Act
 			_instance.MarkIntegrationPointToStopJobs(_sourceWorkspaceArtifactId, _integrationPointArtifactId);
 
-			// assert
-			_jobHistoryManager.Received(1)
-				.GetStoppableJobHistory(
-					Arg.Is(_sourceWorkspaceArtifactId),
-					Arg.Is(_integrationPointArtifactId));
+			// Assert
+			_jobManager.Received().StopJobs(Arg.Is<IList<long>>(x => x.Contains(processingJob3.JobId)));
+			_jobManager.Received().StopJobs(Arg.Is<IList<long>>(x => x.Contains(processingJob4.JobId)));
 
-			_jobHistoryService.Received(2)
+			_jobHistoryService.Received()
 				.UpdateRdo(
 					Arg.Is<Data.JobHistory>(
 						x =>
-							stoppableJobCollection.PendingJobHistory.Contains(x) &&
-							x.JobStatus.Name == JobStatusChoices.JobHistoryStopping.Name));
+							x == pendingJobHistory1 &&
+							x.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopped)));
+
+			_jobManager.Received().DeleteJob(pendingJob1.JobId);
+
+			_jobHistoryService.Received()
+				.UpdateRdo(
+					Arg.Is<Data.JobHistory>(
+						x =>
+							x == pendingJobHistory2 &&
+							x.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopped)));
+
+			_jobManager.Received().DeleteJob(pendingJob2.JobId);
 
 			_jobHistoryService.DidNotReceive()
 				.UpdateRdo(
 					Arg.Is<Data.JobHistory>(
 						x =>
-							stoppableJobCollection.ProcessingJobHistory.Contains(x)));
-
-			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(1)));
-			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(2)));
-			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(3)));
-			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(4)));
+							processingJobHistories.Contains(x)));
 		}
 
 		[Test]
-		public void MarkIntegrationPointToStopJobs_AllQueueUpdatesFail_NoJobStatusesUpdated()
+		public void MarkIntegrationPointToStopJobs_ShouldThrowANdAggregateProcessingAndPendingExceptions()
 		{
 			// arrange
-			var pendingJobHistory1 = new Data.JobHistory { ArtifactId = 123 };
-			var pendingJobHistory2 = new Data.JobHistory { ArtifactId = 456 };
+			var pendingJobHistory1 = PrepareJobHistory(1, JobStatusChoices.JobHistoryPending);
+			var pendingJobHistory2 = PrepareJobHistory(2, JobStatusChoices.JobHistoryPending);
 
-			var processingJobHistory1 = new Data.JobHistory { ArtifactId = 5634 };
-			var processingJobHistory2 = new Data.JobHistory { ArtifactId = 9604 };
+			Data.JobHistory[] pendingJobHistories = new[] { pendingJobHistory1, pendingJobHistory2 };
 
-			var stoppableJobCollection = new StoppableJobHistoryCollection()
-			{
-				PendingJobHistory = new[] { pendingJobHistory1, pendingJobHistory2 },
-				ProcessingJobHistory = new[] { processingJobHistory1, processingJobHistory2 }
-			};
-			_jobHistoryManager
-				.GetStoppableJobHistory(
-					Arg.Is(_sourceWorkspaceArtifactId),
-					Arg.Is(_integrationPointArtifactId))
-				.Returns(stoppableJobCollection);
+			var processingJobHistory3 = PrepareJobHistory(3, JobStatusChoices.JobHistoryProcessing);
+			var processingJobHistory4 = PrepareJobHistory(4, JobStatusChoices.JobHistoryProcessing);
 
-			Data.JobHistory pendingJob1 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJobHistory1.ArtifactId)))
-				.Returns(new List<Data.JobHistory>() { pendingJob1 });
-
-			Data.JobHistory pendingJob2 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJobHistory2.ArtifactId)))
-				.Returns(new List<Data.JobHistory>() { pendingJob2 });
-
-			Data.JobHistory processingJob1 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJobHistory1.ArtifactId)))
-				.Returns(new List<Data.JobHistory>() { processingJob1 });
-
-			Data.JobHistory processingJob2 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJobHistory2.ArtifactId)))
-				.Returns(new List<Data.JobHistory>() { processingJob2 });
-
-			Job baseJob = JobExtensions.CreateJob();
-			IDictionary<Guid, List<Job>> jobs = new Dictionary<Guid, List<Job>>();
-			jobs[new Guid(pendingJob1.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(1) };
-			jobs[new Guid(pendingJob2.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(2) };
-			jobs[new Guid(processingJob1.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(3) };
-			jobs[new Guid(processingJob2.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(4) };
-
-			_jobManager.GetJobsByBatchInstanceId(_integrationPointArtifactId).Returns(jobs);
-
-			const string errorMessageOne = "E1";
-			const string errorMessageTwo = "E2";
-			const string errorMessageThree = "E3";
-			const string errorMessageFour = "E4";
-
-			_jobManager.When(x => x.StopJobs(Arg.Is<List<long>>(y => y.Contains(1)))).Do(x => { throw new Exception(errorMessageOne); });
-			_jobManager.When(x => x.StopJobs(Arg.Is<List<long>>(y => y.Contains(2)))).Do(x => { throw new Exception(errorMessageTwo); });
-			_jobManager.When(x => x.StopJobs(Arg.Is<List<long>>(y => y.Contains(3)))).Do(x => { throw new Exception(errorMessageThree); });
-			_jobManager.When(x => x.StopJobs(Arg.Is<List<long>>(y => y.Contains(4)))).Do(x => { throw new Exception(errorMessageFour); });
-
-			// act
-			bool aggregateExceptionWasThrown = false;
-			try
-			{
-				_instance.MarkIntegrationPointToStopJobs(_sourceWorkspaceArtifactId, _integrationPointArtifactId);
-			}
-			catch (AggregateException aggregateException)
-			{
-				aggregateExceptionWasThrown = true;
-
-				Assert.AreEqual(errorMessageOne, aggregateException.InnerExceptions[0].Message);
-				Assert.AreEqual(errorMessageTwo, aggregateException.InnerExceptions[1].Message);
-				Assert.AreEqual(errorMessageThree, aggregateException.InnerExceptions[2].Message);
-				Assert.AreEqual(errorMessageFour, aggregateException.InnerExceptions[3].Message);
-			}
-			catch (Exception)
-			{
-			}
-
-			// assert
-			_jobHistoryManager.Received(1)
-				.GetStoppableJobHistory(
-					Arg.Is(_sourceWorkspaceArtifactId),
-					Arg.Is(_integrationPointArtifactId));
-
-			_jobHistoryService.DidNotReceiveWithAnyArgs().UpdateRdo(Arg.Any<Data.JobHistory>());
-
-			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(1)));
-			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(2)));
-			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(3)));
-			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(4)));
-
-			Assert.IsTrue(aggregateExceptionWasThrown, "An AggregateException was not thrown.");
-		}
-
-		[Test]
-		public void MarkIntegrationPointToStopJobs_SomeJobsNotMarkedToStop_OnlyMarkedJobsUpdated()
-		{
-			// arrange
-			var pendingJobHistory1 = new Data.JobHistory { ArtifactId = 123 };
-			var pendingJobHistory2 = new Data.JobHistory { ArtifactId = 456 };
-
-			var processingJobHistory1 = new Data.JobHistory { ArtifactId = 5634 };
-			var processingJobHistory2 = new Data.JobHistory { ArtifactId = 9604 };
-
-			var stoppableJobCollection = new StoppableJobHistoryCollection()
-			{
-				PendingJobHistory = new[] { pendingJobHistory1, pendingJobHistory2 },
-				ProcessingJobHistory = new[] { processingJobHistory1, processingJobHistory2 }
-			};
-			_jobHistoryManager
-				.GetStoppableJobHistory(
-					Arg.Is(_sourceWorkspaceArtifactId),
-					Arg.Is(_integrationPointArtifactId))
-				.Returns(stoppableJobCollection);
-
-			Data.JobHistory pendingJob1 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJobHistory1.ArtifactId)))
-				.Returns(new List<Data.JobHistory>() { pendingJob1 });
-
-			Data.JobHistory pendingJob2 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJobHistory2.ArtifactId)))
-				.Returns(new List<Data.JobHistory>() { pendingJob2 });
-
-			Data.JobHistory processingJob1 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJobHistory1.ArtifactId)))
-				.Returns(new List<Data.JobHistory>() { processingJob1 });
-
-			Data.JobHistory processingJob2 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJobHistory2.ArtifactId)))
-				.Returns(new List<Data.JobHistory>() { processingJob2 });
-
-			Job baseJob = JobExtensions.CreateJob();
-			IDictionary<Guid, List<Job>> jobs = new Dictionary<Guid, List<Job>>();
-			jobs[new Guid(pendingJob1.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(1) };
-			jobs[new Guid(pendingJob2.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(2) };
-			jobs[new Guid(processingJob1.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(3) };
-			jobs[new Guid(processingJob2.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(4) };
-
-			_jobManager.GetJobsByBatchInstanceId(_integrationPointArtifactId).Returns(jobs);
-
-			const string errorMessageOne = "E1";
-			const string errorMessageTwo = "E2";
-
-			_jobManager.When(x => x.StopJobs(Arg.Is<List<long>>(y => y.Contains(1)))).Do(x => { throw new Exception(errorMessageOne); });
-			_jobManager.When(x => x.StopJobs(Arg.Is<List<long>>(y => y.Contains(3)))).Do(x => { throw new Exception(errorMessageTwo); });
-
-			// act
-			bool aggregateExceptionWasThrown = false;
-			try
-			{
-				_instance.MarkIntegrationPointToStopJobs(_sourceWorkspaceArtifactId, _integrationPointArtifactId);
-			}
-			catch (AggregateException aggregateException)
-			{
-				aggregateExceptionWasThrown = true;
-
-				Assert.AreEqual(errorMessageOne, aggregateException.InnerExceptions[0].Message);
-				Assert.AreEqual(errorMessageTwo, aggregateException.InnerExceptions[1].Message);
-			}
-
-			// assert
-			_jobHistoryManager.Received(1)
-				.GetStoppableJobHistory(
-					Arg.Is(_sourceWorkspaceArtifactId),
-					Arg.Is(_integrationPointArtifactId));
-
-			_jobHistoryService.Received(1)
-				.UpdateRdo(
-					Arg.Is<Data.JobHistory>(
-						x =>
-							x.ArtifactId == pendingJobHistory2.ArtifactId
-							&& x.JobStatus.Name == JobStatusChoices.JobHistoryStopping.Name));
-
-			_jobHistoryService.DidNotReceive()
-				.UpdateRdo(
-					Arg.Is<Data.JobHistory>(
-						x =>
-							stoppableJobCollection.ProcessingJobHistory.Contains(x)));
-
-			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(1)));
-			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(2)));
-			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(3)));
-			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(4)));
-
-			Assert.IsTrue(aggregateExceptionWasThrown, "An AggregateException was not thrown.");
-		}
-
-		[Test]
-		public void MarkIntegrationPointToStopJobs_OnePendingJobFailsToMarkOnePendingJobsFailsToUpdate_AllExceptionsCaught()
-		{
-			// arrange
-			var pendingJobHistory1 = new Data.JobHistory { ArtifactId = 123 };
-			var pendingJobHistory2 = new Data.JobHistory { ArtifactId = 456 };
-
-			var processingJobHistory1 = new Data.JobHistory { ArtifactId = 5634 };
-			var processingJobHistory2 = new Data.JobHistory { ArtifactId = 9604 };
-
-			var stoppableJobCollection = new StoppableJobHistoryCollection()
-			{
-				PendingJobHistory = new[] { pendingJobHistory1, pendingJobHistory2 },
-				ProcessingJobHistory = new[] { processingJobHistory1, processingJobHistory2 }
-			};
+			Data.JobHistory[] processingJobHistories = new[] { processingJobHistory3, processingJobHistory4 };
 
 			_jobHistoryManager
 				.GetStoppableJobHistory(
 					Arg.Is(_sourceWorkspaceArtifactId),
 					Arg.Is(_integrationPointArtifactId))
-				.Returns(stoppableJobCollection);
-
-			Data.JobHistory pendingJob1 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJobHistory1.ArtifactId)))
-				.Returns(new List<Data.JobHistory>() { pendingJob1 });
-
-			Data.JobHistory pendingJob2 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(pendingJobHistory2.ArtifactId)))
-				.Returns(new List<Data.JobHistory>() { pendingJob2 });
-
-			Data.JobHistory processingJob1 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJobHistory1.ArtifactId)))
-				.Returns(new List<Data.JobHistory>() { processingJob1 });
-
-			Data.JobHistory processingJob2 = new Data.JobHistory() { BatchInstance = Guid.NewGuid().ToString() };
-			_jobHistoryService.GetJobHistory(Arg.Is<List<int>>(x => x.Contains(processingJobHistory2.ArtifactId)))
-				.Returns(new List<Data.JobHistory>() { processingJob2 });
+				.Returns(new StoppableJobHistoryCollection
+				{
+					PendingJobHistory = pendingJobHistories,
+					ProcessingJobHistory = processingJobHistories
+				});
 
 			Job baseJob = JobExtensions.CreateJob();
-			IDictionary<Guid, List<Job>> jobs = new Dictionary<Guid, List<Job>>();
-			jobs[new Guid(pendingJob1.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(1) };
-			jobs[new Guid(pendingJob2.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(2) };
-			jobs[new Guid(processingJob1.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(3) };
-			jobs[new Guid(processingJob2.BatchInstance)] = new List<Job>() { baseJob.CopyJobWithJobId(4) };
 
-			_jobManager.GetJobsByBatchInstanceId(_integrationPointArtifactId).Returns(jobs);
+			Job pendingJob1 = baseJob.CopyJobWithJobId(11);
+			Job pendingJob2 = baseJob.CopyJobWithJobId(22);
+			Job processingJob3 = baseJob.CopyJobWithJobId(33);
+			Job processingJob4 = baseJob.CopyJobWithJobId(44);
 
-			const string errorMessageOne = "E1";
-			const string errorMessageTwo = "E2";
-			const string errorMessageThree = "E3";
-
-			_jobManager.When(x => x.StopJobs(Arg.Is<List<long>>(y => y.Contains(1))))
-				.Do(x => { throw new Exception(errorMessageOne); });
-			_jobManager.When(x => x.StopJobs(Arg.Is<List<long>>(y => y.Contains(3))))
-				.Do(x => { throw new Exception(errorMessageTwo); });
-			_jobHistoryService.When(x =>
-				x.UpdateRdo(
-					Arg.Is<Data.JobHistory>(
-						y =>
-							y.ArtifactId == pendingJobHistory2.ArtifactId
-							&& y.JobStatus.Name == JobStatusChoices.JobHistoryStopping.Name)))
-				.Do(x => { throw new Exception(errorMessageThree); });
-
-			// act
-			bool correctExceptionWasThrown = false;
-			try
+			_jobManager.GetJobsByBatchInstanceId(_integrationPointArtifactId).Returns(new Dictionary<Guid, List<Job>>
 			{
-				_instance.MarkIntegrationPointToStopJobs(_sourceWorkspaceArtifactId, _integrationPointArtifactId);
-			}
-			catch (AggregateException aggregateException)
-			{
-				correctExceptionWasThrown = true;
+				{
+					Guid.Parse(pendingJobHistory1.BatchInstance),
+					new List<Job> { pendingJob1 }
+				},
+				{
+					Guid.Parse(pendingJobHistory2.BatchInstance),
+					new List<Job> { pendingJob2 }
+				},
+				{
+					Guid.Parse(processingJobHistory3.BatchInstance),
+					new List<Job> { processingJob3 }
+				},
+				{
+					Guid.Parse(processingJobHistory4.BatchInstance),
+					new List<Job> { processingJob4 }
+				}
+			});
 
-				Assert.AreEqual(errorMessageOne, aggregateException.InnerExceptions[0].Message);
-				Assert.AreEqual(errorMessageTwo, aggregateException.InnerExceptions[1].Message);
-				Assert.AreEqual(errorMessageThree, aggregateException.InnerExceptions[2].Message);
-			}
-			catch (Exception)
-			{
-			}
+			Exception processingException = new Exception(processingJob3.JobId.ToString());
+
+			_jobManager
+				.When(x =>
+					x.StopJobs(Arg.Is<IList<long>>(y => y.Contains(processingJob3.JobId))))
+				.Do(x => throw processingException);
+
+			Exception pendingException = new Exception(pendingJobHistory1.ArtifactId.ToString());
+
+			_jobHistoryService
+				.When(x =>
+					x.UpdateRdo(Arg.Is<Data.JobHistory>(
+						y => y.ArtifactId == pendingJobHistory1.ArtifactId)))
+				.Do(x => throw pendingException);
+
+			// Act
+			Action action = () => _instance.MarkIntegrationPointToStopJobs(_sourceWorkspaceArtifactId, _integrationPointArtifactId);
 
 			// assert
-			_jobHistoryManager.Received(1)
-				.GetStoppableJobHistory(
-					Arg.Is(_sourceWorkspaceArtifactId),
-					Arg.Is(_integrationPointArtifactId));
+			action.ShouldThrow<AggregateException>()
+				.Where(x => 
+					x.InnerExceptions.Contains(processingException) &&
+					x.InnerExceptions.Contains(pendingException));
 
-			_jobHistoryService.Received(1)
+			_jobManager.Received().StopJobs(Arg.Is<IList<long>>(x => x.Contains(processingJob4.JobId)));
+
+			_jobHistoryService.Received()
 				.UpdateRdo(
 					Arg.Is<Data.JobHistory>(
 						x =>
-							x.ArtifactId == pendingJobHistory2.ArtifactId
-							&& x.JobStatus.Name == JobStatusChoices.JobHistoryStopping.Name));
+							x == pendingJobHistory2 &&
+							x.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopped)));
 
-			_jobHistoryService.DidNotReceive()
-				.UpdateRdo(
-					Arg.Is<Data.JobHistory>(
-						x =>
-							stoppableJobCollection.ProcessingJobHistory.Contains(x)));
-
-			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(1)));
-			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(2)));
-			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(3)));
-			_jobManager.Received(1).StopJobs(Arg.Is<List<long>>(x => x.Contains(4)));
-
-			Assert.IsTrue(correctExceptionWasThrown, "The correct AggregateException was not thrown.");
+			_jobManager.Received().DeleteJob(pendingJob2.JobId);
 		}
 
 		[Test]
@@ -1498,6 +1309,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			// assert
 			_integrationPointRepository.Received(1).ReadWithFieldMappingAsync(_integrationPointArtifactId);
+		}
+
+		private Data.JobHistory PrepareJobHistory(int artifactId, ChoiceRef status)
+		{
+			return new Data.JobHistory
+			{
+				ArtifactId = artifactId,
+				BatchInstance = Guid.NewGuid().ToString(),
+				JobStatus = status
+			};
 		}
 	}
 }

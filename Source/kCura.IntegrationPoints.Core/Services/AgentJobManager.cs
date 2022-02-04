@@ -110,6 +110,12 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			IDictionary<Guid, List<Job>> results = new Dictionary<Guid, List<Job>>();
 			IList<Job> jobs = _jobService.GetJobs(integrationPointId);
+
+			if (jobs == null)
+            {
+				return results;
+            }
+
 			foreach (var job in jobs)
 			{
 				try
