@@ -43,6 +43,12 @@ namespace Relativity.Sync.SyncConfiguration
 		/// <param name="options">Retry options.</param>
 		/// <returns></returns>
 		T IsRetry(RetryOptions options);
+		
+		/// <summary>
+		/// Disables creating JobHistoryError RDOs for item level errors
+		/// </summary>
+		/// <returns></returns>
+		T DisableItemLevelErrorLogging();
 	}
 
 	/// <summary>

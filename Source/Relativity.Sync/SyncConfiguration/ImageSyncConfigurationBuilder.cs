@@ -69,6 +69,12 @@ namespace Relativity.Sync.SyncConfiguration
 
 			return this;
 		}
+		
+		public new IImageSyncConfigurationBuilder DisableItemLevelErrorLogging()
+		{
+			base.DisableItemLevelErrorLogging();
+			return this;
+		}
 
 		protected override Task ValidateAsync()
 		{

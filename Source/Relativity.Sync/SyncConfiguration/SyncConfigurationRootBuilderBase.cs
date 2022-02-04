@@ -38,7 +38,6 @@ namespace Relativity.Sync.SyncConfiguration
                 CorrelationId = Guid.NewGuid().ToString(),
                 ExecutingApplication = syncContext.ExecutingApplication,   
                 ExecutingApplicationVersion = syncContext.ExecutingApplicationVersion.ToString(),   
-                LogItemLevelErrors = syncContext.LogItemLevelErrors,
                 
                 DestinationWorkspaceArtifactId = syncContext.DestinationWorkspaceId,
                 JobHistoryId =  syncContext.JobHistoryId,
@@ -110,6 +109,11 @@ namespace Relativity.Sync.SyncConfiguration
         public void IsRetry(RetryOptions options)
         {
             SyncConfiguration.JobHistoryToRetryId = options.JobToRetry;
+        }
+
+        public void DisableItemLevelErrorLogging()
+        {
+            SyncConfiguration.LogItemLevelErrors = false;
         }
 
         public async Task<int> SaveAsync()

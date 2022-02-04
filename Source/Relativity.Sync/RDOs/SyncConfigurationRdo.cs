@@ -15,9 +15,9 @@ namespace Relativity.Sync.RDOs
 
         [RdoField(SyncRdoGuids.ResumingGuid, RdoFieldType.YesNo)]
         public bool Resuming { get; set; }
-        
+
         [RdoField(SyncRdoGuids.LogItemLevelErrorsGuid, RdoFieldType.YesNo)]
-        public bool LogItemLevelErrors { get; set; }
+        public bool LogItemLevelErrors { get; set; } = true;
 
         [RdoField(SyncRdoGuids.SyncStatisticsIdGuid, RdoFieldType.WholeNumber)]
         public int SyncStatisticsId { get; set; }
