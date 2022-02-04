@@ -58,6 +58,12 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			ImportHelper importHelper = new ImportHelper(ServiceFactory);
 			return importHelper.ImportDataAsync(SourceWorkspace.ArtifactID, importDataTable);
 		}
+		
+		public Task ImportDocumentsAsync(ImportDataTableWrapper importDataTable, WorkspaceRef workspace)
+		{
+			ImportHelper importHelper = new ImportHelper(ServiceFactory);
+			return importHelper.ImportDataAsync(workspace.ArtifactID, importDataTable);
+		}
 
 		/// <summary>
 		/// Creates gold flow tests run.

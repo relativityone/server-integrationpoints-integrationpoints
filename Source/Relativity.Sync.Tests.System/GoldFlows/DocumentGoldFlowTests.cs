@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using FluentAssertions;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Configuration;
@@ -9,9 +11,12 @@ using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using NUnit.Framework;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 using Relativity.Sync.Toggles;
 using Relativity.Toggles;
+using NotImplementedException = System.NotImplementedException;
 
 namespace Relativity.Sync.Tests.System.GoldFlows
 {
@@ -46,6 +51,51 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			await goldFlowTestRun.AssertAsync(result, _dataset.TotalItemCount, _dataset.TotalDocumentCount).ConfigureAwait(false);
 		}
 		
+		[IdentifiedTest("25b723da-82fe-4f56-ae9f-4a8b2a4d60f4")]
+		[TestType.MainFlow]
+		public async Task SyncJob_Should_SyncDocuments_And_NotCreateErrors_WhenDisabled()
+		{
+			// Arrange
+			GoldFlowTestSuite.IGoldFlowTestRun goldFlowTestRun = await _goldFlowTestSuite.CreateTestRunAsync(
+				async (sourceWrokspace, destinationWorkspace, configuration) =>
+				{
+					await ConfigureTestRunAsync(sourceWrokspace, destinationWorkspace, configuration)
+						.ConfigureAwait(false);
+
+					// to create item level errors
+					configuration.ImportOverwriteMode = ImportOverwriteMode.AppendOnly;
+					await _goldFlowTestSuite.ImportDocumentsAsync(DataTableFactory.CreateImportDataTable(_dataset, true), destinationWorkspace)
+						.ConfigureAwait(false);
+					
+				}).ConfigureAwait(false);
+
+			// Act
+			SyncJobState result = await goldFlowTestRun.RunAsync().ConfigureAwait(false);
+
+			// Assert
+			result.Status.Should().Be(SyncJobStatus.CompletedWithErrors);
+			
+			IEnumerable<RelativityObjectSlim> itemLevelErrors = await GetAllItemLevelErrors(goldFlowTestRun.DestinationWorkspaceArtifactId).ConfigureAwait(false);
+			itemLevelErrors.Should().BeEmpty();
+		}
+
+		private async Task<IEnumerable<RelativityObjectSlim>> GetAllItemLevelErrors(int workspaceId)
+		{
+			using (IObjectManager objectManager =
+			       new ServiceFactoryFromAppConfig().CreateServiceFactory().CreateProxy<IObjectManager>())
+			{
+				var query = new QueryRequest
+				{
+					ObjectType = new ObjectTypeRef
+					{
+						Guid = DefaultGuids.JobHistoryError.TypeGuid
+					}
+				};
+
+				return (await objectManager.QuerySlimAsync(workspaceId, query, 0, Int32.MaxValue)).Objects;
+			}
+		}
+
 		[IdentifiedTest("4be91e77-327d-41d6-afcc-a9d1090f0b04")]
 		[TestType.MainFlow]
 		public async Task SyncJob_Should_SyncDocuments_WithCustomRDOs()
