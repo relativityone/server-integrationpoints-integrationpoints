@@ -48,13 +48,13 @@ namespace Relativity.Sync.Storage
                 .Where(x => _repositoryConfigration.LogItemLevelErrors || x.ErrorType == ErrorType.Job)
                 .ToArray();
 
-            if (filteredErrors.Any())
+            if (!filteredErrors.Any())
             {
-                _logger.LogInformation("Mass creating errors count: {count}", filteredErrors.Length);
-                return await MassCreateAsyncInternal(workspaceArtifactId, jobHistoryArtifactId, filteredErrors);
+                return Enumerable.Empty<int>();
             }
-
-            return Enumerable.Empty<int>();
+            
+            _logger.LogInformation("Mass creating errors count: {count}", filteredErrors.Length);
+            return await MassCreateAsyncInternal(workspaceArtifactId, jobHistoryArtifactId, filteredErrors);
         }
 
         private async Task<IEnumerable<int>> MassCreateAsyncInternal(int workspaceArtifactId, int jobHistoryArtifactId,

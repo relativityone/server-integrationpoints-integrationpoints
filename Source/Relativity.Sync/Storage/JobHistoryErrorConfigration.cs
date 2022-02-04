@@ -2,11 +2,11 @@
 
 namespace Relativity.Sync.Storage
 {
-    internal class JobHistoryErrorRepositoryRepositoryConfiguration : IJobHistoryErrorRepositoryConfigration
+    internal class JobHistoryErrorRepositoryConfiguration : IJobHistoryErrorRepositoryConfigration
     {
         private readonly IConfiguration _cache;
 
-        public JobHistoryErrorRepositoryRepositoryConfiguration(IConfiguration cache)
+        public JobHistoryErrorRepositoryConfiguration(IConfiguration cache)
         {
             _cache = cache;
         }

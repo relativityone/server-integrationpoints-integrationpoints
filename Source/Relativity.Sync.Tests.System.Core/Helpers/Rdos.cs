@@ -393,7 +393,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				IncludeOriginalImages = configurationStub.ProductionImagePrecedence is null || configurationStub.IncludeOriginalImageIfNotFoundInProductions,
 				ImageFileCopyMode = configurationStub.ImportImageFileCopyMode,
 				ProductionImagePrecedence = configurationStub.ProductionImagePrecedence is null ? String.Empty : serializer.Serialize(configurationStub.ProductionImagePrecedence),
-				
+				LogItemLevelErrors = configurationStub.LogItemLevelErrors,
 
 				//Drain-Stop
 				SyncStatisticsId = configurationStub.SyncStatisticsId,
