@@ -13,5 +13,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
         FieldsMappingHelper FieldsMappingHelper { get; }
         DocumentHelper DocumentHelper { get; }
         ProductionHelper ProductionHelper { get; }
+        SavedSearchHelper SavedSearchHelper { get; }
     }
 }

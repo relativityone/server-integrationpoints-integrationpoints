@@ -138,6 +138,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             private FieldsMappingHelper _fieldsMappingHelper;
             private DocumentHelper _documentHelper;
             private ProductionHelper _productionHelper;
+            private SavedSearchHelper _savedSearchHelper;
 
             internal WorkspaceHelpers(WorkspaceTest workspace, ISerializer serializer)
             {
@@ -181,6 +182,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             public ProductionHelper ProductionHelper => _productionHelper ??
                                                       (_productionHelper =
                                                           new ProductionHelper(_workspace));
+
+            public SavedSearchHelper SavedSearchHelper => _savedSearchHelper ??
+                                                        (_savedSearchHelper =
+                                                            new SavedSearchHelper(_workspace));
         }
     }
 }

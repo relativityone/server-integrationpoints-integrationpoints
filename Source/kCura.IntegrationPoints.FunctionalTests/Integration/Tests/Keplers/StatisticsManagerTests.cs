@@ -16,13 +16,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
     {
         private IStatisticsManager _sut;
         private DocumentHelper _documentHelper;
+        private ProductionHelper _productionHelper;
+        private SavedSearchHelper _savedSearchHelper;
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-
             _documentHelper = SourceWorkspace.Helpers.DocumentHelper;
+            _productionHelper = SourceWorkspace.Helpers.ProductionHelper;
+            _savedSearchHelper = SourceWorkspace.Helpers.SavedSearchHelper;
+
             _sut = Container.Resolve<IStatisticsManager>();
         }
 
@@ -61,8 +65,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         public async Task GetImagesFileSizeForSavedSearchAsync_ShouldReturnValidFileSize()
         {
             // Arrange
-            int totalFileSize = 4444;
-            int savedSearchArtifactId = SourceWorkspace.SavedSearches.First().ArtifactId;
+            SearchCriteria searchCriteria = new SearchCriteria(false, true, false);
+            SavedSearchTest savedSearch = _savedSearchHelper.GetSavedSearchBySearchCriteria(searchCriteria);
+            int totalFileSize = _documentHelper.GetImagesSizeForSavedSearch(savedSearch.ArtifactId);
             Helper.DbContextMock.Setup(x =>
                     x.ExecuteSqlStatementAsScalar<long>(It.IsAny<string>(), It.IsAny<SqlParameter>(),
                         It.IsAny<SqlParameter>()))
@@ -70,7 +75,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
 
             // Act 
             long returnedTotalFileSize = await _sut
-                .GetImagesFileSizeForSavedSearchAsync(SourceWorkspace.ArtifactId, savedSearchArtifactId)
+                .GetImagesFileSizeForSavedSearchAsync(SourceWorkspace.ArtifactId, savedSearch.ArtifactId)
                 .ConfigureAwait(false);
 
             // Assert
@@ -147,15 +152,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         public async Task GetImagesFileSizeForProductionAsync_ShouldReturnValidFileSize()
         {
             // Arrange
-            int totalFileSize = 3333;
-            int productionArtifactId = SourceWorkspace.SavedSearches.First().ArtifactId;
+            SearchCriteria searchCriteria = new SearchCriteria(false, true, false);
+            ProductionTest production = _productionHelper.GetProductionBySearchCriteria(searchCriteria);
+            int totalFileSize = _documentHelper.GetImagesSizeForProduction(production.ArtifactId);
             Helper.DbContextMock.Setup(x =>
                     x.ExecuteSqlStatementAsScalar<long>(It.IsAny<string>()))
                 .Returns(totalFileSize);
 
             // Act 
             long returnedTotalFileSize = await _sut
-                .GetImagesFileSizeForProductionAsync(SourceWorkspace.ArtifactId, productionArtifactId)
+                .GetImagesFileSizeForProductionAsync(SourceWorkspace.ArtifactId, production.ArtifactId)
                 .ConfigureAwait(false);
 
             // Assert
@@ -231,8 +237,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         public async Task GetImagesFileSizeForFolderAsync_ShouldReturnValidFileSize()
         {
             // Arrange
-            int totalFileSize = 4444;
-            int folderArtifactId = SourceWorkspace.Folders.First().ArtifactId;
+            FolderTest folder = SourceWorkspace.Folders.First();
+            SearchCriteria searchCriteria = new SearchCriteria(false, true, false);
+            int totalFileSize = _documentHelper.GetImagesSizeForFolderBySearchCriteria(folder, searchCriteria);
+
             Helper.DbContextMock.Setup(x =>
                     x.ExecuteSqlStatementAsScalar<long>(It.IsAny<string>(), It.IsAny<SqlParameter>(),
                         It.IsAny<SqlParameter>()))
@@ -240,7 +248,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
 
             // Act 
             long returnedTotalFileSize = await _sut
-                .GetImagesFileSizeForFolderAsync(SourceWorkspace.ArtifactId, folderArtifactId, -1, false)
+                .GetImagesFileSizeForFolderAsync(SourceWorkspace.ArtifactId, folder.ArtifactId, -1, false)
                 .ConfigureAwait(false);
 
             // Assert

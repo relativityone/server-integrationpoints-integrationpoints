@@ -8,8 +8,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
     {
         private const string PRODUCTION_NAME = "Production";
 
+        public int SavedSearchId { get; set; }
+
         public ProductionTest() : base(PRODUCTION_NAME)
         {
+        }
+
+        public ProductionTest(int savedSearchId) : base(PRODUCTION_NAME)
+        {
+            SavedSearchId = savedSearchId;
         }
 
         public override List<Guid> Guids => new List<Guid>();

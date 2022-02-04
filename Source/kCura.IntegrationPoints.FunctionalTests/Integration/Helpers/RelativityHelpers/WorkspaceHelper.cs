@@ -87,6 +87,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 				Name = "All Documents"
 			});
 
+            SavedSearchTest savedSearch = new SavedSearchTest(new SearchCriteria(false, true, false))
+            {
+                ParenObjectArtifactId = workspace.ArtifactId,
+                Name = "Documents with Images only"
+            };
+
+            workspace.SavedSearches.Add(savedSearch);
+
+            workspace.Productions.Add(new ProductionTest(savedSearch.ArtifactId));
+
             FolderTest folder = workspace.Folders.First();
             IList<FieldTest> fields = workspace.Fields;
 
@@ -126,7 +136,25 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 				ImageCount = 12,
 			});
 
-            workspace.Documents.Add(new DocumentTest(fields)
+			workspace.Documents.Add(new DocumentTest
+			{
+				ParenObjectArtifactId = folder.ArtifactId,
+				FolderName = folder.Name,
+				HasImages = true,
+				HasNatives = false,
+				ImageCount = 32,
+			});
+
+            workspace.Documents.Add(new DocumentTest
+            {
+                ParenObjectArtifactId = folder.ArtifactId,
+                FolderName = folder.Name,
+                HasImages = true,
+                HasNatives = false,
+                ImageCount = 21,
+            });
+
+			workspace.Documents.Add(new DocumentTest(fields)
             {
                 ParenObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
@@ -167,7 +195,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                 HasNatives = false,
             });
 
-            workspace.Productions.Add(new ProductionTest());
 
 			return workspace;
 		}

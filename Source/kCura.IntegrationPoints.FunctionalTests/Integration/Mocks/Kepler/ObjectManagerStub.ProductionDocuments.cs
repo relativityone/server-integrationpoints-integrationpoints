@@ -33,20 +33,20 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             Mock.Setup(x => x.QueryAsync(It.IsAny<int>(),
                     It.Is<QueryRequest>(r => IsProductionDocumentsQuery(r)), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns((int workspaceId, QueryRequest request, int start, int length) =>
-                    {
-                        QueryResult result = GetRelativityObjectsForRequest(x => x.Documents, Filter, workspaceId, request, length);
-                        return Task.FromResult(result);
-                    }
-                );
+            {
+                QueryResult result = GetRelativityObjectsForRequest(x => x.Documents, Filter, workspaceId, request, length);
+                return Task.FromResult(result);
+            }
+            );
 
             Mock.Setup(x => x.QuerySlimAsync(It.IsAny<int>(),
                     It.Is<QueryRequest>(r => IsProductionDocumentsQuery(r)), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns((int workspaceId, QueryRequest request, int start, int length) =>
-                    {
-                        QueryResultSlim result = GetQuerySlimsForRequest(x => x.Documents, Filter, workspaceId, request, length);
-                        return Task.FromResult(result);
-                    }
-                );
+            {
+                QueryResultSlim result = GetQuerySlimsForRequest(x => x.Documents, Filter, workspaceId, request, length);
+                return Task.FromResult(result);
+            }
+            );
 		}
 
 	    private bool IsProductionDocumentsQuery(QueryRequest query)
