@@ -282,6 +282,24 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
             builder.SyncConfiguration.DestinationRdoArtifactTypeId.Should().Be(destinationRdoType);
         }
 
+        [TestCase(true)]
+        [TestCase(false)]
+        public void SyncConfigurationBuilderBase_ShouldSetLogItemLevelErrors(bool logItemLevelErrors)
+        {
+            // Arrange
+            RdoOptions rdoOptions = DefaultGuids.DefaultRdoOptions;
+            
+            // Act
+            IDocumentSyncConfigurationBuilder sut = new SyncConfigurationBuilder(new SyncContext(1, 1, 1, logItemLevelErrors),
+                    _servicesManagerMock.Object)
+                .ConfigureRdos(rdoOptions)
+                .ConfigureDocumentSync(new DocumentSyncOptions(1, 1));
+            
+            // Assert
+            (sut as SyncConfigurationRootBuilderBase).SyncConfiguration.LogItemLevelErrors.Should()
+                .Be(logItemLevelErrors);
+        }
+
         static IEnumerable<TestCaseData> RdoOptionsMembers()
         {
             var properties = typeof(RdoOptions).GetProperties()

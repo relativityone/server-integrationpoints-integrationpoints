@@ -38,6 +38,7 @@ namespace Relativity.Sync.SyncConfiguration
                 CorrelationId = Guid.NewGuid().ToString(),
                 ExecutingApplication = syncContext.ExecutingApplication,   
                 ExecutingApplicationVersion = syncContext.ExecutingApplicationVersion.ToString(),   
+                LogItemLevelErrors = syncContext.LogItemLevelErrors,
                 
                 DestinationWorkspaceArtifactId = syncContext.DestinationWorkspaceId,
                 JobHistoryId =  syncContext.JobHistoryId,
