@@ -111,6 +111,11 @@ namespace Relativity.Sync.SyncConfiguration
             SyncConfiguration.JobHistoryToRetryId = options.JobToRetry;
         }
 
+        public void DisableItemLevelErrorLogging()
+        {
+            SyncConfiguration.LogItemLevelErrors = false;
+        }
+
         public async Task<int> SaveAsync()
         {
 	        List<(Guid Guid, string PropertyPath)> allValidationInfos = GetAllValidationInfos();

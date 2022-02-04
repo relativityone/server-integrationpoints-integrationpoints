@@ -75,5 +75,6 @@ namespace Relativity.Sync.RDOs
         public const string JobHistoryOnDocumentFieldGuid = "A60FBE28-D7ED-49CA-BB1D-2EA58CFF406B";
         public const string DestinationWorkspaceOnDocumentFieldGuid = "D8C32815-2311-4554-87E4-81BB649719A4";
         public const string ObjectLinkingSnapshotRecordsCountGuid = "C6580514-3F7B-4BA0-92AB-AF487116171B";
+        public const string LogItemLevelErrorsGuid = "628E37C4-D705-48CC-BA0A-A21B36275522";
     }
 }

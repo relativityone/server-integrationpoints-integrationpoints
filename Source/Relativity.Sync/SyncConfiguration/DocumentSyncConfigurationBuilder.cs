@@ -84,6 +84,12 @@ namespace Relativity.Sync.SyncConfiguration
 			return this;
 		}
 
+		public new IDocumentSyncConfigurationBuilder DisableItemLevelErrorLogging()
+		{
+			base.DisableItemLevelErrorLogging();
+			return this;
+		}
+
 		protected override Task ValidateAsync()
 		{
 			SetFieldsMapping();

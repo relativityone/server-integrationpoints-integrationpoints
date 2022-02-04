@@ -19,7 +19,7 @@ namespace Relativity.Sync.SyncConfiguration
 
 		/// <inheritdoc />
 		public Version ExecutingApplicationVersion { get; }
-
+		
 		/// <summary>
 		/// Creates new instance of <see cref="SyncContext"/> class.
 		/// </summary>

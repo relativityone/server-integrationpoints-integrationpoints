@@ -37,6 +37,7 @@ namespace Relativity.Sync.Storage
 			builder.RegisterType<JobEndMetricsConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<NotificationConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<JobStatusConsolidationConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<JobHistoryErrorRepositoryConfiguration>().AsImplementedInterfaces();
 			
 			builder.RegisterType<RdoGuidConfiguration>().AsImplementedInterfaces();
 			
