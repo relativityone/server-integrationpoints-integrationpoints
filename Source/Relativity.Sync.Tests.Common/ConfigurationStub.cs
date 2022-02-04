@@ -258,6 +258,6 @@ namespace Relativity.Sync.Tests.Common
 
 		public string ExecutingApplicationVersion { get; set; }
 
-		public bool LogErrors { get; set; } = true;
+		public bool LogItemLevelErrors { get; set; } = true;
 	}
 }

@@ -11,6 +11,6 @@ namespace Relativity.Sync.Storage
             _cache = cache;
         }
 
-        public bool LogErrors => _cache.GetFieldValue(x => x.LogErrors);
+        public bool LogItemLevelErrors => _cache.GetFieldValue(x => x.LogItemLevelErrors);
     }
 }

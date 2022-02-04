@@ -2,6 +2,6 @@
 {
     internal interface IJobHistoryErrorRepositoryConfigration
     {
-        public bool LogErrors { get; }
+        public bool LogItemLevelErrors { get; }
     }
 }

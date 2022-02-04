@@ -65,7 +65,7 @@ namespace Relativity.Sync.Tests.Integration
 			_notificationConfiguration.SetupGet(x => x.SyncConfigurationArtifactId).Returns(_SYNC_CONFIG_ARTIFACT_ID);
 
 			_jobHistoryErrorRepositoryConfigurationMock = new Mock<IJobHistoryErrorRepositoryConfigration>();
-			_jobHistoryErrorRepositoryConfigurationMock.SetupGet(x => x.LogErrors).Returns(true);
+			_jobHistoryErrorRepositoryConfigurationMock.SetupGet(x => x.LogItemLevelErrors).Returns(true);
 		}
 
 		[SetUp]

@@ -21,7 +21,7 @@ namespace Relativity.Sync.SyncConfiguration
 		public Version ExecutingApplicationVersion { get; }
 
 		/// <inheritdoc />
-		public bool LogErrors { get; }
+		public bool LogItemLevelErrors { get; }
 
 		/// <summary>
 		/// Creates new instance of <see cref="SyncContext"/> class.
@@ -39,7 +39,7 @@ namespace Relativity.Sync.SyncConfiguration
 			JobHistoryId = jobHistoryId;
 			ExecutingApplication = executingApplication;
 			ExecutingApplicationVersion = executingApplicationVersion;
-			LogErrors = logErrors;
+			LogItemLevelErrors = logErrors;
 		}
 		
 		/// <summary>
