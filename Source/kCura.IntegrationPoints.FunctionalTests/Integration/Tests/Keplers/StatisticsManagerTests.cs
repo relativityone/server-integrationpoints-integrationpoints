@@ -6,9 +6,11 @@ using Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelpers;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data.Extensions;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
 {
@@ -68,9 +70,24 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             SearchCriteria searchCriteria = new SearchCriteria(false, true, false);
             SavedSearchTest savedSearch = _savedSearchHelper.GetSavedSearchBySearchCriteria(searchCriteria);
             int totalFileSize = _documentHelper.GetImagesSizeForSavedSearch(savedSearch.ArtifactId);
+            SqlParameter artifactIdsParameter = new SqlParameter("@ArtifactIds", SqlDbType.Structured)
+            {
+                TypeName = "IDs",
+                Value = new List<int>{ 100046, 100048 }.ToDataTable()
+            };
+            SqlParameter fileTypeParameter = new SqlParameter("@FileType", SqlDbType.Int)
+            {
+                Value = FileType.Tif
+            };
+
             Helper.DbContextMock.Setup(x =>
-                    x.ExecuteSqlStatementAsScalar<long>(It.IsAny<string>(), It.IsAny<SqlParameter>(),
-                        It.IsAny<SqlParameter>()))
+                    x.ExecuteSqlStatementAsScalar<long>(It.IsAny<string>(), 
+                        It.Is<SqlParameter>(parameter => 
+                            parameter.TypeName == "IDs" &&
+                            (string)((DataTable)parameter.Value).Rows[0].ItemArray[0] == "100046" &&
+                            (string)((DataTable)parameter.Value).Rows[1].ItemArray[0] == "100048"), 
+                        It.Is<SqlParameter>(parameter =>
+                            (FileType)parameter.Value == FileType.Tif)))
                 .Returns(totalFileSize);
 
             // Act 
