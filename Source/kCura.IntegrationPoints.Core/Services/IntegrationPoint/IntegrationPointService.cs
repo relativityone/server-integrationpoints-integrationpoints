@@ -268,7 +268,10 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 			IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager();
 			StoppableJobHistoryCollection stoppableJobHistories = jobHistoryManager.GetStoppableJobHistory(workspaceArtifactId, integrationPointArtifactId);
+			_logger.LogInformation("JobHistory requested for stopping {@jobHistoryToStop}", stoppableJobHistories);
+
 			IDictionary<Guid, List<Job>> jobs = _jobService.GetJobsByBatchInstanceId(integrationPointArtifactId);
+			_logger.LogInformation("Jobs marked to stopping with correspondent BatchInstanceId {@jobs}", jobs);
 
 			List<Exception> exceptions = new List<Exception>();
 			foreach (var jobHistory in stoppableJobHistories.ProcessingJobHistory)
@@ -278,6 +281,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 					IList<long> jobIdsForGivenJobHistory = jobs[Guid.Parse(jobHistory.BatchInstance)]
 						.Select(x => x.JobId).ToList();
 					_jobService.StopJobs(jobIdsForGivenJobHistory);
+					_logger.LogInformation("Jobs {@jobs} has been marked to stop for {jobHistoryId}", jobIdsForGivenJobHistory, jobHistory.ArtifactId);
 				}
 				catch(Exception ex)
                 {
@@ -294,6 +298,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 					_jobHistoryService.UpdateRdo(jobHistory);
 
 					jobs[Guid.Parse(jobHistory.BatchInstance)].ForEach(x => _jobService.DeleteJob(x.JobId));
+
+					_logger.LogInformation("Jobs {@jobs} has been deleted from queue and JobHistory {jobHistoryId} was set to Stopped",
+						jobs[Guid.Parse(jobHistory.BatchInstance)], jobHistory.ArtifactId);
 				}
 				catch(Exception ex)
                 {
