@@ -2,11 +2,9 @@
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using Castle.MicroKernel.Registration;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.IntegrationPoints.Services;
 using Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelpers;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
