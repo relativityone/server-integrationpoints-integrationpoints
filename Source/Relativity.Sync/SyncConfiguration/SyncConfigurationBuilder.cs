@@ -27,7 +27,7 @@ namespace Relativity.Sync.SyncConfiguration
         }
 
         /// <inheritdoc />
-        public ISyncJobConfigurationBuilder ConfigureRdos(RdoOptions rdoOptions)
+        public ISyncJobConfigurationBuilder ConfigureRdos(RdoOptions rdoOptions, bool logErrors = true)
         {
             ValidateInput(rdoOptions);
             return new SyncJobConfigurationBuilder(_syncContext, _servicesMgr, rdoOptions, _serializer);

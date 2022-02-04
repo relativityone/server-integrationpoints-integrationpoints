@@ -31,5 +31,10 @@ namespace Relativity.Sync.SyncConfiguration
 		/// Version of the executing application
 		/// </summary>
 		Version ExecutingApplicationVersion { get; }
+
+		/// <summary>
+		/// Specifies whether JobHistoryError RDOs should be created for item level errors
+		/// </summary>
+		bool LogErrors { get; }
 	}
 }

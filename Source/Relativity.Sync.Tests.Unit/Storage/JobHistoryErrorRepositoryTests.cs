@@ -64,7 +64,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			_dateTimeFake.SetupGet(x => x.UtcNow).Returns(_utcNow);
 			_objectManagerMock = new Mock<IObjectManager>();
 			_serviceFactoryFake.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
-			_sut = new JobHistoryErrorRepository(_serviceFactoryFake.Object, new ConfigurationStub(), _dateTimeFake.Object, new EmptyLogger(), new WrapperForRandom());
+			var configuration = new ConfigurationStub();
+			_sut = new JobHistoryErrorRepository(_serviceFactoryFake.Object, configuration, configuration, _dateTimeFake.Object, new EmptyLogger(), new WrapperForRandom());
             _sut.SecondsBetweenRetriesBase = 0.1;
         }
 
@@ -124,7 +125,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 				It.Is<MassCreateRequest>(y => VerifyMassCreateRequest(y, expectedCreateJobHistoryErrorDto))));
 		}
 
-		[TestCase(0, 5, 1)]
+		[TestCase(0, 5, 0)]
 		[TestCase(4, 5, 1)]
 		[TestCase(5, 5, 3)]
 		[TestCase(6, 5, 3)]

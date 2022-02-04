@@ -16,6 +16,7 @@ namespace Relativity.Sync.SyncConfiguration
 		/// Configures Sync RDOs.
 		/// </summary>
 		/// <param name="rdoOptions">Sync RDO options.</param>
-		ISyncJobConfigurationBuilder ConfigureRdos(RdoOptions rdoOptions);
+		/// <param name="logErrors">Specify whether Sync should create JobHistoryError RDOs for item level errors</param>
+		ISyncJobConfigurationBuilder ConfigureRdos(RdoOptions rdoOptions, bool logErrors = true);
 	}
 }

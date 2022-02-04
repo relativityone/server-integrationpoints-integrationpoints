@@ -24,14 +24,16 @@ namespace Relativity.Sync.Storage
 
         private readonly IDateTime _dateTime;
         private readonly ISourceServiceFactoryForUser _serviceFactory;
+        private readonly IJobHistoryErrorRepositoryConfigration _repositoryConfigration;
         private readonly IRdoGuidConfiguration _rdoConfiguration;
         private readonly ISyncLog _logger;
         private readonly IRandom _random;
 
-        public JobHistoryErrorRepository(ISourceServiceFactoryForUser serviceFactory,
+        public JobHistoryErrorRepository(ISourceServiceFactoryForUser serviceFactory, IJobHistoryErrorRepositoryConfigration repositoryConfigration,
             IRdoGuidConfiguration rdoConfiguration, IDateTime dateTime, ISyncLog logger, IRandom random)
         {
             _serviceFactory = serviceFactory;
+            _repositoryConfigration = repositoryConfigration;
             _rdoConfiguration = rdoConfiguration;
             _dateTime = dateTime;
             _logger = logger;
@@ -41,22 +43,38 @@ namespace Relativity.Sync.Storage
         public async Task<IEnumerable<int>> MassCreateAsync(int workspaceArtifactId, int jobHistoryArtifactId,
             IList<CreateJobHistoryErrorDto> createJobHistoryErrorDtos)
         {
-            _logger.LogInformation("Mass creating item level errors count: {count}", createJobHistoryErrorDtos.Count);
 
-            IReadOnlyList<IReadOnlyList<object>> values = createJobHistoryErrorDtos.Select(x => new List<object>()
+            CreateJobHistoryErrorDto[] filteredErrors = createJobHistoryErrorDtos
+                .Where(x => _repositoryConfigration.LogErrors || x.ErrorType == ErrorType.Job)
+                .ToArray();
+
+            if (filteredErrors.Any())
             {
-                x.ErrorMessage,
-                GetErrorStatusChoice(ErrorStatus.New),
-                GetErrorTypeChoice(x.ErrorType),
-                Guid.NewGuid().ToString(),
-                x.SourceUniqueId,
-                x.StackTrace,
-                _dateTime.UtcNow
-            }).ToList();
+                _logger.LogInformation("Mass creating errors count: {count}", filteredErrors.Length);
+                return await MassCreateAsyncInternal(workspaceArtifactId, jobHistoryArtifactId, createJobHistoryErrorDtos);
+            }
 
+            return Enumerable.Empty<int>();
+        }
+
+        private async Task<IEnumerable<int>> MassCreateAsyncInternal(int workspaceArtifactId, int jobHistoryArtifactId,
+            IList<CreateJobHistoryErrorDto> createJobHistoryErrorDtos)
+        {
             using (IObjectManager objectManager =
-                await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+                   await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
+
+                var values = createJobHistoryErrorDtos.Select(x => new List<object>()
+                {
+                    x.ErrorMessage,
+                    GetErrorStatusChoice(ErrorStatus.New),
+                    GetErrorTypeChoice(x.ErrorType),
+                    Guid.NewGuid().ToString(),
+                    x.SourceUniqueId,
+                    x.StackTrace,
+                    _dateTime.UtcNow
+                }).ToList();
+                
                 try
                 {
                     IEnumerable<int> artifactIds = new List<int>();
@@ -90,7 +108,6 @@ namespace Relativity.Sync.Storage
                         _logger.LogInformation("Successfully mass-created item level errors: {count}",
                             createJobHistoryErrorDtos.Count);
                         artifactIds = result.Objects.Select(x => x.ArtifactID);
-
                     }).ConfigureAwait(false);
 
                     return artifactIds;

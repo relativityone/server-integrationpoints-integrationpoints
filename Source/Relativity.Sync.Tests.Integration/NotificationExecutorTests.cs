@@ -47,6 +47,7 @@ namespace Relativity.Sync.Tests.Integration
 		private readonly Guid _destinationWorkspaceTagObjectTypeGuid = new Guid("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
 		private readonly Guid _jobHistoryErrorObjectGuid = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
 		private readonly Guid _progressObjectTypeGuid = new Guid("3D107450-DB18-4FE1-8219-73EE1F921ED9");
+		private Mock<IJobHistoryErrorRepositoryConfigration> _jobHistoryErrorRepositoryConfigurationMock;
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
@@ -62,6 +63,9 @@ namespace Relativity.Sync.Tests.Integration
 			_notificationConfiguration.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_SOURCE_CASE_ARTIFACT_ID);
 			_notificationConfiguration.Setup(x => x.GetSourceWorkspaceTag()).Returns(_SOURCE_CASE_TAG);
 			_notificationConfiguration.SetupGet(x => x.SyncConfigurationArtifactId).Returns(_SYNC_CONFIG_ARTIFACT_ID);
+
+			_jobHistoryErrorRepositoryConfigurationMock = new Mock<IJobHistoryErrorRepositoryConfigration>();
+			_jobHistoryErrorRepositoryConfigurationMock.SetupGet(x => x.LogErrors).Returns(true);
 		}
 
 		[SetUp]
@@ -86,6 +90,9 @@ namespace Relativity.Sync.Tests.Integration
 			containerBuilder.RegisterInstance(_sourceServiceFactoryForUser.Object).As<ISourceServiceFactoryForUser>();
 
 			containerBuilder.RegisterType<NotificationExecutor>().As<IExecutor<INotificationConfiguration>>();
+
+			containerBuilder.RegisterInstance(_jobHistoryErrorRepositoryConfigurationMock.Object)
+				.As<IJobHistoryErrorRepositoryConfigration>();
 
 			IContainer container = containerBuilder.Build();
 			_instance = container.Resolve<IExecutor<INotificationConfiguration>>();

@@ -20,6 +20,9 @@ namespace Relativity.Sync.SyncConfiguration
 		/// <inheritdoc />
 		public Version ExecutingApplicationVersion { get; }
 
+		/// <inheritdoc />
+		public bool LogErrors { get; }
+
 		/// <summary>
 		/// Creates new instance of <see cref="SyncContext"/> class.
 		/// </summary>
@@ -28,19 +31,21 @@ namespace Relativity.Sync.SyncConfiguration
 		/// <param name="jobHistoryId">Specifies Job History Artifact ID.</param>
 		/// <param name="executingApplication">Specifies name of executing application</param>
 		/// <param name="executingApplicationVersion">Specifies version of executing application</param>
-		public SyncContext(int sourceWorkspaceId, int destinationWorkspaceId, int jobHistoryId, string executingApplication, Version executingApplicationVersion)
+		/// <param name="logErrors">Specifies whether JobHistoryErrors RDOs should be created for item level errors. Does not affect logging</param>
+		public SyncContext(int sourceWorkspaceId, int destinationWorkspaceId, int jobHistoryId, string executingApplication, Version executingApplicationVersion, bool logErrors)
 		{
 			SourceWorkspaceId = sourceWorkspaceId;
 			DestinationWorkspaceId = destinationWorkspaceId;
 			JobHistoryId = jobHistoryId;
 			ExecutingApplication = executingApplication;
 			ExecutingApplicationVersion = executingApplicationVersion;
+			LogErrors = logErrors;
 		}
 		
 		/// <summary>
 		/// Internal constructor to make testing easier
 		/// </summary>
-		internal SyncContext(int sourceWorkspaceId, int destinationWorkspaceId, int jobHistoryId) 
-			: this(sourceWorkspaceId, destinationWorkspaceId, jobHistoryId, "SyncTests", new Version()){}
+		internal SyncContext(int sourceWorkspaceId, int destinationWorkspaceId, int jobHistoryId, bool logErrors = true) 
+			: this(sourceWorkspaceId, destinationWorkspaceId, jobHistoryId, "SyncTests", new Version(), logErrors){}
 	}
 }
