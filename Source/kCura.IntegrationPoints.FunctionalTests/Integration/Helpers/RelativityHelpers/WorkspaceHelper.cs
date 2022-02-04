@@ -87,15 +87,34 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 				Name = "All Documents"
 			});
 
-            SavedSearchTest savedSearch = new SavedSearchTest(new SearchCriteria(false, true, false))
+            SavedSearchTest savedSearch = new SavedSearchTest(
+                new SearchCriteria(false, true, false))
+            {
+                ParenObjectArtifactId = workspace.ArtifactId,
+                Name = "Documents with Images only"
+            };
+
+            SavedSearchTest savedSearchWithFieldsAndNatives = new SavedSearchTest(
+                new SearchCriteria(true, false, true))
+            {
+                ParenObjectArtifactId = workspace.ArtifactId,
+                Name = "Documents with Images only"
+            };
+
+            SavedSearchTest savedSearchWithNatives = new SavedSearchTest(
+                new SearchCriteria(true, false, false))
             {
                 ParenObjectArtifactId = workspace.ArtifactId,
                 Name = "Documents with Images only"
             };
 
             workspace.SavedSearches.Add(savedSearch);
+            workspace.SavedSearches.Add(savedSearchWithFieldsAndNatives);
+            workspace.SavedSearches.Add(savedSearchWithNatives);
 
             workspace.Productions.Add(new ProductionTest(savedSearch.ArtifactId));
+            workspace.Productions.Add(new ProductionTest(savedSearchWithFieldsAndNatives.ArtifactId));
+            workspace.Productions.Add(new ProductionTest(savedSearchWithNatives.ArtifactId));
 
             FolderTest folder = workspace.Folders.First();
             IList<FieldTest> fields = workspace.Fields;
