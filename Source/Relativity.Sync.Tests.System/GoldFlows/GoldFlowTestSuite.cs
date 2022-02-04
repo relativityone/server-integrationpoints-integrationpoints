@@ -111,6 +111,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 		{
 			IToggleProvider ToggleProvider { get; }
 			int DestinationWorkspaceArtifactId { get; }
+			int SourceWorkspaceArtifactId { get; }
 
 			Task<SyncJobState> RunAsync();
 
@@ -127,6 +128,8 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			private readonly SyncJobParameters _parameters;
 
 			public int DestinationWorkspaceArtifactId => _configuration.DestinationWorkspaceArtifactId;
+
+			public int SourceWorkspaceArtifactId => _configuration.SourceWorkspaceArtifactId;
 
 			public GoldFlowTestRun(GoldFlowTestSuite goldFlowTestSuite, int configurationId, ConfigurationStub configuration)
 			{

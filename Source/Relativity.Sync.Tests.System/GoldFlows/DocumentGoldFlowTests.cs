@@ -51,7 +51,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			await goldFlowTestRun.AssertAsync(result, _dataset.TotalItemCount, _dataset.TotalDocumentCount).ConfigureAwait(false);
 		}
 		
-		[IdentifiedTest("25b723da-82fe-4f56-ae9f-4a8b2a4d60f4")]
+		[Test]
 		[TestType.MainFlow]
 		public async Task SyncJob_Should_SyncDocuments_And_NotCreateErrors_WhenDisabled()
 		{
@@ -61,6 +61,8 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 				{
 					await ConfigureTestRunAsync(sourceWrokspace, destinationWorkspace, configuration)
 						.ConfigureAwait(false);
+
+					configuration.LogItemLevelErrors = false;
 
 					// to create item level errors
 					configuration.ImportOverwriteMode = ImportOverwriteMode.AppendOnly;
@@ -73,9 +75,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			SyncJobState result = await goldFlowTestRun.RunAsync().ConfigureAwait(false);
 
 			// Assert
-			result.Status.Should().Be(SyncJobStatus.CompletedWithErrors);
-			
-			IEnumerable<RelativityObjectSlim> itemLevelErrors = await GetAllItemLevelErrors(goldFlowTestRun.DestinationWorkspaceArtifactId).ConfigureAwait(false);
+			IEnumerable<RelativityObjectSlim> itemLevelErrors = await GetAllItemLevelErrors(goldFlowTestRun.SourceWorkspaceArtifactId).ConfigureAwait(false);
 			itemLevelErrors.Should().BeEmpty();
 		}
 
