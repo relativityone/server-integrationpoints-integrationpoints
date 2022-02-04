@@ -64,9 +64,8 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
 			};
 		}
 
-		protected string GetTransferredObjectObjectTypeGuid(IntegrationPointProviderValidationModel validationModel)
+		protected Guid GetTransferredObjectObjectTypeGuid(IntegrationPointProviderValidationModel validationModel)
 		{
-			string objectTypeGuid;
 			ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(validationModel.DestinationConfiguration);
 			int destinationWorkspaceArtifactId = destinationConfiguration.CaseArtifactId;
 
@@ -80,10 +79,12 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
 
 				QueryResult results = objectManager.QueryAsync(destinationWorkspaceArtifactId, request, 0, 1)
 					.GetAwaiter().GetResult();
-				objectTypeGuid = results.Objects.Single().Guids.Single().ToString();
+				if (results.TotalCount == 0)
+				{
+					return Guid.Empty;
+				}
+				return results.Objects.Single().Guids.FirstOrDefault();
 			}
-			
-			return objectTypeGuid;
 		}
 
 

@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Core.Validation
 				result.Add(validator.Validate(validationModel));
 			}
 			
-			foreach (IValidator validator in _validatorsMap[GetTransferredObjectObjectTypeGuid(validationModel)])
+			foreach (IValidator validator in _validatorsMap[GetTransferredObjectObjectTypeGuid(validationModel).ToString()])
             {
             	result.Add(validator.Validate(validationModel));
             }
