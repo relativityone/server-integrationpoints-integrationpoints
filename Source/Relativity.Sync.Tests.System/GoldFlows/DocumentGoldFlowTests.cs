@@ -51,7 +51,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			await goldFlowTestRun.AssertAsync(result, _dataset.TotalItemCount, _dataset.TotalDocumentCount).ConfigureAwait(false);
 		}
 		
-		[Test]
+		[IdentifiedTest("215AD6CF-A79A-45A9-AEE2-22C4848F1F8B")]
 		[TestType.MainFlow]
 		public async Task SyncJob_Should_SyncDocuments_And_NotCreateErrors_WhenDisabled()
 		{
