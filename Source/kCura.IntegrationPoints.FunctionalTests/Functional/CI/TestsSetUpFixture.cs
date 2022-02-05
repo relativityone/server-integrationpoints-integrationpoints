@@ -7,6 +7,7 @@ using Relativity.Testing.Framework.Models;
 using Relativity.Testing.Framework.Api;
 using Relativity.Testing.Framework.Api.Services;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
+using Relativity.IntegrationPoints.Tests.Common.Extensions;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
@@ -31,7 +32,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 				return;
 			}
 
-			int workspaceId = RelativityFacade.Instance.CreateWorkspace(WORKSPACE_TEMPLATE_NAME).ArtifactID;
+			Workspace workspace = RelativityFacade.Instance.CreateWorkspace(WORKSPACE_TEMPLATE_NAME);
+			int workspaceId = workspace.ArtifactID;
 
 			InstallIntegrationPointsToWorkspace(workspaceId);
 
@@ -39,7 +41,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 
 			InstallDataTransferLegacy();
 
-			InstallLegalHoldToWorkspace(workspaceId);
+			workspace.InstallLegalHold();
 		}
 
 		[OneTimeTearDown]
@@ -91,15 +93,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
 				.InstallToLibrary(TestConfig.DataTransferLegacyRapFileLocation,
 					new LibraryApplicationInstallOptions { IgnoreVersion = true });
-		}
-
-		private void InstallLegalHoldToWorkspace(int workspaceId)
-		{
-			var applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
-
-			LibraryApplication app = applicationService.Get("Relativity Legal Hold");
-
-			applicationService.InstallToWorkspace(workspaceId, app.ArtifactID);
 		}
 
 		private static void CopyScreenshotsToBase()

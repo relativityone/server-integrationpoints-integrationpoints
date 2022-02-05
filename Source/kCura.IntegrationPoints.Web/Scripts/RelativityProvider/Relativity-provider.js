@@ -48,7 +48,62 @@
 		},
 		message: 'The saved search is no longer accessible. Please verify your settings or create a new Integration Point.'
 	};
+	ko.validation.rules['checkView'] = {
+		async: true,
+		validator: function (value, params, callback) {
+			var okCallback = function (result) {
+				callback(!!result);
+			};
+			var errorCallback = function () {
+				callback({ isValid: false, message: 'Unable to validate if the view is accessible. Please try again.' });
+			};
+			self.RetrieveView(value, okCallback, errorCallback);
+		},
+		message: 'The view is no longer accessible. Please verify your settings or create a new Integration Point.'
+	};
+	ko.validation.rules['checkWorkspaceForObjectType'] = {
+		async: true,
+		validator: function(value, params, callback) {
+			var sourceObjectTypeArtifactId = window.parent.IP.data.params['TransferredRDOArtifactTypeID'];
+			IP.data.ajax({
+				contentType: "application/json",
+				dataType: "json",
+				headers: { "X-CSRF-Header": "-" },
+				type: "GET",
+				url: IP.utils.generateWebAPIURL("ObjectType/Exists", value, sourceObjectTypeArtifactId),
+				async: true
+			})
+			.then(function(objectTypeExistsInDestination) {
+				callback(objectTypeExistsInDestination);
+			})
+			.fail(function(error){
+				console.error("Failed to check if Object Type exists in workspace: " + error);
+			});
+		},
+		message: 'Selected Transferred Object does not exist in this workspace.'
+	};
 	ko.validation.registerExtenders();
+
+	self.RetrieveView = function(viewId, okCallback, errorCallback) {
+		IP.data.ajax({
+			type: 'GET',
+			url: IP.utils.generateWebAPIURL('ObjectType/Views'),
+			async: true,
+			data: {
+				artifactTypeId: window.parent.IP.data.params['TransferredRDOArtifactTypeID'],
+				viewId: viewId
+			},
+			success: okCallback,
+			error: function (err) {
+				if (err.status === 404) {
+					okCallback(null);
+				} else {
+					IP.frameMessaging().dFrame.IP.message.error.raise("Unable to retrieve the view. Please try again.");
+					errorCallback(err);
+				}
+			}
+		});
+	}
 
 	var viewModel;
 
@@ -115,8 +170,8 @@
 		self.SavedSearchService = new SavedSearchService();
 
 		var isNonDocumentObjectFlow = window.parent.IP.data.params['EnableSyncNonDocumentFlowToggleValue'] && window.parent.IP.data.params['TransferredRDOArtifactTypeID'] != documentArtifactTypeId;
-		self.IsNonDocumentObjectSelected = ko.observable();
-		self.IsNonDocumentObjectSelected(isNonDocumentObjectFlow);
+		self.IsNonDocumentObjectFlow = ko.observable();
+		self.IsNonDocumentObjectFlow(isNonDocumentObjectFlow);
 
 		self.workspaces = ko.observableArray(state.workspaces);
 		self.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId);
@@ -130,6 +185,7 @@
 		self.ShowProductionAddButton = ko.observable(state.ShowProductionAddButton);
 		self.LocationFolderChecked = ko.observable(state.LocationFolderChecked || "true");
 		self.DestinationProductionSets = ko.observableArray();
+
 		self.ProductionArtifactId = ko.observable().extend({
 			required: {
 				onlyIf: function () {
@@ -137,6 +193,7 @@
 				}
 			}
 		});
+
 		self.ProductionArtifactId.subscribe(function (value) {
 			self.ProductionImport(!!value);
 			if (value) {
@@ -144,13 +201,20 @@
 				self.locationSelector.toggle(false);
 			}
 		});
+
 		self.CreateSavedSearchForTagging = ko.observable(JSON.parse(IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination).CreateSavedSearchForTagging || "false");
 		self.TypeOfExport = ko.observable();//todo:self.TypeOfExport = ko.observable(initTypeOfExport);
+
 		self.IsSavedSearchSelected = function () {
 			return self.TypeOfExport() === ExportEnums.SourceOptionsEnum.SavedSearch;
 		};
+
 		self.IsProductionSelected = function () {
 			return self.TypeOfExport() === ExportEnums.SourceOptionsEnum.Production;
+		};
+
+		self.IsViewSelected = function() {
+			return self.TypeOfExport() === ExportEnums.SourceOptionsEnum.View;
 		};
 
 		self.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId === 0 ? null : state.SavedSearchArtifactId).extend({
@@ -169,11 +233,17 @@
 			}
 		});
 
-		self.SourceViewId = ko.observable();
+		self.SourceViewId = ko.observable(state.SourceViewId).extend({
+			required: {
+				onlyIf: function () {
+					return self.IsViewSelected();
+				}
+			}
+		});
 
 		self.SourceOptions = ko.observableArray();
 		
-		if (self.IsNonDocumentObjectSelected()) {
+		if (self.IsNonDocumentObjectFlow()) {
 			self.SourceOptions.push({ value: 4, key: "View" });
 		}
 		else {
@@ -311,7 +381,7 @@
 
 			var workspacesUpgradedPromise = self.updateWorkspaces();
 			workspacesUpgradedPromise.then(function () {
-				if (self.FolderArtifactId() && self.TargetWorkspaceArtifactId() && self.TargetWorkspaceArtifactId.isValid()) {
+				if (self.FolderArtifactId() && self.TargetWorkspaceArtifactId() && self.TargetWorkspaceArtifactId.isValid() && !self.IsNonDocumentObjectFlow()) {
 					self.getFolderAndSubFolders(self.TargetWorkspaceArtifactId(), self.FolderArtifactId());
 				}
 				self.locationSelector.toggle(self.TargetWorkspaceArtifactId.isValid());
@@ -319,7 +389,7 @@
 		};
 
 		self.SavedSearchUrl = IP.utils.generateWebAPIURL('SavedSearchFinder', IP.utils.getParameterByName("AppID", window.top));
-		self.ViewUrl = IP.utils.generateWebAPIURL('ViewFinder', IP.utils.getParameterByName("AppID", window.top), window.parent.IP.data.params['TransferredRDOArtifactTypeID']);
+		self.ViewUrl = IP.utils.generateWebAPIURL('ObjectType/Views', window.parent.IP.data.params['TransferredRDOArtifactTypeID']);
 
 		self.updateWorkspaces = function () {
 			var stateLocal = state;
@@ -339,9 +409,14 @@
 						item.displayName = IP.utils.decode(item.displayName);
 					});
 				self.workspaces(result);
-				self.TargetWorkspaceArtifactId(stateLocal.TargetWorkspaceArtifactId);
 				self.getDestinationProductionSets(self.TargetWorkspaceArtifactId());
+				self.TargetWorkspaceArtifactId(stateLocal.TargetWorkspaceArtifactId);
 				self.TargetWorkspaceArtifactId.subscribe(function (value) {
+
+					if (self.IsNonDocumentObjectFlow()){
+						return;
+					}
+
 					if (value) {
 						self.EnableLocationRadio(true);
 						self.TargetFolder("");
@@ -431,11 +506,12 @@
 		this.TargetFolder.extend({
 			required: {
 				onlyIf: function () {
-					return self.LocationFolderChecked() === "true";
+					return self.LocationFolderChecked() === "true" && !self.IsNonDocumentObjectFlow();
 				}
 			}
 		});
-		this.TargetWorkspaceArtifactId.extend({
+		this.TargetWorkspaceArtifactId
+		.extend({
 			required: true
 		}).extend({
 			validation: {
@@ -469,6 +545,12 @@
 				message: "Source workspace name contains an invalid character. Please remove before continuing."
 			}
 		}).extend({
+			checkWorkspaceForObjectType: {
+				onlyIf: function() {
+					return self.IsNonDocumentObjectFlow();
+				}
+			}
+		}).extend({
 			checkWorkspace: {
 				onlyIf: function () {
 					return (typeof self.workspaces()) !== "undefined";
@@ -479,6 +561,10 @@
 
 		self.TargetWorkspaceArtifactId.subscribe(function (value) {
 			if (value) {
+				if (self.IsNonDocumentObjectFlow()){
+					return;
+				}
+
 				if (self.TargetWorkspaceArtifactId() && self.TargetWorkspaceArtifactId.isValid()) {
 					self.validateProductionAddPermissions(self.TargetWorkspaceArtifactId());
 					self.getFolderAndSubFolders(value);
@@ -486,7 +572,7 @@
 					self.ShowProductionAddButton(false);
 				}
 				self.EnableLocationRadio(true);
-				self.LocationFolderChecked((state.ProductionArtifactId != undefined && state.ProductionArtifactId > 0) ? 'false' : 'true');
+				self.LocationFolderChecked((state.ProductionArtifactId != undefined && state.ProductionArtifactId > 0) ? 'false' : 'true');			
 			} else {
 				self.ShowProductionAddButton(false);
 				self.EnableLocationRadio(false);
@@ -508,10 +594,19 @@
 			}
 		});
 
+		this.SourceViewId.extend({
+			checkView: {
+				onlyIf: function () {
+					return self.IsViewSelected();
+				}
+			}
+		});
+
 		this.errors = ko.validation.group(this, { deep: true });
 		this.getSelectedOption = function () {
 			return {
 				"SavedSearchArtifactId": self.SavedSearchArtifactId(),
+				"SourceViewId": self.SourceViewId(),
 				"TypeOfExport": self.TypeOfExport(),
 				"ProductionImport": self.ProductionImport(),
 				"ProductionArtifactId": self.ProductionArtifactId(),
