@@ -271,6 +271,68 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 				o => o.IncludeOriginalImagesIfNotFoundInProductions &&
 				     o.ProductionImagePrecedenceIds.ToList().Count == 0)));
 		}
+
+		[TestCase(null)]
+		[TestCase(true)]
+		public async Task CreateSyncConfigurationAsync_ShouldCreateSyncConfiguration_AndLogErrors(bool? logErrors)
+		{
+			// Arrange
+			IExtendedJob job = SetupExtendedJob();
+			job.IntegrationPointModel.LogErrors = logErrors;
+
+			// Act
+			await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
+
+			// Assert
+			_documentSyncConfigurationBuilderMock.Verify(x => x.DisableItemLevelErrorLogging(), Times.Never);
+		}
+
+		[Test]
+		public async Task CreateSyncConfigurationAsync_ShouldCreateSyncConfiguration_AndDisableLogErrors()
+		{
+			// Arrange
+			IExtendedJob job = SetupExtendedJob();
+			job.IntegrationPointModel.LogErrors = false;
+
+			// Act
+			await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
+
+			// Assert
+			_documentSyncConfigurationBuilderMock.Verify(x => x.DisableItemLevelErrorLogging(), Times.Once);
+		}
+
+		[TestCase(null)]
+		[TestCase(true)]
+		public async Task CreateSyncConfigurationAsync_ShouldCreateImageSyncConfiguration_AndLogErrors(bool? logErrors)
+		{
+			// Arrange
+			_destinationConfiguration = CreateImageDestinationConfiguration();
+			IExtendedJob job = SetupExtendedJob();
+			job.IntegrationPointModel.LogErrors = logErrors;
+
+			// Act
+			await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
+
+			// Assert
+			_imageSyncConfigurationBuilderMock.Verify(x => x.DisableItemLevelErrorLogging(), Times.Never);
+		}
+
+		[Test]
+		public async Task CreateSyncConfigurationAsync_ShouldCreateImageSyncConfiguration_AndDisableLogErrors()
+		{
+			// Arrange
+			_destinationConfiguration = CreateImageDestinationConfiguration();
+			IExtendedJob job = SetupExtendedJob();
+			job.IntegrationPointModel.LogErrors = false;
+
+			// Act
+			await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
+
+			// Assert
+			_imageSyncConfigurationBuilderMock.Verify(x => x.DisableItemLevelErrorLogging(), Times.Once);
+		}
+
+
 		private static ExtendedImportSettings CreateNativeDestinationConfiguration()
 		{
 			ImportSettings settings = new ImportSettings
@@ -324,7 +386,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			{
 				EmailNotificationRecipients = emailNotifications,
 				SourceConfiguration = null,
-				DestinationConfiguration = null
+				DestinationConfiguration = null,
+				LogErrors = null
 			};
 
 			_serializerFake.Setup(x => x.Deserialize<SourceConfiguration>(It.IsAny<string>()))
@@ -379,6 +442,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 				.Returns(_documentSyncConfigurationBuilderMock.Object);
 			_documentSyncConfigurationBuilderMock.Setup(x => x.WithFieldsMapping(It.IsAny<Action<IFieldsMappingBuilder>>()))
 				.Returns(_documentSyncConfigurationBuilderMock.Object);
+			_documentSyncConfigurationBuilderMock.Setup(x => x.DisableItemLevelErrorLogging());
 
 			_imageSyncConfigurationBuilderMock.Setup(x => x.CreateSavedSearch(It.IsAny<CreateSavedSearchOptions>()))
 				.Returns(_imageSyncConfigurationBuilderMock.Object);
@@ -390,6 +454,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 				.Returns(_imageSyncConfigurationBuilderMock.Object);
 			_imageSyncConfigurationBuilderMock.Setup(x => x.ProductionImagePrecedence(It.IsAny<ProductionImagePrecedenceOptions>()))
 				.Returns(_imageSyncConfigurationBuilderMock.Object);
+			_imageSyncConfigurationBuilderMock.Setup(x => x.DisableItemLevelErrorLogging());
 
 			_syncConfigurationBuilderMock.Setup(x => x.ConfigureDocumentSync(It.IsAny<DocumentSyncOptions>()))
 				.Returns(_documentSyncConfigurationBuilderMock.Object);
