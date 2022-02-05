@@ -38,8 +38,8 @@ namespace Relativity.Sync.SyncConfiguration
             _fielsdMappingAction = fieldsMappingAction;
             return this;
 		}
-        
-        protected override async Task ValidateAsync()
+
+		protected override async Task ValidateAsync()
         {
             SetFieldsMapping();
             await ValidateViewExistsAsync().ConfigureAwait(false);
@@ -78,5 +78,40 @@ namespace Relativity.Sync.SyncConfiguration
 	        }
         }
 
+        public new INonDocumentSyncConfigurationBuilder CorrelationId(string correlationId)
+        {
+	        base.CorrelationId(correlationId);
+	        return this;
+        }
+
+        public new INonDocumentSyncConfigurationBuilder OverwriteMode(OverwriteOptions options)
+        {
+	        base.OverwriteMode(options);
+	        return this;
+        }
+
+        public new INonDocumentSyncConfigurationBuilder EmailNotifications(EmailNotificationsOptions options)
+        {
+	        base.EmailNotifications(options);
+	        return this;
+        }
+
+        public new INonDocumentSyncConfigurationBuilder CreateSavedSearch(CreateSavedSearchOptions options)
+        {
+	        base.CreateSavedSearch(options);
+	        return this;
+        }
+
+        public new INonDocumentSyncConfigurationBuilder IsRetry(RetryOptions options)
+        {
+	        base.IsRetry(options);
+	        return this;
+        }
+
+        public new INonDocumentSyncConfigurationBuilder DisableItemLevelErrorLogging()
+        {
+	        base.DisableItemLevelErrorLogging();
+	        return this;
+        }
     }
 }

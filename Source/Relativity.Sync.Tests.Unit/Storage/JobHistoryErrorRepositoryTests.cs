@@ -54,6 +54,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 		private readonly Guid _expectedErrorTypeItem = new Guid("9DDC4914-FEF3-401F-89B7-2967CD76714B");
 		private readonly Guid _expectedErrorTypeJob = new Guid("FA8BB625-05E6-4BF7-8573-012146BAF19B");
+		private ConfigurationStub _configuration;
 
 		[SetUp]
 		public void SetUp()
@@ -64,7 +65,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			_dateTimeFake.SetupGet(x => x.UtcNow).Returns(_utcNow);
 			_objectManagerMock = new Mock<IObjectManager>();
 			_serviceFactoryFake.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
-			_sut = new JobHistoryErrorRepository(_serviceFactoryFake.Object, new ConfigurationStub(), _dateTimeFake.Object, new EmptyLogger(), new WrapperForRandom());
+			_configuration = new ConfigurationStub();
+			_sut = new JobHistoryErrorRepository(_serviceFactoryFake.Object, _configuration, _configuration, _dateTimeFake.Object, new EmptyLogger(), new WrapperForRandom());
             _sut.SecondsBetweenRetriesBase = 0.1;
         }
 
@@ -124,7 +126,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 				It.Is<MassCreateRequest>(y => VerifyMassCreateRequest(y, expectedCreateJobHistoryErrorDto))));
 		}
 
-		[TestCase(0, 5, 1)]
+		[TestCase(0, 5, 0)]
 		[TestCase(4, 5, 1)]
 		[TestCase(5, 5, 3)]
 		[TestCase(6, 5, 3)]
@@ -271,8 +273,46 @@ namespace Relativity.Sync.Tests.Unit.Storage
             action.Should().Throw<SyncException>();
         }
 
+		[Test]
+		public async Task MassCreateAsync_ShouldFilterOutItemLevelError_WhenLogItemLevelErrorsIsFalse()
+		{
+			// Arrange
+			_configuration.LogItemLevelErrors = false;
+			
+			CreateJobHistoryErrorDto itemLevelErrorDto = CreateJobHistoryErrorDto(_TEST_ERROR_TYPE_ITEM);
+			CreateJobHistoryErrorDto jobLevelErrorDto = CreateJobHistoryErrorDto(ErrorType.Job);
+
+			_objectManagerMock.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<MassCreateRequest>()))
+				.Returns((int workspaceId, MassCreateRequest request) => Task.FromResult(GetResultFrom(request, true)));
+			
+			// Act 
+			await _sut.MassCreateAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID, new List<CreateJobHistoryErrorDto>()
+				{
+					itemLevelErrorDto, jobLevelErrorDto
+				}).ConfigureAwait(false);
+
+			// Assert
+			_objectManagerMock.Verify(x => x.CreateAsync(
+				It.Is<int>(y => y == _TEST_WORKSPACE_ARTIFACT_ID),
+				It.Is<MassCreateRequest>(y => y.ValueLists.Count == 1 && VerifyMassCreateRequest(y, jobLevelErrorDto))));
+		}
+
         private bool VerifyMassCreateRequest(MassCreateRequest request, CreateJobHistoryErrorDto dto)
 		{
+			Guid GetErrorType(CreateJobHistoryErrorDto errorDto)
+			{
+				switch(errorDto.ErrorType)
+				{
+					case ErrorType.Item:
+						return _expectedErrorTypeItem;
+					case ErrorType.Job:
+						return _expectedErrorTypeJob;
+					
+					default:
+						return _expectedErrorTypeItem;
+				}
+			}
+			
 #pragma warning disable RG2009 // Hardcoded Numeric Value
 			IReadOnlyList<object> valueList = request.ValueLists[0];
 
@@ -286,7 +326,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 				(string)valueList[0] == dto.ErrorMessage &&
 				((ChoiceRef)valueList[1]).Guid == _expectedErrorStatusNew &&
-				((ChoiceRef)valueList[2]).Guid == _expectedErrorTypeItem &&
+				((ChoiceRef)valueList[2]).Guid == GetErrorType(dto) &&
 				(string)valueList[3] != Guid.Empty.ToString() &&
 				(string)valueList[4] == dto.SourceUniqueId &&
 				(string)valueList[5] == dto.StackTrace &&
