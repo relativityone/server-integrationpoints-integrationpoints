@@ -115,6 +115,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 				syncConfigurationRoot.IsRetry(new RetryOptions(jobToRetry.ArtifactID));
 			}
 
+			if (job.IntegrationPointModel.LogErrors.HasValue && !job.IntegrationPointModel.LogErrors.Value)
+			{
+				syncConfigurationRoot.DisableItemLevelErrorLogging();
+			}
+
 			return await syncConfigurationRoot.SaveAsync().ConfigureAwait(false);
 		}
 
@@ -152,6 +157,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 					sourceConfiguration.SourceWorkspaceArtifactId, job.IntegrationPointId).ConfigureAwait(false);
 
 				syncConfigurationRoot.IsRetry(new RetryOptions(jobToRetry.ArtifactID));
+			}
+
+			if (job.IntegrationPointModel.LogErrors.HasValue && !job.IntegrationPointModel.LogErrors.Value)
+			{
+				syncConfigurationRoot.DisableItemLevelErrorLogging();
 			}
 
 			return await syncConfigurationRoot.SaveAsync().ConfigureAwait(false);
