@@ -9,6 +9,7 @@ using Relativity.Services.Interfaces.Group;
 using Relativity.Services.Objects;
 using Relativity.Services.Permission;
 using Relativity.Services.Search;
+using Relativity.Services.View;
 using Relativity.Services.Workspace;
 using Relativity.Telemetry.Services.Metrics;
 
@@ -39,6 +40,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			RegisterProxyInServiceManagerMock<IAPMManager>(proxy.APMManager.Object);
 			RegisterProxyInServiceManagerMock<IMetricsManager>(proxy.MetricsManager.Object);
 			RegisterProxyInServiceManagerMock<IKeywordSearchManager>(proxy.KeywordSearchManager.Object);
+			RegisterProxyInServiceManagerMock<IViewManager>(proxy.ViewManager.Object);
 		}
 
 		private void RegisterProxyInServiceManagerMock<T>(T proxy) 
