@@ -10,6 +10,7 @@ using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Metrics;
 using Relativity.Services.Field;
 using Relativity.Services.Search;
+using Relativity.Services.View;
 using CategoryAttribute = NUnit.Framework.CategoryAttribute;
 
 namespace Relativity.IntegrationPoints.FieldsMapping.Tests
@@ -21,6 +22,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		private const int WorkspaceArtifactId = 1234;
 
 		private Mock<IKeywordSearchManager> _keywordSearchManagerFake;
+		private Mock<IViewManager> _viewManagerFake;
 		private Mock<IServicesMgr> _servicesMgrFake;
 		private Mock<IMetricBucketNameGenerator> _metricBucketNameGeneratorFake;
 		private Mock<IMetricsSender> _metricsSenderMock;
@@ -29,10 +31,15 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		[SetUp]
 		public void Setup()
 		{
-			_keywordSearchManagerFake = new Mock<IKeywordSearchManager>();
 			_servicesMgrFake = new Mock<IServicesMgr>();
+
+			_keywordSearchManagerFake = new Mock<IKeywordSearchManager>();
 			_servicesMgrFake.Setup(x => x.CreateProxy<IKeywordSearchManager>(It.IsAny<ExecutionIdentity>()))
 				.Returns(_keywordSearchManagerFake.Object);
+
+			_viewManagerFake = new Mock<IViewManager>();
+			_servicesMgrFake.Setup(x => x.CreateProxy<IViewManager>(It.IsAny<ExecutionIdentity>()))
+				.Returns(_viewManagerFake.Object);
 
 			_metricBucketNameGeneratorFake = new Mock<IMetricBucketNameGenerator>();
 
@@ -396,6 +403,97 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 
 			// Act
 			var mappedFields = (await _sut.MapFieldsFromSavedSearchAsync(sourceFields, destinationFields, DestinationProviderGuid, 1, 2)
+				.ConfigureAwait(false)).ToArray();
+
+			// Assert
+			mappedFields.Length.Should().Be(2);
+			mappedFields[0].SourceField.DisplayName.Should().Be("Control Number");
+			mappedFields[1].SourceField.DisplayName.Should().Be("Field 2");
+		}
+
+		[Test]
+		public async Task MapFieldsFromView_ShouldMapFieldFromView()
+		{
+			// Arrange
+
+			var viewFields = new List<FieldRef>
+			{
+				new FieldRef()
+				{
+					ArtifactID = 2,
+					Name = "Field 2"
+				}
+			};
+
+			var sourceFields = new[]
+			{
+				new FieldInfo("1", "Field 1", "Fixed-Length Text(250)"),
+				new FieldInfo("2", "Field 2", "Fixed-Length Text(250)")
+			};
+
+			var destinationFields = new[]
+			{
+				new FieldInfo("3", "Field 3", "Fixed-Length Text(250)"),
+				new FieldInfo("4", "Field 2", "Fixed-Length Text(250)")
+			};
+
+			_viewManagerFake.Setup(x => x.ReadSingleAsync(It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(new View()
+				{
+					Fields = viewFields
+				});
+
+            // Act
+            Models.FieldMap[] mappedFields = (await _sut.MapFieldsFromViewAsync(sourceFields, destinationFields, DestinationProviderGuid, 1, 2)
+				.ConfigureAwait(false)).ToArray();
+
+			// Assert
+			mappedFields.Length.Should().Be(1);
+			mappedFields.Single().SourceField.DisplayName.Should().Be("Field 2");
+		}
+
+		[Test]
+		public async Task MapFieldsFromView_ShouldMapAlsoObjectIdentifier()
+		{
+			// Arrange
+
+			var viewFields = new List<FieldRef>
+			{
+				new FieldRef()
+				{
+					ArtifactID = 2,
+					Name = "Field 2"
+				}
+			};
+
+			var sourceFields = new[]
+			{
+				new FieldInfo("1", "Control Number", "Fixed-Length Text(250)")
+				{
+					IsIdentifier = true
+				},
+				new FieldInfo("2", "Field 2", "Fixed-Length Text(250)")
+			};
+
+			var destinationFields = new[]
+			{
+				new FieldInfo("10", "Control Number", "Fixed-Length Text(250)")
+				{
+					IsIdentifier = true
+				},
+				new FieldInfo("3", "Field 3", "Fixed-Length Text(250)"),
+				new FieldInfo("4", "Field 2", "Fixed-Length Text(250)"),
+				new FieldInfo("5", "Field 5", "Fixed-Length Text(250)")
+			};
+
+			_viewManagerFake.Setup(x => x.ReadSingleAsync(It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(new View()
+				{
+					Fields = viewFields
+				});
+
+			// Act
+			var mappedFields = (await _sut.MapFieldsFromViewAsync(sourceFields, destinationFields, DestinationProviderGuid, 1, 2)
 				.ConfigureAwait(false)).ToArray();
 
 			// Assert
