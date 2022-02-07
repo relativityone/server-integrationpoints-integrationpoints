@@ -27,6 +27,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 		private IQueueManager _queueManager;
 		private IStateManager _stateManager;
 
+		private const int _WORKSPACE_ID = 100;
+		private const int _INTEGRATION_POINT_ID = 200;
+
 		[SetUp]
 		public override void SetUp()
 		{
@@ -42,53 +45,112 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 				_permissionRepository, _permissionValidator, _integrationPointRepository);
 		}
 
-		[TestCase(ProviderType.Relativity, true, true, true, true, true,false)]
-		[TestCase(ProviderType.Other, true, true, true, true, true, false)]
-		[TestCase(ProviderType.FTP, true, true, true, true, true, false)]
-		[TestCase(ProviderType.LDAP, true, true, true, true, true, false)]
-		[TestCase(ProviderType.LoadFile, true, true, true, true, true, false)]
-		[TestCase(ProviderType.Relativity, false, true, true, true, true, false)]
-		[TestCase(ProviderType.Relativity, true, false, true, true, true, false)]
-		[TestCase(ProviderType.Relativity, true, true, false, true, true, false)]
-		[TestCase(ProviderType.Relativity, true, true, true, false, true, false)]
-		[TestCase(ProviderType.Relativity, true, true, true, true, false, false)]
-		[TestCase(ProviderType.Relativity, true, true, true, true, false, true)]
-		[Test]
-		public void BuildButtonState_GoldWorkflow(ProviderType providerType, bool hasErrorViewPermission, bool hasJobsExecutingOrInQueue, bool hasStoppableJobs,
+		[TestCase(ProviderType.Relativity, true, true, true, true,false)]
+		[TestCase(ProviderType.Other, true, true, true, true, false)]
+		[TestCase(ProviderType.FTP, true, true, true, true, false)]
+		[TestCase(ProviderType.LDAP, true, true, true, true, false)]
+		[TestCase(ProviderType.LoadFile, true, true, true, true, false)]
+		[TestCase(ProviderType.Relativity, false, true, true, true, false)]
+		[TestCase(ProviderType.Relativity, true, false, true, true, false)]
+		[TestCase(ProviderType.Relativity, true, true, true, true, false)]
+		[TestCase(ProviderType.Relativity, true, true, false, true, false)]
+		[TestCase(ProviderType.Relativity, true, true, true, false, false)]
+		[TestCase(ProviderType.Relativity, true, true, true, false, true)]
+		public void BuildButtonState_GoldWorkflow(
+			ProviderType providerType, bool hasErrorViewPermission, bool hasJobsExecutingOrInQueue,
 			bool hasErrors, bool hasAddProfilePermission,bool imageImport)
 		{
-			int applicationArtifactId = 501;
-			int integrationPointArtifactId = 229;
-			int sourceProviderArtifactId = 841;
-			int destinationProviderArtifactId = 273;
-			var importSettings = new ImportSettings {ImageImport = imageImport};
-			_integrationPointRepository.ReadWithFieldMappingAsync(integrationPointArtifactId).Returns(new Data.IntegrationPoint
-			{
-				HasErrors = hasErrors,
-				SourceProvider = sourceProviderArtifactId,
-				DestinationProvider = destinationProviderArtifactId,
-				DestinationConfiguration = JsonConvert.SerializeObject(importSettings)
-			});
+			// Arrange
+			SetupIntegrationPoint(providerType, imageImport, hasErrors);
 
-			_permissionValidator.ValidateViewErrors(applicationArtifactId).Returns(
+			_permissionValidator.ValidateViewErrors(_WORKSPACE_ID).Returns(
 				hasErrorViewPermission ? new ValidationResult() : new ValidationResult(new[] {"error"}));
 
-			_providerTypeService.GetProviderType(sourceProviderArtifactId, destinationProviderArtifactId).Returns(providerType);
+			_queueManager.HasJobsExecutingOrInQueue(_WORKSPACE_ID, _INTEGRATION_POINT_ID).Returns(hasJobsExecutingOrInQueue);
 
-			_queueManager.HasJobsExecutingOrInQueue(applicationArtifactId, integrationPointArtifactId).Returns(hasJobsExecutingOrInQueue);
+			_jobHistoryManager.GetStoppableJobHistory(_WORKSPACE_ID, _INTEGRATION_POINT_ID)
+				.Returns(GetJobHistoryCollection(true, false));
 
-			_jobHistoryManager.GetStoppableJobCollection(applicationArtifactId, integrationPointArtifactId).Returns(new StoppableJobCollection
-			{
-				PendingJobArtifactIds = hasStoppableJobs ? new[] {1, 2} : null
-			});
+			_queueManager.HasJobsExecuting(_WORKSPACE_ID, _INTEGRATION_POINT_ID).Returns(false);
 
 			_permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create).Returns(hasAddProfilePermission);
 
-			_buttonStateBuilder.CreateButtonState(applicationArtifactId, integrationPointArtifactId);
+			// Act
+			_buttonStateBuilder.CreateButtonState(_WORKSPACE_ID, _INTEGRATION_POINT_ID);
 
-			bool hasTrulyStoppableJobs = hasStoppableJobs && (providerType == ProviderType.Relativity || providerType == ProviderType.LoadFile) && !imageImport;
-
-			_stateManager.Received(1).GetButtonState(providerType, hasJobsExecutingOrInQueue, hasErrors, hasErrorViewPermission, hasTrulyStoppableJobs, hasAddProfilePermission);
+			// Assert
+			_stateManager.Received()
+				.GetButtonState(
+					Arg.Is(providerType),
+					Arg.Is(hasJobsExecutingOrInQueue),
+					Arg.Is(hasErrors),
+					Arg.Is(hasErrorViewPermission),
+					Arg.Any<bool>(),
+					Arg.Is(hasAddProfilePermission));
 		}
+
+		[TestCase(ProviderType.Other, true, false, false, false, true)]
+		[TestCase(ProviderType.LDAP, true, false, false, false, true)]
+		[TestCase(ProviderType.FTP, true, false, false, false, true)]
+		[TestCase(ProviderType.Other, false, true, false, false, false)]
+		[TestCase(ProviderType.Other, true, false, true, false, false)]
+		[TestCase(ProviderType.Relativity, false, true, true, false, true)]
+		[TestCase(ProviderType.Relativity, false, true, true, true, false)]
+		[TestCase(ProviderType.LoadFile, false, true, true, true, true)]
+		public void CreateButtonState_IntegrationPointIsStoppableBasedOnCriteria(
+			ProviderType providerType,bool hasPendingJobHistory, bool hasProcessingJobHistory,
+			bool hasJobsExecuting, bool isImageImport, bool expectedIsStoppable)
+        {
+			// Arrange
+			SetupIntegrationPoint(providerType, isImageImport: isImageImport);
+
+			_permissionValidator.ValidateViewErrors(_WORKSPACE_ID).Returns(new ValidationResult());
+
+			_jobHistoryManager.GetStoppableJobHistory(_WORKSPACE_ID, _INTEGRATION_POINT_ID)
+				.Returns(GetJobHistoryCollection(hasPendingJobHistory, hasProcessingJobHistory));
+
+			_queueManager.HasJobsExecuting(_WORKSPACE_ID, _INTEGRATION_POINT_ID).Returns(hasJobsExecuting);
+
+			// Act
+			_buttonStateBuilder.CreateButtonState(_WORKSPACE_ID, _INTEGRATION_POINT_ID);
+
+			// Assert
+			_stateManager.Received()
+				.GetButtonState(
+					Arg.Is(providerType),
+					Arg.Any<bool>(),
+					Arg.Any<bool>(),
+					Arg.Any<bool>(),
+					Arg.Is(expectedIsStoppable),
+					Arg.Any<bool>());
+		}
+
+		private void SetupIntegrationPoint(ProviderType providerType, bool isImageImport = false, bool hasErrors = false)
+        {
+			const int sourceProviderArtifactId = 210;
+			const int destinationProviderArtifactId = 220;
+
+			var settings = new ImportSettings { ImageImport = isImageImport };
+
+			_integrationPointRepository.ReadWithFieldMappingAsync(_INTEGRATION_POINT_ID)
+				.Returns(new Data.IntegrationPoint
+				{
+					HasErrors = hasErrors,
+					SourceProvider = sourceProviderArtifactId,
+					DestinationProvider = destinationProviderArtifactId,
+					DestinationConfiguration = JsonConvert.SerializeObject(settings)
+				});
+
+			_providerTypeService.GetProviderType(sourceProviderArtifactId, destinationProviderArtifactId).Returns(providerType);
+		}
+
+		private StoppableJobHistoryCollection GetJobHistoryCollection(bool hasPendingJobHistory, bool hasProcessingJobHistory)
+        {
+			return new StoppableJobHistoryCollection
+			{
+				PendingJobHistory = hasPendingJobHistory ? new[] { new JobHistory() } : Array.Empty<JobHistory>(),
+				ProcessingJobHistory = hasProcessingJobHistory ? new[] { new JobHistory() } : Array.Empty<JobHistory>(),
+			};
+        }
 	}
 }

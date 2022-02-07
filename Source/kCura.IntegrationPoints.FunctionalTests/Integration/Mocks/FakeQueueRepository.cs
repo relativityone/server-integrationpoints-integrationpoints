@@ -36,5 +36,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
                 x.RelatedObjectArtifactID == integrationPointId && x.WorkspaceID == workspaceId &&
                 x.LockedByAgentID == null);
         }
+
+        public int GetNumberOfJobsLockedByAgentForIntegrationPoint(int workspaceId, int integrationPointId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
