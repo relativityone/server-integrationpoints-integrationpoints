@@ -436,10 +436,6 @@
 		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. ---> System.NullReferenceException: Object reference not set to an instance of an object.*at Relativity.Sync.Transfer.BatchDataReader*.GetValue(Int32 i)*"
 	},
 	{
-		"Jira": "REL-503860",
-		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*System.Net.WebException: The remote name could not be resolved*t kCura.WinEDDS.BulkLoadFileImporter.WaitOnPushBatchTask()*"
-	},
-	{
 		"Jira": "REL-541731",
 		"Exception": "*Relativity.Services.Exceptions.ServiceException: Update Failed*Relativity.Sync.Executors.SyncFieldManager.<EnsureFieldsExistAsync>*"
 	},
@@ -525,7 +521,7 @@
 	},
 	{
 		"Jira": "REL-558396",
-		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*'SQL Statement Failed'*The target table 'AuditRecord_PrimaryPartition' of the OUTPUT INTO clause cannot have any enabled check constraints or any enabled rules.*"
+		"Exception": "System.AggregateException: One or more errors occurred. ---> Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. ---> kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException:*The target table 'AuditRecord_PrimaryPartition' of the OUTPUT INTO clause cannot have any enabled triggers*"
 	},
 	{
 		"Jira": "REL-561754",
@@ -573,7 +569,7 @@
 	},
 	{
 		"Jira": "REL-576594",
-		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException: Error: SQL Statement Failed*Error: Invalid column name*"
+		"Exception": "System.AggregateException: One or more errors occurred. ---> Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. ---> kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException*Error: Invalid column name*"
 	},
 	{
 		"Jira": "REL-576596",
@@ -596,10 +592,6 @@
 		"Exception": "*System.Net.WebException: The request was aborted: The connection was closed unexpectedly*at kCura.WinEDDS.BulkLoadFileImporter*"
 	},
 	{
-		"Jira": "REL-576618",
-		"Exception": "*System.Net.WebException: The remote name could not be resolved*at Relativity.Sync.Transfer.SearchManagerFactory.<SearchManagerFactoryAsync>*"
-	},
-	{
 		"Jira": "REL-576619",
 		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*Error: SQL Statement Failed*Invalid object name '_rd_utilities_export.dbo.tblBridgeProjects'*"
 	},
@@ -610,10 +602,6 @@
 	{
 		"Jira": "REL-576624",
 		"Exception": "*Relativity.Sync.Executors.SyncKeplerException: Failed to retrieve data on choice*Relativity.Services.Exceptions.ServiceException: Could not load type*from assembly*"
-	},
-	{
-		"Jira": "REL-576627",
-		"Exception": "*kCura.WinEDDS.Exceptions.InvalidLoginException: Login failed.*System.Exception: Unknown failure during authentication*System.Net.WebException: The remote name could not be resolved*at Relativity.Sync.Executors.ImportApiFactory.CreateImportApiAsync*"
 	},
 	{
 		"Jira": "REL-576639",
@@ -637,7 +625,7 @@
 	},
 	{
 		"Jira": "REL-594903",
-		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*System.Net.WebException: The remote name could not be resolved:*"
+		"Exception": "*System.Net.WebException: The remote name could not be resolved:*kCura.WinEDDS*"
 	},
 	{
 		"Jira": "REL-594909",
@@ -746,5 +734,25 @@
 	{
 		"Jira": "REL-624513",
 		"Exception": "*System.Net.WebException*-->*Relativity.Services.Proxy.RPC.KeplerRPCClient.<ExecuteHttpCall>*"
+	},
+	{
+		"Jira": "REL-644040",
+		"Exception": "System.AggregateException: One or more errors occurred. ---> Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. ---> System.Threading.Tasks.TaskCanceledException: A task was canceled.*"
+	},
+	{
+		"Jira": "REL-644499",
+		"Exception": "System.Web.Services.Protocols.SoapException: Need To Re Login:NeedToReLoginException*at Relativity.Sync.Executors.SynchronizationExecutorBase`1.<ExecuteSynchronizationAsync>d__21.MoveNext()*"
+	},
+	{
+		"Jira": "REL-644508",
+		"Exception": "Relativity.Sync.Executors.RelativitySourceJobTagRepositoryException: Service call failed while creating RelativitySourceJobTag: Relativity.Services.Objects.DataContracts.CreateRequest ---> Relativity.Services.Exceptions.ServiceException: Create Failed*at Relativity.Sync.Executors.DestinationWorkspaceTagsCreationExecutor.<ExecuteAsync>d__4.MoveNext()"
+	},
+	{
+		"Jira": "REL-644523",
+		"Exception": "System.AggregateException: One or more errors occurred. ---> Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. ---> Relativity.Services.Exceptions.ServiceException: Error: SQL Statement Failed*Arithmetic overflow occurred*"
+	},
+	{
+		"Jira": "REL-644534",
+		"Exception": "System.AggregateException: One or more errors occurred. ---> Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. ---> kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException:*Some supplied choice ids are invalid*"
 	}
 ]
