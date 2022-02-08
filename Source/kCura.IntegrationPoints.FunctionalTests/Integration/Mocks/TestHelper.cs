@@ -44,6 +44,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			RegisterProxyInServiceManagerMock<IAPMManager>(proxy.APMManager.Object);
 			RegisterProxyInServiceManagerMock<IMetricsManager>(proxy.MetricsManager.Object);
 			RegisterProxyInServiceManagerMock<IKeywordSearchManager>(proxy.KeywordSearchManager.Object);
+            RegisterProxyInServiceManagerMock<IViewManager>(proxy.ViewManager.Object);
 		}
 
 		private void RegisterProxyInServiceManagerMock<T>(T proxy) 
@@ -75,14 +76,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		{
 			SecretStore.Clear();
 		}
-        #region Not Implemented
 
-		public IDBContext GetDBContext(int caseID)
-		{
+        public IDBContext GetDBContext(int caseID)
+        {
             return _dbContext.Object;
-		}
+        }
 
-		public IUrlHelper GetUrlHelper()
+		#region Not Implemented
+        public IUrlHelper GetUrlHelper()
 		{
 			throw new NotImplementedException();
 		}

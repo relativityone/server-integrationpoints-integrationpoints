@@ -13,7 +13,6 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Extensions;
 using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Field;
 using Relativity.Services.Objects.DataContracts;
