@@ -19,8 +19,8 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		public void IsTypeCompatible_ShouldReturnTrue_WhenTypeAreSameButNoFixedLengthText(string sourceType, string destinationType)
 		{
 			// Arrange
-			var sourceField = new DocumentFieldInfo("1", "Field1", sourceType);
-			var destinationField = new DocumentFieldInfo("2", "Field2", destinationType);
+			var sourceField = new FieldInfo("1", "Field1", sourceType);
+			var destinationField = new FieldInfo("2", "Field2", destinationType);
 
 
 			var result = sourceField.IsTypeCompatible(destinationField);
@@ -40,8 +40,8 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		public void IsTypeCompatible_ShouldReturnTrue_WhenOneOfTheTypesIsNull(string sourceType, string destinationType)
 		{
 			// Arrange
-			var sourceField = new DocumentFieldInfo("1", "Field1", sourceType);
-			var destinationField = new DocumentFieldInfo("2", "Field2", destinationType);
+			var sourceField = new FieldInfo("1", "Field1", sourceType);
+			var destinationField = new FieldInfo("2", "Field2", destinationType);
 
 
 			var result = sourceField.IsTypeCompatible(destinationField);
@@ -54,8 +54,8 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		public void IsTypeCompatible_ShouldReturnFalse_WhenTypeAreDifferent(string sourceType, string destinationType)
 		{
 			// Arrange
-			var sourceField = new DocumentFieldInfo("1", "Field1", sourceType);
-			var destinationField = new DocumentFieldInfo("2", "Field2", destinationType);
+			var sourceField = new FieldInfo("1", "Field1", sourceType);
+			var destinationField = new FieldInfo("2", "Field2", destinationType);
 
 			// Act
 			var result = sourceField.IsTypeCompatible(destinationField);
@@ -71,8 +71,8 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		public void IsTypeCompatible_ShouldValidateFixedLengthText_WhenIsTypeIsExtended(string sourceType, string destinationType, bool expected)
 		{
 			// Arrange
-			var sourceField = new DocumentFieldInfo("1", "Field1", sourceType);
-			var destinationField = new DocumentFieldInfo("2", "Field2", destinationType);
+			var sourceField = new FieldInfo("1", "Field1", sourceType);
+			var destinationField = new FieldInfo("2", "Field2", destinationType);
 
 			// Act
 			var result = sourceField.IsTypeCompatible(destinationField);
@@ -89,8 +89,8 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			string destinationType, int destinationLength, bool expected)
 		{
 			// Arrange
-			var sourceField = new DocumentFieldInfo("1", "Field1", sourceType, sourceLength);
-			var destinationField = new DocumentFieldInfo("2", "Field2", destinationType, destinationLength);
+			var sourceField = new FieldInfo("1", "Field1", sourceType, sourceLength);
+			var destinationField = new FieldInfo("2", "Field2", destinationType, destinationLength);
 
 			// Act
 			var result = sourceField.IsTypeCompatible(destinationField);
@@ -106,8 +106,8 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			string destinationType, int destinationLength, bool expected)
 		{
 			// Arrange
-			var sourceField = new DocumentFieldInfo("1", "Field1", sourceType, sourceLength);
-			var destinationField = new DocumentFieldInfo("2", "Field2", destinationType, destinationLength);
+			var sourceField = new FieldInfo("1", "Field1", sourceType, sourceLength);
+			var destinationField = new FieldInfo("2", "Field2", destinationType, destinationLength);
 
 			// Act
 			var result = sourceField.IsTypeCompatible(destinationField);
@@ -120,7 +120,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		public void DisplayType_ShouldReturnEmptyStringForNullType()
 		{
 			// Arrange 
-			var field = new DocumentFieldInfo("1", "Name", null);
+			var field = new FieldInfo("1", "Name", null);
 
 			// Act
 			var displayType = field.DisplayType;

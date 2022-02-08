@@ -2,7 +2,7 @@
 {
 	public interface IFieldsClassifyRunnerFactory
 	{
-		IFieldsClassifierRunner CreateForSourceWorkspace();
-		IFieldsClassifierRunner CreateForDestinationWorkspace();
+		IFieldsClassifierRunner CreateForSourceWorkspace(int artifactTypeId);
+		IFieldsClassifierRunner CreateForDestinationWorkspace(int artifactTypeId);
 	}
 }

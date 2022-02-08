@@ -1,6 +1,6 @@
 ﻿namespace Relativity.IntegrationPoints.FieldsMapping
 {
-	public class DocumentFieldInfo
+	public class FieldInfo
 	{
 		public string Name { get; }
 		public string FieldIdentifier { get; }
@@ -15,7 +15,7 @@
 
 		public string DisplayType => Type.Equals(FieldTypeName.FIXED_LENGTH_TEXT) && Length != 0 ? $"{Type}({Length})" : Type;
 
-		public DocumentFieldInfo(string fieldIdentifier, string name, string type, int length = 0)
+		public FieldInfo(string fieldIdentifier, string name, string type, int length = 0)
 		{
 			FieldIdentifier = fieldIdentifier;
 			Name = name;
@@ -24,7 +24,7 @@
 			Length = TryGetLengthIfTypeExtendend(out int extendedLength) ? extendedLength : length;
 		}
 
-		public bool IsTypeCompatible(DocumentFieldInfo fieldInfo)
+		public bool IsTypeCompatible(FieldInfo fieldInfo)
 		{
 			if (fieldInfo == null)
 			{

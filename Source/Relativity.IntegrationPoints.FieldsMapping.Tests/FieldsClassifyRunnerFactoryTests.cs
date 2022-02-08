@@ -13,6 +13,8 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		private Mock<IImportApiFacade> _importApiFacadeFake;
 		private Mock<IFieldsRepository> _fieldsRepositoryFake;
 
+		private const int _ARTIFACT_TYPE_ID = 111;
+
 		[SetUp]
 		public void SetUp()
 		{
@@ -26,7 +28,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		public void CreateForDestinationWorkspace_CreatesFieldsClassifierRunnerForDestinationWorkspace()
 		{
 			// Act
-			var classifierRunner = _sut.CreateForDestinationWorkspace();
+			var classifierRunner = _sut.CreateForDestinationWorkspace(_ARTIFACT_TYPE_ID);
 
 			// Assert
 			classifierRunner.Should().NotBeNull();
@@ -36,7 +38,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		public void CreateForSourceWorkspace_CreatesFieldsClassifierRunnerForSourceWorkspace()
 		{
 			// Act
-			var classifierRunner = _sut.CreateForSourceWorkspace();
+			var classifierRunner = _sut.CreateForSourceWorkspace(_ARTIFACT_TYPE_ID);
 
 			// Assert
 			classifierRunner.Should().NotBeNull();

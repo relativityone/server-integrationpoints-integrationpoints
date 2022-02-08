@@ -24,9 +24,9 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 		{
 			// Arrange 
 
-			var fields = new List<DocumentFieldInfo>
+			var fields = new List<FieldInfo>
 			{
-				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Single Object")
+				new FieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Single Object")
 			};
 
 			// Act
@@ -44,9 +44,9 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 		{
 			// Arrange 
 
-			var fields = new List<DocumentFieldInfo>
+			var fields = new List<FieldInfo>
 			{
-				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Multiple Object")
+				new FieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Multiple Object")
 			};
 
 			// Act
@@ -64,9 +64,9 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 		{
 			// Arrange 
 
-			var fields = new List<DocumentFieldInfo>
+			var fields = new List<FieldInfo>
 			{
-				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Other type")
+				new FieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Other type")
 			};
 
 			// Act
