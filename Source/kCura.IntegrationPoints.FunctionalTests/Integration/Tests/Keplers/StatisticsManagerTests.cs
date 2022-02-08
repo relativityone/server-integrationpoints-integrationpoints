@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Collections;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Services;
@@ -10,7 +12,11 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
+using Relativity.Services.DataContracts.DTOs.Results;
+using Relativity.Services.Field;
+using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
 {
@@ -20,6 +26,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         private DocumentHelper _documentHelper;
         private ProductionHelper _productionHelper;
         private SavedSearchHelper _savedSearchHelper;
+
+        private const string _PRODUCTION_DOCUMENT_FILE_TABLE_PREFIX = "ProductionDocumentFile_";
 
         [SetUp]
         public override void SetUp()
@@ -52,15 +60,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         public async Task GetImagesTotalForSavedSearchAsync_ShouldProperlySumAllDocumentImages()
         {
             // Arrange
-            int savedSearchArtifactId = SourceWorkspace.SavedSearches.First().ArtifactId;
+            SearchCriteria searchCriteria = new SearchCriteria(false, true, true);
+            SavedSearchTest savedSearch = _savedSearchHelper.GetSavedSearchBySearchCriteria(searchCriteria);
+            int totalSize = _documentHelper.GetImagesSizeForSavedSearch(savedSearch.ArtifactId);
+            SetupExport(totalSize, FileType.Tif);
 
             // Act 
             long totalImages = await _sut
-                .GetImagesTotalForSavedSearchAsync(SourceWorkspace.ArtifactId, savedSearchArtifactId)
+                .GetImagesTotalForSavedSearchAsync(SourceWorkspace.ArtifactId, savedSearch.ArtifactId)
                 .ConfigureAwait(false);
 
             // Assert
-            totalImages.ShouldBeEquivalentTo(5555);
+            totalImages.ShouldBeEquivalentTo(2*totalSize);
         }
 
         [IdentifiedTest("EA98BDC4-04A4-488B-AF00-260265D1F726")]
@@ -70,25 +81,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             SearchCriteria searchCriteria = new SearchCriteria(false, true, false);
             SavedSearchTest savedSearch = _savedSearchHelper.GetSavedSearchBySearchCriteria(searchCriteria);
             int totalFileSize = _documentHelper.GetImagesSizeForSavedSearch(savedSearch.ArtifactId);
-            SqlParameter artifactIdsParameter = new SqlParameter("@ArtifactIds", SqlDbType.Structured)
-            {
-                TypeName = "IDs",
-                Value = new List<int>{ 100046, 100048 }.ToDataTable()
-            };
-            SqlParameter fileTypeParameter = new SqlParameter("@FileType", SqlDbType.Int)
-            {
-                Value = FileType.Tif
-            };
-
-            Helper.DbContextMock.Setup(x =>
-                    x.ExecuteSqlStatementAsScalar<long>(It.IsAny<string>(), 
-                        It.Is<SqlParameter>(parameter => 
-                            parameter.TypeName == "IDs" &&
-                            (string)((DataTable)parameter.Value).Rows[0].ItemArray[0] == "100046" &&
-                            (string)((DataTable)parameter.Value).Rows[1].ItemArray[0] == "100048"), 
-                        It.Is<SqlParameter>(parameter =>
-                            (FileType)parameter.Value == FileType.Tif)))
-                .Returns(totalFileSize);
+            SetupExport(totalFileSize, FileType.Tif);
 
             // Act 
             long returnedTotalFileSize = await _sut
@@ -121,10 +114,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             SearchCriteria searchCriteria = new SearchCriteria(true, false, false);
             SavedSearchTest savedSearch = _savedSearchHelper.GetSavedSearchBySearchCriteria(searchCriteria);
             int totalFileSize = _documentHelper.GetImagesSizeForSavedSearch(savedSearch.ArtifactId);
-            Helper.DbContextMock.Setup(x =>
-                    x.ExecuteSqlStatementAsScalar<long>(It.IsAny<string>(), It.IsAny<SqlParameter>(),
-                        It.IsAny<SqlParameter>()))
-                .Returns(totalFileSize);
+            SetupExport(totalFileSize, FileType.Native);
 
             // Act 
             long returnedTotalFileSize = await _sut
@@ -155,15 +145,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         public async Task GetImagesTotalForProductionAsync_ShouldProperlySumAllDocumentImages()
         {
             // Arrange
-            int productionArtifactId = SourceWorkspace.Productions.First().ArtifactId;
+            SearchCriteria searchCriteria = new SearchCriteria(false, false, true);
+            ProductionTest production = _productionHelper.GetProductionBySearchCriteria(searchCriteria);
+            int totalSize = _documentHelper.GetImagesSizeForProduction(production.ArtifactId);
+            SetupExport(totalSize, FileType.Tif);
 
             // Act 
             long totalDocuments = await _sut
-                .GetImagesTotalForProductionAsync(SourceWorkspace.ArtifactId, productionArtifactId)
+                .GetImagesTotalForProductionAsync(SourceWorkspace.ArtifactId, production.ArtifactId)
                 .ConfigureAwait(false);
 
             // Assert
-            totalDocuments.ShouldBeEquivalentTo(3333);
+            totalDocuments.ShouldBeEquivalentTo(2*totalSize);
         }
 
         [IdentifiedTest("406519DF-5034-4856-872C-1F8A391CB084")]
@@ -173,8 +166,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             SearchCriteria searchCriteria = new SearchCriteria(false, true, false);
             ProductionTest production = _productionHelper.GetProductionBySearchCriteria(searchCriteria);
             int totalFileSize = _documentHelper.GetImagesSizeForProduction(production.ArtifactId);
+            string sqlText = "SELECT COALESCE(SUM([Size]),0) FROM [{0}] AS PDF JOIN [File] AS F ON F.[FileID] = PDF.[ProducedFileID]";
+            string tableName = $"{_PRODUCTION_DOCUMENT_FILE_TABLE_PREFIX}{production.ArtifactId}";
             Helper.DbContextMock.Setup(x =>
-                    x.ExecuteSqlStatementAsScalar<long>(It.IsAny<string>()))
+                x.ExecuteSqlStatementAsScalar<long>(It.Is<string>(parameter => parameter == string.Format(sqlText, tableName))))
                 .Returns(totalFileSize);
 
             // Act 
@@ -208,9 +203,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             SearchCriteria searchCriteria = new SearchCriteria(true, false, true);
             ProductionTest production = _productionHelper.GetProductionBySearchCriteria(searchCriteria);
             int totalFileSize = _documentHelper.GetImagesSizeForProduction(production.ArtifactId);
-            Helper.DbContextMock.Setup(x =>
-                    x.ExecuteSqlStatementAsScalar<long>(It.IsAny<string>(), It.IsAny<SqlParameter[]>()))
-                .Returns(totalFileSize);
+            SetupExport(totalFileSize, FileType.Native);
 
             // Act 
             long returnedTotalFileSize = await _sut
@@ -241,15 +234,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         public async Task GetImagesTotalForFolderAsync_ShouldProperlySumAllDocumentImages()
         {
             // Arrange
-            int folderArtifactId = SourceWorkspace.Folders.First().ArtifactId;
+            FolderTest folder = SourceWorkspace.Folders.First();
+            SearchCriteria searchCriteria = new SearchCriteria(false, false, true);
+            int totalSize = _documentHelper.GetImagesSizeForFolderBySearchCriteria(folder, searchCriteria);
+            SetupExport(totalSize, FileType.Tif);
 
             // Act 
             long totalImages = await _sut
-                .GetImagesTotalForFolderAsync(SourceWorkspace.ArtifactId, folderArtifactId, -1, false)
+                .GetImagesTotalForFolderAsync(SourceWorkspace.ArtifactId, folder.ArtifactId, -1, false)
                 .ConfigureAwait(false);
 
             // Assert
-            totalImages.ShouldBeEquivalentTo(5555);
+            totalImages.ShouldBeEquivalentTo(2*totalSize);
         }
 
         [IdentifiedTest("E741BE45-E954-4033-BC54-867CC2B39C67")]
@@ -259,11 +255,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             FolderTest folder = SourceWorkspace.Folders.First();
             SearchCriteria searchCriteria = new SearchCriteria(false, true, false);
             int totalFileSize = _documentHelper.GetImagesSizeForFolderBySearchCriteria(folder, searchCriteria);
-
-            Helper.DbContextMock.Setup(x =>
-                    x.ExecuteSqlStatementAsScalar<long>(It.IsAny<string>(), It.IsAny<SqlParameter>(),
-                        It.IsAny<SqlParameter>()))
-                .Returns(totalFileSize);
+            SetupExport(totalFileSize, FileType.Tif);
 
             // Act 
             long returnedTotalFileSize = await _sut
@@ -296,10 +288,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             FolderTest folder = SourceWorkspace.Folders.First();
             SearchCriteria searchCriteria = new SearchCriteria(true, false, true);
             int totalFileSize = _documentHelper.GetImagesSizeForFolderBySearchCriteria(folder, searchCriteria);
-            Helper.DbContextMock.Setup(x =>
-                    x.ExecuteSqlStatementAsScalar<long>(It.IsAny<string>(), It.IsAny<SqlParameter>(),
-                        It.IsAny<SqlParameter>()))
-                .Returns(totalFileSize);
+            SetupExport(totalFileSize, FileType.Native);
 
             // Act 
             long returnedTotalFileSize = await _sut
@@ -308,6 +297,88 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
 
             // Assert
             returnedTotalFileSize.ShouldBeEquivalentTo(totalFileSize);
+        }
+
+        private void SetupExport(int totalFileSize, FileType fileType)
+        {
+            List<int> artifactIds = new List<int> { ArtifactProvider.NextId(), ArtifactProvider.NextId() };
+            List<object> exportResultsValues_1 = new List<object> { totalFileSize, totalFileSize, new { ArtifactID = artifactIds[0] } };
+            List<object> exportResultsValues_2 = new List<object> { totalFileSize, totalFileSize, new { ArtifactID = artifactIds[1] } };
+            Helper.DbContextMock.Setup(x =>
+                    x.ExecuteSqlStatementAsScalar<long>(It.IsAny<string>(),
+                        It.Is<SqlParameter>(parameter =>
+                            parameter.TypeName == "IDs" &&
+                            (string)((DataTable)parameter.Value).Rows[0].ItemArray[0] == artifactIds[0].ToString() &&
+                            (string)((DataTable)parameter.Value).Rows[1].ItemArray[0] == artifactIds[1].ToString()),
+                        It.Is<SqlParameter>(parameter =>
+                            (FileType)parameter.Value == fileType)))
+                .Returns(totalFileSize);
+
+            Proxy.ObjectManager.Mock.Setup(x =>
+                x.InitializeExportAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>()))
+                    .Returns(async (int workspaceId, QueryRequest request, int start) => await Task.FromResult(new ExportInitializationResults
+            {
+                    RunID = new Guid("95E91649-0C15-4B8B-B813-B0266D6DA95E"),
+                    RecordCount = 1,
+                    FieldData = new List<FieldMetadata>
+                    {
+                    new FieldMetadata
+                    {
+                        Name = "RelativityImageCount",
+                        ArtifactID = ArtifactProvider.NextId(),
+                        FieldType = Relativity.Services.FieldType.FixedLengthText,
+                        ViewFieldID = ArtifactProvider.NextId(),
+                        Guids = new List<Guid>
+                        {
+                            DocumentFieldsConstants.RelativityImageCountGuid
+                        }
+                    },
+                    new FieldMetadata
+                    {
+                        Name = "ImageCountFieldGuid",
+                        ArtifactID = ArtifactProvider.NextId(),
+                        FieldType = Relativity.Services.FieldType.FixedLengthText,
+                        ViewFieldID = ArtifactProvider.NextId(),
+                        Guids = new List<Guid>
+                        {
+                            ProductionConsts.ImageCountFieldGuid
+                        }
+                    },
+                    new FieldMetadata
+                    {
+                        Name = "DocumentFieldGuid",
+                        ArtifactID = ArtifactProvider.NextId(),
+                        FieldType = Relativity.Services.FieldType.FixedLengthText,
+                        ViewFieldID = ArtifactProvider.NextId(),
+                        Guids = new List<Guid>
+                        {
+                            ProductionConsts.DocumentFieldGuid
+                        }
+                    },
+                },
+            }
+            ));
+
+            Proxy.ObjectManager.Mock.Setup(x =>
+                    x.RetrieveResultsBlockFromExportAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<int>(),
+                        It.IsAny<int>()))
+                .Returns(async (int workspaceArtifactID, Guid runID, int resultsBlockSize, int exportIndexID) =>
+                    await Task.FromResult(new List<RelativityObjectSlim>
+            {
+                new RelativityObjectSlim
+                {
+                    ArtifactID = artifactIds[0],
+                    Values = exportResultsValues_1
+                },
+                new RelativityObjectSlim
+                {
+                    ArtifactID = artifactIds[1],
+                    Values = exportResultsValues_2
+                }
+            }
+            .ToArray()
+            ));
+
         }
     }
 }

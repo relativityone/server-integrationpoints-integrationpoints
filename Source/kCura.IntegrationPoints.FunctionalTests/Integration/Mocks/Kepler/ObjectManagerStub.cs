@@ -102,7 +102,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             SetupIntegrationPointType();
             SetupApplications();
             SetupEntity();
-            SetupExport();
         }
 
         private void AddObjectToDatabase(ObjectCreationInfo objectCreationInfo)
@@ -156,74 +155,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 return Task.FromResult(result);
             }
             );
-        }
-
-        private void SetupExport()
-        {
-            Mock.Setup(x =>
-                x.InitializeExportAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>()))
-                    .Returns(async (int workspaceId, QueryRequest request, int start) => await Task.FromResult(new ExportInitializationResults
-            {
-                RecordCount = 2,
-                RunID = new Guid("95E91649-0C15-4B8B-B813-B0266D6DA95E"),
-                FieldData = new List<FieldMetadata>
-                {
-                    new FieldMetadata
-                    {
-                        Name = "RelativityImageCount",
-                        ArtifactID = ArtifactProvider.NextId(),
-                        FieldType = FieldType.FixedLengthText,
-                        ViewFieldID = ArtifactProvider.NextId(),
-                        Guids = new List<Guid>
-                        {
-                            DocumentFieldsConstants.RelativityImageCountGuid
-                        }
-                    },
-                    new FieldMetadata
-                    {
-                        Name = "ImageCountFieldGuid",
-                        ArtifactID = ArtifactProvider.NextId(),
-                        FieldType = FieldType.FixedLengthText,
-                        ViewFieldID = ArtifactProvider.NextId(),
-                        Guids = new List<Guid>
-                        {
-                            ProductionConsts.ImageCountFieldGuid
-                        }
-                    },
-                    new FieldMetadata
-                    {
-                        Name = "DocumentFieldGuid",
-                        ArtifactID = ArtifactProvider.NextId(),
-                        FieldType = FieldType.FixedLengthText,
-                        ViewFieldID = ArtifactProvider.NextId(),
-                        Guids = new List<Guid>
-                        {
-                            ProductionConsts.DocumentFieldGuid
-                        }
-                    },
-                }
-            }
-            ));
-
-            Mock.Setup(x =>
-                    x.RetrieveResultsBlockFromExportAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<int>(),
-                        It.IsAny<int>()))
-                .Returns(async (int workspaceArtifactID, Guid runID, int resultsBlockSize, int exportIndexID) => 
-                    await Task.FromResult(new List<RelativityObjectSlim>
-            {
-                new RelativityObjectSlim
-                {
-                    ArtifactID = ArtifactProvider.NextId(),
-                    Values = new List<object> { "1234", "2222", new {ArtifactID = ArtifactProvider.NextId() } }
-                },
-                new RelativityObjectSlim
-                {
-                    ArtifactID = ArtifactProvider.NextId(),
-                    Values = new List<object> { "4321", "1111", new { ArtifactID = ArtifactProvider.NextId() } }
-                }
-            }
-            .ToArray()
-            ));
         }
 
         private QueryResultSlim GetQuerySlimsForRequest<T>(Func<WorkspaceTest, IList<T>> collectionGetter,
