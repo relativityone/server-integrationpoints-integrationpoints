@@ -63,18 +63,18 @@
 	};
 	ko.validation.rules['checkWorkspaceForObjectType'] = {
 		async: true,
-		validator: function(value, params, callback) {
+		validator: function(destinationWorkspaceId, params, callback) {
 			var sourceObjectTypeArtifactId = window.parent.IP.data.params['TransferredRDOArtifactTypeID'];
 			IP.data.ajax({
 				contentType: "application/json",
 				dataType: "json",
 				headers: { "X-CSRF-Header": "-" },
 				type: "GET",
-				url: IP.utils.generateWebAPIURL("ObjectType/Exists", value, sourceObjectTypeArtifactId),
+				url: IP.utils.generateWebAPIURL("ObjectType/GetArtifactTypeId", destinationWorkspaceId, sourceObjectTypeArtifactId),
 				async: true
 			})
-			.then(function(objectTypeExistsInDestination) {
-				callback(objectTypeExistsInDestination);
+			.then(function(objectTypeArtifactId) {
+				callback(objectTypeArtifactId !== -1 ? true : false);
 			})
 			.fail(function(error){
 				console.error("Failed to check if Object Type exists in workspace: " + error);

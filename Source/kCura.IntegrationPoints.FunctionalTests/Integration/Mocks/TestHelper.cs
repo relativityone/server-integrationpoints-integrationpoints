@@ -9,6 +9,7 @@ using Relativity.Services.Interfaces.Group;
 using Relativity.Services.Objects;
 using Relativity.Services.Permission;
 using Relativity.Services.Search;
+using Relativity.Services.View;
 using Relativity.Services.Workspace;
 using Relativity.Telemetry.Services.Metrics;
 

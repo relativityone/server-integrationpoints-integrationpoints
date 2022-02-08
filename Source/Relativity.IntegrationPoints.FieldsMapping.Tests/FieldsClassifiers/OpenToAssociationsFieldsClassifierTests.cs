@@ -26,17 +26,17 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 			const string openToAssociationsDisabledFieldName = "Open to associations - disabled";
 			const string withoutOpenToAssociationsFieldName = "Without open to associations";
 
-			List<DocumentFieldInfo> allFields = new List<DocumentFieldInfo>()
+			List<FieldInfo> allFields = new List<FieldInfo>()
 			{
-				new DocumentFieldInfo(fieldIdentifier: "1", name: openToAssociationsEnabledFieldName, type: "Fixed-Length Text(250)")
+				new FieldInfo(fieldIdentifier: "1", name: openToAssociationsEnabledFieldName, type: "Fixed-Length Text(250)")
 				{
 					OpenToAssociations = true
 				},
-				new DocumentFieldInfo(fieldIdentifier: "1", name: openToAssociationsDisabledFieldName, type: "Fixed-Length Text(250)")
+				new FieldInfo(fieldIdentifier: "1", name: openToAssociationsDisabledFieldName, type: "Fixed-Length Text(250)")
 				{
 					OpenToAssociations = false
 				},
-				new DocumentFieldInfo(fieldIdentifier: "1", name: withoutOpenToAssociationsFieldName, type: "Fixed-Length Text(250)")
+				new FieldInfo(fieldIdentifier: "1", name: withoutOpenToAssociationsFieldName, type: "Fixed-Length Text(250)")
 			};
 
 			// Act

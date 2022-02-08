@@ -35,6 +35,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public IList<SavedSearchTest> SavedSearches { get; } = new List<SavedSearchTest>();
 
+        public IList<ViewTest> Views { get; } = new List<ViewTest>();
+
         public IList<FieldTest> Fields { get; } = new List<FieldTest>();
 
         public IList<EntityTest> Entities { get; } = new List<EntityTest>();
@@ -58,6 +60,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 .Concat(GetArtifacts(DestinationProviders))
                 .Concat(GetArtifacts(Folders))
                 .Concat(GetArtifacts(SavedSearches))
+                .Concat(GetArtifacts(Views))
                 .Concat(GetArtifacts(SyncConfigurations))
                 .Concat(GetArtifacts(Fields))
                 .Concat(GetArtifacts(Documents))
@@ -98,6 +101,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                    ?? TryFind(DestinationProviders)
                    ?? TryFind(Folders)
                    ?? TryFind(SavedSearches)
+                   ?? TryFind(Views)
                    ?? TryFind(Fields)
                    ?? TryFind(SyncConfigurations)
                    ?? TryFind(Documents)

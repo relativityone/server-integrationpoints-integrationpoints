@@ -1,5 +1,7 @@
 ﻿var IP = IP || {};
 
+const documentArtifactTypeId = 10;
+
 ko.validation.rules.pattern.message = 'Invalid.';
 
 ko.validation.configure({
@@ -221,6 +223,10 @@ ko.validation.insertValidationMessage = function (element) {
 		this.IdentifierField = ko.observable(model.IPDestinationSettings.IdentifierField);
 		this.showMapSavedSearchButton = ko.observable(false);
 
+		var isNonDocumentObjectFlow = IP.data.params['EnableSyncNonDocumentFlowToggleValue'] && IP.data.params['TransferredRDOArtifactTypeID'] != documentArtifactTypeId;
+		self.IsNonDocumentObjectFlow = ko.observable();
+		self.IsNonDocumentObjectFlow(isNonDocumentObjectFlow);
+
 		this.overlay = ko.observableArray([]);
 		this.nativeFilePathOption = ko.observableArray([]);
 		this.hasParent = ko.observable(false);
@@ -261,6 +267,7 @@ ko.validation.insertValidationMessage = function (element) {
 		var copyFileToRepositoryText = "Copy Files to Repository:";
 		this.copyNativeLabel = ko.observable(copyNativeFileText);
 		this.ImageImport = ko.observable(model.ImageImport || "false");
+
 		this.CheckRelativityProviderExportType = function (exportType) {
 			if (this.IsRelativityProvider()) {
 				var sourceModel = JSON.parse(model.sourceConfiguration);
@@ -270,11 +277,17 @@ ko.validation.insertValidationMessage = function (element) {
 			}
 			return false;
 		};
+
 		this.IsProductionExport = function () {
 			return this.CheckRelativityProviderExportType(ExportEnums.SourceOptionsEnum.Production);
 		};
+
 		this.IsSavedSearchExport = function () {
 			return this.CheckRelativityProviderExportType(ExportEnums.SourceOptionsEnum.SavedSearch);
+		};
+
+		this.IsViewExport = function () {
+			return this.CheckRelativityProviderExportType(ExportEnums.SourceOptionsEnum.View);
 		};
 
 		this.importNativeFile.subscribe(function (importNative) {
@@ -522,11 +535,14 @@ ko.validation.insertValidationMessage = function (element) {
 		});
 		this.showManager = ko.observable(false);
 		this.cacheMapped = ko.observableArray([]);
-		root.data.ajax({
-			type: 'GET', url: root.utils.generateWebAPIURL('Entity/' + artifactTypeId)
-		}).then(function (result) {
-			self.showManager(result);
-		});
+
+		if (!isNonDocumentObjectFlow){
+			root.data.ajax({
+				type: 'GET', url: root.utils.generateWebAPIURL('Entity/' + artifactTypeId)
+			}).then(function (result) {
+				self.showManager(result);
+			});
+		};
 
 		function getCustomProviderSourceFields() {
 			return root.data.ajax({
@@ -554,18 +570,32 @@ ko.validation.insertValidationMessage = function (element) {
 		function getSyncSourceFields() {
 			return root.data.ajax({
 				type: 'GET',
-				url: root.utils.generateWebAPIURL('FieldMappings/GetMappableFieldsFromSourceWorkspace')
+				url: root.utils.generateWebAPIURL('FieldMappings/GetMappableFieldsFromSourceWorkspace', root.data.params['TransferredRDOArtifactTypeID'])
 			});
 		}
 
 		function getSyncDestinationFields() {
-			return root.data.ajax({
-				type: 'GET',
-				url: root.utils.generateWebURL(JSON.parse(model.destination).CaseArtifactId +
-					'/api/FieldMappings/GetMappableFieldsFromDestinationWorkspace')
-			}).then(function (result) {
-				return result;
+
+			var sourceArtifactTypeId = destinationModel.artifactTypeID;
+			var destinationWorkspaceId = destinationModel.CaseArtifactId;
+
+			return IP.data.ajax({
+				type: "GET",
+				url: IP.utils.generateWebAPIURL("ObjectType/GetArtifactTypeId", destinationWorkspaceId, sourceArtifactTypeId)
+			})
+			.then(function(destinationArtifactTypeIdValue) {
+				self.destinationArtifactTypeId = destinationArtifactTypeIdValue;
+				return root.data.ajax({
+					type: 'GET',
+					url: root.utils.generateWebURL(destinationWorkspaceId + '/api/FieldMappings/GetMappableFieldsFromDestinationWorkspace/' + destinationArtifactTypeIdValue)
+				}).then(function (result) {
+					return result;
+				});
+			})
+			.fail(function(error){
+				console.error("Failed to check if Object Type exists in workspace: " + error);
 			});
+			
 		}
 
 		var sourceFieldPromise =
@@ -939,9 +969,11 @@ ko.validation.insertValidationMessage = function (element) {
 		this.autoFieldMap = function () {
 			self.autoFieldMapWithCustomOptions();
 		};
+
 		this.autoMapFieldsFromSavedSearch = function () {
 			self.autoMapFieldsFromSavedSearchWithCustomOptions();
 		};
+
 		this.autoFieldMapWithCustomOptions = function (matchOnlyIdentifierFields) {
 			//Remove current mappings first
 			const showErrors = self.showErrors();
@@ -968,6 +1000,7 @@ ko.validation.insertValidationMessage = function (element) {
 				self.showErrors(showErrors);
 			});
 		};
+
 		this.autoMapFieldsFromSavedSearchWithCustomOptions = function () {
 			//Remove current mappings first
 			const showErrors = self.showErrors();
@@ -996,6 +1029,40 @@ ko.validation.insertValidationMessage = function (element) {
 				self.showErrors(showErrors);
 			});
 		};
+
+		this.autoMapFieldsFromView = function () {
+			//Remove current mappings first
+			const showErrors = self.showErrors();
+			self.showErrors(false);
+			self.addAlltoSourceField();
+			self.addAlltoWorkspaceField();
+
+			var fieldForAutomap = function (field) {
+				return field.classificationLevel == 0;
+			};
+
+			const sourceConfig = JSON.parse(model.sourceConfiguration);
+			const viewArtifactID = sourceConfig.SourceViewId;
+
+			root.data.ajax({
+				type: 'POST', url: root.utils.generateWebAPIURL('/FieldMappings/AutomapFieldsFromView', viewArtifactID, model.destinationProviderGuid),
+				data: JSON.stringify({
+					SourceFields: this.sourceFields.filter(fieldForAutomap),
+					DestinationFields: this.destinationFields.filter(fieldForAutomap)
+				})
+			})
+			.then(function (mapping) {
+				self.applyMapping(mapping);
+				self.showErrors(showErrors);
+				return mapping;
+			})
+			.fail(function (error) {
+				console.log(error);
+				self.showErrors(showErrors);
+			});
+		};
+
+
 		/********** Tooltips  **********/
 		var settingsTooltipViewModel = new TooltipViewModel(TooltipDefs.RelativityProviderSettingsDetails, TooltipDefs.RelativityProviderSettingsDetailsTitle);
 
@@ -1004,8 +1071,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.openRelativityProviderSettingsTooltip = function (data, event) {
 			settingsTooltipViewModel.open(event);
 		};
-
-
+		
 	};// end of the viewmodel
 
 
@@ -1289,7 +1355,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 					var validateMappedFields = root.data.ajax({
 						type: 'POST',
-						url: root.utils.generateWebAPIURL('FieldMappings/Validate', _destination.CaseArtifactId, this.returnModel.destinationProviderGuid),
+						url: root.utils.generateWebAPIURL('FieldMappings/Validate', _destination.CaseArtifactId, this.returnModel.destinationProviderGuid, this.returnModel.artifactTypeID, this.model.destinationArtifactTypeId),
 						data: JSON.stringify(map)
 					})
 						.fail(function (error) {

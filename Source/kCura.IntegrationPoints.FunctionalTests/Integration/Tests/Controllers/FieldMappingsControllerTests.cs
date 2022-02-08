@@ -21,16 +21,19 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         private WorkspaceTest _destinationWorkspace;
         private List<FieldTest> _fields;
 
-        private const string FIXED_LENGTH_TEXT_NAME = "Fixed-Length Text";
-        private const string LONG_TEXT_NAME = "Long Text";
-        private const string DESTINATION_PROVIDER_GUID = "D2E10795-3A47-47C2-A457-7E54C2A5DD90";
+        private const string _FIXED_LENGTH_TEXT_NAME = "Fixed-Length Text";
+        private const string _LONG_TEXT_NAME = "Long Text";
+        private const string _DESTINATION_PROVIDER_GUID = "D2E10795-3A47-47C2-A457-7E54C2A5DD90";
+
+        private const int _SOURCE_ARTIFACT_TYPE_ID = 111;
+        private const int _DESTINATION_ARTIFACT_TYPE_ID = 222;
 
         public override void SetUp()
         {
             base.SetUp();
             
             _destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspaceWithIntegrationPointsApp(ArtifactProvider.NextId());
-            _fields = CreateFieldsWithSpecialCharactersAsync(Const.FIXED_LENGTH_TEXT_TYPE_ARTIFACT_ID, FIXED_LENGTH_TEXT_NAME).ToList();
+            _fields = CreateFieldsWithSpecialCharactersAsync(Const.FIXED_LENGTH_TEXT_TYPE_ARTIFACT_ID, _FIXED_LENGTH_TEXT_NAME).ToList();
         }
 
         [IdentifiedTest("AE9E4DD3-6E12-4000-BDE7-6CFDAE14F1EB")]
@@ -41,7 +44,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             ((List<FieldTest>)SourceWorkspace.Fields).AddRange(_fields);
 
             // Act
-            HttpResponseMessage result = await sut.GetMappableFieldsFromSourceWorkspace(SourceWorkspace.ArtifactId);
+            HttpResponseMessage result = await sut.GetMappableFieldsFromSourceWorkspace(SourceWorkspace.ArtifactId, _SOURCE_ARTIFACT_TYPE_ID);
             List<ClassifiedFieldDTO> fieldsDTOs = await result.Content.ReadAsAsync<List<ClassifiedFieldDTO>>();
 
             // Assert
@@ -58,7 +61,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             FieldMappingsController sut = PrepareSut(HttpMethod.Get, "/GetMappableFieldsFromSourceWorkspace");
 
             // Act
-            HttpResponseMessage result = await sut.GetMappableFieldsFromSourceWorkspace(SourceWorkspace.ArtifactId);
+            HttpResponseMessage result = await sut.GetMappableFieldsFromSourceWorkspace(SourceWorkspace.ArtifactId, _SOURCE_ARTIFACT_TYPE_ID);
             List<ClassifiedFieldDTO> fieldsDTOs = await result.Content.ReadAsAsync<List<ClassifiedFieldDTO>>();
 
             // Assert
@@ -74,7 +77,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             ((List<FieldTest>)_destinationWorkspace.Fields).AddRange(_fields);
 
             // Act
-            HttpResponseMessage result = await sut.GetMappableFieldsFromDestinationWorkspace(_destinationWorkspace.ArtifactId);
+            HttpResponseMessage result = await sut.GetMappableFieldsFromDestinationWorkspace(_destinationWorkspace.ArtifactId, _DESTINATION_ARTIFACT_TYPE_ID);
             List<ClassifiedFieldDTO> fieldsDTOs = await result.Content.ReadAsAsync<List<ClassifiedFieldDTO>>();
 
             // Assert
@@ -91,7 +94,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             FieldMappingsController sut = PrepareSut(HttpMethod.Get, "/GetMappableFieldsFromDestinationWorkspace");
 
             // Act
-            HttpResponseMessage result = await sut.GetMappableFieldsFromSourceWorkspace(_destinationWorkspace.ArtifactId);
+            HttpResponseMessage result = await sut.GetMappableFieldsFromSourceWorkspace(_destinationWorkspace.ArtifactId, _SOURCE_ARTIFACT_TYPE_ID);
             List<ClassifiedFieldDTO> fieldsDTOs = await result.Content.ReadAsAsync<List<ClassifiedFieldDTO>>();
 
             // Assert
@@ -104,12 +107,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         {
             // Arrange
             FieldMappingsController sut = PrepareSut(HttpMethod.Post, "/AutoMapFields");
-            
-            DocumentFieldInfo[] documentsFieldInfo = ConvertFieldTestListToDocumentFieldInfoArray(_fields);
+
+			FieldsMapping.FieldInfo[] documentsFieldInfo = ConvertFieldTestListToFieldInfoArray(_fields);
             AutomapRequest request = CreateAutomapRequest(documentsFieldInfo);
 
             // Act
-            HttpResponseMessage result = await sut.AutoMapFields(request, SourceWorkspace.ArtifactId, DESTINATION_PROVIDER_GUID);
+            HttpResponseMessage result = await sut.AutoMapFields(request, SourceWorkspace.ArtifactId, _DESTINATION_PROVIDER_GUID);
             List<FieldMap> fieldsMaps = await result.Content.ReadAsAsync<List<FieldMap>>();
 
             // Assert
@@ -126,11 +129,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             FieldMappingsController sut = PrepareSut(HttpMethod.Post, "/AutoMapFields");
             _fields[0].IsIdentifier = true;
 
-            DocumentFieldInfo[] documentsFieldInfo = ConvertFieldTestListToDocumentFieldInfoArray(_fields);
+			FieldsMapping.FieldInfo[] documentsFieldInfo = ConvertFieldTestListToFieldInfoArray(_fields);
             AutomapRequest request = CreateAutomapRequest(documentsFieldInfo , true);
 
             // Act
-            HttpResponseMessage result = await sut.AutoMapFields(request, SourceWorkspace.ArtifactId, DESTINATION_PROVIDER_GUID);
+            HttpResponseMessage result = await sut.AutoMapFields(request, SourceWorkspace.ArtifactId, _DESTINATION_PROVIDER_GUID);
             List<FieldMap> fieldsMaps = await result.Content.ReadAsAsync<List<FieldMap>>();
 
             // Assert
@@ -146,11 +149,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             // Arrange
             FieldMappingsController sut = PrepareSut(HttpMethod.Post, "/AutoMapFields");
 
-            DocumentFieldInfo[] documentsFieldInfo = ConvertFieldTestListToDocumentFieldInfoArray(_fields);
+			FieldsMapping.FieldInfo[] documentsFieldInfo = ConvertFieldTestListToFieldInfoArray(_fields);
             AutomapRequest request = CreateAutomapRequest(documentsFieldInfo, true);
 
             // Act
-            HttpResponseMessage result = await sut.AutoMapFields(request, SourceWorkspace.ArtifactId, DESTINATION_PROVIDER_GUID);
+            HttpResponseMessage result = await sut.AutoMapFields(request, SourceWorkspace.ArtifactId, _DESTINATION_PROVIDER_GUID);
             List<FieldMap> fieldsMaps = await result.Content.ReadAsAsync<List<FieldMap>>();
 
             // Assert
@@ -163,12 +166,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         {
             // Arrange
             FieldMappingsController sut = PrepareSut(HttpMethod.Post, "/AutoMapFieldsFromSavedSearch");
-            DocumentFieldInfo[] documentsFieldInfo = ConvertFieldTestListToDocumentFieldInfoArray(_fields);
+			FieldsMapping.FieldInfo[] documentsFieldInfo = ConvertFieldTestListToFieldInfoArray(_fields);
             AutomapRequest request = CreateAutomapRequest(documentsFieldInfo);
             SavedSearchTest savedSearch = CreateSavedSearchTest(_fields);
 
             // Act
-            HttpResponseMessage result = await sut.AutoMapFieldsFromSavedSearch(request, SourceWorkspace.ArtifactId, savedSearch.ArtifactId, DESTINATION_PROVIDER_GUID);
+            HttpResponseMessage result = await sut.AutoMapFieldsFromSavedSearch(request, SourceWorkspace.ArtifactId, savedSearch.ArtifactId, _DESTINATION_PROVIDER_GUID);
             List<FieldMap> fieldsMaps = await result.Content.ReadAsAsync<List<FieldMap>>();
 
             // Assert
@@ -183,12 +186,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         {
             // Arrange
             FieldMappingsController sut = PrepareSut(HttpMethod.Post, "/AutoMapFieldsFromSavedSearch");
-            DocumentFieldInfo[] documentsFieldInfo = ConvertFieldTestListToDocumentFieldInfoArray(_fields);
+			FieldsMapping.FieldInfo[] documentsFieldInfo = ConvertFieldTestListToFieldInfoArray(_fields);
             AutomapRequest request = CreateAutomapRequest(documentsFieldInfo);
             SavedSearchTest savedSearch = new SavedSearchTest();
 
             // Act
-            HttpResponseMessage result = await sut.AutoMapFieldsFromSavedSearch(request, SourceWorkspace.ArtifactId, savedSearch.ArtifactId, DESTINATION_PROVIDER_GUID);
+            HttpResponseMessage result = await sut.AutoMapFieldsFromSavedSearch(request, SourceWorkspace.ArtifactId, savedSearch.ArtifactId, _DESTINATION_PROVIDER_GUID);
             List<FieldMap> fieldsMaps = await result.Content.ReadAsAsync<List<FieldMap>>();
 
             // Assert
@@ -201,12 +204,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         {
             // Arrange
             FieldMappingsController sut = PrepareSut(HttpMethod.Post, "/AutoMapFieldsFromSavedSearch");
-            DocumentFieldInfo[] documentsFieldInfo = ConvertFieldTestListToDocumentFieldInfoArray(_fields);
+			FieldsMapping.FieldInfo[] documentsFieldInfo = ConvertFieldTestListToFieldInfoArray(_fields);
             AutomapRequest request = CreateAutomapRequest(documentsFieldInfo);
             SavedSearchTest savedSearch = CreateSavedSearchTest(new List<FieldTest>());
 
             // Act
-            HttpResponseMessage result = await sut.AutoMapFieldsFromSavedSearch(request, SourceWorkspace.ArtifactId, savedSearch.ArtifactId, DESTINATION_PROVIDER_GUID);
+            HttpResponseMessage result = await sut.AutoMapFieldsFromSavedSearch(request, SourceWorkspace.ArtifactId, savedSearch.ArtifactId, _DESTINATION_PROVIDER_GUID);
             List<FieldMap> fieldsMaps = await result.Content.ReadAsAsync<List<FieldMap>>();
 
             // Assert
@@ -219,15 +222,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         {
             // Arrange
             FieldMappingsController sut = PrepareSut(HttpMethod.Post, "/AutoMapFieldsFromSavedSearch");
-            DocumentFieldInfo[] documentsFieldInfo = ConvertFieldTestListToDocumentFieldInfoArray(_fields);
+			FieldsMapping.FieldInfo[] documentsFieldInfo = ConvertFieldTestListToFieldInfoArray(_fields);
             AutomapRequest request = CreateAutomapRequest(documentsFieldInfo);
 
-            List<FieldTest> savedSearchFields = CreateFieldsWithSpecialCharactersAsync(Const.LONG_TEXT_TYPE_ARTIFACT_ID, LONG_TEXT_NAME).ToList();
+            List<FieldTest> savedSearchFields = CreateFieldsWithSpecialCharactersAsync(Const.LONG_TEXT_TYPE_ARTIFACT_ID, _LONG_TEXT_NAME).ToList();
             savedSearchFields.AddRange(_fields);
             SavedSearchTest savedSearch = CreateSavedSearchTest(savedSearchFields);
 
             // Act
-            HttpResponseMessage result = await sut.AutoMapFieldsFromSavedSearch(request, SourceWorkspace.ArtifactId, savedSearch.ArtifactId, DESTINATION_PROVIDER_GUID);
+            HttpResponseMessage result = await sut.AutoMapFieldsFromSavedSearch(request, SourceWorkspace.ArtifactId, savedSearch.ArtifactId, _DESTINATION_PROVIDER_GUID);
             List<FieldMap> fieldsMaps = await result.Content.ReadAsAsync<List<FieldMap>>();
 
             // Assert
@@ -247,7 +250,102 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 
             // Act
             Func<Task> function = async () => await sut.AutoMapFieldsFromSavedSearch(request, SourceWorkspace.ArtifactId,
-                    savedSearch.ArtifactId, DESTINATION_PROVIDER_GUID);
+                    savedSearch.ArtifactId, _DESTINATION_PROVIDER_GUID);
+
+            // Assert
+            function.ShouldThrow<ArgumentNullException>();
+        }
+
+        [IdentifiedTest("80090507-41F8-4C35-9878-D263E54562C4")]
+        public async Task AutoMapFieldsFromView_ShouldMapAllFixedLengthTextFields()
+        {
+            // Arrange
+            FieldMappingsController sut = PrepareSut(HttpMethod.Post, "/AutoMapFieldsFromView");
+            FieldsMapping.FieldInfo[] fieldsInfo = ConvertFieldTestListToFieldInfoArray(_fields);
+            AutomapRequest request = CreateAutomapRequest(fieldsInfo);
+            ViewTest view = CreateViewTest(_fields);
+
+            // Act
+            HttpResponseMessage result = await sut.AutoMapFieldsFromView(request, SourceWorkspace.ArtifactId, view.ArtifactId, _DESTINATION_PROVIDER_GUID);
+            List<FieldMap> fieldsMaps = await result.Content.ReadAsAsync<List<FieldMap>>();
+
+            // Assert
+            result.IsSuccessStatusCode.Should().BeTrue();
+            fieldsMaps.Count.Should().Be(_fields.Count);
+            fieldsMaps.Select(x => x.SourceField.DisplayName).ShouldBeEquivalentTo(_fields.Select(x => x.Name));
+            fieldsMaps.Select(x => x.DestinationField.DisplayName).ShouldBeEquivalentTo(_fields.Select(x => x.Name));
+        }
+
+        [IdentifiedTest("A9E9A2B7-CA32-43DC-A655-3F3790EB4665")]
+        public async Task AutoMapFieldsFromView_ShouldHasSuccessStatusCodeWhenReturnsEmptyList()
+        {
+            // Arrange
+            FieldMappingsController sut = PrepareSut(HttpMethod.Post, "/AutoMapFieldsFromView");
+            FieldsMapping.FieldInfo[] fieldsInfo = ConvertFieldTestListToFieldInfoArray(_fields);
+            AutomapRequest request = CreateAutomapRequest(fieldsInfo);
+            ViewTest view = new ViewTest();
+
+            // Act
+            HttpResponseMessage result = await sut.AutoMapFieldsFromView(request, SourceWorkspace.ArtifactId, view.ArtifactId, _DESTINATION_PROVIDER_GUID);
+            List<FieldMap> fieldsMaps = await result.Content.ReadAsAsync<List<FieldMap>>();
+
+            // Assert
+            result.IsSuccessStatusCode.Should().BeTrue();
+            fieldsMaps.Should().BeEmpty();
+        }
+
+        [IdentifiedTest("B86CAB2F-4EA6-4882-A94E-1057A2F83EF0")]
+        public async Task AutoMapFieldsFromView_ShouldReturnEmptyListWhenNoFieldsAreSetSavedSearch()
+        {
+            // Arrange
+            FieldMappingsController sut = PrepareSut(HttpMethod.Post, "/AutoMapFieldsFromView");
+            FieldsMapping.FieldInfo[] documentsFieldInfo = ConvertFieldTestListToFieldInfoArray(_fields);
+            AutomapRequest request = CreateAutomapRequest(documentsFieldInfo);
+            ViewTest view = CreateViewTest(new List<FieldTest>());
+
+            // Act
+            HttpResponseMessage result = await sut.AutoMapFieldsFromView(request, SourceWorkspace.ArtifactId, view.ArtifactId, _DESTINATION_PROVIDER_GUID);
+            List<FieldMap> fieldsMaps = await result.Content.ReadAsAsync<List<FieldMap>>();
+
+            // Assert
+            result.IsSuccessStatusCode.Should().BeTrue();
+            fieldsMaps.Should().BeEmpty();
+        }
+
+        [IdentifiedTest("60F22A32-A077-40FF-B459-9FD2B94C59F2")]
+        public async Task AutoMapFieldsFromView_ShouldReturnOnlyFieldsInSavedSearch()
+        {
+            // Arrange
+            FieldMappingsController sut = PrepareSut(HttpMethod.Post, "/AutoMapFieldsFromView");
+            FieldsMapping.FieldInfo[] documentsFieldInfo = ConvertFieldTestListToFieldInfoArray(_fields);
+            AutomapRequest request = CreateAutomapRequest(documentsFieldInfo);
+
+            List<FieldTest> savedSearchFields = CreateFieldsWithSpecialCharactersAsync(Const.LONG_TEXT_TYPE_ARTIFACT_ID, _LONG_TEXT_NAME).ToList();
+            savedSearchFields.AddRange(_fields);
+            ViewTest view = CreateViewTest(_fields);
+
+            // Act
+            HttpResponseMessage result = await sut.AutoMapFieldsFromView(request, SourceWorkspace.ArtifactId, view.ArtifactId, _DESTINATION_PROVIDER_GUID);
+            List<FieldMap> fieldsMaps = await result.Content.ReadAsAsync<List<FieldMap>>();
+
+            // Assert
+            result.IsSuccessStatusCode.Should().BeTrue();
+            fieldsMaps.Count.Should().Be(_fields.Count);
+            fieldsMaps.Select(x => x.SourceField.DisplayName).ShouldBeEquivalentTo(_fields.Select(x => x.Name));
+            fieldsMaps.Select(x => x.DestinationField.DisplayName).ShouldBeEquivalentTo(_fields.Select(x => x.Name));
+        }
+
+        [IdentifiedTest("8D1BE3D3-0BC1-48B4-AFB6-D3E6F040B041")]
+        public void AutoMapFieldsFromView_ShouldThrowExceptionWhenAutomapRequestIsEmpty()
+        {
+            // Arrange
+            FieldMappingsController sut = PrepareSut(HttpMethod.Post, "/AutoMapFieldsFromView");
+            AutomapRequest request = new AutomapRequest();
+            ViewTest view = CreateViewTest(_fields);
+
+            // Act
+            Func<Task> function = async () => await sut.AutoMapFieldsFromView(request, SourceWorkspace.ArtifactId,
+                    view.ArtifactId, _DESTINATION_PROVIDER_GUID);
 
             // Assert
             function.ShouldThrow<ArgumentNullException>();
@@ -265,7 +363,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             IEnumerable<FieldMap> mappedFields = GetMappedFieldsWithIdentifierField();
 
             // Act
-            HttpResponseMessage result = await sut.ValidateAsync(mappedFields, SourceWorkspace.ArtifactId, _destinationWorkspace.ArtifactId, DESTINATION_PROVIDER_GUID);
+            HttpResponseMessage result = await sut.ValidateAsync(mappedFields, SourceWorkspace.ArtifactId, _destinationWorkspace.ArtifactId, _DESTINATION_PROVIDER_GUID, _SOURCE_ARTIFACT_TYPE_ID, _DESTINATION_ARTIFACT_TYPE_ID);
             FieldMappingValidationResult fieldMappingValidationResult = await result.Content.ReadAsAsync<FieldMappingValidationResult>();
 
             // Assert
@@ -285,7 +383,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             IEnumerable<FieldMap> mappedFields = new List<FieldMap>();
 
             // Act
-            HttpResponseMessage result = await sut.ValidateAsync(mappedFields, SourceWorkspace.ArtifactId, _destinationWorkspace.ArtifactId, DESTINATION_PROVIDER_GUID);
+            HttpResponseMessage result = await sut.ValidateAsync(mappedFields, SourceWorkspace.ArtifactId, _destinationWorkspace.ArtifactId, _DESTINATION_PROVIDER_GUID, _SOURCE_ARTIFACT_TYPE_ID, _DESTINATION_ARTIFACT_TYPE_ID);
             FieldMappingValidationResult fieldMappingValidationResult = await result.Content.ReadAsAsync<FieldMappingValidationResult>();
 
             // Assert
@@ -305,7 +403,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             IEnumerable<FieldMap> mappedFields = GetMappedFieldsWithIdentifierField();
 
             // Act
-            HttpResponseMessage result = await sut.ValidateAsync(mappedFields, SourceWorkspace.ArtifactId, _destinationWorkspace.ArtifactId, DESTINATION_PROVIDER_GUID);
+            HttpResponseMessage result = await sut.ValidateAsync(mappedFields, SourceWorkspace.ArtifactId, _destinationWorkspace.ArtifactId, _DESTINATION_PROVIDER_GUID, _SOURCE_ARTIFACT_TYPE_ID, _DESTINATION_ARTIFACT_TYPE_ID);
             FieldMappingValidationResult fieldMappingValidationResult = await result.Content.ReadAsAsync<FieldMappingValidationResult>();
 
             // Assert
@@ -325,7 +423,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             IEnumerable<FieldMap> mappedFields = SourceWorkspace.Helpers.FieldsMappingHelper.PrepareFixedLengthTextFieldsMapping();
 
             // Act
-            HttpResponseMessage result = await sut.ValidateAsync(mappedFields, SourceWorkspace.ArtifactId, _destinationWorkspace.ArtifactId, DESTINATION_PROVIDER_GUID);
+            HttpResponseMessage result = await sut.ValidateAsync(mappedFields, SourceWorkspace.ArtifactId, _destinationWorkspace.ArtifactId, _DESTINATION_PROVIDER_GUID, _SOURCE_ARTIFACT_TYPE_ID, _DESTINATION_ARTIFACT_TYPE_ID);
             FieldMappingValidationResult fieldMappingValidationResult = await result.Content.ReadAsAsync<FieldMappingValidationResult>();
 
             // Assert
@@ -341,13 +439,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             FieldMappingsController sut = PrepareSut(HttpMethod.Post, "/ValidateAsync");
             _fields[0].IsIdentifier = true;
             ((List<FieldTest>)SourceWorkspace.Fields).AddRange(_fields);
-            List<FieldTest> longTextFields = CreateFieldsWithSpecialCharactersAsync(Const.LONG_TEXT_TYPE_ARTIFACT_ID, LONG_TEXT_NAME).ToList();
+            List<FieldTest> longTextFields = CreateFieldsWithSpecialCharactersAsync(Const.LONG_TEXT_TYPE_ARTIFACT_ID, _LONG_TEXT_NAME).ToList();
             ((List<FieldTest>)_destinationWorkspace.Fields).AddRange(longTextFields);
 
             IEnumerable<FieldMap> mappedFields = SourceWorkspace.Helpers.FieldsMappingHelper.PrepareFixedLengthTextFieldsMapping();
 
             // Act
-            HttpResponseMessage result = await sut.ValidateAsync(mappedFields, SourceWorkspace.ArtifactId, _destinationWorkspace.ArtifactId, DESTINATION_PROVIDER_GUID);
+            HttpResponseMessage result = await sut.ValidateAsync(mappedFields, SourceWorkspace.ArtifactId, _destinationWorkspace.ArtifactId, _DESTINATION_PROVIDER_GUID, _SOURCE_ARTIFACT_TYPE_ID, _DESTINATION_ARTIFACT_TYPE_ID);
             FieldMappingValidationResult fieldMappingValidationResult = await result.Content.ReadAsAsync<FieldMappingValidationResult>();
 
             // Assert
@@ -393,28 +491,28 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
                 {new ClaimsIdentity(new[] {new Claim("rel_uai", User.ArtifactId.ToString())})});
         }
 
-        private DocumentFieldInfo[] ConvertFieldTestListToDocumentFieldInfoArray(List<FieldTest> fields)
+        private FieldsMapping.FieldInfo[] ConvertFieldTestListToFieldInfoArray(List<FieldTest> fields)
         {
-            DocumentFieldInfo[] documentsFieldInfo = new DocumentFieldInfo[fields.Count];
+			FieldsMapping.FieldInfo[] fieldsInfo = new FieldsMapping.FieldInfo[fields.Count];
             for (int i = 0; i < fields.Count; i++)
             {
                 FieldTest field = fields[i];
 
-                DocumentFieldInfo documentFieldInfo = new DocumentFieldInfo(
+				FieldsMapping.FieldInfo fieldInfo = new FieldsMapping.FieldInfo(
                     field.ArtifactId.ToString(),
                     field.Name,
-                    field.ObjectTypeId == Const.FIXED_LENGTH_TEXT_TYPE_ARTIFACT_ID ? FIXED_LENGTH_TEXT_NAME : LONG_TEXT_NAME)
+                    field.ObjectTypeId == Const.FIXED_LENGTH_TEXT_TYPE_ARTIFACT_ID ? _FIXED_LENGTH_TEXT_NAME : _LONG_TEXT_NAME)
                 {
                     IsIdentifier = field.IsIdentifier,
                     IsRequired = false,
                 };
-                documentsFieldInfo[i] = documentFieldInfo;
+                fieldsInfo[i] = fieldInfo;
             }
 
-            return documentsFieldInfo;
+            return fieldsInfo;
         }
 
-        private AutomapRequest CreateAutomapRequest(DocumentFieldInfo[] documentsFieldInfo, bool matchOnlyIdentifiers = false)
+        private AutomapRequest CreateAutomapRequest(FieldsMapping.FieldInfo[] documentsFieldInfo, bool matchOnlyIdentifiers = false)
         {
             AutomapRequest request = new AutomapRequest
             {
@@ -439,9 +537,25 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
                 savedSearch.Values.Add(Guid.NewGuid(), field);
             }
 
-            IList<SavedSearchTest> savedSearches = SourceWorkspace.SavedSearches;
-            savedSearches.Add(savedSearch);
+            SourceWorkspace.SavedSearches.Add(savedSearch);
             return savedSearch;
+        }
+
+        private ViewTest CreateViewTest(List<FieldTest> fields)
+        {
+            ViewTest view = new ViewTest
+            {
+                Name = "Source View",
+                Artifact = { ArtifactId = ArtifactProvider.NextId() }
+            };
+
+            foreach (var field in fields)
+            {
+                view.Values.Add(Guid.NewGuid(), field);
+            }
+
+            SourceWorkspace.Views.Add(view);
+            return view;
         }
 
         private IEnumerable<FieldMap> GetMappedFieldsWithIdentifierField()

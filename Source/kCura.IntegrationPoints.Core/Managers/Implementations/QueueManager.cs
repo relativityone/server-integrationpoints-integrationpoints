@@ -1,11 +1,10 @@
 ﻿using System;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
-	public class QueueManager : IQueueManager
+    public class QueueManager : IQueueManager
 	{
 		private readonly IQueueRepository _queueRepository;
 
@@ -27,5 +26,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 			return numberOfJobs > 0;
 		}
-	}
+
+        public bool HasJobsExecuting(int workspaceId, int integrationPointId)
+        {
+            int numberOfJobs = _queueRepository.GetNumberOfJobsLockedByAgentForIntegrationPoint(workspaceId, integrationPointId);
+
+			return numberOfJobs > 0;
+        }
+    }
 }

@@ -38,7 +38,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 		public async Task ClassifyAsync_ShouldClassifyRipFieldsAsHideFromUser()
 		{
 			// Arrange
-			ICollection<DocumentFieldInfo> fields = CreateFieldInfos(_ripFields).ToList();
+			ICollection<FieldInfo> fields = CreateFieldInfos(_ripFields).ToList();
 
 			// Act
 			List<FieldClassificationResult> classified = (await _sut.ClassifyAsync(fields, 0).ConfigureAwait(false)).ToList();
@@ -52,7 +52,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 		public async Task ClassifyAsync_ShouldNotClassifyOnlyRipFields()
 		{
 			// Arrange
-			ICollection<DocumentFieldInfo> fields = CreateFieldInfos(_nonRipFields).ToList();
+			ICollection<FieldInfo> fields = CreateFieldInfos(_nonRipFields).ToList();
 
 			// Act
 			IEnumerable<FieldClassificationResult> classified = await _sut.ClassifyAsync(fields, 0).ConfigureAwait(false);
@@ -61,9 +61,9 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 			classified.Should().BeEmpty();
 		}
 
-		private IEnumerable<DocumentFieldInfo> CreateFieldInfos(IEnumerable<string> fieldNames)
+		private IEnumerable<FieldInfo> CreateFieldInfos(IEnumerable<string> fieldNames)
 		{
-			return fieldNames.Select(x => new DocumentFieldInfo(fieldIdentifier: x, name: x, type: "Some Type"));
+			return fieldNames.Select(x => new FieldInfo(fieldIdentifier: x, name: x, type: "Some Type"));
 		}
 	}
 }
