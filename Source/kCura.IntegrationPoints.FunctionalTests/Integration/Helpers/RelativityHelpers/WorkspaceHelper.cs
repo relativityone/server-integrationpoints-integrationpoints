@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
@@ -72,7 +73,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 				IsIdentifier = false,
 				Name = "Overwrite Fields"
 			});
-			workspace.Fields.Add(new FieldTest
+            workspace.Fields.Add(new FieldTest
 			{
 				ObjectTypeId = Const.LDAP._ENTITY_TYPE_ARTIFACT_ID,
 				Guid = new Guid(EntityFieldGuids.Manager),
@@ -85,7 +86,130 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 				ParenObjectArtifactId = workspace.ArtifactId,
 				Name = "All Documents"
 			});
-		
+
+            CreateSavedSearchAndProduction(workspace, new SearchCriteria(true, false, true));
+            CreateSavedSearchAndProduction(workspace, new SearchCriteria(true, false, false));
+            CreateSavedSearchAndProduction(workspace, new SearchCriteria(false, true, true));
+            CreateSavedSearchAndProduction(workspace, new SearchCriteria(false, true, false));
+            CreateSavedSearchAndProduction(workspace, new SearchCriteria(false, false, true));
+			
+            FolderTest folder = workspace.Folders.First();
+            IList<FieldTest> fields = workspace.Fields;
+
+            workspace.Documents.Add(new DocumentTest(fields)
+            {
+                ParenObjectArtifactId = folder.ArtifactId,
+                FolderName = folder.Name,
+                HasImages = true,
+                HasNatives = true,
+                ImageCount = 1,
+            });
+
+			workspace.Documents.Add(new DocumentTest(fields)
+            {
+                ParenObjectArtifactId = folder.ArtifactId,
+                FolderName = folder.Name,
+                HasImages = true,
+                HasNatives = true,
+                ImageCount = 1,
+            });
+
+            workspace.Documents.Add(new DocumentTest(fields)
+            {
+                ParenObjectArtifactId = folder.ArtifactId,
+                FolderName = folder.Name,
+                HasImages = true,
+                HasNatives = false,
+                ImageCount = 10,
+            });
+
+			workspace.Documents.Add(new DocumentTest(fields)
+			{
+				ParenObjectArtifactId = folder.ArtifactId,
+				FolderName = folder.Name,
+				HasImages = true,
+				HasNatives = false,
+				ImageCount = 12,
+			});
+
+            workspace.Documents.Add(new DocumentTest(fields)
+            {
+                ParenObjectArtifactId = folder.ArtifactId,
+                FolderName = folder.Name,
+                HasImages = false,
+                HasNatives = false,
+                ImageCount = 0,
+            });
+
+            workspace.Documents.Add(new DocumentTest(fields)
+            {
+                ParenObjectArtifactId = folder.ArtifactId,
+                FolderName = folder.Name,
+                HasImages = false,
+                HasNatives = false,
+                ImageCount = 0,
+            });
+
+            workspace.Documents.Add(new DocumentTest
+			{
+				ParenObjectArtifactId = folder.ArtifactId,
+				FolderName = folder.Name,
+				HasImages = true,
+				HasNatives = false,
+				ImageCount = 32,
+			});
+
+            workspace.Documents.Add(new DocumentTest
+            {
+                ParenObjectArtifactId = folder.ArtifactId,
+                FolderName = folder.Name,
+                HasImages = true,
+                HasNatives = false,
+                ImageCount = 21,
+            });
+
+			workspace.Documents.Add(new DocumentTest(fields)
+            {
+                ParenObjectArtifactId = folder.ArtifactId,
+                FolderName = folder.Name,
+                HasImages = true,
+                HasNatives = false,
+                ImageCount = 15,
+            });
+
+			workspace.Documents.Add(new DocumentTest(fields)
+            {
+                ParenObjectArtifactId = folder.ArtifactId,
+                FolderName = folder.Name,
+                HasImages = false,
+                HasNatives = true,
+            });
+
+            workspace.Documents.Add(new DocumentTest
+            {
+                ParenObjectArtifactId = folder.ArtifactId,
+                FolderName = folder.Name,
+                HasImages = false,
+                HasNatives = true,
+            });
+
+            workspace.Documents.Add(new DocumentTest
+            {
+                ParenObjectArtifactId = folder.ArtifactId,
+                FolderName = folder.Name,
+                HasImages = false,
+                HasNatives = true,
+            });
+
+            workspace.Documents.Add(new DocumentTest
+            {
+                ParenObjectArtifactId = folder.ArtifactId,
+                FolderName = folder.Name,
+                HasImages = false,
+                HasNatives = false,
+            });
+
+
 			return workspace;
 		}
 
@@ -115,5 +239,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 				Relativity.Workspaces.Remove(workspace);
 			}
 		}
+
+        private void CreateSavedSearchAndProduction(WorkspaceTest workspace, SearchCriteria searchCriteria)
+        {
+            SavedSearchTest savedSearch = new SavedSearchTest(searchCriteria)
+            {
+                ParenObjectArtifactId = workspace.ArtifactId
+            };
+
+            workspace.SavedSearches.Add(savedSearch);
+            workspace.Productions.Add(new ProductionTest(savedSearch.ArtifactId));
+        }
 	}
 }

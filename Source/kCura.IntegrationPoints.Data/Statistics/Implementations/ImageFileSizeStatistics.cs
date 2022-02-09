@@ -29,14 +29,14 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 		{
 			try
 			{
-				var queryBuilder = new DocumentQueryBuilder();
-				var query = queryBuilder
+				DocumentQueryBuilder queryBuilder = new DocumentQueryBuilder();
+				QueryRequest query = queryBuilder
 					.AddFolderCondition(folderId, viewId, includeSubFoldersTotals)
 					.AddHasImagesCondition(GetArtifactIdOfYesHoiceOnHasImagesAsync(workspaceArtifactId).GetAwaiter().GetResult())
 					.NoFields()
 					.Build();
-				var queryResult = ExecuteQuery(query, workspaceArtifactId);
-				var artifactIds = queryResult.Select(x => x.ArtifactID).ToList();
+				List<RelativityObjectSlim> queryResult = ExecuteQuery(query, workspaceArtifactId);
+				List<int> artifactIds = queryResult.Select(x => x.ArtifactID).ToList();
 				return GetTotalFileSize(artifactIds, workspaceArtifactId);
 			}
 			catch (Exception e)
@@ -63,14 +63,14 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 		{
 			try
 			{
-				var queryBuilder = new DocumentQueryBuilder();
-				var query = queryBuilder
+				DocumentQueryBuilder queryBuilder = new DocumentQueryBuilder();
+				QueryRequest query = queryBuilder
 					.AddSavedSearchCondition(savedSearchId)
 					.AddHasImagesCondition(GetArtifactIdOfYesHoiceOnHasImagesAsync(workspaceArtifactId).GetAwaiter().GetResult())
 					.NoFields()
 					.Build();
-				var queryResult = ExecuteQuery(query, workspaceArtifactId);
-				var artifactIds = queryResult.Select(x => x.ArtifactID).ToList();
+				List<RelativityObjectSlim> queryResult = ExecuteQuery(query, workspaceArtifactId);
+				List<int> artifactIds = queryResult.Select(x => x.ArtifactID).ToList();
 				return GetTotalFileSize(artifactIds, workspaceArtifactId);
 			}
 			catch (Exception e)
@@ -104,9 +104,9 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 		{
 			const string sqlText = "SELECT COALESCE(SUM([Size]),0) FROM [{0}] AS PDF JOIN [File] AS F ON F.[FileID] = PDF.[ProducedFileID]";
 
-			var tableName = $"{_PRODUCTION_DOCUMENT_FILE_TABLE_PREFIX}{productionSetId}";
+			string tableName = $"{_PRODUCTION_DOCUMENT_FILE_TABLE_PREFIX}{productionSetId}";
 
-			var dbContext = _helper.GetDBContext(workspaceArtifactId);
+			IDBContext dbContext = _helper.GetDBContext(workspaceArtifactId);
 			return dbContext.ExecuteSqlStatementAsScalar<long>(string.Format(sqlText, tableName));
 		}
 

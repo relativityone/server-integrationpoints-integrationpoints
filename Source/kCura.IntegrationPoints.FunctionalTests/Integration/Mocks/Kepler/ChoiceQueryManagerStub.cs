@@ -1,9 +1,6 @@
 ﻿using Moq;
 using Relativity.Services.ChoiceQuery;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
