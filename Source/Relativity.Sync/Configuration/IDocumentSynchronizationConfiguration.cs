@@ -2,10 +2,6 @@
 {
 	internal interface IDocumentSynchronizationConfiguration : ISynchronizationConfiguration
 	{
-		char MultiValueDelimiter { get; }
-
-		char NestedValueDelimiter { get; }
-
 		DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; }
 
 		ImportNativeFileCopyMode ImportNativeFileCopyMode { get; }

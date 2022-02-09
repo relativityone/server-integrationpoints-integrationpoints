@@ -39,5 +39,10 @@ namespace Relativity.Sync.Configuration
 		bool MoveExistingDocuments { get; }
 		
 		int DataSourceArtifactId { get; }
+
+		char MultiValueDelimiter { get; }
+
+		char NestedValueDelimiter { get; }
+
 	}
 }
