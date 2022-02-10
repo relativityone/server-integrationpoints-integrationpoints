@@ -162,8 +162,12 @@ When ADS Team rolled out Agents in K8s it started to fail Custom Providers insta
 ## Ideas
 
 1. Understand what `Bootstrappers.AppDomainBootstrapper.Bootstrap` method does and rethink if this call is needed for temporarily created AppDomain
+  
+    * After removing `Bootstrappers.AppDomainBootstrapper.Bootstrap` method execution the code still worked. We can assume that this method is no longer needed for Integration Points
 
 2. Instead of creating new AppDomain we could operate on the one provided by Agent framework - _RelativityTmpAppDomain_{AgentId}_{Guid}_. We could load there client DLLs and operate on them.
+
+    * I tested CurrentDomain usage instead of creating new one, but it failed on releasing the domain, which is reasonable, because we should not release it before execution finish. Anyway following Agent Framework in K8s guidelines it would be best to get rid off AppDomains in k8s and operate on single provided. We could go in this way, but only if it will be guarented that AppDomain is released after job finish.
 
 ## Consequences
 
