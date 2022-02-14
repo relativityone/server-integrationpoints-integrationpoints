@@ -27,8 +27,6 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 
 		RelativityProviderWorkspaceNameValidator CreateWorkspaceNameValidator(string prefix, int? federatedInstanceArtifactId, string credentials);
 
-		TransferredObjectValidator CreateTransferredObjectValidator();
-
 		ImportProductionValidator CreateImportProductionValidator(int workspaceArtifactId, int? federatedInstanceArtifactId, string credentials);
 	}
 }

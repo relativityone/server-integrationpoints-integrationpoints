@@ -130,9 +130,6 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			var fieldMappingValidator = _validatorsFactory.CreateFieldsMappingValidator(sourceConfiguration.FederatedInstanceArtifactId, integrationModel.SecuredConfiguration);
 			result.Add(fieldMappingValidator.Validate(integrationModel));
 
-			var transferredObjectValidator = _validatorsFactory.CreateTransferredObjectValidator();
-			result.Add(transferredObjectValidator.Validate(destinationConfiguration.ArtifactTypeId));
-
 			return result;
 		}
 

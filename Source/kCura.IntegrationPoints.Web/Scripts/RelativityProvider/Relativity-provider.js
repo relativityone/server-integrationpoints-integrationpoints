@@ -131,6 +131,7 @@
 		destination.ProductionArtifactId = viewModel.ProductionArtifactId();
 		destination.Provider = "relativity";
 		destination.WorkspaceHasChanged = viewModel.WorkspaceHasChanged;
+		destination.DestinationArtifactTypeId = window.parent.IP.data.params['TransferredRDOArtifactTypeID'];
 
 		destinationJson = JSON.stringify(destination);
 		stepModel.destination = destinationJson;

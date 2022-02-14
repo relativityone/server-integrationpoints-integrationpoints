@@ -127,10 +127,5 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			IWorkspaceManager workspaceManager = _managerFactory.CreateWorkspaceManager();
 			return new RelativityProviderWorkspaceNameValidator(workspaceManager, prefix);
 		}
-
-		public TransferredObjectValidator CreateTransferredObjectValidator()
-		{
-			return new TransferredObjectValidator();
-		}
 	}
 }
