@@ -134,6 +134,8 @@ In this class we determine if new AppDomain should be created. The base statemen
 
   At the end method executes `Bootstrappers.AppDomainBootstrapper.Bootstrap` for created AppDomain
 
+  `IProviderFactory` is implemented by `DefalultProviderFactory` which registers `IDataSourceProvider` based on Type determined by _Provider Identifier_
+
 * `LoadClientLibraries` :
 
   This method retrieves assemblies from created domain. During debugging against Test VM following assemblies were returned:
@@ -161,14 +163,19 @@ When ADS Team rolled out Agents in K8s it started to fail Custom Providers insta
 
 ## Ideas
 
-1. Understand what `Bootstrappers.AppDomainBootstrapper.Bootstrap` method does and rethink if this call is needed for temporarily created AppDomain
+1. [NOT VIABLE] Understand what `Bootstrappers.AppDomainBootstrapper.Bootstrap` method does and rethink if this call is needed for temporarily created AppDomain
   
-    * After removing `Bootstrappers.AppDomainBootstrapper.Bootstrap` method execution the code still worked. We can assume that this method is no longer needed for Integration Points
+    * After removing `Bootstrappers.AppDomainBootstrapper.Bootstrap` method execution the code executed only worked if we didn't interact with Relativity Environment. After blind tests we found out that without this method call `IHelper` interface is not fully operational, and e.g in case of Azure AD it failed on `IHelper.GetInstanceSettingBundle()` - method returned null.
 
 2. Instead of creating new AppDomain we could operate on the one provided by Agent framework - _RelativityTmpAppDomain_{AgentId}_{Guid}_. We could load there client DLLs and operate on them.
 
-    * I tested CurrentDomain usage instead of creating new one, but it failed on releasing the domain, which is reasonable, because we should not release it before execution finish. Anyway following Agent Framework in K8s guidelines it would be best to get rid off AppDomains in k8s and operate on single provided. We could go in this way, but only if it will be guarented that AppDomain is released after job finish.
+    * I tested CurrentDomain usage instead of creating new one, but it failed on releasing the domain, which is reasonable, because we should not release it before execution finish. Anyway following Agent Framework in K8s guidelines it would be best to get rid off AppDomains in k8s and operate only on created one. The main concern is that when using temporary domain for Integration Points Provider, we released it after finish so client's DLLs were in domain only in scope of the job, we would need to somehow clean up the DLLs after use.
 
 ## Consequences
 
 Get rid off temporarily AppDomain may have unpredictable consequences for Custom Provider jobs, because we don't own client's DLLs and don't have full visibility what DLLs are included in Custom Provider RAP. On the other hand maybe it's good time to make things right and consider using exising domain _RelativityTmpAppDomain_{AgentId}_{Guid}_ and operate on it. Only question is how and when this AppDomain is released. In Integration Points we execute jobs in the loop until there is no more jobs to process. If this domain wouldn't be released after job process there is a risk that in case of two different Custom Providers jobs we would mix DLLs coming from both RAPs which is definitely undesirable behavior. If _RelativityTmpAppDomain_{AgentId}_{Guid}_ is released after every `AgentBase.Execute` method call we could consider processing only one job per `AgentBase.Execute`.
+
+### Concerns
+
+* Executing existing logic on AppDomain.Current may lead to overwrite some DLLs from WorkingDirectory (TODO: What is directory path?)
+* Loaded DLLs from Integration Points Custom Provider won't be released after job finished (in current design Temporary Domain is released when not needed anymore)
