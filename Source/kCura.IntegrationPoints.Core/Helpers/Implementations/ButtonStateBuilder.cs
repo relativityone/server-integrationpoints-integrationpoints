@@ -8,6 +8,10 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using kCura.IntegrationPoints.Common.Extensions.DotNet;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 
 namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 {
@@ -49,12 +53,27 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
 			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
 
-			bool hasAddProfilePermission = _permissionRepository.UserHasArtifactTypePermission(Guid.Parse(ObjectTypeGuids.IntegrationPointProfile),
+            bool hasAddProfilePermission = _permissionRepository.UserHasArtifactTypePermission(Guid.Parse(ObjectTypeGuids.IntegrationPointProfile),
 				ArtifactPermission.Create) && !settings.IsFederatedInstance();
 
 			bool canViewErrors = jobHistoryErrorViewPermissionCheck.IsValid;
 			bool hasJobsExecutingOrInQueue = HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
-			bool integrationPointIsStoppable = IntegrationPointIsStoppable(providerType, workspaceArtifactId, integrationPointArtifactId, settings);
+
+            SourceConfiguration.ExportType exportType;
+			try
+			{
+                exportType = (SourceConfiguration.ExportType)JsonConvert.DeserializeAnonymousType(
+                        integrationPoint.SourceConfiguration,
+            new { TypeOfExport = 0 })
+                    .TypeOfExport;
+            }
+            catch (Exception)
+            {
+                exportType = 0;
+            }
+
+			bool integrationPointIsStoppable = IntegrationPointIsStoppable(providerType: providerType, workspaceArtifactId: workspaceArtifactId,
+                integrationPointArtifactId: integrationPointArtifactId, exportType: exportType);
 			bool integrationPointHasErrors = integrationPoint.HasErrors.GetValueOrDefault(false);
 			ButtonStateDTO buttonState = _stateManager.GetButtonState(providerType, hasJobsExecutingOrInQueue, integrationPointHasErrors, canViewErrors,
 				integrationPointIsStoppable, hasAddProfilePermission);
@@ -66,7 +85,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			return _queueManager.HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
 		}
 
-		private bool IntegrationPointIsStoppable(ProviderType providerType, int workspaceArtifactId, int integrationPointArtifactId, ImportSettings settings)
+		private bool IntegrationPointIsStoppable(ProviderType providerType, int workspaceArtifactId, int integrationPointArtifactId, SourceConfiguration.ExportType exportType)
 		{
 			StoppableJobHistoryCollection stoppableJobCollection = _jobHistoryManager.GetStoppableJobHistory(workspaceArtifactId, integrationPointArtifactId);
 
@@ -77,7 +96,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 				return true;
             }
 
-			if (IsNonStoppableBasedOnProviderType(providerType, settings))
+			if (IsNonStoppableBasedOnProviderType(providerType, exportType))
 			{
 				return false;
 			}
@@ -85,10 +104,10 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			return stoppableJobCollection.HasStoppableJobHistory;
 		}
 
-		private static bool IsNonStoppableBasedOnProviderType(ProviderType providerType, ImportSettings settings)
+		private static bool IsNonStoppableBasedOnProviderType(ProviderType providerType, SourceConfiguration.ExportType exportType)
 		{
 			return (providerType != ProviderType.Relativity && providerType != ProviderType.LoadFile) ||
-				(providerType == ProviderType.Relativity && settings != null && settings.ImageImport);
+				(providerType == ProviderType.Relativity && exportType == SourceConfiguration.ExportType.ProductionSet);
 		}
 	}
 }
