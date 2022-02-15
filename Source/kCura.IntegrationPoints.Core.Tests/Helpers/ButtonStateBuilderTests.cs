@@ -1,5 +1,4 @@
 ﻿using System;
-using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
@@ -12,7 +11,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using NSubstitute;
 using NUnit.Framework;
 
