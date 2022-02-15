@@ -18,6 +18,8 @@ using Relativity.IntegrationPoints.Contracts;
 using Relativity.IntegrationPoints.Contracts.Internals;
 using Relativity.IntegrationPoints.Contracts.Provider;
 using static LanguageExt.Prelude;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Tests.Provider
 {
@@ -28,6 +30,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
 		private Mock<IApplicationGuidFinder> _appGuidFinderMock;
 		private Mock<IDataProviderFactoryFactory> _dataProviderFactoryFactoryMock;
 		private Mock<IAPILog> _loggerFake;
+		private Mock<IToggleProvider> _toggleProvider;
 
 		private RipProviderInstaller _sut;
 
@@ -42,12 +45,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
 			_appGuidFinderMock = new Mock<IApplicationGuidFinder>();
 			_dataProviderFactoryFactoryMock = new Mock<IDataProviderFactoryFactory>();
 			_loggerFake = new Mock<IAPILog>();
+			_toggleProvider = new Mock<IToggleProvider>();
+
+			_toggleProvider.Setup(x => x.IsEnabledByName(It.IsAny<string>())).Returns(false);
 
 			_sut = new RipProviderInstaller(
 				_loggerFake.Object,
 				_sourceProviderRepositoryMock.Object,
 				_appGuidFinderMock.Object,
-				_dataProviderFactoryFactoryMock.Object
+				_dataProviderFactoryFactoryMock.Object,
+				_toggleProvider.Object
 			);
 
 			SetupDataProviderFactoryFactory();
@@ -215,7 +222,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider
 				_loggerFake.Object,
 				_sourceProviderRepositoryMock.Object,
 				_appGuidFinderMock.Object,
-				_dataProviderFactoryFactoryMock.Object
+				_dataProviderFactoryFactoryMock.Object,
+				_toggleProvider.Object
 			);
 
 			// act

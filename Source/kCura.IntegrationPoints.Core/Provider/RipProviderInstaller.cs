@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using LanguageExt;
 using Newtonsoft.Json;
 using Relativity.API;
+using Relativity.Toggles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace kCura.IntegrationPoints.Core.Provider
     {
         private readonly IAPILog _logger;
         private readonly IDataProviderFactoryFactory _dataProviderFactoryFactory;
+        private readonly IToggleProvider _toggleProvider;
         private readonly ISourceProviderRepository _sourceProviderRepository;
         private readonly IApplicationGuidFinder _applicationGuidFinder;
 
@@ -24,12 +26,14 @@ namespace kCura.IntegrationPoints.Core.Provider
             IAPILog logger,
             ISourceProviderRepository sourceProviderRepository,
             IApplicationGuidFinder applicationGuidFinder,
-            IDataProviderFactoryFactory dataProviderFactoryFactory)
+            IDataProviderFactoryFactory dataProviderFactoryFactory,
+            IToggleProvider toggleProvider)
         {
             _logger = logger;
 
             _applicationGuidFinder = applicationGuidFinder;
             _dataProviderFactoryFactory = dataProviderFactoryFactory;
+            _toggleProvider = toggleProvider;
             _sourceProviderRepository = sourceProviderRepository;
         }
 
@@ -111,6 +115,12 @@ namespace kCura.IntegrationPoints.Core.Provider
         {
             try
             {
+                if (_toggleProvider.IsEnabledByName("Relativity.ADS.Agents.Toggles.ApplicationInstallationWorkerIsActive"))
+                {
+                    _logger.LogInformation("[Workaround] Skip Source Provider loading validation when Application Installation Agent works in K8s");
+                    return provider;
+                }
+
                 dataProviderFactory.GetDataProvider(provider.ApplicationGUID, provider.GUID);
                 return provider;
             }
