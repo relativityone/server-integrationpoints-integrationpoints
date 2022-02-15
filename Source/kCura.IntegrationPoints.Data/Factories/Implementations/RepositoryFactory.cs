@@ -45,6 +45,11 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return new KeplerArtifactGuidRepository(workspaceArtifactId, _destinationServiceMgr);
 		}
 
+		public IRelativityObjectManager CreateRelativityObjectManager(int workspaceArtifactId)
+		{
+			return ObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId);
+		}
+
 		public ICodeRepository GetCodeRepository(int workspaceArtifactId)
 		{
 			IRelativityObjectManager relativityObjectManager =
@@ -289,11 +294,6 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			IAPILog logger = helper.GetLoggerFactory().GetLogger();
 			return new Lazy<IExternalServiceInstrumentationProvider>(() => new ExternalServiceInstrumentationProviderWithoutJobContext(logger));
-		}
-
-		private IRelativityObjectManager CreateRelativityObjectManager(int workspaceArtifactId)
-		{
-			return ObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId);
 		}
 
 		private IRelativityObjectManager CreateRelativityObjectManagerForFederatedInstance(int workspaceArtifactId)

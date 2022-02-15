@@ -181,7 +181,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public bool IsRelativityProvider()
 		{
-			return Provider != null && Provider.ToLowerInvariant() == "relativity";
+			return Provider != null && string.Equals(Provider, "relativity", StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		public bool IsFederatedInstance()

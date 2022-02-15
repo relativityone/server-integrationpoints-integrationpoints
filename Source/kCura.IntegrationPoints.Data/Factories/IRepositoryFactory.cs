@@ -8,6 +8,12 @@ namespace kCura.IntegrationPoints.Data.Factories
 	public interface IRepositoryFactory
 	{
 		/// <summary>
+		/// Returns a class implementing the IRelativityObjectManager interface
+		/// </summary>
+		/// <param name="workspaceArtifactId">The workspace Artifact ID</param>
+		IRelativityObjectManager CreateRelativityObjectManager(int workspaceArtifactId);
+
+		/// <summary>
 		/// Returns a class implementing the IArtifactGuidRepository interface.
 		/// </summary>
 		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
@@ -204,5 +210,5 @@ namespace kCura.IntegrationPoints.Data.Factories
 		IAuditRepository GetAuditRepository(int workspaceArtifactId);
 
 		ICaseRepository GetCaseRepository();
-	}
+    }
 }

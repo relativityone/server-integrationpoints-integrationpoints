@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			switch (sourceConfiguration.TypeOfExport)
             {
 				case SourceConfiguration.ExportType.SavedSearch:
-					SavedSearchValidator savedSearchValidator = _validatorsFactory.CreateSavedSearchValidator(sourceConfiguration.SourceWorkspaceArtifactId, sourceConfiguration.SavedSearchArtifactId);
+					SavedSearchValidator savedSearchValidator = _validatorsFactory.CreateSavedSearchValidator(sourceConfiguration.SourceWorkspaceArtifactId);
 					result.Add(savedSearchValidator.Validate(sourceConfiguration.SavedSearchArtifactId));
 					break;
 				case SourceConfiguration.ExportType.ProductionSet:
@@ -84,7 +84,8 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 					result.Add(productionValidator.Validate(sourceConfiguration.SourceProductionId));
 					break;
 				case SourceConfiguration.ExportType.View:
-					// TODO
+					ViewValidator viewValidator = _validatorsFactory.CreateViewValidator(sourceConfiguration.SourceWorkspaceArtifactId);
+					result.Add(viewValidator.Validate(sourceConfiguration.SourceViewId));
 					break;
             }
 

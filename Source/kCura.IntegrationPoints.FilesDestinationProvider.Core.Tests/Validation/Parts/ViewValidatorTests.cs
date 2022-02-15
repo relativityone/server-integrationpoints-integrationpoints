@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 				.Returns(new List<ViewDTO> { view });
 
 			IAPILog logger = Substitute.For<IAPILog>();
-			var validator = new ViewValidator(logger, viewServiceMock);
+			var validator = new ViewExportValidator(logger, viewServiceMock);
 
 			var exportSettings = new ExportSettings { ViewId = viewId };
 
@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 				.Returns(new List<ViewDTO>());
 
 			IAPILog logger = Substitute.For<IAPILog>();
-			var validator = new ViewValidator(logger, viewServiceMock);
+			var validator = new ViewExportValidator(logger, viewServiceMock);
 
 			var exportSettings = new ExportSettings { ProductionId = viewId };
 

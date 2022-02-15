@@ -53,9 +53,14 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			return new ArtifactValidator(artifactService, workspaceArtifactId, artifactTypeName);
 		}
 
-		public SavedSearchValidator CreateSavedSearchValidator(int workspaceArtifactId, int savedSearchArtifactId)
+		public SavedSearchValidator CreateSavedSearchValidator(int workspaceArtifactId)
 		{
-			return new SavedSearchValidator(_logger, _repositoryFactory.GetSavedSearchQueryRepository(workspaceArtifactId), savedSearchArtifactId);
+			return new SavedSearchValidator(_logger, _repositoryFactory.GetSavedSearchQueryRepository(workspaceArtifactId));
+		}
+
+		public ViewValidator CreateViewValidator(int workspaceArtifactId)
+		{
+			return new ViewValidator(_repositoryFactory.CreateRelativityObjectManager(workspaceArtifactId), _logger);
 		}
 
 		public ProductionValidator CreateProductionValidator(int workspaceArtifactId)
@@ -127,5 +132,5 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			IWorkspaceManager workspaceManager = _managerFactory.CreateWorkspaceManager();
 			return new RelativityProviderWorkspaceNameValidator(workspaceManager, prefix);
 		}
-	}
+    }
 }

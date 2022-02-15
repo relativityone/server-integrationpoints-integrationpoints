@@ -11,20 +11,18 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 	{
 		private readonly IAPILog _logger;
 		private readonly ISavedSearchQueryRepository _savedSearchQueryRepository;
-		private readonly int _savedSearchId;
 
-		public SavedSearchValidator(IAPILog logger, ISavedSearchQueryRepository savedSearchQueryRepository, int savedSearchId)
+		public SavedSearchValidator(IAPILog logger, ISavedSearchQueryRepository savedSearchQueryRepository)
 		{
 			_logger = logger.ForContext<SavedSearchValidator>();
 			_savedSearchQueryRepository = savedSearchQueryRepository;
-			_savedSearchId = savedSearchId;
 		}
 
-		public override ValidationResult Validate(int value)
+		public override ValidationResult Validate(int savedSearchId)
 		{
 			var result = new ValidationResult();
 
-			SavedSearchDTO savedSearch = RetrieveSavedSearch();
+			SavedSearchDTO savedSearch = RetrieveSavedSearch(savedSearchId);
 
 			if (savedSearch == null)
 			{
@@ -45,11 +43,11 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 			return result;
 		}
 
-		private SavedSearchDTO RetrieveSavedSearch()
+		private SavedSearchDTO RetrieveSavedSearch(int savedSearchId)
 		{
 			try
 			{
-				return _savedSearchQueryRepository.RetrieveSavedSearch(_savedSearchId);
+				return _savedSearchQueryRepository.RetrieveSavedSearch(savedSearchId);
 			}
 			catch (Exception ex)
 			{

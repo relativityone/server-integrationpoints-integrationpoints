@@ -60,11 +60,17 @@
     <shortMessage>Verify if a Production Set used as the location in destination workspace is in New status.</shortMessage>
     <troubleshooting>Verify if a Production Set that was used as the location on destination workspace is sill in New status. There is a possibility that used Production was staged or ran. Only Production with New status can be used as a Production Set in Integration Points.</troubleshooting>
   </Message>
-  
-   <Message Name="FederatedInstanceNotSupported">
-    <errorCode>20.014</errorCode>
-    <shortMessage>Federated instance transfers are currently not supported. Please update the Integration Point job to use a destination workspace within the same instance.</shortMessage>
-    <troubleshooting>Instance to instance is not supported.</troubleshooting>
-  </Message>
+
+	<Message Name="FederatedInstanceNotSupported">
+		<errorCode>20.014</errorCode>
+		<shortMessage>Federated instance transfers are currently not supported. Please update the Integration Point job to use a destination workspace within the same instance.</shortMessage>
+		<troubleshooting>Instance to instance is not supported.</troubleshooting>
+	</Message>
+
+	<Message Name="ViewNoAccess">
+		<errorCode>20.015</errorCode>
+		<shortMessage>View is not available or has been secured from this user. Contact your system administrator.</shortMessage>
+		<troubleshooting>Verify if a user has required permissions for the view or if the view has been deleted. Contact your system administrator to verify view configuration.</troubleshooting>
+	</Message>
 
 </ValidationMessages>
