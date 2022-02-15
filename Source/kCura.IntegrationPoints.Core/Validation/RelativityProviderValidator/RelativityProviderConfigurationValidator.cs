@@ -4,7 +4,6 @@ using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
-using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts.Interfaces;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
@@ -101,11 +100,6 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 			result.Add(destinationWorkspaceNameValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId));
 
 			ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationModel.DestinationConfiguration);
-
-			IRelativityProviderDestinationWorkspacePermissionValidator destinationWorkspacePermissionValidator =
-				_validatorsFactory.CreateDestinationWorkspacePermissionValidator(sourceConfiguration.FederatedInstanceArtifactId, integrationModel.SecuredConfiguration);
-			result.Add(destinationWorkspacePermissionValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId, destinationConfiguration.ArtifactTypeId,
-				integrationModel.CreateSavedSearch));
 
 			if (!result.IsValid)
 			{

@@ -19,6 +19,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		IRelativityProviderDestinationWorkspaceExistenceValidator CreateDestinationWorkspaceExistenceValidator(int? federatedInstanceArtifactId, string credentials);
 
 		IRelativityProviderDestinationWorkspacePermissionValidator CreateDestinationWorkspacePermissionValidator(int? federatedInstanceArtifactId, string credentials);
+
 		IRelativityProviderDestinationFolderPermissionValidator CreateDestinationFolderPermissionValidator(int workspaceArtifactId, int? federatedInstanceArtifactId, string credentials);
 
 		IRelativityProviderSourceWorkspacePermissionValidator CreateSourceWorkspacePermissionValidator();
