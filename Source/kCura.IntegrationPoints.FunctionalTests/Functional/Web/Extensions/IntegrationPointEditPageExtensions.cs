@@ -53,14 +53,17 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 			return integrationPointViewPage;
 		}
 
-		public static void CreateSyncRdoIntegrationPoint(this IntegrationPointEditPage page, string integrationPointName, Workspace destinationWorkspace,
+		public static IntegrationPointViewPage CreateSyncRdoIntegrationPoint(this IntegrationPointEditPage page, string integrationPointName, Workspace destinationWorkspace,
 			IntegrationPointTransferredObjects transferredObject, string viewName)
 		{
 			RelativityProviderConnectToSourcePage relativityProviderConnectToSourcePage = FillOutIntegrationPointEditPageForRelativityProvider(page, integrationPointName, transferredObject);
             RelativityProviderMapFieldsPage relativityProviderMapFieldsPage = FillOutRelativityProviderConnectToSourcePage(relativityProviderConnectToSourcePage, destinationWorkspace, viewName);
 
-			relativityProviderMapFieldsPage
-				.MapView.Click();
+			IntegrationPointViewPage integrationPointViewPage = relativityProviderMapFieldsPage
+				.MapView.Click()
+				.Save.ClickAndGo();
+
+			return integrationPointViewPage;
 		}
 
 		private static RelativityProviderConnectToSourcePage FillOutIntegrationPointEditPageForRelativityProvider(IntegrationPointEditPage integrationPointEditPage, string integrationPointName)

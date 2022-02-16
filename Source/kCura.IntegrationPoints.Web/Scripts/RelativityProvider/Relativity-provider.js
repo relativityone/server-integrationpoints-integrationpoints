@@ -5,6 +5,8 @@
 	const thisInstanceArtifactId = 0;
 	const documentArtifactTypeId = 10;
 
+	var viewModel;
+
 	ko.validation.configure({
 		registerExtenders: true,
 		messagesOnModified: true,
@@ -75,6 +77,7 @@
 			})
 			.then(function(objectTypeArtifactId) {
 				callback(objectTypeArtifactId !== -1 ? true : false);
+				viewModel.DestinationArtifactTypeId = objectTypeArtifactId;
 			})
 			.fail(function(error){
 				console.error("Failed to check if Object Type exists in workspace: " + error);
@@ -105,8 +108,6 @@
 		});
 	}
 
-	var viewModel;
-
 	message.dFrame.IP.reverseMapFields = true; // set the flag so that the fields can be reversed;
 	//An event raised when the user has clicked the Next or Save button.
 
@@ -131,7 +132,7 @@
 		destination.ProductionArtifactId = viewModel.ProductionArtifactId();
 		destination.Provider = "relativity";
 		destination.WorkspaceHasChanged = viewModel.WorkspaceHasChanged;
-		destination.DestinationArtifactTypeId = window.parent.IP.data.params['TransferredRDOArtifactTypeID'];
+		destination.DestinationArtifactTypeId = viewModel.DestinationArtifactTypeId;
 
 		destinationJson = JSON.stringify(destination);
 		stepModel.destination = destinationJson;

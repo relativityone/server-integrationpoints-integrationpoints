@@ -33,7 +33,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 		public void OnTearDownFixture()
 		{
-			foreach (var destinationWorkspace in _destinationWorkspaces)
+			foreach (KeyValuePair<string, Workspace> destinationWorkspace in _destinationWorkspaces)
 			{
 				RelativityFacade.Instance.DeleteWorkspace(destinationWorkspace.Value);
 			}
@@ -69,11 +69,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			};
 			RelativityFacade.Instance.Resolve<IKeywordSearchService>().Require(_testsImplementationTestFixture.Workspace.ArtifactID, keywordSearch);
 
-			// Act
-			var integrationPointListPage = Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID);
-			var integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
+            // Act
+            IntegrationPointListPage integrationPointListPage = Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID);
+            IntegrationPointEditPage integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
 
-			var integrationPointViewPage = integrationPointEditPage.CreateSavedSearchToFolderIntegrationPoint(integrationPointName,
+            IntegrationPointViewPage integrationPointViewPage = integrationPointEditPage.CreateSavedSearchToFolderIntegrationPoint(integrationPointName,
 				destinationWorkspace, keywordSearch.Name, copyNativesMode: RelativityProviderCopyNativeFiles.PhysicalFiles);
 
 			integrationPointViewPage = integrationPointViewPage.RunIntegrationPoint(integrationPointName);
@@ -127,7 +127,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			RelativityFacade.Instance.Resolve<IProductionPlaceholderService>().Create(_testsImplementationTestFixture.Workspace.ArtifactID, productionPlaceholder);
 
 			const int productionDocumentsCount = 5;
-			var production = new Testing.Framework.Models.Production
+            Testing.Framework.Models.Production production = new Testing.Framework.Models.Production
 			{
 				Name = nameof(ProductionImagesGoldFlow),
 				Numbering = new ProductionNumbering
@@ -160,13 +160,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			};
 			RelativityFacade.Instance.ProduceProduction(_testsImplementationTestFixture.Workspace, production);
 
-			// Act
-			var integrationPointListPage = Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID);
-			var integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
+            // Act
+            IntegrationPointListPage integrationPointListPage = Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID);
+            IntegrationPointEditPage integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
 
-			var integrationPointViewPage = integrationPointEditPage.CreateProductionToFolderIntegrationPoint(
-				integrationPointName, destinationWorkspace, production);
-			
+            IntegrationPointViewPage integrationPointViewPage = integrationPointEditPage
+				.CreateProductionToFolderIntegrationPoint(integrationPointName, destinationWorkspace, production);
+
 			integrationPointViewPage = integrationPointViewPage.RunIntegrationPoint(integrationPointName);
 
 			// Assert
@@ -189,7 +189,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			IntegrationPointListPage integrationPointListPage = Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID);
 			IntegrationPointEditPage integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
 
-			integrationPointEditPage.CreateSyncRdoIntegrationPoint(integrationPointName, destinationWorkspace, IntegrationPointTransferredObjects.Entity, "Entities - Legal Hold View");
+			IntegrationPointViewPage integrationPointViewPage = integrationPointEditPage
+				.CreateSyncRdoIntegrationPoint(integrationPointName, destinationWorkspace, IntegrationPointTransferredObjects.Entity, "Entities - Legal Hold View");
 
 			// Assert
 		}
