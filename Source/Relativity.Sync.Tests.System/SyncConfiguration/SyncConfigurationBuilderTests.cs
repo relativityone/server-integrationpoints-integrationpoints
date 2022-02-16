@@ -6,6 +6,7 @@ using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.Options;
@@ -21,14 +22,16 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 	{
 		private RdoOptions _rdoOptions;
 
-		private ISyncServiceManager _syncServicesMgr;
+		private ISourceServiceFactoryForAdmin _syncServicesMgrForAdmin;
+		private ISourceServiceFactoryForUser _syncServicesMgrForUser;
 
 		protected override async Task ChildSuiteSetup()
 		{
 			await base.ChildSuiteSetup();
 			
 			_rdoOptions = DefaultGuids.DefaultRdoOptions;
-			_syncServicesMgr = new ServicesManagerStub();
+			_syncServicesMgrForAdmin = new SourceServiceFactoryStub();
+            _syncServicesMgrForUser = new SourceServiceFactoryStub();
 		}
 
 		[IdentifiedTest("08889EA2-DFFB-4F21-8723-5D2C4F23646C")]
@@ -53,7 +56,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			DocumentSyncOptions options = new DocumentSyncOptions(savedSearchId, destinationFolderId);
 			
 			// Act
-			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, _syncServicesMgr)
+			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, _syncServicesMgrForAdmin, _syncServicesMgrForUser)
 				.ConfigureRdos(_rdoOptions)
 				.ConfigureDocumentSync(options)
 				.SaveAsync().ConfigureAwait(false);
@@ -73,7 +76,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 		
 		private async Task<RelativityObject> ReadSyncConfiguration(int workspaceId, int configurationId)
 		{
-			using (IObjectManager objectManager = _syncServicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
+			using (IObjectManager objectManager = _syncServicesMgrForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false).GetAwaiter().GetResult())
 			{
 				var request = new QueryRequest
 				{

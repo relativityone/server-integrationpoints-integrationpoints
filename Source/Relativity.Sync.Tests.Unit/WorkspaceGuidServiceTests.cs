@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Tests.Unit
 {
@@ -15,16 +15,16 @@ namespace Relativity.Sync.Tests.Unit
 	internal sealed class WorkspaceGuidServiceTests
 	{
 		private Mock<IObjectManager> _objectManager;
-		private Mock<ISyncServiceManager> _servicesMgr;
+		private Mock<ISourceServiceFactoryForAdmin> _servicesMgr;
 		private WorkspaceGuidService _instance;
 		private Guid _workspaceGuid;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_servicesMgr = new Mock<ISyncServiceManager>();
+			_servicesMgr = new Mock<ISourceServiceFactoryForAdmin>();
 			_objectManager = new Mock<IObjectManager>();
-			_servicesMgr.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.System)).Returns(_objectManager.Object);
+			_servicesMgr.Setup(x => x.CreateProxyAsync<IObjectManager>()).Returns(Task.FromResult(_objectManager.Object));
 			_workspaceGuid = Guid.NewGuid();
 			QueryResult queryResult = new QueryResult()
 			{

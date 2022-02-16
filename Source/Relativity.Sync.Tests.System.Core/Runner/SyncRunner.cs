@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Autofac;
 using Relativity.API;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Tests.System.Core.Helpers.APIHelper;
 using Relativity.Telemetry.APM;
 using Relativity.Toggles;
@@ -15,7 +16,8 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 	/// </summary>
 	public class SyncRunner
 	{
-		private readonly ISyncServiceManager _serviceManager;
+		private readonly ISourceServiceFactoryForAdmin _servicesManagerForAdmin;
+		private readonly ISourceServiceFactoryForUser _servicesManagerForUser;
 		private readonly Uri _relativityUri;
 		private readonly ISyncLog _logger;
 		private readonly IToggleProvider _toggleProvider;
@@ -25,13 +27,15 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		/// <param name="serviceManager">Authenticated service manager</param>
+		/// <param name="servicesManagerForAdmin">Authenticated service manager with admin privileges</param>
+		/// <param name="servicesManagerForUser">Authenticated service manager with user privileges</param>
 		/// <param name="relativityUri">Host name of relativity - no suffixes</param>
 		/// <param name="apmClient">APM implementation</param>
 		/// <param name="logger">Logger</param>
-		public SyncRunner(ISyncServiceManager serviceManager, Uri relativityUri, IAPM apmClient, ISyncLog logger, IToggleProvider toggleProvider = null)
+		public SyncRunner(ISourceServiceFactoryForAdmin servicesManagerForAdmin, ISourceServiceFactoryForUser servicesManagerForUser, Uri relativityUri, IAPM apmClient, ISyncLog logger, IToggleProvider toggleProvider = null)
 		{
-			_serviceManager = serviceManager;
+			_servicesManagerForAdmin = servicesManagerForAdmin;
+            _servicesManagerForUser = servicesManagerForUser;
 			_relativityUri = relativityUri;
 			_logger = logger;
 			_toggleProvider = toggleProvider;
@@ -109,7 +113,7 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 			}
 			
 			var jobFactory = new SyncJobFactory();
-			var relativityServices = new RelativityServices(_apmClient, _serviceManager, relativityUri, _helper);
+			var relativityServices = new RelativityServices(_apmClient, _servicesManagerForAdmin, _servicesManagerForUser, relativityUri, _helper);
 
 
 			return jobFactory.Create(containerBuilder.Build(), parameters, relativityServices, _logger);

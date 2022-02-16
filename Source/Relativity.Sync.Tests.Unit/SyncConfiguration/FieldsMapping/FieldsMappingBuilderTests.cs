@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Interfaces.Field.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
 using Relativity.Sync.SyncConfiguration.FieldsMapping;
 
@@ -32,11 +33,11 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration.FieldsMapping
 			_objectManagerFake = new Mock<IObjectManager>();
 			_fieldManagerFake = new Mock<IFieldManager>();
 
-			var syncServicesMgrFake = new Mock<ISyncServiceManager>();
-			syncServicesMgrFake.Setup(x => x.CreateProxy<IObjectManager>(It.IsAny<ExecutionIdentity>()))
-				.Returns(_objectManagerFake.Object);
-			syncServicesMgrFake.Setup(x => x.CreateProxy<IFieldManager>(It.IsAny<ExecutionIdentity>()))
-				.Returns(_fieldManagerFake.Object);
+			var syncServicesMgrFake = new Mock<ISourceServiceFactoryForAdmin>();
+			syncServicesMgrFake.Setup(x => x.CreateProxyAsync<IObjectManager>())
+				.Returns(Task.FromResult(_objectManagerFake.Object));
+			syncServicesMgrFake.Setup(x => x.CreateProxyAsync<IFieldManager>())
+				.Returns(Task.FromResult(_fieldManagerFake.Object));
 
 			_sut = new FieldsMappingBuilder(_SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID, 
 				_rdoArtifactTypeId, _rdoArtifactTypeId,

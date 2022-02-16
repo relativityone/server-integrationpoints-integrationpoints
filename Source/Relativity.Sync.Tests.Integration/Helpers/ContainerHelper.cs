@@ -12,6 +12,7 @@ using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.InstanceSetting;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Nodes;
 using Relativity.Sync.Tests.Common;
@@ -116,13 +117,16 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			});
 			instanceSettingManager.Setup(x => x.QueryAsync(It.IsAny<Services.Query>())).ReturnsAsync(resultSet);
 
-			Mock<ISyncServiceManager> servicesMgr = new Mock<ISyncServiceManager>();
-			servicesMgr.Setup(x => x.CreateProxy<IInstanceSettingManager>(It.IsAny<ExecutionIdentity>())).Returns(instanceSettingManager.Object);
+			Mock<ISourceServiceFactoryForAdmin> servicesMgrForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
+            servicesMgrForAdmin.Setup(x => x.CreateProxyAsync<IInstanceSettingManager>()).Returns(Task.FromResult(instanceSettingManager.Object));
+
+            Mock<ISourceServiceFactoryForUser> servicesMgrForUser = new Mock<ISourceServiceFactoryForUser>();
+			servicesMgrForUser.Setup(x => x.CreateProxyAsync<IInstanceSettingManager>()).Returns(Task.FromResult(instanceSettingManager.Object));
 
 			Uri authenticationUri = new Uri("https://localhost", UriKind.RelativeOrAbsolute);
 
 			IHelper helper = Mock.Of<IHelper>();
-			return new RelativityServices(apm, servicesMgr.Object, authenticationUri, helper);
+			return new RelativityServices(apm, servicesMgrForAdmin.Object, servicesMgrForUser.Object, authenticationUri, helper);
 		}
 
         public static void MockSearchManagerFactory(ContainerBuilder containerBuilder)

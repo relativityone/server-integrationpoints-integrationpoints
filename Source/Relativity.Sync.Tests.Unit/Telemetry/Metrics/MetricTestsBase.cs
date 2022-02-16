@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Telemetry;
 using Relativity.Telemetry.Services.Metrics;
 
@@ -35,9 +36,9 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 
 			ISyncMetricsSink splunkSink = new SplunkSyncMetricsSink(_syncLogMock.Object);
 
-			Mock<ISyncServiceManager> serviceManager = new Mock<ISyncServiceManager>();
-			serviceManager.Setup(x => x.CreateProxy<IMetricsManager>(It.IsAny<ExecutionIdentity>()))
-				.Returns(_metricsManagerMock.Object);
+			Mock<ISourceServiceFactoryForAdmin> serviceManager = new Mock<ISourceServiceFactoryForAdmin>();
+			serviceManager.Setup(x => x.CreateProxyAsync<IMetricsManager>())
+				.Returns(Task.FromResult(_metricsManagerMock.Object));
 
 			Mock<IWorkspaceGuidService> workspaceGuidService = new Mock<IWorkspaceGuidService>();
 			workspaceGuidService.Setup(x => x.GetWorkspaceGuidAsync(_WORKSPACE_ID))

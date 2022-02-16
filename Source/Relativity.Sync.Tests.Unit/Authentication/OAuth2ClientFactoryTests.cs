@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.Services.Security;
 using Relativity.Services.Security.Models;
 using Relativity.Sync.Authentication;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Tests.Unit.Authentication
@@ -16,7 +16,7 @@ namespace Relativity.Sync.Tests.Unit.Authentication
 	[TestFixture]
 	public class OAuth2ClientFactoryTests
 	{
-		private Mock<ISyncServiceManager> _servicesMgr;
+		private Mock<ISourceServiceFactoryForAdmin> _servicesMgr;
 		private OAuth2ClientFactory _sut;
 
 		private const string _OAUTH2_CLIENT_NAME_PREFIX = "F6B8C2B4B3E8465CA00775F699375D3C";
@@ -24,7 +24,7 @@ namespace Relativity.Sync.Tests.Unit.Authentication
 		[OneTimeSetUp]
 		public void SetUp()
 		{
-			_servicesMgr = new Mock<ISyncServiceManager>();
+			_servicesMgr = new Mock<ISourceServiceFactoryForAdmin>();
 			_sut = new OAuth2ClientFactory(_servicesMgr.Object, new EmptyLogger());
 		}
 
@@ -37,7 +37,7 @@ namespace Relativity.Sync.Tests.Unit.Authentication
 
 			Mock<IOAuth2ClientManager> clientManager = new Mock<IOAuth2ClientManager>();
 			clientManager.Setup(x => x.ReadAllAsync()).ReturnsAsync(new List<Services.Security.Models.OAuth2Client>() {expectedClient});
-			_servicesMgr.Setup(x => x.CreateProxy<IOAuth2ClientManager>(ExecutionIdentity.System)).Returns(clientManager.Object);
+			_servicesMgr.Setup(x => x.CreateProxyAsync<IOAuth2ClientManager>()).Returns(Task.FromResult(clientManager.Object));
 
 			// act
 			Services.Security.Models.OAuth2Client actualClient = await _sut.GetOauth2ClientAsync(userId).ConfigureAwait(false);
@@ -58,7 +58,7 @@ namespace Relativity.Sync.Tests.Unit.Authentication
 			Mock<IOAuth2ClientManager> clientManager = new Mock<IOAuth2ClientManager>();
 			clientManager.Setup(x => x.ReadAllAsync()).ReturnsAsync(Enumerable.Empty<Services.Security.Models.OAuth2Client>().ToList());
 			clientManager.Setup(x => x.CreateAsync(clientName, OAuth2Flow.ClientCredentials, It.IsAny<IEnumerable<Uri>>(), userId)).ReturnsAsync(expectedClient);
-			_servicesMgr.Setup(x => x.CreateProxy<IOAuth2ClientManager>(ExecutionIdentity.System)).Returns(clientManager.Object);
+			_servicesMgr.Setup(x => x.CreateProxyAsync<IOAuth2ClientManager>()).Returns(Task.FromResult(clientManager.Object));
 
 			// act
 			Services.Security.Models.OAuth2Client actualClient = await _sut.GetOauth2ClientAsync(userId).ConfigureAwait(false);
@@ -75,7 +75,7 @@ namespace Relativity.Sync.Tests.Unit.Authentication
 			const int userId = 1;
 			Mock<IOAuth2ClientManager> clientManager = new Mock<IOAuth2ClientManager>();
 			clientManager.Setup(x => x.ReadAllAsync()).Throws<Exception>();
-			_servicesMgr.Setup(x => x.CreateProxy<IOAuth2ClientManager>(ExecutionIdentity.System)).Returns(clientManager.Object);
+			_servicesMgr.Setup(x => x.CreateProxyAsync<IOAuth2ClientManager>()).Returns(Task.FromResult(clientManager.Object));
 
 			// act
 			Func<Task> action = async () => await _sut.GetOauth2ClientAsync(userId).ConfigureAwait(false);
@@ -91,7 +91,7 @@ namespace Relativity.Sync.Tests.Unit.Authentication
 			Mock<IOAuth2ClientManager> clientManager = new Mock<IOAuth2ClientManager>();
 			clientManager.Setup(x => x.CreateAsync(
 				It.IsAny<string>(), It.IsAny<OAuth2Flow>(), It.IsAny<IEnumerable<Uri>>(), It.IsAny<int?>())).Throws<Exception>();
-			_servicesMgr.Setup(x => x.CreateProxy<IOAuth2ClientManager>(ExecutionIdentity.System)).Returns(clientManager.Object);
+			_servicesMgr.Setup(x => x.CreateProxyAsync<IOAuth2ClientManager>()).Returns(Task.FromResult(clientManager.Object));
 
 			// act
 			Func<Task> action = async () => await _sut.GetOauth2ClientAsync(userId).ConfigureAwait(false);

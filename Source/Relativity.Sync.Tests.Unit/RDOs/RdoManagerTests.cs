@@ -18,9 +18,9 @@ using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Interfaces.Tab;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.RDOs.Framework.Attributes;
-using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Common.RDOs;
 
 namespace Relativity.Sync.Tests.Unit.RDOs
@@ -32,7 +32,7 @@ namespace Relativity.Sync.Tests.Unit.RDOs
         private const int CreatedFieldId = 7;
 
         private Mock<IObjectManager> _objectManagerMock;
-        private Mock<ISyncServiceManager> _syncServicesMgrMock;
+        private Mock<ISourceServiceFactoryForAdmin> _syncServicesMgrMock;
         private Mock<IFieldManager> _fieldManagerMock;
         private Mock<IObjectTypeManager> _objectTypeManagerMock;
         private Mock<ITabManager> _tabManagerMock;
@@ -45,7 +45,7 @@ namespace Relativity.Sync.Tests.Unit.RDOs
         public void SetUp()
         {
             _objectManagerMock = new Mock<IObjectManager>();
-            _syncServicesMgrMock = new Mock<ISyncServiceManager>();
+            _syncServicesMgrMock = new Mock<ISourceServiceFactoryForAdmin>();
             _fieldManagerMock = new Mock<IFieldManager>();
             _objectTypeManagerMock = new Mock<IObjectTypeManager>();
             _tabManagerMock = new Mock<ITabManager>();
@@ -53,20 +53,20 @@ namespace Relativity.Sync.Tests.Unit.RDOs
             _rdoGuidProviderMock = new Mock<IRdoGuidProvider>();
             _artifactGuidManagerMock = new Mock<IArtifactGuidManager>();
 
-            _syncServicesMgrMock.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.System))
-                .Returns(_objectManagerMock.Object);
+            _syncServicesMgrMock.Setup(x => x.CreateProxyAsync<IObjectManager>())
+                .Returns(Task.FromResult(_objectManagerMock.Object));
 
-            _syncServicesMgrMock.Setup(x => x.CreateProxy<IObjectTypeManager>(ExecutionIdentity.System))
-	            .Returns(_objectTypeManagerMock.Object);
+            _syncServicesMgrMock.Setup(x => x.CreateProxyAsync<IObjectTypeManager>())
+	            .Returns(Task.FromResult(_objectTypeManagerMock.Object));
 
-            _syncServicesMgrMock.Setup(x => x.CreateProxy<ITabManager>(ExecutionIdentity.System))
-	            .Returns(_tabManagerMock.Object);
+            _syncServicesMgrMock.Setup(x => x.CreateProxyAsync<ITabManager>())
+	            .Returns(Task.FromResult(_tabManagerMock.Object));
 
-            _syncServicesMgrMock.Setup(x => x.CreateProxy<IFieldManager>(ExecutionIdentity.System)).Returns(
-                _fieldManagerMock.Object);
+            _syncServicesMgrMock.Setup(x => x.CreateProxyAsync<IFieldManager>()).Returns(
+                Task.FromResult(_fieldManagerMock.Object));
 
-            _syncServicesMgrMock.Setup(x => x.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System))
-                .Returns(_artifactGuidManagerMock.Object);
+            _syncServicesMgrMock.Setup(x => x.CreateProxyAsync<IArtifactGuidManager>())
+                .Returns(Task.FromResult(_artifactGuidManagerMock.Object));
 
             _objectManagerMock.Setup(x =>
                     x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))

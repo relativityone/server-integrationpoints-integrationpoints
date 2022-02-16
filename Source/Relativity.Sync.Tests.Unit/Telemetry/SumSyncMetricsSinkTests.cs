@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.API;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Tests.Common;
@@ -29,9 +30,9 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 			_metricsManagerMock = new Mock<IMetricsManager>(MockBehavior.Strict);
 			_metricsManagerMock.Setup(x => x.Dispose());
 
-			Mock<ISyncServiceManager> syncServiceManager = new Mock<ISyncServiceManager>();
-			syncServiceManager.Setup(x => x.CreateProxy<IMetricsManager>(It.IsAny<ExecutionIdentity>()))
-				.Returns(_metricsManagerMock.Object);
+			Mock<ISourceServiceFactoryForAdmin> syncServiceManager = new Mock<ISourceServiceFactoryForAdmin>();
+			syncServiceManager.Setup(x => x.CreateProxyAsync<IMetricsManager>())
+				.Returns(Task.FromResult(_metricsManagerMock.Object));
 
 			_syncLogMock = new Mock<ISyncLog>();
 
