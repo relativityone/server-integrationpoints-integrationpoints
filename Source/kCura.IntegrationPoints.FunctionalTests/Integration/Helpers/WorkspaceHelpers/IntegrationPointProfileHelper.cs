@@ -63,6 +63,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 				ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
 				FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
 				ArtifactTypeId = (int)ArtifactType.Document,
+				DestinationArtifactTypeId = (int)ArtifactType.Document,
 				DestinationFolderArtifactId = destinationFolder.ArtifactId,
 				CaseArtifactId = destinationWorkspace.ArtifactId,
 				WebServiceURL = @"//some/service/url/relativity"
