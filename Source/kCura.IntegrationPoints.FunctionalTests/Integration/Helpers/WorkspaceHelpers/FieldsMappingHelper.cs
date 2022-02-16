@@ -16,11 +16,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 		{
 		}
 	
-		public List<FieldMap> PrepareIdentifierFieldsMapping(WorkspaceTest destinationWorkspace)
+		public List<FieldMap> PrepareIdentifierFieldsMapping(WorkspaceTest destinationWorkspace, int artifactTypeId)
 		{
-			FieldTest sourceControlNumber = Workspace.Fields.First(x => x.IsIdentifier);
+			FieldTest sourceIdentifier = Workspace.Fields.First(x => x.ObjectTypeId == artifactTypeId && x.IsIdentifier);
 			
-			FieldTest destinationControlNumber = destinationWorkspace.Fields.First(x => x.IsIdentifier);
+			FieldTest destinationIdentifier = destinationWorkspace.Fields.First(x => x.ObjectTypeId == artifactTypeId && x.IsIdentifier);
 
 			return new List<FieldMap>
 			{
@@ -28,8 +28,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 				{
 					SourceField = new FieldEntry
 					{
-						DisplayName = sourceControlNumber.Name,
-						FieldIdentifier = sourceControlNumber.ArtifactId.ToString(),
+						DisplayName = sourceIdentifier.Name,
+						FieldIdentifier = sourceIdentifier.ArtifactId.ToString(),
 						FieldType = FieldType.String,
 						IsIdentifier = true,
 						IsRequired = true,
@@ -37,8 +37,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 					},
 					DestinationField = new FieldEntry
 					{
-						DisplayName = destinationControlNumber.Name,
-						FieldIdentifier = destinationControlNumber.ArtifactId.ToString(),
+						DisplayName = destinationIdentifier.Name,
+						FieldIdentifier = destinationIdentifier.ArtifactId.ToString(),
 						FieldType = FieldType.String,
 						IsIdentifier = true,
 						IsRequired = true,
@@ -51,7 +51,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 		
 		public List<FieldMap> PrepareIdentifierFieldsMappingForImport(string identifierFieldName)
 		{
-			FieldTest sourceControlNumber = Workspace.Fields.First(x => x.IsIdentifier);
+			FieldTest sourceIdentifier = Workspace.Fields.First(x => x.IsIdentifier);
 			
 			return new List<FieldMap>
 			{
@@ -68,8 +68,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 					},
 					DestinationField = new FieldEntry
 					{
-						DisplayName = sourceControlNumber.Name,
-						FieldIdentifier = sourceControlNumber.ArtifactId.ToString(),
+						DisplayName = sourceIdentifier.Name,
+						FieldIdentifier = sourceIdentifier.ArtifactId.ToString(),
 						FieldType = FieldType.String,
 						IsIdentifier = true,
 						IsRequired = true,
@@ -82,7 +82,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 		public List<FieldMap> PrepareIdentifierFieldsMappingForLoadFileImport(string identifierFieldName)
 		{
-			FieldTest sourceControlNumber = Workspace.Fields.First(x => x.IsIdentifier);
+			FieldTest sourceIdentifier = Workspace.Fields.First(x => x.IsIdentifier);
 
 			return new List<FieldMap>
 			{
@@ -99,8 +99,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 					},
 					DestinationField = new FieldEntry
 					{
-						DisplayName = sourceControlNumber.Name,
-						FieldIdentifier = sourceControlNumber.ArtifactId.ToString(),
+						DisplayName = sourceIdentifier.Name,
+						FieldIdentifier = sourceIdentifier.ArtifactId.ToString(),
 						FieldType = FieldType.String,
 						IsIdentifier = true,
 						IsRequired = true,
@@ -113,7 +113,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 		public List<FieldMap> PrepareIdentifierFieldsMappingForLDAPEntityImport()
 		{
-			Dictionary<string, FieldTest> entityFields = Workspace.Fields.Where(x => x.ObjectTypeId == Const.LDAP._ENTITY_TYPE_ARTIFACT_ID)
+			Dictionary<string, FieldTest> entityFields = Workspace.Fields.Where(x => x.ObjectTypeId == Const.ArtifactTypesIds.ENTITY_TYPE_ARTIFACT_ID)
 				.ToDictionary(x => x.Name, x => x);
 
 			return new List<FieldMap>

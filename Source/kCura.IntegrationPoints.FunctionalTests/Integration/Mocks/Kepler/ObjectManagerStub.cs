@@ -7,12 +7,9 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data;
 using Moq;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
-using Relativity.Services.DataContracts.DTOs.Results;
-using Relativity.Services.Field;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using FieldRef = Relativity.Services.Objects.DataContracts.FieldRef;
-using FieldType = Relativity.Services.FieldType;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
@@ -43,7 +40,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 return Task.FromResult(new MassCreateResult
                 {
                     Success = true,
-                    Objects = createdObjects.Select(x => new RelativityObjectRef {ArtifactID = x.ArtifactID})
+                    Objects = createdObjects.Select(x => new RelativityObjectRef { ArtifactID = x.ArtifactID })
                         .ToList()
                 });
             });
@@ -58,16 +55,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
                     if (foundRdo != null)
                     {
-	                    RelativityObject relativityObject = GetRelativityObject(request, foundRdo);
+                        RelativityObject relativityObject = GetRelativityObject(request, foundRdo);
 
-	                    if (relativityObject.FieldValues.Any(x => x.Field.Name == null))
-	                    {
+                        if (relativityObject.FieldValues.Any(x => x.Field.Name == null))
+                        {
                             foundRdo.LoadRelativityObjectByGuid(foundRdo.GetType(), relativityObject);
-						}
-	                    else
-	                    {
-		                    foundRdo.LoadRelativityObjectByName(foundRdo.GetType(),
-			                    relativityObject);
+                        }
+                        else
+                        {
+                            foundRdo.LoadRelativityObjectByName(foundRdo.GetType(),
+                                relativityObject);
                         }
                     }
 
@@ -79,7 +76,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 catch (Exception)
                 {
                     Debugger.Break();
-                    return null;
+                    return Task.FromResult<UpdateResult>(null);
                 }
             }
             );
@@ -88,6 +85,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             SetupJobHistory();
             SetupDocumentFields();
             SetupSavedSearch();
+            SetupView();
             SetupSavedSearchDocuments();
             SetupProductionDocuments();
             SetupFolderDocuments();
@@ -114,12 +112,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 newRdo.LoadRelativityObjectByName<JobHistoryTest>(objectCreationInfo.CreatedObject);
                 workspace.JobHistory.Add(newRdo);
             }
-            else if(objectCreationInfo.ObjectTypeGuid == ObjectTypeGuids.JobHistoryErrorGuid)
+            else if (objectCreationInfo.ObjectTypeGuid == ObjectTypeGuids.JobHistoryErrorGuid)
             {
                 var newRdo = new JobHistoryErrorTest();
                 newRdo.LoadRelativityObjectByGuid<JobHistoryErrorTest>(objectCreationInfo.CreatedObject);
                 workspace.JobHistoryErrors.Add(newRdo);
-			}
+            }
             else if (objectCreationInfo.ObjectTypeGuid == ObjectTypeGuids.IntegrationPointProfileGuid)
             {
                 var newRdo = new IntegrationPointProfileTest();
@@ -150,7 +148,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     foundRdo = workspace.ReadArtifact(request.Object.ArtifactID);
                 }
 
-                ReadResult result = new ReadResult {Object = foundRdo?.ToRelativityObject()};
+                ReadResult result = new ReadResult { Object = foundRdo?.ToRelativityObject() };
 
                 return Task.FromResult(result);
             }
@@ -227,7 +225,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             {
                 // we want to return field values in correct order
                 Values = fields.Select(f => relativityObject.FieldValues.First(of => of.Field.Name == f.Name))
-                    .Select(x => (object) x).ToList(),
+                    .Select(x => (object)x).ToList(),
                 ArtifactID = relativityObject.ArtifactID
             };
         }
@@ -254,7 +252,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     collectionGetter(workspace).Where(x => artifactIds.Contains(x.ArtifactId))
                     , foundObjects);
             }
-            
+
             return foundObjects;
         }
 
@@ -359,7 +357,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 ParentObject = request.ParentObject
             };
         }
-        
+
         private RelativityObject GetRelativityObject(UpdateRequest request, RdoTestBase rdo)
         {
             return new RelativityObject()
@@ -370,11 +368,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     Field = new Field
                     {
                         Name = x.Field.Name,
-                        Guids = x.Field.Guid.HasValue ? new List<Guid>{x.Field.Guid.Value} : new List<Guid>()
+                        Guids = x.Field.Guid.HasValue ? new List<Guid> { x.Field.Guid.Value } : new List<Guid>()
                     },
                     Value = x.Value
                 }).ToList(),
-                ParentObject = new RelativityObjectRef {ArtifactID = rdo.ParenObjectArtifactId}
+                ParentObject = new RelativityObjectRef { ArtifactID = rdo.ParenObjectArtifactId }
             };
         }
 
