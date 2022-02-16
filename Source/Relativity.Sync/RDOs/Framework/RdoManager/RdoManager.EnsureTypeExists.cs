@@ -32,7 +32,7 @@ namespace Relativity.Sync.RDOs.Framework
         private async Task<(int artifactId, HashSet<Guid>)?> GetTypeIdAsync(string typeName,
             int workspaceId)
         {
-            using (IObjectManager objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
+            using (IObjectManager objectManager = await _servicesMgr.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
                 _logger.LogDebug("Querying RDO type ({{name}}) existence in workspace {workspaceId}", typeName, workspaceId);
                 QueryResult queryResult = await objectManager
@@ -70,7 +70,7 @@ namespace Relativity.Sync.RDOs.Framework
         
         private async Task<HashSet<Guid>> GetExistingFieldsAsync(int artifactTypeId, int workspaceId)
         {
-            using (IObjectManager objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
+            using (IObjectManager objectManager = await _servicesMgr.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
                 var queryResult = await objectManager.QueryAsync(workspaceId, new QueryRequest()
                 {
@@ -152,8 +152,8 @@ namespace Relativity.Sync.RDOs.Framework
         private async Task<(int artifactId, HashSet<Guid>)> CreateTypeAsync(RdoTypeInfo typeInfo, int workspaceId)
         {
             _logger.LogDebug("Creating type ({name}:{guid}) in workspace {workspaceId}", typeInfo.Name, typeInfo.TypeGuid, workspaceId);
-            using (IObjectTypeManager objectTypeManager = _servicesMgr.CreateProxy<IObjectTypeManager>(ExecutionIdentity.System))
-            using (IArtifactGuidManager guidManager = _servicesMgr.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System))
+            using (IObjectTypeManager objectTypeManager = await _servicesMgr.CreateProxyAsync<IObjectTypeManager>().ConfigureAwait(false))
+            using (IArtifactGuidManager guidManager = await _servicesMgr.CreateProxyAsync<IArtifactGuidManager>().ConfigureAwait(false))
             {
 	            ObjectTypeRequest objectTypeRequest = GetObjectTypeDefinition(typeInfo);
 
@@ -168,8 +168,8 @@ namespace Relativity.Sync.RDOs.Framework
 
         private async Task DeleteTabAsync(int workspaceId, string objectTypeName)
         {
-            using (IObjectManager objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
-	        using (ITabManager tabManager = _servicesMgr.CreateProxy<ITabManager>(ExecutionIdentity.System))
+            using (IObjectManager objectManager = await _servicesMgr.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+	        using (ITabManager tabManager = await _servicesMgr.CreateProxyAsync<ITabManager>().ConfigureAwait(false))
 	        {
 		        QueryResult queryResult = await objectManager.QueryAsync(workspaceId, new QueryRequest()
 		        {
@@ -225,9 +225,9 @@ namespace Relativity.Sync.RDOs.Framework
             int artifactId)
         {
             using (IArtifactGuidManager guidManager =
-                _servicesMgr.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System))
+                   await _servicesMgr.CreateProxyAsync<IArtifactGuidManager>().ConfigureAwait(false))
             {
-                using (IFieldManager fieldManager = _servicesMgr.CreateProxy<IFieldManager>(ExecutionIdentity.System))
+                using (IFieldManager fieldManager = await _servicesMgr.CreateProxyAsync<IFieldManager>().ConfigureAwait(false))
                 {
                     foreach (RdoFieldInfo fieldInfo in typeInfo.Fields.Values.Where(f =>
                         !existingFields.Contains(f.Guid)))

@@ -1,6 +1,7 @@
 ﻿using Relativity.Telemetry.APM;
 using System;
 using Relativity.API;
+using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync
 {
@@ -20,11 +21,11 @@ namespace Relativity.Sync
 		Uri AuthenticationUri { get; }
 
 		/// <summary>
-		///     Relativity authentication endpoint address
+		///     Relativity authentication endpoint address with admin privileges
 		/// </summary>
-		ISyncServiceManager ServicesMgr { get; }
+		ISourceServiceFactoryForAdmin ServicesMgr { get; }
 
-		/// <summary>
+        /// <summary>
 		///     Interface with helper methods to programmatically interact with Relativity
 		/// </summary>
 		IHelper Helper { get; }

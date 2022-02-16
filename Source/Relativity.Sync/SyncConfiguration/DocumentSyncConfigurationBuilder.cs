@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.Services.Interfaces.Field;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.SyncConfiguration.Options;
 using Relativity.Sync.SyncConfiguration.FieldsMapping;
@@ -18,7 +18,7 @@ namespace Relativity.Sync.SyncConfiguration
 		
 		private DestinationFolderStructureOptions _destinationFolderStructureOptions;
 
-		internal DocumentSyncConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr,
+		internal DocumentSyncConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForAdmin servicesMgr,
 			IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, DocumentSyncOptions options,
 			RdoOptions rdoOptions, IRdoManager rdoManager) 
 			: base(syncContext, servicesMgr, rdoOptions, rdoManager, serializer)
@@ -127,7 +127,7 @@ namespace Relativity.Sync.SyncConfiguration
 
 			if (_destinationFolderStructureOptions.DestinationFolderStructure == DestinationFolderStructureBehavior.ReadFromField)
 			{
-				using (var fieldManager = ServicesMgr.CreateProxy<IFieldManager>(ExecutionIdentity.System))
+				using (var fieldManager = await ServicesMgr.CreateProxyAsync<IFieldManager>())
 				{
 					var folderPathField = await fieldManager.ReadAsync(SyncContext.SourceWorkspaceId,
 						_destinationFolderStructureOptions.FolderPathSourceFieldId).ConfigureAwait(false);

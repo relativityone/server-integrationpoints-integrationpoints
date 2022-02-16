@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Relativity.API;
 using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.RDOs;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.RDOs.Framework;
 
 namespace Relativity.Sync.Storage
@@ -18,16 +16,16 @@ namespace Relativity.Sync.Storage
 		private readonly SyncJobParameters _syncJobParameters;
 		private readonly Lazy<string> _jobNameLazy;
 
-		public NotificationConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, ISyncServiceManager servicesManager)
+		public NotificationConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, ISourceServiceFactoryForUser servicesManager)
 		{
 			_cache = cache;
 			_syncJobParameters = syncJobParameters;
 			
 			_jobNameLazy = new Lazy<string>(() =>
-			{
-				using (var objectManager = servicesManager.CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser))
+            {
+                using (var objectManager = servicesManager.CreateProxyAsync<IObjectManager>().ConfigureAwait(false).GetAwaiter().GetResult())
 				{
-					return objectManager.GetObjectNameAsync(syncJobParameters.WorkspaceId,
+                    return objectManager.GetObjectNameAsync(syncJobParameters.WorkspaceId,
 							_cache.GetFieldValue(x => x.JobHistoryId), 
 							_cache.GetFieldValue(x => x.JobHistoryType))
 						.GetAwaiter().GetResult();

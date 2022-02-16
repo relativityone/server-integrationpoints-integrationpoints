@@ -3,6 +3,7 @@ using System.Data;
 using Relativity.Sync.SyncConfiguration.Options;
 using Relativity.Sync.Utils;
 using System.Linq.Expressions;
+using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.SyncConfiguration
 {
@@ -10,18 +11,21 @@ namespace Relativity.Sync.SyncConfiguration
     public class SyncConfigurationBuilder : ISyncConfigurationBuilder
     {
         private readonly ISyncContext _syncContext;
-        private readonly ISyncServiceManager _servicesMgr;
+        private readonly ISourceServiceFactoryForAdmin _servicesMgrForAdmin;
+        private readonly ISourceServiceFactoryForUser _servicesMgrForUser;
         private readonly ISerializer _serializer;
 
         /// <summary>
         /// Creates new instance of <see cref="SyncConfigurationBuilder"/> class.
         /// </summary>
         /// <param name="syncContext">Sync configuration context.</param>
-        /// <param name="servicesMgr">Sync service manager.</param>
-        public SyncConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr)
+        /// <param name="servicesMgrForAdmin">Sync Service Manager with Admin privileges</param>
+        /// <param name="servicesMgrForUser">Sync Service Manager with User privileges</param>
+        public SyncConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForAdmin servicesMgrForAdmin, ISourceServiceFactoryForUser servicesMgrForUser)
         {
             _syncContext = syncContext;
-            _servicesMgr = servicesMgr;
+            _servicesMgrForAdmin = servicesMgrForAdmin;
+            _servicesMgrForUser = servicesMgrForUser;
 
             _serializer = new JSONSerializer();
         }
@@ -30,7 +34,7 @@ namespace Relativity.Sync.SyncConfiguration
         public ISyncJobConfigurationBuilder ConfigureRdos(RdoOptions rdoOptions)
         {
             ValidateInput(rdoOptions);
-            return new SyncJobConfigurationBuilder(_syncContext, _servicesMgr, rdoOptions, _serializer);
+            return new SyncJobConfigurationBuilder(_syncContext, _servicesMgrForAdmin, _servicesMgrForUser, rdoOptions, _serializer);
         }
 
         private void ValidateInput(RdoOptions rdoOptions)

@@ -23,7 +23,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 			IHelper helper = new TestHelper();
 
-			IRelativityServices relativityServices = new RelativityServices(apm, new ServicesManagerStub(), AppSettings.RelativityUrl, helper);
+			IRelativityServices relativityServices = new RelativityServices(apm, new SourceServiceFactoryStub(), AppSettings.RelativityUrl, helper);
 
 			factory.RegisterSyncDependencies(containerBuilder, syncParameters, relativityServices, new SyncJobExecutionConfiguration(), new ConsoleLogger());
 

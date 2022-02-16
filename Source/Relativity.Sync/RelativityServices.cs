@@ -1,5 +1,6 @@
 ﻿using System;
 using Relativity.API;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync
@@ -10,11 +11,11 @@ namespace Relativity.Sync
 		/// <summary>
 		///     Constructor
 		/// </summary>
-		public RelativityServices(IAPM apm, ISyncServiceManager servicesMgr, Uri authenticationUri, IHelper helper)
+		public RelativityServices(IAPM apm, ISourceServiceFactoryForAdmin servicesMgr, Uri authenticationUri, IHelper helper)
 		{
 			Helper = helper;
 			APM = apm;
-			ServicesMgr = servicesMgr;
+            ServicesMgr = servicesMgr;
 			AuthenticationUri = authenticationUri;
 		}
 
@@ -22,8 +23,8 @@ namespace Relativity.Sync
 		public IAPM APM { get; }
 
 		/// <inheritdoc />
-		public ISyncServiceManager ServicesMgr { get; }
-
+        public ISourceServiceFactoryForAdmin ServicesMgr { get; }
+		
 		/// <inheritdoc />
 		public IHelper Helper { get; }
 

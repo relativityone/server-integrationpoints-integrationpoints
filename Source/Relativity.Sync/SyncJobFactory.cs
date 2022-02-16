@@ -1,6 +1,7 @@
 ﻿using System;
 using Autofac;
 using Banzai.Logging;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Telemetry;
 
@@ -74,7 +75,7 @@ namespace Relativity.Sync
 			return new SyncJobInLifetimeScope(_containerFactory, container, syncJobParameters, relativityServices, configuration, logger);
 		}
 
-		private static void InstallSumMetrics(ISyncServiceManager servicesMgr, ISyncLog logger)
+		private static void InstallSumMetrics(ISourceServiceFactoryForAdmin servicesMgr, ISyncLog logger)
 		{
 			ITelemetryManager telemetryManager = new TelemetryMetricsInstaller(servicesMgr, logger);
 

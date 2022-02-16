@@ -1,9 +1,9 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Pipelines;
 
 namespace Relativity.Sync.Executors.Validation
@@ -11,12 +11,12 @@ namespace Relativity.Sync.Executors.Validation
     internal class SnapshotValidator : IValidator
     {
         private readonly IValidationConfiguration _configuration;
-        private readonly ISyncServiceManager _serviceManager;
+        private readonly ISourceServiceFactoryForAdmin _servicesManager;
 
-        public SnapshotValidator(IValidationConfiguration configuration, ISyncServiceManager serviceManager)
+        public SnapshotValidator(IValidationConfiguration configuration, ISourceServiceFactoryForAdmin servicesManager)
         {
             _configuration = configuration;
-            _serviceManager = serviceManager;
+            _servicesManager = servicesManager;
         }
         
         public async Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token)
@@ -38,7 +38,7 @@ namespace Relativity.Sync.Executors.Validation
                 return false;
             }
 
-            using (IObjectManager objectManager = _serviceManager.CreateProxy<IObjectManager>(ExecutionIdentity.System))
+            using (IObjectManager objectManager = await _servicesManager.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
                 return (await objectManager.RetrieveResultsBlockFromExportAsync(workspaceId, snapshotId.Value, 1, 0).ConfigureAwait(false)) != null;
             }

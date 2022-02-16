@@ -8,6 +8,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.DbContext;
 using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Executors.Validation;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.RDOs.Framework;
@@ -32,7 +33,7 @@ namespace Relativity.Sync
 			containerBuilder.RegisterInstance(syncJobParameters).As<SyncJobParameters>();
 			containerBuilder.RegisterInstance(configuration).As<SyncJobExecutionConfiguration>();
 			containerBuilder.RegisterInstance(relativityServices).As<IRelativityServices>();
-			containerBuilder.RegisterInstance(relativityServices.ServicesMgr).As<ISyncServiceManager>();
+			containerBuilder.RegisterInstance(relativityServices.ServicesMgr).As<ISourceServiceFactoryForAdmin>();
 			containerBuilder.RegisterInstance(relativityServices.APM).As<IAPM>();
 			containerBuilder.RegisterInstance(relativityServices.Helper).As<IHelper>();
 			containerBuilder.RegisterType<WorkspaceGuidService>().As<IWorkspaceGuidService>().SingleInstance();

@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.Services.Security;
 using Relativity.Services.Security.Models;
+using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Authentication
 {
 	internal sealed class OAuth2ClientFactory : IOAuth2ClientFactory
 	{
 		private const string _OAUTH2_CLIENT_NAME_PREFIX = "F6B8C2B4B3E8465CA00775F699375D3C";
-		private readonly ISyncServiceManager _servicesMgr;
+		private readonly ISourceServiceFactoryForAdmin _servicesMgr;
 		private readonly ISyncLog _logger;
 
-		public OAuth2ClientFactory(ISyncServiceManager servicesMgr, ISyncLog logger)
+		public OAuth2ClientFactory(ISourceServiceFactoryForAdmin servicesMgr, ISyncLog logger)
 		{
 			_servicesMgr = servicesMgr;
 			_logger = logger;
@@ -22,7 +22,7 @@ namespace Relativity.Sync.Authentication
 
 		public async Task<Services.Security.Models.OAuth2Client> GetOauth2ClientAsync(int userId)
 		{
-			using (var oAuth2ClientManager = _servicesMgr.CreateProxy<IOAuth2ClientManager>(ExecutionIdentity.System))
+			using (var oAuth2ClientManager = await _servicesMgr.CreateProxyAsync<IOAuth2ClientManager>().ConfigureAwait(false))
 			{
 				Services.Security.Models.OAuth2Client client;
 				string clientName = GenerateClientName(userId);
@@ -39,7 +39,7 @@ namespace Relativity.Sync.Authentication
 				}
 				catch (Exception ex)
 				{
-					_logger.LogError(ex, "Error occured while getting OAuth2Client: {errorMessage}", ex.Message);
+					_logger.LogError(ex, "Error occurred while getting OAuth2Client: {errorMessage}", ex.Message);
 					throw new InvalidOperationException($"Failed to retrieve OAuth2Client for user with id: {userId}", ex);
 				}
 

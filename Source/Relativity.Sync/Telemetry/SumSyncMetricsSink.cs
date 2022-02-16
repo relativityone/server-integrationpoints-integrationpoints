@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Threading.Tasks;
-using Relativity.API;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.Sync.Telemetry
@@ -9,11 +9,11 @@ namespace Relativity.Sync.Telemetry
 	internal sealed class SumSyncMetricsSink : ISyncMetricsSink
 	{
 		private readonly ISyncLog _logger;
-		private readonly ISyncServiceManager _servicesManager;
+		private readonly ISourceServiceFactoryForAdmin _servicesManager;
 		private readonly IWorkspaceGuidService _workspaceGuidService;
 		private readonly SyncJobParameters _syncJobParameters;
 
-		public SumSyncMetricsSink(ISyncServiceManager servicesManager, ISyncLog logger, IWorkspaceGuidService workspaceGuidService, SyncJobParameters syncJobParameters)
+		public SumSyncMetricsSink(ISourceServiceFactoryForAdmin servicesManager, ISyncLog logger, IWorkspaceGuidService workspaceGuidService, SyncJobParameters syncJobParameters)
 		{
 			_logger = logger;
 			_workspaceGuidService = workspaceGuidService;
@@ -28,7 +28,7 @@ namespace Relativity.Sync.Telemetry
 
 		private async Task SendAsync(IMetric metric)
 		{
-			using (IMetricsManager metricsManager = _servicesManager.CreateProxy<IMetricsManager>(ExecutionIdentity.System))
+			using (IMetricsManager metricsManager = await _servicesManager.CreateProxyAsync<IMetricsManager>().ConfigureAwait(false))
 			{
 				Guid workspaceGuid = await _workspaceGuidService.GetWorkspaceGuidAsync(_syncJobParameters.WorkspaceId).ConfigureAwait(false);
                 IEnumerable sumMetrics = metric.GetSumMetrics();

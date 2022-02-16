@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.Services.ArtifactGuid;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.SyncConfiguration.Options;
 using Relativity.Sync.Utils;
 using System.Linq.Expressions;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.RDOs.Framework;
 
 namespace Relativity.Sync.SyncConfiguration
 {
     internal abstract class SyncConfigurationRootBuilderBase : ISyncConfigurationRootBuilder
     {
-        protected readonly ISyncServiceManager ServicesMgr;
+        protected readonly IProxyFactory ServicesMgr;
         protected readonly RdoOptions RdoOptions;
         private readonly IRdoManager _rdoManager;
         protected readonly ISerializer Serializer;
@@ -24,7 +24,7 @@ namespace Relativity.Sync.SyncConfiguration
 
         public readonly SyncConfigurationRdo SyncConfiguration;
 
-        protected SyncConfigurationRootBuilderBase(ISyncContext syncContext, ISyncServiceManager servicesMgr,
+        protected SyncConfigurationRootBuilderBase(ISyncContext syncContext, IProxyFactory servicesMgr,
             RdoOptions rdoOptions, IRdoManager rdoManager, ISerializer serializer)
         {
             SyncContext = syncContext;
@@ -185,7 +185,7 @@ namespace Relativity.Sync.SyncConfiguration
 
         private async Task ValidateGuidsAsync(List<(Guid Guid, string PropertyPath)> validationInfos)
         {
-            using (var guidManager = ServicesMgr.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System))
+            using (var guidManager = await ServicesMgr.CreateProxyAsync<IArtifactGuidManager>().ConfigureAwait(false))
             {
                 List<GuidArtifactIDPair> guidArtifactIdPairs = await guidManager
                     .ReadMultipleArtifactIdsAsync(SyncContext.SourceWorkspaceId,

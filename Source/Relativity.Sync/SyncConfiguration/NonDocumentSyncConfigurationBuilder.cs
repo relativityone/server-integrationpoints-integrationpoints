@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;
@@ -14,11 +14,11 @@ namespace Relativity.Sync.SyncConfiguration
     internal class NonDocumentSyncConfigurationBuilder : SyncConfigurationRootBuilderBase, INonDocumentSyncConfigurationBuilder
     {
 	    private readonly ISyncContext _syncContext;
-	    private readonly ISyncServiceManager _servicesMgr;
+	    private readonly ISourceServiceFactoryForUser _servicesMgr;
 	    private readonly IFieldsMappingBuilder _fieldsMappingBuilder;
         private Action<IFieldsMappingBuilder> _fielsdMappingAction;
 
-        public NonDocumentSyncConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr,
+        public NonDocumentSyncConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForUser servicesMgr,
             IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, NonDocumentSyncOptions options,
             RdoOptions rdoOptions, RdoManager rdoManager) : base(syncContext, servicesMgr, rdoOptions, rdoManager, serializer)
         {
@@ -58,7 +58,7 @@ namespace Relativity.Sync.SyncConfiguration
 
         private async Task ValidateViewExistsAsync()
         {
-	        using (IObjectManager objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser))
+	        using (IObjectManager objectManager = await _servicesMgr.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 	        {
 		        QueryRequest request = new QueryRequest()
 		        {

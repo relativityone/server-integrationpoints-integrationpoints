@@ -3,19 +3,19 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync
 {
 	internal sealed class WorkspaceGuidService : IWorkspaceGuidService
 	{
-		private readonly ISyncServiceManager _servicesManager;
+		private readonly ISourceServiceFactoryForAdmin _servicesManager;
 		private readonly IDictionary<int, Guid> _cache;
 
-		public WorkspaceGuidService(ISyncServiceManager servicesManager)
+		public WorkspaceGuidService(ISourceServiceFactoryForAdmin servicesManager)
 		{
 			_servicesManager = servicesManager;
 			_cache = new ConcurrentDictionary<int, Guid>();
@@ -40,7 +40,7 @@ namespace Relativity.Sync
 
 		private async Task<Guid> ReadWorkspaceGuidAsync(int workspaceArtifactId)
 		{
-			using (IObjectManager objectManager = _servicesManager.CreateProxy<IObjectManager>(ExecutionIdentity.System))
+			using (IObjectManager objectManager = await _servicesManager.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				QueryRequest queryRequest = new QueryRequest()
 				{
