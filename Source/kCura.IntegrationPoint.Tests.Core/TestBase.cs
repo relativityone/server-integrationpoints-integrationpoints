@@ -31,7 +31,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 		/// if CI build fails because of timeout we can assume that there is something wrong with test.
 		/// </summary>
 		[SetUp]
-		public abstract void SetUp();
+		public virtual void SetUp()
+        {
+
+        }
 
 	}
 }

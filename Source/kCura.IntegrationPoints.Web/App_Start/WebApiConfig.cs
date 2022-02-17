@@ -228,13 +228,13 @@ namespace kCura.IntegrationPoints.Web
 
 			config.Routes.MapHttpRoute(
 				name: "GetMappableFieldsFromSourceWorkspace",
-				routeTemplate: "{workspaceID}/api/FieldMappings/GetMappableFieldsFromSourceWorkspace",
+				routeTemplate: "{workspaceID}/api/FieldMappings/GetMappableFieldsFromSourceWorkspace/{artifactTypeId}",
 				defaults: new { controller = "FieldMappings", action = "GetMappableFieldsFromSourceWorkspace" }
 			);
 
 			config.Routes.MapHttpRoute(
 				name: "GetMappableFieldsFromDestinationWorkspace",
-				routeTemplate: "{workspaceID}/api/FieldMappings/GetMappableFieldsFromDestinationWorkspace",
+				routeTemplate: "{workspaceID}/api/FieldMappings/GetMappableFieldsFromDestinationWorkspace/{artifactTypeId}",
 				defaults: new { controller = "FieldMappings", action = "GetMappableFieldsFromDestinationWorkspace" }
 			);
 
@@ -246,14 +246,20 @@ namespace kCura.IntegrationPoints.Web
 
 			config.Routes.MapHttpRoute(
 				name: "ValidateFieldsMapping",
-				routeTemplate: "{workspaceID}/api/FieldMappings/Validate/{destinationWorkspaceID}/{destinationProviderGuid}",
+				routeTemplate: "{workspaceID}/api/FieldMappings/Validate/{destinationWorkspaceID}/{destinationProviderGuid}/{sourceArtifactTypeId}/{destinationArtifactTypeId}",
 				defaults: new { controller = "FieldMappings", action = "ValidateAsync" }
 			);
-			
+
 			config.Routes.MapHttpRoute(
 				name: "AutoMapFieldsFromSavedSearch",
 				routeTemplate: "{sourceWorkspaceID}/api/FieldMappings/AutomapFieldsFromSavedSearch/{savedSearchID}/{destinationProviderGuid}",
 				defaults: new { controller = "FieldMappings", action = "AutoMapFieldsFromSavedSearch" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "AutoMapFieldsFromView",
+				routeTemplate: "{sourceWorkspaceID}/api/FieldMappings/AutomapFieldsFromView/{viewID}/{destinationProviderGuid}",
+				defaults: new { controller = "FieldMappings", action = "AutoMapFieldsFromView" }
 			);
 
 			config.Routes.MapHttpRoute(
@@ -293,13 +299,13 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
-				name: "ButtonStateCheckPermissions",
-				routeTemplate: "{workspaceID}/api/ButtonState/CheckPermissions",
-				defaults: new { controller = "ButtonState", action = "CheckPermissions" }
+				name: "ConsoleStateGetState",
+				routeTemplate: "{workspaceID}/api/ConsoleState/GetState",
+				defaults: new { controller = "ConsoleState", action = "GetState" }
 			);
 
 			config.Routes.MapHttpRoute(
-				name: "ButtonStateGetUserPermissionsCheck",
+				name: "ErrorGetViewErrorsLink",
 				routeTemplate: "{workspaceID}/api/Error/GetViewErrorsLink",
 				defaults: new { controller = "Error", action = "GetViewErrorsLink" }
 			);
@@ -407,9 +413,9 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
-				name: "GetObjectTypeExists",
-				routeTemplate: "{sourceWorkspaceId}/api/ObjectType/Exists/{destinationWorkspaceId}/{sourceObjectTypeArtifactId}",
-				defaults: new { controller = "ObjectType", action = "ObjectTypeExists" }
+				name: "GetDestinationArtifactTypeID",
+				routeTemplate: "{sourceWorkspaceId}/api/ObjectType/GetArtifactTypeId/{destinationWorkspaceId}/{sourceArtifactTypeId}",
+				defaults: new { controller = "ObjectType", action = "GetDestinationArtifactTypeID" }
 			);
 
 			config.Routes.MapHttpRoute(

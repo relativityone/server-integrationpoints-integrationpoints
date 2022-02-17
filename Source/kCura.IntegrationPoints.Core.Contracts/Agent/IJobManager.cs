@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
 		/// </summary>
 		/// <param name="integrationPointId">The artifact id of the Integration Point object.</param>
 		/// <returns>A dictionary of batch instance id and its agent job DTOs.</returns>
-		IDictionary<Guid, List<Job>> GetScheduledAgentJobMapedByBatchInstance(long integrationPointId);
+		IDictionary<Guid, List<Job>> GetJobsByBatchInstanceId(long integrationPointId);
 
 		/// <summary>
 		/// Gets scheduled agent jobs by batch instance id.

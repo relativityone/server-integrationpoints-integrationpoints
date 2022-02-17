@@ -24,13 +24,13 @@ namespace Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers
 		// TODO
 		// FieldManager is painfully slow and ObjectManager has defect:
 		// https://jira.kcura.com/browse/REL-369204
-		public async Task<IEnumerable<FieldClassificationResult>> ClassifyAsync(ICollection<DocumentFieldInfo> fields, int workspaceID)
+		public async Task<IEnumerable<FieldClassificationResult>> ClassifyAsync(ICollection<FieldInfo> fields, int workspaceID)
 		{
-			List<DocumentFieldInfo> objectFields = fields
+			List<FieldInfo> objectFields = fields
 				.Where(x => (x.Type == FieldTypeName.SINGLE_OBJECT || x.Type == FieldTypeName.MULTIPLE_OBJECT) && x.AssociativeObjectType != null)
 				.ToList();
 
-			var fieldsWithAssociativeObjectType = new List<DocumentFieldInfo>();
+			var fieldsWithAssociativeObjectType = new List<FieldInfo>();
 			using (var fieldManager = _servicesMgr.CreateProxy<IFieldManager>(ExecutionIdentity.System))
 			{
 				await objectFields.Select(x =>
@@ -44,7 +44,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers
 					.Where(x => x.AssociativeObjectType != null)
 					.Synchronize()
 					.Do(x => fieldsWithAssociativeObjectType.Add(
-						new DocumentFieldInfo(x.ArtifactID.ToString(), x.Name, x.FieldType.ToString(), x.Length)
+						new FieldInfo(x.ArtifactID.ToString(), x.Name, x.FieldType.ToString(), x.Length)
 						{
 							IsIdentifier = x.IsIdentifier,
 							IsRequired = x.IsRequired,

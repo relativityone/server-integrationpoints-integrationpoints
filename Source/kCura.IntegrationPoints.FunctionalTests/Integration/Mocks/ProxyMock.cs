@@ -1,6 +1,5 @@
 ﻿using Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
-using Relativity.Services.Search;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
@@ -28,6 +27,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
 		public KeywordSearchManagerStub KeywordSearchManager { get; set; }
 
+		public ViewManagerStub ViewManager { get; set; }
+
 		public ProxyMock(TestContext context)
 		{
 			ObjectManager = new ObjectManagerStub();
@@ -41,6 +42,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			APMManager = new APMManagerStub();
 			MetricsManager = new MetricsManagerStub();
             KeywordSearchManager = new KeywordSearchManagerStub();
+			ViewManager = new ViewManagerStub();
         }
 
 		public void Setup(RelativityInstanceTest relativity)
@@ -53,6 +55,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			APMManager.Setup(relativity);
 			MetricsManager.Setup(relativity);
             KeywordSearchManager.Setup(relativity);
+			ViewManager.Setup(relativity);
 
 			SetupFixedMocks();
 		}
@@ -69,6 +72,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			APMManager.SetupAPMManagerStub();
 			MetricsManager.SetupMetricsManagerStub();
             KeywordSearchManager.SetupKeywordSearchManagerStub();
+			ViewManager.SetupViewManagerStub();
 		}
 	}
 }

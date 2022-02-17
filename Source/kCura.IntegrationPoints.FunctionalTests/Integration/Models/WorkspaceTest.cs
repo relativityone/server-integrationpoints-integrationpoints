@@ -35,9 +35,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public IList<SavedSearchTest> SavedSearches { get; } = new List<SavedSearchTest>();
 
+        public IList<ViewTest> Views { get; } = new List<ViewTest>();
+
         public IList<FieldTest> Fields { get; } = new List<FieldTest>();
 
         public IList<EntityTest> Entities { get; } = new List<EntityTest>();
+
+        public IList<DocumentTest> Documents { get; } = new List<DocumentTest>();
+
+        public IList<ProductionTest> Productions { get; } = new List<ProductionTest>();
 
         public IList<ArtifactTest> Artifacts => GetAllArtifacts();
 
@@ -54,8 +60,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 .Concat(GetArtifacts(DestinationProviders))
                 .Concat(GetArtifacts(Folders))
                 .Concat(GetArtifacts(SavedSearches))
+                .Concat(GetArtifacts(Views))
                 .Concat(GetArtifacts(SyncConfigurations))
                 .Concat(GetArtifacts(Fields))
+                .Concat(GetArtifacts(Documents))
+                .Concat(GetArtifacts(Productions))
                 .ToList();
         }
         
@@ -92,8 +101,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                    ?? TryFind(DestinationProviders)
                    ?? TryFind(Folders)
                    ?? TryFind(SavedSearches)
+                   ?? TryFind(Views)
                    ?? TryFind(Fields)
-                   ?? TryFind(SyncConfigurations);
+                   ?? TryFind(SyncConfigurations)
+                   ?? TryFind(Documents)
+                   ?? TryFind(Productions);
         }
 
         public override List<Guid> Guids => new List<Guid>();
@@ -128,6 +140,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             private IntegrationPointTypeHelper _integrationPointTypeHelper;
             private JobHistoryHelper _jobHistoryHelper;
             private FieldsMappingHelper _fieldsMappingHelper;
+            private DocumentHelper _documentHelper;
+            private ProductionHelper _productionHelper;
+            private SavedSearchHelper _savedSearchHelper;
 
             internal WorkspaceHelpers(WorkspaceTest workspace, ISerializer serializer)
             {
@@ -163,6 +178,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             public FieldsMappingHelper FieldsMappingHelper => _fieldsMappingHelper ??
                                                               (_fieldsMappingHelper = 
                                                                   new FieldsMappingHelper(_workspace));
+
+            public DocumentHelper DocumentHelper => _documentHelper ??
+                                                    (_documentHelper =
+                                                        new DocumentHelper(_workspace));
+
+            public ProductionHelper ProductionHelper => _productionHelper ??
+                                                      (_productionHelper =
+                                                          new ProductionHelper(_workspace));
+
+            public SavedSearchHelper SavedSearchHelper => _savedSearchHelper ??
+                                                        (_savedSearchHelper =
+                                                            new SavedSearchHelper(_workspace));
         }
     }
 }

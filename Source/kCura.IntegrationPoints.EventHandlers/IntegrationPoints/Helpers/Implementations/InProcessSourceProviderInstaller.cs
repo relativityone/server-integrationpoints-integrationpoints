@@ -93,7 +93,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 				_logger,
 				sourceProviderRepository,
 				applicationGuidFinder,
-				dataProviderFactoryFactory
+				dataProviderFactoryFactory,
+				_toggleProvider
 			);
 		}
 

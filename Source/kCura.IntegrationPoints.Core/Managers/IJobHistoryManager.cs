@@ -13,12 +13,12 @@ namespace kCura.IntegrationPoints.Core.Managers
 		int GetLastJobHistoryArtifactId(int workspaceArtifactId, int integrationPointArtifactId);
 
 		/// <summary>
-		/// Gets the stoppable job history artifact ids for a given Integration Point.
+		/// Gets the stoppable job histories for a given Integration Point.
 		/// </summary>
 		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
 		/// <param name="integrationPointArtifactId">The parent Integration Point artifact id.</param>
 		/// <returns>A StoppableJobCollection</returns>
-		Models.StoppableJobCollection GetStoppableJobCollection(int workspaceArtifactId, int integrationPointArtifactId);
+		Models.StoppableJobHistoryCollection GetStoppableJobHistory(int workspaceArtifactId, int integrationPointArtifactId);
 
 		/// <summary>
 		/// Set all associate job history errors to be expired

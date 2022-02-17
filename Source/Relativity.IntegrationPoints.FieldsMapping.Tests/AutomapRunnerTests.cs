@@ -10,6 +10,7 @@ using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Metrics;
 using Relativity.Services.Field;
 using Relativity.Services.Search;
+using Relativity.Services.View;
 using CategoryAttribute = NUnit.Framework.CategoryAttribute;
 
 namespace Relativity.IntegrationPoints.FieldsMapping.Tests
@@ -21,6 +22,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		private const int WorkspaceArtifactId = 1234;
 
 		private Mock<IKeywordSearchManager> _keywordSearchManagerFake;
+		private Mock<IViewManager> _viewManagerFake;
 		private Mock<IServicesMgr> _servicesMgrFake;
 		private Mock<IMetricBucketNameGenerator> _metricBucketNameGeneratorFake;
 		private Mock<IMetricsSender> _metricsSenderMock;
@@ -29,10 +31,15 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		[SetUp]
 		public void Setup()
 		{
-			_keywordSearchManagerFake = new Mock<IKeywordSearchManager>();
 			_servicesMgrFake = new Mock<IServicesMgr>();
+
+			_keywordSearchManagerFake = new Mock<IKeywordSearchManager>();
 			_servicesMgrFake.Setup(x => x.CreateProxy<IKeywordSearchManager>(It.IsAny<ExecutionIdentity>()))
 				.Returns(_keywordSearchManagerFake.Object);
+
+			_viewManagerFake = new Mock<IViewManager>();
+			_servicesMgrFake.Setup(x => x.CreateProxy<IViewManager>(It.IsAny<ExecutionIdentity>()))
+				.Returns(_viewManagerFake.Object);
 
 			_metricBucketNameGeneratorFake = new Mock<IMetricBucketNameGenerator>();
 
@@ -49,14 +56,14 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			// Arrange
 			var sourceFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Type 1"),
-				new DocumentFieldInfo(fieldIdentifier: "2", name: "Field 2", type: "Type 2")
+				new FieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Type 1"),
+				new FieldInfo(fieldIdentifier: "2", name: "Field 2", type: "Type 2")
 			};
 
 			var destinationFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "3", name: "Field 1", type: "Type 1"),
-				new DocumentFieldInfo(fieldIdentifier: "4", name: "Field 2", type: "Type 2")
+				new FieldInfo(fieldIdentifier: "3", name: "Field 1", type: "Type 1"),
+				new FieldInfo(fieldIdentifier: "4", name: "Field 2", type: "Type 2")
 			};
 
 			// Act
@@ -80,14 +87,14 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			// Arrange
 			var sourceFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Type 1"),
-				new DocumentFieldInfo(fieldIdentifier: "2", name: "Field 2", type: "Type 2")
+				new FieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Type 1"),
+				new FieldInfo(fieldIdentifier: "2", name: "Field 2", type: "Type 2")
 			};
 
 			var destinationFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 3", type: "Type 1"),
-				new DocumentFieldInfo(fieldIdentifier: "2", name: "Field 4", type: "Type 2")
+				new FieldInfo(fieldIdentifier: "1", name: "Field 3", type: "Type 1"),
+				new FieldInfo(fieldIdentifier: "2", name: "Field 4", type: "Type 2")
 			};
 
 			// Act
@@ -103,14 +110,14 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			// Arrange
 			var sourceFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Type 1"),
-				new DocumentFieldInfo(fieldIdentifier: "2", name: "Field 2", type: "Type 2")
+				new FieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Type 1"),
+				new FieldInfo(fieldIdentifier: "2", name: "Field 2", type: "Type 2")
 			};
 
 			var destinationFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "3", name: "Field 3", type: "Type 1"),
-				new DocumentFieldInfo(fieldIdentifier: "4", name: "Field 2", type: "Type 3")
+				new FieldInfo(fieldIdentifier: "3", name: "Field 3", type: "Type 1"),
+				new FieldInfo(fieldIdentifier: "4", name: "Field 2", type: "Type 3")
 			};
 
 			// Act
@@ -126,12 +133,12 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			// Arrange
 			var sourceFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Fixed-Length Text(250)")
+				new FieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Fixed-Length Text(250)")
 			};
 
 			var destinationFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "2", name: "Field 1", type: "Long Text")
+				new FieldInfo(fieldIdentifier: "2", name: "Field 1", type: "Long Text")
 			};
 
 			// Act
@@ -152,12 +159,12 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			// Arrange
 			var sourceFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Fixed-Length Text(250)")
+				new FieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Fixed-Length Text(250)")
 			};
 
 			var destinationFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "2", name: "Field 1", type: "Fixed-Length Text(50)")
+				new FieldInfo(fieldIdentifier: "2", name: "Field 1", type: "Fixed-Length Text(50)")
 			};
 
 			// Act
@@ -173,12 +180,12 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			// Arrange
 			var sourceFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Fixed-Length Text(50)")
+				new FieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Fixed-Length Text(50)")
 			};
 
 			var destinationFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "2", name: "Field 1", type: "Fixed-Length Text(250)")
+				new FieldInfo(fieldIdentifier: "2", name: "Field 1", type: "Fixed-Length Text(250)")
 			};
 
 			// Act
@@ -198,7 +205,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			// Arrange
 			var sourceFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Fixed-Length Text(250)")
+				new FieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Fixed-Length Text(250)")
 				{
 					IsIdentifier = true
 				}
@@ -206,8 +213,8 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 
 			var destinationFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "2", name: "Field 1", type: "Fixed-Length Text(50)"),
-				new DocumentFieldInfo(fieldIdentifier: "3", name: "Field 2", type: "Fixed-Length Text(250)")
+				new FieldInfo(fieldIdentifier: "2", name: "Field 1", type: "Fixed-Length Text(50)"),
+				new FieldInfo(fieldIdentifier: "3", name: "Field 2", type: "Fixed-Length Text(250)")
 				{
 					IsIdentifier = true
 				}
@@ -229,7 +236,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			// Arrange
 			var sourceFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Fixed-Length Text(250)")
+				new FieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Fixed-Length Text(250)")
 				{
 					IsIdentifier = true
 				}
@@ -237,7 +244,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 
 			var destinationFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "2", name: "Field 2", type: "Fixed-Length Text(50)")
+				new FieldInfo(fieldIdentifier: "2", name: "Field 2", type: "Fixed-Length Text(50)")
 				{
 					IsIdentifier = true
 				}
@@ -259,20 +266,20 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			// Arrange
 			var sourceFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Fixed-Length Text(250)")
+				new FieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Fixed-Length Text(250)")
 				{
 					IsIdentifier = true
 				},
-				new DocumentFieldInfo(fieldIdentifier: "2", name: "Field 2", type: "Fixed-Length Text(250)")
+				new FieldInfo(fieldIdentifier: "2", name: "Field 2", type: "Fixed-Length Text(250)")
 			};
 
 			var destinationFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "3", name: "Field 1", type: "Fixed-Length Text(250)")
+				new FieldInfo(fieldIdentifier: "3", name: "Field 1", type: "Fixed-Length Text(250)")
 				{
 					IsIdentifier = true
 				},
-				new DocumentFieldInfo(fieldIdentifier: "4", name: "Field 2", type: "Fixed-Length Text(50)")
+				new FieldInfo(fieldIdentifier: "4", name: "Field 2", type: "Fixed-Length Text(50)")
 			};
 
 			// Act
@@ -291,16 +298,16 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			// Arrange
 			var sourceFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Fixed-Length Text(250)"),
-				new DocumentFieldInfo(fieldIdentifier: "2", name: "Field 3", type: "Fixed-Length Text(250)"),
-				new DocumentFieldInfo(fieldIdentifier: "3", name: "Field 2", type: "Fixed-Length Text(250)")
+				new FieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Fixed-Length Text(250)"),
+				new FieldInfo(fieldIdentifier: "2", name: "Field 3", type: "Fixed-Length Text(250)"),
+				new FieldInfo(fieldIdentifier: "3", name: "Field 2", type: "Fixed-Length Text(250)")
 			};
 
 			var destinationFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "4", name: "Field 3", type: "Fixed-Length Text(250)"),
-				new DocumentFieldInfo(fieldIdentifier: "5", name: "Field 2", type: "Fixed-Length Text(250)"),
-				new DocumentFieldInfo(fieldIdentifier: "6", name: "Field 1", type: "Fixed-Length Text(250)")
+				new FieldInfo(fieldIdentifier: "4", name: "Field 3", type: "Fixed-Length Text(250)"),
+				new FieldInfo(fieldIdentifier: "5", name: "Field 2", type: "Fixed-Length Text(250)"),
+				new FieldInfo(fieldIdentifier: "6", name: "Field 1", type: "Fixed-Length Text(250)")
 			};
 
 			// Act
@@ -329,14 +336,14 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 
 			var sourceFields = new[]
 			{
-				new DocumentFieldInfo("1", "Field 1", "Fixed-Length Text(250)"),
-				new DocumentFieldInfo("2", "Field 2", "Fixed-Length Text(250)")
+				new FieldInfo("1", "Field 1", "Fixed-Length Text(250)"),
+				new FieldInfo("2", "Field 2", "Fixed-Length Text(250)")
 			};
 
 			var destinationFields = new[]
 			{
-				new DocumentFieldInfo("3", "Field 3", "Fixed-Length Text(250)"),
-				new DocumentFieldInfo("4", "Field 2", "Fixed-Length Text(250)")
+				new FieldInfo("3", "Field 3", "Fixed-Length Text(250)"),
+				new FieldInfo("4", "Field 2", "Fixed-Length Text(250)")
 			};
 
 			_keywordSearchManagerFake.Setup(x => x.ReadSingleAsync(It.IsAny<int>(), It.IsAny<int>()))
@@ -370,22 +377,22 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 
 			var sourceFields = new[]
 			{
-				new DocumentFieldInfo("1", "Control Number", "Fixed-Length Text(250)")
+				new FieldInfo("1", "Control Number", "Fixed-Length Text(250)")
 				{
 					IsIdentifier = true
 				},
-				new DocumentFieldInfo("2", "Field 2", "Fixed-Length Text(250)")
+				new FieldInfo("2", "Field 2", "Fixed-Length Text(250)")
 			};
 
 			var destinationFields = new[]
 			{
-				new DocumentFieldInfo("10", "Control Number", "Fixed-Length Text(250)")
+				new FieldInfo("10", "Control Number", "Fixed-Length Text(250)")
 				{
 					IsIdentifier = true
 				},
-				new DocumentFieldInfo("3", "Field 3", "Fixed-Length Text(250)"),
-				new DocumentFieldInfo("4", "Field 2", "Fixed-Length Text(250)"),
-				new DocumentFieldInfo("5", "Field 5", "Fixed-Length Text(250)")
+				new FieldInfo("3", "Field 3", "Fixed-Length Text(250)"),
+				new FieldInfo("4", "Field 2", "Fixed-Length Text(250)"),
+				new FieldInfo("5", "Field 5", "Fixed-Length Text(250)")
 			};
 
 			_keywordSearchManagerFake.Setup(x => x.ReadSingleAsync(It.IsAny<int>(), It.IsAny<int>()))
@@ -405,25 +412,116 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		}
 
 		[Test]
+		public async Task MapFieldsFromView_ShouldMapFieldFromView()
+		{
+			// Arrange
+
+			var viewFields = new List<FieldRef>
+			{
+				new FieldRef()
+				{
+					ArtifactID = 2,
+					Name = "Field 2"
+				}
+			};
+
+			var sourceFields = new[]
+			{
+				new FieldInfo("1", "Field 1", "Fixed-Length Text(250)"),
+				new FieldInfo("2", "Field 2", "Fixed-Length Text(250)")
+			};
+
+			var destinationFields = new[]
+			{
+				new FieldInfo("3", "Field 3", "Fixed-Length Text(250)"),
+				new FieldInfo("4", "Field 2", "Fixed-Length Text(250)")
+			};
+
+			_viewManagerFake.Setup(x => x.ReadSingleAsync(It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(new View()
+				{
+					Fields = viewFields
+				});
+
+            // Act
+            Models.FieldMap[] mappedFields = (await _sut.MapFieldsFromViewAsync(sourceFields, destinationFields, DestinationProviderGuid, 1, 2)
+				.ConfigureAwait(false)).ToArray();
+
+			// Assert
+			mappedFields.Length.Should().Be(1);
+			mappedFields.Single().SourceField.DisplayName.Should().Be("Field 2");
+		}
+
+		[Test]
+		public async Task MapFieldsFromView_ShouldMapAlsoObjectIdentifier()
+		{
+			// Arrange
+
+			var viewFields = new List<FieldRef>
+			{
+				new FieldRef()
+				{
+					ArtifactID = 2,
+					Name = "Field 2"
+				}
+			};
+
+			var sourceFields = new[]
+			{
+				new FieldInfo("1", "Control Number", "Fixed-Length Text(250)")
+				{
+					IsIdentifier = true
+				},
+				new FieldInfo("2", "Field 2", "Fixed-Length Text(250)")
+			};
+
+			var destinationFields = new[]
+			{
+				new FieldInfo("10", "Control Number", "Fixed-Length Text(250)")
+				{
+					IsIdentifier = true
+				},
+				new FieldInfo("3", "Field 3", "Fixed-Length Text(250)"),
+				new FieldInfo("4", "Field 2", "Fixed-Length Text(250)"),
+				new FieldInfo("5", "Field 5", "Fixed-Length Text(250)")
+			};
+
+			_viewManagerFake.Setup(x => x.ReadSingleAsync(It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(new View()
+				{
+					Fields = viewFields
+				});
+
+			// Act
+			var mappedFields = (await _sut.MapFieldsFromViewAsync(sourceFields, destinationFields, DestinationProviderGuid, 1, 2)
+				.ConfigureAwait(false)).ToArray();
+
+			// Assert
+			mappedFields.Length.Should().Be(2);
+			mappedFields[0].SourceField.DisplayName.Should().Be("Control Number");
+			mappedFields[1].SourceField.DisplayName.Should().Be("Field 2");
+		}
+
+		[Test]
 		public void MapFields_ShouldAlwaysSendAutomappedCountMetric()
 		{
 			// Arrange
 			var sourceFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Fixed-Length Text(250)")
+				new FieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Fixed-Length Text(250)")
 				{
 					IsIdentifier = true
 				},
-				new DocumentFieldInfo(fieldIdentifier: "2", name: "Field 2", type: "Fixed-Length Text(250)")
+				new FieldInfo(fieldIdentifier: "2", name: "Field 2", type: "Fixed-Length Text(250)")
 			};
 
 			var destinationFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "3", name: "Field 1", type: "Fixed-Length Text(250)")
+				new FieldInfo(fieldIdentifier: "3", name: "Field 1", type: "Fixed-Length Text(250)")
 				{
 					IsIdentifier = true
 				},
-				new DocumentFieldInfo(fieldIdentifier: "4", name: "Field 2", type: "Fixed-Length Text(50)")
+				new FieldInfo(fieldIdentifier: "4", name: "Field 2", type: "Fixed-Length Text(50)")
 			};
 
 			string bucketName = "FakeProvider.AutoMap.AutoMappedCount";
@@ -444,20 +542,20 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			// Arrange
 			var sourceFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Fixed-Length Text(250)")
+				new FieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Fixed-Length Text(250)")
 				{
 					IsIdentifier = true
 				},
-				new DocumentFieldInfo(fieldIdentifier: "2", name: "Field 2", type: "Fixed-Length Text(250)")
+				new FieldInfo(fieldIdentifier: "2", name: "Field 2", type: "Fixed-Length Text(250)")
 			};
 
 			var destinationFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "3", name: "Field 1", type: "Fixed-Length Text(250)")
+				new FieldInfo(fieldIdentifier: "3", name: "Field 1", type: "Fixed-Length Text(250)")
 				{
 					IsIdentifier = true
 				},
-				new DocumentFieldInfo(fieldIdentifier: "4", name: "Field 2", type: "Fixed-Length Text(50)")
+				new FieldInfo(fieldIdentifier: "4", name: "Field 2", type: "Fixed-Length Text(50)")
 			};
 
 			string autoMappedByNameCount = "FakeProvider.AutoMap.AutoMappedByNameCount";
@@ -484,20 +582,20 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			// Arrange
 			var sourceFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Fixed-Length Text(250)")
+				new FieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Fixed-Length Text(250)")
 				{
 					IsIdentifier = true
 				},
-				new DocumentFieldInfo(fieldIdentifier: "2", name: "Field 2", type: "Fixed-Length Text(250)")
+				new FieldInfo(fieldIdentifier: "2", name: "Field 2", type: "Fixed-Length Text(250)")
 			};
 
 			var destinationFields = new[]
 			{
-				new DocumentFieldInfo(fieldIdentifier: "3", name: "Field 1", type: "Fixed-Length Text(250)")
+				new FieldInfo(fieldIdentifier: "3", name: "Field 1", type: "Fixed-Length Text(250)")
 				{
 					IsIdentifier = true
 				},
-				new DocumentFieldInfo(fieldIdentifier: "4", name: "Field 2", type: "Fixed-Length Text(50)")
+				new FieldInfo(fieldIdentifier: "4", name: "Field 2", type: "Fixed-Length Text(50)")
 			};
 
 			// Act

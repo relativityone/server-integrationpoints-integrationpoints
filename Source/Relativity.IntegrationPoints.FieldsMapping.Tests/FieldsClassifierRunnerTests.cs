@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.IntegrationPoints.FieldsMapping;
 using Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers;
 using Relativity.IntegrationPoints.FieldsMapping.Helpers;
 using Relativity.Services.Objects.DataContracts;
@@ -16,6 +15,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 	[TestFixture, Category("Unit")]
 	public class FieldsClassifierRunnerTests
 	{
+		private const int _ARTIFACT_TYPE_ID = 111;
 		private Mock<IFieldsRepository> _fieldsRepositoryFake;
 
 		[SetUp]
@@ -34,7 +34,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			const string excludedFromAutoMapFieldName = "Excluded from auto-map field";
 			const string notVisibleToUserFieldName = "Field not visible to user";
 
-			var workspaceFields = new List<DocumentFieldInfo>()
+			var workspaceFields = new List<FieldInfo>()
 			{
 				CreateField(autoMappedFieldName, type: autoMappedFieldType, isIdentifier: true),
 				CreateField(excludedFromAutoMapFieldName),
@@ -52,7 +52,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 
 			var classifierFake = new Mock<IFieldsClassifier>();
 			classifierFake
-				.Setup(x => x.ClassifyAsync(It.IsAny<ICollection<DocumentFieldInfo>>(), It.IsAny<int>()))
+				.Setup(x => x.ClassifyAsync(It.IsAny<ICollection<FieldInfo>>(), It.IsAny<int>()))
 				.ReturnsAsync(classificationResult);
 			var fieldsClassifiers = new List<IFieldsClassifier>()
 			{
@@ -62,7 +62,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			FieldsClassifierRunner sut = new FieldsClassifierRunner(_fieldsRepositoryFake.Object, fieldsClassifiers);
 
 			// Act
-			IList<FieldClassificationResult> filteredFields = await sut.GetFilteredFieldsAsync(It.IsAny<int>()).ConfigureAwait(false);
+			IList<FieldClassificationResult> filteredFields = await sut.GetFilteredFieldsAsync(It.IsAny<int>(), _ARTIFACT_TYPE_ID).ConfigureAwait(false);
 
 			// Assert
 			filteredFields.Any(x => x.FieldInfo.Name == autoMappedFieldName && x.FieldInfo.Type == autoMappedFieldType && x.FieldInfo.IsIdentifier).Should().BeTrue();
@@ -80,7 +80,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			FieldsClassifierRunner sut = new FieldsClassifierRunner(_fieldsRepositoryFake.Object);
 
 			// Act
-			IList<FieldClassificationResult> filteredFields = await sut.GetFilteredFieldsAsync(It.IsAny<int>()).ConfigureAwait(false);
+			IList<FieldClassificationResult> filteredFields = await sut.GetFilteredFieldsAsync(It.IsAny<int>(), _ARTIFACT_TYPE_ID).ConfigureAwait(false);
 
 			// Assert
 			filteredFields.Count.Should().Be(count);
@@ -94,7 +94,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			SetupWorkspaceFields(Enumerable.Range(1, 2).Select(x => CreateField(x.ToString())).ToList());
 
 			Mock<IFieldsClassifier> classifierMock = new Mock<IFieldsClassifier>();
-			classifierMock.Setup(x => x.ClassifyAsync(It.IsAny<ICollection<DocumentFieldInfo>>(), It.IsAny<int>())).Throws<InvalidOperationException>();
+			classifierMock.Setup(x => x.ClassifyAsync(It.IsAny<ICollection<FieldInfo>>(), It.IsAny<int>())).Throws<InvalidOperationException>();
 
 			var fieldsClassifiers = new List<IFieldsClassifier>()
 			{
@@ -104,11 +104,11 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			FieldsClassifierRunner sut = new FieldsClassifierRunner(_fieldsRepositoryFake.Object, fieldsClassifiers);
 
 			// Act
-			Func<Task> action = () => sut.GetFilteredFieldsAsync(0);
+			Func<Task> action = () => sut.GetFilteredFieldsAsync(0, _ARTIFACT_TYPE_ID);
 
 			// Assert
 			action.ShouldThrow<InvalidOperationException>();
-			classifierMock.Verify(x => x.ClassifyAsync(It.IsAny<ICollection<DocumentFieldInfo>>(), It.IsAny<int>()), Times.Exactly(2));
+			classifierMock.Verify(x => x.ClassifyAsync(It.IsAny<ICollection<FieldInfo>>(), It.IsAny<int>()), Times.Exactly(2));
 		}
 
 		[Test]
@@ -139,7 +139,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 
 			var classifierFake = new Mock<IFieldsClassifier>();
 			classifierFake
-				.Setup(x => x.ClassifyAsync(It.IsAny<ICollection<DocumentFieldInfo>>(), It.IsAny<int>()))
+				.Setup(x => x.ClassifyAsync(It.IsAny<ICollection<FieldInfo>>(), It.IsAny<int>()))
 				.ReturnsAsync(classificationResult);
 
 			var fieldsClassifiers = new List<IFieldsClassifier>()
@@ -151,7 +151,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 
 
 			// Act
-			IList<FieldClassificationResult> filteredFields = await sut.GetFilteredFieldsAsync(It.IsAny<int>()).ConfigureAwait(false);
+			IList<FieldClassificationResult> filteredFields = await sut.GetFilteredFieldsAsync(It.IsAny<int>(), _ARTIFACT_TYPE_ID).ConfigureAwait(false);
 
 			// Assert
 			filteredFields.Count.Should().Be(count);
@@ -174,21 +174,21 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		public async Task GetFilteredFieldsAsync_ShouldSortByName()
 		{
 			// Arrange
-			List<DocumentFieldInfo> unsortedFields = new List<DocumentFieldInfo>()
+			List<FieldInfo> unsortedFields = new List<FieldInfo>()
 			{
 				CreateField("Field C"),
 				CreateField("Field A"),
 				CreateField("Field B")
 			};
 
-			List<DocumentFieldInfo> sortedFields = unsortedFields.OrderBy(x => x.Name).ToList();
+			List<FieldInfo> sortedFields = unsortedFields.OrderBy(x => x.Name).ToList();
 
 			SetupWorkspaceFields(unsortedFields);
 
 			Mock<IFieldsClassifier> classifier = new Mock<IFieldsClassifier>();
 			IEnumerable<FieldClassificationResult> classificationResult = unsortedFields.Select(x => new FieldClassificationResult(x));
 
-			classifier.Setup(x => x.ClassifyAsync(It.IsAny<ICollection<DocumentFieldInfo>>(), It.IsAny<int>())).ReturnsAsync(classificationResult);
+			classifier.Setup(x => x.ClassifyAsync(It.IsAny<ICollection<FieldInfo>>(), It.IsAny<int>())).ReturnsAsync(classificationResult);
 
 			var fieldsClassifiers = new List<IFieldsClassifier>()
 			{
@@ -198,7 +198,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			FieldsClassifierRunner sut = new FieldsClassifierRunner(_fieldsRepositoryFake.Object, fieldsClassifiers);
 
 			// Act
-			IList<FieldClassificationResult> filteredFields = await sut.GetFilteredFieldsAsync(0).ConfigureAwait(false);
+			IList<FieldClassificationResult> filteredFields = await sut.GetFilteredFieldsAsync(0, _ARTIFACT_TYPE_ID).ConfigureAwait(false);
 
 			// Assert
 			filteredFields.Select(x => x.FieldInfo.Name).ShouldAllBeEquivalentTo(sortedFields.Select(x => x.Name));
@@ -208,14 +208,14 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 		public async Task ClassifyAsync_ShouldCallClassifier()
 		{
 			// Arrange
-			List<DocumentFieldInfo> fields = new List<DocumentFieldInfo>()
+			List<FieldInfo> fields = new List<FieldInfo>()
 			{
 				CreateField("Field C"),
 				CreateField("Field A"),
 				CreateField("Field B")
 			};
 
-			List<DocumentFieldInfo> sortedFields = fields.OrderBy(x => x.Name).ToList();
+			List<FieldInfo> sortedFields = fields.OrderBy(x => x.Name).ToList();
 			string[] artifactIDs = fields.Select(x => x.FieldIdentifier).ToArray();
 			
 			_fieldsRepositoryFake
@@ -225,7 +225,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			Mock<IFieldsClassifier> classifier = new Mock<IFieldsClassifier>();
 			IEnumerable<FieldClassificationResult> fieldClassificationResults = fields.Select(x => new FieldClassificationResult(x)).ToArray();
 
-			classifier.Setup(x => x.ClassifyAsync(It.IsAny<ICollection<DocumentFieldInfo>>(), It.IsAny<int>())).ReturnsAsync(fieldClassificationResults);
+			classifier.Setup(x => x.ClassifyAsync(It.IsAny<ICollection<FieldInfo>>(), It.IsAny<int>())).ReturnsAsync(fieldClassificationResults);
 
 			var fieldsClassifiers = new List<IFieldsClassifier>()
 			{
@@ -242,14 +242,14 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Tests
 			filteredFields.ShouldAllBeEquivalentTo(fieldClassificationResults);
 		}
 
-		private void SetupWorkspaceFields(IEnumerable<DocumentFieldInfo> fields)
+		private void SetupWorkspaceFields(IEnumerable<FieldInfo> fields)
 		{
 			_fieldsRepositoryFake
-				.Setup(x => x.GetAllDocumentFieldsAsync(It.IsAny<int>()))
+				.Setup(x => x.GetAllFieldsAsync(It.IsAny<int>(), _ARTIFACT_TYPE_ID))
 				.ReturnsAsync(fields);
 		}
 
-		private DocumentFieldInfo CreateField(string name, int artifactID = 0, string type = "", bool isIdentifier = false)
+		private FieldInfo CreateField(string name, int artifactID = 0, string type = "", bool isIdentifier = false)
 		{
 			var fieldObject = new RelativityObject()
 			{

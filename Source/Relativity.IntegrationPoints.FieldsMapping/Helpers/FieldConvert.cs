@@ -7,7 +7,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Helpers
 {
 	public static class FieldConvert
 	{
-		public static FieldEntry ToFieldEntry(DocumentFieldInfo fieldInfo)
+		public static FieldEntry ToFieldEntry(FieldInfo fieldInfo)
 		{
 			return new FieldEntry
 			{
@@ -20,9 +20,9 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Helpers
 			};
 		}
 
-		public static DocumentFieldInfo ToDocumentFieldInfo(RelativityObject fieldObject)
+		public static FieldInfo ToDocumentFieldInfo(RelativityObject fieldObject)
 		{
-			return new DocumentFieldInfo(
+			return new FieldInfo(
 				fieldObject.ArtifactID.ToString(),
 				fieldObject.Name,
 				GetValueOrDefault<string>(fieldObject, "Field Type"),
