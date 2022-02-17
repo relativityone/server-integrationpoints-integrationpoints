@@ -2,6 +2,7 @@
 using System.Threading;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
+using IConfiguration = Relativity.Sync.Storage.IConfiguration;
 
 namespace Relativity.Sync.Transfer
 {
@@ -36,6 +37,12 @@ namespace Relativity.Sync.Transfer
 		public ISourceWorkspaceDataReader CreateNonDocumentSourceWorkspaceDataReader(IBatch batch, CancellationToken token)
 		{
 			return CreateSourceWorkspaceDataReader(batch, new NonDocumentBatchDataReaderBuilder(_fieldManager, _dataSanitizer, _logger), token);
+		}
+
+		public ISourceWorkspaceDataReader CreateNonDocumentObjectLinkingSourceWorkspaceDataReader(IBatch batch,
+			CancellationToken token)
+		{
+			return CreateSourceWorkspaceDataReader(batch, new NonDocumentObjectLinkingBatchDataReaderBuilder(_fieldManager, _dataSanitizer, _logger), token);
 		}
 
 		private ISourceWorkspaceDataReader CreateSourceWorkspaceDataReader(IBatch batch, IBatchDataReaderBuilder batchDataReaderBuilder, CancellationToken token)

@@ -3,7 +3,8 @@ using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Storage
 {
-	internal sealed class SynchronizationConfiguration : ISynchronizationConfiguration, IDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, INonDocumentSynchronizationConfiguration
+	internal sealed class SynchronizationConfiguration : ISynchronizationConfiguration, IDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration,
+		INonDocumentSynchronizationConfiguration, INonDocumentObjectLinkingConfiguration
 	{
 		private const int _ASCII_GROUP_SEPARATOR = 29;
 		private const int _ASCII_RECORD_SEPARATOR = 30;
@@ -67,5 +68,7 @@ namespace Relativity.Sync.Storage
 		public string IdentifierColumn { get; set; }
 		public string OiFileTypeColumnName { get; set; }
 		public string SupportedByViewerColumn { get; set; }
+
+		public Guid? ObjectLinkingSnapshotId => _cache.GetFieldValue(x => x.ObjectLinkingSnapshotId );
 	}
 }

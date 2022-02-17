@@ -61,6 +61,9 @@ namespace Relativity.Sync.Tests.Integration
 
 			// ASSERT
 			AssertExecutionOrder(expectedOrder, _executorTypesInActualExecutionOrder);
+			expectedOrder.SelectMany(x => x).Count().Should()
+				.Be(_executorTypesInActualExecutionOrder.Count, 
+					"Expected nodes should have the same count as actual list");
 		}
 
 		[TestCaseSource(nameof(PipelineTypes))]

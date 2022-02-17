@@ -11,7 +11,6 @@ using Relativity.Sync.SyncConfiguration.Options;
 using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
-using Relativity.Sync.Tests.System.Core.Helpers.APIHelper;
 using Relativity.Sync.Tests.System.Core.Runner;
 using Relativity.Sync.Tests.System.Core.Stubs;
 using Relativity.Telemetry.APM;
@@ -21,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
 
 namespace Relativity.Sync.Tests.System.GoldFlows
 {
@@ -29,7 +29,11 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 	{
 		private const string EntityArtifactTypeName = "Entity";
 		private const string ViewName = "Entities - Legal Hold View";
+		private const string ManagerName = "My Manager";
 
+
+		private readonly int _entitiesCount = 5;
+		
 		private WorkspaceRef _sourceWorkspace;
 		private WorkspaceRef _destinationWorkspace;
 		private int _sourceEntityArtifactTypeId;
@@ -38,22 +42,22 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 		protected override async Task ChildSuiteSetup()
 		{
-			//_sourceWorkspace = await Environment.GetWorkspaceAsync(1018612).ConfigureAwait(false);
-			//_destinationWorkspace = await Environment.GetWorkspaceAsync(1018614).ConfigureAwait(false);
+			_sourceWorkspace = await Environment.GetWorkspaceAsync(1024719).ConfigureAwait(false);
+			_destinationWorkspace = await Environment.GetWorkspaceAsync(1024720).ConfigureAwait(false);
 
-			_sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
-			_destinationWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
-
-			await Environment.InstallCustomHelperAppAsync(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
-			Task installLegalHoldToSourceWorkspaceTask = Environment.InstallLegalHoldToWorkspaceAsync(_sourceWorkspace.ArtifactID);
-			Task installLegalHoldToDestinationWorkspaceTask = Environment.InstallLegalHoldToWorkspaceAsync(_destinationWorkspace.ArtifactID);
-			await Task.WhenAll(installLegalHoldToSourceWorkspaceTask, installLegalHoldToDestinationWorkspaceTask).ConfigureAwait(false);
+			// _sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
+			// _destinationWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
+			//
+			// await Environment.InstallCustomHelperAppAsync(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
+			// Task installLegalHoldToSourceWorkspaceTask = Environment.InstallLegalHoldToWorkspaceAsync(_sourceWorkspace.ArtifactID);
+			// Task installLegalHoldToDestinationWorkspaceTask = Environment.InstallLegalHoldToWorkspaceAsync(_destinationWorkspace.ArtifactID);
+			// await Task.WhenAll(installLegalHoldToSourceWorkspaceTask, installLegalHoldToDestinationWorkspaceTask).ConfigureAwait(false);
 
 			_sourceEntityArtifactTypeId = await GetArtifactTypeIdAsync(_sourceWorkspace.ArtifactID, EntityArtifactTypeName).ConfigureAwait(false);
 			_destinationEntityArtifactTypeId = await GetArtifactTypeIdAsync(_destinationWorkspace.ArtifactID, EntityArtifactTypeName).ConfigureAwait(false);
 			_viewArtifactId = await GetViewArtifactIdAsync(ViewName).ConfigureAwait(false);
 
-			await PrepareSourceDataEntitiesAsync(5, _sourceEntityArtifactTypeId).ConfigureAwait(false);
+			await PrepareSourceDataEntitiesAsync(_entitiesCount, _sourceEntityArtifactTypeId).ConfigureAwait(false);
 		}
 
 		[IdentifiedTest("C721DA78-1D27-4463-B49C-9A9E9E65F700")]
@@ -69,29 +73,78 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			int syncConfigurationId = await builder
 				.ConfigureRdos(CustomAppGuids.Guids)
 				.ConfigureNonDocumentSync(new NonDocumentSyncOptions(_viewArtifactId, _sourceEntityArtifactTypeId, _destinationEntityArtifactTypeId))
-				.WithFieldsMapping(mappingBuilder => mappingBuilder.WithIdentifier())
+				.OverwriteMode(new OverwriteOptions(ImportOverwriteMode.AppendOverlay))
+				.WithFieldsMapping(mappingBuilder => mappingBuilder
+					.WithIdentifier()
+					.WithField("Manager", "Manager")
+				)
 				.SaveAsync()
 				.ConfigureAwait(false);
 
-			ISyncJobFactory syncJobFactory = new SyncJobFactory();
 
 			ContainerBuilder containerBuilder = new ContainerBuilder();
 			containerBuilder.RegisterInstance(new SyncDataAndUserConfiguration(User.ArtifactID)).As<IUserContextConfiguration>();
 
 			SyncJobParameters syncJobParameters = new SyncJobParameters(syncConfigurationId, _sourceWorkspace.ArtifactID, Guid.NewGuid());
-			IRelativityServices relativityServices = new RelativityServices(new NullAPM(), new ServicesManagerStub(), AppSettings.RelativityUrl, new TestHelper());
 
-			ISyncJob syncJob = syncJobFactory.Create(
-				containerBuilder.Build(),
-				syncJobParameters,
-				relativityServices,
-				Logger);
-
+			SyncRunner syncRunner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl, new NullAPM(), Logger);
+			
 			// Act
-			await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
+			SyncJobState result = await syncRunner.RunAsync(syncJobParameters, User.ArtifactID).ConfigureAwait(false);
 
 			// Assert
-			// TODO
+			result.Status.Should().Be(SyncJobStatus.Completed);
+			
+			await AssertEntityCountInDestinationAsync(_destinationWorkspace.ArtifactID, _destinationEntityArtifactTypeId, 
+				expectedEntityCount: _entitiesCount + 1 // +1 for manager
+                       ).ConfigureAwait(false);
+			await AssertManagerIsLinkedAsync(_destinationWorkspace.ArtifactID, _destinationEntityArtifactTypeId, _entitiesCount).ConfigureAwait(false);
+		}
+
+		private async Task AssertManagerIsLinkedAsync(int workspaceId, int entityArtifactTypeId, int entitiesCount)
+		{
+			ObjectTypeRef entityObjectType = new ObjectTypeRef()
+			{
+				ArtifactTypeID = entityArtifactTypeId
+			};
+
+			using (IObjectManager objectManager = ServiceFactory.CreateProxy<IObjectManager>())
+			{
+				QueryResultSlim result = await objectManager.QuerySlimAsync(workspaceId,
+					new QueryRequest()
+					{
+						ObjectType = entityObjectType,
+						Fields = new[] {
+							new FieldRef
+							{
+								Name = "Manager"
+							}
+						},
+					}, 0, entitiesCount + 1).ConfigureAwait(false);
+
+				result.Objects.Select(x => x.Values.FirstOrDefault()).Count(x => x != null)
+					.Should().Be(entitiesCount, "Entities should be linked to manager");
+			}
+		}
+
+		private async Task AssertEntityCountInDestinationAsync(int workspaceId, int entityArtifactTypeId, int expectedEntityCount)
+		{
+			ObjectTypeRef entityObjectType = new ObjectTypeRef()
+			{
+				ArtifactTypeID = entityArtifactTypeId
+			};
+
+
+			using (IObjectManager objectManager = ServiceFactory.CreateProxy<IObjectManager>())
+			{
+				QueryResultSlim result = await objectManager.QuerySlimAsync(workspaceId,
+					new QueryRequest()
+					{
+						ObjectType = entityObjectType,
+					}, 0, 1).ConfigureAwait(false);
+
+				result.TotalCount.Should().Be(expectedEntityCount);
+			}
 		}
 
 		private async Task PrepareSourceDataEntitiesAsync(int entitiesCount, int artifactTypeId)
@@ -104,13 +157,12 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 				};
 
 				// Create Manager Entity
-				const string managerName = "My Manager";
 				int managerArtifactId;
 
 				QueryResult managerQueryResult = await objectManager.QueryAsync(_sourceWorkspace.ArtifactID, new QueryRequest()
 				{
 					ObjectType = entityObjectType,
-					Condition = $"'Full Name' == '{managerName}'"
+					Condition = $"'Full Name' == '{ManagerName}'"
 				}, 0, 1).ConfigureAwait(false);
 
 				if (managerQueryResult.Objects.Any())
@@ -130,7 +182,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 							{
 								Name = "Full Name"
 							},
-							Value = managerName
+							Value = ManagerName
 						}
 					}
 					}).ConfigureAwait(false);

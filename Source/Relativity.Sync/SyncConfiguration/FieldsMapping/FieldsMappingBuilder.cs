@@ -75,8 +75,8 @@ namespace Relativity.Sync.SyncConfiguration.FieldsMapping
 		{
 			using (var objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
-				FieldEntry sourceField = ReadFieldEntryByNameAsync(_sourceWorkspaceId, sourceFieldName, objectManager).GetAwaiter().GetResult();
-				FieldEntry destinationField = ReadFieldEntryByNameAsync(_destinationWorkspaceId, destinationFieldName, objectManager).GetAwaiter().GetResult();
+				FieldEntry sourceField = ReadFieldEntryByNameAsync(_sourceWorkspaceId, _rdoArtifactTypeId, sourceFieldName, objectManager).GetAwaiter().GetResult();
+				FieldEntry destinationField = ReadFieldEntryByNameAsync(_destinationWorkspaceId, _destinationRdoArtifactTypeId, destinationFieldName, objectManager).GetAwaiter().GetResult();
 
 				FieldsMapping.Add(new FieldMap
 				{
@@ -142,7 +142,7 @@ namespace Relativity.Sync.SyncConfiguration.FieldsMapping
 			return fieldEntry;
 		}
 
-		private async Task<FieldEntry> ReadFieldEntryByNameAsync(int workspaceId, string fieldName, IObjectManager objectManager)
+		private static async Task<FieldEntry> ReadFieldEntryByNameAsync(int workspaceId, int rdoArtifactTypeId, string fieldName, IObjectManager objectManager)
 		{
 			QueryRequest request = new QueryRequest()
 			{
@@ -150,7 +150,7 @@ namespace Relativity.Sync.SyncConfiguration.FieldsMapping
 				{
 					ArtifactTypeID = (int)ArtifactType.Field
 				},
-				Condition = $"'FieldArtifactTypeID' == {_rdoArtifactTypeId} AND 'Name' == '{fieldName}'",
+				Condition = $"'FieldArtifactTypeID' == {rdoArtifactTypeId} AND 'Name' == '{fieldName}'",
 				Fields = new List<FieldRef>
 				{
 					new FieldRef { Name = "Is Identifier" }

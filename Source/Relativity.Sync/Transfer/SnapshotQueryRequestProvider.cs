@@ -47,10 +47,9 @@ namespace Relativity.Sync.Transfer
         /// <inheritdoc/>
         public async Task<QueryRequest> GetRequestForLinkingNonDocumentObjectsAsync(CancellationToken token)
         {
-            string[] fieldsOfTheSameType =
-                await _fieldManager.GetSameTypeFieldNamesAsync(_configuration.SourceWorkspaceArtifactId).ConfigureAwait(false);
+            IReadOnlyList<FieldInfoDto> mappedFields = await _fieldManager.GetMappedFieldsNonDocumentForLinksAsync(token).ConfigureAwait(false);
             
-            if (fieldsOfTheSameType.Any())
+            if (mappedFields.Any())
             {
                 return new QueryRequest
                 {
@@ -58,14 +57,15 @@ namespace Relativity.Sync.Transfer
                     {
                         ArtifactTypeID = _configuration.RdoArtifactTypeId
                     },
-                    Condition = GetConditionForFieldsWithSetValue(fieldsOfTheSameType)
+                    Condition = GetConditionForFieldsWithSetValue(mappedFields.Select(x => x.SourceFieldName)),
+                    Fields = mappedFields.Select(f => new FieldRef { Name = f.SourceFieldName }).ToList()
                 };
             }
 
             return null;
         }
 
-        private string GetConditionForFieldsWithSetValue(string[] fieldNames)
+        private string GetConditionForFieldsWithSetValue(IEnumerable<string> fieldNames)
         {
             return string.Join(" OR ", fieldNames.Select(name => $"('{name}' ISSET)"));
         }

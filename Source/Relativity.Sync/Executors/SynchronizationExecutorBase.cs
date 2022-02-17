@@ -114,12 +114,12 @@ namespace Relativity.Sync.Executors
 				_logger.LogInformation("Gathering batches to execute.");
 				IEnumerable<int> batchesIds = await _batchRepository
 					.GetAllBatchesIdsToExecuteAsync(configuration.SourceWorkspaceArtifactId,
-						configuration.SyncConfigurationArtifactId, configuration.ExportRunId).ConfigureAwait(false);
+						configuration.SyncConfigurationArtifactId, GetExportRunId(configuration)).ConfigureAwait(false);
 				Dictionary<int, ExecutionResult> batchesCompletedWithErrors = new Dictionary<int, ExecutionResult>();
 
 				List<IBatch> executedBatches = (await _batchRepository.GetAllSuccessfullyExecutedBatchesAsync(
 					configuration.SourceWorkspaceArtifactId,
-					configuration.SyncConfigurationArtifactId, configuration.ExportRunId)
+					configuration.SyncConfigurationArtifactId, GetExportRunId(configuration))
 				.ConfigureAwait(false)).ToList();
 
 				using (IJobProgressHandler progressHandler = _jobProgressHandlerFactory.CreateJobProgressHandler(executedBatches))
@@ -193,6 +193,11 @@ namespace Relativity.Sync.Executors
 			}
 
 			return importAndTagResult;
+		}
+
+		protected virtual Guid GetExportRunId(TConfiguration configuration)
+		{
+			return configuration.ExportRunId;
 		}
 
 		private static ExecutionResult AggregateFailuresOrCancelled(int batchId, params ExecutionResult[] executionResults)

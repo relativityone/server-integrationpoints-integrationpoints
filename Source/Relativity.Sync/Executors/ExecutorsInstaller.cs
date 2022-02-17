@@ -109,6 +109,9 @@ namespace Relativity.Sync.Executors
 
 			builder.RegisterType<NonDocumentSynchronizationExecutionConstrains>().As<IExecutionConstrains<INonDocumentSynchronizationConfiguration>>();
 			builder.RegisterType<NonDocumentSynchronizationExecutor>().As<IExecutor<INonDocumentSynchronizationConfiguration>>();
+			
+			builder.RegisterType<NonDocumentObjectLinkingExecutionConstrains>().As<IExecutionConstrains<INonDocumentObjectLinkingConfiguration>>();
+			builder.RegisterType<NonDocumentObjectLinkingExecutor>().As<IExecutor<INonDocumentObjectLinkingConfiguration>>();
 		}
 	}
 }

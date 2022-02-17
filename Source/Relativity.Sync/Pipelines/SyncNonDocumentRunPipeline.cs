@@ -20,7 +20,8 @@ namespace Relativity.Sync.Pipelines
                 .ForParent()
                 .AddChild<SnapshotPartitionNode>()
                 .AddChild<ObjectLinkingSnapshotPartitionNode>()
-                .AddChild<NonDocumentSynchronizationNode>();
+                .AddChild<NonDocumentSynchronizationNode>()
+                .AddChild<NonDocumentObjectLinkingSynchronizationNode>();
         }
     }
 }

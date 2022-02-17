@@ -12,7 +12,7 @@ namespace Relativity.Sync.ExecutionConstrains
 	{
 		public Task<bool> CanExecuteAsync(IObjectLinkingSnapshotPartitionConfiguration configuration, CancellationToken token)
 		{
-			return Task.FromResult(true);
+			return Task.FromResult(configuration.LinkingExportExists);
 		}
 	}
 }

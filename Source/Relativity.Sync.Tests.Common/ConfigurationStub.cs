@@ -16,7 +16,7 @@ namespace Relativity.Sync.Tests.Common
 		IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration, IRetryDataSourceSnapshotConfiguration, IPipelineSelectorConfiguration,
 		IDocumentSynchronizationConfiguration, INonDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, IPreValidationConfiguration, IRdoGuidConfiguration,
 		IImageJobStartMetricsConfiguration, IDocumentJobStartMetricsConfiguration, ISnapshotQueryConfiguration, IMetricsConfiguration, IStatisticsConfiguration, INonDocumentJobStartMetricsConfiguration,
-		IJobHistoryErrorRepositoryConfigration
+		IJobHistoryErrorRepositoryConfigration, INonDocumentObjectLinkingConfiguration
 	{
 		private IList<FieldMap> _fieldMappings = new List<FieldMap>();
 		private string _jobName = String.Empty;
@@ -219,7 +219,7 @@ namespace Relativity.Sync.Tests.Common
 			return Task.CompletedTask;
 		}
 
-		public Guid ObjectLinkingSnapshotId { get; set; }
+		public Guid? ObjectLinkingSnapshotId { get; set; }
 
 		public int ObjectLinkingSnapshotRecordsCount { get; set; }
 
@@ -259,5 +259,6 @@ namespace Relativity.Sync.Tests.Common
 		public string ExecutingApplicationVersion { get; set; }
 
 		public bool LogItemLevelErrors { get; set; } = true;
+		public bool LinkingExportExists => ObjectLinkingSnapshotId.HasValue;
 	}
 }

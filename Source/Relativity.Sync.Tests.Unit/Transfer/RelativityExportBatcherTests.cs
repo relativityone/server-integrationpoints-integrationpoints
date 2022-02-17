@@ -41,8 +41,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			Mock<IBatch> batch = new Mock<IBatch>();
 			batch.SetupGet(x => x.TotalDocumentsCount).Returns(totalDocumentsCount);
 			batch.SetupGet(x => x.TransferredDocumentsCount).Returns(transferredDocumentsCount);
+			batch.SetupGet(x => x.ExportRunId).Returns(Guid.Empty);
+			
 
-			RelativityExportBatcher sut = new RelativityExportBatcher(_userServiceFactoryStub.Object, batch.Object, It.IsAny<Guid>(), It.IsAny<int>());
+			RelativityExportBatcher sut = new RelativityExportBatcher(_userServiceFactoryStub.Object, batch.Object, It.IsAny<int>());
 
 			// Act
 			await sut.GetNextItemsFromBatchAsync().ConfigureAwait(false);
@@ -61,7 +63,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			const int totalItemsCount = 10;
 			batch.SetupGet(x => x.TotalDocumentsCount).Returns(totalItemsCount);
 			SetupRetrieveResultsBlock(totalItemsCount);
-			RelativityExportBatcher exportBatcher = new RelativityExportBatcher(_userServiceFactoryStub.Object, batch.Object, Guid.Empty, 0);
+			RelativityExportBatcher exportBatcher = new RelativityExportBatcher(_userServiceFactoryStub.Object, batch.Object, 0);
 
 			// act
 			Task<RelativityObjectSlim[]> firstResultsBlock = exportBatcher.GetNextItemsFromBatchAsync();
@@ -81,7 +83,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			const int totalItemsCount = 10;
 			const int maxResultsBlockSize = 7;
 			batchStub.SetupGet(x => x.TotalDocumentsCount).Returns(totalItemsCount);
-			RelativityExportBatcher exportBatcher = new RelativityExportBatcher(_userServiceFactoryStub.Object, batchStub.Object, Guid.Empty, 0);
+			RelativityExportBatcher exportBatcher = new RelativityExportBatcher(_userServiceFactoryStub.Object, batchStub.Object, 0);
 
 			// act
 			SetupRetrieveResultsBlock(maxResultsBlockSize);
@@ -107,7 +109,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			batchStub.SetupGet(x => x.StartingIndex).Returns(0);
 			batchStub.SetupGet(x => x.TotalDocumentsCount).Returns(0);
 
-			RelativityExportBatcher batcher = new RelativityExportBatcher(_userServiceFactoryStub.Object, batchStub.Object, Guid.Empty, 0);
+			RelativityExportBatcher batcher = new RelativityExportBatcher(_userServiceFactoryStub.Object, batchStub.Object, 0);
 
 			// act
 			RelativityObjectSlim[] batches = await batcher.GetNextItemsFromBatchAsync().ConfigureAwait(false);
