@@ -138,7 +138,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 			Logger.LogInformation("Configuration RDO created");
 
 			SyncJobParameters jobParameters = FakeHelper.CreateSyncJobParameters();
-			SyncRunner syncRunner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl, new NullAPM(), Logger);
+			SyncRunner syncRunner = new SyncRunner(new ServicesManagerStub(), new SourceServiceFactoryStub(), AppSettings.RelativityUrl, new NullAPM(), Logger);
 
 			Logger.LogInformation("Starting the job");
 			await syncRunner.RunAsync(jobParameters, User.ArtifactID).ConfigureAwait(false);

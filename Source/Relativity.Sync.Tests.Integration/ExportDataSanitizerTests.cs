@@ -44,11 +44,15 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			_objectManager = new Mock<IObjectManager>();
 			var userServiceFactory = new Mock<ISourceServiceFactoryForUser>();
+			var adminServiceFactory = new Mock<ISourceServiceFactoryForAdmin>();
 			userServiceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>())
 				.ReturnsAsync(_objectManager.Object);
+            adminServiceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>())
+                .ReturnsAsync(_objectManager.Object);
 
 			ContainerBuilder builder = ContainerHelper.CreateInitializedContainerBuilder();
 			builder.RegisterInstance(userServiceFactory.Object).As<ISourceServiceFactoryForUser>();
+			builder.RegisterInstance(adminServiceFactory.Object).As<ISourceServiceFactoryForAdmin>();
 			IntegrationTestsContainerBuilder.MockReportingWithProgress(builder);
 			builder.RegisterInstance(new EmptyLogger()).As<ISyncLog>();
 

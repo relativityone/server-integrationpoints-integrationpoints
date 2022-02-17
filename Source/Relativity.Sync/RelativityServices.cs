@@ -11,21 +11,25 @@ namespace Relativity.Sync
 		/// <summary>
 		///     Constructor
 		/// </summary>
-		public RelativityServices(IAPM apm, ISourceServiceFactoryForAdmin servicesMgr, Uri authenticationUri, IHelper helper)
+		public RelativityServices(IAPM apm, ISyncServiceManager servicesMgr, ISourceServiceFactoryForAdmin servicesMgrForAdmin , Uri authenticationUri, IHelper helper)
 		{
 			Helper = helper;
 			APM = apm;
             ServicesMgr = servicesMgr;
-			AuthenticationUri = authenticationUri;
+            ServicesMgrForAdmin = servicesMgrForAdmin;
+            AuthenticationUri = authenticationUri;
 		}
 
 		/// <inheritdoc />
 		public IAPM APM { get; }
 
-		/// <inheritdoc />
-        public ISourceServiceFactoryForAdmin ServicesMgr { get; }
-		
-		/// <inheritdoc />
+        /// <inheritdoc />
+		public ISyncServiceManager ServicesMgr { get; }
+        
+        /// <inheritdoc />
+		public ISourceServiceFactoryForAdmin ServicesMgrForAdmin { get; }
+
+        /// <inheritdoc />
 		public IHelper Helper { get; }
 
 		/// <inheritdoc />

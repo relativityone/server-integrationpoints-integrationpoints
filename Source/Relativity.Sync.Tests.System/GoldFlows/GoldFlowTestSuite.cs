@@ -141,7 +141,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 			public Task<SyncJobState> RunAsync()
 			{
-				var syncRunner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl, new NullAPM(), TestLogHelper.GetLogger(), ToggleProvider);
+				var syncRunner = new SyncRunner(new ServicesManagerStub(), new SourceServiceFactoryStub(), AppSettings.RelativityUrl, new NullAPM(), TestLogHelper.GetLogger(), ToggleProvider);
 
 				return syncRunner.RunAsync(_parameters, _goldFlowTestSuite.User.ArtifactID);
 			}
