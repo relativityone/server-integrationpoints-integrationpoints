@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
@@ -17,7 +17,8 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 {
 	internal abstract class SyncConfigurationCreationTestsBase : SystemTest
 	{
-		protected ISyncServiceManager SyncServicesMgr;
+		protected ISourceServiceFactoryForAdmin SourceServiceFactoryForAdmin;
+		protected ISourceServiceFactoryForUser SourceServiceFactoryForUser;
 
 		protected int SourceWorkspaceId;
 		protected int DestinationWorkspaceId;
@@ -28,7 +29,8 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 		{
 			await base.ChildSuiteSetup();
 
-			SyncServicesMgr = new ServicesManagerStub();
+			SourceServiceFactoryForAdmin = new SourceServiceFactoryStub();
+			SourceServiceFactoryForUser = new SourceServiceFactoryStub();
 
 			WorkspaceRef sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 			SourceWorkspaceId = sourceWorkspace.ArtifactID;
@@ -56,7 +58,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			}
 
 			RelativityObject configuration;
-			using (IObjectManager objectManager = SyncServicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
+			using (IObjectManager objectManager = await SourceServiceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				var request = new QueryRequest
 				{

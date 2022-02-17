@@ -118,15 +118,13 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			instanceSettingManager.Setup(x => x.QueryAsync(It.IsAny<Services.Query>())).ReturnsAsync(resultSet);
 
 			Mock<ISourceServiceFactoryForAdmin> servicesMgrForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
+			Mock<ISyncServiceManager> servicesMgr = new Mock<ISyncServiceManager>();
             servicesMgrForAdmin.Setup(x => x.CreateProxyAsync<IInstanceSettingManager>()).Returns(Task.FromResult(instanceSettingManager.Object));
 
-            Mock<ISourceServiceFactoryForUser> servicesMgrForUser = new Mock<ISourceServiceFactoryForUser>();
-			servicesMgrForUser.Setup(x => x.CreateProxyAsync<IInstanceSettingManager>()).Returns(Task.FromResult(instanceSettingManager.Object));
-
-			Uri authenticationUri = new Uri("https://localhost", UriKind.RelativeOrAbsolute);
+            Uri authenticationUri = new Uri("https://localhost", UriKind.RelativeOrAbsolute);
 
 			IHelper helper = Mock.Of<IHelper>();
-			return new RelativityServices(apm, servicesMgrForAdmin.Object, servicesMgrForUser.Object, authenticationUri, helper);
+			return new RelativityServices(apm, servicesMgr.Object, servicesMgrForAdmin.Object, authenticationUri, helper);
 		}
 
         public static void MockSearchManagerFactory(ContainerBuilder containerBuilder)

@@ -299,7 +299,7 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
             RdoOptions rdoOptions = DefaultGuids.DefaultRdoOptions;
             
             // Act
-            IDocumentSyncConfigurationBuilder sut = new SyncConfigurationBuilder(_syncContext, _servicesManagerForAdminMock.Object)
+            IDocumentSyncConfigurationBuilder sut = new SyncConfigurationBuilder(_syncContext, _servicesManagerForAdminMock.Object, _servicesManagerForUserMock.Object)
                 .ConfigureRdos(rdoOptions)
                 .ConfigureDocumentSync(new DocumentSyncOptions(1, 1));
             
@@ -315,7 +315,7 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
             RdoOptions rdoOptions = DefaultGuids.DefaultRdoOptions;
             
             // Act
-            IDocumentSyncConfigurationBuilder sut = new SyncConfigurationBuilder(_syncContext, _servicesManagerForAdminMock.Object)
+            IDocumentSyncConfigurationBuilder sut = new SyncConfigurationBuilder(_syncContext, _servicesManagerForAdminMock.Object, _servicesManagerForUserMock.Object)
                 .ConfigureRdos(rdoOptions)
                 .ConfigureDocumentSync(new DocumentSyncOptions(1, 1))
                 .DisableItemLevelErrorLogging();

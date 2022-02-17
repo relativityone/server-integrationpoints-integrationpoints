@@ -31,7 +31,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			NonDocumentSyncOptions options = new NonDocumentSyncOptions(viewArtifactId, RdoArtifactTypeId, DestinationRdoArtifactTypeId);
 
 			// Act
-			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, SourceServiceFactoryForAdmin, SourceServiceFactoryForUser)
 				.ConfigureRdos(DefaultGuids.DefaultRdoOptions)
 				.ConfigureNonDocumentSync(options)
 				.SaveAsync()
@@ -50,7 +50,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			NonDocumentSyncOptions options = new NonDocumentSyncOptions(viewArtifactId, RdoArtifactTypeId, DestinationRdoArtifactTypeId);
 
 			// Act
-			Func<Task<int>> action = async () => await new SyncConfigurationBuilder(syncContext, SyncServicesMgr)
+			Func<Task<int>> action = async () => await new SyncConfigurationBuilder(syncContext, SourceServiceFactoryForAdmin, SourceServiceFactoryForUser)
 				.ConfigureRdos(DefaultGuids.DefaultRdoOptions)
 				.ConfigureNonDocumentSync(options)
 				.SaveAsync().ConfigureAwait(false);

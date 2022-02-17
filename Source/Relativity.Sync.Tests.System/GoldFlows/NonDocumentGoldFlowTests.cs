@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Tests.System.GoldFlows
 {
@@ -64,7 +65,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 			SyncConfigurationBuilder builder = new SyncConfigurationBuilder(
 				new SyncContext(_sourceWorkspace.ArtifactID, _destinationWorkspace.ArtifactID, jobHistoryId),
-				new ServicesManagerStub());
+				new SourceServiceFactoryStub(), new SourceServiceFactoryStub());
 
 			int syncConfigurationId = await builder
 				.ConfigureRdos(CustomAppGuids.Guids)
@@ -79,7 +80,8 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			containerBuilder.RegisterInstance(new SyncDataAndUserConfiguration(User.ArtifactID)).As<IUserContextConfiguration>();
 
 			SyncJobParameters syncJobParameters = new SyncJobParameters(syncConfigurationId, _sourceWorkspace.ArtifactID, Guid.NewGuid());
-			IRelativityServices relativityServices = new RelativityServices(new NullAPM(), new ServicesManagerStub(), AppSettings.RelativityUrl, new TestHelper());
+			IRelativityServices relativityServices = new RelativityServices(new NullAPM(), new ServicesManagerStub(), new SourceServiceFactoryStub(), AppSettings.RelativityUrl, new TestHelper());
+            ISourceServiceFactoryForAdmin serviceFactoryForAdmin = new SourceServiceFactoryStub();
 
 			ISyncJob syncJob = syncJobFactory.Create(
 				containerBuilder.Build(),

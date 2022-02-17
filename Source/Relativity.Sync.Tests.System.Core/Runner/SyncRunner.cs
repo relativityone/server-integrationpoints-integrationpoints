@@ -16,8 +16,8 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 	/// </summary>
 	public class SyncRunner
 	{
-		private readonly ISourceServiceFactoryForAdmin _servicesManagerForAdmin;
-		private readonly ISourceServiceFactoryForUser _servicesManagerForUser;
+		private readonly ISyncServiceManager _servicesMgr;
+		private readonly ISourceServiceFactoryForAdmin _servicesMgrForAdmin;
 		private readonly Uri _relativityUri;
 		private readonly ISyncLog _logger;
 		private readonly IToggleProvider _toggleProvider;
@@ -27,18 +27,18 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		/// <param name="servicesManagerForAdmin">Authenticated service manager with admin privileges</param>
-		/// <param name="servicesManagerForUser">Authenticated service manager with user privileges</param>
+		/// <param name="servicesMgr">Authenticated service manager</param>
+		/// /// <param name="servicesMgrForAdmin">Authenticated service manager with admin privileges</param>
 		/// <param name="relativityUri">Host name of relativity - no suffixes</param>
 		/// <param name="apmClient">APM implementation</param>
 		/// <param name="logger">Logger</param>
-		public SyncRunner(ISourceServiceFactoryForAdmin servicesManagerForAdmin, ISourceServiceFactoryForUser servicesManagerForUser, Uri relativityUri, IAPM apmClient, ISyncLog logger, IToggleProvider toggleProvider = null)
+		public SyncRunner(ISyncServiceManager servicesMgr, ISourceServiceFactoryForAdmin servicesMgrForAdmin, Uri relativityUri, IAPM apmClient, ISyncLog logger, IToggleProvider toggleProvider = null)
 		{
-			_servicesManagerForAdmin = servicesManagerForAdmin;
-            _servicesManagerForUser = servicesManagerForUser;
+            _servicesMgr = servicesMgr;
 			_relativityUri = relativityUri;
 			_logger = logger;
-			_toggleProvider = toggleProvider;
+            _servicesMgrForAdmin = servicesMgrForAdmin;
+            _toggleProvider = toggleProvider;
 			_apmClient = apmClient;
 			_helper = new TestHelper();
 		}
@@ -113,7 +113,7 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 			}
 			
 			var jobFactory = new SyncJobFactory();
-			var relativityServices = new RelativityServices(_apmClient, _servicesManagerForAdmin, _servicesManagerForUser, relativityUri, _helper);
+			var relativityServices = new RelativityServices(_apmClient, _servicesMgr, _servicesMgrForAdmin, relativityUri, _helper);
 
 
 			return jobFactory.Create(containerBuilder.Build(), parameters, relativityServices, _logger);

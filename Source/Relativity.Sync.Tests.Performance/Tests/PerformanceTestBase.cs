@@ -189,7 +189,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 				SyncJobParameters args = new SyncJobParameters(ConfigurationRdoId, SourceWorkspace.ArtifactID,
 					Guid.NewGuid());
 
-				SyncRunner syncRunner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl,
+				SyncRunner syncRunner = new SyncRunner(new ServicesManagerStub(), new SourceServiceFactoryStub(), AppSettings.RelativityUrl,
 					new NullAPM(), Logger, new TestSyncToggleProvider());
 
 				Logger.LogInformation("Staring the job");

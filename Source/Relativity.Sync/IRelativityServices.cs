@@ -20,12 +20,18 @@ namespace Relativity.Sync
 		/// </summary>
 		Uri AuthenticationUri { get; }
 
+
 		/// <summary>
-		///     Relativity authentication endpoint address with admin privileges
+		///     Relativity authentication endpoint address
 		/// </summary>
-		ISourceServiceFactoryForAdmin ServicesMgr { get; }
+        ISyncServiceManager ServicesMgr { get; }
 
         /// <summary>
+        ///     Relativity authentication endpoint address with Admin privileges
+        /// </summary>
+		public ISourceServiceFactoryForAdmin ServicesMgrForAdmin { get; }
+
+		/// <summary>
 		///     Interface with helper methods to programmatically interact with Relativity
 		/// </summary>
 		IHelper Helper { get; }
