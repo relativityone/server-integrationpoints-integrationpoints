@@ -548,9 +548,6 @@
 			}
 		}).extend({
 			checkWorkspaceForObjectType: {
-				onlyIf: function() {
-					return self.IsNonDocumentObjectFlow();
-				}
 			}
 		}).extend({
 			checkWorkspace: {
