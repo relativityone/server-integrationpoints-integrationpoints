@@ -23,6 +23,14 @@ export function createConsole(convenienceApi: IConvenienceApi): void {
     })
 }
 
+export function showContext(convenienceApi: IConvenienceApi): void {
+    console.log("in context show");
+    console.log(convenienceApi);
+    return contextProvider((ctx) => {
+        console.log(ctx);
+    })
+}
+
 export function checkIfRefreshIsNeeded(btnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, currentPage): void {
     var buttonState = getButtonStateObject(convenienceApi, ctx, workspaceId, integrationPointId);
     buttonState.then(function (newBtnStateObj: ButtonState) {
@@ -92,6 +100,8 @@ function generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPoi
         }
         integrationPoint[trimmedKey] = val;
     });
+
+    console.log(integrationPoint);
 
     function postJobAPIRequest(workspaceId, integrationPointId, action = "") {
         var request = {
