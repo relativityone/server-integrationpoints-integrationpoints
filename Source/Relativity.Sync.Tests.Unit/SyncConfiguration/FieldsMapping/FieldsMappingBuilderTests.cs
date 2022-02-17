@@ -24,7 +24,8 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration.FieldsMapping
 
 		private const int _SOURCE_WORKSPACE_ID = 1;
 		private const int _DESTINATION_WORKSPACE_ID = 2;
-		private readonly int _rdoArtifactTypeId = (int)ArtifactType.Production;
+		private readonly int _sourceArtifactTypeId = 68;
+		private readonly int _destinationArtifactTypeId = 78;
 
 		[SetUp]
 		public void SetUp()
@@ -39,7 +40,7 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration.FieldsMapping
 				.Returns(_fieldManagerFake.Object);
 
 			_sut = new FieldsMappingBuilder(_SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID, 
-				_rdoArtifactTypeId, _rdoArtifactTypeId,
+				_sourceArtifactTypeId, _destinationArtifactTypeId,
 				syncServicesMgrFake.Object);
 		}
 
@@ -69,8 +70,8 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration.FieldsMapping
 				}
 			};
 
-			SetupIdentifierField(identifierField, _SOURCE_WORKSPACE_ID);
-			SetupIdentifierField(identifierField, _DESTINATION_WORKSPACE_ID);
+			SetupIdentifierField(identifierField, _sourceArtifactTypeId, _SOURCE_WORKSPACE_ID);
+			SetupIdentifierField(identifierField, _destinationArtifactTypeId ,_DESTINATION_WORKSPACE_ID);
 
 			// Act
 			var fieldsMapping = _sut.WithIdentifier().FieldsMapping;
@@ -85,8 +86,8 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration.FieldsMapping
 			// Arrange
 			RelativityObject identifierField = new RelativityObject() { ArtifactID = 1, Name = "Test" };
 
-			SetupIdentifierField(identifierField, _SOURCE_WORKSPACE_ID);
-			SetupIdentifierField(identifierField, _DESTINATION_WORKSPACE_ID);
+			SetupIdentifierField(identifierField, _sourceArtifactTypeId, _SOURCE_WORKSPACE_ID);
+			SetupIdentifierField(identifierField, _destinationArtifactTypeId, _DESTINATION_WORKSPACE_ID);
 
 			// Act
 			Action action = () => _sut.WithIdentifier().WithIdentifier();
@@ -178,8 +179,8 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration.FieldsMapping
 				}
 			};
 
-			SetupField(sourceField, sourceFieldName, _SOURCE_WORKSPACE_ID);
-			SetupField(destinationField, destinationFieldName, _DESTINATION_WORKSPACE_ID);
+			SetupField(sourceField, sourceFieldName, _sourceArtifactTypeId ,_SOURCE_WORKSPACE_ID);
+			SetupField(destinationField, destinationFieldName, _destinationArtifactTypeId, _DESTINATION_WORKSPACE_ID);
 
 			// Act
 			var fieldsMapping = _sut
@@ -215,11 +216,11 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration.FieldsMapping
 				.WithMessage(InvalidFieldsMappingException.FieldIsIdentifier(identifierId).Message);
 		}
 
-		private void SetupIdentifierField(RelativityObject expectedIdentifier, int workspaceId)
+		private void SetupIdentifierField(RelativityObject expectedIdentifier,int rdoArtifactTypeId ,int workspaceId)
 		{
 			_objectManagerFake.Setup(x =>
 					x.QueryAsync(workspaceId, It.Is<QueryRequest>(q => 
-						q.IncludeNameInQueryResult == true && q.Condition.Contains($"'FieldArtifactTypeID' == {_rdoArtifactTypeId} AND 'Is Identifier' == true")),
+						q.IncludeNameInQueryResult == true && q.Condition.Contains($"'FieldArtifactTypeID' == {rdoArtifactTypeId} AND 'Is Identifier' == true")),
 						It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync(new QueryResult
 				{
@@ -234,12 +235,12 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration.FieldsMapping
 				.ReturnsAsync(expectedField);
 		}
 
-		private void SetupField(RelativityObject expectedField, string fieldName, int workspaceId)
+		private void SetupField(RelativityObject expectedField, string fieldName, int rdoArtifactTypeId, int workspaceId)
 		{
 			_objectManagerFake.Setup(x =>
 					x.QueryAsync(workspaceId, It.Is<QueryRequest>(q =>
 						q.IncludeNameInQueryResult == true 
-						&& q.Condition.Contains($"'FieldArtifactTypeID' == {_rdoArtifactTypeId} AND 'Name' == '{fieldName}'")
+						&& q.Condition.Contains($"'FieldArtifactTypeID' == {rdoArtifactTypeId} AND 'Name' == '{fieldName}'")
 						&& q.Fields.Any(f => f.Name == "Is Identifier")),
 						It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync(new QueryResult

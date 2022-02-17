@@ -57,7 +57,7 @@ namespace Relativity.Sync.Transfer
                     {
                         ArtifactTypeID = _configuration.RdoArtifactTypeId
                     },
-                    Condition = GetConditionForFieldsWithSetValue(mappedFields.Select(x => x.SourceFieldName)),
+                    Condition = GetConditionForFieldsWithSetValue(mappedFields.Where(x => x.IsIdentifier == false).Select(x => x.SourceFieldName)),
                     Fields = mappedFields.Select(f => new FieldRef { Name = f.SourceFieldName }).ToList()
                 };
             }

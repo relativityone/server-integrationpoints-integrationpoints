@@ -21,6 +21,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.WinEDDS;
 
 namespace Relativity.Sync.Tests.System.GoldFlows
 {
@@ -76,6 +77,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 				.OverwriteMode(new OverwriteOptions(ImportOverwriteMode.AppendOverlay))
 				.WithFieldsMapping(mappingBuilder => mappingBuilder
 					.WithIdentifier()
+					.WithField("Email", "Email")
 					.WithField("Manager", "Manager")
 				)
 				.SaveAsync()
@@ -98,10 +100,19 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			await AssertEntityCountInDestinationAsync(_destinationWorkspace.ArtifactID, _destinationEntityArtifactTypeId, 
 				expectedEntityCount: _entitiesCount + 1 // +1 for manager
                        ).ConfigureAwait(false);
-			await AssertManagerIsLinkedAsync(_destinationWorkspace.ArtifactID, _destinationEntityArtifactTypeId, _entitiesCount).ConfigureAwait(false);
+			List<RelativityObjectSlim> entitiesFromDesintion = await GetEntitiesFromDestinationAsync(_destinationWorkspace.ArtifactID, _destinationEntityArtifactTypeId, _entitiesCount).ConfigureAwait(false);
+			
+			AssertManagerIsLinked(_entitiesCount, entitiesFromDesintion);
+			AssertEmailWasTranfered(entitiesFromDesintion);
 		}
 
-		private async Task AssertManagerIsLinkedAsync(int workspaceId, int entityArtifactTypeId, int entitiesCount)
+		private void AssertEmailWasTranfered(List<RelativityObjectSlim> entities)
+		{
+			entities.Select(x => x.Values[1]).All(x => x.ToString().Contains("@email.com")).Should()
+				.BeTrue("Emails were not transferred");
+		}
+
+		private async Task<List<RelativityObjectSlim>> GetEntitiesFromDestinationAsync(int workspaceId, int entityArtifactTypeId, int entitiesCount)
 		{
 			ObjectTypeRef entityObjectType = new ObjectTypeRef()
 			{
@@ -118,13 +129,22 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 							new FieldRef
 							{
 								Name = "Manager"
+							},
+							new FieldRef
+							{
+								Name = "Email"
 							}
 						},
 					}, 0, entitiesCount + 1).ConfigureAwait(false);
 
-				result.Objects.Select(x => x.Values.FirstOrDefault()).Count(x => x != null)
-					.Should().Be(entitiesCount, "Entities should be linked to manager");
+				return result.Objects;
 			}
+		}
+
+		private static void AssertManagerIsLinked(int entitiesCount, List<RelativityObjectSlim> entities)
+		{
+			entities.Select(x => x.Values.FirstOrDefault()).Count(x => x != null)
+				.Should().Be(entitiesCount, "Entities should be linked to manager");
 		}
 
 		private async Task AssertEntityCountInDestinationAsync(int workspaceId, int entityArtifactTypeId, int expectedEntityCount)
@@ -199,6 +219,10 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 					},
 					new FieldRef()
 					{
+						Name	= "Email"
+					},
+					new FieldRef()
+					{
 						Name = "Manager"
 					}
 				};
@@ -208,6 +232,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 					.Select(i => new List<object>()
 					{
 						$"Employee {i}",
+						$"{i}@email.com",
 						new RelativityObjectRef()
 						{
 							ArtifactID = managerArtifactId

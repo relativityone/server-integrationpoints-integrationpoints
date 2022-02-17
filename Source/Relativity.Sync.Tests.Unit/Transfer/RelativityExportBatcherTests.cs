@@ -30,11 +30,12 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 
 		[Test]
-		public async Task GetNextItemsFromBatchAsync_ShouldRespectAlreadyTransferredItems_WhenSetRemainingItems()
+		public async Task GetNextItemsFromBatchAsync_ShouldRespectAlreadyTransferredItems_AndExportRunId_WhenSetRemainingItems()
 		{
 			// Arrange
 			const int totalDocumentsCount = 10;
 			const int transferredDocumentsCount = 3;
+			Guid exportRunId = Guid.NewGuid();
 
 			int expectedRemainingItemsCount = totalDocumentsCount - transferredDocumentsCount;
 
@@ -42,7 +43,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			batch.SetupGet(x => x.TotalDocumentsCount).Returns(totalDocumentsCount);
 			batch.SetupGet(x => x.TransferredDocumentsCount).Returns(transferredDocumentsCount);
 			batch.SetupGet(x => x.ExportRunId).Returns(Guid.Empty);
-			
+			batch.SetupGet(x => x.ExportRunId).Returns(exportRunId);
+
 
 			RelativityExportBatcher sut = new RelativityExportBatcher(_userServiceFactoryStub.Object, batch.Object, It.IsAny<int>());
 
@@ -51,7 +53,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			// Assert
 			_objectManagerMock.Verify(x => x.RetrieveResultsBlockFromExportAsync(
-				It.IsAny<int>(), It.IsAny<Guid>(), expectedRemainingItemsCount, It.IsAny<int>()));
+				It.IsAny<int>(), exportRunId, expectedRemainingItemsCount, It.IsAny<int>()));
 		}
 
 		[Test]
