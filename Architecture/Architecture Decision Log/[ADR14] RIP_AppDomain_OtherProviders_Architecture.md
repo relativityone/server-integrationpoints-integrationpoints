@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed
+Accepted
 
 ## Context
 
@@ -179,3 +179,11 @@ Get rid off temporarily AppDomain may have unpredictable consequences for Custom
 
 * Executing existing logic on AppDomain.Current may lead to overwrite some DLLs from WorkingDirectory (TODO: What is directory path?)
 * Loaded DLLs from Integration Points Custom Provider won't be released after job finished (in current design Temporary Domain is released when not needed anymore)
+
+## Decision
+
+As temporary solution we decided to disable temporarily Other Provider validation during installation (where AppDomains are created and type is resolved) when Application Installation Agent is in k8s. We couldn't do that on lower level, because there is no easy way to distinigiush if executed code is in Installation Agent or Integration Points Agent - [REL-646956](https://jira.kcura.com/browse/REL-646956).
+
+For long term solution we are going to completely get rid off AppDomains when running Agent is in k8s. The main concern - leaving dirty state in container before next job run will be resolved by executing only one job during container lifetime. Thanks to that we will setup RIP "environment" from scratch on every job and avoid potential conflicts in DLLs. We plan to achieve that by modify the code to run single job per `AgentBase.Execute` method and change flag stay_alive to **0** in [deploy.yaml](https://git.kcura.com/projects/IN/repos/integrationpoints/browse/ApplicationsXML/deploy.yaml#5) - container will be disposed immediately after job finish.
+
+Containers requires ~10s to spin up so we accept potential performance degradation especially in Other Providers, but we also take under consideration to increase BatchSize to e.g. _10000_, but it would require additional investigation because right now we store JSON with ids for current batch in SQL column, so we would need to validate if it won't have any uncexpected consequences if this string will be 10 times larger.

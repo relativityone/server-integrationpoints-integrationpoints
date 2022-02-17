@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
@@ -89,20 +90,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 					Arg.Is(hasAddProfilePermission));
 		}
 
-		[TestCase(ProviderType.Other, true, false, false, false, true)]
-		[TestCase(ProviderType.LDAP, true, false, false, false, true)]
-		[TestCase(ProviderType.FTP, true, false, false, false, true)]
-		[TestCase(ProviderType.Other, false, true, false, false, false)]
-		[TestCase(ProviderType.Other, true, false, true, false, false)]
-		[TestCase(ProviderType.Relativity, false, true, true, false, true)]
-		[TestCase(ProviderType.Relativity, false, true, true, true, false)]
-		[TestCase(ProviderType.LoadFile, false, true, true, true, true)]
+		[TestCase(ProviderType.Other, true, false, false, false, 0, true)]
+		[TestCase(ProviderType.LDAP, true, false, false, false, 0, true)]
+		[TestCase(ProviderType.FTP, true, false, false, false, 0, true)]
+		[TestCase(ProviderType.Other, false, true, false, false, 0, false)]
+		[TestCase(ProviderType.Other, true, false, true, false, 0, false)]
+		[TestCase(ProviderType.Relativity, false, true, true, false, SourceConfiguration.ExportType.SavedSearch, true)]
+		[TestCase(ProviderType.Relativity, false, true, true, true, SourceConfiguration.ExportType.SavedSearch, true)]
+		[TestCase(ProviderType.Relativity, false, true, true, true, SourceConfiguration.ExportType.ProductionSet, false)]
+		[TestCase(ProviderType.LoadFile, false, true, true, true, 0, true)]
 		public void CreateButtonState_IntegrationPointIsStoppableBasedOnCriteria(
 			ProviderType providerType,bool hasPendingJobHistory, bool hasProcessingJobHistory,
-			bool hasJobsExecuting, bool isImageImport, bool expectedIsStoppable)
+			bool hasJobsExecuting, bool isImageImport, SourceConfiguration.ExportType exportType, bool expectedIsStoppable)
         {
 			// Arrange
-			SetupIntegrationPoint(providerType, isImageImport: isImageImport);
+			SetupIntegrationPoint(providerType, isImageImport: isImageImport, exportType: exportType);
 
 			_permissionValidator.ValidateViewErrors(_WORKSPACE_ID).Returns(new ValidationResult());
 
@@ -125,7 +127,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 					Arg.Any<bool>());
 		}
 
-		private void SetupIntegrationPoint(ProviderType providerType, bool isImageImport = false, bool hasErrors = false)
+		private void SetupIntegrationPoint(ProviderType providerType, bool isImageImport = false, bool hasErrors = false, SourceConfiguration.ExportType exportType = 0)
         {
 			const int sourceProviderArtifactId = 210;
 			const int destinationProviderArtifactId = 220;
@@ -138,10 +140,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 					HasErrors = hasErrors,
 					SourceProvider = sourceProviderArtifactId,
 					DestinationProvider = destinationProviderArtifactId,
-					DestinationConfiguration = JsonConvert.SerializeObject(settings)
+					DestinationConfiguration = JsonConvert.SerializeObject(settings),
+					SourceConfiguration = JsonConvert.SerializeObject(new {TypeOfExport = exportType})
 				});
 
-			_providerTypeService.GetProviderType(sourceProviderArtifactId, destinationProviderArtifactId).Returns(providerType);
+            _providerTypeService.GetProviderType(sourceProviderArtifactId, destinationProviderArtifactId).Returns(providerType);
 		}
 
 		private StoppableJobHistoryCollection GetJobHistoryCollection(bool hasPendingJobHistory, bool hasProcessingJobHistory)
