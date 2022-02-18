@@ -10,12 +10,12 @@ namespace Relativity.Sync.ExecutionConstrains
 {
     internal abstract class BaseSynchronizationExecutionConstrains<T> : IExecutionConstrains<T> where T : ISynchronizationConfiguration
     {
-        protected readonly IBatchRepository _batchRepository;
+        protected readonly IBatchRepository BatchRepository;
         protected readonly ISyncLog SyncLog;
 
         public BaseSynchronizationExecutionConstrains(IBatchRepository batchRepository, ISyncLog syncLog)
         {
-            _batchRepository = batchRepository;
+            BatchRepository = batchRepository;
             SyncLog = syncLog;
         }
 
@@ -24,7 +24,7 @@ namespace Relativity.Sync.ExecutionConstrains
             bool canExecute = true;
             try
             {
-                IEnumerable<int> batchIds = await _batchRepository.GetAllBatchesIdsToExecuteAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, configuration.ExportRunId).ConfigureAwait(false);
+                IEnumerable<int> batchIds = await BatchRepository.GetAllBatchesIdsToExecuteAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, configuration.ExportRunId).ConfigureAwait(false);
                 if (batchIds == null || !batchIds.Any())
                 {
                     canExecute = false;

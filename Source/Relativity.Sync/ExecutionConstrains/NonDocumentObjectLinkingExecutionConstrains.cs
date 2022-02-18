@@ -8,8 +8,7 @@ using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.ExecutionConstrains
 {
-    internal sealed class
-        NonDocumentObjectLinkingExecutionConstrains : IExecutionConstrains<INonDocumentObjectLinkingConfiguration>
+    internal sealed class NonDocumentObjectLinkingExecutionConstrains : IExecutionConstrains<INonDocumentObjectLinkingConfiguration>
     {
         private readonly IBatchRepository _batchRepository;
         private readonly ISyncLog _syncLog;
