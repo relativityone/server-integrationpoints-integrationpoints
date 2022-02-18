@@ -25,7 +25,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
 		{
 			// Act & Assert
 			ValidateOnOperationShouldNotThrow(
-				(executor, context) => executor.ValidateOnSave(context));
+				(executor, context) => executor.ValidateOnStop(context));
 		}
 
 		[IdentifiedTest("DE07279A-1F14-4F82-9981-B93108B04763")]
@@ -52,6 +52,20 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
 			result.Messages.Should().BeEmpty();
 		}
 
+		[IdentifiedTest("794CAA0A-64D9-42A1-A3CA-0564014EF53C")]
+		public void ValidateOnSave_ShouldThrow_WhenMappingIdentifierOnly()
+		{
+			// Arrange
+			ValidationContext context = PrepareValidationContextForEntity(true);
+			IValidationExecutor sut = PrepareSut();
+			
+			// Act
+			Action validation = () => sut.ValidateOnSave(context); 
+			
+			// Assert
+			validation.ShouldThrow<IntegrationPointValidationException>($"Field: \"First Name\" should be mapped in Destination");
+		}
+		
 		private void ValidateOnOperationShouldNotThrow(Action<IValidationExecutor, ValidationContext> validateAction)
 		{
 			// Arrange
@@ -96,5 +110,30 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
 
 			return context;
 		}
+		
+		private ValidationContext PrepareValidationContextForEntity(bool isMappingIdentifierOnly)
+		{
+			IntegrationPointTest integrationPoint =
+				SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportEntityFromLdapIntegrationPoint(isMappingIdentifierOnly: isMappingIdentifierOnly);
+
+			IntegrationPointTypeTest integrationPointType = SourceWorkspace.IntegrationPointTypes.Single(x => x.ArtifactId == integrationPoint.Type);
+
+			SourceProviderTest sourceProvider = SourceWorkspace.SourceProviders.Single(x => x.ArtifactId == integrationPoint.SourceProvider);
+
+			DestinationProviderTest destinationProvider = SourceWorkspace.DestinationProviders.Single(x => x.ArtifactId == integrationPoint.DestinationProvider);
+
+			ValidationContext context = new ValidationContext
+			{
+				Model = IntegrationPointModel.FromIntegrationPoint(integrationPoint.ToRdo()),
+				SourceProvider = sourceProvider.ToRdo(),
+				DestinationProvider = destinationProvider.ToRdo(),
+				IntegrationPointType = integrationPointType.ToRdo(),
+				ObjectTypeGuid = ObjectTypeGuids.IntegrationPointGuid,
+				UserId = User.ArtifactId
+			};
+
+			return context;
+		}
+
 	}
 }

@@ -113,7 +113,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 		public List<FieldMap> PrepareIdentifierFieldsMappingForLDAPEntityImport()
 		{
-			Dictionary<string, FieldTest> entityFields = Workspace.Fields.Where(x => x.ObjectTypeId == Const.LDAP._ENTITY_TYPE_ARTIFACT_ID)
+			int artifactTypeIdEntity = GetArtifactTypeIdByName(Const.Entity._ENTITY_OBJECT_NAME);
+			Dictionary<string, FieldTest> entityFields = Workspace.Fields.Where(x => x.ObjectTypeId == artifactTypeIdEntity)
 				.ToDictionary(x => x.Name, x => x);
 
 			return new List<FieldMap>
@@ -208,6 +209,40 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 				}
 			};
 		}
+		
+		public List<FieldMap> PrepareIdentifierOnlyFieldsMappingForLDAPEntityImport()
+		{
+			
+			int _artifactTypeIdEntity = GetArtifactTypeIdByName(Const.Entity._ENTITY_OBJECT_NAME);
+			Dictionary<string, FieldTest> entityFields = Workspace.Fields.Where(x => x.ObjectTypeId == _artifactTypeIdEntity)
+				.ToDictionary(x => x.Name, x => x);
+
+			return new List<FieldMap>
+			{
+				new FieldMap
+				{
+					SourceField = new FieldEntry
+					{
+						DisplayName = "uid",
+						FieldIdentifier = "uid",
+						FieldType = FieldType.String,
+						IsIdentifier = false,
+						IsRequired = false,
+						Type = null
+					},
+					DestinationField = new FieldEntry
+					{
+						DisplayName = entityFields["Unique ID"].Name,
+						FieldIdentifier = entityFields["Unique ID"].ArtifactId.ToString(),
+						FieldType = FieldType.String,
+						IsIdentifier = true,
+						IsRequired = true,
+						Type = FIXED_LENGTH_TEXT_NAME
+					},
+					FieldMapType = FieldMapTypeEnum.Identifier
+				}
+			};
+		}
 
 		public List<FieldMap> PrepareLongTextFieldsMapping()
 		{
@@ -254,6 +289,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             }
 
             return fieldsMap;
+        }
+
+        private int GetArtifactTypeIdByName(string name)
+        {
+	        return Workspace.ObjectTypes.First(x => x.Name == name).ArtifactTypeId;
         }
 	}
 

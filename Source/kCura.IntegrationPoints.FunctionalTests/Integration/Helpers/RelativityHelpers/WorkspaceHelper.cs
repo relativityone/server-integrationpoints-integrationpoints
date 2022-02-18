@@ -30,40 +30,21 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 			{
 				Name = workspace.Name
 			});
-
+			
+			workspace.ObjectTypes.Add(new ObjectTypeTest
+				{
+					Name = Const.Document._DOCUMENT_NAME,
+					Guid = Const.Document._DOCUMENT_GUID,
+					ObjectType = Const.Document._DOCUMENT_NAME,
+					ObjectTypeArtifactTypeId = (int)ArtifactType.ObjectType,
+					ArtifactTypeId = (int)ArtifactType.Document
+				}
+			);
 			workspace.Fields.Add(new FieldTest
 			{
 				ObjectTypeId = (int)ArtifactType.Document,
 				IsIdentifier = true,
 				Name = "Control Number"
-			});
-			workspace.Fields.Add(new FieldTest
-			{
-				ObjectTypeId = Const.LDAP._ENTITY_TYPE_ARTIFACT_ID,
-				Guid = new Guid(EntityFieldGuids.UniqueID),
-				IsIdentifier = true,
-				Name = "Unique ID"
-			});
-			workspace.Fields.Add(new FieldTest
-			{
-				ObjectTypeId = Const.LDAP._ENTITY_TYPE_ARTIFACT_ID,
-				Guid = new Guid(EntityFieldGuids.FirstName),
-				IsIdentifier = false,
-				Name = "First Name"
-			});
-			workspace.Fields.Add(new FieldTest
-			{
-				ObjectTypeId = Const.LDAP._ENTITY_TYPE_ARTIFACT_ID,
-				Guid = new Guid(EntityFieldGuids.LastName),
-				IsIdentifier = false,
-				Name = "Last Name"
-			});
-			workspace.Fields.Add(new FieldTest
-			{
-				ObjectTypeId = Const.LDAP._ENTITY_TYPE_ARTIFACT_ID,
-				Guid = new Guid(EntityFieldGuids.FullName),
-				IsIdentifier = false,
-				Name = "Full Name"
 			});
 			workspace.Fields.Add(new FieldTest(Const.OVERWRITE_FIELD_ARTIFACT_ID)
 			{
@@ -72,9 +53,49 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 				IsIdentifier = false,
 				Name = "Overwrite Fields"
 			});
+			
+			workspace.ObjectTypes.Add(new ObjectTypeTest
+				{
+					Name = Const.Entity._ENTITY_OBJECT_NAME,
+					Guid = Const.Entity._ENTITY_OBJECT_GUID,
+					ObjectType = Const.Entity._ENTITY_OBJECT_NAME,
+					ObjectTypeArtifactTypeId = (int)ArtifactType.ObjectType,
+					ArtifactTypeId = ArtifactProvider.NextId()
+				}
+			);
+			int _artifactTypeIdEntity = workspace.ObjectTypes.First(x => x.Name == Const.Entity._ENTITY_OBJECT_NAME).ArtifactTypeId;
 			workspace.Fields.Add(new FieldTest
 			{
-				ObjectTypeId = Const.LDAP._ENTITY_TYPE_ARTIFACT_ID,
+				ObjectTypeId = _artifactTypeIdEntity,
+				Guid = new Guid(EntityFieldGuids.UniqueID),
+				IsIdentifier = true,
+				Name = "Unique ID"
+			});
+			workspace.Fields.Add(new FieldTest
+			{
+				ObjectTypeId = _artifactTypeIdEntity,
+				Guid = new Guid(EntityFieldGuids.FirstName),
+				IsIdentifier = false,
+				Name = "First Name"
+			});
+			workspace.Fields.Add(new FieldTest
+			{
+				ObjectTypeId = _artifactTypeIdEntity,
+				Guid = new Guid(EntityFieldGuids.LastName),
+				IsIdentifier = false,
+				Name = "Last Name"
+			});
+			workspace.Fields.Add(new FieldTest
+			{
+				ObjectTypeId = _artifactTypeIdEntity,
+				Guid = new Guid(EntityFieldGuids.FullName),
+				IsIdentifier = false,
+				Name = "Full Name"
+			});
+			
+			workspace.Fields.Add(new FieldTest
+			{
+				ObjectTypeId = _artifactTypeIdEntity,
 				Guid = new Guid(EntityFieldGuids.Manager),
 				IsIdentifier = false,
 				Name = "Manager"
@@ -82,7 +103,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 
 			workspace.SavedSearches.Add(new SavedSearchTest
 			{
-				ParenObjectArtifactId = workspace.ArtifactId,
+				ParentObjectArtifactId = workspace.ArtifactId,
 				Name = "All Documents"
 			});
 		

@@ -24,7 +24,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 				ArtifactID = ArtifactId,
 				ParentObject = new RelativityObjectRef
 				{
-					ArtifactID = ParenObjectArtifactId
+					ArtifactID = ParentObjectArtifactId
 				},
 				FieldValues = new List<FieldValuePair>
 				{

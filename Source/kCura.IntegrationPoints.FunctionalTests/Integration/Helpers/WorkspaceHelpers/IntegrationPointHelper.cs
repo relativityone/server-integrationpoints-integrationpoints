@@ -182,7 +182,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 		}
 
-		public IntegrationPointTest CreateImportEntityFromLdapIntegrationPoint(bool linkEntityManagers = false)
+		public IntegrationPointTest CreateImportEntityFromLdapIntegrationPoint(bool linkEntityManagers = false, bool isMappingIdentifierOnly = false)
 		{
 			const string ou = "ou=Management";
 
@@ -190,7 +190,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 			integrationPoint.Name = $"Import Entity LDAP - {Guid.NewGuid()}";
 
-			List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMappingForLDAPEntityImport();
+			List<FieldMap> fieldsMapping = isMappingIdentifierOnly 
+				? Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierOnlyFieldsMappingForLDAPEntityImport() 
+				: Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMappingForLDAPEntityImport();
 			integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
 
 
@@ -219,7 +221,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 			ImportSettings destinationConfiguration = new ImportSettings
 			{
-				ArtifactTypeId = Const.LDAP._ENTITY_TYPE_ARTIFACT_ID,
+				ArtifactTypeId = GetArtifactTypeIdByName(Const.Entity._ENTITY_OBJECT_NAME),
 				DestinationProviderType = destinationProvider.Identifier,
 				EntityManagerFieldContainsLink = linkEntityManagers,
 				CaseArtifactId = Workspace.ArtifactId,
@@ -269,6 +271,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			{
 				Workspace.IntegrationPoints.Remove(integrationPoint);
 			}
+		}
+		
+		private int GetArtifactTypeIdByName(string name)
+		{
+			return Workspace.ObjectTypes.First(x => x.Name == name).ArtifactTypeId;
 		}
 	}
 }

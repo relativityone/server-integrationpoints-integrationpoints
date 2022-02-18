@@ -236,7 +236,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 			{
 				RelativityObject = ToRelativityObject(),
 				ArtifactId = ArtifactId,
-				ParentArtifactId = ParenObjectArtifactId,
+				ParentArtifactId = ParentObjectArtifactId,
 				NextScheduledRuntimeUTC = NextScheduledRuntimeUTC,
 				FieldMappings = FieldMappings,
 				EnableScheduler = EnableScheduler,

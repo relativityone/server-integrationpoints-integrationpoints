@@ -368,7 +368,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     },
                     Value = x.Value
                 }).ToList(),
-                ParentObject = new RelativityObjectRef {ArtifactID = rdo.ParenObjectArtifactId}
+                ParentObject = new RelativityObjectRef {ArtifactID = rdo.ParentObjectArtifactId}
             };
         }
 
