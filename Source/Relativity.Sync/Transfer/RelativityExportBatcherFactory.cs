@@ -17,7 +17,7 @@ namespace Relativity.Sync.Transfer
 
 		public IRelativityExportBatcher CreateRelativityExportBatcher(IBatch batch)
 		{
-			return new RelativityExportBatcher(_serviceFactory, batch, _configuration.ExportRunId, _configuration.SourceWorkspaceArtifactId);
+			return new RelativityExportBatcher(_serviceFactory, batch, _configuration.SourceWorkspaceArtifactId);
 		}
 	}
 }

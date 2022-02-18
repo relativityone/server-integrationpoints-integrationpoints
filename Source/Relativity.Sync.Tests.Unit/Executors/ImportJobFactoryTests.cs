@@ -5,6 +5,7 @@ using System.Reactive.Concurrency;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using kCura.EDDS.WebAPI.BulkImportManagerBase;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
@@ -64,6 +65,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_dataReaderFactory.Setup(x => x.CreateNativeSourceWorkspaceDataReader(It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).Returns(dataReader.Object);
 			_dataReaderFactory.Setup(x => x.CreateImageSourceWorkspaceDataReader(It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).Returns(dataReader.Object);
 			_dataReaderFactory.Setup(x => x.CreateNonDocumentSourceWorkspaceDataReader(It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).Returns(dataReader.Object);
+			_dataReaderFactory.Setup(x => x.CreateNonDocumentObjectLinkingSourceWorkspaceDataReader(It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).Returns(dataReader.Object);
+
+
 			_jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
 			_fieldMappingsMock = new Mock<IFieldMappings>();
 			_fieldMappingsMock.Setup(x => x.GetFieldMappings()).Returns(_MAPPED_FIELDS);
@@ -98,7 +102,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
         public async Task CreateNonDocumentImportJobAsync_ShouldPassGoldFlow()
         {
             // Arrange
-            ImportJobFactory instance = GetTestInstance(GetNonDocumentImportAPIFactoryMock());
+            ImportBulkArtifactJob importBulkArtifactJob = new ImportBulkArtifactJob();
+            ImportJobFactory instance = GetTestInstance(GetNonDocumentImportAPIFactoryMock(importBulkArtifactJob));
 
             // Act
             Sync.Executors.IImportJob result = await instance.CreateRdoImportJobAsync(_nonDocumentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
@@ -106,6 +111,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             // Assert
             result.Should().NotBeNull();
+            result.Should().NotBeNull();
+            importBulkArtifactJob.Settings.OverwriteMode.Should().Be(_nonDocumentConfigurationMock.Object.ImportOverwriteMode);
+            importBulkArtifactJob.Settings.ArtifactTypeId.Should().Be(_DEST_RDO_ARTIFACT_TYPE);
+            importBulkArtifactJob.Settings.NativeFileCopyMode.Should()
+	            .Be(NativeFileCopyModeEnum.DoNotImportNativeFiles);
+            importBulkArtifactJob.Settings.SelectedIdentifierFieldName.Should()
+	            .Be(_DOCUMENT_IDENTIFIER_FIELD.DestinationFieldName);
         }
 
         [Test]
@@ -398,6 +410,27 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			// Assert
 			importBulkArtifactJob.Settings.FileNameField.Should().Be(_imageConfigurationMock.Object.FileNameColumn);
+		}
+
+		[Test]
+		public async Task CreateRdoLinkingJobAsync_ShouldSetCorrectValues()
+		{
+			// Arrange 
+			ImportBulkArtifactJob importBulkArtifactJob = new ImportBulkArtifactJob();
+			ImportJobFactory instance = GetTestInstance(GetNonDocumentImportAPIFactoryMock(importBulkArtifactJob));
+			
+			
+			// Act
+			Sync.Executors.IImportJob result = await instance.CreateRdoLinkingJobAsync(_nonDocumentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			result.Should().NotBeNull();
+			importBulkArtifactJob.Settings.OverwriteMode.Should().Be(OverwriteModeEnum.Overlay);
+			importBulkArtifactJob.Settings.ArtifactTypeId.Should().Be(_DEST_RDO_ARTIFACT_TYPE);
+			importBulkArtifactJob.Settings.NativeFileCopyMode.Should()
+				.Be(NativeFileCopyModeEnum.DoNotImportNativeFiles);
+			importBulkArtifactJob.Settings.SelectedIdentifierFieldName.Should()
+				.Be(_DOCUMENT_IDENTIFIER_FIELD.DestinationFieldName);
 		}
 
 		private ImportJobFactory PrepareInstanceForShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0<T>(Expression<Func<IImportAPI, T>> setupAction, T mockObject)

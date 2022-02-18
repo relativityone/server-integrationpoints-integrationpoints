@@ -10,21 +10,21 @@ namespace Relativity.Sync.ExecutionConstrains
 {
     internal abstract class BaseSynchronizationExecutionConstrains<T> : IExecutionConstrains<T> where T : ISynchronizationConfiguration
     {
-        private readonly IBatchRepository _batchRepository;
-        private readonly ISyncLog _syncLog;
+        protected readonly IBatchRepository BatchRepository;
+        protected readonly ISyncLog SyncLog;
 
         public BaseSynchronizationExecutionConstrains(IBatchRepository batchRepository, ISyncLog syncLog)
         {
-            _batchRepository = batchRepository;
-            _syncLog = syncLog;
+            BatchRepository = batchRepository;
+            SyncLog = syncLog;
         }
 
-        public async Task<bool> CanExecuteAsync(T configuration, CancellationToken token)
+        public virtual async Task<bool> CanExecuteAsync(T configuration, CancellationToken token)
         {
             bool canExecute = true;
             try
             {
-                IEnumerable<int> batchIds = await _batchRepository.GetAllBatchesIdsToExecuteAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, configuration.ExportRunId).ConfigureAwait(false);
+                IEnumerable<int> batchIds = await BatchRepository.GetAllBatchesIdsToExecuteAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, configuration.ExportRunId).ConfigureAwait(false);
                 if (batchIds == null || !batchIds.Any())
                 {
                     canExecute = false;
@@ -32,7 +32,7 @@ namespace Relativity.Sync.ExecutionConstrains
             }
             catch (Exception exception)
             {
-                _syncLog.LogError(exception, "Exception occurred when reviewing batches and batch status.");
+                SyncLog.LogError(exception, "Exception occurred when reviewing batches and batch status.");
                 throw;
             }
             return canExecute;

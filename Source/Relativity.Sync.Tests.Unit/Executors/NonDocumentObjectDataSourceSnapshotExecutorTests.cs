@@ -123,7 +123,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _configuration.TotalRecordsCount.Should().Be(AllObjectsCount);
             
             _objectManagerMock.Verify(x => x.InitializeExportAsync(It.IsAny<int>(), It.Is<QueryRequest>(q => q != AllObjectsRequest), It.IsAny<int>()), Times.Never);
-            _configuration.ObjectLinkingSnapshotId.Should().Be(Guid.Empty);
+            _configuration.ObjectLinkingSnapshotId.Should().Be(null);
             _configuration.ObjectLinkingSnapshotRecordsCount.Should().Be(0);
         }
 
@@ -151,7 +151,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _configuration.ExportRunId.Should().Be(AllObjectsExportGuid);
             _configuration.TotalRecordsCount.Should().Be(AllObjectsCount);
             
-            _configuration.ObjectLinkingSnapshotId.Should().Be(Guid.Empty);
+            _configuration.ObjectLinkingSnapshotId.Should().Be(null);
             _configuration.ObjectLinkingSnapshotRecordsCount.Should().Be(0);
 
             // delete export table
