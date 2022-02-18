@@ -43,16 +43,13 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 		protected override async Task ChildSuiteSetup()
 		{
-			_sourceWorkspace = await Environment.GetWorkspaceAsync(1024719).ConfigureAwait(false);
-			_destinationWorkspace = await Environment.GetWorkspaceAsync(1024720).ConfigureAwait(false);
-
-			// _sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
-			// _destinationWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
-			//
-			// await Environment.InstallCustomHelperAppAsync(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
-			// Task installLegalHoldToSourceWorkspaceTask = Environment.InstallLegalHoldToWorkspaceAsync(_sourceWorkspace.ArtifactID);
-			// Task installLegalHoldToDestinationWorkspaceTask = Environment.InstallLegalHoldToWorkspaceAsync(_destinationWorkspace.ArtifactID);
-			// await Task.WhenAll(installLegalHoldToSourceWorkspaceTask, installLegalHoldToDestinationWorkspaceTask).ConfigureAwait(false);
+			_sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
+			_destinationWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
+			
+			await Environment.InstallCustomHelperAppAsync(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
+			Task installLegalHoldToSourceWorkspaceTask = Environment.InstallLegalHoldToWorkspaceAsync(_sourceWorkspace.ArtifactID);
+			Task installLegalHoldToDestinationWorkspaceTask = Environment.InstallLegalHoldToWorkspaceAsync(_destinationWorkspace.ArtifactID);
+			await Task.WhenAll(installLegalHoldToSourceWorkspaceTask, installLegalHoldToDestinationWorkspaceTask).ConfigureAwait(false);
 
 			_sourceEntityArtifactTypeId = await GetArtifactTypeIdAsync(_sourceWorkspace.ArtifactID, EntityArtifactTypeName).ConfigureAwait(false);
 			_destinationEntityArtifactTypeId = await GetArtifactTypeIdAsync(_destinationWorkspace.ArtifactID, EntityArtifactTypeName).ConfigureAwait(false);
