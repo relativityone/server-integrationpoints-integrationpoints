@@ -11,5 +11,6 @@ namespace kCura.IntegrationPoints.Domain.Models
 		public int? DescriptorArtifactTypeId { get; set; } 
 		public string Name { get; set; }
 		public List<Guid> Guids { get; set; }
-	}
+        public bool BelongsToApplication { get; set; }
+    }
 }

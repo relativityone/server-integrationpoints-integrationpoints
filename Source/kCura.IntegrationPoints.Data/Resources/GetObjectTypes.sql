@@ -1,4 +1,4 @@
-﻿SELECT ot.DescriptorArtifactTypeID, ot.Name
+﻿SELECT ot.ArtifactID, ot.DescriptorArtifactTypeID, ot.Name
 FROM [EDDSDBO].ObjectType ot WITH(NOLOCK)
 WHERE DescriptorArtifactTypeID in
 (

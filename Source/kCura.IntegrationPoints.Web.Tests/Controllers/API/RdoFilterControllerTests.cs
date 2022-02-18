@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Hosting;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Controllers.API;
@@ -14,7 +14,7 @@ using Relativity;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
-	[TestFixture, Category("Unit")]
+    [TestFixture, Category("Unit")]
 	public class RdoFilterControllerTests : TestBase
 	{
 		private RdoFilterController _instance;
