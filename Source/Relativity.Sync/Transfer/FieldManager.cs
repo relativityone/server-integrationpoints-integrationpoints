@@ -18,7 +18,7 @@ namespace Relativity.Sync.Transfer
 	/// </summary>
 	internal sealed class FieldManager : IFieldManager
 	{
-		private List<FieldInfoDto> _mappedDocumentFields;
+		private List<FieldInfoDto> _mappedFieldsCache;
 		private IReadOnlyList<FieldInfoDto> _imageAllFields;
 		private IReadOnlyList<FieldInfoDto> _nativeAllFields;
 		
@@ -122,13 +122,13 @@ namespace Relativity.Sync.Transfer
 
 		public async Task<IList<FieldInfoDto>> GetMappedFieldsAsync(CancellationToken token)
 		{
-			if (_mappedDocumentFields == null)
+			if (_mappedFieldsCache == null)
 			{
 				List<FieldInfoDto> fieldInfos = _configuration.GetFieldMappings().Select(CreateFieldInfoFromFieldMap).ToList();
-				_mappedDocumentFields = await EnrichFieldsWithRelativityDataTypesAsync(fieldInfos, token).ConfigureAwait(false);
-				EnrichFieldsWithIndex(_mappedDocumentFields);
+				_mappedFieldsCache = await EnrichFieldsWithRelativityDataTypesAsync(fieldInfos, token).ConfigureAwait(false);
+				EnrichFieldsWithIndex(_mappedFieldsCache);
 			}
-			return _mappedDocumentFields;
+			return _mappedFieldsCache;
 		}
 
 		public async Task<IReadOnlyList<FieldInfoDto>> GetMappedFieldNonDocumentWithoutLinksAsync(
