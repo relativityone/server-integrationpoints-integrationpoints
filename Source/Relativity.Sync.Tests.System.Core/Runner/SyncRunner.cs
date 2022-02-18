@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 		/// Default constructor
 		/// </summary>
 		/// <param name="servicesMgr">Authenticated service manager</param>
-		/// /// <param name="servicesMgrForAdmin">Authenticated service manager with admin privileges</param>
+		/// <param name="servicesMgrForAdmin">Authenticated service manager with admin privileges</param>
 		/// <param name="relativityUri">Host name of relativity - no suffixes</param>
 		/// <param name="apmClient">APM implementation</param>
 		/// <param name="logger">Logger</param>

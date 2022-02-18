@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reflection;
 using Autofac;
-using Relativity.API;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Telemetry
