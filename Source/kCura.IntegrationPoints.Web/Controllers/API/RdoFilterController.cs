@@ -23,6 +23,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         private readonly IRdoFilter _rdoFilter;
         private readonly IAPILog _logger;
 
+        internal TimeSpan ViewableRdosCacheSlidingExpirationTimeout { get; set; } = TimeSpan.FromHours(1);
+
         public RdoFilterController(ICaseServiceContext serviceContext, IRdoFilter rdoFilter, IObjectTypeRepository objectTypeRepository, IHelper helper)
         {
             _serviceContext = serviceContext;
@@ -36,12 +38,11 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         [LogApiExceptionFilter(Message = "Unable to retrieve accessible RDO list.")]
         public HttpResponseMessage GetAllViewableRdos()
         {
-            const int slidingExpirationHours = 1;
             string key = $"{_serviceContext.WorkspaceID}_{_serviceContext.WorkspaceUserID}";
 
             List<ViewableRdo> viewableRdos = HttpRuntime
                 .Cache
-                .GetOrInsert(key, GetViewableRdos, TimeSpan.FromHours(slidingExpirationHours));
+                .GetOrInsert(key, GetViewableRdos, ViewableRdosCacheSlidingExpirationTimeout);
 
             return Request.CreateResponse(HttpStatusCode.OK, viewableRdos);
         }
@@ -69,7 +70,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                 Stopwatch stopwatch = Stopwatch.StartNew();
 
                 List<ViewableRdo> viewableRdos = _rdoFilter
-                .GetAllViewableRdos()
+                .GetAllViewableRdosAsync()
                 .GetAwaiter().GetResult()
                 .Select(x => new ViewableRdo
                 {
@@ -92,7 +93,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             }
         }
 
-        private class ViewableRdo
+        internal class ViewableRdo
         {
             public string Name { get; set; }
             public int? Value { get; set; }

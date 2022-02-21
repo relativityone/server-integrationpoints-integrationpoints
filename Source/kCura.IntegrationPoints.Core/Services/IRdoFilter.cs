@@ -6,6 +6,6 @@ namespace kCura.IntegrationPoints.Core.Services
 {
     public interface IRdoFilter
     {
-        Task<IEnumerable<ObjectTypeDTO>> GetAllViewableRdos();
+        Task<IEnumerable<ObjectTypeDTO>> GetAllViewableRdosAsync();
     }
 }

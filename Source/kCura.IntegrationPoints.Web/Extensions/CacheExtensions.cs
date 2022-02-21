@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Web.Caching;
 
 namespace kCura.IntegrationPoints.Web.Extensions
@@ -16,6 +17,14 @@ namespace kCura.IntegrationPoints.Web.Extensions
             }
 
             return (T)value;
+        }
+
+        public static void Clear(this Cache cache)
+        {
+            foreach (DictionaryEntry item in cache)
+            {
+                cache.Remove(item.Key.ToString());
+            }
         }
     }
 }

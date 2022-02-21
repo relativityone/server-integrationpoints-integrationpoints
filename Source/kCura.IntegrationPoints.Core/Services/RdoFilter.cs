@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Services
             _servicesMgr = servicesMgr;
         }
 
-        public Task<IEnumerable<ObjectTypeDTO>> GetAllViewableRdos()
+        public Task<IEnumerable<ObjectTypeDTO>> GetAllViewableRdosAsync()
         {
             List<ObjectTypeDTO> objectTypes = _rdoQuery
                 .GetAllTypes(_serviceContext.WorkspaceUserID)
