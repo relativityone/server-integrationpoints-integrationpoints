@@ -18,19 +18,19 @@ namespace kCura.IntegrationPoints.Core.Services
         };
 
         private readonly ICaseServiceContext _serviceContext;
-        private readonly IObjectTypeQuery _rdoQuery;
+        private readonly IObjectTypeQuery _objectTypeQuery;
         private readonly IServicesMgr _servicesMgr;
 
-        public RdoFilter(IObjectTypeQuery rdoQuery, ICaseServiceContext serviceContext, IServicesMgr servicesMgr)
+        public RdoFilter(IObjectTypeQuery objectTypeQuery, ICaseServiceContext serviceContext, IServicesMgr servicesMgr)
         {
-            _rdoQuery = rdoQuery;
+            _objectTypeQuery = objectTypeQuery;
             _serviceContext = serviceContext;
             _servicesMgr = servicesMgr;
         }
 
         public Task<IEnumerable<ObjectTypeDTO>> GetAllViewableRdosAsync()
         {
-            List<ObjectTypeDTO> objectTypes = _rdoQuery
+            List<ObjectTypeDTO> objectTypes = _objectTypeQuery
                 .GetAllTypes(_serviceContext.WorkspaceUserID)
                 .Where(objectType => !_systemRdo.Contains(objectType.Name))
                 .ToList();

@@ -34,6 +34,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		[SetUp]
 		public override void SetUp()
 		{
+			base.SetUp();
+
 			_caseServiceContext = new Mock<ICaseServiceContext>();
 			_rdoFilter = new Mock<IRdoFilter>();
 			_objectTypeRepository = new Mock<IObjectTypeRepository>();
