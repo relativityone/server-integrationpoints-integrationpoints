@@ -5,6 +5,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.RDOs;
 
 namespace Relativity.Sync.Storage
 {

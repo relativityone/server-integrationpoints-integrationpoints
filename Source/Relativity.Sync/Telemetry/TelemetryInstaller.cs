@@ -21,7 +21,7 @@ namespace Relativity.Sync.Telemetry
 			builder.RegisterTypes(Assembly.GetExecutingAssembly().GetTypes()
 				.Where(t => !t.IsAbstract && t.IsAssignableTo<ISyncMetricsSink>())
 				.ToArray()).As<ISyncMetricsSink>();
-			builder.Register(c => new Lazy<ISyncMetrics>(c.Resolve<IComponentContext>().Resolve<ISyncMetrics>));
+			builder.Register(c => new Lazy<ISyncMetrics>(c.Resolve<ISyncMetrics>));
 		}
 	}
 }
