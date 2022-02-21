@@ -61,16 +61,25 @@
 	};
 
 	this.selectedType.subscribe(function (selectedValue) {
+
+		var isLoadFileDestinationProvider = parentModel.destination.selectedDestinationTypeGuid() === loadFileProviderGuid;
+		var enableSyncNonDocumentFlow = IP.data.params['EnableSyncNonDocumentFlowToggleValue'];
+
 		$.each(self.sourceTypes(), function () {
 			if (this.value === selectedValue) {
 				self.sourceProvider = this.artifactID;
-				if (
-					typeof this.model.config.compatibleRdoTypes === 'undefined' ||
+				if (typeof this.model.config.compatibleRdoTypes === 'undefined' ||
 					this.model.config.compatibleRdoTypes === null ||
-					parentModel.destination.selectedDestinationTypeGuid() === loadFileProviderGuid ||
-					IP.data.params['EnableSyncNonDocumentFlowToggleValue'] === true
-					) {
-					parentModel.destination.rdoTypes(parentModel.destination.allRdoTypes());
+					isLoadFileDestinationProvider ||
+					enableSyncNonDocumentFlow === true)
+					{
+						var rdoTypesToDisplay = parentModel.destination.allRdoTypes();
+
+						if (enableSyncNonDocumentFlow && parentModel.isSyncFlow()) {
+							rdoTypesToDisplay = rdoTypesToDisplay.filter(x => x.belongsToApplication === true);
+						}
+
+						parentModel.destination.rdoTypes(rdoTypesToDisplay);
 				}
 				else {
 					var compatibleRdos = this.model.config.compatibleRdoTypes;
