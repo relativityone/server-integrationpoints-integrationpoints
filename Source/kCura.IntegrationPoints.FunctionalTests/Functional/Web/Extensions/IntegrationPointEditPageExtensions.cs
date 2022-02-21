@@ -39,13 +39,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 			Workspace destinationWorkspace, Testing.Framework.Models.Production production,
 			RelativityProviderOverwrite overwriteMode = RelativityProviderOverwrite.AppendOnly)
 		{
-			var relativityProviderConnectToSourcePage = FillOutIntegrationPointEditPageForRelativityProvider(integrationPointEditPage, integrationPointName);
+            RelativityProviderConnectToSourcePage relativityProviderConnectToSourcePage = FillOutIntegrationPointEditPageForRelativityProvider(integrationPointEditPage, integrationPointName);
 
-			var relativityProviderMapFieldsPage = FillOutRelativityProviderConnectToSourcePage(
+            RelativityProviderMapFieldsPage relativityProviderMapFieldsPage = FillOutRelativityProviderConnectToSourcePage(
 				relativityProviderConnectToSourcePage, destinationWorkspace, 
 				RelativityProviderSources.Production, productionSetName: production.Name);
 
-			var integrationPointViewPage = relativityProviderMapFieldsPage.ApplyModel(new
+            IntegrationPointViewPage integrationPointViewPage = relativityProviderMapFieldsPage.ApplyModel(new
 			{
 				Overwrite = overwriteMode
 			}).Save.ClickAndGo();
@@ -57,7 +57,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 			IntegrationPointTransferredObjects transferredObject, string viewName)
 		{
 			RelativityProviderConnectToSourcePage relativityProviderConnectToSourcePage = FillOutIntegrationPointEditPageForRelativityProvider(page, integrationPointName, transferredObject);
-			FillOutRelativityProviderConnectToSourcePage(relativityProviderConnectToSourcePage, destinationWorkspace, viewName);
+            RelativityProviderMapFieldsPage relativityProviderMapFieldsPage = FillOutRelativityProviderConnectToSourcePage(relativityProviderConnectToSourcePage, destinationWorkspace, viewName);
+
+			relativityProviderMapFieldsPage
+				.MapView.Click();
 		}
 
 		private static RelativityProviderConnectToSourcePage FillOutIntegrationPointEditPageForRelativityProvider(IntegrationPointEditPage integrationPointEditPage, string integrationPointName)
@@ -110,15 +113,19 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 				.Next.ClickAndGo();
 		}
 
-		private static void FillOutRelativityProviderConnectToSourcePage(RelativityProviderConnectToSourcePage page, Workspace destinationWorkspace, string viewName = null)
+		private static RelativityProviderMapFieldsPage FillOutRelativityProviderConnectToSourcePage(RelativityProviderConnectToSourcePage page, Workspace destinationWorkspace, string viewName = null)
 		{
-			RelativityProviderConnectToSource relativityProviderConnectToSource = new RelativityProviderConnectToViewSource
+			RelativityProviderConnectToViewSource model = new RelativityProviderConnectToViewSource
 			{
 				View = viewName,
 				DestinationWorkspace = $"{destinationWorkspace.Name} - {destinationWorkspace.ArtifactID}"
 			};
 
-			page.ApplyModel(relativityProviderConnectToSource);
+			Thread.Sleep(TimeSpan.FromSeconds(2));
+
+			return page
+				.ApplyModel(model)
+				.Next.ClickAndGo();
 		}
 	}
 }

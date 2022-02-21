@@ -1,4 +1,5 @@
 ﻿using System.Web.Http;
+using System.Web.Mvc;
 
 namespace kCura.IntegrationPoints.Web
 {
@@ -227,13 +228,13 @@ namespace kCura.IntegrationPoints.Web
 
 			config.Routes.MapHttpRoute(
 				name: "GetMappableFieldsFromSourceWorkspace",
-				routeTemplate: "{workspaceID}/api/FieldMappings/GetMappableFieldsFromSourceWorkspace",
+				routeTemplate: "{workspaceID}/api/FieldMappings/GetMappableFieldsFromSourceWorkspace/{artifactTypeId}",
 				defaults: new { controller = "FieldMappings", action = "GetMappableFieldsFromSourceWorkspace" }
 			);
 
 			config.Routes.MapHttpRoute(
 				name: "GetMappableFieldsFromDestinationWorkspace",
-				routeTemplate: "{workspaceID}/api/FieldMappings/GetMappableFieldsFromDestinationWorkspace",
+				routeTemplate: "{workspaceID}/api/FieldMappings/GetMappableFieldsFromDestinationWorkspace/{artifactTypeId}",
 				defaults: new { controller = "FieldMappings", action = "GetMappableFieldsFromDestinationWorkspace" }
 			);
 
@@ -245,14 +246,20 @@ namespace kCura.IntegrationPoints.Web
 
 			config.Routes.MapHttpRoute(
 				name: "ValidateFieldsMapping",
-				routeTemplate: "{workspaceID}/api/FieldMappings/Validate/{destinationWorkspaceID}/{destinationProviderGuid}",
+				routeTemplate: "{workspaceID}/api/FieldMappings/Validate/{destinationWorkspaceID}/{destinationProviderGuid}/{sourceArtifactTypeId}/{destinationArtifactTypeId}",
 				defaults: new { controller = "FieldMappings", action = "ValidateAsync" }
 			);
-			
+
 			config.Routes.MapHttpRoute(
 				name: "AutoMapFieldsFromSavedSearch",
 				routeTemplate: "{sourceWorkspaceID}/api/FieldMappings/AutomapFieldsFromSavedSearch/{savedSearchID}/{destinationProviderGuid}",
 				defaults: new { controller = "FieldMappings", action = "AutoMapFieldsFromSavedSearch" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "AutoMapFieldsFromView",
+				routeTemplate: "{sourceWorkspaceID}/api/FieldMappings/AutomapFieldsFromView/{viewID}/{destinationProviderGuid}",
+				defaults: new { controller = "FieldMappings", action = "AutoMapFieldsFromView" }
 			);
 
 			config.Routes.MapHttpRoute(
@@ -289,6 +296,12 @@ namespace kCura.IntegrationPoints.Web
 				name: "ImportProviderDocumentCheckErrorFile",
 				routeTemplate: "{workspaceID}/api/ImportProviderDocument/CheckErrorFile",
 				defaults: new {controller = "ImportProviderDocument", action = "CheckErrorFile"}
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "ConsoleStateGetState",
+				routeTemplate: "{workspaceID}/api/ConsoleState/GetState",
+				defaults: new { controller = "ConsoleState", action = "GetState" }
 			);
 
 			config.Routes.MapHttpRoute(
@@ -388,10 +401,21 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
-				name: "GetRdoViews",
-				routeTemplate:
-				"{workspaceID}/api/ViewFinder/{destinationWorkspaceId}/{rdoArtifactTypeId}",
-				defaults: new { controller = "ViewFinder", action = "GetViews" }
+				name: "GetView",
+				routeTemplate: "{workspaceID}/api/ObjectType/Views/{artifactTypeId}/{viewId}",
+				defaults: new { controller = "ObjectType", action = "GetView" }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "GetObjectTypeViews",
+				routeTemplate: "{workspaceID}/api/ObjectType/Views/{artifactTypeId}/{search}/{page}",
+				defaults: new { controller = "ObjectType", action = "GetViews", search = UrlParameter.Optional, page = UrlParameter.Optional }
+			);
+
+			config.Routes.MapHttpRoute(
+				name: "GetDestinationArtifactTypeID",
+				routeTemplate: "{sourceWorkspaceId}/api/ObjectType/GetArtifactTypeId/{destinationWorkspaceId}/{sourceArtifactTypeId}",
+				defaults: new { controller = "ObjectType", action = "GetDestinationArtifactTypeID" }
 			);
 
 			config.Routes.MapHttpRoute(

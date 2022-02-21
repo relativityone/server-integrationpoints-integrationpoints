@@ -14,7 +14,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers
 			"Job History"
 		};
 
-		public Task<IEnumerable<FieldClassificationResult>> ClassifyAsync(ICollection<DocumentFieldInfo> fields, int workspaceID)
+		public Task<IEnumerable<FieldClassificationResult>> ClassifyAsync(ICollection<FieldInfo> fields, int workspaceID)
 		{
 			IEnumerable<FieldClassificationResult> filteredOutFields = fields
 				.Where(x => _ripFieldNamesToIgnore.Contains(x.Name))

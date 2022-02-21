@@ -126,22 +126,22 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			_integrationPointRepository.ReadWithFieldMappingAsync(_ARTIFACT_ID).Returns(integrationPoint);
 			_providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value, integrationPoint.DestinationProvider.Value).Returns(providerType);
 
-			StoppableJobCollection stoppableJobCollection = null;
+			StoppableJobHistoryCollection stoppableJobCollection = null;
 
 			if (hasStoppableJobs)
 			{
-				stoppableJobCollection = new StoppableJobCollection
+				stoppableJobCollection = new StoppableJobHistoryCollection
 				{
-					PendingJobArtifactIds = new[] {1232},
-					ProcessingJobArtifactIds = new[] {9403}
+					PendingJobHistory = new[] { new JobHistory { ArtifactId = 1232 } },
+					ProcessingJobHistory = new[] { new JobHistory { ArtifactId = 9403 } }
 				};
 			}
 			else
 			{
-				stoppableJobCollection = new StoppableJobCollection();
+				stoppableJobCollection = new StoppableJobHistoryCollection();
 			}
 
-			_jobHistoryManager.GetStoppableJobCollection(_APPLICATION_ID, _ARTIFACT_ID).Returns(stoppableJobCollection);
+			_jobHistoryManager.GetStoppableJobHistory(_APPLICATION_ID, _ARTIFACT_ID).Returns(stoppableJobCollection);
 
 			if (!hasRunPermissions || !hasViewErrorsPermissions)
 			{
@@ -225,7 +225,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			ConsoleButton runButton = (ConsoleButton) console.Items[buttonIndex++];
 
 
-			_jobHistoryManager.Received(1).GetStoppableJobCollection(_APPLICATION_ID, _ARTIFACT_ID);
+			_jobHistoryManager.Received(1).GetStoppableJobHistory(_APPLICATION_ID, _ARTIFACT_ID);
 
 			if (!hasJobsExecutingOrInQueue)
 			{
@@ -305,22 +305,22 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 
 			_permissionValidator.ValidateViewErrors(_APPLICATION_ID).Returns(new ValidationResult());
 
-			StoppableJobCollection stoppableJobCollection = null;
+			StoppableJobHistoryCollection stoppableJobCollection = null;
 
 			if (hasStoppableJobs)
 			{
-				stoppableJobCollection = new StoppableJobCollection
+				stoppableJobCollection = new StoppableJobHistoryCollection
 				{
-					PendingJobArtifactIds = new[] {1232},
-					ProcessingJobArtifactIds = new[] {9403}
+					PendingJobHistory = new[] { new JobHistory { ArtifactId = 1232 } },
+					ProcessingJobHistory = new[] { new JobHistory { ArtifactId = 9403 } }
 				};
 			}
 			else
 			{
-				stoppableJobCollection = new StoppableJobCollection();
+				stoppableJobCollection = new StoppableJobHistoryCollection();
 			}
 
-			_jobHistoryManager.GetStoppableJobCollection(_APPLICATION_ID, _ARTIFACT_ID).Returns(stoppableJobCollection);
+			_jobHistoryManager.GetStoppableJobHistory(_APPLICATION_ID, _ARTIFACT_ID).Returns(stoppableJobCollection);
 			_queueManager.HasJobsExecutingOrInQueue(_APPLICATION_ID, _ARTIFACT_ID).Returns(hasJobsExecutingOrInQueue);
 
 			ButtonStateDTO buttonStates = null;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -37,6 +38,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 
 		private const int _SOURCE_WORKSPACE_ID = 1;
 		private const int _DESTINATION_WORKSPACE_ID = 2;
+		private const int _SOURCE_ARTIFACT_TYPE_ID = 3;
+		private const int _DESTINATION_ARTIFACT_TYPE_ID = 4;
 
 		[SetUp]
 		public void SetUp()
@@ -46,18 +49,18 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 			_metricBucketNameGeneratorFake = new Mock<IMetricBucketNameGenerator>();
 
 			_fieldsClassifierRunner = new Mock<IFieldsClassifierRunner>();
-			_sourceFieldClassificationResults = new List<FieldClassificationResult> { new FieldClassificationResult(new DocumentFieldInfo("1", "Name", "Type")) };
-			_destinationFieldClassificationResults = new List<FieldClassificationResult> { new FieldClassificationResult(new DocumentFieldInfo("2", "Name", "Type")) };
+			_sourceFieldClassificationResults = new List<FieldClassificationResult> { new FieldClassificationResult(new FieldInfo("1", "Name", "Type")) };
+			_destinationFieldClassificationResults = new List<FieldClassificationResult> { new FieldClassificationResult(new FieldInfo("2", "Name", "Type")) };
 
 			_sourceClassifiedFieldDTOs = _sourceFieldClassificationResults.Select(x => new ClassifiedFieldDTO(x));
 			_destinationClassifiedFieldDTOs = _destinationFieldClassificationResults.Select(x => new ClassifiedFieldDTO(x));
 
-			_fieldsClassifierRunner.Setup(x => x.GetFilteredFieldsAsync(_SOURCE_WORKSPACE_ID)).ReturnsAsync(_sourceFieldClassificationResults);
-			_fieldsClassifierRunner.Setup(x => x.GetFilteredFieldsAsync(_DESTINATION_WORKSPACE_ID)).ReturnsAsync(_destinationFieldClassificationResults);
+			_fieldsClassifierRunner.Setup(x => x.GetFilteredFieldsAsync(_SOURCE_WORKSPACE_ID, _SOURCE_ARTIFACT_TYPE_ID)).ReturnsAsync(_sourceFieldClassificationResults);
+			_fieldsClassifierRunner.Setup(x => x.GetFilteredFieldsAsync(_DESTINATION_WORKSPACE_ID, _DESTINATION_ARTIFACT_TYPE_ID)).ReturnsAsync(_destinationFieldClassificationResults);
 
 			_fieldsClassifyRunnerFactoryMock = new Mock<IFieldsClassifyRunnerFactory>();
-			_fieldsClassifyRunnerFactoryMock.Setup(m => m.CreateForSourceWorkspace()).Returns(_fieldsClassifierRunner.Object);
-			_fieldsClassifyRunnerFactoryMock.Setup(m => m.CreateForDestinationWorkspace()).Returns(_fieldsClassifierRunner.Object);
+			_fieldsClassifyRunnerFactoryMock.Setup(m => m.CreateForSourceWorkspace(_SOURCE_ARTIFACT_TYPE_ID)).Returns(_fieldsClassifierRunner.Object);
+			_fieldsClassifyRunnerFactoryMock.Setup(m => m.CreateForDestinationWorkspace(_DESTINATION_ARTIFACT_TYPE_ID)).Returns(_fieldsClassifierRunner.Object);
 
 			Mock<IMetricsSender> metricsSenderFake = new Mock<IMetricsSender>();
 			Mock<IAPILog> loggerFake = new Mock<IAPILog>();
@@ -74,14 +77,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 		public async Task GetMappableFieldsFromSourceWorkspace_ShouldFilterFields()
 		{
 			// Act
-			HttpResponseMessage responseMessage = await _sut.GetMappableFieldsFromSourceWorkspace(_SOURCE_WORKSPACE_ID).ConfigureAwait(false);
+			HttpResponseMessage responseMessage = await _sut.GetMappableFieldsFromSourceWorkspace(_SOURCE_WORKSPACE_ID, _SOURCE_ARTIFACT_TYPE_ID).ConfigureAwait(false);
 			string jsonResponse = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
 			// Assert
 			responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
 
 			_fieldsClassifierRunner
-				.Verify(x => x.GetFilteredFieldsAsync(_SOURCE_WORKSPACE_ID),
+				.Verify(x => x.GetFilteredFieldsAsync(_SOURCE_WORKSPACE_ID, _SOURCE_ARTIFACT_TYPE_ID),
 					Times.Once);
 
 			jsonResponse.Should().Be(JsonConvert.SerializeObject(_sourceClassifiedFieldDTOs));
@@ -91,14 +94,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 		public async Task GetMappableFieldsFromDestinationWorkspace_ShouldFilterFields()
 		{
 			// Act
-			HttpResponseMessage responseMessage = await _sut.GetMappableFieldsFromDestinationWorkspace(_DESTINATION_WORKSPACE_ID).ConfigureAwait(false);
+			HttpResponseMessage responseMessage = await _sut.GetMappableFieldsFromDestinationWorkspace(_DESTINATION_WORKSPACE_ID, _DESTINATION_ARTIFACT_TYPE_ID).ConfigureAwait(false);
 			string jsonResponse = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
 			// Assert
 			responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
 
 			_fieldsClassifierRunner
-				.Verify(x => x.GetFilteredFieldsAsync(_DESTINATION_WORKSPACE_ID),
+				.Verify(x => x.GetFilteredFieldsAsync(_DESTINATION_WORKSPACE_ID, _DESTINATION_ARTIFACT_TYPE_ID),
 					Times.Once);
 
 			jsonResponse.Should().Be(JsonConvert.SerializeObject(_destinationClassifiedFieldDTOs));
@@ -133,17 +136,17 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API.FieldMappings
 				IsObjectIdentifierMapValid = true
 			};
 
-			_fieldsMappingValidator.Setup(x => x.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID)).ReturnsAsync(validationResult);
+			_fieldsMappingValidator.Setup(x => x.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID, _SOURCE_ARTIFACT_TYPE_ID, _DESTINATION_ARTIFACT_TYPE_ID)).ReturnsAsync(validationResult);
 
 			// Act
-			HttpResponseMessage responseMessage = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID, Guid.Empty.ToString()).ConfigureAwait(false);
+			HttpResponseMessage responseMessage = await _sut.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID, Guid.Empty.ToString(), _SOURCE_ARTIFACT_TYPE_ID, _DESTINATION_ARTIFACT_TYPE_ID).ConfigureAwait(false);
 			string jsonResponse = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
 			// Assert
 			responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
 
 			_fieldsMappingValidator
-				.Verify(x => x.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID),
+				.Verify(x => x.ValidateAsync(fieldMap, _SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID, _SOURCE_ARTIFACT_TYPE_ID, _DESTINATION_ARTIFACT_TYPE_ID),
 					Times.Once);
 
 			jsonResponse.Should().Be(JsonConvert.SerializeObject(validationResult, _sut.Configuration.Formatters.JsonFormatter.SerializerSettings));

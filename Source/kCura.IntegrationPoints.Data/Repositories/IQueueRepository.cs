@@ -30,5 +30,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="integrationPointId">The Artifact ID of the Integration Point the job belongs to.</param>
 		/// <returns>The number of jobs that are queued up to run.</returns>
 		int GetNumberOfPendingJobs(int workspaceId, int integrationPointId);
+
+		int GetNumberOfJobsLockedByAgentForIntegrationPoint(int workspaceId, int integrationPointId);
 	}
 }

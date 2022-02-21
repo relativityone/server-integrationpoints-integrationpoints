@@ -11,6 +11,6 @@ namespace Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers
 		/// <param name="fields">Fields to classify</param>
 		/// <param name="workspaceID">Workspace ID</param>
 		/// <returns>Classification results with ClassificationLevel other than AutoMap</returns>
-		Task<IEnumerable<FieldClassificationResult>> ClassifyAsync(ICollection<DocumentFieldInfo> fields, int workspaceID);
+		Task<IEnumerable<FieldClassificationResult>> ClassifyAsync(ICollection<FieldInfo> fields, int workspaceID);
 	}
 }

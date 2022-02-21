@@ -22,5 +22,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 		/// <param name="runTime">The timestamp at which the job was kicked off.</param>
 		/// <returns>True if there are jobs running, false otherwise.</returns>
 		bool HasJobsExecuting(int workspaceId, int integrationPointId, long jobId, DateTime runTime);
+
+		bool HasJobsExecuting(int workspaceId, int integrationPointId);
 	}
 }

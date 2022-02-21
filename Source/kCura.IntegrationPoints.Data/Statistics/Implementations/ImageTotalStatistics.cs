@@ -125,8 +125,9 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 		{
 			return relativityObject =>
 			{
-				return relativityObject.Values.ElementAtOrDefault(index);
-			};
+				object relativityObjectValue = relativityObject.Values.ElementAtOrDefault(index);
+                return relativityObjectValue;
+            };
 		}
 
 		private long ConvertObjectToLong(object obj)

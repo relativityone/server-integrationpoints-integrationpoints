@@ -63,7 +63,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 						{
 							ArtifactID = 1039896,
 							Name = "Overlay Only"
-						}
+						},
+                        new global::Relativity.Services.ChoiceQuery.Choice()
+                        {
+                            ArtifactID = 1039897,
+                            Name = "Yes"
+                        },
+                        new global::Relativity.Services.ChoiceQuery.Choice()
+                        {
+                            ArtifactID = 1039898,
+                            Name = "No"
+                        }
 				};
 		}
 

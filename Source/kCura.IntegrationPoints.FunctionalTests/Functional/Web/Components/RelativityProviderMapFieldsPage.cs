@@ -18,6 +18,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 
 		public Button<_> MapAllFields { get; private set; }
 
+		public Button<_> MapView { get; private set; }
+
 		[FindByPrecedingDivContent]
 		public Select2<RelativityProviderOverwrite, _> Overwrite { get; private set; }
 

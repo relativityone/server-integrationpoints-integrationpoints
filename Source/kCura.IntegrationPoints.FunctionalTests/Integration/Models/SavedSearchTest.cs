@@ -11,9 +11,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
 		public string Owner { get; set; }
 
+        public SearchCriteria SearchCriteria { get; set; }
+
 		public SavedSearchTest() : base("SavedSearch")
 		{
+			SearchCriteria = new SearchCriteria();
 		}
+
+        public SavedSearchTest(SearchCriteria searchCriteria) : base("SavedSearch")
+        {
+            SearchCriteria = searchCriteria;
+        }
 
 		public override List<Guid> Guids => new List<Guid>();
 

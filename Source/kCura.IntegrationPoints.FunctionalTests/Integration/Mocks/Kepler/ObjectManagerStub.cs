@@ -7,8 +7,12 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data;
 using Moq;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
+using Relativity.Services.DataContracts.DTOs.Results;
+using Relativity.Services.Field;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using FieldRef = Relativity.Services.Objects.DataContracts.FieldRef;
+using FieldType = Relativity.Services.FieldType;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
@@ -84,6 +88,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             SetupJobHistory();
             SetupDocumentFields();
             SetupSavedSearch();
+            SetupSavedSearchDocuments();
+            SetupProductionDocuments();
+            SetupFolderDocuments();
             SetupIntegrationPointLongTextStreaming();
             SetupIntegrationPointProfile();
             SetupIntegrationPointProfileLongTextStreaming();
@@ -130,24 +137,24 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
         {
             Mock.Setup(x => x.ReadAsync(It.IsAny<int>(),
                     It.IsAny<ReadRequest>()))
-                .Returns((int workspaceId, ReadRequest request) =>
-                    {
-                        RdoTestBase foundRdo;
-                        if (workspaceId == -1)
-                        {
-                            foundRdo = Relativity.Workspaces.First(x => x.ArtifactId == request.Object.ArtifactID);
-                        }
-                        else
-                        {
-                            WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
-                            foundRdo = workspace.ReadArtifact(request.Object.ArtifactID);
-                        }
+            .Returns((int workspaceId, ReadRequest request) =>
+            {
+                RdoTestBase foundRdo;
+                if (workspaceId == -1)
+                {
+                    foundRdo = Relativity.Workspaces.First(x => x.ArtifactId == request.Object.ArtifactID);
+                }
+                else
+                {
+                    WorkspaceTest workspace = Relativity.Workspaces.First(x => x.ArtifactId == workspaceId);
+                    foundRdo = workspace.ReadArtifact(request.Object.ArtifactID);
+                }
 
-                        ReadResult result = new ReadResult {Object = foundRdo?.ToRelativityObject()};
+                ReadResult result = new ReadResult {Object = foundRdo?.ToRelativityObject()};
 
-                        return Task.FromResult(result);
-                    }
-                );
+                return Task.FromResult(result);
+            }
+            );
         }
 
         private QueryResultSlim GetQuerySlimsForRequest<T>(Func<WorkspaceTest, IList<T>> collectionGetter,
@@ -235,7 +242,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 foundObjects.AddRange(customFilter(request, collectionGetter(workspace))
                     .Select(x => x.ToRelativityObject()));
             }
-
             if (IsArtifactIdCondition(request.Condition, out int artifactId))
             {
                 AddRelativityObjectsToResult(
@@ -248,7 +254,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     collectionGetter(workspace).Where(x => artifactIds.Contains(x.ArtifactId))
                     , foundObjects);
             }
-
+            
             return foundObjects;
         }
 

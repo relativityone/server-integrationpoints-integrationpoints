@@ -100,5 +100,26 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			return numberOfJobs;
 		}
-	}
+
+        public int GetNumberOfJobsLockedByAgentForIntegrationPoint(int workspaceId, int integrationPointId)
+        {
+			string sql =
+
+			$@"SELECT count(*) 
+			FROM [{_SCHEDULE_AGENT_QUEUE_TABLE_NAME}] 
+			WHERE [WorkspaceID] = @workspaceId 
+				AND [RelatedObjectArtifactID] = @integrationPointId 
+				AND [LockedByAgentID] is not null";
+
+			IEnumerable<SqlParameter> parameters = new List<SqlParameter>
+			{
+				new SqlParameter("@workspaceId", SqlDbType.Int) {Value = workspaceId},
+				new SqlParameter("@integrationPointId", SqlDbType.Int) {Value = integrationPointId}
+			};
+
+			int numberOfJobs = _dbContext.ExecuteSqlStatementAsScalar<int>(sql, parameters);
+
+			return numberOfJobs;
+		}
+    }
 }

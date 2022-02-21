@@ -239,8 +239,6 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		public Job GetJob(long jobID)
 		{
-			LogOnGetJob(jobID);
-
 			AgentService.CreateQueueTableOnce();
 
 			DataRow row = DataProvider.GetJob(jobID);

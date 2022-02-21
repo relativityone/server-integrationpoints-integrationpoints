@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
 using System;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 
 namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 {
@@ -38,50 +39,72 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			_integrationPointRepository = integrationPointRepository;
 		}
 
-		public ButtonStateDTO CreateButtonState(int applicationArtifactId, int integrationPointArtifactId)
+		public ButtonStateDTO CreateButtonState(int workspaceArtifactId, int integrationPointArtifactId)
 		{
 			IntegrationPoint integrationPoint =
 				_integrationPointRepository.ReadWithFieldMappingAsync(integrationPointArtifactId).GetAwaiter().GetResult();
 			ProviderType providerType = _providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value,
 				integrationPoint.DestinationProvider.Value);
 
-			ValidationResult jobHistoryErrorViewPermissionCheck = _permissionValidator.ValidateViewErrors(applicationArtifactId);
+			ValidationResult jobHistoryErrorViewPermissionCheck = _permissionValidator.ValidateViewErrors(workspaceArtifactId);
 
-			var settings = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
+			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
 
-			bool hasAddProfilePermission = _permissionRepository.UserHasArtifactTypePermission(Guid.Parse(ObjectTypeGuids.IntegrationPointProfile),
+            bool hasAddProfilePermission = _permissionRepository.UserHasArtifactTypePermission(Guid.Parse(ObjectTypeGuids.IntegrationPointProfile),
 				ArtifactPermission.Create) && !settings.IsFederatedInstance();
 
 			bool canViewErrors = jobHistoryErrorViewPermissionCheck.IsValid;
-			bool hasJobsExecutingOrInQueue = HasJobsExecutingOrInQueue(applicationArtifactId, integrationPointArtifactId);
-			bool integrationPointIsStoppable = IntegrationPointIsStoppable(providerType, applicationArtifactId, integrationPointArtifactId, settings);
+			bool hasJobsExecutingOrInQueue = HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
+
+            SourceConfiguration.ExportType exportType;
+			try
+			{
+                exportType = (SourceConfiguration.ExportType)JsonConvert.DeserializeAnonymousType(
+                        integrationPoint.SourceConfiguration,
+            new { TypeOfExport = 0 })
+                    .TypeOfExport;
+            }
+            catch (Exception)
+            {
+                exportType = 0;
+            }
+
+			bool integrationPointIsStoppable = IntegrationPointIsStoppable(providerType: providerType, workspaceArtifactId: workspaceArtifactId,
+                integrationPointArtifactId: integrationPointArtifactId, exportType: exportType);
 			bool integrationPointHasErrors = integrationPoint.HasErrors.GetValueOrDefault(false);
 			ButtonStateDTO buttonState = _stateManager.GetButtonState(providerType, hasJobsExecutingOrInQueue, integrationPointHasErrors, canViewErrors,
 				integrationPointIsStoppable, hasAddProfilePermission);
 			return buttonState;
 		}
 
-		private bool HasJobsExecutingOrInQueue(int applicationArtifactId, int integrationPointArtifactId)
+		private bool HasJobsExecutingOrInQueue(int workspaceArtifactId, int integrationPointArtifactId)
 		{
-			return _queueManager.HasJobsExecutingOrInQueue(applicationArtifactId, integrationPointArtifactId);
+			return _queueManager.HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
 		}
 
-		private bool IntegrationPointIsStoppable(ProviderType providerType, int applicationArtifactId, int integrationPointArtifactId, ImportSettings settings)
+		private bool IntegrationPointIsStoppable(ProviderType providerType, int workspaceArtifactId, int integrationPointArtifactId, SourceConfiguration.ExportType exportType)
 		{
-			if (IsNonStoppableBasedOnProviderType(providerType, settings))
+			StoppableJobHistoryCollection stoppableJobCollection = _jobHistoryManager.GetStoppableJobHistory(workspaceArtifactId, integrationPointArtifactId);
+
+			bool hasExecutingJobs = _queueManager.HasJobsExecuting(workspaceArtifactId, integrationPointArtifactId);
+
+			if(stoppableJobCollection.HasOnlyPendingJobHistory && !hasExecutingJobs)
+            {
+				return true;
+            }
+
+			if (IsNonStoppableBasedOnProviderType(providerType, exportType))
 			{
 				return false;
 			}
 
-			StoppableJobCollection stoppableJobCollection = _jobHistoryManager.GetStoppableJobCollection(applicationArtifactId, integrationPointArtifactId);
-			bool integrationPointIsStoppable = stoppableJobCollection.HasStoppableJobs;
-			return integrationPointIsStoppable;
+			return stoppableJobCollection.HasStoppableJobHistory;
 		}
 
-		private static bool IsNonStoppableBasedOnProviderType(ProviderType providerType, ImportSettings settings)
+		private static bool IsNonStoppableBasedOnProviderType(ProviderType providerType, SourceConfiguration.ExportType exportType)
 		{
 			return (providerType != ProviderType.Relativity && providerType != ProviderType.LoadFile) ||
-				(providerType == ProviderType.Relativity && settings != null && settings.ImageImport);
+				(providerType == ProviderType.Relativity && exportType == SourceConfiguration.ExportType.ProductionSet);
 		}
 	}
 }

@@ -121,8 +121,8 @@ group Tests
 	nuget Relativity.Logging.Interfaces 2019.5.1
 	nuget Relativity.Telemetry.Services.Interface 3003.0.2
 	nuget Relativity.Services.Interfaces 13.5.0
-	nuget Relativity.Testing.Framework 7.1.0
-	nuget Relativity.Testing.Framework.Api 6.0.1
+	nuget Relativity.Testing.Framework 7.2.1
+	nuget Relativity.Testing.Framework.Api 6.1.2
 	nuget Relativity.Testing.Framework.Web 1.2.0
 	nuget Relativity.Testing.Framework.RingSetup 0.17.0
 	nuget Selenium.Support 4.0.0-beta4
@@ -133,7 +133,7 @@ group Tests
 	nuget Relativity.OAuth2Client 1.5.2
 	nuget Relativity.OAuth2Client.Interfaces 1.5.2
 
-	nuget Relativity.Sync 0.8.0-pre.105
+	nuget Relativity.Sync 0.8.118
 
 	//RIP packages
 	nuget IntegrationPoints.MyFirstProvider 12.3.2
@@ -145,7 +145,7 @@ group Sync
 	strategy: min
 	source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 	
-    nuget Relativity.Sync 0.8.0-pre.105
+	nuget Relativity.Sync 0.8.118
 	nuget Newtonsoft.Json 6.0.8
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
