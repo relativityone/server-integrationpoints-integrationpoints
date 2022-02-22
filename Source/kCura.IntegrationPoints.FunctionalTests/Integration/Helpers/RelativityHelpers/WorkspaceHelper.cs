@@ -78,14 +78,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 				ObjectTypeId = _artifactTypeIdEntity,
 				Guid = new Guid(EntityFieldGuids.FirstName),
 				IsIdentifier = false,
-				Name = "First Name"
+				Name = Const.Entity._ENTITY_OBJECT_FIRST_NAME
 			});
 			workspace.Fields.Add(new FieldTest
 			{
 				ObjectTypeId = _artifactTypeIdEntity,
 				Guid = new Guid(EntityFieldGuids.LastName),
 				IsIdentifier = false,
-				Name = "Last Name"
+				Name = Const.Entity._ENTITY_OBJECT_LAST_NAME
 			});
 			workspace.Fields.Add(new FieldTest
 			{

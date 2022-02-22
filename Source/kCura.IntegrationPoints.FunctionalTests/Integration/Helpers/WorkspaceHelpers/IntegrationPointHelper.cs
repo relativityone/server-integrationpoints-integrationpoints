@@ -83,7 +83,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 		public IntegrationPointTest CreateNonDocumentSyncIntegrationPoint(WorkspaceTest destinationWorkspace)
 		{
-			int artifactTypeId = GetArtifactTypeIdByName(Const.Entity._ENTITY_OBJECT_NAME);
+			int artifactTypeId = GetArtifactTypeIdByName(Entity._ENTITY_OBJECT_NAME);
 
 			IntegrationPointTest integrationPoint = CreateEmptyIntegrationPoint();
 
@@ -100,7 +100,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			DestinationProviderTest destinationProvider = Workspace.DestinationProviders.First(x =>
 				x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
 
-			List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMapping(destinationWorkspace, artifactTypeId);
+			List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierAndFirstAndLastNameFieldsMappingForEntitySync(destinationWorkspace);
 
 			integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
 			integrationPoint.SourceConfiguration = _serializer.Serialize(new SourceConfiguration
@@ -244,7 +244,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 			List<FieldMap> fieldsMapping = isMappingIdentifierOnly 
 				? Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierOnlyFieldsMappingForLDAPEntityImport() 
-				: Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMappingForLDAPEntityImport();
+				: Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierAndFirstAndLastNameFieldsMappingForLDAPEntityImport();
 			integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
 
 

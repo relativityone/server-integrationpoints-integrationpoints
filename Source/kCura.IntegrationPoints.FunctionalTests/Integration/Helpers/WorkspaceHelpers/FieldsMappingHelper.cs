@@ -110,138 +110,92 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 				}
 			};
 		}
-
-		public List<FieldMap> PrepareIdentifierFieldsMappingForLDAPEntityImport()
+		
+		public List<FieldMap> PrepareIdentifierOnlyFieldsMappingForLDAPEntityImport()
 		{
-			int artifactTypeIdEntity = GetArtifactTypeIdByName(Const.Entity._ENTITY_OBJECT_NAME);
-			Dictionary<string, FieldTest> entityFields = Workspace.Fields.Where(x => x.ObjectTypeId == artifactTypeIdEntity)
+			int _artifactTypeIdEntity = GetArtifactTypeIdByName(Const.Entity._ENTITY_OBJECT_NAME);
+			Dictionary<string, FieldTest> destinationWorkspaceFields = Workspace.Fields.Where(x => x.ObjectTypeId == _artifactTypeIdEntity)
 				.ToDictionary(x => x.Name, x => x);
 
 			return new List<FieldMap>
 			{
 				new FieldMap
 				{
-					SourceField = new FieldEntry
-					{
-						DisplayName = "uid",
-						FieldIdentifier = "uid",
-						FieldType = FieldType.String,
-						IsIdentifier = false,
-						IsRequired = false,
-						Type = null
-					},
-					DestinationField = new FieldEntry
-					{
-						DisplayName = entityFields["Unique ID"].Name,
-						FieldIdentifier = entityFields["Unique ID"].ArtifactId.ToString(),
-						FieldType = FieldType.String,
-						IsIdentifier = true,
-						IsRequired = true,
-						Type = FIXED_LENGTH_TEXT_NAME
-					},
+					SourceField = PrepareFieldEntry("uid", false, null),
+					DestinationField = PrepareFieldEntry("Unique ID", true, FIXED_LENGTH_TEXT_NAME, destinationWorkspaceFields),
+					FieldMapType = FieldMapTypeEnum.Identifier
+				}
+			};
+		}
+
+		public List<FieldMap> PrepareIdentifierAndFirstAndLastNameFieldsMappingForEntitySync(WorkspaceTest destinationWorkspace)
+		{
+			int artifactTypeIdEntity = GetArtifactTypeIdByName(Const.Entity._ENTITY_OBJECT_NAME);
+			Dictionary<string, FieldTest> sourceWorkspaceFields = Workspace.Fields.Where(x => x.ObjectTypeId == artifactTypeIdEntity)
+				.ToDictionary(x => x.Name, x => x);
+			Dictionary<string, FieldTest> destinationWorkspaceFields = destinationWorkspace.Fields.Where(x => x.ObjectTypeId == artifactTypeIdEntity)
+				.ToDictionary(x => x.Name, x => x);
+			return  new List<FieldMap>
+			{
+				new FieldMap
+				{
+					SourceField = PrepareFieldEntry("Unique ID", true, FIXED_LENGTH_TEXT_NAME, sourceWorkspaceFields),
+					DestinationField = PrepareFieldEntry("Unique ID", true, FIXED_LENGTH_TEXT_NAME, destinationWorkspaceFields),
 					FieldMapType = FieldMapTypeEnum.Identifier
 				},
 				new FieldMap
 				{
-					SourceField = new FieldEntry
-					{
-						DisplayName = "sn",
-						FieldIdentifier = "sn",
-						FieldType = FieldType.String,
-						IsIdentifier = false,
-						IsRequired = false,
-						Type = null
-					},
-					DestinationField = new FieldEntry
-					{
-						DisplayName = entityFields["Last Name"].Name,
-						FieldIdentifier = entityFields["Last Name"].ArtifactId.ToString(),
-						FieldType = FieldType.String,
-						IsIdentifier = false,
-						IsRequired = false,
-						Type = FIXED_LENGTH_TEXT_NAME
-					},
+					SourceField = PrepareFieldEntry(Const.Entity._ENTITY_OBJECT_LAST_NAME, false, FIXED_LENGTH_TEXT_NAME, sourceWorkspaceFields),
+					DestinationField = PrepareFieldEntry(Const.Entity._ENTITY_OBJECT_LAST_NAME, false, FIXED_LENGTH_TEXT_NAME, destinationWorkspaceFields),
 					FieldMapType = FieldMapTypeEnum.None
 				},
 				new FieldMap
 				{
-					SourceField = new FieldEntry
-					{
-						DisplayName = "givenname",
-						FieldIdentifier = "givenname",
-						FieldType = FieldType.String,
-						IsIdentifier = false,
-						IsRequired = false,
-						Type = null
-					},
-					DestinationField = new FieldEntry
-					{
-						DisplayName = entityFields["First Name"].Name,
-						FieldIdentifier = entityFields["First Name"].ArtifactId.ToString(),
-						FieldType = FieldType.String,
-						IsIdentifier = false,
-						IsRequired = false,
-						Type = FIXED_LENGTH_TEXT_NAME
-					},
+					SourceField = PrepareFieldEntry(Const.Entity._ENTITY_OBJECT_FIRST_NAME, false, FIXED_LENGTH_TEXT_NAME, sourceWorkspaceFields),
+					DestinationField = PrepareFieldEntry(Const.Entity._ENTITY_OBJECT_FIRST_NAME, false, FIXED_LENGTH_TEXT_NAME, destinationWorkspaceFields),
 					FieldMapType = FieldMapTypeEnum.None
 				},
 				new FieldMap
 				{
-					SourceField = new FieldEntry
-					{
-						DisplayName = "manager",
-						FieldIdentifier = "manager",
-						FieldType = FieldType.String,
-						IsIdentifier = false,
-						IsRequired = false,
-						Type = null
-					},
-					DestinationField = new FieldEntry
-					{
-						DisplayName = entityFields["Manager"].Name,
-						FieldIdentifier = entityFields["Manager"].ArtifactId.ToString(),
-						FieldType = FieldType.String,
-						IsIdentifier = false,
-						IsRequired = false,
-						Type = "Single Object"
-					},
+					SourceField = PrepareFieldEntry("Manager", false, "Single Object", sourceWorkspaceFields),
+					DestinationField = PrepareFieldEntry("Manager", false, "Single Object", destinationWorkspaceFields),
 					FieldMapType = FieldMapTypeEnum.None
 				}
 			};
 		}
-		
-		public List<FieldMap> PrepareIdentifierOnlyFieldsMappingForLDAPEntityImport()
-		{
-			
-			int _artifactTypeIdEntity = GetArtifactTypeIdByName(Const.Entity._ENTITY_OBJECT_NAME);
-			Dictionary<string, FieldTest> entityFields = Workspace.Fields.Where(x => x.ObjectTypeId == _artifactTypeIdEntity)
-				.ToDictionary(x => x.Name, x => x);
 
-			return new List<FieldMap>
+		public List<FieldMap> PrepareIdentifierAndFirstAndLastNameFieldsMappingForLDAPEntityImport()
+		{
+			int artifactTypeIdEntity = GetArtifactTypeIdByName(Const.Entity._ENTITY_OBJECT_NAME);
+			Dictionary<string, FieldTest> destinationWorkspaceFields = Workspace.Fields.Where(x => x.ObjectTypeId == artifactTypeIdEntity)
+				.ToDictionary(x => x.Name, x => x);
+			List<FieldMap> IdentifierOnlyFieldMap = PrepareIdentifierOnlyFieldsMappingForLDAPEntityImport();
+			List<FieldMap> WithoutIdentifierFieldMap = new List<FieldMap>
 			{
 				new FieldMap
 				{
-					SourceField = new FieldEntry
-					{
-						DisplayName = "uid",
-						FieldIdentifier = "uid",
-						FieldType = FieldType.String,
-						IsIdentifier = false,
-						IsRequired = false,
-						Type = null
-					},
-					DestinationField = new FieldEntry
-					{
-						DisplayName = entityFields["Unique ID"].Name,
-						FieldIdentifier = entityFields["Unique ID"].ArtifactId.ToString(),
-						FieldType = FieldType.String,
-						IsIdentifier = true,
-						IsRequired = true,
-						Type = FIXED_LENGTH_TEXT_NAME
-					},
-					FieldMapType = FieldMapTypeEnum.Identifier
+					SourceField = PrepareFieldEntry("sn", false, null),
+					DestinationField = PrepareFieldEntry(Const.Entity._ENTITY_OBJECT_LAST_NAME, false,
+						FIXED_LENGTH_TEXT_NAME, destinationWorkspaceFields),
+					FieldMapType = FieldMapTypeEnum.None
+				},
+				new FieldMap
+				{
+					SourceField = PrepareFieldEntry("givenname", false, null),
+					DestinationField = PrepareFieldEntry(Const.Entity._ENTITY_OBJECT_FIRST_NAME, false,
+						FIXED_LENGTH_TEXT_NAME, destinationWorkspaceFields),
+					FieldMapType = FieldMapTypeEnum.None
+				},
+				new FieldMap
+				{
+					SourceField = PrepareFieldEntry("manager", false, null),
+					DestinationField = PrepareFieldEntry("Manager", false, "Single Object", destinationWorkspaceFields),
+					FieldMapType = FieldMapTypeEnum.None
 				}
 			};
+			IdentifierOnlyFieldMap.AddRange(WithoutIdentifierFieldMap);
+			List<FieldMap> joinedList = IdentifierOnlyFieldMap;
+			return joinedList;
 		}
 
 		public List<FieldMap> PrepareLongTextFieldsMapping()
@@ -249,12 +203,25 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return AddFieldEntriesToFieldsMap(Const.LONG_TEXT_TYPE_ARTIFACT_ID, LONG_TEXT_NAME);
         }
 
-        public List<FieldMap> PrepareFixedLengthTextFieldsMapping()
+		public List<FieldMap> PrepareFixedLengthTextFieldsMapping()
         {
             return AddFieldEntriesToFieldsMap(Const.FIXED_LENGTH_TEXT_TYPE_ARTIFACT_ID, FIXED_LENGTH_TEXT_NAME);
         }
 
-        private List<FieldMap> AddFieldEntriesToFieldsMap(int objectTypeId, string fieldType)
+		private FieldEntry PrepareFieldEntry(string displayName, bool isIdentifier, string type, Dictionary<string, FieldTest> workspaceFields = null)
+		{
+			return new FieldEntry
+			{
+				DisplayName = workspaceFields == null ? displayName : workspaceFields[displayName].Name,
+				FieldIdentifier = workspaceFields == null ? displayName : workspaceFields[displayName].ArtifactId.ToString(),
+				FieldType = FieldType.String,
+				IsIdentifier = isIdentifier,
+				IsRequired = isIdentifier,
+				Type = type
+			};
+		}
+
+		private List<FieldMap> AddFieldEntriesToFieldsMap(int objectTypeId, string fieldType)
         {
             Dictionary<string, FieldTest> fields = Workspace.Fields.Where(x => x.ObjectTypeId == objectTypeId)
                 .ToDictionary(x => x.Name, x => x);
@@ -291,7 +258,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return fieldsMap;
         }
 
-        private int GetArtifactTypeIdByName(string name)
+		private int GetArtifactTypeIdByName(string name)
         {
 	        return Workspace.ObjectTypes.First(x => x.Name == name).ArtifactTypeId;
         }

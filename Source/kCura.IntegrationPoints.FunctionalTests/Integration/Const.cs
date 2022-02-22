@@ -40,6 +40,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		public static class Entity
 		{
 			public static readonly string _ENTITY_OBJECT_NAME = "Entity";
+			public static readonly string _ENTITY_OBJECT_FIRST_NAME = "First Name";
+			public static readonly string _ENTITY_OBJECT_LAST_NAME = "Last Name";
 			public static readonly int _ENTITY_TYPE_ARTIFACT_ID = ArtifactProvider.NextId();
 			public static readonly Guid _ENTITY_OBJECT_GUID = new Guid("D216472D-A1AA-4965-8B36-367D43D4E64C");
 		}

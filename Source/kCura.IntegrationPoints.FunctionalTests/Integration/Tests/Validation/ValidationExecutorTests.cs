@@ -60,7 +60,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
 		public void ValidateOnSave_ShouldThrow_WhenMappingIdentifierOnly()
 		{
 			// Arrange
-			ValidationContext context = PrepareValidationContextForEntity(true);
+			IntegrationPointTest integrationPoint = PrepareImportEntityFromLdapIntegrationPoint(true);
+			ValidationContext context = PrepareValidationContext(integrationPoint);
+			
 			IValidationExecutor sut = PrepareSut();
 			
 			// Act
@@ -122,30 +124,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
 			IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateNonDocumentSyncIntegrationPoint(destinationWorkspace);
 			return integrationPoint;
 		}
-		
-		private ValidationContext PrepareValidationContextForEntity(bool isMappingIdentifierOnly)
+
+		private IntegrationPointTest PrepareImportEntityFromLdapIntegrationPoint(bool isMappingIdentifierOnly)
 		{
 			IntegrationPointTest integrationPoint =
 				SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportEntityFromLdapIntegrationPoint(isMappingIdentifierOnly: isMappingIdentifierOnly);
+			return integrationPoint;
 
-			IntegrationPointTypeTest integrationPointType = SourceWorkspace.IntegrationPointTypes.Single(x => x.ArtifactId == integrationPoint.Type);
-
-			SourceProviderTest sourceProvider = SourceWorkspace.SourceProviders.Single(x => x.ArtifactId == integrationPoint.SourceProvider);
-
-			DestinationProviderTest destinationProvider = SourceWorkspace.DestinationProviders.Single(x => x.ArtifactId == integrationPoint.DestinationProvider);
-
-			ValidationContext context = new ValidationContext
-			{
-				Model = IntegrationPointModel.FromIntegrationPoint(integrationPoint.ToRdo()),
-				SourceProvider = sourceProvider.ToRdo(),
-				DestinationProvider = destinationProvider.ToRdo(),
-				IntegrationPointType = integrationPointType.ToRdo(),
-				ObjectTypeGuid = ObjectTypeGuids.IntegrationPointGuid,
-				UserId = User.ArtifactId
-			};
-
-			return context;
 		}
-
 	}
 }
