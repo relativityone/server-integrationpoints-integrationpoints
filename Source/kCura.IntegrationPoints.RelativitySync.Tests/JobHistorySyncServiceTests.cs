@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
@@ -19,15 +20,20 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 
 		private Mock<IExtendedJob> _jobFake;
 		private Mock<IObjectManager> _objectManagerMock;
+		private Mock<IRelativityObjectManager> _relativityObjectManagerFake;
 
 		private const int _JOB_ID = 1;
 		private const int _JOB_HISTORY_ID = 10;
 		private const int _WORKSPACE_ID = 100;
 		private const int _INTEGRATION_POINT_ID = 110;
 
+		private JobHistory _jobHistory;
+
 		[SetUp]
 		public void SetUp()
 		{
+			_jobHistory = new JobHistory { ItemsWithErrors = 0 };
+
 			_jobFake = new Mock<IExtendedJob>();
 			_jobFake.SetupGet(x => x.JobHistoryId).Returns(_JOB_HISTORY_ID);
 			_jobFake.SetupGet(x => x.WorkspaceId).Returns(_WORKSPACE_ID);
@@ -43,7 +49,11 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			Mock<IHelper> helper = new Mock<IHelper>();
 			helper.Setup(x => x.GetServicesManager()).Returns(servicesMgr.Object);
 
-			_sut = new JobHistorySyncService(helper.Object);
+			_relativityObjectManagerFake = new Mock<IRelativityObjectManager>();
+			_relativityObjectManagerFake.Setup(x => x.Read<JobHistory>(_JOB_HISTORY_ID, It.IsAny<ExecutionIdentity>()))
+				.Returns(_jobHistory);
+
+			_sut = new JobHistorySyncService(helper.Object, _relativityObjectManagerFake.Object);
 		}
 
 		[TestCase("validating")]
@@ -142,6 +152,27 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			VerifyJobHistoryStatus(JobStatusChoices.JobHistoryCompletedWithErrorsGuid);
 
 			VerifyIntegrationPointWasUpdated(hasErrors);
+		}
+
+		[Test]
+		public async Task MarkJobAsCompletedAsync_ShouldUpdateStatusToCompletedWithErrors_WhenJobHistoryItemsWithErrorsIsGreaterThanZero()
+        {
+			// Arrange
+			const int itemsWithErrors = 10;
+
+			const bool expectedHasErrors = true;
+
+			SetupHasErrors(false);
+
+			_jobHistory.ItemsWithErrors = itemsWithErrors;
+
+			// Act
+			await _sut.MarkJobAsCompletedAsync(_jobFake.Object).ConfigureAwait(false);
+
+			// Assert
+			VerifyJobHistoryStatus(JobStatusChoices.JobHistoryCompletedWithErrorsGuid);
+
+			VerifyIntegrationPointWasUpdated(expectedHasErrors);
 		}
 
 		[Test]
