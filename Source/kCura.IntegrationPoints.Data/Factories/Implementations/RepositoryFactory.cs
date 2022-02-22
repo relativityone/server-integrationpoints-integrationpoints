@@ -45,11 +45,6 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return new KeplerArtifactGuidRepository(workspaceArtifactId, _destinationServiceMgr);
 		}
 
-		public IRelativityObjectManager CreateRelativityObjectManager(int workspaceArtifactId)
-		{
-			return ObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId);
-		}
-
 		public ICodeRepository GetCodeRepository(int workspaceArtifactId)
 		{
 			IRelativityObjectManager relativityObjectManager =
@@ -285,6 +280,12 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		}
 
 		#region Helper Methods
+
+		private IRelativityObjectManager CreateRelativityObjectManager(int workspaceArtifactId)
+		{
+			return ObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId);
+		}
+
 		private static Lazy<IRelativityObjectManagerFactory> CreateRelativityObjectManagerFactory(IHelper helper)
 		{
 			return new Lazy<IRelativityObjectManagerFactory>(() => new RelativityObjectManagerFactory(helper));

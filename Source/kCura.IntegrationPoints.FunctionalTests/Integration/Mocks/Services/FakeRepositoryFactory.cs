@@ -174,10 +174,5 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 		{
 			return _repositoryFactory.GetCaseRepository();
 		}
-
-        public IRelativityObjectManager CreateRelativityObjectManager(int workspaceArtifactId)
-        {
-			return _repositoryFactory.CreateRelativityObjectManager(workspaceArtifactId);
-        }
     }
 }

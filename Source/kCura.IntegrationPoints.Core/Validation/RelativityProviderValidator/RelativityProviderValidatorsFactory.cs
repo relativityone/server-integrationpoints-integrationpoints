@@ -22,26 +22,28 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly ISerializer _serializer;
 		private readonly IArtifactServiceFactory _artifactServiceFactory;
+		private readonly IRelativityObjectManager _objectManager;
 
-		public RelativityProviderValidatorsFactory(
-			ISerializer serializer,
-			IRepositoryFactory repositoryFactory,
-			IHelper helper,
-			IProductionManager productionManager,
-			IManagerFactory managerFactory,
-			IArtifactServiceFactory artifactServiceFactory)
-		{
-			_serializer = serializer;
-			_repositoryFactory = repositoryFactory;
-			_helper = helper;
-			_productionManager = productionManager;
-			_managerFactory = managerFactory;
-			_artifactServiceFactory = artifactServiceFactory;
+        public RelativityProviderValidatorsFactory(
+            ISerializer serializer,
+            IRepositoryFactory repositoryFactory,
+            IHelper helper,
+            IProductionManager productionManager,
+            IManagerFactory managerFactory,
+            IArtifactServiceFactory artifactServiceFactory, IRelativityObjectManager objectManager)
+        {
+            _serializer = serializer;
+            _repositoryFactory = repositoryFactory;
+            _helper = helper;
+            _productionManager = productionManager;
+            _managerFactory = managerFactory;
+            _artifactServiceFactory = artifactServiceFactory;
 
-			_logger = _helper.GetLoggerFactory().GetLogger();
-		}
+            _logger = _helper.GetLoggerFactory().GetLogger();
+            _objectManager = objectManager;
+        }
 
-		public FieldsMappingValidator CreateFieldsMappingValidator(int? federatedInstanceArtifactId, string credentials)
+        public FieldsMappingValidator CreateFieldsMappingValidator(int? federatedInstanceArtifactId, string credentials)
 		{
 			IFieldManager fieldManager = _managerFactory.CreateFieldManager();
 			return new FieldsMappingValidator(_logger, _serializer, fieldManager, fieldManager);
@@ -60,7 +62,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 
 		public ViewValidator CreateViewValidator(int workspaceArtifactId)
 		{
-			return new ViewValidator(_repositoryFactory.CreateRelativityObjectManager(workspaceArtifactId), _logger);
+			return new ViewValidator(_objectManager, _logger);
 		}
 
 		public ProductionValidator CreateProductionValidator(int workspaceArtifactId)
