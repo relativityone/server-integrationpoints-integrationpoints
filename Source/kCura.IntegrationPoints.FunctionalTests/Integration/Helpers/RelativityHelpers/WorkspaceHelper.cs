@@ -61,7 +61,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 					Guid = Const.Entity._ENTITY_OBJECT_GUID,
 					ObjectType = Const.Entity._ENTITY_OBJECT_NAME,
 					ObjectTypeArtifactTypeId = (int)ArtifactType.ObjectType,
-					ArtifactTypeId = ArtifactProvider.NextId()
+					ArtifactTypeId = Const.Entity._ENTITY_TYPE_ARTIFACT_ID
 				}
 			);
 			int _artifactTypeIdEntity = workspace.ObjectTypes.First(x => x.Name == Const.Entity._ENTITY_OBJECT_NAME).ArtifactTypeId;
