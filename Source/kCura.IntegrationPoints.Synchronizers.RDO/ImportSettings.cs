@@ -12,7 +12,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public class ImportSettings
 	{
-
 		public const string FIELDOVERLAYBEHAVIOR_DEFAULT = "Use Field Settings";
 		public const string FIELDOVERLAYBEHAVIOR_MERGE = "Merge Values";
 		public const string FIELDOVERLAYBEHAVIOR_REPLACE = "Replace Values";
@@ -31,7 +30,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		[JsonProperty(PropertyName = "artifactTypeID")]
 		public int ArtifactTypeId { get; set; }
-		public string BulkLoadFileFieldDelimiter { get; set; }
+
+        public int DestinationArtifactTypeId { get; set; }
+
+        public string BulkLoadFileFieldDelimiter { get; set; }
 		public int CaseArtifactId { get; set; }
 		public int? FederatedInstanceArtifactId { get; set; }
 		public string FederatedInstanceCredentials { get; set; }
@@ -179,7 +181,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public bool IsRelativityProvider()
 		{
-			return Provider != null && Provider.ToLowerInvariant() == "relativity";
+			return Provider != null && string.Equals(Provider, "relativity", StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		public bool IsFederatedInstance()

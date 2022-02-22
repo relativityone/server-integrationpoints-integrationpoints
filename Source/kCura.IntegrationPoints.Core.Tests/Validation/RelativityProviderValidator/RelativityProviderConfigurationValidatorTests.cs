@@ -19,6 +19,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 	public class RelativityProviderConfigurationValidatorTests
 	{
 		private const int _SAVED_SEARCH_ARTIFACT_ID = 1038052;
+		private const int _VIEW_ARTIFACT_ID = 10235456;
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 1074540;
 		private const int _TARGET_WORKSPACE_ARTIFACT_ID = 1075642;
 	    private const int _PRODUCTION_ARTIFACT_ID = 4;
@@ -52,11 +53,18 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 				.Returns(workspaceValidatorMock);
 
 			var savedSearchRepositoryMock = Substitute.For<ISavedSearchQueryRepository>();
-			var savedSearchValidatorMock = Substitute.For<SavedSearchValidator>(logger, savedSearchRepositoryMock, _SAVED_SEARCH_ARTIFACT_ID);
+			var savedSearchValidatorMock = Substitute.For<SavedSearchValidator>(logger, savedSearchRepositoryMock);
 			savedSearchValidatorMock.Validate(Arg.Any<int>())
 				.Returns(new ValidationResult());
-			validatorsFactoryMock.CreateSavedSearchValidator(Arg.Any<int>(), Arg.Any<int>())
+			validatorsFactoryMock.CreateSavedSearchValidator(Arg.Any<int>())
 				.Returns(savedSearchValidatorMock);
+
+			var objectManagerMock = Substitute.For<IRelativityObjectManager>();
+			var viewValidatorMock = Substitute.For<ViewValidator>(objectManagerMock, logger);
+			viewValidatorMock.Validate(_VIEW_ARTIFACT_ID)
+				.Returns(new ValidationResult());
+			validatorsFactoryMock.CreateViewValidator(Arg.Any<int>())
+				.Returns(viewValidatorMock);
 
 			var artifactServiceMock = Substitute.For<IArtifactService>();
 			var destinationFolderValidatorMock = Substitute.For<ArtifactValidator>(artifactServiceMock, Arg.Any<int>(), Arg.Any<string>());
@@ -74,12 +82,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			validatorsFactoryMock.CreateFieldsMappingValidator(Arg.Any<int?>(), Arg.Any<string>())
 				.Returns(fieldMappingValidatorMock);
 
-			var transferredObjectValidatorMock = Substitute.For<TransferredObjectValidator>();
-			transferredObjectValidatorMock.Validate(Arg.Any<int>())
-				.Returns(new ValidationResult());
-			validatorsFactoryMock.CreateTransferredObjectValidator()
-				.Returns(transferredObjectValidatorMock);
-            
 		    var productionManagerMock = Substitute.For<IProductionManager>();
 			var permissionManager = Substitute.For<IPermissionManager>();
 		    var importProductionValidatorMock = Substitute.For<ImportProductionValidator>(Arg.Any<int>(), productionManagerMock, permissionManager, Arg.Any<int?>(), Arg.Any<string>());

@@ -19,10 +19,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			_validatorsFactory = validatorsFactory;
 		}
 
-		public override string Key
-			=>
-			IntegrationPointPermissionValidator.GetProviderValidatorKey(Domain.Constants.RELATIVITY_PROVIDER_GUID,
-				Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString());
+		public override string Key => IntegrationPointPermissionValidator.GetProviderValidatorKey(Domain.Constants.RELATIVITY_PROVIDER_GUID, Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString());
 
 		public override ValidationResult Validate(IntegrationPointProviderValidationModel model)
 		{
@@ -30,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			result.Add(ValidateInstanceToInstanceIsNotUsed(model));
 			if (result.IsValid)
 			{
-				result.Add(ValidateSourceWorkspacePermission());
+				result.Add(ValidateSourceWorkspacePermission(model));
 				result.Add(ValidateDestinationWorkspacePermission(model));
 				result.Add(ValidateSourceWorkspaceProductionPermission(model));
 			}
@@ -50,10 +47,10 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			return result;
 		}
 
-		private ValidationResult ValidateSourceWorkspacePermission()
+		private ValidationResult ValidateSourceWorkspacePermission(IntegrationPointProviderValidationModel model)
 		{
 			IRelativityProviderSourceWorkspacePermissionValidator sourceWorkspacePermissionValidator = _validatorsFactory.CreateSourceWorkspacePermissionValidator();
-			return sourceWorkspacePermissionValidator.Validate(ContextHelper.WorkspaceID);
+			return sourceWorkspacePermissionValidator.Validate(ContextHelper.WorkspaceID, model.ArtifactTypeId);
 		}
 
 		private ValidationResult ValidateDestinationWorkspacePermission(IntegrationPointProviderValidationModel model)
@@ -63,18 +60,21 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			SourceConfiguration sourceConfiguration = Serializer.Deserialize<SourceConfiguration>(model.SourceConfiguration);
 			DestinationConfigurationPermissionValidationModel destinationConfiguration = Serializer.Deserialize<DestinationConfigurationPermissionValidationModel>(model.DestinationConfiguration);
 
+			IRelativityProviderDestinationWorkspaceExistenceValidator destinationWorkspaceExistenceValidator = _validatorsFactory
+				.CreateDestinationWorkspaceExistenceValidator(sourceConfiguration.FederatedInstanceArtifactId, model.SecuredConfiguration);
 
-			IRelativityProviderDestinationWorkspaceExistenceValidator destinationWorkspaceExistenceValidator = _validatorsFactory.CreateDestinationWorkspaceExistenceValidator(
-				sourceConfiguration.FederatedInstanceArtifactId, model.SecuredConfiguration);
 			result.Add(destinationWorkspaceExistenceValidator.Validate(sourceConfiguration));
+
 			if (!result.IsValid)
 			{
 				return result; // destination workspace doesnt exist
 			}
 
-			IRelativityProviderDestinationWorkspacePermissionValidator destinationWorkspacePermissionValidator = _validatorsFactory.CreateDestinationWorkspacePermissionValidator(
-				sourceConfiguration.FederatedInstanceArtifactId, model.SecuredConfiguration);
-			result.Add(destinationWorkspacePermissionValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId, destinationConfiguration.ArtifactTypeId, model.CreateSavedSearch));
+			IRelativityProviderDestinationWorkspacePermissionValidator destinationWorkspacePermissionValidator = _validatorsFactory
+				.CreateDestinationWorkspacePermissionValidator(sourceConfiguration.FederatedInstanceArtifactId, model.SecuredConfiguration);
+
+			result.Add(destinationWorkspacePermissionValidator.Validate(sourceConfiguration.TargetWorkspaceArtifactId, destinationConfiguration.DestinationArtifactTypeId, model.CreateSavedSearch));
+
 			if (!result.IsValid)
 			{
 				return result; // no permission to destination workspace

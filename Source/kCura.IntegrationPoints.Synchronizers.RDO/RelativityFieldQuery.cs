@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				{
 					ArtifactTypeID = (int)ArtifactType.Field
 				},
-				Condition = $"'Object Type Artifact Type ID' == {rdoTypeId}",
+				Condition = $"'Object Type Artifact Type ID' == OBJECT {rdoTypeId}",
 				IncludeNameInQueryResult = true,
 				Fields = new[]
 				{

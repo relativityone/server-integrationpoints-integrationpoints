@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
@@ -64,6 +64,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 					ArtifactTypeId = Const.Entity._ENTITY_TYPE_ARTIFACT_ID
 				}
 			);
+			
 			int _artifactTypeIdEntity = workspace.ObjectTypes.First(x => x.Name == Const.Entity._ENTITY_OBJECT_NAME).ArtifactTypeId;
 			workspace.Fields.Add(new FieldTest
 			{
@@ -105,6 +106,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 			{
 				ParentObjectArtifactId = workspace.ArtifactId,
 				Name = "All Documents"
+			});
+
+			workspace.Views.Add(new ViewTest
+			{
+				ParentObjectArtifactId = workspace.ArtifactId,
+				Name = "Default View"
 			});
 
             CreateSavedSearchAndProduction(workspace, new SearchCriteria(true, false, true));

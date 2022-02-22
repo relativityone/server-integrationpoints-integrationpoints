@@ -40,7 +40,8 @@ namespace kCura.IntegrationPoints.Core.Validation
 
 			IntegrationPointProviderValidationModel validationModel = CreateValidationModel(model, sourceProvider, destinationProvider, integrationPointType, objectTypeGuid, userId);
 
-			foreach (var validator in _validatorsMap[Constants.IntegrationPoints.Validation.SAVE])
+            IEnumerable<IPermissionValidator> validators = _validatorsMap[Constants.IntegrationPoints.Validation.SAVE];
+            foreach (IPermissionValidator validator in validators)
 			{
 				result.Add(validator.Validate(validationModel));
 			}
@@ -54,7 +55,8 @@ namespace kCura.IntegrationPoints.Core.Validation
 		{
 			var result = new ValidationResult();
 
-			foreach (var validator in _validatorsMap[Constants.IntegrationPoints.Validation.VIEW_ERRORS])
+            IEnumerable<IPermissionValidator> validators = _validatorsMap[Constants.IntegrationPoints.Validation.VIEW_ERRORS];
+            foreach (IPermissionValidator validator in validators)
 			{
 				result.Add(validator.Validate(workspaceArtifactId));
 			}
@@ -74,7 +76,8 @@ namespace kCura.IntegrationPoints.Core.Validation
 
 			IntegrationPointProviderValidationModel validationModel = CreateValidationModel(model, sourceProvider, destinationProvider, integrationPointType, objectTypeGuid, userId);
 
-			foreach (var validator in _validatorsMap[Constants.IntegrationPoints.Validation.STOP])
+            IEnumerable<IPermissionValidator> validators = _validatorsMap[Constants.IntegrationPoints.Validation.STOP];
+            foreach (IPermissionValidator validator in validators)
 			{
 				result.Add(validator.Validate(validationModel));
 			}
@@ -90,7 +93,8 @@ namespace kCura.IntegrationPoints.Core.Validation
 		{
 			var result = new ValidationResult();
 
-			foreach (IPermissionValidator validator in _validatorsMap[Constants.IntegrationPoints.Validation.INTEGRATION_POINT])
+            IEnumerable<IPermissionValidator> permissionValidators = _validatorsMap[Constants.IntegrationPoints.Validation.INTEGRATION_POINT];
+            foreach (IPermissionValidator validator in permissionValidators)
 			{
 				result.Add(validator.Validate(validationModel));
 			}
@@ -98,19 +102,22 @@ namespace kCura.IntegrationPoints.Core.Validation
 			//workaround for import providers
 			if (integrationPointType.Identifier.Equals(Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid.ToString()))
 			{
-				foreach (IPermissionValidator validator in _validatorsMap[Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid.ToString()])
+                IEnumerable<IPermissionValidator> importProviderPermissionValidators = _validatorsMap[Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid.ToString()];
+                foreach (IPermissionValidator validator in importProviderPermissionValidators)
 				{
 					result.Add(validator.Validate(validationModel));
 				}
 			}
 
-			// provider-specific validation
-			foreach (IPermissionValidator validator in _validatorsMap[GetProviderValidatorKey(sourceProvider.Identifier, destinationProvider.Identifier)])
+            // provider-specific validation
+            IEnumerable<IPermissionValidator> sourceProviderPermissionValidators = _validatorsMap[GetProviderValidatorKey(sourceProvider.Identifier, destinationProvider.Identifier)];
+            foreach (IPermissionValidator validator in sourceProviderPermissionValidators)
 			{
 				result.Add(validator.Validate(validationModel));
 			}
 
-			foreach (IPermissionValidator validator in _validatorsMap[Constants.IntegrationPoints.Validation.NATIVE_COPY_LINKS_MODE])
+            IEnumerable<IPermissionValidator> nativeCopyLinksValidators = _validatorsMap[Constants.IntegrationPoints.Validation.NATIVE_COPY_LINKS_MODE];
+            foreach (IPermissionValidator validator in nativeCopyLinksValidators)
 			{
 				result.Add(validator.Validate(validationModel));
 			}

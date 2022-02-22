@@ -58,7 +58,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
 			WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
 
 			IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
-				.CreateSavedSearchIntegrationPoint(destinationWorkspace);
+				.CreateSavedSearchSyncIntegrationPoint(destinationWorkspace);
 
 			FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
 		}

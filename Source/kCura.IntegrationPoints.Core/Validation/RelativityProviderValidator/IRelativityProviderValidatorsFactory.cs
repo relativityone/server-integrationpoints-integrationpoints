@@ -10,13 +10,16 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 
 		ArtifactValidator CreateArtifactValidator(int workspaceArtifactId, string artifactTypeName, int? federatedInstanceArtifactId, string credentials);
 
-		SavedSearchValidator CreateSavedSearchValidator(int workspaceArtifactId, int savedSearchArtifactId);
+		SavedSearchValidator CreateSavedSearchValidator(int workspaceArtifactId);
+
+		ViewValidator CreateViewValidator(int workspaceArtifactId);
 
 		ProductionValidator CreateProductionValidator(int workspaceArtifactId);
 
 		IRelativityProviderDestinationWorkspaceExistenceValidator CreateDestinationWorkspaceExistenceValidator(int? federatedInstanceArtifactId, string credentials);
 
 		IRelativityProviderDestinationWorkspacePermissionValidator CreateDestinationWorkspacePermissionValidator(int? federatedInstanceArtifactId, string credentials);
+
 		IRelativityProviderDestinationFolderPermissionValidator CreateDestinationFolderPermissionValidator(int workspaceArtifactId, int? federatedInstanceArtifactId, string credentials);
 
 		IRelativityProviderSourceWorkspacePermissionValidator CreateSourceWorkspacePermissionValidator();
@@ -26,8 +29,6 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		RelativityProviderWorkspaceNameValidator CreateWorkspaceNameValidator(string prefix);
 
 		RelativityProviderWorkspaceNameValidator CreateWorkspaceNameValidator(string prefix, int? federatedInstanceArtifactId, string credentials);
-
-		TransferredObjectValidator CreateTransferredObjectValidator();
 
 		ImportProductionValidator CreateImportProductionValidator(int workspaceArtifactId, int? federatedInstanceArtifactId, string credentials);
 	}

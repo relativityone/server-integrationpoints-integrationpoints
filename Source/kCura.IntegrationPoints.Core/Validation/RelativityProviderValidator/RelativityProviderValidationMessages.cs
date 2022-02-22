@@ -20,7 +20,5 @@
 		public static readonly string FIELD_MAP_IMAGE_TOO_MANY_FIELDS = "Too many fields mapped. Please map only identifier fields.";
 
 		public static readonly string WORKSPACE_INVALID_NAME = "workspace name contains an invalid character.";
-
-		public static readonly string TRANSFERRED_OBJECT_INVALIDA_TYPE = "Invalid type of Transferred Object:";
 	}
 }

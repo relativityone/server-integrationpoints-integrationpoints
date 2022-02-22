@@ -4,8 +4,6 @@ namespace kCura.IntegrationPoints.Core.Validation
 {
 	internal static class ValidationMessages
 	{
-		#region Sync
-
 		public static ValidationMessage DestinationWorkspaceNoAccess => new ValidationMessage(
 			errorCode: $"20.001",
 			shortMessage: $"User does not have sufficient permissions to access destination workspace. Contact your system administrator."
@@ -50,6 +48,9 @@ namespace kCura.IntegrationPoints.Core.Validation
 			errorCode: $"20.014",
 			shortMessage: $"Federated instance transfers are currently not supported. Please update the Integration Point job to use a destination workspace within the same instance."
 		);
-		#endregion
+		public static ValidationMessage ViewNoAccess => new ValidationMessage(
+			errorCode: $"20.015",
+			shortMessage: $"View is not available or has been secured from this user. Contact your system administrator."
+		);
 	}
 }

@@ -69,6 +69,7 @@ namespace kCura.IntegrationPoints.Core
 				public const string MISSING_DESTINATION_RDO_PERMISSIONS = "User does not have all required destination RDO permissions. Please make sure the user has view, edit, and add permissions for the destination RDO.";
 				public const string DESTINATION_WORKSPACE_NO_IMPORT = "User does not have permission to import in the destination workspace.";
 				public const string SOURCE_WORKSPACE_NO_EXPORT = "User does not have permission to export in the source workspace.";
+				public const string MISSING_SOURCE_RDO_PERMISSIONS = "User does not have all required source RDO permissions. Please make sure the user has view permissions for the source RDO.";
 				public const string SAVED_SEARCH_NO_ACCESS = "Saved search is not available or has been secured from this user. Contact your system administrator.";
 				public const string SAVED_SEARCH_NOT_PUBLIC = "The saved search must be public.";
 				public const string PRODUCTION_NO_ACCESS = "The production is no longer available or the user does not have access.";
