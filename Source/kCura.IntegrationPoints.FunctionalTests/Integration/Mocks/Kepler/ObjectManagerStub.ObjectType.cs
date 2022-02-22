@@ -36,7 +36,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 });
 
             Mock.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(
-                    q => IsObjectTypeQuery(q) && q.Condition == $"'DescriptorArtifactTypeID' IN [{Const.LDAP._ENTITY_TYPE_ARTIFACT_ID}]"), It.IsAny<int>(), It.IsAny<int>()))
+                    q => IsObjectTypeQuery(q) && q.Condition == $"'DescriptorArtifactTypeID' IN [{Const.ArtifactTypesIds.ENTITY_TYPE_ARTIFACT_ID}]"), It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(new QueryResult
                 {
                     Objects = new List<RelativityObject>()

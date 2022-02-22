@@ -11,6 +11,7 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.IntegrationPoints.Tests.Common;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
+using static Relativity.IntegrationPoints.Tests.Integration.Const;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelpers
 {
@@ -32,7 +33,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			return integrationPoint;
 		}
 
-		public IntegrationPointTest CreateSavedSearchIntegrationPoint(WorkspaceTest destinationWorkspace)
+		public IntegrationPointTest CreateSavedSearchSyncIntegrationPoint(WorkspaceTest destinationWorkspace)
 		{
 			IntegrationPointTest integrationPoint = CreateEmptyIntegrationPoint();
 
@@ -40,7 +41,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 			SavedSearchTest sourceSavedSearch = Workspace.SavedSearches.First();
 
-			IntegrationPointTypeTest integrationPointType = Workspace.IntegrationPointTypes.First(x => x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString());
+			IntegrationPointTypeTest integrationPointType = Workspace.IntegrationPointTypes.First(x => 
+				x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString());
 
 			SourceProviderTest sourceProvider = Workspace.SourceProviders.First(x =>
 				x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY);
@@ -48,7 +50,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			DestinationProviderTest destinationProvider = Workspace.DestinationProviders.First(x =>
 				x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
 
-			List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMapping(destinationWorkspace);
+			List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMapping(destinationWorkspace, (int)ArtifactType.Document);
 
 			integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
 			integrationPoint.SourceConfiguration = _serializer.Serialize(new SourceConfiguration
@@ -63,7 +65,57 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 				ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
 				FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
 				ArtifactTypeId = (int) ArtifactType.Document,
+				DestinationArtifactTypeId = (int) ArtifactType.Document,
 				DestinationFolderArtifactId = destinationFolder.ArtifactId,
+				CaseArtifactId = destinationWorkspace.ArtifactId,
+				WebServiceURL = @"//some/service/url/relativity"
+			});
+			integrationPoint.SourceProvider = sourceProvider.ArtifactId;
+			integrationPoint.EnableScheduler = true;
+			integrationPoint.ScheduleRule = ScheduleRuleTest.CreateWeeklyRule(
+					new DateTime(2021, 3, 20), new DateTime(2021, 3, 30), TimeZoneInfo.Utc, DaysOfWeek.Friday)
+				.Serialize();
+			integrationPoint.DestinationProvider = destinationProvider.ArtifactId;
+			integrationPoint.Type = integrationPointType.ArtifactId;
+
+			return integrationPoint;
+		}
+
+		public IntegrationPointTest CreateNonDocumentSyncIntegrationPoint(WorkspaceTest destinationWorkspace)
+		{
+			int artifactTypeId = ArtifactTypesIds.ENTITY_TYPE_ARTIFACT_ID;
+
+			IntegrationPointTest integrationPoint = CreateEmptyIntegrationPoint();
+
+			FolderTest destinationFolder = destinationWorkspace.Folders.First();
+
+			ViewTest sourceView = Workspace.Views.First();
+
+			IntegrationPointTypeTest integrationPointType = Workspace.IntegrationPointTypes.First(x => 
+				x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString());
+
+			SourceProviderTest sourceProvider = Workspace.SourceProviders.First(x =>
+				x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY);
+
+			DestinationProviderTest destinationProvider = Workspace.DestinationProviders.First(x =>
+				x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
+
+			List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMapping(destinationWorkspace, artifactTypeId);
+
+			integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
+			integrationPoint.SourceConfiguration = _serializer.Serialize(new SourceConfiguration
+			{
+				SourceWorkspaceArtifactId = Workspace.ArtifactId,
+				TargetWorkspaceArtifactId = destinationWorkspace.ArtifactId,
+				TypeOfExport = SourceConfiguration.ExportType.View,
+				SourceViewId = sourceView.ArtifactId,
+			});
+            integrationPoint.DestinationConfiguration = _serializer.Serialize(new ImportSettings
+            {
+				ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
+				FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
+				ArtifactTypeId = artifactTypeId,
+				DestinationArtifactTypeId = artifactTypeId,
 				CaseArtifactId = destinationWorkspace.ArtifactId,
 				WebServiceURL = @"//some/service/url/relativity"
 			});
@@ -119,7 +171,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			return integrationPoint;
 		}
 
-		public IntegrationPointTest CreateImportDocumentLoadFileIntegrationPoint(string loadFile)
+        public IntegrationPointTest CreateImportDocumentLoadFileIntegrationPoint(string loadFile)
 		{
 			IntegrationPointTest integrationPoint = CreateEmptyIntegrationPoint();
 
@@ -219,7 +271,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 			ImportSettings destinationConfiguration = new ImportSettings
 			{
-				ArtifactTypeId = Const.LDAP._ENTITY_TYPE_ARTIFACT_ID,
+				ArtifactTypeId = Const.ArtifactTypesIds.ENTITY_TYPE_ARTIFACT_ID,
 				DestinationProviderType = destinationProvider.Identifier,
 				EntityManagerFieldContainsLink = linkEntityManagers,
 				CaseArtifactId = Workspace.ArtifactId,
@@ -244,7 +296,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 		public kCura.IntegrationPoints.Core.Models.IntegrationPointModel CreateSavedSearchIntegrationPointModel(WorkspaceTest destinationWorkspace)
         {
-			IntegrationPointTest integrationPoint = CreateSavedSearchIntegrationPoint(destinationWorkspace);
+			IntegrationPointTest integrationPoint = CreateSavedSearchSyncIntegrationPoint(destinationWorkspace);
 			return new kCura.IntegrationPoints.Core.Models.IntegrationPointModel
             {
 				Name = integrationPoint.Name,

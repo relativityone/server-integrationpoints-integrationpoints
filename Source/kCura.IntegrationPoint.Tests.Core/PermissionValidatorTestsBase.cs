@@ -15,77 +15,85 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	internal static class ValidationResultExtensions
-	{
-		internal static void Check(this ValidationResult result, bool expected)
-		{
-			Assert.That(result.IsValid, Is.EqualTo(expected));
+    internal static class ValidationResultExtensions
+    {
+        internal static void Check(this ValidationResult result, bool expected)
+        {
+            Assert.That(result.IsValid, Is.EqualTo(expected));
 
-			if (expected)
-			{
-				Assert.That(result.MessageTexts.Count, Is.Zero);
-			}
-			else
-			{
-				Assert.That(result.MessageTexts.Count, Is.Positive);
-			}
-		}
-	}
+            if (expected)
+            {
+                Assert.That(result.MessageTexts.Count, Is.Zero);
+            }
+            else
+            {
+                Assert.That(result.MessageTexts.Count, Is.Positive);
+            }
+        }
+    }
 
-	public class PermissionValidatorTestsBase : TestBase
-	{
-		protected const int _SOURCE_WORKSPACE_ID = 100532;
-		protected const int _DESTINATION_WORKSPACE_ID = 349234;
-		protected const int INTEGRATION_POINT_ID = 101323;
-		protected const int _ARTIFACT_TYPE_ID = 1232;
-		protected const int _SOURCE_PROVIDER_ID = 39309;
-		protected const int _DESTINATION_PROVIDER_ID = 42042;
-		protected const int _SAVED_SEARCH_ID = 9492;
-		protected Guid _SOURCE_PROVIDER_GUID = ObjectTypeGuids.SourceProviderGuid;
-		protected Guid _DESTINATION_PROVIDER_GUID = ObjectTypeGuids.DestinationProviderGuid;
+    public class PermissionValidatorTestsBase : TestBase
+    {
+        protected const int _SOURCE_WORKSPACE_ID = 100532;
+        protected const int _DESTINATION_WORKSPACE_ID = 349234;
+        protected const int INTEGRATION_POINT_ID = 101323;
+        protected const int _ARTIFACT_TYPE_ID = 1232;
+        protected const int _DESTINATION_ARTIFACT_TYPE_ID = 1233;
+        protected const int _SOURCE_PROVIDER_ID = 39309;
+        protected const int _DESTINATION_PROVIDER_ID = 42042;
+        protected const int _SAVED_SEARCH_ID = 9492;
+        protected Guid _SOURCE_PROVIDER_GUID = ObjectTypeGuids.SourceProviderGuid;
+        protected Guid _DESTINATION_PROVIDER_GUID = ObjectTypeGuids.DestinationProviderGuid;
 
-		protected IRepositoryFactory _repositoryFactory;
-		protected IPermissionRepository _sourcePermissionRepository;
-		protected IPermissionRepository _destinationPermissionRepository;
-		protected ISerializer _serializer;
-		protected IServiceContextHelper ServiceContextHelper;
-		protected IntegrationPointProviderValidationModel _validationModel;
+        protected IRepositoryFactory _repositoryFactory;
+        protected IPermissionRepository _sourcePermissionRepository;
+        protected IPermissionRepository _destinationPermissionRepository;
+        protected ISerializer _serializer;
+        protected IServiceContextHelper ServiceContextHelper;
+        protected IntegrationPointProviderValidationModel _validationModel;
 
-		[SetUp]
-		public override void SetUp()
-		{
-			_repositoryFactory = Substitute.For<IRepositoryFactory>();
-			_sourcePermissionRepository = Substitute.For<IPermissionRepository>();
-			_destinationPermissionRepository = Substitute.For<IPermissionRepository>();
-			ServiceContextHelper = Substitute.For<IServiceContextHelper>();
-			ServiceContextHelper.WorkspaceID.Returns(_SOURCE_WORKSPACE_ID);
-			_repositoryFactory.GetPermissionRepository(Arg.Is(_SOURCE_WORKSPACE_ID)).Returns(_sourcePermissionRepository);
-			_repositoryFactory.GetPermissionRepository(Arg.Is(_DESTINATION_WORKSPACE_ID)).Returns(_destinationPermissionRepository);
-			_serializer = Substitute.For<ISerializer>();
+        [SetUp]
+        public override void SetUp()
+        {
+            _repositoryFactory = Substitute.For<IRepositoryFactory>();
+            _sourcePermissionRepository = Substitute.For<IPermissionRepository>();
+            _destinationPermissionRepository = Substitute.For<IPermissionRepository>();
+            ServiceContextHelper = Substitute.For<IServiceContextHelper>();
+            ServiceContextHelper.WorkspaceID.Returns(_SOURCE_WORKSPACE_ID);
+            _repositoryFactory.GetPermissionRepository(Arg.Is(_SOURCE_WORKSPACE_ID)).Returns(_sourcePermissionRepository);
+            _repositoryFactory.GetPermissionRepository(Arg.Is(_DESTINATION_WORKSPACE_ID)).Returns(_destinationPermissionRepository);
+            _serializer = Substitute.For<ISerializer>();
 
-			_validationModel = new IntegrationPointProviderValidationModel()
-			{
-				ArtifactId = INTEGRATION_POINT_ID,
-				SourceConfiguration = $"{{ \"SavedSearchArtifactId\":{_SAVED_SEARCH_ID}, \"SourceWorkspaceArtifactId\":{_SOURCE_WORKSPACE_ID}, \"TargetWorkspaceArtifactId\":{_DESTINATION_WORKSPACE_ID} }}",
-				DestinationConfiguration = $"{{ \"artifactTypeID\": {_ARTIFACT_TYPE_ID} }}",
-				SourceProviderArtifactId = _SOURCE_PROVIDER_ID,
-				DestinationProviderArtifactId = _DESTINATION_PROVIDER_ID,
-				ObjectTypeGuid = Guid.Empty
-			};
+            _validationModel = new IntegrationPointProviderValidationModel()
+            {
+                ArtifactId = INTEGRATION_POINT_ID,
+                SourceConfiguration = $"{{ \"SavedSearchArtifactId\":{_SAVED_SEARCH_ID}, \"SourceWorkspaceArtifactId\":{_SOURCE_WORKSPACE_ID}, \"TargetWorkspaceArtifactId\":{_DESTINATION_WORKSPACE_ID} }}",
+                DestinationConfiguration = $"{{ \"artifactTypeID\": {_ARTIFACT_TYPE_ID} }}",
+                SourceProviderArtifactId = _SOURCE_PROVIDER_ID,
+                DestinationProviderArtifactId = _DESTINATION_PROVIDER_ID,
+                ObjectTypeGuid = Guid.Empty
+            };
 
-			_serializer.Deserialize<SourceConfiguration>(_validationModel.SourceConfiguration)
-				.Returns(new SourceConfiguration
-				{
-					SavedSearchArtifactId = _SAVED_SEARCH_ID,
-					SourceWorkspaceArtifactId = _SOURCE_WORKSPACE_ID,
-					TargetWorkspaceArtifactId = _DESTINATION_WORKSPACE_ID
-				});
+            _serializer.Deserialize<SourceConfiguration>(_validationModel.SourceConfiguration)
+                .Returns(new SourceConfiguration
+                {
+                    SavedSearchArtifactId = _SAVED_SEARCH_ID,
+                    SourceWorkspaceArtifactId = _SOURCE_WORKSPACE_ID,
+                    TargetWorkspaceArtifactId = _DESTINATION_WORKSPACE_ID
+                });
 
-			_serializer.Deserialize<DestinationConfiguration>(_validationModel.DestinationConfiguration)
-				.Returns(new DestinationConfiguration { ArtifactTypeId = _ARTIFACT_TYPE_ID });
+            _serializer.Deserialize<DestinationConfiguration>(_validationModel.DestinationConfiguration)
+                .Returns(new DestinationConfiguration
+                {
+                    ArtifactTypeId = _ARTIFACT_TYPE_ID,
+                });
 
-			_serializer.Deserialize<DestinationConfigurationPermissionValidationModel>(_validationModel.DestinationConfiguration)
-				.Returns(new DestinationConfigurationPermissionValidationModel { ArtifactTypeId = _ARTIFACT_TYPE_ID });
-		}
-	}
+            _serializer.Deserialize<DestinationConfigurationPermissionValidationModel>(_validationModel.DestinationConfiguration)
+                .Returns(new DestinationConfigurationPermissionValidationModel
+                {
+                    ArtifactTypeId = _ARTIFACT_TYPE_ID,
+                    DestinationArtifactTypeId = _DESTINATION_ARTIFACT_TYPE_ID
+                });
+        }
+    }
 }

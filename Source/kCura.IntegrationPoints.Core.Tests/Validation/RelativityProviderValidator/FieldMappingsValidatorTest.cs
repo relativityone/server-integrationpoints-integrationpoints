@@ -6,8 +6,6 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts;
-using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
@@ -22,6 +20,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 		private IValidator _instance;
 		private IFieldManager _sourceFieldManager;
 		private IFieldManager _targetFieldManager;
+		private const int _DOCUMENT_ARTIFACT_TYPE_ID = 10;
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 1074540;
 		private const int _TARGET_WORKSPACE_ARTIFACT_ID = 1075642;
 		private readonly string SourceConfiguration = "{\"SourceWorkspaceArtifactId\":\"" + _SOURCE_WORKSPACE_ARTIFACT_ID + "\",\"TargetWorkspaceArtifactId\":" + _TARGET_WORKSPACE_ARTIFACT_ID + "}";
@@ -326,8 +325,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 
 		private void SetReturnValue(IFieldManager fieldManager, int workspaceId, List<ArtifactDTO> fieldArtifacts)
 		{
-			const int artifactTypeDocument = 10;
-			fieldManager.RetrieveFields(artifactTypeDocument,
+			fieldManager.RetrieveFields(workspaceId, _DOCUMENT_ARTIFACT_TYPE_ID,
 				new HashSet<string>(new[]
 				{
 					RelativityProviderValidationMessages.FIELD_MAP_FIELD_NAME,

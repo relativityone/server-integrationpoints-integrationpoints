@@ -204,5 +204,5 @@ namespace kCura.IntegrationPoints.Data.Factories
 		IAuditRepository GetAuditRepository(int workspaceArtifactId);
 
 		ICaseRepository GetCaseRepository();
-	}
+    }
 }

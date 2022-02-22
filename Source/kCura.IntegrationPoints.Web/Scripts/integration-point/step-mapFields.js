@@ -576,26 +576,15 @@ ko.validation.insertValidationMessage = function (element) {
 
 		function getSyncDestinationFields() {
 
-			var sourceArtifactTypeId = destinationModel.artifactTypeID;
 			var destinationWorkspaceId = destinationModel.CaseArtifactId;
+			var destinationArtifactTypeId = destinationModel.DestinationArtifactTypeId;
 
-			return IP.data.ajax({
-				type: "GET",
-				url: IP.utils.generateWebAPIURL("ObjectType/GetArtifactTypeId", destinationWorkspaceId, sourceArtifactTypeId)
-			})
-			.then(function(destinationArtifactTypeIdValue) {
-				self.destinationArtifactTypeId = destinationArtifactTypeIdValue;
-				return root.data.ajax({
-					type: 'GET',
-					url: root.utils.generateWebURL(destinationWorkspaceId + '/api/FieldMappings/GetMappableFieldsFromDestinationWorkspace/' + destinationArtifactTypeIdValue)
-				}).then(function (result) {
-					return result;
-				});
-			})
-			.fail(function(error){
-				console.error("Failed to check if Object Type exists in workspace: " + error);
-			});
-			
+			return root.data.ajax({
+				type: 'GET',
+				url: root.utils.generateWebURL(destinationWorkspaceId + '/api/FieldMappings/GetMappableFieldsFromDestinationWorkspace/' + destinationArtifactTypeId)
+			}).then(function (result) {
+				return result;
+			});			
 		}
 
 		var sourceFieldPromise =
@@ -1355,7 +1344,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 					var validateMappedFields = root.data.ajax({
 						type: 'POST',
-						url: root.utils.generateWebAPIURL('FieldMappings/Validate', _destination.CaseArtifactId, this.returnModel.destinationProviderGuid, this.returnModel.artifactTypeID, this.model.destinationArtifactTypeId),
+						url: root.utils.generateWebAPIURL('FieldMappings/Validate', _destination.CaseArtifactId, this.returnModel.destinationProviderGuid, this.returnModel.artifactTypeID, _destination.DestinationArtifactTypeId),
 						data: JSON.stringify(map)
 					})
 						.fail(function (error) {

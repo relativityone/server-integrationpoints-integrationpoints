@@ -18,13 +18,14 @@ namespace kCura.IntegrationPoints.Core.Managers
 		/// </summary>
 		/// <returns>An array of ArtifactFieldDTOs</returns>
 		ArtifactFieldDTO[] RetrieveBeginBatesFields(int workspaceArtifactId);
-		
+
 		/// <summary>
 		/// Retrieves fields for Document object
 		/// </summary>
 		/// <param name="workspaceId">Artifact id of workspace</param>
+		/// <param name="artifactTypeId">Artifact ID of the object type</param>
 		/// <param name="fieldNames">The names of the fields to retrieve for the field artifact</param>
 		/// <returns>An array of ArtifactDTO with populated fields for Document</returns>
-		ArtifactDTO[] RetrieveFields(int workspaceId, HashSet<string> fieldNames);
+		ArtifactDTO[] RetrieveFields(int workspaceId, int artifactTypeId, HashSet<string> fieldNames);
 	}
 }

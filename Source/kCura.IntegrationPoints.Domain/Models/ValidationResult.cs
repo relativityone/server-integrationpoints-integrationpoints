@@ -10,7 +10,8 @@ namespace kCura.IntegrationPoints.Domain.Models
 	/// </summary>
 	public class ValidationResult
 	{
-		private const string _MESSAGE_PREFIX = "Integration Point validation failed.";
+		private const string _MESSAGE_PREFIX_FAILED = "Integration Point validation failed.";
+		private const string _MESSAGE_PREFIX_PASSED = "Integration Point validation passed.";
 
 		private readonly List<ValidationMessage> _messages = new List<ValidationMessage>();
 
@@ -180,7 +181,8 @@ namespace kCura.IntegrationPoints.Domain.Models
 		{
 			IEnumerable<string> messageStrings = _messages.Select(m => m.ToString());
 			string resultMessage = string.Join(Environment.NewLine, messageStrings);
-			return $"{_MESSAGE_PREFIX}{Environment.NewLine}{resultMessage}";
+			string prefix = IsValid ? _MESSAGE_PREFIX_PASSED : _MESSAGE_PREFIX_FAILED;
+			return $"{prefix}{Environment.NewLine}{resultMessage}";
 		}
 	}
 }

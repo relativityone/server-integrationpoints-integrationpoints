@@ -24,10 +24,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			savedSearchRepositoryMock.RetrieveSavedSearch(_SAVED_SEARCH_ID)
 				.Returns(savedSearch);
 			IAPILog logger = Substitute.For<IAPILog>();
-			var validator = new SavedSearchValidator(logger, savedSearchRepositoryMock, _SAVED_SEARCH_ID);
+			var validator = new SavedSearchValidator(logger, savedSearchRepositoryMock);
 
 			// act
-			var actual = validator.Validate(0);
+			var actual = validator.Validate(_SAVED_SEARCH_ID);
 
 			// assert
 			Assert.IsTrue(actual.IsValid);
@@ -45,10 +45,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 				.Returns(savedSearch);
 
 			IAPILog logger = Substitute.For<IAPILog>();
-			var validator = new SavedSearchValidator(logger, savedSearchRepositoryMock, _SAVED_SEARCH_ID);
+			var validator = new SavedSearchValidator(logger, savedSearchRepositoryMock);
 
 			// act
-			var actual = validator.Validate(0);
+			var actual = validator.Validate(_SAVED_SEARCH_ID);
 
 			// assert
 			Assert.IsFalse(actual.IsValid);
@@ -67,10 +67,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 				.Returns(savedSearch);
 
 			IAPILog logger = Substitute.For<IAPILog>();
-			var validator = new SavedSearchValidator(logger, savedSearchRepositoryMock, _SAVED_SEARCH_ID);
+			var validator = new SavedSearchValidator(logger, savedSearchRepositoryMock);
 
 			// act
-			var actual = validator.Validate(0);
+			var actual = validator.Validate(_SAVED_SEARCH_ID);
 
 			// assert
 			Assert.IsFalse(actual.IsValid);
