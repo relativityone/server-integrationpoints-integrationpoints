@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Extensions;
 using Relativity.API;
 using Relativity.Services.Objects;
@@ -15,10 +16,12 @@ namespace kCura.IntegrationPoints.RelativitySync
 	internal class JobHistorySyncService : IJobHistorySyncService
 	{
 		private readonly IHelper _helper;
+        private readonly IRelativityObjectManager _relativityObjectManager;
 
-		public JobHistorySyncService(IHelper helper)
+        public JobHistorySyncService(IHelper helper, IRelativityObjectManager relativityObjectManager)
 		{
 			_helper = helper;
+			_relativityObjectManager = relativityObjectManager;
 		}
 
 		public async Task<RelativityObject> GetLastJobHistoryWithErrorsAsync(int workspaceID,
@@ -193,7 +196,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		private static async Task<bool> HasErrorsAsync(IExtendedJob job, IObjectManager manager)
+		private async Task<bool> HasErrorsAsync(IExtendedJob job, IObjectManager manager)
 		{
 			QueryRequest request = new QueryRequest
 			{
@@ -201,8 +204,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 				Condition =
 					$"('{Data.JobHistoryErrorFields.JobHistory}' IN OBJECT [{job.JobHistoryId}]) AND ('{Data.JobHistoryErrorFields.ErrorType}' == CHOICE {ErrorTypeChoices.JobHistoryErrorItem.Guids[0]})"
 			};
-			QueryResult queryResult = await manager.QueryAsync(job.WorkspaceId, request, 0, 1).ConfigureAwait(false);
-			return queryResult.ResultCount > 0;
+			QueryResult itemLevelErrors = await manager.QueryAsync(job.WorkspaceId, request, 0, 1).ConfigureAwait(false);
+
+			JobHistory jobHistory = _relativityObjectManager.Read<JobHistory>(job.JobHistoryId, ExecutionIdentity.System);
+
+			return itemLevelErrors.ResultCount > 0 || jobHistory.ItemsWithErrors > 0;
 		}
 
 		private static Task MarkJobAsFailedAsync(IExtendedJob job, IObjectManager manager)
