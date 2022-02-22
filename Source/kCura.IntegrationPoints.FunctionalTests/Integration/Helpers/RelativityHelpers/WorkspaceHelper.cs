@@ -54,7 +54,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 				IsIdentifier = false,
 				Name = "Overwrite Fields"
 			});
-			
+
 			workspace.ObjectTypes.Add(new ObjectTypeTest
 				{
 					Name = Const.Entity._ENTITY_OBJECT_NAME,
@@ -93,14 +93,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 				IsIdentifier = false,
 				Name = "Full Name"
 			});
-			workspace.Fields.Add(new FieldTest(Const.OVERWRITE_FIELD_ARTIFACT_ID)
-			{
-				ObjectTypeId = (int)ArtifactType.Document,
-				Guid = IntegrationPointProfileFieldGuids.OverwriteFieldsGuid,
-				IsIdentifier = false,
-				Name = "Overwrite Fields"
-			});
-            workspace.Fields.Add(new FieldTest
+			workspace.Fields.Add(new FieldTest
 			{
 				ObjectTypeId = _artifactTypeIdEntity,
 				Guid = new Guid(EntityFieldGuids.Manager),
@@ -125,7 +118,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 
             workspace.Documents.Add(new DocumentTest(fields)
             {
-                ParenObjectArtifactId = folder.ArtifactId,
+                ParentObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
                 HasImages = true,
                 HasNatives = true,
@@ -134,7 +127,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 
 			workspace.Documents.Add(new DocumentTest(fields)
             {
-                ParenObjectArtifactId = folder.ArtifactId,
+                ParentObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
                 HasImages = true,
                 HasNatives = true,
@@ -143,7 +136,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 
             workspace.Documents.Add(new DocumentTest(fields)
             {
-                ParenObjectArtifactId = folder.ArtifactId,
+                ParentObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
                 HasImages = true,
                 HasNatives = false,
@@ -152,7 +145,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 
 			workspace.Documents.Add(new DocumentTest(fields)
 			{
-				ParenObjectArtifactId = folder.ArtifactId,
+				ParentObjectArtifactId = folder.ArtifactId,
 				FolderName = folder.Name,
 				HasImages = true,
 				HasNatives = false,
@@ -161,7 +154,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 
             workspace.Documents.Add(new DocumentTest(fields)
             {
-                ParenObjectArtifactId = folder.ArtifactId,
+                ParentObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
                 HasImages = false,
                 HasNatives = false,
@@ -170,7 +163,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 
             workspace.Documents.Add(new DocumentTest(fields)
             {
-                ParenObjectArtifactId = folder.ArtifactId,
+                ParentObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
                 HasImages = false,
                 HasNatives = false,
@@ -179,7 +172,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 
             workspace.Documents.Add(new DocumentTest
 			{
-				ParenObjectArtifactId = folder.ArtifactId,
+				ParentObjectArtifactId = folder.ArtifactId,
 				FolderName = folder.Name,
 				HasImages = true,
 				HasNatives = false,
@@ -188,7 +181,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 
             workspace.Documents.Add(new DocumentTest
             {
-                ParenObjectArtifactId = folder.ArtifactId,
+                ParentObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
                 HasImages = true,
                 HasNatives = false,
@@ -197,7 +190,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 
 			workspace.Documents.Add(new DocumentTest(fields)
             {
-                ParenObjectArtifactId = folder.ArtifactId,
+                ParentObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
                 HasImages = true,
                 HasNatives = false,
@@ -206,7 +199,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 
 			workspace.Documents.Add(new DocumentTest(fields)
             {
-                ParenObjectArtifactId = folder.ArtifactId,
+                ParentObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
                 HasImages = false,
                 HasNatives = true,
@@ -214,7 +207,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 
             workspace.Documents.Add(new DocumentTest
             {
-                ParenObjectArtifactId = folder.ArtifactId,
+                ParentObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
                 HasImages = false,
                 HasNatives = true,
@@ -222,7 +215,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 
             workspace.Documents.Add(new DocumentTest
             {
-                ParenObjectArtifactId = folder.ArtifactId,
+                ParentObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
                 HasImages = false,
                 HasNatives = true,
@@ -230,7 +223,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
 
             workspace.Documents.Add(new DocumentTest
             {
-                ParenObjectArtifactId = folder.ArtifactId,
+                ParentObjectArtifactId = folder.ArtifactId,
                 FolderName = folder.Name,
                 HasImages = false,
                 HasNatives = false,
@@ -271,7 +264,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
         {
             SavedSearchTest savedSearch = new SavedSearchTest(searchCriteria)
             {
-                ParenObjectArtifactId = workspace.ArtifactId
+                ParentObjectArtifactId = workspace.ArtifactId
             };
 
             workspace.SavedSearches.Add(savedSearch);
