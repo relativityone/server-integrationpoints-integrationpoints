@@ -12,11 +12,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public class ImportSettings
 	{
+		private int _destinationArtifactTypeId;
+
 		public const string FIELDOVERLAYBEHAVIOR_DEFAULT = "Use Field Settings";
 		public const string FIELDOVERLAYBEHAVIOR_MERGE = "Merge Values";
 		public const string FIELDOVERLAYBEHAVIOR_REPLACE = "Replace Values";
 
-		public ImportSettings()
+        public ImportSettings()
 		{
 			ImportAuditLevel = ImportAuditLevelEnum.FullAudit;
 			ExtractedTextFieldContainsFilePath = false;
@@ -31,7 +33,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		[JsonProperty(PropertyName = "artifactTypeID")]
 		public int ArtifactTypeId { get; set; }
 
-        public int DestinationArtifactTypeId { get; set; }
+		/// <summary>
+		/// Specifies Artifact Type ID of the destination object type. If the value is not set and equals to 0, then it returns the value of <see cref="ArtifactTypeId"/>
+		/// (to preserve backwards compatibility after implementing non-document object transfer in Sync)
+		/// </summary>
+        public int DestinationArtifactTypeId
+        {
+            get { return _destinationArtifactTypeId == 0 ? ArtifactTypeId : _destinationArtifactTypeId; }
+            set { _destinationArtifactTypeId = value; }
+        }
 
         public string BulkLoadFileFieldDelimiter { get; set; }
 		public int CaseArtifactId { get; set; }
