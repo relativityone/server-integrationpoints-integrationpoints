@@ -7,7 +7,7 @@
 	///         1) have logs for this application sent to the Splunk sink;
 	///         2) have the log level for this application set to at least Information.
 	/// </summary>
-	internal sealed class SplunkSyncMetricsSink : ISyncMetricsSink
+	internal sealed class SplunkSyncMetricsSink : SyncMetricsSinkBase, ISyncMetricsSink
 	{
 		private readonly ISyncLog _logger;
 
@@ -18,6 +18,7 @@
 		public SplunkSyncMetricsSink(ISyncLog logger)
 		{
 			_logger = logger;
+            Sink = this;
 		}
 
 		/// <inheritdoc />

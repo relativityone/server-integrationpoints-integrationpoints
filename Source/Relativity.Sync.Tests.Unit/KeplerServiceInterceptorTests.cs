@@ -27,6 +27,7 @@ namespace Relativity.Sync.Tests.Unit
 
 		private Mock<IStubForInterception> _stubForInterceptionMock;
 		private Mock<Func<Task<IStubForInterception>>> _stubForInterceptionFactoryFake;
+		private Mock<SyncMetricsBase> _syncMetricsBaseMock;
 		private Mock<ISyncMetrics> _syncMetricsMock;
 		private Mock<ISyncLog> _syncLogMock;
 		private Mock<IRandom> _randomFake;
@@ -41,8 +42,9 @@ namespace Relativity.Sync.Tests.Unit
 			_stubForInterceptionMock = new Mock<IStubForInterception>();
 			_stubForInterceptionFactoryFake = new Mock<Func<Task<IStubForInterception>>>();
 			_stubForInterceptionFactoryFake.Setup(x => x()).Returns(Task.FromResult(_stubForInterceptionMock.Object));
-			
-			_syncMetricsMock = new Mock<ISyncMetrics>();
+
+            _syncMetricsBaseMock = new Mock<SyncMetricsBase>();
+            _syncMetricsMock = new Mock<ISyncMetrics>();
 			_syncLogMock = new Mock<ISyncLog>();
 			_randomFake = new Mock<IRandom>();
 
@@ -50,7 +52,8 @@ namespace Relativity.Sync.Tests.Unit
 			stopwatchFake.Setup(x => x.Elapsed).Returns(_executionTime);
 			Func<IStopwatch> stopwatchFactory = new Func<IStopwatch>(() => stopwatchFake.Object);
 
-			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(_syncMetricsMock.Object, stopwatchFactory, _randomFake.Object, _syncLogMock.Object);
+            _syncMetricsBaseMock.Setup(x => x.SyncMetricsValue).Returns(_syncMetricsMock.Object);
+			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(_syncMetricsBaseMock.Object, stopwatchFactory, _randomFake.Object, _syncLogMock.Object);
 			_sut = dynamicProxyFactory.WrapKeplerService(_stubForInterceptionMock.Object, _stubForInterceptionFactoryFake.Object);
 			const int delayBaseMs = 0;
 			SetMillisecondsDelayBetweenHttpRetriesBase(_sut, delayBaseMs);
@@ -379,7 +382,7 @@ namespace Relativity.Sync.Tests.Unit
 			Mock<IStopwatch> stopwatchFake = new Mock<IStopwatch>();
 			stopwatchFake.Setup(x => x.Elapsed).Returns(_executionTime);
 			Func<IStopwatch> stopwatchFactory = new Func<IStopwatch>(() => stopwatchFake.Object);
-			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(_syncMetricsMock.Object, stopwatchFactory, _randomFake.Object, new EmptyLogger());
+			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(_syncMetricsBaseMock.Object, stopwatchFactory, _randomFake.Object, new EmptyLogger());
 			IStubForInterception instance = dynamicProxyFactory.WrapKeplerService(badService.Object, ServiceFactory);
 
 			// ACT

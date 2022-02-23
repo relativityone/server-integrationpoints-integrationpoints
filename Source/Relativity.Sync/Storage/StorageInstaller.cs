@@ -49,6 +49,7 @@ namespace Relativity.Sync.Storage
 			RegisterNonDocumentFlowComponents(builder);
 
 			builder.Register(CreateConfiguration).As<IConfiguration>().SingleInstance();
+			builder.Register(CreateConfigurationInstance).As<ConfigurationBase>().SingleInstance();
 		}
 
 		private void RegisterNonDocumentFlowComponents(ContainerBuilder builder)
@@ -58,11 +59,16 @@ namespace Relativity.Sync.Storage
 			builder.RegisterType<NonDocumentJobStartMetricsConfiguration>().AsImplementedInterfaces();
 		}
 
+        private Configuration CreateConfigurationInstance(IComponentContext componentContext)
+        {
+            return (Configuration)CreateConfiguration(componentContext);
+        }
+
 		private IConfiguration CreateConfiguration(IComponentContext componentContext)
 		{
 			SyncJobParameters syncJobParameters = componentContext.Resolve<SyncJobParameters>();
 			ISyncLog logger = componentContext.Resolve<ISyncLog>();
-			IRdoManager rdoManager = componentContext.Resolve<IRdoManager>();
+            RdoManagerBase rdoManager = componentContext.Resolve<RdoManagerBase>();
 			
 			return Configuration.GetAsync(syncJobParameters, logger, new SemaphoreSlimWrapper(new SemaphoreSlim(1)), rdoManager).ConfigureAwait(false).GetAwaiter().GetResult();
 		}

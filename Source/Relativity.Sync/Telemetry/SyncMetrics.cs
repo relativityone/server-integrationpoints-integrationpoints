@@ -6,21 +6,23 @@ namespace Relativity.Sync.Telemetry
 	/// <summary>
 	///     Entry point for logging metrics. Dispatches metrics to registered <see cref="ISyncMetricsSink" />s for processing.
 	/// </summary>
-	internal class SyncMetrics : ISyncMetrics
+	internal class SyncMetrics : SyncMetricsBase, ISyncMetrics
 	{
-		private readonly IEnumerable<ISyncMetricsSink> _sinks;
+		private readonly IEnumerable<SyncMetricsSinkBase> _sinks;
 		private readonly IMetricsConfiguration _metricsConfiguration;
+        public sealed override ISyncMetrics SyncMetricsValue { get; set; }
 
 		/// <summary>
 		///     Creates a new instance of <see cref="SyncMetrics" /> with the given sinks.
 		/// </summary>
 		/// <param name="sinks">Sinks to which metrics should be sent</param>
 		/// <param name="metricsConfiguration">Metrics configuration.</param>
-		public SyncMetrics(IEnumerable<ISyncMetricsSink> sinks, IMetricsConfiguration metricsConfiguration)
+		public SyncMetrics(IEnumerable<SyncMetricsSinkBase> sinks, IMetricsConfiguration metricsConfiguration)
 		{
 			_sinks = sinks;
 			_metricsConfiguration = metricsConfiguration;
-		}
+            SyncMetricsValue = this;
+        }
 
 		/// <inheritdoc />
 		public void Send(IMetric metric)
@@ -39,5 +41,5 @@ namespace Relativity.Sync.Telemetry
 				sink.Send(metric);
 			}
 		}
-	}
+    }
 }

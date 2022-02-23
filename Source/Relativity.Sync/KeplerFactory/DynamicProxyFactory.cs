@@ -8,7 +8,7 @@ namespace Relativity.Sync.KeplerFactory
 {
 	internal sealed class DynamicProxyFactory : IDynamicProxyFactory
 	{
-		private readonly ISyncMetrics _syncMetrics;
+		private readonly SyncMetricsBase _syncMetrics;
 		private readonly Func<IStopwatch> _stopwatch;
 		private readonly IRandom _random;
 		private readonly ISyncLog _logger;
@@ -19,7 +19,7 @@ namespace Relativity.Sync.KeplerFactory
 		// We also have to set disableSignedModule to true to prevent Castle from signing the dynamic proxy dll which can lead to FileLoadException
 		private static readonly ProxyGenerator _proxyGenerator = new ProxyGenerator(true);
 
-		public DynamicProxyFactory(ISyncMetrics syncMetrics, Func<IStopwatch> stopwatch, IRandom random, ISyncLog logger)
+		public DynamicProxyFactory(SyncMetricsBase syncMetrics, Func<IStopwatch> stopwatch, IRandom random, ISyncLog logger)
 		{
 			_syncMetrics = syncMetrics;
 			_stopwatch = stopwatch;
@@ -29,7 +29,7 @@ namespace Relativity.Sync.KeplerFactory
 
 		public T WrapKeplerService<T>(T keplerService, Func<Task<T>> keplerServiceFactory) where T : class
 		{
-			KeplerServiceInterceptor<T> interceptor = new KeplerServiceInterceptor<T>(_syncMetrics, _stopwatch, keplerServiceFactory, _random, _logger);
+			KeplerServiceInterceptor<T> interceptor = new KeplerServiceInterceptor<T>(_syncMetrics.SyncMetricsValue, _stopwatch, keplerServiceFactory, _random, _logger);
 			
 			return _proxyGenerator.CreateInterfaceProxyWithTargetInterface<T>(keplerService, interceptor);
 		}

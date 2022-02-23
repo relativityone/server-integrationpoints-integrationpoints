@@ -6,7 +6,7 @@ using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.Sync.Telemetry
 {
-	internal sealed class SumSyncMetricsSink : ISyncMetricsSink
+	internal sealed class SumSyncMetricsSink : SyncMetricsSinkBase, ISyncMetricsSink
 	{
 		private readonly ISyncLog _logger;
 		private readonly ISourceServiceFactoryForAdmin _servicesManager;
@@ -19,7 +19,8 @@ namespace Relativity.Sync.Telemetry
 			_workspaceGuidService = workspaceGuidService;
 			_syncJobParameters = syncJobParameters;
 			_servicesManager = servicesManager;
-		}
+            Sink = this;
+        }
 
 		public void Send(IMetric metric)
 		{

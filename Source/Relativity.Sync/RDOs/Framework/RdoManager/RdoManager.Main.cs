@@ -15,17 +15,20 @@ using Relativity.Sync.KeplerFactory;
 // ReSharper disable once CheckNamespace
 namespace Relativity.Sync.RDOs.Framework
 {
-    internal partial class RdoManager : IRdoManager
+    internal partial class RdoManager : RdoManagerBase, IRdoManager
     {
         private readonly ISyncLog _logger;
         private readonly ISourceServiceFactoryForAdmin _servicesMgr;
         private readonly IRdoGuidProvider _rdoGuidProvider;
+
+        internal sealed override IRdoManager RdoManagerValue { get; set; }
 
         public RdoManager(ISyncLog logger, ISourceServiceFactoryForAdmin servicesMgr, IRdoGuidProvider rdoGuidProvider)
         {
             _logger = logger;
             _servicesMgr = servicesMgr;
             _rdoGuidProvider = rdoGuidProvider;
+            RdoManagerValue = this;
         }
 
         public async Task CreateAsync<TRdo>(int workspaceId, TRdo rdo, int? parentObjectId = null) where TRdo : IRdoType

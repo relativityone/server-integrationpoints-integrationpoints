@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.Services.ArtifactGuid;
 using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Interfaces.Field.Models;

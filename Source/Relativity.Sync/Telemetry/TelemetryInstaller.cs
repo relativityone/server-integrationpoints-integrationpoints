@@ -17,6 +17,7 @@ namespace Relativity.Sync.Telemetry
 			builder.RegisterType<APMClient>().As<IAPMClient>();
 			builder.RegisterType<StopwatchWrapper>().As<IStopwatch>();
 			builder.RegisterType<SyncMetrics>().As<ISyncMetrics>();
+			builder.RegisterType<SyncMetrics>().As<SyncMetricsBase>();
 			builder.RegisterType<JobStatisticsContainer>().As<IJobStatisticsContainer>().SingleInstance();
 			builder.RegisterTypes(Assembly.GetExecutingAssembly().GetTypes()
 				.Where(t => !t.IsAbstract && t.IsAssignableTo<ISyncMetricsSink>())
