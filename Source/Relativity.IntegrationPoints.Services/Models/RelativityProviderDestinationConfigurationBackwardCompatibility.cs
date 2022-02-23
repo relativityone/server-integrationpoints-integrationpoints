@@ -4,6 +4,8 @@
 	{
 		public int ArtifactTypeID { get; set; }
 
+		public int DestinationArtifactTypeID { get; set; }
+
 		/// <summary>
 		///     Why do we need this?
 		/// </summary>
@@ -63,6 +65,7 @@
 			RelativityProviderSourceConfiguration sourceConfiguration, string overwriteFieldsChoice)
 		{
 			ArtifactTypeID = destinationConfiguration.ArtifactTypeID;
+			DestinationArtifactTypeID = destinationConfiguration.DestinationArtifactTypeID != 0 ? destinationConfiguration.DestinationArtifactTypeID : destinationConfiguration.ArtifactTypeID;
 			DestinationProviderType = kCura.IntegrationPoints.Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
 			CaseArtifactId = destinationConfiguration.CaseArtifactId;
 			DestinationFolderArtifactId = destinationConfiguration.DestinationFolderArtifactId;

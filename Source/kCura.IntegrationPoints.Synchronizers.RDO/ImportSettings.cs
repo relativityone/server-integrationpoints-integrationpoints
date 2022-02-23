@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		/// </summary>
         public int DestinationArtifactTypeId
         {
-            get { return _destinationArtifactTypeId == 0 ? ArtifactTypeId : _destinationArtifactTypeId; }
+            get { return _destinationArtifactTypeId != 0 ? _destinationArtifactTypeId : ArtifactTypeId; }
             set { _destinationArtifactTypeId = value; }
         }
 
