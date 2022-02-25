@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Relativity.Sync.Configuration
+﻿namespace Relativity.Sync.Configuration
 {
 	internal interface IImageJobStartMetricsConfiguration : IConfiguration
 	{
