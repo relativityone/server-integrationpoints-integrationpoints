@@ -56,6 +56,7 @@ namespace Relativity.Sync.Storage
 			builder.RegisterType<NonDocumentDataSourceSnapshotConfiguration>().AsImplementedInterfaces();
 			builder.RegisterType<ObjectLinkingSnapshotPartitionConfiguration>().As<IObjectLinkingSnapshotPartitionConfiguration>();
 			builder.RegisterType<NonDocumentJobStartMetricsConfiguration>().AsImplementedInterfaces();
+			builder.RegisterType<NonDocumentJobEndMetricsConfiguration>().AsImplementedInterfaces();
 		}
 
 		private IConfiguration CreateConfiguration(IComponentContext componentContext)
