@@ -9,6 +9,7 @@
 
 		public const string FLOW_TYPE_SAVED_SEARCH_IMAGES = "SavedSearch.Images";
 		public const string FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA = "SavedSearch.NativesAndMetadata";
+		public const string FLOW_TYPE_SAVED_SEARCH_NON_DOCUMENT_OBJECTS = "SavedSearch.NonDocumentObjects";
 		
 		public static class MetricIdentifiers
 		{

@@ -9,5 +9,7 @@
         int SourceWorkspaceArtifactId { get; }
 
         int DestinationWorkspaceArtifactId { get; }
-	}
+
+        int RdoArtifactTypeId { get; }
+    }
 }
