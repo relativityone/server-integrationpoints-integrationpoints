@@ -45,6 +45,7 @@ namespace kCura.ScheduleQueue.Core.Services
                 if (bcpFileShareInfo == null)
                 {
                     _logger.LogWarning("Skip mounting BCPPath Fileshare. Failed to retrieve BCPPath Fileshare information.");
+                    return;
                 }
 
                 using (IMigrateFileshare migrateFileShare = _fileShareAccessFactory.Create())
@@ -76,7 +77,7 @@ namespace kCura.ScheduleQueue.Core.Services
                     Condition = $"'Type' IN ['{_SQL_DISTRIBUTED_SERVER_TYPE}', '{_SQL_PRIMARY_SERVER_TYPE}'] AND 'Status' == 'Active'",
                 };
 
-                QueryResult result = await objectManager.QueryAsync(-1, queryRequest, 0, int.MaxValue).ConfigureAwait(false);
+                QueryResultSlim result = await objectManager.QuerySlimAsync(-1, queryRequest, 0, int.MaxValue).ConfigureAwait(false);
 
                 if(result == null || result.ResultCount == 0)
                 {
@@ -91,16 +92,21 @@ namespace kCura.ScheduleQueue.Core.Services
                 {
                     foreach (var obj in result.Objects)
                     {
+                        if(!string.IsNullOrEmpty(resourceServerBcpPath))
+                        {
+                            break;
+                        }
+
                         ResourceServer serverResponse = await resourceServerManager.ReadSingleAsync(obj.ArtifactID).ConfigureAwait(false);
                         if (serverResponse?.ServerType?.Name == _SQL_PRIMARY_SERVER_TYPE)
                         {
                             SqlPrimaryServerResponse sqlPrimaryResponse = await sqlPrimaryServerManager.ReadAsync(serverResponse.ArtifactID).ConfigureAwait(false);
-                            resourceServerBcpPath = sqlPrimaryResponse.BcpPath;
+                            resourceServerBcpPath = sqlPrimaryResponse?.BcpPath;
                         }
                         else if(serverResponse?.ServerType?.Name == _SQL_DISTRIBUTED_SERVER_TYPE)
                         {
                             SqlDistributedServerResponse sqlPrimaryResponse = await sqlDistributedServerManager.ReadAsync(serverResponse.ArtifactID).ConfigureAwait(false);
-                            resourceServerBcpPath = sqlPrimaryResponse.BcpPath;
+                            resourceServerBcpPath = sqlPrimaryResponse?.BcpPath;
                         }
                     }
                 }
@@ -138,12 +144,16 @@ namespace kCura.ScheduleQueue.Core.Services
                     return null;
                 }
 
-                result.Results.Select(x => x.Artifact.Name);
-
                 FileShareCredential credential = result.Results.Select(x => new FileShareCredential(x.Artifact?.SecretValues))
                     .FirstOrDefault(fs =>
                         !string.IsNullOrWhiteSpace(fs.AccountName) &&
                         fs.AccountName.StartsWith(_REL_SERVICE_NAME_PREFIX, StringComparison.OrdinalIgnoreCase));
+
+                if(credential == null)
+                {
+                    _logger.LogWarning("Credential applicable to mount BCPPath not found");
+                    return null;
+                }
 
                 fileShareInfo.AccountName = credential.AccountName;
                 fileShareInfo.AccountPassword = credential.AccountPassword;
