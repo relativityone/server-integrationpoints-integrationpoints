@@ -164,6 +164,7 @@ NUGET
       Relativity.Telemetry.Services.Interface (>= 3003.0.2)
       Relativity.Transfer.Client (>= 7.4.6 < 7.5)
     Relativity.DataGrid (14.0.0)
+    Relativity.DataMigration.MigrateFileshareAccess (0.2.0)
     Relativity.DataTransfer.Legacy.SDK (0.2.0)
     Relativity.DataTransfer.MessageService (10.2.0)
       Relativity.Kepler.Client (>= 1.0.1.445)
