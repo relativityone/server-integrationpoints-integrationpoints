@@ -3,7 +3,7 @@ strategy: min
 source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 
 //RIP packages
-nuget Relativity.IntegrationPoints.Services.Interfaces.Private 1.2.1
+nuget Relativity.IntegrationPoints.Services.Interfaces.Private 1.2.2
 nuget Relativity.IntegrationPoints.Contracts 1.0.9
 nuget Relativity.IntegrationPoints.SDK 1.0.9
 
