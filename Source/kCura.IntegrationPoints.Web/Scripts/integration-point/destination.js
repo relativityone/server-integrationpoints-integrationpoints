@@ -6,7 +6,7 @@
 	this.settings = $.extend({}, d);
 	var self = this;
 	self.disable = parentModel.hasBeenRun();
-	var relativityProviderGuid = "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
+	var relativityDestinationProviderGuid = "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
 	var loadFileProviderGuid = "1D3AD995-32C5-48FE-BAA5-5D97089C8F18";
 
 	this.loadSettings = function (settings) {
@@ -24,23 +24,29 @@
 	this.selectedDestinationType = ko.observable().extend({ required: true });
 
 	this.selectedDestinationType.subscribe(function (selectedValue) {
+
 		var destType = self.selectedDestinationTypeGuid();
 		var enableSyncNonDocumentFlow = IP.data.params['EnableSyncNonDocumentFlowToggleValue'];
-		var disableRdoSelection = destType === relativityProviderGuid && enableSyncNonDocumentFlow === false;
 
+		var disableRdoSelection = destType === relativityDestinationProviderGuid && enableSyncNonDocumentFlow === false;
 		self.isDestinationObjectDisabled(disableRdoSelection);
 		
-		if (
-			destType === loadFileProviderGuid ||
+		if (destType === loadFileProviderGuid ||
 			(typeof parentModel.source.SourceProviderConfiguration.compatibleRdoTypes === 'undefined' ||
 			parentModel.source.SourceProviderConfiguration.compatibleRdoTypes === null ||
-			enableSyncNonDocumentFlow
-			)
-		) {
-			self.rdoTypes(self.allRdoTypes());
-			if (typeof self.artifactTypeID() === 'undefined') {
-				self.artifactTypeID(parentModel.DefaultRdoTypeId);
-			}
+			enableSyncNonDocumentFlow === true)) {
+
+				var rdoTypesToDisplay = self.allRdoTypes();
+
+				if (enableSyncNonDocumentFlow && parentModel.isSyncFlow()) {
+					rdoTypesToDisplay = rdoTypesToDisplay.filter(x => x.belongsToApplication === true);
+				}
+
+				self.rdoTypes(rdoTypesToDisplay);
+
+				if (typeof self.artifactTypeID() === 'undefined') {
+					self.artifactTypeID(parentModel.DefaultRdoTypeId);
+				}
 		}
 		else {
 			if ($.isArray(parentModel.source.SourceProviderConfiguration.compatibleRdoTypes)) {
@@ -71,7 +77,7 @@
 
 	this.setRelativityAsDestinationProvider = function () {
 		var defaultRelativityProvider = self.destinationTypes().filter(function (obj) {
-			return obj.value === relativityProviderGuid;
+			return obj.value === relativityDestinationProviderGuid;
 		});
 		if (defaultRelativityProvider.length === 1) {
 			self.selectedDestinationType(defaultRelativityProvider[0].artifactID);

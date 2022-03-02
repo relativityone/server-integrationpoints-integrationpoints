@@ -5,6 +5,8 @@ using Moq;
 using NUnit.Framework;
 using Relativity;
 using Relativity.API;
+using Relativity.Services.Interfaces.ObjectType;
+using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using System.Collections.Generic;
@@ -15,14 +17,16 @@ using System.Web.Http;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
-	[TestFixture]
+	[TestFixture, Category("Unit")]
 	public class ObjectTypeControllerTests
 	{
-		private const int _WORKSPACE_ID = 111;
 		private Mock<ICPHelper> _helperMock;
 		private Mock<IObjectManager> _objectManagerMock;
+		private Mock<IObjectTypeManager> _objectTypeManagerMock;
 
 		private ObjectTypeController _sut;
+
+		private const int _WORKSPACE_ID = 111;
 
 		[SetUp]
 		public void SetUp()
@@ -30,9 +34,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			Mock<IAPILog> loggerFake = new Mock<IAPILog>();
 
 			_objectManagerMock = new Mock<IObjectManager>();
+			_objectTypeManagerMock = new Mock<IObjectTypeManager>();
 			_helperMock = new Mock<ICPHelper>();
 			_helperMock.Setup(x => x.GetLoggerFactory().GetLogger().ForContext<ObjectTypeController>()).Returns(loggerFake.Object);
 			_helperMock.Setup(x => x.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser)).Returns(_objectManagerMock.Object);
+			_helperMock.Setup(x => x.GetServicesManager().CreateProxy<IObjectTypeManager>(ExecutionIdentity.CurrentUser)).Returns(_objectTypeManagerMock.Object);
 			_sut = new ObjectTypeController(_helperMock.Object)
 			{
 				Request = new HttpRequestMessage()
@@ -143,14 +149,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		{
 			// Arrange
 			const int destinationWorkspaceId = 222;
-			const int rdoArtifactTypeId = 333;
-			const int rdoArtifactId = 444;
+			const int sourceRdoArtifactTypeId = 333;
+			const int destinationRdoArtifactTypeId = 444;
 			const string rdoName = "My RDO";
 
 			_objectManagerMock
 				.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(q =>
 					q.ObjectType.ArtifactTypeID == (int)ArtifactType.ObjectType &&
-					q.Condition == $"'Artifact Type ID' == {rdoArtifactTypeId}"), 0, 1))
+					q.Condition == $"'Artifact Type ID' == {sourceRdoArtifactTypeId}"), 0, 1))
 				.ReturnsAsync(new QueryResult()
 				{
 					Objects = new List<RelativityObject>()
@@ -162,26 +168,22 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 					}
 				});
 
-			_objectManagerMock
-				.Setup(x => x.QueryAsync(destinationWorkspaceId, It.Is<QueryRequest>(q =>
-					q.ObjectType.ArtifactTypeID == (int)ArtifactType.ObjectType &&
-					q.Condition == $"'Name' == '{rdoName}'"), 0, 1))
-				.ReturnsAsync(new QueryResult()
+			_objectTypeManagerMock
+				.Setup(x => x.GetAvailableParentObjectTypesAsync(destinationWorkspaceId))
+				.ReturnsAsync(new List<ObjectTypeIdentifier>()
 				{
-					Objects = new List<RelativityObject>()
+					new ObjectTypeIdentifier()
 					{
-						new RelativityObject()
-                        {
-							ArtifactID = rdoArtifactId
-                        }
+						Name = rdoName,
+						ArtifactTypeID = destinationRdoArtifactTypeId
 					}
 				});
 
 			// Act
-			int response = await _sut.GetDestinationArtifactTypeID(_WORKSPACE_ID, destinationWorkspaceId, rdoArtifactTypeId).ConfigureAwait(false);
+			int response = await _sut.GetDestinationArtifactTypeID(_WORKSPACE_ID, destinationWorkspaceId, sourceRdoArtifactTypeId).ConfigureAwait(false);
 
 			// Assert
-			response.Should().Be(rdoArtifactId);
+			response.Should().Be(destinationRdoArtifactTypeId);
 		}
 
 		[Test]
@@ -215,6 +217,12 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 				{
 					Objects = new List<RelativityObject>()
 				});
+
+
+			_objectTypeManagerMock
+				.Setup(x => x.GetAvailableParentObjectTypesAsync(destinationWorkspaceId))
+				.ReturnsAsync(new List<ObjectTypeIdentifier>());
+
 
 			// Act
 			int response = await _sut.GetDestinationArtifactTypeID(_WORKSPACE_ID, destinationWorkspaceId, rdoArtifactTypeId).ConfigureAwait(false);
