@@ -5,8 +5,8 @@ namespace Relativity.Sync.Storage
 {
 	internal class ObjectLinkingSnapshotPartitionConfiguration : SnapshotPartitionConfiguration, IObjectLinkingSnapshotPartitionConfiguration
 	{
-		public ObjectLinkingSnapshotPartitionConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, SyncJobExecutionConfiguration configuration, ISyncLog syncLog)
-			: base(cache, syncJobParameters, configuration, syncLog)
+		public ObjectLinkingSnapshotPartitionConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, ISyncLog syncLog)
+			: base(cache, syncJobParameters, syncLog)
 		{
 		}
 

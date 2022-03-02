@@ -9,10 +9,12 @@ namespace Relativity.Sync.Executors
     {
         private readonly ISyncLog _logger;
         private readonly IBatchRepository _batchRepository;
+        private readonly IInstanceSettings _instanceSettings;
 
-        protected SnapshotPartitionExecutorBase(IBatchRepository batchRepository, ISyncLog logger)
+        protected SnapshotPartitionExecutorBase(IBatchRepository batchRepository, IInstanceSettings instanceSettings, ISyncLog logger)
         {
             _batchRepository = batchRepository;
+            _instanceSettings = instanceSettings;
             _logger = logger;
         }
 
@@ -77,11 +79,13 @@ namespace Relativity.Sync.Executors
             return numberOfRecordsIncludedInBatches;
         }
 
-        private async Task<ExecutionResult> CreateBatchesAsync(ISnapshotPartitionConfiguration configuration,
-            int numberOfRecordsIncludedInBatches)
+        private async Task<ExecutionResult> CreateBatchesAsync(ISnapshotPartitionConfiguration configuration, int numberOfRecordsIncludedInBatches)
         {
-            Snapshot snapshot = new Snapshot(configuration.TotalRecordsCount, configuration.BatchSize,
-                numberOfRecordsIncludedInBatches);
+            int syncBatchSize = await _instanceSettings.GetSyncBatchSizeAsync().ConfigureAwait(false);
+
+            _logger.LogInformation("Sync Batch size: {syncBatchSize}", syncBatchSize);
+
+            Snapshot snapshot = new Snapshot(configuration.TotalRecordsCount, syncBatchSize, numberOfRecordsIncludedInBatches);
 
             try
             {
