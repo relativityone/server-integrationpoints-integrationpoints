@@ -7,28 +7,6 @@ namespace Relativity.Sync
 	/// </summary>
 	public sealed class SyncJobExecutionConfiguration
 	{
-		private int _batchSize = 25000;
-
-		/// <summary>
-		///     Defines size of a single batch
-		/// </summary>
-		/// <remarks>
-		///     Set to <see cref="int.MaxValue" /> to ensure only one batch
-		/// </remarks>
-		public int BatchSize
-		{
-			get => _batchSize;
-			set
-			{
-				if (value <= 0)
-				{
-					throw new ArgumentException("Batch size must be greater than 0.");
-				}
-
-				_batchSize = value;
-			}
-		}
-
 		/// <summary>
 		///     Defines how many batches can be run in parallel
 		/// </summary>

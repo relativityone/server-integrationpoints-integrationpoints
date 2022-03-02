@@ -7,8 +7,8 @@ namespace Relativity.Sync.Executors
     {
         private readonly ISyncLog _logger;
 
-        public ObjectLinkingSnapshotPartitionExecutor(IBatchRepository batchRepository, ISyncLog logger)
-            : base(batchRepository, logger)
+        public ObjectLinkingSnapshotPartitionExecutor(IBatchRepository batchRepository, IInstanceSettings instanceSettings, ISyncLog logger)
+            : base(batchRepository, instanceSettings, logger)
         {
             _logger = logger;
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Storage
@@ -11,12 +12,14 @@ namespace Relativity.Sync.Storage
 
 		private readonly IConfiguration _cache;
 		private readonly SyncJobParameters _syncJobParameters;
-		
-		public SynchronizationConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters)
+        private readonly IInstanceSettings _instanceSettings;
+
+        public SynchronizationConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, IInstanceSettings instanceSettings)
 		{
 			_cache = cache;
 			_syncJobParameters = syncJobParameters;
-		}
+            _instanceSettings = instanceSettings;
+        }
 
 		public char MultiValueDelimiter => (char) _ASCII_RECORD_SEPARATOR;
 		public char NestedValueDelimiter => (char) _ASCII_GROUP_SEPARATOR;
@@ -71,4 +74,10 @@ namespace Relativity.Sync.Storage
 
 		public Guid? ObjectLinkingSnapshotId => _cache.GetFieldValue(x => x.ObjectLinkingSnapshotId );
 	}
+
+        public async Task<int> GetImportApiBatchSizeAsync()
+        {
+            return await _instanceSettings.GetImportApiBatchSizeAsync();
+        }
+    }
 }

@@ -23,6 +23,5 @@ namespace Relativity.Sync.KeplerFactory
             T keplerService = await KeplerServiceFactory().ConfigureAwait(false);
             return _proxyFactory.WrapKeplerService(keplerService, KeplerServiceFactory);
         }
-		
     }
 }

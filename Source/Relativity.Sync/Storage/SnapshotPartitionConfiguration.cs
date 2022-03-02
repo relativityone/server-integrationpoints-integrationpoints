@@ -9,19 +9,16 @@ namespace Relativity.Sync.Storage
 
 		protected readonly IConfiguration Cache;
 
-		public SnapshotPartitionConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, SyncJobExecutionConfiguration configuration, ISyncLog syncLog)
+		public SnapshotPartitionConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, ISyncLog syncLog)
 		{
 			Cache = cache;
 			_syncLog = syncLog;
 
 			SourceWorkspaceArtifactId = syncJobParameters.WorkspaceId;
 			SyncConfigurationArtifactId = syncJobParameters.SyncConfigurationArtifactId;
-			BatchSize = configuration.BatchSize;
 		}
 
 		public int TotalRecordsCount => Cache.GetFieldValue(x => x.SnapshotRecordsCount);
-
-		public int BatchSize { get; }
 
 		public virtual Guid ExportRunId
 		{
