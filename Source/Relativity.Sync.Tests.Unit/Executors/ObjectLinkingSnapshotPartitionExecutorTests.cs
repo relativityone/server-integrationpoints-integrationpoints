@@ -13,7 +13,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public override void SetUp()
 		{
 			base.SetUp();
-            Instance = new ObjectLinkingSnapshotPartitionExecutor(BatchRepository.Object, InstanceSettings.Object, new EmptyLogger());
+            Instance = new ObjectLinkingSnapshotPartitionExecutor(BatchRepository.Object, new EmptyLogger());
 		}
 
         protected override IObjectLinkingSnapshotPartitionConfiguration GetConfiguration()
@@ -28,27 +28,25 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
         protected override IObjectLinkingSnapshotPartitionConfiguration ItShouldReturnFailureWhenUnableToCreateBatchMockConfiguration()
         {
-            InstanceSettings.Setup(x => x.GetSyncBatchSizeAsync(It.IsAny<int>())).ReturnsAsync(1);
-
             const int ten = 10;
             Mock<IObjectLinkingSnapshotPartitionConfiguration> configuration = new Mock<IObjectLinkingSnapshotPartitionConfiguration>();
 
             configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
             configuration.Setup(x => x.SyncConfigurationArtifactId).Returns(_SYNC_CONF_ID);
             configuration.Setup(x => x.TotalRecordsCount).Returns(ten);
+            configuration.Setup(x => x.GetSyncBatchSizeAsync()).ReturnsAsync(1);
 
             return configuration.Object;
         }
 
         protected override IObjectLinkingSnapshotPartitionConfiguration ItShouldCreateBatchesWhenTheyDoNotExistMockConfiguration(int items)
         {
-            InstanceSettings.Setup(x => x.GetSyncBatchSizeAsync(It.IsAny<int>())).ReturnsAsync(1);
-
             Mock<IObjectLinkingSnapshotPartitionConfiguration> configuration = new Mock<IObjectLinkingSnapshotPartitionConfiguration>();
 
             configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
             configuration.Setup(x => x.SyncConfigurationArtifactId).Returns(_SYNC_CONF_ID);
             configuration.Setup(x => x.TotalRecordsCount).Returns(items);
+            configuration.Setup(x => x.GetSyncBatchSizeAsync()).ReturnsAsync(1);
 
             return configuration.Object;
         }
@@ -58,26 +56,24 @@ namespace Relativity.Sync.Tests.Unit.Executors
             const int totalItems = 40;
             const int batchSize = 30;
 
-            InstanceSettings.Setup(x => x.GetSyncBatchSizeAsync(It.IsAny<int>())).ReturnsAsync(batchSize);
-
             Mock<IObjectLinkingSnapshotPartitionConfiguration> configuration = new Mock<IObjectLinkingSnapshotPartitionConfiguration>();
 
             configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
             configuration.Setup(x => x.SyncConfigurationArtifactId).Returns(_SYNC_CONF_ID);
             configuration.Setup(x => x.TotalRecordsCount).Returns(totalItems);
+            configuration.Setup(x => x.GetSyncBatchSizeAsync()).ReturnsAsync(batchSize);
 
             return configuration.Object;
         }
 
         protected override IObjectLinkingSnapshotPartitionConfiguration ItShouldSucceedWhenNoMoreBatchesIsRequiredMockConfiguration(int itemsSize)
         {
-            InstanceSettings.Setup(x => x.GetSyncBatchSizeAsync(It.IsAny<int>())).ReturnsAsync(itemsSize);
-
             Mock<IObjectLinkingSnapshotPartitionConfiguration> configuration = new Mock<IObjectLinkingSnapshotPartitionConfiguration>();
 
             configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
             configuration.Setup(x => x.SyncConfigurationArtifactId).Returns(_SYNC_CONF_ID);
             configuration.Setup(x => x.TotalRecordsCount).Returns(itemsSize);
+            configuration.Setup(x => x.GetSyncBatchSizeAsync()).ReturnsAsync(itemsSize);
 
             return configuration.Object;
         }

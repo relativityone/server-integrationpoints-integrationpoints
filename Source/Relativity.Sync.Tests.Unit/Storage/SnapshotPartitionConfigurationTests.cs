@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -10,6 +11,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 {
 	internal sealed class SnapshotPartitionConfigurationTests : ConfigurationTestBase
 	{
+		private Mock<IInstanceSettings> _instanceSettings;
 		private SnapshotPartitionConfiguration _sut;
 
 		private const int _WORKSPACE_ID = 987432;
@@ -18,8 +20,9 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[SetUp]
 		public void SetUp()
 		{
+			_instanceSettings = new Mock<IInstanceSettings>();
 			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _WORKSPACE_ID, It.IsAny<Guid>());
-			_sut = new SnapshotPartitionConfiguration(_configuration, syncJobParameters, new EmptyLogger());
+			_sut = new SnapshotPartitionConfiguration(_configuration, syncJobParameters, _instanceSettings.Object, new EmptyLogger());
 		}
 
 		[Test]
@@ -74,6 +77,20 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			// ASSERT
 			action.Should().Throw<ArgumentException>();
 		}
+
+		[Test]
+		public async Task ItShouldReturnSyncBatchSize()
+        {
+			// Arrange
+			int syncBatchSize = 10;
+			_instanceSettings.Setup(x => x.GetSyncBatchSizeAsync(It.IsAny<int>())).ReturnsAsync(syncBatchSize);
+
+			// Act
+			int actualSyncBatchSize = await _sut.GetSyncBatchSizeAsync();
+
+			// Assert
+			actualSyncBatchSize.Should().Be(syncBatchSize);
+        }
 		
 		static IEnumerable<TestCaseData> SnapshotCaseSource()
 		{
