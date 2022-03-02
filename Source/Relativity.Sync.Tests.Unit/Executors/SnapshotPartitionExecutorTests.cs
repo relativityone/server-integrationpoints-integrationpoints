@@ -13,8 +13,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public override void SetUp()
 		{
 			base.SetUp();
-			Instance = new SnapshotPartitionExecutor(BatchRepository.Object, new EmptyLogger());
+			Instance = new SnapshotPartitionExecutor(BatchRepository.Object, InstanceSettings.Object, new EmptyLogger());
 		}
-		
 	}
 }
