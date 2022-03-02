@@ -261,9 +261,16 @@ namespace Relativity.Sync.Tests.Common
 
 		public int ImportApiBatchSize { get; set; } = 1000;
 
+		public int SyncBatchSize { get; set; } = 25000;
+
 		public Task<int> GetImportApiBatchSizeAsync()
 		{
 			return Task.FromResult(ImportApiBatchSize);
 		}
-	}
+
+        public Task<int> GetSyncBatchSizeAsync()
+        {
+			return Task.FromResult(SyncBatchSize);
+        }
+    }
 }
