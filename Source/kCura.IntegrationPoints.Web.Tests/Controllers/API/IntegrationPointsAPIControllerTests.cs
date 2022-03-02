@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -24,173 +25,215 @@ using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Telemetry.Services.Metrics;
+using static kCura.IntegrationPoints.Web.Controllers.API.IntegrationPointsAPIController;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
-	[TestFixture, Category("Unit")]
-	public class IntegrationPointsAPIControllerTests : TestBase
-	{
-		private IntegrationPointsAPIController _sut;
-		private IServiceFactory _serviceFactory;
-		private IIntegrationPointService _integrationPointService;
-		private IRelativityUrlHelper _relativityUrlHelper;
-		private IRdoSynchronizerProvider _rdoSynchronizerProvider;
-		private ICPHelper _cpHelper;
-		private IServicesMgr _svcMgr;
+    [TestFixture, Category("Unit")]
+    public class IntegrationPointsAPIControllerTests : TestBase
+    {
+        private Mock<IAPILog> _loggerFake;
+        private IntegrationPointsAPIController _sut;
+        private IServiceFactory _serviceFactory;
+        private IIntegrationPointService _integrationPointService;
+        private IRelativityUrlHelper _relativityUrlHelper;
+        private IRdoSynchronizerProvider _rdoSynchronizerProvider;
+        private ICPHelper _cpHelper;
+        private IServicesMgr _svcMgr;        
 
-		private const int _WORKSPACE_ID = 23432;
-		private const int _INTEGRATION_POINT_ID = 23432;
-		private const string _CREDENTIALS = "{}";
+        private const int _WORKSPACE_ID = 23432;
+        private const int _INTEGRATION_POINT_ID = 23432;
+        private const string _CREDENTIALS = "{}";
 
-		[SetUp]
-		public override void SetUp()
-		{
-			_relativityUrlHelper = Substitute.For<IRelativityUrlHelper>();
-			_integrationPointService = Substitute.For<IIntegrationPointService>();
-			_rdoSynchronizerProvider = Substitute.For<IRdoSynchronizerProvider>();
-			_serviceFactory = Substitute.For<IServiceFactory>();
-			_cpHelper = Substitute.For<ICPHelper>();
-			_svcMgr = Substitute.For<IServicesMgr>();
+        [SetUp]
+        public override void SetUp()
+        {
+            _relativityUrlHelper = Substitute.For<IRelativityUrlHelper>();
+            _integrationPointService = Substitute.For<IIntegrationPointService>();
+            _rdoSynchronizerProvider = Substitute.For<IRdoSynchronizerProvider>();
+            _serviceFactory = Substitute.For<IServiceFactory>();
+            _cpHelper = Substitute.For<ICPHelper>();
+            _svcMgr = Substitute.For<IServicesMgr>();            
 
-			_cpHelper.GetServicesManager().Returns(_svcMgr);
-			_svcMgr.CreateProxy<IMetricsManager>(Arg.Any<ExecutionIdentity>())
-				.Returns(Substitute.For<IMetricsManager>());
+            _cpHelper.GetServicesManager().Returns(_svcMgr);
+            _svcMgr.CreateProxy<IMetricsManager>(Arg.Any<ExecutionIdentity>())
+                .Returns(Substitute.For<IMetricsManager>());
 
-			Mock<IAPILog> loggerFake = new Mock<IAPILog>();
+            _loggerFake = new Mock<IAPILog>();
 
-			_sut = new IntegrationPointsAPIController(
-				_serviceFactory,
-				_relativityUrlHelper,
-				_rdoSynchronizerProvider,
-				_cpHelper,
-				loggerFake.Object
-				)
-			{
-				Request = new HttpRequestMessage()
-			};
+            _sut = new IntegrationPointsAPIController(
+                _serviceFactory,
+                _relativityUrlHelper,
+                _rdoSynchronizerProvider,                
+                _cpHelper,
+                _loggerFake.Object
+                )
+            {
+                Request = new HttpRequestMessage()
+            };
 
-			_sut.Request.SetConfiguration(new HttpConfiguration());
-		}
+            _sut.Request.SetConfiguration(new HttpConfiguration());
+        }
 
 
-		[Test]
-		public async Task Get_WhenFederatedInstanceIsSetUp_ShouldReturnNullSourceConfiguration()
-		{
-			// Arrange
-			var model = new IntegrationPointModel()
-			{
-				ArtifactID = 123,
-				SourceConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = 12345 })
-			};
+        [Test]
+        public async Task Get_WhenFederatedInstanceIsSetUp_ShouldReturnNullSourceConfiguration()
+        {
+            // Arrange
+            var model = new IntegrationPointModel()
+            {
+                ArtifactID = 123,
+                SourceConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = 12345 })
+            };
 
-			_serviceFactory.CreateIntegrationPointService(_cpHelper).Returns(_integrationPointService);
+            _serviceFactory.CreateIntegrationPointService(_cpHelper).Returns(_integrationPointService);
 
-			_integrationPointService.ReadIntegrationPointModel(Arg.Any<int>()).Returns(model);
+            _integrationPointService.ReadIntegrationPointModel(Arg.Any<int>()).Returns(model);
 
-			// Act
-			HttpResponseMessage httpResponse = _sut.Get(_INTEGRATION_POINT_ID);
+            // Act
+            HttpResponseMessage httpResponse = _sut.Get(_INTEGRATION_POINT_ID);
 
-			// Assert
-			IntegrationPointModel integrationPointModel = await GetIntegrationPointModelFromHttpResponse(httpResponse).ConfigureAwait(false);
-			integrationPointModel.SourceConfiguration.Should().BeNull();
-		}
+            // Assert
+            IntegrationPointModel integrationPointModel = await GetIntegrationPointModelFromHttpResponse(httpResponse).ConfigureAwait(false);
+            integrationPointModel.SourceConfiguration.Should().BeNull();
+        }
 
-		[Test]
-		public async Task Get_WhenFederatedInstanceIsNotSetUp_ShouldReturnValidSourceConfiguration()
-		{
-			// Arrange
-			var model = new IntegrationPointModel()
-			{
-				ArtifactID = 123,
-				SourceConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = null })
-			};
+        [Test]
+        public async Task Get_WhenFederatedInstanceIsNotSetUp_ShouldReturnValidSourceConfiguration()
+        {
+            // Arrange
+            var model = new IntegrationPointModel()
+            {
+                ArtifactID = 123,
+                SourceConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = null })
+            };
 
-			_serviceFactory.CreateIntegrationPointService(_cpHelper).Returns(_integrationPointService);
+            _serviceFactory.CreateIntegrationPointService(_cpHelper).Returns(_integrationPointService);
 
-			_integrationPointService.ReadIntegrationPointModel(Arg.Any<int>()).Returns(model);
+            _integrationPointService.ReadIntegrationPointModel(Arg.Any<int>()).Returns(model);
 
-			// Act
-			HttpResponseMessage httpResponse = _sut.Get(_INTEGRATION_POINT_ID);
+            // Act
+            HttpResponseMessage httpResponse = _sut.Get(_INTEGRATION_POINT_ID);
 
-			// Assert
-			IntegrationPointModel integrationPointModel = await GetIntegrationPointModelFromHttpResponse(httpResponse).ConfigureAwait(false);
-			integrationPointModel.SourceConfiguration.Should().NotContain("FederatedInstanceArtifactId");
-		}
+            // Assert
+            IntegrationPointModel integrationPointModel = await GetIntegrationPointModelFromHttpResponse(httpResponse).ConfigureAwait(false);
+            integrationPointModel.SourceConfiguration.Should().NotContain("FederatedInstanceArtifactId");
+        }
 
-		[TestCase(null)]
-		[TestCase(1000)]
-		public void Update_StandardSourceProvider_NoJobsRun_GoldFlow(int? federatedInstanceArtifactId)
-		{
-			// Arrange
-			var model = new IntegrationPointModel()
-			{
-				ArtifactID = 123,
-				SourceProvider = 9830,
-				Destination = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
-				SecuredConfiguration = _CREDENTIALS
-			};
+        [TestCase(null)]
+        [TestCase(1000)]
+        public void Update_StandardSourceProvider_NoJobsRun_GoldFlow(int? federatedInstanceArtifactId)
+        {
+            // Arrange
+            var model = new IntegrationPointModel()
+            {
+                ArtifactID = 123,
+                SourceProvider = 9830,
+                Destination = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
+                SecuredConfiguration = _CREDENTIALS
+            };
 
-			_serviceFactory.CreateIntegrationPointService(_cpHelper).Returns(_integrationPointService);
+            _serviceFactory.CreateIntegrationPointService(_cpHelper).Returns(_integrationPointService);
 
-			_integrationPointService.SaveIntegration(Arg.Is(model)).Returns(model.ArtifactID);
+            _integrationPointService.SaveIntegration(Arg.Is(model)).Returns(model.ArtifactID);
 
-			string url = "http://lolol.com";
-			_relativityUrlHelper.GetRelativityViewUrl(
-					_WORKSPACE_ID,
-					model.ArtifactID,
-					ObjectTypes.IntegrationPoint)
-				.Returns(url);
+            string url = "http://lolol.com";
+            _relativityUrlHelper.GetRelativityViewUrl(
+                    _WORKSPACE_ID,
+                    model.ArtifactID,
+                    ObjectTypes.IntegrationPoint)
+                .Returns(url);
 
-			// Act
-			HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model);
+            // Act
+            HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model);
 
-			// Assert
-			Assert.IsNotNull(response, "Response should not be null");
-			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, "HttpStatusCode should be OK");
-			Assert.AreEqual(JsonConvert.SerializeObject(new { returnURL = url }), response.Content.ReadAsStringAsync().Result, "The HttpContent should be as expected");
+            // Assert
+            Assert.IsNotNull(response, "Response should not be null");
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, "HttpStatusCode should be OK");
+            Assert.AreEqual(JsonConvert.SerializeObject(new { returnURL = url }), response.Content.ReadAsStringAsync().Result, "The HttpContent should be as expected");
 
-			_integrationPointService.Received(1).SaveIntegration(model);
-			_relativityUrlHelper
-				.Received(1)
-				.GetRelativityViewUrl(
-					_WORKSPACE_ID,
-					model.ArtifactID,
-					ObjectTypes.IntegrationPoint);
-		}
+            _integrationPointService.Received(1).SaveIntegration(model);
+            _relativityUrlHelper
+                .Received(1)
+                .GetRelativityViewUrl(
+                    _WORKSPACE_ID,
+                    model.ArtifactID,
+                    ObjectTypes.IntegrationPoint);
+        }
 
-		[TestCase(null)]
-		[TestCase(1000)]
-		public void UpdateIntegrationPointThrowsError_ReturnFailedResponse(int? federatedInstanceArtifactId)
-		{
-			var model = new IntegrationPointModel()
-			{
-				Destination = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
-				SecuredConfiguration = _CREDENTIALS
-			};
-			var validationResult = new ValidationResult(false, "That's a damn shame.");
-			Exception expectException = new IntegrationPointValidationException(validationResult);
+        [TestCase(null)]
+        [TestCase(1000)]
+        public void UpdateIntegrationPointThrowsError_ReturnFailedResponse(int? federatedInstanceArtifactId)
+        {
+            var model = new IntegrationPointModel()
+            {
+                Destination = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
+                SecuredConfiguration = _CREDENTIALS
+            };
+            var validationResult = new ValidationResult(false, "That's a damn shame.");
+            Exception expectException = new IntegrationPointValidationException(validationResult);
 
-			_serviceFactory.CreateIntegrationPointService(_cpHelper).Returns(_integrationPointService);
+            _serviceFactory.CreateIntegrationPointService(_cpHelper).Returns(_integrationPointService);
 
-			_integrationPointService.SaveIntegration(Arg.Any<IntegrationPointModel>()).Throws(expectException);
+            _integrationPointService.SaveIntegration(Arg.Any<IntegrationPointModel>()).Throws(expectException);
 
-			// Act
-			HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model);
+            // Act
+            HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model);
 
-			Assert.IsNotNull(response);
-			String actual = response.Content.ReadAsStringAsync().Result;
-			_relativityUrlHelper.DidNotReceive().GetRelativityViewUrl(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<String>());
-			ValidationResultDTO actualResult =
-				JsonConvert.DeserializeObject<ValidationResultDTO>(actual);
+            Assert.IsNotNull(response);
+            String actual = response.Content.ReadAsStringAsync().Result;
+            _relativityUrlHelper.DidNotReceive().GetRelativityViewUrl(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<String>());
+            ValidationResultDTO actualResult =
+                JsonConvert.DeserializeObject<ValidationResultDTO>(actual);
 
-			Assert.AreEqual(validationResult.MessageTexts.First(), actualResult.Errors.Single().Message);
-			Assert.AreEqual(HttpStatusCode.NotAcceptable, response.StatusCode);
-		}
+            Assert.AreEqual(validationResult.MessageTexts.First(), actualResult.Errors.Single().Message);
+            Assert.AreEqual(HttpStatusCode.NotAcceptable, response.StatusCode);
+        }
 
-		private async Task<IntegrationPointModel> GetIntegrationPointModelFromHttpResponse(HttpResponseMessage httpResponse)
-		{
-			string serializedModel = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-			return JsonConvert.DeserializeObject<IntegrationPointModel>(serializedModel);
-		}
-	}
+        private async Task<IntegrationPointModel> GetIntegrationPointModelFromHttpResponse(HttpResponseMessage httpResponse)
+        {
+            string serializedModel = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+            return JsonConvert.DeserializeObject<IntegrationPointModel>(serializedModel);
+        }
+
+        [Test]
+        public void Update_ShouldLogMappingInfo()
+        {
+            // Arrange
+            var model = new IntegrationPointModel()
+            {
+                ArtifactID = 123,
+                SourceProvider = 9830,
+                Destination = "",
+                SecuredConfiguration = _CREDENTIALS
+            };
+
+            _serviceFactory.CreateIntegrationPointService(_cpHelper).Returns(_integrationPointService);
+
+            _integrationPointService.SaveIntegration(Arg.Is(model)).Returns(model.ArtifactID);
+
+            string url = "http://lolol.com";
+            _relativityUrlHelper.GetRelativityViewUrl(
+                    _WORKSPACE_ID,
+                    model.ArtifactID,
+                    ObjectTypes.IntegrationPoint)
+                .Returns(url);
+
+            // Act
+            HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model, true, true, true, IntegrationPointsAPIController.MappingType.SavedSearch);
+
+            // Assert
+            _loggerFake.Verify(x => x.LogInformation("Saved IntegrationPoint with following options: {options}", 
+                It.Is<object>(o => MappingInfoObjectIsCorrect(o))));
+        }
+
+        private bool MappingInfoObjectIsCorrect(object o)
+        {
+            dynamic dynamicObject = o;
+            return dynamicObject.MappingHasWarnings == true
+            && dynamicObject.ClearAndProceedSelected == true
+            && dynamicObject.MappingType == MappingType.SavedSearch;
+        }
+
+    }
 }
