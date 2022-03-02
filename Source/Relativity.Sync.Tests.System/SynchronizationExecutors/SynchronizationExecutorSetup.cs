@@ -15,15 +15,11 @@ using Relativity.Sync.Transfer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using Relativity.Sync.SyncConfiguration;
-using Relativity.Sync.SyncConfiguration.Options;
-using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 using ImportJobFactory = Relativity.Sync.Tests.System.Core.Helpers.ImportJobFactory;
 
 namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 {
-	internal class SynchronizationExecutorSetup
+    internal class SynchronizationExecutorSetup
 	{
 		public TestEnvironment Environment { get; }
 		public ServiceFactory ServiceFactory { get; }
@@ -122,7 +118,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 			Configuration.SendEmails = false;
 
 			Configuration.TotalRecordsCount = totalRecordsCount == 0 ? TotalDataCount : totalRecordsCount;
-			Configuration.BatchSize = batchSize == 0 ? TotalDataCount : batchSize;
+			Configuration.SyncBatchSize = batchSize == 0 ? TotalDataCount : batchSize;
 			Configuration.ImportOverwriteMode = overwriteMode;
 			Configuration.FieldOverlayBehavior = overlayBehavior;
 			
@@ -155,7 +151,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 			Configuration.SendEmails = false;
 
 			Configuration.TotalRecordsCount = totalRecordsCount == 0 ? TotalDataCount : totalRecordsCount;
-			Configuration.BatchSize = batchSize == 0 ? TotalDataCount : batchSize;
+			Configuration.SyncBatchSize = batchSize == 0 ? TotalDataCount : batchSize;
 			Configuration.ImportOverwriteMode = overwriteMode;
 			Configuration.FieldOverlayBehavior = overlayBehavior;
 			
