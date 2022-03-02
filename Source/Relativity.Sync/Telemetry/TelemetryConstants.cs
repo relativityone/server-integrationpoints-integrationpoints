@@ -38,6 +38,8 @@
 
 			public const string FLOW_TYPE = "Relativity.Sync.FlowType";
 
+			public const string PARENT_APPLICATION_NAME = "Relativity.Sync.ParentApplicationName";
+
 			public const string DATA_BYTES_METADATA_TRANSFERRED = "Relativity.Sync.Data.Bytes.MetadataTransferred";
 			public const string DATA_BYTES_NATIVES_TRANSFERRED = "Relativity.Sync.Data.Bytes.NativesTransferred";
 			public const string DATA_BYTES_IMAGES_TRANSFERRED = "Relativity.Sync.Data.Bytes.ImagesTransferred";

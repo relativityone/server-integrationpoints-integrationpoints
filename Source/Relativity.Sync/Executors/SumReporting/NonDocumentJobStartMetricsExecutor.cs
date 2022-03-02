@@ -5,6 +5,8 @@ using System.Threading;
 using Relativity.Sync.Configuration;
 using System.Threading.Tasks;
 using Relativity.Services.Exceptions;
+using Relativity.Services.Interfaces.ObjectType;
+using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
@@ -17,6 +19,7 @@ namespace Relativity.Sync.Executors.SumReporting
 	internal class NonDocumentJobStartMetricsExecutor : IExecutor<INonDocumentJobStartMetricsConfiguration>
 	{
         private const string _EXTRACTED_TEXT_FIELD_NAME = "Extracted Text";
+        private const string _NOT_ASSIGNED_APPLICATION_NAME = "Custom";
 
 		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
         private readonly IFieldManager _fieldManager;
@@ -32,23 +35,28 @@ namespace Relativity.Sync.Executors.SumReporting
         }
 
         public async Task<ExecutionResult> ExecuteAsync(INonDocumentJobStartMetricsConfiguration configuration, CompositeCancellationToken token)
-		{
-            if (configuration.Resuming)
+        {
+            string dataSourceType = ((ArtifactType)configuration.RdoArtifactTypeId).ToString();
+            string parentApplicationName = await GetParentApplicationNameAsync(configuration);
+
+			if (configuration.Resuming)
             {
                 _syncMetrics.Send(new JobResumeMetric
                 {
                     Type = TelemetryConstants.PROVIDER_NAME,
-                    RetryType = configuration.JobHistoryToRetryId != null ? TelemetryConstants.PROVIDER_NAME : null
-                });
+                    RetryType = configuration.JobHistoryToRetryId != null ? TelemetryConstants.PROVIDER_NAME : null,
+				});
             }
             else
             {
-                _syncMetrics.Send(new JobStartMetric
+                _syncMetrics.Send(new NonDocumentJobStartMetric
                 {
                     Type = TelemetryConstants.PROVIDER_NAME,
                     FlowType = TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_NON_DOCUMENT_OBJECTS,
-                    RetryType = configuration.JobHistoryToRetryId != null ? TelemetryConstants.PROVIDER_NAME : null
-                });
+                    RetryType = configuration.JobHistoryToRetryId != null ? TelemetryConstants.PROVIDER_NAME : null,
+					DataSourceType = dataSourceType,
+					ParentApplicationName = parentApplicationName
+				});
 
                 try
                 {
@@ -63,26 +71,43 @@ namespace Relativity.Sync.Executors.SumReporting
             return ExecutionResult.Success();
 		}
 
+        private async Task<string> GetParentApplicationNameAsync(INonDocumentJobStartMetricsConfiguration configuration)
+        {
+            using (IObjectTypeManager objectTypeManager = await _serviceFactory.CreateProxyAsync<IObjectTypeManager>())
+            {
+                ObjectTypeResponse objectTypeResponse =
+                    await objectTypeManager.ReadAsync(configuration.SourceWorkspaceArtifactId,
+                        configuration.RdoArtifactTypeId);
+                if (objectTypeResponse.RelativityApplications.ViewableItems.Any())
+                {
+                    return objectTypeResponse.RelativityApplications.ViewableItems.First().Name;
+                }
+
+                return _NOT_ASSIGNED_APPLICATION_NAME;
+            }
+
+		}
+		
         private async Task LogFieldsMappingDetailsAsync(INonDocumentJobStartMetricsConfiguration configuration, CancellationToken token)
         {
-            IList<FieldInfoDto> documentFields = await _fieldManager.GetMappedFieldsAsync(token).ConfigureAwait(false);
+            IReadOnlyList<FieldInfoDto> nonDocumentFields = await _fieldManager.GetMappedFieldNonDocumentWithoutLinksAsync(token).ConfigureAwait(false);
 
             Task<Dictionary<string, RelativityObjectSlim>> sourceFieldsDetailsTask = GetFieldsDetailsAsync(configuration.SourceWorkspaceArtifactId,
-                documentFields.Where(x => x.RelativityDataType == RelativityDataType.LongText)
-                    .Select(x => x.SourceFieldName), token);
+                nonDocumentFields.Where(x => x.RelativityDataType == RelativityDataType.LongText)
+                    .Select(x => x.SourceFieldName), configuration.RdoArtifactTypeId, token);
 
             Task<Dictionary<string, RelativityObjectSlim>> destinationFieldsDetailsTask = GetFieldsDetailsAsync(configuration.DestinationWorkspaceArtifactId,
-                documentFields.Where(x => x.RelativityDataType == RelativityDataType.LongText)
-                    .Select(x => x.DestinationFieldName), token);
+                nonDocumentFields.Where(x => x.RelativityDataType == RelativityDataType.LongText)
+                    .Select(x => x.DestinationFieldName), configuration.RdoArtifactTypeId, token);
 
             await Task.WhenAll(sourceFieldsDetailsTask, destinationFieldsDetailsTask).ConfigureAwait(false);
 
             _logger.LogInformation("Fields map configuration summary: {@summary}",
-                GetFieldsMappingSummary(documentFields, sourceFieldsDetailsTask.Result, destinationFieldsDetailsTask.Result));
+                GetFieldsMappingSummary(nonDocumentFields, sourceFieldsDetailsTask.Result, destinationFieldsDetailsTask.Result));
         }
 
 		private async Task<Dictionary<string, RelativityObjectSlim>> GetFieldsDetailsAsync(int workspaceId,
-			IEnumerable<string> fieldNames, CancellationToken token)
+			IEnumerable<string> fieldNames, int rdoArtifactTypeId, CancellationToken token)
 		{
 			if (fieldNames == null || !fieldNames.Any())
 			{
@@ -99,7 +124,7 @@ namespace Relativity.Sync.Executors.SumReporting
 			{
 				ObjectType = new ObjectTypeRef { Name = "Field" },
 				Condition =
-					$"'Name' IN [{concatenatedFieldNames}] AND 'Object Type Artifact Type ID' == {(int)ArtifactType.Document}",
+					$"'Name' IN [{concatenatedFieldNames}] AND 'Object Type Artifact Type ID' == {rdoArtifactTypeId}",
 				Fields = new[]
 				{
 					new FieldRef {Name = "Name"},
@@ -120,26 +145,26 @@ namespace Relativity.Sync.Executors.SumReporting
 				catch (ServiceException ex)
 				{
 					_logger.LogError(ex,
-						"Service call failed while querying document fields in workspace {workspaceArtifactId} for mapping details",
+						"Service call failed while querying non document fields in workspace {workspaceArtifactId} for mapping details",
 						workspaceId);
 					throw new SyncKeplerException(
-						$"Service call failed while querying document fields in workspace {workspaceId} for mapping details",
+						$"Service call failed while querying non document fields in workspace {workspaceId} for mapping details",
 						ex);
 				}
 				catch (Exception ex)
 				{
 					_logger.LogError(ex,
-						"Failed to query document fields in workspace {workspaceArtifactId} for mapping details",
+						"Failed to query non document fields in workspace {workspaceArtifactId} for mapping details",
 						workspaceId);
 					throw new SyncKeplerException(
-						$"Failed to query document fields in workspace {workspaceId} for mapping details", ex);
+						$"Failed to query non document fields in workspace {workspaceId} for mapping details", ex);
 				}
 			}
 
 			return result.Objects.ToDictionary(x => x.Values[0].ToString(), x => x);
 		}
 
-		private Dictionary<string, object> GetFieldsMappingSummary(IList<FieldInfoDto> mappings,
+		private Dictionary<string, object> GetFieldsMappingSummary(IReadOnlyList<FieldInfoDto> mappings,
 			IDictionary<string, RelativityObjectSlim> sourceLongTextFieldsDetails,
 			IDictionary<string, RelativityObjectSlim> destinationLongTextFieldsDetails)
 		{
