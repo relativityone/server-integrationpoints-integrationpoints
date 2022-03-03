@@ -106,7 +106,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					IIntegrationPointPermissionValidator permissionValidator =
 						new IntegrationPointPermissionValidator(new[]
 							{ new ViewErrorsPermissionValidator(repositoryFactory) },
-							new IntegrationPointSerializer(logger), servicesMgr);
+							new IntegrationPointSerializer(logger));
 					IPermissionRepository permissionRepository = new PermissionRepository(Helper, Helper.GetActiveCaseID());
 					IProviderTypeService providerTypeService = new ProviderTypeService(objectManager);
 					_buttonStateBuilder = new ButtonStateBuilder(providerTypeService, queueManager, jobHistoryManager, stateManager,

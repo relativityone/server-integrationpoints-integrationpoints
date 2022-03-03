@@ -56,6 +56,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
 			result.IsValid.Should().BeTrue();
 			result.Messages.Should().BeEmpty();
 		}
+		
 		[IdentifiedTest("794CAA0A-64D9-42A1-A3CA-0564014EF53C")]
 		public void ValidateOnSave_ShouldThrow_WhenMappingIdentifierOnly()
 		{

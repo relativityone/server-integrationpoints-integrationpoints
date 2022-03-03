@@ -6,10 +6,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using Relativity;
 using Relativity.API;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Validation.Abstract
 {
@@ -17,13 +14,11 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
 	{
 		protected readonly ILookup<string, TValidator> _validatorsMap;
 		protected readonly IIntegrationPointSerializer _serializer;
-		private readonly IServicesMgr _servicesMgr;
 
-		protected BaseIntegrationPointValidator(IEnumerable<TValidator> validators, IIntegrationPointSerializer serializer, IServicesMgr servicesMgr)
+		protected BaseIntegrationPointValidator(IEnumerable<TValidator> validators, IIntegrationPointSerializer serializer)
 		{
 			_validatorsMap = validators.ToLookup(x => x.Key);
 			_serializer = serializer;
-			_servicesMgr = servicesMgr;
 		}
 
 		public static string GetProviderValidatorKey(string sourceProviderId, string destinationProviderId)
@@ -62,29 +57,6 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
 				SecuredConfiguration = model.SecuredConfiguration,
 				CreateSavedSearch = destinationConfiguration.CreateSavedSearchForTagging
 			};
-		}
-
-		protected Guid GetTransferredObjectObjectTypeGuid(IntegrationPointProviderValidationModel validationModel)
-		{
-			ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(validationModel.DestinationConfiguration);
-			int destinationWorkspaceArtifactId = destinationConfiguration.CaseArtifactId;
-
-			using (IObjectManager objectManager = _servicesMgr.CreateProxy<IObjectManager>(ExecutionIdentity.System))
-			{
-				var request = new QueryRequest()
-				{
-					ObjectType = new ObjectTypeRef() { ArtifactTypeID = (int)ArtifactType.ObjectType },
-					Condition = $"(('Artifact Type ID' == {validationModel.ArtifactTypeId}))"
-				};
-
-				QueryResult results = objectManager.QueryAsync(destinationWorkspaceArtifactId, request, 0, 1)
-					.GetAwaiter().GetResult();
-				if (results.TotalCount == 0)
-				{
-					return Guid.Empty;
-				}
-				return results.Objects.Single().Guids.FirstOrDefault();
-			}
 		}
 
 

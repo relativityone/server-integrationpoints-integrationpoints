@@ -40,8 +40,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 			IAPILog logger = helper.GetLoggerFactory().GetLogger();
 			IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer(logger);
 
-			IServicesMgr destinationServiceMgr = helper.GetServicesManager();
-			IChoiceQuery choiceQuery = new ChoiceQuery(destinationServiceMgr);
+			IServicesMgr servicesManager = helper.GetServicesManager();
+			IChoiceQuery choiceQuery = new ChoiceQuery(servicesManager);
 
 			Guid agentGuid = new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
 
@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
             IJobService jobService = new JobService(agentService, jobServiceDataProvider, new KubernetesMode(logger), helper);
 			IEddsServiceContext eddsServiceContext = new EddsServiceContext(serviceContextHelper);
-			IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, destinationServiceMgr);
+			IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, servicesManager);
 			IDBContext dbContext = helper.GetDBContext(helper.GetActiveCaseID());
 			IWorkspaceDBContext workspaceDbContext = new WorkspaceDBContext(dbContext);
 			IJobTrackerQueryManager jobTrackerQueryManager = new JobTrackerQueryManager(repositoryFactory, workspaceDbContext);
@@ -59,8 +59,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager();
 			IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, helper, integrationPointSerializer, jobTracker);
-			IRelativityObjectManager objectManager =
-				new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(workspaceArtifactId);
+			RelativityObjectManagerFactory relativityObjectManagerFactory = new RelativityObjectManagerFactory(helper);
+			IRelativityObjectManager objectManager = relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId);
 			IProviderTypeService providerTypeService = new ProviderTypeService(objectManager);
 			IMessageService messageService = new MessageService();
 
@@ -73,9 +73,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 
 			IManagerFactory managerFactory = new ManagerFactory(helper, new FakeNonRemovableAgent(), jobServiceDataProvider);
 
-			IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), integrationPointSerializer, destinationServiceMgr);
+			IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), integrationPointSerializer, relativityObjectManagerFactory);
 
-			IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), integrationPointSerializer, destinationServiceMgr);
+			IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), integrationPointSerializer);
 
 			IValidationExecutor validationExecutor = new ValidationExecutor(ipValidator, permissionValidator, helper);
 

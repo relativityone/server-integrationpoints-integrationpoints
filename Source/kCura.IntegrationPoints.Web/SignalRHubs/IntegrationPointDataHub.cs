@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			_serviceManager = _helper.GetServicesManager();
 			
 			IRepositoryFactory repositoryFactory = new RepositoryFactory(_helper, _serviceManager);
-			_permissionValidator = new IntegrationPointPermissionValidator(new[]{new ViewErrorsPermissionValidator(repositoryFactory)}, new IntegrationPointSerializer(_logger), _serviceManager);
+			_permissionValidator = new IntegrationPointPermissionValidator(new[]{new ViewErrorsPermissionValidator(repositoryFactory)}, new IntegrationPointSerializer(_logger));
 
 			if (_tasks == null)
 			{

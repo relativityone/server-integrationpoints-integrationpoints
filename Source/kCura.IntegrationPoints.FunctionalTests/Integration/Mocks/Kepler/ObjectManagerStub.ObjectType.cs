@@ -59,7 +59,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             Mock.Setup(x => x.QueryAsync(It.IsAny<int>(), 
                     It.Is<QueryRequest>(q => IsObjectTypeQuery(q) && IsArtifactTypeIdCondition(q.Condition)), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns((int workspaceId, QueryRequest request, int start, int length) =>
-
                 {
                     List<RelativityObject> foundObjects = GetObjectForArtifactTypeId(workspaceId, request); 
                     QueryResult result = new QueryResult();

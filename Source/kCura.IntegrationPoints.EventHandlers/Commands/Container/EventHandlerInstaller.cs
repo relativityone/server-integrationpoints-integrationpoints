@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.EventHandlers.Commands.Context;
@@ -70,12 +71,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 			);
 
 			container.Register(Component.For<IIntegrationPointProviderValidator>().UsingFactoryMethod(k =>
-					new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), k.Resolve<IIntegrationPointSerializer>(),  k.Resolve<IServicesMgr>()))
+					new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), k.Resolve<IIntegrationPointSerializer>(),  k.Resolve<IRelativityObjectManagerFactory>()))
 				.LifestyleSingleton());
 
 			container.Register(Component.For<IIntegrationPointPermissionValidator>().UsingFactoryMethod(k =>
 				new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(),
-					k.Resolve<IIntegrationPointSerializer>(), k.Resolve<IServicesMgr>())).LifestyleSingleton());
+					k.Resolve<IIntegrationPointSerializer>())).LifestyleSingleton());
 
 			container.Register(Component.For<IValidationExecutor>().ImplementedBy<ValidationExecutor>().LifestyleSingleton());
 
