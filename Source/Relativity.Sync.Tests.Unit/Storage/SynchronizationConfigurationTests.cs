@@ -1,27 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
 	internal sealed class SynchronizationConfigurationTests : ConfigurationTestBase
 	{
+		private Mock<IInstanceSettings> _instanceSettings;
 		private SynchronizationConfiguration _syncConfig;
 
 		private const int _JOB_ID = 2;
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 3;
 
-
-		[SetUp]
+        [SetUp]
 		public void SetUp()
 		{
+			_instanceSettings = new Mock<IInstanceSettings>();
 			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, Guid.NewGuid());
-			_syncConfig = new SynchronizationConfiguration(_configuration, syncJobParameters);
+			_syncConfig = new SynchronizationConfiguration(_configuration, syncJobParameters, _instanceSettings.Object);
 		}
 
 		[Test]
@@ -182,7 +183,22 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			// ASSERT
 			action.Should().Throw<ArgumentException>();
 		}
-		
+
+		[Test]
+		public async Task GetImportApiBatchSizeAsync_ShouldReturnValueFromInstanceSetting()
+		{
+			// Arrange
+			const int importApiBatchSize = 5;
+			_instanceSettings.Setup(x => x.GetImportApiBatchSizeAsync(It.IsAny<int>())).ReturnsAsync(importApiBatchSize);
+
+			// Act
+			int actualValue = await _syncConfig.GetImportApiBatchSizeAsync();
+
+			// Assert
+			actualValue.Should().Be(importApiBatchSize);
+		}
+
+
 		static IEnumerable<TestCaseData> SnapshotCaseSource()
 		{
 			yield return new TestCaseData((Guid?) null);

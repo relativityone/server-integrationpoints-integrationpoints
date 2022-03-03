@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Relativity.Sync.Tests.System.Core.Helpers
 {
-	public class ToggleHelper
+	public static class ToggleHelper
 	{
 		private static Func<SqlConnection> SqlConnectionFunc => SqlHelper.CreateEddsConnectionFromAppConfig;
 
