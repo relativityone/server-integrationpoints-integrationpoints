@@ -15,6 +15,5 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			base.SetUp();
 			Instance = new SnapshotPartitionExecutor(BatchRepository.Object, new EmptyLogger());
 		}
-		
 	}
 }

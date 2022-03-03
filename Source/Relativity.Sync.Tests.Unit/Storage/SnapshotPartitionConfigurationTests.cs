@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -10,41 +11,30 @@ namespace Relativity.Sync.Tests.Unit.Storage
 {
 	internal sealed class SnapshotPartitionConfigurationTests : ConfigurationTestBase
 	{
-		private SnapshotPartitionConfiguration _instance;
+		private Mock<IInstanceSettings> _instanceSettings;
+		private SnapshotPartitionConfiguration _sut;
 
 		private const int _WORKSPACE_ID = 987432;
 		private const int _JOB_ID = 9687413;
 
-		private const int _BATCH_SIZE = 985632;
-
 		[SetUp]
 		public void SetUp()
 		{
+			_instanceSettings = new Mock<IInstanceSettings>();
 			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _WORKSPACE_ID, It.IsAny<Guid>());
-			SyncJobExecutionConfiguration configuration = new SyncJobExecutionConfiguration
-			{
-				BatchSize = _BATCH_SIZE
-			};
-
-			_instance = new SnapshotPartitionConfiguration(_configuration, syncJobParameters, configuration, new EmptyLogger());
+			_sut = new SnapshotPartitionConfiguration(_configuration, syncJobParameters, _instanceSettings.Object, new EmptyLogger());
 		}
 
 		[Test]
 		public void WorkspaceIdShouldMatch()
 		{
-			_instance.SourceWorkspaceArtifactId.Should().Be(_WORKSPACE_ID);
+			_sut.SourceWorkspaceArtifactId.Should().Be(_WORKSPACE_ID);
 		}
 
 		[Test]
 		public void SyncConfigurationIdShouldMatch()
 		{
-			_instance.SyncConfigurationArtifactId.Should().Be(_JOB_ID);
-		}
-
-		[Test]
-		public void BatchSizeShouldMatch()
-		{
-			_instance.BatchSize.Should().Be(_BATCH_SIZE);
+			_sut.SyncConfigurationArtifactId.Should().Be(_JOB_ID);
 		}
 
 		[Test]
@@ -55,7 +45,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			_configurationRdo.SnapshotRecordsCount = totalRecordsCount;
 
 			// ACT & ASSERT
-			_instance.TotalRecordsCount.Should().Be(totalRecordsCount);
+			_sut.TotalRecordsCount.Should().Be(totalRecordsCount);
 		}
 
 		[Test]
@@ -66,7 +56,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			_configurationRdo.SnapshotId = runId;
 
 			// ACT
-			Guid actualRunId = _instance.ExportRunId;
+			Guid actualRunId = _sut.ExportRunId;
 
 			// ASSERT
 			actualRunId.Should().Be(runId);
@@ -81,12 +71,26 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			// ACT
 			Action action = () =>
 			{
-				Guid guid = _instance.ExportRunId;
+				Guid guid = _sut.ExportRunId;
 			};
 
 			// ASSERT
 			action.Should().Throw<ArgumentException>();
 		}
+
+		[Test]
+		public async Task ItShouldReturnSyncBatchSize()
+        {
+			// Arrange
+			int syncBatchSize = 10;
+			_instanceSettings.Setup(x => x.GetSyncBatchSizeAsync(It.IsAny<int>())).ReturnsAsync(syncBatchSize);
+
+			// Act
+			int actualSyncBatchSize = await _sut.GetSyncBatchSizeAsync();
+
+			// Assert
+			actualSyncBatchSize.Should().Be(syncBatchSize);
+        }
 		
 		static IEnumerable<TestCaseData> SnapshotCaseSource()
 		{
