@@ -77,7 +77,7 @@ namespace Relativity.Sync.Storage
 
         public async Task<int> GetImportApiBatchSizeAsync()
         {
-            return await _instanceSettings.GetImportApiBatchSizeAsync();
+            return await _instanceSettings.GetImportApiBatchSizeAsync().ConfigureAwait(false);
         }
     }
 }
