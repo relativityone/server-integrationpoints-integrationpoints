@@ -133,7 +133,7 @@ group Tests
 	nuget Relativity.OAuth2Client 1.5.2
 	nuget Relativity.OAuth2Client.Interfaces 1.5.2
 
-	nuget Relativity.Sync 0.8.118
+	nuget Relativity.Sync 0.8.124
 
 	//RIP packages
 	nuget IntegrationPoints.MyFirstProvider 12.3.2
@@ -145,7 +145,7 @@ group Sync
 	strategy: min
 	source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 	
-	nuget Relativity.Sync 0.8.118
+	nuget Relativity.Sync 0.8.124
 	nuget Newtonsoft.Json 6.0.8
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
