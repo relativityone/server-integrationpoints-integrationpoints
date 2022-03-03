@@ -229,11 +229,10 @@ namespace Relativity.Sync.Tests.Common
 
 		public int TotalRecordsCount { get; set; }
 
-		public int BatchSize { get; set; }
-
 		public Guid ExportRunId { get; set; }
 
 		public int? JobHistoryToRetryId { get; set; }
+
 		public string SyncVersion { get; set;  }
 
 		public bool IncludeOriginalImageIfNotFoundInProductions { get; set; }
@@ -260,5 +259,12 @@ namespace Relativity.Sync.Tests.Common
 
 		public bool LogItemLevelErrors { get; set; } = true;
 		public bool LinkingExportExists => ObjectLinkingSnapshotId.HasValue;
+
+		public int ImportApiBatchSize { get; set; } = 1000;
+
+		public Task<int> GetImportApiBatchSizeAsync()
+		{
+			return Task.FromResult(ImportApiBatchSize);
+		}
 	}
 }
