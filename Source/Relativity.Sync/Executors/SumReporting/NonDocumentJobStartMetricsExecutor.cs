@@ -90,7 +90,7 @@ namespace Relativity.Sync.Executors.SumReporting
 		
         private async Task LogFieldsMappingDetailsAsync(INonDocumentJobStartMetricsConfiguration configuration, CancellationToken token)
         {
-            IReadOnlyList<FieldInfoDto> nonDocumentFields = await _fieldManager.GetMappedFieldNonDocumentWithoutLinksAsync(token).ConfigureAwait(false);
+            IList<FieldInfoDto> nonDocumentFields = await _fieldManager.GetMappedFieldsAsync(token).ConfigureAwait(false);
 
             Task<Dictionary<string, RelativityObjectSlim>> sourceFieldsDetailsTask = GetFieldsDetailsAsync(configuration.SourceWorkspaceArtifactId,
                 nonDocumentFields.Where(x => x.RelativityDataType == RelativityDataType.LongText)
@@ -164,7 +164,7 @@ namespace Relativity.Sync.Executors.SumReporting
 			return result.Objects.ToDictionary(x => x.Values[0].ToString(), x => x);
 		}
 
-		private Dictionary<string, object> GetFieldsMappingSummary(IReadOnlyList<FieldInfoDto> mappings,
+		private Dictionary<string, object> GetFieldsMappingSummary(IList<FieldInfoDto> mappings,
 			IDictionary<string, RelativityObjectSlim> sourceLongTextFieldsDetails,
 			IDictionary<string, RelativityObjectSlim> destinationLongTextFieldsDetails)
 		{

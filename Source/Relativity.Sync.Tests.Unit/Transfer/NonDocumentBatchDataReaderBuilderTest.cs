@@ -49,7 +49,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_exportDataSanitizerFake = new Mock<IExportDataSanitizer>();
 			_exportDataSanitizerFake.Setup(s => s.ShouldSanitize(It.IsAny<RelativityDataType>())).Returns(false);
 			_fieldManagerMock = new Mock<IFieldManager>();
-			_fieldManagerMock.Setup(fm => fm.GetMappedFieldNonDocumentWithoutLinksAsync(CancellationToken.None)).ReturnsAsync(_getAllFieldsResult);
+			_fieldManagerMock.Setup(fm => fm.GetMappedFieldsNonDocumentWithoutLinksAsync(CancellationToken.None)).ReturnsAsync(_getAllFieldsResult);
 			_fieldManagerMock.Setup(fm => fm.GetObjectIdentifierFieldAsync(CancellationToken.None)).ReturnsAsync(_secondDocumentField);
 		}
 
@@ -65,7 +65,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			// Assert
 			_fieldManagerMock.Verify(x => x.GetImageAllFieldsAsync(It.IsAny<CancellationToken>()), Times.Never);
 			_fieldManagerMock.Verify(x => x.GetNativeAllFieldsAsync(It.IsAny<CancellationToken>()), Times.Never);
-			_fieldManagerMock.Verify(x => x.GetMappedFieldNonDocumentWithoutLinksAsync(It.IsAny<CancellationToken>()));
+			_fieldManagerMock.Verify(x => x.GetMappedFieldsNonDocumentWithoutLinksAsync(It.IsAny<CancellationToken>()));
 			dataReader.Should().BeOfType<NonDocumentBatchDataReader>();
 		}
 

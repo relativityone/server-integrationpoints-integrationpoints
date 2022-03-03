@@ -131,7 +131,7 @@ namespace Relativity.Sync.Transfer
 			return _mappedFieldsCache;
 		}
 
-		public async Task<IReadOnlyList<FieldInfoDto>> GetMappedFieldNonDocumentWithoutLinksAsync(
+		public async Task<IReadOnlyList<FieldInfoDto>> GetMappedFieldsNonDocumentWithoutLinksAsync(
 			CancellationToken token)
 		{
 			IList<FieldInfoDto> fieldInfos = await GetMappedFieldsAsync(token).ConfigureAwait(false);

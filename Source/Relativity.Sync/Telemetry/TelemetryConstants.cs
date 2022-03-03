@@ -28,10 +28,11 @@
 
 			public const string JOB_SUSPENDED_STATUS_NATIVES_AND_METADATA = "Relativity.Sync.Job.Suspended.Status.SavedSearch.NativesAndMetadata";
 			public const string JOB_SUSPENDED_STATUS_IMAGES = "Relativity.Sync.Job.Suspended.Status.SavedSearch.Images";
+			public const string JOB_SUSPENDED_STATUS_NON_DOCUMENT_OBJECTS = "Relativity.Sync.Job.Suspended.Status.SavedSearch.NonDocumentObjects";
 
 			public const string JOB_END_STATUS_NATIVES_AND_METADATA = "Relativity.Sync.Job.End.Status.SavedSearch.NativesAndMetadata";
 			public const string JOB_END_STATUS_IMAGES = "Relativity.Sync.Job.End.Status.SavedSearch.Images";
-			public const string JOB_END_STATUS_NONDOCUMENTS = "Relativity.Sync.Job.End.Status.NonDocuments";
+			public const string JOB_END_STATUS_NON_DOCUMENT_OBJECTS = "Relativity.Sync.Job.End.Status.NonDocumentObjects";
 
 			public const string RETRY_JOB_START_TYPE = "Relativity.Sync.Retry.Job.Start.Type";
 			public const string RETRY_JOB_END_STATUS = "Relativity.Sync.Retry.Job.End.Status";
@@ -51,6 +52,7 @@
 			public const string DATA_RECORDS_FAILED = "Relativity.Sync.Data.Records.Failed";
 			public const string DATA_RECORDS_TOTAL_REQUESTED = "Relativity.Sync.Data.Records.TotalRequested";
 			public const string DATA_FIELDS_MAPPED = "Relativity.Sync.Data.Fields.Mapped";
+			public const string DATA_FIELDS_TOTAL_REQUESTED = "Relativity.Sync.Data.Fields.TotalRequested";
 			
 			public const string DATA_LONGTEXT_STREAM_AVERAGE_SIZE_LESSTHAN1MB = "Relativity.Sync.Data.LongTextStream.AverageSize.LessThan1MB";
 			public const string DATA_LONGTEXT_STREAM_AVERAGE_TIME_LESSTHAN1MB = "Relativity.Sync.Data.LongTextStream.AverageTime.LessThan1MB";
