@@ -73,7 +73,6 @@ namespace Relativity.Sync.Storage
 		public string SupportedByViewerColumn { get; set; }
 
 		public Guid? ObjectLinkingSnapshotId => _cache.GetFieldValue(x => x.ObjectLinkingSnapshotId );
-	}
 
         public async Task<int> GetImportApiBatchSizeAsync()
         {

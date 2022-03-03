@@ -116,7 +116,7 @@ namespace Relativity.Sync.Executors
 
 				List<int> batchesIds = (await _batchRepository
 					.GetAllBatchesIdsToExecuteAsync(configuration.SourceWorkspaceArtifactId,
-						configuration.SyncConfigurationArtifactId, , GetExportRunId(configuration)).ConfigureAwait(false)).ToList();
+						configuration.SyncConfigurationArtifactId, GetExportRunId(configuration)).ConfigureAwait(false)).ToList();
 
 				Dictionary<int, ExecutionResult> batchesCompletedWithErrors = new Dictionary<int, ExecutionResult>();
 
