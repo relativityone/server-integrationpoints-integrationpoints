@@ -15,7 +15,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public int ArtifactId => Artifact.ArtifactId;
 
-        public int ParenObjectArtifactId { get; set; }
+        public int ParentObjectArtifactId { get; set; }
 
         protected RdoTestBase(string artifactTypeName, int? artifactId = null)
         {
@@ -56,7 +56,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(x => x.CanWrite)
                 .ToDictionary(x => SanitizeFieldName(x.Name), x => x);
 
-            ParenObjectArtifactId = relativityObject?.ParentObject?.ArtifactID ?? 0;
+            ParentObjectArtifactId = relativityObject?.ParentObject?.ArtifactID ?? 0;
             Artifact.ArtifactId = relativityObject.ArtifactID;
 
             foreach (FieldValuePair fieldValuePair in relativityObject.FieldValues)
@@ -94,7 +94,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
 		public void LoadRelativityObjectByGuid(Type type, RelativityObject relativityObject)
         {
-            ParenObjectArtifactId = relativityObject?.ParentObject?.ArtifactID ?? 0;
+            ParentObjectArtifactId = relativityObject?.ParentObject?.ArtifactID ?? 0;
             Artifact.ArtifactId = relativityObject.ArtifactID;
 
 			foreach (FieldValuePair fieldValuePair in relativityObject.FieldValues)

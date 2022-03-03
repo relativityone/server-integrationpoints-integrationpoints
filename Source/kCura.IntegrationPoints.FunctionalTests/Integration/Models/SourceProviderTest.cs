@@ -120,7 +120,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 			{
 				RelativityObject = ToRelativityObject(),
 				ArtifactId = ArtifactId,
-				ParentArtifactId = ParenObjectArtifactId,
+				ParentArtifactId = ParentObjectArtifactId,
 				Config = null,
 				Identifier = Identifier,
 				SourceConfigurationUrl = SourceConfigurationUrl,
