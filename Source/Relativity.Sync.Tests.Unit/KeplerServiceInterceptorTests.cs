@@ -27,8 +27,6 @@ namespace Relativity.Sync.Tests.Unit
 
 		private Mock<IStubForInterception> _stubForInterceptionMock;
 		private Mock<Func<Task<IStubForInterception>>> _stubForInterceptionFactoryFake;
-		private Mock<SyncMetricsBase> _syncMetricsBaseMock;
-		private Mock<ISyncMetrics> _syncMetricsMock;
 		private Mock<ISyncLog> _syncLogMock;
 		private Mock<IRandom> _randomFake;
 
@@ -43,17 +41,14 @@ namespace Relativity.Sync.Tests.Unit
 			_stubForInterceptionFactoryFake = new Mock<Func<Task<IStubForInterception>>>();
 			_stubForInterceptionFactoryFake.Setup(x => x()).Returns(Task.FromResult(_stubForInterceptionMock.Object));
 
-            _syncMetricsBaseMock = new Mock<SyncMetricsBase>();
-            _syncMetricsMock = new Mock<ISyncMetrics>();
 			_syncLogMock = new Mock<ISyncLog>();
 			_randomFake = new Mock<IRandom>();
 
 			Mock<IStopwatch> stopwatchFake = new Mock<IStopwatch>();
 			stopwatchFake.Setup(x => x.Elapsed).Returns(_executionTime);
 			Func<IStopwatch> stopwatchFactory = new Func<IStopwatch>(() => stopwatchFake.Object);
-
-            _syncMetricsBaseMock.Setup(x => x.SyncMetricsValue).Returns(_syncMetricsMock.Object);
-			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(_syncMetricsBaseMock.Object, stopwatchFactory, _randomFake.Object, _syncLogMock.Object);
+			
+			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(stopwatchFactory, _randomFake.Object, _syncLogMock.Object);
 			_sut = dynamicProxyFactory.WrapKeplerService(_stubForInterceptionMock.Object, _stubForInterceptionFactoryFake.Object);
 			const int delayBaseMs = 0;
 			SetMillisecondsDelayBetweenHttpRetriesBase(_sut, delayBaseMs);
@@ -82,7 +77,6 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			_stubForInterceptionMock.Verify(x => x.ExecuteAsync(), Times.Once);
-			_syncMetricsMock.Verify(x => x.Send(It.Is<KeplerMetric>(m => m.Duration == _executionTime.TotalMilliseconds)), Times.Once);
 		}
 
 		[Test]
@@ -96,7 +90,6 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			action.Should().Throw<Exception>();
-			_syncMetricsMock.Verify(x => x.Send(It.Is<KeplerMetric>(m => m.NumberOfHttpRetriesForFailed != null)), Times.Once);
 		}
 
 		[Test]
@@ -107,9 +100,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			_stubForInterceptionMock.Verify(x => x.ExecuteAsync(), Times.Once);
-			
-			_syncMetricsMock.Verify(x => x.Send(It.Is<KeplerMetric>(m => m.NumberOfHttpRetriesForSuccess != null)), Times.Once);
-		}
+        }
 
 		[Test]
 		public void Execute_ShouldReportFailedMetric_WhenExecutionFails()
@@ -122,23 +113,9 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			action.Should().Throw<Exception>();
-			_syncMetricsMock.Verify(x => x.Send(It.Is<KeplerMetric>(m => m.NumberOfHttpRetriesForFailed == 0)), Times.Once);
 		}
 
-		[Test]
-		public void Execute_ShouldNotFail_WhenMetricsFails()
-		{
-			// ARRANGE
-			_syncMetricsMock.Setup(x => x.Send(It.IsAny<KeplerMetric>())).Throws<Exception>();
-
-			// ACT
-			Func<Task> action = () => _sut.ExecuteAsync();
-
-			// ASSERT
-			action.Should().NotThrow();
-		}
-
-		[Test]
+        [Test]
 		public void Execute_ShouldNotReportMetrics_WhenDisposeIsCalled()
 		{
 			// ACT
@@ -146,7 +123,6 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			_stubForInterceptionMock.Verify(x => x.Dispose(), Times.Once);
-			_syncMetricsMock.Verify(x => x.Send(It.IsAny<KeplerMetric>()), Times.Never);
 		}
 
 		[Test]
@@ -240,39 +216,6 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ASSERT
 			action.Should().Throw<SyncMaxKeplerRetriesException>();
-			_syncMetricsMock.Verify(x => x.Send(It.Is<KeplerMetric>(m => m.NumberOfHttpRetriesForFailed == _MAX_NUMBER_OF_HTTP_RETRIES)), Times.Once);
-		}
-
-		[Test]
-		[TestCaseSource(nameof(AuthTokenExceptionToRetry))]
-		public async Task Execute_ShouldReportAuthRefreshMetricWithNumberOfRefreshes_WhenAuthRefreshed(Exception exception)
-		{
-			// ARRANGE
-			const int expectedRefreshes = 2;
-
-			_stubForInterceptionMock.SetupSequence(x => x.ExecuteAsync()).Throws(exception).Throws(exception).Returns(Task.CompletedTask);
-
-			// ACT
-			await _sut.ExecuteAsync().ConfigureAwait(false);
-
-			// ASSERT
-			_syncMetricsMock.Verify(x => x.Send(It.Is<KeplerMetric>(m => m.AuthTokenExpirationCount == expectedRefreshes)), Times.Once);
-		}
-
-		[Test]
-		[TestCaseSource(nameof(ConnectionExceptionsToRetry))]
-		public async Task Execute_ShouldReportSuccessMetricWithNumberOfRetries_WhenRetried(Exception exception)
-		{
-			// ARRANGE
-			const int expectedRetries = 2;
-
-			_stubForInterceptionMock.SetupSequence(x => x.ExecuteAsync()).Throws(exception).Throws(exception).Returns(Task.CompletedTask);
-
-			// ACT
-			await _sut.ExecuteAsync().ConfigureAwait(false);
-
-			// ASSERT
-			_syncMetricsMock.Verify(x => x.Send(It.Is<KeplerMetric>(m => m.NumberOfHttpRetriesForSuccess == expectedRetries)), Times.Once);
 		}
 
 		[Test]
@@ -382,7 +325,7 @@ namespace Relativity.Sync.Tests.Unit
 			Mock<IStopwatch> stopwatchFake = new Mock<IStopwatch>();
 			stopwatchFake.Setup(x => x.Elapsed).Returns(_executionTime);
 			Func<IStopwatch> stopwatchFactory = new Func<IStopwatch>(() => stopwatchFake.Object);
-			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(_syncMetricsBaseMock.Object, stopwatchFactory, _randomFake.Object, new EmptyLogger());
+			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(stopwatchFactory, _randomFake.Object, new EmptyLogger());
 			IStubForInterception instance = dynamicProxyFactory.WrapKeplerService(badService.Object, ServiceFactory);
 
 			// ACT

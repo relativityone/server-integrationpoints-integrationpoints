@@ -6,7 +6,7 @@ namespace Relativity.Sync.Telemetry
 	/// <summary>
 	///     Logs <see cref="IMetric"/>s to New Relic.
 	/// </summary>
-	internal sealed class NewRelicSyncMetricsSink : SyncMetricsSinkBase, ISyncMetricsSink
+	internal sealed class NewRelicSyncMetricsSink : ISyncMetricsSink
 	{
 		private const string _NEW_RELIC_INDEX_NAME = "Relativity.Sync";
 
@@ -19,7 +19,6 @@ namespace Relativity.Sync.Telemetry
 		public NewRelicSyncMetricsSink(IAPMClient apmClient)
 		{
 			_apmClient = apmClient;
-            Sink = this;
 		}
 
 		/// <inheritdoc />

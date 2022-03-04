@@ -71,7 +71,6 @@ namespace Relativity.Sync
 
 			containerBuilder.RegisterType<RdoGuidProvider>().AsImplementedInterfaces();
 			containerBuilder.RegisterType<RdoManager>().AsImplementedInterfaces();
-			containerBuilder.RegisterType<RdoManager>().As<RdoManagerBase>();
 
             IPipelineBuilder pipelineBuilder = new PipelineBuilder();
 			pipelineBuilder.RegisterFlow(containerBuilder);

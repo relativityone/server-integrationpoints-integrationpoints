@@ -49,10 +49,8 @@ namespace Relativity.Sync.Tests.Integration
 			const int second = 1000;
 			_semaphoreSlim = new SemaphoreSlimStub(() => Thread.Sleep(second));
 			SyncJobParameters jobParameters = new SyncJobParameters(_ARTIFACT_ID, _WORKSPACE_ID, _WORKFLOW_ID);
-			var rdoManagerBaseMock = new Mock<RdoManagerBase>();
             var rdoManagerMock = new Mock<IRdoManager>();
-
-            rdoManagerBaseMock.Setup(x => x.RdoManagerValue).Returns(rdoManagerMock.Object);
+			
             rdoManagerMock.Setup(x => x.GetAsync<SyncConfigurationRdo>(It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync(new SyncConfigurationRdo());
 
@@ -65,7 +63,7 @@ namespace Relativity.Sync.Tests.Integration
 				})
 				.Returns(Task.CompletedTask);
 			
-			Storage.IConfiguration cache = await Storage.Configuration.GetAsync(jobParameters, new EmptyLogger(), _semaphoreSlim, rdoManagerBaseMock.Object).ConfigureAwait(false);
+			Storage.IConfiguration cache = await Storage.Configuration.GetAsync(jobParameters, new EmptyLogger(), _semaphoreSlim, rdoManagerMock.Object).ConfigureAwait(false);
 
 			// ACT
 			Task updateTask = cache.UpdateFieldValueAsync(x => x.JobHistoryId, newValue);
