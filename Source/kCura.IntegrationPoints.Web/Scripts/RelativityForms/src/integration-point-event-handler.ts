@@ -12,14 +12,9 @@ export default function (eventNames: typeof EventNames, convenienceApi: IConveni
     let destinationConfiguration;
 
     eventHandlers[eventNames.TRANSFORM_LAYOUT] = function (layoutData) {
-        try {
-            console.log(this.backingModelData);
-            let configurations = transformLayout(layoutData, convenienceApi, this.backingModelData);
-            sourceConfiguration = configurations[0];
-            destinationConfiguration = configurations[1];
-        } catch (err) {
-            console.log(err);
-        }
+        let configurations = transformLayout(layoutData, convenienceApi, this.backingModelData);
+        sourceConfiguration = configurations[0];
+        destinationConfiguration = configurations[1];
         
     };
     eventHandlers[eventNames.HYDRATE_LAYOUT_COMPLETE] = function (layoutData) { setFieldsValues(layoutData, convenienceApi, sourceConfiguration, destinationConfiguration) };
