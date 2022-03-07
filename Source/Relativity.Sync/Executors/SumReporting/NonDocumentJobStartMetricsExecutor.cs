@@ -21,12 +21,12 @@ namespace Relativity.Sync.Executors.SumReporting
         private const string _EXTRACTED_TEXT_FIELD_NAME = "Extracted Text";
         private const string _NOT_ASSIGNED_APPLICATION_NAME = "Custom";
 
-		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
+		private readonly ISourceServiceFactoryForUser _serviceFactory;
         private readonly IFieldManager _fieldManager;
         private readonly ISyncLog _logger;
         private readonly ISyncMetrics _syncMetrics;
 
-		public NonDocumentJobStartMetricsExecutor(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger, ISyncMetrics syncMetrics, IFieldManager fieldManager)
+		public NonDocumentJobStartMetricsExecutor(ISourceServiceFactoryForUser serviceFactory, ISyncLog logger, ISyncMetrics syncMetrics, IFieldManager fieldManager)
         {
             _serviceFactory = serviceFactory;
             _logger = logger;
