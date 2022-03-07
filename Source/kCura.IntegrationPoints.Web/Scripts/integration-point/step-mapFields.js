@@ -2,6 +2,16 @@
 
 const documentArtifactTypeId = 10;
 
+const mappingType = {
+	Manual: "manual",
+	Automap: "automap",
+	SavedSearch: "savedsearch",
+	View: "view",
+	Loaded : "loaded"
+};
+
+IP.mappingType = mappingType.Loaded;
+
 ko.validation.rules.pattern.message = 'Invalid.';
 
 ko.validation.configure({
@@ -984,6 +994,7 @@ ko.validation.insertValidationMessage = function (element) {
 			}).then(function (mapping) {
 				self.applyMapping(mapping);
 				self.showErrors(showErrors);
+				IP.mappingType = mappingType.Automap;
 				return mapping;
 			}, function () {
 				self.showErrors(showErrors);
@@ -1013,11 +1024,13 @@ ko.validation.insertValidationMessage = function (element) {
 			}).then(function (mapping) {
 				self.applyMapping(mapping);
 				self.showErrors(showErrors);
+				IP.mappingType = mappingType.SavedSearch;
 				return mapping;
 			}, function () {
 				self.showErrors(showErrors);
 			});
 		};
+
 
 		this.autoMapFieldsFromView = function () {
 			//Remove current mappings first
@@ -1043,6 +1056,7 @@ ko.validation.insertValidationMessage = function (element) {
 			.then(function (mapping) {
 				self.applyMapping(mapping);
 				self.showErrors(showErrors);
+				IP.mappingType = mappingType.View;
 				return mapping;
 			})
 			.fail(function (error) {
@@ -1363,7 +1377,8 @@ ko.validation.insertValidationMessage = function (element) {
 								var filteredOutInvalidFields = map.filter(
 									x => validationResult.invalidMappedFields.map(f => f.fieldMap).findIndex(
 										i => StepMapFieldsValidator.isFieldMapEqual(i, x)) ==
-									-1);
+										-1);
+								this.returnModel.proceedAndClearClicked = true;
 								this.returnModel.map = JSON.stringify(filteredOutInvalidFields);
 								d.resolve(this.returnModel);
 							}.bind(this);

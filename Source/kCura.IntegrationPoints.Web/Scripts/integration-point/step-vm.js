@@ -185,7 +185,8 @@
 				return;
 			}
 
-			var mappingHasWarnings = false;
+			var mappingHasWarnings = false;			 
+
 			if (model.mappingHasWarnings){
 				mappingHasWarnings = true;
 			}
@@ -195,9 +196,16 @@
 				destinationWorkspaceChanged = true;
 			}
 
+			var clearAndProceedSelected = false;
+			if (model.clearAndProceedSelected) {
+				clearAndProceedSelected = true;
+			}
+
 			var apiUrl = IP.utils.generateWebAPIURL(IP.data.params['apiControllerName'])
 				+ '?mappingHasWarnings=' + mappingHasWarnings
-				+ '&destinationWorkspaceChanged=' + destinationWorkspaceChanged;
+				+ '&destinationWorkspaceChanged=' + destinationWorkspaceChanged
+				+ '&clearAndProceed=' + clearAndProceedSelected
+				+ '&mappingType=' + IP.mappingType;
 
 			IP.data.ajax({ type: 'POST', url: apiUrl, data: JSON.stringify(model) })
 				.then(function (result) {

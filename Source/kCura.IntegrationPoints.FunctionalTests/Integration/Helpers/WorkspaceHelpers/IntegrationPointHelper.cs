@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
@@ -83,7 +83,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 		public IntegrationPointTest CreateNonDocumentSyncIntegrationPoint(WorkspaceTest destinationWorkspace)
 		{
-			int artifactTypeId = ArtifactTypesIds.ENTITY_TYPE_ARTIFACT_ID;
+			int artifactTypeId = GetArtifactTypeIdByName(Entity._ENTITY_OBJECT_NAME);
 
 			IntegrationPointTest integrationPoint = CreateEmptyIntegrationPoint();
 
@@ -100,7 +100,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			DestinationProviderTest destinationProvider = Workspace.DestinationProviders.First(x =>
 				x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
 
-			List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMapping(destinationWorkspace, artifactTypeId);
+			List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierAndFirstAndLastNameFieldsMappingForEntitySync(destinationWorkspace);
 
 			integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
 			integrationPoint.SourceConfiguration = _serializer.Serialize(new SourceConfiguration
@@ -234,7 +234,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 		}
 
-		public IntegrationPointTest CreateImportEntityFromLdapIntegrationPoint(bool linkEntityManagers = false)
+		public IntegrationPointTest CreateImportEntityFromLdapIntegrationPoint(bool linkEntityManagers = false, bool isMappingIdentifierOnly = false)
 		{
 			const string ou = "ou=Management";
 
@@ -242,7 +242,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 			integrationPoint.Name = $"Import Entity LDAP - {Guid.NewGuid()}";
 
-			List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMappingForLDAPEntityImport();
+			List<FieldMap> fieldsMapping = isMappingIdentifierOnly 
+				? Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierOnlyFieldsMappingForLDAPEntityImport() 
+				: Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierAndFirstAndLastNameFieldsMappingForLDAPEntityImport();
 			integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
 
 
@@ -271,7 +273,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 			ImportSettings destinationConfiguration = new ImportSettings
 			{
-				ArtifactTypeId = Const.ArtifactTypesIds.ENTITY_TYPE_ARTIFACT_ID,
+				ArtifactTypeId = GetArtifactTypeIdByName(Const.Entity._ENTITY_OBJECT_NAME),
 				DestinationProviderType = destinationProvider.Identifier,
 				EntityManagerFieldContainsLink = linkEntityManagers,
 				CaseArtifactId = Workspace.ArtifactId,
@@ -321,6 +323,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			{
 				Workspace.IntegrationPoints.Remove(integrationPoint);
 			}
+		}
+		
+		private int GetArtifactTypeIdByName(string name)
+		{
+			return Workspace.ObjectTypes.First(x => x.Name == name).ArtifactTypeId;
 		}
 	}
 }

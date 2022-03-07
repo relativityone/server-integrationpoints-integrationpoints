@@ -39,6 +39,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public IList<FieldTest> Fields { get; } = new List<FieldTest>();
 
+        public IList<ObjectTypeTest> ObjectTypes { get; } = new List<ObjectTypeTest>();
+
         public IList<EntityTest> Entities { get; } = new List<EntityTest>();
 
         public IList<DocumentTest> Documents { get; } = new List<DocumentTest>();
@@ -62,6 +64,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 .Concat(GetArtifacts(SavedSearches))
                 .Concat(GetArtifacts(Views))
                 .Concat(GetArtifacts(SyncConfigurations))
+                .Concat(GetArtifacts(ObjectTypes))
                 .Concat(GetArtifacts(Fields))
                 .Concat(GetArtifacts(Documents))
                 .Concat(GetArtifacts(Productions))
