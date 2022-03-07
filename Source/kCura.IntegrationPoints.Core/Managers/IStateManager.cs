@@ -1,5 +1,6 @@
 ﻿using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Domain.Models;
+using static kCura.IntegrationPoints.Core.Contracts.Configuration.SourceConfiguration;
 
 namespace kCura.IntegrationPoints.Core.Managers
 {
@@ -8,6 +9,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 		/// <summary>
 		///     Returns a set of booleans that convey the button state of the console buttons for all providers.
 		/// </summary>
+		/// <param name="exportType">Type of export</param>
 		/// <param name="providerType">Type of Integration Point Provider</param>
 		/// <param name="hasJobsExecutingOrInQueue">If the current Integration Point has jobs running or queued up.</param>
 		/// <param name="hasErrors">If the Integration Point has errors or not.</param>
@@ -18,7 +20,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 		///     A collection of booleans which explain the button state of the buttons on the console for the Relativity
 		///     Provider.
 		/// </returns>
-		ButtonStateDTO GetButtonState(ProviderType providerType, bool hasJobsExecutingOrInQueue, bool hasErrors, bool hasErrorViewPermissions,
+		ButtonStateDTO GetButtonState(ExportType exportType, ProviderType providerType, bool hasJobsExecutingOrInQueue, bool hasErrors, bool hasErrorViewPermissions,
 			bool hasStoppableJobs, bool hasProfileAddPermission);
 	}
 }

@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			bool integrationPointIsStoppable = IntegrationPointIsStoppable(providerType: providerType, workspaceArtifactId: workspaceArtifactId,
                 integrationPointArtifactId: integrationPointArtifactId, exportType: exportType);
 			bool integrationPointHasErrors = integrationPoint.HasErrors.GetValueOrDefault(false);
-			ButtonStateDTO buttonState = _stateManager.GetButtonState(providerType, hasJobsExecutingOrInQueue, integrationPointHasErrors, canViewErrors,
+			ButtonStateDTO buttonState = _stateManager.GetButtonState(exportType, providerType, hasJobsExecutingOrInQueue, integrationPointHasErrors, canViewErrors,
 				integrationPointIsStoppable, hasAddProfilePermission);
 			return buttonState;
 		}
