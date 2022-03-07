@@ -28,28 +28,22 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 
         protected override RelativityObjectSlimDto UpdateFields(RelativityObjectSlimDto value)
         {
-            _log.LogInformation($"{nameof(NonDocumentObjectMigrationCommand)}: Updating fields");
-
             string originalDestinationConfiguration = value.FieldValues[_DESTINATION_CONFIGURATION] as string;
 
             if (!IsDestinationProviderRelativity(originalDestinationConfiguration))
             {
-                _log.LogInformation($"{nameof(NonDocumentObjectMigrationCommand)}: Destination provider is not Relativity");
                 return null;
             }
 
-            _log.LogInformation($"{nameof(NonDocumentObjectMigrationCommand)}: Updating destination config");
             string updatedDestinationConfiguration = AddDestinationArtifactTypeIdIfMissing(originalDestinationConfiguration);
 
             if (updatedDestinationConfiguration == originalDestinationConfiguration)
             {
-                _log.LogInformation($"{nameof(NonDocumentObjectMigrationCommand)}: Destination config not changed");
                 return null;
             }
 
             value.FieldValues[_DESTINATION_CONFIGURATION] = updatedDestinationConfiguration;
 
-            _log.LogInformation($"{nameof(NonDocumentObjectMigrationCommand)}: Updated destination configuration: {updatedDestinationConfiguration}");
             return value;
         }
 
@@ -62,8 +56,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 
             JObject jObject = JObject.Parse(destinationConfiguration);
             string destinationProviderType = jObject.GetValue("destinationProviderType", System.StringComparison.OrdinalIgnoreCase)?.ToString().ToUpper();
-
-            _log.LogInformation($"{nameof(NonDocumentObjectMigrationCommand)}: Destination provider type: {destinationProviderType}");
 
             return destinationProviderType.Equals(_destinationProviderGuid, System.StringComparison.OrdinalIgnoreCase);
         }
@@ -78,7 +70,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 
             if (!string.IsNullOrWhiteSpace(destinationArtifactTypeIdStr))
             {
-                _log.LogInformation($"{nameof(NonDocumentObjectMigrationCommand)}: DestinationArtifactTypeId already exists: {destinationArtifactTypeIdStr}");
                 return destinationConfiguration;
             }
 
@@ -86,8 +77,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
             int artifactTypeId = int.Parse(artifactTypeIdStr);
 
             jObject[destinationArtifactTypeIdFieldName] = artifactTypeId;
-
-            _log.LogInformation($"{nameof(NonDocumentObjectMigrationCommand)}: DestinationArtifactTypeId set to {artifactTypeId}");
 
             return jObject.ToString();
         }
