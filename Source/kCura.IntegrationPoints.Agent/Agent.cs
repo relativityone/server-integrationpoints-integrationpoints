@@ -232,6 +232,7 @@ namespace kCura.IntegrationPoints.Agent
 				IMessageService messageService = _agentLevelContainer.Value.Resolve<IMessageService>();
 
 				Guid batchInstanceId = taskParameterHelper.GetBatchInstance(job);
+				Logger.LogInformation("Job will be executed in case of BatchInstanceId: {batchInstanceId}", batchInstanceId);
 				if (!IsJobResumed(batchInstanceId))
 				{
 					IntegrationPoint integrationPoint = integrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);

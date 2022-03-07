@@ -22,9 +22,6 @@ using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Data;
-using kCura.ScheduleQueue.Core.Services;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using Relativity.API;
@@ -33,7 +30,7 @@ using Timer = System.Timers.Timer;
 
 namespace kCura.IntegrationPoints.Web.SignalRHubs
 {
-	[HubName("IntegrationPointData")]
+    [HubName("IntegrationPointData")]
 	public class IntegrationPointDataHub : Hub
 	{
 		private static ConcurrentDictionary<IntegrationPointDataHubKey, HashSet<string>> _tasks;
@@ -60,9 +57,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 
 			_logger = _helper.GetLoggerFactory().GetLogger();
 
-			IQueueQueryManager queryManager = new QueueQueryManager(helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
-			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
-			_managerFactory = new ManagerFactory(_helper, new FakeNonRemovableAgent(), jobServiceDataProvider);
+			_managerFactory = new ManagerFactory(_helper, new FakeNonRemovableAgent());
 			_queueManager = _managerFactory.CreateQueueManager();
 			_jobHistoryManager = _managerFactory.CreateJobHistoryManager();
 			_stateManager = _managerFactory.CreateStateManager();

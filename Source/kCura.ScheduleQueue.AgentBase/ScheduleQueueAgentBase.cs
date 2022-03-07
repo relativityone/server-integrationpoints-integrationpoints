@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Common.Helpers;
@@ -301,6 +302,11 @@ namespace kCura.ScheduleQueue.AgentBase
 
 			NotifyAgentTab(LogCategory.Debug, "Checking for active jobs in Schedule Agent Queue table");
 
+			if(_kubernetesMode.IsEnabled())
+            {
+				LogAllJobsInTheQueue();
+			}
+
 			return _jobService.GetNextQueueJob(GetListOfResourceGroupIDs(), _agentId.Value);
 		}
 
@@ -415,6 +421,21 @@ namespace kCura.ScheduleQueue.AgentBase
 		{
 			Logger.LogInformation("Job ID {jobId} has been picked up from the queue by Agent ID {agentId}. Job Information: {@job}", job.JobId, _agentId, job.RemoveSensitiveData());
 		}
+
+		private void LogAllJobsInTheQueue()
+        {
+			try
+            {
+				IEnumerable<Job> jobs = _jobService.GetAllScheduledJobs();
+
+				Logger.LogInformation("Jobs in queue JobId-RootJobId-LockedByAgentId-StopState: {jobs}",
+					string.Join(";", jobs?.Select(x => $"{x.JobId}-{x.RootJobId}-{x.LockedByAgentID}-{x.StopState}") ?? new List<string>()));
+			}
+			catch(Exception ex)
+            {
+				Logger.LogError(ex, "Unable to log jobs in queue.");
+            }
+        }
 
 		#endregion
 	}

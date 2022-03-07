@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Text;
 
 namespace kCura.IntegrationPoints.Data
 {
@@ -69,11 +70,29 @@ namespace kCura.IntegrationPoints.Data
 				LastRunTime = LastRunTime,
 				ScheduleRuleType = ScheduleRuleType,
 				SerializedScheduleRule = SerializedScheduleRule,
+				JobDetails = JobDetails != null ? "<sensitive_data>" : null,
 				JobFlags = JobFlags,
 				SubmittedDate = SubmittedDate,
 				SubmittedBy = SubmittedBy,
 				StopState = StopState
 			};
 		}
-	}
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+			sb.AppendLine($"JobId: {JobId}");
+			sb.AppendLine($"ParentJobId: {ParentJobId}");
+			sb.AppendLine($"RootJobId: {RootJobId}");
+			sb.AppendLine($"LockedByAgentId: {LockedByAgentID}");
+			sb.AppendLine($"WorkspaceId: {WorkspaceID}");
+			sb.AppendLine($"IntegrationPointId: {RelatedObjectArtifactID}");
+			sb.AppendLine($"StopState: {StopState}");
+			sb.AppendLine($"SubmitedBy: {SubmittedBy}");
+			sb.AppendLine($"SubmitedDate: {SubmittedDate}");
+			sb.AppendLine($"NextRunTime: {NextRunTime}");
+
+			return sb.ToString();
+        }
+    }
 }

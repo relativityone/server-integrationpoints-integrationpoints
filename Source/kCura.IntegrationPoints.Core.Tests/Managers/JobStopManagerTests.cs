@@ -11,8 +11,6 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Core;
-using kCura.ScheduleQueue.Core.Data;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
@@ -20,12 +18,11 @@ using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
-	[TestFixture, Category("Unit")]
+    [TestFixture, Category("Unit")]
 	public class JobStopManagerTests : TestBase
 	{
 		private Mock<IJobService> _jobServiceMock;
 		private Mock<IJobHistoryService> _jobHistoryServiceMock;
-		private Mock<IJobServiceDataProvider> _jobServiceDataProviderMock;
 		private Mock<IRemovableAgent> _agentFake;
 		private Mock<IHelper> _helperFake;
 		private Guid _jobHistoryInstanceGuid;
@@ -41,7 +38,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			};
 			_jobServiceMock = new Mock<IJobService>();
 			_jobHistoryServiceMock = new Mock<IJobHistoryService>();
-			_jobServiceDataProviderMock = new Mock<IJobServiceDataProvider>();
 			_agentFake = new Mock<IRemovableAgent>();
 			_jobHistoryInstanceGuid = Guid.NewGuid();
 			_jobId = 123;
@@ -51,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 
 		private JobStopManager PrepareSut(bool supportsDrainStop, CancellationTokenSource stopToken = null, CancellationTokenSource drainStopToken = null)
 		{
-			return new JobStopManager(_jobServiceMock.Object, _jobHistoryServiceMock.Object, _jobServiceDataProviderMock.Object,
+			return new JobStopManager(_jobServiceMock.Object, _jobHistoryServiceMock.Object,
 				_helperFake.Object, _jobHistoryInstanceGuid, _jobId, _agentFake.Object, supportsDrainStop,
 				stopToken ?? new CancellationTokenSource(), drainStopToken ?? new CancellationTokenSource());
 		}
