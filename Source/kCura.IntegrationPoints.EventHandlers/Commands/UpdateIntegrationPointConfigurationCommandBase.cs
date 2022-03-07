@@ -16,6 +16,7 @@ using kCura.IntegrationPoints.Data.Converters;
 using kCura.IntegrationPoints.Data.DTO;
 using Relativity.Services.Objects.Exceptions;
 using kCura.IntegrationPoints.EventHandlers.Commands.Helpers;
+using System.Runtime.CompilerServices;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands
 {
@@ -24,7 +25,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 		private const string _REQUEST_ENTITY_TOO_LARGE_EXCEPTION = "Request Entity Too Large";
 
 		private readonly IRelativityObjectManager _relativityObjectManager;
-		private readonly IAPILog _log;
+
+		protected readonly IAPILog _log;
 
 		protected readonly IEHHelper _helper;
 
@@ -150,6 +152,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 
 				return;
 			}
+			catch (Exception ex)
+            {
+				_log.LogError(ex, "Exception occurred during mass-updating Integration Points in {type}", this.GetType().Name);
+				throw;
+            }
 		}
 
 		private MassUpdatePerObjectsRequest GetIntegrationPointsUpdateRequest(IList<RelativityObjectSlimDto> values)
