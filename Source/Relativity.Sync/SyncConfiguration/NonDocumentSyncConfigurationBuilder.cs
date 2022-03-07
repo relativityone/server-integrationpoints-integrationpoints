@@ -14,11 +14,11 @@ namespace Relativity.Sync.SyncConfiguration
     internal class NonDocumentSyncConfigurationBuilder : SyncConfigurationRootBuilderBase, INonDocumentSyncConfigurationBuilder
     {
 	    private readonly ISyncContext _syncContext;
-	    private readonly ISourceServiceFactoryForUser _servicesMgr;
+	    private readonly ISourceServiceFactoryForAdmin _servicesMgr;
 	    private readonly IFieldsMappingBuilder _fieldsMappingBuilder;
         private Action<IFieldsMappingBuilder> _fielsdMappingAction;
 
-        public NonDocumentSyncConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForUser servicesMgr,
+        public NonDocumentSyncConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForAdmin servicesMgr,
             IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, NonDocumentSyncOptions options,
             RdoOptions rdoOptions, RdoManager rdoManager) : base(syncContext, servicesMgr, rdoOptions, rdoManager, serializer)
         {

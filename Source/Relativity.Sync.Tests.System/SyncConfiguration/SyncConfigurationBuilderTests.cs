@@ -2,11 +2,11 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Logging;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.Options;
@@ -23,15 +23,15 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 		private RdoOptions _rdoOptions;
 
 		private ISourceServiceFactoryForAdmin _syncServicesMgrForAdmin;
-		private ISourceServiceFactoryForUser _syncServicesMgrForUser;
+		private ISyncServiceManager _servicesMgr;
 
-		protected override async Task ChildSuiteSetup()
+        protected override async Task ChildSuiteSetup()
 		{
 			await base.ChildSuiteSetup();
 			
 			_rdoOptions = DefaultGuids.DefaultRdoOptions;
 			_syncServicesMgrForAdmin = new SourceServiceFactoryStub();
-            _syncServicesMgrForUser = new SourceServiceFactoryStub();
+            _servicesMgr = new ServicesManagerStub();
 		}
 
 		[IdentifiedTest("08889EA2-DFFB-4F21-8723-5D2C4F23646C")]
@@ -56,7 +56,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			DocumentSyncOptions options = new DocumentSyncOptions(savedSearchId, destinationFolderId);
 			
 			// Act
-			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, _syncServicesMgrForAdmin, _syncServicesMgrForUser)
+			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, _servicesMgr, new EmptyLogger())
 				.ConfigureRdos(_rdoOptions)
 				.ConfigureDocumentSync(options)
 				.SaveAsync().ConfigureAwait(false);

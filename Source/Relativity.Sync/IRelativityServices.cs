@@ -26,11 +26,6 @@ namespace Relativity.Sync
 		/// </summary>
         ISyncServiceManager ServicesMgr { get; }
 
-        /// <summary>
-        ///     Relativity authentication endpoint address with Admin privileges
-        /// </summary>
-		public ISourceServiceFactoryForAdmin ServicesMgrForAdmin { get; }
-
 		/// <summary>
 		///     Interface with helper methods to programmatically interact with Relativity
 		/// </summary>

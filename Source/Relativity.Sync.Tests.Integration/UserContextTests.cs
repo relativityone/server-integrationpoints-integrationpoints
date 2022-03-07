@@ -81,11 +81,11 @@ namespace Relativity.Sync.Tests.Integration
 		private void MockProvideServiceUrisToProvideValidUris()
 		{
 			IAPM apm = Mock.Of<IAPM>();
-            ISourceServiceFactoryForAdmin servicesMgrForAdmin = Mock.Of<ISourceServiceFactoryForAdmin>();
             ISyncServiceManager servicesMgr = Mock.Of<ISyncServiceManager>();
 			Uri authenticationUri = new Uri(_INSTANCE_URL);
 			IHelper helper = Mock.Of<IHelper>();
-			IRelativityServices relativityServices = new RelativityServices(apm, servicesMgr, servicesMgrForAdmin, authenticationUri, helper);
+
+			IRelativityServices relativityServices = new RelativityServices(apm, servicesMgr, authenticationUri, helper);
 			_containerBuilder.RegisterInstance(relativityServices).As<IRelativityServices>();
 		}
 
@@ -103,6 +103,7 @@ namespace Relativity.Sync.Tests.Integration
 		}
 
 		[Test]
+        [Ignore("This scenario will be valid when we decide to use again ISourceServiceFactoryForUser in NonDocumentSyncConfigurationBuilder")]
 		public async Task ItShouldCreateSourceKeplerServiceInUserContext()
 		{
 			ISourceServiceFactoryForUser factoryForUser = _containerBuilder.Build().Resolve<ISourceServiceFactoryForUser>();

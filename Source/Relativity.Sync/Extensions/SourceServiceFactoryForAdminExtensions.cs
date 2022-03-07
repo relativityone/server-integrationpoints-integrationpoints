@@ -14,7 +14,7 @@ namespace Relativity.Sync.Extensions
         /// <summary>
         /// Prepares SyncConfiguration for resuming paused job 
         /// </summary>
-        public static Task PrepareSyncConfigurationForResumeAsync(this ISourceServiceFactoryForAdmin serviceManager, int workspaceId,
+        internal static Task PrepareSyncConfigurationForResumeAsync(this ISourceServiceFactoryForAdmin serviceManager, int workspaceId,
             int syncConfigurationId)
         {
             var rdo = new SyncConfigurationRdo

@@ -12,6 +12,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Logging;
 using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.Options;
 using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
@@ -64,7 +65,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 			SyncConfigurationBuilder builder = new SyncConfigurationBuilder(
 				new SyncContext(_sourceWorkspace.ArtifactID, _destinationWorkspace.ArtifactID, jobHistoryId),
-				new SourceServiceFactoryStub(), new SourceServiceFactoryStub());
+				new ServicesManagerStub(), new EmptyLogger());
 
 			int syncConfigurationId = await builder
 				.ConfigureRdos(CustomAppGuids.Guids)
@@ -84,7 +85,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
 			SyncJobParameters syncJobParameters = new SyncJobParameters(syncConfigurationId, _sourceWorkspace.ArtifactID, Guid.NewGuid());
 
-			SyncRunner syncRunner = new SyncRunner(new ServicesManagerStub(), new SourceServiceFactoryStub(), AppSettings.RelativityUrl, new NullAPM(), Logger);
+			SyncRunner syncRunner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl, new NullAPM(), Logger);
 
 			// Act
 			SyncJobState result = await syncRunner.RunAsync(syncJobParameters, User.ArtifactID).ConfigureAwait(false);

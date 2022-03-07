@@ -70,7 +70,11 @@ namespace Relativity.Sync
 
 			LogWriter.SetFactory(new SyncLogWriterFactory(logger));
 
-			InstallSumMetrics(relativityServices.ServicesMgrForAdmin, logger);
+            ServiceFactoryForAdminFactory serviceFactoryForAdminFactory =
+                new ServiceFactoryForAdminFactory(relativityServices.ServicesMgr, logger);
+            ISourceServiceFactoryForAdmin serviceFactoryForAdmin = serviceFactoryForAdminFactory.Create();
+
+			InstallSumMetrics(serviceFactoryForAdmin, logger);
 
 			return new SyncJobInLifetimeScope(_containerFactory, container, syncJobParameters, relativityServices, configuration, logger);
 		}

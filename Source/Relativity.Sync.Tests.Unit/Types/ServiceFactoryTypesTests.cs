@@ -4,9 +4,8 @@ using System.Linq;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Telemetry;
+using Relativity.Sync.SyncConfiguration;
 
 namespace Relativity.Sync.Tests.Unit.Types
 {
@@ -24,6 +23,8 @@ namespace Relativity.Sync.Tests.Unit.Types
                 typeof(ServiceFactoryForAdmin),
                 typeof(ServiceFactoryForUser),
                 typeof(RelativityServices),
+                typeof(SyncConfigurationBuilder),
+                typeof(SyncJobConfigurationBuilder),
             };
         }
 

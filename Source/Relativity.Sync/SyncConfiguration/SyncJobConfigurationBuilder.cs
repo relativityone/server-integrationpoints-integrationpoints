@@ -11,15 +11,14 @@ namespace Relativity.Sync.SyncConfiguration
     {
         private readonly ISyncContext _syncContext;
         private readonly ISourceServiceFactoryForAdmin _servicesMgrForAdmin;
-        private readonly ISourceServiceFactoryForUser _servicesMgrForUser;
         private readonly RdoOptions _rdoOptions;
         private readonly ISerializer _serializer;
 
-        internal SyncJobConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForAdmin servicesMgrForAdmin, ISourceServiceFactoryForUser servicesMgrForUser, RdoOptions rdoOptions, ISerializer serializer)
+        internal SyncJobConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr, RdoOptions rdoOptions, ISerializer serializer, ISyncLog logger)
         {
             _syncContext = syncContext;
-            _servicesMgrForAdmin = servicesMgrForAdmin;
-            _servicesMgrForUser = servicesMgrForUser;
+            ServiceFactoryForAdminFactory servicesManagerForAdminFactory = new ServiceFactoryForAdminFactory(servicesMgr, logger);
+            _servicesMgrForAdmin = servicesManagerForAdminFactory.Create();
             _rdoOptions = rdoOptions;
             _serializer = serializer;
         }
@@ -47,7 +46,7 @@ namespace Relativity.Sync.SyncConfiguration
             IFieldsMappingBuilder fieldsMappingBuilder = new FieldsMappingBuilder(
                 _syncContext.SourceWorkspaceId, _syncContext.DestinationWorkspaceId, options.RdoArtifactTypeId, options.DestinationRdoArtifactTypeId, _servicesMgrForAdmin);
             
-            return new NonDocumentSyncConfigurationBuilder(_syncContext, _servicesMgrForUser,
+            return new NonDocumentSyncConfigurationBuilder(_syncContext, _servicesMgrForAdmin,
                 fieldsMappingBuilder, _serializer, options, _rdoOptions,
                 new RdoManager(new EmptyLogger(), _servicesMgrForAdmin, new RdoGuidProvider()));
         }

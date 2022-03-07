@@ -27,8 +27,7 @@ namespace Relativity.Sync.Tests.Unit
 			_container = new Mock<IContainer>();
 
 			_syncJobParameters = FakeHelper.CreateSyncJobParameters();
-			_relativityServices = new RelativityServices(Mock.Of<IAPM>(), Mock.Of<ISyncServiceManager>(),
-                Mock.Of<ISourceServiceFactoryForAdmin>(), new Uri("http://localhost", UriKind.RelativeOrAbsolute), Mock.Of<IHelper>());
+			_relativityServices = new RelativityServices(Mock.Of<IAPM>(), Mock.Of<ISyncServiceManager>(), new Uri("http://localhost", UriKind.RelativeOrAbsolute), Mock.Of<IHelper>());
 			_configuration = new SyncJobExecutionConfiguration();
 			_logger = new EmptyLogger();
 			_instance = new SyncJobFactory(new Mock<IContainerFactory>().Object);
