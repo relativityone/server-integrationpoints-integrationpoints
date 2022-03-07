@@ -7,35 +7,46 @@ using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Storage;
 
 namespace Relativity.Sync
 {
-	internal sealed class WorkspaceGuidService : IWorkspaceGuidService
+	internal sealed class WorkspaceGuidService : IWorkspaceGuidService, IDisposable
 	{
 		private readonly ISourceServiceFactoryForAdmin _servicesManager;
 		private readonly IDictionary<int, Guid> _cache;
+        private readonly ISemaphoreSlim _semaphoreSlim;
 
-		public WorkspaceGuidService(ISourceServiceFactoryForAdmin servicesManager)
+		public WorkspaceGuidService(ISourceServiceFactoryForAdmin servicesManager, ISemaphoreSlim semaphoreSlim)
 		{
 			_servicesManager = servicesManager;
-			_cache = new ConcurrentDictionary<int, Guid>();
+            _semaphoreSlim = semaphoreSlim;
+            _cache = new ConcurrentDictionary<int, Guid>();
 		}
 
 		public async Task<Guid> GetWorkspaceGuidAsync(int workspaceArtifactId)
 		{
 			Guid workspaceGuid;
 
-			if (_cache.ContainsKey(workspaceArtifactId))
-			{
-				workspaceGuid = _cache[workspaceArtifactId];
-			}
-			else
-			{
-				workspaceGuid = await ReadWorkspaceGuidAsync(workspaceArtifactId).ConfigureAwait(false);
-				_cache.Add(workspaceArtifactId, workspaceGuid);
-			}
+            await _semaphoreSlim.WaitAsync();
+            try
+            {
+                if (_cache.ContainsKey(workspaceArtifactId))
+                {
+                    workspaceGuid = _cache[workspaceArtifactId];
+                }
+                else
+                {
+                    workspaceGuid = await ReadWorkspaceGuidAsync(workspaceArtifactId).ConfigureAwait(false);
+                    _cache.Add(workspaceArtifactId, workspaceGuid);
+                }
+            }
+            finally
+            {
+                _semaphoreSlim.Release();
+            }
 
-			return workspaceGuid;
+            return workspaceGuid;
 		}
 
 		private async Task<Guid> ReadWorkspaceGuidAsync(int workspaceArtifactId)
@@ -60,5 +71,10 @@ namespace Relativity.Sync
 				return queryResult.Objects.First().Guids.FirstOrDefault();
 			}
 		}
-	}
+
+        public void Dispose()
+        {
+            _semaphoreSlim?.Dispose();
+        }
+    }
 }
