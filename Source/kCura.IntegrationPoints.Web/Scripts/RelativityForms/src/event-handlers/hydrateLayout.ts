@@ -32,7 +32,7 @@ export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sou
     getDestinationDetails(sourceConfiguration, convenienceApi).then(label => {
         convenienceApi.fieldHelper.setValue("Destination Details", label);
     })
-    //convenienceApi.fieldHelper.setValue("Destination Details", getDestinationDetails(sourceConfiguration, convenienceApi));
+
     convenienceApi.fieldHelper.setValue("Overwrite Files", formatToYesOrNo(destinationConfiguration["OverwriteFiles"]));
     convenienceApi.fieldHelper.setValue("Start at record", sourceConfiguration["StartExportAtRecord"]);
     convenienceApi.fieldHelper.setValue("Volume", getVolume(sourceConfiguration));
@@ -68,7 +68,6 @@ export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sou
     convenienceApi.fieldHelper.setValue("Import Nested Items", formatToYesOrNo(convertToBool(sourceConfiguration["importNested"])));
 
     // import from FTP
-    // convenienceApi.fieldHelper.setValue("Destination RDO", ""); <- common for ftp and load file import 
     convenienceApi.fieldHelper.setValue("Host", sourceConfiguration["Host"]);
     convenienceApi.fieldHelper.setValue("Port", sourceConfiguration["Port"]);
     convenienceApi.fieldHelper.setValue("Protocol", sourceConfiguration["Protocol"]);
