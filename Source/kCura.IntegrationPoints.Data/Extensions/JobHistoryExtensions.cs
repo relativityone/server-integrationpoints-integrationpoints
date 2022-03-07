@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 
 namespace kCura.IntegrationPoints.Data.Extensions
 {
@@ -11,14 +12,22 @@ namespace kCura.IntegrationPoints.Data.Extensions
                 return string.Empty;
             }
 
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("JobistoryDetails:");
-            sb.AppendLine($"ArtifactId: {jobHistory.ArtifactId}");
-            sb.AppendLine($"BatchInstance: {jobHistory.BatchInstance}");
-            sb.AppendLine($"JobId: {jobHistory.JobID}");
-            sb.AppendLine($"JobStatus: {jobHistory.JobStatus?.Name}");
+            try
+            {
 
-            return sb.ToString();
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("JobistoryDetails:");
+                sb.AppendLine($"ArtifactId: {jobHistory.ArtifactId}");
+                sb.AppendLine($"BatchInstance: {jobHistory.BatchInstance}");
+                sb.AppendLine($"JobId: {jobHistory.JobID}");
+                sb.AppendLine($"JobStatus: {jobHistory.JobStatus?.Name}");
+
+                return sb.ToString();
+            }
+            catch(Exception)
+            {
+                return "<stringify_job_history_failed>";
+            }
         }
     }
 }

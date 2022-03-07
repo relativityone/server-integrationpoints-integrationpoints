@@ -42,7 +42,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			[LogCategory.Info] = 10
 		};
 
-		protected IAPILog Logger => _loggerLazy.Value;
+		protected virtual IAPILog Logger => _loggerLazy.Value;
 
 		protected IJobService JobService => _jobService;
 
@@ -281,6 +281,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void FinalizeJobExecution(Job job, TaskResult taskResult)
 		{
+			Logger.LogInformation("Finalize JobExecution: {job}", job.ToString());
 			FinalizeJobResult result = _jobService.FinalizeJob(job, ScheduleRuleFactory, taskResult);
 			LogJobState(job, result.JobState, null, result.Details);
 			LogFinalizeJob(job, result);

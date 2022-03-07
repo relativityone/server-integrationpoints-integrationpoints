@@ -19,6 +19,7 @@ using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Choice;
 using System;
 using FluentAssertions;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests
 {
@@ -182,6 +183,8 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 		private class TestAgent : Agent
 		{
+			private readonly Mock<IAPILog> _logMock;
+
 			public IWindsorContainer Container { get; }
 
 			public TestAgent(IWindsorContainer container) : base()
@@ -189,11 +192,16 @@ namespace kCura.IntegrationPoints.Agent.Tests
 				Container = container;
 				
 				JobExecutor = Container.Resolve<IJobExecutor>();
+
+				_logMock = new Mock<IAPILog>();
 			}
 
 			public TaskResult ProcessJob_Test(Job job) => ProcessJob(job);
 
 			protected override IWindsorContainer CreateAgentLevelContainer() => Container;
+
+			protected override IAPILog Logger => _logMock.Object;
+
 		}
 	}
 }
