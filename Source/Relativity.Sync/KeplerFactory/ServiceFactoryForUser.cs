@@ -18,7 +18,7 @@ namespace Relativity.Sync.KeplerFactory
 		private readonly IServiceFactoryFactory _serviceFactoryFactory;
 
 
-		internal ServiceFactoryForUser(IUserContextConfiguration userContextConfiguration, ISyncServiceManager servicesMgr, IAuthTokenGenerator tokenGenerator, IDynamicProxyFactory dynamicProxyFactory,
+		public ServiceFactoryForUser(IUserContextConfiguration userContextConfiguration, ISyncServiceManager servicesMgr, IAuthTokenGenerator tokenGenerator, IDynamicProxyFactory dynamicProxyFactory,
 			IServiceFactoryFactory serviceFactoryFactory, IRandom random, ISyncLog logger)
 		    : base (random, logger)
 		{
