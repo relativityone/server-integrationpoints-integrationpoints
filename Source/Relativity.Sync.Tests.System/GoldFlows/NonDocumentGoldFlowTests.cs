@@ -1,4 +1,10 @@
-﻿using Autofac;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Autofac;
+using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Interfaces.Shared.Models;
@@ -11,7 +17,6 @@ using Relativity.Sync.SyncConfiguration.Options;
 using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
-using Relativity.Sync.Tests.System.Core.Helpers.APIHelper;
 using Relativity.Sync.Tests.System.Core.Runner;
 using Relativity.Sync.Tests.System.Core.Stubs;
 using Relativity.Telemetry.APM;
@@ -25,23 +30,23 @@ using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Tests.System.GoldFlows
 {
-	[TestFixture]
-	internal class NonDocumentGoldFlowTests : SystemTest
-	{
-		private const string EntityArtifactTypeName = "Entity";
-		private const string ViewName = "Entities - Legal Hold View";
+    [TestFixture]
+    internal class NonDocumentGoldFlowTests : SystemTest
+    {
+        private const string EntityArtifactTypeName = "Entity";
+        private const string ViewName = "Entities - Legal Hold View";
+        private const string ManagerName = "My Manager";
 
-		private WorkspaceRef _sourceWorkspace;
-		private WorkspaceRef _destinationWorkspace;
-		private int _sourceEntityArtifactTypeId;
-		private int _destinationEntityArtifactTypeId;
-		private int _viewArtifactId;
+        private readonly int _entitiesCount = 5;
 
-		protected override async Task ChildSuiteSetup()
-		{
-			//_sourceWorkspace = await Environment.GetWorkspaceAsync(1018612).ConfigureAwait(false);
-			//_destinationWorkspace = await Environment.GetWorkspaceAsync(1018614).ConfigureAwait(false);
+        private WorkspaceRef _sourceWorkspace;
+        private WorkspaceRef _destinationWorkspace;
+        private int _sourceEntityArtifactTypeId;
+        private int _destinationEntityArtifactTypeId;
+        private int _viewArtifactId;
 
+        protected override async Task ChildSuiteSetup()
+        {
 			_sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 			_destinationWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
 

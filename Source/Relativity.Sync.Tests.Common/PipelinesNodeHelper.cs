@@ -170,8 +170,20 @@ namespace Relativity.Sync.Tests.Common
 				{
 					typeof(INonDocumentJobStartMetricsConfiguration)
 				},
-				new[] {typeof(ISnapshotPartitionConfiguration)},
-				new[] {typeof(IObjectLinkingSnapshotPartitionConfiguration)},
+				new[]
+				{
+					typeof(ISnapshotPartitionConfiguration),
+					typeof(IObjectLinkingSnapshotPartitionConfiguration),
+					typeof(INonDocumentSynchronizationConfiguration),
+					typeof(INonDocumentObjectLinkingConfiguration)
+				},
+				new[] {typeof(IJobStatusConsolidationConfiguration)},
+				new[]
+				{
+					typeof(INotificationConfiguration),
+					typeof(IAutomatedWorkflowTriggerConfiguration)
+				},
+				new[] {typeof(IJobCleanupConfiguration)}
 			};
 		}
 	}

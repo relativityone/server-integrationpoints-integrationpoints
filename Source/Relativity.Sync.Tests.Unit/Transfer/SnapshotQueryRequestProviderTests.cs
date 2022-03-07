@@ -297,6 +297,32 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			VerifyQueryRequest(request, expectedDocumentCondition, expectedFieldRefs);
 		}
 
+		[Test]
+		public async Task GetRequestForLinkingNonDocumentObjectsAsync_ShouldPrepareQuery()
+		{
+			// Arrange
+			List<FieldInfoDto> fieldsForLinks = GetFieldsForLinks().ToList();
+
+			_fieldManagerFake.Setup(x => x.GetMappedFieldsNonDocumentForLinksAsync(It.IsAny<CancellationToken>()))
+				.ReturnsAsync(fieldsForLinks);
+			
+			
+			// Act
+			QueryRequest request = await _sut.GetRequestForLinkingNonDocumentObjectsAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			const string expectedDocumentCondition = "('Link 1' ISSET) OR ('Link 2' ISSET)";
+			IEnumerable<FieldRef> expectedFieldRefs = fieldsForLinks.Select(dto => new FieldRef {Name = dto.SourceFieldName});
+			VerifyQueryRequest(request, expectedDocumentCondition, expectedFieldRefs);
+		}
+
+		private IEnumerable<FieldInfoDto> GetFieldsForLinks()
+		{
+			yield return new FieldInfoDto(SpecialFieldType.None, "Id", "Id", true, false);
+			yield return new FieldInfoDto(SpecialFieldType.None, "Link 1", "Link 1", false, false);
+			yield return new FieldInfoDto(SpecialFieldType.None, "Link 2", "Link 2", false, false);
+		}
+
 		private void VerifyQueryRequest(QueryRequest actualRequest, 
 			string expectedCondition, IEnumerable<FieldRef> expectedFields)
 		{

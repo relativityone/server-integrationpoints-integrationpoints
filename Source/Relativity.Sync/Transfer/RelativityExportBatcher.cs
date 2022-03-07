@@ -16,10 +16,10 @@ namespace Relativity.Sync.Transfer
 		private readonly Guid _runId;
 		private readonly int _sourceWorkspaceArtifactId;
 
-		public RelativityExportBatcher(ISourceServiceFactoryForUser serviceFactory, IBatch batch, Guid runId, int sourceWorkspaceArtifactId)
+		public RelativityExportBatcher(ISourceServiceFactoryForUser serviceFactory, IBatch batch, int sourceWorkspaceArtifactId)
 		{
 			_serviceFactory = serviceFactory;
-			_runId = runId;
+			_runId = batch.ExportRunId;
 			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
 
 			_batchCurrentIndex = batch.StartingIndex;

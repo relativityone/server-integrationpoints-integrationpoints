@@ -63,7 +63,37 @@ namespace Relativity.Sync.Executors
             return job;
         }
 
-		public async Task<IImportJob> CreateImageImportJobAsync(IImageSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
+        public async Task<IImportJob> CreateRdoLinkingJobAsync(INonDocumentSynchronizationConfiguration configuration, IBatch batch,
+	        CancellationToken token)
+        {
+	        ISourceWorkspaceDataReader sourceWorkspaceDataReader = _dataReaderFactory.CreateNonDocumentObjectLinkingSourceWorkspaceDataReader(batch, token);
+	        IImportAPI importApi = await GetImportApiAsync().ConfigureAwait(false);
+	        ImportBulkArtifactJob importJob = importApi.NewObjectImportJob(configuration.DestinationRdoArtifactTypeId);
+
+	        SetCommonIapiSettings(configuration, importJob.Settings);
+
+	        importJob.Settings.OverwriteMode = OverwriteModeEnum.Overlay;
+	        
+	        importJob.SourceData.SourceData = sourceWorkspaceDataReader;
+	        importJob.Settings.ArtifactTypeId = configuration.DestinationRdoArtifactTypeId;
+
+	        importJob.Settings.MultiValueDelimiter = configuration.MultiValueDelimiter;
+	        importJob.Settings.NestedValueDelimiter = configuration.NestedValueDelimiter;
+
+	        importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles;
+	        importJob.Settings.SelectedIdentifierFieldName = GetIdentifierFieldName();
+
+	        var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);
+
+	        ImportJob job = new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository, configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
+
+	        _logger.LogInformation("Import Settings: {@settings}",
+		        NonDocumentImportSettingsForLogging.CreateWithoutSensitiveData(importJob.Settings));
+
+	        return job;
+        }
+
+        public async Task<IImportJob> CreateImageImportJobAsync(IImageSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
 		{
 			ISourceWorkspaceDataReader sourceWorkspaceDataReader = _dataReaderFactory.CreateImageSourceWorkspaceDataReader(batch, token);
 			IImportAPI importApi = await GetImportApiAsync().ConfigureAwait(false);

@@ -93,9 +93,12 @@ namespace Relativity.Sync.Transfer
 			return new FieldInfoDto(specialFieldType, sourceFieldName, destinationFieldName, false, false);
 		}
 
-		public static FieldInfoDto DocumentField(string sourceFieldName, string destinationFieldName, bool isIdentifier)
+		public static FieldInfoDto DocumentField(string sourceFieldName, string destinationFieldName, bool isIdentifier, RelativityDataType dataType = RelativityDataType.FixedLengthText)
 		{
-			return new FieldInfoDto(SpecialFieldType.None, sourceFieldName, destinationFieldName, isIdentifier, true);
+			return new FieldInfoDto(SpecialFieldType.None, sourceFieldName, destinationFieldName, isIdentifier, true)
+			{
+				RelativityDataType = dataType
+			};
 		}
 
 		public static FieldInfoDto FolderPathFieldFromDocumentField(string displayName)

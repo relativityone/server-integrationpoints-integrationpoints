@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Relativity.Sync.Configuration
 {
@@ -6,12 +7,12 @@ namespace Relativity.Sync.Configuration
 	{
 		int TotalRecordsCount { get; }
 
-		int BatchSize { get; }
-		
 		int SourceWorkspaceArtifactId { get; }
 
 		int SyncConfigurationArtifactId { get; }
 
         Guid ExportRunId { get; }
+
+		Task<int> GetSyncBatchSizeAsync();
 	}
 }

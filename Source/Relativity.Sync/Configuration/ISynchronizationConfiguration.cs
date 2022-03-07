@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Relativity.Sync.Configuration
 {
@@ -37,12 +38,14 @@ namespace Relativity.Sync.Configuration
 		string FolderPathSourceFieldName { get; set; }
 
 		bool MoveExistingDocuments { get; }
-		
+
 		int DataSourceArtifactId { get; }
 
 		char MultiValueDelimiter { get; }
 
 		char NestedValueDelimiter { get; }
 
+
+		Task<int> GetImportApiBatchSizeAsync();
 	}
 }

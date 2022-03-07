@@ -75,7 +75,7 @@ namespace Relativity.Sync.Tests.System
 			ConfigurationStub configuration = new ConfigurationStub()
 			{
 				TotalRecordsCount = totalRecordsCount,
-				BatchSize = batchSize,
+				SyncBatchSize = batchSize,
 				ExportRunId = Guid.Empty,
 				SourceWorkspaceArtifactId = _workspaceId,
 				SyncConfigurationArtifactId = _syncConfigurationId
@@ -111,7 +111,7 @@ namespace Relativity.Sync.Tests.System
 			ConfigurationStub configuration = new ConfigurationStub()
 			{
 				TotalRecordsCount = totalRecordsCount,
-				BatchSize = batchSize,
+				SyncBatchSize = batchSize,
 				ExportRunId = _EXPORT_RUN_ID,
 				SourceWorkspaceArtifactId = _workspaceId,
 				SyncConfigurationArtifactId = _syncConfigurationId
@@ -148,7 +148,7 @@ namespace Relativity.Sync.Tests.System
 			ConfigurationStub configuration = new ConfigurationStub()
 			{
 				TotalRecordsCount = totalRecordsCount,
-				BatchSize = newBatchSize,
+				SyncBatchSize = newBatchSize,
 				ExportRunId = _EXPORT_RUN_ID,
 				SourceWorkspaceArtifactId = _workspaceId,
 				SyncConfigurationArtifactId = _syncConfigurationId

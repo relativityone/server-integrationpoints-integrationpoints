@@ -33,8 +33,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
             configuration.Setup(x => x.SyncConfigurationArtifactId).Returns(_SYNC_CONF_ID);
-            configuration.Setup(x => x.BatchSize).Returns(1);
             configuration.Setup(x => x.TotalRecordsCount).Returns(ten);
+            configuration.Setup(x => x.GetSyncBatchSizeAsync()).ReturnsAsync(1);
 
             return configuration.Object;
         }
@@ -45,8 +45,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
             configuration.Setup(x => x.SyncConfigurationArtifactId).Returns(_SYNC_CONF_ID);
-            configuration.Setup(x => x.BatchSize).Returns(1);
             configuration.Setup(x => x.TotalRecordsCount).Returns(items);
+            configuration.Setup(x => x.GetSyncBatchSizeAsync()).ReturnsAsync(1);
 
             return configuration.Object;
         }
@@ -55,12 +55,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
         {
             const int totalItems = 40;
             const int batchSize = 30;
+
             Mock<IObjectLinkingSnapshotPartitionConfiguration> configuration = new Mock<IObjectLinkingSnapshotPartitionConfiguration>();
 
             configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
             configuration.Setup(x => x.SyncConfigurationArtifactId).Returns(_SYNC_CONF_ID);
-            configuration.Setup(x => x.BatchSize).Returns(batchSize);
             configuration.Setup(x => x.TotalRecordsCount).Returns(totalItems);
+            configuration.Setup(x => x.GetSyncBatchSizeAsync()).ReturnsAsync(batchSize);
 
             return configuration.Object;
         }
@@ -71,8 +72,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
             configuration.Setup(x => x.SyncConfigurationArtifactId).Returns(_SYNC_CONF_ID);
-            configuration.Setup(x => x.BatchSize).Returns(itemsSize);
             configuration.Setup(x => x.TotalRecordsCount).Returns(itemsSize);
+            configuration.Setup(x => x.GetSyncBatchSizeAsync()).ReturnsAsync(itemsSize);
 
             return configuration.Object;
         }

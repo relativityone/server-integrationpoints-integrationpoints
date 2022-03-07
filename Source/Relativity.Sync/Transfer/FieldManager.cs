@@ -18,10 +18,9 @@ namespace Relativity.Sync.Transfer
 	/// </summary>
 	internal sealed class FieldManager : IFieldManager
 	{
-		private List<FieldInfoDto> _mappedDocumentFields;
+		private List<FieldInfoDto> _mappedFieldsCache;
 		private IReadOnlyList<FieldInfoDto> _imageAllFields;
 		private IReadOnlyList<FieldInfoDto> _nativeAllFields;
-		private IReadOnlyList<FieldInfoDto> _nonDocumentWithoutLinksFields;
 		
 		private readonly IFieldConfiguration _configuration;
 		private readonly IObjectFieldTypeRepository _objectFieldTypeRepository;
@@ -123,12 +122,13 @@ namespace Relativity.Sync.Transfer
 
 		public async Task<IList<FieldInfoDto>> GetMappedFieldsAsync(CancellationToken token)
 		{
-			if (_mappedDocumentFields == null)
+			if (_mappedFieldsCache == null)
 			{
 				List<FieldInfoDto> fieldInfos = _configuration.GetFieldMappings().Select(CreateFieldInfoFromFieldMap).ToList();
-				_mappedDocumentFields = await EnrichFieldsWithRelativityDataTypesAsync(fieldInfos, token).ConfigureAwait(false);
+				_mappedFieldsCache = await EnrichFieldsWithRelativityDataTypesAsync(fieldInfos, token).ConfigureAwait(false);
+				EnrichFieldsWithIndex(_mappedFieldsCache);
 			}
-			return _mappedDocumentFields;
+			return _mappedFieldsCache;
 		}
 
 		public async Task<IReadOnlyList<FieldInfoDto>> GetMappedFieldNonDocumentWithoutLinksAsync(
@@ -137,12 +137,21 @@ namespace Relativity.Sync.Transfer
 			IList<FieldInfoDto> fieldInfos = await GetMappedFieldsAsync(token).ConfigureAwait(false);
 
 			string[] namesOfFieldsOfTheSameType = await GetSameTypeFieldNamesAsync(_configuration.SourceWorkspaceArtifactId).ConfigureAwait(false);
-			
-			_nonDocumentWithoutLinksFields = fieldInfos.Where(f => !namesOfFieldsOfTheSameType.Any( n => n == f.SourceFieldName)).ToList();
-			
-			return _nonDocumentWithoutLinksFields;
+
+			List<FieldInfoDto> result = fieldInfos.Where(f => !namesOfFieldsOfTheSameType.Any( n => n == f.SourceFieldName)).ToList();
+			return  EnrichFieldsWithIndex(result);
 		}
-		
+
+		public async Task<IReadOnlyList<FieldInfoDto>> GetMappedFieldsNonDocumentForLinksAsync(CancellationToken token)
+		{
+			IList<FieldInfoDto> fieldInfos = await GetMappedFieldsAsync(token).ConfigureAwait(false);
+
+			string[] namesOfFieldsOfTheSameType = await GetSameTypeFieldNamesAsync(_configuration.SourceWorkspaceArtifactId).ConfigureAwait(false);
+
+			List<FieldInfoDto> result = fieldInfos.Where(f => f.IsIdentifier || namesOfFieldsOfTheSameType.Any( n => n == f.SourceFieldName)).ToList();
+			return EnrichFieldsWithIndex(result);
+		}
+
 		public async Task<string[]> GetSameTypeFieldNamesAsync(int workspaceId)
 		{
 			string rdoTypeName = await GetRdoTypeNameAsync(_configuration.SourceWorkspaceArtifactId, _configuration.RdoArtifactTypeId);

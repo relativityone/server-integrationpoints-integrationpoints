@@ -21,10 +21,9 @@ namespace Relativity.Sync.Transfer
 			return _fieldManager.GetMappedFieldNonDocumentWithoutLinksAsync(token);
 		}
 
-		protected override async Task<IBatchDataReader> CreateDataReaderAsync(DataTable templateDataTable, int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token)
+		protected override Task<IBatchDataReader> CreateDataReaderAsync(DataTable templateDataTable, int sourceWorkspaceArtifactId, RelativityObjectSlim[] batch, CancellationToken token)
 		{
-			FieldInfoDto identifierField = await _fieldManager.GetObjectIdentifierFieldAsync(token).ConfigureAwait(false);
-			return new NonDocumentBatchDataReader(templateDataTable, sourceWorkspaceArtifactId, batch, _allFields, _fieldManager, _exportDataSanitizer, ItemLevelErrorHandler, token, _logger);
+			return Task.FromResult((IBatchDataReader) new NonDocumentBatchDataReader(templateDataTable, sourceWorkspaceArtifactId, batch, _allFields, _fieldManager, _exportDataSanitizer, ItemLevelErrorHandler, token, _logger));
 		}
 	}
 }

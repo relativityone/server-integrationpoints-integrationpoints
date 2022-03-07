@@ -16,7 +16,7 @@ namespace Relativity.Sync.Tests.Common
 		IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration, IRetryDataSourceSnapshotConfiguration, IPipelineSelectorConfiguration,
 		IDocumentSynchronizationConfiguration, INonDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, IPreValidationConfiguration, IRdoGuidConfiguration,
 		IImageJobStartMetricsConfiguration, IDocumentJobStartMetricsConfiguration, ISnapshotQueryConfiguration, IMetricsConfiguration, IStatisticsConfiguration, INonDocumentJobStartMetricsConfiguration,
-		IJobHistoryErrorRepositoryConfigration
+		IJobHistoryErrorRepositoryConfigration, INonDocumentObjectLinkingConfiguration
 	{
 		private IList<FieldMap> _fieldMappings = new List<FieldMap>();
 		private string _jobName = String.Empty;
@@ -219,7 +219,7 @@ namespace Relativity.Sync.Tests.Common
 			return Task.CompletedTask;
 		}
 
-		public Guid ObjectLinkingSnapshotId { get; set; }
+		public Guid? ObjectLinkingSnapshotId { get; set; }
 
 		public int ObjectLinkingSnapshotRecordsCount { get; set; }
 
@@ -229,11 +229,10 @@ namespace Relativity.Sync.Tests.Common
 
 		public int TotalRecordsCount { get; set; }
 
-		public int BatchSize { get; set; }
-
 		public Guid ExportRunId { get; set; }
 
 		public int? JobHistoryToRetryId { get; set; }
+
 		public string SyncVersion { get; set;  }
 
 		public bool IncludeOriginalImageIfNotFoundInProductions { get; set; }
@@ -259,5 +258,20 @@ namespace Relativity.Sync.Tests.Common
 		public string ExecutingApplicationVersion { get; set; }
 
 		public bool LogItemLevelErrors { get; set; } = true;
-	}
+		public bool LinkingExportExists => ObjectLinkingSnapshotId.HasValue;
+
+		public int ImportApiBatchSize { get; set; } = 1000;
+
+		public int SyncBatchSize { get; set; } = 25000;
+
+		public Task<int> GetImportApiBatchSizeAsync()
+		{
+			return Task.FromResult(ImportApiBatchSize);
+		}
+
+        public Task<int> GetSyncBatchSizeAsync()
+        {
+			return Task.FromResult(SyncBatchSize);
+        }
+    }
 }

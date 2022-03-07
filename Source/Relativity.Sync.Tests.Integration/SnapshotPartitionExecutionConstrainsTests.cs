@@ -69,7 +69,7 @@ namespace Relativity.Sync.Tests.Integration
 			const int numberOfItems = 100;
 			const int batchSize = 100;
 
-			_snapshotPartitionConfiguration.SetupGet(x => x.BatchSize).Returns(batchSize);
+			_snapshotPartitionConfiguration.Setup(x => x.GetSyncBatchSizeAsync()).ReturnsAsync(batchSize);
 			_snapshotPartitionConfiguration.SetupGet(x => x.TotalRecordsCount).Returns(testTotalNumberOfItems);
 			const int batchArtifactId = 1;
 			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), 1, 1))

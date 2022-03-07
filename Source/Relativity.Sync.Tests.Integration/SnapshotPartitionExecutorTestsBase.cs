@@ -221,8 +221,8 @@ namespace Relativity.Sync.Tests.Integration
         {
             Mock<ISnapshotPartitionConfiguration> snapshotPartitionConfiguration = new Mock<ISnapshotPartitionConfiguration>(MockBehavior.Loose);
 
-            snapshotPartitionConfiguration.SetupGet(x => x.BatchSize).Returns(batchSize);
-            snapshotPartitionConfiguration.SetupGet(x => x.TotalRecordsCount).Returns(totalRecords);
+            snapshotPartitionConfiguration.Setup(x => x.GetSyncBatchSizeAsync()).ReturnsAsync(batchSize);
+			snapshotPartitionConfiguration.SetupGet(x => x.TotalRecordsCount).Returns(totalRecords);
 
             return (T)snapshotPartitionConfiguration.Object;
         }
