@@ -3,10 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Extensions;
-using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.RDOs;
 
 namespace Relativity.Sync.Tests.Unit.Extensions
@@ -24,12 +24,12 @@ namespace Relativity.Sync.Tests.Unit.Extensions
             var objectManagerMock = new Mock<IObjectManager>();
             objectManagerMock.Setup(x => x.UpdateAsync(workspaceId, It.IsAny<UpdateRequest>())).Returns(Task.FromResult(new UpdateResult()));
 
-            var syncServicesManagerMock = new Mock<ISourceServiceFactoryForAdmin>();
-            syncServicesManagerMock.Setup(x => x.CreateProxyAsync<IObjectManager>())
-                .Returns(Task.FromResult(objectManagerMock.Object));
+            var syncServicesManagerMock = new Mock<ISyncServiceManager>();
+            syncServicesManagerMock.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.System))
+                .Returns(objectManagerMock.Object);
 
             // Act
-            await syncServicesManagerMock.Object.PrepareSyncConfigurationForResumeAsync(workspaceId, configurationId)
+            await syncServicesManagerMock.Object.PrepareSyncConfigurationForResumeAsync(workspaceId, configurationId, new Mock<ISyncLog>().Object)
                 .ConfigureAwait(false);
 
             // Assert

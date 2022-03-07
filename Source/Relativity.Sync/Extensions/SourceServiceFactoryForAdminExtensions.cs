@@ -14,15 +14,18 @@ namespace Relativity.Sync.Extensions
         /// <summary>
         /// Prepares SyncConfiguration for resuming paused job 
         /// </summary>
-        internal static Task PrepareSyncConfigurationForResumeAsync(this ISourceServiceFactoryForAdmin serviceManager, int workspaceId,
-            int syncConfigurationId)
+        public static Task PrepareSyncConfigurationForResumeAsync(this ISyncServiceManager serviceManager, int workspaceId,
+            int syncConfigurationId, ISyncLog logger)
         {
             var rdo = new SyncConfigurationRdo
             {
                 ArtifactId = syncConfigurationId,
             };
 
-            return new RdoManager(new EmptyLogger(), serviceManager, new RdoGuidProvider())
+            ServiceFactoryForAdminFactory servicesManagerForAdminFactory = new ServiceFactoryForAdminFactory(serviceManager, logger);
+            ISourceServiceFactoryForAdmin servicesMgrForAdmin = servicesManagerForAdminFactory.Create();
+
+            return new RdoManager(new EmptyLogger(), servicesMgrForAdmin, new RdoGuidProvider())
                 .SetValueAsync(workspaceId, rdo, x => x.Resuming, true);
         }
     }
