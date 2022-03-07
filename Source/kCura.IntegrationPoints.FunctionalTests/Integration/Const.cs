@@ -28,10 +28,22 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		{
 			public const string _MY_FIRST_PROVIDER = "C9DE331D-2DCA-4F78-85BD-91493D0B9B37";
 		}
-
-		public static class ArtifactTypesIds
+		
+		public static class Document
 		{
-			public static readonly int ENTITY_TYPE_ARTIFACT_ID = ArtifactProvider.NextId();
+			public static readonly string _DOCUMENT_NAME = "Document";
+			public static readonly Guid _DOCUMENT_GUID = new Guid("2A3F1212-C8CA-4FA9-AD6B-F76C97F05438");
+			
+		}
+
+
+		public static class Entity
+		{
+			public static readonly string _ENTITY_OBJECT_NAME = "Entity";
+			public static readonly string _ENTITY_OBJECT_FIRST_NAME = "First Name";
+			public static readonly string _ENTITY_OBJECT_LAST_NAME = "Last Name";
+			public static readonly int _ENTITY_TYPE_ARTIFACT_ID = ArtifactProvider.NextId();
+			public static readonly Guid _ENTITY_OBJECT_GUID = new Guid("D216472D-A1AA-4965-8B36-367D43D4E64C");
 		}
 
 		public static class Choices

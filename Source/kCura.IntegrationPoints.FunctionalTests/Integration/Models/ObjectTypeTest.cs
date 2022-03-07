@@ -4,26 +4,19 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
-	public class FieldTest : RdoTestBase
+	public class ObjectTypeTest : RdoTestBase
 	{
 		public string Name { get; set; }
-
-		public int ObjectTypeId { get; set; }
-
-		public bool IsIdentifier { get; set; }
-
+		public string ObjectType { get; set; }
+		public int ObjectTypeArtifactTypeId { get; set; }
+		public int ArtifactTypeId { get; set; }
 		public Guid Guid { get; set; }
 
-		public FieldTest() : base("Field")
+		public ObjectTypeTest() : base("Object Type")
 		{
 		}
-
-		public FieldTest(int artifactId) : base("Field", artifactId)
-		{
-		}
-
+		
 		public override List<Guid> Guids => new List<Guid>();
-
 		public override RelativityObject ToRelativityObject()
 		{
 			return new RelativityObject
@@ -40,19 +33,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 					{
 						Field = new Field
 						{
-							Name = "Is Identifier"
-						},
-						Value = IsIdentifier
-					},
-					new FieldValuePair
-					{
-						Field = new Field
-						{
 							Name = "Name"
 						},
 						Value = Name
 					}
-				},
+				}
 			};
 		}
 	}

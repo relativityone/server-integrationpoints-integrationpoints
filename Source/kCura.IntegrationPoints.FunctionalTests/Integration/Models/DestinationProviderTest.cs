@@ -81,7 +81,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 			{
 				RelativityObject = ToRelativityObject(),
 				ArtifactId = ArtifactId,
-				ParentArtifactId = ParenObjectArtifactId,
+				ParentArtifactId = ParentObjectArtifactId,
 				Identifier = Identifier,
 				ApplicationIdentifier = ApplicationIdentifier,
 				Name = Name

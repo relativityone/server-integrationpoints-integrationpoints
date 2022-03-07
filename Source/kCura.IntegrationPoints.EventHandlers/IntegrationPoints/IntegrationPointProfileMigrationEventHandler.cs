@@ -221,7 +221,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			const string destinationFolderArtifactIdPropertyName = "FolderArtifactId";
 
 			JObject sourceConfiguration = JObject.Parse(sourceConfigurationJson);
-			sourceConfiguration[nameof(SourceConfiguration.SavedSearchArtifactId)] = 0;
+            sourceConfiguration[nameof(SourceConfiguration.SourceViewId)] = 0;
+            sourceConfiguration[nameof(SourceConfiguration.SavedSearchArtifactId)] = 0;
 			sourceConfiguration[nameof(SourceConfiguration.SourceWorkspaceArtifactId)] = WorkspaceID;
 			sourceConfiguration[destinationFolderArtifactIdPropertyName] = null;
 			string updatedSourceConfiguration = sourceConfiguration.ToString(Formatting.None);

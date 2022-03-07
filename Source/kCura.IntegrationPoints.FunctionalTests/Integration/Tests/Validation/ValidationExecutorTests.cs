@@ -56,6 +56,22 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
 			result.IsValid.Should().BeTrue();
 			result.Messages.Should().BeEmpty();
 		}
+		
+		[IdentifiedTest("794CAA0A-64D9-42A1-A3CA-0564014EF53C")]
+		public void ValidateOnSave_ShouldThrow_WhenMappingIdentifierOnly()
+		{
+			// Arrange
+			IntegrationPointTest integrationPoint = PrepareImportEntityFromLdapIntegrationPoint(true);
+			ValidationContext context = PrepareValidationContext(integrationPoint);
+			
+			IValidationExecutor sut = PrepareSut();
+			
+			// Act
+			Action validation = () => sut.ValidateOnSave(context); 
+			
+			// Assert
+			validation.ShouldThrow<IntegrationPointValidationException>($"Field: \"First Name\" should be mapped in Destination");
+		}
 
 		private void ValidateOnOperationShouldNotThrow(IntegrationPointTest integrationPoint, Action<IValidationExecutor, ValidationContext> validateAction)
 		{
@@ -96,7 +112,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
 
             return context;
 		}
-
 		private IntegrationPointTest PrepareSavedSearchSyncIntegrationPoint()
 		{
 			WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
@@ -109,6 +124,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
 			WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
 			IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateNonDocumentSyncIntegrationPoint(destinationWorkspace);
 			return integrationPoint;
+		}
+
+		private IntegrationPointTest PrepareImportEntityFromLdapIntegrationPoint(bool isMappingIdentifierOnly)
+		{
+			IntegrationPointTest integrationPoint =
+				SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportEntityFromLdapIntegrationPoint(isMappingIdentifierOnly: isMappingIdentifierOnly);
+			return integrationPoint;
+
 		}
 	}
 }
