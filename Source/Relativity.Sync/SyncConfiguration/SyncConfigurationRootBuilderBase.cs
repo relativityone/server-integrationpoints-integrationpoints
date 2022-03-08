@@ -16,7 +16,7 @@ namespace Relativity.Sync.SyncConfiguration
 {
     internal abstract class SyncConfigurationRootBuilderBase : ISyncConfigurationRootBuilder
     {
-        protected readonly IProxyFactory ServicesMgr;
+        protected readonly IProxyFactory ServiceFactoryForAdmin;
         protected readonly RdoOptions RdoOptions;
         private readonly IRdoManager _rdoManager;
         protected readonly ISerializer Serializer;
@@ -24,11 +24,11 @@ namespace Relativity.Sync.SyncConfiguration
 
         public readonly SyncConfigurationRdo SyncConfiguration;
 
-        protected SyncConfigurationRootBuilderBase(ISyncContext syncContext, IProxyFactory servicesMgr,
+        protected SyncConfigurationRootBuilderBase(ISyncContext syncContext, IProxyFactory serviceFactoryForAdmin,
             RdoOptions rdoOptions, IRdoManager rdoManager, ISerializer serializer)
         {
             SyncContext = syncContext;
-            ServicesMgr = servicesMgr;
+            ServiceFactoryForAdmin = serviceFactoryForAdmin;
             RdoOptions = rdoOptions;
             _rdoManager = rdoManager;
             Serializer = serializer;
@@ -185,7 +185,7 @@ namespace Relativity.Sync.SyncConfiguration
 
         private async Task ValidateGuidsAsync(List<(Guid Guid, string PropertyPath)> validationInfos)
         {
-            using (var guidManager = await ServicesMgr.CreateProxyAsync<IArtifactGuidManager>().ConfigureAwait(false))
+            using (var guidManager = await ServiceFactoryForAdmin.CreateProxyAsync<IArtifactGuidManager>().ConfigureAwait(false))
             {
                 List<GuidArtifactIDPair> guidArtifactIdPairs = await guidManager
                     .ReadMultipleArtifactIdsAsync(SyncContext.SourceWorkspaceId,

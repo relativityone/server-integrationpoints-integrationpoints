@@ -14,16 +14,16 @@ namespace Relativity.Sync.SyncConfiguration
     internal class NonDocumentSyncConfigurationBuilder : SyncConfigurationRootBuilderBase, INonDocumentSyncConfigurationBuilder
     {
 	    private readonly ISyncContext _syncContext;
-	    private readonly ISourceServiceFactoryForAdmin _serviceFactory;
+	    private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 	    private readonly IFieldsMappingBuilder _fieldsMappingBuilder;
         private Action<IFieldsMappingBuilder> _fielsdMappingAction;
 
-        public NonDocumentSyncConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForAdmin serviceFactory,
+        public NonDocumentSyncConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
             IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, NonDocumentSyncOptions options,
-            RdoOptions rdoOptions, RdoManager rdoManager) : base(syncContext, serviceFactory, rdoOptions, rdoManager, serializer)
+            RdoOptions rdoOptions, RdoManager rdoManager) : base(syncContext, serviceFactoryForAdmin, rdoOptions, rdoManager, serializer)
         {
 	        _syncContext = syncContext;
-	        _serviceFactory = serviceFactory;
+	        _serviceFactoryForAdmin = serviceFactoryForAdmin;
 	        _fieldsMappingBuilder = fieldsMappingBuilder;
 
             SyncConfiguration.RdoArtifactTypeId = options.RdoArtifactTypeId;
@@ -58,7 +58,7 @@ namespace Relativity.Sync.SyncConfiguration
 
         private async Task ValidateViewExistsAsync()
         {
-	        using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+	        using (IObjectManager objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 	        {
 		        QueryRequest request = new QueryRequest()
 		        {

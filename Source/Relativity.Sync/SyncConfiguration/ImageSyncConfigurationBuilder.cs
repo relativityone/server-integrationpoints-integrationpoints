@@ -11,10 +11,10 @@ namespace Relativity.Sync.SyncConfiguration
 	{
 		private readonly IFieldsMappingBuilder _fieldsMappingBuilder;
 
-		internal ImageSyncConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForAdmin serviceFactory,
+		internal ImageSyncConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
 			IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, ImageSyncOptions options,
 			RdoOptions rdoOptions, IRdoManager rdoManager) 
-			: base(syncContext, serviceFactory, rdoOptions, rdoManager, serializer)
+			: base(syncContext, serviceFactoryForAdmin, rdoOptions, rdoManager, serializer)
 		{
 			_fieldsMappingBuilder = fieldsMappingBuilder;
 
