@@ -1,5 +1,4 @@
-﻿import { Stats } from "webpack";
-import { IConvenienceApi } from "../types/convenienceApi";
+﻿import { IConvenienceApi } from "../types/convenienceApi";
 
 export function transformLayout(layoutData, convenienceApi: IConvenienceApi, backingModelData) {
     try {
