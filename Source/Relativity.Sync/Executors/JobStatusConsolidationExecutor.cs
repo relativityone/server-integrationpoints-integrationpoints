@@ -16,14 +16,14 @@ namespace Relativity.Sync.Executors
 		private readonly IRdoGuidConfiguration _rdoGuidConfiguration;
 		private readonly IBatchRepository _batchRepository;
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
-		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
+		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 
-		public JobStatusConsolidationExecutor(IRdoGuidConfiguration rdoGuidConfiguration, IBatchRepository batchRepository, IJobStatisticsContainer jobStatisticsContainer, ISourceServiceFactoryForAdmin serviceFactory)
+		public JobStatusConsolidationExecutor(IRdoGuidConfiguration rdoGuidConfiguration, IBatchRepository batchRepository, IJobStatisticsContainer jobStatisticsContainer, ISourceServiceFactoryForAdmin serviceFactoryForAdmin)
 		{
 			_rdoGuidConfiguration = rdoGuidConfiguration;
 			_batchRepository = batchRepository;
 			_jobStatisticsContainer = jobStatisticsContainer;
-			_serviceFactory = serviceFactory;
+			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 		}
 
 		public async Task<ExecutionResult> ExecuteAsync(IJobStatusConsolidationConfiguration configuration, CompositeCancellationToken token)
@@ -81,7 +81,7 @@ namespace Relativity.Sync.Executors
 
 		private async Task<UpdateResult> UpdateJobHistoryAsync(IJobStatusConsolidationConfiguration configuration, int completedItemsCount, int failedItemsCount, int totalItemsCount)
 		{
-			using (var objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (var objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				var updateRequest = new UpdateRequest
 				{

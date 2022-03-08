@@ -26,7 +26,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
 		
 		private readonly ISyncLog _logger;
 
-		public SourcePermissionCheckBase(ISyncLog logger, ISourceServiceFactoryForUser sourceServiceFactory) : base(sourceServiceFactory)
+		public SourcePermissionCheckBase(ISyncLog logger, ISourceServiceFactoryForUser serviceFactoryForUser) : base(serviceFactoryForUser)
 		{
 			_logger = logger;
 		}

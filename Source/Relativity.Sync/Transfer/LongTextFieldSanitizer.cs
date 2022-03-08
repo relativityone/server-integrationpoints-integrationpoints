@@ -16,15 +16,15 @@ namespace Relativity.Sync.Transfer
 		private const string _BIG_LONG_TEXT_SHIBBOLETH = "#KCURA99DF2F0FEB88420388879F1282A55760#";
 
 		private readonly IImportStreamBuilder _importStreamBuilder;
-		private readonly ISourceServiceFactoryForUser _serviceFactory;
+		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private readonly IRetriableStreamBuilderFactory _streamBuilderFactory;
 		private readonly ISyncLog _logger;
 
 		public RelativityDataType SupportedType => RelativityDataType.LongText;
 
-		public LongTextFieldSanitizer(ISourceServiceFactoryForUser serviceFactory, IRetriableStreamBuilderFactory streamBuilderFactory, IImportStreamBuilder importStreamBuilder, ISyncLog logger)
+		public LongTextFieldSanitizer(ISourceServiceFactoryForUser serviceFactoryForUser, IRetriableStreamBuilderFactory streamBuilderFactory, IImportStreamBuilder importStreamBuilder, ISyncLog logger)
 		{
-			_serviceFactory = serviceFactory;
+			_serviceFactoryForUser = serviceFactoryForUser;
 			_streamBuilderFactory = streamBuilderFactory;
 			_importStreamBuilder = importStreamBuilder;
 			_logger = logger;
@@ -70,7 +70,7 @@ namespace Relativity.Sync.Transfer
 
 		private async Task<int> GetItemArtifactIdAsync(int workspaceArtifactId, string itemIdentifierSourceFieldName, string itemIdentifier)
 		{
-			using (var objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (var objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				var request = new QueryRequest
 				{
@@ -90,7 +90,7 @@ namespace Relativity.Sync.Transfer
 
 		private async Task<bool> IsFieldInUnicodeAsync(int workspaceArtifactId, string sanitizingSourceFieldName)
 		{
-			using (var objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (var objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				string conditionString = $"'Name' == '{sanitizingSourceFieldName}' AND 'Object Type Artifact Type ID' == {_DOCUMENT_OBJECT_TYPE_ARTIFACT_TYPE_ID}";
 				var request = new QueryRequest

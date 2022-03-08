@@ -12,14 +12,14 @@ namespace Relativity.Sync.Transfer
 		private int _batchCurrentIndex;
 		private int _remainingItems;
 
-		private readonly ISourceServiceFactoryForUser _serviceFactory;
+		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private readonly Guid _runId;
 		private readonly int _sourceWorkspaceArtifactId;
 
-		public RelativityExportBatcher(ISourceServiceFactoryForUser serviceFactory, IBatch batch, Guid runId, int sourceWorkspaceArtifactId)
+		public RelativityExportBatcher(ISourceServiceFactoryForUser serviceFactoryForUser, IBatch batch, int sourceWorkspaceArtifactId)
 		{
-			_serviceFactory = serviceFactory;
-			_runId = runId;
+			_serviceFactoryForUser = serviceFactoryForUser;
+			_runId = batch.ExportRunId;
 			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
 
 			_batchCurrentIndex = batch.StartingIndex;
@@ -34,7 +34,7 @@ namespace Relativity.Sync.Transfer
 				return Array.Empty<RelativityObjectSlim>();
 			}
 
-			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (IObjectManager objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				// Export API may not return all items in our batch (the actual results block size is configurable on the instance level),
 				// so we have to account for results paging.

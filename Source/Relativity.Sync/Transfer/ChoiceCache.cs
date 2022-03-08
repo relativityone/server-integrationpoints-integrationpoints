@@ -15,13 +15,13 @@ namespace Relativity.Sync.Transfer
         private const int _CHOICE_ARTIFACT_TYPE_ID = 7;
 
 		private readonly ISynchronizationConfiguration _configuration;
-		private readonly ISourceServiceFactoryForUser _serviceFactory;
+		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private readonly IDictionary<int, ChoiceWithParentInfo> _cache;
 
-		public ChoiceCache(ISynchronizationConfiguration configuration, ISourceServiceFactoryForUser serviceFactory)
+		public ChoiceCache(ISynchronizationConfiguration configuration, ISourceServiceFactoryForUser serviceFactoryForUser)
 		{
 			_configuration = configuration;
-			_serviceFactory = serviceFactory;
+			_serviceFactoryForUser = serviceFactoryForUser;
 			_cache = new Dictionary<int, ChoiceWithParentInfo>();
 		}
 
@@ -29,7 +29,7 @@ namespace Relativity.Sync.Transfer
 		{
 			var choicesWithParentInfo = new List<ChoiceWithParentInfo>();
 
-			using (var objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (var objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				foreach (Choice choice in choices)
 				{

@@ -31,8 +31,8 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			_objectManager = new Mock<IObjectManager>();
 
-			Mock<ISourceServiceFactoryForAdmin> serviceFactoryMock = new Mock<ISourceServiceFactoryForAdmin>();
-			serviceFactoryMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			Mock<ISourceServiceFactoryForAdmin> serviceFactoryForAdminMock = new Mock<ISourceServiceFactoryForAdmin>();
+			serviceFactoryForAdminMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 		}
 
 		[Test]
@@ -49,12 +49,12 @@ namespace Relativity.Sync.Tests.Integration
 			const int second = 1000;
 			_semaphoreSlim = new SemaphoreSlimStub(() => Thread.Sleep(second));
 			SyncJobParameters jobParameters = new SyncJobParameters(_ARTIFACT_ID, _WORKSPACE_ID, _WORKFLOW_ID);
-			var rdoManagerMock = new Mock<IRdoManager>();
-
-			rdoManagerMock.Setup(x => x.GetAsync<SyncConfigurationRdo>(It.IsAny<int>(), It.IsAny<int>()))
-				.ReturnsAsync(new SyncConfigurationRdo());
+            var rdoManagerMock = new Mock<IRdoManager>();
 			
-			rdoManagerMock.Setup(x => x.SetValueAsync(It.IsAny<int>(), It.IsAny<SyncConfigurationRdo>(),
+            rdoManagerMock.Setup(x => x.GetAsync<SyncConfigurationRdo>(It.IsAny<int>(), It.IsAny<int>()))
+				.ReturnsAsync(new SyncConfigurationRdo());
+
+            rdoManagerMock.Setup(x => x.SetValueAsync(It.IsAny<int>(), It.IsAny<SyncConfigurationRdo>(),
 					It.IsAny<Expression<Func<SyncConfigurationRdo, int>>>(), It.IsAny<int>()))
 				.Callback((int ws, SyncConfigurationRdo rdo, Expression<Func<SyncConfigurationRdo, int>> expression,
 					int value) =>

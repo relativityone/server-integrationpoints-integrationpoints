@@ -42,8 +42,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			_objectManager = new Mock<IObjectManager>();
 
-			Mock<ISourceServiceFactoryForUser> serviceFactory = new Mock<ISourceServiceFactoryForUser>();
-			serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			Mock<ISourceServiceFactoryForUser> serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
+			serviceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
 			_configuration = new Mock<IRetryDataSourceSnapshotConfiguration>();
 			_configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
@@ -57,7 +57,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Mock<IJobProgressUpdaterFactory> jobProgressUpdaterFactory = new Mock<IJobProgressUpdaterFactory>();
 			jobProgressUpdaterFactory.Setup(x => x.CreateJobProgressUpdater()).Returns(_jobProgressUpdater.Object);
 
-			_instance = new RetryDataSourceSnapshotExecutor(serviceFactory.Object, jobProgressUpdaterFactory.Object,
+			_instance = new RetryDataSourceSnapshotExecutor(serviceFactoryForUser.Object, jobProgressUpdaterFactory.Object,
 				new EmptyLogger(), _snapshotQueryProviderFake.Object);
 		}
 

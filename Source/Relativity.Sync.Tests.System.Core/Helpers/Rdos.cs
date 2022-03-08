@@ -497,7 +497,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 		{
 			serializer = serializer ?? new JSONSerializer();
 			logger = logger ?? TestLogHelper.GetLogger();
-			var rdoManager = new RdoManager(logger, new ServicesManagerStub(), new RdoGuidProvider());
+			var rdoManager = new RdoManager(logger, new SourceServiceFactoryStub(), new RdoGuidProvider());
 			SyncConfigurationRdo configuration = GetConfiguration(configurationStub, serializer);
 
 			await rdoManager.CreateAsync(workspaceId, configuration).ConfigureAwait(false);
@@ -535,7 +535,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 		private static IRdoManager CreateRdoManager()
 		{
 			ISyncLog log = TestLogHelper.GetLogger();
-			return new RdoManager(log, new ServicesManagerStub(), new RdoGuidProvider());
+			return new RdoManager(log, new SourceServiceFactoryStub(), new RdoGuidProvider());
 		}
 	}
 }

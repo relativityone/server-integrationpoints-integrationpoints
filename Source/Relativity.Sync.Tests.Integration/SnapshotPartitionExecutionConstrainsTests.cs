@@ -47,9 +47,9 @@ namespace Relativity.Sync.Tests.Integration
 
 			containerBuilder.RegisterInstance(_syncLog.Object).As<ISyncLog>();
 
-			var serviceFactoryMock = new Mock<ISourceServiceFactoryForAdmin>();
-			serviceFactoryMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-			containerBuilder.RegisterInstance(serviceFactoryMock.Object).As<ISourceServiceFactoryForAdmin>();
+			var serviceFactoryForAdminMock = new Mock<ISourceServiceFactoryForAdmin>();
+			serviceFactoryForAdminMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			containerBuilder.RegisterInstance(serviceFactoryForAdminMock.Object).As<ISourceServiceFactoryForAdmin>();
 
 			containerBuilder.RegisterType<SnapshotPartitionExecutionConstrains>().As<IExecutionConstrains<ISnapshotPartitionConfiguration>>();
 

@@ -24,15 +24,12 @@ namespace Relativity.Sync.KeplerFactory
 		private readonly Func<Task<TService>> _keplerServiceFactory;
 		private readonly IRandom _random;
 		private readonly ISyncLog _logger;
-
-		private readonly ISyncMetrics _syncMetrics;
 		private readonly System.Reflection.FieldInfo _currentInterceptorIndexField;
 
 		private static readonly MethodInfo _handleAsyncMethodInfo = typeof(KeplerServiceInterceptor<TService>).GetMethod(nameof(HandleAsyncWithResultAsync), BindingFlags.Instance | BindingFlags.NonPublic);
 
-		public KeplerServiceInterceptor(ISyncMetrics syncMetrics, Func<IStopwatch> stopwatch, Func<Task<TService>> keplerServiceFactory, IRandom random, ISyncLog logger)
+		public KeplerServiceInterceptor(Func<IStopwatch> stopwatch, Func<Task<TService>> keplerServiceFactory, IRandom random, ISyncLog logger)
 		{
-			_syncMetrics = syncMetrics;
 			_stopwatch = stopwatch;
 			_keplerServiceFactory = keplerServiceFactory;
 			_random = random;
@@ -175,16 +172,7 @@ namespace Relativity.Sync.KeplerFactory
 				stopwatch.Stop();
 
 				LogIfExecutionSuccessfullyRetried(invocationKepler, invocationStatus, httpRetries, authTokenRetries);
-
-				try
-				{
-					ReportMetrics(invocationKepler, invocationStatus, stopwatch.Elapsed, httpRetries, authTokenRetries);
-				}
-				catch (Exception e)
-				{
-					_logger.LogError(e, "Reporting metrics during interception failed.");
-				}
-			}
+            }
 		}
 
 		private static MethodType GetDelegateType(IInvocation invocation)
@@ -242,30 +230,5 @@ namespace Relativity.Sync.KeplerFactory
 				}
 			}
 		}
-
-		private void ReportMetrics(string invocationKepler, ExecutionStatus status, TimeSpan duration, int numberOfHttpRetries, int authTokenExpirationCount)
-		{
-			KeplerMetric metric = new KeplerMetric(invocationKepler)
-			{
-				ExecutionStatus = status,
-				Duration = duration.TotalMilliseconds
-			};
-
-			if (status == ExecutionStatus.Completed)
-			{
-				metric.NumberOfHttpRetriesForSuccess = numberOfHttpRetries;
-			}
-			else
-			{
-				metric.NumberOfHttpRetriesForFailed = numberOfHttpRetries;
-			}
-
-			if (authTokenExpirationCount > 0)
-			{
-				metric.AuthTokenExpirationCount = authTokenExpirationCount;
-			}
-
-			_syncMetrics.Send(metric);
-		}
-	}
+    }
 }

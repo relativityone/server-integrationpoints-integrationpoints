@@ -54,10 +54,10 @@ namespace Relativity.Sync.Tests.Integration
 		[Test]
 		public async Task ItShouldWrapSourceKeplerServiceForAdmin()
 		{
-			ISourceServiceFactoryForAdmin serviceFactory = _container.Resolve<ISourceServiceFactoryForAdmin>();
+			ISourceServiceFactoryForAdmin serviceFactoryForAdmin = _container.Resolve<ISourceServiceFactoryForAdmin>();
 
 			// ACT
-			IObjectManager actualObjectManager = await serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
+			IObjectManager actualObjectManager = await serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
 
 			// ASSERT
 			actualObjectManager.Should().Be(_wrappedObjectManager);
@@ -66,10 +66,10 @@ namespace Relativity.Sync.Tests.Integration
 		[Test]
 		public async Task ItShouldWrapSourceKeplerServiceForUser()
 		{
-			ISourceServiceFactoryForUser serviceFactory = _container.Resolve<ISourceServiceFactoryForUser>();
+			ISourceServiceFactoryForUser serviceFactoryForUser = _container.Resolve<ISourceServiceFactoryForUser>();
 
 			// ACT
-			IObjectManager actualObjectManager = await serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
+			IObjectManager actualObjectManager = await serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
 
 			// ASSERT
 			actualObjectManager.Should().Be(_wrappedObjectManager);

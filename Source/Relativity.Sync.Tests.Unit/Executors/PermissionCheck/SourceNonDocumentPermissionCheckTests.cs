@@ -20,7 +20,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		private SourceNonDocumentPermissionCheck _instance;
 
 		private Mock<ISyncLog> _logger;
-		private Mock<ISourceServiceFactoryForUser> _sourceServiceFactory;
+		private Mock<ISourceServiceFactoryForUser> _serviceFactoryForUser;
 
 		private const int _TEST_WORKSPACE_ARTIFACT_ID = 105789;
 		private const int _ALLOW_EXPORT_PERMISSION_ID = 159; // 159 is the artifact id of the "Allow Export" permission
@@ -36,8 +36,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		public void SetUp()
 		{
 			_logger = new Mock<ISyncLog>();
-			_sourceServiceFactory = new Mock<ISourceServiceFactoryForUser>();
-			_instance = new SourceNonDocumentPermissionCheck(_logger.Object,_sourceServiceFactory.Object);
+			_serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
+			_instance = new SourceNonDocumentPermissionCheck(_logger.Object,_serviceFactoryForUser.Object);
 		}
 
 		[Test]
@@ -245,7 +245,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			Mock<IPermissionsCheckConfiguration> configuration = ConfigurationSet();
 
 			var permissionManager = new Mock<IPermissionManager>();
-			_sourceServiceFactory.Setup(x => x.CreateProxyAsync<IPermissionManager>()).ReturnsAsync(permissionManager.Object);
+			_serviceFactoryForUser.Setup(x => x.CreateProxyAsync<IPermissionManager>()).ReturnsAsync(permissionManager.Object);
 
 			var permissionValuesDefault = new List<PermissionValue>();
 			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.IsAny<List<PermissionRef>>(), It.IsAny<int>())).ReturnsAsync(permissionValuesDefault);
@@ -267,7 +267,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		private Mock<IPermissionManager> ArrangeSet()
 		{
 			var permissionManager = new Mock<IPermissionManager>();
-			_sourceServiceFactory.Setup(x => x.CreateProxyAsync<IPermissionManager>()).ReturnsAsync(permissionManager.Object);
+			_serviceFactoryForUser.Setup(x => x.CreateProxyAsync<IPermissionManager>()).ReturnsAsync(permissionManager.Object);
 
 			var permissionValuesDefault = new List<PermissionValue> { new PermissionValue { Selected = true } };
 			permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.IsAny<List<PermissionRef>>(), It.IsAny<int>())).ReturnsAsync(permissionValuesDefault);

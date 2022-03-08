@@ -13,7 +13,7 @@ namespace Relativity.Sync.Executors.PermissionCheck.DocumentPermissionChecks
         private const string _SOURCE_WORKSPACE_NO_DOC_EDIT = "User does not have permission to edit Documents in this workspace.";
 
         
-        public SourceDocumentPermissionCheck(ISyncLog logger, ISourceServiceFactoryForUser sourceServiceFactory) : base(logger, sourceServiceFactory)
+        public SourceDocumentPermissionCheck(ISyncLog logger, ISourceServiceFactoryForUser serviceFactoryForUser) : base(logger, serviceFactoryForUser)
         {
         }
 

@@ -10,13 +10,13 @@ namespace Relativity.Sync.Executors
 	internal sealed class DestinationWorkspaceTagLinker : IDestinationWorkspaceTagsLinker
 	{
 		private readonly IRdoGuidConfiguration _rdoGuidConfiguration;
-		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
+		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private readonly ISyncLog _logger;
 
-		public DestinationWorkspaceTagLinker(IRdoGuidConfiguration rdoGuidConfiguration, ISourceServiceFactoryForUser sourceServiceFactoryForUser, ISyncLog logger)
+		public DestinationWorkspaceTagLinker(IRdoGuidConfiguration rdoGuidConfiguration, ISourceServiceFactoryForUser serviceFactoryForUser, ISyncLog logger)
 		{
 			_rdoGuidConfiguration = rdoGuidConfiguration;
-			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
+			_serviceFactoryForUser = serviceFactoryForUser;
 			_logger = logger;
 		}
 		
@@ -25,7 +25,7 @@ namespace Relativity.Sync.Executors
 			_logger.LogVerbose("Linking destination workspace tag Artifact ID: {destinationWorkspaceTagArtifactId} to job history Artifact ID: {jobArtifactId}");
 			UpdateRequest request = CreateUpdateRequest(destinationWorkspaceTagArtifactId, jobArtifactId);
 
-			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (IObjectManager objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				try
 				{

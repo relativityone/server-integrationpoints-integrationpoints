@@ -4,28 +4,31 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit
 {
 	[TestFixture]
 	internal sealed class WorkspaceGuidServiceTests
 	{
-		private Mock<IObjectManager> _objectManager;
-		private Mock<ISyncServiceManager> _servicesMgr;
+        private Mock<ISemaphoreSlim> _semaphoreSlim;
+        private Mock<IObjectManager> _objectManager;
+		private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdmin;
 		private WorkspaceGuidService _instance;
-		private Guid _workspaceGuid;
+        private Guid _workspaceGuid;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_servicesMgr = new Mock<ISyncServiceManager>();
+			_serviceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
 			_objectManager = new Mock<IObjectManager>();
-			_servicesMgr.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.System)).Returns(_objectManager.Object);
+			_serviceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IObjectManager>()).Returns(Task.FromResult(_objectManager.Object));
 			_workspaceGuid = Guid.NewGuid();
+            _semaphoreSlim = new Mock<ISemaphoreSlim>();
 			QueryResult queryResult = new QueryResult()
 			{
 				Objects = new List<RelativityObject>()
@@ -43,7 +46,7 @@ namespace Relativity.Sync.Tests.Unit
 				.Setup(x => x.QueryAsync(-1, It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync(queryResult)
 				.Verifiable();
-			_instance = new WorkspaceGuidService(_servicesMgr.Object);
+			_instance = new WorkspaceGuidService(_serviceFactoryForAdmin.Object, _semaphoreSlim.Object);
 		}
 
 		[Test]

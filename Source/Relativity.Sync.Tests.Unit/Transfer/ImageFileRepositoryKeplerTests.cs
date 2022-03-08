@@ -21,7 +21,7 @@ namespace Relativity.Sync.Tests.Unit
 		private Mock<ISyncLog> _loggerMock;
 		private ImageFileRepositoryKepler _sut;
 		private Mock<ISearchService> _searchServiceMock;
-		private Mock<ISourceServiceFactoryForUser> _serviceFactoryMock;
+		private Mock<ISourceServiceFactoryForUser> _serviceFactoryForUserMock;
 
 		[SetUp]
 		public void Setup()
@@ -29,14 +29,14 @@ namespace Relativity.Sync.Tests.Unit
 			_loggerMock = new Mock<ISyncLog>();
 
 			_searchServiceMock = new Mock<ISearchService>();
-			_serviceFactoryMock = new Mock<ISourceServiceFactoryForUser>();
+			_serviceFactoryForUserMock = new Mock<ISourceServiceFactoryForUser>();
 
-			_serviceFactoryMock.Setup(x => x.CreateProxyAsync<ISearchService>())
+			_serviceFactoryForUserMock.Setup(x => x.CreateProxyAsync<ISearchService>())
 				.ReturnsAsync(_searchServiceMock.Object);
 
 			SyncJobParameters parameters = new SyncJobParameters(It.IsAny<int>(), It.IsAny<int>(), Guid.NewGuid());
 
-			_sut = new ImageFileRepositoryKepler(_serviceFactoryMock.Object, _loggerMock.Object, parameters);
+			_sut = new ImageFileRepositoryKepler(_serviceFactoryForUserMock.Object, _loggerMock.Object, parameters);
 		}
 
 		[Test]

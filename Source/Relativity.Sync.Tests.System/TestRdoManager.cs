@@ -5,7 +5,7 @@ namespace Relativity.Sync.Tests.System
 {
     internal class TestRdoManager : RdoManager
     {
-        public TestRdoManager(ISyncLog logger) : base(logger, new ServicesManagerStub(), new RdoGuidProvider())
+        public TestRdoManager(ISyncLog logger) : base(logger, new SourceServiceFactoryStub(), new RdoGuidProvider())
         {
         }
     }

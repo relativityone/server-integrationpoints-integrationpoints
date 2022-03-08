@@ -47,8 +47,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_objectManagerFake = new Mock<IObjectManager>(MockBehavior.Strict);
 			_objectManagerFake.Setup(x => x.Dispose());
 
-			Mock<ISourceServiceFactoryForUser> serviceFactory = new Mock<ISourceServiceFactoryForUser>();
-			serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>())
+			Mock<ISourceServiceFactoryForUser> serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
+			serviceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>())
 				.ReturnsAsync(_objectManagerFake.Object);
 
 			_fileStatisticsCalculatorFake = new Mock<IFileStatisticsCalculator>();
@@ -65,7 +65,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 				_syncLogMock.Object,
 				_syncMetricsMock.Object,
 				_fieldManagerFake.Object,
-				serviceFactory.Object,
+				serviceFactoryForUser.Object,
 				_jobStatisticsContainer,
 				_fileStatisticsCalculatorFake.Object,
 				queryRequestProvider.Object);

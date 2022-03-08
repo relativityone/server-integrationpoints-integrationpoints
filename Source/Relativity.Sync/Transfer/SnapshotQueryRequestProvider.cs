@@ -18,19 +18,19 @@ namespace Relativity.Sync.Transfer
         private readonly ISnapshotQueryConfiguration _configuration;
         private readonly IPipelineSelector _pipelineSelector;
         private readonly IFieldManager _fieldManager;
-        private readonly ISourceServiceFactoryForAdmin _sourceServiceFactoryForAdmin;
+        private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
         protected readonly ISyncLog _logger;
 
         private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 
         public SnapshotQueryRequestProvider(ISnapshotQueryConfiguration configuration,
             IPipelineSelector pipelineSelector, IFieldManager fieldManager,
-            ISourceServiceFactoryForAdmin sourceServiceFactoryForAdmin, ISyncLog logger)
+            ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger)
         {
             _configuration = configuration;
             _pipelineSelector = pipelineSelector;
             _fieldManager = fieldManager;
-            _sourceServiceFactoryForAdmin = sourceServiceFactoryForAdmin;
+            _serviceFactoryForAdmin = serviceFactoryForAdmin;
             _logger = logger;
         }
 
@@ -47,10 +47,9 @@ namespace Relativity.Sync.Transfer
         /// <inheritdoc/>
         public async Task<QueryRequest> GetRequestForLinkingNonDocumentObjectsAsync(CancellationToken token)
         {
-            string[] fieldsOfTheSameType =
-                await _fieldManager.GetSameTypeFieldNamesAsync(_configuration.SourceWorkspaceArtifactId).ConfigureAwait(false);
+            IReadOnlyList<FieldInfoDto> mappedFields = await _fieldManager.GetMappedFieldsNonDocumentForLinksAsync(token).ConfigureAwait(false);
             
-            if (fieldsOfTheSameType.Any())
+            if (mappedFields.Any())
             {
                 return new QueryRequest
                 {
@@ -58,14 +57,15 @@ namespace Relativity.Sync.Transfer
                     {
                         ArtifactTypeID = _configuration.RdoArtifactTypeId
                     },
-                    Condition = GetConditionForFieldsWithSetValue(fieldsOfTheSameType)
+                    Condition = GetConditionForFieldsWithSetValue(mappedFields.Where(x => x.IsIdentifier == false).Select(x => x.SourceFieldName)),
+                    Fields = mappedFields.Select(f => new FieldRef { Name = f.SourceFieldName }).ToList()
                 };
             }
 
             return null;
         }
 
-        private string GetConditionForFieldsWithSetValue(string[] fieldNames)
+        private string GetConditionForFieldsWithSetValue(IEnumerable<string> fieldNames)
         {
             return string.Join(" OR ", fieldNames.Select(name => $"('{name}' ISSET)"));
         }
@@ -195,8 +195,8 @@ namespace Relativity.Sync.Transfer
             int fieldArtifactID;
 
             using (IObjectManager objectManager =
-                   await _sourceServiceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-            using (IChoiceQueryManager choiceQueryManager = await _sourceServiceFactoryForAdmin
+                   await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+            using (IChoiceQueryManager choiceQueryManager = await _serviceFactoryForAdmin
                        .CreateProxyAsync<IChoiceQueryManager>().ConfigureAwait(false))
             {
                 QueryResult result = await objectManager.QueryAsync(_configuration.SourceWorkspaceArtifactId,

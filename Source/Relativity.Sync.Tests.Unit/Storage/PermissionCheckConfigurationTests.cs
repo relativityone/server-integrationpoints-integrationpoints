@@ -13,7 +13,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 {
 	internal class PermissionCheckConfigurationTests : ConfigurationTestBase
 	{
-		private Mock<ISourceServiceFactoryForUser> _sourceServiceFactory;
+		private Mock<ISourceServiceFactoryForUser> _serviceFactoryForUser;
 		private Mock<IObjectManager> _objectManager;
 		private PermissionsCheckConfiguration _instance;
 		private SyncJobParameters _sycJobParameters;
@@ -25,17 +25,17 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[SetUp]
 		public void SetUp()
 		{
-			_sourceServiceFactory = new Mock<ISourceServiceFactoryForUser>();
+			_serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
 			_objectManager = new Mock<IObjectManager>();
 			_sycJobParameters = FakeHelper.CreateSyncJobParameters();
-			_instance = new PermissionsCheckConfiguration(_configuration, _sycJobParameters,_sourceServiceFactory.Object);
+			_instance = new PermissionsCheckConfiguration(_configuration, _sycJobParameters,_serviceFactoryForUser.Object);
 		}
 
 		[Test]
 		public void ShouldReturnSourceProviderArtifactIdTests()
 		{
 			// Arrange
-			_sourceServiceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			_serviceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
 			var relativityObjects = new List<RelativityObject>
 			{
@@ -67,7 +67,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void ShouldThrowExceptionTests(int totalCountValue)
 		{
 			// Arrange
-			_sourceServiceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			_serviceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
 			var relativityObjects = new List<RelativityObject>
 			{
@@ -97,7 +97,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		public void VerifyCorrectnessOfQueryRequestTests()
 		{
 			// Arrange
-			_sourceServiceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			_serviceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
 			var relativityObjects = new List<RelativityObject>
 			{

@@ -12,6 +12,11 @@ namespace Relativity.Sync.Storage
 			_semaphoreSlim = semaphoreSlim;
 		}
 
+        public SemaphoreSlimWrapper()
+        {
+            _semaphoreSlim = new SemaphoreSlim(1);
+        }
+
 		public void Dispose()
 		{
 			_semaphoreSlim.Dispose();

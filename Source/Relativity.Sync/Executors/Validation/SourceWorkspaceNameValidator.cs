@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
@@ -12,14 +11,14 @@ namespace Relativity.Sync.Executors.Validation
 	{
 		private const string _WORKSPACE_INVALID_NAME_MESSAGE = "Source workspace name contains an invalid character.";
 
-		private readonly ISourceServiceFactoryForUser _serviceFactory;
+		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private readonly IWorkspaceNameQuery _workspaceNameQuery;
 		private readonly IWorkspaceNameValidator _workspaceNameValidator;
 		private readonly ISyncLog _logger;
 
-		public SourceWorkspaceNameValidator(ISourceServiceFactoryForUser serviceFactory, IWorkspaceNameQuery workspaceNameQuery, IWorkspaceNameValidator workspaceNameValidator, ISyncLog logger)
+		public SourceWorkspaceNameValidator(ISourceServiceFactoryForUser serviceFactoryForUser, IWorkspaceNameQuery workspaceNameQuery, IWorkspaceNameValidator workspaceNameValidator, ISyncLog logger)
 		{
-			_serviceFactory = serviceFactory;
+			_serviceFactoryForUser = serviceFactoryForUser;
 			_workspaceNameQuery = workspaceNameQuery;
 			_workspaceNameValidator = workspaceNameValidator;
 			_logger = logger;
@@ -31,7 +30,7 @@ namespace Relativity.Sync.Executors.Validation
 			ValidationResult result = new ValidationResult();
 			try
 			{
-				string workspaceName = await _workspaceNameQuery.GetWorkspaceNameAsync(_serviceFactory, configuration.SourceWorkspaceArtifactId, token).ConfigureAwait(false);
+				string workspaceName = await _workspaceNameQuery.GetWorkspaceNameAsync(_serviceFactoryForUser, configuration.SourceWorkspaceArtifactId, token).ConfigureAwait(false);
 				bool isValidName = _workspaceNameValidator.Validate(workspaceName, configuration.SourceWorkspaceArtifactId, token);
 				if (!isValidName)
 				{
