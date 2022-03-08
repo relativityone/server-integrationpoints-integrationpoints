@@ -13,13 +13,13 @@ namespace Relativity.Sync
 	{
 		private readonly int _workspaceArtifactId;
 		private readonly int _jobHistoryArtifactId;
-		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
+		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 		private readonly IRdoGuidConfiguration _rdoGuidConfiguration;
 		private readonly ISyncLog _logger;
 
-		public JobProgressUpdater(ISourceServiceFactoryForAdmin serviceFactory, IRdoGuidConfiguration rdoGuidConfiguration, int workspaceArtifactId, int jobHistoryArtifactId, ISyncLog logger)
+		public JobProgressUpdater(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IRdoGuidConfiguration rdoGuidConfiguration, int workspaceArtifactId, int jobHistoryArtifactId, ISyncLog logger)
 		{
-			_serviceFactory = serviceFactory;
+			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_rdoGuidConfiguration = rdoGuidConfiguration;
 			_workspaceArtifactId = workspaceArtifactId;
 			_jobHistoryArtifactId = jobHistoryArtifactId;
@@ -30,7 +30,7 @@ namespace Relativity.Sync
 		{
 			try
 			{
-				using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+				using (IObjectManager objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 				{
 					UpdateRequest updateRequest = new UpdateRequest()
 					{
@@ -63,7 +63,7 @@ namespace Relativity.Sync
 		{
 			try
 			{
-				using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+				using (IObjectManager objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 				{
 					UpdateRequest updateRequest = new UpdateRequest()
 					{

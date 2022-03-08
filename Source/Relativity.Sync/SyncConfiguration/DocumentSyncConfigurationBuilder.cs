@@ -18,10 +18,10 @@ namespace Relativity.Sync.SyncConfiguration
 		
 		private DestinationFolderStructureOptions _destinationFolderStructureOptions;
 
-		internal DocumentSyncConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForAdmin servicesMgr,
+		internal DocumentSyncConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
 			IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, DocumentSyncOptions options,
 			RdoOptions rdoOptions, IRdoManager rdoManager) 
-			: base(syncContext, servicesMgr, rdoOptions, rdoManager, serializer)
+			: base(syncContext, serviceFactoryForAdmin, rdoOptions, rdoManager, serializer)
 		{
 			_fieldsMappingBuilder = fieldsMappingBuilder;
 
@@ -127,7 +127,7 @@ namespace Relativity.Sync.SyncConfiguration
 
 			if (_destinationFolderStructureOptions.DestinationFolderStructure == DestinationFolderStructureBehavior.ReadFromField)
 			{
-				using (var fieldManager = await ServicesMgr.CreateProxyAsync<IFieldManager>())
+				using (var fieldManager = await ServiceFactoryForAdmin.CreateProxyAsync<IFieldManager>())
 				{
 					var folderPathField = await fieldManager.ReadAsync(SyncContext.SourceWorkspaceId,
 						_destinationFolderStructureOptions.FolderPathSourceFieldId).ConfigureAwait(false);

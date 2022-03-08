@@ -28,14 +28,14 @@ namespace Relativity.Sync.Tests.System
 		private WorkspaceRef _workspace;
 		private IUserService _userService;
 		private ISyncServiceManager _servicesManager;
-		private ISourceServiceFactoryForAdmin _servicesManagerForAdmin;
+		private ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 
 		[SetUp]
 		public async Task SetUp()
 		{
 			_userService = RelativityFacade.Instance.Resolve<IUserService>();
 			_servicesManager = new ServicesManagerStub();
-            _servicesManagerForAdmin = new SourceServiceFactoryStub();
+            _serviceFactoryForAdmin = new SourceServiceFactoryStub();
 			_workspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
 		}
 
@@ -70,7 +70,7 @@ namespace Relativity.Sync.Tests.System
 			Mock<IUserContextConfiguration> userContextConfiguration = new Mock<IUserContextConfiguration>();
 			userContextConfiguration.SetupGet(x => x.ExecutingUserId).Returns(_userService.GetByEmail(userEmail).ArtifactID);
 
-			IAuthTokenGenerator authTokenGenerator = new OAuth2TokenGenerator(new OAuth2ClientFactory(_servicesManagerForAdmin, new EmptyLogger()),
+			IAuthTokenGenerator authTokenGenerator = new OAuth2TokenGenerator(new OAuth2ClientFactory(_serviceFactoryForAdmin, new EmptyLogger()),
 				new TokenProviderFactoryFactory(), AppSettings.RelativityUrl, new EmptyLogger());
 			PermissionRef permissionRef = new PermissionRef
 			{

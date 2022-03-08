@@ -22,7 +22,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 	{
 		private RdoOptions _rdoOptions;
 
-		private ISourceServiceFactoryForAdmin _syncServicesMgrForAdmin;
+		private ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 		private ISyncServiceManager _servicesMgr;
 
         protected override async Task ChildSuiteSetup()
@@ -30,7 +30,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			await base.ChildSuiteSetup();
 			
 			_rdoOptions = DefaultGuids.DefaultRdoOptions;
-			_syncServicesMgrForAdmin = new SourceServiceFactoryStub();
+			_serviceFactoryForAdmin = new SourceServiceFactoryStub();
             _servicesMgr = new ServicesManagerStub();
 		}
 
@@ -76,7 +76,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 		
 		private async Task<RelativityObject> ReadSyncConfiguration(int workspaceId, int configurationId)
 		{
-			using (IObjectManager objectManager = _syncServicesMgrForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false).GetAwaiter().GetResult())
+			using (IObjectManager objectManager = _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false).GetAwaiter().GetResult())
 			{
 				var request = new QueryRequest
 				{

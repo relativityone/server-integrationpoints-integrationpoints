@@ -105,10 +105,10 @@ namespace Relativity.Sync.Tests.Integration
 		[Test]
         public async Task ItShouldCreateSourceKeplerServiceInUserContext()
 		{
-			ISourceServiceFactoryForUser factoryForUser = _containerBuilder.Build().Resolve<ISourceServiceFactoryForUser>();
+			ISourceServiceFactoryForUser serviceFactoryForUser = _containerBuilder.Build().Resolve<ISourceServiceFactoryForUser>();
 
 			// ACT
-			await factoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
+			await serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
 
 			// ASSERT
 			_serviceFactoryFactoryStub.Settings.Should().NotBeNull();

@@ -30,8 +30,8 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 			_metricsManagerMock = new Mock<IMetricsManager>(MockBehavior.Strict);
 			_metricsManagerMock.Setup(x => x.Dispose());
 
-			Mock<ISourceServiceFactoryForAdmin> syncServiceManager = new Mock<ISourceServiceFactoryForAdmin>();
-			syncServiceManager.Setup(x => x.CreateProxyAsync<IMetricsManager>())
+			Mock<ISourceServiceFactoryForAdmin> serviceFactoryForAdminMock = new Mock<ISourceServiceFactoryForAdmin>();
+			serviceFactoryForAdminMock.Setup(x => x.CreateProxyAsync<IMetricsManager>())
 				.Returns(Task.FromResult(_metricsManagerMock.Object));
 
 			_syncLogMock = new Mock<ISyncLog>();
@@ -39,7 +39,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 			Mock<IWorkspaceGuidService> workspaceGuidServiceFake = new Mock<IWorkspaceGuidService>();
 			workspaceGuidServiceFake.Setup(x => x.GetWorkspaceGuidAsync(It.IsAny<int>())).ReturnsAsync(_workspaceGuid);
 
-			_sut = new SumSyncMetricsSink(syncServiceManager.Object, _syncLogMock.Object, 
+			_sut = new SumSyncMetricsSink(serviceFactoryForAdminMock.Object, _syncLogMock.Object, 
 				workspaceGuidServiceFake.Object, _syncJobParamters);
 		}
 

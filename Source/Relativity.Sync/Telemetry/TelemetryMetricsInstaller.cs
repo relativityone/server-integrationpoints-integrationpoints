@@ -9,13 +9,13 @@ namespace Relativity.Sync.Telemetry
 {
 	internal sealed class TelemetryMetricsInstaller : ITelemetryManager
 	{
-		private readonly ISourceServiceFactoryForAdmin _servicesManager;
+		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 		private readonly ISyncLog _logger;
 		private readonly List<ITelemetryMetricProvider> _metricProviders;
 
-		public TelemetryMetricsInstaller(ISourceServiceFactoryForAdmin servicesManager, ISyncLog logger)
+		public TelemetryMetricsInstaller(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger)
 		{
-			_servicesManager = servicesManager;
+			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_logger = logger;
 			_metricProviders = new List<ITelemetryMetricProvider>();
 		}
@@ -50,7 +50,7 @@ namespace Relativity.Sync.Telemetry
 
 		private void AddMetricsForCategories(IDictionary<string, CategoryRef> categories)
 		{
-			using (var manager = _servicesManager.CreateProxyAsync<IInternalMetricsCollectionManager>().ConfigureAwait(false).GetAwaiter().GetResult())
+			using (var manager = _serviceFactoryForAdmin.CreateProxyAsync<IInternalMetricsCollectionManager>().ConfigureAwait(false).GetAwaiter().GetResult())
 			{
 				_metricProviders.ForEach(item => item.AddMetricsForCategory(manager, categories[item.CategoryName]).GetAwaiter().GetResult());
 			}
@@ -60,7 +60,7 @@ namespace Relativity.Sync.Telemetry
 		{
 			IDictionary<string, CategoryRef> categories = new Dictionary<string, CategoryRef>();
 
-			using (var manager = _servicesManager.CreateProxyAsync<IInternalMetricsCollectionManager>().ConfigureAwait(false).GetAwaiter().GetResult())
+			using (var manager = _serviceFactoryForAdmin.CreateProxyAsync<IInternalMetricsCollectionManager>().ConfigureAwait(false).GetAwaiter().GetResult())
 			{
 				List<CategoryTarget> categoryTargets = await manager.GetCategoryTargetsAsync().ConfigureAwait(false);
 

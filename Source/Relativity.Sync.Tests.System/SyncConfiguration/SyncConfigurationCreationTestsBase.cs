@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 {
 	internal abstract class SyncConfigurationCreationTestsBase : SystemTest
 	{
-		protected ISourceServiceFactoryForAdmin SourceServiceFactoryForAdmin;
+		protected ISourceServiceFactoryForAdmin ServiceFactoryForAdmin;
 		protected ISyncServiceManager ServicesMgr;
 
 		protected int SourceWorkspaceId;
@@ -29,7 +29,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 		{
 			await base.ChildSuiteSetup();
 
-			SourceServiceFactoryForAdmin = new SourceServiceFactoryStub();
+			ServiceFactoryForAdmin = new SourceServiceFactoryStub();
             ServicesMgr = new ServicesManagerStub();
 
 			WorkspaceRef sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
@@ -58,7 +58,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			}
 
 			RelativityObject configuration;
-			using (IObjectManager objectManager = await SourceServiceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (IObjectManager objectManager = await ServiceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				var request = new QueryRequest
 				{

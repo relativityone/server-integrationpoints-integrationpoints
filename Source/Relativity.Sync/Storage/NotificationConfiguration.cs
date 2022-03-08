@@ -16,14 +16,14 @@ namespace Relativity.Sync.Storage
 		private readonly SyncJobParameters _syncJobParameters;
 		private readonly Lazy<string> _jobNameLazy;
 
-		public NotificationConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, ISourceServiceFactoryForUser servicesManager)
+		public NotificationConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, ISourceServiceFactoryForUser serviceFactoryForUser)
 		{
 			_cache = cache;
 			_syncJobParameters = syncJobParameters;
 			
 			_jobNameLazy = new Lazy<string>(() =>
             {
-                using (var objectManager = servicesManager.CreateProxyAsync<IObjectManager>().ConfigureAwait(false).GetAwaiter().GetResult())
+                using (var objectManager = serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false).GetAwaiter().GetResult())
 				{
                     return objectManager.GetObjectNameAsync(syncJobParameters.WorkspaceId,
 							_cache.GetFieldValue(x => x.JobHistoryId), 

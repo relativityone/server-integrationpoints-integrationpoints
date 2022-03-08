@@ -17,16 +17,16 @@ namespace Relativity.Sync.Tests.Unit
 	{
         private Mock<ISemaphoreSlim> _semaphoreSlim;
         private Mock<IObjectManager> _objectManager;
-		private Mock<ISourceServiceFactoryForAdmin> _servicesMgr;
+		private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdmin;
 		private WorkspaceGuidService _instance;
         private Guid _workspaceGuid;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_servicesMgr = new Mock<ISourceServiceFactoryForAdmin>();
+			_serviceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
 			_objectManager = new Mock<IObjectManager>();
-			_servicesMgr.Setup(x => x.CreateProxyAsync<IObjectManager>()).Returns(Task.FromResult(_objectManager.Object));
+			_serviceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IObjectManager>()).Returns(Task.FromResult(_objectManager.Object));
 			_workspaceGuid = Guid.NewGuid();
             _semaphoreSlim = new Mock<ISemaphoreSlim>();
 			QueryResult queryResult = new QueryResult()
@@ -46,7 +46,7 @@ namespace Relativity.Sync.Tests.Unit
 				.Setup(x => x.QueryAsync(-1, It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync(queryResult)
 				.Verifiable();
-			_instance = new WorkspaceGuidService(_servicesMgr.Object, _semaphoreSlim.Object);
+			_instance = new WorkspaceGuidService(_serviceFactoryForAdmin.Object, _semaphoreSlim.Object);
 		}
 
 		[Test]

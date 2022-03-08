@@ -22,20 +22,20 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
         private Mock<IObjectManager> _objectManagerMock;
         private ConfigurationStub _configuration;
         private SnapshotValidator _sut;
-        private Mock<ISourceServiceFactoryForAdmin> _syncServiceManagerMock;
+        private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdminMock;
 
         [SetUp]
         public void SetUp()
         {
             _objectManagerMock = new Mock<IObjectManager>();
-            _syncServiceManagerMock = new Mock<ISourceServiceFactoryForAdmin>();
+            _serviceFactoryForAdminMock = new Mock<ISourceServiceFactoryForAdmin>();
 
-            _syncServiceManagerMock.Setup(x => x.CreateProxyAsync<IObjectManager>())
+            _serviceFactoryForAdminMock.Setup(x => x.CreateProxyAsync<IObjectManager>())
                 .Returns(Task.FromResult(_objectManagerMock.Object));
             
             _configuration = new ConfigurationStub();
 
-            _sut = new SnapshotValidator(_configuration, _syncServiceManagerMock.Object);
+            _sut = new SnapshotValidator(_configuration, _serviceFactoryForAdminMock.Object);
         }
         
         [TestCaseSource(nameof(SnapshotCaseSource))]

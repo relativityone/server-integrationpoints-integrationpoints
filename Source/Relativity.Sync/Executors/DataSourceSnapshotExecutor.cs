@@ -11,17 +11,17 @@ namespace Relativity.Sync.Executors
 {
 	internal class DataSourceSnapshotExecutor : IExecutor<IDataSourceSnapshotConfiguration>
 	{
-		private readonly ISourceServiceFactoryForUser _serviceFactory;
+		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
 		private readonly ISnapshotQueryRequestProvider _snapshotQueryRequestProvider;
 
 		protected readonly ISyncLog Logger;
 
-		public DataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactory, 
+		public DataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactoryForUser, 
 			IJobProgressUpdaterFactory jobProgressUpdaterFactory, ISyncLog logger, 
 			ISnapshotQueryRequestProvider snapshotQueryRequestProvider)
 		{
-			_serviceFactory = serviceFactory;
+			_serviceFactoryForUser = serviceFactoryForUser;
 			_jobProgressUpdaterFactory = jobProgressUpdaterFactory;
 			Logger = logger;
 			_snapshotQueryRequestProvider = snapshotQueryRequestProvider;
@@ -36,7 +36,7 @@ namespace Relativity.Sync.Executors
 			try
 			{
 				QueryRequest queryRequest = await _snapshotQueryRequestProvider.GetRequestForCurrentPipelineAsync(token.StopCancellationToken).ConfigureAwait(false);
-				using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+				using (IObjectManager objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 				{
 					results = await objectManager.InitializeExportAsync(configuration.SourceWorkspaceArtifactId, queryRequest, 1).ConfigureAwait(false);
 					Logger.LogInformation("Retrieved {documentsCount} documents from saved search.", results.RecordCount);

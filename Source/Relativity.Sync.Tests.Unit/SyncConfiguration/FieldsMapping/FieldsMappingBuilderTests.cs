@@ -34,15 +34,15 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration.FieldsMapping
 			_objectManagerFake = new Mock<IObjectManager>();
 			_fieldManagerFake = new Mock<IFieldManager>();
 
-			var syncServicesMgrFake = new Mock<ISourceServiceFactoryForAdmin>();
-			syncServicesMgrFake.Setup(x => x.CreateProxyAsync<IObjectManager>())
+			var serviceFactoryForAdminFake = new Mock<ISourceServiceFactoryForAdmin>();
+			serviceFactoryForAdminFake.Setup(x => x.CreateProxyAsync<IObjectManager>())
 				.Returns(Task.FromResult(_objectManagerFake.Object));
-			syncServicesMgrFake.Setup(x => x.CreateProxyAsync<IFieldManager>())
+			serviceFactoryForAdminFake.Setup(x => x.CreateProxyAsync<IFieldManager>())
 				.Returns(Task.FromResult(_fieldManagerFake.Object));
 
 			_sut = new FieldsMappingBuilder(_SOURCE_WORKSPACE_ID, _DESTINATION_WORKSPACE_ID, 
 				_sourceArtifactTypeId, _destinationArtifactTypeId,
-				syncServicesMgrFake.Object);
+				serviceFactoryForAdminFake.Object);
 		}
 
 		[Test]

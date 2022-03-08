@@ -18,19 +18,19 @@ namespace Relativity.Sync.Transfer
         private readonly ISnapshotQueryConfiguration _configuration;
         private readonly IPipelineSelector _pipelineSelector;
         private readonly IFieldManager _fieldManager;
-        private readonly ISourceServiceFactoryForAdmin _sourceServiceFactoryForAdmin;
+        private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
         protected readonly ISyncLog _logger;
 
         private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 
         public SnapshotQueryRequestProvider(ISnapshotQueryConfiguration configuration,
             IPipelineSelector pipelineSelector, IFieldManager fieldManager,
-            ISourceServiceFactoryForAdmin sourceServiceFactoryForAdmin, ISyncLog logger)
+            ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger)
         {
             _configuration = configuration;
             _pipelineSelector = pipelineSelector;
             _fieldManager = fieldManager;
-            _sourceServiceFactoryForAdmin = sourceServiceFactoryForAdmin;
+            _serviceFactoryForAdmin = serviceFactoryForAdmin;
             _logger = logger;
         }
 
@@ -195,8 +195,8 @@ namespace Relativity.Sync.Transfer
             int fieldArtifactID;
 
             using (IObjectManager objectManager =
-                   await _sourceServiceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-            using (IChoiceQueryManager choiceQueryManager = await _sourceServiceFactoryForAdmin
+                   await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+            using (IChoiceQueryManager choiceQueryManager = await _serviceFactoryForAdmin
                        .CreateProxyAsync<IChoiceQueryManager>().ConfigureAwait(false))
             {
                 QueryResult result = await objectManager.QueryAsync(_configuration.SourceWorkspaceArtifactId,

@@ -23,9 +23,9 @@ namespace Relativity.Sync.Extensions
             };
 
             ServiceFactoryForAdminFactory servicesManagerForAdminFactory = new ServiceFactoryForAdminFactory(serviceManager, logger);
-            ISourceServiceFactoryForAdmin servicesMgrForAdmin = servicesManagerForAdminFactory.Create();
+            ISourceServiceFactoryForAdmin serviceFactoryForAdmin = servicesManagerForAdminFactory.Create();
 
-            return new RdoManager(new EmptyLogger(), servicesMgrForAdmin, new RdoGuidProvider())
+            return new RdoManager(new EmptyLogger(), serviceFactoryForAdmin, new RdoGuidProvider())
                 .SetValueAsync(workspaceId, rdo, x => x.Resuming, true);
         }
     }

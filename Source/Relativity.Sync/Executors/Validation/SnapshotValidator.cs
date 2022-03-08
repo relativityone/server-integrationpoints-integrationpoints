@@ -11,12 +11,12 @@ namespace Relativity.Sync.Executors.Validation
     internal class SnapshotValidator : IValidator
     {
         private readonly IValidationConfiguration _configuration;
-        private readonly ISourceServiceFactoryForAdmin _servicesManager;
+        private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 
-        public SnapshotValidator(IValidationConfiguration configuration, ISourceServiceFactoryForAdmin servicesManager)
+        public SnapshotValidator(IValidationConfiguration configuration, ISourceServiceFactoryForAdmin serviceFactoryForAdmin)
         {
             _configuration = configuration;
-            _servicesManager = servicesManager;
+            _serviceFactoryForAdmin = serviceFactoryForAdmin;
         }
         
         public async Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token)
@@ -38,7 +38,7 @@ namespace Relativity.Sync.Executors.Validation
                 return false;
             }
 
-            using (IObjectManager objectManager = await _servicesManager.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+            using (IObjectManager objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
                 return (await objectManager.RetrieveResultsBlockFromExportAsync(workspaceId, snapshotId.Value, 1, 0).ConfigureAwait(false)) != null;
             }

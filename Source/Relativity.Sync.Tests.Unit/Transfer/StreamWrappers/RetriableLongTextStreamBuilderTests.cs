@@ -21,7 +21,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 	public sealed class RetriableLongTextStreamBuilderTests : IDisposable
 	{
 		private Mock<IObjectManager> _objectManager;
-		private Mock<ISourceServiceFactoryForUser> _userServiceFactory;
+		private Mock<ISourceServiceFactoryForUser> _serviceFactoryForUser;
 		private Mock<IStreamRetryPolicyFactory> _policyFactory;
 		private Mock<ISyncMetrics> _syncMetrics;
 
@@ -46,15 +46,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			_objectManager = new Mock<IObjectManager>();
 			SetupStreamLongText(objectRef => objectRef.ArtifactID == _RELATIVITY_OBJECT_ARTIFACT_ID, fieldRef => fieldRef.Name == _LONG_TEXT_FIELD_NAME)
 				.ReturnsAsync(_keplerStream.Object);
-			_userServiceFactory = new Mock<ISourceServiceFactoryForUser>();
-			_userServiceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			_serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
+			_serviceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
 			_policyFactory = new Mock<IStreamRetryPolicyFactory>();
 			_policyFactory.Setup(f => f.Create(It.IsAny<Func<Stream, bool>>(), It.IsAny<Action<Stream, Exception, int>>(), _RETRY_COUNT, It.IsAny<TimeSpan>()))
 				.Returns((Func<Stream, bool> shouldRetry, Action<Stream, Exception, int> onRetry, int retryCount, TimeSpan waitInterval) => GetRetryPolicy(shouldRetry, onRetry, retryCount));
 			_syncMetrics = new Mock<ISyncMetrics>();
 			
-			_instance = new RetriableLongTextStreamBuilder(_WORKSPACE_ARTIFACT_ID, _RELATIVITY_OBJECT_ARTIFACT_ID, _LONG_TEXT_FIELD_NAME, _userServiceFactory.Object, _policyFactory.Object,
+			_instance = new RetriableLongTextStreamBuilder(_WORKSPACE_ARTIFACT_ID, _RELATIVITY_OBJECT_ARTIFACT_ID, _LONG_TEXT_FIELD_NAME, _serviceFactoryForUser.Object, _policyFactory.Object,
 				_syncMetrics.Object, new EmptyLogger());
 		}
 

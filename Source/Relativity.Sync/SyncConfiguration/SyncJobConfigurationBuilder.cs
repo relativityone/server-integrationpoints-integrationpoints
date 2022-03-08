@@ -26,41 +26,41 @@ namespace Relativity.Sync.SyncConfiguration
 
         public IDocumentSyncConfigurationBuilder ConfigureDocumentSync(DocumentSyncOptions options)
         {
-            ISourceServiceFactoryForAdmin servicesMgrForAdmin = CreateServicesManagerForAdmin();
+            ISourceServiceFactoryForAdmin serviceFactoryForAdmin = CreateServicesManagerForAdmin();
             IFieldsMappingBuilder fieldsMappingBuilder = new FieldsMappingBuilder(
-                _syncContext.SourceWorkspaceId, _syncContext.DestinationWorkspaceId, (int)ArtifactType.Document, (int)ArtifactType.Document, servicesMgrForAdmin);
+                _syncContext.SourceWorkspaceId, _syncContext.DestinationWorkspaceId, (int)ArtifactType.Document, (int)ArtifactType.Document, serviceFactoryForAdmin);
 
-            return new DocumentSyncConfigurationBuilder(_syncContext, servicesMgrForAdmin, fieldsMappingBuilder, _serializer,
-                options, _rdoOptions, new RdoManager(new EmptyLogger(), servicesMgrForAdmin, new RdoGuidProvider()));
+            return new DocumentSyncConfigurationBuilder(_syncContext, serviceFactoryForAdmin, fieldsMappingBuilder, _serializer,
+                options, _rdoOptions, new RdoManager(new EmptyLogger(), serviceFactoryForAdmin, new RdoGuidProvider()));
         }
 
         public IImageSyncConfigurationBuilder ConfigureImageSync(ImageSyncOptions options)
         {
-            ISourceServiceFactoryForAdmin servicesMgrForAdmin = CreateServicesManagerForAdmin();
+            ISourceServiceFactoryForAdmin serviceFactoryForAdmin = CreateServicesManagerForAdmin();
             IFieldsMappingBuilder fieldsMappingBuilder = new FieldsMappingBuilder(
-                _syncContext.SourceWorkspaceId, _syncContext.DestinationWorkspaceId, (int)ArtifactType.Document, (int)ArtifactType.Document, servicesMgrForAdmin);
+                _syncContext.SourceWorkspaceId, _syncContext.DestinationWorkspaceId, (int)ArtifactType.Document, (int)ArtifactType.Document, serviceFactoryForAdmin);
 
-            return new ImageSyncConfigurationBuilder(_syncContext, servicesMgrForAdmin, fieldsMappingBuilder, _serializer,
-                options, _rdoOptions, new RdoManager(new EmptyLogger(), servicesMgrForAdmin, new RdoGuidProvider()));
+            return new ImageSyncConfigurationBuilder(_syncContext, serviceFactoryForAdmin, fieldsMappingBuilder, _serializer,
+                options, _rdoOptions, new RdoManager(new EmptyLogger(), serviceFactoryForAdmin, new RdoGuidProvider()));
         }
 
         public INonDocumentSyncConfigurationBuilder ConfigureNonDocumentSync(NonDocumentSyncOptions options)
         {
-            ISourceServiceFactoryForAdmin servicesMgrForAdmin = CreateServicesManagerForAdmin();
+            ISourceServiceFactoryForAdmin serviceFactoryForAdmin = CreateServicesManagerForAdmin();
             IFieldsMappingBuilder fieldsMappingBuilder = new FieldsMappingBuilder(
-                _syncContext.SourceWorkspaceId, _syncContext.DestinationWorkspaceId, options.RdoArtifactTypeId, options.DestinationRdoArtifactTypeId, servicesMgrForAdmin);
+                _syncContext.SourceWorkspaceId, _syncContext.DestinationWorkspaceId, options.RdoArtifactTypeId, options.DestinationRdoArtifactTypeId, serviceFactoryForAdmin);
 
-            return new NonDocumentSyncConfigurationBuilder(_syncContext, servicesMgrForAdmin,
+            return new NonDocumentSyncConfigurationBuilder(_syncContext, serviceFactoryForAdmin,
                 fieldsMappingBuilder, _serializer, options, _rdoOptions,
-                new RdoManager(new EmptyLogger(), servicesMgrForAdmin, new RdoGuidProvider()));
+                new RdoManager(new EmptyLogger(), serviceFactoryForAdmin, new RdoGuidProvider()));
         }
 
         private ISourceServiceFactoryForAdmin CreateServicesManagerForAdmin()
         {
-            ServiceFactoryForAdminFactory servicesManagerForAdminFactory = new ServiceFactoryForAdminFactory(_servicesMgr, _logger);
-            ISourceServiceFactoryForAdmin servicesMgrForAdmin = servicesManagerForAdminFactory.Create();
+            ServiceFactoryForAdminFactory serviceFactoryForAdminFactory = new ServiceFactoryForAdminFactory(_servicesMgr, _logger);
+            ISourceServiceFactoryForAdmin serviceFactoryForAdmin = serviceFactoryForAdminFactory.Create();
 
-            return servicesMgrForAdmin;
+            return serviceFactoryForAdmin;
         }
     }
 }

@@ -11,18 +11,18 @@ namespace Relativity.Sync.Authentication
 	internal sealed class OAuth2ClientFactory : IOAuth2ClientFactory
 	{
 		private const string _OAUTH2_CLIENT_NAME_PREFIX = "F6B8C2B4B3E8465CA00775F699375D3C";
-		private readonly ISourceServiceFactoryForAdmin _servicesMgr;
+		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 		private readonly ISyncLog _logger;
 
-		public OAuth2ClientFactory(ISourceServiceFactoryForAdmin servicesMgr, ISyncLog logger)
+		public OAuth2ClientFactory(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger)
 		{
-			_servicesMgr = servicesMgr;
+			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_logger = logger;
 		}
 
 		public async Task<Services.Security.Models.OAuth2Client> GetOauth2ClientAsync(int userId)
 		{
-			using (var oAuth2ClientManager = await _servicesMgr.CreateProxyAsync<IOAuth2ClientManager>().ConfigureAwait(false))
+			using (var oAuth2ClientManager = await _serviceFactoryForAdmin.CreateProxyAsync<IOAuth2ClientManager>().ConfigureAwait(false))
 			{
 				Services.Security.Models.OAuth2Client client;
 				string clientName = GenerateClientName(userId);

@@ -6,34 +6,34 @@ namespace Relativity.Sync.Storage
 {
 	internal sealed class ProgressRepository : IProgressRepository
 	{
-		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
+		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 		private readonly ISyncLog _logger;
 
-		public ProgressRepository(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger)
+		public ProgressRepository(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger)
 		{
-			_serviceFactory = serviceFactory;
+			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_logger = logger;
 		}
 
 		public Task<IProgress> CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, string name, int order, SyncJobStatus status)
 		{
 			var createProgressDto = new CreateProgressDto(name, order, status, syncConfigurationArtifactId, workspaceArtifactId);
-			return Progress.CreateAsync(_serviceFactory, _logger, createProgressDto);
+			return Progress.CreateAsync(_serviceFactoryForAdmin, _logger, createProgressDto);
 		}
 
 		public Task<IProgress> GetAsync(int workspaceArtifactId, int artifactId)
 		{
-			return Progress.GetAsync(_serviceFactory, _logger, workspaceArtifactId, artifactId);
+			return Progress.GetAsync(_serviceFactoryForAdmin, _logger, workspaceArtifactId, artifactId);
 		}
 
 		public Task<IReadOnlyCollection<IProgress>> QueryAllAsync(int workspaceArtifactId, int syncConfigurationArtifactId)
 		{
-			return Progress.QueryAllAsync(_serviceFactory, _logger, workspaceArtifactId, syncConfigurationArtifactId);
+			return Progress.QueryAllAsync(_serviceFactoryForAdmin, _logger, workspaceArtifactId, syncConfigurationArtifactId);
 		}
 
 		public Task<IProgress> QueryAsync(int workspaceArtifactId, int syncConfigurationArtifactId, string name)
 		{
-			return Progress.QueryAsync(_serviceFactory, _logger, workspaceArtifactId, syncConfigurationArtifactId, name);
+			return Progress.QueryAsync(_serviceFactoryForAdmin, _logger, workspaceArtifactId, syncConfigurationArtifactId, name);
 		}
 	}
 }

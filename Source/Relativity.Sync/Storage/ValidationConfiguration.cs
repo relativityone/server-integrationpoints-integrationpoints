@@ -16,7 +16,7 @@ namespace Relativity.Sync.Storage
         public int SourceWorkspaceArtifactId { get; }
 
         public ValidationConfiguration(IConfiguration cache, IFieldMappings fieldMappings,
-	        SyncJobParameters syncJobParameters, ISourceServiceFactoryForUser servicesManager)
+	        SyncJobParameters syncJobParameters, ISourceServiceFactoryForUser serviceFactoryForUser)
         {
 	        _cache = cache;
 	        _fieldMappings = fieldMappings;
@@ -24,7 +24,7 @@ namespace Relativity.Sync.Storage
 
 	        _jobNameLazy = new Lazy<string>(() =>
 	        {
-		        using (var objectManager = servicesManager.CreateProxyAsync<IObjectManager>().ConfigureAwait(false).GetAwaiter().GetResult())
+		        using (var objectManager = serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false).GetAwaiter().GetResult())
 		        {
 			        return objectManager.GetObjectNameAsync(syncJobParameters.WorkspaceId,
 					        _cache.GetFieldValue(x => x.JobHistoryId),

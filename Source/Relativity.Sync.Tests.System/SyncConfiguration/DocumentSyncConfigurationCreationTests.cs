@@ -285,7 +285,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 		private async Task<int> ReadFieldByName(int workspaceId, string fieldName)
 		{
 			using (IObjectManager objectManager = await
-				SourceServiceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+				ServiceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				QueryRequest request = new QueryRequest()
 				{

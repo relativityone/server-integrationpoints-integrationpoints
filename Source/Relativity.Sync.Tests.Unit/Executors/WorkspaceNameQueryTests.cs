@@ -15,7 +15,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	[TestFixture]
 	public sealed class WorkspaceNameQueryTests
 	{
-		private Mock<ISourceServiceFactoryForUser> _serviceFactoryMock;
+		private Mock<ISourceServiceFactoryForUser> _serviceFactoryForUserMock;
 
 		private WorkspaceNameQuery _sut;
 		private Mock<IWorkspaceManager> _workspaceManagerMock;
@@ -23,10 +23,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[SetUp]
 		public void SetUp()
 		{
-			_serviceFactoryMock = new Mock<ISourceServiceFactoryForUser>();
+			_serviceFactoryForUserMock = new Mock<ISourceServiceFactoryForUser>();
 			_workspaceManagerMock = new Mock<IWorkspaceManager>();
 
-			_serviceFactoryMock.Setup(x => x.CreateProxyAsync<IWorkspaceManager>())
+			_serviceFactoryForUserMock.Setup(x => x.CreateProxyAsync<IWorkspaceManager>())
 				.Returns(Task.FromResult(_workspaceManagerMock.Object));
 
 			_sut = new WorkspaceNameQuery(new EmptyLogger());
@@ -39,7 +39,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_workspaceManagerMock.Setup(x => x.ReadAsync(It.IsAny<int>())).Throws<InvalidOperationException>();
 			
 			// Act
-			Func<Task> action = async () => await _sut.GetWorkspaceNameAsync(_serviceFactoryMock.Object, 1, CancellationToken.None).ConfigureAwait(false);
+			Func<Task> action = async () => await _sut.GetWorkspaceNameAsync(_serviceFactoryForUserMock.Object, 1, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			action.Should().Throw<InvalidOperationException>();
@@ -52,7 +52,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_workspaceManagerMock.Setup(x => x.ReadAsync(It.IsAny<int>())).Returns(Task.FromResult<WorkspaceResponse>(null));
 
 			// Act
-			Func<Task> action = async () => await _sut.GetWorkspaceNameAsync(_serviceFactoryMock.Object, 1, CancellationToken.None).ConfigureAwait(false);
+			Func<Task> action = async () => await _sut.GetWorkspaceNameAsync(_serviceFactoryForUserMock.Object, 1, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			action.Should().Throw<SyncException>();
@@ -68,7 +68,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 				.Returns(Task.FromResult(new WorkspaceResponse {Name = expectedWorkspaceName}));
 
 			// Act
-			string actualWorkspaceName = await _sut.GetWorkspaceNameAsync(_serviceFactoryMock.Object, 1, CancellationToken.None).ConfigureAwait(false);
+			string actualWorkspaceName = await _sut.GetWorkspaceNameAsync(_serviceFactoryForUserMock.Object, 1, CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
 			Assert.AreEqual(expectedWorkspaceName, actualWorkspaceName);

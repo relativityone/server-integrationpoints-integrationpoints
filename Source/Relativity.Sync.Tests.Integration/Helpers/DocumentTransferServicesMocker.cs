@@ -36,16 +36,16 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 		private const string _LOCATION_COLUMN_NAME = "Location";
 		private const string _SIZE_COLUMN_NAME = "Size";
 
-		public Mock<ISourceServiceFactoryForUser> SourceServiceFactoryForUser { get; }
-		public Mock<ISourceServiceFactoryForAdmin> SourceServiceFactoryForAdmin { get; }
+		public Mock<ISourceServiceFactoryForUser> ServiceFactoryForUser { get; }
+		public Mock<ISourceServiceFactoryForAdmin> ServiceFactoryForAdmin { get; }
 		public Mock<IObjectManager> ObjectManager { get; }
 		public Mock<ISearchService> SearchService { get; }
 		public Mock<ISearchManager> SearchManager { get; }
 
         public DocumentTransferServicesMocker()
 		{
-			SourceServiceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
-			SourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
+			ServiceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
+			ServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
 			ObjectManager = new Mock<IObjectManager>();
 			SearchService = new Mock<ISearchService>();
             SearchManager = new Mock<ISearchManager>();
@@ -105,8 +105,8 @@ namespace Relativity.Sync.Tests.Integration.Helpers
         }
 		public void RegisterServiceMocks(ContainerBuilder containerBuilder)
 		{
-			containerBuilder.RegisterInstance(SourceServiceFactoryForUser.Object).As<ISourceServiceFactoryForUser>();
-			containerBuilder.RegisterInstance(SourceServiceFactoryForAdmin.Object).As<ISourceServiceFactoryForAdmin>();
+			containerBuilder.RegisterInstance(ServiceFactoryForUser.Object).As<ISourceServiceFactoryForUser>();
+			containerBuilder.RegisterInstance(ServiceFactoryForAdmin.Object).As<ISourceServiceFactoryForAdmin>();
 
             Mock<ISearchManagerFactory> searchManagerFactory = new Mock<ISearchManagerFactory>();
             searchManagerFactory.Setup(x => x.CreateSearchManagerAsync())
@@ -144,14 +144,14 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 
 		private void SetupServiceCreation<T>(Mock<T> serviceMock) where T : class, IDisposable
 		{
-			SourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<T>()).ReturnsAsync(serviceMock.Object);
-			SourceServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<T>()).ReturnsAsync(serviceMock.Object);
+			ServiceFactoryForUser.Setup(x => x.CreateProxyAsync<T>()).ReturnsAsync(serviceMock.Object);
+			ServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<T>()).ReturnsAsync(serviceMock.Object);
 		}
 
 		private void SetupFailingServiceCreation<T>() where T : class, IDisposable
 		{
-			SourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<T>()).ThrowsAsync(new AggregateException());
-			SourceServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<T>()).ThrowsAsync(new AggregateException());
+			ServiceFactoryForUser.Setup(x => x.CreateProxyAsync<T>()).ThrowsAsync(new AggregateException());
+			ServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<T>()).ThrowsAsync(new AggregateException());
 		}
 
 		private void SetupFields(IReadOnlyDictionary<string, RelativityDataType> fieldSchema)

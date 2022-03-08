@@ -19,7 +19,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	[TestFixture]
 	public class NotificationExecutorTests
 	{
-		private Mock<ISourceServiceFactoryForAdmin> _serviceFactory;
+		private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdmin;
 		private Mock<IProgressRepository> _progressRepository;
 		private Mock<IDestinationWorkspaceTagRepository> _destinationWorkspaceTagRepository;
 		private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepository;
@@ -60,15 +60,15 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[SetUp]
 		public void SetUp()
 		{
-			_serviceFactory = new Mock<ISourceServiceFactoryForAdmin>();
+			_serviceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
 			_progressRepository = new Mock<IProgressRepository>();
 			_destinationWorkspaceTagRepository = new Mock<IDestinationWorkspaceTagRepository>();
 			_jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
 
 			_emailManager = new Mock<IEmailNotificationsManager>();
-			_serviceFactory.Setup(x => x.CreateProxyAsync<IEmailNotificationsManager>()).ReturnsAsync(_emailManager.Object);
+			_serviceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IEmailNotificationsManager>()).ReturnsAsync(_emailManager.Object);
 
-			_instance = new NotificationExecutor(_serviceFactory.Object, _progressRepository.Object, _destinationWorkspaceTagRepository.Object, _jobHistoryErrorRepository.Object, new EmptyLogger());
+			_instance = new NotificationExecutor(_serviceFactoryForAdmin.Object, _progressRepository.Object, _destinationWorkspaceTagRepository.Object, _jobHistoryErrorRepository.Object, new EmptyLogger());
 		}
 
 		[Test]
@@ -227,7 +227,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			jobHistory.Setup(x => x.ErrorMessage).Returns(_ERROR_MESSAGE);
 			_jobHistoryErrorRepository.Setup(x => x.GetLastJobErrorAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(jobHistory.Object);
 
-			_serviceFactory.Setup(x => x.CreateProxyAsync<IEmailNotificationsManager>()).Throws<NullReferenceException>();
+			_serviceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IEmailNotificationsManager>()).Throws<NullReferenceException>();
 
 			// Act
 			ExecutionResult actualResult = await _instance.ExecuteAsync(configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);

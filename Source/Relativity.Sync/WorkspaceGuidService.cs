@@ -13,13 +13,13 @@ namespace Relativity.Sync
 {
 	internal sealed class WorkspaceGuidService : IWorkspaceGuidService, IDisposable
 	{
-		private readonly ISourceServiceFactoryForAdmin _servicesManager;
+		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 		private readonly IDictionary<int, Guid> _cache;
         private readonly ISemaphoreSlim _semaphoreSlim;
 
-		public WorkspaceGuidService(ISourceServiceFactoryForAdmin servicesManager, ISemaphoreSlim semaphoreSlim)
+		public WorkspaceGuidService(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISemaphoreSlim semaphoreSlim)
 		{
-			_servicesManager = servicesManager;
+			_serviceFactoryForAdmin = serviceFactoryForAdmin;
             _semaphoreSlim = semaphoreSlim;
             _cache = new ConcurrentDictionary<int, Guid>();
 		}
@@ -51,7 +51,7 @@ namespace Relativity.Sync
 
 		private async Task<Guid> ReadWorkspaceGuidAsync(int workspaceArtifactId)
 		{
-			using (IObjectManager objectManager = await _servicesManager.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (IObjectManager objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				QueryRequest queryRequest = new QueryRequest()
 				{

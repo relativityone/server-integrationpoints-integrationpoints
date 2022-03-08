@@ -15,15 +15,15 @@ namespace Relativity.Sync.SyncConfiguration.FieldsMapping
 		private readonly int _destinationWorkspaceId;
 		private readonly int _rdoArtifactTypeId;
 		private readonly int _destinationRdoArtifactTypeId;
-		private readonly ISourceServiceFactoryForAdmin _servicesMgr;
+		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 
-		public FieldsMappingBuilder(int sourceWorkspaceId, int destinationWorkspaceId, int rdoArtifactTypeId, int destinationRdoArtifactTypeId, ISourceServiceFactoryForAdmin servicesMgr)
+		public FieldsMappingBuilder(int sourceWorkspaceId, int destinationWorkspaceId, int rdoArtifactTypeId, int destinationRdoArtifactTypeId, ISourceServiceFactoryForAdmin serviceFactoryForAdmin)
 		{
 			_sourceWorkspaceId = sourceWorkspaceId;
 			_destinationWorkspaceId = destinationWorkspaceId;
 			_rdoArtifactTypeId = rdoArtifactTypeId;
 			_destinationRdoArtifactTypeId = destinationRdoArtifactTypeId;
-			_servicesMgr = servicesMgr;
+			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 
 			FieldsMapping = new List<FieldMap>();
 		}
@@ -37,7 +37,7 @@ namespace Relativity.Sync.SyncConfiguration.FieldsMapping
 				throw InvalidFieldsMappingException.IdentifierMappedTwice();
 			}
 
-			using (var objectManager = _servicesMgr.CreateProxyAsync<IObjectManager>().ConfigureAwait(false).GetAwaiter().GetResult())
+			using (var objectManager = _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false).GetAwaiter().GetResult())
 			{
 				FieldEntry sourceField = ReadIdentifierFieldAsync(_sourceWorkspaceId, _rdoArtifactTypeId, objectManager).GetAwaiter().GetResult();
 				FieldEntry destinationField = ReadIdentifierFieldAsync(_destinationWorkspaceId, _destinationRdoArtifactTypeId, objectManager).GetAwaiter().GetResult();
@@ -55,7 +55,7 @@ namespace Relativity.Sync.SyncConfiguration.FieldsMapping
 
 		public IFieldsMappingBuilder WithField(int sourceFieldId, int destinationFieldId)
 		{
-			using (var fieldManager = _servicesMgr.CreateProxyAsync<IFieldManager>().ConfigureAwait(false).GetAwaiter().GetResult())
+			using (var fieldManager = _serviceFactoryForAdmin.CreateProxyAsync<IFieldManager>().ConfigureAwait(false).GetAwaiter().GetResult())
 			{
 				FieldEntry sourceField = ReadFieldEntryByIdAsync(_sourceWorkspaceId, sourceFieldId, fieldManager).GetAwaiter().GetResult();
 				FieldEntry destinationField = ReadFieldEntryByIdAsync(_destinationWorkspaceId, destinationFieldId, fieldManager).GetAwaiter().GetResult();
@@ -73,7 +73,7 @@ namespace Relativity.Sync.SyncConfiguration.FieldsMapping
 
 		public IFieldsMappingBuilder WithField(string sourceFieldName, string destinationFieldName)
 		{
-			using (var objectManager = _servicesMgr.CreateProxyAsync<IObjectManager>().ConfigureAwait(false).GetAwaiter().GetResult())
+			using (var objectManager = _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false).GetAwaiter().GetResult())
 			{
 				FieldEntry sourceField = ReadFieldEntryByNameAsync(_sourceWorkspaceId, _rdoArtifactTypeId, sourceFieldName, objectManager).GetAwaiter().GetResult();
 				FieldEntry destinationField = ReadFieldEntryByNameAsync(_destinationWorkspaceId, _destinationRdoArtifactTypeId, destinationFieldName, objectManager).GetAwaiter().GetResult();

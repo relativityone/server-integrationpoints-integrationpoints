@@ -18,13 +18,13 @@ namespace Relativity.Sync.RDOs.Framework
     internal partial class RdoManager : IRdoManager
     {
         private readonly ISyncLog _logger;
-        private readonly ISourceServiceFactoryForAdmin _servicesMgr;
+        private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
         private readonly IRdoGuidProvider _rdoGuidProvider;
 
-        public RdoManager(ISyncLog logger, ISourceServiceFactoryForAdmin servicesMgr, IRdoGuidProvider rdoGuidProvider)
+        public RdoManager(ISyncLog logger, ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IRdoGuidProvider rdoGuidProvider)
         {
             _logger = logger;
-            _servicesMgr = servicesMgr;
+            _serviceFactoryForAdmin = serviceFactoryForAdmin;
             _rdoGuidProvider = rdoGuidProvider;
         }
 
@@ -49,7 +49,7 @@ namespace Relativity.Sync.RDOs.Framework
                 request.ParentObject = new RelativityObjectRef { ArtifactID = parentObjectId.Value };
             }
 
-            using (var objectManager = await _servicesMgr.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+            using (var objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
                 CreateResult result = await objectManager.CreateAsync(workspaceId, request).ConfigureAwait(false);
 
@@ -75,7 +75,7 @@ namespace Relativity.Sync.RDOs.Framework
                 FieldValues = GetFieldRefValuePairsForSettingValues(rdo, typeInfo.Fields.Values.ToArray())
             };
 
-            using (var objectManager = await _servicesMgr.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+            using (var objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
                 await objectManager.UpdateAsync(workspaceId, request).ConfigureAwait(false);
                 _logger.LogDebug("Set {valuesCount} fields on object {artifactId} in workspace {workspaceId}",
@@ -99,7 +99,7 @@ namespace Relativity.Sync.RDOs.Framework
                 FieldValues = GetFieldRefValuePairsForSettingValue(fieldInfo, value)
             };
 
-            using (var objectManager = await _servicesMgr.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+            using (var objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
                 await objectManager.UpdateAsync(workspaceId, request).ConfigureAwait(false);
                 fieldInfo.PropertyInfo.SetValue(rdo, value);
@@ -138,7 +138,7 @@ namespace Relativity.Sync.RDOs.Framework
                 Condition = $"'ArtifactId' == {artifactId}"
             };
 
-            using (var objectManager = await _servicesMgr.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+            using (var objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
                 QueryResultSlim queryResult =
                     await objectManager.QuerySlimAsync(workspaceId, request, 0, 1).ConfigureAwait(false);

@@ -10,18 +10,18 @@ namespace Relativity.Sync.Executors
 {
 	internal sealed class JobHistoryNameQuery : IJobHistoryNameQuery
 	{
-		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
+		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private readonly ISyncLog _logger;
 		
-		public JobHistoryNameQuery(ISourceServiceFactoryForUser sourceServiceFactoryForUser, ISyncLog logger)
+		public JobHistoryNameQuery(ISourceServiceFactoryForUser serviceFactoryForUser, ISyncLog logger)
 		{
-			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
+			_serviceFactoryForUser = serviceFactoryForUser;
 			_logger = logger;
 		}
 
 		public async Task<string> GetJobNameAsync(Guid jobHistoryGuid, int jobHistoryArtifactId, int sourceWorkspaceArtifactId, CancellationToken token)
 		{
-			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (IObjectManager objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				QueryRequest request = new QueryRequest()
 				{

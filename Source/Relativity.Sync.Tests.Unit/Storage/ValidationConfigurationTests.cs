@@ -15,7 +15,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 	{
 		private ValidationConfiguration _sut;
 		private Mock<IFieldMappings> _fieldMappings;
-		private Mock<ISourceServiceFactoryForUser> _syncServiceManagerMock;
+		private Mock<ISourceServiceFactoryForUser> _serviceFactoryForUser;
 		private const int _WORKSPACE_ID = 111;
 		
 
@@ -24,8 +24,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			_fieldMappings = new Mock<IFieldMappings>();
 			SyncJobParameters jobParameters = new SyncJobParameters(It.IsAny<int>(), _WORKSPACE_ID, It.IsAny<Guid>());
-			_syncServiceManagerMock = new Mock<ISourceServiceFactoryForUser>();
-			_sut = new ValidationConfiguration(_configuration, _fieldMappings.Object, jobParameters, _syncServiceManagerMock.Object);
+			_serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
+			_sut = new ValidationConfiguration(_configuration, _fieldMappings.Object, jobParameters, _serviceFactoryForUser.Object);
 		}
 
 		[Test]
@@ -121,7 +121,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 			const string jobName = "Job name";
 
 			var objectManagerMock = new Mock<IObjectManager>();
-			_syncServiceManagerMock.Setup(x => x.CreateProxyAsync<IObjectManager>())
+			_serviceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>())
 				.Returns(Task.FromResult(objectManagerMock.Object));
 			
 			SetupJobName(objectManagerMock, jobName);
