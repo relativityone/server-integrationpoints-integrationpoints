@@ -2,7 +2,7 @@ version: 1 # Parsing version for this file. Currently all should be "1"
 agents:
   08c0ce2d-8191-4e8f-b037-899ceaee493d: # GUID for Agent
     enable_in_k8s: false # If true, this agent will be enabled to run in K8s. If false or missing, there will be NO CHANGES made to this agent.
-    stay_alive: 5 # Number of minutes one container of this agent should stay alive before getting torn down in order to make it available for immediate response
+    stay_alive: 0 # Number of minutes one container of this agent should stay alive before getting torn down in order to make it available for immediate response
     container_resources: # Container memory and CPU in GB. Notes: 1. Global default (mem: 1, cpu: 1) is used if not specified here 2. Max value for each is 8
       mem: 8
       cpu: 4

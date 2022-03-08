@@ -124,6 +124,13 @@ namespace kCura.ScheduleQueue.AgentBase
 		{
 			using (Logger.LogContextPushProperty("AgentRunCorrelationId", Guid.NewGuid()))
             {
+	            if (IsKubernetesMode && DidWork.HasValue && DidWork.Value)
+	            {
+		            Logger.LogInformation("Shutting down agent after single job in K8s mode");
+		            DidWork = false;
+		            return;
+	            }
+	            
 				if (ToBeRemoved)
 				{
 					Logger.LogInformation("Agent is marked to be removed. Job will not be processed.");
@@ -226,7 +233,7 @@ namespace kCura.ScheduleQueue.AgentBase
 					TaskResult jobResult = ProcessJob(nextJob);
 
 					Logger.LogInformation("Job {jobId} has been processed with status {status}", nextJob.JobId, jobResult.Status.ToString());
-
+					
 					// If last job was drain-stopped, assign null to nextJob so it doesn't get executed on next loop iteration.
 					// Also do not finalize the job (i.e. do not remove it from the queue).
 					if (jobResult.Status == TaskStatusEnum.DrainStopped)
@@ -238,7 +245,15 @@ namespace kCura.ScheduleQueue.AgentBase
 					else
 					{
 						FinalizeJobExecution(nextJob, jobResult);
-						nextJob = GetNextQueueJob(); // assumptions: it will not throws exception
+
+						if (!IsKubernetesMode)
+						{
+							nextJob = GetNextQueueJob(); // assumptions: it will not throws exception
+						}
+						else
+						{
+							nextJob = null;
+						}
 					}
 				}
 

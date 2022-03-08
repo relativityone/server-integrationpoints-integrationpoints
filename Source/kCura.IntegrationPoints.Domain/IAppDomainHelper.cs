@@ -10,5 +10,6 @@ namespace kCura.IntegrationPoints.Domain
         IAppDomainManager SetupDomainAndCreateManager(AppDomain domain,
 			Guid applicationGuid);
         T CreateInstance<T>(AppDomain domain, params object[] constructorArgs) where T : class;
-    }
+        void BootstrapDomain(AppDomain newDomain);
+	}
 }
