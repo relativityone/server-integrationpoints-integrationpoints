@@ -62,7 +62,7 @@ async function getButtonStateObject(convenienceApi, ctx, workspaceId, integratio
                 "content-type": "application/json; charset=utf-8"
             }
         }),
-        url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/" + workspaceId + "/api/ConsoleState/GetState" + '?workspaceId=' + workspaceId + '&integrationPointArtifactId=' + integrationPointId
+        url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/" + workspaceId + "/api/ConsoleState/GetConsoleState" + '?workspaceId=' + workspaceId + '&integrationPointArtifactId=' + integrationPointId
     };
 
     var resp = await convenienceApi.relativityHttpClient.get(request.url, request.options)

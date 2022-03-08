@@ -18,8 +18,21 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         [LogApiExceptionFilter(Message = "Unable to get ConsoleState")]
         public IHttpActionResult GetConsoleState(int workspaceId, int integrationPointArtifactId)
         {
-            ButtonStateDTO buttonState = _buttonStateBuilder
-                .CreateButtonState(workspaceId, integrationPointArtifactId);
+            //ButtonStateDTO buttonState = _buttonStateBuilder
+            //    .CreateButtonState(workspaceId, integrationPointArtifactId);
+
+            var buttonState = new ButtonStateDTO
+            {
+                DownloadErrorFileLinkEnabled = true,
+                DownloadErrorFileLinkVisible = true,
+                RetryErrorsButtonEnabled = true,
+                RetryErrorsButtonVisible = true,
+                RunButtonEnabled = true,
+                SaveAsProfileButtonVisible = true,
+                StopButtonEnabled = true,
+                ViewErrorsLinkEnabled = true,
+                ViewErrorsLinkVisible = true
+            };
 
             return Ok(buttonState);
         }
