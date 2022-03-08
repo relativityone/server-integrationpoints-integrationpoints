@@ -11,16 +11,16 @@ namespace Relativity.Sync.Executors
 {
     internal class NonDocumentObjectDataSourceSnapshotExecutor : IExecutor<INonDocumentDataSourceSnapshotConfiguration>
     {
-        private readonly ISourceServiceFactoryForUser _serviceFactory;
+        private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
         private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
         private readonly ISnapshotQueryRequestProvider _snapshotQueryRequestProvider;
         private readonly ISyncLog _logger;
 
-        public NonDocumentObjectDataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactory,
+        public NonDocumentObjectDataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactoryForUser,
             IJobProgressUpdaterFactory jobProgressUpdaterFactory,
             ISnapshotQueryRequestProvider snapshotQueryRequestProvider, ISyncLog logger)
         {
-            _serviceFactory = serviceFactory;
+            _serviceFactoryForUser = serviceFactoryForUser;
             _jobProgressUpdaterFactory = jobProgressUpdaterFactory;
             _snapshotQueryRequestProvider = snapshotQueryRequestProvider;
             _logger = logger;
@@ -69,7 +69,7 @@ namespace Relativity.Sync.Executors
                 {
                     ExportInitializationResults exportResults;
                     using (IObjectManager objectManager =
-                           await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+                           await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
                     {
                         exportResults = await objectManager
                             .InitializeExportAsync(configuration.SourceWorkspaceArtifactId, queryRequest, 1)
@@ -120,7 +120,7 @@ namespace Relativity.Sync.Executors
 
                 ExportInitializationResults exportResults;
                 using (IObjectManager objectManager =
-                       await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+                       await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
                 {
                     QueryRequest queryRequest = await _snapshotQueryRequestProvider
                         .GetRequestForCurrentPipelineAsync(token.AnyReasonCancellationToken).ConfigureAwait(false);

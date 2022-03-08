@@ -5,15 +5,15 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 {
 	internal sealed class RetriableLongTextStreamBuilderFactory : IRetriableStreamBuilderFactory
 	{
-		private readonly ISourceServiceFactoryForUser _serviceFactory;
+		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private readonly IStreamRetryPolicyFactory _streamRetryPolicyFactory;
 		private readonly ISyncMetrics _syncMetrics;
 		private readonly ISyncLog _logger;
 
-		public RetriableLongTextStreamBuilderFactory(ISourceServiceFactoryForUser serviceFactory,
+		public RetriableLongTextStreamBuilderFactory(ISourceServiceFactoryForUser serviceFactoryForUser,
 			IStreamRetryPolicyFactory streamRetryPolicyFactory, ISyncMetrics syncMetrics, ISyncLog logger)
 		{
-			_serviceFactory = serviceFactory;
+			_serviceFactoryForUser = serviceFactoryForUser;
 			_streamRetryPolicyFactory = streamRetryPolicyFactory;
 			_syncMetrics = syncMetrics;
 			_logger = logger;
@@ -21,7 +21,7 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 
 		public IRetriableStreamBuilder Create(int workspaceArtifactId, int relativityObjectArtifactId, string fieldName)
 		{
-			return new RetriableLongTextStreamBuilder(workspaceArtifactId, relativityObjectArtifactId, fieldName, _serviceFactory, _streamRetryPolicyFactory, _syncMetrics, _logger);
+			return new RetriableLongTextStreamBuilder(workspaceArtifactId, relativityObjectArtifactId, fieldName, _serviceFactoryForUser, _streamRetryPolicyFactory, _syncMetrics, _logger);
 		}
 	}
 }

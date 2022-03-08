@@ -19,10 +19,10 @@ namespace Relativity.Sync
 		/// </summary>
 		Uri AuthenticationUri { get; }
 
-		/// <summary>
+        /// <summary>
 		///     Relativity authentication endpoint address
 		/// </summary>
-		ISyncServiceManager ServicesMgr { get; }
+        ISyncServiceManager ServicesMgr { get; }
 
 		/// <summary>
 		///     Interface with helper methods to programmatically interact with Relativity

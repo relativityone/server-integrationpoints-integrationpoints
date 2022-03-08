@@ -13,12 +13,12 @@ namespace Relativity.Sync
 		private const string _RELATIVITY_CORE_SETTING_SECTION = "Relativity.Core";
 		private const string _SYNC_SECTION = "Relativity.Sync";
 
-		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
+		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 		private readonly ISyncLog _logger;
 
-		public InstanceSettings(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger)
+		public InstanceSettings(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger)
 		{
-			_serviceFactory = serviceFactory;
+			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_logger = logger;
 		}
 
@@ -74,7 +74,7 @@ namespace Relativity.Sync
 		{
 			try
 			{
-				using (IInstanceSettingManager instanceSettingManager = await _serviceFactory.CreateProxyAsync<IInstanceSettingManager>().ConfigureAwait(false))
+				using (IInstanceSettingManager instanceSettingManager = await _serviceFactoryForAdmin.CreateProxyAsync<IInstanceSettingManager>().ConfigureAwait(false))
 				{
 					Services.Query query = BuildInstanceSettingQuery(name, section);
 					InstanceSettingQueryResultSet resultSet = await instanceSettingManager.QueryAsync(query).ConfigureAwait(false);

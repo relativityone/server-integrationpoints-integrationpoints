@@ -16,7 +16,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	internal sealed class ChoiceCacheTests
 	{
 		private Mock<ISynchronizationConfiguration> _config;
-		private Mock<ISourceServiceFactoryForUser> _serviceFactory;
+		private Mock<ISourceServiceFactoryForUser> _serviceFactoryForUser;
 		private Mock<IObjectManager> _objectManager;
 		private ChoiceCache _instance;
 
@@ -24,10 +24,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public void SetUp()
 		{
 			_config = new Mock<ISynchronizationConfiguration>();
-			_serviceFactory = new Mock<ISourceServiceFactoryForUser>();
+			_serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
 			_objectManager = new Mock<IObjectManager>();
-			_serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-			_instance = new ChoiceCache(_config.Object, _serviceFactory.Object);
+			_serviceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			_instance = new ChoiceCache(_config.Object, _serviceFactoryForUser.Object);
 		}
 
 		[Test]

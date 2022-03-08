@@ -9,6 +9,8 @@ namespace Relativity.Sync.Storage
 		int StartingIndex { get; }
 		BatchStatus Status { get; }
 		
+		Guid ExportRunId { get; }
+		
 		int TransferredItemsCount { get; }
 		int FailedItemsCount { get; }
 

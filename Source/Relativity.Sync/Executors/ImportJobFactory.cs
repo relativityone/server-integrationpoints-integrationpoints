@@ -46,21 +46,12 @@ namespace Relativity.Sync.Executors
 
             importJob.SourceData.SourceData = sourceWorkspaceDataReader;
 			importJob.Settings.ArtifactTypeId = configuration.DestinationRdoArtifactTypeId;
-			importJob.Settings.Billable = false;
-			importJob.Settings.BulkLoadFileFieldDelimiter = ";";
-			importJob.Settings.CopyFilesToDocumentRepository = false;
-			importJob.Settings.DisableControlNumberCompatibilityMode = true;
-			importJob.Settings.DisableExtractedTextEncodingCheck = true;
-			importJob.Settings.DisableExtractedTextFileLocationValidation = true;
-			importJob.Settings.DisableNativeLocationValidation = false;
-			importJob.Settings.DisableNativeValidation = false;
-			importJob.Settings.DisableUserSecurityCheck = true;
-			importJob.Settings.ExtractedTextFieldContainsFilePath = false;
-			importJob.Settings.LoadImportedFullTextFromServer = false;
-			importJob.Settings.MultiValueDelimiter = ';';
-			importJob.Settings.NativeFileCopyMode = kCura.Relativity.DataReaderClient.NativeFileCopyModeEnum.DoNotImportNativeFiles;
+
+			importJob.Settings.MultiValueDelimiter = configuration.MultiValueDelimiter;
+			importJob.Settings.NestedValueDelimiter = configuration.NestedValueDelimiter;
+
+			importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles;
 			importJob.Settings.SelectedIdentifierFieldName = GetIdentifierFieldName();
-			importJob.Settings.IdentityFieldId = 0;
 
 			var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);
 
@@ -70,6 +61,36 @@ namespace Relativity.Sync.Executors
                 NonDocumentImportSettingsForLogging.CreateWithoutSensitiveData(importJob.Settings));
 
             return job;
+        }
+
+        public async Task<IImportJob> CreateRdoLinkingJobAsync(INonDocumentSynchronizationConfiguration configuration, IBatch batch,
+	        CancellationToken token)
+        {
+	        ISourceWorkspaceDataReader sourceWorkspaceDataReader = _dataReaderFactory.CreateNonDocumentObjectLinkingSourceWorkspaceDataReader(batch, token);
+	        IImportAPI importApi = await GetImportApiAsync().ConfigureAwait(false);
+	        ImportBulkArtifactJob importJob = importApi.NewObjectImportJob(configuration.DestinationRdoArtifactTypeId);
+
+	        SetCommonIapiSettings(configuration, importJob.Settings);
+
+	        importJob.Settings.OverwriteMode = OverwriteModeEnum.Overlay;
+	        
+	        importJob.SourceData.SourceData = sourceWorkspaceDataReader;
+	        importJob.Settings.ArtifactTypeId = configuration.DestinationRdoArtifactTypeId;
+
+	        importJob.Settings.MultiValueDelimiter = configuration.MultiValueDelimiter;
+	        importJob.Settings.NestedValueDelimiter = configuration.NestedValueDelimiter;
+
+	        importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles;
+	        importJob.Settings.SelectedIdentifierFieldName = GetIdentifierFieldName();
+
+	        var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);
+
+	        ImportJob job = new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository, configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
+
+	        _logger.LogInformation("Import Settings: {@settings}",
+		        NonDocumentImportSettingsForLogging.CreateWithoutSensitiveData(importJob.Settings));
+
+	        return job;
         }
 
         public async Task<IImportJob> CreateImageImportJobAsync(IImageSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
@@ -154,7 +175,7 @@ namespace Relativity.Sync.Executors
 
 			return job;
 		}
-		
+
 		private void SetCommonIapiSettings(ISynchronizationConfiguration configuration, ImportSettingsBase settings)
 		{
 			settings.ApplicationName = _syncJobParameters.SyncApplicationName;
@@ -169,6 +190,7 @@ namespace Relativity.Sync.Executors
 
 			settings.OverlayBehavior = (OverlayBehavior)configuration.FieldOverlayBehavior;
 			settings.OverwriteMode = (OverwriteModeEnum)configuration.ImportOverwriteMode;
+
 			settings.IdentityFieldId = configuration.IdentityFieldId;
 		}
 
@@ -196,11 +218,11 @@ namespace Relativity.Sync.Executors
 			Field identityField = workspaceFields.First(x => x.ArtifactID == identityFieldArtifactId);
 			return identityField.Name;
 		}
-		
+
 		private string GetIdentifierFieldName()
 		{
 			return _fieldMappings.GetFieldMappings().First(x => x.FieldMapType == FieldMapType.Identifier).DestinationField.DisplayName;
 		}
-		
+
 	}
 }

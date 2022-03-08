@@ -6,18 +6,18 @@ namespace Relativity.Sync.Transfer
 {
 	internal sealed class RelativityExportBatcherFactory : IRelativityExportBatcherFactory
 	{
-		private readonly ISourceServiceFactoryForUser _serviceFactory;
+		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private readonly ISynchronizationConfiguration _configuration;
 
-		public RelativityExportBatcherFactory(ISourceServiceFactoryForUser serviceFactory, ISynchronizationConfiguration configuration)
+		public RelativityExportBatcherFactory(ISourceServiceFactoryForUser serviceFactoryForUser, ISynchronizationConfiguration configuration)
 		{
-			_serviceFactory = serviceFactory;
+			_serviceFactoryForUser = serviceFactoryForUser;
 			_configuration = configuration;
 		}
 
 		public IRelativityExportBatcher CreateRelativityExportBatcher(IBatch batch)
 		{
-			return new RelativityExportBatcher(_serviceFactory, batch, _configuration.ExportRunId, _configuration.SourceWorkspaceArtifactId);
+			return new RelativityExportBatcher(_serviceFactoryForUser, batch, _configuration.SourceWorkspaceArtifactId);
 		}
 	}
 }

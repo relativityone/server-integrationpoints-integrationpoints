@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.API;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Tests.Common;
@@ -29,16 +30,16 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 			_metricsManagerMock = new Mock<IMetricsManager>(MockBehavior.Strict);
 			_metricsManagerMock.Setup(x => x.Dispose());
 
-			Mock<ISyncServiceManager> syncServiceManager = new Mock<ISyncServiceManager>();
-			syncServiceManager.Setup(x => x.CreateProxy<IMetricsManager>(It.IsAny<ExecutionIdentity>()))
-				.Returns(_metricsManagerMock.Object);
+			Mock<ISourceServiceFactoryForAdmin> serviceFactoryForAdminMock = new Mock<ISourceServiceFactoryForAdmin>();
+			serviceFactoryForAdminMock.Setup(x => x.CreateProxyAsync<IMetricsManager>())
+				.Returns(Task.FromResult(_metricsManagerMock.Object));
 
 			_syncLogMock = new Mock<ISyncLog>();
 
 			Mock<IWorkspaceGuidService> workspaceGuidServiceFake = new Mock<IWorkspaceGuidService>();
 			workspaceGuidServiceFake.Setup(x => x.GetWorkspaceGuidAsync(It.IsAny<int>())).ReturnsAsync(_workspaceGuid);
 
-			_sut = new SumSyncMetricsSink(syncServiceManager.Object, _syncLogMock.Object, 
+			_sut = new SumSyncMetricsSink(serviceFactoryForAdminMock.Object, _syncLogMock.Object, 
 				workspaceGuidServiceFake.Object, _syncJobParamters);
 		}
 

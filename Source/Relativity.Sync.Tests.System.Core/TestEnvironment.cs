@@ -245,7 +245,7 @@ namespace Relativity.Sync.Tests.System.Core
 
 		private static async Task EnsureRdosExistsAsync(int workspaceArtifactId)
 		{
-			var rdoManager = new RdoManager(TestLogHelper.GetLogger(), new ServicesManagerStub(), new RdoGuidProvider());
+			var rdoManager = new RdoManager(TestLogHelper.GetLogger(), new SourceServiceFactoryStub(), new RdoGuidProvider());
 			await rdoManager.EnsureTypeExistsAsync<SyncConfigurationRdo>(workspaceArtifactId).ConfigureAwait(false);
 			await rdoManager.EnsureTypeExistsAsync<SyncProgressRdo>(workspaceArtifactId).ConfigureAwait(false);
 			await rdoManager.EnsureTypeExistsAsync<SyncBatchRdo>(workspaceArtifactId).ConfigureAwait(false);

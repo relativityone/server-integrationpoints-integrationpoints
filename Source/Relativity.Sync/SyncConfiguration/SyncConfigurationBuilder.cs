@@ -11,18 +11,20 @@ namespace Relativity.Sync.SyncConfiguration
     {
         private readonly ISyncContext _syncContext;
         private readonly ISyncServiceManager _servicesMgr;
+        private readonly ISyncLog _logger;
         private readonly ISerializer _serializer;
 
         /// <summary>
         /// Creates new instance of <see cref="SyncConfigurationBuilder"/> class.
         /// </summary>
         /// <param name="syncContext">Sync configuration context.</param>
-        /// <param name="servicesMgr">Sync service manager.</param>
-        public SyncConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr)
+        /// <param name="servicesMgr">Sync Service Manager</param>
+        /// <param name="logger">logs data for debug purposes</param>
+        public SyncConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr, ISyncLog logger)
         {
             _syncContext = syncContext;
             _servicesMgr = servicesMgr;
-
+            _logger = logger;
             _serializer = new JSONSerializer();
         }
 
@@ -30,7 +32,7 @@ namespace Relativity.Sync.SyncConfiguration
         public ISyncJobConfigurationBuilder ConfigureRdos(RdoOptions rdoOptions)
         {
             ValidateInput(rdoOptions);
-            return new SyncJobConfigurationBuilder(_syncContext, _servicesMgr, rdoOptions, _serializer);
+            return new SyncJobConfigurationBuilder(_syncContext, _servicesMgr, rdoOptions, _serializer, _logger);
         }
 
         private void ValidateInput(RdoOptions rdoOptions)

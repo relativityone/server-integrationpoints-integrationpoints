@@ -13,12 +13,12 @@ namespace Relativity.Sync.Transfer
 {
 	internal sealed class ObjectFieldTypeRepository : IObjectFieldTypeRepository
 	{
-		private readonly ISourceServiceFactoryForUser _serviceFactory;
+		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private readonly ISyncLog _logger;
 
-		public ObjectFieldTypeRepository(ISourceServiceFactoryForUser serviceFactory, ISyncLog logger)
+		public ObjectFieldTypeRepository(ISourceServiceFactoryForUser serviceFactoryForUser, ISyncLog logger)
 		{
-			_serviceFactory = serviceFactory;
+			_serviceFactoryForUser = serviceFactoryForUser;
 			_logger = logger;
 		}
 
@@ -47,7 +47,7 @@ namespace Relativity.Sync.Transfer
 			};
 
 			QueryResultSlim result;
-			using (var objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (var objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				try
 				{

@@ -12,5 +12,7 @@ namespace Relativity.Sync.Executors
 		Task<IImportJob> CreateImageImportJobAsync(IImageSynchronizationConfiguration configuration, IBatch batch, CancellationToken token);
 
 		Task<IImportJob> CreateRdoImportJobAsync(INonDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token);
+		
+		Task<IImportJob> CreateRdoLinkingJobAsync(INonDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token);
 	}
 }

@@ -23,7 +23,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IObjectManager> _objectManagerFake;
 		private Mock<IBatchRepository> _batchRepositoryStub;
 		private Mock<IJobStatisticsContainer> _jobStatisticsContainerStub;
-		private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryStub;
+		private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdminStub;
 		private Mock<IJobStatusConsolidationConfiguration> _configurationStub;
 		private List<IBatch> _batches;
 
@@ -36,7 +36,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 		public static IEnumerable<Action<JobStatusConsolidationExecutorTests>> ServiceFailures { get; } = new Action<JobStatusConsolidationExecutorTests>[]
 		{
-			ctx => ctx._serviceFactoryStub
+			ctx => ctx._serviceFactoryForAdminStub
 				.Setup(x => x.CreateProxyAsync<IObjectManager>())
 				.ThrowsAsync(_EXCEPTION),
 			ctx => ctx._objectManagerFake
@@ -56,8 +56,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_configurationStub = new Mock<IJobStatusConsolidationConfiguration>();
             _configurationStub.Setup(x => x.ExportRunId).Returns(new Guid("286E0000-479B-4752-B95A-C818A3974495"));
 
-			_serviceFactoryStub = new Mock<ISourceServiceFactoryForAdmin>();
-			_serviceFactoryStub
+			_serviceFactoryForAdminStub = new Mock<ISourceServiceFactoryForAdmin>();
+			_serviceFactoryForAdminStub
 				.Setup(x => x.CreateProxyAsync<IObjectManager>())
 				.ReturnsAsync(_objectManagerFake.Object);
 
@@ -69,7 +69,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
 			SetUpUpdateCall(success: true);
 
-			_sut = new JobStatusConsolidationExecutor(new ConfigurationStub(), _batchRepositoryStub.Object, _jobStatisticsContainerStub.Object, _serviceFactoryStub.Object);
+			_sut = new JobStatusConsolidationExecutor(new ConfigurationStub(), _batchRepositoryStub.Object, _jobStatisticsContainerStub.Object, _serviceFactoryForAdminStub.Object);
 		}
 
 		[Test]

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.RDOs.Framework;
 
 namespace Relativity.Sync.Storage
@@ -16,7 +16,7 @@ namespace Relativity.Sync.Storage
         public int SourceWorkspaceArtifactId { get; }
 
         public ValidationConfiguration(IConfiguration cache, IFieldMappings fieldMappings,
-	        SyncJobParameters syncJobParameters, ISyncServiceManager servicesManager)
+	        SyncJobParameters syncJobParameters, ISourceServiceFactoryForUser serviceFactoryForUser)
         {
 	        _cache = cache;
 	        _fieldMappings = fieldMappings;
@@ -24,7 +24,7 @@ namespace Relativity.Sync.Storage
 
 	        _jobNameLazy = new Lazy<string>(() =>
 	        {
-		        using (var objectManager = servicesManager.CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser))
+		        using (var objectManager = serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false).GetAwaiter().GetResult())
 		        {
 			        return objectManager.GetObjectNameAsync(syncJobParameters.WorkspaceId,
 					        _cache.GetFieldValue(x => x.JobHistoryId),

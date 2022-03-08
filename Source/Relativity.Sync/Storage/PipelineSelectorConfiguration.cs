@@ -1,7 +1,5 @@
 ﻿using System;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.RDOs;
 
 namespace Relativity.Sync.Storage
 {

@@ -57,12 +57,12 @@ namespace Relativity.Sync.Storage
 			builder.RegisterType<ObjectLinkingSnapshotPartitionConfiguration>().As<IObjectLinkingSnapshotPartitionConfiguration>();
 			builder.RegisterType<NonDocumentJobStartMetricsConfiguration>().AsImplementedInterfaces();
 		}
-
+		
 		private IConfiguration CreateConfiguration(IComponentContext componentContext)
 		{
 			SyncJobParameters syncJobParameters = componentContext.Resolve<SyncJobParameters>();
 			ISyncLog logger = componentContext.Resolve<ISyncLog>();
-			IRdoManager rdoManager = componentContext.Resolve<IRdoManager>();
+            IRdoManager rdoManager = componentContext.Resolve<IRdoManager>();
 			
 			return Configuration.GetAsync(syncJobParameters, logger, new SemaphoreSlimWrapper(new SemaphoreSlim(1)), rdoManager).ConfigureAwait(false).GetAwaiter().GetResult();
 		}

@@ -29,16 +29,16 @@ namespace Relativity.Sync.Executors
 		private const string _MESSAGE_FAILED = "A job for the following Relativity Integration Point has failed to complete.";
 		private const string _MESSAGE_STOPPED = "A job for the following Relativity Integration Point has been stopped.";
 
-		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
+		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 		private readonly IProgressRepository _progressRepository;
 		private readonly IDestinationWorkspaceTagRepository _destinationWorkspaceTagRepository;
 		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private readonly ISyncLog _logger;
 
-		public NotificationExecutor(ISourceServiceFactoryForAdmin serviceFactory, IProgressRepository progressRepository,
+		public NotificationExecutor(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IProgressRepository progressRepository,
 			IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository, IJobHistoryErrorRepository jobHistoryErrorRepository, ISyncLog logger)
 		{
-			_serviceFactory = serviceFactory;
+			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_progressRepository = progressRepository;
 			_destinationWorkspaceTagRepository = destinationWorkspaceTagRepository;
 			_jobHistoryErrorRepository = jobHistoryErrorRepository;
@@ -52,7 +52,7 @@ namespace Relativity.Sync.Executors
 			try
 			{
 				EmailNotificationRequest emailRequest = await GetEmailNotificationRequestAsync(configuration, token.StopCancellationToken).ConfigureAwait(false);
-				using (var emailManager = await _serviceFactory.CreateProxyAsync<IEmailNotificationsManager>().ConfigureAwait(false))
+				using (var emailManager = await _serviceFactoryForAdmin.CreateProxyAsync<IEmailNotificationsManager>().ConfigureAwait(false))
 				{
 					await emailManager.SendEmailNotificationAsync(emailRequest).ConfigureAwait(false);
 				}

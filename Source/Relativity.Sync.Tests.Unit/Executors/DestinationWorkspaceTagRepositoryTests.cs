@@ -53,16 +53,16 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[SetUp]
 		public void SetUp()
 		{
-			var serviceFactory = new Mock<ISourceServiceFactoryForUser>();
+			var serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
 			_federatedInstance = new Mock<IFederatedInstance>();
 			_objectManager = new Mock<IObjectManager>();
 			_tagNameFormatter = new Mock<ITagNameFormatter>();
 			_tagNameFormatter.Setup(x => x.FormatWorkspaceDestinationTagName(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns("foo bar");
-			serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			serviceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 			_syncMetrics = new Mock<ISyncMetrics>();
 			_stopWatch = new Mock<IStopwatch>();
 
-			_sut = new DestinationWorkspaceTagRepository(serviceFactory.Object, _federatedInstance.Object,
+			_sut = new DestinationWorkspaceTagRepository(serviceFactoryForUser.Object, _federatedInstance.Object,
 				_tagNameFormatter.Object, new ConfigurationStub(), _syncLog, _syncMetrics.Object, () => _stopWatch.Object);
 		}
 

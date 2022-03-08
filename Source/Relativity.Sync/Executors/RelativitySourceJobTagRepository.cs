@@ -15,22 +15,22 @@ namespace Relativity.Sync.Executors
 		private const string _NAME_FIELD_NAME = "Name";
 		private const string _SENSITIVE_DATA_REMOVED = "[Sensitive user data has been removed]";
 
-		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
+		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private readonly ISyncLog _logger;
 
 		private static readonly Guid JobHistoryNameGuid = new Guid("0b8fcebf-4149-4f1b-a8bc-d88ff5917169");
 		private static readonly Guid JobHistoryIdFieldGuid = new Guid("2bf54e79-7f75-4a51-a99a-e4d68f40a231");
 		private static readonly Guid RelativitySourceJobTypeGuid = new Guid("6f4dd346-d398-4e76-8174-f0cd8236cbe7");
 
-		public RelativitySourceJobTagRepository(ISourceServiceFactoryForUser sourceServiceFactoryForUser, ISyncLog logger)
+		public RelativitySourceJobTagRepository(ISourceServiceFactoryForUser serviceFactoryForUser, ISyncLog logger)
 		{
-			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
+			_serviceFactoryForUser = serviceFactoryForUser;
 			_logger = logger;
 		}
 
 		public async Task<RelativitySourceJobTag> ReadAsync(int destinationWorkspaceArtifactId, int jobHistoryArtifactId, CancellationToken token)
 		{
-			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (IObjectManager objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				QueryRequest queryRequest = new QueryRequest
 				{
@@ -55,7 +55,7 @@ namespace Relativity.Sync.Executors
 		{
 			_logger.LogVerbose($"Creating {nameof(RelativitySourceJobTag)} in destination workspace artifact ID: {{destinationWorkspaceArtifactId}} Source case tag artifact ID: {{sourceCaseTagArtifactId}}",
 				destinationWorkspaceArtifactId, sourceJobTag.SourceCaseTagArtifactId);
-			using (IObjectManager objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (IObjectManager objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				CreateRequest request = new CreateRequest
 				{

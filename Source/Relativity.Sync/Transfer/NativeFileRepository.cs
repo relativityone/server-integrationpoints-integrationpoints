@@ -10,11 +10,11 @@ namespace Relativity.Sync.Transfer
     {
         private readonly INativeFileRepository _nativeFileRepository;
 
-        public NativeFileRepository(IToggleProvider toggleProvider, ISearchManagerFactory searchManagerFactory, ISourceServiceFactoryForUser serviceFactory, ISyncLog logger, SyncJobParameters parameters)
+        public NativeFileRepository(IToggleProvider toggleProvider, ISearchManagerFactory searchManagerFactory, ISourceServiceFactoryForUser serviceFactoryForUser, ISyncLog logger, SyncJobParameters parameters)
         {
             if (toggleProvider.IsEnabled<EnableKeplerizedImportAPIToggle>())
             {
-                _nativeFileRepository = new NativeFileRepositoryKepler(serviceFactory, logger, parameters);
+                _nativeFileRepository = new NativeFileRepositoryKepler(serviceFactoryForUser, logger, parameters);
             }
             else
             {

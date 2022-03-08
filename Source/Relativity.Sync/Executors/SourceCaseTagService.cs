@@ -11,22 +11,22 @@ namespace Relativity.Sync.Executors
 		private readonly IWorkspaceNameQuery _workspaceNameQuery;
 		private readonly IFederatedInstance _federatedInstance;
 		private readonly ITagNameFormatter _tagNameFormatter;
-		private readonly ISourceServiceFactoryForUser _serviceFactory;
+		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 
 		public SourceCaseTagService(IRelativitySourceCaseTagRepository relativitySourceCaseTagRepository, IWorkspaceNameQuery workspaceNameQuery,
-			IFederatedInstance federatedInstance, ITagNameFormatter tagNameFormatter, ISourceServiceFactoryForUser serviceFactory)
+			IFederatedInstance federatedInstance, ITagNameFormatter tagNameFormatter, ISourceServiceFactoryForUser serviceFactoryForUser)
 		{
 			_relativitySourceCaseTagRepository = relativitySourceCaseTagRepository;
 			_workspaceNameQuery = workspaceNameQuery;
 			_federatedInstance = federatedInstance;
 			_tagNameFormatter = tagNameFormatter;
-			_serviceFactory = serviceFactory;
+			_serviceFactoryForUser = serviceFactoryForUser;
 		}
 
 		public async Task<RelativitySourceCaseTag> CreateOrUpdateSourceCaseTagAsync(IDestinationWorkspaceTagsCreationConfiguration configuration, CancellationToken token)
 		{
 			string federatedInstanceName = await _federatedInstance.GetInstanceNameAsync().ConfigureAwait(false);
-			string sourceWorkspaceName = await _workspaceNameQuery.GetWorkspaceNameAsync(_serviceFactory, configuration.SourceWorkspaceArtifactId, token).ConfigureAwait(false);
+			string sourceWorkspaceName = await _workspaceNameQuery.GetWorkspaceNameAsync(_serviceFactoryForUser, configuration.SourceWorkspaceArtifactId, token).ConfigureAwait(false);
 			string sourceCaseTagName = _tagNameFormatter.FormatSourceCaseTagName(federatedInstanceName, sourceWorkspaceName, configuration.SourceWorkspaceArtifactId);
 
 			RelativitySourceCaseTag sourceCaseTag = await _relativitySourceCaseTagRepository

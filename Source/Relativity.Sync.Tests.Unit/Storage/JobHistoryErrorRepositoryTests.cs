@@ -21,7 +21,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 	internal sealed class JobHistoryErrorRepositoryTests
 	{
 		private JobHistoryErrorRepository _sut;
-		private Mock<ISourceServiceFactoryForUser> _serviceFactoryFake;
+		private Mock<ISourceServiceFactoryForUser> _serviceFactoryForUserFake;
 		private Mock<IObjectManager> _objectManagerMock;
 		private Mock<IDateTime> _dateTimeFake;
 		private DateTime _utcNow;
@@ -59,14 +59,14 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		[SetUp]
 		public void SetUp()
 		{
-			_serviceFactoryFake = new Mock<ISourceServiceFactoryForUser>();
+			_serviceFactoryForUserFake = new Mock<ISourceServiceFactoryForUser>();
 			_utcNow = DateTime.UtcNow;
 			_dateTimeFake = new Mock<IDateTime>();
 			_dateTimeFake.SetupGet(x => x.UtcNow).Returns(_utcNow);
 			_objectManagerMock = new Mock<IObjectManager>();
-			_serviceFactoryFake.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
+			_serviceFactoryForUserFake.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
 			_configuration = new ConfigurationStub();
-			_sut = new JobHistoryErrorRepository(_serviceFactoryFake.Object, _configuration, _configuration, _dateTimeFake.Object, new EmptyLogger(), new WrapperForRandom());
+			_sut = new JobHistoryErrorRepository(_serviceFactoryForUserFake.Object, _configuration, _configuration, _dateTimeFake.Object, new EmptyLogger(), new WrapperForRandom());
             _sut.SecondsBetweenRetriesBase = 0.1;
         }
 

@@ -30,9 +30,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			_objectManager = new Mock<IObjectManager>();
 
-			var serviceFactory = new Mock<ISourceServiceFactoryForUser>();
-			serviceFactory.Setup(f => f.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-			_instance = new ObjectFieldTypeRepository(serviceFactory.Object, new EmptyLogger());
+			var serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
+			serviceFactoryForUser.Setup(f => f.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			_instance = new ObjectFieldTypeRepository(serviceFactoryForUser.Object, new EmptyLogger());
 		}
 
 		[Test]

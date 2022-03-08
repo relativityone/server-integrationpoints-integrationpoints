@@ -16,10 +16,10 @@ namespace Relativity.Sync.Tests.Unit
 		[SetUp]
 		public void SetUp()
 		{
-			Mock<ISourceServiceFactoryForUser> serviceFactory = new Mock<ISourceServiceFactoryForUser>();
+			Mock<ISourceServiceFactoryForUser> serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
 			Mock<ISynchronizationConfiguration> configuration = new Mock<ISynchronizationConfiguration>();
 
-			_instance = new RelativityExportBatcherFactory(serviceFactory.Object, configuration.Object);
+			_instance = new RelativityExportBatcherFactory(serviceFactoryForUser.Object, configuration.Object);
 		}
 
 		[Test]

@@ -15,7 +15,6 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
     [TestFixture]
     public class NonDocumentSynchronizationExecutorConstrainsTests
     {
-
         [TestCase(new int[0], false)]//Empty array
         [TestCase(null,false)]
         [TestCase(new[] { 1 }, true)]//one element

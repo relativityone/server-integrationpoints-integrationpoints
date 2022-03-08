@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Telemetry;
 using Relativity.Telemetry.Services.Metrics;
 
@@ -33,20 +34,20 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			_metricsManagerMock.Setup(x => x.Dispose());
 			_apmMock = new Mock<IAPMClient>();
 
-			ISyncMetricsSink splunkSink = new SplunkSyncMetricsSink(_syncLogMock.Object);
+            ISyncMetricsSink splunkSink = new SplunkSyncMetricsSink(_syncLogMock.Object);
 
-			Mock<ISyncServiceManager> serviceManager = new Mock<ISyncServiceManager>();
-			serviceManager.Setup(x => x.CreateProxy<IMetricsManager>(It.IsAny<ExecutionIdentity>()))
-				.Returns(_metricsManagerMock.Object);
+			Mock<ISourceServiceFactoryForAdmin> serviceFactoryForAdminMock = new Mock<ISourceServiceFactoryForAdmin>();
+			serviceFactoryForAdminMock.Setup(x => x.CreateProxyAsync<IMetricsManager>())
+				.Returns(Task.FromResult(_metricsManagerMock.Object));
 
 			Mock<IWorkspaceGuidService> workspaceGuidService = new Mock<IWorkspaceGuidService>();
 			workspaceGuidService.Setup(x => x.GetWorkspaceGuidAsync(_WORKSPACE_ID))
 				.ReturnsAsync(_EXPECTED_WORKSPACE_GUID);
 
-			ISyncMetricsSink sumSink = new SumSyncMetricsSink(serviceManager.Object, _syncLogMock.Object,
+            ISyncMetricsSink sumSink = new SumSyncMetricsSink(serviceFactoryForAdminMock.Object, _syncLogMock.Object,
 				workspaceGuidService.Object, _jobParameters);
 
-			ISyncMetricsSink apmSink = new NewRelicSyncMetricsSink(_apmMock.Object);
+            ISyncMetricsSink apmSink = new NewRelicSyncMetricsSink(_apmMock.Object);
 
 			var sinks = new ISyncMetricsSink[]
 			{

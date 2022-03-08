@@ -34,11 +34,11 @@ namespace Relativity.Sync.Tests.Unit.Executors.PreValidation
 
 			var logger = new EmptyLogger();
 
-			var serviceFactory = new Mock<ISourceServiceFactoryForAdmin>();
-			serviceFactory.Setup(x => x.CreateProxyAsync<IWorkspaceManager>())
+			var serviceFactoryForAdminMock = new Mock<ISourceServiceFactoryForAdmin>();
+			serviceFactoryForAdminMock.Setup(x => x.CreateProxyAsync<IWorkspaceManager>())
 				.ReturnsAsync(_workspaceManagerFake.Object);
 
-			_sut = new DestinationWorkspaceExistenceValidator(serviceFactory.Object, logger);
+			_sut = new DestinationWorkspaceExistenceValidator(serviceFactoryForAdminMock.Object, logger);
 		}
 
 		[Test]

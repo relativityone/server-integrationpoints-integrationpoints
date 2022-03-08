@@ -11,7 +11,7 @@ namespace Relativity.Sync.Telemetry
 		private readonly IEnumerable<ISyncMetricsSink> _sinks;
 		private readonly IMetricsConfiguration _metricsConfiguration;
 
-		/// <summary>
+        /// <summary>
 		///     Creates a new instance of <see cref="SyncMetrics" /> with the given sinks.
 		/// </summary>
 		/// <param name="sinks">Sinks to which metrics should be sent</param>
@@ -20,7 +20,7 @@ namespace Relativity.Sync.Telemetry
 		{
 			_sinks = sinks;
 			_metricsConfiguration = metricsConfiguration;
-		}
+        }
 
 		/// <inheritdoc />
 		public void Send(IMetric metric)
@@ -39,5 +39,5 @@ namespace Relativity.Sync.Telemetry
 				sink.Send(metric);
 			}
 		}
-	}
+    }
 }

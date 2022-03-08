@@ -21,16 +21,16 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 
 		private readonly int _relativityObjectArtifactId;
 		private readonly int _workspaceArtifactId;
-		private readonly ISourceServiceFactoryForUser _serviceFactory;
+		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private readonly ISyncMetrics _syncMetrics;
 		private readonly ISyncLog _logger;
 		private readonly string _fieldName;
 		private readonly IAsyncPolicy<Stream> _retryPolicy;
 
-		public RetriableLongTextStreamBuilder(int workspaceArtifactId, int relativityObjectArtifactId, string fieldName, ISourceServiceFactoryForUser serviceFactory,
+		public RetriableLongTextStreamBuilder(int workspaceArtifactId, int relativityObjectArtifactId, string fieldName, ISourceServiceFactoryForUser serviceFactoryForUser,
 			IStreamRetryPolicyFactory streamRetryPolicyFactory, ISyncMetrics syncMetrics, ISyncLog logger)
 		{
-			_serviceFactory = serviceFactory;
+			_serviceFactoryForUser = serviceFactoryForUser;
 			_syncMetrics = syncMetrics;
 			_logger = logger;
 			_workspaceArtifactId = workspaceArtifactId;
@@ -64,7 +64,7 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 
 		private async Task<IObjectManager> GetObjectManagerAsync()
 		{
-			return _objectManager ?? (_objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false));
+			return _objectManager ?? (_objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false));
 		}
 
 		private void OnRetry(Stream stream, Exception exception, int retryAttempt)

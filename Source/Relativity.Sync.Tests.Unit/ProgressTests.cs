@@ -35,11 +35,11 @@ namespace Relativity.Sync.Tests.Unit
 		[SetUp]
 		public void SetUp()
 		{
-			Mock<ISourceServiceFactoryForAdmin> serviceFactoryMock = new Mock<ISourceServiceFactoryForAdmin>();
-			_progressRepository = new ProgressRepository(serviceFactoryMock.Object, new EmptyLogger());
+			Mock<ISourceServiceFactoryForAdmin> serviceFactoryForAdminMock = new Mock<ISourceServiceFactoryForAdmin>();
+			_progressRepository = new ProgressRepository(serviceFactoryForAdminMock.Object, new EmptyLogger());
 
 			_objectManager = new Mock<IObjectManager>();
-			serviceFactoryMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			serviceFactoryForAdminMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 		}
 
 		[Test]

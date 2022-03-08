@@ -1,25 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.Services.InternalMetricsCollection;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync.Tests.Unit.Telemetry
 {
 	public class TelemetryManagerTests
 	{
-		private Mock<ISyncServiceManager> _servicesManager;
+		private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdmin;
 		private Mock<ISyncLog> _logger;
 		private ITelemetryManager _telemetryManager;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_servicesManager = new Mock<ISyncServiceManager>();
+			_serviceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
 			_logger = new Mock<ISyncLog>();
-			_telemetryManager = new TelemetryMetricsInstaller(_servicesManager.Object, _logger.Object);
+			_telemetryManager = new TelemetryMetricsInstaller(_serviceFactoryForAdmin.Object, _logger.Object);
 		}
 
 		[Test]
@@ -42,8 +43,8 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 			metricsCollectionManager.Setup(x => x.GetCategoryTargetsAsync())
 				.ReturnsAsync(categoryTargetList);
 
-			_servicesManager.Setup(x => x.CreateProxy<IInternalMetricsCollectionManager>(It.IsAny<ExecutionIdentity>()))
-				.Returns(metricsCollectionManager.Object);
+			_serviceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IInternalMetricsCollectionManager>())
+				.Returns(Task.FromResult(metricsCollectionManager.Object));
 
 			// ACT
 			_telemetryManager.AddMetricProvider(null);
@@ -66,8 +67,8 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 			metricsCollectionManager.Setup(x => x.CreateCategoryAsync(It.IsAny<Category>(), It.IsAny<bool>()))
 				.ReturnsAsync(0);
 
-			_servicesManager.Setup(x => x.CreateProxy<IInternalMetricsCollectionManager>(It.IsAny<ExecutionIdentity>()))
-				.Returns(metricsCollectionManager.Object);
+			_serviceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IInternalMetricsCollectionManager>())
+				.Returns(Task.FromResult(metricsCollectionManager.Object));
 
 			Mock<ITelemetryMetricProvider> telemetryProvider = new Mock<ITelemetryMetricProvider>();
 			telemetryProvider.SetupGet(m => m.CategoryName).Returns(nameof(TelemetryManagerTests));
@@ -88,7 +89,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 			// ARRANGE
 			Mock<ITelemetryMetricProvider> telemetryProvider = new Mock<ITelemetryMetricProvider>();
 
-			_servicesManager.Setup(x => x.CreateProxy<IInternalMetricsCollectionManager>(It.IsAny<ExecutionIdentity>()))
+			_serviceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IInternalMetricsCollectionManager>())
 				.Throws<Exception>();
 
 			_telemetryManager.AddMetricProvider(telemetryProvider.Object);

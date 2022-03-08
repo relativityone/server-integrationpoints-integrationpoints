@@ -17,16 +17,16 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	[TestFixture]
 	public sealed class DestinationWorkspaceTagsLinkerTests
 	{
-		private Mock<ISourceServiceFactoryForUser> _serviceFactory;
+		private Mock<ISourceServiceFactoryForUser> _serviceFactoryForUser;
 
 		private DestinationWorkspaceTagLinker _sut;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_serviceFactory = new Mock<ISourceServiceFactoryForUser>();
+			_serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
 
-			_sut = new DestinationWorkspaceTagLinker( new ConfigurationStub(), _serviceFactory.Object,new EmptyLogger());
+			_sut = new DestinationWorkspaceTagLinker( new ConfigurationStub(), _serviceFactoryForUser.Object,new EmptyLogger());
 		}
 
 		[Test]
@@ -36,7 +36,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			const int destinationWorkspaceTagArtifactId = 2;
 			const int jobArtifactId = 3;
 			var objectManager = new Mock<IObjectManager>();
-			_serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(objectManager.Object);
+			_serviceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(objectManager.Object);
 
 			// act
 			await _sut.LinkDestinationWorkspaceTagToJobHistoryAsync(sourceWorkspaceArtifactId, destinationWorkspaceTagArtifactId, jobArtifactId).ConfigureAwait(false);
@@ -50,7 +50,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			Mock<IObjectManager> objectManager = new Mock<IObjectManager>();
 			objectManager.Setup(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<UpdateRequest>())).Throws<InvalidOperationException>();
-			_serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(objectManager.Object);
+			_serviceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(objectManager.Object);
 
 			// act
 			Func<Task> action = async () => await _sut.LinkDestinationWorkspaceTagToJobHistoryAsync(0, 0, 0).ConfigureAwait(false);

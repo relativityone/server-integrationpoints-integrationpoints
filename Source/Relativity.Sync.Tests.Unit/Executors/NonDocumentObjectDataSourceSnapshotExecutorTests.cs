@@ -24,7 +24,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
     {
         private NonDocumentObjectDataSourceSnapshotExecutor _sut;
         private Mock<IObjectManager> _objectManagerMock;
-        private Mock<ISourceServiceFactoryForUser> _serviceFactoryMock;
+        private Mock<ISourceServiceFactoryForUser> _serviceFactoryForUserMock;
         private Mock<IJobProgressUpdaterFactory> _jobProgressUpdaterFactoryMock;
         private Mock<ISnapshotQueryRequestProvider> _snapshotQueryRequestProvider;
         private Mock<ISyncLog> _logMock;
@@ -43,9 +43,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
         public void Setup()
         {
             _objectManagerMock = new Mock<IObjectManager>();
-            _serviceFactoryMock = new Mock<ISourceServiceFactoryForUser>();
+            _serviceFactoryForUserMock = new Mock<ISourceServiceFactoryForUser>();
 
-            _serviceFactoryMock.Setup(x => x.CreateProxyAsync<IObjectManager>())
+            _serviceFactoryForUserMock.Setup(x => x.CreateProxyAsync<IObjectManager>())
                 .ReturnsAsync(_objectManagerMock.Object);
 
             _jobProgressUpdaterFactoryMock = new Mock<IJobProgressUpdaterFactory>();
@@ -88,7 +88,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             _configuration = new ConfigurationStub();
             
-            _sut = new NonDocumentObjectDataSourceSnapshotExecutor(_serviceFactoryMock.Object, _jobProgressUpdaterFactoryMock.Object,_snapshotQueryRequestProvider.Object, _logMock.Object);
+            _sut = new NonDocumentObjectDataSourceSnapshotExecutor(_serviceFactoryForUserMock.Object, _jobProgressUpdaterFactoryMock.Object,_snapshotQueryRequestProvider.Object, _logMock.Object);
         }
 
         [Test]
@@ -123,7 +123,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _configuration.TotalRecordsCount.Should().Be(AllObjectsCount);
             
             _objectManagerMock.Verify(x => x.InitializeExportAsync(It.IsAny<int>(), It.Is<QueryRequest>(q => q != AllObjectsRequest), It.IsAny<int>()), Times.Never);
-            _configuration.ObjectLinkingSnapshotId.Should().Be(Guid.Empty);
+            _configuration.ObjectLinkingSnapshotId.Should().Be(null);
             _configuration.ObjectLinkingSnapshotRecordsCount.Should().Be(0);
         }
 
@@ -151,7 +151,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _configuration.ExportRunId.Should().Be(AllObjectsExportGuid);
             _configuration.TotalRecordsCount.Should().Be(AllObjectsCount);
             
-            _configuration.ObjectLinkingSnapshotId.Should().Be(Guid.Empty);
+            _configuration.ObjectLinkingSnapshotId.Should().Be(null);
             _configuration.ObjectLinkingSnapshotRecordsCount.Should().Be(0);
 
             // delete export table

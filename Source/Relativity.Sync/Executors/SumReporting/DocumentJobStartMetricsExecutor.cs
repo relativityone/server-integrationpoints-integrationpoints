@@ -19,7 +19,7 @@ namespace Relativity.Sync.Executors.SumReporting
 		private readonly ISyncLog _logger;
 		private readonly ISyncMetrics _syncMetrics;
 		private readonly IFieldManager _fieldManager;
-		private readonly ISourceServiceFactoryForUser _serviceFactory;
+		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
 		private readonly IFileStatisticsCalculator _fileStatisticsCalculator;
 		private readonly ISnapshotQueryRequestProvider _queryRequestProvider;
@@ -27,13 +27,13 @@ namespace Relativity.Sync.Executors.SumReporting
 		private const string _EXTRACTED_TEXT_FIELD_NAME = "Extracted Text";
 
 		public DocumentJobStartMetricsExecutor(ISyncLog logger, ISyncMetrics syncMetrics, IFieldManager fieldManager,
-			ISourceServiceFactoryForUser serviceFactory, IJobStatisticsContainer jobStatisticsContainer,
+			ISourceServiceFactoryForUser serviceFactoryForUser, IJobStatisticsContainer jobStatisticsContainer,
 			IFileStatisticsCalculator fileStatisticsCalculator, ISnapshotQueryRequestProvider queryRequestProvider)
 		{
 			_logger = logger;
 			_syncMetrics = syncMetrics;
 			_fieldManager = fieldManager;
-			_serviceFactory = serviceFactory;
+			_serviceFactoryForUser = serviceFactoryForUser;
 			_jobStatisticsContainer = jobStatisticsContainer;
 			_fileStatisticsCalculator = fileStatisticsCalculator;
 			_queryRequestProvider = queryRequestProvider;
@@ -134,7 +134,7 @@ namespace Relativity.Sync.Executors.SumReporting
 			};
 
 			QueryResultSlim result;
-			using (var objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (var objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				try
 				{

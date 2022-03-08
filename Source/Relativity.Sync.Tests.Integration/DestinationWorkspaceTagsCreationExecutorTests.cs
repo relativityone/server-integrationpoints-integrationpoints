@@ -43,16 +43,16 @@ namespace Relativity.Sync.Tests.Integration
 
 			_workspaceManagerMock = new Mock<IWorkspaceManager>();
 			_objectManagerMock = new Mock<IObjectManager>();
-			var serviceFactoryMock = new Mock<IDestinationServiceFactoryForUser>();
-			var serviceFactoryMock2 = new Mock<ISourceServiceFactoryForUser>();
-			serviceFactoryMock.Setup(x => x.CreateProxyAsync<IWorkspaceManager>()).Returns(Task.FromResult(_workspaceManagerMock.Object));
-			serviceFactoryMock2.Setup(x => x.CreateProxyAsync<IWorkspaceManager>()).Returns(Task.FromResult(_workspaceManagerMock.Object));
+			var destinationServiceFactoryForUser = new Mock<IDestinationServiceFactoryForUser>();
+			var sourceServiceFactoryForUserMock = new Mock<ISourceServiceFactoryForUser>();
+			destinationServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IWorkspaceManager>()).Returns(Task.FromResult(_workspaceManagerMock.Object));
+			sourceServiceFactoryForUserMock.Setup(x => x.CreateProxyAsync<IWorkspaceManager>()).Returns(Task.FromResult(_workspaceManagerMock.Object));
 			
-			serviceFactoryMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).Returns(Task.FromResult(_objectManagerMock.Object));
-			serviceFactoryMock2.Setup(x => x.CreateProxyAsync<IObjectManager>()).Returns(Task.FromResult(_objectManagerMock.Object));
+			destinationServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).Returns(Task.FromResult(_objectManagerMock.Object));
+			sourceServiceFactoryForUserMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).Returns(Task.FromResult(_objectManagerMock.Object));
 
-			containerBuilder.RegisterInstance(serviceFactoryMock.Object).As<IDestinationServiceFactoryForUser>();
-			containerBuilder.RegisterInstance(serviceFactoryMock2.Object).As<ISourceServiceFactoryForUser>();
+			containerBuilder.RegisterInstance(destinationServiceFactoryForUser.Object).As<IDestinationServiceFactoryForUser>();
+			containerBuilder.RegisterInstance(sourceServiceFactoryForUserMock.Object).As<ISourceServiceFactoryForUser>();
 			containerBuilder.RegisterType<DestinationWorkspaceTagsCreationExecutor>().As<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>();
 
 			containerBuilder.RegisterInstance(new EmptyLogger()).As<ISyncLog>();
