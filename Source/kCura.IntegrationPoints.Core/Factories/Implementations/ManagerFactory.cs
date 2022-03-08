@@ -15,33 +15,26 @@ using kCura.IntegrationPoints.Data.Helpers;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Data;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
-	public class ManagerFactory : IManagerFactory
+    public class ManagerFactory : IManagerFactory
 	{
 		private readonly IHelper _helper;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly IRemovableAgent _agent;
-		private readonly IJobServiceDataProvider _jobServiceDataProvider;
 		private readonly IAPILog _logger;
 
-		public ManagerFactory(IHelper helper, IRemovableAgent agent, IJobServiceDataProvider jobServiceDataProvider)
-			: this(
-				helper,
-				new RepositoryFactory(helper, helper.GetServicesManager()),
-				agent,
-				jobServiceDataProvider)
+		public ManagerFactory(IHelper helper, IRemovableAgent agent)
+			: this(helper, new RepositoryFactory(helper, helper.GetServicesManager()), agent)
 		{ }
 
-		public ManagerFactory(IHelper helper, IRepositoryFactory repositoryFactory, IRemovableAgent agent, IJobServiceDataProvider jobServiceDataProvider)
+		public ManagerFactory(IHelper helper, IRepositoryFactory repositoryFactory, IRemovableAgent agent)
 		{
 			_helper = helper;
 			_repositoryFactory = repositoryFactory;
 			_agent = agent;
-			_jobServiceDataProvider = jobServiceDataProvider;
 			_logger = _helper.GetLoggerFactory().GetLogger();
 		}
 
@@ -85,7 +78,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			CancellationTokenSource stopCancellationTokenSource = null, CancellationTokenSource drainStopCancellationTokenSource = null)
 		{
 			_logger.LogInformation("Create JobStopManager for Job: {jobId}", jobId);
-			JobStopManager jobStopManager = new JobStopManager(jobService, jobHistoryService, _jobServiceDataProvider, _helper, jobIdentifier, jobId, _agent,
+			JobStopManager jobStopManager = new JobStopManager(jobService, jobHistoryService, _helper, jobIdentifier, jobId, _agent,
 				supportsDrainStop, stopCancellationTokenSource ?? new CancellationTokenSource(), drainStopCancellationTokenSource ?? new CancellationTokenSource());
 			jobStopManager.ActivateTimer();
 			return jobStopManager;
