@@ -13,12 +13,12 @@ namespace Relativity.Sync.Executors.PreValidation
 	{
 		private const string _DESTINATION_WORKSPACE_DOES_NOT_EXIST_MESSAGE = "Destination Workspace {0} does not exist";
 
-		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
+		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 		private readonly ISyncLog _logger;
 
-		public DestinationWorkspaceExistenceValidator(ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger)
+		public DestinationWorkspaceExistenceValidator(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger)
 		{
-			_serviceFactory = serviceFactory;
+			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_logger = logger;
 		}
 
@@ -29,7 +29,7 @@ namespace Relativity.Sync.Executors.PreValidation
 			ValidationResult result = new ValidationResult();
 			try
 			{
-				using (IWorkspaceManager workspaceManager = await _serviceFactory.CreateProxyAsync<IWorkspaceManager>().ConfigureAwait(false))
+				using (IWorkspaceManager workspaceManager = await _serviceFactoryForAdmin.CreateProxyAsync<IWorkspaceManager>().ConfigureAwait(false))
 				{
 					WorkspaceRef destinationWorkspace = new WorkspaceRef(configuration.DestinationWorkspaceArtifactId);
 

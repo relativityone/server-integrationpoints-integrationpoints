@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Sync.KeplerFactory
 {
-	internal interface ISourceServiceFactoryForUser : IProxyFactory
+    internal interface ISourceServiceFactoryForUser : IProxyFactory
 	{
 
 	}

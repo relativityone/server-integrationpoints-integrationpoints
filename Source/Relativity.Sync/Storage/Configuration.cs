@@ -12,19 +12,18 @@ namespace Relativity.Sync.Storage
 		private readonly int _workspaceArtifactId;
 		private readonly int _syncConfigurationArtifactId;
 		private readonly ISyncLog _logger;
-
-		private readonly ISemaphoreSlim _semaphoreSlim;
+        private readonly ISemaphoreSlim _semaphoreSlim;
 
 		private SyncConfigurationRdo _configuration;
 
-		private Configuration(SyncJobParameters syncJobParameters, IRdoManager rdoManager, ISemaphoreSlim semaphoreSlim, ISyncLog logger)
+        private Configuration(SyncJobParameters syncJobParameters, IRdoManager rdoManager, ISemaphoreSlim semaphoreSlim, ISyncLog logger)
 		{
 			_rdoManager = rdoManager;
 			_workspaceArtifactId = syncJobParameters.WorkspaceId;
 			_syncConfigurationArtifactId = syncJobParameters.SyncConfigurationArtifactId;
 			_semaphoreSlim = semaphoreSlim;
 			_logger = logger;
-		}
+        }
 
 		public T GetFieldValue<T>(Func<SyncConfigurationRdo, T> valueGetter)
 		{
@@ -83,5 +82,5 @@ namespace Relativity.Sync.Storage
 		{
 			_semaphoreSlim?.Dispose();
 		}
-	}
+    }
 }

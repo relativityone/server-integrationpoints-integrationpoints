@@ -36,17 +36,17 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_objectManager = new Mock<IObjectManager>();
 			_folderManager = new Mock<IFolderManager>();
 
-			var serviceFactory = new Mock<ISourceServiceFactoryForUser>();
-			serviceFactory
+			var serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
+			serviceFactoryForUser
 				.Setup(x => x.CreateProxyAsync<IObjectManager>())
 				.ReturnsAsync(_objectManager.Object);
-			serviceFactory
+			serviceFactoryForUser
 				.Setup(x => x.CreateProxyAsync<IFolderManager>())
 				.ReturnsAsync(_folderManager.Object);
 
 			_logger = new Mock<ISyncLog>();
 
-			_instance = new FolderPathRetriever(serviceFactory.Object, _logger.Object);
+			_instance = new FolderPathRetriever(serviceFactoryForUser.Object, _logger.Object);
 		}
 
 		private static IEnumerable<ICollection<int>> EmptyAndNullDocumentArtifactIds()

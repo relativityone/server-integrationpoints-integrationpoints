@@ -23,7 +23,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		private Mock<ISnapshotQueryConfiguration> _configurationFake;
 		private Mock<IPipelineSelector> _pipelineSelectorFake;
 		private Mock<IFieldManager> _fieldManagerFake;
-		private Mock<ISourceServiceFactoryForAdmin> _sourceServiceFactoryForAdmin;
+		private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdmin;
 		private Mock<IObjectManager> _objectManager;
 		private Mock<IChoiceQueryManager> _choiceQueryManager;
 
@@ -49,9 +49,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_objectManager = new Mock<IObjectManager>();
 			_choiceQueryManager = new Mock<IChoiceQueryManager>();
 
-			_sourceServiceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
-			_sourceServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-			_sourceServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IChoiceQueryManager>()).ReturnsAsync(_choiceQueryManager.Object);
+			_serviceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
+			_serviceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			_serviceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IChoiceQueryManager>()).ReturnsAsync(_choiceQueryManager.Object);
 
 			_fieldManagerFake = new Mock<IFieldManager>();
 			_fieldManagerFake.Setup(x => x.GetDocumentTypeFieldsAsync(It.IsAny<CancellationToken>()))
@@ -66,7 +66,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				_configurationFake.Object,
 				_pipelineSelectorFake.Object,
 				_fieldManagerFake.Object,
-				_sourceServiceFactoryForAdmin.Object,
+				_serviceFactoryForAdmin.Object,
 				new EmptyLogger()
 				);
 		}

@@ -21,13 +21,13 @@ namespace Relativity.Sync.Transfer
 		private const string _FILENAME_COLUMN_NAME = "Filename";
 		private const string _SIZE_COLUMN_NAME = "Size";
 
-		private readonly ISourceServiceFactoryForUser _serviceFactory;
+		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private readonly ISyncLog _logger;
 		private readonly SyncJobParameters _parameters;
 
-		public ImageFileRepositoryKepler(ISourceServiceFactoryForUser serviceFactory, ISyncLog logger, SyncJobParameters parameters)
+		public ImageFileRepositoryKepler(ISourceServiceFactoryForUser serviceFactoryForUser, ISyncLog logger, SyncJobParameters parameters)
 		{
-			_serviceFactory = serviceFactory;
+			_serviceFactoryForUser = serviceFactoryForUser;
 			_logger = logger;
 			_parameters = parameters;
 		}
@@ -86,7 +86,7 @@ namespace Relativity.Sync.Transfer
 
 			int[] documentsWithoutImages = documentIds;
 
-			using (ISearchService searchService = await _serviceFactory.CreateProxyAsync<ISearchService>().ConfigureAwait(false))
+			using (ISearchService searchService = await _serviceFactoryForUser.CreateProxyAsync<ISearchService>().ConfigureAwait(false))
 			{
 				foreach (int production in productionPrecedence)
 				{
@@ -133,7 +133,7 @@ namespace Relativity.Sync.Transfer
 		private async Task<(ImageFile[] Images, int[] DocumentWithoutImages)> RetrieveOriginalImagesForDocuments(int workspaceId, int[] documentIds)
 		{
 			DataSetWrapper dataSet;
-			using (ISearchService searchService = await _serviceFactory.CreateProxyAsync<ISearchService>().ConfigureAwait(false))
+			using (ISearchService searchService = await _serviceFactoryForUser.CreateProxyAsync<ISearchService>().ConfigureAwait(false))
 			{
 				dataSet = await searchService.RetrieveImagesForSearchAsync(workspaceId, documentIds, _parameters.WorkflowId);
 			}

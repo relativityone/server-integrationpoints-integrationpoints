@@ -2,20 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.Services.InternalMetricsCollection;
+using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Telemetry
 {
 	internal sealed class TelemetryMetricsInstaller : ITelemetryManager
 	{
-		private readonly ISyncServiceManager _servicesManager;
+		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 		private readonly ISyncLog _logger;
 		private readonly List<ITelemetryMetricProvider> _metricProviders;
 
-		public TelemetryMetricsInstaller(ISyncServiceManager servicesManager, ISyncLog logger)
+		public TelemetryMetricsInstaller(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger)
 		{
-			_servicesManager = servicesManager;
+			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_logger = logger;
 			_metricProviders = new List<ITelemetryMetricProvider>();
 		}
@@ -44,13 +44,13 @@ namespace Relativity.Sync.Telemetry
 			}
 			catch (Exception e)
 			{
-				_logger.LogError(e, "Error occured when installing SUM metrics. SUM metrics might not be logged.");
+				_logger.LogError(e, "Error occurred when installing SUM metrics. SUM metrics might not be logged.");
 			}
 		}
 
 		private void AddMetricsForCategories(IDictionary<string, CategoryRef> categories)
 		{
-			using (var manager = _servicesManager.CreateProxy<IInternalMetricsCollectionManager>(ExecutionIdentity.System))
+			using (var manager = _serviceFactoryForAdmin.CreateProxyAsync<IInternalMetricsCollectionManager>().ConfigureAwait(false).GetAwaiter().GetResult())
 			{
 				_metricProviders.ForEach(item => item.AddMetricsForCategory(manager, categories[item.CategoryName]).GetAwaiter().GetResult());
 			}
@@ -60,7 +60,7 @@ namespace Relativity.Sync.Telemetry
 		{
 			IDictionary<string, CategoryRef> categories = new Dictionary<string, CategoryRef>();
 
-			using (var manager = _servicesManager.CreateProxy<IInternalMetricsCollectionManager>(ExecutionIdentity.System))
+			using (var manager = _serviceFactoryForAdmin.CreateProxyAsync<IInternalMetricsCollectionManager>().ConfigureAwait(false).GetAwaiter().GetResult())
 			{
 				List<CategoryTarget> categoryTargets = await manager.GetCategoryTargetsAsync().ConfigureAwait(false);
 

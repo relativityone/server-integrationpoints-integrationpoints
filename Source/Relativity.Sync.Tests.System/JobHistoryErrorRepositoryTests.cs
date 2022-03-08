@@ -23,7 +23,7 @@ namespace Relativity.Sync.Tests.System
 	internal class JobHistoryErrorRepositoryTests : SystemTest
 	{
 		private WorkspaceRef _workspace;
-		private ISourceServiceFactoryForUser _serviceFactory;
+		private ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private IDateTime _dateTime;
 		private ISyncLog _logger;
 
@@ -41,7 +41,7 @@ namespace Relativity.Sync.Tests.System
             Mock<ISyncLog> syncLogMock = new Mock<ISyncLog>();
 
 			_workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
-			_serviceFactory = new ServiceFactoryForUser(ServiceFactory, new DynamicProxyFactoryStub(), 
+			_serviceFactoryForUser = new ServiceFactoryForUser(ServiceFactory, new DynamicProxyFactoryStub(), 
                 randomFake.Object, syncLogMock.Object);
 			_dateTime = new DateTimeWrapper();
 			_logger = new EmptyLogger();
@@ -66,7 +66,7 @@ namespace Relativity.Sync.Tests.System
 			};
 
 			var configurationStub = new ConfigurationStub();
-			JobHistoryErrorRepository instance = new JobHistoryErrorRepository(_serviceFactory, configurationStub, configurationStub,
+			JobHistoryErrorRepository instance = new JobHistoryErrorRepository(_serviceFactoryForUser, configurationStub, configurationStub,
                 _dateTime, _logger, new WrapperForRandom());
 
 			// Act
@@ -103,7 +103,7 @@ namespace Relativity.Sync.Tests.System
 			IList<CreateJobHistoryErrorDto> itemLevelErrors = Enumerable.Repeat(itemLevelError, itemLevelErrorsCount).ToList();
 
 			var configurationStub = new ConfigurationStub();
-			JobHistoryErrorRepository sut = new JobHistoryErrorRepository(_serviceFactory, configurationStub, configurationStub,
+			JobHistoryErrorRepository sut = new JobHistoryErrorRepository(_serviceFactoryForUser, configurationStub, configurationStub,
 				_dateTime, _logger, new WrapperForRandom());
 
 			// Act

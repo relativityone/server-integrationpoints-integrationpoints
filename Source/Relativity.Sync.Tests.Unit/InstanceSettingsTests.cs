@@ -14,7 +14,7 @@ namespace Relativity.Sync.Tests.Unit
 	[TestFixture]
 	public sealed class InstanceSettingsTests
 	{
-		private Mock<ISourceServiceFactoryForAdmin> _serviceFactory;
+		private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdmin;
 		private Mock<IInstanceSettingManager> _instanceSettingManager;
 		private InstanceSettings _sut;
 
@@ -29,10 +29,10 @@ namespace Relativity.Sync.Tests.Unit
 		[SetUp]
 		public void SetUp()
 		{
-			_serviceFactory = new Mock<ISourceServiceFactoryForAdmin>();
+			_serviceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
 			_instanceSettingManager = new Mock<IInstanceSettingManager>();
-			_serviceFactory.Setup(x => x.CreateProxyAsync<IInstanceSettingManager>()).ReturnsAsync(_instanceSettingManager.Object);
-			_sut = new InstanceSettings(_serviceFactory.Object, new EmptyLogger());
+			_serviceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IInstanceSettingManager>()).ReturnsAsync(_instanceSettingManager.Object);
+			_sut = new InstanceSettings(_serviceFactoryForAdmin.Object, new EmptyLogger());
 		}
 
 		[Test]

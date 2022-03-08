@@ -24,20 +24,20 @@ namespace Relativity.Sync.Transfer
 		
 		private readonly IFieldConfiguration _configuration;
 		private readonly IObjectFieldTypeRepository _objectFieldTypeRepository;
-		private readonly ISourceServiceFactoryForAdmin _sourceServiceFactoryForAdmin;
+		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 
 		private readonly IList<INativeSpecialFieldBuilder> _nativeSpecialFieldBuilders;
 		private readonly IList<IImageSpecialFieldBuilder> _imageSpecialFieldBuilders;
 		private readonly ISyncLog _logger;
 
 		public FieldManager(IFieldConfiguration configuration, IObjectFieldTypeRepository objectFieldTypeRepository,
-			IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders, IEnumerable<IImageSpecialFieldBuilder> imageSpecialFieldBuilders, ISourceServiceFactoryForAdmin sourceServiceFactoryForAdmin, ISyncLog logger)
+			IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders, IEnumerable<IImageSpecialFieldBuilder> imageSpecialFieldBuilders, ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger)
 		{
 			_configuration = configuration;
 			_objectFieldTypeRepository = objectFieldTypeRepository;
 			_nativeSpecialFieldBuilders = OmitNativeInfoFieldsBuildersIfNotNeeded(configuration, nativeSpecialFieldBuilders).OrderBy(b => b.GetType().FullName).ToList();
 			_imageSpecialFieldBuilders = imageSpecialFieldBuilders.ToList();
-			_sourceServiceFactoryForAdmin = sourceServiceFactoryForAdmin;
+			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_logger = logger;
 		}
 
@@ -157,7 +157,7 @@ namespace Relativity.Sync.Transfer
 			string rdoTypeName = await GetRdoTypeNameAsync(_configuration.SourceWorkspaceArtifactId, _configuration.RdoArtifactTypeId);
 			
 			using (var objectManager =
-				await _sourceServiceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+				await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				var request = new QueryRequest
 				{
@@ -178,7 +178,7 @@ namespace Relativity.Sync.Transfer
 		private async Task<string> GetRdoTypeNameAsync(int workspaceArtifactId, int rdoArtifactTypeId)
 		{
 			using (var objectManager =
-				await _sourceServiceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+				await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				var query = new QueryRequest
 				{

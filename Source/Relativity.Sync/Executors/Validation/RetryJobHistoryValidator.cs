@@ -13,12 +13,12 @@ namespace Relativity.Sync.Executors.Validation
 {
 	internal sealed class RetryJobHistoryValidator : IValidator
 	{
-		private readonly ISourceServiceFactoryForUser _serviceFactory;
+		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private readonly ISyncLog _logger;
 
-		public RetryJobHistoryValidator(ISourceServiceFactoryForUser serviceFactory, ISyncLog logger)
+		public RetryJobHistoryValidator(ISourceServiceFactoryForUser serviceFactoryForUser, ISyncLog logger)
 		{
-			_serviceFactory = serviceFactory;
+			_serviceFactoryForUser = serviceFactoryForUser;
 			_logger = logger;
 		}
 
@@ -33,7 +33,7 @@ namespace Relativity.Sync.Executors.Validation
 				try
 				{
 					using (IObjectManager objectManager =
-						await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+						await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 					{
 						QueryRequest request = new QueryRequest
 						{

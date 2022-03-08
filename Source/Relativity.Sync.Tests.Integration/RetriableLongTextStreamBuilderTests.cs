@@ -37,13 +37,13 @@ namespace Relativity.Sync.Tests.Integration
 			var objectManager = new Mock<IObjectManager>();
 			objectManager.Setup(om => om.StreamLongTextAsync(workspaceArtifactId, It.IsAny<RelativityObjectRef>(), It.IsAny<FieldRef>())).ReturnsAsync(_keplerStream.Object);
 
-			var serviceFactory = new Mock<ISourceServiceFactoryForUser>();
-			serviceFactory.Setup(f => f.CreateProxyAsync<IObjectManager>()).ReturnsAsync(objectManager.Object);
+			var serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
+			serviceFactoryForUser.Setup(f => f.CreateProxyAsync<IObjectManager>()).ReturnsAsync(objectManager.Object);
 
 			_syncMetrics = new Mock<ISyncMetrics>();
 
 			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
-			containerBuilder.RegisterInstance(serviceFactory.Object).As<ISourceServiceFactoryForUser>();
+			containerBuilder.RegisterInstance(serviceFactoryForUser.Object).As<ISourceServiceFactoryForUser>();
 			containerBuilder.RegisterInstance(_syncMetrics.Object).As<ISyncMetrics>();
 			IContainer container = containerBuilder.Build();
 			IRetriableStreamBuilderFactory streamBuilderFactory = container.Resolve<IRetriableStreamBuilderFactory>();

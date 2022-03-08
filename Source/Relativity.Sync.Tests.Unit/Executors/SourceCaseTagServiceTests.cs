@@ -14,7 +14,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IRelativitySourceCaseTagRepository> _relativitySourceCaseTagRepository;
 		private Mock<IWorkspaceNameQuery> _workspaceNameQuery;
 		private Mock<IFederatedInstance> _federatedInstance;
-		private Mock<ISourceServiceFactoryForUser> _serviceFactory;
+		private Mock<ISourceServiceFactoryForUser> _serviceFactoryForUser;
 
 		private SourceCaseTagService _sut;
 
@@ -24,10 +24,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_relativitySourceCaseTagRepository = new Mock<IRelativitySourceCaseTagRepository>();
 			_workspaceNameQuery = new Mock<IWorkspaceNameQuery>();
 			_federatedInstance = new Mock<IFederatedInstance>();
-			_serviceFactory = new Mock<ISourceServiceFactoryForUser>();
+			_serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
 
 			var tagNameFormatter = new Mock<ITagNameFormatter>();
-			_sut = new SourceCaseTagService(_relativitySourceCaseTagRepository.Object, _workspaceNameQuery.Object, _federatedInstance.Object, tagNameFormatter.Object, _serviceFactory.Object);
+			_sut = new SourceCaseTagService(_relativitySourceCaseTagRepository.Object, _workspaceNameQuery.Object, _federatedInstance.Object, tagNameFormatter.Object, _serviceFactoryForUser.Object);
 		}
 
 		[Test]
@@ -38,7 +38,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			const int sourceWorkspaceArtifactId = 1;
 			const int destinationWorkspaceArtifactId = 2;
 			_federatedInstance.Setup(x => x.GetInstanceNameAsync()).ReturnsAsync(instanceName);
-			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(_serviceFactory.Object, It.IsAny<int>(), CancellationToken.None)).ReturnsAsync(sourceWorkspaceName);
+			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(_serviceFactoryForUser.Object, It.IsAny<int>(), CancellationToken.None)).ReturnsAsync(sourceWorkspaceName);
 
 			Mock<IDestinationWorkspaceTagsCreationConfiguration> configuration = new Mock<IDestinationWorkspaceTagsCreationConfiguration>();
 			configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(sourceWorkspaceArtifactId);
@@ -75,7 +75,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			const int destinationWorkspaceArtifactId = 2;
 			const string newWorkspaceName = "workspace name";
 			_federatedInstance.Setup(x => x.GetInstanceNameAsync()).ReturnsAsync(instanceName);
-			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(_serviceFactory.Object, It.IsAny<int>(), CancellationToken.None)).ReturnsAsync(newWorkspaceName);
+			_workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(_serviceFactoryForUser.Object, It.IsAny<int>(), CancellationToken.None)).ReturnsAsync(newWorkspaceName);
 
 			Mock<IDestinationWorkspaceTagsCreationConfiguration> configuration = new Mock<IDestinationWorkspaceTagsCreationConfiguration>();
 			configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(sourceWorkspaceArtifactId);

@@ -19,20 +19,20 @@ namespace Relativity.Sync.Executors
 	internal sealed class DestinationWorkspaceTagRepository : WorkspaceTagRepositoryBase<int>, IDestinationWorkspaceTagRepository
 	{
 		private readonly IFederatedInstance _federatedInstance;
-		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
+		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private readonly ISyncLog _logger;
 		private readonly ISyncMetrics _syncMetrics;
 		private readonly ITagNameFormatter _tagNameFormatter;
 		private readonly IRdoGuidConfiguration _rdoGuidConfiguration;
 		private readonly Func<IStopwatch> _stopwatch;
 
-		public DestinationWorkspaceTagRepository(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IFederatedInstance federatedInstance, ITagNameFormatter tagNameFormatter,
+		public DestinationWorkspaceTagRepository(ISourceServiceFactoryForUser serviceFactoryForUser, IFederatedInstance federatedInstance, ITagNameFormatter tagNameFormatter,
 			IRdoGuidConfiguration rdoGuidConfiguration, ISyncLog logger, ISyncMetrics syncMetrics, Func<IStopwatch> stopwatch)
 			: base(logger)
 		{
 			_federatedInstance = federatedInstance;
 			_logger = logger;
-			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
+			_serviceFactoryForUser = serviceFactoryForUser;
 			_syncMetrics = syncMetrics;
 			_tagNameFormatter = tagNameFormatter;
 			_rdoGuidConfiguration = rdoGuidConfiguration;
@@ -69,7 +69,7 @@ namespace Relativity.Sync.Executors
 
 			int federatedInstanceId = await _federatedInstance.GetInstanceIdAsync().ConfigureAwait(false);
 
-			using (var objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (var objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				var request = new CreateRequest
 				{
@@ -121,7 +121,7 @@ namespace Relativity.Sync.Executors
 				FieldValues = CreateFieldValues(destinationWorkspaceTag.DestinationWorkspaceArtifactId, destinationWorkspaceTag.DestinationWorkspaceName, federatedInstanceName, federatedInstanceId),
 			};
 
-			using (var objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (var objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				try
 				{
@@ -155,7 +155,7 @@ namespace Relativity.Sync.Executors
 			IStopwatch stopwatch = _stopwatch();
 			try
 			{
-				using (var objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+				using (var objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 				{
 					stopwatch.Start();
 					MassUpdateResult updateResult = await objectManager.UpdateAsync(synchronizationConfiguration.SourceWorkspaceArtifactId, updateByIdentifiersRequest, massUpdateOptions, token).ConfigureAwait(false);
@@ -208,7 +208,7 @@ namespace Relativity.Sync.Executors
 
 		private async Task<RelativityObject> QueryRelativityObjectTagAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, CancellationToken token)
 		{
-			using (var objectManager = await _sourceServiceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (var objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				int federatedInstanceId = await _federatedInstance.GetInstanceIdAsync().ConfigureAwait(false);
 

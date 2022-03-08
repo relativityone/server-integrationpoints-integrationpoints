@@ -7,7 +7,7 @@ namespace Relativity.Sync.Executors.Validation
 {
 	internal sealed class NativeCopyLinksValidator : CopyLinksValidatorBase
 	{
-		public NativeCopyLinksValidator(IInstanceSettings instanceSettings, IUserContextConfiguration userContext, ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger) : base(instanceSettings, userContext, serviceFactory, logger)
+		public NativeCopyLinksValidator(IInstanceSettings instanceSettings, IUserContextConfiguration userContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger) : base(instanceSettings, userContext, serviceFactoryForAdmin, logger)
 		{
 		}
 
