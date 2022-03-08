@@ -103,8 +103,7 @@ namespace Relativity.Sync.Tests.Integration
 		}
 
 		[Test]
-        [Ignore("This scenario will be valid when we decide to use again ISourceServiceFactoryForUser in NonDocumentSyncConfigurationBuilder")]
-		public async Task ItShouldCreateSourceKeplerServiceInUserContext()
+        public async Task ItShouldCreateSourceKeplerServiceInUserContext()
 		{
 			ISourceServiceFactoryForUser factoryForUser = _containerBuilder.Build().Resolve<ISourceServiceFactoryForUser>();
 
