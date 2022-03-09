@@ -43,6 +43,7 @@ namespace Relativity.Sync.Storage
         public int FailedDocumentsCount => _batchRdo.FailedDocumentsCount;
 
         public Guid ExportRunId => _batchRdo.ExportRunId;
+
         public int TransferredItemsCount => _batchRdo.TransferredItemsCount;
 
         public int FailedItemsCount => _batchRdo.FailedItemsCount;

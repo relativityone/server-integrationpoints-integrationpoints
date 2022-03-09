@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;

@@ -12,8 +12,7 @@ namespace Relativity.Sync.Executors.SumReporting
 {
 	internal class NonDocumentJobEndMetricsService : JobEndMetricsServiceBase, IJobEndMetricsService
 	{
-		private readonly IJobEndMetricsConfiguration _configuration;
-		private readonly IFieldManager _fieldManager;
+        private readonly IFieldManager _fieldManager;
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
 		private readonly ISyncMetrics _syncMetrics;
 		private readonly ISyncLog _logger;
@@ -22,8 +21,7 @@ namespace Relativity.Sync.Executors.SumReporting
 			IJobStatisticsContainer jobStatisticsContainer, ISyncMetrics syncMetrics, ISyncLog logger)
 			: base(batchRepository, configuration)
 		{
-			_configuration = configuration;
-			_fieldManager = fieldManager;
+            _fieldManager = fieldManager;
 			_jobStatisticsContainer = jobStatisticsContainer;
 			_syncMetrics = syncMetrics;
 			_logger = logger;
@@ -55,7 +53,7 @@ namespace Relativity.Sync.Executors.SumReporting
 
 		private async Task WriteFieldsStatisticsAsync(NonDocumentJobEndMetric metric)
 		{
-            IReadOnlyList<FieldInfoDto> fields = await _fieldManager.GetMappedFieldsNonDocumentForLinksAsync(CancellationToken.None).ConfigureAwait(false);
+            IReadOnlyList<FieldInfoDto> fields = await _fieldManager.GetMappedFieldsNonDocumentWithoutLinksAsync(CancellationToken.None).ConfigureAwait(false);
             metric.TotalMappedFields = fields.Count;
 		}
 
