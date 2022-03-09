@@ -175,6 +175,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			
 			if (IsDrainStopped())
 			{
+				Logger.LogInformation("ImportServiceManager job {jobId} was DrainStopped.", job.JobId);
 				if(AnyItemsLeftToBeProcessed(processedItemsCount, JobHistory))
 				{
 					UpdateJobWithProcessedItemsCount(job, processedItemsCount);
@@ -187,6 +188,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void UpdateJobWithProcessedItemsCount(Job job, int processedItemsCount)
 		{
+			Logger.LogInformation("Update Job Details {jobId} with processed items {processedItemsCount}", job.JobId, processedItemsCount);
 			TaskParameters updatedTaskParameters = UpdateJobDetails(job, processedItemsCount);
 			job.JobDetails = Serializer.Serialize(updatedTaskParameters);
 			JobService.UpdateJobDetails(job);
@@ -214,9 +216,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			return (jobHistory.ItemsTransferred ?? 0) + (jobHistory.ItemsWithErrors ?? 0);
 		}
 
-		private static bool AnyItemsLeftToBeProcessed(int processedItemCount, JobHistory jobHistory)
+		private bool AnyItemsLeftToBeProcessed(int processedItemCount, JobHistory jobHistory)
 		{
-			return processedItemCount < (jobHistory.TotalItems ?? int.MaxValue);
+			long totalItems = (jobHistory.TotalItems ?? int.MaxValue);
+
+			Logger.LogInformation("Checking if some documents left to process {processedItemsCount}/{totalItemsCount}", processedItemCount, totalItems);
+
+			return processedItemCount < totalItems;
 		}
 
 		private async Task SendAutomatedWorkflowsTriggerAsync(Job job)

@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Monitoring;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
@@ -105,7 +106,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 					? JobTypeChoices.JobHistoryRun
 					: JobTypeChoices.JobHistoryScheduledRun, DateTime.Now);
 
-			LogGetJobHistorySuccessfulEnd(job);
+			LogGetJobHistorySuccessfulEnd(job, jobHistory);
 			return jobHistory;
 		}
 		
@@ -122,10 +123,10 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 			_logger.LogInformation("Removing job history from integration point: {ArtifactId}", _integrationPoint.ArtifactId);
 		}
 
-		private void LogGetJobHistorySuccessfulEnd(Job job)
+		private void LogGetJobHistorySuccessfulEnd(Job job, JobHistory jobHistory)
 		{
-			_logger.LogInformation("Successfully retrieved job history,  job: {JobId}, ArtifactId: {ArtifactId} ", job.JobId,
-				_integrationPoint.ArtifactId);
+			_logger.LogInformation("Successfully retrieved job history,  job: {JobId}, ArtifactId: {ArtifactId}, JobHistoryDetails: {jobHistoryDetails}", job.JobId,
+				_integrationPoint.ArtifactId, jobHistory?.Stringify());
 		}
 
 		private void LogGetJobHistoryStart(Job job)

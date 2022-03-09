@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.RelativitySync.OldBatchesCleanup
         {
             ISourceServiceFactoryForAdmin serviceFactory = new ServiceFactoryForAdmin(_servicesMgr);
             IBatchRepository batchRepository = new BatchRepository(
-                new RdoManager(new SyncLog(_apiLog), new SyncServiceManagerForRip(_servicesMgr), new RdoGuidProvider()),
+                new RdoManager(new SyncLog(_apiLog), serviceFactory, new RdoGuidProvider()),
                 serviceFactory, new DateTimeWrapper());
 
             return new OldBatchesCleanupService(batchRepository, _errorService, _apiLog);

@@ -214,23 +214,24 @@ namespace kCura.IntegrationPoints.Agent
                 IProviderTypeService providerTypeService = _agentLevelContainer.Value.Resolve<IProviderTypeService>();
                 IMessageService messageService = _agentLevelContainer.Value.Resolve<IMessageService>();
 
-                Guid batchInstanceId = taskParameterHelper.GetBatchInstance(job);
-                if (!IsJobResumed(batchInstanceId))
-                {
-                    IntegrationPoint integrationPoint = integrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
-                    var message = new JobStartedMessage
-                    {
-                        Provider = integrationPoint.GetProviderName(providerTypeService),
-                        CorrelationID = batchInstanceId.ToString()
-                    };
-                    messageService.Send(message).GetAwaiter().GetResult();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Exception occurred during sending Job Start metric for JobId {jobId}", job.JobId);
-            }
-        }
+				Guid batchInstanceId = taskParameterHelper.GetBatchInstance(job);
+				Logger.LogInformation("Job will be executed in case of BatchInstanceId: {batchInstanceId}", batchInstanceId);
+				if (!IsJobResumed(batchInstanceId))
+				{
+					IntegrationPoint integrationPoint = integrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
+					var message = new JobStartedMessage
+					{
+						Provider = integrationPoint.GetProviderName(providerTypeService),
+						CorrelationID = batchInstanceId.ToString()
+					};
+					messageService.Send(message).GetAwaiter().GetResult();
+				}
+			}
+			catch (Exception ex)
+			{
+				Logger.LogError(ex, "Exception occurred during sending Job Start metric for JobId {jobId}", job.JobId);
+			}
+		}
 
         private bool IsJobResumed(Guid batchInstanceId)
         {
