@@ -55,7 +55,8 @@ namespace Relativity.Sync.Executors.SumReporting
 		{
             IReadOnlyList<FieldInfoDto> fields = await _fieldManager.GetMappedFieldsNonDocumentWithoutLinksAsync(CancellationToken.None).ConfigureAwait(false);
             metric.TotalMappedFields = fields.Count;
-		}
+            metric.TotalAvailableFields = _fieldManager.GetAllAvailableFieldsToMap().Count;
+        }
 
 		private void WriteBytesStatistics(NonDocumentJobEndMetric metric)
 		{

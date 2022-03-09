@@ -26,5 +26,6 @@ namespace Relativity.Sync.Transfer
 		Task<IReadOnlyList<FieldInfoDto>> GetMappedFieldsNonDocumentWithoutLinksAsync(CancellationToken token);
 		Task<IReadOnlyList<FieldInfoDto>> GetMappedFieldsNonDocumentForLinksAsync(CancellationToken token);
 		Task<string[]> GetSameTypeFieldNamesAsync(int configurationSourceWorkspaceArtifactId);
-	}
+        List<FieldInfoDto> GetAllAvailableFieldsToMap();
+    }
 }

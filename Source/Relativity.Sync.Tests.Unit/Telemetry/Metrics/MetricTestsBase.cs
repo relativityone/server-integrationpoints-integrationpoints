@@ -87,7 +87,6 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 
 			// Assert
 			_metricsManagerMock.Verify(x => x.Dispose());
-			//_metricsManagerMock.VerifyNoOtherCalls();
 		}
 		
 		[Test]

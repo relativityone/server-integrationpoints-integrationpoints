@@ -35,6 +35,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_fieldManagerFake = new Mock<IFieldManager>();
 			_fieldManagerFake.Setup(x => x.GetMappedFieldsNonDocumentWithoutLinksAsync(It.IsAny<CancellationToken>()))
 				.ReturnsAsync(new List<FieldInfoDto>().AsReadOnly());
+            _fieldManagerFake.Setup(x => x.GetAllAvailableFieldsToMap())
+                .Returns(new List<FieldInfoDto>());
 
 			_syncMetricsMock = new Mock<ISyncMetrics>();
 			_jobStatisticsContainerFake = new Mock<IJobStatisticsContainer>();
@@ -66,6 +68,10 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			IEnumerable<FieldInfoDto> fields = Enumerable.Repeat(FieldInfoDto.SupportedByViewerField(), testNumberOfFields);
 			_fieldManagerFake.Setup(x => x.GetMappedFieldsNonDocumentWithoutLinksAsync(It.Is<CancellationToken>(c => c == CancellationToken.None))).ReturnsAsync(fields.ToList);
 
+            const int testNumberOfAvailableFields = 15;
+            IEnumerable<FieldInfoDto> availableFields = Enumerable.Repeat(FieldInfoDto.SupportedByViewerField(), testNumberOfAvailableFields);
+            _fieldManagerFake.Setup(x => x.GetAllAvailableFieldsToMap()).Returns(availableFields.ToList);
+
 			const ImportOverwriteMode overwriteMode = ImportOverwriteMode.AppendOnly;
 			const DataSourceType sourceType = DataSourceType.SavedSearch;
 			const DestinationLocationType destinationType = DestinationLocationType.Folder;
@@ -93,6 +99,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 				m.TotalRecordsTagged == taggedItemsPerBatch * testBatches.Count &&
 				m.JobEndStatus == expectedStatusDescription &&
 				m.TotalMappedFields == testNumberOfFields &&
+				m.TotalAvailableFields == testNumberOfAvailableFields &&
 				m.BytesMetadataTransferred == metadataSize &&
 				m.BytesTransferred == jobSize)), Times.Once);
 		}

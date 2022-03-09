@@ -68,9 +68,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 				_syncLogMock.Object,
 				_syncMetricsMock.Object,
 				_fieldManagerFake.Object);
-
-            
-		}
+        }
 
 		[Test]
 		public async Task ExecuteAsync_ShouldReportJobStartMetric()
