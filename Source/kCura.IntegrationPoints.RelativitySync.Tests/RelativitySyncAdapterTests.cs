@@ -117,7 +117,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			// Assert
 			result.Status.Should().Be(TaskStatusEnum.Fail);
 
-			_jobHistorySyncServiceMock.Verify(x => x.MarkJobAsValidationFailedAsync(expectedException, It.IsAny<IExtendedJob>()));
+			_jobHistorySyncServiceMock.Verify(x => x.MarkJobAsValidationFailedAsync(It.IsAny<IExtendedJob>(), expectedException));
 		}
 
 		[Test]
