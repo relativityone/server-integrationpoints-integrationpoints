@@ -46,11 +46,15 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected IJobService JobService => _jobService;
 
-		protected ScheduleQueueAgentBase(Guid agentGuid, IAgentService agentService = null, IJobService jobService = null,
+		protected ScheduleQueueAgentBase(Guid agentGuid, IKubernetesMode kubernetesMode = null, IAgentService agentService = null, IJobService jobService = null,
 			IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null, 
-			IQueueQueryManager queryManager = null, IKubernetesMode kubernetesMode = null, IDateTime dateTime = null, IAPILog logger = null,
+			IQueueQueryManager queryManager = null, IDateTime dateTime = null, IAPILog logger = null,
 			IFileShareAccessService fileShareAccessService = null)
 		{
+			_loggerLazy = logger != null
+				? new Lazy<IAPILog>(() => logger)
+				: new Lazy<IAPILog>(InitializeLogger);
+			
 			_agentGuid = agentGuid;
 			_agentService = agentService;
 			_jobService = jobService;
@@ -58,14 +62,10 @@ namespace kCura.ScheduleQueue.AgentBase
 			_dateTime = dateTime;
             _fileShareAccessService = fileShareAccessService;
             _queryManager = queryManager;
-			_kubernetesMode = kubernetesMode;
+			_kubernetesMode = kubernetesMode ?? new KubernetesMode(_loggerLazy.Value);
 			ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
 
 			_agentId = new Lazy<int>(GetAgentID);
-
-			_loggerLazy = logger != null
-				? new Lazy<IAPILog>(() => logger)
-				: new Lazy<IAPILog>(InitializeLogger);
 		}
 
 		public IScheduleRuleFactory ScheduleRuleFactory { get; }
