@@ -6,5 +6,6 @@ Castle.Windsor
 Relativity.DataGrid
 Relativity.DataTransfer.MessageService
 iTextSharp
+Relativity.Transfer.Client
 
 
