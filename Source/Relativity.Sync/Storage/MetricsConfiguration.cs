@@ -29,5 +29,9 @@ namespace Relativity.Sync.Storage
 		public int? JobHistoryToRetryId => _cache.GetFieldValue(x => x.JobHistoryToRetryId);
 
 		public string SyncVersion => _syncJobParameters.SyncBuildVersion;
+
+        public int RdoArtifactTypeId => _cache.GetFieldValue(x => x.RdoArtifactTypeId);
+
+		public int DestinationRdoArtifactTypeId => _cache.GetFieldValue(x => x.DestinationRdoArtifactTypeId);
 	}
 }

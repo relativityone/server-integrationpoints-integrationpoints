@@ -107,10 +107,7 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<NonDocumentJobStartMetricsExecutorConstrains>().As<IExecutionConstrains<INonDocumentJobStartMetricsConfiguration>>();
 			builder.RegisterType<NonDocumentJobStartMetricsExecutor>().As<IExecutor<INonDocumentJobStartMetricsConfiguration>>();
 
-            builder.RegisterType<NonDocumentJobEndMetricsExecutorConstrains>().As<IExecutionConstrains<INonDocumentJobEndMetricsConfiguration>>();
-            builder.RegisterType<NonDocumentJobEndMetricsExecutor>().As<IExecutor<INonDocumentJobEndMetricsConfiguration>>();
-
-			builder.RegisterType<NonDocumentSynchronizationExecutionConstrains>().As<IExecutionConstrains<INonDocumentSynchronizationConfiguration>>();
+            builder.RegisterType<NonDocumentSynchronizationExecutionConstrains>().As<IExecutionConstrains<INonDocumentSynchronizationConfiguration>>();
 			builder.RegisterType<NonDocumentSynchronizationExecutor>().As<IExecutor<INonDocumentSynchronizationConfiguration>>();
 			
 			builder.RegisterType<NonDocumentObjectLinkingExecutionConstrains>().As<IExecutionConstrains<INonDocumentObjectLinkingConfiguration>>();

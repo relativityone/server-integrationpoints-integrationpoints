@@ -79,7 +79,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			// Assert
 			_syncMetricsMock.Verify(x => x.Send(It.Is<NonDocumentJobStartMetric>(m => 
 				m.Type == TelemetryConstants.PROVIDER_NAME &&
-				m.FlowType == TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_NON_DOCUMENT_OBJECTS)));
+				m.FlowType == TelemetryConstants.FLOW_TYPE_VIEW_NON_DOCUMENT_OBJECTS)));
 		}
 
 

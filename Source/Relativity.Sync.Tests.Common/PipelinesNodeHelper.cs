@@ -170,10 +170,6 @@ namespace Relativity.Sync.Tests.Common
 				{
 					typeof(INonDocumentJobStartMetricsConfiguration)
 				},
-                new[]
-                {
-                    typeof(INonDocumentJobEndMetricsConfiguration)
-                },
 				new[]
 				{
 					typeof(ISnapshotPartitionConfiguration),

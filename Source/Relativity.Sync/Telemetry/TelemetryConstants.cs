@@ -9,7 +9,7 @@
 
 		public const string FLOW_TYPE_SAVED_SEARCH_IMAGES = "SavedSearch.Images";
 		public const string FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA = "SavedSearch.NativesAndMetadata";
-		public const string FLOW_TYPE_SAVED_SEARCH_NON_DOCUMENT_OBJECTS = "SavedSearch.NonDocumentObjects";
+		public const string FLOW_TYPE_VIEW_NON_DOCUMENT_OBJECTS = "View.NonDocumentObjects";
 		
 		public static class MetricIdentifiers
 		{
@@ -20,6 +20,7 @@
 
 			public const string APM_FLOW_NAME_IMAGES = "Images";
 			public const string APM_FLOW_NAME_NATIVES_OR_METADATA = "NativesOrMetadata";
+			public const string APM_FLOW_NAME_NON_DOCUMENT_OBJECTS = "NonDocumentObjects";
 
 			public const string JOB_CORRELATION_ID = "Relativity.Sync.Job.CorrelationId";
 
@@ -28,11 +29,11 @@
 
 			public const string JOB_SUSPENDED_STATUS_NATIVES_AND_METADATA = "Relativity.Sync.Job.Suspended.Status.SavedSearch.NativesAndMetadata";
 			public const string JOB_SUSPENDED_STATUS_IMAGES = "Relativity.Sync.Job.Suspended.Status.SavedSearch.Images";
-			public const string JOB_SUSPENDED_STATUS_NON_DOCUMENT_OBJECTS = "Relativity.Sync.Job.Suspended.Status.SavedSearch.NonDocumentObjects";
+			public const string JOB_SUSPENDED_STATUS_NON_DOCUMENT_OBJECTS = "Relativity.Sync.Job.Suspended.Status.View.NonDocumentObjects";
 
 			public const string JOB_END_STATUS_NATIVES_AND_METADATA = "Relativity.Sync.Job.End.Status.SavedSearch.NativesAndMetadata";
 			public const string JOB_END_STATUS_IMAGES = "Relativity.Sync.Job.End.Status.SavedSearch.Images";
-			public const string JOB_END_STATUS_NON_DOCUMENT_OBJECTS = "Relativity.Sync.Job.End.Status.NonDocumentObjects";
+			public const string JOB_END_STATUS_NON_DOCUMENT_OBJECTS = "Relativity.Sync.Job.End.Status.View.NonDocumentObjects";
 
 			public const string RETRY_JOB_START_TYPE = "Relativity.Sync.Retry.Job.Start.Type";
 			public const string RETRY_JOB_END_STATUS = "Relativity.Sync.Retry.Job.End.Status";

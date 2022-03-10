@@ -18,7 +18,8 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			BytesTransferred = 55,
 			JobEndStatus = "Completed with Errors",
 			BytesMetadataTransferred = 77,
-			TotalMappedFields = 99
+            TotalMappedFields = 88,
+            TotalAvailableFields = 99
 		};
 
 		protected override IMetric ArrangeTestMetric()
@@ -28,7 +29,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 
 		protected override IMetric EmptyTestMetric()
 		{
-			return new DocumentJobEndMetric();
+			return new NonDocumentJobEndMetric();
 		}
 
 		protected override void VerifySumSink(Mock<IMetricsManager> metricsManagerMock)
@@ -51,6 +52,8 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.BytesMetadataTransferred.Value));
 			metricsManagerMock.Verify(x => x.LogPointInTimeLongAsync(TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED,
 				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.TotalMappedFields.Value));
+            metricsManagerMock.Verify(x => x.LogPointInTimeLongAsync(TelemetryConstants.MetricIdentifiers.DATA_FIELDS_TOTAL_REQUESTED,
+                _EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.TotalAvailableFields.Value));
 
 			metricsManagerMock.Verify(x => x.Dispose());
 		}
@@ -66,6 +69,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 				d["BytesTransferred"].Equals(_sut.BytesTransferred) &&
 				d["JobEndStatus"].Equals(_sut.JobEndStatus) &&
 				d["BytesMetadataTransferred"].Equals(_sut.BytesMetadataTransferred) &&
+				d["TotalAvailableFields"].Equals(_sut.TotalAvailableFields) &&
 				d["TotalMappedFields"].Equals(_sut.TotalMappedFields))));
 		}
 	}

@@ -52,7 +52,7 @@ namespace Relativity.Sync.Executors.SumReporting
                 _syncMetrics.Send(new NonDocumentJobStartMetric
                 {
                     Type = TelemetryConstants.PROVIDER_NAME,
-                    FlowType = TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_NON_DOCUMENT_OBJECTS,
+                    FlowType = TelemetryConstants.FLOW_TYPE_VIEW_NON_DOCUMENT_OBJECTS,
                     RetryType = configuration.JobHistoryToRetryId != null ? TelemetryConstants.PROVIDER_NAME : null,
 					DataSourceType = dataSourceType,
 					ParentApplicationName = parentApplicationName
