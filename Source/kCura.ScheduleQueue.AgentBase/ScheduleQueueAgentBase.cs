@@ -21,7 +21,7 @@ namespace kCura.ScheduleQueue.AgentBase
 	{
 		private IAgentService _agentService;
 		private IQueueQueryManager _queryManager;
-		private IKubernetesMode _kubernetesMode;
+		private Lazy<IKubernetesMode> _kubernetesModeLazy;
 		private IJobService _jobService;
 		private IQueueJobValidator _queueJobValidator;
 		private IDateTime _dateTime;
@@ -34,7 +34,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected Func<IEnumerable<int>> GetResourceGroupIDsFunc { get; set; }
 
-		private bool IsKubernetesMode => _kubernetesMode.IsEnabled();
+		private bool IsKubernetesMode => _kubernetesModeLazy.Value.IsEnabled();
 
 		private static readonly Dictionary<LogCategory, int> _logCategoryToLogLevelMapping = new Dictionary<LogCategory, int>
 		{
@@ -51,10 +51,17 @@ namespace kCura.ScheduleQueue.AgentBase
 			IQueueQueryManager queryManager = null, IDateTime dateTime = null, IAPILog logger = null,
 			IFileShareAccessService fileShareAccessService = null)
 		{
+			// Lazy init is required for things depending on Helper
+			// Helper property in base class is assigned AFTER object construction
 			_loggerLazy = logger != null
 				? new Lazy<IAPILog>(() => logger)
 				: new Lazy<IAPILog>(InitializeLogger);
-			
+
+			_kubernetesModeLazy = kubernetesMode != null 
+				? new Lazy<IKubernetesMode>(() => kubernetesMode)
+				: new Lazy<IKubernetesMode>(() => new KubernetesMode(Logger));
+
+
 			_agentGuid = agentGuid;
 			_agentService = agentService;
 			_jobService = jobService;
@@ -62,7 +69,6 @@ namespace kCura.ScheduleQueue.AgentBase
 			_dateTime = dateTime;
             _fileShareAccessService = fileShareAccessService;
             _queryManager = queryManager;
-			_kubernetesMode = kubernetesMode ?? new KubernetesMode(_loggerLazy.Value);
 			ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
 
 			_agentId = new Lazy<int>(GetAgentID);
@@ -84,14 +90,9 @@ namespace kCura.ScheduleQueue.AgentBase
 				_agentService = new AgentService(Helper, _queryManager, _agentGuid);
 			}
 
-			if(_kubernetesMode == null)
-            {
-				_kubernetesMode = new KubernetesMode(Logger);
-			}
-
 			if (_jobService == null)
 			{
-				_jobService = new JobService(_agentService, new JobServiceDataProvider(_queryManager), _kubernetesMode, Helper);
+				_jobService = new JobService(_agentService, new JobServiceDataProvider(_queryManager), _kubernetesModeLazy.Value, Helper);
 			}
 
 			if (_queueJobValidator == null)
@@ -188,7 +189,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void MountBCPPath()
         {
-            if (!_kubernetesMode.IsEnabled())
+            if (!IsKubernetesMode)
             {
                 Logger.LogInformation("Integration Points Agent is not enabled on shared compute environment. Mount BCPPath is not needed.");
                 return;
@@ -318,7 +319,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 			NotifyAgentTab(LogCategory.Debug, "Checking for active jobs in Schedule Agent Queue table");
 
-			if(_kubernetesMode.IsEnabled())
+			if(IsKubernetesMode)
             {
 				LogAllJobsInTheQueue();
 			}

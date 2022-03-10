@@ -15,7 +15,6 @@ using Moq;
 using Moq.Language;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 
 namespace kCura.ScheduleQueue.AgentBase.Tests
 {
