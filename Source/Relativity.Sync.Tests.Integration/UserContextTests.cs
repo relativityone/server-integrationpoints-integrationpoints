@@ -72,18 +72,19 @@ namespace Relativity.Sync.Tests.Integration
 			};
 			oAuth2ClientManager.Setup(x => x.ReadAllAsync()).ReturnsAsync(clients);
 
-			Mock<ISyncServiceManager> serviceMgr = new Mock<ISyncServiceManager>();
-			_containerBuilder.RegisterInstance(serviceMgr.Object).As<ISyncServiceManager>();
-			serviceMgr.Setup(x => x.CreateProxy<IOAuth2ClientManager>(ExecutionIdentity.System)).Returns(oAuth2ClientManager.Object);
-			serviceMgr.Setup(x => x.GetRESTServiceUrl()).Returns(new Uri(_REST_URL));
+            Mock<ISyncServiceManager> serviceMgr = new Mock<ISyncServiceManager>();
+            _containerBuilder.RegisterInstance(serviceMgr.Object).As<ISyncServiceManager>();
+            serviceMgr.Setup(x => x.CreateProxy<IOAuth2ClientManager>(ExecutionIdentity.System)).Returns(oAuth2ClientManager.Object);
+            serviceMgr.Setup(x => x.GetRESTServiceUrl()).Returns(new Uri(_REST_URL));
 		}
 
 		private void MockProvideServiceUrisToProvideValidUris()
 		{
 			IAPM apm = Mock.Of<IAPM>();
-			ISyncServiceManager servicesMgr = Mock.Of<ISyncServiceManager>();
+            ISyncServiceManager servicesMgr = Mock.Of<ISyncServiceManager>();
 			Uri authenticationUri = new Uri(_INSTANCE_URL);
 			IHelper helper = Mock.Of<IHelper>();
+
 			IRelativityServices relativityServices = new RelativityServices(apm, servicesMgr, authenticationUri, helper);
 			_containerBuilder.RegisterInstance(relativityServices).As<IRelativityServices>();
 		}
@@ -102,12 +103,12 @@ namespace Relativity.Sync.Tests.Integration
 		}
 
 		[Test]
-		public async Task ItShouldCreateSourceKeplerServiceInUserContext()
+        public async Task ItShouldCreateSourceKeplerServiceInUserContext()
 		{
-			ISourceServiceFactoryForUser factoryForUser = _containerBuilder.Build().Resolve<ISourceServiceFactoryForUser>();
+			ISourceServiceFactoryForUser serviceFactoryForUser = _containerBuilder.Build().Resolve<ISourceServiceFactoryForUser>();
 
 			// ACT
-			await factoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
+			await serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
 
 			// ASSERT
 			_serviceFactoryFactoryStub.Settings.Should().NotBeNull();

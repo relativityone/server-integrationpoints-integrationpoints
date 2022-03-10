@@ -20,7 +20,7 @@ namespace Relativity.Sync.Transfer
 	/// </summary>
 	internal sealed class UserFieldSanitizer : IExportFieldSanitizer
 	{
-		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
+		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 		private readonly IMemoryCache _memoryCache;
 		private readonly IEddsDbContext _eddsDbContext;
 		private readonly ISyncLog _log;
@@ -30,10 +30,10 @@ namespace Relativity.Sync.Transfer
 
 		public RelativityDataType SupportedType { get; } = RelativityDataType.User;
 
-		public UserFieldSanitizer(ISourceServiceFactoryForAdmin serviceFactory, IMemoryCache memoryCache,
+		public UserFieldSanitizer(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IMemoryCache memoryCache,
 			IEddsDbContext eddsDbContext, ISyncLog log, IToggleProvider toggleProvider)
 		{
-			_serviceFactory = serviceFactory;
+			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_memoryCache = memoryCache;
 			_eddsDbContext = eddsDbContext;
 			_log = log;
@@ -70,7 +70,7 @@ namespace Relativity.Sync.Transfer
 				_log.LogInformation("Read Instance Level UserId: {instanceUserArtifactId}", instanceUserArtifactId);
 			}
 
-			using (IUserInfoManager userInfoManager = await _serviceFactory.CreateProxyAsync<IUserInfoManager>().ConfigureAwait(false))
+			using (IUserInfoManager userInfoManager = await _serviceFactoryForAdmin.CreateProxyAsync<IUserInfoManager>().ConfigureAwait(false))
 			{
 				string instanceUserEmail = await GetUserEmailAsync(userInfoManager, -1, instanceUserArtifactId).ConfigureAwait(false);
 				if (!string.IsNullOrEmpty(instanceUserEmail))

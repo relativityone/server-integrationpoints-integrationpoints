@@ -1,6 +1,7 @@
 ﻿using System;
 using Autofac;
 using Banzai.Logging;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Telemetry;
 
@@ -69,14 +70,18 @@ namespace Relativity.Sync
 
 			LogWriter.SetFactory(new SyncLogWriterFactory(logger));
 
-			InstallSumMetrics(relativityServices.ServicesMgr, logger);
+            ServiceFactoryForAdminFactory serviceFactoryForAdminFactory =
+                new ServiceFactoryForAdminFactory(relativityServices.ServicesMgr, logger);
+            ISourceServiceFactoryForAdmin serviceFactoryForAdmin = serviceFactoryForAdminFactory.Create();
+
+			InstallSumMetrics(serviceFactoryForAdmin, logger);
 
 			return new SyncJobInLifetimeScope(_containerFactory, container, syncJobParameters, relativityServices, configuration, logger);
 		}
 
-		private static void InstallSumMetrics(ISyncServiceManager servicesMgr, ISyncLog logger)
+		private static void InstallSumMetrics(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger)
 		{
-			ITelemetryManager telemetryManager = new TelemetryMetricsInstaller(servicesMgr, logger);
+			ITelemetryManager telemetryManager = new TelemetryMetricsInstaller(serviceFactoryForAdmin, logger);
 
 			// Telemetry providers should be added here using this method: `void ITelemetryManager.AddMetricProvider(ITelemetryMetricProvider metricProvider)`
 			telemetryManager.AddMetricProvider(new MainTelemetryMetricsProvider(logger));

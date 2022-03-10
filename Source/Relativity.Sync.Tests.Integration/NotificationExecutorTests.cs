@@ -29,8 +29,8 @@ namespace Relativity.Sync.Tests.Integration
 		private Mock<IEmailNotificationsManager> _emailNotificationsManager;
 		private Mock<INotificationConfiguration> _notificationConfiguration;
 		private Mock<IObjectManager> _objectManager;
-		private Mock<ISourceServiceFactoryForAdmin> _sourceServiceFactoryForAdmin;
-		private Mock<ISourceServiceFactoryForUser> _sourceServiceFactoryForUser;
+		private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdmin;
+		private Mock<ISourceServiceFactoryForUser> _serviceFactoryForUser;
 		private Mock<ISyncLog> _syncLog;
 		private Mock<ISyncMetrics> _syncMetrics;
 
@@ -80,14 +80,14 @@ namespace Relativity.Sync.Tests.Integration
 			containerBuilder.RegisterInstance(_syncLog.Object).As<ISyncLog>();
 			containerBuilder.RegisterInstance(_syncMetrics.Object).As<ISyncMetrics>();
 
-			_sourceServiceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
-			_sourceServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IEmailNotificationsManager>()).ReturnsAsync(_emailNotificationsManager.Object);
-			_sourceServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-			containerBuilder.RegisterInstance(_sourceServiceFactoryForAdmin.Object).As<ISourceServiceFactoryForAdmin>();
+			_serviceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
+			_serviceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IEmailNotificationsManager>()).ReturnsAsync(_emailNotificationsManager.Object);
+			_serviceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			containerBuilder.RegisterInstance(_serviceFactoryForAdmin.Object).As<ISourceServiceFactoryForAdmin>();
 
-			_sourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
-			_sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-			containerBuilder.RegisterInstance(_sourceServiceFactoryForUser.Object).As<ISourceServiceFactoryForUser>();
+			_serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
+			_serviceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			containerBuilder.RegisterInstance(_serviceFactoryForUser.Object).As<ISourceServiceFactoryForUser>();
 
 			containerBuilder.RegisterType<NotificationExecutor>().As<IExecutor<INotificationConfiguration>>();
 

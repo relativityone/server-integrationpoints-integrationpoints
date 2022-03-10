@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.DataExchange;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Extensions;
 using Relativity.Sync.Storage;
@@ -112,9 +113,11 @@ namespace Relativity.Sync.Executors
 			try
 			{
 				_logger.LogInformation("Gathering batches to execute.");
-				IEnumerable<int> batchesIds = await _batchRepository
+
+				List<int> batchesIds = (await _batchRepository
 					.GetAllBatchesIdsToExecuteAsync(configuration.SourceWorkspaceArtifactId,
-						configuration.SyncConfigurationArtifactId, GetExportRunId(configuration)).ConfigureAwait(false);
+						configuration.SyncConfigurationArtifactId, GetExportRunId(configuration)).ConfigureAwait(false)).ToList();
+
 				Dictionary<int, ExecutionResult> batchesCompletedWithErrors = new Dictionary<int, ExecutionResult>();
 
 				List<IBatch> executedBatches = (await _batchRepository.GetAllSuccessfullyExecutedBatchesAsync(
@@ -126,17 +129,22 @@ namespace Relativity.Sync.Executors
 				{
 					_jobStatisticsContainer.RestoreJobStatistics(executedBatches);
 
-					foreach (int batchId in batchesIds)
+                    for (int i = 0; i < batchesIds.Count; i++)
 					{
+                        int batchId = batchesIds[i];
 						if (token.StopCancellationToken.IsCancellationRequested)
 						{
 							_logger.LogInformation("Import job has been canceled.");
 							return ExecutionResult.Canceled();
 						}
 
-						_logger.LogInformation("Processing batch ID: {batchId}", batchId);
+                        await SetImportApiBatchSizeAsync(configuration).ConfigureAwait(false);
+
+                        _logger.LogInformation("Processing batch ID: {batchId} ({index} out of {totalBatches})", batchId, i+1, batchesIds.Count);
+
 						IStopwatch batchTimer = GetStartedTimer();
 						IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
+
 						using (IImportJob importJob = await CreateImportJobAsync(configuration, batch, token.AnyReasonCancellationToken).ConfigureAwait(false))
 						{
 							using (progressHandler.AttachToImportJob(importJob.SyncImportBulkArtifactJob, batch))
@@ -144,12 +152,12 @@ namespace Relativity.Sync.Executors
 								IStopwatch importApiTimer = GetStartedTimer();
 								BatchProcessResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token).ConfigureAwait(false);
 								importApiTimer.Stop();
-								
+
 								TaggingExecutionResult taggingResult = await TagObjectsAsync(importJob, configuration, token).ConfigureAwait(false);
 								int documentsTaggedCount = taggingResult.TaggedDocumentsCount;
 								await batch.SetTaggedDocumentsCountAsync(batch.TaggedDocumentsCount + documentsTaggedCount).ConfigureAwait(false);
 								batchProcessingResult.TotalRecordsTagged = documentsTaggedCount;
-								
+
 								if (batchProcessingResult.ExecutionResult.Status == ExecutionStatus.CompletedWithErrors)
 								{
 									batchesCompletedWithErrors[batch.ArtifactId] = batchProcessingResult.ExecutionResult;
@@ -167,7 +175,7 @@ namespace Relativity.Sync.Executors
 							}
 						}
 
-						_logger.LogInformation("Batch ID: {batchId} processed successfully.", batch.ArtifactId);
+                        _logger.LogInformation("Batch ID: {batchId} processed successfully ({index} out of {totalBatches})", batch.ArtifactId, i + 1, batchesIds.Count);
 					}
 
 					importAndTagResult = AggregateBatchesCompletedWithErrorsResults(batchesCompletedWithErrors);
@@ -303,6 +311,13 @@ namespace Relativity.Sync.Executors
 
 			_logger.LogInformation("Setting status {status} for batch {batchId}", status, batch.ArtifactId);
 			return batch.SetStatusAsync(status);
+		}
+
+		private async Task SetImportApiBatchSizeAsync(TConfiguration configuration)
+		{
+			int importApiBatchSize = await configuration.GetImportApiBatchSizeAsync().ConfigureAwait(false);
+			AppSettings.Instance.ImportBatchSize = importApiBatchSize;
+			_logger.LogInformation("Import API batch size set to {importApiBatchSize}", importApiBatchSize);
 		}
 
 		private async Task<BatchProcessResult> RunImportJobAsync(IImportJob importJob, CompositeCancellationToken token)

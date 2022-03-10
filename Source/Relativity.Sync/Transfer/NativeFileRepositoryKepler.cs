@@ -11,13 +11,13 @@ namespace Relativity.Sync.Transfer
 {
 	internal sealed class NativeFileRepositoryKepler : INativeFileRepository
 	{
-		private readonly ISourceServiceFactoryForUser _serviceFactory;
+		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private readonly ISyncLog _logger;
 		private readonly SyncJobParameters _parameters;
 
-		public NativeFileRepositoryKepler(ISourceServiceFactoryForUser serviceFactory, ISyncLog logger, SyncJobParameters parameters)
+		public NativeFileRepositoryKepler(ISourceServiceFactoryForUser serviceFactoryForUser, ISyncLog logger, SyncJobParameters parameters)
 		{
-			_serviceFactory = serviceFactory;
+			_serviceFactoryForUser = serviceFactoryForUser;
 			_logger = logger;
 			_parameters = parameters;
 		}
@@ -33,7 +33,7 @@ namespace Relativity.Sync.Transfer
 
 			_logger.LogInformation("Searching for native files. Documents count: {numberOfDocuments}", documentIds.Count);
 
-			using (ISearchService searchService = await _serviceFactory.CreateProxyAsync<ISearchService>().ConfigureAwait(false))
+			using (ISearchService searchService = await _serviceFactoryForUser.CreateProxyAsync<ISearchService>().ConfigureAwait(false))
 			{
 				string concatenatedArtifactIds = string.Join(",", documentIds);
 				DataSetWrapper dataSetWrapper = await searchService.RetrieveNativesForSearchAsync(

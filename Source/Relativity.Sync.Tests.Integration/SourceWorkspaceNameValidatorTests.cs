@@ -26,11 +26,11 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			_workspaceManagerMock = new Mock<IWorkspaceManager>();
 
-			Mock<ISourceServiceFactoryForUser> serviceFactory = new Mock<ISourceServiceFactoryForUser>();
-			serviceFactory.Setup(sf => sf.CreateProxyAsync<IWorkspaceManager>()).ReturnsAsync(_workspaceManagerMock.Object);
+			Mock<ISourceServiceFactoryForUser> serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
+			serviceFactoryForUser.Setup(sf => sf.CreateProxyAsync<IWorkspaceManager>()).ReturnsAsync(_workspaceManagerMock.Object);
 
 			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
-			containerBuilder.RegisterInstance(serviceFactory.Object).As<ISourceServiceFactoryForUser>();
+			containerBuilder.RegisterInstance(serviceFactoryForUser.Object).As<ISourceServiceFactoryForUser>();
 			containerBuilder.RegisterType<SourceWorkspaceNameValidator>();
 			IContainer container = containerBuilder.Build();
 

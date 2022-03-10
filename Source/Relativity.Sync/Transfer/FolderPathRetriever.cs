@@ -16,12 +16,12 @@ namespace Relativity.Sync.Transfer
 		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
 		private const int _BATCH_SIZE = 100_000;
 
-		private readonly ISourceServiceFactoryForUser _serviceFactory;
+		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private readonly ISyncLog _logger;
 
-		public FolderPathRetriever(ISourceServiceFactoryForUser serviceFactory, ISyncLog logger)
+		public FolderPathRetriever(ISourceServiceFactoryForUser serviceFactoryForUser, ISyncLog logger)
 		{
-			_serviceFactory = serviceFactory;
+			_serviceFactoryForUser = serviceFactoryForUser;
 			_logger = logger;
 		}
 
@@ -40,7 +40,7 @@ namespace Relativity.Sync.Transfer
 
 		private async Task<IDictionary<int, int>> GetDocumentIdToFolderIdMapAsync(int workspaceArtifactId, ICollection<int> documentArtifactIds)
 		{
-			using (var objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (var objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				IEnumerable<IDictionary<int, int>> batchDocumentIdToFolderIdMaps = await documentArtifactIds
 					.SplitList(_BATCH_SIZE)
@@ -85,7 +85,7 @@ namespace Relativity.Sync.Transfer
 
 		private async Task<IDictionary<int, string>> GetFolderIdToFolderPathMapAsync(int workspaceArtifactId, IEnumerable<int> folderIds)
 		{
-			using (var folderManager = await _serviceFactory.CreateProxyAsync<IFolderManager>().ConfigureAwait(false))
+			using (var folderManager = await _serviceFactoryForUser.CreateProxyAsync<IFolderManager>().ConfigureAwait(false))
 			{
 				List<FolderPath> result;
 				List<int> foldersWithIds = folderIds.ToList(); 

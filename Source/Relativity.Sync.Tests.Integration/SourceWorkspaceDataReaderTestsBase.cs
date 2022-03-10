@@ -61,7 +61,7 @@ namespace Relativity.Sync.Tests.Integration
 				ResultCount = 1,
 				DataResults = new[] { new UserInfo { ArtifactID = _USER_ARTIFACT_ID, Email = _USER_EMAIL } }
 			});
-			_documentTransferServicesMocker.SourceServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IUserInfoManager>())
+			_documentTransferServicesMocker.ServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IUserInfoManager>())
 				.ReturnsAsync(userInfoManagerMock.Object);
 
 			IFieldManager fieldManager = _container.Resolve<IFieldManager>();

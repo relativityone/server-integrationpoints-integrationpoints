@@ -31,7 +31,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		private Mock<IFieldConfiguration> _configuration;
 		private Mock<IObjectFieldTypeRepository> _documentFieldRepository;
-		private Mock<ISourceServiceFactoryForAdmin> _sourceServiceFactoryForAdminFake;
+		private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdminFake;
 		private Mock<ISyncLog> _syncLogFake;
 
 		private FieldManager _sut;
@@ -145,9 +145,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			var nativeSpecialFieldBuilders = SetupNativeSpecialFieldBuilders();
 			var imageSpecialFieldBuilders = SetupImageSpecialFieldBuilders();
 			
-			_sourceServiceFactoryForAdminFake = new Mock<ISourceServiceFactoryForAdmin>();
+			_serviceFactoryForAdminFake = new Mock<ISourceServiceFactoryForAdmin>();
 			_objectManagerFake = new Mock<IObjectManager>();
-			_sourceServiceFactoryForAdminFake.Setup(x => x.CreateProxyAsync<IObjectManager>())
+			_serviceFactoryForAdminFake.Setup(x => x.CreateProxyAsync<IObjectManager>())
 				.ReturnsAsync(_objectManagerFake.Object);
 			
 			_objectManagerFake.Setup(x => x.QueryAsync(
@@ -165,7 +165,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			
 			_syncLogFake = new Mock<ISyncLog>();
 
-			_sut = new FieldManager(_configuration.Object, _documentFieldRepository.Object, nativeSpecialFieldBuilders, imageSpecialFieldBuilders, _sourceServiceFactoryForAdminFake.Object, _syncLogFake.Object);
+			_sut = new FieldManager(_configuration.Object, _documentFieldRepository.Object, nativeSpecialFieldBuilders, imageSpecialFieldBuilders, _serviceFactoryForAdminFake.Object, _syncLogFake.Object);
 		}
 
 		[Test]
@@ -358,7 +358,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			// Arrange
 			_sut = new FieldManager(_configuration.Object, _documentFieldRepository.Object,
-				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>(), _sourceServiceFactoryForAdminFake.Object, _syncLogFake.Object);
+				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>(), _serviceFactoryForAdminFake.Object, _syncLogFake.Object);
 
 			// Act
 			Func<Task<IReadOnlyList<FieldInfoDto>>> action = () => _sut.GetNativeAllFieldsAsync(CancellationToken.None);
@@ -468,7 +468,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_configuration.Setup(c => c.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ARTIFACT_ID);
 
 			_sut = new FieldManager(_configuration.Object, _documentFieldRepository.Object,
-				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>(), _sourceServiceFactoryForAdminFake.Object, _syncLogFake.Object);
+				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>(), _serviceFactoryForAdminFake.Object, _syncLogFake.Object);
 
 			// Act
 			IReadOnlyList<FieldInfoDto> result = await _sut.GetNativeAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
@@ -482,7 +482,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			// Arrange
 			_sut = new FieldManager(_configuration.Object, _documentFieldRepository.Object,
-				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>(), _sourceServiceFactoryForAdminFake.Object, _syncLogFake.Object);
+				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>(), _serviceFactoryForAdminFake.Object, _syncLogFake.Object);
 
 			// Act
 			Func<IEnumerable<FieldInfoDto>> action = () => _sut.GetNativeSpecialFields();
@@ -496,7 +496,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			// Arrange
 			_sut = new FieldManager(_configuration.Object, _documentFieldRepository.Object,
-				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>(), _sourceServiceFactoryForAdminFake.Object, _syncLogFake.Object);
+				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>(), _serviceFactoryForAdminFake.Object, _syncLogFake.Object);
 
 			// Act
 			Func<IEnumerable<FieldInfoDto>> action = () => _sut.GetImageSpecialFields();
@@ -510,7 +510,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			// Arrange
 			_sut = new FieldManager(_configuration.Object, _documentFieldRepository.Object,
-				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>(), _sourceServiceFactoryForAdminFake.Object, _syncLogFake.Object);
+				Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>(), _serviceFactoryForAdminFake.Object, _syncLogFake.Object);
 
 			// Act
 			Func<Task<IList<FieldInfoDto>>> action = () => _sut.GetDocumentTypeFieldsAsync(CancellationToken.None);

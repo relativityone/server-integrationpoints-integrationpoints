@@ -22,7 +22,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		private Mock<IObjectManager> _objectManager;
 
 		private NativeFileRepositoryKepler _instance;
-		private Mock<ISourceServiceFactoryForUser> _serviceFactory;
+		private Mock<ISourceServiceFactoryForUser> _serviceFactoryForUser;
 
 		private const string _DOCUMENT_ARTIFACT_ID_COLUMN_NAME = "DocumentArtifactID";
 		private const string _LOCATION_COLUMN_NAME = "Location";
@@ -33,15 +33,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public void SetUp()
 		{
 			_searchService = new Mock<ISearchService>();
-			_serviceFactory = new Mock<ISourceServiceFactoryForUser>();
+			_serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
 			_objectManager = new Mock<IObjectManager>();
 
-			_serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-			_serviceFactory.Setup(x => x.CreateProxyAsync<ISearchService>()).ReturnsAsync(_searchService.Object);
+			_serviceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			_serviceFactoryForUser.Setup(x => x.CreateProxyAsync<ISearchService>()).ReturnsAsync(_searchService.Object);
 
 			SyncJobParameters parameters = new SyncJobParameters(It.IsAny<int>(), It.IsAny<int>(), Guid.NewGuid());
 
-			_instance = new NativeFileRepositoryKepler(_serviceFactory.Object, new EmptyLogger(), parameters);
+			_instance = new NativeFileRepositoryKepler(_serviceFactoryForUser.Object, new EmptyLogger(), parameters);
 		}
 
 		[Test]

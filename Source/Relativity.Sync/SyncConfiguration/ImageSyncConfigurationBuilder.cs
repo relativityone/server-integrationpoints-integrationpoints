@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;
@@ -10,10 +11,10 @@ namespace Relativity.Sync.SyncConfiguration
 	{
 		private readonly IFieldsMappingBuilder _fieldsMappingBuilder;
 
-		internal ImageSyncConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr,
+		internal ImageSyncConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
 			IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, ImageSyncOptions options,
 			RdoOptions rdoOptions, IRdoManager rdoManager) 
-			: base(syncContext, servicesMgr, rdoOptions, rdoManager, serializer)
+			: base(syncContext, serviceFactoryForAdmin, rdoOptions, rdoManager, serializer)
 		{
 			_fieldsMappingBuilder = fieldsMappingBuilder;
 

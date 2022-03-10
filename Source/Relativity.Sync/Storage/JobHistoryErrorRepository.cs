@@ -23,16 +23,16 @@ namespace Relativity.Sync.Storage
         private const string CannotInsertDuplicateKeyInObject = "Cannot insert duplicate key in object";
 
         private readonly IDateTime _dateTime;
-        private readonly ISourceServiceFactoryForUser _serviceFactory;
+        private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
         private readonly IJobHistoryErrorRepositoryConfigration _repositoryConfigration;
         private readonly IRdoGuidConfiguration _rdoConfiguration;
         private readonly ISyncLog _logger;
         private readonly IRandom _random;
 
-        public JobHistoryErrorRepository(ISourceServiceFactoryForUser serviceFactory, IJobHistoryErrorRepositoryConfigration repositoryConfigration,
+        public JobHistoryErrorRepository(ISourceServiceFactoryForUser serviceFactoryForUser, IJobHistoryErrorRepositoryConfigration repositoryConfigration,
             IRdoGuidConfiguration rdoConfiguration, IDateTime dateTime, ISyncLog logger, IRandom random)
         {
-            _serviceFactory = serviceFactory;
+            _serviceFactoryForUser = serviceFactoryForUser;
             _repositoryConfigration = repositoryConfigration;
             _rdoConfiguration = rdoConfiguration;
             _dateTime = dateTime;
@@ -61,7 +61,7 @@ namespace Relativity.Sync.Storage
             IList<CreateJobHistoryErrorDto> createJobHistoryErrorDtos)
         {
             using (IObjectManager objectManager =
-                   await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+                   await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
 
                 var values = createJobHistoryErrorDtos.Select(x => new List<object>()
@@ -186,7 +186,7 @@ namespace Relativity.Sync.Storage
         {
             IJobHistoryError jobHistoryError = null;
 
-            using (var objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+            using (var objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
                 var readRequest = new ReadRequest
                 {

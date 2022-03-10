@@ -18,12 +18,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
         protected const int _WORKSPACE_ID = 589632;
         protected const int _SYNC_CONF_ID = 214563;
+		protected const int _SYNC_BATCH_SIZE = 25000;
 
 		[SetUp]
 		public virtual void SetUp()
 		{
 			BatchRepository = new Mock<IBatchRepository>();
-        }
+		}
 
 		[Test]
 		public async Task ItShouldReturnFailureWhenCannotReadLastBatch()
@@ -139,52 +140,53 @@ namespace Relativity.Sync.Tests.Unit.Executors
         }
 
         protected virtual T ItShouldReturnFailureWhenUnableToCreateBatchMockConfiguration()
-        {
-            const int ten = 10;
+		{
+			const int ten = 10;
             Mock<ISnapshotPartitionConfiguration> configuration = new Mock<ISnapshotPartitionConfiguration>();
 
             configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
             configuration.Setup(x => x.SyncConfigurationArtifactId).Returns(_SYNC_CONF_ID);
-			configuration.Setup(x => x.BatchSize).Returns(1);
             configuration.Setup(x => x.TotalRecordsCount).Returns(ten);
+			configuration.Setup(x => x.GetSyncBatchSizeAsync()).ReturnsAsync(1);
 
 			return (T)configuration.Object;
         }
 
         protected virtual T ItShouldCreateBatchesWhenTheyDoNotExistMockConfiguration(int items)
-        {
-            Mock<ISnapshotPartitionConfiguration> configuration = new Mock<ISnapshotPartitionConfiguration>();
+		{
+			Mock<ISnapshotPartitionConfiguration> configuration = new Mock<ISnapshotPartitionConfiguration>();
 
 			configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
             configuration.Setup(x => x.SyncConfigurationArtifactId).Returns(_SYNC_CONF_ID);
-			configuration.Setup(x => x.BatchSize).Returns(1);
             configuration.Setup(x => x.TotalRecordsCount).Returns(items);
+			configuration.Setup(x => x.GetSyncBatchSizeAsync()).ReturnsAsync(1);
 
-            return (T)configuration.Object;
+			return (T)configuration.Object;
 		}
 
         protected virtual T ItShouldAddMissingBatchesMockConfiguration()
         {
             const int totalItems = 40;
-            const int batchSize = 30;
+			const int batchSize = 30;
+
 			Mock<ISnapshotPartitionConfiguration> configuration = new Mock<ISnapshotPartitionConfiguration>();
 
 			configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
             configuration.Setup(x => x.SyncConfigurationArtifactId).Returns(_SYNC_CONF_ID);
-			configuration.Setup(x => x.BatchSize).Returns(batchSize);
             configuration.Setup(x => x.TotalRecordsCount).Returns(totalItems);
+			configuration.Setup(x => x.GetSyncBatchSizeAsync()).ReturnsAsync(batchSize);
 
 			return (T)configuration.Object;
         }
 
         protected virtual T ItShouldSucceedWhenNoMoreBatchesIsRequiredMockConfiguration(int itemsSize)
-        {
-            Mock<ISnapshotPartitionConfiguration> configuration = new Mock<ISnapshotPartitionConfiguration>();
+		{
+			Mock<ISnapshotPartitionConfiguration> configuration = new Mock<ISnapshotPartitionConfiguration>();
 
 			configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
             configuration.Setup(x => x.SyncConfigurationArtifactId).Returns(_SYNC_CONF_ID);
-			configuration.Setup(x => x.BatchSize).Returns(itemsSize);
             configuration.Setup(x => x.TotalRecordsCount).Returns(itemsSize);
+			configuration.Setup(x => x.GetSyncBatchSizeAsync()).ReturnsAsync(itemsSize);
 
 			return (T)configuration.Object;
         }

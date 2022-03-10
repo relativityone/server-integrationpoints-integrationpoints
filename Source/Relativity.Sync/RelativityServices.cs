@@ -14,17 +14,17 @@ namespace Relativity.Sync
 		{
 			Helper = helper;
 			APM = apm;
-			ServicesMgr = servicesMgr;
-			AuthenticationUri = authenticationUri;
+            ServicesMgr = servicesMgr;
+            AuthenticationUri = authenticationUri;
 		}
 
 		/// <inheritdoc />
 		public IAPM APM { get; }
 
-		/// <inheritdoc />
+        /// <inheritdoc />
 		public ISyncServiceManager ServicesMgr { get; }
-
-		/// <inheritdoc />
+        
+        /// <inheritdoc />
 		public IHelper Helper { get; }
 
 		/// <inheritdoc />

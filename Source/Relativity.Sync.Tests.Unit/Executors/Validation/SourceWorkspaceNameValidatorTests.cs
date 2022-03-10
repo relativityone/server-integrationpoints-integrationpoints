@@ -19,7 +19,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 	{
 		private SourceWorkspaceNameValidator _sut;
 
-		private Mock<ISourceServiceFactoryForUser> _serviceFactory;
+		private Mock<ISourceServiceFactoryForUser> _serviceFactoryForUserMock;
 		private Mock<IWorkspaceNameValidator> _workspaceNameValidatorMock;
 		private Mock<IValidationConfiguration> _configurationMock;
 		
@@ -29,16 +29,16 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		[SetUp]
 		public void SetUp()
 		{
-			_serviceFactory = new Mock<ISourceServiceFactoryForUser>();
+			_serviceFactoryForUserMock = new Mock<ISourceServiceFactoryForUser>();
 			_workspaceNameValidatorMock = new Mock<IWorkspaceNameValidator>();
 
 			var workspaceNameQuery = new Mock<IWorkspaceNameQuery>();
-			workspaceNameQuery.Setup(wnq => wnq.GetWorkspaceNameAsync(_serviceFactory.Object, _WORKSPACE_ARTIFACT_ID, CancellationToken.None)).ReturnsAsync(_WORKSPACE_NAME);
+			workspaceNameQuery.Setup(wnq => wnq.GetWorkspaceNameAsync(_serviceFactoryForUserMock.Object, _WORKSPACE_ARTIFACT_ID, CancellationToken.None)).ReturnsAsync(_WORKSPACE_NAME);
 
 			_configurationMock = new Mock<IValidationConfiguration>();
 			_configurationMock.Setup(c => c.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ARTIFACT_ID);
 
-			_sut = new SourceWorkspaceNameValidator(_serviceFactory.Object, workspaceNameQuery.Object, _workspaceNameValidatorMock.Object, new EmptyLogger());
+			_sut = new SourceWorkspaceNameValidator(_serviceFactoryForUserMock.Object, workspaceNameQuery.Object, _workspaceNameValidatorMock.Object, new EmptyLogger());
 		}
 
 		[Test]

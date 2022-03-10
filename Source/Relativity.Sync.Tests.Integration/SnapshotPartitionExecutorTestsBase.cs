@@ -50,9 +50,9 @@ namespace Relativity.Sync.Tests.Integration
             ContainerBuilder.RegisterInstance(_syncLog.Object).As<ISyncLog>();
             ContainerBuilder.RegisterInstance(_rdoManagerMock.Object).As<IRdoManager>();
 
-			var serviceFactoryMock = new Mock<ISourceServiceFactoryForAdmin>();
-			serviceFactoryMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-            ContainerBuilder.RegisterInstance(serviceFactoryMock.Object).As<ISourceServiceFactoryForAdmin>();
+			var serviceFactoryForAdminMock = new Mock<ISourceServiceFactoryForAdmin>();
+			serviceFactoryForAdminMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+            ContainerBuilder.RegisterInstance(serviceFactoryForAdminMock.Object).As<ISourceServiceFactoryForAdmin>();
 
 			IContainer container = ContainerBuilder.Build();
 			_instance = container.Resolve<IExecutor<T>>();
@@ -221,8 +221,8 @@ namespace Relativity.Sync.Tests.Integration
         {
             Mock<ISnapshotPartitionConfiguration> snapshotPartitionConfiguration = new Mock<ISnapshotPartitionConfiguration>(MockBehavior.Loose);
 
-            snapshotPartitionConfiguration.SetupGet(x => x.BatchSize).Returns(batchSize);
-            snapshotPartitionConfiguration.SetupGet(x => x.TotalRecordsCount).Returns(totalRecords);
+            snapshotPartitionConfiguration.Setup(x => x.GetSyncBatchSizeAsync()).ReturnsAsync(batchSize);
+			snapshotPartitionConfiguration.SetupGet(x => x.TotalRecordsCount).Returns(totalRecords);
 
             return (T)snapshotPartitionConfiguration.Object;
         }

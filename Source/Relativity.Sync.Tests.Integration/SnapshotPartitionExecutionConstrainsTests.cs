@@ -47,9 +47,9 @@ namespace Relativity.Sync.Tests.Integration
 
 			containerBuilder.RegisterInstance(_syncLog.Object).As<ISyncLog>();
 
-			var serviceFactoryMock = new Mock<ISourceServiceFactoryForAdmin>();
-			serviceFactoryMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-			containerBuilder.RegisterInstance(serviceFactoryMock.Object).As<ISourceServiceFactoryForAdmin>();
+			var serviceFactoryForAdminMock = new Mock<ISourceServiceFactoryForAdmin>();
+			serviceFactoryForAdminMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			containerBuilder.RegisterInstance(serviceFactoryForAdminMock.Object).As<ISourceServiceFactoryForAdmin>();
 
 			containerBuilder.RegisterType<SnapshotPartitionExecutionConstrains>().As<IExecutionConstrains<ISnapshotPartitionConfiguration>>();
 
@@ -69,7 +69,7 @@ namespace Relativity.Sync.Tests.Integration
 			const int numberOfItems = 100;
 			const int batchSize = 100;
 
-			_snapshotPartitionConfiguration.SetupGet(x => x.BatchSize).Returns(batchSize);
+			_snapshotPartitionConfiguration.Setup(x => x.GetSyncBatchSizeAsync()).ReturnsAsync(batchSize);
 			_snapshotPartitionConfiguration.SetupGet(x => x.TotalRecordsCount).Returns(testTotalNumberOfItems);
 			const int batchArtifactId = 1;
 			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), 1, 1))

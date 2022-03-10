@@ -16,17 +16,17 @@ namespace Relativity.Sync.Transfer
 	internal class FileStatisticsCalculator : IFileStatisticsCalculator
 	{
 		private readonly IStatisticsConfiguration _configuration;
-		private readonly ISourceServiceFactoryForUser _serviceFactory;
+		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private readonly IImageFileRepository _imageFileRepository;
 		private readonly INativeFileRepository _nativeFileRepository;
 		private readonly IRdoManager _rdoManager;
 		private readonly ISyncLog _logger;
 
-		public FileStatisticsCalculator(IStatisticsConfiguration configuration, ISourceServiceFactoryForUser serviceFactory, 
+		public FileStatisticsCalculator(IStatisticsConfiguration configuration, ISourceServiceFactoryForUser serviceFactoryForUser, 
 			IImageFileRepository imageFileRepository, INativeFileRepository nativeFileRepository, IRdoManager rdoManager, ISyncLog logger)
 		{
 			_configuration = configuration;
-			_serviceFactory = serviceFactory;
+			_serviceFactoryForUser = serviceFactoryForUser;
 			_imageFileRepository = imageFileRepository;
 			_nativeFileRepository = nativeFileRepository;
 			_rdoManager = rdoManager;
@@ -145,7 +145,7 @@ namespace Relativity.Sync.Transfer
 
 		private async Task<SyncStatisticsRdo> InitializeDocumentsQueryAsync(int workspaceId, QueryRequest request)
 		{
-			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (IObjectManager objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				SyncStatisticsRdo syncStatistics = await _rdoManager.GetAsync<SyncStatisticsRdo>(workspaceId, _configuration.SyncStatisticsId).ConfigureAwait(false);
 
@@ -166,7 +166,7 @@ namespace Relativity.Sync.Transfer
 
 		private async Task<IList<int>> GetNextBatchAsync(int workspaceId, SyncStatisticsRdo statistics)
 		{
-			using (IObjectManager objectManager = await _serviceFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+			using (IObjectManager objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
 			{
 				int blockSize = Math.Min(
 					(int)(statistics.RequestedDocuments - statistics.CalculatedDocuments),

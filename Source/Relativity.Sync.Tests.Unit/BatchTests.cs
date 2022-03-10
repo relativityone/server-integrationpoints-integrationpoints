@@ -36,13 +36,13 @@ namespace Relativity.Sync.Tests.Unit
 		[SetUp]
 		public void SetUp()
 		{
-			var serviceFactoryMock = new Mock<ISourceServiceFactoryForAdmin>();
+			var serviceFactoryForAdminMock = new Mock<ISourceServiceFactoryForAdmin>();
 			_dateTime = new Mock<IDateTime>();
 			_fakeRdoManager = new FakeRdoManager(_ARTIFACT_ID);
-			_batchRepository = new BatchRepository(_fakeRdoManager, serviceFactoryMock.Object, _dateTime.Object);
+			_batchRepository = new BatchRepository(_fakeRdoManager, serviceFactoryForAdminMock.Object, _dateTime.Object);
 
 			_objectManager = new Mock<IObjectManager>();
-			serviceFactoryMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+			serviceFactoryForAdminMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 			
 			_fakeRdoManager.Mock.Setup(x => x.CreateAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), It.IsAny<int?>()))
 				.Returns((int _, SyncBatchRdo rdo, int? __) =>

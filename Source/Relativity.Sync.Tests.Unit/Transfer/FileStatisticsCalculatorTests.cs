@@ -43,8 +43,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			_objectManagerMock = new Mock<IObjectManager>();
 
-			Mock<ISourceServiceFactoryForUser> serviceFactory = new Mock<ISourceServiceFactoryForUser>();
-			serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>())
+			Mock<ISourceServiceFactoryForUser> serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
+			serviceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>())
 				.ReturnsAsync(_objectManagerMock.Object);
 
 			_imageFileRepositoryFake = new Mock<IImageFileRepository>();
@@ -58,7 +58,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			_sut = new FileStatisticsCalculator(
 				configuration.Object,
-				serviceFactory.Object,
+				serviceFactoryForUser.Object,
 				_imageFileRepositoryFake.Object,
 				_nativeFileRepositoryFake.Object,
 				_rdoManagerMock.Object,

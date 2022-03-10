@@ -12,6 +12,7 @@ using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Logging;
 using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.Options;
 using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
@@ -26,7 +27,7 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
         private readonly int _jobHistoryId = 3;
 
         private SyncContext _syncContext;
-        private Mock<ISyncServiceManager> _servicesManagerMock;
+        private Mock<ISyncServiceManager> _servicesManager;
         private SyncConfigurationBuilder _sut;
         private Mock<IArtifactGuidManager> _guidManagerMock;
         private Mock<IObjectManager> _objectManagerMock;
@@ -36,7 +37,7 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
         public void SetUp()
         {
             _syncContext = new SyncContext(_sourceWorkspaceId, _destinationWorkspaceId, _jobHistoryId);
-            _servicesManagerMock = new Mock<ISyncServiceManager>();
+            _servicesManager = new Mock<ISyncServiceManager>();
             _guidManagerMock = new Mock<IArtifactGuidManager>();
             _objectManagerMock = new Mock<IObjectManager>();
             _fieldManagerMock = new Mock<IFieldManager>();
@@ -81,17 +82,25 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
                     Object = new RelativityObject() {ArtifactID = 1}
                 });
 
-            _servicesManagerMock.Setup(x => x.CreateProxy<IArtifactGuidManager>(ExecutionIdentity.System))
+            _servicesManager.Setup(x => x.CreateProxy<IArtifactGuidManager>(It.IsAny<ExecutionIdentity>()))
                 .Returns(_guidManagerMock.Object);
 
-            _servicesManagerMock.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.System))
+            _servicesManager.Setup(x => x.CreateProxy<IObjectManager>(It.IsAny<ExecutionIdentity>()))
                 .Returns(_objectManagerMock.Object);
 
-            _servicesManagerMock.Setup(x => x.CreateProxy<IFieldManager>(ExecutionIdentity.System))
+            _servicesManager.Setup(x => x.CreateProxy<IFieldManager>(It.IsAny<ExecutionIdentity>()))
                 .Returns(_fieldManagerMock.Object);
 
+            _servicesManager.Setup(x => x.CreateProxy<IArtifactGuidManager>(It.IsAny<ExecutionIdentity>()))
+                .Returns(_guidManagerMock.Object);
 
-            _sut = new SyncConfigurationBuilder(_syncContext, _servicesManagerMock.Object);
+            _servicesManager.Setup(x => x.CreateProxy<IObjectManager>(It.IsAny<ExecutionIdentity>()))
+                .Returns(_objectManagerMock.Object);
+
+            _servicesManager.Setup(x => x.CreateProxy<IFieldManager>(It.IsAny<ExecutionIdentity>()))
+                .Returns(_fieldManagerMock.Object);
+
+            _sut = new SyncConfigurationBuilder(_syncContext, _servicesManager.Object, new EmptyLogger());
         }
 
         [Test]
@@ -289,7 +298,7 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
             RdoOptions rdoOptions = DefaultGuids.DefaultRdoOptions;
             
             // Act
-            IDocumentSyncConfigurationBuilder sut = new SyncConfigurationBuilder(_syncContext, _servicesManagerMock.Object)
+            IDocumentSyncConfigurationBuilder sut = new SyncConfigurationBuilder(_syncContext, _servicesManager.Object, new EmptyLogger())
                 .ConfigureRdos(rdoOptions)
                 .ConfigureDocumentSync(new DocumentSyncOptions(1, 1));
             
@@ -305,7 +314,7 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
             RdoOptions rdoOptions = DefaultGuids.DefaultRdoOptions;
             
             // Act
-            IDocumentSyncConfigurationBuilder sut = new SyncConfigurationBuilder(_syncContext, _servicesManagerMock.Object)
+            IDocumentSyncConfigurationBuilder sut = new SyncConfigurationBuilder(_syncContext, _servicesManager.Object, new EmptyLogger())
                 .ConfigureRdos(rdoOptions)
                 .ConfigureDocumentSync(new DocumentSyncOptions(1, 1))
                 .DisableItemLevelErrorLogging();

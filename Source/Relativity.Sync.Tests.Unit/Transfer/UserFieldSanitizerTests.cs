@@ -36,8 +36,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 					It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
 				.ReturnsAsync(new UserInfoQueryResultSet { ResultCount = 0, DataResults = Enumerable.Empty<UserInfo>() });
 
-			Mock<ISourceServiceFactoryForAdmin> serviceFactory = new Mock<ISourceServiceFactoryForAdmin>();
-			serviceFactory.Setup(x => x.CreateProxyAsync<IUserInfoManager>())
+			Mock<ISourceServiceFactoryForAdmin> serviceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
+			serviceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IUserInfoManager>())
 				.ReturnsAsync(_userInfoManagerMock.Object);
 
 			Mock<ISyncLog> syncLog = new Mock<ISyncLog>();
@@ -48,7 +48,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			_toggleProviderFake = new Mock<IToggleProvider>();
 
-			_sut = new UserFieldSanitizer(serviceFactory.Object, _memoryCacheStub.Object,
+			_sut = new UserFieldSanitizer(serviceFactoryForAdmin.Object, _memoryCacheStub.Object,
 				_eddsDbContextFake.Object, syncLog.Object, _toggleProviderFake.Object);
 		}
 

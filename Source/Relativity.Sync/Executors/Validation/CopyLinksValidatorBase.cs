@@ -14,16 +14,16 @@ namespace Relativity.Sync.Executors.Validation
 	{
 		private readonly IInstanceSettings _instanceSettings;
 		private readonly IUserContextConfiguration _userContext;
-		private readonly ISourceServiceFactoryForAdmin _serviceFactory;
+		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 		private readonly ISyncLog _logger;
 
 		protected abstract string ValidatorKind { get; }
 
-		protected CopyLinksValidatorBase(IInstanceSettings instanceSettings, IUserContextConfiguration userContext, ISourceServiceFactoryForAdmin serviceFactory, ISyncLog logger)
+		protected CopyLinksValidatorBase(IInstanceSettings instanceSettings, IUserContextConfiguration userContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger)
 		{
 			_instanceSettings = instanceSettings;
 			_userContext = userContext;
-			_serviceFactory = serviceFactory;
+			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_logger = logger;
 		}
 
@@ -72,7 +72,7 @@ namespace Relativity.Sync.Executors.Validation
 		private async Task<bool> ExecutingUserIsAdminAsync()
 		{
 			_logger.LogInformation("Check if User {userId} is Admin", _userContext.ExecutingUserId);
-			using (IGroupManager groupManager = await _serviceFactory.CreateProxyAsync<IGroupManager>().ConfigureAwait(false))
+			using (IGroupManager groupManager = await _serviceFactoryForAdmin.CreateProxyAsync<IGroupManager>().ConfigureAwait(false))
 			{
 				QueryRequest request = BuildAdminGroupsQuery();
 				QueryResultSlim result = await groupManager.QueryGroupsByUserAsync(request, 0, 1, _userContext.ExecutingUserId).ConfigureAwait(false);

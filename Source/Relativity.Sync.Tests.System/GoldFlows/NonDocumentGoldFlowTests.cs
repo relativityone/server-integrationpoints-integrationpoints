@@ -12,6 +12,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Logging;
 using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.Options;
 using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
@@ -44,62 +45,62 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 			_sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 			_destinationWorkspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
 
-            await Environment.InstallCustomHelperAppAsync(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
-            Task installLegalHoldToSourceWorkspaceTask = Environment.InstallLegalHoldToWorkspaceAsync(_sourceWorkspace.ArtifactID);
-            Task installLegalHoldToDestinationWorkspaceTask = Environment.InstallLegalHoldToWorkspaceAsync(_destinationWorkspace.ArtifactID);
-            await Task.WhenAll(installLegalHoldToSourceWorkspaceTask, installLegalHoldToDestinationWorkspaceTask).ConfigureAwait(false);
+			await Environment.InstallCustomHelperAppAsync(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
+			Task installLegalHoldToSourceWorkspaceTask = Environment.InstallLegalHoldToWorkspaceAsync(_sourceWorkspace.ArtifactID);
+			Task installLegalHoldToDestinationWorkspaceTask = Environment.InstallLegalHoldToWorkspaceAsync(_destinationWorkspace.ArtifactID);
+			await Task.WhenAll(installLegalHoldToSourceWorkspaceTask, installLegalHoldToDestinationWorkspaceTask).ConfigureAwait(false);
 
-            _sourceEntityArtifactTypeId = await GetArtifactTypeIdAsync(_sourceWorkspace.ArtifactID, EntityArtifactTypeName).ConfigureAwait(false);
-            _destinationEntityArtifactTypeId = await GetArtifactTypeIdAsync(_destinationWorkspace.ArtifactID, EntityArtifactTypeName).ConfigureAwait(false);
-            _viewArtifactId = await GetViewArtifactIdAsync(ViewName).ConfigureAwait(false);
+			_sourceEntityArtifactTypeId = await GetArtifactTypeIdAsync(_sourceWorkspace.ArtifactID, EntityArtifactTypeName).ConfigureAwait(false);
+			_destinationEntityArtifactTypeId = await GetArtifactTypeIdAsync(_destinationWorkspace.ArtifactID, EntityArtifactTypeName).ConfigureAwait(false);
+			_viewArtifactId = await GetViewArtifactIdAsync(ViewName).ConfigureAwait(false);
 
-            await PrepareSourceDataEntitiesAsync(_entitiesCount, _sourceEntityArtifactTypeId).ConfigureAwait(false);
-        }
+			await PrepareSourceDataEntitiesAsync(_entitiesCount, _sourceEntityArtifactTypeId).ConfigureAwait(false);
+		}
 
-        [IdentifiedTest("C721DA78-1D27-4463-B49C-9A9E9E65F700")]
-        public async Task SyncJob_Should_SyncEntities()
-        {
-            // Arrange
-            int jobHistoryId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _sourceWorkspace.ArtifactID, $"Sync Job {DateTime.Now:yyyy MMMM dd HH.mm.ss.fff}", CustomAppGuids.JobHistory.TypeGuid).ConfigureAwait(false);
+		[IdentifiedTest("C721DA78-1D27-4463-B49C-9A9E9E65F700")]
+		public async Task SyncJob_Should_SyncEntities()
+		{
+			// Arrange
+			int jobHistoryId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _sourceWorkspace.ArtifactID, $"Sync Job {DateTime.Now:yyyy MMMM dd HH.mm.ss.fff}", CustomAppGuids.JobHistory.TypeGuid).ConfigureAwait(false);
 
-            SyncConfigurationBuilder builder = new SyncConfigurationBuilder(
-                new SyncContext(_sourceWorkspace.ArtifactID, _destinationWorkspace.ArtifactID, jobHistoryId),
-                new ServicesManagerStub());
+			SyncConfigurationBuilder builder = new SyncConfigurationBuilder(
+				new SyncContext(_sourceWorkspace.ArtifactID, _destinationWorkspace.ArtifactID, jobHistoryId),
+				new ServicesManagerStub(), new EmptyLogger());
 
-            int syncConfigurationId = await builder
-                .ConfigureRdos(CustomAppGuids.Guids)
-                .ConfigureNonDocumentSync(new NonDocumentSyncOptions(_viewArtifactId, _sourceEntityArtifactTypeId, _destinationEntityArtifactTypeId))
-                .OverwriteMode(new OverwriteOptions(ImportOverwriteMode.AppendOverlay))
-                .WithFieldsMapping(mappingBuilder => mappingBuilder
-                    .WithIdentifier()
-                    .WithField("Email", "Email")
-                    .WithField("Manager", "Manager")
-                )
-                .SaveAsync()
-                .ConfigureAwait(false);
+			int syncConfigurationId = await builder
+				.ConfigureRdos(CustomAppGuids.Guids)
+				.ConfigureNonDocumentSync(new NonDocumentSyncOptions(_viewArtifactId, _sourceEntityArtifactTypeId, _destinationEntityArtifactTypeId))
+				.OverwriteMode(new OverwriteOptions(ImportOverwriteMode.AppendOverlay))
+				.WithFieldsMapping(mappingBuilder => mappingBuilder
+					.WithIdentifier()
+					.WithField("Email", "Email")
+					.WithField("Manager", "Manager")
+				)
+				.SaveAsync()
+				.ConfigureAwait(false);
 
 
-            ContainerBuilder containerBuilder = new ContainerBuilder();
-            containerBuilder.RegisterInstance(new SyncDataAndUserConfiguration(User.ArtifactID)).As<IUserContextConfiguration>();
+			ContainerBuilder containerBuilder = new ContainerBuilder();
+			containerBuilder.RegisterInstance(new SyncDataAndUserConfiguration(User.ArtifactID)).As<IUserContextConfiguration>();
 
-            SyncJobParameters syncJobParameters = new SyncJobParameters(syncConfigurationId, _sourceWorkspace.ArtifactID, Guid.NewGuid());
+			SyncJobParameters syncJobParameters = new SyncJobParameters(syncConfigurationId, _sourceWorkspace.ArtifactID, Guid.NewGuid());
 
-            SyncRunner syncRunner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl, new NullAPM(), Logger);
+			SyncRunner syncRunner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl, new NullAPM(), Logger);
 
-            // Act
-            SyncJobState result = await syncRunner.RunAsync(syncJobParameters, User.ArtifactID).ConfigureAwait(false);
+			// Act
+			SyncJobState result = await syncRunner.RunAsync(syncJobParameters, User.ArtifactID).ConfigureAwait(false);
 
-            // Assert
-            result.Status.Should().Be(SyncJobStatus.Completed);
+			// Assert
+			result.Status.Should().Be(SyncJobStatus.Completed);
 
-            await AssertEntityCountInDestinationAsync(_destinationWorkspace.ArtifactID, _destinationEntityArtifactTypeId,
-                expectedEntityCount: _entitiesCount + 1 // +1 for manager
-                       ).ConfigureAwait(false);
-            List<RelativityObjectSlim> entitiesFromDesintion = await GetEntitiesFromDestinationAsync(_destinationWorkspace.ArtifactID, _destinationEntityArtifactTypeId, _entitiesCount).ConfigureAwait(false);
+			await AssertEntityCountInDestinationAsync(_destinationWorkspace.ArtifactID, _destinationEntityArtifactTypeId,
+				expectedEntityCount: _entitiesCount + 1 // +1 for manager
+					   ).ConfigureAwait(false);
+			List<RelativityObjectSlim> entitiesFromDesintion = await GetEntitiesFromDestinationAsync(_destinationWorkspace.ArtifactID, _destinationEntityArtifactTypeId, _entitiesCount).ConfigureAwait(false);
 
-            AssertManagerIsLinked(_entitiesCount, entitiesFromDesintion);
-            AssertEmailWasTranfered(entitiesFromDesintion);
-        }
+			AssertManagerIsLinked(_entitiesCount, entitiesFromDesintion);
+			AssertEmailWasTranfered(entitiesFromDesintion);
+		}
 
         private void AssertEmailWasTranfered(List<RelativityObjectSlim> entities)
         {
@@ -292,6 +293,5 @@ namespace Relativity.Sync.Tests.System.GoldFlows
                 return queryResult.Objects[0].ArtifactID;
             }
         }
-
     }
 }

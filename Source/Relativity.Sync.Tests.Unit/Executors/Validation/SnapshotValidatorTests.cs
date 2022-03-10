@@ -6,10 +6,10 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.ArtifactGuid;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Executors.Validation;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Unit.Executors.Validation
@@ -22,20 +22,20 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
         private Mock<IObjectManager> _objectManagerMock;
         private ConfigurationStub _configuration;
         private SnapshotValidator _sut;
-        private Mock<ISyncServiceManager> _syncServiceManagerMock;
+        private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdminMock;
 
         [SetUp]
         public void SetUp()
         {
             _objectManagerMock = new Mock<IObjectManager>();
-            _syncServiceManagerMock = new Mock<ISyncServiceManager>();
+            _serviceFactoryForAdminMock = new Mock<ISourceServiceFactoryForAdmin>();
 
-            _syncServiceManagerMock.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.System))
-                .Returns(_objectManagerMock.Object);
+            _serviceFactoryForAdminMock.Setup(x => x.CreateProxyAsync<IObjectManager>())
+                .Returns(Task.FromResult(_objectManagerMock.Object));
             
             _configuration = new ConfigurationStub();
 
-            _sut = new SnapshotValidator(_configuration, _syncServiceManagerMock.Object);
+            _sut = new SnapshotValidator(_configuration, _serviceFactoryForAdminMock.Object);
         }
         
         [TestCaseSource(nameof(SnapshotCaseSource))]

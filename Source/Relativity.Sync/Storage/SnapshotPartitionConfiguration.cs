@@ -1,27 +1,27 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Storage
 {
 	internal class SnapshotPartitionConfiguration : ISnapshotPartitionConfiguration
 	{
+		private readonly IInstanceSettings _instanceSettings;
 		private readonly ISyncLog _syncLog;
 
 		protected readonly IConfiguration Cache;
 
-		public SnapshotPartitionConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, SyncJobExecutionConfiguration configuration, ISyncLog syncLog)
+        public SnapshotPartitionConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, IInstanceSettings instanceSettings, ISyncLog syncLog)
 		{
 			Cache = cache;
-			_syncLog = syncLog;
+            _instanceSettings = instanceSettings;
+            _syncLog = syncLog;
 
 			SourceWorkspaceArtifactId = syncJobParameters.WorkspaceId;
 			SyncConfigurationArtifactId = syncJobParameters.SyncConfigurationArtifactId;
-			BatchSize = configuration.BatchSize;
 		}
 
 		public int TotalRecordsCount => Cache.GetFieldValue(x => x.SnapshotRecordsCount);
-
-		public int BatchSize { get; }
 
 		public virtual Guid ExportRunId
 		{
@@ -40,5 +40,10 @@ namespace Relativity.Sync.Storage
 		public int SourceWorkspaceArtifactId { get; }
 
 		public int SyncConfigurationArtifactId { get; }
-	}
+
+        public async Task<int> GetSyncBatchSizeAsync()
+        {
+            return await _instanceSettings.GetSyncBatchSizeAsync().ConfigureAwait(false);
+        }
+    }
 }
