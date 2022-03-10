@@ -1,0 +1,165 @@
+﻿<BuildTools>
+  <BuildHelper>
+    <Projects>
+      <Build />
+      <Ignore />
+    </Projects>
+    <Rules>
+      <Rule name="CommonAssemblyInfo">
+        <Extensions>
+          <Extension>.vbproj</Extension>
+          <Extension>.csproj</Extension>
+        </Extensions>
+        <XPath>Compile[contains(@Include, '..\Version\AssemblyInfo.')]</XPath>
+        <RuleType>Exists</RuleType>
+        <ErrorMessage>Not using the Common AssemblyInfo file. Please include it in the project.</ErrorMessage>
+      </Rule>
+      <Rule name="OptionExplicitOn">
+        <Extensions>
+          <Extension>.vbproj</Extension>
+        </Extensions>
+        <XPath>OptionExplicit</XPath>
+        <RuleType>Equals</RuleType>
+        <Value>On</Value>
+        <ErrorMessage>Project has Option explicit turned off. Please turn this option on.</ErrorMessage>
+      </Rule>
+      <Rule name="OptionStrictOn">
+        <Extensions>
+          <Extension>.vbproj</Extension>
+        </Extensions>
+        <XPath>OptionStrict</XPath>
+        <RuleType>Equals</RuleType>
+        <Value>On</Value>
+        <ErrorMessage>Project has Option strict turned off. Please turn this option on.</ErrorMessage>
+      </Rule>
+      <Rule name="OptionInfertOff">
+        <Extensions>
+          <Extension>.vbproj</Extension>
+        </Extensions>
+        <XPath>OptionInfer</XPath>
+        <RuleType>Equals</RuleType>
+        <Value>Off</Value>
+        <ErrorMessage>Project has Option infer turned on. Please turn this option off.</ErrorMessage>
+      </Rule>
+      <Rule name="WarningLevel4">
+        <Extensions>
+          <Extension>.csproj</Extension>
+        </Extensions>
+        <XPath>WarningLevel</XPath>
+        <RuleType>Equals</RuleType>
+        <Value>4</Value>
+        <ErrorMessage>Project warning level is not set to 4. Please set warning level to 4.</ErrorMessage>
+      </Rule>
+      <Rule name="TreatWarningsAsErrors">
+        <Extensions>
+          <Extension>.vbproj</Extension>
+          <Extension>.csproj</Extension>
+        </Extensions>
+        <XPath>TreatWarningsAsErrors</XPath>
+        <RuleType>Equals</RuleType>
+        <Value>true</Value>
+        <ErrorMessage>Project does not treat all warnings as errors. Please turn this option on.</ErrorMessage>
+      </Rule>
+    </Rules>
+  </BuildHelper>
+  <TestRunner>
+    <DLLs>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Agent.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Core.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Data.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.DocumentTransferProvider.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.EventHandlers.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Synchronizers.RDO.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Web.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.ScheduleQueue.Core.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Core.Contracts.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.FtpProvider.Helpers.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.FtpProvider.Parser.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.FtpProvider.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\Relativity.IntegrationPoints.Services.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Management.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.ImportProvider.Parser.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.LDAPProvider.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Domain.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Email.Tests.dll</DLL>
+      <DLL type="x64">lib\UnitTests\kCura.IntegrationPoints.Common.Tests.dll</DLL>
+    </DLLs>
+    <WhiteList>
+      <allow>kCura.IntegrationPoints.Agent.Tests.Tasks.SyncCustodianManagerWorkerTests.Execute_GoldFlow</allow>
+      <allow>Relativity.IntegrationPoints.Services.Tests.IntegrationPointRepositoryLoggingTests.ItShouldLogErrorFromCreateIntegrationPointAsync</allow>
+    </WhiteList>
+  </TestRunner>
+  <RAPBuilder>
+    <Applications>
+      <Application name="kCura.IntegrationPoints" generatenuspec="true">
+        <Destination>Applications\RelativityIntegrationPoints.Auto.rap</Destination>
+        <ApplicationSchema>ApplicationsXML\application.xml</ApplicationSchema>
+        <Assemblies>
+          <Assembly>lib\UnitTests\Castle.Windsor.dll</Assembly>
+          <Assembly>lib\UnitTests\Castle.Core.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.Apps.Common.Config.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.Apps.Common.Data.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.Apps.Common.Utils.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Agent.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Common.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Config.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Contracts.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Core.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Core.Contracts.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Data.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.DocumentTransferProvider.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Domain.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Email.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.EventHandlers.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Management.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.FtpProvider.Parser.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.FtpProvider.Helpers.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.FtpProvider.Connection.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.FtpProvider.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.FilesDestinationProvider.Core.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.ImportProvider.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.ImportProvider.Parser.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.LDAPProvider.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Services.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.Synchronizers.RDO.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.IntegrationPoints.RelativitySync.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.Sync.dll</Assembly>
+          <Assembly>lib\UnitTests\Autofac.dll</Assembly>
+          <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\netstandard.dll</Assembly>
+          <Assembly>packages\sync\Banzai\lib\netstandard2.0\Banzai.dll</Assembly>
+          <Assembly>packages\sync\Banzai.Autofac\lib\netstandard2.0\Banzai.Autofac.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.LongPath.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.Relativity.Client.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.DataExchange.Client.SDK.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.DataTransfer.MessageService.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.Telemetry.Services.Interface.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.Transfer.Client.Aspera.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.Transfer.Client.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.Transfer.Client.Core.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.Transfer.Client.FileShare.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.Transfer.Client.Http.dll</Assembly>
+          <Assembly>lib\UnitTests\FaspManager.dll</Assembly>
+          <Assembly>lib\UnitTests\Polly.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.ScheduleQueue.AgentBase.dll</Assembly>
+          <Assembly>lib\UnitTests\kCura.ScheduleQueue.Core.dll</Assembly>
+          <Assembly>lib\UnitTests\Newtonsoft.Json.dll</Assembly>
+          <Assembly>lib\UnitTests\Renci.SshNet.dll</Assembly>
+          <Assembly>lib\UnitTests\SystemInterface.dll</Assembly>
+          <Assembly>lib\UnitTests\ZetaLongPaths.dll</Assembly>
+          <Assembly>lib\UnitTests\Relativity.Productions.Services.Interfaces.dll</Assembly>
+          <Assembly>lib\UnitTests\LanguageExt.Core.dll</Assembly>
+          <Assembly>lib\UnitTests\System.ValueTuple.dll</Assembly>
+          <Assembly>lib\UnitTests\itextsharp.dll</Assembly>
+          <Assembly>lib\UnitTests\System.Reactive.dll</Assembly>
+        </Assemblies>
+        <ResourceFiles />
+        <CustomPages>
+          <CustomPage guid="c2c93191-7b15-4a9b-aa56-6a8c2dac5494">Source\CustomPages\IntegrationPoints</CustomPage>
+        </CustomPages>
+      </Application>
+    </Applications>
+  </RAPBuilder>
+</BuildTools>

@@ -20,7 +20,7 @@ task version {
     }
 
 
-    $NewInfoVersion = 'AssemblyInformationalVersionAttribute("' + $version + '-' + $branch + '-' + $buildtypeversioninfo + '")'
+    $NewInfoVersion = 'AssemblyInformationalVersion("' + $version + '-' + $branch + '-' + $buildtypeversioninfo + '")'
     $NewCopyright = 'AssemblyCopyright("Copyright (c) ' + [System.DateTime]::Now.Year + ', ' + $company + '")'
     $NewTitle = 'AssemblyTitle("' + $product + '")'
     $NewDescription = 'AssemblyDescription("' + $product_description + '")'
@@ -34,7 +34,7 @@ task version {
        $tmp = Get-Content $o.FullName | 
        %{$_ -replace 'AssemblyVersion\(".*"\)', $NewVersion} |
        %{$_ -replace 'AssemblyFileVersion\(".*"\)', $NewFileVersion} |
-       %{$_ -replace 'AssemblyInformationalVersionAttribute\(".*"\)', $NewInfoVersion} |
+       %{$_ -replace 'AssemblyInformationalVersion\(".*"\)', $NewInfoVersion} |
        %{$_ -replace 'AssemblyCopyright\(".*"\)', $NewCopyright} |
        %{$_ -replace 'AssemblyTitle\(".*"\)', $NewTitle} |
        %{$_ -replace 'AssemblyDescription\(".*"\)', $NewDescription} |
