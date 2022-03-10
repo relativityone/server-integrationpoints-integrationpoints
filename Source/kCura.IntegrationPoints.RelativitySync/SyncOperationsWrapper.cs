@@ -43,13 +43,13 @@ namespace kCura.IntegrationPoints.RelativitySync
 		public async Task PrepareSyncConfigurationForResumeAsync(int workspaceId, int syncConfigurationId)
 		{
 			await _syncServiceManager.PrepareSyncConfigurationForResumeAsync(
-					workspaceId, syncConfigurationId)
+					workspaceId, syncConfigurationId, CreateSyncLog())
 				.ConfigureAwait(false);
 		}
 
 		public ISyncConfigurationBuilder GetSyncConfigurationBuilder(ISyncContext context)
 		{
-			return new SyncConfigurationBuilder(context, _syncServiceManager);
+            return new SyncConfigurationBuilder(context, _syncServiceManager, CreateSyncLog());
 		}
 	}
 }
