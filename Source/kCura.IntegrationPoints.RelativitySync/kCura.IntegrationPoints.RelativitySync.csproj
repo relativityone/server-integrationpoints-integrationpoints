@@ -46,6 +46,60 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="oi\docs\fileids_values_only_sorted.txt">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\docs\fileids_values_strs.txt">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\cmmap000.bin">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\oilink.exe">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\oilink.jar">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccca-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccch-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccda-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccex-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfa-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfi-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfmt-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfnt-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccfut-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccind-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\scclo-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\sccut-R1.dll">
+      <Paket>True</Paket>
+    </Content>
+    <Content Include="oi\unmanaged\wvcore-R1.dll">
+      <Paket>True</Paket>
+    </Content>
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
@@ -168,17 +222,6 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
-        <Reference Include="oi">
-          <HintPath>..\..\packages\kCura.OutsideIn.FI.Win32\lib\net40\oi.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
         <Reference Include="kCura.Relativity.Client">
           <HintPath>..\..\packages\kCura.Relativity.Client\lib\net462\kCura.Relativity.Client.dll</HintPath>
           <Private>True</Private>
@@ -267,7 +310,18 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Import Project="..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets')" Label="Paket" />
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="oi">
+          <HintPath>..\..\packages\sync\kCura.OutsideIn.FI.Win32\lib\net40\oi.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Import Project="..\..\packages\sync\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets" Condition="Exists('..\..\packages\sync\kCura.OutsideIn.FI.Win32\build\kCura.OutsideIn.FI.Win32.targets')" Label="Paket" />
   <ItemGroup>
     <Analyzer Include="..\..\packages\sync\Microsoft.CodeAnalysis.VersionCheckAnalyzer\analyzers\dotnet\Microsoft.CodeAnalysis.VersionCheckAnalyzer.dll">
       <Paket>True</Paket>
@@ -316,17 +370,6 @@
       <ItemGroup>
         <Reference Include="Relativity">
           <HintPath>..\..\packages\sync\Relativity\lib\net462\Relativity.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
-      <ItemGroup>
-        <Reference Include="Relativity.AutomatedWorkflows.Services.Interfaces">
-          <HintPath>..\..\packages\sync\Relativity.AutomatedWorkflows.Services.Interfaces\lib\net462\Relativity.AutomatedWorkflows.Services.Interfaces.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -532,6 +575,11 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.DataTransfer.Nodes">
+          <HintPath>..\..\packages\sync\relativity.transfer.client\lib\net462\Relativity.DataTransfer.Nodes.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="Relativity.Transfer.Client">
           <HintPath>..\..\packages\sync\relativity.transfer.client\lib\net462\Relativity.Transfer.Client.dll</HintPath>
           <Private>True</Private>
