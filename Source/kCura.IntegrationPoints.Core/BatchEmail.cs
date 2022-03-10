@@ -73,14 +73,14 @@ namespace kCura.IntegrationPoints.Core
 		{
 			TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
 			ChoiceRef jobStatus = _jobStatusUpdater.GenerateStatus(taskParameters.BatchInstance);
-
-			EmailJobParameters jobParameters = GenerateEmailJobParameters(jobStatus, emails);
-
+		
+			EmailJobParameters jobParameters = GenerateEmailJobParameters(jobStatus, emails);			
 			TaskParameters emailTaskParameters = new TaskParameters
 			{
 				BatchInstance = taskParameters.BatchInstance,
 				BatchParameters = jobParameters
 			};
+			JobService.UpdateStopState(new List<long> { job.JobId }, StopState.None);
 			JobManager.CreateJob(job, emailTaskParameters, TaskType.SendEmailWorker);
 		}
 

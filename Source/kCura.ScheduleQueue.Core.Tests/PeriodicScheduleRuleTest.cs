@@ -899,9 +899,7 @@ namespace kCura.ScheduleQueue.Core.Tests
                 Assert.IsNotNull(nextRunTime);
                 Assert.AreEqual(DateTime.Parse(expectedRunUtcTime), nextRunTime);
             }
-        }
-
-        //10/0*1*/2022 8:15 PM(UTC+10:00) Canberra, Melbourne.
+        }        
 
         [TestCase("Central European Standard Time", "1:20 AM", "02/25/2017", "09/03/2017", "09/05/2017 11:20 PM")]
         [TestCase("Central European Standard Time", "1:20 AM", "02/25/2017", "10/28/2017", "11/01/2017 12:20 AM")]  //DST: CEST → CET change 10/30/2016

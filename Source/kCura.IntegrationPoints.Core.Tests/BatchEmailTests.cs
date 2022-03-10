@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
@@ -158,6 +160,31 @@ namespace kCura.IntegrationPoints.Core.Tests
 				parentJob,
 				It.Is<TaskParameters>(y => y.BatchInstance == batchInstanceGuid), TaskType.SendEmailWorker)
 			);
+		}
+
+		[Test]
+		public void ParentJobShouldHaveStopStateResetToNoneBeforeEmailJobCreation()
+		{
+			//arrange
+			Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint();
+			integrationPoint.EmailNotificationRecipients = "xyz@email.com";
+			_integrationPointRepositoryMock
+				.Setup(x => x.ReadWithFieldMappingAsync(It.IsAny<int>()))
+				.ReturnsAsync(integrationPoint);
+
+            Guid batchInstanceGuid = Guid.NewGuid();
+            string jobDetails = $"{{\"BatchInstance\":\"{batchInstanceGuid.ToString()}\"}}";
+            _jobStatusUpdaterMock.Setup(x => x.GenerateStatus(It.IsAny<Guid>()))
+				.Returns(JobStatusChoices.JobHistoryCompletedWithErrors);
+			Job job = GetTestJob();
+			job.JobDetails = jobDetails;	
+
+			//act
+			_sut.OnJobComplete(job);
+
+			//assert	
+			_jobServiceMock.Verify(x => x.UpdateStopState(It.Is<IList<long>>(j => j.Contains(job.JobId)),
+				It.Is<StopState>(s => s == StopState.None)), Times.Once);			
 		}
 
 		[TestCaseSource(nameof(_generateEmailSource))]
