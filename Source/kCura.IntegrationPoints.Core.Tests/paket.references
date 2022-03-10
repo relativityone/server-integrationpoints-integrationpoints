@@ -16,6 +16,7 @@ Relativity.OAuth2Client.Interfaces
 Relativity.Toggles
 SystemWrapper.Interfaces
 iTextSharp
+Relativity.Transfer.Client
 
 
 

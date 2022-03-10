@@ -47,6 +47,7 @@ nuget Relativity.DataMigration.MigrateFileshareAccess 0.2.0
 // Import API packages
 nuget Relativity.DataExchange.Client.SDK 1.16.22
 nuget Relativity.DataTransfer.Legacy.SDK 0.2.0
+nuget Relativity.Transfer.Client 7.4.7
 
 //Relativity transient packages
 nuget kCura.OutsideIn.FI.Win32 2020.7.0 content: none 		//Relativity.DataExchange.Client.SDK
