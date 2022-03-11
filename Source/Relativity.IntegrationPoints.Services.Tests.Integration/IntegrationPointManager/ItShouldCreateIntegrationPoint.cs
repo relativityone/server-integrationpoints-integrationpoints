@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -56,6 +56,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Integration.IntegrationPoi
 
 			var destinationConfiguration = new
 			{
+				CaseArtifactId = SourceWorkspaceArtifactID,
 				ArtifactTypeId = (int) ArtifactType.Document,
 				AppendOriginalFileName = false,
 				DataFileEncodingType = "UTF-16",
