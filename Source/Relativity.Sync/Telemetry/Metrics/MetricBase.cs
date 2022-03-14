@@ -28,11 +28,7 @@ namespace Relativity.Sync.Telemetry.Metrics
 
 		public bool IsRetry { get; set; }
 
-        public int RdoArtifactTypeId { get; set; }
-
-        public int DestinationRdoArtifactTypeId { get; set; }
-
-		protected MetricBase()
+        protected MetricBase()
 		{
 			Name = GetType().Name;
 		}

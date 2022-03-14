@@ -32,11 +32,9 @@ namespace Relativity.Sync.Telemetry
 			metric.DataDestinationType = _metricsConfiguration.DataDestinationType.GetDescription();
 			metric.IsRetry = _metricsConfiguration.JobHistoryToRetryId.HasValue;
             metric.SyncVersion = _metricsConfiguration.SyncVersion;
-            metric.RdoArtifactTypeId = _metricsConfiguration.RdoArtifactTypeId;
-            metric.DestinationRdoArtifactTypeId = _metricsConfiguration.DestinationRdoArtifactTypeId;
 
-            if (metric.RdoArtifactTypeId != (int)ArtifactType.Document &&
-                metric.DestinationRdoArtifactTypeId != (int)ArtifactType.Document)
+            if (_metricsConfiguration.RdoArtifactTypeId != (int)ArtifactType.Document &&
+                _metricsConfiguration.DestinationRdoArtifactTypeId != (int)ArtifactType.Document)
             {
                 metric.FlowName = TelemetryConstants.MetricIdentifiers.APM_FLOW_NAME_NON_DOCUMENT_OBJECTS;
             }

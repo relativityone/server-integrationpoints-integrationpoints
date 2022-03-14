@@ -22,11 +22,7 @@ namespace Relativity.Sync.Telemetry
 
 		bool IsRetry { get; set; }
 
-        int RdoArtifactTypeId { get; set; }
-
-        int DestinationRdoArtifactTypeId { get; set; }
-
-		Dictionary<string, object> GetApmMetrics();
+        Dictionary<string, object> GetApmMetrics();
 
 		IEnumerable<SumMetric> GetSumMetrics();
 	}

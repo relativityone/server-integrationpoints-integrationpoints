@@ -135,8 +135,6 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			metric.DataDestinationType.Should().Be(dataDestinationType.GetDescription());
 			metric.IsRetry.Should().Be(true);
 			metric.FlowName.Should().Be("Images");
-			metric.RdoArtifactTypeId.Should().Be(rdoArtifactTypeId);
-			metric.DestinationRdoArtifactTypeId.Should().Be(destinationRdoArtifactTypeId);
 		}
 
 		[TestCase(null, false)]
