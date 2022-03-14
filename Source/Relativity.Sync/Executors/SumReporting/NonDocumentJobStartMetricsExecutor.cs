@@ -73,17 +73,22 @@ namespace Relativity.Sync.Executors.SumReporting
 
         private async Task<string> GetParentApplicationNameAsync(INonDocumentJobStartMetricsConfiguration configuration)
         {
+			string parentApplicationName = _NOT_ASSIGNED_APPLICATION_NAME;
             using (IObjectTypeManager objectTypeManager = await _serviceFactory.CreateProxyAsync<IObjectTypeManager>())
             {
-                ObjectTypeResponse objectTypeResponse =
-                    await objectTypeManager.ReadAsync(configuration.SourceWorkspaceArtifactId,
-                        configuration.RdoArtifactTypeId);
-                if (objectTypeResponse.RelativityApplications.ViewableItems.Any())
+				try
                 {
-                    return objectTypeResponse.RelativityApplications.ViewableItems.First().Name;
+                    ObjectTypeResponse objectTypeResponse =
+                        await objectTypeManager.ReadAsync(configuration.SourceWorkspaceArtifactId,
+                            configuration.RdoArtifactTypeId);
+                    parentApplicationName = objectTypeResponse.RelativityApplications.ViewableItems.First().Name;
+                }
+                catch
+                {
+					_logger.LogWarning("Parent application name not found for artifactTypeId - {artifactTypeId}", configuration.RdoArtifactTypeId);
                 }
 
-                return _NOT_ASSIGNED_APPLICATION_NAME;
+                return parentApplicationName;
             }
 
 		}

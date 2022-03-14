@@ -11,7 +11,10 @@
 		[Metric(MetricType.PointInTimeLong, TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED)]
 		public long? TotalMappedFields { get; set; }
 
+        [Metric(MetricType.PointInTimeLong, TelemetryConstants.MetricIdentifiers.DATA_FIELDS_LINKS_MAPPED)]
+        public long? TotalLinksMappedFields { get; set; }
+
         [Metric(MetricType.PointInTimeLong, TelemetryConstants.MetricIdentifiers.DATA_BYTES_METADATA_TRANSFERRED)]
         public long? BytesMetadataTransferred { get; set; }
-	}
+    }
 }

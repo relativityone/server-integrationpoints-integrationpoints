@@ -16,6 +16,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			TotalRecordsFailed = 33,
 			TotalRecordsRequested = 44,
 			BytesTransferred = 55,
+			TotalLinksMappedFields = 66,
 			JobEndStatus = "Completed with Errors",
 			BytesMetadataTransferred = 77,
             TotalMappedFields = 88,
@@ -52,7 +53,9 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.BytesMetadataTransferred.Value));
 			metricsManagerMock.Verify(x => x.LogPointInTimeLongAsync(TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED,
 				_EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.TotalMappedFields.Value));
-            metricsManagerMock.Verify(x => x.LogPointInTimeLongAsync(TelemetryConstants.MetricIdentifiers.DATA_FIELDS_TOTAL_REQUESTED,
+            metricsManagerMock.Verify(x => x.LogPointInTimeLongAsync(TelemetryConstants.MetricIdentifiers.DATA_FIELDS_LINKS_MAPPED,
+                _EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.TotalLinksMappedFields.Value));
+			metricsManagerMock.Verify(x => x.LogPointInTimeLongAsync(TelemetryConstants.MetricIdentifiers.DATA_FIELDS_TOTAL_REQUESTED,
                 _EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.TotalAvailableFields.Value));
 
 			metricsManagerMock.Verify(x => x.Dispose());
@@ -70,6 +73,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 				d["JobEndStatus"].Equals(_sut.JobEndStatus) &&
 				d["BytesMetadataTransferred"].Equals(_sut.BytesMetadataTransferred) &&
 				d["TotalAvailableFields"].Equals(_sut.TotalAvailableFields) &&
+				d["TotalLinksMappedFields"].Equals(_sut.TotalLinksMappedFields) &&
 				d["TotalMappedFields"].Equals(_sut.TotalMappedFields))));
 		}
 	}

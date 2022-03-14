@@ -53,9 +53,11 @@ namespace Relativity.Sync.Executors.SumReporting
 
 		private async Task WriteFieldsStatisticsAsync(NonDocumentJobEndMetric metric)
 		{
-            IReadOnlyList<FieldInfoDto> fields = await _fieldManager.GetMappedFieldsNonDocumentWithoutLinksAsync(CancellationToken.None).ConfigureAwait(false);
-            metric.TotalMappedFields = fields.Count;
             metric.TotalAvailableFields = _fieldManager.GetAllAvailableFieldsToMap().Count;
+			IReadOnlyList<FieldInfoDto> totalMappedFields = await _fieldManager.GetMappedFieldsNonDocumentWithoutLinksAsync(CancellationToken.None).ConfigureAwait(false);
+            metric.TotalMappedFields = totalMappedFields.Count;
+            IReadOnlyList<FieldInfoDto> totalLinksMappedFields = await _fieldManager.GetMappedFieldsNonDocumentForLinksAsync(CancellationToken.None).ConfigureAwait(false);
+            metric.TotalLinksMappedFields = totalLinksMappedFields.Count;
         }
 
 		private void WriteBytesStatistics(NonDocumentJobEndMetric metric)

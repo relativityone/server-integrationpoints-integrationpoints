@@ -25,7 +25,9 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		{
 			base.SetUp();
 
-            FieldManagerFake.Setup(x => x.GetMappedFieldsNonDocumentWithoutLinksAsync(It.IsAny<CancellationToken>()))
+            FieldManagerFake.Setup(x => x.GetMappedFieldsNonDocumentForLinksAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<FieldInfoDto>().AsReadOnly());
+			FieldManagerFake.Setup(x => x.GetMappedFieldsNonDocumentWithoutLinksAsync(It.IsAny<CancellationToken>()))
 				.ReturnsAsync(new List<FieldInfoDto>().AsReadOnly());
             FieldManagerFake.Setup(x => x.GetAllAvailableFieldsToMap())
                 .Returns(new List<FieldInfoDto>());
@@ -52,6 +54,10 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			batch.SetupGet(x => x.TotalDocumentsCount).Returns(totalItemsCountPerBatch);
 			var testBatches = new List<IBatch> { batch.Object, batch.Object };
 			BatchRepositoryFake.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>())).ReturnsAsync(testBatches);
+
+            const int testNumberOfLinkedFields = 8;
+            IEnumerable<FieldInfoDto> linkedFields = Enumerable.Repeat(FieldInfoDto.SupportedByViewerField(), testNumberOfLinkedFields);
+            FieldManagerFake.Setup(x => x.GetMappedFieldsNonDocumentForLinksAsync(It.Is<CancellationToken>(c => c == CancellationToken.None))).ReturnsAsync(linkedFields.ToList);
 
 			const int testNumberOfFields = 10;
 			IEnumerable<FieldInfoDto> fields = Enumerable.Repeat(FieldInfoDto.SupportedByViewerField(), testNumberOfFields);
@@ -88,6 +94,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 				m.TotalRecordsTagged == taggedItemsPerBatch * testBatches.Count &&
 				m.JobEndStatus == expectedStatusDescription &&
 				m.TotalMappedFields == testNumberOfFields &&
+				m.TotalLinksMappedFields == testNumberOfLinkedFields &&
 				m.TotalAvailableFields == testNumberOfAvailableFields &&
 				m.BytesMetadataTransferred == metadataSize &&
 				m.BytesTransferred == jobSize)), Times.Once);
