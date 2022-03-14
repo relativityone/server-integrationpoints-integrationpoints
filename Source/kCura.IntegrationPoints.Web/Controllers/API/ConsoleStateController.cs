@@ -1,6 +1,10 @@
-﻿using kCura.IntegrationPoints.Core.Helpers;
+﻿using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Helpers;
+using kCura.IntegrationPoints.Core.Helpers.Implementations;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
+using Relativity.API;
 using System.Web.Http;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -9,30 +13,19 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
     {
         private readonly IButtonStateBuilder _buttonStateBuilder;
 
-        public ConsoleStateController(IButtonStateBuilder buttonStateBuilder)
+        public ConsoleStateController(ICPHelper helper,
+            IRepositoryFactory respositoryFactory,
+            IManagerFactory managerFactory)
         {
-            _buttonStateBuilder = buttonStateBuilder;
+            _buttonStateBuilder = ButtonStateBuilder.CreateButtonStateBuilder(helper, respositoryFactory, managerFactory);
         }
 
         [HttpGet]
         [LogApiExceptionFilter(Message = "Unable to get ConsoleState")]
         public IHttpActionResult GetConsoleState(int workspaceId, int integrationPointArtifactId)
         {
-            //ButtonStateDTO buttonState = _buttonStateBuilder
-            //    .CreateButtonState(workspaceId, integrationPointArtifactId);
-
-            var buttonState = new ButtonStateDTO
-            {
-                DownloadErrorFileLinkEnabled = true,
-                DownloadErrorFileLinkVisible = true,
-                RetryErrorsButtonEnabled = true,
-                RetryErrorsButtonVisible = true,
-                RunButtonEnabled = true,
-                SaveAsProfileButtonVisible = true,
-                StopButtonEnabled = true,
-                ViewErrorsLinkEnabled = true,
-                ViewErrorsLinkVisible = true
-            };
+            ButtonStateDTO buttonState = _buttonStateBuilder
+                .CreateButtonState(workspaceId, integrationPointArtifactId);
 
             return Ok(buttonState);
         }
