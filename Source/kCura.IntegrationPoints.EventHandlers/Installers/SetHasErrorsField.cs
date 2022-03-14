@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 		{
 		}
 
-		internal SetHasErrorsField(IIntegrationPointService integrationPointService, IJobHistoryService jobHistoryService, ICaseServiceContext caseServiceContext)
+		public SetHasErrorsField(IIntegrationPointService integrationPointService, IJobHistoryService jobHistoryService, ICaseServiceContext caseServiceContext)
 		{
 			_integrationPointService = integrationPointService;
 			_jobHistoryService = jobHistoryService;
@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			ExecuteInstanced();
 		}
 
-		internal void ExecuteInstanced()
+		public void ExecuteInstanced()
 		{
 
 			IList<Data.IntegrationPoint> integrationPoints = GetIntegrationPoints();
@@ -158,7 +158,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			return new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(workspaceID);
 		}
 
-		internal void UpdateIntegrationPointHasErrorsField(IntegrationPoint integrationPoint)
+		public void UpdateIntegrationPointHasErrorsField(IntegrationPoint integrationPoint)
 		{
 			integrationPoint.HasErrors = false;
 
@@ -180,7 +180,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			_integrationPointService.UpdateIntegrationPoint(integrationPoint);
 		}
 
-		internal IList<Data.IntegrationPoint> GetIntegrationPoints()
+		public IList<Data.IntegrationPoint> GetIntegrationPoints()
 		{
 			IList<Data.IntegrationPoint> integrationPoints = _integrationPointService.GetAllRDOsWithAllFields();
 			return integrationPoints;

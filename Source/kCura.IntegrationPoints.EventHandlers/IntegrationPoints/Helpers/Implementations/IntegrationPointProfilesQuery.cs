@@ -14,7 +14,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations
 {
-	internal class IntegrationPointProfilesQuery : IIntegrationPointProfilesQuery
+	public class IntegrationPointProfilesQuery : IIntegrationPointProfilesQuery
 	{
 		private readonly Func<int, IRelativityObjectManager> _createRelativityObjectManager;
 		private readonly IObjectArtifactIdsByStringFieldValueQuery _objectArtifactIDsByStringFieldValueQuery;

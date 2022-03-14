@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.RenameCustodianToEntity
 {
-	internal class RenameCustodianToEntityForSourceProviderCommand : UpdateIntegrationPointConfigurationCommandBase
+	public class RenameCustodianToEntityForSourceProviderCommand : UpdateIntegrationPointConfigurationCommandBase
 	{
 		private const string _OLD_PROPERTY_NAME = "CustodianManagerFieldContainsLink";
 		private const string _NEW_PROPERTY_NAME = "EntityManagerFieldContainsLink";

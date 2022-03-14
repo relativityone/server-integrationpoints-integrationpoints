@@ -125,6 +125,7 @@
     <Compile Include="RipOverride\EmptyTagSavedSearchManager.cs" />
     <Compile Include="RipOverride\IExportServiceManager.cs" />
     <Compile Include="RipOverride\SyncJobHistoryService.cs" />
+    <Compile Include="RipOverride\SyncServiceManagerForRip.cs" />
     <Compile Include="StepResult.cs" />
     <Compile Include="SyncConfiguration.cs" />
     <Compile Include="SyncLog.cs" />

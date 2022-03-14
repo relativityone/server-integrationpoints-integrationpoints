@@ -44,8 +44,6 @@ Task Test -Description "Run tests that don't require a deployed environment." {
 }
 
 Task FunctionalTest -Description "Run functional tests that require a deployed environment." {
-    # $LogPath = Join-Path $LogsDir "FunctionalTestResults.xml"
-    # Invoke-Tests -WhereClause "namespace =~ FunctionalTests && cat == 'TestType.CI'" -OutputFile $LogPath -TestSettings (Join-Path $PSScriptRoot FunctionalTestSettings)
 }
 
 Task Sign -Description "Sign all files" {

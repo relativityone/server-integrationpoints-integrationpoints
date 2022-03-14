@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			_consoleBuilder = new ConsoleBuilder();
 		}
 
-		internal ConsoleEventHandler(IButtonStateBuilder buttonStateBuilder, IOnClickEventConstructor onClickEventConstructor, IConsoleBuilder consoleBuilder)
+		public ConsoleEventHandler(IButtonStateBuilder buttonStateBuilder, IOnClickEventConstructor onClickEventConstructor, IConsoleBuilder consoleBuilder)
 		{
 			_buttonStateBuilder = buttonStateBuilder;
 			_onClickEventConstructor = onClickEventConstructor;

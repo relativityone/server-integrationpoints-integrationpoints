@@ -1,8 +1,0 @@
-CSharpGuidelineAnalyzer
-Relativity.IntegrationPoints.SDK
-
-group TestPackages
-	FluentAssertions
-	Moq
-	NUnit
-	relativity.testing.identification

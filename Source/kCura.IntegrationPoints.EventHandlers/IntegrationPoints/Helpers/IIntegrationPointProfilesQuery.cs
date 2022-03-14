@@ -4,7 +4,7 @@ using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers
 {
-	internal interface IIntegrationPointProfilesQuery
+	public interface IIntegrationPointProfilesQuery
 	{
 		Task<IEnumerable<IntegrationPointProfile>> GetAllProfilesAsync(int workspaceID);
 		IEnumerable<IntegrationPointProfile> GetProfilesToUpdate(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID);

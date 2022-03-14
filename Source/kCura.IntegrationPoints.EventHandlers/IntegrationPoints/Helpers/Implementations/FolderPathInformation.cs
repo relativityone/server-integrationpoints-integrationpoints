@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			return folderPathInformation;
 		}
 
-		internal class IntegrationPointDestinationConfiguration
+		public class IntegrationPointDestinationConfiguration
 		{
 			public int FolderPathSourceField;
 			public ImportOverwriteModeEnum ImportOverwriteMode;

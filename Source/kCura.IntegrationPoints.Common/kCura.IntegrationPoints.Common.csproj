@@ -64,8 +64,11 @@
     <Compile Include="Monitoring\Instrumentation\Model\InstrumentationServiceCallContext.cs" />
     <Compile Include="Monitoring\Messages\JobProgressStatisticsMessage.cs" />
     <Compile Include="Monitoring\UnitsOfMeasureConstants.cs" />
-    <Compile Include="..\..\Version\AssemblyInfo.cs">
-      <Link>Properties\AssemblyInfo.cs</Link>
+    <Compile Include="..\Version\AssemblyInfo.cs">
+        <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Version\AssemblyInfo.Custom.cs">
+        <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
     <Compile Include="Monitoring\Instrumentation\IExternalServiceInstrumentation.cs" />
     <Compile Include="Monitoring\Instrumentation\IExternalServiceInstrumentationStarted.cs" />

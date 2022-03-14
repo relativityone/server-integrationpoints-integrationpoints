@@ -280,8 +280,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>GeneratedDTOs.tt</DependentUpon>
     </Compile>
-    <Compile Include="..\..\Version\AssemblyInfo.cs">
-      <Link>AssemblyInfo.cs</Link>
+    <Compile Include="..\Version\AssemblyInfo.cs">
+        <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Version\AssemblyInfo.Custom.cs">
+        <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
     <Compile Include="RSAPIServiceAdminAccess.cs" />
     <Compile Include="RSAPIService.cs" />

@@ -39,3 +39,4 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.RelativitySync.Tests.Integration")]
 [assembly: InternalsVisibleTo("Relativity.IntegrationPoints.FunctionalTests")]
 [assembly: InternalsVisibleTo("Relativity.IntegrationPoints.Services.Tests")]
+[assembly: InternalsVisibleTo("kCura.ScheduleQueue.Core")]

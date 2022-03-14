@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			_integrationPointProfilesQuery = new IntegrationPointProfilesQuery(createRelativityObjectManager, objectArtifactIdsByStringFieldValueQuery);
 		}
 
-		internal IntegrationPointProfileMigrationEventHandler(IErrorService errorService,
+		public IntegrationPointProfileMigrationEventHandler(IErrorService errorService,
 			Func<IRelativityObjectManagerFactory> relativityObjectManagerFactoryProvider,
 			IIntegrationPointProfilesQuery integrationPointProfilesQuery) : base(errorService)
 		{

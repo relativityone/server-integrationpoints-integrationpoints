@@ -1,8 +1,0 @@
-CSharpGuidelineAnalyzer
-Relativity.API
-kCura
-
-group TestPackages
-	NUnit
-	NSubstitute
-	relativity.testing.identification

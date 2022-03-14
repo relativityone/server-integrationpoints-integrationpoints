@@ -416,8 +416,11 @@
     <Compile Include="Installers\ServicesInstaller.cs" />
     <Compile Include="Services\ServiceContext\ICaseServiceContext.cs" />
     <Compile Include="Models\ErrorModel.cs" />
-    <Compile Include="..\..\Version\AssemblyInfo.cs">
-      <Link>AssemblyInfo.cs</Link>
+    <Compile Include="..\Version\AssemblyInfo.cs">
+        <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Version\AssemblyInfo.Custom.cs">
+        <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
     <Compile Include="Models\IntegrationPointModel.cs" />
     <Compile Include="Models\RdoFilter.cs" />

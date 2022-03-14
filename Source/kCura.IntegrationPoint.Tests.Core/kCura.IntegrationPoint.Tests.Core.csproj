@@ -61,10 +61,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Compile Include="..\Version\AssemblyInfo.cs">
-        <Link>Properties\AssemblyInfo.cs</Link>
+      <Link>Properties\AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
-        <Link>Properties\AssemblyInfo.Custom.cs</Link>
+      <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
     <Compile Include="Agent.cs" />
     <Compile Include="AgentTypeInformationHelper.cs" />
@@ -274,13 +274,11 @@
       <Name>kCura.IntegrationPoints.Web</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">
-      <Project>{C831C856-E74F-48B4-AEBC-1CF15576E082}</Project>
+      <Project>{c831c856-e74f-48b4-aebc-1cf15576e082}</Project>
       <Name>kCura.ScheduleQueue.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="ExternalDependencies\TransferConsole\Relativity.Transfer.Console.exe.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

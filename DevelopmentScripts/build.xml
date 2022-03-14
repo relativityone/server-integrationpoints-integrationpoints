@@ -3,7 +3,7 @@
     <Applications>
       <Application name="kCura.IntegrationPoints" generatenuspec="true">
         <Destination>Artifacts\RelativityIntegrationPoints.Auto.rap</Destination>
-        <ApplicationSchema>ApplicationsXML/application.xml</ApplicationSchema>
+        <ApplicationSchema>ApplicationsXML\application.xml</ApplicationSchema>
         <Assemblies>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Castle.Windsor.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Castle.Core.dll</Assembly>
@@ -38,8 +38,8 @@
           <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Relativity.Sync.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Autofac.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\netstandard.dll</Assembly>
-          <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Banzai.dll</Assembly>
-          <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Banzai.Autofac.dll</Assembly>
+          <Assembly>packages\sync\Banzai\lib\netstandard2.0\Banzai.dll</Assembly>
+          <Assembly>packages\sync\Banzai.Autofac\lib\netstandard2.0\Banzai.Autofac.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\kCura.LongPath.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\kCura.Relativity.Client.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.DataExchange.Client.SDK.dll</Assembly>
@@ -63,7 +63,6 @@
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\System.ValueTuple.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\itextsharp.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\System.Reactive.dll</Assembly>
-          <Assembly>Source\kCura.IntegrationPoints.Agent\bin\Relativity.AutomatedWorkflows.Services.Interfaces.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>

@@ -108,7 +108,6 @@
     <Compile Include="..\Version\AssemblyInfo.Custom.cs">
       <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
-    <Compile Include="FieldMapHelperTests.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="OldBatchesCleanup\OldBatchesCleanupServiceFactoryTests.cs" />
     <Compile Include="OldBatchesCleanup\OldBatchesCleanupServiceTests.cs" />
