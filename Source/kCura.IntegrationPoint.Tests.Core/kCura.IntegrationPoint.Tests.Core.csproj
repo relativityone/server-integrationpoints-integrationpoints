@@ -278,7 +278,6 @@
       <Name>kCura.ScheduleQueue.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <None Include="ExternalDependencies\TransferConsole\Relativity.Transfer.Console.exe.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
