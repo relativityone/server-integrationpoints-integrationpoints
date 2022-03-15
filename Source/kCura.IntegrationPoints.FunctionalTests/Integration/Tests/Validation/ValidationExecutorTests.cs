@@ -8,7 +8,6 @@ using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
 using Moq;
-using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
 using Relativity.Toggles;
