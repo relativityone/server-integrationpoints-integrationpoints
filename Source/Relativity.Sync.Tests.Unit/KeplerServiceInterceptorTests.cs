@@ -12,9 +12,7 @@ using NUnit.Framework;
 using Relativity.Kepler.Exceptions;
 using Relativity.Services.Exceptions;
 using Relativity.Sync.Logging;
-using Relativity.Sync.Telemetry;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Tests.Unit.Stubs;
 using Relativity.Sync.Utils;
 
@@ -405,13 +403,9 @@ namespace Relativity.Sync.Tests.Unit
 			yield return new ServiceNotFoundException();
 			yield return new TemporarilyUnavailableException();
 			yield return new ServiceException("Failed to determine route");
+			yield return new ServiceException("Create Failed");
 			yield return new TimeoutException();
 			yield return new Exception("Socket exception", new SocketException());
-		}
-
-		private static string GetMetricName(string methodName)
-		{
-			return $"{typeof(IStubForInterception).FullName}.{methodName}";
 		}
 	}
 }
