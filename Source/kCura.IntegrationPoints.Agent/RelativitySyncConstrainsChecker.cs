@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using Relativity;
 using Relativity.API;
 using Relativity.Toggles;
 
@@ -157,15 +158,14 @@ namespace kCura.IntegrationPoints.Agent
 				sourceConfiguration.TypeOfExport, importSettings.ImageImport, importSettings.ProductionImport);
 
 			bool isSyncDocumentFlow = sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch && !importSettings.ProductionImport;
-			bool isSyncNonDocumentFlow = IsNonDocumentFlow(sourceConfiguration);
+			bool isSyncNonDocumentFlow = IsNonDocumentFlow(importSettings);
 
 			return isSyncDocumentFlow || isSyncNonDocumentFlow;
 		}
 
-		private bool IsNonDocumentFlow(SourceConfiguration sourceConfiguration)
+		private bool IsNonDocumentFlow(ImportSettings destinationConfiguration)
         {
-			return sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.View;
-
-		}
+			return destinationConfiguration.ArtifactTypeId != (int)ArtifactType.Document;
+        }
 	}
 }
