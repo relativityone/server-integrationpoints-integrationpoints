@@ -18,7 +18,6 @@ namespace Relativity.Sync.Executors.SumReporting
 {
 	internal class NonDocumentJobStartMetricsExecutor : IExecutor<INonDocumentJobStartMetricsConfiguration>
 	{
-        private const string _EXTRACTED_TEXT_FIELD_NAME = "Extracted Text";
         private const string _NOT_ASSIGNED_APPLICATION_NAME = "Custom";
 
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
@@ -198,14 +197,11 @@ namespace Relativity.Sync.Executors.SumReporting
 							}
 						}
 					});
-
-			string extractedTextKey = string.Format(keyFormat, _EXTRACTED_TEXT_FIELD_NAME, _EXTRACTED_TEXT_FIELD_NAME);
-
+			
 			var summary = new Dictionary<string, object>()
 			{
 				{ "FieldMapping", mappingSummary },
-				{ "ExtractedText", longTextFields.TryGetValue(extractedTextKey, out var v) ? v : null },
-				{ "LongText", longTextFields.Where(x => x.Key != extractedTextKey).Select(x => x.Value).ToArray() }
+				{ "LongText", longTextFields.Select(x => x.Value).ToArray() }
 			};
 
 			return summary;

@@ -156,9 +156,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             SyncLogMock.Verify(x => x.LogInformation("Fields map configuration summary: {@summary}", It.IsAny<Dictionary<string, object>>()), Times.Never);
 		}
 
-		
-
-		private void PrepareTestData()
+        private void PrepareTestData()
 		{
 			List<DisplayableObjectIdentifier> displayableObjectIdentifiers = new List<DisplayableObjectIdentifier>
 			{
@@ -223,5 +221,520 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 					fieldsDtos.Count, It.IsAny<CancellationToken>()))
 				.Returns(Task.FromResult(queryResultSlim));
 		}
+
+		private static IEnumerable<TestCaseData> FieldsMappingTestCaseSource()
+        {
+            const string fieldName = "Field name";
+
+            yield return new TestCaseData(
+                    new List<FieldMapDefinitionCase>
+                    {
+                        new FieldMapDefinitionCase
+                        {
+                            SourceFieldName = fieldName, DestinationFieldName = fieldName,
+                            DataType = RelativityDataType.LongText
+                        },
+                    }, PrepareSummaryWithDisabledDataGrid()
+                )
+                { TestName = "{m}(DataGridSource=disable, DataGridDestination=disabled)" };
+
+            yield return new TestCaseData(
+                    new List<FieldMapDefinitionCase>
+                    {
+                        new FieldMapDefinitionCase
+                        {
+                            SourceFieldName = fieldName, DestinationFieldName = fieldName,
+                            DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
+                            DestinationFieldDataGridEnabled = false
+                        }
+                    }, PrepareSummaryWithEnabledDataGridInSource()
+                )
+                { TestName = "{m}(DataGridSource=enabled, DataGridDestination=disabled)" };
+
+            yield return new TestCaseData(
+                    new List<FieldMapDefinitionCase>
+                    {
+                        new FieldMapDefinitionCase
+                        {
+                            SourceFieldName = fieldName, DestinationFieldName = fieldName,
+                            DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = false,
+                            DestinationFieldDataGridEnabled = true
+                        }
+                    }, PrepareSummaryWithEnabledDataGridInDestination()
+                )
+                { TestName = "{m}(DataGridSource=disabled, DataGridDestination=enabled)" };
+
+            yield return new TestCaseData(
+                    new List<FieldMapDefinitionCase>
+                    {
+                        new FieldMapDefinitionCase
+                        {
+                            SourceFieldName = fieldName, DestinationFieldName = fieldName,
+                            DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
+                            DestinationFieldDataGridEnabled = true
+                        }
+                    }, PrepareSummaryWithDataGridEnabledBothInSourceAndDestination()
+                )
+                { TestName = "{m}(DataGridSource=enabled, tDataGridDestination=enabled)" };
+
+            yield return new TestCaseData(
+                    new List<FieldMapDefinitionCase>
+                    {
+                        new FieldMapDefinitionCase
+                        {
+                            SourceFieldName = "fixed-length", DestinationFieldName = "fixed-length",
+                            DataType = RelativityDataType.FixedLengthText
+                        },
+                        new FieldMapDefinitionCase
+                        {
+                            SourceFieldName = "fixed-length 2", DestinationFieldName = "fixed-length 2",
+                            DataType = RelativityDataType.FixedLengthText
+                        },
+                        new FieldMapDefinitionCase
+                        {
+                            SourceFieldName = "number", DestinationFieldName = "number destination",
+                            DataType = RelativityDataType.WholeNumber
+                        },
+                        new FieldMapDefinitionCase
+                        {
+                            SourceFieldName = "randomName", DestinationFieldName = "CommandoreBomardiero",
+                            DataType = RelativityDataType.FixedLengthText
+                        },
+                        new FieldMapDefinitionCase
+                        {
+                            SourceFieldName = "AdlerSieben", DestinationFieldName = "SeniorGordo",
+                            DataType = RelativityDataType.FixedLengthText
+                        },
+                        new FieldMapDefinitionCase
+                            {SourceFieldName = "1", DestinationFieldName = "1", DataType = RelativityDataType.Currency},
+                        new FieldMapDefinitionCase
+                            {SourceFieldName = "2", DestinationFieldName = "2", DataType = RelativityDataType.Currency},
+                        new FieldMapDefinitionCase
+                            {SourceFieldName = "3", DestinationFieldName = "3", DataType = RelativityDataType.YesNo},
+                        new FieldMapDefinitionCase
+                            {SourceFieldName = "4", DestinationFieldName = "4", DataType = RelativityDataType.YesNo},
+                        new FieldMapDefinitionCase
+                            {SourceFieldName = "5", DestinationFieldName = "5", DataType = RelativityDataType.YesNo},
+                        new FieldMapDefinitionCase
+                            {SourceFieldName = "6", DestinationFieldName = "6", DataType = RelativityDataType.YesNo},
+                    }, PrepareSummaryForCountingTypes()
+                )
+                { TestName = "{m}(CountingTypes)" };
+
+            yield return new TestCaseData(
+                    new List<FieldMapDefinitionCase>
+                    {
+                        new FieldMapDefinitionCase
+                        {
+                            SourceFieldName = fieldName, DestinationFieldName = fieldName,
+                            DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
+                            DestinationFieldDataGridEnabled = true
+                        },
+                        new FieldMapDefinitionCase
+                        {
+                            SourceFieldName = "long text1", DestinationFieldName = "long text1 dest",
+                            DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = false,
+                            DestinationFieldDataGridEnabled = true
+                        },
+                        new FieldMapDefinitionCase
+                        {
+                            SourceFieldName = "long text2", DestinationFieldName = "long text2",
+                            DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
+                            DestinationFieldDataGridEnabled = false
+                        }
+                    }, PrepareSummaryForLongText()
+                )
+                { TestName = "{m}(LongText)" };
+
+            yield return new TestCaseData(
+                    new List<FieldMapDefinitionCase>
+                    {
+                        new FieldMapDefinitionCase
+                        {
+                            SourceFieldName = fieldName, DestinationFieldName = fieldName,
+                            DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
+                            DestinationFieldDataGridEnabled = true
+                        },
+                        new FieldMapDefinitionCase
+                        {
+                            SourceFieldName = "long text1", DestinationFieldName = "long text1 dest",
+                            DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = false,
+                            DestinationFieldDataGridEnabled = true
+                        },
+                        new FieldMapDefinitionCase
+                        {
+                            SourceFieldName = "long text2", DestinationFieldName = "long text2",
+                            DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
+                            DestinationFieldDataGridEnabled = false
+                        },
+                        new FieldMapDefinitionCase
+                        {
+                            SourceFieldName = "supported by viewer 1", DestinationFieldName = "supported by viewer 1",
+                            DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
+                            DestinationFieldDataGridEnabled = false,
+                            SpecialFieldType = SpecialFieldType.SupportedByViewer
+                        },
+                        new FieldMapDefinitionCase
+                        {
+                            SourceFieldName = "supported by viewer 2", DestinationFieldName = "supported by viewer 2",
+                            DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
+                            DestinationFieldDataGridEnabled = false,
+                            SpecialFieldType = SpecialFieldType.SupportedByViewer
+                        }
+                    }, PrepareSummaryForLoggingSpecialFields()
+                )
+                { TestName = "{m}(ShouldLogSpecialFieldsWhenTheyHaveBeenMapped)" };
+        }
+
+        private static Dictionary<string, object> PrepareSummaryForLoggingSpecialFields()
+        {
+            return new Dictionary<string, object>()
+            {
+                {
+                    "FieldMapping", new Dictionary<string, int>()
+                    {
+                        {
+                            "LongText", 5
+                        }
+                    }
+                },
+                {
+                    "LongText", new Dictionary<string, Dictionary<string, object>>[]
+                    {
+                        new Dictionary<string, Dictionary<string, object>>()
+                        {
+                            {
+                                "Source", new Dictionary<string, object>()
+                                {
+                                    {"ArtifactId", 1},
+                                    {"DataGridEnabled", true}
+                                }
+                            },
+                            {
+                                "Destination", new Dictionary<string, object>()
+                                {
+                                    {"ArtifactId", 6},
+                                    {"DataGridEnabled", true}
+                                }
+                            }
+                        },
+                        new Dictionary<string, Dictionary<string, object>>()
+                        {
+                            {
+                                "Source", new Dictionary<string, object>()
+                                {
+                                    {"ArtifactId", 2},
+                                    {"DataGridEnabled", false}
+                                }
+                            },
+                            {
+                                "Destination", new Dictionary<string, object>()
+                                {
+                                    {"ArtifactId", 7},
+                                    {"DataGridEnabled", true}
+                                }
+                            }
+                        },
+                        new Dictionary<string, Dictionary<string, object>>()
+                        {
+                            {
+                                "Source", new Dictionary<string, object>()
+                                {
+                                    {"ArtifactId", 3},
+                                    {"DataGridEnabled", true}
+                                }
+                            },
+                            {
+                                "Destination", new Dictionary<string, object>()
+                                {
+                                    {"ArtifactId", 8},
+                                    {"DataGridEnabled", false}
+                                }
+                            }
+                        },
+                        new Dictionary<string, Dictionary<string, object>>()
+                        {
+                            {
+                                "Source", new Dictionary<string, object>()
+                                {
+                                    {"ArtifactId", 4},
+                                    {"DataGridEnabled", true}
+                                }
+                            },
+                            {
+                                "Destination", new Dictionary<string, object>()
+                                {
+                                    {"ArtifactId", 9},
+                                    {"DataGridEnabled", false}
+                                }
+                            }
+                        },
+                        new Dictionary<string, Dictionary<string, object>>()
+                        {
+                            {
+                                "Source", new Dictionary<string, object>()
+                                {
+                                    {"ArtifactId", 5},
+                                    {"DataGridEnabled", true}
+                                }
+                            },
+                            {
+                                "Destination", new Dictionary<string, object>()
+                                {
+                                    {"ArtifactId", 10},
+                                    {"DataGridEnabled", false}
+                                }
+                            }
+                        },
+                    }
+                }
+            };
+        }
+
+        private static Dictionary<string, object> PrepareSummaryForLongText()
+        {
+            return new Dictionary<string, object>()
+            {
+                {
+                    "FieldMapping", new Dictionary<string, int>()
+                    {
+                        {
+                            "LongText", 3
+                        }
+                    }
+                },
+                {
+                    "LongText", new Dictionary<string, Dictionary<string, object>>[]
+                    {
+                        new Dictionary<string, Dictionary<string, object>>()
+                        {
+                            {
+                                "Source", new Dictionary<string, object>()
+                                {
+                                    {"ArtifactId", 1},
+                                    {"DataGridEnabled", true}
+                                }
+                            },
+                            {
+                                "Destination", new Dictionary<string, object>()
+                                {
+                                    {"ArtifactId", 4},
+                                    {"DataGridEnabled", true}
+                                }
+                            }
+                        },
+                        new Dictionary<string, Dictionary<string, object>>()
+                        {
+                            {
+                                "Source", new Dictionary<string, object>()
+                                {
+                                    {"ArtifactId", 2},
+                                    {"DataGridEnabled", false}
+                                }
+                            },
+                            {
+                                "Destination", new Dictionary<string, object>()
+                                {
+                                    {"ArtifactId", 5},
+                                    {"DataGridEnabled", true}
+                                }
+                            }
+                        },
+                        new Dictionary<string, Dictionary<string, object>>()
+                        {
+                            {
+                                "Source", new Dictionary<string, object>()
+                                {
+                                    {"ArtifactId", 3},
+                                    {"DataGridEnabled", true}
+                                }
+                            },
+                            {
+                                "Destination", new Dictionary<string, object>()
+                                {
+                                    {"ArtifactId", 6},
+                                    {"DataGridEnabled", false}
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+        }
+
+        private static Dictionary<string, object> PrepareSummaryForCountingTypes()
+        {
+            return new Dictionary<string, object>()
+            {
+                {
+                    "FieldMapping", new Dictionary<string, int>()
+                    {
+                        {
+                            "FixedLengthText", 4
+                        },
+                        {
+                            "WholeNumber", 1
+                        },
+                        {
+                            "Currency", 2
+                        },
+                        {
+                            "YesNo", 4
+                        }
+                    }
+                },
+                {
+                    "LongText", new Dictionary<string, Dictionary<string, object>>[0]
+                }
+            };
+        }
+
+        private static Dictionary<string, object> PrepareSummaryWithDataGridEnabledBothInSourceAndDestination()
+        {
+            return new Dictionary<string, object>()
+            {
+                {
+                    "FieldMapping", new Dictionary<string, int>()
+                    {
+                        {
+                            "LongText", 1
+                        }
+                    }
+                },
+                {
+                    "LongText", new Dictionary<string, Dictionary<string, object>>[]
+                    {
+                        new Dictionary<string, Dictionary<string, object>>
+                        {
+                            {
+                                "Source", new Dictionary<string, object>
+                                {
+                                    {"ArtifactId", 1},
+                                    {"DataGridEnabled", true}
+                                }
+                            },
+                            {
+                                "Destination", new Dictionary<string, object>
+                                {
+                                    {"ArtifactId", 2},
+                                    {"DataGridEnabled", true}
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+        }
+
+        private static Dictionary<string, object> PrepareSummaryWithEnabledDataGridInDestination()
+        {
+            return new Dictionary<string, object>()
+            {
+                {
+                    "FieldMapping", new Dictionary<string, int>()
+                    {
+                        {
+                            "LongText", 1
+                        }
+                    }
+                },
+                {
+                    "LongText", new Dictionary<string, Dictionary<string, object>>[]
+                    {
+                        new Dictionary<string, Dictionary<string, object>>
+                        {
+                            {
+                                "Source", new Dictionary<string, object>
+                                {
+                                    {"ArtifactId", 1},
+                                    {"DataGridEnabled", false}
+                                }
+                            },
+                            {
+                                "Destination", new Dictionary<string, object>
+                                {
+                                    {"ArtifactId", 2},
+                                    {"DataGridEnabled", true}
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+        }
+
+        private static Dictionary<string, object> PrepareSummaryWithEnabledDataGridInSource()
+        {
+            return new Dictionary<string, object>()
+            {
+                {
+                    "FieldMapping", new Dictionary<string, int>()
+                    {
+                        {
+                            "LongText", 1
+                        }
+                    }
+                },
+                {
+                    "LongText", new Dictionary<string, Dictionary<string, object>>[]
+                    {
+                        new Dictionary<string, Dictionary<string, object>>
+                        {
+                            {
+                                "Source", new Dictionary<string, object>
+                                {
+                                    {"ArtifactId", 1},
+                                    {"DataGridEnabled", true}
+                                }
+                            },
+                            {
+                                "Destination", new Dictionary<string, object>
+                                {
+                                    {"ArtifactId", 2},
+                                    {"DataGridEnabled", false}
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+        }
+
+        private static Dictionary<string, object> PrepareSummaryWithDisabledDataGrid()
+        {
+            return new Dictionary<string, object>()
+            {
+                {
+                    "FieldMapping", new Dictionary<string, int>()
+                    {
+                        {
+                            "LongText", 1
+                        }
+                    }
+                },
+                {
+                    "LongText", new Dictionary<string, Dictionary<string, object>>[]
+                    {
+                        new Dictionary<string, Dictionary<string, object>>
+                        {
+                            {
+                                "Source", new Dictionary<string, object>
+                                {
+                                    {"ArtifactId", 1},
+                                    {"DataGridEnabled", false}
+                                }
+                            },
+                            {
+                                "Destination", new Dictionary<string, object>
+                                {
+                                    {"ArtifactId", 2},
+                                    {"DataGridEnabled", false}
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+        }
     }
 }
