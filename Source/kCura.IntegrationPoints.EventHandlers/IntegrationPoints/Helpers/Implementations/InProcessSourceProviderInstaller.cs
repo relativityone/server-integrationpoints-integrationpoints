@@ -15,7 +15,7 @@ using static LanguageExt.Prelude;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations
 {
-	internal class InProcessSourceProviderInstaller : ISourceProviderInstaller
+	public class InProcessSourceProviderInstaller : ISourceProviderInstaller
 	{
 		private readonly IAPILog _logger;
 		private readonly IEHHelper _helper;

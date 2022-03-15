@@ -9,7 +9,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{99EE3407-05E1-4F6B-9518-77F8F0EE34AF}</ProjectGuid>
+    <ProjectGuid>{B606C8B4-D106-4A1F-A794-9DED7B02DE3E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>kCura.IntegrationPoints.RelativitySync</RootNamespace>
@@ -100,8 +100,11 @@
     <Content Include="oi\unmanaged\wvcore-R1.dll">
       <Paket>True</Paket>
     </Content>
-    <Compile Include="..\..\Version\AssemblyInfo.cs">
+    <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Version\AssemblyInfo.Custom.cs">
+      <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
     <Compile Include="CancellationAdapter.cs" />
     <Compile Include="ExtendedJob.cs" />
@@ -131,6 +134,7 @@
   <ItemGroup>
     <None Include="paket.references" />
   </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
       <Project>{30503682-e18d-49df-a308-fe7996c4108e}</Project>
@@ -161,12 +165,28 @@
       <Name>kCura.ScheduleQueue.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <Reference Include="netstandard">
-      <Private>True</Private>
-    </Reference>
-  </ItemGroup>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Banzai">
+          <HintPath>..\..\packages\sync\Banzai\lib\netstandard2.0\Banzai.dll</HintPath>
+          <Private>True</Private>
+          <Paket>False</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
+        <Reference Include="Banzai.Autofac">
+          <HintPath>..\..\packages\sync\Banzai.Autofac\lib\netstandard2.0\Banzai.Autofac.dll</HintPath>
+          <Private>True</Private>
+          <Paket>False</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

@@ -10,7 +10,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations
 {
-	internal class ObjectArtifactIdsByStringFieldValueQuery : IObjectArtifactIdsByStringFieldValueQuery
+	public class ObjectArtifactIdsByStringFieldValueQuery : IObjectArtifactIdsByStringFieldValueQuery
 	{
 		private readonly Func<int, IRelativityObjectManager> _createRelativityObjectManager;
 

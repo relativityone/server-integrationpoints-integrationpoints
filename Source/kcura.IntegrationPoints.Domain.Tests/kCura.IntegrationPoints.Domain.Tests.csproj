@@ -20,21 +20,20 @@
     <TargetFrameworkProfile />
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\x64\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <DefineConstants>TIME_MACHINE,$(Injections)</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x64</PlatformTarget>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\x64\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <DefineConstants>$(Injections)</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -54,8 +53,11 @@
     </When>
   </Choose>
   <ItemGroup>
-    <Compile Include="..\..\Version\AssemblyInfo.cs">
-      <Link>AssemblyInfo.cs</Link>
+    <Compile Include="..\Version\AssemblyInfo.cs">
+        <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Version\AssemblyInfo.Custom.cs">
+        <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
     <Compile Include="Extensions\IAPILogExtensionsTests.cs" />
     <Compile Include="Models\SourceJobDTOTests.cs" />

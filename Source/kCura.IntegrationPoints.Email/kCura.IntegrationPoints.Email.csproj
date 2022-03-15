@@ -13,17 +13,17 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\x64\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\x64\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <Optimize>true</Optimize>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DebugType>pdbonly</DebugType>
@@ -39,8 +39,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Version\AssemblyInfo.cs">
-      <Link>AssemblyInfo.cs</Link>
+    <Compile Include="..\Version\AssemblyInfo.cs">
+        <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Version\AssemblyInfo.Custom.cs">
+        <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
     <Compile Include="Dto\ValidEmailAddress.cs" />
     <Compile Include="Dto\EmailMessageDto.cs" />

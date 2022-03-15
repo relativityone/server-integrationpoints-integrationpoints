@@ -17,16 +17,14 @@
     <TestProjectType>UnitTest</TestProjectType>
     <TargetFrameworkProfile />
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\x64\</OutputPath>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
     <DebugType>full</DebugType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\x64\</OutputPath>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
     <DebugType>pdbonly</DebugType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
@@ -36,8 +34,11 @@
     <Reference Include="System.Data.DataSetExtensions" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Version\AssemblyInfo.cs">
-      <Link>AssemblyInfo.cs</Link>
+    <Compile Include="..\Version\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Version\AssemblyInfo.Custom.cs">
+      <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
     <Compile Include="FunctionalTestsSetupFixture.cs" />
     <Compile Include="SystemTests\EventHandlers\IntegrationPointProfileMigrationEventHandlerTest.cs" />
@@ -59,9 +60,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="paket.references" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
@@ -99,10 +97,6 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>
       <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rip.TestUtilities\Rip.TestUtilities.csproj">
-      <Project>{88f9b589-2aa4-4609-af61-e0badb5de82e}</Project>
-      <Name>Rip.TestUtilities</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

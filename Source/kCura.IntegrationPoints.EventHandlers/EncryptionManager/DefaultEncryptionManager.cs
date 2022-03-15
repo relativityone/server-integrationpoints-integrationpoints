@@ -5,7 +5,7 @@ using System.Text;
 
 namespace kCura.IntegrationPoints.Security
 {
-	internal class DefaultEncryptionManager : IEncryptionManager
+	public class DefaultEncryptionManager : IEncryptionManager
 	{
 		//TODO: this does not belong here, we need to wait until we have a more permanent solution from the portland team
 		private readonly string Salt =

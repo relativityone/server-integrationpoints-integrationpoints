@@ -64,7 +64,6 @@ packages/*
 *.nupkg
 msbuild.targets
 dlls.txt
-version.txt
 DevelopmentScripts/NUnit*
 BuildLogs
 PDBs
@@ -92,3 +91,5 @@ DevelopmentScripts/*Results.html
 /DevelopmentScripts/chromeLog.txt
 Artifacts
 .ionide
+buildtools/
+!buildtools/packages.config

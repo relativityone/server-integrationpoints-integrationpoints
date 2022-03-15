@@ -10,7 +10,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{446645C0-6B6D-471D-AB7E-A183F47011F4}</ProjectGuid>
+    <ProjectGuid>{3941F1C1-84BB-4966-A16F-6B3446D1E4E0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>kCura.IntegrationPoints.RelativitySync.Tests</RootNamespace>
@@ -24,7 +24,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\x64\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -32,7 +32,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\x64\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -102,8 +102,11 @@
     <Content Include="oi\unmanaged\wvcore-R1.dll">
       <Paket>True</Paket>
     </Content>
-    <Compile Include="..\..\Version\AssemblyInfo.cs">
+    <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Version\AssemblyInfo.Custom.cs">
+      <Link>Properties\AssemblyInfo.Custom.cs</Link>
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="OldBatchesCleanup\OldBatchesCleanupServiceFactoryTests.cs" />
@@ -111,9 +114,9 @@
     <Compile Include="OldBatchesCleanup\ServiceFactoryForAdminTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="paket.references" />
   </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
       <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>
@@ -124,11 +127,10 @@
       <Name>kCura.IntegrationPoints.Domain</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.RelativitySync\kCura.IntegrationPoints.RelativitySync.csproj">
-      <Project>{99ee3407-05e1-4f6b-9518-77f8f0ee34af}</Project>
+      <Project>{b606c8b4-d106-4a1f-a794-9ded7b02de3e}</Project>
       <Name>kCura.IntegrationPoints.RelativitySync</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>

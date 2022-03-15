@@ -1,1 +1,0 @@
-Invoke-Expression ".\DevelopmentScripts\build.ps1 $args"

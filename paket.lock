@@ -1,7 +1,7 @@
 STRATEGY: MIN
 RESTRICTION: == net462
 NUGET
-  remote: https://proget.kcura.corp/nuget/NuGet
+  remote: https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
     Antlr (3.5.0.2)
     AutoMapper (4.2.1)
     BCrypt.Net-Core (1.6.0)
@@ -280,7 +280,7 @@ GROUP Sync
 STRATEGY: MIN
 RESTRICTION: == net462
 NUGET
-  remote: https://proget.kcura.corp/nuget/NuGet
+  remote: https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
     Autofac (4.9.4)
     Banzai (3.0.0)
     Banzai.Autofac (3.0.0)
@@ -351,7 +351,7 @@ NUGET
     Relativity.Services.Layout.Interfaces (1.1.46)
       Relativity.Kepler (>= 1.0.1.297)
       Relativity.Services.DataContracts (>= 9.4.346.73)
-    Relativity.Sync (0.99.1.0)
+    Relativity.Sync (0.99.4)
       Autofac (>= 4.9 < 5.0)
       Banzai (>= 3.0 < 4.0)
       Banzai.Autofac (>= 3.0 < 4.0)
@@ -386,7 +386,7 @@ GROUP TestPackages
 STRATEGY: MIN
 RESTRICTION: == net462
 NUGET
-  remote: https://proget.kcura.corp/nuget/NuGet
+  remote: https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
     BenchmarkDotNet (0.10.12)
       BenchmarkDotNet.Core (>= 0.10.12)
       BenchmarkDotNet.Toolchains.Roslyn (>= 0.10.12)

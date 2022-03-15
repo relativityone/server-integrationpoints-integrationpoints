@@ -1,7 +1,7 @@
 framework: net462
 strategy: min
 
-source https://proget.kcura.corp/nuget/NuGet
+source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 
 //RIP packages
 nuget Relativity.IntegrationPoints.Services.Interfaces.Private 11.1.0
@@ -63,7 +63,7 @@ nuget CSharpGuidelineAnalyzer 1.0.3.0
 group TestPackages
 	framework: net462
 	strategy: min
-	source https://proget.kcura.corp/nuget/NuGet
+	source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 	nuget BenchmarkDotNet 0.10.12
 	nuget DotNetSeleniumExtras.PageObjects 3.11.0
 	nuget DotNetSeleniumExtras.WaitHelpers 3.11.0
@@ -83,8 +83,8 @@ group TestPackages
 group Sync
 	framework: auto-detect
 	strategy: min
-	source https://proget.kcura.corp/nuget/NuGet
-	nuget Relativity.Sync 0.99.1
+	source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
+	nuget Relativity.Sync 0.99.4
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
 	nuget Relativity.IntegrationPoints.Contracts 1.0.5

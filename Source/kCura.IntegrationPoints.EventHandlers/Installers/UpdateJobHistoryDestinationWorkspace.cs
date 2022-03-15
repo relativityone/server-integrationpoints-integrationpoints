@@ -46,14 +46,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			ExecuteInternal();
 		}
 
-		internal UpdateJobHistoryDestinationWorkspace(IJobHistoryService jobHistoryService,
+		public UpdateJobHistoryDestinationWorkspace(IJobHistoryService jobHistoryService,
 			IDestinationParser destinationParser)
 		{
 			_jobHistoryService = jobHistoryService;
 			_destinationParser = destinationParser;
 		}
 
-		internal void ExecuteInternal()
+		public void ExecuteInternal()
 		{
 			
 			IList<Data.JobHistory> jobHistories = _jobHistoryService.GetAll();
