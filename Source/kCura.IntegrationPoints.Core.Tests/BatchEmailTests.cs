@@ -131,6 +131,8 @@ namespace kCura.IntegrationPoints.Core.Tests
 			job.JobDetails = taskParametersSerialized;
 
 			_integrationPointRepositoryMock.Setup(x => x.ReadWithFieldMappingAsync(_INTEGRATION_POINT_ID)).ReturnsAsync(integrationPoint);
+			Job emailJob = new JobBuilder().WithJobId(1338).Build();
+			_jobManagerMock.Setup(x => x.CreateJob(job, It.IsAny<TaskParameters>(), TaskType.SendEmailWorker)).Returns(emailJob);
 			//ACT
 			_sut.OnJobComplete(job);
 			//ASSERT
@@ -153,6 +155,8 @@ namespace kCura.IntegrationPoints.Core.Tests
 				.Returns(Data.JobStatusChoices.JobHistoryCompletedWithErrors);
 			Job parentJob = GetTestJob();
 			parentJob.JobDetails = jobDetails;
+			Job emailJob = new JobBuilder().WithJobId(1338).Build();
+			_jobManagerMock.Setup(x => x.CreateJob(parentJob, It.IsAny<TaskParameters>(), TaskType.SendEmailWorker)).Returns(emailJob);
 			//ACT
 			_sut.OnJobComplete(parentJob);
 
