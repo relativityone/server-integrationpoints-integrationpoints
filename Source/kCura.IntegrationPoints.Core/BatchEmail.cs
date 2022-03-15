@@ -79,9 +79,9 @@ namespace kCura.IntegrationPoints.Core
 			{
 				BatchInstance = taskParameters.BatchInstance,
 				BatchParameters = jobParameters
-			};
-			JobService.UpdateStopState(new List<long> { job.JobId }, StopState.None);
-			JobManager.CreateJob(job, emailTaskParameters, TaskType.SendEmailWorker);
+			};			
+			Job sendEmailJob = JobManager.CreateJob(job, emailTaskParameters, TaskType.SendEmailWorker);
+			JobService.UpdateStopState(new List<long> { sendEmailJob.JobId }, StopState.None);
 		}
 
 		private EmailJobParameters GenerateEmailJobParameters(ChoiceRef choice, List<string> emails)

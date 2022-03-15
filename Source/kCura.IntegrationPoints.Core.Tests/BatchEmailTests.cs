@@ -4,6 +4,7 @@ using System.Linq;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services;
@@ -163,7 +164,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		}
 
 		[Test]
-		public void ParentJobShouldHaveStopStateResetToNoneBeforeEmailJobCreation()
+		public void EmailJobShouldHaveStopStateResetToNoneAfterCreation()
 		{
 			//arrange
 			Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint();
@@ -177,13 +178,16 @@ namespace kCura.IntegrationPoints.Core.Tests
             _jobStatusUpdaterMock.Setup(x => x.GenerateStatus(It.IsAny<Guid>()))
 				.Returns(JobStatusChoices.JobHistoryCompletedWithErrors);
 			Job job = GetTestJob();
-			job.JobDetails = jobDetails;	
+			job.JobDetails = jobDetails;
 
+			Job emailJob = new JobBuilder().WithJobId(1338).Build();
+			_jobManagerMock.Setup(x => x.CreateJob(job, It.IsAny<TaskParameters>(), TaskType.SendEmailWorker)).Returns(emailJob);
+			
 			//act
 			_sut.OnJobComplete(job);
 
-			//assert	
-			_jobServiceMock.Verify(x => x.UpdateStopState(It.Is<IList<long>>(j => j.Contains(job.JobId)),
+			//assert					
+			_jobServiceMock.Verify(x => x.UpdateStopState(It.Is<IList<long>>(j => j.Contains(emailJob.JobId)),
 				It.Is<StopState>(s => s == StopState.None)), Times.Once);			
 		}
 
