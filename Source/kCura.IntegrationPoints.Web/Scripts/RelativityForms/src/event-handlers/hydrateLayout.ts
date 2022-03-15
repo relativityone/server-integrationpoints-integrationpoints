@@ -1,8 +1,8 @@
-﻿import { IConvenienceApi } from "../types/convenienceApi";
+import { IConvenienceApi } from "../types/convenienceApi";
 
 export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sourceConfiguration: Object, destinationConfiguration: Object) {
 
-    var sourceDetails = getSourceDetails(sourceConfiguration, destinationConfiguration["ArtifactTypeName"]);
+    var sourceDetails = getSourceDetails(sourceConfiguration);
     var useFolderPathInfo = formatToYesOrNo(convertToBool(destinationConfiguration["UseDynamicFolderPath"]));
     let exportType = getExportType(sourceConfiguration, destinationConfiguration);
 
@@ -321,42 +321,41 @@ async function getDestinationDetails(sourceConfiguration: Object, convenienceApi
     return label;
 }
 
-function getSourceDetails(sourceConfiguration, transferredObjects) {
+function getSourceDetails(sourceConfiguration) {
 
     if (sourceConfiguration["SourceProductionId"]) {
         return "Production Set: " + sourceConfiguration["SourceProductionName"];
-    } else if (sourceConfiguration["SavedSearchArtifactId"]){
+    } else if (sourceConfiguration["SavedSearchArtifactId"]) {
         return "Saved Search: " + sourceConfiguration["SavedSearch"];
+    } else if (sourceConfiguration["SourceViewId"]) {
+        return "View: " + sourceConfiguration["ViewName"];
     }
 
-    if (transferredObjects !== "Document") {
-        return "RDO: " + transferredObjects + "; " + sourceConfiguration["ViewName"];
-    }
-    if (sourceConfiguration["ExportType"] === 3) {
-        return "Saved search: " + sourceConfiguration["SavedSearch"];
-    }
-    if (sourceConfiguration["ExportType"] === 0) {
-        return "Folder: " + sourceConfiguration["FolderArtifactName"];
-    }
-    if (sourceConfiguration["ExportType"] === 1) {
-        return "Folder + Subfolders: " + sourceConfiguration["FolderArtifactName"];
-    }
-    if (sourceConfiguration["ExportType"] === 2) {
-        return "Production: " + sourceConfiguration["ProductionName"];
+    switch (sourceConfiguration["ExportType"])
+    {
+        case 0:
+            return "Folder: " + sourceConfiguration["FolderArtifactName"];
+        case 1:
+            return "Folder + Subfolders: " + sourceConfiguration["FolderArtifactName"];
+        case 2:
+            return "Production: " + sourceConfiguration["ProductionName"];
+        case 3:
+            return "Saved search: " + sourceConfiguration["SavedSearch"];
     }
 }
 
 function getExportType(sourceConfiguration: Object, destinationConfiguration: Object) {
     // if source configuration has an "ExportType" property, then it's export to loadfile - othervise export to relativity
     if (sourceConfiguration["ExportType"]) {
-        return "Load file"
-            + (sourceConfiguration["ExportImages"] ? "; Images" : "")
-            + (sourceConfiguration["ExportNatives"] ? "; Natives" : "")
-                + (sourceConfiguration["ExportFullTextAsFile"] ? "; Text As Files" : "");
+        return "Load file; "
+            + (sourceConfiguration["ExportImages"] ? "Images" : "")
+            + (sourceConfiguration["ExportNatives"] ? "Natives" : "")
+                + (sourceConfiguration["ExportFullTextAsFile"] ? "Text As Files" : "");
     } else {
-        return "Workspace"
-            + (convertToBool(destinationConfiguration["ImageImport"]) ? "; Images" : "")
-            + (convertToBool(destinationConfiguration["importNativeFile"]) ? "; Natives" : "");
+        return "Workspace; "
+            + (convertToBool(destinationConfiguration["ImageImport"]) ? "Images" : "")
+            + (convertToBool(destinationConfiguration["importNativeFile"]) ? "Natives" : "")
+            + (destinationConfiguration["ArtifactTypeName"] !== "Document" ? "View" : "");
     }
     
 }

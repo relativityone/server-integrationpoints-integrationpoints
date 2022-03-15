@@ -114,22 +114,34 @@ function prepareFieldsForLoadFileExport(sourceConfiguration: Object, destination
 }
 
 function prepareFieldsForRelativityExport(sourceConfiguration: Object, destinationConfiguration: Object) {
-    var fieldsForRelativityExport = ["Export Type", "Source Details", "Source Workspace"] 
+
+    var fieldsForRelativityExport = ["Export Type", "Source Details", "Source Workspace"];
+
     if (destinationConfiguration["FederatedInstanceArtifactId"] !== null) {
         fieldsForRelativityExport.push("Source Rel. Instance");
     }
+
     fieldsForRelativityExport.push("Transfered Object", "Destination Workspace");
+
     if (sourceConfiguration["TargetFolder"] !== undefined) {
         fieldsForRelativityExport.push("Destination Folder");
     }
-    if (sourceConfiguration["targetProductionSet"] !== undefined) {
-        fieldsForRelativityExport.push("Destination Production Set");
-    }
-    fieldsForRelativityExport.push( "Multi-Select Overlay", "Use Folder Path Info");
-    if (destinationConfiguration["ImageImport"] !== "true") {
-        fieldsForRelativityExport.push("Move Existing Docs");
-    } else {
-        fieldsForRelativityExport.push("Image Precedence", "Copy Files to Repository");
+
+    fieldsForRelativityExport.push("Multi-Select Overlay");
+
+    if (destinationConfiguration["ArtifactTypeName"] === "Document"){
+
+        if (sourceConfiguration["targetProductionSet"] !== undefined) {
+            fieldsForRelativityExport.push("Destination Production Set");
+        }
+
+        fieldsForRelativityExport.push("Use Folder Path Info");
+
+        if (destinationConfiguration["ImageImport"] !== "true") {
+            fieldsForRelativityExport.push("Move Existing Docs");
+        } else {
+            fieldsForRelativityExport.push("Image Precedence", "Copy Files to Repository");
+        }    
     }
 
     return fieldsForRelativityExport;
