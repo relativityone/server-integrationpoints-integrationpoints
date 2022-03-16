@@ -111,7 +111,7 @@ function generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPoi
         transferSection.push(stopButton);
     }
 
-    if (buttonState.retryErrorsButtonVisible) {
+    if (buttonState.retryErrorsButtonVisible && integrationPoint["ExportType"].artifactTypeID === 10) {
         var retryErrorsButton = createRetryErrorsButton(consoleApi, convenienceApi, ctx, buttonState.retryErrorsButtonEnabled, workspaceId, integrationPointId);
         transferSection.push(retryErrorsButton);
     }
