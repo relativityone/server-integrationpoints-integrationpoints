@@ -1,0 +1,20 @@
+{
+  "profiles": {
+    "Agent - kCura.IntegrationPoints.Agent.Agent": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Users\\krzysztof.skowronek\\AppData\\Local\\RelativityStudio\\InstanceFiles\\Relativity.Platform.Service2.exe",
+      "commandLineArgs": "--Name \"Agent - kCura.IntegrationPoints.Agent.Agent\" --Identifier \"08c0ce2d-8191-4e8f-b037-899ceaee493d\" --Uri \"https://testvm-tl0/\" --DiscoveryUri \"https://testvm-tl0/Relativity.Rest\" --Version \"1.0.0.0\" --Path \"C:\\_SourceCode\\integrationpoints\\Source\\kCura.IntegrationPoints.Agent\\bin\" --Service \"C:\\Users\\krzysztof.skowronek\\AppData\\Local\\RelativityStudio\\InstanceFiles\\Relativity.Platform.Agent.dll\" --Type \"Agent\" --StartupTimeout \"00:02:00\"",
+      "workingDirectory": "C:\\_SourceCode\\integrationpoints\\Source\\kCura.IntegrationPoints.Agent\\bin\\",
+      "environmentVariables": {
+        "C4.ADS.AGENT": "TRUE",
+        "C4.ADS.APPLICATION-IDENTIFIER": "dcf6e9d1-22b6-4da3-98f6-41381e93c30c",
+        "C4.ADS.SQL-CONNECTION": "Data Source=testvm-tl0;Initial Catalog=EDDS;Persist Security Info=False;user id=eddsdbo;password=M@y0rQu1mby2!F0r3v3r;Packet Size=4096;Workstation ID=localhost",
+        "C4.ADS.SECRETSTORE-URL": "https://testvm-tl0/Relativity/Identity",
+        "C4.ADS.SECRETSTORE-IDENTITY-CONNECTION": "1",
+        "C4.ADS.RSAPI-URL": "https://testvm-tl0/Relativity.Services",
+        "C4.ADS.SECRETSTORE-RESOURCE-ID": "1",
+        "C4.ADS.SECRETSTORE-STATIC-ACCESS-TOKEN": "1"
+      }
+    }
+  }
+}

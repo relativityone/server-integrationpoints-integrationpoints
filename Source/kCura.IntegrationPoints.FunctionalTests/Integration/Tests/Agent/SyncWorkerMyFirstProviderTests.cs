@@ -32,7 +32,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 		public void SyncWorker_ShouldImportData()
 		{
 			// Arrange
-			const int numberOfRecords = 1000;
+			const int numberOfRecords = 10000;
 			string xmlPath = _myFirstProviderUtil.PrepareRecords(numberOfRecords);
 			JobTest job = _myFirstProviderUtil.PrepareJob(xmlPath, out JobHistoryTest jobHistory, RegisterJobContext);
 			SyncWorker sut = _myFirstProviderUtil.PrepareSut((importJob) => { importJob.Complete(); });

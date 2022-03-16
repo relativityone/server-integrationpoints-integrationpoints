@@ -26,7 +26,8 @@ namespace kCura.ScheduleQueue.AgentBase
 		private IQueueJobValidator _queueJobValidator;
 		private IDateTime _dateTime;
         private IFileShareAccessService _fileShareAccessService;
-        private const int _MAX_MESSAGE_LENGTH = 10000;
+		private bool _firstRun = true;
+		private const int _MAX_MESSAGE_LENGTH = 10000;
 
 		private readonly Guid _agentGuid;
 		private readonly Lazy<int> _agentId;
@@ -105,6 +106,9 @@ namespace kCura.ScheduleQueue.AgentBase
 				_dateTime = new DateTimeWrapper();
 			}
 
+
+
+
 			if(GetResourceGroupIDsFunc == null)
             {
 				GetResourceGroupIDsFunc = () => GetResourceGroupIDs();
@@ -126,7 +130,17 @@ namespace kCura.ScheduleQueue.AgentBase
 			using (Logger.LogContextPushProperty("AgentRunCorrelationId", Guid.NewGuid()))
             {
 	            Logger.LogInformation("Agent properties in Execute:{props}",  new {DidWork, IsKubernetesMode, ToBeRemoved});
-	            
+
+				if (IsKubernetesMode && !_firstRun)
+				{
+					Logger.LogInformation("Shutting down agent after single job in K8s mode");
+					DidWork = false;
+					ToBeRemoved = true;
+					return;
+				}
+
+				_firstRun = false;
+
 				if (ToBeRemoved)
 				{
 					Logger.LogInformation("Agent is marked to be removed. Job will not be processed.");
@@ -153,12 +167,6 @@ namespace kCura.ScheduleQueue.AgentBase
 				}
 				
 				Logger.LogInformation("Agent properties at the end of Execute:{props}",  new {DidWork, IsKubernetesMode, ToBeRemoved});
-
-				if (IsKubernetesMode && DidWork.HasValue && DidWork.Value)
-				{
-					Logger.LogInformation("Shutting down agent after single job in K8s mode");
-					DidWork = false;
-				}
 			}
 		}
 		
