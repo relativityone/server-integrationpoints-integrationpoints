@@ -207,14 +207,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			transferredItemsCount.Should().Be(workspaceDocumentCount).And.Be(productionDocumentsCount);
 			taggedDocs.Should().Be(transferredItemsCount);
 
-			foreach (var doc in transferredSourceDocs)
-				FieldTagMatchesExpectedValue(doc, "Relativity Destination Case", expectedDestinationCaseTag).Should().BeTrue();
-
-			foreach (var doc in destinationDocs)
-			{
-				FieldTagMatchesExpectedValue(doc, "Relativity Source Case", expectedSourceCaseTag).Should().BeTrue();
-				FieldTagMatchesExpectedValue(doc, "Relativity Source Job", expectedSourceJobTag).Should().BeTrue();
-			}
+			transferredSourceDocs.All(x => FieldTagMatchesExpectedValue(x, "Relativity Destination Case", expectedDestinationCaseTag))
+				.Should().BeTrue($"Destination Case tag value should be: {expectedDestinationCaseTag}");
+			destinationDocs.All(x => FieldTagMatchesExpectedValue(x, "Relativity Source Case", expectedSourceCaseTag))
+				.Should().BeTrue($"Source Case tag value should be: {expectedSourceCaseTag}");
+			destinationDocs.All(x => FieldTagMatchesExpectedValue(x, "Relativity Source Job", expectedSourceJobTag))
+				.Should().BeTrue($"Source Job tag value should be: {expectedSourceJobTag}");
 		}
 
 		public void EntitiesPushGoldFlow()
