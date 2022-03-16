@@ -125,12 +125,7 @@ namespace kCura.ScheduleQueue.AgentBase
 		{
 			using (Logger.LogContextPushProperty("AgentRunCorrelationId", Guid.NewGuid()))
             {
-	            if (IsKubernetesMode && DidWork.HasValue && DidWork.Value)
-	            {
-		            Logger.LogInformation("Shutting down agent after single job in K8s mode");
-		            DidWork = false;
-		            return;
-	            }
+	            Logger.LogInformation("Agent properties in Execute:{props}",  new {DidWork, IsKubernetesMode, ToBeRemoved});
 	            
 				if (ToBeRemoved)
 				{
@@ -154,6 +149,14 @@ namespace kCura.ScheduleQueue.AgentBase
 				{
 					Logger.LogError(ex, "Unhandled exception occurred while processing job from queue. Unlocking the job");
 					_jobService.UnlockJobs(_agentId.Value);
+					DidWork = false;
+				}
+				
+				Logger.LogInformation("Agent properties at the end of Execute:{props}",  new {DidWork, IsKubernetesMode, ToBeRemoved});
+
+				if (IsKubernetesMode && DidWork.HasValue && DidWork.Value)
+				{
+					Logger.LogInformation("Shutting down agent after single job in K8s mode");
 					DidWork = false;
 				}
 			}
