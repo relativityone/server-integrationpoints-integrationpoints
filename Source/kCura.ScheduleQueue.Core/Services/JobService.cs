@@ -312,7 +312,7 @@ namespace kCura.ScheduleQueue.Core.Services
 				throw new ArgumentNullException(nameof(job));
 			}
 
-			LogUpdateJobDetails(job.JobId);
+			LogUpdateJobDetails(job);
 			DataProvider.UpdateJobDetails(job.JobId, job.JobDetails);
 		}
 		
@@ -332,13 +332,13 @@ namespace kCura.ScheduleQueue.Core.Services
 		{
             UpdateStopState(new List<long>() { job.JobId }, StopState.DrainStopped);
             DataProvider.UnlockJob(job.JobId);
-			_log.LogInformation("Finished Drain-Stop finalization of Job with ID: {jobId}", job.JobId);
+			_log.LogInformation("Finished Drain-Stop finalization of Job with ID: {jobId} - JobInfo: {jobInfo}", job.JobId, job.ToString());
 		}
 
 		#region Logging
-		private void LogUpdateJobDetails(long jobId)
+		private void LogUpdateJobDetails(Job job)
 		{
-			_log.LogInformation("Attempting to update JobDetails for job with ID: ({jobId})", jobId);
+			_log.LogInformation("Attempting to update JobDetails for job with ID: {jobId} - JobInfo: {jobInfo}", job.JobId, job.ToString());
 		}
 
 		public void LogOnFinalizeJob(long jobJobId, string jobJobDetails, TaskResult taskResult)
@@ -412,7 +412,7 @@ namespace kCura.ScheduleQueue.Core.Services
 		
 		private void LogOnCreatedScheduledJob(Job job)
 		{
-			_log.LogInformation("Scheduled Job has been created:\n {@job}", job);
+			_log.LogInformation("Scheduled Job has been created:\n {job}", job.ToString());
 		}
 
 		private void LogOnCreatedScheduledJobBasedOnOldJob(long oldJobId, int workspaceID, int relatedObjectArtifactID,

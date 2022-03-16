@@ -1,11 +1,11 @@
-﻿import { getConnectionAuthenticationType, getFilter } from "../helpers/fieldValuesForImport";
+import { getConnectionAuthenticationType, getFilter } from "../helpers/fieldValuesForImport";
 import { getDestinationDetails, getFilePath, getImageFileFormat, getImageFileType, getImagePrecedence, getImportType, getLoadFileFormat, getPrecedenceList, getSubdirectoryInfo, getTextAndNativeFileNames, getTextFileEncoding, getVolume } from "../helpers/fieldValuesForLoadFileExport";
 import { formatToYesOrNo, getExportType, getImagesStatsForProduction, getImagesStatsForSavedSearch, getNativesStats, getPrecenenceSummary, getSourceDetails, prepareStatsInfo } from "../helpers/fieldValuesForRelativityExport";
 import { IConvenienceApi } from "../types/convenienceApi";
 
-export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sourceConfiguration: Object, destinationConfiguration: Object) {
+export function setFieldsValues(convenienceApi: IConvenienceApi, sourceConfiguration: Object, destinationConfiguration: Object) {
 
-    var sourceDetails = getSourceDetails(sourceConfiguration, destinationConfiguration["ArtifactTypeName"]);
+    var sourceDetails = getSourceDetails(sourceConfiguration);
     var useFolderPathInfo = formatToYesOrNo(destinationConfiguration["UseDynamicFolderPath"]);
     let exportType = getExportType(sourceConfiguration, destinationConfiguration);
 

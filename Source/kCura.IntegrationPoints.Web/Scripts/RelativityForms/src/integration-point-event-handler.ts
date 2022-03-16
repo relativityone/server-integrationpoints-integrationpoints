@@ -17,7 +17,7 @@ export default function (eventNames: typeof EventNames, convenienceApi: IConveni
         destinationConfiguration = configurations[1];
         
     };
-    eventHandlers[eventNames.HYDRATE_LAYOUT_COMPLETE] = function (layoutData) { setFieldsValues(layoutData, convenienceApi, sourceConfiguration, destinationConfiguration) };
+    eventHandlers[eventNames.HYDRATE_LAYOUT_COMPLETE] = setFieldsValues(convenienceApi, sourceConfiguration, destinationConfiguration);
     eventHandlers[eventNames.CREATE_CONSOLE] = createConsole(convenienceApi);
     eventHandlers[eventNames.UPDATE_CONSOLE] = createConsole(convenienceApi);
 
