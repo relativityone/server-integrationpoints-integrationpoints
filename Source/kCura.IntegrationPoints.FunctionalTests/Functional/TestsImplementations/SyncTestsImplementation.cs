@@ -83,9 +83,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 			integrationPointViewPage = integrationPointViewPage.RunIntegrationPoint(integrationPointName);			
 
-			var sourceDocs = GetDocumentsTagsDataFromWorkspace(_testsImplementationTestFixture.Workspace.ArtifactID, true);
+			var sourceDocs = GetDocumentsTagsDataFromSourceWorkspace(_testsImplementationTestFixture.Workspace.ArtifactID);
 			var transferredSourceDocs = sourceDocs.Where(x => x.FieldValues.FirstOrDefault().Value != null).ToList();
-			var destinationDocs = GetDocumentsTagsDataFromWorkspace(destinationWorkspace.ArtifactID, false);
+			var destinationDocs = GetDocumentsTagsDataFromDestinationWorkspace(destinationWorkspace.ArtifactID);
 
 			string expectedDestinationCaseTag = $"This Instance - {destinationWorkspace.Name} - {destinationWorkspace.ArtifactID}";
 			string expectedSourceCaseTag = $"This Instance - {_testsImplementationTestFixture.Workspace.Name} - {_testsImplementationTestFixture.Workspace.ArtifactID}";
@@ -99,14 +99,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			transferredItemsCount.Should().Be(workspaceDocumentCount).And.Be(keywordSearchDocumentsCount);
 			taggedDocs.Should().Be(transferredItemsCount);
 
-			foreach(var doc in transferredSourceDocs)				
-				FieldTagMatchesExpectedValue(doc, "Relativity Destination Case", expectedDestinationCaseTag).Should().BeTrue();
-
-			foreach (var doc in destinationDocs)
-            {				
-				FieldTagMatchesExpectedValue(doc, "Relativity Source Case", expectedSourceCaseTag).Should().BeTrue();
-				FieldTagMatchesExpectedValue(doc, "Relativity Source Job", expectedSourceJobTag).Should().BeTrue();
-			}
+			transferredSourceDocs.All(x => FieldTagMatchesExpectedValue(x, "Relativity Destination Case", expectedDestinationCaseTag))
+				.Should().BeTrue($"Destination Case tag value should be: {expectedDestinationCaseTag}");			
+			destinationDocs.All(x => FieldTagMatchesExpectedValue(x, "Relativity Source Case", expectedSourceCaseTag))
+				.Should().BeTrue($"Source Case tag value should be: {expectedSourceCaseTag}");
+			destinationDocs.All(x => FieldTagMatchesExpectedValue(x, "Relativity Source Job", expectedSourceJobTag))
+				.Should().BeTrue($"Source Job tag value should be: {expectedSourceJobTag}");			
 		}
 
 		public void ProductionImagesGoldFlow()
@@ -193,9 +191,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 			integrationPointViewPage = integrationPointViewPage.RunIntegrationPoint(integrationPointName);
 
-			var sourceDocs = GetDocumentsTagsDataFromWorkspace(_testsImplementationTestFixture.Workspace.ArtifactID, true);
+			var sourceDocs = GetDocumentsTagsDataFromSourceWorkspace(_testsImplementationTestFixture.Workspace.ArtifactID);
 			var transferredSourceDocs = sourceDocs.Where(x => x.FieldValues.FirstOrDefault().Value != null).ToList();
-			var destinationDocs = GetDocumentsTagsDataFromWorkspace(destinationWorkspace.ArtifactID, false);
+			var destinationDocs = GetDocumentsTagsDataFromDestinationWorkspace(destinationWorkspace.ArtifactID);
 
 			string expectedDestinationCaseTag = $"This Instance - {destinationWorkspace.Name} - {destinationWorkspace.ArtifactID}";
 			string expectedSourceCaseTag = $"This Instance - {_testsImplementationTestFixture.Workspace.Name} - {_testsImplementationTestFixture.Workspace.ArtifactID}";
@@ -257,18 +255,28 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			return fieldValue == null ? false : ((IList<RelativityObjectValue>)fieldValue).FirstOrDefault().Name == expectedTagValue;
 		}
 
-		private List<RelativityObject> GetDocumentsTagsDataFromWorkspace(int workspaceId, bool isSourceWorkspace)
+		private List<RelativityObject> GetDocumentsTagsDataFromSourceWorkspace(int workspaceId)
 		{
-			FieldRef[] sourceWorkspaceFields = new FieldRef[] { new FieldRef { Name = "Relativity Destination Case" } };
-			FieldRef[] destinationWorkspaceFields = new FieldRef[] { new FieldRef { Name = "Relativity Source Case" },
+			FieldRef[] fields = new FieldRef[] { new FieldRef { Name = "Relativity Destination Case" } };
+			return GetDocumentsWithSelectedFields(workspaceId, fields);			
+		}
+
+		private List<RelativityObject> GetDocumentsTagsDataFromDestinationWorkspace(int workspaceId)
+		{			
+			FieldRef[] fields = new FieldRef[] { new FieldRef { Name = "Relativity Source Case" },
 				new FieldRef { Name = "Relativity Source Job" } };
 
+			return GetDocumentsWithSelectedFields(workspaceId, fields);
+		}
+
+		private List<RelativityObject> GetDocumentsWithSelectedFields(int workspaceId, FieldRef[] fields)
+		{
 			using (IObjectManager objectManager = RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory.GetServiceProxy<IObjectManager>())
 			{
 				QueryRequest request = new QueryRequest
 				{
 					ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Document },
-					Fields = isSourceWorkspace ? sourceWorkspaceFields : destinationWorkspaceFields 
+					Fields = fields
 				};
 
 				return objectManager.QueryAsync(workspaceId, request, 0, int.MaxValue)
