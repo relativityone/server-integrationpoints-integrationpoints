@@ -3,7 +3,7 @@ import { getDestinationDetails, getFilePath, getImageFileFormat, getImageFileTyp
 import { formatToYesOrNo, getExportType, getImagesStatsForProduction, getImagesStatsForSavedSearch, getNativesStats, getPrecenenceSummary, getSourceDetails, prepareStatsInfo } from "../helpers/fieldValuesForRelativityExport";
 import { IConvenienceApi } from "../types/convenienceApi";
 
-export function setFieldsValues(convenienceApi: IConvenienceApi, sourceConfiguration: Object, destinationConfiguration: Object) {
+export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sourceConfiguration: Object, destinationConfiguration: Object) {
 
     var sourceDetails = getSourceDetails(sourceConfiguration);
     var useFolderPathInfo = formatToYesOrNo(destinationConfiguration["UseDynamicFolderPath"]);
