@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3] - 2022-03-16
+### Changed
+- Add RetryIntegrationPointAsync to IIIntegrationPointsAgentManager
+
 ## [1.2] - 2021-07-16
 ### Changed
 - Add IIntegrationPointsAgentManager Kepler with GetWorkloadAsync method
