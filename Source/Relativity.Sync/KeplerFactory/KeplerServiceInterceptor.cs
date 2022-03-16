@@ -7,8 +7,6 @@ using Polly.Retry;
 using Castle.DynamicProxy;
 using Relativity.Kepler.Exceptions;
 using Relativity.Services.Exceptions;
-using Relativity.Sync.Telemetry;
-using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.KeplerFactory
@@ -90,6 +88,7 @@ namespace Relativity.Sync.KeplerFactory
 					.Handle<ServiceNotFoundException>()                                             // Thrown when the service does not exist, the service isn't running yet or there are bad routing entries.
 					.Or<TemporarilyUnavailableException>()                                          // Thrown when the service is temporarily unavailable.
 					.Or<ServiceException>(ex => ex.Message.Contains("Failed to determine route"))   // Thrown when there are bad routing entries.
+					.Or<ServiceException>(ex => ex.Message.Contains("Create Failed"))   // Thrown when the create call failed.
 					.Or<TimeoutException>()                                                         // Thrown when there is an infrastructure level timeout.
 					.Or<Exception>(HasInInnerExceptions<Exception>)									// Thrown when there is an issue on networking layer
 					.WaitAndRetryAsync(_MAX_NUMBER_OF_HTTP_RETRIES, retryAttempt =>
