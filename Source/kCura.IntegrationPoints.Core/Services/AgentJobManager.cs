@@ -54,9 +54,9 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 		}
 
-		public void CreateJob<T>(Job parentJob, T jobDetails, TaskType task) where T : class
+		public Job CreateJob<T>(Job parentJob, T jobDetails, TaskType task) where T : class
 		{
-			CreateJob(jobDetails, task, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, GetRootJobId(parentJob), parentJob.JobId);
+			return CreateJob(jobDetails, task, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, GetRootJobId(parentJob), parentJob.JobId);
 		}
 
 		public Job CreateJobWithTracker<T>(Job parentJob, T jobDetails, TaskType type, string batchId) where T: class
@@ -77,9 +77,9 @@ namespace kCura.IntegrationPoints.Core.Services
 			return _tracker.GetBatchesStatuses(job, batchId);
 		}
 
-		public void CreateJob<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, long? rootJobId = null, long? parentJobId = null) where T : class
+		public Job CreateJob<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, long? rootJobId = null, long? parentJobId = null) where T : class
 		{
-			CreateJobInternal(jobDetails, task, workspaceId, integrationPointId, _context.UserID, rootJobId, parentJobId);
+			return CreateJobInternal(jobDetails, task, workspaceId, integrationPointId, _context.UserID, rootJobId, parentJobId);
 		}
 
 		public void CreateJobOnBehalfOfAUser<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, int userId, long? rootJobId = null,
