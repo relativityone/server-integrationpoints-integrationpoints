@@ -176,9 +176,21 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
                     export.ExportResult.RecordCount, callingMethodName, sw.Elapsed.TotalSeconds);
 
                 sw.Restart();
+                
+                List<RelativityObjectSlim> documents = new List<RelativityObjectSlim>();
+                List<RelativityObjectSlim> result;
+                int startIndex = 0;
+                do
+                {
+                    result = (await export.GetNextBlockAsync(startIndex, token)).ToList();
+                    if (result.Any())
+                    {
+                        documents.AddRange(result);
+                    }
 
-                IEnumerable<RelativityObjectSlim> documents =
-                    await export.GetAllResultsAsync(token).ConfigureAwait(false);
+                    startIndex += result.Count;
+                }
+                while (result.Any());
 
                 _logger.LogInformation("Finished gathering document ids for ({method}) in {elapsed} s",
                     callingMethodName, sw.Elapsed.TotalSeconds);
