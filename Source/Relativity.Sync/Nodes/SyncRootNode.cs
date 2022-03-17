@@ -55,7 +55,7 @@ namespace Relativity.Sync.Nodes
 
 			if (syncExceptions.Any())
 			{
-				throw new SyncException("Failures occured when finalizing the job.", new AggregateException(syncExceptions));
+				throw new SyncException("Failures occurred when finalizing the job.", new AggregateException(syncExceptions));
 			}
 		}
 

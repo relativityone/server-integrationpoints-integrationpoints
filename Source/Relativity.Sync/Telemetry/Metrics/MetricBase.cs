@@ -28,7 +28,7 @@ namespace Relativity.Sync.Telemetry.Metrics
 
 		public bool IsRetry { get; set; }
 
-		protected MetricBase()
+        protected MetricBase()
 		{
 			Name = GetType().Name;
 		}

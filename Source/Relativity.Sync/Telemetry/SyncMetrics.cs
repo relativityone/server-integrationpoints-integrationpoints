@@ -31,10 +31,19 @@ namespace Relativity.Sync.Telemetry
 			metric.DataSourceType = _metricsConfiguration.DataSourceType.GetDescription();
 			metric.DataDestinationType = _metricsConfiguration.DataDestinationType.GetDescription();
 			metric.IsRetry = _metricsConfiguration.JobHistoryToRetryId.HasValue;
-			metric.FlowName = _metricsConfiguration.ImageImport ? TelemetryConstants.MetricIdentifiers.APM_FLOW_NAME_IMAGES : TelemetryConstants.MetricIdentifiers.APM_FLOW_NAME_NATIVES_OR_METADATA;
-			metric.SyncVersion = _metricsConfiguration.SyncVersion;
-			
-			foreach (ISyncMetricsSink sink in _sinks)
+            metric.SyncVersion = _metricsConfiguration.SyncVersion;
+
+            if (_metricsConfiguration.RdoArtifactTypeId != (int)ArtifactType.Document &&
+                _metricsConfiguration.DestinationRdoArtifactTypeId != (int)ArtifactType.Document)
+            {
+                metric.FlowName = TelemetryConstants.MetricIdentifiers.APM_FLOW_NAME_NON_DOCUMENT_OBJECTS;
+            }
+            else
+            {
+                metric.FlowName = _metricsConfiguration.ImageImport ? TelemetryConstants.MetricIdentifiers.APM_FLOW_NAME_IMAGES : TelemetryConstants.MetricIdentifiers.APM_FLOW_NAME_NATIVES_OR_METADATA;
+			}
+
+            foreach (ISyncMetricsSink sink in _sinks)
 			{
 				sink.Send(metric);
 			}

@@ -1,13 +1,22 @@
 ﻿using Relativity.Sync.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Relativity.Sync.Storage
 {
 	internal class NonDocumentJobStartMetricsConfiguration : INonDocumentJobStartMetricsConfiguration
 	{
-	}
+        private readonly SyncJobParameters _syncJobParameters;
+        private readonly IConfiguration _cache;
+
+        public bool Resuming => _cache.GetFieldValue(x => x.Resuming);
+        public int DestinationWorkspaceArtifactId => _cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);
+        public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
+        public int? JobHistoryToRetryId => _cache.GetFieldValue(x => x.JobHistoryToRetryId);
+        public int RdoArtifactTypeId => _cache.GetFieldValue(x => x.RdoArtifactTypeId);
+
+        public NonDocumentJobStartMetricsConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters)
+        {
+            _syncJobParameters = syncJobParameters;
+            _cache = cache;
+        }
+    }
 }

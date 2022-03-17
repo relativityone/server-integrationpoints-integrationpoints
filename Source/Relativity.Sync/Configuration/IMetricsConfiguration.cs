@@ -17,5 +17,9 @@
 		int? JobHistoryToRetryId { get; }
 
 		string SyncVersion { get; }
-	}
+
+        int RdoArtifactTypeId { get;}
+
+        int DestinationRdoArtifactTypeId { get; }
+    }
 }
