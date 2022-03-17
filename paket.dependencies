@@ -44,8 +44,9 @@ nuget Relativity.AutomatedWorkflows.Services.Interfaces 0.10.0-pre.1
 nuget Relativity.AutomatedWorkflows.SDK 0.10.0-pre.1
 
 // Import API packages
-nuget Relativity.DataExchange.Client.SDK 1.15.30
+nuget Relativity.DataExchange.Client.SDK 1.16.22
 nuget Relativity.DataTransfer.Legacy.SDK 0.2.0
+nuget Relativity.Transfer.Client 7.4.7
 
 //Relativity transient packages
 nuget kCura.OutsideIn.FI.Win32 2020.7.0 content: none 		//Relativity.DataExchange.Client.SDK
@@ -133,7 +134,7 @@ group Tests
 	nuget Relativity.OAuth2Client 1.5.2
 	nuget Relativity.OAuth2Client.Interfaces 1.5.2
 
-	nuget Relativity.Sync 0.8.124
+	nuget Relativity.Sync 0.8.0-pre.128
 
 	//RIP packages
 	nuget IntegrationPoints.MyFirstProvider 12.3.2
@@ -145,7 +146,7 @@ group Sync
 	strategy: min
 	source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 	
-	nuget Relativity.Sync 0.8.124
+	nuget Relativity.Sync 0.8.0-pre.128
 	nuget Newtonsoft.Json 6.0.8
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
