@@ -9,6 +9,14 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
 using System;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
+using Relativity.API;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Core.Validation.Parts;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
+using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 
 namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 {
@@ -39,7 +47,35 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 			_integrationPointRepository = integrationPointRepository;
 		}
 
-		public ButtonStateDTO CreateButtonState(int workspaceArtifactId, int integrationPointArtifactId)
+        public static ButtonStateBuilder CreateButtonStateBuilder(
+            ICPHelper helper,
+            IRepositoryFactory respositoryFactory,
+            IManagerFactory managerFactory)
+        {
+
+            var logger = helper.GetLoggerFactory().GetLogger();
+            IRelativityObjectManager objectManager = new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(helper.GetActiveCaseID());
+            IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer(logger);
+            ISecretsRepository secretsRepository = new SecretsRepository(
+                    SecretStoreFacadeFactory_Deprecated.Create(helper.GetSecretStore, logger),
+                    logger
+                );
+            IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(objectManager, integrationPointSerializer, secretsRepository, logger);
+			var providerTypeService = new ProviderTypeService(objectManager);
+			var queueManager = managerFactory.CreateQueueManager();
+            var jobHistoryManager = managerFactory.CreateJobHistoryManager();
+            var stateManager = managerFactory.CreateStateManager();
+            var permissionValidator = new IntegrationPointPermissionValidator(new[] {
+                new ViewErrorsPermissionValidator(respositoryFactory) },
+                new IntegrationPointSerializer(logger));
+            IPermissionRepository permissionRepository = new PermissionRepository(helper, helper.GetActiveCaseID());
+
+            var buttonStateBuilder = new ButtonStateBuilder(providerTypeService, queueManager, jobHistoryManager, stateManager,
+                        permissionRepository, permissionValidator, integrationPointRepository);
+            return buttonStateBuilder;
+        }
+
+        public ButtonStateDTO CreateButtonState(int workspaceArtifactId, int integrationPointArtifactId)
 		{
 			IntegrationPoint integrationPoint =
 				_integrationPointRepository.ReadWithFieldMappingAsync(integrationPointArtifactId).GetAwaiter().GetResult();

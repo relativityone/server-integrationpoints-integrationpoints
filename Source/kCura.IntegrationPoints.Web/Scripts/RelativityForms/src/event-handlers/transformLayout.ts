@@ -1,5 +1,4 @@
-﻿import { Stats } from "webpack";
-import { IConvenienceApi } from "../types/convenienceApi";
+﻿import { IConvenienceApi } from "../types/convenienceApi";
 
 export function transformLayout(layoutData, convenienceApi: IConvenienceApi, backingModelData) {
     try {
@@ -17,6 +16,8 @@ export function transformLayout(layoutData, convenienceApi: IConvenienceApi, bac
                 if (destinationConfiguration["Provider"] === "relativity") {
                     let fieldsForRelativityExport = prepareFieldsForRelativityExport(sourceConfiguration, destinationConfiguration)
                     addFieldsToLayout(layoutData, existingFields, fieldsForRelativityExport)
+                    let fieldsForRelativityExportSecondColumn = prepareFieldsForRelativityExportSecondColumn(destinationConfiguration);
+                    addFieldsToLayoutSecondColumn(layoutData, fieldsForRelativityExportSecondColumn);
                 } else if (destinationConfiguration["Provider"] === "Load File") {
                     let fieldsForLoadFileExport = prepareFieldsForLoadFileExport(sourceConfiguration, destinationConfiguration);
                     addFieldsToLayout(layoutData, existingFields, fieldsForLoadFileExport)
@@ -94,6 +95,38 @@ function addFieldsToLayout(layoutData, existingFields, fields: Array<String>) {
     })
 }
 
+function addFieldsToLayoutSecondColumn(layoutData, fields: Array<String>) {
+    let pos = 6;
+    fields.forEach((label, index) => {
+
+        // the rest of new fields are added below - starting at row 7 
+        layoutData[0].Elements[0].Elements.push({
+            FieldType: "FixedLengthText",
+            MaxLength: 255,
+            AllowHTML: false,
+            FieldID: label,
+            DisplayName: label,
+            AllowCopyFromPrevious: false,
+            ShowNameColumn: true,
+            IsReadOnly: false,
+            IsRequired: false,
+            IsSystem: false,
+            FieldCategoryID: 2,
+            EnableDataGrid: false,
+            Guids: [
+                "b1323ca7-34e5-4e6b-8ff1-e8d3b1a5fd0a"
+            ],
+            Colspan: 1,
+            Column: 2,
+            Row: pos,
+            expanded: false,
+            minimumWidth: -1,
+            IsVisible: true
+        });
+        pos += 1;
+        })
+}
+
 function prepareFieldsForLoadFileExport(sourceConfiguration: Object, destinationConfiguration: Object) {
     var fieldsForLoadFileExport = ["Export Type", "Source Details", "Destination Details", "Overwrite Files", "Start at record"]; 
     if (sourceConfiguration["ExportNatives"] || sourceConfiguration["ExportImages"] || sourceConfiguration["ExportFullTextAsFile"]) {
@@ -145,4 +178,24 @@ function prepareFieldsForRelativityExport(sourceConfiguration: Object, destinati
     }
 
     return fieldsForRelativityExport;
+}
+
+function prepareFieldsForRelativityExportSecondColumn(destinationConfiguration: Object) {
+    var fieldsForRelativityExportSecondColumn = ["Total of Documents"];
+
+    if (destinationConfiguration["importNativeFile"] == 'true' && !importImageFiles(destinationConfiguration)) {
+        fieldsForRelativityExportSecondColumn.push("Total of Natives");
+    }
+
+    if (importImageFiles(destinationConfiguration)) {
+        fieldsForRelativityExportSecondColumn.push("Total of Images");
+    }
+
+    fieldsForRelativityExportSecondColumn.push("Create Saved Search");
+
+    return fieldsForRelativityExportSecondColumn;
+}
+
+function importImageFiles(destinationConfiguration: Object) {
+    return (destinationConfiguration["ImageImport"] == 'true' && (!destinationConfiguration["ImagePrecedence"] || destinationConfiguration["ImagePrecedence"].length == 0));
 }
