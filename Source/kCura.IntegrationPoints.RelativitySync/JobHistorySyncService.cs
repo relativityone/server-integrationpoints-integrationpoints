@@ -9,7 +9,6 @@ using kCura.IntegrationPoints.Domain.Extensions;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Executors.Validation;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
@@ -107,7 +106,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		public async Task MarkJobAsValidationFailedAsync(ValidationException ex, IExtendedJob job)
+		public async Task MarkJobAsValidationFailedAsync(IExtendedJob job, Exception ex)
 		{
 			using (IObjectManager manager = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{

@@ -1,11 +1,12 @@
 ﻿using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Domain.Models;
+using static kCura.IntegrationPoints.Core.Contracts.Configuration.SourceConfiguration;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
 	public class StateManager : IStateManager
 	{
-		public ButtonStateDTO GetButtonState(ProviderType providerType, bool hasJobsExecutingOrInQueue, bool hasErrors, bool hasErrorViewPermissions,
+		public ButtonStateDTO GetButtonState(ExportType exportType, ProviderType providerType, bool hasJobsExecutingOrInQueue, bool hasErrors, bool hasErrorViewPermissions,
 			bool hasStoppableJobs, bool hasProfileAddPermission)
 		{
 			bool runButtonEnabled = IsRunButtonEnable(hasJobsExecutingOrInQueue);
@@ -13,7 +14,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			bool retryErrorsButtonEnabled = IsRetryErrorsButtonEnabled(providerType, hasJobsExecutingOrInQueue, hasErrors);
 			bool stopButtonEnabled = IsStopButtonEnabled(hasStoppableJobs);
 			bool viewErrorsLinkVisible = IsViewErrorsLinkVisible(providerType, hasErrorViewPermissions);
-			bool retryErrorsButtonVisible = IsRetryErrorsButtonVisible(providerType);
+			bool retryErrorsButtonVisible = IsRetryErrorsButtonVisible(providerType, exportType);
 			bool saveAsProfileButtonVisible = IsSaveAsProfileButtonVisible(hasProfileAddPermission);
 			bool downloadErrorFileLinkEnabled = IsDownloadErrorFileLinkEnabled(hasErrors);
 			bool downloadErrorFileLinkVisible = IsDownloadErrorFileLinkVisible(providerType);
@@ -57,9 +58,9 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return (providerType == ProviderType.Relativity) && hasErrorViewPermissions;
 		}
 
-		private bool IsRetryErrorsButtonVisible(ProviderType providerType)
+		private bool IsRetryErrorsButtonVisible(ProviderType providerType, ExportType exportType)
 		{
-			return providerType == ProviderType.Relativity;
+			return providerType == ProviderType.Relativity && exportType != ExportType.View;
 		}
 
 		private bool IsSaveAsProfileButtonVisible(bool hasProfileAddPermission)

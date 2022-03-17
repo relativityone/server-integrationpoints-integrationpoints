@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			ValidationException exception = new ValidationException(new ValidationResult() { IsValid = false });
 
 			// Act
-			await _sut.MarkJobAsValidationFailedAsync(exception, _jobFake.Object).ConfigureAwait(false);
+			await _sut.MarkJobAsValidationFailedAsync(_jobFake.Object, exception).ConfigureAwait(false);
 
 			// Assert
 			VerifyJobHistoryStatus(JobStatusChoices.JobHistoryValidationFailedGuid);
