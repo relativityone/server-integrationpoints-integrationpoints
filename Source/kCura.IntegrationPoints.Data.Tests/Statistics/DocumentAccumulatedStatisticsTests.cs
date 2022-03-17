@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 				Enumerable.Repeat(CreateDocumentWithHasNativeField(true), nativesCount),
 				Enumerable.Repeat(CreateDocumentWithHasNativeField(false), 3)).ToList();
 
-			_exportQueryResultFake.Setup(x => x.GetAllResultsAsync(It.IsAny<CancellationToken>()))
+			_exportQueryResultFake.Setup(x => x.GetNextBlockAsync(0, It.IsAny<CancellationToken>(), It.IsAny<int>()))
 				.ReturnsAsync(documents);
 			
 			_nativeFileSizeStatisticsFake.Setup(x => x.GetTotalFileSize(It.IsAny<IEnumerable<int>>(), _WORKSPACE_ID)).Returns(nativesSize);
@@ -98,8 +98,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 				Enumerable.Repeat(CreateDocumentWithImages(true, imagesPerDocumentCount), documentsWithImagesCount),
 				Enumerable.Repeat(CreateDocumentWithImages(false, 0), 4)
 				);
-		
-			
+
+            _exportQueryResultFake.Setup(x => x.GetNextBlockAsync(0, It.IsAny<CancellationToken>(), It.IsAny<int>()))
+                .ReturnsAsync(Documents);
+
 			_imageFileSizeStatisticsFake.Setup(x => x.GetTotalFileSize(It.IsAny<IList<int>>(), _WORKSPACE_ID)).Returns(imagesSize);
 
 			// Act
@@ -125,6 +127,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 				Enumerable.Repeat(CreateDocumentWithImages(false, 0), 4)
 			);
 
+            _exportQueryResultFake.Setup(x => x.GetNextBlockAsync(0, It.IsAny<CancellationToken>(), It.IsAny<int>()))
+                .ReturnsAsync(Documents);
+
 			// Act
 			DocumentsStatistics actual = await _sut.GetImagesStatisticsForSavedSearchAsync(_WORKSPACE_ID, savedSearchArtifactId, false).ConfigureAwait(false);
 
@@ -148,7 +153,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 				Enumerable.Repeat(CreateDocumentWithProducedImages(0), 4)
 			).ToList();
 
-			_imageFileSizeStatisticsFake.Setup(x => x.GetTotalFileSize(productionArtifactId, _WORKSPACE_ID)).Returns(imagesSize);
+            _exportQueryResultFake.Setup(x => x.GetNextBlockAsync(0, It.IsAny<CancellationToken>(), It.IsAny<int>()))
+                .ReturnsAsync(Documents);
+            _imageFileSizeStatisticsFake.Setup(x => x.GetTotalFileSize(productionArtifactId, _WORKSPACE_ID)).Returns(imagesSize);
 
 			// Act
 			DocumentsStatistics actual = await _sut.GetImagesStatisticsForProductionAsync(_WORKSPACE_ID, productionArtifactId).ConfigureAwait(false);
