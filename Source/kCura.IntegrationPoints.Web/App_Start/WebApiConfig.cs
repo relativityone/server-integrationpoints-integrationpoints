@@ -299,9 +299,9 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
-				name: "ConsoleStateGetState",
-				routeTemplate: "{workspaceID}/api/ConsoleState/GetState",
-				defaults: new { controller = "ConsoleState", action = "GetState" }
+				name: "ConsoleStateGetConsoleState",
+				routeTemplate: "{workspaceID}/api/ConsoleState/GetConsoleState",
+				defaults: new { controller = "ConsoleState", action = "GetConsoleState" }
 			);
 
 			config.Routes.MapHttpRoute(
