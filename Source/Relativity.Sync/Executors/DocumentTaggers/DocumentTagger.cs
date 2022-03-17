@@ -18,32 +18,28 @@ namespace Relativity.Sync.Executors.DocumentTaggers
 		    _logger = logger;
 	    }
 
-	    public async Task<TaggingExecutionResult> TagObjectsAsync(IImportJob importJob,
-		    ISynchronizationConfiguration configuration, CompositeCancellationToken token)
+        public async Task<TaggingExecutionResult> TagObjectsAsync(IImportJob importJob,
+            ISynchronizationConfiguration configuration, CompositeCancellationToken token)
         {
-            TaggingExecutionResult taggingExecutionResult;
-            if (!token.IsStopRequested)
-            {
-                Task<TaggingExecutionResult> destinationDocumentsTaggingTask = TagDestinationDocumentsAsync(importJob, configuration, token.StopCancellationToken);
-                Task<TaggingExecutionResult> sourceDocumentsTaggingTask = TagSourceDocumentsAsync(importJob, configuration, token.StopCancellationToken);
+            Task<TaggingExecutionResult> destinationDocumentsTaggingTask =
+                TagDestinationDocumentsAsync(importJob, configuration, CancellationToken.None);
+            Task<TaggingExecutionResult> sourceDocumentsTaggingTask =
+                TagSourceDocumentsAsync(importJob, configuration, CancellationToken.None);
 
-                TaggingExecutionResult sourceTaggingResult = await sourceDocumentsTaggingTask.ConfigureAwait(false);
-                TaggingExecutionResult destinationTaggingResult = await destinationDocumentsTaggingTask.ConfigureAwait(false);
-
-                taggingExecutionResult = TaggingExecutionResult.Compose(sourceTaggingResult, destinationTaggingResult);
-			}
-            else
+            if (token.IsStopRequested)
             {
                 string message =
                     $"Sync job was cancelled. SyncConfigurationArtifactId - {configuration.SyncConfigurationArtifactId}, ExportRunId - {configuration.ExportRunId}";
-                taggingExecutionResult =
-                    new TaggingExecutionResult(ExecutionStatus.Canceled, message, new Exception());
-			}
+                return new TaggingExecutionResult(ExecutionStatus.Canceled, message, new Exception());
+            }
 
-            return taggingExecutionResult;
-		}
+            TaggingExecutionResult sourceTaggingResult = await sourceDocumentsTaggingTask.ConfigureAwait(false);
+            TaggingExecutionResult destinationTaggingResult = await destinationDocumentsTaggingTask.ConfigureAwait(false);
 
-		private async Task<TaggingExecutionResult> TagDestinationDocumentsAsync(IImportJob importJob, ISynchronizationConfiguration configuration,
+            return TaggingExecutionResult.Compose(sourceTaggingResult, destinationTaggingResult);
+        }
+
+        private async Task<TaggingExecutionResult> TagDestinationDocumentsAsync(IImportJob importJob, ISynchronizationConfiguration configuration,
 			CancellationToken token)
 		{
 			_logger.LogInformation("Start tagging documents in destination workspace ArtifactID: {workspaceID}", configuration.DestinationWorkspaceArtifactId);
