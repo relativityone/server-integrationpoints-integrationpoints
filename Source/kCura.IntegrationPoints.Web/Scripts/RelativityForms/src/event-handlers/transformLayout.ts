@@ -16,8 +16,10 @@ export function transformLayout(layoutData, convenienceApi: IConvenienceApi, bac
                 if (destinationConfiguration["Provider"] === "relativity") {
                     let fieldsForRelativityExport = prepareFieldsForRelativityExport(sourceConfiguration, destinationConfiguration)
                     addFieldsToLayout(layoutData, existingFields, fieldsForRelativityExport)
-                    let fieldsForRelativityExportSecondColumn = prepareFieldsForRelativityExportSecondColumn(destinationConfiguration);
-                    addFieldsToLayoutSecondColumn(layoutData, fieldsForRelativityExportSecondColumn);
+                    if (destinationConfiguration["artifactTypeID"] == 10) {
+                        let fieldsForRelativityExportSecondColumn = prepareFieldsForRelativityExportSecondColumn(destinationConfiguration);
+                        addFieldsToLayoutSecondColumn(layoutData, fieldsForRelativityExportSecondColumn);
+                    }
                 } else if (destinationConfiguration["Provider"] === "Load File") {
                     let fieldsForLoadFileExport = prepareFieldsForLoadFileExport(sourceConfiguration, destinationConfiguration);
                     addFieldsToLayout(layoutData, existingFields, fieldsForLoadFileExport)
