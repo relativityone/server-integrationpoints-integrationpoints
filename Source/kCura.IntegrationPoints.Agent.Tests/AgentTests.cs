@@ -19,8 +19,10 @@ using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Choice;
 using System;
 using FluentAssertions;
+using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.AgentBase;
+using NSubstitute;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests
@@ -211,7 +213,8 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 			public IWindsorContainer Container { get; }
 
-			public TestAgent(IWindsorContainer container, Mock<IAPILog> logger, IKubernetesMode kubernetesMode) : base(Guid.Empty, kubernetesMode: kubernetesMode)
+			public TestAgent(IWindsorContainer container, Mock<IAPILog> logger, IKubernetesMode kubernetesMode) 
+				: base(Guid.Empty, kubernetesMode: kubernetesMode, dateTime: new DateTimeWrapper(), jobService: Substitute.For<IJobService>())
 			{
 				Container = container;
 				

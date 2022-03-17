@@ -44,6 +44,8 @@ namespace kCura.ScheduleQueue.AgentBase
 			[LogCategory.Info] = 10
 		};
 
+		private IDisposable _loggerAgentInstanceContext;
+
 		protected virtual IAPILog Logger => _loggerLazy.Value;
 
 		protected IJobService JobService => _jobService;
@@ -128,7 +130,6 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		public sealed override void Execute()
 		{
-			using (Logger.LogContextPushProperty("AgentInstanceGuid", _agentInstanceGuid))
 			using (Logger.LogContextPushProperty("AgentRunCorrelationId", Guid.NewGuid()))
             {
 				if (ToBeRemoved)
@@ -254,7 +255,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 						if (!IsKubernetesMode)
 						{
-							nextJob = GetNextQueueJob(); // assumptions: it will not throws exception
+							nextJob = GetNextQueueJob(); // assumptions: it will not throw exception
 						}
 						else
 						{
@@ -384,8 +385,11 @@ namespace kCura.ScheduleQueue.AgentBase
 			{
 				NotifyAgentTab(LogCategory.Exception, "Logger initialization failed. Helper is null.");
 			}
-
-			return Helper.GetLoggerFactory().GetLogger().ForContext<ScheduleQueueAgentBase>();
+			
+			IAPILog logger = Helper.GetLoggerFactory().GetLogger().ForContext<ScheduleQueueAgentBase>();
+			_loggerAgentInstanceContext = logger.LogContextPushProperty("AgentInstanceGuid", _agentInstanceGuid);
+			
+			return logger;
 		}
 
 		#region Logging
