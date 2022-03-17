@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Data.Toggles
 {
-	[DefaultValue(false)]
+	[DefaultValue(true)]
 	[Description("Force Integration Points to use keplerized Import API with Relativity.DataTransfer.Legacy.SDK ", "Adler Sieben")]
 	public class EnableKeplerizedImportAPIToggle : IToggle
 	{

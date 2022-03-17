@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -28,23 +29,31 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 
         protected override RelativityObjectSlimDto UpdateFields(RelativityObjectSlimDto value)
         {
-            string originalDestinationConfiguration = value.FieldValues[_DESTINATION_CONFIGURATION] as string;
-
-            if (!IsDestinationProviderRelativity(originalDestinationConfiguration))
+            try
             {
+                string originalDestinationConfiguration = value.FieldValues[_DESTINATION_CONFIGURATION] as string;
+
+                if (!IsDestinationProviderRelativity(originalDestinationConfiguration))
+                {
+                    return null;
+                }
+
+                string updatedDestinationConfiguration = AddDestinationArtifactTypeIdIfMissing(originalDestinationConfiguration);
+
+                if (updatedDestinationConfiguration == originalDestinationConfiguration)
+                {
+                    return null;
+                }
+
+                value.FieldValues[_DESTINATION_CONFIGURATION] = updatedDestinationConfiguration;
+
+                return value;
+            }
+            catch (Exception ex)
+            {
+                _log.LogError(ex, "Error while updating Destination Configuration in {eventHandlerName}", nameof(NonDocumentObjectMigrationCommand));
                 return null;
             }
-
-            string updatedDestinationConfiguration = AddDestinationArtifactTypeIdIfMissing(originalDestinationConfiguration);
-
-            if (updatedDestinationConfiguration == originalDestinationConfiguration)
-            {
-                return null;
-            }
-
-            value.FieldValues[_DESTINATION_CONFIGURATION] = updatedDestinationConfiguration;
-
-            return value;
         }
 
         private bool IsDestinationProviderRelativity(string destinationConfiguration)

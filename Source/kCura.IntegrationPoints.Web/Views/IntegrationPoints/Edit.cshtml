@@ -61,7 +61,7 @@
 
 		var getEnableSyncNonDocumentFlowToggleValue = function() {
             var enableSyncNonDocumentFlowToggleValue = IP.data.ajax({
-                url: IP.utils.generateWebAPIURL('ToggleAPI', 'kCura.IntegrationPoints.Agent.Toggles.EnableSyncNonDocumentFlowToggle'),
+                url: IP.utils.generateWebAPIURL('ToggleAPI', 'kCura.IntegrationPoints.Common.Toggles.EnableSyncNonDocumentFlowToggle'),
                 type: 'get'
             }).fail(function (error) {
                 console.log(error);

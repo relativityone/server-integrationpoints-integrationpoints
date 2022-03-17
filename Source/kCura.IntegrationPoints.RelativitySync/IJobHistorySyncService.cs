@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Executors.Validation;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
@@ -11,7 +10,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		Task UpdateJobStatusAsync(string syncStatus, IExtendedJob job);
 
-		Task MarkJobAsValidationFailedAsync(ValidationException ex, IExtendedJob job);
+		Task MarkJobAsValidationFailedAsync(IExtendedJob job, Exception ex);
 
 		Task MarkJobAsStoppedAsync(IExtendedJob job);
 

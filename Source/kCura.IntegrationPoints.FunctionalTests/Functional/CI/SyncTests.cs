@@ -8,7 +8,7 @@ using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Models;
 using Relativity.Toggles;
-using kCura.IntegrationPoints.Agent.Toggles;
+using kCura.IntegrationPoints.Common.Toggles;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
