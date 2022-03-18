@@ -1,6 +1,7 @@
 ﻿using System;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts;
 
@@ -14,7 +15,8 @@ namespace kCura.IntegrationPoints.Core.Services.Domain
 		private readonly IHelper _helper;
 		private readonly IWindsorContainerSetup _windsorContainerSetup;
 
-		public ProviderFactoryLifecycleStrategy(IHelper helper, IAppDomainHelper domainHelper, IWindsorContainerSetup windsorContainerSetup) : base(domainHelper)
+		public ProviderFactoryLifecycleStrategy(IHelper helper, IAppDomainHelper domainHelper,
+			IWindsorContainerSetup windsorContainerSetup, IKubernetesMode kubernetesMode) : base(domainHelper, kubernetesMode, helper)
 		{
 			_helper = helper;
 			_applicationId = Guid.Parse(Constants.IntegrationPoints.APPLICATION_GUID_STRING);

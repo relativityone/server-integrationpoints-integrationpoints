@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Core.Provider.Internals
                 IPluginProvider pluginProvider = new DefaultSourcePluginProvider(getAppBinaries);
                 var relativityFeaturePathService = new RelativityFeaturePathService();
                 var domainHelper = new AppDomainHelper(pluginProvider, _helper, relativityFeaturePathService, _toggleProvider, _kubernetesMode);
-                var strategy = new AppDomainIsolatedFactoryLifecycleStrategy(domainHelper);
+                var strategy = new AppDomainIsolatedFactoryLifecycleStrategy(domainHelper, _kubernetesMode, _helper);
                 return strategy;
             }
             catch (Exception ex)

@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.Agent
         protected Agent(Guid agentGuid, IAgentService agentService = null, IJobService jobService = null,
                 IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
                 IQueueQueryManager queryManager = null, IKubernetesMode kubernetesMode = null, IDateTime dateTime = null, IAPILog logger = null)
-            : base(agentGuid, agentService, jobService, scheduleRuleFactory, queueJobValidator, queryManager, kubernetesMode, dateTime, logger)
+            : base(agentGuid, kubernetesMode, agentService, jobService, scheduleRuleFactory, queueJobValidator, queryManager, dateTime, logger)
         {
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
