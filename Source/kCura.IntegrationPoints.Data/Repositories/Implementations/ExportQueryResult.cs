@@ -46,25 +46,19 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		/// <inheritdoc />
 		public async Task<IEnumerable<RelativityObjectSlim>> GetNextBlockAsync(int startIndex, int resultsBlockSize = 1000)
-        {
-            return await GetNextBlockAsync(startIndex, default(CancellationToken), resultsBlockSize);
-        }
+		{
+			if (startIndex >= _exportResult.RecordCount)
+			{
+				return Enumerable.Empty<RelativityObjectSlim>();
+			}
 
-        /// <inheritdoc />
-        public async Task<IEnumerable<RelativityObjectSlim>> GetNextBlockAsync(int startIndex, CancellationToken token, int resultsBlockSize = 1000)
-        {
-            if (startIndex >= _exportResult.RecordCount)
-            {
-                return Enumerable.Empty<RelativityObjectSlim>();
-            }
+			using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(_executionIdentity))
+			{
+				RelativityObjectSlim[] results = (await GetBlockFromExportInternalAsync(resultsBlockSize, startIndex, client).ConfigureAwait(false)).ToArray();
 
-            using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(_executionIdentity))
-            {
-                RelativityObjectSlim[] results = (await GetBlockFromExportInternalAsync(resultsBlockSize, startIndex, client, token).ConfigureAwait(false)).ToArray();
-
-                return results;
-            }
-        }
+				return results;
+			}
+		}
 
 
 		/// <inheritdoc />
