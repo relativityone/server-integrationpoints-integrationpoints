@@ -65,6 +65,40 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
             }
         }
 
+        public async Task<int> RetryIntegrationPointAsync(IntegrationPointModel integrationPoint, int workspaceId)
+        {
+            //TODO => manager.Retry... (unable to call retry before paket versions adjustment)
+
+            using (var manager = _serviceFactory.GetServiceProxy<IIntegrationPointManager>())
+            {
+                await manager.RunIntegrationPointAsync(workspaceId, integrationPoint.ArtifactId).ConfigureAwait(false);
+            }
+
+            QueryRequest query = new QueryRequest
+            {
+                ObjectType = new ObjectTypeRef
+                {
+                    Guid = ObjectTypeGuids.JobHistoryGuid
+                },
+                Fields = new[] { new FieldRef { Name = "Integration Point" } }
+            };
+
+            using (var objectManager = _serviceFactory
+                .GetServiceProxy<IObjectManager>())
+            {
+                QueryResult result = await objectManager.QueryAsync(workspaceId, query, 0, 1000)
+                    .ConfigureAwait(false);
+
+                RelativityObject jobHistory = result.Objects
+                    .Where(x => (x.FieldValues.First().Value as List<RelativityObjectValue>)?.First()?.ArtifactID ==
+                                integrationPoint.ArtifactId)
+                    .OrderByDescending(x => x.ArtifactID)
+                    .First();
+
+                return jobHistory.ArtifactID;
+            }
+        }
+
         public async Task<string> GetJobHistoryStatus(int jobHistoryId, int workspaceId)
         {
             QueryRequest query = new QueryRequest
