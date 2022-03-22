@@ -11,9 +11,11 @@ using kCura.IntegrationPoints.Data.Statistics.Implementations;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Productions.Services.Interfaces.DTOs;
 using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Field;
 using Relativity.Services.Objects.DataContracts;
+using ImageFile = kCura.IntegrationPoints.Data.DTO.ImageFile;
 
 namespace kCura.IntegrationPoints.Data.Tests.Statistics
 {
@@ -95,6 +97,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			const int imagesSize = 33333;
 			const int documentsWithImagesCount = 2;
 			const int imagesPerDocumentCount = 5;
+            const int totalImagesCount = documentsWithImagesCount * imagesPerDocumentCount;
 
 			Documents = Enumerable.Concat(
 				Enumerable.Repeat(CreateDocumentWithImages(true, imagesPerDocumentCount), documentsWithImagesCount),
@@ -104,6 +107,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
             _exportQueryResultFake.Setup(x => x.GetNextBlockAsync(0, It.IsAny<CancellationToken>(), It.IsAny<int>()))
                 .ReturnsAsync(Documents);
 
+            ImageFile[] images = Enumerable.Repeat(
+                new ImageFile(0, "AdlerLocation", "AdlerName", 1), totalImagesCount)
+                .ToArray();
+            _fileRepositoryMock.Setup(x => x.RetrieveOriginalImagesForDocuments(_WORKSPACE_ID, It.IsAny<int[]>()))
+                .Returns(Task.FromResult((images, Array.Empty<int>())));
+
 			_imageFileSizeStatisticsFake.Setup(x => x.GetTotalFileSize(It.IsAny<IList<int>>(), _WORKSPACE_ID)).Returns(imagesSize);
 
 			// Act
@@ -111,7 +120,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 
 			// Assert
 			actual.DocumentsCount.Should().Be(Documents.Count());
-			actual.TotalImagesCount.Should().Be(documentsWithImagesCount * imagesPerDocumentCount);
+			actual.TotalImagesCount.Should().Be(totalImagesCount);
 			actual.TotalImagesSizeBytes.Should().Be(imagesSize);
 		}
 
@@ -123,16 +132,22 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			const int savedSearchArtifactId = 222;
 			const int documentsWithImagesCount = 2;
 			const int imagesPerDocumentCount = 5;
+            const int totalImagesCount = documentsWithImagesCount * imagesPerDocumentCount;
 
 			Documents = Enumerable.Concat(
 				Enumerable.Repeat(CreateDocumentWithImages(true, imagesPerDocumentCount), documentsWithImagesCount),
 				Enumerable.Repeat(CreateDocumentWithImages(false, 0), 4)
 			);
-
             _exportQueryResultFake.Setup(x => x.GetNextBlockAsync(0, It.IsAny<CancellationToken>(), It.IsAny<int>()))
                 .ReturnsAsync(Documents);
 
-			// Act
+			ImageFile[] images = Enumerable.Repeat(
+                    new ImageFile(0, "AdlerLocation", "AdlerName", 1), totalImagesCount)
+                .ToArray();
+            _fileRepositoryMock.Setup(x => x.RetrieveOriginalImagesForDocuments(_WORKSPACE_ID, It.IsAny<int[]>()))
+                .Returns(Task.FromResult((images, Array.Empty<int>())));
+
+            // Act
 			DocumentsStatistics actual = await _sut.GetImagesStatisticsForSavedSearchAsync(_WORKSPACE_ID, savedSearchArtifactId, false).ConfigureAwait(false);
 
 			// Assert

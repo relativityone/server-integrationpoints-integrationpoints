@@ -74,6 +74,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Installer
 				CreateDummyObjectRegistration<IExternalServiceInstrumentationProvider>(),
 				CreateDummyObjectRegistration<IRetryHandlerFactory>(),
 				CreateDummyObjectRegistration<IRetryHandler>(),
+				CreateDummyObjectRegistration<IAPILog>(),
 			};
 
 			container.Register(dependencies);
