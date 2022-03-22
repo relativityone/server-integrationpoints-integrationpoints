@@ -52,5 +52,9 @@ namespace kCura.IntegrationPoints.Core.Validation
 			errorCode: $"20.015",
 			shortMessage: $"View is not available or has been secured from this user. Contact your system administrator."
 		);
+		public static ValidationMessage SyncNonDocumentFlowToggleDisabled => new ValidationMessage(
+			errorCode: $"20.016",
+			shortMessage: $"'kCura.IntegrationPoints.Common.Toggles.EnableSyncNonDocumentFlowToggle' toggle is disabled."
+		);
 	}
 }

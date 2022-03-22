@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation.Parts;
@@ -10,6 +11,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity;
 using Relativity.API;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 {
@@ -18,13 +20,15 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		private readonly IAPILog _logger;
 		private readonly ISerializer _serializer;
 		private readonly IRelativityProviderValidatorsFactory _validatorsFactory;
+        private readonly IToggleProvider _toggleProvider;
 
-		public RelativityProviderConfigurationValidator(IAPILog logger, ISerializer serializer, IRelativityProviderValidatorsFactory validatorsFactory)
+        public RelativityProviderConfigurationValidator(IAPILog logger, ISerializer serializer, IRelativityProviderValidatorsFactory validatorsFactory, IToggleProvider toggleProvider)
 		{
 			_logger = logger;
 			_serializer = serializer;
 			_validatorsFactory = validatorsFactory;
-		}
+            _toggleProvider = toggleProvider;
+        }
 
 		public string Key => IntegrationPointProviderValidator.GetProviderValidatorKey(Domain.Constants.RELATIVITY_PROVIDER_GUID, Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID.ToString());
 
@@ -53,10 +57,24 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator
 		private ValidationResult Validate(IntegrationPointProviderValidationModel integrationModel)
 		{
 			SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(integrationModel.SourceConfiguration);
+            ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationModel.DestinationConfiguration);
 
 			var result = new ValidationResult();
+			result.Add(ValidateSyncNonDocumentFlowToggle(destinationConfiguration));
 			result.Add(ValidateSourceWorkspace(sourceConfiguration));
 			result.Add(ValidateDestinationWorkspace(integrationModel, sourceConfiguration));
+			return result;
+		}
+
+		private ValidationResult ValidateSyncNonDocumentFlowToggle(ImportSettings destinationConfiguration)
+        {
+			var result = new ValidationResult();
+
+			if (destinationConfiguration.ArtifactTypeId != (int)ArtifactType.Document && !_toggleProvider.IsEnabled<EnableSyncNonDocumentFlowToggle>())
+            {
+				result.Add(ValidationMessages.SyncNonDocumentFlowToggleDisabled);
+            }
+
 			return result;
 		}
 

@@ -132,7 +132,7 @@ namespace kCura.IntegrationPoints.Domain
 			{
 				ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile,
 				ApplicationBase = domainPath,
-				PrivateBinPath = Path.GetDirectoryName(new Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase).LocalPath)
+				PrivateBinPath = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath)
 			};
 
 			string domainName = Guid.NewGuid().ToString();
@@ -163,14 +163,19 @@ namespace kCura.IntegrationPoints.Domain
 
 			manager.Init();
 
-			Bootstrappers.AppDomainBootstrapper.Bootstrap(
-				Constants.IntegrationPoints.APP_DOMAIN_SUBSYSTEM_NAME,
-				Constants.IntegrationPoints.APPLICATION_GUID_STRING, 
-				libraryPath: string.Empty, 
-				domain: domain);
+			BootstrapDomain(domain);
 
 			return manager;
 		}
+        
+        public void BootstrapDomain(AppDomain domain)
+        {
+	        Bootstrappers.AppDomainBootstrapper.Bootstrap(
+		        Constants.IntegrationPoints.APP_DOMAIN_SUBSYSTEM_NAME,
+		        Constants.IntegrationPoints.APPLICATION_GUID_STRING,
+		        libraryPath: string.Empty,
+		        domain: domain);
+        }
 
         public virtual T CreateInstance<T>(AppDomain domain, params object[] constructorArgs) where T : class
         {

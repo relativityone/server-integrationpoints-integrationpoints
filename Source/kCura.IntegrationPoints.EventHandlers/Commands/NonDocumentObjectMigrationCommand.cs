@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
             }
             catch (Exception ex)
             {
-                _log.LogError(ex, "Failed to migrate Integration Point to be non-document object compatible.");
+                _log.LogError(ex, "Error while updating Destination Configuration in {eventHandlerName}", nameof(NonDocumentObjectMigrationCommand));
                 return null;
             }
         }

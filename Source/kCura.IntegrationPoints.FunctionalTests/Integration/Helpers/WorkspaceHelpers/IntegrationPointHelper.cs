@@ -86,9 +86,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			int artifactTypeId = GetArtifactTypeIdByName(Entity._ENTITY_OBJECT_NAME);
 
 			IntegrationPointTest integrationPoint = CreateEmptyIntegrationPoint();
-
-			FolderTest destinationFolder = destinationWorkspace.Folders.First();
-
+			
 			ViewTest sourceView = Workspace.Views.First();
 
 			IntegrationPointTypeTest integrationPointType = Workspace.IntegrationPointTypes.First(x => 

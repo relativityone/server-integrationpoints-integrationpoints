@@ -3,6 +3,7 @@ using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services.Domain;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -23,6 +24,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
 		private IProviderFactory _providerFactoryMock;
 		private readonly Guid _thirdPartyApplicationGuid = Guid.NewGuid();
 		private readonly Guid _internalApplicationGuid = Guid.Parse(Constants.IntegrationPoints.APPLICATION_GUID_STRING);
+		private IKubernetesMode _kubernetesModeMock;
 
 		public override void SetUp()
 		{
@@ -37,7 +39,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
 			_windsorContainer = Substitute.For<IWindsorContainer>();
 			_windsorContainerSetup = Substitute.For<IWindsorContainerSetup>();
 			_windsorContainerSetup.SetUpCastleWindsor(_helper).Returns(_windsorContainer);
-			_creationStrategy = new ProviderFactoryLifecycleStrategy(_helper, _domainHelperMock, _windsorContainerSetup);
+			
+			_kubernetesModeMock = Substitute.For<IKubernetesMode>();
+			_kubernetesModeMock.IsEnabled().Returns(false);
+
+			_creationStrategy = new ProviderFactoryLifecycleStrategy(_helper, _domainHelperMock, _windsorContainerSetup,
+				_kubernetesModeMock);
 		}
 
 
@@ -66,6 +73,19 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Domain
 			_creationStrategy.CreateProviderFactory(_thirdPartyApplicationGuid);
 
 			_domainHelperMock.Received().SetupDomainAndCreateManager(_appDomainMock, _thirdPartyApplicationGuid);
+		}
+		
+		[Test]
+		public void CreateProviderFactory_CallsSetupDomainAndCreateManager_InKubernetesMode()
+		{
+			// Arrange
+			_kubernetesModeMock.IsEnabled().Returns(true);
+			
+			// Act
+			_creationStrategy.CreateProviderFactory(_thirdPartyApplicationGuid);
+
+			// Assert
+			_domainHelperMock.Received().SetupDomainAndCreateManager(AppDomain.CurrentDomain, _thirdPartyApplicationGuid);
 		}
 
 		[Test]
