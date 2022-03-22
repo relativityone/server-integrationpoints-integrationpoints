@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Data.DTO;
@@ -17,10 +18,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private readonly IFileRepository _fileRepository;
 
 		public FileRepositoryProxy(IToggleProvider toggleProvider, Func<ISearchManager> searchManagerFactory, IServicesMgr servicesMgr,
-			IExternalServiceInstrumentationProvider instrumentationProvider, IRetryHandlerFactory retryHandlerFactory)
+			IExternalServiceInstrumentationProvider instrumentationProvider, IRetryHandlerFactory retryHandlerFactory, IAPILog logger)
 		{
 			_fileRepository = toggleProvider.IsEnabled<EnableKeplerizedImportAPIToggle>()
-				? (IFileRepository) new FileRepository(servicesMgr, instrumentationProvider, retryHandlerFactory)
+				? (IFileRepository) new FileRepository(servicesMgr, instrumentationProvider, retryHandlerFactory, logger)
 				: new WebAPIFileRepository(searchManagerFactory, instrumentationProvider, retryHandlerFactory);
 		}
 
@@ -40,5 +41,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			return _fileRepository.GetNativesForDocuments(workspaceID, documentIDs, searchManager);
 		}
-	}
+
+        public Task<(ImageFile[] Images, int[] DocumentWithoutImages)> RetrieveOriginalImagesForDocuments(int workspaceId, int[] documentIds)
+        {
+			return _fileRepository.RetrieveOriginalImagesForDocuments(workspaceId, documentIds);
+		}
+    }
 }

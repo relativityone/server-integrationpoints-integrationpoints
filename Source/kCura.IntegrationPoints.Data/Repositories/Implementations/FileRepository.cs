@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Constants;
 using kCura.IntegrationPoints.Common.Handlers;
@@ -30,6 +31,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private const string _FILENAME_COLUMN_NAME_PRODUCTION = "ImageFileName";
 		private const string _SIZE_COLUMN_NAME_PRODUCTION = "ImageSize";
 		private const string _NATIVE_IDENTIFIER = "NativeIdentifier";
+        private const string _IDENTIFIER = "Identifier";
 
 		private const string _FILENAME_COLUMN_NAME = "Filename";
 		private const string _SIZE_COLUMN_NAME = "Size";
@@ -37,13 +39,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private readonly IServicesMgr _servicesMgr;
 		private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
 		private readonly IRetryHandler _retryHandler;
+        private readonly IAPILog _logger;
 
-		public FileRepository(IServicesMgr servicesMgr, IExternalServiceInstrumentationProvider instrumentationProvider, IRetryHandlerFactory retryHandlerFactory)
+		public FileRepository(IServicesMgr servicesMgr, IExternalServiceInstrumentationProvider instrumentationProvider, IRetryHandlerFactory retryHandlerFactory, IAPILog logger)
 		{
 			_servicesMgr = servicesMgr;
 			_retryHandler = retryHandlerFactory.Create(_MAX_NUMBER_OF_RETRIES, _EXPONENTIAL_WAIT_TIME_BASE_IN_SEC);
 			_instrumentationProvider = instrumentationProvider;
-		}
+            _logger = logger;
+        }
 
 		public ILookup<int, ImageFile> GetImagesLocationForProductionDocuments(int workspaceId, int productionId, int[] documentIDs, ISearchManager searchManager = null)
 		{
@@ -137,6 +141,32 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return files;
 		}
 
+        public async Task<(ImageFile[] Images, int[] DocumentWithoutImages)> RetrieveOriginalImagesForDocuments(int workspaceId, int[] documentIds)
+        {
+            DataSetWrapper dataSet;
+            using (ISearchService searchService = _servicesMgr.CreateProxy<ISearchService>(ExecutionIdentity.CurrentUser))
+            {
+                dataSet = await searchService.RetrieveImagesForSearchAsync(workspaceId, documentIds, "");
+            }
+
+            DataSet unwrappedDataSet = dataSet.Unwrap();
+
+			if (dataSet == null || unwrappedDataSet.Tables.Count == 0)
+            {
+                _logger.LogWarning("ISearchService.RetrieveImagesForSearchAsync returned null/empty data set.");
+                _logger.LogInformation("Image retrieve statistics: OriginalImages: {originalImagesCount}, DocumentsWithoutImages: {noImagesCount}",
+                    0, documentIds.Length);
+                return (Array.Empty<ImageFile>(), documentIds.ToArray());
+            }
+
+            ImageFile[] imageFiles = unwrappedDataSet.Tables[0].AsEnumerable().Select(GetImageFileWithIdentifier).ToArray();
+
+            _logger.LogInformation("Image retrieve statistics: OriginalImages: {originalImagesCount}, DocumentsWithoutImages: {noImagesCount}",
+                imageFiles.Length, documentIds.Length - imageFiles.Length);
+
+            return (imageFiles, documentIds.Except(imageFiles.Select(x => x.DocumentArtifactId)).ToArray());
+        }
+
 		private ILookup<int, ImageFile> ToProducedImageFilesLookup(DataSet imagesFromProductionDataSet, int productionId)
 		{
 			return imagesFromProductionDataSet.Tables[0].AsEnumerable()
@@ -154,7 +184,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return new ImageFile(documentArtifactId, location, fileName, size, productionId, nativeIdentifier);
 		}
 
-		private ImageFile GetImageFile(DataRow dataRow)
+        private ImageFile GetImageFile(DataRow dataRow)
 		{
 			int documentArtifactId = GetValue<int>(dataRow, _DOCUMENT_ARTIFACT_ID_COLUMN_NAME);
 			string location = GetValue<string>(dataRow, _LOCATION_COLUMN_NAME);
@@ -163,6 +193,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			return new ImageFile(documentArtifactId, location, fileName, size);
 		}
+
+        private ImageFile GetImageFileWithIdentifier(DataRow dataRow)
+        {
+            int documentArtifactId = GetValue<int>(dataRow, _DOCUMENT_ARTIFACT_ID_COLUMN_NAME);
+            string location = GetValue<string>(dataRow, _LOCATION_COLUMN_NAME);
+            string fileName = GetValue<string>(dataRow, _FILENAME_COLUMN_NAME);
+            long size = GetValue<long>(dataRow, _SIZE_COLUMN_NAME);
+            string nativeIdentifier = GetValue<string>(dataRow, _IDENTIFIER);
+
+			return new ImageFile(documentArtifactId, location, fileName, size, nativeIdentifier: nativeIdentifier);
+        }
 
 		private T GetValue<T>(DataRow row, string columnName)
 		{

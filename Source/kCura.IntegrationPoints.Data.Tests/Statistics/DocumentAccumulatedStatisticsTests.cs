@@ -27,6 +27,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 		private Mock<INativeFileSizeStatistics> _nativeFileSizeStatisticsFake;
 		private Mock<IRelativityObjectManager> _objectManagerFake;
 		private Mock<IExportQueryResult> _exportQueryResultFake;
+		private Mock<IFileRepository> _fileRepositoryMock;
 
 		private Mock<IRelativityObjectManagerFactory> _objectManagerFactoryFake;
 		private const int _WORKSPACE_ID = 1111;
@@ -44,6 +45,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 			_imageFileSizeStatisticsFake = new Mock<IImageFileSizeStatistics>();
 			_loggerFake = new Mock<IAPILog>();
 			_exportQueryResultFake = new Mock<IExportQueryResult>();
+            _fileRepositoryMock = new Mock<IFileRepository>();
 
 			_objectManagerFake.Setup(x =>
 					x.QueryWithExportAsync(It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<ExecutionIdentity>()))
@@ -56,7 +58,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
 				.Returns(() => new ExportInitializationResults
 					{ FieldData = new List<FieldMetadata>(), RecordCount = Documents.Count(), RunID = Guid.NewGuid() });
 
-			_sut = new DocumentAccumulatedStatistics(_objectManagerFactoryFake.Object, _nativeFileSizeStatisticsFake.Object, _imageFileSizeStatisticsFake.Object, _loggerFake.Object);
+			_sut = new DocumentAccumulatedStatistics(_objectManagerFactoryFake.Object, _nativeFileSizeStatisticsFake.Object, 
+                _imageFileSizeStatisticsFake.Object, _loggerFake.Object, _fileRepositoryMock.Object);
 		}
 
 		[Test]
