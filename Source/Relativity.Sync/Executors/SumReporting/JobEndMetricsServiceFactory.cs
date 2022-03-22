@@ -39,6 +39,7 @@ namespace Relativity.Sync.Executors.SumReporting
 			ISyncPipeline syncPipeline = _pipelineSelector.GetPipeline();
 			bool isDocumentPipeline = syncPipeline.IsDocumentPipeline();
 			bool isImagePipeline = syncPipeline.IsImagePipeline();
+			bool isNonDocumentPipeline = syncPipeline.IsNonDocumentPipeline();
 
 			switch (isSuspended)
 			{
@@ -46,10 +47,14 @@ namespace Relativity.Sync.Executors.SumReporting
 					return new DocumentJobSuspendedMetricsService(_syncMetrics);
 				case true when isImagePipeline:
 					return new ImageJobSuspendedMetricsService(_syncMetrics);
+                case true when isNonDocumentPipeline:
+                    return new NonDocumentJobSuspendedMetricsService(_syncMetrics);
 				case false when isDocumentPipeline:
 					return new DocumentJobEndMetricsService(_batchRepository, _configuration, _fieldManager, _jobStatisticsContainer, _syncMetrics, _logger);
 				case false when isImagePipeline:
 					return new ImageJobEndMetricsService(_batchRepository, _configuration, _jobStatisticsContainer, _syncMetrics, _logger);
+                case false when isNonDocumentPipeline:
+                    return new NonDocumentJobEndMetricsService(_batchRepository, _configuration, _fieldManager, _jobStatisticsContainer, _syncMetrics, _logger);
 				default:
 					_logger.LogWarning(
 						"Unable to determine valid job pipeline type {pipelineType} for metrics send. EmptyJobEndMetricsService is creating...", syncPipeline.GetType());

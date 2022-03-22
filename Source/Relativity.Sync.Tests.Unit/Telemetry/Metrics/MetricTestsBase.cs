@@ -12,7 +12,11 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 {
 	[TestFixture]
 	internal abstract class MetricTestsBase<T> where T: IMetric
-	{
+    {
+        private const string _DOCUMENT_FLOW_NAME = "NativesOrMetadata";
+        private const string _IMAGES_FLOW_NAME = "Images";
+        private const string _NON_DOCUMENT_FLOW_NAME = "NonDocumentObjects";
+
 		private ISyncMetrics _syncMetrics;
 
 		private Mock<ISyncLog> _syncLogMock;
@@ -57,6 +61,8 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			};
 
 			_metricsConfigurationFake = new Mock<IMetricsConfiguration>();
+            _metricsConfigurationFake.SetupGet(x => x.RdoArtifactTypeId).Returns((int)ArtifactType.Document);
+            _metricsConfigurationFake.SetupGet(x => x.DestinationRdoArtifactTypeId).Returns((int)ArtifactType.Document);
 			_syncMetrics = new SyncMetrics(sinks, _metricsConfigurationFake.Object);
 		}
 
@@ -88,9 +94,8 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 
 			// Assert
 			_metricsManagerMock.Verify(x => x.Dispose());
-			//_metricsManagerMock.VerifyNoOtherCalls();
 		}
-		
+
 		[Test]
 		public void Send_ShouldSetAllDecoratorsOnMetric()
 		{
@@ -100,12 +105,14 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			const string executingAppName = "SomeApp";
 			const string executingAppVersion = "1.2.3.4";
 			const string syncVersion = "1.2.3.5";
-			const DataSourceType dataSourceType = DataSourceType.SavedSearch;
-			const DestinationLocationType dataDestinationType = DestinationLocationType.Folder;
+            const DestinationLocationType dataDestinationType = DestinationLocationType.Folder;
+            const DataSourceType dataSourceType = DataSourceType.SavedSearch;
+            const bool imagePush = true;
+            const int rdoArtifactTypeId = (int)ArtifactType.Document;
+            const int destinationRdoArtifactTypeId = (int)ArtifactType.Document;
 			int? jobHistoryToRetry = 123;
-			const bool imagePush = true;
-
-			_metricsConfigurationFake.SetupGet(x => x.CorrelationId).Returns(correlationId);
+            
+            _metricsConfigurationFake.SetupGet(x => x.CorrelationId).Returns(correlationId);
 			_metricsConfigurationFake.SetupGet(x => x.ExecutingApplication).Returns(executingAppName);
 			_metricsConfigurationFake.SetupGet(x => x.ExecutingApplicationVersion).Returns(executingAppVersion);
 			_metricsConfigurationFake.SetupGet(x => x.SyncVersion).Returns(syncVersion);
@@ -113,6 +120,8 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			_metricsConfigurationFake.SetupGet(x => x.DataDestinationType).Returns(dataDestinationType);
 			_metricsConfigurationFake.SetupGet(x => x.JobHistoryToRetryId).Returns(jobHistoryToRetry);
 			_metricsConfigurationFake.SetupGet(x => x.ImageImport).Returns(imagePush);
+			_metricsConfigurationFake.SetupGet(x => x.RdoArtifactTypeId).Returns(rdoArtifactTypeId);
+			_metricsConfigurationFake.SetupGet(x => x.DestinationRdoArtifactTypeId).Returns(destinationRdoArtifactTypeId);
 
 			// Act
 			_syncMetrics.Send(metric);
@@ -143,13 +152,20 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 			metric.IsRetry.Should().Be(expectedResult);
 		}
 
-		[TestCase(true, "Images")]
-		[TestCase(false, "NativesOrMetadata")]
+		[TestCase(true, _IMAGES_FLOW_NAME)]
+		[TestCase(false, _DOCUMENT_FLOW_NAME)]
+		[TestCase(false, _NON_DOCUMENT_FLOW_NAME)]
 		public void Send_ShouldSetFlowType(bool imageImport, string expectedFlowType)
 		{
 			// Arrange
 			IMetric metric = EmptyTestMetric();
 			_metricsConfigurationFake.SetupGet(x => x.ImageImport).Returns(imageImport);
+
+            if (expectedFlowType == _NON_DOCUMENT_FLOW_NAME)
+            {
+                _metricsConfigurationFake.SetupGet(x => x.RdoArtifactTypeId).Returns((int)ArtifactType.Agent);
+                _metricsConfigurationFake.SetupGet(x => x.DestinationRdoArtifactTypeId).Returns((int)ArtifactType.Sync);
+            }
 
 			// Act
 			_syncMetrics.Send(metric);

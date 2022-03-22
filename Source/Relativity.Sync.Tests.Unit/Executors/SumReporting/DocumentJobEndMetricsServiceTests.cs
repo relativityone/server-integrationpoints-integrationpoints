@@ -17,31 +17,21 @@ using Relativity.Sync.Transfer;
 namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 {
 	[TestFixture]
-	public class DocumentJobEndMetricsServiceTests
+	public class DocumentJobEndMetricsServiceTests : JobEndMetricsServiceTestsBase
 	{
 		private DocumentJobEndMetricsService _sut;
 
-		private Mock<IJobEndMetricsConfiguration> _jobEndMetricsConfigurationFake;
-		private Mock<IBatchRepository> _batchRepositoryFake;
-		private Mock<IFieldManager> _fieldManagerFake;
-		private Mock<ISyncMetrics> _syncMetricsMock;
-		private Mock<IJobStatisticsContainer> _jobStatisticsContainerFake;
-
-		[SetUp]
-		public void SetUp()
+        [SetUp]
+		public override void SetUp()
 		{
-			_batchRepositoryFake = new Mock<IBatchRepository>();
-			_jobEndMetricsConfigurationFake = new Mock<IJobEndMetricsConfiguration>(MockBehavior.Loose);
-			_fieldManagerFake = new Mock<IFieldManager>();
-			_fieldManagerFake.Setup(x => x.GetNativeAllFieldsAsync(It.IsAny<CancellationToken>()))
-				.ReturnsAsync(new List<FieldInfoDto>().AsReadOnly());
+			base.SetUp();
 
-			_syncMetricsMock = new Mock<ISyncMetrics>();
-			_jobStatisticsContainerFake = new Mock<IJobStatisticsContainer>();
-			_jobStatisticsContainerFake
+			FieldManagerFake.Setup(x => x.GetNativeAllFieldsAsync(It.IsAny<CancellationToken>()))
+				.ReturnsAsync(new List<FieldInfoDto>().AsReadOnly());
+            JobStatisticsContainerFake
 				.Setup(x => x.CalculateAverageLongTextStreamSizeAndTime(It.IsAny<Func<long, bool>>()))
 				.Returns(new Tuple<double, double>(1, 2));
-			_jobStatisticsContainerFake
+			JobStatisticsContainerFake
 				.SetupGet(x => x.LongTextStatistics)
 				.Returns(Enumerable.Range(1, 20).Select(x => new LongTextStreamStatistics()
 				{
@@ -49,7 +39,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 					TotalReadTime = TimeSpan.FromSeconds(x)
 				}).ToList());
 
-			_sut = new DocumentJobEndMetricsService(_batchRepositoryFake.Object, _jobEndMetricsConfigurationFake.Object, _fieldManagerFake.Object, _jobStatisticsContainerFake.Object, _syncMetricsMock.Object, new EmptyLogger());
+			_sut = new DocumentJobEndMetricsService(BatchRepositoryFake.Object, JobEndMetricsConfigurationFake.Object, FieldManagerFake.Object, JobStatisticsContainerFake.Object, SyncMetricsMock.Object, new EmptyLogger());
 		}
 
 		[Test]
@@ -70,30 +60,30 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			batch.SetupGet(x => x.TaggedDocumentsCount).Returns(taggedItemsPerBatch);
 			batch.SetupGet(x => x.TotalDocumentsCount).Returns(totalItemsCountPerBatch);
 			var testBatches = new List<IBatch> { batch.Object, batch.Object };
-			_batchRepositoryFake.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>())).ReturnsAsync(testBatches);
+			BatchRepositoryFake.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>())).ReturnsAsync(testBatches);
 
 			const int testNumberOfFields = 10;
 			IEnumerable<FieldInfoDto> fields = Enumerable.Repeat(FieldInfoDto.NativeFileFilenameField(), testNumberOfFields);
-			_fieldManagerFake.Setup(x => x.GetNativeAllFieldsAsync(It.Is<CancellationToken>(c => c == CancellationToken.None))).ReturnsAsync(fields.ToList);
+			FieldManagerFake.Setup(x => x.GetNativeAllFieldsAsync(It.Is<CancellationToken>(c => c == CancellationToken.None))).ReturnsAsync(fields.ToList);
 
 			const ImportOverwriteMode overwriteMode = ImportOverwriteMode.AppendOnly;
 			const DataSourceType sourceType = DataSourceType.SavedSearch;
 			const DestinationLocationType destinationType = DestinationLocationType.Folder;
 			const ImportNativeFileCopyMode nativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles;
 
-			_jobEndMetricsConfigurationFake.SetupGet(x => x.ImportOverwriteMode).Returns(overwriteMode);
-			_jobEndMetricsConfigurationFake.SetupGet(x => x.DataSourceType).Returns(sourceType);
-			_jobEndMetricsConfigurationFake.SetupGet(x => x.DestinationType).Returns(destinationType);
-			_jobEndMetricsConfigurationFake.SetupGet(x => x.ImportNativeFileCopyMode).Returns(nativeFileCopyMode);
+			JobEndMetricsConfigurationFake.SetupGet(x => x.ImportOverwriteMode).Returns(overwriteMode);
+			JobEndMetricsConfigurationFake.SetupGet(x => x.DataSourceType).Returns(sourceType);
+			JobEndMetricsConfigurationFake.SetupGet(x => x.DestinationType).Returns(destinationType);
+			JobEndMetricsConfigurationFake.SetupGet(x => x.ImportNativeFileCopyMode).Returns(nativeFileCopyMode);
 
 
 			const long jobSize = 12345;
 			const long metadataSize = 6667;
 			const long nativesSize = 5678;
-			_jobStatisticsContainerFake.SetupGet(x => x.MetadataBytesTransferred).Returns(metadataSize);
-			_jobStatisticsContainerFake.SetupGet(x => x.FilesBytesTransferred).Returns(nativesSize);
-			_jobStatisticsContainerFake.SetupGet(x => x.TotalBytesTransferred).Returns(jobSize);
-			_jobStatisticsContainerFake.SetupGet(x => x.NativesBytesRequested).Returns(Task.FromResult(nativesSize));
+			JobStatisticsContainerFake.SetupGet(x => x.MetadataBytesTransferred).Returns(metadataSize);
+			JobStatisticsContainerFake.SetupGet(x => x.FilesBytesTransferred).Returns(nativesSize);
+			JobStatisticsContainerFake.SetupGet(x => x.TotalBytesTransferred).Returns(jobSize);
+			JobStatisticsContainerFake.SetupGet(x => x.NativesBytesRequested).Returns(Task.FromResult(nativesSize));
 
 			// Act
 			ExecutionResult actualResult = await _sut.ExecuteAsync(expectedStatus).ConfigureAwait(false);
@@ -102,7 +92,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			actualResult.Should().NotBeNull();
 			actualResult.Status.Should().Be(ExecutionStatus.Completed);
 
-			_syncMetricsMock.Verify(x => x.Send(It.Is<DocumentJobEndMetric>(m =>
+			SyncMetricsMock.Verify(x => x.Send(It.Is<DocumentJobEndMetric>(m =>
 				m.TotalRecordsTransferred == completedItemsPerBatch * testBatches.Count &&
 				m.TotalRecordsFailed == failedItemsPerBatch * testBatches.Count &&
 				m.TotalRecordsRequested == totalItemsCountPerBatch * testBatches.Count &&
@@ -122,13 +112,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			const ExecutionStatus expectedStatus = ExecutionStatus.Completed;
 			const string expectedStatusDescription = "Completed";
 
-			_jobEndMetricsConfigurationFake.Setup(x => x.JobHistoryToRetryId).Returns(It.IsAny<int>());
+			JobEndMetricsConfigurationFake.Setup(x => x.JobHistoryToRetryId).Returns(It.IsAny<int>());
 
 			// Act
 			ExecutionResult actualResult = await _sut.ExecuteAsync(expectedStatus).ConfigureAwait(false);
 
 			// Assert
-			_syncMetricsMock.Verify(x => x.Send(It.Is<DocumentJobEndMetric>(m => m.RetryJobEndStatus == expectedStatusDescription)), Times.Once);
+			SyncMetricsMock.Verify(x => x.Send(It.Is<DocumentJobEndMetric>(m => m.RetryJobEndStatus == expectedStatusDescription)), Times.Once);
 		}
 
 		[Test]
@@ -140,7 +130,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			// Assert
 			actualResult.Should().NotBeNull();
 			actualResult.Status.Should().Be(ExecutionStatus.Completed);
-			_syncMetricsMock.Verify(x => x.Send(It.Is<DocumentJobEndMetric>(m => m.BytesNativesTransferred == null)));
+			SyncMetricsMock.Verify(x => x.Send(It.Is<DocumentJobEndMetric>(m => m.BytesNativesTransferred == null)));
 		}
 
 		[Test]
@@ -153,7 +143,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			ExecutionResult actualResult = await _sut.ExecuteAsync(expectedStatus).ConfigureAwait(false);
 
 			// Assert
-			_syncMetricsMock.Verify(x => x.Send(It.Is<DocumentJobEndMetric>(m =>
+			SyncMetricsMock.Verify(x => x.Send(It.Is<DocumentJobEndMetric>(m =>
 				m.BytesMetadataTransferred == null &&
 				m.BytesNativesTransferred == null &&
 				m.BytesTransferred == null)));
@@ -165,7 +155,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			// Arrange
 			const ExecutionStatus expectedStatus = ExecutionStatus.CompletedWithErrors;
 
-			_batchRepositoryFake.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>())).Throws<SyncException>();
+			BatchRepositoryFake.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>())).Throws<SyncException>();
 
 			// Act
 			ExecutionResult actualResult = await _sut.ExecuteAsync(expectedStatus).ConfigureAwait(false);
@@ -182,7 +172,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			const string expectedStatusDescription = "Completed with Errors";
 			const ExecutionStatus expectedStatus = ExecutionStatus.CompletedWithErrors;
 
-			_jobStatisticsContainerFake.SetupGet(x => x.NativesBytesRequested).Returns((Task<long>)null);
+			JobStatisticsContainerFake.SetupGet(x => x.NativesBytesRequested).Returns((Task<long>)null);
 
 			// Act
 			ExecutionResult actualResult = await _sut.ExecuteAsync(expectedStatus).ConfigureAwait(false);
@@ -190,7 +180,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			// Assert
 			actualResult.Should().NotBeNull();
 			actualResult.Status.Should().Be(ExecutionStatus.Completed);
-			_syncMetricsMock.Verify(x => x.Send(It.Is<DocumentJobEndMetric>(m => m.JobEndStatus == expectedStatusDescription)), Times.Once);
+			SyncMetricsMock.Verify(x => x.Send(It.Is<DocumentJobEndMetric>(m => m.JobEndStatus == expectedStatusDescription)), Times.Once);
 		}
 
         [Test]
@@ -201,7 +191,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             const ExecutionStatus expectedStatus = ExecutionStatus.CompletedWithErrors;
             Exception exception = new Exception();
 
-            _jobStatisticsContainerFake.SetupGet(x => x.NativesBytesRequested).Throws(exception);
+            JobStatisticsContainerFake.SetupGet(x => x.NativesBytesRequested).Throws(exception);
 
             // Act
             ExecutionResult actualResult = await _sut.ExecuteAsync(expectedStatus).ConfigureAwait(false);
@@ -209,7 +199,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             // Assert
             actualResult.Should().NotBeNull();
             actualResult.Status.Should().Be(ExecutionStatus.Completed);
-            _syncMetricsMock.Verify(x => x.Send(It.Is<DocumentJobEndMetric>(m => m.JobEndStatus == expectedStatusDescription)), Times.Once);
+            SyncMetricsMock.Verify(x => x.Send(It.Is<DocumentJobEndMetric>(m => m.JobEndStatus == expectedStatusDescription)), Times.Once);
         }
 	}
 }

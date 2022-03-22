@@ -124,14 +124,20 @@ namespace Relativity.Sync.Transfer
 		{
 			if (_mappedFieldsCache == null)
 			{
-				List<FieldInfoDto> fieldInfos = _configuration.GetFieldMappings().Select(CreateFieldInfoFromFieldMap).ToList();
+				List<FieldInfoDto> fieldInfos = GetAllAvailableFieldsToMap();
 				_mappedFieldsCache = await EnrichFieldsWithRelativityDataTypesAsync(fieldInfos, token).ConfigureAwait(false);
 				EnrichFieldsWithIndex(_mappedFieldsCache);
 			}
 			return _mappedFieldsCache;
 		}
 
-		public async Task<IReadOnlyList<FieldInfoDto>> GetMappedFieldNonDocumentWithoutLinksAsync(
+        public List<FieldInfoDto> GetAllAvailableFieldsToMap()
+        {
+            List<FieldInfoDto> fieldInfos = _configuration.GetFieldMappings().Select(CreateFieldInfoFromFieldMap).ToList();
+            return fieldInfos;
+        }
+
+		public async Task<IReadOnlyList<FieldInfoDto>> GetMappedFieldsNonDocumentWithoutLinksAsync(
 			CancellationToken token)
 		{
 			IList<FieldInfoDto> fieldInfos = await GetMappedFieldsAsync(token).ConfigureAwait(false);

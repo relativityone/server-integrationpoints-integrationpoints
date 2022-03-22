@@ -16,7 +16,7 @@ namespace Relativity.Sync.SyncConfiguration
 	    private readonly ISyncContext _syncContext;
 	    private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 	    private readonly IFieldsMappingBuilder _fieldsMappingBuilder;
-        private Action<IFieldsMappingBuilder> _fielsdMappingAction;
+        private Action<IFieldsMappingBuilder> _fieldsMappingAction;
 
         public NonDocumentSyncConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
             IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, NonDocumentSyncOptions options,
@@ -35,7 +35,7 @@ namespace Relativity.Sync.SyncConfiguration
 
 		public INonDocumentSyncConfigurationBuilder WithFieldsMapping(Action<IFieldsMappingBuilder> fieldsMappingAction)
         {
-            _fielsdMappingAction = fieldsMappingAction;
+            _fieldsMappingAction = fieldsMappingAction;
             return this;
 		}
 
@@ -47,9 +47,9 @@ namespace Relativity.Sync.SyncConfiguration
 
         private void SetFieldsMapping()
         {
-            if (_fielsdMappingAction != null)
+            if (_fieldsMappingAction != null)
             {
-                _fielsdMappingAction(_fieldsMappingBuilder);
+                _fieldsMappingAction(_fieldsMappingBuilder);
                 
                 SyncConfiguration.FieldsMapping = Serializer.Serialize(
                     _fieldsMappingBuilder.FieldsMapping);

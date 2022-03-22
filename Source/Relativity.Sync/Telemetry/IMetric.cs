@@ -22,7 +22,7 @@ namespace Relativity.Sync.Telemetry
 
 		bool IsRetry { get; set; }
 
-		Dictionary<string, object> GetApmMetrics();
+        Dictionary<string, object> GetApmMetrics();
 
 		IEnumerable<SumMetric> GetSumMetrics();
 	}

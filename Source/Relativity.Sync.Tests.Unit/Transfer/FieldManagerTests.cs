@@ -526,7 +526,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_configuration.Setup(c => c.GetFieldMappings()).Returns(_MAPPED_FIELDS_WITH_MANAGER);
 			
 			//Act
-			var sameTypeFields = await _sut.GetMappedFieldNonDocumentWithoutLinksAsync(It.IsAny<CancellationToken>()).ConfigureAwait(false);
+			var sameTypeFields = await _sut.GetMappedFieldsNonDocumentWithoutLinksAsync(It.IsAny<CancellationToken>()).ConfigureAwait(false);
 			
 			//Assert
 			sameTypeFields.Should().BeEquivalentTo(GetFieldsWithIndexes(_DOCUMENT_IDENTIFIER_FIELD, _DOCUMENT_MAPPED_FIELD));
