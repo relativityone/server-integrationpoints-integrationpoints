@@ -37,8 +37,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 
 		public static Workspace GetExistingWorkspace(this IRelativityFacade instance, int workspaceArtifactID)
 		{
-			IWorkspaceService workspaceService = instance.Resolve<IWorkspaceService>();
-
 			return instance.Resolve<IWorkspaceService>().Get(workspaceArtifactID);
 		}
 
