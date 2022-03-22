@@ -17,12 +17,11 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Objects;
 using Relativity.Testing.Framework.Api;
 using System.Linq;
-using System.Reflection;
 using kCura.IntegrationPoints.Data;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 {
-	internal class SyncTestsImplementation
+    internal class SyncTestsImplementation
 	{
 		private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
 		private readonly Dictionary<string, Workspace> _destinationWorkspaces = new Dictionary<string, Workspace>();
@@ -87,18 +86,18 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			string expectedSourceCaseTag = $"This Instance - {_testsImplementationTestFixture.Workspace.Name} - {_testsImplementationTestFixture.Workspace.ArtifactID}";
 			string expectedSourceJobTag = $"{integrationPointName} - {GetJobId(_testsImplementationTestFixture.Workspace.ArtifactID, integrationPointName)}";
 
-			var sourceDocs = GetDocumentsTagsDataFromSourceWorkspace(_testsImplementationTestFixture.Workspace.ArtifactID);			
+			var sourceDocs = GetDocumentsTagsDataFromSourceWorkspace(_testsImplementationTestFixture.Workspace.ArtifactID);
 			var destinationDocs = GetDocumentsTagsDataFromDestinationWorkspace(destinationWorkspace.ArtifactID);
 
 			// Assert
 			int transferredItemsCount = integrationPointViewPage.GetTransferredItemsCount(integrationPointName);
-			int workspaceDocumentCount = RelativityFacade.Instance.Resolve<IDocumentService>().GetAll(destinationWorkspace.ArtifactID).Length;			
+			int workspaceDocumentCount = RelativityFacade.Instance.Resolve<IDocumentService>().GetAll(destinationWorkspace.ArtifactID).Length;
 
 			transferredItemsCount.Should().Be(workspaceDocumentCount).And.Be(keywordSearchDocumentsCount);
 
 			GetCorrectlyTaggedDocumentsCount(sourceDocs, "Relativity Destination Case", expectedDestinationCaseTag).Should().Be(transferredItemsCount);
 			GetCorrectlyTaggedDocumentsCount(destinationDocs, "Relativity Source Case", expectedSourceCaseTag).Should().Be(transferredItemsCount);
-			GetCorrectlyTaggedDocumentsCount(destinationDocs, "Relativity Source Job", expectedSourceJobTag).Should().Be(transferredItemsCount);			
+			GetCorrectlyTaggedDocumentsCount(destinationDocs, "Relativity Source Job", expectedSourceJobTag).Should().Be(transferredItemsCount);
 		}
 
 		public void ProductionImagesGoldFlow()
@@ -106,7 +105,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			// Arrange
 			_testsImplementationTestFixture.LoginAsStandardUser();
 
-			string integrationPointName = nameof(ProductionImagesGoldFlow);
+			string integrationPointName = $"{nameof(ProductionImagesGoldFlow)} - {Guid.NewGuid()}";
 
 			Workspace destinationWorkspace = CreateDestinationWorkspace();
 
@@ -183,7 +182,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             IntegrationPointViewPage integrationPointViewPage = integrationPointEditPage
 				.CreateProductionToFolderIntegrationPoint(integrationPointName, destinationWorkspace, production);
 
-			integrationPointViewPage = integrationPointViewPage.RunIntegrationPoint(integrationPointName);			
+			integrationPointViewPage = integrationPointViewPage.RunIntegrationPoint(integrationPointName);
 
 			string expectedDestinationCaseTag = $"This Instance - {destinationWorkspace.Name} - {destinationWorkspace.ArtifactID}";
 			string expectedSourceCaseTag = $"This Instance - {_testsImplementationTestFixture.Workspace.Name} - {_testsImplementationTestFixture.Workspace.ArtifactID}";
@@ -194,9 +193,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 			// Assert
 			int transferredItemsCount = integrationPointViewPage.GetTransferredItemsCount(integrationPointName);
-			int workspaceDocumentCount = RelativityFacade.Instance.Resolve<IDocumentService>().GetAll(destinationWorkspace.ArtifactID).Length;			
+			int workspaceDocumentCount = RelativityFacade.Instance.Resolve<IDocumentService>().GetAll(destinationWorkspace.ArtifactID).Length;
 
-			transferredItemsCount.Should().Be(workspaceDocumentCount).And.Be(productionDocumentsCount);			
+			transferredItemsCount.Should().Be(workspaceDocumentCount).And.Be(productionDocumentsCount);
 
 			GetCorrectlyTaggedDocumentsCount(sourceDocs, "Relativity Destination Case", expectedDestinationCaseTag).Should().Be(transferredItemsCount);
 			GetCorrectlyTaggedDocumentsCount(destinationDocs, "Relativity Source Case", expectedSourceCaseTag).Should().Be(transferredItemsCount);
