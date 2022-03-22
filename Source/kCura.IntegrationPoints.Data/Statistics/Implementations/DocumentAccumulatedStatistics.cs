@@ -78,44 +78,17 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
         public async Task<DocumentsStatistics> GetImagesStatisticsForSavedSearchAsync(int workspaceId,
             int savedSearchId, bool calculateSize, CancellationToken token = default(CancellationToken))
         {
-            //long GetDocumentImageCount(RelativityObjectSlim document, int imageCountFieldIndex) =>
-            //    Convert.ToInt64(document.Values[imageCountFieldIndex] ?? 0);
-
             try
             {
                 DocumentsStatistics statistics = new DocumentsStatistics();
-
-                //QueryRequest query = new DocumentQueryBuilder()
-                //    .AddSavedSearchCondition(savedSearchId)
-                //    .AddField(DocumentFieldsConstants.HasImagesFieldName)
-                //    .AddField(DocumentFieldsConstants.RelativityImageCountGuid)
-                //    .Build();
-                
-                //RelativityObjectSlim[] documents =
-                //    await QueryDocumentsWithExport(workspaceId, query, nameof(GetImagesStatisticsForSavedSearchAsync),
-                //        token).ConfigureAwait(false);
-
                 RelativityObjectSlim[] documentIds = await GetObjectIdentifierFieldRequestAsync(workspaceId, savedSearchId, token).ConfigureAwait(false);
 
                 statistics.DocumentsCount = documentIds.Length;
-                //statistics.TotalImagesCount = documentIds.Sum(x => GetDocumentImageCount(x, 1));
                 (ImageFile[] images, int[] documentWithoutImages) = await _fileRepository.RetrieveOriginalImagesForDocuments(workspaceId, documentIds.Select(x => x.ArtifactID).ToArray());
                 statistics.TotalImagesCount = images.Length;
-                    
 
                 if (calculateSize)
                 {
-                    //List<int> documentsWithImagesArtifactIDs = documents.Where(x =>
-                    //{
-                    //    dynamic choice = x.Values[0];
-                    //    return choice.Name == DocumentFieldsConstants.HasImagesYesChoiceName;
-                    //}).Select(x => x.ArtifactID).ToList();
-
-                    //Stopwatch sw = Stopwatch.StartNew();
-                    //statistics.TotalImagesSizeBytes =
-                    //    _imageFileSizeStatistics.GetTotalFileSize(documentsWithImagesArtifactIDs, workspaceId);
-
-                    //sw.Stop();
                     Stopwatch sw = Stopwatch.StartNew();
                     statistics.TotalImagesSizeBytes =
                         _imageFileSizeStatistics.GetTotalFileSize(documentIds.Select(x => x.ArtifactID).ToList(), workspaceId);
@@ -203,8 +176,20 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
                 stopWatch.Restart();
 
-                IEnumerable<RelativityObjectSlim> documents =
-                    await export.GetAllResultsAsync(token).ConfigureAwait(false);
+                List<RelativityObjectSlim> documents = new List<RelativityObjectSlim>();
+                List<RelativityObjectSlim> result;
+                int startIndex = 0;
+                do
+                {
+                    result = (await export.GetNextBlockAsync(startIndex, token)).ToList();
+                    if (result.Any())
+                    {
+                        documents.AddRange(result);
+                    }
+                    
+                    startIndex += result.Count;
+                }
+                while (result.Any());
 
                 _logger.LogInformation("Finished gathering document ids for ({method}) in {elapsed} s",
                     callingMethodName, stopWatch.Elapsed.TotalSeconds);

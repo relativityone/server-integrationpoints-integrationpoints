@@ -2,7 +2,6 @@
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Statistics.Implementations;
 using kCura.IntegrationPoints.Data.UtilityDTO;
 using NSubstitute;
 using NUnit.Framework;
