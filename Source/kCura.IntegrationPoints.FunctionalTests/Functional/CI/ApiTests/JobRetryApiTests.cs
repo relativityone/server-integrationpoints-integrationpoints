@@ -9,48 +9,40 @@ using NUnit.Framework;
 using System.Threading.Tasks;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles;
+using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.ApiTests;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI.ApiTests
 {
-    public class JobRetryApiTests 
-    {       
-        private const string SavedSearchName = "AllDocuments";
-        private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
-        private Workspace destinationWorkspace;
-        private int integrationPoint;
-
-        private readonly IRipApi _ripApi = new RipApi(RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory);
-
-        private int savedSearchId;
-        private int destinationProviderId;
-        private int sourceProviderId;
-        private int integrationPointType;
-        private List<Choice> choices;
-        private const string JOB_RETRY_TEST_WORKSPACE_NAME = "RIP Job Retry Test";
-        public Workspace SourceWorkspace => _testsImplementationTestFixture.Workspace;
+    public class JobRetryApiTests : TestsBase
+    {
+        private readonly JobRetryApiTestsImplementation _implementation;
+        public JobRetryApiTests() : base(nameof(JobRetryApiTests))
+        {
+            _implementation = new JobRetryApiTestsImplementation(this);
+        }
 
         [OneTimeSetUp]
-        public void OneTimeSetup() 
+        public void OneTimeSetup()
         {
-            //import docs to Source Workspace
-            RelativityFacade.Instance.ImportDocumentsFromCsv(_testsImplementationTestFixture.Workspace, LoadFilesGenerator.GetOrCreateNativesLoadFile(), overwriteMode: DocumentOverwriteMode.AppendOverlay);
-
-            //create Destination Workspace
-            RelativityFacade.Instance.CreateWorkspace(JOB_RETRY_TEST_WORKSPACE_NAME);
-
-            
+            base.OnSetUpFixture();
+            _implementation.OnSetUpFixture();
         }
 
         [OneTimeTearDown]
-        public void OneTimeTeardown() { }
+        public void OneTimeTeardown()
+        {
+            base.OnTearDownFixture();
+            _implementation.OnTearDownFixture();
+        }
 
-        //[Test]
-        //public async Task JobRetryTest()
-        //{
+        //TODO: TEST GIUD?
+        [Test]
+        public async Task JobRetryTest()
+        {
+            await _implementation.RunAndRetryIntegrationPoint();
+        }
 
-        //}
 
-       
 
     }
 }
