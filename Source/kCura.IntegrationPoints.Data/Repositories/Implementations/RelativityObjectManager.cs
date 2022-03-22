@@ -607,7 +607,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			ExecutionIdentity executionIdentity)
 		{
 			var msgBuilder = new StringBuilder();
-			msgBuilder.Append($"Error occured when calling {nameof(InitializeExportAsync)}. ");
+			msgBuilder.Append($"Error occurred when calling {nameof(InitializeExportAsync)}. ");
 			msgBuilder.Append($"Workspace: ({workspaceArtifactID}) ");
 			msgBuilder.Append($"Query condition: ({queryCondition})");
 			msgBuilder.Append($"Start record: ({startRecord}) ");
