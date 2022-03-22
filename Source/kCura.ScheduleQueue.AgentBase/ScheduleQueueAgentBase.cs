@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Common.Helpers;
@@ -7,10 +8,12 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
+using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Services;
 using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
+using Relativity.DataMigration.MigrateFileshareAccess;
 
 namespace kCura.ScheduleQueue.AgentBase
 {
@@ -18,20 +21,22 @@ namespace kCura.ScheduleQueue.AgentBase
 	{
 		private IAgentService _agentService;
 		private IQueueQueryManager _queryManager;
-		private IKubernetesMode _kubernetesMode;
+		private Lazy<IKubernetesMode> _kubernetesModeLazy;
 		private IJobService _jobService;
 		private IQueueJobValidator _queueJobValidator;
 		private IDateTime _dateTime;
-
+        private IFileShareAccessService _fileShareAccessService;
 		private const int _MAX_MESSAGE_LENGTH = 10000;
 
 		private readonly Guid _agentGuid;
 		private readonly Lazy<int> _agentId;
 		private readonly Lazy<IAPILog> _loggerLazy;
 
+		private readonly Guid _agentInstanceGuid = Guid.NewGuid();
+
 		protected Func<IEnumerable<int>> GetResourceGroupIDsFunc { get; set; }
 
-		private bool IsKubernetesMode => _kubernetesMode.IsEnabled();
+		private bool IsKubernetesMode => _kubernetesModeLazy.Value.IsEnabled();
 
 		private static readonly Dictionary<LogCategory, int> _logCategoryToLogLevelMapping = new Dictionary<LogCategory, int>
 		{
@@ -39,28 +44,38 @@ namespace kCura.ScheduleQueue.AgentBase
 			[LogCategory.Info] = 10
 		};
 
-		protected IAPILog Logger => _loggerLazy.Value;
+		private IDisposable _loggerAgentInstanceContext;
+
+		protected virtual IAPILog Logger => _loggerLazy.Value;
 
 		protected IJobService JobService => _jobService;
 
-		protected ScheduleQueueAgentBase(Guid agentGuid, IAgentService agentService = null, IJobService jobService = null,
+		protected ScheduleQueueAgentBase(Guid agentGuid, IKubernetesMode kubernetesMode = null, IAgentService agentService = null, IJobService jobService = null,
 			IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null, 
-			IQueueQueryManager queryManager = null, IKubernetesMode kubernetesMode = null, IDateTime dateTime = null, IAPILog logger = null)
+			IQueueQueryManager queryManager = null, IDateTime dateTime = null, IAPILog logger = null,
+			IFileShareAccessService fileShareAccessService = null)
 		{
+			// Lazy init is required for things depending on Helper
+			// Helper property in base class is assigned AFTER object construction
+			_loggerLazy = logger != null
+				? new Lazy<IAPILog>(() => logger)
+				: new Lazy<IAPILog>(InitializeLogger);
+
+			_kubernetesModeLazy = kubernetesMode != null 
+				? new Lazy<IKubernetesMode>(() => kubernetesMode)
+				: new Lazy<IKubernetesMode>(() => new KubernetesMode(Logger));
+
+
 			_agentGuid = agentGuid;
 			_agentService = agentService;
 			_jobService = jobService;
 			_queueJobValidator = queueJobValidator;
 			_dateTime = dateTime;
-			_queryManager = queryManager;
-			_kubernetesMode = kubernetesMode;
+            _fileShareAccessService = fileShareAccessService;
+            _queryManager = queryManager;
 			ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
 
 			_agentId = new Lazy<int>(GetAgentID);
-
-			_loggerLazy = logger != null
-				? new Lazy<IAPILog>(() => logger)
-				: new Lazy<IAPILog>(InitializeLogger);
 		}
 
 		public IScheduleRuleFactory ScheduleRuleFactory { get; }
@@ -79,14 +94,9 @@ namespace kCura.ScheduleQueue.AgentBase
 				_agentService = new AgentService(Helper, _queryManager, _agentGuid);
 			}
 
-			if(_kubernetesMode == null)
-            {
-				_kubernetesMode = new KubernetesMode(Logger);
-			}
-
 			if (_jobService == null)
 			{
-				_jobService = new JobService(_agentService, new JobServiceDataProvider(_queryManager), _kubernetesMode, Helper);
+				_jobService = new JobService(_agentService, new JobServiceDataProvider(_queryManager), _kubernetesModeLazy.Value, Helper);
 			}
 
 			if (_queueJobValidator == null)
@@ -99,10 +109,23 @@ namespace kCura.ScheduleQueue.AgentBase
 				_dateTime = new DateTimeWrapper();
 			}
 
+
+
+
 			if(GetResourceGroupIDsFunc == null)
             {
 				GetResourceGroupIDsFunc = () => GetResourceGroupIDs();
 			}
+
+			if(_fileShareAccessService == null)
+            {
+				IMigrateFileshareFactory migrateFileshareFactory = 
+					new MigrateFileshareFactory(
+						new FileShareSecretProvider(Helper),
+						new FileshareLogger(Logger));
+
+				_fileShareAccessService = new FileShareAccessService(Helper, migrateFileshareFactory);
+            }
 		}
 
 		public sealed override void Execute()
@@ -133,6 +156,12 @@ namespace kCura.ScheduleQueue.AgentBase
 					_jobService.UnlockJobs(_agentId.Value);
 					DidWork = false;
 				}
+				
+				if (IsKubernetesMode)
+				{
+					Logger.LogInformation("Shutting down agent after single job in K8s mode");
+					DidWork = false;
+				}
 			}
 		}
 		
@@ -141,6 +170,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			Initialize();
 			InitializeManagerConfigSettingsFactory();
 			CheckQueueTable();
+			MountBCPPath();
 		}
 
 		private void CompleteExecution()
@@ -161,6 +191,17 @@ namespace kCura.ScheduleQueue.AgentBase
 			NotifyAgentTab(LogCategory.Debug, "Check Schedule Agent Queue table exists");
 
 			_agentService.InstallQueueTable();
+		}
+
+		private void MountBCPPath()
+        {
+            if (!IsKubernetesMode)
+            {
+                Logger.LogInformation("Integration Points Agent is not enabled on shared compute environment. Mount BCPPath is not needed.");
+                return;
+            }
+
+            _fileShareAccessService.MountBcpPathAsync().GetAwaiter().GetResult();
 		}
 
 		protected virtual IEnumerable<int> GetListOfResourceGroupIDs() // this method was added for unit testing purpose
@@ -199,7 +240,7 @@ namespace kCura.ScheduleQueue.AgentBase
 					TaskResult jobResult = ProcessJob(nextJob);
 
 					Logger.LogInformation("Job {jobId} has been processed with status {status}", nextJob.JobId, jobResult.Status.ToString());
-
+					
 					// If last job was drain-stopped, assign null to nextJob so it doesn't get executed on next loop iteration.
 					// Also do not finalize the job (i.e. do not remove it from the queue).
 					if (jobResult.Status == TaskStatusEnum.DrainStopped)
@@ -211,7 +252,15 @@ namespace kCura.ScheduleQueue.AgentBase
 					else
 					{
 						FinalizeJobExecution(nextJob, jobResult);
-						nextJob = GetNextQueueJob(); // assumptions: it will not throws exception
+
+						if (!IsKubernetesMode)
+						{
+							nextJob = GetNextQueueJob(); // assumptions: it will not throw exception
+						}
+						else
+						{
+							nextJob = null;
+						}
 					}
 				}
 
@@ -254,6 +303,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void FinalizeJobExecution(Job job, TaskResult taskResult)
 		{
+			Logger.LogInformation("Finalize JobExecution: {job}", job.ToString());
 			FinalizeJobResult result = _jobService.FinalizeJob(job, ScheduleRuleFactory, taskResult);
 			LogJobState(job, result.JobState, null, result.Details);
 			LogFinalizeJob(job, result);
@@ -274,6 +324,11 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 
 			NotifyAgentTab(LogCategory.Debug, "Checking for active jobs in Schedule Agent Queue table");
+
+			if(IsKubernetesMode)
+            {
+				LogAllJobsInTheQueue();
+			}
 
 			return _jobService.GetNextQueueJob(GetListOfResourceGroupIDs(), _agentId.Value);
 		}
@@ -330,8 +385,11 @@ namespace kCura.ScheduleQueue.AgentBase
 			{
 				NotifyAgentTab(LogCategory.Exception, "Logger initialization failed. Helper is null.");
 			}
-
-			return Helper.GetLoggerFactory().GetLogger().ForContext<ScheduleQueueAgentBase>();
+			
+			IAPILog logger = Helper.GetLoggerFactory().GetLogger().ForContext<ScheduleQueueAgentBase>();
+			_loggerAgentInstanceContext = logger.LogContextPushProperty("AgentInstanceGuid", _agentInstanceGuid);
+			
+			return logger;
 		}
 
 		#region Logging
@@ -389,6 +447,21 @@ namespace kCura.ScheduleQueue.AgentBase
 		{
 			Logger.LogInformation("Job ID {jobId} has been picked up from the queue by Agent ID {agentId}. Job Information: {@job}", job.JobId, _agentId, job.RemoveSensitiveData());
 		}
+
+		private void LogAllJobsInTheQueue()
+        {
+			try
+            {
+				IEnumerable<Job> jobs = _jobService.GetAllScheduledJobs();
+
+				Logger.LogInformation("Jobs in queue JobId-RootJobId-LockedByAgentId-StopState: {jobs}",
+					string.Join(";", jobs?.Select(x => $"{x.JobId}-{x.RootJobId}-{x.LockedByAgentID}-{x.StopState}") ?? new List<string>()));
+			}
+			catch(Exception ex)
+            {
+				Logger.LogError(ex, "Unable to log jobs in queue.");
+            }
+        }
 
 		#endregion
 	}

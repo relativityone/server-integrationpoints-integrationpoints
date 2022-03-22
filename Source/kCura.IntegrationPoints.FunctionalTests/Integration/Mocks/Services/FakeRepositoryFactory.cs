@@ -174,5 +174,5 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 		{
 			return _repositoryFactory.GetCaseRepository();
 		}
-	}
+    }
 }

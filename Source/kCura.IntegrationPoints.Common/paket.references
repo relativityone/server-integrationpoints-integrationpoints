@@ -5,3 +5,4 @@ Relativity.API
 Relativity.Productions.Services.Interfaces
 Relativity.Telemetry.APM
 Relativity.DataTransfer.MessageService
+Relativity.Toggles

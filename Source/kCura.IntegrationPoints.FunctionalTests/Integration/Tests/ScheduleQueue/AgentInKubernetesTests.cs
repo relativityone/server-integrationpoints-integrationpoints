@@ -8,13 +8,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 {
     public class AgentInKubernetesTests : TestsBase
     {
+        [SetUp]
+        public void Setup()
+        {
+            FakeKubernetesMode kubernetesMode = (FakeKubernetesMode)Container.Resolve<IKubernetesMode>();
+            kubernetesMode.SetIsEnabled(true);
+        }
+
         [Test]
         public void Agent_ShouldNotCallGetListOfResourceGroupIDs_WhenKubernetesModeIsEnabled()
         {
             // Arrange
-            FakeKubernetesMode kubernetesMode = (FakeKubernetesMode)Container.Resolve<IKubernetesMode>();
-            kubernetesMode.SetIsEnabled(true);
-
             JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleBasicJob(SourceWorkspace);
 
             FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container, shouldRunOnce: true);

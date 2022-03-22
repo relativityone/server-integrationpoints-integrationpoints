@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValida
 			relativityProviderPermissionValidator.Validate(_validationModel);
 
 			// assert
-			_destinationWorkspacePermissionValidator.Received().Validate(_DESTINATION_WORKSPACE_ID, _ARTIFACT_TYPE_ID, Arg.Any<bool>());
+			_destinationWorkspacePermissionValidator.Received().Validate(_DESTINATION_WORKSPACE_ID, _DESTINATION_ARTIFACT_TYPE_ID, Arg.Any<bool>());
 		}
 
 		[Test]

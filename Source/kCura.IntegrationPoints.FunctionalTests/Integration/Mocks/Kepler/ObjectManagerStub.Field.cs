@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -36,11 +35,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                         .Where(x => x.Guid == IntegrationPointProfileFieldGuids.OverwriteFieldsGuid).ToList();
                     return fields;
                 }
-                
+
                 return new List<FieldTest>();
             }
 
-            Mock.Setup(x => x.QueryAsync(It.IsAny<int>(), 
+            Mock.Setup(x => x.QueryAsync(It.IsAny<int>(),
                     It.Is<QueryRequest>(r => IsFieldQuery(r)), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns((int workspaceId, QueryRequest request, int start, int length) =>
             {
@@ -53,14 +52,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     It.Is<QueryRequest>(r => IsFieldQuery(r)), It.IsAny<int>(), It.IsAny<int>()))
                 .Returns((int workspaceId, QueryRequest request, int start, int length) =>
             {
-                QueryResultSlim result = GetQuerySlimsForRequest(x=>x.Fields, FieldsByObjectTypeFilter, workspaceId, request, start, length);
+                QueryResultSlim result = GetQuerySlimsForRequest(x => x.Fields, FieldsByObjectTypeFilter, workspaceId, request, start, length);
                 return Task.FromResult(result);
             });
         }
 
         private bool IsRDOFieldTypeCondition(string condition, out int objectTypeId)
         {
-            Match match = Regex.Match(condition, @"'Object Type Artifact Type ID' == (\d+)");
+            Match match = Regex.Match(condition, @"'Object Type Artifact Type ID' == OBJECT (\d+)", RegexOptions.IgnoreCase);
 
             if (match.Success && int.TryParse(match.Groups[1].Value, out int extractedArtifactId))
             {
@@ -74,14 +73,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
         private bool IsFieldQuery(QueryRequest r)
         {
-	        return r.ObjectType.ArtifactTypeID == (int) ArtifactType.Field;
+            return r.ObjectType.ArtifactTypeID == (int)ArtifactType.Field;
         }
 
         private bool HasFieldName(QueryRequest r)
         {
             return r.Fields.Count(x => x.Name == "*") > 0;
-        } 
-        
+        }
+
         private bool HasObjectTypeRefWithGuid(QueryRequest r)
         {
             return r.ObjectType.Guid.HasValue;

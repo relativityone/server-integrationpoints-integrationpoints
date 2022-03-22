@@ -38,8 +38,8 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			IntegrationPointDestinationConfiguration destinationConfiguration = _serializer.Deserialize<IntegrationPointDestinationConfiguration>(value.DestinationConfiguration);
 			List<FieldMap> fieldsMap = _serializer.Deserialize<List<FieldMap>>(value.FieldsMap);
 
-			List<ArtifactDTO> sourceWorkpaceFields = RetrieveAllFields(_sourcefieldManager, sourceConfiguration.SourceWorkspaceArtifactId);
-			List<ArtifactDTO> destinationWorkpaceFields = RetrieveAllFields(_targetfieldManager, sourceConfiguration.TargetWorkspaceArtifactId);
+			List<ArtifactDTO> sourceWorkpaceFields = RetrieveAllFields(_sourcefieldManager, sourceConfiguration.SourceWorkspaceArtifactId, destinationConfiguration.ArtifactTypeId);
+			List<ArtifactDTO> destinationWorkpaceFields = RetrieveAllFields(_targetfieldManager, sourceConfiguration.TargetWorkspaceArtifactId, destinationConfiguration.DestinationArtifactTypeId);
 
 			bool mappedIdentifier = false;
 
@@ -112,6 +112,8 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 			public string FieldOverlayBehavior { get; set; }
 			public bool UseDynamicFolderPath { get; set; }
 			public bool ImageImport { get; set; }
+			public int ArtifactTypeId { get; set; }
+			public int DestinationArtifactTypeId { get; set; }
 		}
 
 		#region Internal validators
@@ -256,11 +258,11 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 		}
 		#endregion
 
-		private List<ArtifactDTO> RetrieveAllFields(IFieldManager fieldManager, int workspaceId)
+		private List<ArtifactDTO> RetrieveAllFields(IFieldManager fieldManager, int workspaceId, int artifactTypeId)
 		{
 			try
 			{
-				ArtifactDTO[] fieldArtifacts = fieldManager.RetrieveFields(workspaceId,
+				ArtifactDTO[] fieldArtifacts = fieldManager.RetrieveFields(workspaceId, artifactTypeId,
 					new HashSet<string>(new[]
 					{
 						RelativityProviderValidationMessages.FIELD_MAP_FIELD_NAME,

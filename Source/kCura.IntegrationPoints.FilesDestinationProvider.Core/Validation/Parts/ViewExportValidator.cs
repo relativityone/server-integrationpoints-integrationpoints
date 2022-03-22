@@ -8,12 +8,12 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 {
-	public class ViewValidator : BasePartsValidator<ExportSettings>
+	public class ViewExportValidator : BasePartsValidator<ExportSettings>
 	{
 		private readonly IViewService _viewService;
 		private readonly IAPILog _logger;
 
-		public ViewValidator(IAPILog logger, IViewService viewService)
+		public ViewExportValidator(IAPILog logger, IViewService viewService)
 		{
 			_logger = logger;
 			_viewService = viewService;
@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "An error occurred while retrieving view in {validator}", nameof(ViewValidator));
+				_logger.LogError(ex, "An error occurred while retrieving view in {validator}", nameof(ViewExportValidator));
 				string message =
 					IntegrationPointsExceptionMessages.CreateErrorMessageRetryOrContactAdministrator("while retrieving View");
 				throw new IntegrationPointsException(message, ex);

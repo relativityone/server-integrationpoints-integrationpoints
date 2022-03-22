@@ -1,11 +1,16 @@
 ﻿var IP = IP || {};
 
 IP.workspaceFieldsControls = (function () {
+	function udpateMappingType() {		
+		IP.mappingType = mappingType.Manual;		
+    }
+
 	function add(from, fields, destination) {
 		var to = destination;
 		move(fields(), to);
 		from.removeAll(fields());
 		fields.splice(0, fields().length);
+		udpateMappingType();
 	};
 
 	function addAll(from, fields, destination) {
@@ -13,12 +18,14 @@ IP.workspaceFieldsControls = (function () {
 		move(from(), to);
 		from.removeAll();
 		fields.splice(0, fields().length);
+		udpateMappingType();
 	};
 
 	var move = function(from, to) {
 		$.each(from, function() {
 			to.push(this);
 		});
+		udpateMappingType();
 	};
 	var down = function(field, selected) {
 		for (var j = selected().length - 1; j >= 0; j--) {
@@ -31,6 +38,7 @@ IP.workspaceFieldsControls = (function () {
 				break;
 			}
 		}
+		udpateMappingType();
 	};
 
 	var up = function(field, selected) {
@@ -43,6 +51,7 @@ IP.workspaceFieldsControls = (function () {
 				break;
 			}
 		}
+		udpateMappingType();
 	};
 	function moveField(source, oldIndex, newIndex) {
 		if (newIndex >= source.length) {
@@ -52,6 +61,7 @@ IP.workspaceFieldsControls = (function () {
 			}
 		}
 		source.splice(newIndex, 0, source.splice(oldIndex, 1)[0]);
+		udpateMappingType();
 	};
 
 

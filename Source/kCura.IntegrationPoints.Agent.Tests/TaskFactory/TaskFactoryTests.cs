@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -189,7 +190,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 		{
 			public TestAgentBase(Guid agentGuid, IAgentService agentService = null,
 				IJobService jobService = null, IScheduleRuleFactory scheduleRuleFactory = null)
-				: base(agentGuid, agentService, jobService, scheduleRuleFactory)
+				: base(agentGuid,Substitute.For<IKubernetesMode>(), agentService, jobService, scheduleRuleFactory)
 			{
 			}
 

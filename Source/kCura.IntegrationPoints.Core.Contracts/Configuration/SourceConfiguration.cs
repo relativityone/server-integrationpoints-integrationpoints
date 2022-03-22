@@ -5,7 +5,8 @@
 		public enum ExportType
 		{
 			ProductionSet = 2,
-			SavedSearch = 3
+			SavedSearch = 3,
+			View = 4
 		}
 		public int SavedSearchArtifactId { get; set; }
 		public int SourceWorkspaceArtifactId { get; set; }
@@ -18,5 +19,6 @@
 		public ExportType TypeOfExport { get; set; }
 
 		public int SourceProductionId { get; set; }
+		public int SourceViewId { get; set; }
 	}
 }

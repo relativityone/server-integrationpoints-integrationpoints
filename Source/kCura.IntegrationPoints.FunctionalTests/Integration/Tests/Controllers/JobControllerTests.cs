@@ -40,7 +40,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         {
             // Arrange
             IntegrationPointTest integrationPoint =
-                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchIntegrationPoint(_destinationWorkspace);
+                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(_destinationWorkspace);
 
             JobController.Payload payload = new JobController.Payload
             {
@@ -64,7 +64,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         {
             // Arrange
             IntegrationPointTest integrationPoint =
-                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchIntegrationPoint(_destinationWorkspace);
+                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(_destinationWorkspace);
 
             JobController.Payload payload = new JobController.Payload
             {
@@ -90,7 +90,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         {
             // Arrange
             IntegrationPointTest integrationPoint =
-                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchIntegrationPoint(_destinationWorkspace);
+                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(_destinationWorkspace);
             integrationPoint.HasErrors = true;
 
             SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(new JobTest(), integrationPoint);
@@ -116,7 +116,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         {
             // Arrange
             IntegrationPointTest integrationPoint =
-                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchIntegrationPoint(_destinationWorkspace);
+                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(_destinationWorkspace);
             integrationPoint.HasErrors = false;
 
             SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(new JobTest(), integrationPoint);
@@ -142,7 +142,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         {
             // Arrange
             IntegrationPointTest integrationPoint =
-                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchIntegrationPoint(_destinationWorkspace);
+                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(_destinationWorkspace);
 
             JobTest job =
                 FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
@@ -176,7 +176,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         {
             // Arrange
             IntegrationPointTest integrationPoint =
-                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchIntegrationPoint(_destinationWorkspace);
+                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(_destinationWorkspace);
 
             JobTest job =
                 FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
@@ -210,7 +210,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         {
             // Arrange
             IntegrationPointTest integrationPoint =
-                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchIntegrationPoint(_destinationWorkspace);
+                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(_destinationWorkspace);
 
             JobTest job =
                 FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
@@ -245,7 +245,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         {
             // Arrange
             IntegrationPointTest integrationPoint =
-                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchIntegrationPoint(_destinationWorkspace);
+                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(_destinationWorkspace);
 
             JobTest job =
                 FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
@@ -343,7 +343,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper
 	            .CreateWorkspaceWithIntegrationPointsApp(destinationWorkspaceArtifactId);
             IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
-	            .CreateSavedSearchIntegrationPoint(destinationWorkspace);
+	            .CreateSavedSearchSyncIntegrationPoint(destinationWorkspace);
 
 	        JobController.Payload payload = new JobController.Payload
 	        {

@@ -48,7 +48,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			DestinationProviderTest destinationProvider = Workspace.DestinationProviders.First(x =>
 				x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
 
-			List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMapping(destinationWorkspace);
+			List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMapping(destinationWorkspace, (int)ArtifactType.Document);
 
 			integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
 			integrationPoint.SourceConfiguration = _serializer.Serialize(new SourceConfiguration
@@ -63,6 +63,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 				ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
 				FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
 				ArtifactTypeId = (int)ArtifactType.Document,
+				DestinationArtifactTypeId = (int)ArtifactType.Document,
 				DestinationFolderArtifactId = destinationFolder.ArtifactId,
 				CaseArtifactId = destinationWorkspace.ArtifactId,
 				WebServiceURL = @"//some/service/url/relativity"
@@ -97,7 +98,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 		public IntegrationPointProfileTest CreateSavedSearchIntegrationPointWithDeserializableFieldMappings(WorkspaceTest destinationWorkspace, int longTextLimit)
 		{
 			IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPoint(destinationWorkspace);
-			List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMapping(destinationWorkspace);
+			List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMapping(destinationWorkspace, (int)ArtifactType.Document);
 			fieldsMapping[0].SourceField.DisplayName = new string(Enumerable.Repeat('-', longTextLimit / 2).ToArray());
 			fieldsMapping[0].DestinationField.DisplayName = new string(Enumerable.Repeat('-', longTextLimit / 2).ToArray());
 			integrationPointProfile.FieldMappings = _serializer.Serialize(fieldsMapping);

@@ -32,7 +32,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 				Guids = new List<Guid> { Guid },
 				ParentObject = new RelativityObjectRef
 				{
-					ArtifactID = ParenObjectArtifactId
+					ArtifactID = ParentObjectArtifactId
 				},
 				FieldValues = new List<FieldValuePair>
 				{

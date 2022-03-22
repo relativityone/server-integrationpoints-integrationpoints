@@ -280,6 +280,12 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		}
 
 		#region Helper Methods
+
+		private IRelativityObjectManager CreateRelativityObjectManager(int workspaceArtifactId)
+		{
+			return ObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId);
+		}
+
 		private static Lazy<IRelativityObjectManagerFactory> CreateRelativityObjectManagerFactory(IHelper helper)
 		{
 			return new Lazy<IRelativityObjectManagerFactory>(() => new RelativityObjectManagerFactory(helper));
@@ -289,11 +295,6 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			IAPILog logger = helper.GetLoggerFactory().GetLogger();
 			return new Lazy<IExternalServiceInstrumentationProvider>(() => new ExternalServiceInstrumentationProviderWithoutJobContext(logger));
-		}
-
-		private IRelativityObjectManager CreateRelativityObjectManager(int workspaceArtifactId)
-		{
-			return ObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId);
 		}
 
 		private IRelativityObjectManager CreateRelativityObjectManagerForFederatedInstance(int workspaceArtifactId)

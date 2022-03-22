@@ -74,9 +74,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				if (_managerFactory == null)
 				{
-					IQueueQueryManager queryManager = new QueueQueryManager(Helper, _agentGuid);
-					IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
-					_managerFactory = new ManagerFactory(Helper, new FakeNonRemovableAgent(), jobServiceDataProvider);
+					_managerFactory = new ManagerFactory(Helper, new FakeNonRemovableAgent());
 				}
 				return _managerFactory;
 			}
@@ -101,7 +99,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					IQueueManager queueManager = ManagerFactory.CreateQueueManager();
 					IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager();
 					IStateManager stateManager = ManagerFactory.CreateStateManager();
-					IRepositoryFactory repositoryFactory = new RepositoryFactory(Helper, Helper.GetServicesManager());
+					IServicesMgr servicesMgr = Helper.GetServicesManager();
+					IRepositoryFactory repositoryFactory = new RepositoryFactory(Helper, servicesMgr);
 					IIntegrationPointPermissionValidator permissionValidator =
 						new IntegrationPointPermissionValidator(new[]
 							{ new ViewErrorsPermissionValidator(repositoryFactory) },

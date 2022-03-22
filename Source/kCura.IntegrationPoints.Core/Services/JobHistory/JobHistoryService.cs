@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.QueryOptions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Transformers;
@@ -90,10 +91,14 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 			if (jobHistory == null)
 			{
+				_logger.LogInformation("JobHistory {batchInstance} doesn't exist. Create new...", batchInstance);
 				jobHistory = CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryScheduledRun, startTimeUtc);
 
 				integrationPoint.JobHistory = integrationPoint?.JobHistory.Concat(new[] { jobHistory.ArtifactId }).ToArray();
 			}
+
+			_logger.LogInformation("Read JobHistory: {jobHistoryDetails}", jobHistory.Stringify());
+
 			return jobHistory;
 		}
 
@@ -166,6 +171,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			int artifactId = _relativityObjectManager.Create(jobHistory);
 			jobHistory.ArtifactId = artifactId;
 
+			_logger.LogInformation("Created JobHistory: {jobHistoryDetails}", jobHistory.Stringify());
+
 			return jobHistory;
 		}
 
@@ -230,6 +237,9 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				LogMoreThanOneHistoryInstanceWarning(batchInstance);
 			}
 			Data.JobHistory jobHistory = jobHistories.SingleOrDefault(); //there should only be one!
+
+			_logger.LogInformation("Read JobHistory for BatchInstanceId {batchInstanceId}: JobHistory - {jobHistoryDetails}",
+				batchInstance, jobHistory.Stringify());
 
 			return jobHistory;
 		}

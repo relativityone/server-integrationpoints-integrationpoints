@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -202,7 +203,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 
 		private class AgentMock : ScheduleQueueAgentBase
 		{
-			public AgentMock(IScheduleRuleFactory scheduleRuleFactory = null) : base(Guid.Empty, null, null, scheduleRuleFactory)
+			public AgentMock(IScheduleRuleFactory scheduleRuleFactory = null) : base(Guid.Empty, Substitute.For<IKubernetesMode>(), scheduleRuleFactory: scheduleRuleFactory)
 			{ }
 
 			public override string Name { get; }

@@ -1,6 +1,9 @@
 ﻿var IP = IP || {};
 IP.reverseMapFields = false;
 
+var relativitySourceProviderGuid = "423B4D43-EAE9-4E14-B767-17D629DE4BB2";
+var relativityDestinationProviderGuid = "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
+
 ko.validation.rules.pattern.message = 'Invalid.';
 
 ko.validation.configure({
@@ -233,7 +236,7 @@ var IP = IP || {};
 			});
 
 			var rdoTypes = $.map(result[2], function (entry) {
-				return new Choice(entry.name, entry.value);
+				return new Choice(entry.name, entry.value, null, null, entry.belongsToApplication);
 			});
 
 			self.DefaultRdoTypeId = result[3];
@@ -246,7 +249,6 @@ var IP = IP || {};
 			self.destination.allRdoTypes(rdoTypes);
 			self.source.sourceTypes(sTypes);
 			self.integrationPointTypes(ipTypes);
-
 
 			self.destination.destinationProviderVisible(self.destination.destinationTypes().length > 1);
 			self.destination.setRelativityAsDestinationProvider();
@@ -306,6 +308,13 @@ var IP = IP || {};
 				var disableRdoSelection = isExportType && !enableSyncNonDocumentFlow;
 				self.destination.isDestinationObjectDisabled(disableRdoSelection);
 			}
+		};
+
+		this.isSyncFlow = function () {
+			var sourceProvider = (this.source.selectedType() || '').toUpperCase();
+			var destinationProvider = (this.destination.selectedDestinationTypeGuid() || '').toUpperCase();
+	
+			return sourceProvider === relativitySourceProviderGuid && destinationProvider === relativityDestinationProviderGuid;
 		};
 	};
 

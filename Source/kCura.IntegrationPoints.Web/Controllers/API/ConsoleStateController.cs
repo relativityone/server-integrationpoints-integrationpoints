@@ -1,6 +1,10 @@
-﻿using kCura.IntegrationPoints.Core.Helpers;
+﻿using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Helpers;
+using kCura.IntegrationPoints.Core.Helpers.Implementations;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
+using Relativity.API;
 using System.Web.Http;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -9,9 +13,11 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
     {
         private readonly IButtonStateBuilder _buttonStateBuilder;
 
-        public ConsoleStateController(IButtonStateBuilder buttonStateBuilder)
+        public ConsoleStateController(ICPHelper helper,
+            IRepositoryFactory respositoryFactory,
+            IManagerFactory managerFactory)
         {
-            _buttonStateBuilder = buttonStateBuilder;
+            _buttonStateBuilder = ButtonStateBuilder.CreateButtonStateBuilder(helper, respositoryFactory, managerFactory);
         }
 
         [HttpGet]

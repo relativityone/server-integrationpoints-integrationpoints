@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 
 		SavedSearchValidator CreateSavedSearchValidator(int workspaceArtifactId, int savedSearchArtifactId);
 
-		ViewValidator CreateViewValidator();
+		ViewExportValidator CreateViewValidator();
 
 		ExportProductionValidator CreateExportProductionValidator();
 
@@ -91,12 +91,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
 
 		public SavedSearchValidator CreateSavedSearchValidator(int workspaceArtifactId, int savedSearchArtifactId)
 		{
-			return new SavedSearchValidator(_logger, _repositoryFactory.GetSavedSearchQueryRepository(workspaceArtifactId), savedSearchArtifactId);
+			return new SavedSearchValidator(_logger, _repositoryFactory.GetSavedSearchQueryRepository(workspaceArtifactId));
 		}
 
-		public ViewValidator CreateViewValidator()
+		public ViewExportValidator CreateViewValidator()
 		{
-			return new ViewValidator(_logger, _viewService);
+			return new ViewExportValidator(_logger, _viewService);
 		}
 
 		public ExportProductionValidator CreateExportProductionValidator()

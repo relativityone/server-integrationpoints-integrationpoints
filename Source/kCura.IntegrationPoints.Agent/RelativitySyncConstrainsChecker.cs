@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using Relativity;
 using Relativity.API;
 using Relativity.Toggles;
 
@@ -36,44 +37,33 @@ namespace kCura.IntegrationPoints.Agent
 
 		public bool ShouldUseRelativitySync(Job job)
 		{
-			_logger.LogDebug("Checking if Relativity Sync flow should be used for job with ID: {jobId}. IntegrationPointId: {integrationPointId}", job.JobId);
+			_logger.LogInformation("Checking if Relativity Sync flow should be used for job with ID: {jobId}. IntegrationPointId: {integrationPointId}", job.JobId);
 			
             try
 			{
 				IntegrationPoint integrationPoint = GetIntegrationPoint(job.RelatedObjectArtifactID);
 				ProviderType providerType = GetProviderType(integrationPoint.SourceProvider ?? 0,
 					integrationPoint.DestinationProvider ?? 0);
-				
+
 				if (providerType == ProviderType.Relativity)
 				{
-					SourceConfiguration sourceConfiguration =
-						VerboseDeserialize<SourceConfiguration>(integrationPoint.SourceConfiguration);
-					ImportSettings importSettings =
-						VerboseDeserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
+					SourceConfiguration sourceConfiguration = VerboseDeserialize<SourceConfiguration>(integrationPoint.SourceConfiguration);
+					ImportSettings importSettings = VerboseDeserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
 
 					if (ConfigurationAllowsUsingRelativitySync(sourceConfiguration, importSettings))
 					{
-                        if (IsToggleEnabled<EnableSyncNonDocumentFlowToggle>())
-                        {
-                            _logger.LogInformation(
-                                $"Non-Document objects import flow will be used for job with ID: {{jobId}} because {nameof(EnableSyncNonDocumentFlowToggle)} is enabled. IntegrationPointId: {{integrationPointId}}",
-                                job.JobId, job.RelatedObjectArtifactID);
-
-                            return true;
-                        }
-
 						if (importSettings.ImageImport && !IsToggleEnabled<EnableSyncImageFlowToggle>())
 						{
 							_logger.LogInformation(
-								$"Old image import flow will be used for job with ID: {{jobId}} because {nameof(EnableSyncImageFlowToggle)} is disabled. IntegrationPointId: {{integrationPointId}}",
+								"Old image import flow will be used for job with ID: {jobId} because toggle '{typeof(EnableSyncImageFlowToggle).FullName}' is disabled. IntegrationPointId: {integrationPointId}",
 								job.JobId, job.RelatedObjectArtifactID);
 
 							return false;
 						}
 
-                        _logger.LogInformation(
-							"Relativity Sync flow will be used for job with ID: {jobId}. IntegrationPointId: {integrationPointId}",
+                        _logger.LogInformation("Relativity Sync flow will be used for job with ID: {jobId}. IntegrationPointId: {integrationPointId}",
 							job.JobId, job.RelatedObjectArtifactID);
+
 						return true;
 					}
 				}
@@ -110,12 +100,10 @@ namespace kCura.IntegrationPoints.Agent
 
 		private IntegrationPoint GetIntegrationPoint(int integrationPointId)
 		{
-			_logger.LogDebug("Retrieving Integration Point using IntegrationPointService. IntegrationPointId: {integrationPointId}", integrationPointId);
-
 			try
 			{
 				IntegrationPoint integrationPoint = _integrationPointService.ReadIntegrationPoint(integrationPointId);
-				_logger.LogInformation("Integration Point with id: {integrationPointId} retrieved successfully.", integrationPointId);
+				_logger.LogInformation("Integration Point with Id: {integrationPointId} retrieved successfully.", integrationPointId);
 				return integrationPoint;
 			}
 			catch (Exception ex)
@@ -127,15 +115,9 @@ namespace kCura.IntegrationPoints.Agent
 
 		private ProviderType GetProviderType(int sourceProviderId, int destinationProviderId)
 		{
-			_logger.LogDebug(
-				$"Determining Integration Point provider type based on source and destination provider id's using {nameof(IProviderTypeService)} SourceProviderId: {{sourceProviderId}}; DestinationProviderId: {{destinationProviderId}}",
-				sourceProviderId,
-				destinationProviderId);
-
 			try
 			{
-				ProviderType providerType =
-					_providerTypeService.GetProviderType(sourceProviderId, destinationProviderId);
+				ProviderType providerType = _providerTypeService.GetProviderType(sourceProviderId, destinationProviderId);
 				_logger.LogInformation(
 					"ProviderType for given providers has been determined as: {providerType}. SourceProviderId: {sourceProviderId}; DestinationProviderId: {destinationProviderId}",
 					providerType, sourceProviderId, destinationProviderId);
@@ -150,8 +132,6 @@ namespace kCura.IntegrationPoints.Agent
 
 		private T VerboseDeserialize<T>(string jsonToDeserialize)
 		{
-			_logger.LogDebug($"Deserializing json for type {nameof(T)}");
-
 			if (string.IsNullOrWhiteSpace(jsonToDeserialize))
 			{
 				throw new ArgumentNullException(nameof(jsonToDeserialize));
@@ -160,7 +140,6 @@ namespace kCura.IntegrationPoints.Agent
 			try
 			{
 				T result = _serializer.Deserialize<T>(jsonToDeserialize);
-				_logger.LogInformation($"Json for type {nameof(T)} deserialized successfully");
 				return result;
 			}
 			catch (Exception ex)
@@ -172,14 +151,21 @@ namespace kCura.IntegrationPoints.Agent
 
 		private bool ConfigurationAllowsUsingRelativitySync(SourceConfiguration sourceConfiguration, ImportSettings importSettings)
 		{
-			_logger.LogDebug(
-				"Checking if configurations allow using RelativitySync. SourceConfiguration.TypeOfExport: {typeOfExport}; DestinationConfiguration.ImageImport: {imageImport}; DestinationConfiguration.ProductionImport: {productionImport}",
-				sourceConfiguration.TypeOfExport,
-				importSettings.ImageImport,
-				importSettings.ProductionImport);
+			_logger.LogInformation("Checking if configurations allow using RelativitySync. " +
+					"SourceConfiguration.TypeOfExport: {typeOfExport}; " +
+					"DestinationConfiguration.ImageImport: {imageImport}; " +
+					"DestinationConfiguration.ProductionImport: {productionImport}",
+				sourceConfiguration.TypeOfExport, importSettings.ImageImport, importSettings.ProductionImport);
 
-			return sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch &&
-				   !importSettings.ProductionImport;
+			bool isSyncDocumentFlow = sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch && !importSettings.ProductionImport;
+			bool isSyncNonDocumentFlow = IsNonDocumentFlow(importSettings);
+
+			return isSyncDocumentFlow || isSyncNonDocumentFlow;
 		}
+
+		private bool IsNonDocumentFlow(ImportSettings destinationConfiguration)
+        {
+			return destinationConfiguration.ArtifactTypeId != (int)ArtifactType.Document;
+        }
 	}
 }

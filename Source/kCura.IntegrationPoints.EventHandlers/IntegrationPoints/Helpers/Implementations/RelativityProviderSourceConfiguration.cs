@@ -7,8 +7,11 @@ using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using Relativity;
 using Relativity.API;
 using Relativity.Services.Folder;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Search;
 using Artifact = kCura.EventHandler.Artifact;
 
@@ -45,9 +48,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			SetSourceWorkspaceName(settings);
 			SetSavedSearchName(settings);
 			SetSourceProductionName(settings);
-		}
+            SetViewName(settings);
+        }
 
-		private void SetInstanceFriendlyName(IDictionary<string, object> settings, IInstanceSettingsManager instanceSettingsManager)
+        private void SetInstanceFriendlyName(IDictionary<string, object> settings, IInstanceSettingsManager instanceSettingsManager)
 		{
 			settings[_SOURCE_RELATIVITY_INSTANCE] = $"{_RELATIVITY_THIS_INSTANCE}({instanceSettingsManager.RetriveCurrentInstanceFriendlyName()})";
 		}
@@ -72,6 +76,45 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 			else
 			{
 				settings[nameof(ExportUsingSavedSearchSettings.SavedSearchArtifactId)] = 0;
+			}
+		}
+
+        private void SetViewName(IDictionary<string, object> settings)
+        {
+			int viewArtifactId = ParseValue<int>(settings, "SourceViewId");
+            if (viewArtifactId > 0)
+            {
+                try
+                {
+                    int sourceWorkspaceId = ParseValue<int>(settings, nameof(ExportUsingSavedSearchSettings.SourceWorkspaceArtifactId));
+                    using (IObjectManager objectManager = Helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser))
+                    {
+                        QueryRequest request = new QueryRequest()
+                        {
+							ObjectType = new ObjectTypeRef()
+                            {
+								ArtifactTypeID = (int)ArtifactType.View
+                            },
+							Condition = $"'ArtifactID' == {viewArtifactId}",
+							IncludeNameInQueryResult = true
+                        };
+
+                        QueryResult results = objectManager.QueryAsync(sourceWorkspaceId, request, 0, 1).GetAwaiter().GetResult();
+
+                        if (results.TotalCount > 0)
+                        {
+                            settings["ViewName"] = results.Objects.First().Name;
+                        }
+                    }
+
+				}
+                catch (Exception ex)
+                {
+					Helper.GetLoggerFactory()
+                        .GetLogger()
+                        .ForContext<IntegrationPointViewPreLoad>()
+                        .LogError(ex, "Source View not found");
+				}
 			}
 		}
 

@@ -1,18 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
+using Relativity;
+using Relativity.API;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Validation
 {
-	public class IntegrationPointProviderValidator : BaseIntegrationPointValidator<IValidator>, IIntegrationPointProviderValidator
+    public class IntegrationPointProviderValidator : BaseIntegrationPointValidator<IValidator>, IIntegrationPointProviderValidator
 	{
-		public IntegrationPointProviderValidator(IEnumerable<IValidator> validators, IIntegrationPointSerializer serializer)
+		private readonly IRelativityObjectManagerFactory _relativityObjectManagerFactory;
+
+		public IntegrationPointProviderValidator(IEnumerable<IValidator> validators, IIntegrationPointSerializer serializer, IRelativityObjectManagerFactory relativityObjectManagerFactory)
 			: base(validators, serializer)
 		{
+			_relativityObjectManagerFactory = relativityObjectManagerFactory;
 		}
 
 		public override ValidationResult Validate(
@@ -55,7 +65,34 @@ namespace kCura.IntegrationPoints.Core.Validation
 				result.Add(validator.Validate(validationModel));
 			}
 
+			foreach (IValidator validator in _validatorsMap[GetTransferredObjectObjectTypeGuid(validationModel).ToString()])
+            {
+            	result.Add(validator.Validate(validationModel));
+            }
+
 			return result;
+		}
+
+		protected Guid GetTransferredObjectObjectTypeGuid(IntegrationPointProviderValidationModel validationModel)
+		{
+			ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(validationModel.DestinationConfiguration);
+			int destinationWorkspaceArtifactId = destinationConfiguration.CaseArtifactId;
+			IRelativityObjectManager relativityObjectManager = _relativityObjectManagerFactory.CreateRelativityObjectManager(destinationWorkspaceArtifactId);
+
+			var request = new QueryRequest()
+			{
+				ObjectType = new ObjectTypeRef() { ArtifactTypeID = (int)ArtifactType.ObjectType },
+				Condition = $"(('Artifact Type ID' == {validationModel.ArtifactTypeId}))"
+			};
+
+            Data.UtilityDTO.ResultSet<RelativityObject> results = relativityObjectManager.QueryAsync( request, 0, 1, false, ExecutionIdentity.System).GetAwaiter().GetResult();
+			if (results.TotalCount == 0)
+			{
+				return Guid.Empty;
+			}
+
+			return results.Items.Single().Guids.FirstOrDefault();
+
 		}
 	}
 }

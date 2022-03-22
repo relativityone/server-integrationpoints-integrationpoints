@@ -2,6 +2,7 @@
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.EventHandler;
 using kCura.IntegrationPoint.Tests.Core.TestCategories.Attributes;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
@@ -104,12 +105,17 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			bool hasProfileAddPermission)
 		{
 			// ARRANGE
+			var sourceConfiguration = new SourceConfiguration()
+			{
+				TypeOfExport = SourceConfiguration.ExportType.SavedSearch
+			};
 			var importSettings = new ImportSettings { ImageImport = false };
 			var integrationPoint = new Data.IntegrationPoint
 			{
 				HasErrors = true,
 				SourceProvider = 8392,
 				DestinationProvider = 437,
+				SourceConfiguration = _serializer.Serialize(sourceConfiguration),
 				DestinationConfiguration = _serializer.Serialize(importSettings)
 			};
 
@@ -170,6 +176,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			_queueManager.HasJobsExecutingOrInQueue(_APPLICATION_ID, _ARTIFACT_ID).Returns(hasJobsExecutingOrInQueue);
 
 			_stateManager.GetButtonState(
+					sourceConfiguration.TypeOfExport,
 					ProviderType.Relativity, 
 					hasJobsExecutingOrInQueue,
 					integrationPoint.HasErrors.Value,
@@ -283,12 +290,17 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 		public void GetConsole_NonRelativityProvider_GoldFlow(bool hasJobsExecutingOrInQueue, bool hasStoppableJobs, ProviderType providerType)
 		{
 			// ARRANGE
+			var sourceConfiguration = new SourceConfiguration()
+			{
+				TypeOfExport = SourceConfiguration.ExportType.SavedSearch
+			};
 			var importSettings = new ImportSettings { ImageImport = false };
 			var integrationPoint = new Data.IntegrationPoint
 			{
 				HasErrors = true,
 				SourceProvider = 8392,
 				DestinationProvider = 243,
+				SourceConfiguration = _serializer.Serialize(sourceConfiguration),
 				DestinationConfiguration = _serializer.Serialize(importSettings)
 			};
 			
@@ -336,7 +348,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 				RetryErrorsButtonEnabled = false
 			};
 
-			_stateManager.GetButtonState(providerType, hasJobsExecutingOrInQueue, true, true, providerType == ProviderType.LoadFile && hasStoppableJobs, true).Returns(buttonStates);
+			_stateManager
+				.GetButtonState(sourceConfiguration.TypeOfExport, providerType, hasJobsExecutingOrInQueue, true, true, providerType == ProviderType.LoadFile && hasStoppableJobs, true)
+				.Returns(buttonStates);
 
 			string actionButtonOnClickEvent;
 			if (!hasJobsExecutingOrInQueue)

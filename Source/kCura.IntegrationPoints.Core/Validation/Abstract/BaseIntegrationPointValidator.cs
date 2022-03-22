@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Validation.Abstract
 {
@@ -57,6 +58,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
 				CreateSavedSearch = destinationConfiguration.CreateSavedSearchForTagging
 			};
 		}
+
 
 		public abstract ValidationResult Validate(
 			IntegrationPointModelBase model,
