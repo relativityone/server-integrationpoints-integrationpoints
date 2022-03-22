@@ -3,7 +3,7 @@ strategy: min
 source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 
 //RIP packages
-nuget Relativity.IntegrationPoints.Services.Interfaces.Private 1.2.1
+nuget Relativity.IntegrationPoints.Services.Interfaces.Private 1.2.2
 nuget Relativity.IntegrationPoints.Contracts 1.0.9
 nuget Relativity.IntegrationPoints.SDK 1.0.9
 
@@ -42,6 +42,7 @@ nuget Relativity.Telemetry.Services.Interface 3003.0.2
 nuget Relativity.Toggles 1.0.1
 nuget Relativity.AutomatedWorkflows.Services.Interfaces 0.10.0-pre.1
 nuget Relativity.AutomatedWorkflows.SDK 0.10.0-pre.1
+nuget Relativity.DataMigration.MigrateFileshareAccess 0.2.0
 
 // Import API packages
 nuget Relativity.DataExchange.Client.SDK 1.16.22
@@ -134,7 +135,7 @@ group Tests
 	nuget Relativity.OAuth2Client 1.5.2
 	nuget Relativity.OAuth2Client.Interfaces 1.5.2
 
-	nuget Relativity.Sync 0.8.0-pre.128
+	nuget Relativity.Sync 0.8.132
 
 	//RIP packages
 	nuget IntegrationPoints.MyFirstProvider 12.3.2
@@ -146,7 +147,7 @@ group Sync
 	strategy: min
 	source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 	
-	nuget Relativity.Sync 0.8.0-pre.128
+	nuget Relativity.Sync 0.8.132
 	nuget Newtonsoft.Json 6.0.8
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0

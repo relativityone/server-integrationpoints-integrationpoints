@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		public ISyncConfigurationBuilder GetSyncConfigurationBuilder(ISyncContext context)
 		{
-			return new SyncConfigurationBuilder(context, _syncServiceManager, CreateSyncLog());
+            return new SyncConfigurationBuilder(context, _syncServiceManager, CreateSyncLog());
 		}
 	}
 }
