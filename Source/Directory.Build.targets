@@ -6,9 +6,9 @@
   <!-- Relativity Packages source (https://git.kcura.com/projects/REL/repos/relativity/browse/packages.props)-->
   <!-- Relativity Packages with Relativity Versioning Schema -->
   <ItemGroup>
-    <PackageReference Update="Relativity" Version="40.8.29" />
+    <PackageReference Update="Relativity" Version="48.2.10" />
     <PackageReference Update="Relativity.Services.Interfaces" Version="13.5.0" />
-    <PackageReference Update="Relativity.Services.Interfaces.Private" Version="14.0.1" />
+    <PackageReference Update="Relativity.Services.Interfaces.Private" Version="14.1.0" />
     <PackageReference Update="Relativity.Services.DataContracts" Version="13.5.0" />
   </ItemGroup>
   <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
