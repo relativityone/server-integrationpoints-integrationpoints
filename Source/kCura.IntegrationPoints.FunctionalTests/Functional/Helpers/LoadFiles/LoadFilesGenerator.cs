@@ -9,6 +9,7 @@ using Relativity.Testing.Framework.Api;
 using System.IO.Compression;
 using Relativity.Kepler.Transport;
 using NUnit.Framework;
+using System.Linq;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 {
@@ -23,7 +24,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 		private static readonly string NATIVES_FOR_LOAD_FILE_FOLDER_PATH = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\LoadFiles");
 		private static readonly string IMAGES_FOR_LOAD_FILE_FOLDER_PATH = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\Images");
 
-		public static string GetOrCreateNativesLoadFile()
+		public static string GetOrCreateNativesLoadFile(int limit = 10)
 		{
 			if (File.Exists(NATIVES_LOAD_FILE_PATH))
 			{
@@ -36,7 +37,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 				{
 					nativesLoadFileWriter.WriteLine(NATIVES_LOAD_FILE_HEADER);
 
-					foreach (var native in Natives.NATIVES)
+					foreach (var native in Natives.NATIVES.Take(limit))
 					{
 						nativesLoadFileWriter.WriteLine($"{native.Key},{native.Value}");
 					}

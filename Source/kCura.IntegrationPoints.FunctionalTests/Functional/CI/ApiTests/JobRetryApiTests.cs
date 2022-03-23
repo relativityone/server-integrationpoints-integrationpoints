@@ -10,9 +10,11 @@ using System.Threading.Tasks;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.ApiTests;
+using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI.ApiTests
 {
+    [TestType.MainFlow]
     public class JobRetryApiTests : TestsBase
     {
         private readonly JobRetryApiTestsImplementation _implementation;
@@ -34,9 +36,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI.ApiTests
             base.OnTearDownFixture();
             _implementation.OnTearDownFixture();
         }
-
-        //TODO: TEST GIUD?
-        [Test]
+       
+        [IdentifiedTest("F35707DA-51C3-41D2-A4BD-6C032FA5995C")]
         public async Task JobRetryTest()
         {
             await _implementation.RunAndRetryIntegrationPoint();
