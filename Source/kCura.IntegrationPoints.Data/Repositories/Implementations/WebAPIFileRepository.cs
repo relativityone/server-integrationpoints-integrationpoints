@@ -118,7 +118,46 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		
+		private ILookup<int, ImageFile> ToProducedImageFilesLookup(DataSet imagesFromProductionDataSet, int productionId)
+		{
+			return imagesFromProductionDataSet.Tables[0].AsEnumerable()
+				.ToLookup(x => (int)x[_DOCUMENT_ARTIFACT_ID_COLUMN_NAME], x => GetImageFileFromProduction(x, productionId));
+		}
+
+		private ImageFile GetImageFileFromProduction(DataRow dataRow, int productionId)
+		{
+			int documentArtifactId = GetValue<int>(dataRow, _DOCUMENT_ARTIFACT_ID_COLUMN_NAME);
+			string location = GetValue<string>(dataRow, _LOCATION_COLUMN_NAME);
+			string fileName = GetValue<string>(dataRow, _FILENAME_COLUMN_NAME_PRODUCTION);
+			long size = GetValue<long>(dataRow, _SIZE_COLUMN_NAME_PRODUCTION);
+			string nativeIdentifier = GetValue<string>(dataRow, _NATIVE_IDENTIFIER);
+
+			return new ImageFile(documentArtifactId, location, fileName, size, productionId, nativeIdentifier);
+		}
+
+		private ImageFile GetImageFile(DataRow dataRow)
+		{
+			int documentArtifactId = GetValue<int>(dataRow, _DOCUMENT_ARTIFACT_ID_COLUMN_NAME);
+			string location = GetValue<string>(dataRow, _LOCATION_COLUMN_NAME);
+			string fileName = GetValue<string>(dataRow, _FILENAME_COLUMN_NAME);
+			long size = GetValue<long>(dataRow, _SIZE_COLUMN_NAME);
+
+			return new ImageFile(documentArtifactId, location, fileName, size);
+		}
+
+		private T GetValue<T>(DataRow row, string columnName)
+		{
+			object value = null;
+			try
+			{
+				value = row[columnName];
+				return (T)Convert.ChangeType(value, typeof(T));
+			}
+			catch (Exception ex)
+			{
+				throw new FileRepositoryException($"Error while retrieving image file info from column \"{columnName}\". Value: \"{value}\" Requested type: \"{typeof(T)}\"", ex);
+			}
+		}
 
 		public List<string> GetImagesLocationForDocument(int workspaceID, int documentId, ISearchManager searchManager = null)
 		{
@@ -234,53 +273,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return Task.FromResult((imageFiles, documentIds.Except(imageFiles.Select(x => x.DocumentArtifactId)).ToArray()));
         }
 
-        private ILookup<int, ImageFile> ToProducedImageFilesLookup(DataSet imagesFromProductionDataSet, int productionId)
-        {
-            return imagesFromProductionDataSet.Tables[0].AsEnumerable()
-                .ToLookup(x => (int)x[_DOCUMENT_ARTIFACT_ID_COLUMN_NAME], x => GetImageFileFromProduction(x, productionId));
-        }
-
         private ImageFile GetImageFileWithIdentifier(DataRow dataRow)
-        {
-            ImageFile imageFile = GetImageFile(dataRow);
-            string nativeIdentifier = GetValue<string>(dataRow, _IDENTIFIER);
-
-            return new ImageFile(imageFile.DocumentArtifactId, imageFile.Location, imageFile.Filename, imageFile.Size, nativeIdentifier: nativeIdentifier);
-        }
-
-		private ImageFile GetImageFileFromProduction(DataRow dataRow, int productionId)
-        {
-            int documentArtifactId = GetValue<int>(dataRow, _DOCUMENT_ARTIFACT_ID_COLUMN_NAME);
-            string location = GetValue<string>(dataRow, _LOCATION_COLUMN_NAME);
-            string fileName = GetValue<string>(dataRow, _FILENAME_COLUMN_NAME_PRODUCTION);
-            long size = GetValue<long>(dataRow, _SIZE_COLUMN_NAME_PRODUCTION);
-            string nativeIdentifier = GetValue<string>(dataRow, _NATIVE_IDENTIFIER);
-
-            return new ImageFile(documentArtifactId, location, fileName, size, productionId, nativeIdentifier);
-        }
-
-        private ImageFile GetImageFile(DataRow dataRow)
         {
             int documentArtifactId = GetValue<int>(dataRow, _DOCUMENT_ARTIFACT_ID_COLUMN_NAME);
             string location = GetValue<string>(dataRow, _LOCATION_COLUMN_NAME);
             string fileName = GetValue<string>(dataRow, _FILENAME_COLUMN_NAME);
             long size = GetValue<long>(dataRow, _SIZE_COLUMN_NAME);
+            string nativeIdentifier = GetValue<string>(dataRow, _IDENTIFIER);
 
-            return new ImageFile(documentArtifactId, location, fileName, size);
-        }
-
-        private T GetValue<T>(DataRow row, string columnName)
-        {
-            object value = null;
-            try
-            {
-                value = row[columnName];
-                return (T)Convert.ChangeType(value, typeof(T));
-            }
-            catch (Exception ex)
-            {
-                throw new FileRepositoryException($"Error while retrieving image file info from column \"{columnName}\". Value: \"{value}\" Requested type: \"{typeof(T)}\"", ex);
-            }
+            return new ImageFile(documentArtifactId, location, fileName, size, nativeIdentifier: nativeIdentifier);
         }
 
 		private void ThrowWhenNullArgument<T>(T argument, string argumentName)
