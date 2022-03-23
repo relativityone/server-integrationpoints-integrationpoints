@@ -75,45 +75,38 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
         public async Task<DocumentsStatistics> GetImagesStatisticsForSavedSearchAsync(int workspaceId,
             int savedSearchId, bool calculateSize, CancellationToken token = default(CancellationToken))
         {
-            //long GetDocumentImageCount(RelativityObjectSlim document, int imageCountFieldIndex) =>
-            //    Convert.ToInt64(document.Values[imageCountFieldIndex] ?? 0);
+            long GetDocumentImageCount(RelativityObjectSlim document, int imageCountFieldIndex) =>
+                Convert.ToInt64(document.Values[imageCountFieldIndex] ?? 0);
 
             try
             {
                 DocumentsStatistics statistics = new DocumentsStatistics();
 
-                //QueryRequest query = new DocumentQueryBuilder()
-                //    .AddSavedSearchCondition(savedSearchId)
-                //    .AddField(DocumentFieldsConstants.HasImagesFieldName)
-                //    .AddField(DocumentFieldsConstants.RelativityImageCountGuid)
-                //    .Build();
-                
-                //RelativityObjectSlim[] documents =
-                //    await QueryDocumentsWithExport(workspaceId, query, nameof(GetImagesStatisticsForSavedSearchAsync),
-                //        token).ConfigureAwait(false);
+                QueryRequest query = new DocumentQueryBuilder()
+                    .AddSavedSearchCondition(savedSearchId)
+                    .AddField(DocumentFieldsConstants.HasImagesFieldName)
+                    .AddField(DocumentFieldsConstants.RelativityImageCountGuid)
+                    .Build();
 
-                RelativityObjectSlim[] documentIds = await GetObjectIdentifierFieldRequestAsync(workspaceId, savedSearchId, token).ConfigureAwait(false);
+                RelativityObjectSlim[] documents =
+                    await QueryDocumentsWithExport(workspaceId, query, nameof(GetImagesStatisticsForSavedSearchAsync),
+                        token).ConfigureAwait(false);
 
-                statistics.DocumentsCount = documentIds.Length;
-                //statistics.TotalImagesCount = documentIds.Sum(x => GetDocumentImageCount(x, 1));
-                statistics.TotalImagesCount = _imageFileSizeStatistics.ForSavedSearch(workspaceId, savedSearchId);
+                statistics.DocumentsCount = documents.Length;
+                statistics.TotalImagesCount = documents.Sum(x => GetDocumentImageCount(x, 1));
 
                 if (calculateSize)
                 {
-                    //List<int> documentsWithImagesArtifactIDs = documents.Where(x =>
-                    //{
-                    //    dynamic choice = x.Values[0];
-                    //    return choice.Name == DocumentFieldsConstants.HasImagesYesChoiceName;
-                    //}).Select(x => x.ArtifactID).ToList();
+                    List<int> documentsWithImagesArtifactIDs = documents.Where(x =>
+                    {
+                        dynamic choice = x.Values[0];
+                        return choice.Name == DocumentFieldsConstants.HasImagesYesChoiceName;
+                    }).Select(x => x.ArtifactID).ToList();
 
-                    //Stopwatch sw = Stopwatch.StartNew();
-                    //statistics.TotalImagesSizeBytes =
-                    //    _imageFileSizeStatistics.GetTotalFileSize(documentsWithImagesArtifactIDs, workspaceId);
-
-                    //sw.Stop();
                     Stopwatch sw = Stopwatch.StartNew();
                     statistics.TotalImagesSizeBytes =
-                        _imageFileSizeStatistics.GetTotalFileSize(documentIds.Select(x => x.ArtifactID).ToList(), workspaceId);
+                        _imageFileSizeStatistics.GetTotalFileSize(documentsWithImagesArtifactIDs, workspaceId);
+
                     sw.Stop();
                     _logger.LogInformation("Calculated total images size for saved search in {elapsed} ms", sw.ElapsedMilliseconds);
                 }
@@ -169,20 +162,6 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
             }
         }
 
-        private async Task<RelativityObjectSlim[]> GetObjectIdentifierFieldRequestAsync( int workspaceId, int savedSearchId, CancellationToken token)
-        {
-            QueryRequest query = new DocumentQueryBuilder()
-                .AddSavedSearchCondition(savedSearchId)
-                .AddField(DocumentFieldsConstants.ControlNumberGuid)
-                .Build();
-
-            RelativityObjectSlim[] documentIds =
-                await QueryDocumentsWithExport(workspaceId, query, nameof(GetImagesStatisticsForSavedSearchAsync),
-                    token).ConfigureAwait(false);
-
-            return documentIds;
-        }
-
         private async Task<RelativityObjectSlim[]> QueryDocumentsWithExport(int workspaceId, QueryRequest query,
             string callingMethodName,
             CancellationToken token)
@@ -190,19 +169,19 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
             IRelativityObjectManager objectManager =
                 _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceId);
 
-            Stopwatch stopWatch = Stopwatch.StartNew();
+            Stopwatch sw = Stopwatch.StartNew();
             using (IExportQueryResult export = await objectManager.QueryWithExportAsync(query, 0).ConfigureAwait(false))
             {
                 _logger.LogInformation("Exported {count} documents ({method}) in {elapsed} s",
-                    export.ExportResult.RecordCount, callingMethodName, stopWatch.Elapsed.TotalSeconds);
+                    export.ExportResult.RecordCount, callingMethodName, sw.Elapsed.TotalSeconds);
 
-                stopWatch.Restart();
+                sw.Restart();
 
                 IEnumerable<RelativityObjectSlim> documents =
                     await export.GetAllResultsAsync(token).ConfigureAwait(false);
 
                 _logger.LogInformation("Finished gathering document ids for ({method}) in {elapsed} s",
-                    callingMethodName, stopWatch.Elapsed.TotalSeconds);
+                    callingMethodName, sw.Elapsed.TotalSeconds);
 
                 return documents.ToArray();
             }
