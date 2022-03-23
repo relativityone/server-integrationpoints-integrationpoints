@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Threading.Tasks;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Constants;
 using kCura.IntegrationPoints.Common.Handlers;
@@ -27,7 +26,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private const string _FILENAME_COLUMN_NAME_PRODUCTION = "ImageFileName";
 		private const string _SIZE_COLUMN_NAME_PRODUCTION = "ImageSize";
 		private const string _NATIVE_IDENTIFIER = "NativeIdentifier";
-        private const string _IDENTIFIER = "Identifier";
 
 		private const string _FILENAME_COLUMN_NAME = "Filename";
 		private const string _SIZE_COLUMN_NAME = "Size";
@@ -256,33 +254,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				}
 			}
 		}
-
-		public Task<(ImageFile[] Images, int[] DocumentWithoutImages)> RetrieveOriginalImagesForDocuments(int workspaceId, int[] documentIds)
-        {
-            DataSet dataSet;
-            ISearchManager searchManagerLocal = _searchManagerFactory();
-            dataSet = searchManagerLocal.RetrieveImagesForDocuments(workspaceId, documentIds);
-
-            if (dataSet == null || dataSet.Tables.Count == 0)
-            {
-                return Task.FromResult((Array.Empty<ImageFile>(), documentIds.ToArray()));
-            }
-
-            ImageFile[] imageFiles = dataSet.Tables[0].AsEnumerable().Select(GetImageFileWithIdentifier).ToArray();
-
-            return Task.FromResult((imageFiles, documentIds.Except(imageFiles.Select(x => x.DocumentArtifactId)).ToArray()));
-        }
-
-        private ImageFile GetImageFileWithIdentifier(DataRow dataRow)
-        {
-            int documentArtifactId = GetValue<int>(dataRow, _DOCUMENT_ARTIFACT_ID_COLUMN_NAME);
-            string location = GetValue<string>(dataRow, _LOCATION_COLUMN_NAME);
-            string fileName = GetValue<string>(dataRow, _FILENAME_COLUMN_NAME);
-            long size = GetValue<long>(dataRow, _SIZE_COLUMN_NAME);
-            string nativeIdentifier = GetValue<string>(dataRow, _IDENTIFIER);
-
-            return new ImageFile(documentArtifactId, location, fileName, size, nativeIdentifier: nativeIdentifier);
-        }
 
 		private void ThrowWhenNullArgument<T>(T argument, string argumentName)
 		{

@@ -29,7 +29,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 		private Mock<IExternalServiceSimpleInstrumentation> _instrumentationSimpleProviderMock;
 		private Mock<IRetryHandler> _retryHandlerMock;
 		private Mock<IRetryHandlerFactory> _retryHandlerFactoryMock;
-		private Mock<IAPILog> _loggerMock;
 
 		private FileRepository _sut;
 
@@ -164,10 +163,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 					_KEPLER_SERVICE_NAME,
 					It.IsAny<string>()))
 				.Returns(_instrumentationSimpleProviderMock.Object);
-            _loggerMock = new Mock<IAPILog>();
 
-			_sut = new FileRepository(_servicesMgr.Object, _instrumentationProviderMock.Object, 
-                _retryHandlerFactoryMock.Object, _loggerMock.Object);
+			_sut = new FileRepository(_servicesMgr.Object, _instrumentationProviderMock.Object, _retryHandlerFactoryMock.Object );
 		}
 
 		[Test]

@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -18,20 +17,18 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
         private readonly IRelativityObjectManagerFactory _relativityObjectManagerFactory;
         private readonly INativeFileSizeStatistics _nativeFileSizeStatistics;
         private readonly IImageFileSizeStatistics _imageFileSizeStatistics;
-        private readonly IFileRepository _fileRepository;
         private readonly IAPILog _logger;
 
         public DocumentAccumulatedStatistics(
             IRelativityObjectManagerFactory relativityObjectManagerFactory,
             INativeFileSizeStatistics nativeFileSizeStatistics,
             IImageFileSizeStatistics imageFileSizeStatistics,
-            IAPILog logger, IFileRepository fileRepository)
+            IAPILog logger)
         {
             _relativityObjectManagerFactory = relativityObjectManagerFactory;
             _nativeFileSizeStatistics = nativeFileSizeStatistics;
             _imageFileSizeStatistics = imageFileSizeStatistics;
             _logger = logger;
-            _fileRepository = fileRepository;
         }
 
         public async Task<DocumentsStatistics> GetNativesStatisticsForSavedSearchAsync(int workspaceId,
@@ -99,9 +96,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
                 statistics.DocumentsCount = documentIds.Length;
                 //statistics.TotalImagesCount = documentIds.Sum(x => GetDocumentImageCount(x, 1));
-                (ImageFile[] images, int[] documentWithoutImages) = await _fileRepository.RetrieveOriginalImagesForDocuments(workspaceId, documentIds.Select(x => x.ArtifactID).ToArray());
-                statistics.TotalImagesCount = images.Length;
-                    
+                statistics.TotalImagesCount = _imageFileSizeStatistics.ForSavedSearch(workspaceId, savedSearchId);
 
                 if (calculateSize)
                 {
