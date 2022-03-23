@@ -22,16 +22,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <returns>Results</returns>
 		Task<IEnumerable<RelativityObjectSlim>> GetNextBlockAsync(int startIndex, int resultsBlockSize = 1000);
 
-        /// <summary>
-        /// Retrieves block of results.
-        /// </summary>
-        /// <param name="startIndex">Starting index</param>
-        /// <param name="token">token passed in order to request cancellation processes running in method</param>
-        /// <param name="resultsBlockSize">Number of retrieved results</param>
-        /// <returns>Results</returns>
-        Task<IEnumerable<RelativityObjectSlim>> GetNextBlockAsync(int startIndex, CancellationToken token,
-            int resultsBlockSize = 1000);
-
 		/// <summary>
 		/// Retrieves all results, always starts at index 0
 		/// </summary>
