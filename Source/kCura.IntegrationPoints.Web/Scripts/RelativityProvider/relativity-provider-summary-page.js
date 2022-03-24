@@ -31,11 +31,12 @@ var loadData = function (ko, dataContainer) {
 			}
 		};
 
-		function formatExportType(importNatives, importImages) {
-			var exportType = "Workspace;";
+		function formatExportType(importNatives, importImages, typeOfExport) {
+			var exportType = "Workspace; ";
 			var images = convertToBool(importImages) ? "Images;" : "";
 			var natives = convertToBool(importNatives) ? "Natives;" : "";
-			return exportType + images + natives;
+			var view = typeOfExport === 4 ? "View;" : "";
+			return exportType + images + natives + view;
 		};
 
 		function getProductionPrecedenceTextRepresentation() {
@@ -67,10 +68,13 @@ var loadData = function (ko, dataContainer) {
 		this.showTargetFolder = dataContainer.sourceConfiguration.TargetFolder !== undefined;
 		this.targetProductionSet = dataContainer.sourceConfiguration.targetProductionSet;
 		this.showTargetProductionSet = dataContainer.sourceConfiguration.targetProductionSet !== undefined;
+		this.isNonDocumentSyncFlow = dataContainer.sourceConfiguration.SourceViewId !== undefined;
 		this.sourceWorkspace = dataContainer.sourceConfiguration.SourceWorkspace;
 		this.targetWorkspace = dataContainer.sourceConfiguration.TargetWorkspace;
 		if (dataContainer.sourceConfiguration.SourceProductionId) {
 			this.sourceDetails = "Production Set: " + dataContainer.sourceConfiguration.SourceProductionName;
+		} else if (dataContainer.sourceConfiguration.SourceViewId) {
+			this.sourceDetails = "View: " + dataContainer.sourceConfiguration.ViewName;
 		} else {
 			this.sourceDetails = "Saved Search: " + dataContainer.sourceConfiguration.SavedSearch;
 		}
@@ -79,7 +83,7 @@ var loadData = function (ko, dataContainer) {
 		this.useFolderPathInfo = ko.observable();
 		formatFolderPathInformation(dataContainer.destinationConfiguration.UseFolderPathInformation, dataContainer.destinationConfiguration.UseDynamicFolderPath);
 		this.moveExistingDocs = formatToYesOrNo(dataContainer.destinationConfiguration.MoveExistingDocuments);
-		this.exportType = formatExportType(dataContainer.destinationConfiguration.importNativeFile, dataContainer.destinationConfiguration.ImageImport);
+		this.exportType = formatExportType(dataContainer.destinationConfiguration.importNativeFile, dataContainer.destinationConfiguration.ImageImport, dataContainer.sourceConfiguration.TypeOfExport);
 		this.showInstanceInfo = dataContainer.destinationConfiguration.FederatedInstanceArtifactId !== null;
 
 		this.importNativeFile = ko.observable(dataContainer.destinationConfiguration.importNativeFile == 'true');
