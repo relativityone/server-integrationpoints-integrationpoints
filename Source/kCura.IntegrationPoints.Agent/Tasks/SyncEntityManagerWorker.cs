@@ -24,6 +24,7 @@ using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
+using Microsoft.Ajax.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Relativity.API;
@@ -378,13 +379,36 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				throw;
 			}
 
-			IDictionary<string, int> managerIDs =
+            ValidateDuplicatesInResult(result, uniqueFieldName);
+            result = result.DistinctBy(x => x.FieldValues.First(f => f.Field.Name == uniqueFieldName).Value?.ToString()).ToList();
+			
+            IDictionary<string, int> managerIDs =
 				result.ToDictionary(r => r.FieldValues.First(f => f.Field.Name == uniqueFieldName).Value?.ToString(), r => r.ArtifactID);
-			LogGetImportedManagerArtifactIDsSuccessfulEnd(managerIDs);
+
+            LogGetImportedManagerArtifactIDsSuccessfulEnd(managerIDs);
 			return managerIDs;
 		}
-		
-		private int GetEntityManagerFieldArtifactID(int workspaceArtifactId)
+
+        private void ValidateDuplicatesInResult(List<RelativityObject> result, string uniqueFieldName)
+        {
+            IEnumerable<IGrouping<string, RelativityObject>> duplicates = result
+                .GroupBy(x => x.FieldValues.First(f => f.Field.Name == uniqueFieldName).Value?.ToString())
+                .Where(g => g.Count() > 1);
+
+            if (duplicates.Any())
+            {
+                IEnumerable<RelativityObject> itemLevelErrors = duplicates.SelectMany(x => x.Skip(1));
+
+                foreach (RelativityObject itemLevelError in itemLevelErrors)
+                {
+                    JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorItem, itemLevelError.ArtifactID.ToString(),
+                    $"Duplicated entity found for: {itemLevelError.FieldValues.First().Value} with the following ArtifactID: {itemLevelError.ArtifactID}",
+                    string.Empty);
+                }
+            }
+        }
+
+        private int GetEntityManagerFieldArtifactID(int workspaceArtifactId)
 		{
 			try
 			{
