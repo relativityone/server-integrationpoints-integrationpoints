@@ -64,6 +64,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			RegisterSpecialField(columns, Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD_NAME, Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD);
 			RegisterSpecialField(columns, Constants.SPECIAL_FOLDERPATH_FIELD_NAME, Constants.SPECIAL_FOLDERPATH_FIELD);
 			RegisterSpecialField(columns, Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD_NAME, Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD);
+			
+			RegisterSpecialField(columns, Constants.SPECIAL_IMAGE_FILE_NAME_FIELD_NAME, Constants.SPECIAL_IMAGE_FILE_NAME_FIELD);
 
 			// So that the destination workspace file icons correctly display, we give the import API the file name of the document
 			RegisterSpecialField(columns, Constants.SPECIAL_FILE_NAME_FIELD_NAME, Constants.SPECIAL_FILE_NAME_FIELD);

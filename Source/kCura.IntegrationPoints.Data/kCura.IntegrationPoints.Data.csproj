@@ -62,6 +62,7 @@
     <Compile Include="Converters\RelativityObjectExtensions.cs" />
     <Compile Include="Converters\RelativityObjectSlimExtensions.cs" />
     <Compile Include="Converters\WorkspaceRefExtensions.cs" />
+    <Compile Include="DTO\ImageFile.cs" />
     <Compile Include="DTO\ExportInitializationResultsDto.cs" />
     <Compile Include="DTO\RelativityObjectSlimDto.cs" />
     <Compile Include="DTO\SavedSearchQueryRequest.cs" />
@@ -142,6 +143,7 @@
     <Compile Include="Repositories\IFoundationRepositoryFactory.cs" />
     <Compile Include="Repositories\Implementations\CachedChoiceRepository.cs" />
     <Compile Include="Repositories\Implementations\ChoiceRepository.cs" />
+    <Compile Include="Repositories\Implementations\FileRepositoryException.cs" />
     <Compile Include="Repositories\Implementations\SecretsRepository.cs" />
     <Compile Include="Repositories\IRepositoryWithMassUpdate.cs" />
     <Compile Include="Repositories\IRepository.cs" />

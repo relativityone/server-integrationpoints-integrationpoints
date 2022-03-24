@@ -414,26 +414,26 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			return retrievedData;
 		}
 
-		private ILookup<int, string> CreateDocumentOriginalImageResponses(int[] ids)
+		private ILookup<int, ImageFile> CreateDocumentOriginalImageResponses(int[] ids)
 		{
-			return ids.ToLookup(x => x, x => "0");
+			return ids.ToLookup(x => x, x => new ImageFile(x, $"\\someLocation_{x}", "x.tiff", 1));
 		}
 
 
 
-		private ILookup<int, string> CreateDocumentImageResponses(int[] ids)
+		private ILookup<int, ImageFile> CreateDocumentImageResponses(int[] ids)
 		{
-			return ids.ToLookup(x => x, x => $"\\someLocation_{x}");
+			return ids.ToLookup(x => x, x => new ImageFile(x, $"\\someLocation_{x}", "x.tiff", 1));
 		}
 
-		private ILookup<int, string> CreateProductionDocumentImageResponses(int[] ids)
+		private ILookup<int, ImageFile> CreateProductionDocumentImageResponses(int[] ids)
 		{
-			return ids.ToLookup(x => x, x => $"\\someLocation_{x}");
+			return ids.ToLookup(x => x, x => new ImageFile(x, $"\\someLocation_{x}", "x.tiff", 1));
 		}
 
-		private ILookup<int, string> CreateProductionDocumentImageResponses(int[] ids, int productionId)
+		private ILookup<int, ImageFile> CreateProductionDocumentImageResponses(int[] ids, int productionId)
 		{
-			return ids.ToLookup(x => x, x => $"{productionId}");
+			return ids.ToLookup(x => x, x => new ImageFile(x, $"\\someLocation_{x}", "x.tiff", 1, productionId));
 		}
 
 		#endregion

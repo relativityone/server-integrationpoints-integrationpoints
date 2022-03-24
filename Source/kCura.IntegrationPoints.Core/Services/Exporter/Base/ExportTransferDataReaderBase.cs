@@ -137,6 +137,12 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Base
 				FieldIdentifier = IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD,
 				FieldType = FieldType.String
 			});
+			sourceFields.Add(new FieldEntry
+			{
+				DisplayName = IntegrationPoints.Domain.Constants.SPECIAL_IMAGE_FILE_NAME_FIELD_NAME,
+				FieldIdentifier = IntegrationPoints.Domain.Constants.SPECIAL_IMAGE_FILE_NAME_FIELD,
+				FieldType = FieldType.String
+			});
 		}
 
 		private static void InsertFolderFields(List<FieldEntry> sourceFields, FieldMap[] mappingFields, bool useDynamicFolderPath)
