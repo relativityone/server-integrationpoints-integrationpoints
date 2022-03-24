@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Queries;
@@ -16,7 +17,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Managers;
@@ -32,6 +32,7 @@ using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Objects.DataContracts;
+using ObjectTypeGuids = kCura.IntegrationPoints.Core.Contracts.Entity.ObjectTypeGuids;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
@@ -46,9 +47,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IJobStopManager _jobStopManager;
 		private IIntegrationPointRepository _integrationPointRepository;
 		private ISerializer _jsonSerializer;
+        private IRelativityObjectManager _relativityObjectManager;
 		private Job _job;
 		private JobHistory _jobHistory;
 		private SyncEntityManagerWorker _instance;
+
+        private const string _SOURCE_MANAGER_UNIQUE_ID = "source id";
+        private const string _DESTINATION_MANAGER_UNIQUE_ID = "destination id";
+
 
 		private readonly string _jsonParam1 =
 			"{\"BatchInstance\":\"2b7bda1b-11c9-4349-b446-ae5c8ca2c408\",\"BatchParameters\":{\"EntityManagerMap\":{\"9E6D57BEE28D8D4CA9A64765AE9510FB\":\"CN=Middle Manager,OU=Nested,OU=Testing - Users,DC=testing,DC=corp\",\"779561316F4CE44191B150453DE9A745\":\"CN=Top Manager,OU=Testing - Users,DC=testing,DC=corp\",\"2845DA5813991740BA2D6CC6C9765799\":\"CN=Bottom Manager,OU=NestedAgain,OU=Nested,OU=Testing - Users,DC=testing,DC=corp\"},\"EntityManagerFieldMap\":[{\"SourceField\":{\"DisplayName\":\"CustodianIdentifier\",\"FieldIdentifier\":\"objectguid\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"ManagerIdentidier\",\"FieldIdentifier\":\"distinguishedname\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"FieldMapType\":1}],\"ManagerFieldIdIsBinary\":false,\"ManagerFieldMap\":[{\"SourceField\":{\"DisplayName\":\"mail\",\"FieldIdentifier\":\"mail\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"Email\",\"FieldIdentifier\":\"1040539\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"FieldMapType\":0},{\"SourceField\":{\"DisplayName\":\"givenname\",\"FieldIdentifier\":\"givenname\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"First Name\",\"FieldIdentifier\":\"1040546\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":true},\"FieldMapType\":0},{\"SourceField\":{\"DisplayName\":\"sn\",\"FieldIdentifier\":\"sn\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"Last Name\",\"FieldIdentifier\":\"1040547\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":true},\"FieldMapType\":0},{\"SourceField\":{\"DisplayName\":\"manager\",\"FieldIdentifier\":\"manager\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"Manager\",\"FieldIdentifier\":\"1040548\",\"FieldType\":0,\"IsIdentifier\":false,\"IsRequired\":false},\"FieldMapType\":0},{\"SourceField\":{\"DisplayName\":\"objectguid\",\"FieldIdentifier\":\"objectguid\",\"FieldType\":0,\"IsIdentifier\":true,\"IsRequired\":false},\"DestinationField\":{\"DisplayName\":\"UniqueID\",\"FieldIdentifier\":\"1040555\",\"FieldType\":0,\"IsIdentifier\":true,\"IsRequired\":false},\"FieldMapType\":1}]}}";
@@ -87,7 +93,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			IFieldQueryRepository fieldQueryRepository = Substitute.For<IFieldQueryRepository>();
 
-			IRelativityObjectManager relativityObjectManager = Substitute.For<IRelativityObjectManager>();
+			_relativityObjectManager = Substitute.For<IRelativityObjectManager>();
 
 			int workspaceArtifactId = 12345;
 
@@ -104,7 +110,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				managerFactory,
 				_jobService,
 				repositoryFactory,
-				relativityObjectManager,
+                _relativityObjectManager,
 				providerTypeService,
 				_integrationPointRepository);
 
@@ -168,13 +174,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 						{
 							DestinationField = new FieldEntry
 							{
-								DisplayName = "destination id",
+								DisplayName = _DESTINATION_MANAGER_UNIQUE_ID,
 								FieldIdentifier = "123456"
 							},
 							FieldMapType = FieldMapTypeEnum.Identifier,
 							SourceField = new FieldEntry
 							{
-								DisplayName = "source id",
+								DisplayName = _SOURCE_MANAGER_UNIQUE_ID,
 								FieldIdentifier = "789456"
 							}
 						}
@@ -186,13 +192,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 						{
 							DestinationField = new FieldEntry
 							{
-								DisplayName = "destination id",
+								DisplayName = _DESTINATION_MANAGER_UNIQUE_ID,
 								FieldIdentifier = entityManagerFieldArtifactId.ToString()
 							},
 							FieldMapType = FieldMapTypeEnum.Identifier,
 							SourceField = new FieldEntry
 							{
-								DisplayName = "source id",
+								DisplayName = _SOURCE_MANAGER_UNIQUE_ID,
 								FieldIdentifier = "789456"
 							}
 						}
@@ -216,7 +222,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				.Returns(_jobStopManager);
 			serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(fieldsMap);
 
-			relativityObjectManager.Query(Arg.Any<QueryRequest>()).Returns(new List<RelativityObject>());
+            _relativityObjectManager.Query(Arg.Any<QueryRequest>()).Returns(new List<RelativityObject>());
 			repositoryFactory.GetFieldQueryRepository(workspaceArtifactId).Returns(fieldQueryRepository);
 			fieldQueryRepository.ReadArtifactID(Arg.Any<Guid>()).Returns(entityManagerFieldArtifactId);
 			appDomainRdoSynchronizerFactory.CreateSynchronizer(new Guid(destinationProvider.Identifier),
@@ -322,7 +328,94 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			Assert.AreEqual(1019127, importSettings.CaseArtifactId);
 		}
 
-		private Job GetJob(string jobDetails)
+        [Test]
+        public void SampleTest()
+        {
+			// arrange
+            List<RelativityObject> result = new List<RelativityObject>
+            {
+                new RelativityObject
+                {
+                    FieldValues = new List<FieldValuePair>
+                    {
+                        new FieldValuePair
+                        {
+                            Field = new Field { Name = _DESTINATION_MANAGER_UNIQUE_ID },
+							Value = "Sieben 1"
+                        }
+                    },
+                    ArtifactID = 1
+                },
+                new RelativityObject
+                {
+                    FieldValues = new List<FieldValuePair>
+                    {
+                        new FieldValuePair
+                        {
+                            Field = new Field { Name = _DESTINATION_MANAGER_UNIQUE_ID },
+                            Value = "Sieben 2"
+						}
+                    },
+                    ArtifactID = 2
+                },
+                new RelativityObject
+                {
+                    FieldValues = new List<FieldValuePair>
+                    {
+                        new FieldValuePair
+                        {
+                            Field = new Field { Name = _DESTINATION_MANAGER_UNIQUE_ID },
+                            Value = "Sieben 1"
+						}
+                    },
+                    ArtifactID = 3
+                },
+                new RelativityObject
+                {
+                    FieldValues = new List<FieldValuePair>
+                    {
+                        new FieldValuePair
+                        {
+                            Field = new Field { Name = _DESTINATION_MANAGER_UNIQUE_ID },
+                            Value = "Sieben 1"
+                        }
+                    },
+                    ArtifactID = 4
+                },
+                new RelativityObject
+                {
+                    FieldValues = new List<FieldValuePair>
+                    {
+                        new FieldValuePair
+                        {
+                            Field = new Field { Name = _DESTINATION_MANAGER_UNIQUE_ID },
+                            Value = "Sieben 2"
+                        }
+                    },
+                    ArtifactID = 5
+                }
+			};
+
+            _relativityObjectManager.Query(Arg.Do<QueryRequest>(x => x.ObjectType.Guid = ObjectTypeGuids.Entity)).Returns(result);
+
+            // act && assert
+            Action action = () => _instance.Execute(_job);
+            action.ShouldNotThrow();
+
+            _jobHistoryErrorService.DidNotReceive().AddError(ErrorTypeChoices.JobHistoryErrorJob, Arg.Any<Exception>());
+
+			_jobHistoryErrorService.Received(1).AddError(ErrorTypeChoices.JobHistoryErrorItem, result[2].ArtifactID.ToString(),
+            $"Duplicated entity found for: {result[2].FieldValues.First().Value} with the following ArtifactID: {result[2].ArtifactID}",
+			string.Empty);
+            _jobHistoryErrorService.Received(1).AddError(ErrorTypeChoices.JobHistoryErrorItem, result[3].ArtifactID.ToString(),
+            $"Duplicated entity found for: {result[3].FieldValues.First().Value} with the following ArtifactID: {result[3].ArtifactID}",
+            string.Empty);
+            _jobHistoryErrorService.Received(1).AddError(ErrorTypeChoices.JobHistoryErrorItem, result[4].ArtifactID.ToString(),
+            $"Duplicated entity found for: {result[4].FieldValues.First().Value} with the following ArtifactID: {result[4].ArtifactID}",
+            string.Empty);
+		}
+
+        private Job GetJob(string jobDetails)
 		{
 			return JobHelper.GetJob(1, null, null, 1, 1, 111, 222, TaskType.SyncEntityManagerWorker, new DateTime(), null, jobDetails,
 				0, new DateTime(), 1, null, null);
