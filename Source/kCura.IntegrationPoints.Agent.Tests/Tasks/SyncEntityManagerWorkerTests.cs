@@ -329,7 +329,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		}
 
         [Test]
-        public void SampleTest()
+        public void ImportedManagerArtifactIDsShouldNotLogJobLevelError()
         {
 			// arrange
             List<RelativityObject> result = new List<RelativityObject>
