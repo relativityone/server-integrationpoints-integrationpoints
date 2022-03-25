@@ -24,7 +24,6 @@ using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
-using Microsoft.Ajax.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Relativity.API;
@@ -379,22 +378,20 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				throw;
 			}
 
-            ValidateDuplicatesInResult(result, uniqueFieldName);
-            result = result.DistinctBy(x => x.FieldValues.First(f => f.Field.Name == uniqueFieldName).Value?.ToString()).ToList();
-			
+            IEnumerable<RelativityObject> deduplicatedResults = HandleDuplicatesInResult(result, uniqueFieldName);
+
             IDictionary<string, int> managerIDs =
-				result.ToDictionary(r => r.FieldValues.First(f => f.Field.Name == uniqueFieldName).Value?.ToString(), r => r.ArtifactID);
+                deduplicatedResults.ToDictionary(r => r.FieldValues.First(f => f.Field.Name == uniqueFieldName).Value?.ToString(), r => r.ArtifactID);
 
             LogGetImportedManagerArtifactIDsSuccessfulEnd(managerIDs);
 			return managerIDs;
 		}
 
-        private void ValidateDuplicatesInResult(List<RelativityObject> result, string uniqueFieldName)
+        private IEnumerable<RelativityObject> HandleDuplicatesInResult(List<RelativityObject> result, string uniqueFieldName)
         {
             IEnumerable<IGrouping<string, RelativityObject>> duplicates = result
-                .GroupBy(x => x.FieldValues.First(f => f.Field.Name == uniqueFieldName).Value?.ToString())
-                .Where(g => g.Count() > 1);
-
+                .GroupBy(x => x.FieldValues.First(f => f.Field.Name == uniqueFieldName).Value?.ToString());
+                
             if (duplicates.Any())
             {
                 IEnumerable<RelativityObject> itemLevelErrors = duplicates.SelectMany(x => x.Skip(1));
@@ -406,6 +403,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     string.Empty);
                 }
             }
+
+            IEnumerable<RelativityObject> deduplicatedResults = duplicates.Select(x => x.First());
+
+            return deduplicatedResults;
         }
 
         private int GetEntityManagerFieldArtifactID(int workspaceArtifactId)

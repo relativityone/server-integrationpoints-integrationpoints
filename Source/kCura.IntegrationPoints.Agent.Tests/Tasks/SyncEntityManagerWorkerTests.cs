@@ -393,6 +393,18 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                         }
                     },
                     ArtifactID = 5
+                },
+                new RelativityObject
+                {
+                    FieldValues = new List<FieldValuePair>
+                    {
+                        new FieldValuePair
+                        {
+                            Field = new Field { Name = _DESTINATION_MANAGER_UNIQUE_ID },
+                            Value = "Sieben 3"
+                        }
+                    },
+                    ArtifactID = 6
                 }
 			};
 
