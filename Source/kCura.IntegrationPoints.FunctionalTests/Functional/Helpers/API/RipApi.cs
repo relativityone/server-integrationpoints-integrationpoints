@@ -67,11 +67,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
 
         public async Task<int> RetryIntegrationPointAsync(IntegrationPointModel integrationPoint, int workspaceId)
         {
-            //TODO => manager.Retry... (unable to call retry before paket versions adjustment)
-
             using (var manager = _serviceFactory.GetServiceProxy<IIntegrationPointManager>())
             {
-                await manager.RunIntegrationPointAsync(workspaceId, integrationPoint.ArtifactId).ConfigureAwait(false);
+                await manager.RetryIntegrationPointAsync(workspaceId, integrationPoint.ArtifactId).ConfigureAwait(false);
             }
 
             QueryRequest query = new QueryRequest

@@ -19,12 +19,35 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 		private const string NATIVES_DAT_LOAD_FILE_HEADER = "^Control Number^|^FILE_PATH^|^File Size^|^File Name^|^Folder_Path^";
 
 		private static readonly string NATIVES_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles\NativesLoadFile.csv");
+		private static readonly string NATIVES_LIMITED_ITEMS_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles\NativesPartialDataLoadFile.csv");
 		private static readonly string NATIVES_DAT_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles\NativesLoadFile.dat");
 		private static readonly string IMAGES_OPT_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\Images\ImagesLoadFile.opt");
 		private static readonly string NATIVES_FOR_LOAD_FILE_FOLDER_PATH = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\LoadFiles");
 		private static readonly string IMAGES_FOR_LOAD_FILE_FOLDER_PATH = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\Images");
 
-		public static string GetOrCreateNativesLoadFile(int limit = 10)
+		public static string CreateNativesLoadFileWithLimitedItems(int limit)
+		{
+			if (File.Exists(NATIVES_LIMITED_ITEMS_LOAD_FILE_PATH))
+			{
+				return NATIVES_LIMITED_ITEMS_LOAD_FILE_PATH;
+			}
+
+			using (FileStream nativesLoadFileStream = new FileStream(NATIVES_LIMITED_ITEMS_LOAD_FILE_PATH, FileMode.Create))
+			{
+				using (StreamWriter nativesLoadFileWriter = new StreamWriter(nativesLoadFileStream))
+				{
+					nativesLoadFileWriter.WriteLine(NATIVES_LOAD_FILE_HEADER);
+
+					foreach (var native in Natives.NATIVES.Take(limit))
+					{
+						nativesLoadFileWriter.WriteLine($"{native.Key},{native.Value}");
+					}
+				}
+			}
+			return NATIVES_LIMITED_ITEMS_LOAD_FILE_PATH;
+		}
+
+		public static string GetOrCreateNativesLoadFile()
 		{
 			if (File.Exists(NATIVES_LOAD_FILE_PATH))
 			{
@@ -37,7 +60,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 				{
 					nativesLoadFileWriter.WriteLine(NATIVES_LOAD_FILE_HEADER);
 
-					foreach (var native in Natives.NATIVES.Take(limit))
+					foreach (var native in Natives.NATIVES)
 					{
 						nativesLoadFileWriter.WriteLine($"{native.Key},{native.Value}");
 					}

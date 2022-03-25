@@ -37,7 +37,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI.ApiTests
             _implementation.OnTearDownFixture();
         }
        
-        [IdentifiedTest("F35707DA-51C3-41D2-A4BD-6C032FA5995C")]
+        [IdentifiedTest("F35707DA-51C3-41D2-A4BD-6C032FA5995C")]       
         public async Task JobRetryTest()
         {
             await _implementation.RunAndRetryIntegrationPoint();
