@@ -303,7 +303,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 			sourceProductionIds.Take(3).All(x => x == "1").Should().BeTrue();
 			sourceProductionIds.Skip(3).Take(3).All(x => x == "2").Should().BeTrue();
 			sourceProductionIds.Take(40).Skip(6).All(x => x == "3").Should().BeTrue();
-			sourceProductionIds.Skip(40).All(x => x == "0").Should().BeTrue();
+			sourceProductionIds.Skip(40).All(x => x == "\\someLocation").Should().BeTrue();
 
 		}
 
@@ -428,12 +428,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Images
 
 		private ILookup<int, ImageFile> CreateProductionDocumentImageResponses(int[] ids)
 		{
-			return ids.ToLookup(x => x, x => new ImageFile(x, $"\\someLocation_{x}", "x.tiff", 1));
+			return ids.ToLookup(x => x, x => new ImageFile(x, $"0_{x}", "x.tiff", 1));
 		}
 
 		private ILookup<int, ImageFile> CreateProductionDocumentImageResponses(int[] ids, int productionId)
 		{
-			return ids.ToLookup(x => x, x => new ImageFile(x, $"\\someLocation_{x}", "x.tiff", 1, productionId));
+			return ids.ToLookup(x => x, x => new ImageFile(x, $"{productionId}_{x}", "x.tiff", 1, productionId));
 		}
 
 		#endregion
