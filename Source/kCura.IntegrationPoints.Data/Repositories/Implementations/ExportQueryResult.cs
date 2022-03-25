@@ -47,10 +47,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		/// <inheritdoc />
 		public async Task<IEnumerable<RelativityObjectSlim>> GetNextBlockAsync(int startIndex, int resultsBlockSize = 1000)
 		{
-            
             return await GetNextBlockAsync(startIndex, default(CancellationToken), resultsBlockSize);
-            
-		}
+        }
 
         public async Task<IEnumerable<RelativityObjectSlim>> GetNextBlockAsync(int startIndex, CancellationToken token,
             int resultsBlockSize = 1000)
