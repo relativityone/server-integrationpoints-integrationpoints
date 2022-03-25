@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 		protected IRelativityObjectManager _relativityObjectManager;
 		protected IDocumentRepository _documentRepository;
 
-		protected const int _SPECIAL_FIELD_COUNT = 5;
+		protected const int _SPECIAL_FIELD_COUNT = 6;
 		protected const int _DOCUMENT_ARTIFACTID = 123423;
 		protected const string _FIELD_NAME = "DispName";
 		protected const int _FIELD_IDENTIFIER = 123;
@@ -647,6 +647,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD),
+					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_IMAGE_FILE_NAME_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_TYPE_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD),
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
@@ -689,6 +690,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD),
+					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_IMAGE_FILE_NAME_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_TYPE_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD),
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
@@ -719,8 +721,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD),
+					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_IMAGE_FILE_NAME_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_TYPE_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD),
+
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEJOB_FIELD)
 				}
@@ -749,6 +753,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_NAME_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD),
+					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_IMAGE_FILE_NAME_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_TYPE_FIELD),
 					new DataColumn(IntegrationPoints.Domain.Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD),
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),

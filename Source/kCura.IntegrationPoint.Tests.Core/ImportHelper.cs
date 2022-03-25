@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			importJob.Settings.CopyFilesToDocumentRepository = false;
 			importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles;
 
-			importJob.Settings.DestinationFolderArtifactID = GetWorkspaceRootFolderID(workspaceArtifactId);
+			importJob.Settings.DestinationFolderArtifactID = GetWorkspaceRootFolderID(workspaceArtifactId); 
 			importJob.Settings.IdentityFieldId = _CONTROL_NUMBER_FIELD_ARTIFACT_ID;
 			importJob.Settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
 
