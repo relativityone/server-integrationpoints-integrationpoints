@@ -39,12 +39,13 @@ It's a S2 service - Azure service that is going to be hosted per tenant. It will
         - name of this Folder should be GUID
         - UNC Path of destination fileshare in ADLS convention `\\Destination\Workspace\Files\Location\On\ADLS`
             - we need to make a call to new Kepler service that is going to be created by FAST team
-            - this will result in Response with token and exact destination destination location
+            - this will result in Response with token and exact destination location
         - Final full path: `\\Destination\Workspace\Files\Location\On\ADLS\{NewFolderNameGUID}\{FileName}32bad1e5-4e09-46b7-ba99-2e23ac2ef031`
 
 ## Consequences of using FMS
 Natural consequnce of FMS is modification of document flow.
  - set new native file location path - this point will be done by Sync using **ADLS Path creation**
+ - create "LoadFile" for FMS and save it on ADLS
  - copy natives to new location - this point will be done by using FMS 
  - run IAPI job with CopyLinks mode and disable FileExists check - We need to supply new location bases on **ADLS Path creation**
  - copy metadata according to field mapping
@@ -54,7 +55,13 @@ In order to transtion away from IAPI dependency on copying native files, we need
 
 - `SynchronizationExeecutorBase.cs`
     - `ExecuteSynchronizationAsync(..)` method needs to be change. Current flow relies on creating one IAPI job that fits flow that it used for.( Documents, Images etc.)
-Proposed changes
+Proposed changes:
 1. Create separate flow for CopyNatives that is different from LinksOnly/Metadata Only modes.
+    - Add new parallel Banzai node for ADSL actions(new paths, start FMS copy action)
+    - when implementing IAPI 2.0 this will be unchanged.
 2. Change implementation of CreateNativeImportJobAsync in ImportJobFactory that will change mode to LinksOnly when in CopyFiles flow.
     - Add dependency on CopyFiles config option in method `ExecuteSynchronizationAsync` of `SynchronizationExecutorBase.cs` and modify flow to trigger FMS and start LinksOnly job for metadata and FilePath
+
+## Concerns
+1. We need to implement QC to make sure that none of involved party is properly finished.(IAPI and FMS)
+2. We need to make sure that we do not delete Snapshot before ending whole job( or at least Synchronization step).
