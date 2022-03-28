@@ -77,7 +77,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             int jobHistoryId = await ripApi.RunIntegrationPointAsync(integrationPoint, SourceWorkspace.ArtifactID);
 
             //Assert             
-            Func<Task> endRun = async () => { await ripApi.WaitForJobToFinishAsync(jobHistoryId, SourceWorkspace.ArtifactID, checkDelayInMs: 500, expectedStatus); };
+            Func<Task> endRun = async () => { await ripApi.WaitForJobToFinishAsync(jobHistoryId, SourceWorkspace.ArtifactID, checkDelayInMs: 500, expectedStatus: expectedStatus); };
             endRun.ShouldNotThrow();
             GetJobHistoryDetails(jobHistoryId, out transferredItems, out itemsWithErrors);
             itemsWithErrors.Should().Be(expectedItemErrorsToRetry);
@@ -92,7 +92,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             int retryJobHistoryId = await ripApi.RetryIntegrationPointAsync(integrationPoint, SourceWorkspace.ArtifactID);
 
             //Assert
-            Func<Task> endRetry = async () => { await ripApi.WaitForJobToFinishAsync(retryJobHistoryId, SourceWorkspace.ArtifactID, checkDelayInMs: 500, expectedStatus); };
+            Func<Task> endRetry = async () => { await ripApi.WaitForJobToFinishAsync(retryJobHistoryId, SourceWorkspace.ArtifactID, checkDelayInMs: 500, expectedStatus: expectedStatus); };
             endRetry.ShouldNotThrow();
             GetJobHistoryDetails(retryJobHistoryId, out transferredItems, out itemsWithErrors);
             transferredItems.Should().Be(expectedItemErrorsToRetry);
