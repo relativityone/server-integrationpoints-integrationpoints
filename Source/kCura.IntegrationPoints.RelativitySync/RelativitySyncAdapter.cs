@@ -103,7 +103,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		{
 			try
 			{
-				await _jobHistorySyncService.MarkJobAsValidationFailedAsync(ex, _job).ConfigureAwait(false);
+				await _jobHistorySyncService.MarkJobAsValidationFailedAsync(_job, ex).ConfigureAwait(false);
 				await _jobMetric.SendJobFailedAsync(_job.Job, ex).ConfigureAwait(false);
 			}
 			catch (SyncMetricException e)

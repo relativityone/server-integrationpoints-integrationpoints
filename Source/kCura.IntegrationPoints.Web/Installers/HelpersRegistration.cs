@@ -1,5 +1,7 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Data.Statistics;
@@ -70,10 +72,6 @@ namespace kCura.IntegrationPoints.Web.Installers
 				Component
 					.For<IDateTimeHelper>()
 					.ImplementedBy<DateTimeHelper>()
-					.LifestyleTransient(),
-				Component
-					.For<IButtonStateBuilder>()
-					.ImplementedBy<ButtonStateBuilder>()
 					.LifestyleTransient()
 			);
 		}

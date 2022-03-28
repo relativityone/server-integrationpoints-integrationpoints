@@ -55,11 +55,11 @@
 								<td class="dynamicViewFieldName">Multi-Select Overlay:</td>
 								<td class="dynamicViewFieldValue" data-bind="text: multiSelectOverlay"></td>
 							</tr>
-							<tr>
-								<td class="dynamicViewFieldName">Use Folder Path Info:</td>
+							<tr data-bind="visible: !isNonDocumentSyncFlow">
+								<td class="dynamicViewFieldName" >Use Folder Path Info:</td>
 								<td class="dynamicViewFieldValue" data-bind="text: useFolderPathInfo"></td>
 							</tr>
-							<tr data-bind="visible: !copyImages()">
+							<tr data-bind="visible: !copyImages() && !isNonDocumentSyncFlow">
 								<td class="dynamicViewFieldName">Move Existing Docs:</td>
 								<td class="dynamicViewFieldValue" data-bind="text: moveExistingDocs"></td>
 							</tr>
@@ -97,7 +97,7 @@
 					</td>
 				</tr>
 			</table>
-			<table>
+			<table data-bind="visible: !isNonDocumentSyncFlow">
 				<tr>
 					<td class="editTableColumn">
 						<table>

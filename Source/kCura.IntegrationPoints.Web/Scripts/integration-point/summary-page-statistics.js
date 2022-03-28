@@ -11,6 +11,7 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 	this.workspaceId = sourceConfiguration.SourceWorkspaceArtifactId;
 	this.savedSearchId = sourceConfiguration.SavedSearchArtifactId;
 	this.sourceProductionId = sourceConfiguration.SourceProductionId;
+	this.sourceViewId = sourceConfiguration.SourceViewId;
 
 	this.defaultSettings = function () {
 		return {
@@ -91,7 +92,6 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 	};
 
 	function getImagesStatisticsForSavedSearch(workspaceId, savedSearchId) {
-		console.log('getImagesStatisticsForSavedSearch');
 		IP.data.ajax(jQuery.extend(self.defaultSettings(),
 			{
 				type: 'POST',
@@ -117,7 +117,6 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 	}
 
 	function getImagesStatisticsForProduction(workspaceId, productionId) {
-		console.log('getImagesStatisticsForSavedSearch');
 		IP.data.ajax(jQuery.extend(self.defaultSettings(),
 			{
 				type: 'POST',
@@ -153,7 +152,7 @@ var SavedSearchStatistics = function (sourceConfiguration, destinationConfigurat
 		getImagesStatisticsForProduction(self.workspaceId, self.sourceProductionId);
 	} else if (self.importNatives && !self.importImages) {
 		getNativesStatistics(self.workspaceId, self.savedSearchId);
-	} else {
+	} else if (self.sourceViewId === undefined) {
 		getImagesStatisticsForSavedSearch(self.workspaceId, self.savedSearchId);
 	}
 };

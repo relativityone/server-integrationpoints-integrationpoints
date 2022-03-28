@@ -21,20 +21,22 @@ namespace kCura.ScheduleQueue.AgentBase
 	{
 		private IAgentService _agentService;
 		private IQueueQueryManager _queryManager;
-		private IKubernetesMode _kubernetesMode;
+		private Lazy<IKubernetesMode> _kubernetesModeLazy;
 		private IJobService _jobService;
 		private IQueueJobValidator _queueJobValidator;
 		private IDateTime _dateTime;
         private IFileShareAccessService _fileShareAccessService;
-        private const int _MAX_MESSAGE_LENGTH = 10000;
+		private const int _MAX_MESSAGE_LENGTH = 10000;
 
 		private readonly Guid _agentGuid;
 		private readonly Lazy<int> _agentId;
 		private readonly Lazy<IAPILog> _loggerLazy;
 
+		private readonly Guid _agentInstanceGuid = Guid.NewGuid();
+
 		protected Func<IEnumerable<int>> GetResourceGroupIDsFunc { get; set; }
 
-		private bool IsKubernetesMode => _kubernetesMode.IsEnabled();
+		private bool IsKubernetesMode => _kubernetesModeLazy.Value.IsEnabled();
 
 		private static readonly Dictionary<LogCategory, int> _logCategoryToLogLevelMapping = new Dictionary<LogCategory, int>
 		{
@@ -42,15 +44,28 @@ namespace kCura.ScheduleQueue.AgentBase
 			[LogCategory.Info] = 10
 		};
 
+		private IDisposable _loggerAgentInstanceContext;
+
 		protected virtual IAPILog Logger => _loggerLazy.Value;
 
 		protected IJobService JobService => _jobService;
 
-		protected ScheduleQueueAgentBase(Guid agentGuid, IAgentService agentService = null, IJobService jobService = null,
+		protected ScheduleQueueAgentBase(Guid agentGuid, IKubernetesMode kubernetesMode = null, IAgentService agentService = null, IJobService jobService = null,
 			IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null, 
-			IQueueQueryManager queryManager = null, IKubernetesMode kubernetesMode = null, IDateTime dateTime = null, IAPILog logger = null,
+			IQueueQueryManager queryManager = null, IDateTime dateTime = null, IAPILog logger = null,
 			IFileShareAccessService fileShareAccessService = null)
 		{
+			// Lazy init is required for things depending on Helper
+			// Helper property in base class is assigned AFTER object construction
+			_loggerLazy = logger != null
+				? new Lazy<IAPILog>(() => logger)
+				: new Lazy<IAPILog>(InitializeLogger);
+
+			_kubernetesModeLazy = kubernetesMode != null 
+				? new Lazy<IKubernetesMode>(() => kubernetesMode)
+				: new Lazy<IKubernetesMode>(() => new KubernetesMode(Logger));
+
+
 			_agentGuid = agentGuid;
 			_agentService = agentService;
 			_jobService = jobService;
@@ -58,14 +73,9 @@ namespace kCura.ScheduleQueue.AgentBase
 			_dateTime = dateTime;
             _fileShareAccessService = fileShareAccessService;
             _queryManager = queryManager;
-			_kubernetesMode = kubernetesMode;
 			ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
 
 			_agentId = new Lazy<int>(GetAgentID);
-
-			_loggerLazy = logger != null
-				? new Lazy<IAPILog>(() => logger)
-				: new Lazy<IAPILog>(InitializeLogger);
 		}
 
 		public IScheduleRuleFactory ScheduleRuleFactory { get; }
@@ -84,14 +94,9 @@ namespace kCura.ScheduleQueue.AgentBase
 				_agentService = new AgentService(Helper, _queryManager, _agentGuid);
 			}
 
-			if(_kubernetesMode == null)
-            {
-				_kubernetesMode = new KubernetesMode(Logger);
-			}
-
 			if (_jobService == null)
 			{
-				_jobService = new JobService(_agentService, new JobServiceDataProvider(_queryManager), _kubernetesMode, Helper);
+				_jobService = new JobService(_agentService, new JobServiceDataProvider(_queryManager), _kubernetesModeLazy.Value, Helper);
 			}
 
 			if (_queueJobValidator == null)
@@ -103,6 +108,9 @@ namespace kCura.ScheduleQueue.AgentBase
 			{
 				_dateTime = new DateTimeWrapper();
 			}
+
+
+
 
 			if(GetResourceGroupIDsFunc == null)
             {
@@ -148,6 +156,12 @@ namespace kCura.ScheduleQueue.AgentBase
 					_jobService.UnlockJobs(_agentId.Value);
 					DidWork = false;
 				}
+				
+				if (IsKubernetesMode)
+				{
+					Logger.LogInformation("Shutting down agent after single job in K8s mode");
+					DidWork = false;
+				}
 			}
 		}
 		
@@ -181,7 +195,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void MountBCPPath()
         {
-            if (!_kubernetesMode.IsEnabled())
+            if (!IsKubernetesMode)
             {
                 Logger.LogInformation("Integration Points Agent is not enabled on shared compute environment. Mount BCPPath is not needed.");
                 return;
@@ -226,7 +240,7 @@ namespace kCura.ScheduleQueue.AgentBase
 					TaskResult jobResult = ProcessJob(nextJob);
 
 					Logger.LogInformation("Job {jobId} has been processed with status {status}", nextJob.JobId, jobResult.Status.ToString());
-
+					
 					// If last job was drain-stopped, assign null to nextJob so it doesn't get executed on next loop iteration.
 					// Also do not finalize the job (i.e. do not remove it from the queue).
 					if (jobResult.Status == TaskStatusEnum.DrainStopped)
@@ -238,7 +252,15 @@ namespace kCura.ScheduleQueue.AgentBase
 					else
 					{
 						FinalizeJobExecution(nextJob, jobResult);
-						nextJob = GetNextQueueJob(); // assumptions: it will not throws exception
+
+						if (!IsKubernetesMode)
+						{
+							nextJob = GetNextQueueJob(); // assumptions: it will not throw exception
+						}
+						else
+						{
+							nextJob = null;
+						}
 					}
 				}
 
@@ -303,7 +325,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 			NotifyAgentTab(LogCategory.Debug, "Checking for active jobs in Schedule Agent Queue table");
 
-			if(_kubernetesMode.IsEnabled())
+			if(IsKubernetesMode)
             {
 				LogAllJobsInTheQueue();
 			}
@@ -363,8 +385,11 @@ namespace kCura.ScheduleQueue.AgentBase
 			{
 				NotifyAgentTab(LogCategory.Exception, "Logger initialization failed. Helper is null.");
 			}
-
-			return Helper.GetLoggerFactory().GetLogger().ForContext<ScheduleQueueAgentBase>();
+			
+			IAPILog logger = Helper.GetLoggerFactory().GetLogger().ForContext<ScheduleQueueAgentBase>();
+			_loggerAgentInstanceContext = logger.LogContextPushProperty("AgentInstanceGuid", _agentInstanceGuid);
+			
+			return logger;
 		}
 
 		#region Logging

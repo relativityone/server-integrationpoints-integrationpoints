@@ -378,13 +378,38 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				throw;
 			}
 
-			IDictionary<string, int> managerIDs =
-				result.ToDictionary(r => r.FieldValues.First(f => f.Field.Name == uniqueFieldName).Value?.ToString(), r => r.ArtifactID);
-			LogGetImportedManagerArtifactIDsSuccessfulEnd(managerIDs);
+            IEnumerable<RelativityObject> deduplicatedResults = HandleDuplicatesInResult(result, uniqueFieldName);
+
+            IDictionary<string, int> managerIDs =
+                deduplicatedResults.ToDictionary(r => r.FieldValues.First(f => f.Field.Name == uniqueFieldName).Value?.ToString(), r => r.ArtifactID);
+
+            LogGetImportedManagerArtifactIDsSuccessfulEnd(managerIDs);
 			return managerIDs;
 		}
-		
-		private int GetEntityManagerFieldArtifactID(int workspaceArtifactId)
+
+        private IEnumerable<RelativityObject> HandleDuplicatesInResult(List<RelativityObject> result, string uniqueFieldName)
+        {
+            IEnumerable<IGrouping<string, RelativityObject>> duplicates = result
+                .GroupBy(x => x.FieldValues.First(f => f.Field.Name == uniqueFieldName).Value?.ToString());
+                
+            if (duplicates.Any())
+            {
+                IEnumerable<RelativityObject> itemLevelErrors = duplicates.SelectMany(x => x.Skip(1));
+
+                foreach (RelativityObject itemLevelError in itemLevelErrors)
+                {
+                    JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorItem, itemLevelError.ArtifactID.ToString(),
+                    $"Duplicated entity found for: {itemLevelError.FieldValues.First().Value} with the following ArtifactID: {itemLevelError.ArtifactID}",
+                    string.Empty);
+                }
+            }
+
+            IEnumerable<RelativityObject> deduplicatedResults = duplicates.Select(x => x.First());
+
+            return deduplicatedResults;
+        }
+
+        private int GetEntityManagerFieldArtifactID(int workspaceArtifactId)
 		{
 			try
 			{
