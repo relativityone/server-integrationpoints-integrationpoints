@@ -17,8 +17,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 	{
 		private readonly SyncTestsImplementation _testsImplementation;
 
-		public SyncTests()
-			: base(nameof(SyncTests))
+		public SyncTests() : base($"Sync Tests - Source")
 		{
 			_testsImplementation = new SyncTestsImplementation(this);
 		}
