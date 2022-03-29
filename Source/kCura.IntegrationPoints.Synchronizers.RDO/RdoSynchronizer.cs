@@ -13,7 +13,6 @@ using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Domain.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
-using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
 using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Internals;

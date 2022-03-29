@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Common.Context;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Web.Attributes;
 using Relativity;
+using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 
@@ -19,19 +20,22 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IChoiceService _choiceService;
 		private readonly IWorkspaceContext _workspaceIdProvider;
 		private readonly IImportApiFacade _importApiFacade;
+        private readonly IAPILog _logger;
 
 		public FolderPathController(
 			IFieldService fieldService,
 			IChoiceService choiceService,
 			IWorkspaceContext workspaceIdProvider,
-			IImportApiFacade importApiFacade
+			IImportApiFacade importApiFacade,
+			IHelper helper
 			)
 		{
 			_fieldService = fieldService;
 			_choiceService = choiceService; 
 			_workspaceIdProvider = workspaceIdProvider;
 			_importApiFacade = importApiFacade;
-		}
+            _logger = helper.GetLoggerFactory().GetLogger().ForContext<FolderPathController>();
+        }
 		
 		[HttpGet]
 		[LogApiExceptionFilter(Message = "Unable to retrieve fields data.")]
@@ -48,11 +52,19 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to retrieve long text fields data.")]
 		public HttpResponseMessage GetLongTextFields()
 		{
-			List<FieldEntry> textFields = _fieldService.GetLongTextFields(_workspaceIdProvider.GetWorkspaceID(), (int)ArtifactType.Document).ToList();
+            try
+            {
+                List<FieldEntry> textFields = _fieldService.GetLongTextFields(_workspaceIdProvider.GetWorkspaceID(), (int)ArtifactType.Document).ToList();
 
-			IEnumerable<FieldEntry> textMappableFields = GetFieldCategory(textFields);
+                IEnumerable<FieldEntry> textMappableFields = GetFieldCategory(textFields);
 
-			return Request.CreateResponse(HttpStatusCode.OK, textMappableFields, Configuration.Formatters.JsonFormatter);
+                return Request.CreateResponse(HttpStatusCode.OK, textMappableFields, Configuration.Formatters.JsonFormatter);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Exception occurred in {nameof(FolderPathController)}.{nameof(GetLongTextFields)}");
+                throw;
+            }
 		}
 
 		[HttpGet]

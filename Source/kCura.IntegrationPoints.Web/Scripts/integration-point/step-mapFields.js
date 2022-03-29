@@ -538,7 +538,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.selectedIdentifier = ko.observable().extend({
 			required: {
 				onlyIf: function () {
-					return self.showErrors() && self.hasParent();
+					return !isNonDocumentObjectFlow && self.showErrors() && self.hasParent();
 				},
 				message: 'The Parent Attribute is required.',
 			}
