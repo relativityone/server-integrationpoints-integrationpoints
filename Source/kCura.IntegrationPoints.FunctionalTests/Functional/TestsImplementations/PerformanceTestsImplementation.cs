@@ -6,27 +6,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain.Models;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using Relativity.IntegrationPoints.Services;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers.API;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles;
-using Relativity.Services.ArtifactGuid;
-using Relativity.Services.ChoiceQuery;
-using Relativity.Services.Folder;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.Search;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api;
 using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Models;
 using static kCura.IntegrationPoints.Core.Constants.IntegrationPoints;
-using Choice = Relativity.Services.ChoiceQuery.Choice;
 using KeywordSearch = Relativity.Testing.Framework.Models.KeywordSearch;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
@@ -45,8 +37,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         private int _savedSearchId;
         private int _destinationProviderId;
         private int _sourceProviderId;
-        private int _integrationPointType;
-        //private List<Choice> _choices;
+        private int _integrationPointType;       
 
         public Workspace SourceWorkspace => _testsImplementationTestFixture.Workspace;
 

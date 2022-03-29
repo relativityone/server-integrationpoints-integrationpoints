@@ -16,7 +16,6 @@ using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using kCura.IntegrationPoints.Data;
-using Relativity.Services.Search;
 using FluentAssertions;
 using static kCura.IntegrationPoints.Core.Constants.IntegrationPoints;
 
@@ -24,10 +23,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 {
     internal class JobRetryApiTestsImplementation
     {
-        private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
-        private readonly IRipApi ripApi = new RipApi(RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory);
-        private const string savedSearchName = "AllDocuments";
+        private const string SAVED_SEARCH_NAME = "AllDocuments";
         private const string JOB_RETRY_WORKSPACE_NAME = "RIP Job Retry Test";
+        private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
+        private readonly IRipApi ripApi = new RipApi(RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory);       
 
         private ICommonIntegrationPointDataService dataService;
 
@@ -77,7 +76,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             int jobHistoryId = await ripApi.RunIntegrationPointAsync(integrationPoint, SourceWorkspace.ArtifactID);
 
             //Assert             
-            Func<Task> endRun = async () => { await ripApi.WaitForJobToFinishAsync(jobHistoryId, SourceWorkspace.ArtifactID, checkDelayInMs: 500, expectedStatus: expectedStatus); };
+            Func<Task> endRun = async () => { await ripApi.WaitForJobToFinishAsync(jobHistoryId, SourceWorkspace.ArtifactID, checkDelayInMs: 500, expectedStatus: expectedStatus).ConfigureAwait(false); };
             endRun.ShouldNotThrow();
             GetJobHistoryDetails(jobHistoryId, out transferredItems, out itemsWithErrors);
             itemsWithErrors.Should().Be(expectedItemErrorsToRetry);
@@ -92,7 +91,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             int retryJobHistoryId = await ripApi.RetryIntegrationPointAsync(integrationPoint, SourceWorkspace.ArtifactID);
 
             //Assert
-            Func<Task> endRetry = async () => { await ripApi.WaitForJobToFinishAsync(retryJobHistoryId, SourceWorkspace.ArtifactID, checkDelayInMs: 500, expectedStatus: expectedStatus); };
+            Func<Task> endRetry = async () => { await ripApi.WaitForJobToFinishAsync(retryJobHistoryId, SourceWorkspace.ArtifactID, checkDelayInMs: 500, expectedStatus: expectedStatus).ConfigureAwait(false); };
             endRetry.ShouldNotThrow();
             GetJobHistoryDetails(retryJobHistoryId, out transferredItems, out itemsWithErrors);
             transferredItems.Should().Be(expectedItemErrorsToRetry);
@@ -100,13 +99,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 
         private void CreateSavedSearch(int workspaceId)
         {
-            KeywordSearch keywordSearch = new KeywordSearch { Name = savedSearchName };
+            KeywordSearch keywordSearch = new KeywordSearch { Name = SAVED_SEARCH_NAME };
             RelativityFacade.Instance.Resolve<IKeywordSearchService>().Require(workspaceId, keywordSearch);
         }
 
         private async Task<IntegrationPointModel> PrepareIntegrationPointModel()
         {
-            int savedSearchId = await dataService.GetSavedSearchArtifactIdAsync(savedSearchName).ConfigureAwait(false);
+            int savedSearchId = await dataService.GetSavedSearchArtifactIdAsync(SAVED_SEARCH_NAME).ConfigureAwait(false);
             int destinationFolderId = await dataService.GetRootFolderArtifactIdAsync(destinationWorkspace.ArtifactID).ConfigureAwait(false);
 
             return new IntegrationPointModel
