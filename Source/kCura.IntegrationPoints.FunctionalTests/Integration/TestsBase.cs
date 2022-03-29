@@ -21,6 +21,7 @@ using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.LDAPProvider.Installers;
 using kCura.IntegrationPoints.RelativitySync;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.IntegrationPoints.Web.Controllers.API;
@@ -153,9 +154,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			RegisterFakeRipServices();
 			RegisterRipServices(sourceWorkspace);
             RegisterKeplerServices();
+            RegisterRdoSynchronizers();
+        }
+
+        private void RegisterRdoSynchronizers()
+        {
+			Container.Register(Component.For<RdoEntitySynchronizer>().ImplementedBy<RdoEntitySynchronizer>());
 		}
 
-		private void RegisterAPIControllers()
+        private void RegisterAPIControllers()
 		{
 			Container.Register(Component.For<JobController>().ImplementedBy<JobController>());
 			Container.Register(Component.For<FieldMappingsController>().ImplementedBy<FieldMappingsController>());

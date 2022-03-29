@@ -353,7 +353,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 		}
 
-		public bool IsField(RelativityObject artifact, Guid fieldGuid)
+        private bool IsField(RelativityObject artifact, Guid fieldGuid)
 		{
 			return artifact.Guids.Contains(fieldGuid);
 		}
