@@ -233,7 +233,12 @@ ko.validation.insertValidationMessage = function (element) {
 		this.IdentifierField = ko.observable(model.IPDestinationSettings.IdentifierField);
 		this.showMapSavedSearchButton = ko.observable(false);
 
-		var isNonDocumentObjectFlow = IP.data.params['EnableSyncNonDocumentFlowToggleValue'] && IP.data.params['TransferredRDOArtifactTypeID'] != documentArtifactTypeId;
+		//use this to bind which elements show up depending on if the user is accessing Relativity Provider or not
+		this.IsRelativityProvider = ko.observable(IP.reverseMapFields);
+
+		var isNonDocumentObjectFlow = IP.data.params['EnableSyncNonDocumentFlowToggleValue'] &&
+										IP.data.params['TransferredRDOArtifactTypeID'] != documentArtifactTypeId &&
+										this.IsRelativityProvider();
 		self.IsNonDocumentObjectFlow = ko.observable();
 		self.IsNonDocumentObjectFlow(isNonDocumentObjectFlow);
 
@@ -269,9 +274,6 @@ ko.validation.insertValidationMessage = function (element) {
 			}
 		});
 
-
-		//use this to bind which elements show up depending on if the user is accessing Relativity Provider or not
-		this.IsRelativityProvider = ko.observable(IP.reverseMapFields);
 
 		var copyNativeFileText = "Copy Native Files:";
 		var copyFileToRepositoryText = "Copy Files to Repository:";

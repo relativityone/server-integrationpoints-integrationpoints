@@ -152,7 +152,7 @@
 								<select id="overlay-identifier" data-bind="options: overlay, value: selectedUniqueId, optionsValue: 'name', optionsText: 'name', select2: {}"></select>
 							</div>
 						</div>
-						<div class="field-row" data-bind="visible: hasParent && !IsNonDocumentObjectFlow()">
+						<div class="field-row" data-bind="visible: hasParent() && !IsNonDocumentObjectFlow()">
 							<div class="field-label required ">Parent Attribute:</div>
 							<div class="field-value ">
 								<select id="parent-identifier" data-bind="options: parentField, value: selectedIdentifier, optionsValue: 'name', optionsText: 'name', optionsCaption: 'Select...' ,select2: {}"></select>
