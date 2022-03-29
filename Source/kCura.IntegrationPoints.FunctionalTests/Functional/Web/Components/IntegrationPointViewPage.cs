@@ -1,7 +1,6 @@
 ﻿using Atata;
 using Relativity.Testing.Framework.Web.Triggers;
 using Relativity.Testing.Framework.Web.Components;
-using System;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 {
@@ -21,16 +20,26 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		
 		public _ RunIntegrationPoint(string integrationPointName)
 		{
-			return this.Run.WaitTo.Within(60).BeVisible()
+			return Run.WaitTo.Within(60).BeVisible()
 				.Run.ClickAndGo()
 				.OK.ClickAndGo()
 				.WaitUntilJobCompleted(integrationPointName);
 		}
 
-		public int GetTransferredItemsCount(string integrationPointName)
-		{
-			return Int32.Parse(this.Status.Table.Rows[y => y.Name == integrationPointName].ItemsTransferred.Content.Value);
-		}
+        public int GetTransferredItemsCount(string integrationPointName)
+        {
+            return int.Parse(Status.Table.Rows[y => y.Name == integrationPointName].ItemsTransferred.Content.Value);
+        }
+
+        public int GetTotalItemsCount(string integrationPointName)
+        {
+            return int.Parse(Status.Table.Rows[y => y.Name == integrationPointName].TotalItems.Content.Value);
+        }
+
+        public string GetJobStatus(string integrationPointName)
+        {
+            return Status.Table.Rows[y => y.Name == integrationPointName].JobStatus.Content;
+        }
 
 		private _ WaitUntilJobCompleted(string jobName = null)
 		{
