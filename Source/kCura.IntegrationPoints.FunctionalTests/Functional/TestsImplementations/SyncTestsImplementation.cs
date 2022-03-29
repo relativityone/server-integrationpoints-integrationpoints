@@ -232,7 +232,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             int transferredItemsCount = integrationPointViewPage.GetTransferredItemsCount(integrationPointName);
 
             jobStatus.Should().Be("Completed");
-            totalItemsCount.Should().Be(totalItemsCount);
+            totalItemsCount.Should().Be(entitiesCount);
             transferredItemsCount.Should().Be(entitiesCount);
         }
 
