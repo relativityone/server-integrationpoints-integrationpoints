@@ -18,46 +18,48 @@ using Relativity.Services.Objects.DataContracts;
 using kCura.IntegrationPoints.Data;
 using FluentAssertions;
 using static kCura.IntegrationPoints.Core.Constants.IntegrationPoints;
+using Relativity.Testing.Framework.Api.Kepler;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.ApiTests
 {
     internal class JobRetryApiTestsImplementation
-    {
+    {       
+        private int _transferredItems;
+        private int _itemsWithError;
+        private Workspace _destinationWorkspace;
+        private Workspace _sourceWorkspace;
+
+        private ICommonIntegrationPointDataService _sourceWorkspaceDataService;
+        private ICommonIntegrationPointDataService _destinationWorkspaceDataService;
+
         private const string SAVED_SEARCH_NAME = "AllDocuments";
-        private const string JOB_RETRY_WORKSPACE_NAME = "RIP Job Retry Test";
+        private const string JOB_RETRY_DESTINATION_WORKSPACE_NAME = "RIP Job Retry Test";
+        private const int _destinationWorkspaceDocumentLimit = 4;
         private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
-        private readonly IRipApi ripApi = new RipApi(RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory);       
-
-        private ICommonIntegrationPointDataService dataService;
-
-        private int initialSourceWorkspaceDocsCount;
-        private int initialDestinationWorkspaceDocsCount;
-        private Workspace destinationWorkspace;
-        public Workspace SourceWorkspace;
+        private readonly IKeplerServiceFactory _serviceFactory;         
+        private readonly IRipApi _ripApi;        
 
         public JobRetryApiTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture)
         {
             _testsImplementationTestFixture = testsImplementationTestFixture;
+            _serviceFactory = RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory;           
+            _ripApi = new RipApi(_serviceFactory);
         }
 
         public void OnSetUpFixture()
         {
-            SourceWorkspace = _testsImplementationTestFixture.Workspace;
+            _sourceWorkspace = _testsImplementationTestFixture.Workspace;           
             RelativityFacade.Instance.ImportDocumentsFromCsv(_testsImplementationTestFixture.Workspace, LoadFilesGenerator.GetOrCreateNativesLoadFile(), overwriteMode: DocumentOverwriteMode.AppendOverlay);
-            destinationWorkspace = RelativityFacade.Instance.CreateWorkspace(JOB_RETRY_WORKSPACE_NAME, _testsImplementationTestFixture.Workspace.Name);
+            _destinationWorkspace = RelativityFacade.Instance.CreateWorkspace(JOB_RETRY_DESTINATION_WORKSPACE_NAME, _testsImplementationTestFixture.Workspace.Name);
             CreateSavedSearch(_testsImplementationTestFixture.Workspace.ArtifactID);
-
-            RelativityFacade.Instance.ImportDocumentsFromCsv(destinationWorkspace, LoadFilesGenerator.CreateNativesLoadFileWithLimitedItems(4), overwriteMode: DocumentOverwriteMode.AppendOverlay);
-
-            initialSourceWorkspaceDocsCount = GetDocumentsFromWorkspace(SourceWorkspace.ArtifactID).Count();
-            initialDestinationWorkspaceDocsCount = GetDocumentsFromWorkspace(destinationWorkspace.ArtifactID).Count();
-
-            dataService = new CommonIntegrationPointDataService(RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory, SourceWorkspace.ArtifactID);
+            RelativityFacade.Instance.ImportDocumentsFromCsv(_destinationWorkspace, LoadFilesGenerator.CreateNativesLoadFileWithLimitedItems(_destinationWorkspaceDocumentLimit), overwriteMode: DocumentOverwriteMode.AppendOverlay);
+            _sourceWorkspaceDataService = new CommonIntegrationPointDataService(_serviceFactory, _sourceWorkspace.ArtifactID);
+            _destinationWorkspaceDataService = new CommonIntegrationPointDataService(_serviceFactory, _destinationWorkspace.ArtifactID);
         }
 
         public void OnTearDownFixture()
         {
-            RelativityFacade.Instance.DeleteWorkspace(destinationWorkspace);
+            RelativityFacade.Instance.DeleteWorkspace(_destinationWorkspace);
         }
 
         public async Task RunAndRetryIntegrationPoint()
@@ -65,36 +67,38 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             //1. Job first run:
 
             //Arrange
+            List<RelativityObject> sourceWorkspaceAlldocs = await GetDocumentsFromWorkspace(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
+            List<RelativityObject> destinationWorkspaceAllDocs = await GetDocumentsFromWorkspace(_destinationWorkspace.ArtifactID).ConfigureAwait(false);          
+
             IntegrationPointModel integrationPoint = await PrepareIntegrationPointModel().ConfigureAwait(false);
-            await ripApi.CreateIntegrationPointAsync(integrationPoint, SourceWorkspace.ArtifactID);
-            int expectedItemErrorsToRetry = initialSourceWorkspaceDocsCount - initialDestinationWorkspaceDocsCount;
-            string expectedStatus = JobStatusChoices.JobHistoryCompletedWithErrors.Name;
-            int transferredItems;
-            int itemsWithErrors;
+            await _ripApi.CreateIntegrationPointAsync(integrationPoint, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
+
+            int expectedItemErrorsToRetry = sourceWorkspaceAlldocs.Count() - destinationWorkspaceAllDocs.Count();
+            string expectedStatus = JobStatusChoices.JobHistoryCompletedWithErrors.Name;           
 
             //Act
-            int jobHistoryId = await ripApi.RunIntegrationPointAsync(integrationPoint, SourceWorkspace.ArtifactID);
+            int jobHistoryId = await _ripApi.RunIntegrationPointAsync(integrationPoint, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
 
             //Assert             
-            Func<Task> endRun = async () => { await ripApi.WaitForJobToFinishAsync(jobHistoryId, SourceWorkspace.ArtifactID, checkDelayInMs: 500, expectedStatus: expectedStatus).ConfigureAwait(false); };
+            Func<Task> endRun = async () => { await _ripApi.WaitForJobToFinishAsync(jobHistoryId, _sourceWorkspace.ArtifactID, checkDelayInMs: 500, expectedStatus: expectedStatus).ConfigureAwait(false); };
             endRun.ShouldNotThrow();
-            GetJobHistoryDetails(jobHistoryId, out transferredItems, out itemsWithErrors);
-            itemsWithErrors.Should().Be(expectedItemErrorsToRetry);
+            await GetJobHistoryDetails(jobHistoryId).ConfigureAwait(false);
+            _itemsWithError.Should().Be(expectedItemErrorsToRetry);
 
             //2. Job retry:
 
             //Arrange
-            integrationPoint.OverwriteFieldsChoiceId = await dataService.GetOverwriteFieldsChoiceIdAsync(OverwriteFieldsChoices.IntegrationPointAppendOverlay.Name).ConfigureAwait(false);
+            integrationPoint.OverwriteFieldsChoiceId = await _sourceWorkspaceDataService.GetOverwriteFieldsChoiceIdAsync(OverwriteFieldsChoices.IntegrationPointAppendOverlay.Name).ConfigureAwait(false);
             expectedStatus = JobStatusChoices.JobHistoryCompleted.Name;
 
             //Act
-            int retryJobHistoryId = await ripApi.RetryIntegrationPointAsync(integrationPoint, SourceWorkspace.ArtifactID);
+            int retryJobHistoryId = await _ripApi.RetryIntegrationPointAsync(integrationPoint, _sourceWorkspace.ArtifactID);
 
             //Assert
-            Func<Task> endRetry = async () => { await ripApi.WaitForJobToFinishAsync(retryJobHistoryId, SourceWorkspace.ArtifactID, checkDelayInMs: 500, expectedStatus: expectedStatus).ConfigureAwait(false); };
+            Func<Task> endRetry = async () => { await _ripApi.WaitForJobToFinishAsync(retryJobHistoryId, _sourceWorkspace.ArtifactID, checkDelayInMs: 500, expectedStatus: expectedStatus).ConfigureAwait(false); };
             endRetry.ShouldNotThrow();
-            GetJobHistoryDetails(retryJobHistoryId, out transferredItems, out itemsWithErrors);
-            transferredItems.Should().Be(expectedItemErrorsToRetry);
+            await GetJobHistoryDetails(retryJobHistoryId).ConfigureAwait(false);
+            _transferredItems.Should().Be(expectedItemErrorsToRetry);
         }
 
         private void CreateSavedSearch(int workspaceId)
@@ -105,19 +109,19 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 
         private async Task<IntegrationPointModel> PrepareIntegrationPointModel()
         {
-            int savedSearchId = await dataService.GetSavedSearchArtifactIdAsync(SAVED_SEARCH_NAME).ConfigureAwait(false);
-            int destinationFolderId = await dataService.GetRootFolderArtifactIdAsync(destinationWorkspace.ArtifactID).ConfigureAwait(false);
+            int savedSearchId = await _sourceWorkspaceDataService.GetSavedSearchArtifactIdAsync(SAVED_SEARCH_NAME).ConfigureAwait(false);
+            int destinationFolderId = await _destinationWorkspaceDataService.GetRootFolderArtifactIdAsync().ConfigureAwait(false);
 
             return new IntegrationPointModel
             {
                 SourceConfiguration = GetSourceConfig(savedSearchId),
                 DestinationConfiguration = GetDestinationConfiguration(destinationFolderId),
-                Name = $"{JOB_RETRY_WORKSPACE_NAME} {destinationWorkspace.ArtifactID}",
-                FieldMappings = await dataService.GetIdentifierMappingAsync(SourceWorkspace.ArtifactID, destinationWorkspace.ArtifactID).ConfigureAwait(false),
-                DestinationProvider = await dataService.GetDestinationProviderIdAsync(DestinationProviders.RELATIVITY).ConfigureAwait(false),
-                SourceProvider = await dataService.GetSourceProviderIdAsync(SourceProviders.RELATIVITY).ConfigureAwait(false),
-                Type = await dataService.GetIntegrationPointTypeByAsync(IntegrationPointTypes.ExportName).ConfigureAwait(false),
-                OverwriteFieldsChoiceId = await dataService.GetOverwriteFieldsChoiceIdAsync(OverwriteFieldsChoices.IntegrationPointOverlayOnly.Name).ConfigureAwait(false),
+                Name = $"{JOB_RETRY_DESTINATION_WORKSPACE_NAME} {_destinationWorkspace.ArtifactID}",
+                FieldMappings = await _sourceWorkspaceDataService.GetIdentifierMappingAsync(_destinationWorkspace.ArtifactID).ConfigureAwait(false),
+                DestinationProvider = await _sourceWorkspaceDataService.GetDestinationProviderIdAsync(DestinationProviders.RELATIVITY).ConfigureAwait(false),
+                SourceProvider = await _sourceWorkspaceDataService.GetSourceProviderIdAsync(SourceProviders.RELATIVITY).ConfigureAwait(false),
+                Type = await _sourceWorkspaceDataService.GetIntegrationPointTypeByAsync(IntegrationPointTypes.ExportName).ConfigureAwait(false),
+                OverwriteFieldsChoiceId = await _sourceWorkspaceDataService.GetOverwriteFieldsChoiceIdAsync(OverwriteFieldsChoices.IntegrationPointOverlayOnly.Name).ConfigureAwait(false),
                 EmailNotificationRecipients = string.Empty,
                 ScheduleRule = new ScheduleModel(),
                 LogErrors = true
@@ -130,7 +134,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             {
                 TypeOfExport = (int)SourceConfiguration.ExportType.SavedSearch,
                 SavedSearchArtifactId = savedSearchId,
-                SourceWorkspaceArtifactId = SourceWorkspace.ArtifactID,
+                SourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID,
                 UseDynamicFolderPath = false
             };
         }
@@ -139,7 +143,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
         {
             return new RelativityProviderDestinationConfiguration
             {
-                CaseArtifactId = destinationWorkspace.ArtifactID,
+                CaseArtifactId = _destinationWorkspace.ArtifactID,
                 FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
                 ImportNativeFile = false,
                 ArtifactTypeID = (int)ArtifactType.Document,
@@ -147,31 +151,34 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
                 FolderPathSourceField = 0,
                 UseFolderPathInformation = false
             };
-        }      
+        }
 
-        private List<RelativityObject> GetDocumentsFromWorkspace(int workspaceId)
+        private async Task<List<RelativityObject>> GetDocumentsFromWorkspace(int workspaceId)
         {
-            using (IObjectManager objectManager = RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory.GetServiceProxy<IObjectManager>())
+            using (var objectManager = _serviceFactory
+               .GetServiceProxy<IObjectManager>())
             {
                 QueryRequest request = new QueryRequest
                 {
                     ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Document },
                     Fields = new FieldRef[] { new FieldRef { Name = "*" } }
                 };
-                return objectManager.QueryAsync(workspaceId, request, 0, int.MaxValue).GetAwaiter().GetResult().Objects.ToList();
-            }
+                QueryResult result = await objectManager.QueryAsync(workspaceId, request, 0, int.MaxValue).ConfigureAwait(false);
+
+                return result.Objects.ToList();              
+            }            
         }
 
-        private void GetJobHistoryDetails(int jobHistoryId, out int transferredItems, out int itemsWithError)
+        private async Task GetJobHistoryDetails(int jobHistoryId)
         {
-            RelativityObject jobHistoryDetails = GetJobHistoryByObjectManager(jobHistoryId);
-            transferredItems = (int)jobHistoryDetails.FieldValues.Where(f => f.Field.Name == JobHistoryFields.ItemsTransferred).FirstOrDefault().Value;
-            itemsWithError = (int)jobHistoryDetails.FieldValues.Where(f => f.Field.Name == JobHistoryFields.ItemsWithErrors).FirstOrDefault().Value;
+            RelativityObject jobHistoryDetails = await GetJobHistoryByObjectManager(jobHistoryId);
+            _transferredItems = (int)jobHistoryDetails.FieldValues.Where(f => f.Field.Name == JobHistoryFields.ItemsTransferred).FirstOrDefault().Value;
+            _itemsWithError = (int)jobHistoryDetails.FieldValues.Where(f => f.Field.Name == JobHistoryFields.ItemsWithErrors).FirstOrDefault().Value;
         }
 
-        private RelativityObject GetJobHistoryByObjectManager(int jobHistoryId)
+        private async Task<RelativityObject> GetJobHistoryByObjectManager(int jobHistoryId)
         {
-            using (IObjectManager objectManager = RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory.GetServiceProxy<IObjectManager>())
+            using (IObjectManager objectManager = _serviceFactory.GetServiceProxy<IObjectManager>())
             {
                 QueryRequest request = new QueryRequest
                 {
@@ -183,9 +190,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
                     },
                     Condition = $"'ArtifactId' == '{jobHistoryId}'"
                 };
-
-                return objectManager.QueryAsync(SourceWorkspace.ArtifactID, request, 0, int.MaxValue)
-                    .GetAwaiter().GetResult().Objects.ToList().FirstOrDefault();
+                QueryResult result = await objectManager.QueryAsync(_sourceWorkspace.ArtifactID, request, 0, int.MaxValue).ConfigureAwait(false);
+                return result.Objects.FirstOrDefault();
             }
         }
 

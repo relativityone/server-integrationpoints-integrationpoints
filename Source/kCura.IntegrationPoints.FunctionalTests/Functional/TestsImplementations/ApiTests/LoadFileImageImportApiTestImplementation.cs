@@ -80,7 +80,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             ICommonIntegrationPointDataService commonDataSvc = new CommonIntegrationPointDataService(
                 RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory, SourceWorkspace.ArtifactID);
 
-            int destinationFodler = await commonDataSvc.GetRootFolderArtifactIdAsync(SourceWorkspace.ArtifactID).ConfigureAwait(false);
+            int destinationFodler = await commonDataSvc.GetRootFolderArtifactIdAsync().ConfigureAwait(false);
 
             var sourceConfiguration = new ImportSourceConfigurationModel()
             {

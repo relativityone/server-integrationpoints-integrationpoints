@@ -19,10 +19,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
         Task<int> GetDestinationProviderIdAsync(string identifier);
         Task<int> GetIntegrationPointTypeByAsync(string name);
         Task<int> GetOverwriteFieldsChoiceIdAsync(string name);
-        Task<int> GetRootFolderArtifactIdAsync(int workspaceId);
+        Task<int> GetRootFolderArtifactIdAsync();
         Task<int> GetSourceProviderIdAsync(string identifier);
         Task<int> GetSavedSearchArtifactIdAsync(string savedSearchName);
-        Task<List<FieldMap>> GetIdentifierMappingAsync(int sourceWorkspaceId, int targetWorkspaceId);
+        Task<List<FieldMap>> GetIdentifierMappingAsync(int targetWorkspaceId);
     }
 
     internal class CommonIntegrationPointDataService : ICommonIntegrationPointDataService
@@ -77,11 +77,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
             }
         }
 
-        public async Task<int> GetRootFolderArtifactIdAsync(int workspaceId)
+        public async Task<int> GetRootFolderArtifactIdAsync()
         {
             using (IFolderManager folderManager = _serviceFactory.GetServiceProxy<IFolderManager>())
             {
-                Folder rootFolder = await folderManager.GetWorkspaceRootAsync(workspaceId).ConfigureAwait(false);
+                Folder rootFolder = await folderManager.GetWorkspaceRootAsync(_workspaceId).ConfigureAwait(false);
                 
                 return rootFolder.ArtifactID;
             }
@@ -100,12 +100,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
             }
         }
 
-        public async Task<List<FieldMap>> GetIdentifierMappingAsync(int sourceWorkspaceId, int targetWorkspaceId)
+        public async Task<List<FieldMap>> GetIdentifierMappingAsync(int targetWorkspaceId)
         {
             using (IObjectManager objectManager = _serviceFactory.GetServiceProxy<IObjectManager>())
             {
                 QueryRequest query = PrepareIdentifierFieldsQueryRequest();
-                QueryResult sourceQueryResult = await objectManager.QueryAsync(sourceWorkspaceId, query, 0, 1).ConfigureAwait(false);
+                QueryResult sourceQueryResult = await objectManager.QueryAsync(_workspaceId, query, 0, 1).ConfigureAwait(false);
                 QueryResult destinationQueryResult = await objectManager.QueryAsync(targetWorkspaceId, query, 0, 1).ConfigureAwait(false);
 
                 return new List<FieldMap>

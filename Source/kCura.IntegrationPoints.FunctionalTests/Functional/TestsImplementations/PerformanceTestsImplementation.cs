@@ -27,7 +27,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
     {
         private const string SavedSearchName = "AllDocuments";
         private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
-        private ICommonIntegrationPointDataService dataService;
+        private ICommonIntegrationPointDataService _sourceWorkspaceDataService;
+        private ICommonIntegrationPointDataService _destinationWorkspaceDataService;
         private Workspace[] _destinationWorkspaces;
         private List<int> _integrationPoints = new List<int>();
 
@@ -51,8 +52,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             RelativityFacade.Instance.ImportDocumentsFromCsv(_testsImplementationTestFixture.Workspace,
                 LoadFilesGenerator.GetOrCreateNativesLoadFile(), overwriteMode: DocumentOverwriteMode.AppendOverlay);
 
-            dataService = new CommonIntegrationPointDataService(RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory, _testsImplementationTestFixture.Workspace.ArtifactID);
-
+            _sourceWorkspaceDataService = new CommonIntegrationPointDataService(RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory, _testsImplementationTestFixture.Workspace.ArtifactID);
+            
             CreateSavedSearch(_testsImplementationTestFixture.Workspace.ArtifactID);
 
             GetIntegrationPointsConstantsAsync().GetAwaiter().GetResult();
@@ -173,8 +174,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
         private async Task<IntegrationPointModel> GetIntegrationPointAsync(Workspace destinationWorkspace)
         {
-            List<FieldMap> fieldsMapping = await dataService.GetIdentifierMappingAsync(SourceWorkspace.ArtifactID, destinationWorkspace.ArtifactID).ConfigureAwait(false);
-            int rootFolderId = await dataService.GetRootFolderArtifactIdAsync(destinationWorkspace.ArtifactID).ConfigureAwait(false);            
+            _destinationWorkspaceDataService = new CommonIntegrationPointDataService(RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory, destinationWorkspace.ArtifactID);
+
+            List<FieldMap> fieldsMapping = await _sourceWorkspaceDataService.GetIdentifierMappingAsync(destinationWorkspace.ArtifactID).ConfigureAwait(false);
+            int rootFolderId = await _destinationWorkspaceDataService.GetRootFolderArtifactIdAsync().ConfigureAwait(false);            
 
             var sourceConfiguration = new RelativityProviderSourceConfiguration
             {
@@ -196,20 +199,20 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                 SourceProvider = _sourceProviderId,
                 Type = _integrationPointType,
                 EmailNotificationRecipients = "",
-                OverwriteFieldsChoiceId = await dataService.GetOverwriteFieldsChoiceIdAsync("Append/Overlay").ConfigureAwait(false),
+                OverwriteFieldsChoiceId = await _sourceWorkspaceDataService.GetOverwriteFieldsChoiceIdAsync("Append/Overlay").ConfigureAwait(false),
                 ScheduleRule = new ScheduleModel()
             };
         }
 
         private async Task GetIntegrationPointsConstantsAsync()
         {
-            _savedSearchId = await dataService.GetSavedSearchArtifactIdAsync(SavedSearchName).ConfigureAwait(false);          
+            _savedSearchId = await _sourceWorkspaceDataService.GetSavedSearchArtifactIdAsync(SavedSearchName).ConfigureAwait(false);          
 
-            _destinationProviderId = await dataService.GetDestinationProviderIdAsync(DestinationProviders.RELATIVITY).ConfigureAwait(false);            
+            _destinationProviderId = await _sourceWorkspaceDataService.GetDestinationProviderIdAsync(DestinationProviders.RELATIVITY).ConfigureAwait(false);            
 
-            _sourceProviderId = await dataService.GetSourceProviderIdAsync(SourceProviders.RELATIVITY).ConfigureAwait(false);           
+            _sourceProviderId = await _sourceWorkspaceDataService.GetSourceProviderIdAsync(SourceProviders.RELATIVITY).ConfigureAwait(false);           
 
-            _integrationPointType = await dataService.GetIntegrationPointTypeByAsync(IntegrationPointTypes.ExportName).ConfigureAwait(false);             
+            _integrationPointType = await _sourceWorkspaceDataService.GetIntegrationPointTypeByAsync(IntegrationPointTypes.ExportName).ConfigureAwait(false);             
         }        
 
         private RelativityProviderDestinationConfiguration GetDestinationConfiguration(int workspaceId, int folderId)
