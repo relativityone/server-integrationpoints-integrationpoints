@@ -94,46 +94,151 @@
 		});
 	};
 
-	root.retryJob = function (artifactId, appId) {
+	root.retryJob = function (artifactId, appId, switchToAppendOverlayMode) {
 		var overwriteOption = $("[fafriendlyname=\"Overwrite Fields\"]").closest("tr").find(".dynamicViewFieldValue").text();
 		var selectedMessage = "";
-		if (overwriteOption === "Overlay Only") {
-			selectedMessage = "The retry job will run in Overlay mode. Document metadata with the same identifier will be overwritten in the target workspace. Would you still like to proceed?";
-		} else {
-			selectedMessage = "The retry job will run in Append/Overlay mode. Document metadata with the same identifier will be overwritten in the target workspace. Would you still like to proceed?";
-		}
+		switchToAppendOverlayMode = false;
 
-		if (!!root.errorMessage && root.errorMessage.length !== 0) {
-			IP.message.error.raise(root.errorMessage, $(".cardContainer"));
-			return;
+		if (overwriteOption === "Append Only") //modal with 3 options (append - append/overlay - cancel)
+		{
+			selectedMessage = ""; //TODO - message with question about overwrite mode
+			window.Dragon.dialogs.showYesNoCancel({
+				message: selectedMessage,
+				title: "Retry Errors",
+				showCancel: true,
+				yesText: "Append/Overlay",
+				noText: overwriteOption,
+				cancelText: "Cancel",
+				width: 450,
+				yesHandle: function (calls) {
+					switchToAppendOverlayMode = true;
+					calls.close();					
+					var ajax = IP.data.ajax({
+						type: "POST",
+						url: root.utils.generateWebAPIURL('Job/Retry'),
+						async: true,
+						data: JSON.stringify({
+							"appId": appId,
+							"artifactId": artifactId,
+							"switchToAppendOverlayMode": switchToAppendOverlayMode
+						})
+					});
+					ajax.fail(function (value) {
+						const prefix = "Failed to submit the retry job.";
+						const errTitle = "Unable to Retry Errors";
+						IP.message.errorDialog.show(errTitle, prefix, value.responseText);
+					});
+					ajax.done(function () {
+						IP.message.info.raise("Retry job started", $(".cardContainer"));
+					});
+				},
+				noHandle: function (calls) {
+					calls.close();					
+					var ajax = IP.data.ajax({
+						type: "POST",
+						url: root.utils.generateWebAPIURL('Job/Retry'),
+						async: true,
+						data: JSON.stringify({
+							"appId": appId,
+							"artifactId": artifactId,
+							"switchToAppendOverlayMode": switchToAppendOverlayMode
+						})
+					});
+					ajax.fail(function (value) {
+						const prefix = "Failed to submit the retry job.";
+						const errTitle = "Unable to Retry Errors";
+						IP.message.errorDialog.show(errTitle, prefix, value.responseText);
+					});
+					ajax.done(function () {
+						IP.message.info.raise("Retry job started", $(".cardContainer"));
+					});
+				}
+			});
 		}
-		window.Dragon.dialogs.showConfirm({
-			message: selectedMessage,
-			title: "Retry Errors",
-			showCancel: true,
-			width: 450,
-			success: function (calls) {
-				calls.close();
-				var ajax = IP.data.ajax({
-					type: "POST",
-					url: root.utils.generateWebAPIURL('Job/Retry'),
-					async: true,
-					data: JSON.stringify({
-						"appId": appId,
-						"artifactId": artifactId
-					})
-				});
-				ajax.fail(function (value) {
-					const prefix = "Failed to submit the retry job.";
-					const errTitle = "Unable to Retry Errors";
-					IP.message.errorDialog.show(errTitle, prefix, value.responseText);
-				});
-				ajax.done(function () {
-					IP.message.info.raise("Retry job started", $(".cardContainer"));
-				});
+		else //modal with 2 options (originalOverwriteOption - cancel)
+		{
+			if (overwriteOption === "Overlay Only") {
+				selectedMessage = "The retry job will run in Overlay mode. Document metadata with the same identifier will be overwritten in the target workspace. Would you still like to proceed?";
+			} else {
+				selectedMessage = "The retry job will run in Append/Overlay mode. Document metadata with the same identifier will be overwritten in the target workspace. Would you still like to proceed?";
 			}
-		});
+
+			if (!!root.errorMessage && root.errorMessage.length !== 0) {
+				IP.message.error.raise(root.errorMessage, $(".cardContainer"));
+				return;
+			}
+			window.Dragon.dialogs.showConfirm({
+				message: selectedMessage,
+				title: "Retry Errors",
+				showCancel: true,
+				width: 450,
+				success: function (calls) {
+					calls.close();
+					var ajax = IP.data.ajax({
+						type: "POST",
+						url: root.utils.generateWebAPIURL('Job/Retry'),
+						async: true,
+						data: JSON.stringify({
+							"appId": appId,
+							"artifactId": artifactId
+						})
+					});
+					ajax.fail(function (value) {
+						const prefix = "Failed to submit the retry job.";
+						const errTitle = "Unable to Retry Errors";
+						IP.message.errorDialog.show(errTitle, prefix, value.responseText);
+					});
+					ajax.done(function () {
+						IP.message.info.raise("Retry job started", $(".cardContainer"));
+					});
+				}
+			});
+        }
+
+
+		
 	};
+
+	//root.retryJob = function (artifactId, appId) {
+	//	var overwriteOption = $("[fafriendlyname=\"Overwrite Fields\"]").closest("tr").find(".dynamicViewFieldValue").text();
+	//	var selectedMessage = "";
+	//	if (overwriteOption === "Overlay Only") {
+	//		selectedMessage = "The retry job will run in Overlay mode. Document metadata with the same identifier will be overwritten in the target workspace. Would you still like to proceed?";
+	//	} else {
+	//		selectedMessage = "The retry job will run in Append/Overlay mode. Document metadata with the same identifier will be overwritten in the target workspace. Would you still like to proceed?";
+	//	}
+
+	//	if (!!root.errorMessage && root.errorMessage.length !== 0) {
+	//		IP.message.error.raise(root.errorMessage, $(".cardContainer"));
+	//		return;
+	//	}
+	//	window.Dragon.dialogs.showConfirm({
+	//		message: selectedMessage,
+	//		title: "Retry Errors",
+	//		showCancel: true,
+	//		width: 450,
+	//		success: function (calls) {
+	//			calls.close();
+	//			var ajax = IP.data.ajax({
+	//				type: "POST",
+	//				url: root.utils.generateWebAPIURL('Job/Retry'),
+	//				async: true,
+	//				data: JSON.stringify({
+	//					"appId": appId,
+	//					"artifactId": artifactId
+	//				})
+	//			});
+	//			ajax.fail(function (value) {
+	//				const prefix = "Failed to submit the retry job.";
+	//				const errTitle = "Unable to Retry Errors";
+	//				IP.message.errorDialog.show(errTitle, prefix, value.responseText);
+	//			});
+	//			ajax.done(function () {
+	//				IP.message.info.raise("Retry job started", $(".cardContainer"));
+	//			});
+	//		}
+	//	});
+	//};
 
 	root.saveAsProfile = function (integrationPointId, workspaceId, ipName) {
 		const SAVE_AS_PROFILE_ERR_PREFIX = "Failed to save integration point as profile.";
