@@ -99,9 +99,12 @@
 		var selectedMessage = "";
 		switchToAppendOverlayMode = false;
 
-		if (overwriteOption === "Append Only") //modal with 3 options (append - append/overlay - cancel)
+		console.log(overwriteOption);
+
+		if (overwriteOption === "Append Only") 
 		{
-			selectedMessage = ""; //TODO - message with question about overwrite mode
+			selectedMessage = "Test msg - choose Append/Overlay or leave Append mode"; 
+			console.log(selectedMessage);
 			window.Dragon.dialogs.showYesNoCancel({
 				message: selectedMessage,
 				title: "Retry Errors",
@@ -155,7 +158,7 @@
 				}
 			});
 		}
-		else //modal with 2 options (originalOverwriteOption - cancel)
+		else 
 		{
 			if (overwriteOption === "Overlay Only") {
 				selectedMessage = "The retry job will run in Overlay mode. Document metadata with the same identifier will be overwritten in the target workspace. Would you still like to proceed?";

@@ -524,7 +524,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			// Act
 			Assert.Throws<Exception>(() =>
-				_instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId),
+				_instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId, switchToAppendOverlayMode: false),
 				Constants.IntegrationPoints.RETRY_NO_EXISTING_ERRORS);
 
 			// Assert
@@ -569,7 +569,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			// Act
 			Assert.Throws<Exception>(() =>
-				_instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId),
+				_instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId, switchToAppendOverlayMode: false),
 				String.Join("<br/>", Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE));
 
 			// Assert
@@ -602,7 +602,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			// Act
 			Assert.Throws<Exception>(() =>
-				_instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId),
+				_instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId, switchToAppendOverlayMode: false),
 				Constants.IntegrationPoints.RETRY_IS_NOT_RELATIVITY_PROVIDER);
 
 			// Assert
@@ -625,7 +625,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				.Returns((List<Data.JobHistory>)null);
 
 			// Act
-			Exception exception = Assert.Throws<Exception>(() => _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId));
+			Exception exception = Assert.Throws<Exception>(() => _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId, switchToAppendOverlayMode: false));
 
 			// Assert
 			Assert.AreEqual("Unable to retrieve the previous job history.", exception.Message);
@@ -643,7 +643,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				.Throws<Exception>();
 
 			// Act
-			Exception exception = Assert.Throws<Exception>(() => _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId));
+			Exception exception = Assert.Throws<Exception>(() => _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId, switchToAppendOverlayMode: false));
 
 			// Assert
 			Assert.AreEqual("Unable to retrieve the previous job history.", exception.Message);
@@ -666,7 +666,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 			_previousJobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
 
 			// Act
-			Exception exception = Assert.Throws<Exception>(() => _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId));
+			Exception exception = Assert.Throws<Exception>(() => _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId, switchToAppendOverlayMode: false));
 
 			// Assert
 			Assert.AreEqual(Constants.IntegrationPoints.RETRY_ON_STOPPED_JOB, exception.Message);
@@ -688,7 +688,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 				.Returns(new Data.JobHistory() { BatchInstance = string.Empty });
 
 			// Act
-			_instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId);
+			_instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId, switchToAppendOverlayMode: false);
 
 			// Assert
 			_objectManager.Received(1).Read<SourceProvider>(_integrationPoint.SourceProvider.Value);
@@ -714,7 +714,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
 			// Act
 			Assert.Throws<Exception>(() =>
-			_instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId),
+			_instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId, switchToAppendOverlayMode: false),
 				Constants.IntegrationPoints.NO_SOURCE_PROVIDER_SPECIFIED);
 
 			// Assert
