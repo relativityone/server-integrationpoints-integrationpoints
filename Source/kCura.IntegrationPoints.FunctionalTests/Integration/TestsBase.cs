@@ -154,13 +154,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			RegisterFakeRipServices();
 			RegisterRipServices(sourceWorkspace);
             RegisterKeplerServices();
-            RegisterRdoSynchronizers();
         }
-
-        private void RegisterRdoSynchronizers()
-        {
-			Container.Register(Component.For<RdoEntitySynchronizer>().ImplementedBy<RdoEntitySynchronizer>());
-		}
 
         private void RegisterAPIControllers()
 		{
@@ -260,7 +254,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IRelativityUrlHelper>().ImplementedBy<FakeRelativityUrlHelper>());
 
             // LDAP Entity
-			Container.Register(Component.For<IEntityManagerLinksSanitizer>().ImplementedBy<OpenLDAPEntityManagerLinksSanitizer>().IsDefault());
+			Container.Register(Component.For<IEntityManagerLinksSanitizer>().ImplementedBy<OpenLDAPEntityManagerLinksSanitizer>());
 
 			// IAPI
 			Container.Register(Component.For<IImportJobFactory>().ImplementedBy<FakeImportApiJobFactory>().LifestyleTransient().IsDefault());

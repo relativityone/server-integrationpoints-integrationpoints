@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			return CreateJob(jobDetails, task, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, GetRootJobId(parentJob), parentJob.JobId);
 		}
 
-		public Job CreateJobWithTracker<T>(Job parentJob, T jobDetails, TaskType type, string batchId) where T: class
+		public virtual Job CreateJobWithTracker<T>(Job parentJob, T jobDetails, TaskType type, string batchId) where T: class
 		{
 			Job job = CreateJobInternal(jobDetails, type, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, parentJob.SubmittedBy, GetRootJobId(parentJob), parentJob.JobId);
 			_tracker.CreateTrackingEntry(job, batchId);
