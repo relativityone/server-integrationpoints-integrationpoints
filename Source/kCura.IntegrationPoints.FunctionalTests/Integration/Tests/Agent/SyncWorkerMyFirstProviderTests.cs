@@ -400,9 +400,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
         public override Job CreateJobWithTracker<T>(Job parentJob, T jobDetails, TaskType type, string batchId)
         {
-            if (jobDetails is TaskParameters details)
+            if (jobDetails is TaskParameters)
             {
-                JobDetails = details;
+                dynamic taskParameters = jobDetails;
+                JobDetails = (TaskParameters)taskParameters;
             }
             return base.CreateJobWithTracker(parentJob, jobDetails, type, batchId);
         }
