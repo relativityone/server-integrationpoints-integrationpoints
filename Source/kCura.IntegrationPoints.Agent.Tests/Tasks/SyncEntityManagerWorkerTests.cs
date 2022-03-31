@@ -286,7 +286,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			//ASSERT
 			Assert.AreEqual(new Guid("2b7bda1b-11c9-4349-b446-ae5c8ca2c408"), task.GetType().GetProperty("BatchInstance", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(task));
 
-			List<EntityManagerMap> custodianManagerMap = (List<EntityManagerMap>)task.GetType().GetField("EntityManagerMap", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(task);
+			List<EntityManagerMap> custodianManagerMap = (List<EntityManagerMap>)task.GetType().GetField("_entityManagerMap", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(task);
 			Assert.AreEqual(3, custodianManagerMap.Count);
 			Assert.AreEqual("779561316F4CE44191B150453DE9A745", custodianManagerMap[1].EntityID);
 			Assert.AreEqual("CN=Bottom Manager,OU=NestedAgain,OU=Nested,OU=Testing - Users,DC=testing,DC=corp", custodianManagerMap[2].OldManagerID);
