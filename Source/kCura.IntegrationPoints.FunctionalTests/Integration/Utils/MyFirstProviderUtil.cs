@@ -47,6 +47,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Utils
             return tmpPath;
         }
 
+        public string PrepareRecordsWithEntities(int numberOfRecords)
+        {
+            string xml = new MyFirstProviderXmlGenerator().GenerateEntitiesRecords(numberOfRecords);
+            string tmpPath = Path.GetTempFileName();
+            File.WriteAllText(tmpPath, xml);
+            return tmpPath;
+        }
+
         public JobTest PrepareJobs(string xmlPath, int numberOfBatches, Action<JobTest> registerJobContext)
         {
             _fakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
@@ -88,17 +96,41 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Utils
             return job;
         }
 
-        public JobTest PrepareJob(string xmlPath, out JobHistoryTest jobHistory
+        public JobTest PrepareJobWithEntities(string xmlPath, out JobHistoryTest jobHistory
             , Action<JobTest> registerJobContext, string emailToAddress = null)
+        {
+            SourceProviderTest provider =
+                _sourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
+
+            IntegrationPointTest integrationPoint =
+                _sourceWorkspace.Helpers.IntegrationPointHelper.CreateImportIntegrationPointWithEntities(provider,
+                    identifierFieldName: "UniqueID", sourceProviderConfiguration: xmlPath);
+
+            JobTest job = PrepareJob(xmlPath, out jobHistory, registerJobContext, emailToAddress, integrationPoint);
+
+            string[] recordsIds = XDocument.Load(xmlPath).XPathSelectElements("//UniqueID").Select(x => x.Value)
+                .ToArray();
+            TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+            taskParameters.BatchParameters = recordsIds;
+            job.JobDetails = _serializer.Serialize(taskParameters);
+
+            return job;
+        }
+
+        public JobTest PrepareJob(string xmlPath, out JobHistoryTest jobHistory
+            , Action<JobTest> registerJobContext, string emailToAddress = null, IntegrationPointTest integrationPoint = null)
         {
             AgentTest agent = _fakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
             SourceProviderTest provider =
                 _sourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
 
-            IntegrationPointTest integrationPoint =
-                _sourceWorkspace.Helpers.IntegrationPointHelper.CreateImportIntegrationPoint(provider,
-                    identifierFieldName: "Name", sourceProviderConfiguration: xmlPath);
+            if (integrationPoint == null)
+            {
+                integrationPoint =
+                    _sourceWorkspace.Helpers.IntegrationPointHelper.CreateImportIntegrationPoint(provider,
+                        identifierFieldName: "Name", sourceProviderConfiguration: xmlPath);
+            }
 
             integrationPoint.SourceProvider = provider.ArtifactId;
             integrationPoint.SourceConfiguration = xmlPath;
@@ -136,6 +168,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Utils
                 InsertBatchToJobTrackerTable(otherJob, jobHistory);
             }
         }
+
         public SyncWorker PrepareSut(Action<FakeJobImport> importAction)
         {
             _container.Register(Component.For<IDataSourceProvider>()

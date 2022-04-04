@@ -153,9 +153,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			RegisterFakeRipServices();
 			RegisterRipServices(sourceWorkspace);
             RegisterKeplerServices();
-		}
+        }
 
-		private void RegisterAPIControllers()
+        private void RegisterAPIControllers()
 		{
 			Container.Register(Component.For<JobController>().ImplementedBy<JobController>());
 			Container.Register(Component.For<FieldMappingsController>().ImplementedBy<FieldMappingsController>());
