@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
+using kCura.IntegrationPoints.Core.Services.EntityManager;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries;
@@ -355,17 +356,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
 			Container.Register(Component.For<IEntityManagerLinksSanitizer>().ImplementedBy<EntityManagerLinksSanitizer>().IsDefault());
 
-            AgentJobManagerWrapper agentJobManagerWrapper = new AgentJobManagerWrapper(
-                Container.Resolve<IEddsServiceContext>(),
-                Container.Resolve<IJobService>(),
-                Container.Resolve<IHelper>(),
-                Container.Resolve<IIntegrationPointSerializer>(),
-                Container.Resolve<IJobTracker>()
-            );
-
-            Container.Register(Component.For<IJobManager>().Instance(agentJobManagerWrapper).IsDefault());
-
-			_myFirstProviderUtil.SetupWorkspaceDbContextMock_AsNotLastBatch();
+            _myFirstProviderUtil.SetupWorkspaceDbContextMock_AsNotLastBatch();
             string xmlPath = _myFirstProviderUtil.PrepareRecordsWithEntities(numberOfRecords);
             JobTest job = _myFirstProviderUtil.PrepareJobWithEntities(xmlPath, out JobHistoryTest jobHistory, RegisterJobContext);
             jobHistory.TotalItems = 1000;
@@ -383,29 +374,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             sut.Execute(job.AsJob());
 
 			// Assert
-            dynamic batchParameters = agentJobManagerWrapper.JobDetails.BatchParameters;
-            Dictionary<string, string> entityManagerMap = batchParameters.EntityManagerMap;
-			entityManagerMap.Count.ShouldBeEquivalentTo(numberOfRecords - numberOfErrors);
-            FakeRelativityInstance.JobsInQueue.TrueForAll(x => x.StopState == StopState.None);
-        }
-    }
-
-    public class AgentJobManagerWrapper : AgentJobManager
-	{
-        public TaskParameters JobDetails;
-
-        public AgentJobManagerWrapper(IEddsServiceContext context, IJobService jobService, IHelper helper, IIntegrationPointSerializer serializer, IJobTracker tracker) : base(context, jobService, helper, serializer, tracker)
-        {
-        }
-
-        public override Job CreateJobWithTracker<T>(Job parentJob, T jobDetails, TaskType type, string batchId)
-        {
-            if (jobDetails is TaskParameters)
-            {
-                dynamic taskParameters = jobDetails;
-                JobDetails = (TaskParameters)taskParameters;
-            }
-            return base.CreateJobWithTracker(parentJob, jobDetails, type, batchId);
+            JobTest createdJob = FakeRelativityInstance.JobsInQueue.Single(x => x.ParentJobId == job.JobId);
+            EntityManagerJobParameters jobParameters = createdJob.DeserializeDetails<EntityManagerJobParameters>();
+			jobParameters.EntityManagerMap.Should().HaveCount(numberOfRecords - numberOfErrors);
+			FakeRelativityInstance.JobsInQueue.TrueForAll(x => x.StopState == StopState.None);
         }
     }
 }
