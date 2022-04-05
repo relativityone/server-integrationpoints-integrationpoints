@@ -77,6 +77,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 			IAgentValidator agentValidator = Substitute.For<IAgentValidator>();
 			IIntegrationPointRepository integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 			IJobStatusUpdater jobStatusUpdater = Substitute.For<IJobStatusUpdater>();
+			IJobTracker jobTrackerFake = Substitute.For<IJobTracker>();
 
 			//Data Transfer Location
 			IDataTransferLocationServiceFactory lsFactory = Substitute.For<IDataTransferLocationServiceFactory>();
@@ -168,7 +169,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 				agentValidator,
 				integrationPointRepository,
 				jobStatusUpdater,
-				automatedWorkflowsManager
+				automatedWorkflowsManager,
+				jobTrackerFake
 			);
 		}
 

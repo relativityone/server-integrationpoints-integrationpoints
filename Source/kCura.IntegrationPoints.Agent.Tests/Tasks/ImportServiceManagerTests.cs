@@ -60,6 +60,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private IObjectManager _objectManager;
 		private IAutomatedWorkflowsManager _automatedWorkflowsManager;
 		private IJobStatusUpdater _jobStatusUpdater;
+		private IJobTracker _jobTrackerFake;
 		private const int _RECORD_COUNT = 42;
 		private const string _ERROR_FILE_PATH = "ErrorFilePath";
 		private const string _IMPORT_PROVIDER_SETTINGS_FOR_DOC = "DocumentImport";
@@ -130,6 +131,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			IJobStopManager jobStopManager = Substitute.For<IJobStopManager>();
 			_synchronizer = Substitute.For<IDataSynchronizer>();
 			IDataReaderFactory dataReaderFactory = Substitute.For<IDataReaderFactory>();
+			_jobTrackerFake = Substitute.For<IJobTracker>();
 			
 			IDataReader loadFileReader = Substitute.For<IDataReader, IArtifactReader>();
 			IDataReader opticonFileReader = Substitute.For<IDataReader, IOpticonDataReader>();
@@ -218,7 +220,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 				agentValidator,
 				integrationPointRepository,
 				_jobStatusUpdater,
-				_automatedWorkflowsManager);
+				_automatedWorkflowsManager,
+				_jobTrackerFake);
 		}
 
 		[Test]

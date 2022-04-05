@@ -4,9 +4,9 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.ScheduleQueue.Core;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {
@@ -18,6 +18,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         private string _goldFlowBatchId;
         private IJobResourceTracker _jobResourceTracker;
         private Mock<IJobResourceTracker> _jobResourceTrackerMock;
+        private Mock<IAPILog> _loggerMock;
+        private IAPILog _loggerMockObject;
 
         public override void FixtureSetUp()
         {
@@ -26,6 +28,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             _goldFlowJob = GetJob(11, 22, 33);
             _goldFlowExpectedTempTableName = "RIP_JobTracker_22_33_batchID";
             _jobResourceTrackerMock = new Mock<IJobResourceTracker>();
+            _loggerMock = new Mock<IAPILog>();
+            _loggerMockObject = _loggerMock.Object;
             _jobResourceTracker = _jobResourceTrackerMock.Object;
             _jobResourceTrackerMock
                 .Setup(x => x.RemoveEntryAndCheckStatus(It.IsAny<string>(), It.IsAny<long>(), It.IsAny<int>(), It.IsAny<bool>()))
@@ -39,6 +43,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
                 return 1;
             });
+        }
+
+        private JobTracker PrepareJobTracker()
+        {
+            return new JobTracker(_jobResourceTracker, _loggerMockObject);
         }
 
         [SetUp]
@@ -63,7 +72,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         [Test]
         public void CreateTrackingEntry_GoldFlow()
         {
-            var jobTracker = new JobTracker(_jobResourceTracker);
+            JobTracker jobTracker = PrepareJobTracker();
 
             jobTracker.CreateTrackingEntry(_goldFlowJob, _goldFlowBatchId);
 
@@ -73,7 +82,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         [Test]
         public void CreateTrackingEntry_JobIsNull_ThrowsArgumentNullException()
         {
-            var jobTracker = new JobTracker(_jobResourceTracker);
+            JobTracker jobTracker = PrepareJobTracker();
 
             Assert.Throws<ArgumentNullException>(() => jobTracker.CreateTrackingEntry(null, _goldFlowBatchId));
         }
@@ -81,7 +90,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         [Test]
         public void CheckEntries_ExistingJob_True()
         {
-            var jobTracker = new JobTracker(_jobResourceTracker);
+            JobTracker jobTracker = PrepareJobTracker();
 
             bool checkResult = jobTracker.CheckEntries(_goldFlowJob, _goldFlowBatchId, true);
 
@@ -91,7 +100,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         [Test]
         public void CheckEntries_ExistingJob_False_BatchNotFinished()
         {
-	        var jobTracker = new JobTracker(_jobResourceTracker);
+	        JobTracker jobTracker = PrepareJobTracker();
 
 	        bool checkResult = jobTracker.CheckEntries(_goldFlowJob, _goldFlowBatchId, false);
 
@@ -102,7 +111,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         public void CheckEntries_NonExistingJob_False()
         {
             Job nonExistingJob = GetJob(1, 1, 1);
-            var jobTracker = new JobTracker(_jobResourceTracker);
+            JobTracker jobTracker = PrepareJobTracker();
 
             bool checkResult = jobTracker.CheckEntries(nonExistingJob, _goldFlowBatchId, true);
 
@@ -112,7 +121,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         [Test]
         public void CheckEntries_ExistingJobWrongBatchId_False()
         {
-            var jobTracker = new JobTracker(_jobResourceTracker);
+            JobTracker jobTracker = PrepareJobTracker();
 
             bool checkResult = jobTracker.CheckEntries(_goldFlowJob, "wrong batch id", true);
 

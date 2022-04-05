@@ -2,17 +2,19 @@
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.ScheduleQueue.Core;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
 	public class JobTracker : IJobTracker
     {
         private readonly IJobResourceTracker _tracker;
+        private readonly IAPILog _logger;
 
-        public JobTracker(IJobResourceTracker tracker)
+        public JobTracker(IJobResourceTracker tracker, IAPILog logger)
         {
             _tracker = tracker;
+            _logger = logger;
         }
 
         public static string GenerateJobTrackerTempTableName(Job job, string batchID)
@@ -33,6 +35,7 @@ namespace kCura.IntegrationPoints.Core.Services
             }
 
             string jobTrackerTempTableName = GenerateJobTrackerTempTableName(job, batchId);
+            _logger.LogInformation("Creating job entry {jobTrackerTempTableName}", jobTrackerTempTableName);
 
             _tracker.CreateTrackingEntry(jobTrackerTempTableName, job.JobId, job.WorkspaceID);
         }
@@ -40,6 +43,7 @@ namespace kCura.IntegrationPoints.Core.Services
         public bool CheckEntries(Job job, string batchId, bool batchIsFinished)
         {
 	        string jobTrackerTempTableName = GenerateJobTrackerTempTableName(job, batchId);
+            _logger.LogInformation("JobTracker RemoveEntryAndCheckStatus for {jobTrackerTempTableName}", jobTrackerTempTableName);
 
             return _tracker.RemoveEntryAndCheckStatus(jobTrackerTempTableName, job.JobId, job.WorkspaceID, batchIsFinished) == 0;
         }
