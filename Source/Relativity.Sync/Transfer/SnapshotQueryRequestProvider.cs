@@ -50,7 +50,8 @@ namespace Relativity.Sync.Transfer
             IReadOnlyList<FieldInfoDto> mappedFields = await _fieldManager.GetMappedFieldsNonDocumentForLinksAsync(token).ConfigureAwait(false);
             _logger.LogInformation("LinkingNonDocuments: Mapped fields count {mappedFieldsCount}", mappedFields.Count);
             
-            if (mappedFields.Any())
+            // GetMappedFieldsNonDocumentForLinksAsync always return at least Identifier field
+            if (mappedFields.Any(x => !x.IsIdentifier))
             {
                 return new QueryRequest
                 {

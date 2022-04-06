@@ -320,6 +320,20 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			VerifyQueryRequest(request, expectedDocumentCondition, expectedFieldRefs);
 		}
 		
+		[Test]
+		public async Task GetRequestForLinkingNonDocumentObjectsAsync_ShouldNotPrepareQuery_WhenThereAreNoFieldsForLinking()
+		{
+			// Arrange
+			_fieldManagerFake.Setup(x => x.GetMappedFieldsNonDocumentForLinksAsync(It.IsAny<CancellationToken>()))
+				.ReturnsAsync(new List<FieldInfoDto>{new FieldInfoDto(SpecialFieldType.None, "Id", "Id", true, false)});
+
+			// Act
+			QueryRequest request = await _sut.GetRequestForLinkingNonDocumentObjectsAsync(CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			request.Should().BeNull();
+		}
+		
 		private IEnumerable<FieldInfoDto> GetFieldsForLinks()
 		{
 			yield return new FieldInfoDto(SpecialFieldType.None, "Id", "Id", true, false);
