@@ -17,6 +17,9 @@ using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;
 using SyncFieldMap = Relativity.Sync.Storage.FieldMap;
 using System.Reflection;
+using kCura.ScheduleQueue.Core.Core;
+using kCura.IntegrationPoints.Data.Extensions;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
@@ -106,7 +109,14 @@ namespace kCura.IntegrationPoints.RelativitySync
 					})
 				.CreateSavedSearch(
 					new CreateSavedSearchOptions(
-						importSettings.CreateSavedSearchForTagging));			
+						importSettings.CreateSavedSearchForTagging));
+			if (IsRetryingErrors(job.Job))
+			{
+				RelativityObject jobToRetry = await _jobHistorySyncService.GetLastJobHistoryWithErrorsAsync(
+					sourceConfiguration.SourceWorkspaceArtifactId, job.IntegrationPointId).ConfigureAwait(false);
+
+				syncConfigurationRoot.IsRetry(new RetryOptions(jobToRetry.ArtifactID));
+			}
 
 			if (job.IntegrationPointModel.LogErrors.HasValue && !job.IntegrationPointModel.LogErrors.Value)
 			{
@@ -142,7 +152,14 @@ namespace kCura.IntegrationPoints.RelativitySync
 					})
 				.CreateSavedSearch(
 					new CreateSavedSearchOptions(
-						importSettings.CreateSavedSearchForTagging));		
+						importSettings.CreateSavedSearchForTagging));
+			if (IsRetryingErrors(job.Job))
+			{
+				RelativityObject jobToRetry = await _jobHistorySyncService.GetLastJobHistoryWithErrorsAsync(
+					sourceConfiguration.SourceWorkspaceArtifactId, job.IntegrationPointId).ConfigureAwait(false);
+
+				syncConfigurationRoot.IsRetry(new RetryOptions(jobToRetry.ArtifactID));
+			}
 
 			if (job.IntegrationPointModel.LogErrors.HasValue && !job.IntegrationPointModel.LogErrors.Value)
 			{
@@ -232,6 +249,20 @@ namespace kCura.IntegrationPoints.RelativitySync
 				.ToList();
 
 			return new EmailNotificationsOptions(emailsList);
-		}		
+		}
+
+		private bool IsRetryingErrors(Job job)
+		{
+			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+			JobHistory jobHistory = _jobHistoryService.GetRdo(taskParameters.BatchInstance);
+
+			if (jobHistory == null)
+			{
+				// this means that job is scheduled, so it's not retrying errors 
+				return false;
+			}
+
+			return jobHistory.JobType.EqualsToChoice(JobTypeChoices.JobHistoryRetryErrors);
+		}
 	}
 }

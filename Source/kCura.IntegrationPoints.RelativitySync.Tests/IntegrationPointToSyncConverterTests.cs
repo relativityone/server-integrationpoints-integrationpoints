@@ -138,6 +138,28 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
                      o.CopyNativesMode == expectedCopyMode)));
         }
 
+        [TestCase("Append Only", ImportOverwriteMode.AppendOnly)]
+        [TestCase("Append/Overlay", ImportOverwriteMode.AppendOverlay)]
+        [TestCase("Overlay Only", ImportOverwriteMode.OverlayOnly)]
+        public async Task CreateSyncConfigurationAsync_ShouldCreateSyncConfiguration_WithJobHistoryOverwriteModeWhenRetry(
+            string jobHistoryOverwrite, ImportOverwriteMode expectedOverwriteSetting)
+        {
+            // Arrange
+            IExtendedJob job = SetupExtendedJob(isRetry: true);
+
+            // Act
+            JobHistory jobHistory = new JobHistory { JobType = JobTypeChoices.JobHistoryRetryErrors, Overwrite = jobHistoryOverwrite };
+            _jobHistoryServiceFake
+                .Setup(x => x.GetJobHistory(It.Is<IList<int>>(l => l.Contains(job.JobHistoryId))))
+                .Returns(new List<JobHistory> { jobHistory });
+
+            await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
+
+            // Assert
+            _documentSyncConfigurationBuilderMock.Verify(x => x.OverwriteMode(It.Is<OverwriteOptions>(
+               o => o.OverwriteMode == expectedOverwriteSetting)));          
+        }
+
         [Test]
         public async Task CreateSyncConfigurationAsync_ShouldCreateSyncConfiguration_WhenIntegrationPointEmailNotifications()
         {
@@ -443,7 +465,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 
         private IExtendedJob SetupExtendedJob(
             bool isRetry = false,
-            string emailNotifications = "")
+            string emailNotifications = "",
+            string overwriteMode = "")
         {
             _integrationPointModel = new Data.IntegrationPoint
             {
@@ -470,7 +493,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             _jobHistoryServiceFake.Setup(x => x.GetRdo(It.IsAny<Guid>()))
                 .Returns(new Data.JobHistory
                 {
-                    JobType = isRetry ? JobTypeChoices.JobHistoryRetryErrors : JobTypeChoices.JobHistoryRun
+                    JobType = isRetry ? JobTypeChoices.JobHistoryRetryErrors : JobTypeChoices.JobHistoryRun,
+                    Overwrite = overwriteMode
                 });
 
             Job job = new JobBuilder()

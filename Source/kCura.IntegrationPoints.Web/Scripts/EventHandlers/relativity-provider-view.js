@@ -7,7 +7,7 @@
 		var appendWithFolderPathMessage = "You may be creating folders in the destination workspace using the ";
 		var expiredErrorsMessage = " Any existing errors will be marked as expired.";
 		var proceedWarningMessage = " Would you still like to proceed?";
-		var overwriteOption = $("[fafriendlyname=\"Overwrite Fields\"]").closest("tr").find(".dynamicViewFieldValue").text();
+		var overwriteOption = $("#overwriteType").text();
 
 		const RUN_ERR_PREFIX = "Failed to submit integration job.";
 		var selectedMessage = "";
