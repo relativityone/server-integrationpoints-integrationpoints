@@ -48,6 +48,7 @@ namespace Relativity.Sync.Transfer
         public async Task<QueryRequest> GetRequestForLinkingNonDocumentObjectsAsync(CancellationToken token)
         {
             IReadOnlyList<FieldInfoDto> mappedFields = await _fieldManager.GetMappedFieldsNonDocumentForLinksAsync(token).ConfigureAwait(false);
+            _logger.LogInformation("LinkingNonDocuments: Mapped fields count {mappedFieldsCount}", mappedFields.Count);
             
             if (mappedFields.Any())
             {
@@ -67,7 +68,9 @@ namespace Relativity.Sync.Transfer
 
         private string GetConditionForFieldsWithSetValue(IEnumerable<string> fieldNames)
         {
-            return string.Join(" OR ", fieldNames.Select(name => $"('{name}' ISSET)"));
+            var fieldNameCondition = string.Join(" OR ", fieldNames.Select(name => $"('{name}' ISSET)"));
+            var viewCondition = $"('ArtifactId' IN VIEW {_configuration.DataSourceArtifactId})";
+            return $"( {fieldNameCondition} ) AND {viewCondition}";
         }
         
         private async Task<QueryRequest> GetRequestForCurrentPipelineInternalAsync(bool withIdentifierOnly,

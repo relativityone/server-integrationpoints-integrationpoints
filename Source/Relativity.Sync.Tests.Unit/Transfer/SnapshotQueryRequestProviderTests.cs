@@ -20,12 +20,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	[TestFixture]
 	internal class SnapshotQueryRequestProviderTests
 	{
+		private const int ViewArtifactId = 69;
+		
 		private Mock<ISnapshotQueryConfiguration> _configurationFake;
 		private Mock<IPipelineSelector> _pipelineSelectorFake;
 		private Mock<IFieldManager> _fieldManagerFake;
 		private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdmin;
 		private Mock<IObjectManager> _objectManager;
 		private Mock<IChoiceQueryManager> _choiceQueryManager;
+
 
 		private SnapshotQueryRequestProvider _sut;
 
@@ -61,6 +64,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			_fieldManagerFake.Setup(x => x.GetMappedFieldsAsync(It.IsAny<CancellationToken>()))
 				.ReturnsAsync(_expectedFields.ToList());
+			_configurationFake.SetupGet(x => x.DataSourceArtifactId).Returns(ViewArtifactId);
 
 			_sut = new SnapshotQueryRequestProvider(
 				_configurationFake.Object,
@@ -311,11 +315,11 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			QueryRequest request = await _sut.GetRequestForLinkingNonDocumentObjectsAsync(CancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			const string expectedDocumentCondition = "('Link 1' ISSET) OR ('Link 2' ISSET)";
+			string expectedDocumentCondition = $"( ('Link 1' ISSET) OR ('Link 2' ISSET) ) AND ('ArtifactId' IN VIEW {ViewArtifactId})";
 			IEnumerable<FieldRef> expectedFieldRefs = fieldsForLinks.Select(dto => new FieldRef {Name = dto.SourceFieldName});
 			VerifyQueryRequest(request, expectedDocumentCondition, expectedFieldRefs);
 		}
-
+		
 		private IEnumerable<FieldInfoDto> GetFieldsForLinks()
 		{
 			yield return new FieldInfoDto(SpecialFieldType.None, "Id", "Id", true, false);
