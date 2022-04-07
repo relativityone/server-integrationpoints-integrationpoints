@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			Guid batchInstance = _helper.GetBatchInstance(_job);
 			string tableName = JobTracker.GenerateJobTrackerTempTableName(_job, batchInstance.ToString());
 
-            long totalSize;
+			long totalSize;
             if (_job.TaskType == TaskType.ImportService.ToString())
             {
                 totalSize = 0; // No way to get this from JobMessageBase and reading it from Db will be to expensive
@@ -125,6 +125,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				using (new JobHistoryMutex(_context, batchInstance))
 				{
 					// TODO refactoring, command query separation
+					_logger.LogInformation("In JobStatisticsService.cs executing UpdateAndRetrieveStats()[CreateJobTrackingEntry.sql and UpdateJobStatistics.sql] with {tableName}", tableName);
 					JobStatistics stats = _query.UpdateAndRetrieveStats(tableName, _job.JobId, new JobStatistics { Completed = total, Errored = _rowErrors, ImportApiErrors = errorCount }, _job.WorkspaceID);
 					UpdateJobHistory(batchInstance, stats, totalSize);
 				}
