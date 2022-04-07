@@ -111,6 +111,50 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             FakeRelativityInstance.JobsInQueue.First().RelatedObjectArtifactID.Should().Be(integrationPoint.ArtifactId);
         }
 
+        [IdentifiedTest("B7782A2E-2FA6-4CE8-AB8C-D3FB1115765E")]
+        [TestCase("Append Only", true)]
+        [TestCase("Append Only", false)]
+        [TestCase("Overlay Only", false)]
+        [TestCase("Append/Overlay", false)]
+        public void Retry_ShouldAssignCorrectOverwriteModeToJobHistory(string initialOverwriteMode, bool switchModeToAppendOverlay)
+        {
+            // Arrange
+            IntegrationPointTest integrationPoint =
+                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(_destinationWorkspace);
+            integrationPoint.HasErrors = true;
+            switch (initialOverwriteMode)
+            {
+                case "Append Only":
+                    integrationPoint.OverwriteFields = OverwriteFieldsChoices.IntegrationPointAppendOnly;
+                    break;
+                case "Append/Overlay":
+                    integrationPoint.OverwriteFields = OverwriteFieldsChoices.IntegrationPointAppendOverlay;
+                    break;
+                case "Overlay Only":
+                    integrationPoint.OverwriteFields = OverwriteFieldsChoices.IntegrationPointOverlayOnly;
+                    break;
+            }           
+            SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(new JobTest(), integrationPoint);
+            string expectedOverwriteMode = switchModeToAppendOverlay ? 
+                OverwriteFieldsChoices.IntegrationPointAppendOverlay.Name 
+                : initialOverwriteMode;
+
+            JobController.Payload payload = new JobController.Payload
+            {
+                ArtifactId = integrationPoint.ArtifactId,
+                AppId = SourceWorkspace.ArtifactId
+            };
+
+            JobController sut = PrepareSut(HttpMethod.Post, "/retry");
+
+            // Act
+            sut.Retry(payload, switchModeToAppendOverlay);
+
+            // Assert
+            JobHistoryTest addedJobHistoryForNextRun = SourceWorkspace.JobHistory.LastOrDefault();
+            addedJobHistoryForNextRun.Overwrite.Should().Be(expectedOverwriteMode);           
+        }
+
         [IdentifiedTest("EEDDA654-F7C0-4843-BAF6-ADBDB57EFC22")]
         public void Retry_ShouldNotScheduleRetryJob_WhenIntegrationPointDoesNotHaveErrors()
         {
