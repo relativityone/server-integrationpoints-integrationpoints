@@ -75,7 +75,7 @@ namespace Relativity.Sync.Executors
                             .InitializeExportAsync(configuration.SourceWorkspaceArtifactId, queryRequest, 1)
                             .ConfigureAwait(false);
 
-                        _logger.LogInformation("Retrieved {objectsCount} objects from view {viewId}.",
+                        _logger.LogInformation("Retrieved {objectsCount} objects from view {viewId} in step ObjectsToLink",
                             exportResults.RecordCount, configuration.DataSourceArtifactId);
 
 
@@ -129,7 +129,7 @@ namespace Relativity.Sync.Executors
                         .InitializeExportAsync(configuration.SourceWorkspaceArtifactId, queryRequest, 1)
                         .ConfigureAwait(false);
 
-                    _logger.LogInformation("Retrieved {objectsCount} objects from view {viewId}.",
+                    _logger.LogInformation("Retrieved {objectsCount} objects from view {viewId} in step AllObjects",
                         exportResults.RecordCount, configuration.DataSourceArtifactId);
                 }
 
