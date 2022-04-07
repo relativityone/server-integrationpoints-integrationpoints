@@ -241,7 +241,7 @@ namespace Relativity.Sync.Tests.Integration
 		{
 			if (pipelineType == typeof(SyncDocumentRetryPipeline) || pipelineType == typeof(SyncImageRetryPipeline))
 			{
-				return typeof(RetryDataSourceSnapshotNode);
+				return typeof(DataSourceSnapshotNode);
 			}
 
 			if (pipelineType == typeof(SyncDocumentRunPipeline) || pipelineType == typeof(SyncImageRunPipeline))
