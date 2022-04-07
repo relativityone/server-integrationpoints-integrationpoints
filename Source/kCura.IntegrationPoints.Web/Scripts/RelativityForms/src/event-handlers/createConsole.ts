@@ -69,7 +69,7 @@ async function getButtonStateObject(convenienceApi, ctx, workspaceId, integratio
     var resp = await convenienceApi.relativityHttpClient.get(request.url, request.options)
         .then(function (result) {
             if (!result.ok) {
-                return ctx.setErrorSummary(["Failed to get permissions."]);
+                console.log("Failed to get permissions.")
             } else if (result.ok) {
                 return result.json();
             }
@@ -84,6 +84,7 @@ function generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPoi
     var consoleApi = convenienceApi.console;
 
     var integrationPoint = {};
+
     ctx.fieldNameToFieldIdMap.forEach(function (value, key) {
         var trimmedKey = key.replaceAll(" ", "");
         try {
@@ -112,7 +113,7 @@ function generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPoi
     }
 
     if (buttonState.retryErrorsButtonVisible && integrationPoint["ExportType"].artifactTypeID === 10) {
-        var retryErrorsButton = createRetryErrorsButton(consoleApi, convenienceApi, ctx, buttonState.retryErrorsButtonEnabled, workspaceId, integrationPointId);
+        var retryErrorsButton = createRetryErrorsButton(consoleApi, convenienceApi, ctx, buttonState.retryErrorsButtonEnabled, workspaceId, integrationPointId, integrationPoint["OverwriteFields"].Name);
         transferSection.push(retryErrorsButton);
     }
 

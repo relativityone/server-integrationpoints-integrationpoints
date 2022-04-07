@@ -53,13 +53,21 @@ export function createStopButton(consoleApi, convenienceApi: IConvenienceApi, ct
     });
 }
 
-export function createRetryErrorsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number) {
+export function createRetryErrorsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number, overwriteOption: string) {
+
     return consoleApi.generate.button({
         innerText: "Retry Errors",
         disabled: !enabled,
         onclick: function () {
             function generateRunMessage() {
-                return "Are you sure you want to run this job now?";
+
+                var selectedMessage = "";
+                if (overwriteOption === "Overlay Only") {
+                    selectedMessage = "The retry job will run in Overlay mode. Document metadata with the same identifier will be overwritten in the target workspace. Would you still like to proceed?";
+                } else {
+                    selectedMessage = "The retry job will run in Append/Overlay mode. Document metadata with the same identifier will be overwritten in the target workspace. Would you still like to proceed?";
+                }
+                return selectedMessage;
             }
 
             return convenienceApi.modalService.confirm({
