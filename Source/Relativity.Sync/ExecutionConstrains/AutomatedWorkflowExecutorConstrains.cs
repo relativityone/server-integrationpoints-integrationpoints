@@ -25,12 +25,15 @@ namespace Relativity.Sync.ExecutionConstrains
 		}
 
 		public async Task<bool> CanExecuteAsync(IAutomatedWorkflowTriggerConfiguration configuration, CancellationToken token)
-		{
-			return configuration.SynchronizationExecutionResult != null
-			       && (configuration.SynchronizationExecutionResult.Status == ExecutionStatus.Completed || configuration.SynchronizationExecutionResult.Status == ExecutionStatus.CompletedWithErrors)
-			       && await IsAutomatedWorkflowsInstalledAsync(configuration.DestinationWorkspaceArtifactId).ConfigureAwait(false)
-                   && IsDocumentObjectFlow(configuration);
-		}
+        {
+            return IsDocumentObjectFlow(configuration)
+                   && configuration.SynchronizationExecutionResult != null
+                   && (configuration.SynchronizationExecutionResult.Status == ExecutionStatus.Completed ||
+                       configuration.SynchronizationExecutionResult.Status == ExecutionStatus.CompletedWithErrors)
+                   && await IsAutomatedWorkflowsInstalledAsync(configuration.DestinationWorkspaceArtifactId)
+                       .ConfigureAwait(false);
+
+        }
 
         private bool IsDocumentObjectFlow(IAutomatedWorkflowTriggerConfiguration configuration)
         {
