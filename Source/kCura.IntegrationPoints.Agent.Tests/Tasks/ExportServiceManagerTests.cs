@@ -41,6 +41,7 @@ using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Choice;
+using static kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
@@ -186,7 +187,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			};
 
 			_taskParameters = new TaskParameters() { BatchInstance = Guid.NewGuid() };
-			_jobHistory = new JobHistory() { JobType = JobTypeChoices.JobHistoryRun, TotalItems = 0, Overwrite = "Append Only" };
+			_jobHistory = new JobHistory() { JobType = JobTypeChoices.JobHistoryRun, TotalItems = 0, Overwrite = OverwriteModeNames.AppendOnlyModeName };
 			_sourceProvider = new SourceProvider();
 			List<FieldMap> mappings = new List<FieldMap>();
 			_updateStatusType = new JobHistoryErrorDTO.UpdateStatusType();

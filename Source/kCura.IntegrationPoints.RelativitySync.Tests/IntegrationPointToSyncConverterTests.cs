@@ -19,6 +19,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;
+using static kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests
 {
@@ -138,9 +139,9 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
                      o.CopyNativesMode == expectedCopyMode)));
         }
 
-        [TestCase("Append Only", ImportOverwriteMode.AppendOnly)]
-        [TestCase("Append/Overlay", ImportOverwriteMode.AppendOverlay)]
-        [TestCase("Overlay Only", ImportOverwriteMode.OverlayOnly)]
+        [TestCase(OverwriteModeNames.AppendOnlyModeName, ImportOverwriteMode.AppendOnly)]
+        [TestCase(OverwriteModeNames.AppendOverlayModeName, ImportOverwriteMode.AppendOverlay)]
+        [TestCase(OverwriteModeNames.OverlayOnlyModeName, ImportOverwriteMode.OverlayOnly)]
         public async Task CreateSyncConfigurationAsync_ShouldCreateSyncConfiguration_WithJobHistoryOverwriteModeWhenRetry(
             string jobHistoryOverwrite, ImportOverwriteMode expectedOverwriteSetting)
         {
@@ -192,13 +193,13 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             switch (importOverwriteMode)
             {
                 case ImportOverwriteModeEnum.AppendOnly: 
-                    SetupJobHistory(job, "Append Only"); 
+                    SetupJobHistory(job, OverwriteModeNames.AppendOnlyModeName); 
                     break;
                 case ImportOverwriteModeEnum.AppendOverlay:
-                    SetupJobHistory(job, "Append/Overlay");
+                    SetupJobHistory(job, OverwriteModeNames.AppendOverlayModeName);
                     break;
                 case ImportOverwriteModeEnum.OverlayOnly:
-                    SetupJobHistory(job, "Overlay Only");
+                    SetupJobHistory(job, OverwriteModeNames.OverlayOnlyModeName);
                     break;
             }
             // Act
@@ -517,7 +518,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             return extendedJob.Object;
         }
 
-        private void SetupJobHistory(IExtendedJob job, string jobHistoryOverwrite = "Append Only")
+        private void SetupJobHistory(IExtendedJob job, string jobHistoryOverwrite = OverwriteModeNames.AppendOnlyModeName)
         {
             JobHistory jobHistory = new JobHistory { JobType = JobTypeChoices.JobHistoryRetryErrors, Overwrite = jobHistoryOverwrite };
             _jobHistoryServiceFake

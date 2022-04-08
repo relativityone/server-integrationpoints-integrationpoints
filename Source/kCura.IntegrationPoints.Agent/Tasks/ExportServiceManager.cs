@@ -36,6 +36,8 @@ using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using Relativity;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Toggles;
+using kCura.IntegrationPoints.Core.Utils;
+using static kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -263,18 +265,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             if (JobHistory != null)
             {
-                switch (JobHistory.Overwrite)
-                {
-                    case @"Append Only":
-                        importSettings.ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly;
-                        break;
-                    case @"Append/Overlay":
-                        importSettings.ImportOverwriteMode = ImportOverwriteModeEnum.AppendOverlay;
-                        break;
-                    case @"Overlay Only":
-                        importSettings.ImportOverwriteMode = ImportOverwriteModeEnum.OverlayOnly;
-                        break;
-                }
+                importSettings.ImportOverwriteMode = NameToEnumConvert.GetEnumByModeName(JobHistory.Overwrite);                
             }         
         }
 

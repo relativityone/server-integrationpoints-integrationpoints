@@ -1,7 +1,7 @@
 ﻿using kCura.IntegrationPoints.Synchronizers.RDO;
 using System.ComponentModel;
 
-namespace kCura.IntegrationPoints.RelativitySync.Utils
+namespace kCura.IntegrationPoints.Core.Utils
 {
     public static class NameToEnumConvert
     {

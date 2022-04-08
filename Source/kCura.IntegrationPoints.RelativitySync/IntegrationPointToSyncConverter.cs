@@ -20,6 +20,7 @@ using System.Reflection;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.IntegrationPoints.Data.Extensions;
 using Relativity.Services.Objects.DataContracts;
+using kCura.IntegrationPoints.Core.Utils;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {

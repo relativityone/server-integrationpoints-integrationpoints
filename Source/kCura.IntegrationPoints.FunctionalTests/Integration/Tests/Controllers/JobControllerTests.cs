@@ -18,6 +18,7 @@ using Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
 using SystemInterface.IO;
+using static kCura.IntegrationPoints.Core.Constants;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 {
@@ -112,10 +113,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         }
 
         [IdentifiedTest("B7782A2E-2FA6-4CE8-AB8C-D3FB1115765E")]
-        [TestCase("Append Only", true)]
-        [TestCase("Append Only", false)]
-        [TestCase("Overlay Only", false)]
-        [TestCase("Append/Overlay", false)]
+        [TestCase(OverwriteModeNames.AppendOnlyModeName, true)]
+        [TestCase(OverwriteModeNames.AppendOnlyModeName, false)]
+        [TestCase(OverwriteModeNames.OverlayOnlyModeName, false)]
+        [TestCase(OverwriteModeNames.AppendOverlayModeName, false)]
         public void Retry_ShouldAssignCorrectOverwriteModeToJobHistory(string initialOverwriteMode, bool switchModeToAppendOverlay)
         {
             // Arrange
@@ -124,13 +125,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             integrationPoint.HasErrors = true;
             switch (initialOverwriteMode)
             {
-                case "Append Only":
+                case OverwriteModeNames.AppendOnlyModeName:
                     integrationPoint.OverwriteFields = OverwriteFieldsChoices.IntegrationPointAppendOnly;
                     break;
-                case "Append/Overlay":
+                case OverwriteModeNames.AppendOverlayModeName:
                     integrationPoint.OverwriteFields = OverwriteFieldsChoices.IntegrationPointAppendOverlay;
                     break;
-                case "Overlay Only":
+                case OverwriteModeNames.OverlayOnlyModeName:
                     integrationPoint.OverwriteFields = OverwriteFieldsChoices.IntegrationPointOverlayOnly;
                     break;
             }           
