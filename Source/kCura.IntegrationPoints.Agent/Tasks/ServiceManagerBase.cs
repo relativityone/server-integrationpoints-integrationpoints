@@ -114,7 +114,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobHistoryErrorService.SubscribeToBatchReporterEvents(synchronizer);
 		}
 
-		protected void FinalizeService(Job job)
+		protected virtual void FinalizeService(Job job)
 		{
 			LogFinalizeServiceStart(job);
 

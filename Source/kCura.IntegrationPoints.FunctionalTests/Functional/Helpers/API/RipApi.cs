@@ -40,28 +40,38 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
                 await manager.RunIntegrationPointAsync(workspaceId, integrationPoint.ArtifactId).ConfigureAwait(false);
             }
 
+            return await GetJobHistoryId(integrationPoint.Name, workspaceId);
+        }
+
+        public async Task<int> RetryIntegrationPointAsync(IntegrationPointModel integrationPoint, int workspaceId)
+        {
+            using (var manager = _serviceFactory.GetServiceProxy<IIntegrationPointManager>())
+            {
+                await manager.RetryIntegrationPointAsync(workspaceId, integrationPoint.ArtifactId).ConfigureAwait(false);
+            }
+
+            return await GetJobHistoryId(integrationPoint.Name, workspaceId);           
+        }
+
+        public async Task<int> GetJobHistoryId(string integrationPointName, int workspaceId)
+        {
             QueryRequest query = new QueryRequest
             {
                 ObjectType = new ObjectTypeRef
                 {
                     Guid = ObjectTypeGuids.JobHistoryGuid
-                },
-                Fields = new[] {new FieldRef {Name = "Integration Point"}}
+                },               
+                Fields = new FieldRef[] { new FieldRef { Name = "Job Status" } },
+                Condition = $"'Name' LIKE '{integrationPointName}'"
             };
 
             using (var objectManager = _serviceFactory
                 .GetServiceProxy<IObjectManager>())
             {
-                QueryResult result = await objectManager.QueryAsync(workspaceId, query, 0, 1000)
+                QueryResult result = await objectManager.QueryAsync(workspaceId, query, 0, int.MaxValue)
                     .ConfigureAwait(false);
 
-                RelativityObject jobHistory = result.Objects
-                    .Where(x => (x.FieldValues.First().Value as List<RelativityObjectValue>)?.First()?.ArtifactID ==
-                                integrationPoint.ArtifactId)
-                    .OrderByDescending(x => x.ArtifactID)
-                    .First();
-
-                return jobHistory.ArtifactID;
+                return result.Objects.OrderByDescending(x => x.ArtifactID).FirstOrDefault().ArtifactID;          
             }
         }
 

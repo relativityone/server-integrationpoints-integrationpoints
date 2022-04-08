@@ -128,6 +128,24 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			return integrationPoint;
 		}
 
+        public IntegrationPointTest CreateImportIntegrationPointWithEntities(SourceProviderTest sourceProvider,
+            string identifierFieldName, string sourceProviderConfiguration)
+        {
+            IntegrationPointTest integrationPoint =
+                CreateImportIntegrationPoint(sourceProvider, identifierFieldName, sourceProviderConfiguration);
+
+            ImportSettings destinationImportSettings = _serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
+
+            destinationImportSettings.ArtifactTypeId = GetArtifactTypeIdByName(Const.Entity._ENTITY_OBJECT_NAME);
+            destinationImportSettings.EntityManagerFieldContainsLink = true;
+            integrationPoint.DestinationConfiguration = _serializer.Serialize(destinationImportSettings);
+
+            List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierAndFirstAndLastNameFieldsMappingForEntitySync();
+            integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
+			
+			return integrationPoint;
+        }
+
 		public IntegrationPointTest CreateImportIntegrationPoint(SourceProviderTest sourceProvider, string identifierFieldName, string sourceProviderConfiguration)
 		{
 			IntegrationPointTest integrationPoint = CreateEmptyIntegrationPoint();

@@ -8,12 +8,10 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
-using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Services;
 using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
-using Relativity.DataMigration.MigrateFileshareAccess;
 
 namespace kCura.ScheduleQueue.AgentBase
 {
@@ -25,7 +23,6 @@ namespace kCura.ScheduleQueue.AgentBase
 		private IJobService _jobService;
 		private IQueueJobValidator _queueJobValidator;
 		private IDateTime _dateTime;
-        private IFileShareAccessService _fileShareAccessService;
 		private const int _MAX_MESSAGE_LENGTH = 10000;
 
 		private readonly Guid _agentGuid;
@@ -52,8 +49,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected ScheduleQueueAgentBase(Guid agentGuid, IKubernetesMode kubernetesMode = null, IAgentService agentService = null, IJobService jobService = null,
 			IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null, 
-			IQueueQueryManager queryManager = null, IDateTime dateTime = null, IAPILog logger = null,
-			IFileShareAccessService fileShareAccessService = null)
+			IQueueQueryManager queryManager = null, IDateTime dateTime = null, IAPILog logger = null)
 		{
 			// Lazy init is required for things depending on Helper
 			// Helper property in base class is assigned AFTER object construction
@@ -71,7 +67,6 @@ namespace kCura.ScheduleQueue.AgentBase
 			_jobService = jobService;
 			_queueJobValidator = queueJobValidator;
 			_dateTime = dateTime;
-            _fileShareAccessService = fileShareAccessService;
             _queryManager = queryManager;
 			ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
 
@@ -109,23 +104,10 @@ namespace kCura.ScheduleQueue.AgentBase
 				_dateTime = new DateTimeWrapper();
 			}
 
-
-
-
 			if(GetResourceGroupIDsFunc == null)
             {
 				GetResourceGroupIDsFunc = () => GetResourceGroupIDs();
 			}
-
-			if(_fileShareAccessService == null)
-            {
-				IMigrateFileshareFactory migrateFileshareFactory = 
-					new MigrateFileshareFactory(
-						new FileShareSecretProvider(Helper),
-						new FileshareLogger(Logger));
-
-				_fileShareAccessService = new FileShareAccessService(Helper, migrateFileshareFactory);
-            }
 		}
 
 		public sealed override void Execute()
@@ -170,7 +152,6 @@ namespace kCura.ScheduleQueue.AgentBase
 			Initialize();
 			InitializeManagerConfigSettingsFactory();
 			CheckQueueTable();
-			MountBCPPath();
 		}
 
 		private void CompleteExecution()
@@ -191,17 +172,6 @@ namespace kCura.ScheduleQueue.AgentBase
 			NotifyAgentTab(LogCategory.Debug, "Check Schedule Agent Queue table exists");
 
 			_agentService.InstallQueueTable();
-		}
-
-		private void MountBCPPath()
-        {
-            if (!IsKubernetesMode)
-            {
-                Logger.LogInformation("Integration Points Agent is not enabled on shared compute environment. Mount BCPPath is not needed.");
-                return;
-            }
-
-            _fileShareAccessService.MountBcpPathAsync().GetAwaiter().GetResult();
 		}
 
 		protected virtual IEnumerable<int> GetListOfResourceGroupIDs() // this method was added for unit testing purpose

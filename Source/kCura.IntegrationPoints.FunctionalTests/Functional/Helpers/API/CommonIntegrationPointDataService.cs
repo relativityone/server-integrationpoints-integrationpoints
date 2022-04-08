@@ -2,11 +2,15 @@
 using Relativity.Services.ArtifactGuid;
 using Relativity.Services.ChoiceQuery;
 using Relativity.Services.Folder;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
+using Relativity.Services.Search;
 using Relativity.Testing.Framework.Api.Kepler;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Choice = Relativity.Services.ChoiceQuery.Choice;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
 {
@@ -17,6 +21,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
         Task<int> GetOverwriteFieldsChoiceIdAsync(string name);
         Task<int> GetRootFolderArtifactIdAsync();
         Task<int> GetSourceProviderIdAsync(string identifier);
+        Task<int> GetSavedSearchArtifactIdAsync(string savedSearchName);
+        Task<List<FieldMap>> GetIdentifierMappingAsync(int targetWorkspaceId);
     }
 
     internal class CommonIntegrationPointDataService : ICommonIntegrationPointDataService
@@ -79,6 +85,62 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
                 
                 return rootFolder.ArtifactID;
             }
+        }
+
+        public async Task<int> GetSavedSearchArtifactIdAsync(string savedSearchName)
+        {
+            using (IKeywordSearchManager keywordSearchManager = _serviceFactory.GetServiceProxy<IKeywordSearchManager>())
+            {
+                Relativity.Services.Query request = new Relativity.Services.Query
+                {
+                    Condition = $"'Name' == '{savedSearchName}'"
+                };
+                KeywordSearchQueryResultSet result = await keywordSearchManager.QueryAsync(_workspaceId, request).ConfigureAwait(false);
+                return result.Results.First().Artifact.ArtifactID;
+            }
+        }
+
+        public async Task<List<FieldMap>> GetIdentifierMappingAsync(int targetWorkspaceId)
+        {
+            using (IObjectManager objectManager = _serviceFactory.GetServiceProxy<IObjectManager>())
+            {
+                QueryRequest query = PrepareIdentifierFieldsQueryRequest();
+                QueryResult sourceQueryResult = await objectManager.QueryAsync(_workspaceId, query, 0, 1).ConfigureAwait(false);
+                QueryResult destinationQueryResult = await objectManager.QueryAsync(targetWorkspaceId, query, 0, 1).ConfigureAwait(false);
+
+                return new List<FieldMap>
+                {
+                    new FieldMap
+                    {
+                        SourceField = new FieldEntry
+                        {
+                            DisplayName = sourceQueryResult.Objects.First()["Name"].Value.ToString(),
+                            FieldIdentifier = sourceQueryResult.Objects.First().ArtifactID.ToString(),
+                            IsIdentifier = true
+                        },
+                        DestinationField = new FieldEntry
+                        {
+                            DisplayName = destinationQueryResult.Objects.First()["Name"].Value.ToString(),
+                            FieldIdentifier = destinationQueryResult.Objects.First().ArtifactID.ToString(),
+                            IsIdentifier = true
+                        },
+                        FieldMapType = FieldMapType.Identifier
+                    }
+                };
+            }
+        }
+
+        private QueryRequest PrepareIdentifierFieldsQueryRequest()
+        {
+            int fieldArtifactTypeID = (int)ArtifactType.Field;
+            QueryRequest queryRequest = new QueryRequest()
+            {
+                ObjectType = new ObjectTypeRef() { ArtifactTypeID = fieldArtifactTypeID },
+                Condition = $"'FieldArtifactTypeID' == {(int)ArtifactType.Document} and 'Is Identifier' == true",
+                Fields = new[] { new FieldRef { Name = "Name" } },
+                IncludeNameInQueryResult = true
+            };
+            return queryRequest;
         }
     }
 }

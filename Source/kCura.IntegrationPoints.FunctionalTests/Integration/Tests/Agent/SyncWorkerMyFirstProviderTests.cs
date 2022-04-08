@@ -1,12 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Castle.MicroKernel.Registration;
 using FluentAssertions;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Common.Agent;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
+using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
+using kCura.IntegrationPoints.Core.Services.EntityManager;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.IntegrationPoints.Tests.Integration.Utils;
@@ -337,6 +346,38 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 			jobHistory.JobStatus.Guids.First().Should().Be(JobStatusChoices.JobHistoryErrorJobFailedGuid);
             FakeRelativityInstance.JobsInQueue.Single().StopState.Should().Be(StopState.None);
 		}
-		
-	}
+
+        [IdentifiedTest("0D0FC321-0033-4537-8A78-1D8F5B9B598F")]
+        public void SyncWorker_ShouldRemoveFailedItemsFromEntityManagerMap()
+        {
+            // Arrange
+            const int numberOfRecords = 100;
+            const int numberOfErrors = 60;
+
+			Container.Register(Component.For<IEntityManagerLinksSanitizer>().ImplementedBy<EntityManagerLinksSanitizer>().IsDefault());
+
+            _myFirstProviderUtil.SetupWorkspaceDbContextMock_AsNotLastBatch();
+            string xmlPath = _myFirstProviderUtil.PrepareRecordsWithEntities(numberOfRecords);
+            JobTest job = _myFirstProviderUtil.PrepareJobWithEntities(xmlPath, out JobHistoryTest jobHistory, RegisterJobContext);
+            jobHistory.TotalItems = 1000;
+
+            IRemovableAgent agent = Container.Resolve<IRemovableAgent>();
+
+            SyncWorker sut = _myFirstProviderUtil.PrepareSut((importJob) =>
+            {
+                importJob.Complete(numberOfItemLevelErrors: numberOfErrors);
+
+                agent.ToBeRemoved = true;
+            });
+
+            // Act
+            sut.Execute(job.AsJob());
+
+			// Assert
+            JobTest createdJob = FakeRelativityInstance.JobsInQueue.Single(x => x.ParentJobId == job.JobId);
+            EntityManagerJobParameters jobParameters = createdJob.DeserializeDetails<EntityManagerJobParameters>();
+			jobParameters.EntityManagerMap.Should().HaveCount(numberOfRecords - numberOfErrors);
+			FakeRelativityInstance.JobsInQueue.TrueForAll(x => x.StopState == StopState.None);
+        }
+    }
 }
