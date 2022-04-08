@@ -25,11 +25,12 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 		private const int _RELATIVITY_APPLICATIONS_ARTIFACT_TYPE_ID = 1000011;
 		private const string _AUTOMATED_WORKFLOWS_APPLICATION_CONDITION = "'Name' == 'Automated Workflows'";
 
-		private static IAutomatedWorkflowTriggerConfiguration PrepareAutomatedWorkflowTriggerConfiguration(ExecutionResult executionResult)
+		private static IAutomatedWorkflowTriggerConfiguration PrepareAutomatedWorkflowTriggerConfiguration(ExecutionResult executionResult, ArtifactType rdoArtifactType = ArtifactType.Document)
 		{
 			Mock<IAutomatedWorkflowTriggerConfiguration> configurationFake = new Mock<IAutomatedWorkflowTriggerConfiguration>();
 			configurationFake.SetupGet(p => p.SynchronizationExecutionResult).Returns(executionResult);
 			configurationFake.SetupGet(p => p.DestinationWorkspaceArtifactId).Returns(_DESTINATION_WORKSPACE_ARTIFACT_ID);
+			configurationFake.SetupGet(p => p.RdoArtifactTypeId).Returns((int)rdoArtifactType);
 
 			return configurationFake.Object;
 		}
@@ -188,5 +189,20 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 			// ASSERT
 			canExecute.Should().BeFalse();
 		}
+
+        [Test]
+        public async Task CanExecuteAsync_ShouldBeFalse_WhenAIsNonDocumentObjectFlow()
+        {
+            // ARRANGE
+            IAutomatedWorkflowTriggerConfiguration configuration = PrepareAutomatedWorkflowTriggerConfiguration(ExecutionResult.SuccessWithErrors(new Exception()), ArtifactType.View);
+
+            AutomatedWorkflowExecutorConstrains sut = PrepareAutomatedWorkflowExecutorConstrains(true);
+
+            // ACT
+            bool canExecute = await sut.CanExecuteAsync(configuration, CancellationToken.None).ConfigureAwait(false);
+
+            // ASSERT
+            canExecute.Should().BeFalse();
+        }
 	}
 }

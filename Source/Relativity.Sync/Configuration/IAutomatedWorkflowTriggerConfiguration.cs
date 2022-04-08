@@ -7,5 +7,6 @@
 		ExecutionResult SynchronizationExecutionResult { get; set; }
 		string TriggerId { get; }
 		string TriggerValue { get; }
+        public int RdoArtifactTypeId { get; }
 	}
 }

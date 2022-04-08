@@ -28,8 +28,14 @@ namespace Relativity.Sync.ExecutionConstrains
 		{
 			return configuration.SynchronizationExecutionResult != null
 			       && (configuration.SynchronizationExecutionResult.Status == ExecutionStatus.Completed || configuration.SynchronizationExecutionResult.Status == ExecutionStatus.CompletedWithErrors)
-			       && await IsAutomatedWorkflowsInstalledAsync(configuration.DestinationWorkspaceArtifactId).ConfigureAwait(false);
+			       && await IsAutomatedWorkflowsInstalledAsync(configuration.DestinationWorkspaceArtifactId).ConfigureAwait(false)
+                   && IsDocumentObjectFlow(configuration);
 		}
+
+        private bool IsDocumentObjectFlow(IAutomatedWorkflowTriggerConfiguration configuration)
+        {
+            return configuration.RdoArtifactTypeId == (int)ArtifactType.Document;
+        }
 
 		private async Task<bool> IsAutomatedWorkflowsInstalledAsync(int workspaceArtifactId)
 		{
