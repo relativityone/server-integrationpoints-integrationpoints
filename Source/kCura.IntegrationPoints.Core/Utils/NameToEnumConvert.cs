@@ -1,5 +1,6 @@
 ﻿using kCura.IntegrationPoints.Synchronizers.RDO;
 using System.ComponentModel;
+using static kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Core.Utils
 {
@@ -9,11 +10,11 @@ namespace kCura.IntegrationPoints.Core.Utils
         {
             switch (overwriteModeName)
             {
-                case @"Append Only":
+                case OverwriteModeNames.AppendOnlyModeName:
                     return ImportOverwriteModeEnum.AppendOnly;
-                case @"Overlay Only":
+                case OverwriteModeNames.OverlayOnlyModeName:
                     return ImportOverwriteModeEnum.OverlayOnly;
-                case @"Append/Overlay":
+                case OverwriteModeNames.AppendOverlayModeName:
                     return ImportOverwriteModeEnum.AppendOverlay;
                 default:
                     throw new InvalidEnumArgumentException(nameof(overwriteModeName));
