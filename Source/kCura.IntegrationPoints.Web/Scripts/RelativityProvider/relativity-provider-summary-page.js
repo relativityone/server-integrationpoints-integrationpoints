@@ -68,7 +68,7 @@ var loadData = function (ko, dataContainer) {
 		this.showTargetFolder = dataContainer.sourceConfiguration.TargetFolder !== undefined;
 		this.targetProductionSet = dataContainer.sourceConfiguration.targetProductionSet;
 		this.showTargetProductionSet = dataContainer.sourceConfiguration.targetProductionSet !== undefined;
-		this.isNonDocumentSyncFlow = dataContainer.sourceConfiguration.SourceViewId == 10;
+		this.isNonDocumentSyncFlow = dataContainer.sourceConfiguration.ArtifactTypeID != 10;
 		this.sourceWorkspace = dataContainer.sourceConfiguration.SourceWorkspace;
 		this.targetWorkspace = dataContainer.sourceConfiguration.TargetWorkspace;
 		if (dataContainer.sourceConfiguration.SourceProductionId) {
