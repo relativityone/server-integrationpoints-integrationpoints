@@ -76,7 +76,7 @@ export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sou
     convenienceApi.fieldHelper.setValue("Filename Prefix", sourceConfiguration["FileNamePrefix"]);
     convenienceApi.fieldHelper.setValue("Timezone Offset", sourceConfiguration["TimezoneOffset"]);
 
-    if (sourceConfiguration["ArtifactTypeID"] == 10) {
+    if (destinationConfiguration["artifactTypeID"] == 10) {
         if (sourceConfiguration["SourceProductionId"]) {
             getImagesStatsForProduction(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], sourceConfiguration["SourceProductionId"]).then(data => {
                 convenienceApi.fieldHelper.setValue("Total of Documents", data["DocumentsCount"]);
