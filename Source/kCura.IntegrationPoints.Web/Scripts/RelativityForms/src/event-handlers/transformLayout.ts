@@ -16,7 +16,7 @@ export function transformLayout(layoutData, convenienceApi: IConvenienceApi, bac
                 if (destinationConfiguration["Provider"] === "relativity") {
                     let fieldsForRelativityExport = prepareFieldsForRelativityExport(sourceConfiguration, destinationConfiguration)
                     addFieldsToLayout(layoutData, existingFields, fieldsForRelativityExport)
-                    if (destinationConfiguration["artifactTypeID"] == 10) {
+                    if (destinationConfiguration["artifactTypeID"] == 10 && sourceConfiguration["SourceViewId"] != 10) {
                         let fieldsForRelativityExportSecondColumn = prepareFieldsForRelativityExportSecondColumn(destinationConfiguration);
                         addFieldsToLayoutSecondColumn(layoutData, fieldsForRelativityExportSecondColumn);
                     }
