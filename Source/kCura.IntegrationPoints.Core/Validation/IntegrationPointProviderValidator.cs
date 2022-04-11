@@ -65,11 +65,14 @@ namespace kCura.IntegrationPoints.Core.Validation
 				result.Add(validator.Validate(validationModel));
 			}
 
-			foreach (IValidator validator in _validatorsMap[GetTransferredObjectObjectTypeGuid(validationModel).ToString()])
+            if (!IsSyncFlow(sourceProvider, destinationProvider))
             {
-            	result.Add(validator.Validate(validationModel));
-            }
-
+                foreach (IValidator validator in _validatorsMap[GetTransferredObjectObjectTypeGuid(validationModel).ToString()])
+                {
+                    result.Add(validator.Validate(validationModel));
+                }
+			}
+			
 			return result;
 		}
 
@@ -92,7 +95,12 @@ namespace kCura.IntegrationPoints.Core.Validation
 			}
 
 			return results.Items.Single().Guids.FirstOrDefault();
+        }
 
-		}
+        private static bool IsSyncFlow(SourceProvider sourceProvider, DestinationProvider destinationProvider)
+        {
+            return sourceProvider.Identifier.Equals(Constants.IntegrationPoints.SourceProviders.RELATIVITY, StringComparison.InvariantCultureIgnoreCase) &&
+                   destinationProvider.Identifier.Equals(Constants.IntegrationPoints.DestinationProviders.RELATIVITY, StringComparison.InvariantCultureIgnoreCase);
+        }
 	}
 }

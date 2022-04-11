@@ -71,5 +71,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
         {
             return IntegrationPointModel;
         }
+
+        public object RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId)
+        {
+            return IntegrationPointModel;
+        }
     }
 }

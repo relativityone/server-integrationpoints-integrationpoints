@@ -128,6 +128,27 @@ namespace Relativity.IntegrationPoints.Services
 				throw CreateInternalServerErrorException();
 			}
 		}
+		
+		public async Task<object> RetryIntegrationPointAsync(int workspaceArtifactId, int integrationPointArtifactId)
+		{
+			LogInvocation(nameof(RunIntegrationPointAsync));
+
+			CheckPermissions(nameof(RunIntegrationPointAsync), workspaceArtifactId,
+				new[] {new PermissionModel(ObjectTypeGuids.IntegrationPointGuid, ObjectTypes.IntegrationPoint, ArtifactPermission.Edit)});
+			try
+			{
+				using (var container = GetDependenciesContainer(workspaceArtifactId))
+				{
+					IIntegrationPointRepository integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
+					return await Task.Run(() => integrationPointRepository.RetryIntegrationPoint(workspaceArtifactId, integrationPointArtifactId)).ConfigureAwait(false);
+				}
+			}
+			catch (Exception e)
+			{
+				LogException(nameof(RunIntegrationPointAsync), e);
+				throw CreateInternalServerErrorException();
+			}
+		}
 
 		public async Task<IList<IntegrationPointModel>> GetAllIntegrationPointsAsync(int workspaceArtifactId)
 		{

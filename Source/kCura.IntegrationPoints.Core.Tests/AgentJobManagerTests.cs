@@ -33,6 +33,7 @@ namespace kCura.IntegrationPoints.Core.Tests
 		private int _integrationPointId;
 		private int _userId;
 		private TaskType _task;
+		private IAPILog _logger;
 
 		[SetUp]
 		public override void SetUp()
@@ -49,8 +50,9 @@ namespace kCura.IntegrationPoints.Core.Tests
 			_serializer = Substitute.For<IIntegrationPointSerializer>();
 			_jobTrackerQueryManager = Substitute.For<IJobTrackerQueryManager>();
 			_queueQueryManager = Substitute.For<IQueueQueryManager>();
+			_logger = Substitute.For<IAPILog>();
 			_jobResource = new JobResourceTracker(_jobTrackerQueryManager, _queueQueryManager);
-			_jobTracker = new JobTracker(_jobResource);
+			_jobTracker = new JobTracker(_jobResource, _logger);
 			_manager = new AgentJobManager(_context, _jobService, _helper, _serializer, _jobTracker);
 		}
 

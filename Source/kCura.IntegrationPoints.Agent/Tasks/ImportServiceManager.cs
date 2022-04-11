@@ -51,6 +51,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IImportFileLocationService _importFileLocationService;
 		private readonly IJobStatusUpdater _jobStatusUpdater;
 		private readonly IAutomatedWorkflowsManager _automatedWorkflowsManager;
+		private readonly IJobTracker _jobTracker;
 
 		public const string RAW_STATE_COMPLETE_WITH_ERRORS = "complete-with-errors";
 		public const string RAW_STATE_COMPLETE = "complete";
@@ -76,7 +77,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IAgentValidator agentValidator,
 			IIntegrationPointRepository integrationPointRepository,
 			IJobStatusUpdater jobStatusUpdater,
-			IAutomatedWorkflowsManager automatedWorkflowsManager)
+			IAutomatedWorkflowsManager automatedWorkflowsManager,
+			IJobTracker jobTracker)
 			: base(
 				helper,
 				jobService,
@@ -99,6 +101,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobStatusUpdater = jobStatusUpdater;
 			Logger = _helper.GetLoggerFactory().GetLogger().ForContext<ImportServiceManager>();
 			_automatedWorkflowsManager = automatedWorkflowsManager;
+			_jobTracker = jobTracker;
 		}
 
 		public override void Execute(Job job)
@@ -158,6 +161,18 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				LogExecuteFinalize(job);
 				SendAutomatedWorkflowsTriggerAsync(job).GetAwaiter().GetResult();
 			}
+		}
+
+		protected override void FinalizeService(Job job)
+		{
+			base.FinalizeService(job);
+			RemoveTrackingEntry(job, Identifier,  !IsDrainStopped());
+		}
+		
+		private void RemoveTrackingEntry(Job job, Guid batchId, bool isBatchFinished)
+		{
+			Logger.LogInformation("Removing tracking entry for job {jobId} BatchID: {batchId} and isBatchFinished: {isBatchFinished}", job.JobId, batchId, isBatchFinished)  ;
+			_jobTracker.CheckEntries(job, batchId.ToString(), isBatchFinished);
 		}
 
 		protected override void RunValidation(Job job)

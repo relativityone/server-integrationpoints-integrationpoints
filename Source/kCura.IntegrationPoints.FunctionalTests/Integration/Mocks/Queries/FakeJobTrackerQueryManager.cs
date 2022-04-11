@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using Castle.Core.Internal;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 {
@@ -55,23 +56,23 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 
 		public IQuery<int> RemoveEntryAndCheckBatchStatus(string tableName, int workspaceId, long jobId, bool isBatchFinished)
 		{
+			int result = 0;
+			if (_relativity.JobTrackerResourceTables.IsNullOrEmpty())
+			{
+				return new ValueReturnQuery<int>(0);
+			}
+			
 			if(isBatchFinished)
 			{
 				JobTrackerTest jobBatch = _relativity.JobTrackerResourceTables[tableName].Single(x => x.JobId == jobId);
 				jobBatch.Completed = true;
 			}
 
-			int result;
 			if (_relativity.JobTrackerResourceTables[tableName].Any(x => x.Completed == false))
 			{
 				result = 1;
 			}
-			else
-			{
-				_relativity.JobTrackerResourceTables.Remove(tableName);
-				result = 0;
-			}
-
+			
 			return new ValueReturnQuery<int>(result);
 		}
 	}

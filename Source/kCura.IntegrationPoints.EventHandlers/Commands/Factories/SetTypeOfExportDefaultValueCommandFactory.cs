@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 			IWorkspaceDBContext workspaceDbContext = new WorkspaceDBContext(dbContext);
 			IJobTrackerQueryManager jobTrackerQueryManager = new JobTrackerQueryManager(repositoryFactory, workspaceDbContext);
 			IJobResourceTracker jobResourceTracker = new JobResourceTracker(jobTrackerQueryManager, queryManager);
-			IJobTracker jobTracker = new JobTracker(jobResourceTracker);
+			IJobTracker jobTracker = new JobTracker(jobResourceTracker, logger);
 			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager();
 			IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, helper, integrationPointSerializer, jobTracker);
