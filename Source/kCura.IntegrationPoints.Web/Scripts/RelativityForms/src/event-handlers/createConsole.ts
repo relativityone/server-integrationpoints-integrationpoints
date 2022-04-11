@@ -69,7 +69,7 @@ async function getButtonStateObject(convenienceApi, ctx, workspaceId, integratio
     var resp = await convenienceApi.relativityHttpClient.get(request.url, request.options)
         .then(function (result) {
             if (!result.ok) {
-                console.log("Failed to get permissions.")
+                return ctx.setErrorSummary(["Failed to get permissions."]);
             } else if (result.ok) {
                 return result.json();
             }

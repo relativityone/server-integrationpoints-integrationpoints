@@ -7,7 +7,7 @@ export function updeteJobHistoryTable(convenienceApi: IConvenienceApi, currentPa
             newData.push(convertToJobHistory(el.Values));
         })
 
-        let table = document.getElementById("1040204");
+        let table = document.getElementById(fieldId.toString());
         if (checkIfArrayDataShouldBeUpdated(table["data"], newData)) {
             table["data"] = newData;
         }
@@ -30,6 +30,9 @@ async function getListData(convenienceApi: IConvenienceApi, workspaceId: number,
         let sortsCondition = getSortParametersIfExists(fieldId);
         let filterCondition = getFilterParametersIfExists(fieldId);
 
+        let table: any = document.getElementById(fieldId.toString());
+        let tableState = table.getState();
+
         var url = `Relativity.Objects/workspace/${workspaceId}/object/queryslim`;
         var payload = {
             request: {
@@ -41,8 +44,8 @@ async function getListData(convenienceApi: IConvenienceApi, workspaceId: number,
                 executingViewId: viewId,
                 convertNumberFieldValuesToString: true
             },
-            start: 1,
-            length: 10
+            start: tableState._startIndex,
+            length: tableState._pageSize
         };
         var promise = convenienceApi.relativityHttpClient.keplerPost(url, payload);
         return promise.then(function (info) {
