@@ -7,6 +7,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Pipelines;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors.Validation
 {
@@ -15,15 +16,17 @@ namespace Relativity.Sync.Executors.Validation
 		private readonly IInstanceSettings _instanceSettings;
 		private readonly IUserContextConfiguration _userContext;
 		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
+		private readonly INonAdminCanSyncUsingLinks _nonAdminCanSyncUsingLinks;
 		private readonly ISyncLog _logger;
 
 		protected abstract string ValidatorKind { get; }
 
-		protected CopyLinksValidatorBase(IInstanceSettings instanceSettings, IUserContextConfiguration userContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger)
+		protected CopyLinksValidatorBase(IInstanceSettings instanceSettings, IUserContextConfiguration userContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin, INonAdminCanSyncUsingLinks nonAdminCanSyncUsingLinks, ISyncLog logger)
 		{
 			_instanceSettings = instanceSettings;
 			_userContext = userContext;
 			_serviceFactoryForAdmin = serviceFactoryForAdmin;
+			_nonAdminCanSyncUsingLinks = nonAdminCanSyncUsingLinks;
 			_logger = logger;
 		}
 
@@ -39,7 +42,12 @@ namespace Relativity.Sync.Executors.Validation
 
 			try
 			{
-				if (ShouldValidateReferentialFileLinksRestriction(configuration))
+				if (ShouldNotValidateReferentialFileLinksRestriction(configuration))
+				{
+					return validationResult;
+				}
+
+				if (_nonAdminCanSyncUsingLinks.IsEnabled())
 				{
 					return validationResult;
 				}
@@ -67,7 +75,7 @@ namespace Relativity.Sync.Executors.Validation
 
 		public abstract bool ShouldValidate(ISyncPipeline pipeline);
 		
-		protected abstract bool ShouldValidateReferentialFileLinksRestriction(IValidationConfiguration configuration);
+		protected abstract bool ShouldNotValidateReferentialFileLinksRestriction(IValidationConfiguration configuration);
 
 		private async Task<bool> ExecutingUserIsAdminAsync()
 		{

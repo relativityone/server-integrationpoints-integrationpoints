@@ -11,6 +11,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
+using IConfiguration = Relativity.Sync.Configuration.IConfiguration;
 
 namespace Relativity.Sync.Executors
 {

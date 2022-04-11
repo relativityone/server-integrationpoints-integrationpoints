@@ -30,6 +30,7 @@ namespace Relativity.Sync.Transfer
 			builder.RegisterType<RetriableLongTextStreamBuilderFactory>().As<IRetriableStreamBuilderFactory>();
 			builder.RegisterType<InstanceSettings>().As<IInstanceSettings>();
 			builder.RegisterType<SnapshotQueryRequestProvider>().As<ISnapshotQueryRequestProvider>();
+			builder.RegisterType<NonAdminCanSyncUsingLinks>().As<NonAdminCanSyncUsingLinks>();
 		}
 	}
 }
