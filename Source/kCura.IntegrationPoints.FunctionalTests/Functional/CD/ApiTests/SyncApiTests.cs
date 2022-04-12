@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.ApiTests;
 using Relativity.Testing.Identification;
 
-namespace Relativity.IntegrationPoints.Tests.Functional.CI.ApiTests
+namespace Relativity.IntegrationPoints.Tests.Functional.CD.ApiTests
 {
     [TestType.MainFlow]
     public class SyncApiTests : TestsBase
@@ -18,22 +18,19 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI.ApiTests
         [OneTimeSetUp]
         public void OneTimeSetup()
         {
+            base.OneTimeSetUp();
             _implementation.OneTimeSetup();
         }
 
         [OneTimeTearDown]
         public void OneTimeTeardown()
         {
+            base.OneTimeTearDown();
             _implementation.OneTimeTeardown();
         }
 
         [Test]
-        public async Task JobRetryTest()
-        {
-            await _implementation.RunAndRetryIntegrationPoint().ConfigureAwait(false);
-        }
-
-        [Test]
+        [TestExecutionCategory.RAPCD.Verification.Functional]
         public async Task JobRunTest()
         {
             await _implementation.RunIntegrationPoint().ConfigureAwait(false);
