@@ -46,9 +46,9 @@ namespace Relativity.Sync.Logging
                         _itemLevelErrorCount++;
                         string message = error.Message;
                         
-                        foreach (var f in _standarizationFunctions)
+                        foreach (Func<string, ItemLevelError, (bool matched, string newMessage)> func in _standarizationFunctions)
                         {
-                            (bool matched, string newMessage) = f(message, error);
+                            (bool matched, string newMessage) = func(message, error);
                             if (matched)
                             {
                                 message = newMessage;
