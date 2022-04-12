@@ -10,6 +10,7 @@ using Relativity.Sync.Executors.DocumentTaggers;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Extensions;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
 {
@@ -88,6 +89,7 @@ namespace Relativity.Sync.Executors
 
 			builder.RegisterTypesInExecutingAssembly<IPermissionCheck>();
 			builder.RegisterTypesInExecutingAssembly<IPreValidator>();
+			builder.RegisterType<NonAdminCanSyncUsingLinks>().As<INonAdminCanSyncUsingLinks>();
 
 			builder.RegisterType<BatchRepository>().As<IBatchRepository>();
 			builder.RegisterType<ProgressRepository>().As<IProgressRepository>();

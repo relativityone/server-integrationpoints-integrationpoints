@@ -17,7 +17,7 @@ namespace Relativity.Sync.Executors
 	{
 		private readonly IUserContextConfiguration _userContextConfiguration;
 		private readonly IAuthTokenGenerator _tokenGenerator;
-		private readonly NonAdminCanSyncUsingLinks _nonAdminCanSyncUsingLinks;
+		private readonly INonAdminCanSyncUsingLinks _nonAdminCanSyncUsingLinks;
 		private const int _ADMIN_USER_ID = 777;
 
 #pragma warning disable RG0001 
@@ -39,7 +39,7 @@ namespace Relativity.Sync.Executors
 		}
 #pragma warning restore RG0001
 
-		public ImportApiFactory(IUserContextConfiguration userContextConfiguration, IAuthTokenGenerator tokenGenerator, NonAdminCanSyncUsingLinks nonAdminCanSyncUsingLinks)
+		public ImportApiFactory(IUserContextConfiguration userContextConfiguration, IAuthTokenGenerator tokenGenerator, INonAdminCanSyncUsingLinks nonAdminCanSyncUsingLinks)
 		{
 			_userContextConfiguration = userContextConfiguration;
 			_tokenGenerator = tokenGenerator;

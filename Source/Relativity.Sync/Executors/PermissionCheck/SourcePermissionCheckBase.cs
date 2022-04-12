@@ -14,9 +14,9 @@ namespace Relativity.Sync.Executors.PermissionCheck
 	{
 		private const string _JOB_HISTORY_TYPE_NO_ADD = "User does not have permission to add Job History RDOs in the source workspace.";
 		private const string _OBJECT_TYPE_NO_ADD = "User does not have permission to add object types in the source workspace.";
-		private const string _CONFIGURATION_TYPE_NO_ADD = "User does not have permission to the Configuration object type in the source workspace.";
-		private const string _BATCH_OBJECT_TYPE_ERROR = "User does not have permission to the Batch object type in the source workspace.";
-		private const string _PROGRESS_OBJECT_TYPE_ERROR = "User does not have permission to the Progress object type in the source workspace.";
+		private const string _CONFIGURATION_TYPE_NO_ADD = "User does not have permission to the Sync Configuration object type in the source workspace.";
+		private const string _BATCH_OBJECT_TYPE_ERROR = "User does not have permission to the Sync Batch object type in the source workspace.";
+		private const string _PROGRESS_OBJECT_TYPE_ERROR = "User does not have permission to the Sync Progress object type in the source workspace.";
 		private const string _SOURCE_WORKSPACE_NO_EXPORT = "User does not have permission to export in the source workspace.";
 
 		private const int _ALLOW_EXPORT_PERMISSION_ID = 159; // 159 is the artifact id of the "Allow Export" permission

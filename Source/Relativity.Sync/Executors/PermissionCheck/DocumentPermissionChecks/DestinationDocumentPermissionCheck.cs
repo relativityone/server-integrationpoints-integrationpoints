@@ -103,6 +103,5 @@ namespace Relativity.Sync.Executors.PermissionCheck.DocumentPermissionChecks
 
             throw new ValidationException($"Cannot find Object Type: {objectTypeName} in Destination Workspace Artifact ID: {configuration.DestinationWorkspaceArtifactId}");
         }
-
     }
 }

@@ -10,10 +10,10 @@ namespace Relativity.Sync.Transfer
 		private bool? _isEnabled;
 		
 		private readonly IToggleProvider _toggleProvider;
-		private readonly IAPILog _logger;
+		private readonly ISyncLog _logger;
 		private readonly IDocumentSynchronizationConfiguration _synchronizationConfiguration;
 
-		public NonAdminCanSyncUsingLinks(IToggleProvider toggleProvider, IAPILog logger, IDocumentSynchronizationConfiguration synchronizationConfiguration)
+		public NonAdminCanSyncUsingLinks(IToggleProvider toggleProvider, ISyncLog logger, IDocumentSynchronizationConfiguration synchronizationConfiguration)
 		{
 			_toggleProvider = toggleProvider;
 			_logger = logger;
