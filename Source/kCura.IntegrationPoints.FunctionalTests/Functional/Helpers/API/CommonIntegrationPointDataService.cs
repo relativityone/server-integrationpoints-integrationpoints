@@ -16,6 +16,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
 {
     internal interface ICommonIntegrationPointDataService
     {
+        int WorkspaceId { get; }
         Task<int> GetDestinationProviderIdAsync(string identifier);
         Task<int> GetIntegrationPointTypeByAsync(string name);
         Task<int> GetOverwriteFieldsChoiceIdAsync(string name);
@@ -35,6 +36,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
             _serviceFactory = serviceFactory;
             _workspaceId = workspaceId;
         }
+
+        public int WorkspaceId => _workspaceId;
 
         public async Task<int> GetSourceProviderIdAsync(string identifier)
         {
