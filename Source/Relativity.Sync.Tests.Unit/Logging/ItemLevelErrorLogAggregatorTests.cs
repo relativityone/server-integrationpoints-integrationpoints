@@ -6,7 +6,7 @@ using NUnit.Framework;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Transfer;
 
-namespace Relativity.Sync.Tests.Unit
+namespace Relativity.Sync.Tests.Unit.Logging
 {
     [TestFixture]
     public class ItemLevelErrorLogAggregatorTests

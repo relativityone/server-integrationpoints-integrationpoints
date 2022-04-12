@@ -6,48 +6,69 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Interfaces.ObjectType;
-using Relativity.Services.Interfaces.ObjectType.Models;
-using Relativity.Services.Interfaces.Shared;
-using Relativity.Services.Interfaces.Shared.Models;
+using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.SumReporting;
+using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
-using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 {
 	[TestFixture]
-	internal class NonDocumentJobStartMetricsExecutorTests : JobStartMetricsExecutorTestsBase
-	{
+	internal class NonDocumentJobStartMetricsExecutorTests
+    {
+        private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 1;
+        private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 2;
+
+        private const int _NON_DOCUMENT_OBJECT_TYPE_ID = (int)ArtifactType.View;
+
+        private Mock<ISyncLog> _loggerMock;
+        private Mock<ISyncMetrics> _syncMetricsMock;
+
+        private Mock<IFieldMappingSummary> _fieldMappingSummaryFake;
+        private Mock<IObjectManager> _objectManagerFake;
+
+        private Mock<ISourceServiceFactoryForUser> _serviceFactory;
+
         private Mock<IObjectTypeManager> _objectTypeManagerMock;
         private Mock<INonDocumentJobStartMetricsConfiguration> _configurationFake;
 
         private NonDocumentJobStartMetricsExecutor _sut;
-        private const int _NON_DOCUMENT_OBJECT_TYPE_ID = (int)ArtifactType.View;
 
 		[SetUp]
-		public override void SetUp()
-		{
-			base.SetUp();
+		public void SetUp()
+        {
+            _loggerMock = new Mock<ISyncLog>();
+
+            _syncMetricsMock = new Mock<ISyncMetrics>();
+
+            _fieldMappingSummaryFake = new Mock<IFieldMappingSummary>();
+
+            _objectManagerFake = new Mock<IObjectManager>(MockBehavior.Strict);
+            _objectManagerFake.Setup(x => x.Dispose());
+
+            _serviceFactory = new Mock<ISourceServiceFactoryForUser>();
+            _serviceFactory.Setup(x => x.CreateProxyAsync<IObjectManager>())
+                .ReturnsAsync(_objectManagerFake.Object);
+
             _objectTypeManagerMock = new Mock<IObjectTypeManager>();
 
-			ServiceFactory.Setup(x => x.CreateProxyAsync<IObjectTypeManager>())
+			_serviceFactory.Setup(x => x.CreateProxyAsync<IObjectTypeManager>())
                 .ReturnsAsync(_objectTypeManagerMock.Object);
 
 			_configurationFake = new Mock<INonDocumentJobStartMetricsConfiguration>();
-			_configurationFake.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(SOURCE_WORKSPACE_ARTIFACT_ID);
-			_configurationFake.SetupGet(x => x.DestinationWorkspaceArtifactId).Returns(DESTINATION_WORKSPACE_ARTIFACT_ID);
+			_configurationFake.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ARTIFACT_ID);
+			_configurationFake.SetupGet(x => x.DestinationWorkspaceArtifactId).Returns(_DESTINATION_WORKSPACE_ARTIFACT_ID);
 			_configurationFake.SetupGet(x => x.RdoArtifactTypeId).Returns(_NON_DOCUMENT_OBJECT_TYPE_ID);
             
-            PrepareTestData();
-
 			_sut = new NonDocumentJobStartMetricsExecutor(
-                ServiceFactory.Object,
-				SyncLogMock.Object,
-				SyncMetricsMock.Object,
-				FieldManagerFake.Object);
+                _serviceFactory.Object,
+				_syncMetricsMock.Object,
+				_fieldMappingSummaryFake.Object,
+                _loggerMock.Object);
         }
 
 		[Test]
@@ -57,7 +78,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			SyncMetricsMock.Verify(x => x.Send(It.Is<NonDocumentJobStartMetric>(m => 
+			_syncMetricsMock.Verify(x => x.Send(It.Is<NonDocumentJobStartMetric>(m => 
 				m.Type == TelemetryConstants.PROVIDER_NAME &&
 				m.FlowType == TelemetryConstants.FLOW_TYPE_VIEW_NON_DOCUMENT_OBJECTS)));
 		}
@@ -73,28 +94,14 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-            SyncMetricsMock.Verify(x => x.Send(It.Is<NonDocumentJobStartMetric>(m => m.RetryType != null)));
-		}
-
-		[Test]
-		public async Task ExecuteAsync_ShouldLogFieldsMappingDetails()
-		{
-			// Arrange
-			FieldManagerFake.Setup(x => x.GetMappedFieldsAsync(It.IsAny<CancellationToken>()))
-				.ReturnsAsync(new List<FieldInfoDto>());
-
-			// Act
-			await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
-
-			// Assert
-			SyncLogMock.Verify(x => x.LogInformation("Fields map configuration summary: {@summary}", It.IsAny<Dictionary<string, object>>()));
+            _syncMetricsMock.Verify(x => x.Send(It.Is<NonDocumentJobStartMetric>(m => m.RetryType != null)));
 		}
 
 		[Test]
 		public void ExecuteAsync_ShouldComplete_WhenObjectManagerThrows()
 		{
 			// Arrange
-            ObjectManagerFake
+            _objectManagerFake
 				.Setup(x => x.QuerySlimAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(),
 					It.IsAny<int>(), It.IsAny<CancellationToken>()))
 				.ThrowsAsync(new Exception());
@@ -110,7 +117,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		public void ExecuteAsync_ShouldComplete_WhenFieldManagerThrows()
 		{
 			// Arrange
-            FieldManagerFake.Setup(x => x.GetMappedFieldsAsync(It.IsAny<CancellationToken>()))
+            _fieldMappingSummaryFake.Setup(x => x.GetFieldsMappingSummaryAsync(It.IsAny<CancellationToken>()))
 				.ThrowsAsync(new Exception());
 
 			// Act
@@ -121,25 +128,50 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		}
 
 
-		[TestCaseSource(nameof(FieldsMappingTestCaseSource))]
-		public async Task ExecuteAsync_ShouldLogFieldsMappingDetails(List<FieldMapDefinitionCase> mapping, Dictionary<string, object> expectedLog)
-		{
+        [Test]
+        public async Task ExecuteAsync_ShouldLogFieldsMappingDetails()
+        {
 			// Arrange
-			SetupFieldMapping(mapping);
+            Dictionary<string, object> summary = new Dictionary<string, object>();
+            _fieldMappingSummaryFake.Setup(x => x.GetFieldsMappingSummaryAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(summary);
 
-			// Act
-			await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+            // Act
+            await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
-			// Assert
-			Func<Dictionary<string, object>, bool> verify = actual =>
-			{
-				CollectionAssert.AreEquivalent(actual, expectedLog);
-				return true;
-			};
-            SyncLogMock.Verify(x => x.LogInformation("Fields map configuration summary: {@summary}", It.Is<Dictionary<string, object>>(actual => verify(actual))));
-		}
+            // Assert
+            _loggerMock.Verify(x => x.LogInformation("Fields mapping summary: {@fieldsMappingSummary}", It.IsAny<Dictionary<string, object>>()));
+        }
 
-		[Test]
+
+        //[Test]
+        //public async Task ExecuteAsync_ShouldReportApplicationName()
+        //{
+        //    List<DisplayableObjectIdentifier> displayableObjectIdentifiers = new List<DisplayableObjectIdentifier>
+        //    {
+        //        new DisplayableObjectIdentifier
+        //        {
+        //            Name = "Adler Sieben 1",
+        //        },
+        //        new DisplayableObjectIdentifier
+        //        {
+        //            Name = "Adler Sieben 2",
+        //        }
+        //    };
+
+        //    ObjectTypeResponse objectTypeResponse = new ObjectTypeResponse
+        //    {
+        //        ArtifactTypeID = _NON_DOCUMENT_OBJECT_TYPE_ID,
+        //        RelativityApplications =
+        //            new SecurableList<DisplayableObjectIdentifier>(false, displayableObjectIdentifiers)
+        //    };
+
+        //    _objectTypeManagerMock.Setup(x => x.ReadAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _NON_DOCUMENT_OBJECT_TYPE_ID))
+        //        .Returns(Task.FromResult(objectTypeResponse));
+
+        //}
+
+        [Test]
 		public async Task ExecuteAsync_ShouldReportJobResumeMetric_WhenResuming()
 		{
 			// Arrange
@@ -149,592 +181,11 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-            SyncMetricsMock.Verify(x => x.Send(It.Is<JobResumeMetric>(metric =>
+            _syncMetricsMock.Verify(x => x.Send(It.Is<JobResumeMetric>(metric =>
 				metric.Type == TelemetryConstants.PROVIDER_NAME)), Times.Once);
-            SyncMetricsMock.Verify(x => x.Send(It.IsAny<NonDocumentJobStartMetric>()), Times.Never);
+            _syncMetricsMock.Verify(x => x.Send(It.IsAny<NonDocumentJobStartMetric>()), Times.Never);
 
-            SyncLogMock.Verify(x => x.LogInformation("Fields map configuration summary: {@summary}", It.IsAny<Dictionary<string, object>>()), Times.Never);
+            _loggerMock.Verify(x => x.LogInformation("Fields map configuration summary: {@summary}", It.IsAny<Dictionary<string, object>>()), Times.Never);
 		}
-
-        private void PrepareTestData()
-		{
-			List<DisplayableObjectIdentifier> displayableObjectIdentifiers = new List<DisplayableObjectIdentifier>
-			{
-				new DisplayableObjectIdentifier
-				{
-					Name = "Adler Sieben 1",
-				},
-				new DisplayableObjectIdentifier
-				{
-					Name = "Adler Sieben 2",
-				}
-			};
-			ObjectTypeResponse objectTypeResponse = new ObjectTypeResponse
-			{
-				ArtifactTypeID = _NON_DOCUMENT_OBJECT_TYPE_ID,
-				RelativityApplications =
-					new SecurableList<DisplayableObjectIdentifier>(false, displayableObjectIdentifiers)
-			};
-			_objectTypeManagerMock.Setup(x => x.ReadAsync(SOURCE_WORKSPACE_ARTIFACT_ID, _NON_DOCUMENT_OBJECT_TYPE_ID))
-				.Returns(Task.FromResult(objectTypeResponse));
-
-			IList<FieldInfoDto> fieldsDtos = new List<FieldInfoDto>
-			{
-				new FieldInfoDto(SpecialFieldType.None, "source Field 1", "destination Field 1",
-					false, false)
-				{
-					RelativityDataType = RelativityDataType.LongText
-				},
-				new FieldInfoDto(SpecialFieldType.None, "source Field 2", "destination Field 2",
-					false, false)
-				{
-					RelativityDataType = RelativityDataType.LongText
-				},
-				new FieldInfoDto(SpecialFieldType.None, "source Field 3", "destination Field 3",
-					false, false)
-				{
-					RelativityDataType = RelativityDataType.LongText
-				}
-			};
-
-            FieldManagerFake.Setup(x => x.GetMappedFieldsAsync(It.IsAny<CancellationToken>()))
-				.Returns(Task.FromResult(fieldsDtos));
-
-			QueryResultSlim queryResultSlim = new QueryResultSlim
-			{
-				Objects = new List<RelativityObjectSlim>
-				{
-					new RelativityObjectSlim
-					{
-						Values = new List<object>
-						{
-							"ValuesId",
-							"value 1",
-							"value 2",
-							"value 3",
-						}
-					}
-				}
-			};
-
-            ObjectManagerFake.Setup(x => x.QuerySlimAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(),
-					fieldsDtos.Count, It.IsAny<CancellationToken>()))
-				.Returns(Task.FromResult(queryResultSlim));
-		}
-
-		private static IEnumerable<TestCaseData> FieldsMappingTestCaseSource()
-        {
-            const string fieldName = "Field name";
-
-            yield return new TestCaseData(
-                    new List<FieldMapDefinitionCase>
-                    {
-                        new FieldMapDefinitionCase
-                        {
-                            SourceFieldName = fieldName, DestinationFieldName = fieldName,
-                            DataType = RelativityDataType.LongText
-                        },
-                    }, PrepareSummaryWithDisabledDataGrid()
-                )
-                { TestName = "{m}(DataGridSource=disable, DataGridDestination=disabled)" };
-
-            yield return new TestCaseData(
-                    new List<FieldMapDefinitionCase>
-                    {
-                        new FieldMapDefinitionCase
-                        {
-                            SourceFieldName = fieldName, DestinationFieldName = fieldName,
-                            DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
-                            DestinationFieldDataGridEnabled = false
-                        }
-                    }, PrepareSummaryWithEnabledDataGridInSource()
-                )
-                { TestName = "{m}(DataGridSource=enabled, DataGridDestination=disabled)" };
-
-            yield return new TestCaseData(
-                    new List<FieldMapDefinitionCase>
-                    {
-                        new FieldMapDefinitionCase
-                        {
-                            SourceFieldName = fieldName, DestinationFieldName = fieldName,
-                            DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = false,
-                            DestinationFieldDataGridEnabled = true
-                        }
-                    }, PrepareSummaryWithEnabledDataGridInDestination()
-                )
-                { TestName = "{m}(DataGridSource=disabled, DataGridDestination=enabled)" };
-
-            yield return new TestCaseData(
-                    new List<FieldMapDefinitionCase>
-                    {
-                        new FieldMapDefinitionCase
-                        {
-                            SourceFieldName = fieldName, DestinationFieldName = fieldName,
-                            DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
-                            DestinationFieldDataGridEnabled = true
-                        }
-                    }, PrepareSummaryWithDataGridEnabledBothInSourceAndDestination()
-                )
-                { TestName = "{m}(DataGridSource=enabled, tDataGridDestination=enabled)" };
-
-            yield return new TestCaseData(
-                    new List<FieldMapDefinitionCase>
-                    {
-                        new FieldMapDefinitionCase
-                        {
-                            SourceFieldName = "fixed-length", DestinationFieldName = "fixed-length",
-                            DataType = RelativityDataType.FixedLengthText
-                        },
-                        new FieldMapDefinitionCase
-                        {
-                            SourceFieldName = "fixed-length 2", DestinationFieldName = "fixed-length 2",
-                            DataType = RelativityDataType.FixedLengthText
-                        },
-                        new FieldMapDefinitionCase
-                        {
-                            SourceFieldName = "number", DestinationFieldName = "number destination",
-                            DataType = RelativityDataType.WholeNumber
-                        },
-                        new FieldMapDefinitionCase
-                        {
-                            SourceFieldName = "randomName", DestinationFieldName = "CommandoreBomardiero",
-                            DataType = RelativityDataType.FixedLengthText
-                        },
-                        new FieldMapDefinitionCase
-                        {
-                            SourceFieldName = "AdlerSieben", DestinationFieldName = "SeniorGordo",
-                            DataType = RelativityDataType.FixedLengthText
-                        },
-                        new FieldMapDefinitionCase
-                            {SourceFieldName = "1", DestinationFieldName = "1", DataType = RelativityDataType.Currency},
-                        new FieldMapDefinitionCase
-                            {SourceFieldName = "2", DestinationFieldName = "2", DataType = RelativityDataType.Currency},
-                        new FieldMapDefinitionCase
-                            {SourceFieldName = "3", DestinationFieldName = "3", DataType = RelativityDataType.YesNo},
-                        new FieldMapDefinitionCase
-                            {SourceFieldName = "4", DestinationFieldName = "4", DataType = RelativityDataType.YesNo},
-                        new FieldMapDefinitionCase
-                            {SourceFieldName = "5", DestinationFieldName = "5", DataType = RelativityDataType.YesNo},
-                        new FieldMapDefinitionCase
-                            {SourceFieldName = "6", DestinationFieldName = "6", DataType = RelativityDataType.YesNo},
-                    }, PrepareSummaryForCountingTypes()
-                )
-                { TestName = "{m}(CountingTypes)" };
-
-            yield return new TestCaseData(
-                    new List<FieldMapDefinitionCase>
-                    {
-                        new FieldMapDefinitionCase
-                        {
-                            SourceFieldName = fieldName, DestinationFieldName = fieldName,
-                            DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
-                            DestinationFieldDataGridEnabled = true
-                        },
-                        new FieldMapDefinitionCase
-                        {
-                            SourceFieldName = "long text1", DestinationFieldName = "long text1 dest",
-                            DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = false,
-                            DestinationFieldDataGridEnabled = true
-                        },
-                        new FieldMapDefinitionCase
-                        {
-                            SourceFieldName = "long text2", DestinationFieldName = "long text2",
-                            DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
-                            DestinationFieldDataGridEnabled = false
-                        }
-                    }, PrepareSummaryForLongText()
-                )
-                { TestName = "{m}(LongText)" };
-
-            yield return new TestCaseData(
-                    new List<FieldMapDefinitionCase>
-                    {
-                        new FieldMapDefinitionCase
-                        {
-                            SourceFieldName = fieldName, DestinationFieldName = fieldName,
-                            DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
-                            DestinationFieldDataGridEnabled = true
-                        },
-                        new FieldMapDefinitionCase
-                        {
-                            SourceFieldName = "long text1", DestinationFieldName = "long text1 dest",
-                            DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = false,
-                            DestinationFieldDataGridEnabled = true
-                        },
-                        new FieldMapDefinitionCase
-                        {
-                            SourceFieldName = "long text2", DestinationFieldName = "long text2",
-                            DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
-                            DestinationFieldDataGridEnabled = false
-                        },
-                        new FieldMapDefinitionCase
-                        {
-                            SourceFieldName = "supported by viewer 1", DestinationFieldName = "supported by viewer 1",
-                            DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
-                            DestinationFieldDataGridEnabled = false,
-                            SpecialFieldType = SpecialFieldType.SupportedByViewer
-                        },
-                        new FieldMapDefinitionCase
-                        {
-                            SourceFieldName = "supported by viewer 2", DestinationFieldName = "supported by viewer 2",
-                            DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
-                            DestinationFieldDataGridEnabled = false,
-                            SpecialFieldType = SpecialFieldType.SupportedByViewer
-                        }
-                    }, PrepareSummaryForLoggingSpecialFields()
-                )
-                { TestName = "{m}(ShouldLogSpecialFieldsWhenTheyHaveBeenMapped)" };
-        }
-
-        private static Dictionary<string, object> PrepareSummaryForLoggingSpecialFields()
-        {
-            return new Dictionary<string, object>()
-            {
-                {
-                    "FieldMapping", new Dictionary<string, int>()
-                    {
-                        {
-                            "LongText", 5
-                        }
-                    }
-                },
-                {
-                    "LongText", new Dictionary<string, Dictionary<string, object>>[]
-                    {
-                        new Dictionary<string, Dictionary<string, object>>()
-                        {
-                            {
-                                "Source", new Dictionary<string, object>()
-                                {
-                                    {"ArtifactId", 1},
-                                    {"DataGridEnabled", true}
-                                }
-                            },
-                            {
-                                "Destination", new Dictionary<string, object>()
-                                {
-                                    {"ArtifactId", 6},
-                                    {"DataGridEnabled", true}
-                                }
-                            }
-                        },
-                        new Dictionary<string, Dictionary<string, object>>()
-                        {
-                            {
-                                "Source", new Dictionary<string, object>()
-                                {
-                                    {"ArtifactId", 2},
-                                    {"DataGridEnabled", false}
-                                }
-                            },
-                            {
-                                "Destination", new Dictionary<string, object>()
-                                {
-                                    {"ArtifactId", 7},
-                                    {"DataGridEnabled", true}
-                                }
-                            }
-                        },
-                        new Dictionary<string, Dictionary<string, object>>()
-                        {
-                            {
-                                "Source", new Dictionary<string, object>()
-                                {
-                                    {"ArtifactId", 3},
-                                    {"DataGridEnabled", true}
-                                }
-                            },
-                            {
-                                "Destination", new Dictionary<string, object>()
-                                {
-                                    {"ArtifactId", 8},
-                                    {"DataGridEnabled", false}
-                                }
-                            }
-                        },
-                        new Dictionary<string, Dictionary<string, object>>()
-                        {
-                            {
-                                "Source", new Dictionary<string, object>()
-                                {
-                                    {"ArtifactId", 4},
-                                    {"DataGridEnabled", true}
-                                }
-                            },
-                            {
-                                "Destination", new Dictionary<string, object>()
-                                {
-                                    {"ArtifactId", 9},
-                                    {"DataGridEnabled", false}
-                                }
-                            }
-                        },
-                        new Dictionary<string, Dictionary<string, object>>()
-                        {
-                            {
-                                "Source", new Dictionary<string, object>()
-                                {
-                                    {"ArtifactId", 5},
-                                    {"DataGridEnabled", true}
-                                }
-                            },
-                            {
-                                "Destination", new Dictionary<string, object>()
-                                {
-                                    {"ArtifactId", 10},
-                                    {"DataGridEnabled", false}
-                                }
-                            }
-                        },
-                    }
-                }
-            };
-        }
-
-        private static Dictionary<string, object> PrepareSummaryForLongText()
-        {
-            return new Dictionary<string, object>()
-            {
-                {
-                    "FieldMapping", new Dictionary<string, int>()
-                    {
-                        {
-                            "LongText", 3
-                        }
-                    }
-                },
-                {
-                    "LongText", new Dictionary<string, Dictionary<string, object>>[]
-                    {
-                        new Dictionary<string, Dictionary<string, object>>()
-                        {
-                            {
-                                "Source", new Dictionary<string, object>()
-                                {
-                                    {"ArtifactId", 1},
-                                    {"DataGridEnabled", true}
-                                }
-                            },
-                            {
-                                "Destination", new Dictionary<string, object>()
-                                {
-                                    {"ArtifactId", 4},
-                                    {"DataGridEnabled", true}
-                                }
-                            }
-                        },
-                        new Dictionary<string, Dictionary<string, object>>()
-                        {
-                            {
-                                "Source", new Dictionary<string, object>()
-                                {
-                                    {"ArtifactId", 2},
-                                    {"DataGridEnabled", false}
-                                }
-                            },
-                            {
-                                "Destination", new Dictionary<string, object>()
-                                {
-                                    {"ArtifactId", 5},
-                                    {"DataGridEnabled", true}
-                                }
-                            }
-                        },
-                        new Dictionary<string, Dictionary<string, object>>()
-                        {
-                            {
-                                "Source", new Dictionary<string, object>()
-                                {
-                                    {"ArtifactId", 3},
-                                    {"DataGridEnabled", true}
-                                }
-                            },
-                            {
-                                "Destination", new Dictionary<string, object>()
-                                {
-                                    {"ArtifactId", 6},
-                                    {"DataGridEnabled", false}
-                                }
-                            }
-                        }
-                    }
-                }
-            };
-        }
-
-        private static Dictionary<string, object> PrepareSummaryForCountingTypes()
-        {
-            return new Dictionary<string, object>()
-            {
-                {
-                    "FieldMapping", new Dictionary<string, int>()
-                    {
-                        {
-                            "FixedLengthText", 4
-                        },
-                        {
-                            "WholeNumber", 1
-                        },
-                        {
-                            "Currency", 2
-                        },
-                        {
-                            "YesNo", 4
-                        }
-                    }
-                },
-                {
-                    "LongText", new Dictionary<string, Dictionary<string, object>>[0]
-                }
-            };
-        }
-
-        private static Dictionary<string, object> PrepareSummaryWithDataGridEnabledBothInSourceAndDestination()
-        {
-            return new Dictionary<string, object>()
-            {
-                {
-                    "FieldMapping", new Dictionary<string, int>()
-                    {
-                        {
-                            "LongText", 1
-                        }
-                    }
-                },
-                {
-                    "LongText", new Dictionary<string, Dictionary<string, object>>[]
-                    {
-                        new Dictionary<string, Dictionary<string, object>>
-                        {
-                            {
-                                "Source", new Dictionary<string, object>
-                                {
-                                    {"ArtifactId", 1},
-                                    {"DataGridEnabled", true}
-                                }
-                            },
-                            {
-                                "Destination", new Dictionary<string, object>
-                                {
-                                    {"ArtifactId", 2},
-                                    {"DataGridEnabled", true}
-                                }
-                            }
-                        }
-                    }
-                }
-            };
-        }
-
-        private static Dictionary<string, object> PrepareSummaryWithEnabledDataGridInDestination()
-        {
-            return new Dictionary<string, object>()
-            {
-                {
-                    "FieldMapping", new Dictionary<string, int>()
-                    {
-                        {
-                            "LongText", 1
-                        }
-                    }
-                },
-                {
-                    "LongText", new Dictionary<string, Dictionary<string, object>>[]
-                    {
-                        new Dictionary<string, Dictionary<string, object>>
-                        {
-                            {
-                                "Source", new Dictionary<string, object>
-                                {
-                                    {"ArtifactId", 1},
-                                    {"DataGridEnabled", false}
-                                }
-                            },
-                            {
-                                "Destination", new Dictionary<string, object>
-                                {
-                                    {"ArtifactId", 2},
-                                    {"DataGridEnabled", true}
-                                }
-                            }
-                        }
-                    }
-                }
-            };
-        }
-
-        private static Dictionary<string, object> PrepareSummaryWithEnabledDataGridInSource()
-        {
-            return new Dictionary<string, object>()
-            {
-                {
-                    "FieldMapping", new Dictionary<string, int>()
-                    {
-                        {
-                            "LongText", 1
-                        }
-                    }
-                },
-                {
-                    "LongText", new Dictionary<string, Dictionary<string, object>>[]
-                    {
-                        new Dictionary<string, Dictionary<string, object>>
-                        {
-                            {
-                                "Source", new Dictionary<string, object>
-                                {
-                                    {"ArtifactId", 1},
-                                    {"DataGridEnabled", true}
-                                }
-                            },
-                            {
-                                "Destination", new Dictionary<string, object>
-                                {
-                                    {"ArtifactId", 2},
-                                    {"DataGridEnabled", false}
-                                }
-                            }
-                        }
-                    }
-                }
-            };
-        }
-
-        private static Dictionary<string, object> PrepareSummaryWithDisabledDataGrid()
-        {
-            return new Dictionary<string, object>()
-            {
-                {
-                    "FieldMapping", new Dictionary<string, int>()
-                    {
-                        {
-                            "LongText", 1
-                        }
-                    }
-                },
-                {
-                    "LongText", new Dictionary<string, Dictionary<string, object>>[]
-                    {
-                        new Dictionary<string, Dictionary<string, object>>
-                        {
-                            {
-                                "Source", new Dictionary<string, object>
-                                {
-                                    {"ArtifactId", 1},
-                                    {"DataGridEnabled", false}
-                                }
-                            },
-                            {
-                                "Destination", new Dictionary<string, object>
-                                {
-                                    {"ArtifactId", 2},
-                                    {"DataGridEnabled", false}
-                                }
-                            }
-                        }
-                    }
-                }
-            };
-        }
     }
 }

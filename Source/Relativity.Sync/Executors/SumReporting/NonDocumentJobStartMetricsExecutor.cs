@@ -7,9 +7,9 @@ using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
-using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors.SumReporting
 {
@@ -18,16 +18,16 @@ namespace Relativity.Sync.Executors.SumReporting
         private const string _NOT_ASSIGNED_APPLICATION_NAME = "None";
 
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
-        private readonly IFieldManager _fieldManager;
-        private readonly ISyncLog _logger;
+        private readonly IFieldMappingSummary _fieldMappingSummary;
         private readonly ISyncMetrics _syncMetrics;
+        private readonly ISyncLog _logger;
 
-		public NonDocumentJobStartMetricsExecutor(ISourceServiceFactoryForUser serviceFactory, ISyncLog logger, ISyncMetrics syncMetrics, IFieldManager fieldManager)
+        public NonDocumentJobStartMetricsExecutor(ISourceServiceFactoryForUser serviceFactory, ISyncMetrics syncMetrics, IFieldMappingSummary fieldMappingSummary, ISyncLog logger)
         {
             _serviceFactory = serviceFactory;
-            _logger = logger;
             _syncMetrics = syncMetrics;
-            _fieldManager = fieldManager;
+            _fieldMappingSummary = fieldMappingSummary;
+            _logger = logger;
         }
 
         public async Task<ExecutionResult> ExecuteAsync(INonDocumentJobStartMetricsConfiguration configuration, CompositeCancellationToken token)
@@ -54,7 +54,7 @@ namespace Relativity.Sync.Executors.SumReporting
 
                 try
                 {
-                    Dictionary<string, object> fieldsMappingSummary = await _fieldManager.GetFieldsMappingSummaryAsync(token.StopCancellationToken).ConfigureAwait(false);
+                    Dictionary<string, object> fieldsMappingSummary = await _fieldMappingSummary.GetFieldsMappingSummaryAsync(token.StopCancellationToken).ConfigureAwait(false);
                     _logger.LogInformation("Fields mapping summary: {@fieldsMappingSummary}", fieldsMappingSummary);
                 }
                 catch (Exception ex)

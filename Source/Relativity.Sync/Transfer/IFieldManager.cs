@@ -31,7 +31,5 @@ namespace Relativity.Sync.Transfer
         Task<string[]> GetSameTypeFieldNamesAsync(int configurationSourceWorkspaceArtifactId);
         
         List<FieldInfoDto> GetAllAvailableFieldsToMap();
-
-        Task<Dictionary<string, object>> GetFieldsMappingSummaryAsync(CancellationToken token);
 	}
 }
