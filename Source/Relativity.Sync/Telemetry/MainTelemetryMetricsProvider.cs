@@ -22,12 +22,17 @@ namespace Relativity.Sync.Telemetry
 				Name = TelemetryConstants.MetricIdentifiers.JOB_END_STATUS_NATIVES_AND_METADATA,
 				Description = "The end status of the SYNC job for natives and metadata flow."
 			},
-			new MetricIdentifier
-			{
-				Name = TelemetryConstants.MetricIdentifiers.JOB_END_STATUS_IMAGES,
-				Description = "The end status of the SYNC job for images flow."
-			},
             new MetricIdentifier
+            {
+                Name = TelemetryConstants.MetricIdentifiers.JOB_END_STATUS_IMAGES,
+                Description = "The end status of the SYNC job for images flow."
+            },
+            new MetricIdentifier
+            {
+                Name = TelemetryConstants.MetricIdentifiers.JOB_END_STATUS_NON_DOCUMENT_OBJECTS,
+                Description = "The end status of the SYNC job for non-document object flow."
+            },
+			new MetricIdentifier
             {
                 Name = TelemetryConstants.MetricIdentifiers.JOB_SUSPENDED_STATUS_NATIVES_AND_METADATA,
                 Description = "The suspended status of the SYNC job for natives and metadata flow."
@@ -36,7 +41,12 @@ namespace Relativity.Sync.Telemetry
             {
                 Name = TelemetryConstants.MetricIdentifiers.JOB_SUSPENDED_STATUS_IMAGES,
                 Description = "The suspended status of the SYNC job for images flow."
-			},
+            },
+            new MetricIdentifier
+            {
+                Name = TelemetryConstants.MetricIdentifiers.JOB_SUSPENDED_STATUS_NON_DOCUMENT_OBJECTS,
+                Description = "The suspended status of the SYNC job for non-document object flow."
+            },
 			new MetricIdentifier
 			{
 				Name = TelemetryConstants.MetricIdentifiers.RETRY_JOB_START_TYPE,
@@ -47,11 +57,16 @@ namespace Relativity.Sync.Telemetry
 				Name = TelemetryConstants.MetricIdentifiers.RETRY_JOB_END_STATUS,
 				Description = "The end status of the SYNC retry job."
 			},
-			new MetricIdentifier
-			{
-				Name = TelemetryConstants.MetricIdentifiers.FLOW_TYPE,
-				Description = "The type of Sync job flow."
-			},
+            new MetricIdentifier
+            {
+                Name = TelemetryConstants.MetricIdentifiers.FLOW_TYPE,
+                Description = "The type of Sync job flow."
+            },
+            new MetricIdentifier
+            {
+                Name = TelemetryConstants.MetricIdentifiers.PARENT_APPLICATION_NAME,
+                Description = "Parent application name for transferred RDO."
+            },
 			new MetricIdentifier
 			{
 				Name = TelemetryConstants.MetricIdentifiers.DATA_FIELDS_MAPPED,
