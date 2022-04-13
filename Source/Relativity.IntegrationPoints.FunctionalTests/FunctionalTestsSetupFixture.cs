@@ -27,8 +27,6 @@ public class FunctionalTestsSetupFixture
 
 		ConfigureFileShareServices();
 
-		ConfigureDataTransferLegacy();
-
 		if (!FunctionalTemplateWorkspaceExists())
 		{
 			SetupTemplateWorkspace();
@@ -100,12 +98,5 @@ public class FunctionalTestsSetupFixture
 
 		var applicationManager = new RelativityApplicationManager(_testHelper);
 		applicationManager.ImportApplicationToLibraryAsync(SharedVariables.FileShareServicesRAP).GetAwaiter().GetResult();
-	}
-
-	private void ConfigureDataTransferLegacy()
-	{
-		var applicationManager = new RelativityApplicationManager(_testHelper);
-		applicationManager.ImportApplicationToLibraryAsync(SharedVariables.DataTransferLegacyRAP)
-			.GetAwaiter().GetResult();
 	}
 }
