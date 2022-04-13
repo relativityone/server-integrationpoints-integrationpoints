@@ -265,6 +265,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             if (JobHistory != null)
             {
+                Logger.LogInformation($@"Overwrite mode set to: {JobHistory.Overwrite}");
                 importSettings.ImportOverwriteMode = NameToEnumConvert.GetEnumByModeName(JobHistory.Overwrite);                
             }         
         }
