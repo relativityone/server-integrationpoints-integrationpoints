@@ -54,6 +54,7 @@ nuget kCura.OutsideIn.FI.Win32 2020.7.0 content: none 		//Relativity.DataExchang
 nuget Relativity.OutsideIn 2021.8.0 content: none 			//Relativity.DataExchange.Client.SDK
 
 //Other packages
+nuget SSH.NET 2020.0.1
 nuget Newtonsoft.Json 6.0.8 redirects: force
 nuget AutoMapper 4.2.1
 nuget Castle.Windsor 3.3.0 // don't change this version - Agent Framework always loads version 3.3, no matter which version is in resource files
