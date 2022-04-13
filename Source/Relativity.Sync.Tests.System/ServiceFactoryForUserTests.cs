@@ -1,4 +1,5 @@
-﻿using System.Linq;
+using Relativity.API;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Moq;
@@ -79,7 +80,7 @@ namespace Relativity.Sync.Tests.System
 			};
 
             Mock<IRandom> randomFake = new Mock<IRandom>();
-            Mock<ISyncLog> syncLogMock = new Mock<ISyncLog>();
+            Mock<IAPILog> syncLogMock = new Mock<IAPILog>();
 
 			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactoryStub();
 			ServiceFactoryForUser sut = new ServiceFactoryForUser(userContextConfiguration.Object, _servicesManager,

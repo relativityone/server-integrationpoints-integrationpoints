@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,9 +18,9 @@ namespace Relativity.Sync.Executors.Validation
 		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public FolderStructureBehaviorValidator(ISourceServiceFactoryForUser sourceServiceFactoryForUser, ISyncLog logger)
+		public FolderStructureBehaviorValidator(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IAPILog logger)
 		{
 			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
 			_logger = logger;

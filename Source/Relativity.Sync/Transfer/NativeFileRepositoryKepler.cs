@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -12,10 +13,10 @@ namespace Relativity.Sync.Transfer
 	internal sealed class NativeFileRepositoryKepler : INativeFileRepository
 	{
 		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 		private readonly SyncJobParameters _parameters;
 
-		public NativeFileRepositoryKepler(ISourceServiceFactoryForUser serviceFactoryForUser, ISyncLog logger, SyncJobParameters parameters)
+		public NativeFileRepositoryKepler(ISourceServiceFactoryForUser serviceFactoryForUser, IAPILog logger, SyncJobParameters parameters)
 		{
 			_serviceFactoryForUser = serviceFactoryForUser;
 			_logger = logger;

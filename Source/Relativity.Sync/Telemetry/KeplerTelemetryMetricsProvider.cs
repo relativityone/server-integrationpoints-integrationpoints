@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,7 +33,7 @@ namespace Relativity.Sync.Telemetry
 
 		protected override string ProviderName { get; } = nameof(KeplerTelemetryMetricsProvider);
 
-		public KeplerTelemetryMetricsProvider(ISyncLog logger)
+		public KeplerTelemetryMetricsProvider(IAPILog logger)
 			: base(logger)
 		{
 		}

@@ -32,7 +32,7 @@ namespace Relativity.Sync.Tests.System.RDOs
         [SetUp]
         public void SetUp()
         {
-            _sut = new RdoManager(SyncLog, new SourceServiceFactoryStub(), new RdoGuidProvider());
+            _sut = new RdoManager(Logger, new SourceServiceFactoryStub(), new RdoGuidProvider());
         }
 
         [IdentifiedTest("5CDA93A5-F9D2-4C8A-B4CC-EFB832D8746D")]

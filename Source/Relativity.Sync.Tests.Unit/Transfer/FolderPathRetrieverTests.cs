@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -21,7 +22,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	[TestFixture]
 	public class FolderPathRetrieverTests
 	{
-		private Mock<ISyncLog> _logger;
+		private Mock<IAPILog> _logger;
 		private FolderPathRetriever _instance;
 		private Mock<IObjectManager> _objectManager;
 		private Mock<IFolderManager> _folderManager;
@@ -44,7 +45,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				.Setup(x => x.CreateProxyAsync<IFolderManager>())
 				.ReturnsAsync(_folderManager.Object);
 
-			_logger = new Mock<ISyncLog>();
+			_logger = new Mock<IAPILog>();
 
 			_instance = new FolderPathRetriever(serviceFactoryForUser.Object, _logger.Object);
 		}

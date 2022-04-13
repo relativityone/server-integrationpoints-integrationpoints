@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+using Relativity.API;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
@@ -18,7 +19,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 		private Mock<IImageFileRepository> _imageFileRepositoryMock;
 		private Mock<IImageRetrieveConfiguration> _configurationFake;
-		private Mock<ISyncLog> _syncLogMock;
+		private Mock<IAPILog> _syncLogMock;
 
 		private readonly int[] _DOCUMENT_ARTIFACT_IDS = new int[] { 1, 2, 3 };
 
@@ -34,7 +35,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			_configurationFake = new Mock<IImageRetrieveConfiguration>();
 
-			_syncLogMock = new Mock<ISyncLog>();
+			_syncLogMock = new Mock<IAPILog>();
 
 			_sut = new ImageInfoFieldsBuilder(
 				_imageFileRepositoryMock.Object,

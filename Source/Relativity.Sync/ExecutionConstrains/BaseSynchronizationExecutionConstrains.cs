@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -11,9 +12,9 @@ namespace Relativity.Sync.ExecutionConstrains
     internal abstract class BaseSynchronizationExecutionConstrains<T> : IExecutionConstrains<T> where T : ISynchronizationConfiguration
     {
         protected readonly IBatchRepository BatchRepository;
-        protected readonly ISyncLog SyncLog;
+        protected readonly IAPILog SyncLog;
 
-        public BaseSynchronizationExecutionConstrains(IBatchRepository batchRepository, ISyncLog syncLog)
+        public BaseSynchronizationExecutionConstrains(IBatchRepository batchRepository, IAPILog syncLog)
         {
             BatchRepository = batchRepository;
             SyncLog = syncLog;

@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading;
@@ -16,13 +17,13 @@ namespace Relativity.Sync.Executors
 		private const string _SENSITIVE_DATA_REMOVED = "[Sensitive user data has been removed]";
 
 		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		private static readonly Guid JobHistoryNameGuid = new Guid("0b8fcebf-4149-4f1b-a8bc-d88ff5917169");
 		private static readonly Guid JobHistoryIdFieldGuid = new Guid("2bf54e79-7f75-4a51-a99a-e4d68f40a231");
 		private static readonly Guid RelativitySourceJobTypeGuid = new Guid("6f4dd346-d398-4e76-8174-f0cd8236cbe7");
 
-		public RelativitySourceJobTagRepository(ISourceServiceFactoryForUser serviceFactoryForUser, ISyncLog logger)
+		public RelativitySourceJobTagRepository(ISourceServiceFactoryForUser serviceFactoryForUser, IAPILog logger)
 		{
 			_serviceFactoryForUser = serviceFactoryForUser;
 			_logger = logger;

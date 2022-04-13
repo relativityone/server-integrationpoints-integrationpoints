@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using Relativity.API;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
@@ -34,7 +35,7 @@ namespace Relativity.Sync.Tests.System
 					SourceWorkspaceArtifactId = _workspace.ArtifactID
 				},
 				toggleProvider: null,
-				cb => cb.RegisterInstance(Logger).As<ISyncLog>()
+				cb => cb.RegisterInstance(Logger).As<IAPILog>()
 			);
 
 			_sut = container.Resolve<IImageFileRepository>();

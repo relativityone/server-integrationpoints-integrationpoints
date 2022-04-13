@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Services.Interfaces.Workspace;
@@ -9,9 +10,9 @@ namespace Relativity.Sync.Executors
 {
     internal sealed class WorkspaceNameQuery : IWorkspaceNameQuery
     {
-        private readonly ISyncLog _logger;
+        private readonly IAPILog _logger;
 
-        public WorkspaceNameQuery(ISyncLog logger)
+        public WorkspaceNameQuery(IAPILog logger)
         {
             _logger = logger;
         }

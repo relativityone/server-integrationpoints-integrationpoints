@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
@@ -14,9 +15,9 @@ namespace Relativity.Sync.Executors.Validation
 		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private readonly IWorkspaceNameQuery _workspaceNameQuery;
 		private readonly IWorkspaceNameValidator _workspaceNameValidator;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public SourceWorkspaceNameValidator(ISourceServiceFactoryForUser serviceFactoryForUser, IWorkspaceNameQuery workspaceNameQuery, IWorkspaceNameValidator workspaceNameValidator, ISyncLog logger)
+		public SourceWorkspaceNameValidator(ISourceServiceFactoryForUser serviceFactoryForUser, IWorkspaceNameQuery workspaceNameQuery, IWorkspaceNameValidator workspaceNameValidator, IAPILog logger)
 		{
 			_serviceFactoryForUser = serviceFactoryForUser;
 			_workspaceNameQuery = workspaceNameQuery;

@@ -1,4 +1,5 @@
-﻿// This file is used by Code Analysis to maintain SuppressMessage 
+using Relativity.API;
+// This file is used by Code Analysis to maintain SuppressMessage 
 // attributes that are applied to this project.
 // Project-level suppressions either have no target or are given 
 // a specific target and scoped to a namespace, type, member, etc.
@@ -33,7 +34,7 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Relativity.Sync.SyncJob.ExecuteAsync(System.Threading.CancellationToken,System.IProgress{Relativity.Sync.SyncJobState}[])~System.Threading.Tasks.Task")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Relativity.Sync.SyncJobInLifetimeScope.CreateSyncJob(Autofac.ILifetimeScope)~Relativity.Sync.ISyncJob")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Relativity.Sync.SyncJobProgress.ReportAsync(Relativity.Sync.SyncJobState)~System.Threading.Tasks.Task")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Relativity.Sync.Telemetry.EnvironmentPropertyProvider.CreateAsync(Relativity.Sync.ISyncServiceManager,Relativity.Sync.ISyncLog)~System.Threading.Tasks.Task{Relativity.Sync.Telemetry.IEnvironmentPropertyProvider}")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "member", Target = "~M:Relativity.Sync.Telemetry.EnvironmentPropertyProvider.CreateAsync(Relativity.Sync.ISyncServiceManager,Relativity.Sync.IAPILog)~System.Threading.Tasks.Task{Relativity.Sync.Telemetry.IEnvironmentPropertyProvider}")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Updating batch progress should never cause failure", Scope = "member", Target = "~M:Relativity.Sync.BatchProgressUpdater.UpdateProgressAsync(Relativity.Sync.Storage.IBatch,System.Int32,System.Int32)~System.Threading.Tasks.Task")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "type", Target = "Relativity.Sync.Executors.SynchronizationExecutor")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>", Scope = "type", Target = "Relativity.Sync.Executors.SourceWorkspaceTagRepository")]

@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Linq;
 using System.Threading;
 using Autofac;
@@ -65,7 +66,7 @@ namespace Relativity.Sync.Tests.Integration
 				container.Resolve<ISyncExecutionContextFactory>(),
 				FakeHelper.CreateSyncJobParameters(), 
 				Mock.Of<IProgress<SyncJobState>>(),
-				Mock.Of<ISyncLog>());
+				Mock.Of<IAPILog>());
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -20,14 +21,14 @@ namespace Relativity.Sync.Executors
 	{
 		private readonly IFederatedInstance _federatedInstance;
 		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 		private readonly ISyncMetrics _syncMetrics;
 		private readonly ITagNameFormatter _tagNameFormatter;
 		private readonly IRdoGuidConfiguration _rdoGuidConfiguration;
 		private readonly Func<IStopwatch> _stopwatch;
 
 		public DestinationWorkspaceTagRepository(ISourceServiceFactoryForUser serviceFactoryForUser, IFederatedInstance federatedInstance, ITagNameFormatter tagNameFormatter,
-			IRdoGuidConfiguration rdoGuidConfiguration, ISyncLog logger, ISyncMetrics syncMetrics, Func<IStopwatch> stopwatch)
+			IRdoGuidConfiguration rdoGuidConfiguration, IAPILog logger, ISyncMetrics syncMetrics, Func<IStopwatch> stopwatch)
 			: base(logger)
 		{
 			_federatedInstance = federatedInstance;

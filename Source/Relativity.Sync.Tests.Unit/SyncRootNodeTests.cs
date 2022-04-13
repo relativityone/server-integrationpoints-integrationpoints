@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Banzai;
@@ -28,7 +29,7 @@ namespace Relativity.Sync.Tests.Unit
 		private Mock<IJobEndMetricsService> _jobEndMetricsService;
 		private Mock<IJobEndMetricsServiceFactory> _jobEndMetricsServiceFactory;
 		private Mock<INode<SyncExecutionContext>> _childNodeFake;
-		private Mock<ISyncLog> _loggerFake;
+		private Mock<IAPILog> _loggerFake;
 		
 		[SetUp]
 		public void SetUp()
@@ -52,7 +53,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			_childNodeFake = new Mock<INode<SyncExecutionContext>>();
 
-			_loggerFake = new Mock<ISyncLog>();
+			_loggerFake = new Mock<IAPILog>();
 
 			_sut = new SyncRootNode(_jobEndMetricsServiceFactory.Object,
 				_jobStatusConsolidationCommandFake.Object,

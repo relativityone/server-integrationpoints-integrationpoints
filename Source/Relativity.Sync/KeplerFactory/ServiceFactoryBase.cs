@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Threading.Tasks;
 using Polly;
 using Polly.Retry;
@@ -11,12 +12,12 @@ namespace Relativity.Sync.KeplerFactory
     {
 
         protected readonly IRandom Random;
-        protected readonly ISyncLog Logger;
+        protected readonly IAPILog Logger;
         protected int RetryMaxCount = 2;
         protected int AuthTokenRetriesMaxCount = 2;
         public double SecondsBetweenRetries = 2;
 
-        protected ServiceFactoryBase(IRandom random, ISyncLog logger)
+        protected ServiceFactoryBase(IRandom random, IAPILog logger)
         {
             Random = random;
             Logger = logger;

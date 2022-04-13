@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -15,11 +16,11 @@ namespace Relativity.Sync.Transfer
 		protected IReadOnlyList<FieldInfoDto> _allFields;
 		protected readonly IExportDataSanitizer _exportDataSanitizer;
 		protected readonly IFieldManager _fieldManager;
-		protected readonly ISyncLog _logger;
+		protected readonly IAPILog _logger;
 
 		public Action<string, string> ItemLevelErrorHandler { get; set; }
 
-		internal BatchDataReaderBuilderBase(IFieldManager fieldManager, IExportDataSanitizer exportDataSanitizer, ISyncLog logger)
+		internal BatchDataReaderBuilderBase(IFieldManager fieldManager, IExportDataSanitizer exportDataSanitizer, IAPILog logger)
 		{
 			_fieldManager = fieldManager;
 			_exportDataSanitizer = exportDataSanitizer;

@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,9 +21,9 @@ namespace Relativity.Sync.Transfer
 		private const string _SIZE_COLUMN_NAME = "Size";
 
 		private readonly ISearchManagerFactory _searchManagerFactory;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public ImageFileRepositoryWebAPI(ISearchManagerFactory searchManagerFactory, ISyncLog logger)
+		public ImageFileRepositoryWebAPI(ISearchManagerFactory searchManagerFactory, IAPILog logger)
 		{
 			_searchManagerFactory = searchManagerFactory;
 			_logger = logger;

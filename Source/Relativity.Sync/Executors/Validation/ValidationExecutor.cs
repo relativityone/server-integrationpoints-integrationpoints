@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -12,9 +13,9 @@ namespace Relativity.Sync.Executors.Validation
 	{
 		private readonly IEnumerable<IValidator> _validators;
 		private readonly IPipelineSelector _pipelineSelector;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public ValidationExecutor(IEnumerable<IValidator> validators, IPipelineSelector pipelineSelector, ISyncLog logger)
+		public ValidationExecutor(IEnumerable<IValidator> validators, IPipelineSelector pipelineSelector, IAPILog logger)
 		{
 			_validators = validators;
 			_pipelineSelector = pipelineSelector;

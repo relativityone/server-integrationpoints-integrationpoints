@@ -1,4 +1,5 @@
-﻿using System.Threading;
+using Relativity.API;
+using System.Threading;
 
 namespace Relativity.Sync.Executors.Validation
 {
@@ -6,9 +7,9 @@ namespace Relativity.Sync.Executors.Validation
 	{
 		private const string _WORKSPACE_INVALID_NAME_CHAR = ";";
 
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public WorkspaceNameValidator(ISyncLog logger)
+		public WorkspaceNameValidator(IAPILog logger)
 		{
 			_logger = logger;
 		}

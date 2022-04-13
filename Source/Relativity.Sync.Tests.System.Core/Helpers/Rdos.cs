@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -493,7 +494,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 		}
 
 		public static async Task<int> CreateSyncConfigurationRdoAsync(int workspaceId,
-			ConfigurationStub configurationStub, ISyncLog logger = null, ISerializer serializer = null)
+			ConfigurationStub configurationStub, IAPILog logger = null, ISerializer serializer = null)
 		{
 			serializer = serializer ?? new JSONSerializer();
 			logger = logger ?? TestLogHelper.GetLogger();
@@ -534,7 +535,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 		private static IRdoManager CreateRdoManager()
 		{
-			ISyncLog log = TestLogHelper.GetLogger();
+			IAPILog log = TestLogHelper.GetLogger();
 			return new RdoManager(log, new SourceServiceFactoryStub(), new RdoGuidProvider());
 		}
 	}

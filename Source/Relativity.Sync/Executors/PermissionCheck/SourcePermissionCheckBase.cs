@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Relativity.Services;
@@ -24,9 +25,9 @@ namespace Relativity.Sync.Executors.PermissionCheck
 		private readonly Guid _batchObjectTypeGuid = new Guid(SyncBatchGuids.SyncBatchObjectTypeGuid);
 		private readonly Guid _progressObjectTypeGuid = new Guid(SyncProgressGuids.ProgressObjectTypeGuid);
 		
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public SourcePermissionCheckBase(ISyncLog logger, ISourceServiceFactoryForUser serviceFactoryForUser) : base(serviceFactoryForUser)
+		public SourcePermissionCheckBase(IAPILog logger, ISourceServiceFactoryForUser serviceFactoryForUser) : base(serviceFactoryForUser)
 		{
 			_logger = logger;
 		}

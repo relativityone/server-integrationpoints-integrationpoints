@@ -69,18 +69,17 @@ namespace Relativity.Sync
                 throw new ArgumentNullException(nameof(logger));
             }
             
-            ISyncLog syncLog = new ContextLogger(logger);
-            LogWriter.SetFactory(new SyncLogWriterFactory(syncLog));
+            LogWriter.SetFactory(new SyncLogWriterFactory(logger));
 
-            ServiceFactoryForAdminFactory serviceFactoryForAdminFactory = new ServiceFactoryForAdminFactory(relativityServices.ServicesMgr, syncLog);
+            ServiceFactoryForAdminFactory serviceFactoryForAdminFactory = new ServiceFactoryForAdminFactory(relativityServices.ServicesMgr, logger);
             ISourceServiceFactoryForAdmin serviceFactoryForAdmin = serviceFactoryForAdminFactory.Create();
 
-            InstallSumMetrics(serviceFactoryForAdmin, syncLog);
+            InstallSumMetrics(serviceFactoryForAdmin, logger);
 
             return new SyncJobInLifetimeScope(_containerFactory, container, syncJobParameters, relativityServices, configuration, logger);
         }
 
-        private static void InstallSumMetrics(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger)
+        private static void InstallSumMetrics(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IAPILog logger)
         {
             ITelemetryManager telemetryManager = new TelemetryMetricsInstaller(serviceFactoryForAdmin, logger);
 

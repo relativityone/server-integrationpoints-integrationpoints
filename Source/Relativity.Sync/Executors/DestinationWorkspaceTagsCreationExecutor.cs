@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
@@ -9,9 +10,9 @@ namespace Relativity.Sync.Executors
 	{
 		private readonly ISourceCaseTagService _sourceCaseTagService;
 		private readonly ISourceJobTagService _sourceJobTagService;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public DestinationWorkspaceTagsCreationExecutor(ISourceCaseTagService sourceCaseTagService, ISourceJobTagService sourceJobTagService, ISyncLog logger)
+		public DestinationWorkspaceTagsCreationExecutor(ISourceCaseTagService sourceCaseTagService, ISourceJobTagService sourceJobTagService, IAPILog logger)
 		{
 			_sourceCaseTagService = sourceCaseTagService;
 			_sourceJobTagService = sourceJobTagService;

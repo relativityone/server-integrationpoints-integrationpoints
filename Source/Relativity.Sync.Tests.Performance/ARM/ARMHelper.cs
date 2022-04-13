@@ -1,4 +1,5 @@
-﻿using Relativity.Sync.Tests.Performance.Helpers;
+using Relativity.API;
+using Relativity.Sync.Tests.Performance.Helpers;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -44,7 +45,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			Logger = TestLogHelper.GetLogger();
 		}
 
-		protected ISyncLog Logger { get; }
+		protected IAPILog Logger { get; }
 
 		public static ARMHelper CreateInstance()
 		{

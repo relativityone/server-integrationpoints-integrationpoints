@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Linq;
 using System.Runtime.Caching;
 using System.Threading.Tasks;
@@ -40,7 +41,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			serviceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IUserInfoManager>())
 				.ReturnsAsync(_userInfoManagerMock.Object);
 
-			Mock<ISyncLog> syncLog = new Mock<ISyncLog>();
+			Mock<IAPILog> syncLog = new Mock<IAPILog>();
 
 			_memoryCacheStub = new Mock<IMemoryCache>();
 

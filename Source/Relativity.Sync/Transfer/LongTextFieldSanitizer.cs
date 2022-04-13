@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -18,11 +19,11 @@ namespace Relativity.Sync.Transfer
 		private readonly IImportStreamBuilder _importStreamBuilder;
 		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private readonly IRetriableStreamBuilderFactory _streamBuilderFactory;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		public RelativityDataType SupportedType => RelativityDataType.LongText;
 
-		public LongTextFieldSanitizer(ISourceServiceFactoryForUser serviceFactoryForUser, IRetriableStreamBuilderFactory streamBuilderFactory, IImportStreamBuilder importStreamBuilder, ISyncLog logger)
+		public LongTextFieldSanitizer(ISourceServiceFactoryForUser serviceFactoryForUser, IRetriableStreamBuilderFactory streamBuilderFactory, IImportStreamBuilder importStreamBuilder, IAPILog logger)
 		{
 			_serviceFactoryForUser = serviceFactoryForUser;
 			_streamBuilderFactory = streamBuilderFactory;

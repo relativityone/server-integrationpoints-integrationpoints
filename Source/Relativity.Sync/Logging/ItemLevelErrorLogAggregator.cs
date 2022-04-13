@@ -1,3 +1,4 @@
+using Relativity.API;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace Relativity.Sync.Logging
 {
     internal class ItemLevelErrorLogAggregator : IItemLevelErrorLogAggregator
     {
-        private readonly ISyncLog _logger;
+        private readonly IAPILog _logger;
         private readonly Dictionary<string, List<int>> _errorsAggregate;
         private readonly BlockingCollection<(ItemLevelError, int)> _queue = new BlockingCollection<(ItemLevelError, int)>();
         private readonly Func<string, ItemLevelError, (bool matched, string newMessage)>[] _standarizationFunctions = {
@@ -25,7 +26,7 @@ namespace Relativity.Sync.Logging
         private readonly Task _processingTask;
         private int _itemLevelErrorCount = 0;
 
-        public ItemLevelErrorLogAggregator(ISyncLog logger)
+        public ItemLevelErrorLogAggregator(IAPILog logger)
         {
             _logger = logger;
             _errorsAggregate = new Dictionary<string, List<int>>();

@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -12,11 +13,11 @@ namespace Relativity.Sync.Executors
 	{
 		private const int _MAX_OBJECT_QUERY_BATCH_SIZE = 10000;
 
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		protected const string _UNIT_OF_MEASURE = "document(s)";
 
-		protected WorkspaceTagRepositoryBase(ISyncLog logger)
+		protected WorkspaceTagRepositoryBase(IAPILog logger)
 		{
 			_logger = logger;
 		}

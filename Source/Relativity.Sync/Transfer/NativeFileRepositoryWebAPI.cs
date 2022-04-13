@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -10,9 +11,9 @@ namespace Relativity.Sync.Transfer
 	internal sealed class NativeFileRepositoryWebAPI : INativeFileRepository
 	{
 		private readonly ISearchManagerFactory _searchManagerFactory;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public NativeFileRepositoryWebAPI(ISearchManagerFactory searchManagerFactory, ISyncLog logger)
+		public NativeFileRepositoryWebAPI(ISearchManagerFactory searchManagerFactory, IAPILog logger)
 		{
 			_searchManagerFactory = searchManagerFactory;
 			_logger = logger;

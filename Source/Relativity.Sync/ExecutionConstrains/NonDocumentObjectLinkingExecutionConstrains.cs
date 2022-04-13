@@ -1,3 +1,4 @@
+using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,9 @@ namespace Relativity.Sync.ExecutionConstrains
     internal sealed class NonDocumentObjectLinkingExecutionConstrains : IExecutionConstrains<INonDocumentObjectLinkingConfiguration>
     {
         private readonly IBatchRepository _batchRepository;
-        private readonly ISyncLog _syncLog;
+        private readonly IAPILog _syncLog;
 
-        public NonDocumentObjectLinkingExecutionConstrains(IBatchRepository batchRepository, ISyncLog syncLog)
+        public NonDocumentObjectLinkingExecutionConstrains(IBatchRepository batchRepository, IAPILog syncLog)
         {
             _batchRepository = batchRepository;
             _syncLog = syncLog;

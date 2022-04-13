@@ -1,3 +1,4 @@
+using Relativity.API;
 using System.Threading.Tasks;
 using Relativity.Services.Permission;
 using Relativity.Sync.Configuration;
@@ -10,7 +11,7 @@ namespace Relativity.Sync.Executors.PermissionCheck.NonDocumentPermissionChecks
 {
     internal class DestinationNonDocumentPermissionCheck : DestinationPermissionCheckBase
     {
-        public DestinationNonDocumentPermissionCheck(IDestinationServiceFactoryForUser destinationServiceFactory, ISyncLog logger) : base(destinationServiceFactory, logger)
+        public DestinationNonDocumentPermissionCheck(IDestinationServiceFactoryForUser destinationServiceFactory, IAPILog logger) : base(destinationServiceFactory, logger)
         {
         }
 

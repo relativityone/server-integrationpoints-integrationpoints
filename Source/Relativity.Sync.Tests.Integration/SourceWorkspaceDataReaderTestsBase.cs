@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -75,7 +76,7 @@ namespace Relativity.Sync.Tests.Integration
 			IRelativityExportBatcher batcher = CreateExporterForGivenBatchSize(batchSize);
 			IBatchDataReaderBuilder batchDataReaderBuilder = CreateBatchDataReaderBuilder();
 			IFieldManager fieldManager = _container.Resolve<IFieldManager>();
-			ISyncLog syncLog = Mock.Of<ISyncLog>();
+			IAPILog syncLog = Mock.Of<IAPILog>();
 
 			return new SourceWorkspaceDataReader(
 				batchDataReaderBuilder,

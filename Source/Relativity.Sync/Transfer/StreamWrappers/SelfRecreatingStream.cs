@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -17,9 +18,9 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 		private Lazy<Stream> _innerStream;
 
 		private readonly IRetriableStreamBuilder _streamBuilder;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 		
-		public SelfRecreatingStream(IRetriableStreamBuilder streamBuilder, ISyncLog logger)
+		public SelfRecreatingStream(IRetriableStreamBuilder streamBuilder, IAPILog logger)
 		{
 			_streamBuilder = streamBuilder;
 			_logger = logger;

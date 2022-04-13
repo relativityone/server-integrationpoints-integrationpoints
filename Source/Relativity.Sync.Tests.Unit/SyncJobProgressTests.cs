@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using FluentAssertions;
 using NUnit.Framework;
 using Moq;
@@ -24,7 +25,7 @@ namespace Relativity.Sync.Tests.Unit
 			_jobParameters = FakeHelper.CreateSyncJobParameters();
 			_progressRepository = new ProgressRepositoryStub();
 			_counter = new ProgressStateCounter();
-			_instance = new SyncJobProgress(_jobParameters, _progressRepository, _counter, Mock.Of<ISyncLog>());
+			_instance = new SyncJobProgress(_jobParameters, _progressRepository, _counter, Mock.Of<IAPILog>());
 		}
 
 		[Test]
@@ -90,7 +91,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ACT
 			SyncJobState state = SyncJobState.Start("FooBar");
-			_instance = new SyncJobProgress(_jobParameters, progressRepositoryMock.Object, _counter, Mock.Of<ISyncLog>());
+			_instance = new SyncJobProgress(_jobParameters, progressRepositoryMock.Object, _counter, Mock.Of<IAPILog>());
 			_instance.Report(state);
 
 			// ASSERT
@@ -109,7 +110,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ACT
 			SyncJobState state = SyncJobState.Start("FooBar");
-			_instance = new SyncJobProgress(_jobParameters, progressRepositoryMock.Object, _counter, Mock.Of<ISyncLog>());
+			_instance = new SyncJobProgress(_jobParameters, progressRepositoryMock.Object, _counter, Mock.Of<IAPILog>());
 			_instance.Report(state);
 
 			// ASSERT
@@ -128,7 +129,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			// ACT
 			SyncJobState state = SyncJobState.Start("FooBar");
-			_instance = new SyncJobProgress(_jobParameters, progressRepositoryMock.Object, _counter, Mock.Of<ISyncLog>());
+			_instance = new SyncJobProgress(_jobParameters, progressRepositoryMock.Object, _counter, Mock.Of<IAPILog>());
 			_instance.Report(state);
 
 			// ASSERT

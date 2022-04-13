@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Services.DataContracts.DTOs;
@@ -14,9 +15,9 @@ namespace Relativity.Sync.Executors.Validation
 	internal sealed class RetryJobHistoryValidator : IValidator
 	{
 		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public RetryJobHistoryValidator(ISourceServiceFactoryForUser serviceFactoryForUser, ISyncLog logger)
+		public RetryJobHistoryValidator(ISourceServiceFactoryForUser serviceFactoryForUser, IAPILog logger)
 		{
 			_serviceFactoryForUser = serviceFactoryForUser;
 			_logger = logger;

@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Logging;
@@ -26,7 +27,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			var innerProgress =	new Mock<IProgress<SyncJobState>>();
 			innerProgress.Setup(x => x.Report(It.IsAny<SyncJobState>())).Throws<InvalidOperationException>();
-			var logger = new Mock<ISyncLog>();
+			var logger = new Mock<IAPILog>();
 			var instance = new SafeProgressWrapper<SyncJobState>(innerProgress.Object, logger.Object);
 
 			// ACT

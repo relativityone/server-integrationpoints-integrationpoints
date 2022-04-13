@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.IO;
 using FluentAssertions;
 using Moq;
@@ -220,7 +221,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 			var streamMock = new Mock<Stream>();
 			streamMock.Setup(x => x.Read(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<int>()))
 				.Throws<ArgumentException>();
-			var loggerMock = new Mock<ISyncLog>();
+			var loggerMock = new Mock<IAPILog>();
 			var selfDisposingStream = new SelfDisposingStream(streamMock.Object, loggerMock.Object);
 
 			// act

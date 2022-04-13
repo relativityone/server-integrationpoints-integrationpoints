@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 	public class DocumentSynchronizationExecutorConstrainsTests
 	{
 		private CancellationToken _token;
-		private ISyncLog _syncLog;
+		private IAPILog _syncLog;
 
 		private Mock<IDocumentSynchronizationConfiguration> _synchronizationConfiguration;
 

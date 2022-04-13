@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Relativity.Sync.RDOs;
@@ -11,12 +12,12 @@ namespace Relativity.Sync.Storage
 		private readonly IRdoManager _rdoManager;
 		private readonly int _workspaceArtifactId;
 		private readonly int _syncConfigurationArtifactId;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
         private readonly ISemaphoreSlim _semaphoreSlim;
 
 		private SyncConfigurationRdo _configuration;
 
-        private Configuration(SyncJobParameters syncJobParameters, IRdoManager rdoManager, ISemaphoreSlim semaphoreSlim, ISyncLog logger)
+        private Configuration(SyncJobParameters syncJobParameters, IRdoManager rdoManager, ISemaphoreSlim semaphoreSlim, IAPILog logger)
 		{
 			_rdoManager = rdoManager;
 			_workspaceArtifactId = syncJobParameters.WorkspaceId;
@@ -70,7 +71,7 @@ namespace Relativity.Sync.Storage
 			}
 		}
 
-		public static async Task<IConfiguration> GetAsync(SyncJobParameters syncJobParameters, ISyncLog logger,
+		public static async Task<IConfiguration> GetAsync(SyncJobParameters syncJobParameters, IAPILog logger,
 			ISemaphoreSlim semaphoreSlim, IRdoManager rdoManager)
 		{
 			Configuration configuration = new Configuration(syncJobParameters, rdoManager, semaphoreSlim, logger);

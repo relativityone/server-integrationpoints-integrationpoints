@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+using Relativity.API;
+using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Transfer;
@@ -8,7 +9,7 @@ namespace Relativity.Sync.Executors
     internal class RetryDataSourceSnapshotExecutor : DataSourceSnapshotExecutor, IExecutor<IRetryDataSourceSnapshotConfiguration>
     {
         public RetryDataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactoryForUser,
-                IJobProgressUpdaterFactory jobProgressUpdaterFactory, ISyncLog logger,
+                IJobProgressUpdaterFactory jobProgressUpdaterFactory, IAPILog logger,
                 ISnapshotQueryRequestProvider snapshotQueryRequestProvider)
             : base(serviceFactoryForUser, jobProgressUpdaterFactory, logger, snapshotQueryRequestProvider)
         {

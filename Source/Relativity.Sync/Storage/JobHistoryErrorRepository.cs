@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,11 +27,11 @@ namespace Relativity.Sync.Storage
         private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
         private readonly IJobHistoryErrorRepositoryConfigration _repositoryConfigration;
         private readonly IRdoGuidConfiguration _rdoConfiguration;
-        private readonly ISyncLog _logger;
+        private readonly IAPILog _logger;
         private readonly IRandom _random;
 
         public JobHistoryErrorRepository(ISourceServiceFactoryForUser serviceFactoryForUser, IJobHistoryErrorRepositoryConfigration repositoryConfigration,
-            IRdoGuidConfiguration rdoConfiguration, IDateTime dateTime, ISyncLog logger, IRandom random)
+            IRdoGuidConfiguration rdoConfiguration, IDateTime dateTime, IAPILog logger, IRandom random)
         {
             _serviceFactoryForUser = serviceFactoryForUser;
             _repositoryConfigration = repositoryConfigration;

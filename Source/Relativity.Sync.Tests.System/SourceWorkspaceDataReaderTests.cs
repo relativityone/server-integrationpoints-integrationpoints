@@ -1,3 +1,4 @@
+using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -124,7 +125,7 @@ namespace Relativity.Sync.Tests.System
 			// Test SourceWorkspaceDataReader
 			const int resultsBlockSize = 100;
 			object[] tmpTable = new object[resultsBlockSize];
-			ISyncLog logger = new ConsoleLogger();
+			IAPILog logger = new ConsoleLogger();
 
 			IDataReaderRowSetValidator validator = DataReaderRowSetValidator.Create(dataTableWrapper.Data);
 
@@ -247,7 +248,7 @@ namespace Relativity.Sync.Tests.System
 			// Test SourceWorkspaceDataReader
 			const int resultsBlockSize = 100;
 			object[] tmpTable = new object[resultsBlockSize];
-			ISyncLog logger = new ConsoleLogger();
+			IAPILog logger = new ConsoleLogger();
 
 			int imageFilesCount = dataset.GetFiles().Count();
 			bool read;

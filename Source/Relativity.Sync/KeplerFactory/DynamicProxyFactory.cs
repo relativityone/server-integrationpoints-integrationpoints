@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Threading.Tasks;
 using Castle.DynamicProxy;
 using Relativity.Sync.Utils;
@@ -9,7 +10,7 @@ namespace Relativity.Sync.KeplerFactory
 	{
 		private readonly Func<IStopwatch> _stopwatch;
 		private readonly IRandom _random;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		// If you have a long running process and you have to create many dynamic proxies, you should make sure to reuse the same ProxyGenerator instance.
 		// If not, be aware that you will then bypass the caching mechanism. Side effects are high CPU usage and constant increase in memory consumption.
@@ -17,7 +18,7 @@ namespace Relativity.Sync.KeplerFactory
 		// We also have to set disableSignedModule to true to prevent Castle from signing the dynamic proxy dll which can lead to FileLoadException
 		private static readonly ProxyGenerator _proxyGenerator = new ProxyGenerator(true);
 
-		public DynamicProxyFactory(Func<IStopwatch> stopwatch, IRandom random, ISyncLog logger)
+		public DynamicProxyFactory(Func<IStopwatch> stopwatch, IRandom random, IAPILog logger)
 		{
 			_stopwatch = stopwatch;
 			_random = random;

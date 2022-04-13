@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Data;
 using System.Threading;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace Relativity.Sync.Transfer
 
 		private readonly IRelativityExportBatcher _exportBatcher;
 		private readonly IFieldManager _fieldManager;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 		private readonly ISynchronizationConfiguration _configuration;
 		private readonly IBatchDataReaderBuilder _readerBuilder;
 		private readonly CancellationToken _cancellationToken;
@@ -33,7 +34,7 @@ namespace Relativity.Sync.Transfer
 			IRelativityExportBatcher exportBatcher,
 			IFieldManager fieldManager,
 			IItemStatusMonitor itemStatusMonitor,
-			ISyncLog logger,
+			IAPILog logger,
 			CancellationToken cancellationToken)
 		{
 			_readerBuilder = readerBuilder;

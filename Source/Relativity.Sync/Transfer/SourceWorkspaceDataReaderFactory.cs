@@ -1,4 +1,5 @@
-﻿using System.Threading;
+using Relativity.API;
+using System.Threading;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 
@@ -8,12 +9,12 @@ namespace Relativity.Sync.Transfer
 	{
 		private readonly IRelativityExportBatcherFactory _exportBatcherFactory;
 		private readonly IFieldManager _fieldManager;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 		private readonly ISynchronizationConfiguration _configuration;
 		private readonly IExportDataSanitizer _dataSanitizer;
 
 		public SourceWorkspaceDataReaderFactory(IRelativityExportBatcherFactory exportBatcherFactory, IFieldManager fieldManager, ISynchronizationConfiguration configuration,
-			IExportDataSanitizer dataSanitizer, ISyncLog logger)
+			IExportDataSanitizer dataSanitizer, IAPILog logger)
 		{
 			_exportBatcherFactory = exportBatcherFactory;
 			_fieldManager = fieldManager;

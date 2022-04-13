@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Moq;
@@ -12,14 +13,14 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 	public class TelemetryManagerTests
 	{
 		private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdmin;
-		private Mock<ISyncLog> _logger;
+		private Mock<IAPILog> _logger;
 		private ITelemetryManager _telemetryManager;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_serviceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
-			_logger = new Mock<ISyncLog>();
+			_logger = new Mock<IAPILog>();
 			_telemetryManager = new TelemetryMetricsInstaller(_serviceFactoryForAdmin.Object, _logger.Object);
 		}
 

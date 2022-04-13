@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 
@@ -13,13 +14,13 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 	{
 		private bool _disposed = false;
 
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		internal Stream InnerStream { get; }
 
 		public SelfDisposingStream(
 			Stream stream,
-			ISyncLog logger)
+			IAPILog logger)
 		{
 			_logger = logger;
 			InnerStream = stream;

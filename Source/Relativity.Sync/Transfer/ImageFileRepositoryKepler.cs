@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,10 +23,10 @@ namespace Relativity.Sync.Transfer
 		private const string _SIZE_COLUMN_NAME = "Size";
 
 		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 		private readonly SyncJobParameters _parameters;
 
-		public ImageFileRepositoryKepler(ISourceServiceFactoryForUser serviceFactoryForUser, ISyncLog logger, SyncJobParameters parameters)
+		public ImageFileRepositoryKepler(ISourceServiceFactoryForUser serviceFactoryForUser, IAPILog logger, SyncJobParameters parameters)
 		{
 			_serviceFactoryForUser = serviceFactoryForUser;
 			_logger = logger;

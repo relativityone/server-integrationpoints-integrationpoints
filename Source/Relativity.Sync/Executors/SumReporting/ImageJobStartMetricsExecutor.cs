@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+using Relativity.API;
+using System.Threading.Tasks;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Telemetry;
@@ -9,13 +10,13 @@ namespace Relativity.Sync.Executors.SumReporting
 {
 	internal class ImageJobStartMetricsExecutor : IExecutor<IImageJobStartMetricsConfiguration>
 	{
-		private readonly ISyncLog _syncLog;
+		private readonly IAPILog _syncLog;
 		private readonly ISyncMetrics _syncMetrics;
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
 		private readonly IFileStatisticsCalculator _fileStatisticsCalculator;
 		private readonly ISnapshotQueryRequestProvider _queryRequestProvider;
 
-		public ImageJobStartMetricsExecutor(ISyncLog syncLog, ISyncMetrics syncMetrics, IJobStatisticsContainer jobStatisticsContainer,
+		public ImageJobStartMetricsExecutor(IAPILog syncLog, ISyncMetrics syncMetrics, IJobStatisticsContainer jobStatisticsContainer,
 			IFileStatisticsCalculator fileStatisticsCalculator, ISnapshotQueryRequestProvider queryRequestProvider)
 		{
 			_syncLog = syncLog;

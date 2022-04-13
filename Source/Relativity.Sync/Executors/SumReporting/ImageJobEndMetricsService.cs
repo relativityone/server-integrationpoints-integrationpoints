@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Threading.Tasks;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
@@ -12,10 +13,10 @@ namespace Relativity.Sync.Executors.SumReporting
 		private readonly IJobEndMetricsConfiguration _configuration;
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
 		private readonly ISyncMetrics _syncMetrics;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		public ImageJobEndMetricsService(IBatchRepository batchRepository, IJobEndMetricsConfiguration configuration,
-			IJobStatisticsContainer jobStatisticsContainer, ISyncMetrics syncMetrics, ISyncLog logger)
+			IJobStatisticsContainer jobStatisticsContainer, ISyncMetrics syncMetrics, IAPILog logger)
 			: base(batchRepository, configuration)
 		{
 			_configuration = configuration;

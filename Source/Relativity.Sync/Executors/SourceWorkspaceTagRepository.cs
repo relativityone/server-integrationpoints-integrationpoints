@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -18,14 +19,14 @@ namespace Relativity.Sync.Executors
 	{
 		private readonly IFieldMappings _fieldMappings;
 		private readonly IProxyFactory _serviceFactory;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 		private readonly ISyncMetrics _syncMetrics;
 		private readonly Func<IStopwatch> _stopwatch;
 
 		private readonly Guid _sourceWorkspaceTagFieldMultiObject = new Guid("2FA844E3-44F0-47F9-ABB7-D6D8BE0C9B8F");
 		private readonly Guid _sourceJobTagFieldMultiObject = new Guid("7CC3FAAF-CBB8-4315-A79F-3AA882F1997F");
 
-		public SourceWorkspaceTagRepository(IDestinationServiceFactoryForUser serviceFactory, ISyncLog logger, ISyncMetrics syncMetrics,
+		public SourceWorkspaceTagRepository(IDestinationServiceFactoryForUser serviceFactory, IAPILog logger, ISyncMetrics syncMetrics,
 			IFieldMappings fieldMappings, Func<IStopwatch> stopwatch)
 		: base(logger)
 		{

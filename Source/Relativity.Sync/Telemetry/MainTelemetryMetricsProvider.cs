@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using Relativity.API;
+using System.Collections.Generic;
 using Relativity.Services.InternalMetricsCollection;
 
 namespace Relativity.Sync.Telemetry
@@ -124,7 +125,7 @@ namespace Relativity.Sync.Telemetry
 			}
 		};
 
-		public MainTelemetryMetricsProvider(ISyncLog logger) : base(logger)
+		public MainTelemetryMetricsProvider(IAPILog logger) : base(logger)
 		{
 		}
 

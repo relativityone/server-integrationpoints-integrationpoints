@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -33,10 +34,10 @@ namespace Relativity.Sync.Executors
 		private readonly IProgressRepository _progressRepository;
 		private readonly IDestinationWorkspaceTagRepository _destinationWorkspaceTagRepository;
 		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		public NotificationExecutor(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IProgressRepository progressRepository,
-			IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository, IJobHistoryErrorRepository jobHistoryErrorRepository, ISyncLog logger)
+			IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository, IJobHistoryErrorRepository jobHistoryErrorRepository, IAPILog logger)
 		{
 			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_progressRepository = progressRepository;

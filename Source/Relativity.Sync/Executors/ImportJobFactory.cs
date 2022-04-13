@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -22,10 +23,10 @@ namespace Relativity.Sync.Executors
 		private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
 		private readonly SyncJobParameters _syncJobParameters;
 		private readonly IFieldMappings _fieldMappings;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		public ImportJobFactory(IImportApiFactory importApiFactory, ISourceWorkspaceDataReaderFactory dataReaderFactory,
-			IJobHistoryErrorRepository jobHistoryErrorRepository, IInstanceSettings instanceSettings, SyncJobParameters syncJobParameters, IFieldMappings fieldMappings, ISyncLog logger)
+			IJobHistoryErrorRepository jobHistoryErrorRepository, IInstanceSettings instanceSettings, SyncJobParameters syncJobParameters, IFieldMappings fieldMappings, IAPILog logger)
 		{
 			_importApiFactory = importApiFactory;
 			_dataReaderFactory = dataReaderFactory;

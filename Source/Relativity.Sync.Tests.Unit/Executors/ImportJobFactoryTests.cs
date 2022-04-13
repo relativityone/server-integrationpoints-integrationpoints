@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Concurrency;
@@ -24,7 +25,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	public class ImportJobFactoryTests
 	{
 
-		private ISyncLog _logger;
+		private IAPILog _logger;
 		private Mock<IBatch> _batch;
 		
 		private Mock<IDocumentSynchronizationConfiguration> _documentConfigurationMock;

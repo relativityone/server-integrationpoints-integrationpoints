@@ -1,13 +1,14 @@
-﻿using System;
+using Relativity.API;
+using System;
 
 namespace Relativity.Sync
 {
 	internal sealed class SafeProgressWrapper<T> : IProgress<T>
 	{
 		private readonly IProgress<T> _progress;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public SafeProgressWrapper(IProgress<T> progress, ISyncLog logger)
+		public SafeProgressWrapper(IProgress<T> progress, IAPILog logger)
 		{
 			_progress = progress;
 			_logger = logger;

@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -111,7 +112,7 @@ namespace Relativity.Sync.Tests.Integration
 			containerBuilder.RegisterType<DocumentTagger>().As<IDocumentTagger>();
 			containerBuilder.RegisterType<DocumentSynchronizationExecutor>().As<IExecutor<IDocumentSynchronizationConfiguration>>();
 
-			containerBuilder.RegisterInstance(new EmptyLogger()).As<ISyncLog>();
+			containerBuilder.RegisterInstance(new EmptyLogger()).As<IAPILog>();
 			containerBuilder.RegisterInstance(fieldMappings.Object).As<IFieldMappings>();
 
 			IContainer container = containerBuilder.Build();

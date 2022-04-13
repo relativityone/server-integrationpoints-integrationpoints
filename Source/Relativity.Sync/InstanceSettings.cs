@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,9 +15,9 @@ namespace Relativity.Sync
 		private const string _SYNC_SECTION = "Relativity.Sync";
 
 		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public InstanceSettings(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger)
+		public InstanceSettings(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IAPILog logger)
 		{
 			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_logger = logger;

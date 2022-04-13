@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using Banzai.Logging;
 
 namespace Relativity.Sync.Logging
@@ -7,9 +8,9 @@ namespace Relativity.Sync.Logging
 	{
 		private const string _UNABLE_TO_RESOLVE_MESSAGE = "Unable to resolve logging message due to framework limitation.";
 
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public SyncLogWriter(ISyncLog logger)
+		public SyncLogWriter(IAPILog logger)
 		{
 			_logger = logger;
 		}

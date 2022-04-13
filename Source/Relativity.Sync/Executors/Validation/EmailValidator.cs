@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -23,9 +24,9 @@ namespace Relativity.Sync.Executors.Validation
 		private const string _INVALID_EMAIL_MESSAGE = "E-mail format is invalid";
 		private const string _MISSING_EMAIL_MESSAGE = "Missing email.";
 
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public EmailValidator(ISyncLog logger)
+		public EmailValidator(IAPILog logger)
 		{
 			_logger = logger;
 		}

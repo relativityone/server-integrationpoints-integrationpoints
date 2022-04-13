@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,14 +16,14 @@ namespace Relativity.Sync.Nodes
 		private readonly ICommand<IJobCleanupConfiguration> _jobCleanupCommand;
 		private readonly ICommand<IAutomatedWorkflowTriggerConfiguration> _automatedWfTriggerCommand;
 		private readonly IJobEndMetricsServiceFactory _jobEndMetricsServiceFactory;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		public SyncRootNode(IJobEndMetricsServiceFactory jobEndMetricsServiceFactory,
 			ICommand<IJobStatusConsolidationConfiguration> jobStatusConsolidationCommand,
 			ICommand<INotificationConfiguration> notificationCommand,
 			ICommand<IJobCleanupConfiguration> jobCleanupCommand,
 			ICommand<IAutomatedWorkflowTriggerConfiguration> automatedWfTriggerCommand,
-			ISyncLog logger)
+			IAPILog logger)
 		{
 			_jobEndMetricsServiceFactory = jobEndMetricsServiceFactory;
 			_jobStatusConsolidationCommand = jobStatusConsolidationCommand;

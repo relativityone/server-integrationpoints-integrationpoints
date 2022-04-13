@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -23,7 +24,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		private CancellationToken _cancellationToken;
 
 		private Mock<ISourceServiceFactoryForUser> _sourceServiceFactoryForUser;
-		private Mock<ISyncLog> _syncLog;
+		private Mock<IAPILog> _syncLog;
 		private Mock<IObjectManager> _objectManager;
 		private Mock<IValidationConfiguration> _validationConfiguration;
 
@@ -40,7 +41,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_cancellationToken = CancellationToken.None;
 
 			_sourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
-			_syncLog = new Mock<ISyncLog>();
+			_syncLog = new Mock<IAPILog>();
 			_objectManager = new Mock<IObjectManager>();
 			_validationConfiguration = new Mock<IValidationConfiguration>();
 

@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
@@ -11,7 +12,7 @@ namespace Relativity.Sync.Tests.Unit
 	{
 		private Mock<ISyncJob> _syncJob;
 		private FakeAppDomain _appDomain;
-		private Mock<ISyncLog> _syncLog;
+		private Mock<IAPILog> _syncLog;
 
 		private SyncJobWithUnhandledExceptionLogging _sut;
 
@@ -20,7 +21,7 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			_syncJob = new Mock<ISyncJob>();
 			_appDomain = new FakeAppDomain();
-			_syncLog = new Mock<ISyncLog>();
+			_syncLog = new Mock<IAPILog>();
 
 			_sut = new SyncJobWithUnhandledExceptionLogging(_syncJob.Object, _appDomain, _syncLog.Object);
 		}

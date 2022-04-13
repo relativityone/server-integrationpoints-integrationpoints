@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,9 +15,9 @@ namespace Relativity.Sync.Executors
 	internal sealed class SyncFieldManager : ISyncFieldManager
 	{
 		private readonly IDestinationServiceFactoryForAdmin _serviceFactory;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public SyncFieldManager(IDestinationServiceFactoryForAdmin serviceFactory, ISyncLog logger)
+		public SyncFieldManager(IDestinationServiceFactoryForAdmin serviceFactory, IAPILog logger)
 		{
 			_serviceFactory = serviceFactory;
 			_logger = logger;

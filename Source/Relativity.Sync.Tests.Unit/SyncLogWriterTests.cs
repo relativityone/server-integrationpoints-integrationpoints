@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.IO;
 using Moq;
 using NUnit.Framework;
@@ -11,7 +12,7 @@ namespace Relativity.Sync.Tests.Unit
 	{
 		private SyncLogWriter _instance;
 
-		private Mock<ISyncLog> _logger;
+		private Mock<IAPILog> _logger;
 
 		private const string _MESSAGE_TEMPLATE = "message template {param1}";
 		private const string _UNABLE_TO_RESOLVE_MESSAGE = "Unable to resolve logging message due to framework limitation.";
@@ -23,7 +24,7 @@ namespace Relativity.Sync.Tests.Unit
 		[SetUp]
 		public void SetUp()
 		{
-			_logger = new Mock<ISyncLog>();
+			_logger = new Mock<IAPILog>();
 
 			_instance = new SyncLogWriter(_logger.Object);
 		}

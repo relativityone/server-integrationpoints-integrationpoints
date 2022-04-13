@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace Relativity.Sync.Tests.Unit
 	{
 		private const int WORKSPACE_ID = 5;
 
-		private Mock<ISyncLog> _loggerMock;
+		private Mock<IAPILog> _loggerMock;
 		private ImageFileRepositoryKepler _sut;
 		private Mock<ISearchService> _searchServiceMock;
 		private Mock<ISourceServiceFactoryForUser> _serviceFactoryForUserMock;
@@ -26,7 +27,7 @@ namespace Relativity.Sync.Tests.Unit
 		[SetUp]
 		public void Setup()
 		{
-			_loggerMock = new Mock<ISyncLog>();
+			_loggerMock = new Mock<IAPILog>();
 
 			_searchServiceMock = new Mock<ISearchService>();
 			_serviceFactoryForUserMock = new Mock<ISourceServiceFactoryForUser>();

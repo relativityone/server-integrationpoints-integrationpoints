@@ -10,7 +10,7 @@ namespace Relativity.Sync.KeplerFactory
 		private readonly IDynamicProxyFactory _proxyFactory;
 
 		public ServiceFactoryForAdmin(ISyncServiceManager servicesMgr, IDynamicProxyFactory proxyFactory,
-            IRandom random, ISyncLog logger)
+            IRandom random, IAPILog logger)
 		    : base(random, logger)
 		{
 			_servicesMgr = servicesMgr;

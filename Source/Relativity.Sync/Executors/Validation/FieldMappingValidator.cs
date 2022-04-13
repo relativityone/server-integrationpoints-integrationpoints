@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace Relativity.Sync.Executors.Validation
 {
 	internal sealed class FieldMappingValidator : FieldMappingValidatorBase
 	{
-		public FieldMappingValidator(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IDestinationServiceFactoryForUser destinationServiceFactoryForUser, ISyncLog logger)
+		public FieldMappingValidator(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IDestinationServiceFactoryForUser destinationServiceFactoryForUser, IAPILog logger)
 			: base(sourceServiceFactoryForUser, destinationServiceFactoryForUser, logger)
 		{
 		}

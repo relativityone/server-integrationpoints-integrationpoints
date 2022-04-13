@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -31,7 +32,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		private Mock<IFieldConfiguration> _configuration;
 		private Mock<IObjectFieldTypeRepository> _documentFieldRepository;
 		private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdminFake;
-		private Mock<ISyncLog> _syncLogFake;
+		private Mock<IAPILog> _syncLogFake;
 
 		private FieldManager _sut;
 
@@ -162,7 +163,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				It.IsAny<int>(),
 				It.IsAny<int>())).ReturnsAsync(queryResultForGetRdoTypeName);
 			
-			_syncLogFake = new Mock<ISyncLog>();
+			_syncLogFake = new Mock<IAPILog>();
 
 			_sut = new FieldManager(_configuration.Object, _documentFieldRepository.Object, nativeSpecialFieldBuilders,
                 imageSpecialFieldBuilders, _serviceFactoryForAdminFake.Object, _syncLogFake.Object);

@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Polly;
@@ -23,12 +24,12 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 		private readonly int _workspaceArtifactId;
 		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private readonly ISyncMetrics _syncMetrics;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 		private readonly string _fieldName;
 		private readonly IAsyncPolicy<Stream> _retryPolicy;
 
 		public RetriableLongTextStreamBuilder(int workspaceArtifactId, int relativityObjectArtifactId, string fieldName, ISourceServiceFactoryForUser serviceFactoryForUser,
-			IStreamRetryPolicyFactory streamRetryPolicyFactory, ISyncMetrics syncMetrics, ISyncLog logger)
+			IStreamRetryPolicyFactory streamRetryPolicyFactory, ISyncMetrics syncMetrics, IAPILog logger)
 		{
 			_serviceFactoryForUser = serviceFactoryForUser;
 			_syncMetrics = syncMetrics;

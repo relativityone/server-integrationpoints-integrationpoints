@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,7 +27,7 @@ namespace Relativity.Sync.Executors
 
 		private readonly ISyncObjectTypeManager _syncObjectTypeManager;
 		private readonly ISyncFieldManager _syncFieldManager;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		private static readonly Guid SourceWorkspaceObjectTypeGuid = new Guid("7E03308C-0B58-48CB-AFA4-BB718C3F5CAC");
 		private static readonly Guid SourceJobObjectTypeGuid = new Guid("6f4dd346-d398-4e76-8174-f0cd8236cbe7");
@@ -40,7 +41,7 @@ namespace Relativity.Sync.Executors
 		private static readonly Guid JobHistoryNameFieldGuid = new Guid("0b8fcebf-4149-4f1b-a8bc-d88ff5917169");
 		private static readonly Guid JobHistoryFieldOnDocumentGuid = new Guid("7cc3faaf-cbb8-4315-a79f-3aa882f1997f");
 
-		public DestinationWorkspaceObjectTypesCreationExecutor(ISyncObjectTypeManager syncObjectTypeManager, ISyncFieldManager syncFieldManager, ISyncLog logger)
+		public DestinationWorkspaceObjectTypesCreationExecutor(ISyncObjectTypeManager syncObjectTypeManager, ISyncFieldManager syncFieldManager, IAPILog logger)
 		{
 			_syncObjectTypeManager = syncObjectTypeManager;
 			_syncFieldManager = syncFieldManager;

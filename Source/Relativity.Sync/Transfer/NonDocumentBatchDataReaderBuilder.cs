@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using Relativity.API;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace Relativity.Sync.Transfer
 	/// </summary>
 	internal sealed class NonDocumentBatchDataReaderBuilder : BatchDataReaderBuilderBase
 	{
-		public NonDocumentBatchDataReaderBuilder(IFieldManager fieldManager, IExportDataSanitizer exportDataSanitizer, ISyncLog logger)
+		public NonDocumentBatchDataReaderBuilder(IFieldManager fieldManager, IExportDataSanitizer exportDataSanitizer, IAPILog logger)
 			: base(fieldManager, exportDataSanitizer, logger)
 		{
 		}

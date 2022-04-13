@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace Relativity.Sync.Tests.System
 		private WorkspaceRef _workspace;
 		private ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private IDateTime _dateTime;
-		private ISyncLog _logger;
+		private IAPILog _logger;
 
 		private readonly Guid _jobHistoryErrorObject = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
 		private readonly Guid _errorMessageField = new Guid("4112B894-35B0-4E53-AB99-C9036D08269D");
@@ -38,7 +39,7 @@ namespace Relativity.Sync.Tests.System
 		public async Task SetUp()
 		{
             Mock<IRandom> randomFake = new Mock<IRandom>();
-            Mock<ISyncLog> syncLogMock = new Mock<ISyncLog>();
+            Mock<IAPILog> syncLogMock = new Mock<IAPILog>();
 
 			_workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 			_serviceFactoryForUser = new ServiceFactoryForUser(ServiceFactory, new DynamicProxyFactoryStub(), 

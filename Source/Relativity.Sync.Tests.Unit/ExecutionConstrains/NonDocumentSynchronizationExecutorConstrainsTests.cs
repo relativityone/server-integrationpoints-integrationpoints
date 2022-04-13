@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -22,7 +23,7 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
         {
             //Arrange
             var fakeBatchRepository = new Mock<IBatchRepository>();
-            var fakeSyncLog = new Mock<ISyncLog>();
+            var fakeSyncLog = new Mock<IAPILog>();
             var fakeConfiguration = new Mock<INonDocumentSynchronizationConfiguration>();
 
             fakeBatchRepository

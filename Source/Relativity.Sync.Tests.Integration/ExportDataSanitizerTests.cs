@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -54,7 +55,7 @@ namespace Relativity.Sync.Tests.Integration
 			builder.RegisterInstance(serviceFactoryForUser.Object).As<ISourceServiceFactoryForUser>();
 			builder.RegisterInstance(serviceFactoryForAdmin.Object).As<ISourceServiceFactoryForAdmin>();
 			IntegrationTestsContainerBuilder.MockReportingWithProgress(builder);
-			builder.RegisterInstance(new EmptyLogger()).As<ISyncLog>();
+			builder.RegisterInstance(new EmptyLogger()).As<IAPILog>();
 
 			var configuration = new ConfigurationStub();
 			builder.RegisterInstance(configuration).AsImplementedInterfaces();

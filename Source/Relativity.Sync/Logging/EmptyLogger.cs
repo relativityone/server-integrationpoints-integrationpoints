@@ -6,7 +6,7 @@ using Relativity.API;
 namespace Relativity.Sync.Logging
 {
 	[ExcludeFromCodeCoverage]
-	internal sealed class EmptyLogger : IAPILog, ISyncLog
+	internal sealed class EmptyLogger : IAPILog
 	{
 		public void LogVerbose(string messageTemplate, params object[] propertyValues)
 		{

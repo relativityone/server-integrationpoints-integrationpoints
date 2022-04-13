@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,9 +18,9 @@ namespace Relativity.Sync.Executors
 		private readonly Guid _controlNumberGuid = new Guid("2a3f1212-c8ca-4fa9-ad6b-f76c97f05438");
 
 		private readonly IDestinationServiceFactoryForUser _destinationServiceFactoryForUser;
-		private readonly ISyncLog _syncLog;
+		private readonly IAPILog _syncLog;
 
-		public TagSavedSearch(IDestinationServiceFactoryForUser destinationServiceFactoryForUser, ISyncLog syncLog)
+		public TagSavedSearch(IDestinationServiceFactoryForUser destinationServiceFactoryForUser, IAPILog syncLog)
 		{
 			_destinationServiceFactoryForUser = destinationServiceFactoryForUser;
 			_syncLog = syncLog;

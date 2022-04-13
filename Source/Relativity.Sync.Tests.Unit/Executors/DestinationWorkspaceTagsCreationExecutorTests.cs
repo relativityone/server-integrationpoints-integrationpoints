@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -23,7 +24,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_sourceJobTagService = new Mock<ISourceJobTagService>();
 			_sourceCaseTagService = new Mock<ISourceCaseTagService>();
 
-			_sut = new DestinationWorkspaceTagsCreationExecutor(_sourceCaseTagService.Object, _sourceJobTagService.Object, Mock.Of<ISyncLog>());
+			_sut = new DestinationWorkspaceTagsCreationExecutor(_sourceCaseTagService.Object, _sourceJobTagService.Object, Mock.Of<IAPILog>());
 		}
 
 		[Test]

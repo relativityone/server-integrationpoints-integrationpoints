@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections;
 using System.IO;
 using System.Threading;
@@ -19,7 +20,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private CancellationToken _token;
 
 		private Mock<IDestinationServiceFactoryForUser> _destinationServiceFactoryForUser;
-		private Mock<ISyncLog> _syncLog;
+		private Mock<IAPILog> _syncLog;
 		private Mock<IKeywordSearchManager> _keywordSearchManager;
 
 		private Mock<IDestinationWorkspaceSavedSearchCreationConfiguration> _destinationWorkspaceSavedSearchCreationConfiguration;
@@ -41,7 +42,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		public void SetUp()
 		{
 			_destinationServiceFactoryForUser = new Mock<IDestinationServiceFactoryForUser>();
-			_syncLog = new Mock<ISyncLog>();
+			_syncLog = new Mock<IAPILog>();
 			_keywordSearchManager = new Mock<IKeywordSearchManager>();
 
 			_destinationWorkspaceSavedSearchCreationConfiguration = new Mock<IDestinationWorkspaceSavedSearchCreationConfiguration>();

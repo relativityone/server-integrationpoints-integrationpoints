@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Linq;
 using System.Runtime.Caching;
 using System.Threading.Tasks;
@@ -23,7 +24,7 @@ namespace Relativity.Sync.Transfer
 		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 		private readonly IMemoryCache _memoryCache;
 		private readonly IEddsDbContext _eddsDbContext;
-		private readonly ISyncLog _log;
+		private readonly IAPILog _log;
 		private readonly IToggleProvider _toggleProvider;
 		private readonly JSONSerializer _serializer = new JSONSerializer();
 		private readonly CacheItemPolicy _memoryCacheItemPolicy = new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(5) };
@@ -31,7 +32,7 @@ namespace Relativity.Sync.Transfer
 		public RelativityDataType SupportedType { get; } = RelativityDataType.User;
 
 		public UserFieldSanitizer(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IMemoryCache memoryCache,
-			IEddsDbContext eddsDbContext, ISyncLog log, IToggleProvider toggleProvider)
+			IEddsDbContext eddsDbContext, IAPILog log, IToggleProvider toggleProvider)
 		{
 			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_memoryCache = memoryCache;

@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
@@ -23,7 +24,7 @@ namespace Relativity.Sync.Transfer
 			Action<string, string> itemLevelErrorHandler,
 			int identifierFieldIndex,
 			CancellationToken cancellationToken,
-			ISyncLog logger)
+			IAPILog logger)
 		: base(templateDataTable, sourceWorkspaceArtifactId, batch, allFields, fieldManager, exportDataSanitizer, itemLevelErrorHandler, cancellationToken, logger)
 		{
 			_identifierFieldIndex = identifierFieldIndex;

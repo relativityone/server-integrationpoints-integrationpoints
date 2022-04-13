@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Services.Objects;
@@ -16,9 +17,9 @@ namespace Relativity.Sync.ExecutionConstrains
 		private const string _AUTOMATED_WORKFLOWS_APPLICATION_NAME = "Automated Workflows";
 
 		private readonly IDestinationServiceFactoryForAdmin _serviceFactory;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public AutomatedWorkflowExecutorConstrains(IDestinationServiceFactoryForAdmin serviceFactory, ISyncLog logger)
+		public AutomatedWorkflowExecutorConstrains(IDestinationServiceFactoryForAdmin serviceFactory, IAPILog logger)
 		{
 			_serviceFactory = serviceFactory;
 			_logger = logger;

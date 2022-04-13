@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections;
 using System.Threading.Tasks;
 using Relativity.Sync.KeplerFactory;
@@ -8,12 +9,12 @@ namespace Relativity.Sync.Telemetry
 {
 	internal sealed class SumSyncMetricsSink : ISyncMetricsSink
 	{
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 		private readonly IWorkspaceGuidService _workspaceGuidService;
 		private readonly SyncJobParameters _syncJobParameters;
 
-		public SumSyncMetricsSink(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger, IWorkspaceGuidService workspaceGuidService, SyncJobParameters syncJobParameters)
+		public SumSyncMetricsSink(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IAPILog logger, IWorkspaceGuidService workspaceGuidService, SyncJobParameters syncJobParameters)
 		{
 			_logger = logger;
 			_workspaceGuidService = workspaceGuidService;

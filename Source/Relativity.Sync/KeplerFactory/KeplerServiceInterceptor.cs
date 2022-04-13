@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Reflection;
 using System.Threading.Tasks;
 using Polly;
@@ -21,12 +22,12 @@ namespace Relativity.Sync.KeplerFactory
 		private readonly Func<IStopwatch> _stopwatch;
 		private readonly Func<Task<TService>> _keplerServiceFactory;
 		private readonly IRandom _random;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 		private readonly System.Reflection.FieldInfo _currentInterceptorIndexField;
 
 		private static readonly MethodInfo _handleAsyncMethodInfo = typeof(KeplerServiceInterceptor<TService>).GetMethod(nameof(HandleAsyncWithResultAsync), BindingFlags.Instance | BindingFlags.NonPublic);
 
-		public KeplerServiceInterceptor(Func<IStopwatch> stopwatch, Func<Task<TService>> keplerServiceFactory, IRandom random, ISyncLog logger)
+		public KeplerServiceInterceptor(Func<IStopwatch> stopwatch, Func<Task<TService>> keplerServiceFactory, IRandom random, IAPILog logger)
 		{
 			_stopwatch = stopwatch;
 			_keplerServiceFactory = keplerServiceFactory;

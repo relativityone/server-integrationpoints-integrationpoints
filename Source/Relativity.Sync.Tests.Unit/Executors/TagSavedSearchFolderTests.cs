@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	[TestFixture]
 	public sealed class TagSavedSearchFolderTests
 	{
-		private Mock<ISyncLog> _syncLogMock;
+		private Mock<IAPILog> _syncLogMock;
 		private Mock<IDestinationServiceFactoryForUser> _serviceFactoryForUser;
 		private Mock<ISearchContainerManager> _searchContainerManager;
 		private TagSavedSearchFolder _instance;
@@ -25,7 +26,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			_syncLogMock = new Mock<ISyncLog>();
+			_syncLogMock = new Mock<IAPILog>();
 		}
 
 		[SetUp]

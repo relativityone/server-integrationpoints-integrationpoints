@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -26,7 +27,7 @@ namespace Relativity.Sync.Tests.Integration
 	internal sealed class SourceWorkspaceTagsCreationExecutorTests
 	{
 		private CompositeCancellationToken _token;
-		private ISyncLog _logger;
+		private IAPILog _logger;
 
 		private IExecutor<ISourceWorkspaceTagsCreationConfiguration> _executor;
 		private Mock<IObjectManager> _destinationObjectManagerMock;
@@ -88,7 +89,7 @@ namespace Relativity.Sync.Tests.Integration
 			containerBuilder.RegisterInstance(destinationServiceFactoryMock.Object).As<IDestinationServiceFactoryForUser>();
 			containerBuilder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
 
-			containerBuilder.RegisterInstance(_logger).As<ISyncLog>();
+			containerBuilder.RegisterInstance(_logger).As<IAPILog>();
 
 			var syncMetrics = new Mock<ISyncMetrics>();
 			containerBuilder.RegisterInstance(syncMetrics.Object).As<ISyncMetrics>();

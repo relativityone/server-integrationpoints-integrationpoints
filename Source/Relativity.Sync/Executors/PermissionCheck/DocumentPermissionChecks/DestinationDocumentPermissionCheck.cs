@@ -1,3 +1,4 @@
+using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,7 @@ namespace Relativity.Sync.Executors.PermissionCheck.DocumentPermissionChecks
 
         
         public DestinationDocumentPermissionCheck(IDestinationServiceFactoryForUser destinationServiceFactory, 
-            ISyncObjectTypeManager syncObjectTypeManager, ISyncLog logger) : base(destinationServiceFactory, logger)
+            ISyncObjectTypeManager syncObjectTypeManager, IAPILog logger) : base(destinationServiceFactory, logger)
         {
             _syncObjectTypeManager = syncObjectTypeManager;
         }

@@ -1,3 +1,4 @@
+using Relativity.API;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
     [TestFixture]
     public class ItemLevelErrorLogAggregatorTests
     {
-        private Mock<ISyncLog> _loggerMock;
+        private Mock<IAPILog> _loggerMock;
         private ItemLevelErrorLogAggregator _sut;
 
         private const string SampleErrorMessage1 = "Sample error message 1";
@@ -20,7 +21,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
         [SetUp]
         public void Setup()
         {
-            _loggerMock = new Mock<ISyncLog>();
+            _loggerMock = new Mock<IAPILog>();
             _sut = new ItemLevelErrorLogAggregator(_loggerMock.Object);
         }
 

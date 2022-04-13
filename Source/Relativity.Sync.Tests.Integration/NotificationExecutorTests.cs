@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,7 +32,7 @@ namespace Relativity.Sync.Tests.Integration
 		private Mock<IObjectManager> _objectManager;
 		private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdmin;
 		private Mock<ISourceServiceFactoryForUser> _serviceFactoryForUser;
-		private Mock<ISyncLog> _syncLog;
+		private Mock<IAPILog> _syncLog;
 		private Mock<ISyncMetrics> _syncMetrics;
 
 		private IExecutor<INotificationConfiguration> _instance;
@@ -52,7 +53,7 @@ namespace Relativity.Sync.Tests.Integration
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			_syncLog = new Mock<ISyncLog>();
+			_syncLog = new Mock<IAPILog>();
 			_syncMetrics = new Mock<ISyncMetrics>();
 			_token = CompositeCancellationToken.None;
 
@@ -77,7 +78,7 @@ namespace Relativity.Sync.Tests.Integration
 			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
 			IntegrationTestsContainerBuilder.MockStepsExcept<INotificationConfiguration>(containerBuilder);
 
-			containerBuilder.RegisterInstance(_syncLog.Object).As<ISyncLog>();
+			containerBuilder.RegisterInstance(_syncLog.Object).As<IAPILog>();
 			containerBuilder.RegisterInstance(_syncMetrics.Object).As<ISyncMetrics>();
 
 			_serviceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();

@@ -1,4 +1,5 @@
-﻿using Relativity.Sync.KeplerFactory;
+using Relativity.API;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync.Transfer.StreamWrappers
@@ -8,10 +9,10 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private readonly IStreamRetryPolicyFactory _streamRetryPolicyFactory;
 		private readonly ISyncMetrics _syncMetrics;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		public RetriableLongTextStreamBuilderFactory(ISourceServiceFactoryForUser serviceFactoryForUser,
-			IStreamRetryPolicyFactory streamRetryPolicyFactory, ISyncMetrics syncMetrics, ISyncLog logger)
+			IStreamRetryPolicyFactory streamRetryPolicyFactory, ISyncMetrics syncMetrics, IAPILog logger)
 		{
 			_serviceFactoryForUser = serviceFactoryForUser;
 			_streamRetryPolicyFactory = streamRetryPolicyFactory;

@@ -5,7 +5,7 @@ using Relativity.API;
 
 namespace Relativity.Sync.Tests.System.Core
 {
-	internal sealed class DebugLogger : ISyncLog, IAPILog
+	internal sealed class DebugLogger : IAPILog
 	{
 		public void LogVerbose(string messageTemplate, params object[] propertyValues)
 		{

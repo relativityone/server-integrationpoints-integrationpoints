@@ -1,4 +1,5 @@
-﻿using Relativity.Services.DataContracts.DTOs.Results;
+using Relativity.API;
+using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -14,11 +15,11 @@ namespace Relativity.Sync.Executors
         private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
         private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
         private readonly ISnapshotQueryRequestProvider _snapshotQueryRequestProvider;
-        private readonly ISyncLog _logger;
+        private readonly IAPILog _logger;
 
         public NonDocumentObjectDataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactoryForUser,
             IJobProgressUpdaterFactory jobProgressUpdaterFactory,
-            ISnapshotQueryRequestProvider snapshotQueryRequestProvider, ISyncLog logger)
+            ISnapshotQueryRequestProvider snapshotQueryRequestProvider, IAPILog logger)
         {
             _serviceFactoryForUser = serviceFactoryForUser;
             _jobProgressUpdaterFactory = jobProgressUpdaterFactory;

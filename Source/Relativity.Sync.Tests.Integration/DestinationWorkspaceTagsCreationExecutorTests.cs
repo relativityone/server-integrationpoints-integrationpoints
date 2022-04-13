@@ -1,4 +1,5 @@
-﻿using System;
+using Relativity.API;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -55,7 +56,7 @@ namespace Relativity.Sync.Tests.Integration
 			containerBuilder.RegisterInstance(sourceServiceFactoryForUserMock.Object).As<ISourceServiceFactoryForUser>();
 			containerBuilder.RegisterType<DestinationWorkspaceTagsCreationExecutor>().As<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>();
 
-			containerBuilder.RegisterInstance(new EmptyLogger()).As<ISyncLog>();
+			containerBuilder.RegisterInstance(new EmptyLogger()).As<IAPILog>();
 
 			IContainer container = containerBuilder.Build();
 			_executor = container.Resolve<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>();
