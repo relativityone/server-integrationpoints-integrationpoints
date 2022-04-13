@@ -43,7 +43,7 @@
   <!-- Relativity Packages with Unknown Versioning Schema -->
   <ItemGroup>
     <PackageReference Include="Relativity.Testing.Framework" Version="7.2.1" />
-    <PackageReference Include="Relativity.Testing.Framework.Api" Version="6.0.1" />
+    <PackageReference Include="Relativity.Testing.Framework.Api" Version="6.1.5" />
     <PackageReference Include="Relativity.Testing.Identification" Version="3.12.0" />
     <PackageReference Include="Relativity.Productions.Services.Interfaces" Version="11.2.13" />
   </ItemGroup>
