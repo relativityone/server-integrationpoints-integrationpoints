@@ -58,6 +58,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             docs.Should().HaveCount(expectedNumberOfDocs);
 
             docs.Should().OnlyContain(x => x.HasImages.Name == "Yes");
+
         }
 
         private List<RelativityObject> GetAllDocumentsFromWorkspace(int workspaceId)

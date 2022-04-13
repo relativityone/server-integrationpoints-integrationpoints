@@ -221,7 +221,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			_logger.LogInformation("Run request was completed successfully and job has been added to Schedule Queue.");
 		}
 
-		public void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId)
+		public void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId, bool switchToAppendOverlayMode)
 		{
 			Data.IntegrationPoint integrationPoint;
 			SourceProvider sourceProvider;
@@ -248,7 +248,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
 			Guid jobRunId = Guid.NewGuid();
 
-			Data.JobHistory jobHistory = CreateJobHistory(integrationPoint, jobRunId, JobTypeChoices.JobHistoryRetryErrors);
+			Data.JobHistory jobHistory = CreateJobHistory(integrationPoint, jobRunId, JobTypeChoices.JobHistoryRetryErrors, switchToAppendOverlayMode);
 
 			ValidateIntegrationPointBeforeRun(integrationPointArtifactId, userId, integrationPoint, sourceProvider, destinationProvider, jobHistory);
 			
@@ -412,12 +412,13 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			_logger.LogInformation("Job was successfully created.");
 		}
 
-		private Data.JobHistory CreateJobHistory(Data.IntegrationPoint integrationPoint, Guid jobRunId, ChoiceRef jobType)
+		private Data.JobHistory CreateJobHistory(Data.IntegrationPoint integrationPoint, Guid jobRunId, ChoiceRef jobType, bool switchToAppendOverlayMode = false)
 		{
 			_logger.LogInformation("Creating Job History for Integration Point {integrationPointId} with BatchInstance {batchInstance}...", 
 				integrationPoint.ArtifactId, jobRunId);
 
 			Data.JobHistory jobHistory = _jobHistoryService.CreateRdo(integrationPoint, jobRunId, jobType, null);
+			AdjustOverwriteModeForRetry(jobHistory, switchToAppendOverlayMode);
 
 			if (jobHistory == null)
 			{
@@ -431,7 +432,16 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 			return jobHistory;
 		}
 
-		private void SetJobHistoryStatus(Data.JobHistory jobHistory, ChoiceRef status)
+        private void AdjustOverwriteModeForRetry(Data.JobHistory jobHistory, bool switchToAppendOverlayMode)
+        {
+            if (switchToAppendOverlayMode)
+            {
+				jobHistory.Overwrite = OverwriteFieldsChoices.IntegrationPointAppendOverlay.Name;
+				_jobHistoryService.UpdateRdo(jobHistory);
+            }
+        }
+
+        private void SetJobHistoryStatus(Data.JobHistory jobHistory, ChoiceRef status)
 		{
 			if (jobHistory != null)
 			{
