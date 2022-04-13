@@ -47,12 +47,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync
 
 			return syncJobFactory.Object;
 		}
-
-		public ISyncLog CreateSyncLog()
-		{
-			return new Mock<ISyncLog>().Object;
-		}
-
+		
 		public ISyncConfigurationBuilder GetSyncConfigurationBuilder(ISyncContext context)
 		{
 			Mock<ISyncJobConfigurationBuilder> syncConfigurationBuilderMock = new Mock<ISyncJobConfigurationBuilder>();

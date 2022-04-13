@@ -1,6 +1,5 @@
 ﻿using System;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using Relativity.API;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.RDOs.Framework;
@@ -26,7 +25,7 @@ namespace kCura.IntegrationPoints.RelativitySync.OldBatchesCleanup
         {
             ISourceServiceFactoryForAdmin serviceFactory = new ServiceFactoryForAdmin(_servicesMgr);
             IBatchRepository batchRepository = new BatchRepository(
-                new RdoManager(new SyncLog(_apiLog), serviceFactory, new RdoGuidProvider()),
+                new RdoManager(_apiLog, serviceFactory, new RdoGuidProvider()),
                 serviceFactory, new DateTimeWrapper());
 
             return new OldBatchesCleanupService(batchRepository, _errorService, _apiLog);

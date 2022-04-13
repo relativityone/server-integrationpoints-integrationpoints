@@ -34,22 +34,17 @@ namespace kCura.IntegrationPoints.RelativitySync
 			return new RelativityServices(_apmMetrics, _syncServiceManager, 
 				ExtensionPointServiceFinder.ServiceUriProvider.AuthenticationUri(), _helper);
 		}
-
-		public ISyncLog CreateSyncLog()
-		{
-			return new SyncLog(_log);
-		}
-
+		
 		public async Task PrepareSyncConfigurationForResumeAsync(int workspaceId, int syncConfigurationId)
 		{
 			await _syncServiceManager.PrepareSyncConfigurationForResumeAsync(
-					workspaceId, syncConfigurationId, CreateSyncLog())
+					workspaceId, syncConfigurationId, _log)
 				.ConfigureAwait(false);
 		}
 
 		public ISyncConfigurationBuilder GetSyncConfigurationBuilder(ISyncContext context)
 		{
-            return new SyncConfigurationBuilder(context, _syncServiceManager, CreateSyncLog());
+            return new SyncConfigurationBuilder(context, _syncServiceManager, _log);
 		}
 	}
 }
