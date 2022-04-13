@@ -9,6 +9,7 @@ using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Models;
 using Relativity.Toggles;
 using kCura.IntegrationPoints.Common.Toggles;
+using NUnit.Framework;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
@@ -17,7 +18,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 	{
 		private readonly SyncTestsImplementation _testsImplementation;
 
-		public SyncTests() : base($"Sync Tests - Source")
+		public SyncTests() : base(nameof(SyncTests))
 		{
 			_testsImplementation = new SyncTestsImplementation(this);
 		}
@@ -36,20 +37,19 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			_testsImplementation.OnTearDownFixture();
 		}
 
-		[TestType.Critical]
-		[IdentifiedTest("b0afe8eb-e898-4763-9f95-e998f220b421")]
+		[Test, TestType.Critical]
 		public void SavedSearch_NativesAndMetadata_GoldFlow()
 		{
 			_testsImplementation.SavedSearchNativesAndMetadataGoldFlow();
 		}
 
-		[IdentifiedTest("26b72aab-a7ef-44ed-8338-81f91523388c")]
+		[Test]
 		public void Production_Images_GoldFlow()
 		{
 			_testsImplementation.ProductionImagesGoldFlow();
 		}
 
-		[IdentifiedTest("0AB920A7-7F1A-4C72-82A7-F1A1CEB42863")]
+		[Test]
 		public async Task Production_Images_WithKeplerizedImportAPI()
 		{
 			IToggleProvider toggleProvider = SqlToggleProvider.Create();
@@ -67,7 +67,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			}
 		}
 
-		[IdentifiedTest("6E4C0033-D728-4C20-95ED-023527B598DE")]
+		[Test]
 		public async Task Entities_GoldFlow()
 		{
 			IToggleProvider toggleProvider = SqlToggleProvider.Create();

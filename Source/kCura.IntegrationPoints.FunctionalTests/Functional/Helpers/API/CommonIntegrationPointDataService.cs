@@ -1,4 +1,6 @@
-﻿using Relativity.IntegrationPoints.Services;
+﻿using kCura.IntegrationPoints.Domain.Extensions;
+using kCura.IntegrationPoints.Synchronizers.RDO;
+using Relativity.IntegrationPoints.Services;
 using Relativity.Services.ArtifactGuid;
 using Relativity.Services.ChoiceQuery;
 using Relativity.Services.Folder;
@@ -16,9 +18,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
 {
     internal interface ICommonIntegrationPointDataService
     {
+        int WorkspaceId { get; }
         Task<int> GetDestinationProviderIdAsync(string identifier);
         Task<int> GetIntegrationPointTypeByAsync(string name);
-        Task<int> GetOverwriteFieldsChoiceIdAsync(string name);
+        Task<int> GetOverwriteFieldsChoiceIdAsync(ImportOverwriteModeEnum overwriteMode);
         Task<int> GetRootFolderArtifactIdAsync();
         Task<int> GetSourceProviderIdAsync(string identifier);
         Task<int> GetSavedSearchArtifactIdAsync(string savedSearchName);
@@ -35,6 +38,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
             _serviceFactory = serviceFactory;
             _workspaceId = workspaceId;
         }
+
+        public int WorkspaceId => _workspaceId;
 
         public async Task<int> GetSourceProviderIdAsync(string identifier)
         {
@@ -62,7 +67,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
             }
         }
 
-        public async Task<int> GetOverwriteFieldsChoiceIdAsync(string name)
+        public async Task<int> GetOverwriteFieldsChoiceIdAsync(ImportOverwriteModeEnum overwriteMode)
         {
             using (IArtifactGuidManager guidManager = _serviceFactory.GetServiceProxy<IArtifactGuidManager>())
             using (IChoiceQueryManager choiceManager = _serviceFactory.GetServiceProxy<IChoiceQueryManager>())
@@ -73,7 +78,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
 
                 List<Choice> choices = await choiceManager.QueryAsync(_workspaceId, overwriteFieldId).ConfigureAwait(false);
 
-                return choices.Single(x => x.Name == name).ArtifactID;
+                return choices.Single(x => x.Name == overwriteMode.GetDescription()).ArtifactID;
             }
         }
 

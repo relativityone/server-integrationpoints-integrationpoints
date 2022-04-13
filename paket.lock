@@ -547,7 +547,7 @@ NUGET
       NLog (>= 4.7.2)
       NUnit (>= 3.13.2)
       SemanticVersioning (>= 1.2.2)
-    Relativity.Testing.Framework.Api (6.1.2)
+    Relativity.Testing.Framework.Api (6.1.4)
       Newtonsoft.Json (>= 11.0.2)
       NUnit (>= 3.13.2)
       Polly (>= 5.7)
