@@ -26,7 +26,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	[TestFixture]
 	internal sealed class RetryDataSourceSnapshotExecutorTests
 	{
-		private RetryDataSourceSnapshotExecutor _instance;
+		private DataSourceSnapshotExecutor _instance;
 
 		private Mock<IObjectManager> _objectManager;
 		private Mock<IRetryDataSourceSnapshotConfiguration> _configuration;
@@ -57,7 +57,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			Mock<IJobProgressUpdaterFactory> jobProgressUpdaterFactory = new Mock<IJobProgressUpdaterFactory>();
 			jobProgressUpdaterFactory.Setup(x => x.CreateJobProgressUpdater()).Returns(_jobProgressUpdater.Object);
 
-			_instance = new RetryDataSourceSnapshotExecutor(serviceFactoryForUser.Object, jobProgressUpdaterFactory.Object,
+			_instance = new DataSourceSnapshotExecutor(serviceFactoryForUser.Object, jobProgressUpdaterFactory.Object,
 				new EmptyLogger(), _snapshotQueryProviderFake.Object);
 		}
 
@@ -117,7 +117,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		[TestCase(ImportOverwriteMode.AppendOverlay)]
 		[TestCase(ImportOverwriteMode.AppendOnly)]
 		[TestCase(ImportOverwriteMode.OverlayOnly)]
-		public async Task ItShouldSetOverrideModeToAppendOverlay(ImportOverwriteMode previousOverrideMode)
+		public async Task ItShouldNotChangeOverrideModeFromConfig(ImportOverwriteMode previousOverrideMode)
 		{
 			// Arrange
 			_configuration.SetupProperty(x => x.ImportOverwriteMode, previousOverrideMode);
@@ -126,7 +126,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
 			// Assert
-			_configuration.Object.ImportOverwriteMode.Should().Be(ImportOverwriteMode.AppendOverlay);
+			_configuration.Object.ImportOverwriteMode.Should().Be(previousOverrideMode);
 		}
 	}
 }
