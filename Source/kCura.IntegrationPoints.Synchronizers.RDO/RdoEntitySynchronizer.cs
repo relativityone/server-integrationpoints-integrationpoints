@@ -34,6 +34,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoEntitySynchronizer>();
 			_entityManagerLinksSanitizer = entityManagerLinksSanitizer;
+            OnDocumentError += RemoveFailedItemFromEntityManagerMap;
 		}
 
 		public ITaskJobSubmitter TaskJobSubmitter { get; set; }
@@ -194,7 +195,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			LogGeneratingImportRow();
 			Dictionary<string, object> importRow = base.GenerateImportRow(row, fieldMap, settings);
-			ProcessManagerReference(importRow);
+            ProcessManagerReference(importRow);
 			if (HandleFullNamePopulation && !importRow.ContainsKey(_LDAP_MAP_FULL_NAME_FIELD_NAME))
 			{
 				string firstName = (string)importRow[FirstNameSourceFieldId];
@@ -203,7 +204,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				if (!string.IsNullOrWhiteSpace(fullName))
 				{
 					importRow.Add(_LDAP_MAP_FULL_NAME_FIELD_NAME, fullName);
-				}
+                }
 				else
 				{
                     string sourceFieldId = importRow[UniqueIDSourceFieldId] as string ?? String.Empty;
@@ -211,13 +212,18 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 					//if no Full Name, do not insert record
 					importRow = null;
 				}
-			}
-			return importRow;
+            }
+            return importRow;
 		}
 
-		private void GenerateImportRowError(string sourceFieldId, string errorMessage)
+        private void RemoveFailedItemFromEntityManagerMap(string row, string error)
+        {
+            _entityManagerMap.Remove(row);
+		}
+
+        private void GenerateImportRowError(string sourceFieldId, string errorMessage)
 		{
-			RaiseDocumentErrorEvent(sourceFieldId, errorMessage);
+            RaiseDocumentErrorEvent(sourceFieldId, errorMessage);
 			_logger.LogWarning("There was a problem with record: {sanitizedSourceFieldId}. {errorMessage}", SanitizeString(sourceFieldId), errorMessage );
 		}
 
@@ -347,7 +353,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 		}
 
-		public bool IsField(RelativityObject artifact, Guid fieldGuid)
+        private bool IsField(RelativityObject artifact, Guid fieldGuid)
 		{
 			return artifact.Guids.Contains(fieldGuid);
 		}

@@ -8,7 +8,6 @@ using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Validation;
 using Moq;
@@ -18,7 +17,7 @@ using Relativity.API;
 
 namespace kCura.ScheduleQueue.AgentBase.Tests
 {
-	[TestFixture, Category("Unit")]
+    [TestFixture, Category("Unit")]
 	public class ScheduleQueueAgentBaseTests
 	{
 		private Mock<IJobService> _jobServiceMock;
@@ -202,7 +201,6 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 			var agentService = new Mock<IAgentService>();
 			var scheduleRuleFactory = new Mock<IScheduleRuleFactory>();
 			var emptyLog = new Mock<IAPILog>();
-			var fileShareAccessService = new Mock<IFileShareAccessService>();
 
 			_jobServiceMock = new Mock<IJobService>();
 			_jobServiceMock.Setup(x => x.FinalizeJob(It.IsAny<Job>(), It.IsAny<IScheduleRuleFactory>(),
@@ -219,7 +217,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 
 			return new TestAgent(agentService.Object, _jobServiceMock.Object,
 				scheduleRuleFactory.Object, _queueJobValidatorFake.Object, _queryManager.Object, 
-				_kubernetesModeFake.Object, _dateTime.Object, emptyLog.Object, fileShareAccessService.Object)
+				_kubernetesModeFake.Object, _dateTime.Object, emptyLog.Object)
 			{
 				JobResult = jobStatus
 			};
@@ -246,10 +244,8 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 		{
 			public TestAgent(IAgentService agentService = null, IJobService jobService = null, 
 				IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
-				IQueueQueryManager queryManager = null, IKubernetesMode kubernetesMode = null, IDateTime dateTime = null, IAPILog log = null,
-				IFileShareAccessService fileShareAccessService = null) 
-				: base(Guid.NewGuid(), agentService, jobService, scheduleRuleFactory, queueJobValidator, queryManager, kubernetesMode, dateTime, log,
-					  fileShareAccessService)
+				IQueueQueryManager queryManager = null, IKubernetesMode kubernetesMode = null, IDateTime dateTime = null, IAPILog log = null) 
+				: base(Guid.NewGuid(), kubernetesMode, agentService, jobService, scheduleRuleFactory, queueJobValidator, queryManager, dateTime, log)
 			{
 				//'Enabled = true' triggered Execute() immediately. I needed to set the field only to enable getting job from the queue
 				typeof(Agent.AgentBase).GetField("_enabled", BindingFlags.NonPublic | BindingFlags.Instance)

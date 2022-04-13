@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
+using static kCura.IntegrationPoints.Core.Contracts.Configuration.SourceConfiguration;
 
 namespace kCura.IntegrationPoints.Core.Tests.Helpers
 {
@@ -46,23 +47,23 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 				_permissionRepository, _permissionValidator, _integrationPointRepository);
 		}
 
-		[TestCase(ProviderType.Relativity, true, true, true, true,false)]
-		[TestCase(ProviderType.Other, true, true, true, true, false)]
-		[TestCase(ProviderType.FTP, true, true, true, true, false)]
-		[TestCase(ProviderType.LDAP, true, true, true, true, false)]
-		[TestCase(ProviderType.LoadFile, true, true, true, true, false)]
-		[TestCase(ProviderType.Relativity, false, true, true, true, false)]
-		[TestCase(ProviderType.Relativity, true, false, true, true, false)]
-		[TestCase(ProviderType.Relativity, true, true, true, true, false)]
-		[TestCase(ProviderType.Relativity, true, true, false, true, false)]
-		[TestCase(ProviderType.Relativity, true, true, true, false, false)]
-		[TestCase(ProviderType.Relativity, true, true, true, false, true)]
+		[TestCase(ExportType.SavedSearch, ProviderType.Relativity, true, true, true, true,false)]
+		[TestCase(ExportType.SavedSearch, ProviderType.Other, true, true, true, true, false)]
+		[TestCase(ExportType.SavedSearch, ProviderType.FTP, true, true, true, true, false)]
+		[TestCase(ExportType.SavedSearch, ProviderType.LDAP, true, true, true, true, false)]
+		[TestCase(ExportType.SavedSearch, ProviderType.LoadFile, true, true, true, true, false)]
+		[TestCase(ExportType.SavedSearch, ProviderType.Relativity, false, true, true, true, false)]
+		[TestCase(ExportType.SavedSearch, ProviderType.Relativity, true, false, true, true, false)]
+		[TestCase(ExportType.SavedSearch, ProviderType.Relativity, true, true, true, true, false)]
+		[TestCase(ExportType.SavedSearch, ProviderType.Relativity, true, true, false, true, false)]
+		[TestCase(ExportType.ProductionSet, ProviderType.Relativity, true, true, true, false, false)]
+		[TestCase(ExportType.View, ProviderType.Relativity, true, true, true, false, true)]
 		public void BuildButtonState_GoldWorkflow(
-			ProviderType providerType, bool hasErrorViewPermission, bool hasJobsExecutingOrInQueue,
+			ExportType exportType, ProviderType providerType, bool hasErrorViewPermission, bool hasJobsExecutingOrInQueue,
 			bool hasErrors, bool hasAddProfilePermission,bool imageImport)
 		{
 			// Arrange
-			SetupIntegrationPoint(providerType, imageImport, hasErrors);
+			SetupIntegrationPoint(providerType, imageImport, hasErrors, exportType);
 
 			_permissionValidator.ValidateViewErrors(_WORKSPACE_ID).Returns(
 				hasErrorViewPermission ? new ValidationResult() : new ValidationResult(new[] {"error"}));
@@ -82,6 +83,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			// Assert
 			_stateManager.Received()
 				.GetButtonState(
+					Arg.Is(exportType),
 					Arg.Is(providerType),
 					Arg.Is(hasJobsExecutingOrInQueue),
 					Arg.Is(hasErrors),
@@ -119,6 +121,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 			// Assert
 			_stateManager.Received()
 				.GetButtonState(
+					Arg.Is(exportType),
 					Arg.Is(providerType),
 					Arg.Any<bool>(),
 					Arg.Any<bool>(),

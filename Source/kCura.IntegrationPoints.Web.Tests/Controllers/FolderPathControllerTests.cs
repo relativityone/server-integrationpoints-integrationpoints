@@ -15,7 +15,7 @@ using NSubstitute;
 using NUnit.Framework;
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Common.Context;
-using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
+using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 using Field = kCura.Relativity.ImportAPI.Data.Field;
@@ -45,13 +45,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_workspaceIdProvider = Substitute.For<IWorkspaceContext>();
 			_importApiFacade = Substitute.For<IImportApiFacade>();
 			_configuration = Substitute.For<HttpConfiguration>();
+            IHelper helper = Substitute.For<IHelper>();
 
 			var config = new HttpConfiguration();
 			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
 			IHttpRoute route = config.Routes.MapHttpRoute("DefaultApi", "api/{controller}/{id}");
 			var routeData = new HttpRouteData(route, new HttpRouteValueDictionary { { "controller", "GetFolderPathFieldsController" } });
 
-			_instance = new FolderPathController(_fieldService, _choiceService, _workspaceIdProvider, _importApiFacade)
+			_instance = new FolderPathController(_fieldService, _choiceService, _workspaceIdProvider, _importApiFacade, helper)
 			{
 				ControllerContext = new HttpControllerContext(config, routeData, request),
 				Request = request

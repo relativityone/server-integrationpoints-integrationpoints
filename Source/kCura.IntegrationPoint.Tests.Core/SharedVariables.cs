@@ -284,6 +284,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 
         public static string RipRapFilePath => GetRapFilePath(AppSettingString("RipRapFileName"));
 
+		public static string BuildToolsDirectory => AppSettingString("BuildToolsDirectory");
+
 		#endregion RAP File Settings
 
 		#region FTP Configuration Settings
@@ -310,11 +312,15 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static string FileShareServicesPath => AppSettingString("FileshareServicesPath");
 
+		public static string FileShareServicesRAP => Path.Combine(BuildToolsDirectory, FileShareServicesPath);
+
 		#endregion
 
 		#region DataTransfer.Legacy Settings
 
 		public static string DataTransferLegacyRapPath => AppSettingString("DataTransferLegacyPath");
+
+		public static string DataTransferLegacyRAP => Path.Combine(BuildToolsDirectory, DataTransferLegacyRapPath);
 
 		#endregion
 

@@ -1,9 +1,16 @@
-﻿namespace kCura.IntegrationPoints.Synchronizers.RDO
+﻿using System.ComponentModel;
+
+namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public enum ImportOverwriteModeEnum
 	{
-		AppendOnly = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append,
-		AppendOverlay = kCura.Relativity.DataReaderClient.OverwriteModeEnum.AppendOverlay,
-		OverlayOnly = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Overlay,
+		[Description("Append Only")]
+		AppendOnly = Relativity.DataReaderClient.OverwriteModeEnum.Append,
+
+		[Description("Append/Overlay")]
+		AppendOverlay = Relativity.DataReaderClient.OverwriteModeEnum.AppendOverlay,
+
+		[Description("Overlay Only")]
+		OverlayOnly = Relativity.DataReaderClient.OverwriteModeEnum.Overlay,
 	}
 }

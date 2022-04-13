@@ -6,18 +6,16 @@ using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity;
 using Relativity.API;
-using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Validation
 {
-	public class IntegrationPointProviderValidator : BaseIntegrationPointValidator<IValidator>, IIntegrationPointProviderValidator
+    public class IntegrationPointProviderValidator : BaseIntegrationPointValidator<IValidator>, IIntegrationPointProviderValidator
 	{
 		private readonly IRelativityObjectManagerFactory _relativityObjectManagerFactory;
 
@@ -66,12 +64,15 @@ namespace kCura.IntegrationPoints.Core.Validation
 			{
 				result.Add(validator.Validate(validationModel));
 			}
-			
-			foreach (IValidator validator in _validatorsMap[GetTransferredObjectObjectTypeGuid(validationModel).ToString()])
-            {
-            	result.Add(validator.Validate(validationModel));
-            }
 
+            if (!IsSyncFlow(sourceProvider, destinationProvider))
+            {
+                foreach (IValidator validator in _validatorsMap[GetTransferredObjectObjectTypeGuid(validationModel).ToString()])
+                {
+                    result.Add(validator.Validate(validationModel));
+                }
+			}
+			
 			return result;
 		}
 
@@ -79,23 +80,27 @@ namespace kCura.IntegrationPoints.Core.Validation
 		{
 			ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(validationModel.DestinationConfiguration);
 			int destinationWorkspaceArtifactId = destinationConfiguration.CaseArtifactId;
-			IRelativityObjectManager relativityObjectManager =
-				_relativityObjectManagerFactory.CreateRelativityObjectManager(destinationWorkspaceArtifactId);
-				
+			IRelativityObjectManager relativityObjectManager = _relativityObjectManagerFactory.CreateRelativityObjectManager(destinationWorkspaceArtifactId);
+
 			var request = new QueryRequest()
 			{
 				ObjectType = new ObjectTypeRef() { ArtifactTypeID = (int)ArtifactType.ObjectType },
 				Condition = $"(('Artifact Type ID' == {validationModel.ArtifactTypeId}))"
 			};
 
-			var results = relativityObjectManager.QueryAsync( request, 0, 1, false, ExecutionIdentity.System)
-				.GetAwaiter().GetResult();
+            Data.UtilityDTO.ResultSet<RelativityObject> results = relativityObjectManager.QueryAsync( request, 0, 1, false, ExecutionIdentity.System).GetAwaiter().GetResult();
 			if (results.TotalCount == 0)
 			{
 				return Guid.Empty;
 			}
-			return results.Items.Single().Guids.FirstOrDefault();
 
-		}
+			return results.Items.Single().Guids.FirstOrDefault();
+        }
+
+        private static bool IsSyncFlow(SourceProvider sourceProvider, DestinationProvider destinationProvider)
+        {
+            return sourceProvider.Identifier.Equals(Constants.IntegrationPoints.SourceProviders.RELATIVITY, StringComparison.InvariantCultureIgnoreCase) &&
+                   destinationProvider.Identifier.Equals(Constants.IntegrationPoints.DestinationProviders.RELATIVITY, StringComparison.InvariantCultureIgnoreCase);
+        }
 	}
 }

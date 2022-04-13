@@ -74,29 +74,28 @@ export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sou
     convenienceApi.fieldHelper.setValue("Port", sourceConfiguration["port"]);
     convenienceApi.fieldHelper.setValue("Protocol", sourceConfiguration["protocol"]);
     convenienceApi.fieldHelper.setValue("Filename Prefix", sourceConfiguration["filename_prefix"]);
-    convenienceApi.fieldHelper.setValue("Timezone Offset", sourceConfiguration["timezone_offset"]);
+    convenienceApi.fieldHelper.setValue("Timezone Offset", sourceConfiguration["TimezoneOffset"]);
 
-    if (sourceConfiguration["SourceProductionId"]) {
-        getImagesStatsForProduction(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], sourceConfiguration["SourceProductionId"]).then(data => {
-            console.log("image prod stats:", data);
-            convenienceApi.fieldHelper.setValue("Total of Documents", data["DocumentsCount"]);
-            convenienceApi.fieldHelper.setValue("Total of Images", prepareStatsInfo(data["TotalImagesCount"], data["TotalImagesSizeBytes"]));
-        })
-    } else if (destinationConfiguration["importNativeFile"] == 'true' && !importImageFiles(destinationConfiguration)) {
-        getNativesStats(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], sourceConfiguration["SavedSearchArtifactId"]).then(data => {
-            console.log("natives stats:", data);
-            convenienceApi.fieldHelper.setValue("Total of Documents", data["DocumentsCount"]);
-            convenienceApi.fieldHelper.setValue("Total of Natives", prepareStatsInfo(data["TotalNativesCount"], data["TotalNativesSizeBytes"]));
-        })
-    } else {
-        getImagesStatsForSavedSearch(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], sourceConfiguration["SavedSearchArtifactId"], (destinationConfiguration["getImagesStatsForProduction"] === 'true')).then(data => {
-            console.log("image saved search stats:", data);
-            convenienceApi.fieldHelper.setValue("Total of Documents", data["DocumentsCount"]);
-            convenienceApi.fieldHelper.setValue("Total of Images", prepareStatsInfo(data["TotalImagesCount"], data["TotalImagesSizeBytes"]));
-        })
+    if (destinationConfiguration["artifactTypeID"] == 10) {
+        if (sourceConfiguration["SourceProductionId"]) {
+            getImagesStatsForProduction(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], sourceConfiguration["SourceProductionId"]).then(data => {
+                convenienceApi.fieldHelper.setValue("Total of Documents", data["DocumentsCount"]);
+                convenienceApi.fieldHelper.setValue("Total of Images", prepareStatsInfo(data["TotalImagesCount"], data["TotalImagesSizeBytes"]));
+            })
+        } else if (destinationConfiguration["importNativeFile"] == 'true' && !importImageFiles(destinationConfiguration)) {
+            getNativesStats(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], sourceConfiguration["SavedSearchArtifactId"]).then(data => {
+                convenienceApi.fieldHelper.setValue("Total of Documents", data["DocumentsCount"]);
+                convenienceApi.fieldHelper.setValue("Total of Natives", prepareStatsInfo(data["TotalNativesCount"], data["TotalNativesSizeBytes"]));
+            })
+        } else {
+            getImagesStatsForSavedSearch(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], sourceConfiguration["SavedSearchArtifactId"], (destinationConfiguration["getImagesStatsForProduction"] === 'true')).then(data => {
+                convenienceApi.fieldHelper.setValue("Total of Documents", data["DocumentsCount"]);
+                convenienceApi.fieldHelper.setValue("Total of Images", prepareStatsInfo(data["TotalImagesCount"], data["TotalImagesSizeBytes"]));
+            })
+        }
+
+        convenienceApi.fieldHelper.setValue("Create Saved Search", formatToYesOrNo(destinationConfiguration["CreateSavedSearchForTagging"]));
     }
-
-    convenienceApi.fieldHelper.setValue("Create Saved Search", formatToYesOrNo(destinationConfiguration["CreateSavedSearchForTagging"]));
 }
 
 function importImageFiles(destinationConfiguration: Object) {

@@ -19,6 +19,10 @@ using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Choice;
 using System;
 using FluentAssertions;
+using kCura.IntegrationPoints.Common.Helpers;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
+using kCura.ScheduleQueue.AgentBase;
+using NSubstitute;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests
@@ -29,11 +33,13 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		private Mock<IMessageService> _messageServiceMock;
 		private Mock<IJobHistoryService> _jobHistoryServiceFake;
 		private Mock<IMemoryUsageReporter> _memoryUsageReporter;
+		private Mock<IAPILog> _loggerMock;
 
 		private IWindsorContainer _container;
 
 		private const string _PROVIDER_NAME = "TestProvider";
 		private readonly Guid _BATCH_INSTANCE_GUID = Guid.NewGuid();
+		private Mock<IKubernetesMode> _kubernetesModeMock;
 
 		[SetUp]
 		public void SetUp()
@@ -41,6 +47,9 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			_messageServiceMock = new Mock<IMessageService>();
 			_jobHistoryServiceFake = new Mock<IJobHistoryService>();
 			_memoryUsageReporter = new Mock<IMemoryUsageReporter>();
+			_loggerMock = new Mock<IAPILog>();
+			_kubernetesModeMock = new Mock<IKubernetesMode>();
+			_kubernetesModeMock.Setup(x => x.IsEnabled()).Returns(false);
 		}
 
 		[Test]
@@ -114,6 +123,22 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			action.ShouldNotThrow();
 		}
 
+		[Test]
+		public void Execute_ShouldReturn_WhenDidWork_And_KubernetesMode()
+		{
+			// Arrange
+			_kubernetesModeMock.Setup(x => x.IsEnabled()).Returns(true);
+			TestAgent sut = PrepareSut();
+			sut.DidWork = true;
+			
+			// Act
+			sut.Execute();
+			
+			// Assert
+			_loggerMock.Verify(x => x.LogDebug("Attempting to initialize Config Settings factory in {TypeName}",
+				nameof(ScheduleQueueAgentBase)), Times.Never);
+		}
+
 		private TestAgent PrepareSut()
 		{
 			_container = new WindsorContainer();
@@ -161,10 +186,11 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			RegisterMock(_memoryUsageReporter);
 			RegisterMock(providerTypeService);
 			RegisterMock(_messageServiceMock);
+			RegisterMock(_kubernetesModeMock);
 
 			SetupJobHistoryStatus(JobStatusChoices.JobHistoryPending);
 
-			return new TestAgent(_container);
+			return new TestAgent(_container, _loggerMock, _kubernetesModeMock.Object);
 		}
 
 		private void RegisterMock<T>(Mock<T> mock) where T: class
@@ -187,13 +213,14 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 			public IWindsorContainer Container { get; }
 
-			public TestAgent(IWindsorContainer container) : base()
+			public TestAgent(IWindsorContainer container, Mock<IAPILog> logger, IKubernetesMode kubernetesMode) 
+				: base(Guid.Empty, kubernetesMode: kubernetesMode, dateTime: new DateTimeWrapper(), jobService: Substitute.For<IJobService>())
 			{
 				Container = container;
 				
 				JobExecutor = Container.Resolve<IJobExecutor>();
 
-				_logMock = new Mock<IAPILog>();
+				_logMock = logger;
 			}
 
 			public TaskResult ProcessJob_Test(Job job) => ProcessJob(job);
