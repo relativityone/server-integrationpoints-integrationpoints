@@ -14,9 +14,6 @@ using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
-using Relativity.Sync.Toggles;
-using Relativity.Toggles;
-using NotImplementedException = System.NotImplementedException;
 
 namespace Relativity.Sync.Tests.System.GoldFlows
 {
