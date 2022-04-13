@@ -89,6 +89,7 @@ namespace Relativity.Sync.Executors
 
 			builder.RegisterTypesInExecutingAssembly<IPermissionCheck>();
 			builder.RegisterTypesInExecutingAssembly<IPreValidator>();
+			builder.RegisterType<UserService>().As<IUserService>();
 			builder.RegisterType<NonAdminCanSyncUsingLinks>().As<INonAdminCanSyncUsingLinks>();
 
 			builder.RegisterType<BatchRepository>().As<IBatchRepository>();

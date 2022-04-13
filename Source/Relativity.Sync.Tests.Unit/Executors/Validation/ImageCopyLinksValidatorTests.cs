@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.Sync.Executors;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Tests.Common.Attributes;
 using Relativity.Sync.Transfer;
@@ -29,6 +30,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		private Mock<IValidationConfiguration> _configurationFake;
 		private Mock<IGroupManager> _groupManagerFake;
 		private Mock<INonAdminCanSyncUsingLinks> _nonAdminCanSyncUsingLinksFake; 
+		private Mock<IUserService> _userService; 
 
 		private const int _USER_IS_ADMIN_ID = 1;
 		private const int _USER_IS_NON_ADMIN_ID = 2;
@@ -46,12 +48,14 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_configurationFake = new Mock<IValidationConfiguration>();
 
 			_nonAdminCanSyncUsingLinksFake = new Mock<INonAdminCanSyncUsingLinks>();
+			_userService = new Mock<IUserService>();
 
 			_sut = new ImageCopyLinksValidator(
 				_instanceSettingsFake.Object,
 				_userContextFake.Object,
 				_serviceFactoryForAdminFake.Object,
 				_nonAdminCanSyncUsingLinksFake.Object,
+				_userService.Object,
 				new EmptyLogger());
 		}
 

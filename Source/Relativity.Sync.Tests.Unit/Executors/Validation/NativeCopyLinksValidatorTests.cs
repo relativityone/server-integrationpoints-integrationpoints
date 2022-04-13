@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.Sync.Executors;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Tests.Common.Attributes;
 using Relativity.Sync.Transfer;
@@ -29,6 +30,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		private Mock<IValidationConfiguration> _configurationFake;
 		private Mock<IGroupManager> _groupManagerFake;
 		private Mock<INonAdminCanSyncUsingLinks> _nonAdminCanSyncUsingLinksFake; 
+		private Mock<IUserService> _userServiceFake; 
 
 
 		private const int _USER_IS_ADMIN_ID = 1;
@@ -46,12 +48,15 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 			_configurationFake = new Mock<IValidationConfiguration>();
 			_nonAdminCanSyncUsingLinksFake = new Mock<INonAdminCanSyncUsingLinks>();
+			_userServiceFake = new Mock<IUserService>();
+			
 
 			_sut = new NativeCopyLinksValidator(
 				_instanceSettingsFake.Object,
 				_userContextFake.Object,
 				_serviceFactoryForAdminFake.Object,
 				_nonAdminCanSyncUsingLinksFake.Object,
+				_userServiceFake.Object,
 				new EmptyLogger());
 		}
 
@@ -132,6 +137,21 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			// Assert
 			actualResult.Should().Be(expectedResult,
 				$"ShouldValidate should return {expectedResult} for pipeline {pipelineType.Name}");
+		}
+		
+		[Test]
+		public async Task ValidateAsync_ShouldSkipValidationOfUser_WhenNonAdminCanSyncUsingLinkToggleIsTrue()
+		{
+			// Arrange
+			SetupValidator(_USER_IS_NON_ADMIN_ID, ImportNativeFileCopyMode.SetFileLinks, true);
+			_nonAdminCanSyncUsingLinksFake.Setup(t => t.IsEnabled()).Returns(true);
+
+			// Act
+			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			result.IsValid.Should().BeTrue();
+			result.Messages.Should().BeEmpty();
 		}
 
 		private void SetupValidator(int userId, ImportNativeFileCopyMode copyMode, bool isRestrictedCopyLinksOnly)

@@ -132,7 +132,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should()
-				.Be("User does not have permission to the Batch object type in the source workspace.");
+				.Be("User does not have permission to the Sync Batch object type in the source workspace.");
 		}
 
 		[Test]
@@ -152,7 +152,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should()
-				.Be("User does not have permission to the Progress object type in the source workspace.");
+				.Be("User does not have permission to the Sync Progress object type in the source workspace.");
 		}
 
 		[Test]
@@ -172,7 +172,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should()
-				.Be("User does not have permission to the Configuration object type in the source workspace.");
+				.Be("User does not have permission to the Sync Configuration object type in the source workspace.");
 		}
 
 		[Test]

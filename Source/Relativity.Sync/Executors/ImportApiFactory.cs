@@ -18,6 +18,8 @@ namespace Relativity.Sync.Executors
 		private readonly IUserContextConfiguration _userContextConfiguration;
 		private readonly IAuthTokenGenerator _tokenGenerator;
 		private readonly INonAdminCanSyncUsingLinks _nonAdminCanSyncUsingLinks;
+		private readonly IUserService _userService;
+		private readonly ISyncLog _logger;
 		private const int _ADMIN_USER_ID = 777;
 
 #pragma warning disable RG0001 
@@ -39,20 +41,25 @@ namespace Relativity.Sync.Executors
 		}
 #pragma warning restore RG0001
 
-		public ImportApiFactory(IUserContextConfiguration userContextConfiguration, IAuthTokenGenerator tokenGenerator, INonAdminCanSyncUsingLinks nonAdminCanSyncUsingLinks)
+		public ImportApiFactory(IUserContextConfiguration userContextConfiguration, IAuthTokenGenerator tokenGenerator, INonAdminCanSyncUsingLinks nonAdminCanSyncUsingLinks, IUserService userService, ISyncLog logger)
 		{
 			_userContextConfiguration = userContextConfiguration;
 			_tokenGenerator = tokenGenerator;
 			_nonAdminCanSyncUsingLinks = nonAdminCanSyncUsingLinks;
+			_userService = userService;
+			_logger = logger;
 		}
-
+		
 		public Task<IImportAPI> CreateImportApiAsync(Uri webServiceUrl)
 		{
 			int executingUserId = _userContextConfiguration.ExecutingUserId;
-			if (_nonAdminCanSyncUsingLinks.IsEnabled())
+			bool executingUserIsAdmin = _userService.ExecutingUserIsAdminAsync(_userContextConfiguration).GetAwaiter().GetResult();
+			if (_nonAdminCanSyncUsingLinks.IsEnabled() && !executingUserIsAdmin)
 			{
 				executingUserId = _ADMIN_USER_ID;
 			}
+			//AD UT for logs
+			_logger.LogInformation("Creating IAPI as userId: {executingUserId}", executingUserId);
 			IRelativityTokenProvider relativityTokenProvider = new RelativityTokenProvider(executingUserId, _tokenGenerator);
 
 			return Task.FromResult<IImportAPI>(ExtendedImportAPI.CreateByTokenProvider(webServiceUrl.AbsoluteUri, relativityTokenProvider));

@@ -29,9 +29,11 @@ namespace Relativity.Sync.Transfer
 
 			bool toggleValue = _toggleProvider.IsEnabled<EnableNonAdminSyncLinksToggle>();
 			bool isCopyModeFileLinks = _synchronizationConfiguration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.SetFileLinks;
-			_logger.LogInformation("Validating if NonAdmin user can sync using Links options. Toggle EnableNonAdminSyncLinksToggle: {toggleValue}, CopyMode: {ImportNativeFileCopyMode}", toggleValue, isCopyModeFileLinks);
+			_logger.LogInformation("Validating if NonAdmin user can sync using Links options. Toggle EnableNonAdminSyncLinksToggle: {toggleValue}, CopyMode: {ImportNativeFileCopyMode}", toggleValue, _synchronizationConfiguration.ImportNativeFileCopyMode);
 			if (toggleValue && isCopyModeFileLinks)
+			{
 				_isEnabled = true;
+			}
 			
 			return (bool)_isEnabled;
 		}
