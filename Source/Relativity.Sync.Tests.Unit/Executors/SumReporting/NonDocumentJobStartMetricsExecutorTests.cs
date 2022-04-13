@@ -6,6 +6,9 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Interfaces.ObjectType;
+using Relativity.Services.Interfaces.ObjectType.Models;
+using Relativity.Services.Interfaces.Shared;
+using Relativity.Services.Interfaces.Shared.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -23,7 +26,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
         private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 1;
         private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 2;
 
-        private const int _NON_DOCUMENT_OBJECT_TYPE_ID = (int)ArtifactType.View;
+        private const int _NON_DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.View;
 
         private Mock<ISyncLog> _loggerMock;
         private Mock<ISyncMetrics> _syncMetricsMock;
@@ -62,7 +65,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			_configurationFake = new Mock<INonDocumentJobStartMetricsConfiguration>();
 			_configurationFake.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ARTIFACT_ID);
 			_configurationFake.SetupGet(x => x.DestinationWorkspaceArtifactId).Returns(_DESTINATION_WORKSPACE_ARTIFACT_ID);
-			_configurationFake.SetupGet(x => x.RdoArtifactTypeId).Returns(_NON_DOCUMENT_OBJECT_TYPE_ID);
+			_configurationFake.SetupGet(x => x.RdoArtifactTypeId).Returns(_NON_DOCUMENT_ARTIFACT_TYPE_ID);
             
 			_sut = new NonDocumentJobStartMetricsExecutor(
                 _serviceFactory.Object,
@@ -143,33 +146,63 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             _loggerMock.Verify(x => x.LogInformation("Fields mapping summary: {@fieldsMappingSummary}", It.IsAny<Dictionary<string, object>>()));
         }
 
+        [Test]
+        public async Task ExecuteAsync_ShouldReportApplicationName()
+        {
+            // Arrange
+            const int objectTypeArtifactId = 3456;
 
-        //[Test]
-        //public async Task ExecuteAsync_ShouldReportApplicationName()
-        //{
-        //    List<DisplayableObjectIdentifier> displayableObjectIdentifiers = new List<DisplayableObjectIdentifier>
-        //    {
-        //        new DisplayableObjectIdentifier
-        //        {
-        //            Name = "Adler Sieben 1",
-        //        },
-        //        new DisplayableObjectIdentifier
-        //        {
-        //            Name = "Adler Sieben 2",
-        //        }
-        //    };
+            _objectTypeManagerMock
+                .Setup(x => x.GetAvailableParentObjectTypesAsync(_SOURCE_WORKSPACE_ARTIFACT_ID))
+                .ReturnsAsync(new List<ObjectTypeIdentifier>()
+                {
+                    new ObjectTypeIdentifier()
+                    {
+                        ArtifactTypeID = _NON_DOCUMENT_ARTIFACT_TYPE_ID,
+                        ArtifactID = objectTypeArtifactId
+                    }
+                });
 
-        //    ObjectTypeResponse objectTypeResponse = new ObjectTypeResponse
-        //    {
-        //        ArtifactTypeID = _NON_DOCUMENT_OBJECT_TYPE_ID,
-        //        RelativityApplications =
-        //            new SecurableList<DisplayableObjectIdentifier>(false, displayableObjectIdentifiers)
-        //    };
+            const string appName = "Adler Sieben App";
+            List<DisplayableObjectIdentifier> displayableObjectIdentifiers = new List<DisplayableObjectIdentifier>
+            {
+                new DisplayableObjectIdentifier
+                {
+                    Name = appName,
+                }
+            };
 
-        //    _objectTypeManagerMock.Setup(x => x.ReadAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _NON_DOCUMENT_OBJECT_TYPE_ID))
-        //        .Returns(Task.FromResult(objectTypeResponse));
+            ObjectTypeResponse objectTypeResponse = new ObjectTypeResponse
+            {
+                ArtifactTypeID = _NON_DOCUMENT_ARTIFACT_TYPE_ID,
+                RelativityApplications = new SecurableList<DisplayableObjectIdentifier>(false, displayableObjectIdentifiers)
+            };
 
-        //}
+            _objectTypeManagerMock.Setup(x => x.ReadAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, objectTypeArtifactId))
+                .Returns(Task.FromResult(objectTypeResponse));
+
+            // Act
+            await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+
+            // Assert
+            _syncMetricsMock.Verify(x => x.Send(It.Is<NonDocumentJobStartMetric>(metric => metric.ParentApplicationName == appName)));
+        }
+
+        [Test]
+        public void ExecuteAsync_ShouldNotThrow_WhenApplicationNameQueryFails()
+        {
+            // Arrange
+            _objectTypeManagerMock
+                .Setup(x => x.GetAvailableParentObjectTypesAsync(_SOURCE_WORKSPACE_ARTIFACT_ID))
+                .Throws<InvalidOperationException>();
+
+            // Act
+            Func<Task> action = () => _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None);
+
+            // Assert
+            action.Should().NotThrow();
+            _syncMetricsMock.Verify(x => x.Send(It.Is<NonDocumentJobStartMetric>(metric => metric.ParentApplicationName == "None")));
+        }
 
         [Test]
 		public async Task ExecuteAsync_ShouldReportJobResumeMetric_WhenResuming()
