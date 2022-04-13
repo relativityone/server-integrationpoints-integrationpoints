@@ -10,6 +10,7 @@ using Relativity.Services.Interfaces.Group;
 using Relativity.Services.Objects.DataContracts;
 using System;
 using System.Linq;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
@@ -19,19 +20,24 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 			"You do not have permission to perform this operation because it uses referential links to files. " +
 			"You must either log in as a system administrator or change the settings to upload files.";
 
+		private const string _ENABLE_NON_ADMIN_SYNC_LINKS_TOGGLE =
+			"Relativity.Sync.Toggles.EnableNonAdminSyncLinksToggle";
+
 		private readonly IAPILog _logger;
 		private readonly IHelper _helper;
 		private readonly ISerializer _serializer;
 		private readonly IManagerFactory _managerFactory;
+		private readonly IToggleProvider _toggleProvider;
 
 		public string Key => Constants.IntegrationPoints.Validation.NATIVE_COPY_LINKS_MODE;
 
-		public NativeCopyLinksValidator(IAPILog logger, IHelper helper, ISerializer serializer, IManagerFactory managerFactory)
+		public NativeCopyLinksValidator(IAPILog logger, IHelper helper, ISerializer serializer, IManagerFactory managerFactory, IToggleProvider toggleProvider)
 		{
 			_logger = logger;
 			_helper = helper;
 			_serializer = serializer;
 			_managerFactory = managerFactory;
+			_toggleProvider = toggleProvider;
 		}
 
 		public ValidationResult Validate(object value)
@@ -47,6 +53,13 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 
 				if (settings.ImportNativeFileCopyMode != ImportNativeFileCopyModeEnum.SetFileLinks)
 				{
+					return validationResult;
+				}
+
+				if (_toggleProvider.IsEnabledByName(_ENABLE_NON_ADMIN_SYNC_LINKS_TOGGLE))
+				{
+					_logger.LogInformation("Toggle {toggleName} is set to TRUE. Skipping Native File links copy Restriction validation",
+						_ENABLE_NON_ADMIN_SYNC_LINKS_TOGGLE);
 					return validationResult;
 				}
 
