@@ -18,14 +18,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CD.ApiTests
         [OneTimeSetUp]
         public void OneTimeSetup()
         {
-            base.OneTimeSetUp();
             _implementation.OneTimeSetup();
         }
 
         [OneTimeTearDown]
         public void OneTimeTeardown()
         {
-            base.OneTimeTearDown();
             _implementation.OneTimeTeardown();
         }
 

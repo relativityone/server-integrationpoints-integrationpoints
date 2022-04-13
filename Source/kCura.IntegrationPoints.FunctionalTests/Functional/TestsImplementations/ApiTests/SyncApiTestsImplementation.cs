@@ -65,7 +65,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
         public async Task RunIntegrationPoint()
         {
             // Arrange
-            Workspace destinationWorkspace = RelativityFacade.Instance.CreateWorkspace($"SYNC Destination - {Guid.NewGuid()}", _testsImplementationTestFixture.Workspace.Name);
+            Workspace destinationWorkspace = RelativityFacade.Instance.CreateWorkspace($"SYNC - {Guid.NewGuid()}", _testsImplementationTestFixture.Workspace.Name);
             _destinationWorkspaces.Add(destinationWorkspace);
 
             ICommonIntegrationPointDataService destinationWorkspaceDataService = new CommonIntegrationPointDataService(_serviceFactory, destinationWorkspace.ArtifactID);
@@ -100,7 +100,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             //0. Arrange test
             const int destinationWorkspaceInitialImportCount = 4;
 
-            Workspace destinationWorkspace = RelativityFacade.Instance.CreateWorkspace($"SYNC Destination - {Guid.NewGuid()}", _testsImplementationTestFixture.Workspace.Name);
+            Workspace destinationWorkspace = RelativityFacade.Instance.CreateWorkspace($"SYNC - {Guid.NewGuid()}", _testsImplementationTestFixture.Workspace.Name);
             _destinationWorkspaces.Add(destinationWorkspace);
 
             RelativityFacade.Instance.ImportDocumentsFromCsv(destinationWorkspace,
