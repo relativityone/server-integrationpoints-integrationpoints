@@ -4,7 +4,6 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Common;
 using Relativity.Telemetry.APM;
@@ -16,7 +15,7 @@ namespace Relativity.Sync.Tests.Unit
 	{
 		private SyncJobFactory _instance;
 		private Mock<IContainer> _container;
-		private ISyncLog _logger;
+		private IAPILog _logger;
 		private SyncJobParameters _syncJobParameters;
 		private IRelativityServices _relativityServices;
 		private SyncJobExecutionConfiguration _configuration;

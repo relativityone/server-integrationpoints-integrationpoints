@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Disposables;
+using Relativity.API;
 
 namespace Relativity.Sync.Logging
 {
 	[ExcludeFromCodeCoverage]
-	internal sealed class EmptyLogger : ISyncLog
+	internal sealed class EmptyLogger : IAPILog, ISyncLog
 	{
 		public void LogVerbose(string messageTemplate, params object[] propertyValues)
 		{
@@ -65,5 +67,25 @@ namespace Relativity.Sync.Logging
 		{
 			// Method intentionally left empty.
 		}
-	}
+
+        public IAPILog ForContext<T>()
+        {
+            return this;
+        }
+
+        public IAPILog ForContext(Type source)
+        {
+			return this;
+		}
+
+        public IAPILog ForContext(string propertyName, object value, bool destructureObjects)
+        {
+			return this;
+		}
+
+        public IDisposable LogContextPushProperty(string propertyName, object obj)
+        {
+			return Disposable.Empty;
+		}
+    }
 }

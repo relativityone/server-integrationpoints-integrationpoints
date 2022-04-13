@@ -33,7 +33,7 @@ namespace Relativity.Sync.Tests.System
 
 		protected override Task ChildSuiteSetup()
 		{
-			_batchRepository = new BatchRepository(new TestRdoManager(Logger), new ServiceFactoryStub(ServiceFactory), new DateTimeWrapper());
+			_batchRepository = new BatchRepository(new TestRdoManager(SyncLog), new ServiceFactoryStub(ServiceFactory), new DateTimeWrapper());
 			return Task.CompletedTask;
 		}
 

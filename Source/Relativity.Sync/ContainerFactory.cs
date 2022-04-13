@@ -22,13 +22,13 @@ namespace Relativity.Sync
 	internal sealed class ContainerFactory : IContainerFactory
 	{
 		public void RegisterSyncDependencies(ContainerBuilder containerBuilder, SyncJobParameters syncJobParameters, IRelativityServices relativityServices, SyncJobExecutionConfiguration configuration,
-			ISyncLog logger)
+			IAPILog logger)
 		{
 			const string syncJob = nameof(SyncJob);
 			containerBuilder.RegisterType<SyncJob>().Named(syncJob, typeof(ISyncJob));
 			containerBuilder.RegisterDecorator<ISyncJob>((context, job) => new SyncJobWithUnhandledExceptionLogging(job, context.Resolve<IAppDomain>(), context.Resolve<ISyncLog>()), syncJob);
 
-			containerBuilder.RegisterInstance(new ContextLogger(syncJobParameters, logger)).As<ISyncLog>();
+			containerBuilder.RegisterInstance(new ContextLogger(logger)).As<ISyncLog>();
 			containerBuilder.RegisterInstance(syncJobParameters).As<SyncJobParameters>();
 			containerBuilder.RegisterInstance(configuration).As<SyncJobExecutionConfiguration>();
 			containerBuilder.RegisterInstance(relativityServices).As<IRelativityServices>();

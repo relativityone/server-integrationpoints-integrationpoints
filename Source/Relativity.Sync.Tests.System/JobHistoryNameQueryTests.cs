@@ -37,7 +37,7 @@ namespace Relativity.Sync.Tests.System
         {
             //Arrange
             JobHistoryNameQuery jobHistoryNameQuery =
-                new JobHistoryNameQuery(new ServiceFactoryStub(ServiceFactory), Logger);
+                new JobHistoryNameQuery(new ServiceFactoryStub(ServiceFactory), SyncLog);
 
             // Act
             string sourceCaseTag = await jobHistoryNameQuery.GetJobNameAsync(_jobHistoryObjectTypeGuid, 

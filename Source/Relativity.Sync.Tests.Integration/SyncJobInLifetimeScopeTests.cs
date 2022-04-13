@@ -5,6 +5,7 @@ using Autofac;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Integration.Helpers;
@@ -16,7 +17,7 @@ namespace Relativity.Sync.Tests.Integration
 	{
 		private IContainer _container;
 		private Mock<IContainerFactory> _containerFactory;
-		private ISyncLog _logger;
+		private IAPILog _logger;
 		private SyncJobParameters _syncJobParameters;
 		private IRelativityServices _relativityServices;
 		private SyncJobExecutionConfiguration _configuration;

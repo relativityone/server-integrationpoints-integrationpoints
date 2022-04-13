@@ -34,7 +34,7 @@ namespace Relativity.Sync.Tests.System
         {
             //Arrange
             RelativitySourceCaseTagRepository repository =
-                new RelativitySourceCaseTagRepository(new ServiceFactoryStub(ServiceFactory), Logger);
+                new RelativitySourceCaseTagRepository(new ServiceFactoryStub(ServiceFactory), SyncLog);
 
             RelativitySourceCaseTag relativitySourceCaseTag = new RelativitySourceCaseTag
             {
