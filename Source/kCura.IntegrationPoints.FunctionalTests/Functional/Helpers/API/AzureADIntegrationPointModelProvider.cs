@@ -40,7 +40,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
                 DestinationProvider = await _commonDataSvc.GetDestinationProviderIdAsync(DestinationProviders.RELATIVITY).ConfigureAwait(false),
                 FieldMappings = GetAzureADFieldsMapping(entityType.Fields),
                 Type = await _commonDataSvc.GetIntegrationPointTypeByAsync(IntegrationPointTypes.ImportName).ConfigureAwait(false),
-                OverwriteFieldsChoiceId = await _commonDataSvc.GetOverwriteFieldsChoiceIdAsync("Append Only").ConfigureAwait(false),
+                OverwriteFieldsChoiceId = await _commonDataSvc.GetOverwriteFieldsChoiceIdAsync(ImportOverwriteModeEnum.AppendOnly).ConfigureAwait(false),
                 SecuredConfiguration = new 
                 { 
                     applicationID = GlobalConst.AAD._APPLICATION_ID,

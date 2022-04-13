@@ -19,6 +19,7 @@ using kCura.IntegrationPoints.Data;
 using FluentAssertions;
 using static kCura.IntegrationPoints.Core.Constants.IntegrationPoints;
 using Relativity.Testing.Framework.Api.Kepler;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.ApiTests
 {
@@ -72,9 +73,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 
             string integrationPointName = $"{nameof(RunIntegrationPoint)} - {Guid.NewGuid()}";
             
-            IntegrationPointModel integrationPoint = await PrepareIntegrationPointModel(integrationPointName, destinationWorkspaceDataService).ConfigureAwait(false);
-
-            List<RelativityObject> sourceWorkspaceAlldocs = await GetDocumentsFromWorkspace(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
+            IntegrationPointModel integrationPoint = await PrepareIntegrationPointModel(integrationPointName, 
+                    ImportOverwriteModeEnum.AppendOnly, destinationWorkspaceDataService)
+                .ConfigureAwait(false);
 
             // Act
             await _ripApi.CreateIntegrationPointAsync(integrationPoint, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
@@ -85,6 +86,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
                     expectedStatus: JobStatusChoices.JobHistoryCompleted.Name).ConfigureAwait(false);
 
             // Assert
+            List<RelativityObject> sourceWorkspaceAlldocs = await GetDocumentsFromWorkspace(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
             List<RelativityObject> destinationWorkspaceAllDocs = await GetDocumentsFromWorkspace(destinationWorkspace.ArtifactID).ConfigureAwait(false);
 
             (int TransferredItems, int ItemsWithErrors) = await GetTransferredItemsFromJobHistory(jobHistoryId).ConfigureAwait(false);
@@ -117,7 +119,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             List<RelativityObject> sourceWorkspaceAlldocs = await GetDocumentsFromWorkspace(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
             List<RelativityObject> destinationWorkspaceAllDocs = await GetDocumentsFromWorkspace(destinationWorkspace.ArtifactID).ConfigureAwait(false);
 
-            IntegrationPointModel integrationPoint = await PrepareIntegrationPointModel(integrationPointName, destinationWorkspaceDataService).ConfigureAwait(false);
+            IntegrationPointModel integrationPoint = await PrepareIntegrationPointModel(integrationPointName,
+                    ImportOverwriteModeEnum.OverlayOnly, destinationWorkspaceDataService)
+                .ConfigureAwait(false);
             
             await _ripApi.CreateIntegrationPointAsync(integrationPoint, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
 
@@ -141,7 +145,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             //2. Job retry:
 
             //Arrange
-            integrationPoint.OverwriteFieldsChoiceId = await _sourceWorkspaceDataService.GetOverwriteFieldsChoiceIdAsync(OverwriteFieldsChoices.IntegrationPointAppendOverlay.Name).ConfigureAwait(false);
+            integrationPoint.OverwriteFieldsChoiceId = await _sourceWorkspaceDataService.GetOverwriteFieldsChoiceIdAsync(ImportOverwriteModeEnum.AppendOverlay).ConfigureAwait(false);
 
             //Act
             int retryJobHistoryId = await _ripApi.RetryIntegrationPointAsync(integrationPoint, _sourceWorkspace.ArtifactID);
@@ -168,7 +172,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
         }
 
         private async Task<IntegrationPointModel> PrepareIntegrationPointModel(string integrationPointName,
-            ICommonIntegrationPointDataService destinationWorkspaceDataService)
+            ImportOverwriteModeEnum overwriteMode, ICommonIntegrationPointDataService destinationWorkspaceDataService)
         {
             int savedSearchId = await _sourceWorkspaceDataService.GetSavedSearchArtifactIdAsync(_SAVED_SEARCH_NAME).ConfigureAwait(false);
             int destinationFolderId = await destinationWorkspaceDataService.GetRootFolderArtifactIdAsync().ConfigureAwait(false);
@@ -183,7 +187,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
                 DestinationProvider = await _sourceWorkspaceDataService.GetDestinationProviderIdAsync(DestinationProviders.RELATIVITY).ConfigureAwait(false),
                 SourceProvider = await _sourceWorkspaceDataService.GetSourceProviderIdAsync(SourceProviders.RELATIVITY).ConfigureAwait(false),
                 Type = await _sourceWorkspaceDataService.GetIntegrationPointTypeByAsync(IntegrationPointTypes.ExportName).ConfigureAwait(false),
-                OverwriteFieldsChoiceId = await _sourceWorkspaceDataService.GetOverwriteFieldsChoiceIdAsync(OverwriteFieldsChoices.IntegrationPointOverlayOnly.Name).ConfigureAwait(false),
+                OverwriteFieldsChoiceId = await _sourceWorkspaceDataService.GetOverwriteFieldsChoiceIdAsync(overwriteMode).ConfigureAwait(false),
                 EmailNotificationRecipients = string.Empty,
                 ScheduleRule = new ScheduleModel(),
                 LogErrors = true
