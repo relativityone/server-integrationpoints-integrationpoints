@@ -207,5 +207,12 @@ namespace kCura.IntegrationPoints.Core
 			public const string LONG_TEXT_LIMIT_NAME = "MaximumNumberOfCharactersSupportedByLongText";
 			public const string LONG_TEXT_LIMIT_VALUE = "100000";
 		}
+
+		public static class OverwriteModeNames
+        {
+			public const string AppendOnlyModeName = "Append Only";
+			public const string AppendOverlayModeName = "Append/Overlay";
+			public const string OverlayOnlyModeName = "Overlay Only";
+		}
 	}
 }

@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 		/// <param name="workspaceArtifactId">Workspace artifact id of the integration point.</param>
 		/// <param name="integrationPointArtifactId">Integration point artifact id.</param>
 		/// <param name="userId">User id of the user running the job.</param>
-		void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId);
+		void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId, bool switchToAppendOverlayMode);
 
 		/// <summary>
 		/// Marks an Integration Point to be stopped.

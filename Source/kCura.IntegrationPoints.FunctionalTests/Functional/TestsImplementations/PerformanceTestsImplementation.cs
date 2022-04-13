@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using Relativity.IntegrationPoints.Services;
@@ -199,7 +200,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                 SourceProvider = _sourceProviderId,
                 Type = _integrationPointType,
                 EmailNotificationRecipients = "",
-                OverwriteFieldsChoiceId = await _sourceWorkspaceDataService.GetOverwriteFieldsChoiceIdAsync("Append/Overlay").ConfigureAwait(false),
+                OverwriteFieldsChoiceId = await _sourceWorkspaceDataService.GetOverwriteFieldsChoiceIdAsync(ImportOverwriteModeEnum.AppendOverlay).ConfigureAwait(false),
                 ScheduleRule = new ScheduleModel()
             };
         }

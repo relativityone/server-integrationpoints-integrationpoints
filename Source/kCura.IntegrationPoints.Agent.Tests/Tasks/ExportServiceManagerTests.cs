@@ -31,6 +31,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.Relativity.DataReaderClient;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -41,6 +42,7 @@ using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Choice;
+using static kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
@@ -89,6 +91,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 		private SourceConfiguration _configuration;
 		private SourceProvider _sourceProvider;
 		private TaskParameters _taskParameters;
+		private ImportSettings _importSettings;
 
 		private const int _EXPORT_DOC_COUNT = 0;
 		private const int _RETRY_SAVEDSEARCHID = 312;
@@ -186,7 +189,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			};
 
 			_taskParameters = new TaskParameters() { BatchInstance = Guid.NewGuid() };
-			_jobHistory = new JobHistory() { JobType = JobTypeChoices.JobHistoryRun, TotalItems = 0 };
+			_jobHistory = new JobHistory() { JobType = JobTypeChoices.JobHistoryRun, TotalItems = 0, Overwrite = OverwriteModeNames.AppendOnlyModeName };
 			_sourceProvider = new SourceProvider();
 			List<FieldMap> mappings = new List<FieldMap>();
 			_updateStatusType = new JobHistoryErrorDTO.UpdateStatusType();
@@ -205,10 +208,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 			_jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job, _configuration.SavedSearchArtifactId).Returns(_RETRY_SAVEDSEARCHID);
 			synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _integrationPoint.DestinationConfiguration).Returns(_synchronizer);
 			_managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _taskParameters.BatchInstance, job.JobId, Arg.Any<bool>()).Returns(_jobStopManager);
-
-			ImportSettings settings = new ImportSettings();
-			_serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(settings);
-			_serializer.Serialize(settings).Returns(_IMPORTSETTINGS_WITH_USERID);
+			
+			_importSettings = new ImportSettings();
+			_serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_importSettings);
+			_serializer.Serialize(_importSettings).Returns(_IMPORTSETTINGS_WITH_USERID);
 
 			_repositoryFactory.GetDocumentRepository(_configuration.SourceWorkspaceArtifactId).Returns(documentRepository);
 
@@ -289,6 +292,22 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
 			// ASSERT
 			Assert.IsTrue(mappedFields[0].SourceField.IsIdentifier);
+		}
+
+		[Test]
+		[TestCase(OverwriteModeNames.AppendOnlyModeName, OverwriteModeEnum.Append)]
+		[TestCase(OverwriteModeNames.AppendOverlayModeName, OverwriteModeEnum.AppendOverlay)]
+		[TestCase(OverwriteModeNames.OverlayOnlyModeName, OverwriteModeEnum.Overlay)]
+		public void Execute_EnsureToAssignCorrectOverwriteModeFromJobHistory(string initialOverwriteMode, OverwriteModeEnum expectedOverwriteSetting)
+		{
+			// ARRANGE
+			 _jobHistory.Overwrite = initialOverwriteMode;
+
+			// ACT
+			_instance.Execute(_job);
+
+			// ASSERT
+			Assert.AreEqual(expectedOverwriteSetting, _importSettings.OverwriteMode);			
 		}
 
 		[Test]

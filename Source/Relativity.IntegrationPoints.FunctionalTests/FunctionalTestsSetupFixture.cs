@@ -35,7 +35,7 @@ public class FunctionalTestsSetupFixture
 		IsInitialized = true;
 	}
 
-	private void SetupTemplateWorkspace()
+    private void SetupTemplateWorkspace()
 	{
 		int workspaceID = CreateFunctionalTemplateWorkspace();
 		InstallIntegrationPointsFromLibrary(workspaceID);
@@ -97,6 +97,6 @@ public class FunctionalTestsSetupFixture
 		InstanceSetting.CreateOrUpdateAsync("kCura.ARM", "DevelopmentMode", "True", Relativity.Services.InstanceSetting.ValueType.TrueFalse).GetAwaiter().GetResult();
 
 		var applicationManager = new RelativityApplicationManager(_testHelper);
-		applicationManager.ImportApplicationToLibraryAsync(SharedVariables.FileShareServicesPath).GetAwaiter().GetResult();
+		applicationManager.ImportApplicationToLibraryAsync(SharedVariables.FileShareServicesRAP).GetAwaiter().GetResult();
 	}
 }

@@ -39,8 +39,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 
 			InstallARMTestServices();
 
-			InstallDataTransferLegacy();
-
 			workspace.InstallLegalHold();
 		}
 
@@ -86,13 +84,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 				ValueType = InstanceSettingValueType.TrueFalse
 			}
             );
-		}
-
-		private static void InstallDataTransferLegacy()
-		{
-			RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
-				.InstallToLibrary(TestConfig.DataTransferLegacyRapFileLocation,
-					new LibraryApplicationInstallOptions { IgnoreVersion = true });
 		}
 
 		private static void CopyScreenshotsToBase()

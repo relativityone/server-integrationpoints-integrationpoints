@@ -217,7 +217,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_auditRepository.Received(1)
 							.CreateAuditRecord(_payload.ArtifactId,
 							Arg.Is<AuditElement>(audit => audit.AuditMessage == _RETRY_AUDIT_MESSAGE));
-			_integrationPointService.Received(1).RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, _USERID);
+			_integrationPointService.Received(1).RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, _USERID, switchToAppendOverlayMode: false);
 			Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
 		}
 
@@ -234,7 +234,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(0)));
 			var exception = new Exception(Core.Constants.IntegrationPoints.NO_USERID);
-			_integrationPointService.When(x => x.RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0))
+			_integrationPointService.When(x => x.RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0, switchToAppendOverlayMode: false))
 				.Throw(exception);
 			_integrationPointRepository.ReadWithFieldMappingAsync(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 
@@ -245,7 +245,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_auditRepository.Received(1)
 				.CreateAuditRecord(_payload.ArtifactId,
 				Arg.Is<AuditElement>(audit => audit.AuditMessage == _RETRY_AUDIT_MESSAGE));
-			_integrationPointService.Received(1).RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0);
+			_integrationPointService.Received(1).RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0, switchToAppendOverlayMode: false);
 			Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
 			Assert.AreEqual(Core.Constants.IntegrationPoints.NO_USERID, response.Content.ReadAsStringAsync().GetAwaiter().GetResult().Trim('"'));
 		}
