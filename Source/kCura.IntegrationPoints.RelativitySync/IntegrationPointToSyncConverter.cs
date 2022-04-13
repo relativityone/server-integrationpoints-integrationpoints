@@ -21,6 +21,7 @@ using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;
 using SyncFieldMap = Relativity.Sync.Storage.FieldMap;
 using System.Reflection;
+using Relativity;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
@@ -53,7 +54,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 			ISyncConfigurationBuilder builder = _syncOperations.GetSyncConfigurationBuilder(syncContext);
 
-			if (sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.View)
+			if (importSettings.ArtifactTypeId != (int)ArtifactType.Document)
             {
 				return await CreateNonDocumentSyncConfigurationAsync(builder, job, sourceConfiguration, importSettings).ConfigureAwait(false);
             }

@@ -9,6 +9,7 @@ using Relativity.Sync.SyncConfiguration.Options;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.API;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync
 {
@@ -41,7 +42,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync
 		{
 			Mock<ISyncJobFactory> syncJobFactory = new Mock<ISyncJobFactory>();
 			syncJobFactory.Setup(x => x.Create(It.IsAny<IContainer>(), It.IsAny<SyncJobParameters>(),
-					It.IsAny<IRelativityServices>(), It.IsAny<ISyncLog>()))
+					It.IsAny<IRelativityServices>(), It.IsAny<IAPILog>()))
 				.Returns(_syncJob.Object);
 
 			return syncJobFactory.Object;

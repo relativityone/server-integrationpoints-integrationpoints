@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.Core;
 using Moq;
 using NUnit.Framework;
+using Relativity;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -376,6 +377,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
         {
             ImportSettings settings = new ImportSettings
             {
+                ArtifactTypeId = (int)ArtifactType.Document,
+                DestinationArtifactTypeId = (int)ArtifactType.Document,
                 DestinationFolderArtifactId = _DESTINATION_FOLDER_ARTIFACT_ID,
                 ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles,
                 ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
@@ -393,6 +396,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
         {
             ImportSettings settings = new ImportSettings
             {
+                ArtifactTypeId = (int)ArtifactType.Document,
+                DestinationArtifactTypeId = (int)ArtifactType.Document,
                 DestinationFolderArtifactId = _DESTINATION_FOLDER_ARTIFACT_ID,
                 ImportNativeFileCopyMode = importFileCopyMode,
                 ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
