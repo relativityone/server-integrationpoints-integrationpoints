@@ -1,9 +1,9 @@
-using Relativity.API;
 using System;
 using System.Data;
+using System.Linq.Expressions;
+using Relativity.API;
 using Relativity.Sync.SyncConfiguration.Options;
 using Relativity.Sync.Utils;
-using System.Linq.Expressions;
 
 namespace Relativity.Sync.SyncConfiguration
 {

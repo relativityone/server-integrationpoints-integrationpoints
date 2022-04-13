@@ -1,4 +1,3 @@
-using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +7,7 @@ using kCura.EDDS.WebAPI.BulkImportManagerBase;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;

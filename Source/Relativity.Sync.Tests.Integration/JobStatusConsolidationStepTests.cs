@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using Relativity.Services.Security;
 using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Tests.Integration

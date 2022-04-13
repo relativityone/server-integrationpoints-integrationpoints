@@ -1,14 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.Sync.Storage;
-using Relativity.Sync.Telemetry;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.SumReporting;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using FluentAssertions;
 using Relativity.Sync.Logging;
+using Relativity.Sync.Storage;
+using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
 
 namespace Relativity.Sync.Tests.Unit.Executors.SumReporting

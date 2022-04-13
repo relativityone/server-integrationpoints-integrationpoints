@@ -1,10 +1,10 @@
-using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.DataContracts.DTOs.EmailNotifications;
 using Relativity.Services.EmailNotificationsManager;
 using Relativity.Sync.Configuration;

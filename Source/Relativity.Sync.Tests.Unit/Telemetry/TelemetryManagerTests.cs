@@ -1,9 +1,9 @@
-using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.InternalMetricsCollection;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Telemetry;

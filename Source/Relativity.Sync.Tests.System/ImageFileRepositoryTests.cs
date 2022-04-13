@@ -1,10 +1,10 @@
-using Relativity.API;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
 using FluentAssertions;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;

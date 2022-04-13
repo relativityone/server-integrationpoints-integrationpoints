@@ -1,6 +1,6 @@
-﻿using Autofac;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
+using Autofac;
 
 namespace Relativity.Sync.Extensions
 {

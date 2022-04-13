@@ -1,8 +1,8 @@
-using Relativity.API;
 using System;
 using System.Threading.Tasks;
 using Polly;
 using Polly.Retry;
+using Relativity.API;
 using Relativity.Services.Exceptions;
 using Relativity.Sync.Utils;
 

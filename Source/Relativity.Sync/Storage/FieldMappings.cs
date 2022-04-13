@@ -1,7 +1,6 @@
-using Relativity.API;
 using System;
 using System.Collections.Generic;
-using Relativity.Sync.RDOs;
+using Relativity.API;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Storage

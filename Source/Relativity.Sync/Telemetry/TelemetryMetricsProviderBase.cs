@@ -1,7 +1,7 @@
-using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.InternalMetricsCollection;
 
 namespace Relativity.Sync.Telemetry

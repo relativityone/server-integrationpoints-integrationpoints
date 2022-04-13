@@ -1,8 +1,8 @@
-using Relativity.API;
 using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;

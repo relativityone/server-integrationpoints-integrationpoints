@@ -1,11 +1,11 @@
+using System;
+using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
-using System;
-using System.Threading.Tasks;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors

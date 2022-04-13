@@ -1,5 +1,5 @@
-﻿using Banzai;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Banzai;
 
 namespace Relativity.Sync.Tests.Unit.Stubs
 {

@@ -1,6 +1,6 @@
-using Relativity.API;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Relativity.API;
 
 namespace Relativity.Sync.Transfer
 {

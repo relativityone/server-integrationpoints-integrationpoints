@@ -1,8 +1,8 @@
-using Relativity.API;
 using System;
 using System.Threading;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Sync.Executors.Validation;
 
 namespace Relativity.Sync.Tests.Unit.Executors.Validation

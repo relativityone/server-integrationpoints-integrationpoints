@@ -1,6 +1,6 @@
-using Relativity.API;
 using System;
 using Banzai.Logging;
+using Relativity.API;
 
 namespace Relativity.Sync.Logging
 {

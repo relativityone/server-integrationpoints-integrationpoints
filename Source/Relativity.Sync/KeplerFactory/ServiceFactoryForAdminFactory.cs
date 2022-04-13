@@ -1,5 +1,5 @@
-using Relativity.API;
 using System;
+using Relativity.API;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.KeplerFactory

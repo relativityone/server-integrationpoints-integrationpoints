@@ -1,10 +1,10 @@
-using Relativity.API;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.ExecutionConstrains;
 using Relativity.Sync.Storage;

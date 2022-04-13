@@ -1,9 +1,9 @@
-using Relativity.API;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Transfer;
 

@@ -1,8 +1,8 @@
-using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.Folder;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -10,13 +10,13 @@ using Relativity.Services.Search;
 using Relativity.Services.ServiceProxy;
 using Relativity.Services.User;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Utils;
 using Relativity.Sync.Executors;
-using Relativity.Sync.Tests.Common;
-using User = Relativity.Services.User.User;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.RDOs.Framework;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core.Stubs;
+using Relativity.Sync.Utils;
+using User = Relativity.Services.User.User;
 
 namespace Relativity.Sync.Tests.System.Core.Helpers
 {

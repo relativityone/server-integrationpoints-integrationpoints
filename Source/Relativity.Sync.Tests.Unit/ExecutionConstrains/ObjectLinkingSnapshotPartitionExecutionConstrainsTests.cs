@@ -4,6 +4,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.ExecutionConstrains;
+
 // ReSharper disable NUnit.IncorrectExpectedResultType
 
 namespace Relativity.Sync.Tests.Unit.ExecutionConstrains

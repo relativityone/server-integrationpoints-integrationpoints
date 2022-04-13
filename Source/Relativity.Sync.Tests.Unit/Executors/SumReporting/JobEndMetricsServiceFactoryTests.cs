@@ -1,7 +1,7 @@
-using Relativity.API;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Pipelines;

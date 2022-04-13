@@ -1,14 +1,14 @@
-using Relativity.API;
 using System.Net;
 using System.Threading.Tasks;
 using Banzai.Logging;
 using NUnit.Framework;
-using Relativity.Services.ServiceProxy;
+using Relativity.API;
 using Relativity.Services.InstanceSetting;
-using Relativity.Testing.Framework;
-using Relativity.Testing.Framework.Api;
+using Relativity.Services.ServiceProxy;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.System.Core.Helpers;
+using Relativity.Testing.Framework;
+using Relativity.Testing.Framework.Api;
 
 namespace Relativity.Sync.Tests.System.Core
 {

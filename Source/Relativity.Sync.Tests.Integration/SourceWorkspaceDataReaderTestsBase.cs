@@ -1,4 +1,3 @@
-using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -9,6 +8,7 @@ using Autofac;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Interfaces.UserInfo;
 using Relativity.Services.Interfaces.UserInfo.Models;
 using Relativity.Services.Objects.DataContracts;

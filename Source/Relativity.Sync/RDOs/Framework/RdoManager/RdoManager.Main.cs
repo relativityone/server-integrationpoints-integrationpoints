@@ -1,4 +1,3 @@
-using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,6 +6,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Polly;
+using Relativity.API;
 using Relativity.Kepler.Transport;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;

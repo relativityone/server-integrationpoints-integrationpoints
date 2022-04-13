@@ -1,14 +1,12 @@
-using Relativity.API;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Transfer;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
 {

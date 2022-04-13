@@ -1,5 +1,5 @@
-using Relativity.API;
 using System;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Storage

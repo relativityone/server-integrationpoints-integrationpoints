@@ -1,4 +1,3 @@
-using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -6,6 +5,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;

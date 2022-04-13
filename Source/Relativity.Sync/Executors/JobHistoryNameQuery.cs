@@ -1,8 +1,8 @@
-using Relativity.API;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;

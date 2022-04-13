@@ -4,7 +4,6 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
-using IConfiguration = Relativity.Sync.Storage.IConfiguration;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {

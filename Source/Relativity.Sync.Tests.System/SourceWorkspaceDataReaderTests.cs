@@ -1,4 +1,3 @@
-using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -11,6 +10,7 @@ using Autofac;
 using Castle.Core.Internal;
 using FluentAssertions;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;

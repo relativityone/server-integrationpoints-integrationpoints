@@ -1,8 +1,8 @@
-using Relativity.API;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.Sync.Transfer

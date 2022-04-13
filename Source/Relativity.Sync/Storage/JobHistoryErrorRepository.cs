@@ -1,10 +1,10 @@
-using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Polly;
 using Polly.Retry;
+using Relativity.API;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;

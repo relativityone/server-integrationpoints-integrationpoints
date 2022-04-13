@@ -1,9 +1,8 @@
-using Relativity.API;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.ChoiceQuery;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;

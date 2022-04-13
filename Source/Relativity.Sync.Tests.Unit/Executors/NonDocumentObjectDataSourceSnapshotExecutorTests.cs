@@ -1,13 +1,11 @@
-using Relativity.API;
 using System;
 using System.Collections.Generic;
-using System.Runtime.Remoting;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.Services.ChoiceQueryManager.Models;
+using Relativity.API;
 using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Field;
 using Relativity.Services.Objects;
@@ -16,7 +14,6 @@ using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
-using QueryRequest = Relativity.Services.Objects.DataContracts.QueryRequest;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {

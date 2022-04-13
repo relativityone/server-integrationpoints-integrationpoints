@@ -7,7 +7,6 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {

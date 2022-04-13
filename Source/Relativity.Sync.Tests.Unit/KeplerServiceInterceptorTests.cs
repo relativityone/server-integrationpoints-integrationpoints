@@ -1,19 +1,19 @@
-using Relativity.API;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Net.Sockets;
 using Castle.DynamicProxy;
 using Castle.DynamicProxy.Internal;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Kepler.Exceptions;
 using Relativity.Services.Exceptions;
-using Relativity.Sync.Logging;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Unit.Stubs;
 using Relativity.Sync.Utils;
 

@@ -1,11 +1,11 @@
-using Relativity.API;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
-using Polly;
-using Polly.Wrap;
-using Polly.Retry;
 using Castle.DynamicProxy;
+using Polly;
+using Polly.Retry;
+using Polly.Wrap;
+using Relativity.API;
 using Relativity.Kepler.Exceptions;
 using Relativity.Services.Exceptions;
 using Relativity.Sync.Utils;

@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using Relativity.Sync.Utils;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Logging;
-using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Unit.Storage;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit
 {

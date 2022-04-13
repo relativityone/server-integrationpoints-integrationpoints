@@ -1,9 +1,9 @@
-using Relativity.API;
 using System;
 using System.Threading.Tasks;
+using Relativity.API;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.Telemetry.Metrics;
 
 namespace Relativity.Sync.Executors.SumReporting

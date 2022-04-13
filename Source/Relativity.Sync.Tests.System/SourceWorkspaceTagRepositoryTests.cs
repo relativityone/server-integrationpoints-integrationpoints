@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Relativity.Sync.Utils;
 using kCura.Relativity.DataReaderClient;
 using Moq;
 using NUnit.Framework;
@@ -15,6 +14,7 @@ using Relativity.Sync.Telemetry;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
+using Relativity.Sync.Utils;
 using Relativity.Testing.Identification;
 using ImportJobFactory = Relativity.Sync.Tests.System.Core.Helpers.ImportJobFactory;
 

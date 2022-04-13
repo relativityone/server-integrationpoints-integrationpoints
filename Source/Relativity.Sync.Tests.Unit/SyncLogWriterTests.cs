@@ -1,8 +1,8 @@
-using Relativity.API;
 using System;
 using System.IO;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Tests.Unit

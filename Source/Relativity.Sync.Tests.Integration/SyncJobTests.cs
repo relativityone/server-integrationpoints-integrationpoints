@@ -1,13 +1,12 @@
-using Relativity.API;
 using System;
 using System.Linq;
-using System.Threading;
 using Autofac;
+using Banzai;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Sync.Configuration;
-using Banzai;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Integration.Helpers;
 

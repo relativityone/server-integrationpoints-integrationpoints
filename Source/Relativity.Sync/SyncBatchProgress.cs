@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Relativity.Sync
+﻿namespace Relativity.Sync
 {
 	/// <summary>
 	/// Data structure to hold progress for each batch

@@ -1,13 +1,12 @@
-using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.Search;
 using Relativity.Sync.Configuration;

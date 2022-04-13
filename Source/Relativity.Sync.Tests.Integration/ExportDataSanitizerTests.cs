@@ -1,4 +1,3 @@
-using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,6 +10,7 @@ using Moq;
 using Moq.Language.Flow;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Kepler.Transport;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;

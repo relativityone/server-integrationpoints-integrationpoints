@@ -1,8 +1,8 @@
-using Relativity.API;
 using System;
 using FluentAssertions;
-using NUnit.Framework;
 using Moq;
+using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Exceptions;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;

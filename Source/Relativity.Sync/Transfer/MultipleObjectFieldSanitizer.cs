@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Relativity.Sync.Utils;
 using Newtonsoft.Json;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Transfer
 {

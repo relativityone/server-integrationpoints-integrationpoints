@@ -1,7 +1,7 @@
-using Relativity.API;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Relativity.API;
 
 namespace Relativity.Sync.Transfer.StreamWrappers
 {

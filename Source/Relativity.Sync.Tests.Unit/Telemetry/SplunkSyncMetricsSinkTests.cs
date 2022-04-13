@@ -1,6 +1,6 @@
-using Relativity.API;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
 

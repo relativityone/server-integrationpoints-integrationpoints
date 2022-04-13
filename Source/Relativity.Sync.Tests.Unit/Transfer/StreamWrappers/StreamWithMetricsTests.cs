@@ -1,4 +1,3 @@
-using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,6 +5,7 @@ using System.Linq;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Transfer.StreamWrappers;
 using Relativity.Sync.Utils;

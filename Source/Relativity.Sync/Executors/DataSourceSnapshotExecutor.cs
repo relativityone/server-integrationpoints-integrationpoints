@@ -1,6 +1,6 @@
-using Relativity.API;
 using System;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;

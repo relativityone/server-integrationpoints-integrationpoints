@@ -1,10 +1,10 @@
-using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
+using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Utils;
 

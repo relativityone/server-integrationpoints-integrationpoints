@@ -1,12 +1,12 @@
-using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Relativity.Sync.Configuration;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Interfaces.Shared.Models;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Telemetry;

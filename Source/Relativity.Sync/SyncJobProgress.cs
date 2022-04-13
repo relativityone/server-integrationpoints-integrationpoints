@@ -1,6 +1,6 @@
-using Relativity.API;
 using System;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync

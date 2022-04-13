@@ -1,4 +1,3 @@
-using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -7,6 +6,7 @@ using Autofac;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Kepler.Exceptions;
 using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.DataContracts.DTOs.EmailNotifications;

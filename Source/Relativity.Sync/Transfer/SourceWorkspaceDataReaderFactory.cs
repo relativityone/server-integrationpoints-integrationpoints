@@ -1,5 +1,5 @@
-using Relativity.API;
 using System.Threading;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 

@@ -1,6 +1,6 @@
-using Relativity.API;
 using System;
 using System.IO;
+using Relativity.API;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Utils;
 

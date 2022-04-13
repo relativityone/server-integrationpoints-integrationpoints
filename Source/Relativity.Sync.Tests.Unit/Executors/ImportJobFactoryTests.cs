@@ -1,4 +1,3 @@
-using Relativity.API;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -6,12 +5,12 @@ using System.Reactive.Concurrency;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.EDDS.WebAPI.BulkImportManagerBase;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;

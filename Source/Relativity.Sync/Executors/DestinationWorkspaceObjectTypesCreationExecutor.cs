@@ -1,8 +1,7 @@
-using Relativity.API;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.Interfaces.Field.Models;
 using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Interfaces.Shared;

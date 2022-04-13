@@ -2,8 +2,8 @@
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.Sync.Storage;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {

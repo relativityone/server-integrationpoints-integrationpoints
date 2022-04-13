@@ -1,5 +1,5 @@
-using Relativity.API;
 using System.Threading;
+using Relativity.API;
 
 namespace Relativity.Sync.Executors.Validation
 {

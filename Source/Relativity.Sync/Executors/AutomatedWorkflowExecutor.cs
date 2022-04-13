@@ -1,10 +1,10 @@
-using Relativity.API;
 using System;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.AutomatedWorkflows.SDK;
-using Relativity.Sync.Configuration;
 using Relativity.AutomatedWorkflows.Services.Interfaces.v1.Models.Triggers;
+using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Executors
 {

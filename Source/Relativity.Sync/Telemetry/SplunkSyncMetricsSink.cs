@@ -1,4 +1,5 @@
 using Relativity.API;
+
 namespace Relativity.Sync.Telemetry
 {
 	/// <summary>

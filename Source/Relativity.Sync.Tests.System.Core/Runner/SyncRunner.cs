@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Autofac;
 using Relativity.API;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Tests.System.Core.Helpers.APIHelper;
 using Relativity.Telemetry.APM;
 using Relativity.Toggles;
