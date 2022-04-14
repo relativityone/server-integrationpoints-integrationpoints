@@ -6,9 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4] - 2022-04-14
+### Changed
+- Add bool switchToAppendOverlayMode to RetryIntegrationPointAsync method in IIntegrationPointsAgentManager
+
 ## [1.3] - 2022-03-16
 ### Changed
-- Add RetryIntegrationPointAsync to IIIntegrationPointsAgentManager
+- Add RetryIntegrationPointAsync to IIntegrationPointsAgentManager
 
 ## [1.2] - 2021-07-16
 ### Changed
