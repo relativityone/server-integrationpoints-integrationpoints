@@ -13,6 +13,8 @@ namespace Relativity.Sync.Configuration
 		
 		int RdoArtifactTypeId { get; }
 
+		int DestinationRdoArtifactTypeId { get; }
+
 		string GetFolderPathSourceFieldName();
 
 		IList<FieldMap> GetFieldMappings();
