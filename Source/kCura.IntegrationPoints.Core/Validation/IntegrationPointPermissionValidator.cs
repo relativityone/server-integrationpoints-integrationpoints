@@ -109,8 +109,17 @@ namespace kCura.IntegrationPoints.Core.Validation
 				}
 			}
 
-            // provider-specific validation
-            IEnumerable<IPermissionValidator> sourceProviderPermissionValidators = _validatorsMap[GetProviderValidatorKey(sourceProvider.Identifier, destinationProvider.Identifier)];
+            if (integrationPointType.Identifier.Equals(Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString()))
+            {
+                IEnumerable<IPermissionValidator> exportProviderPermissionValidators = _validatorsMap[Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString()];
+                foreach (IPermissionValidator validator in exportProviderPermissionValidators)
+                {
+                    result.Add(validator.Validate(validationModel));
+                }
+            }
+
+			// provider-specific validation
+			IEnumerable<IPermissionValidator> sourceProviderPermissionValidators = _validatorsMap[GetProviderValidatorKey(sourceProvider.Identifier, destinationProvider.Identifier)];
             foreach (IPermissionValidator validator in sourceProviderPermissionValidators)
 			{
 				result.Add(validator.Validate(validationModel));
