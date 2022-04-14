@@ -63,13 +63,15 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		}
 
 		protected bool HasPermissions(int? artifactId)
-		{
+        {
+            Guid integrationPointsObjectTypeGuid = new Guid(ObjectTypeGuid);
 			IPermissionRepository permissionRepository = _repositoryFactory.GetPermissionRepository(_workspaceIdProvider.GetWorkspaceID());
 			bool canImport = permissionRepository.UserCanImport();
-			bool canAddOrEdit = permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuid),
-				artifactId.HasValue ? ArtifactPermission.Edit : ArtifactPermission.Create);
+			bool canAdd = permissionRepository.UserHasArtifactTypePermission(integrationPointsObjectTypeGuid, ArtifactPermission.Create);
+            bool canEdit = permissionRepository.UserHasArtifactTypePermission(integrationPointsObjectTypeGuid, ArtifactPermission.Edit);
+            bool canAddOrEdit = artifactId.HasValue ? canEdit : canAdd && canEdit;
 			bool canEditExistingIp = !artifactId.HasValue ||
-									permissionRepository.UserHasArtifactInstancePermission(new Guid(ObjectTypeGuid), artifactId.Value, ArtifactPermission.Edit);
+									permissionRepository.UserHasArtifactInstancePermission(integrationPointsObjectTypeGuid, artifactId.Value, ArtifactPermission.Edit);
 			return canImport && canAddOrEdit && canEditExistingIp;
 		}
 		
