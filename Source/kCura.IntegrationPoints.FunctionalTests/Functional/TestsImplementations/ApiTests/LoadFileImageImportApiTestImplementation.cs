@@ -58,6 +58,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             docs.Should().HaveCount(expectedNumberOfDocs);
 
             docs.Should().OnlyContain(x => x.HasImages.Name == "Yes");
+
         }
 
         private List<RelativityObject> GetAllDocumentsFromWorkspace(int workspaceId)
@@ -137,7 +138,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                 Type = await commonDataSvc.GetIntegrationPointTypeByAsync(IntegrationPointTypes.ImportName).ConfigureAwait(false),
                 EmailNotificationRecipients = "",
                 FieldMappings = new List<FieldMap>(),
-                OverwriteFieldsChoiceId = await commonDataSvc.GetOverwriteFieldsChoiceIdAsync("Append Only").ConfigureAwait(false),
+                OverwriteFieldsChoiceId = await commonDataSvc.GetOverwriteFieldsChoiceIdAsync(ImportOverwriteModeEnum.AppendOnly).ConfigureAwait(false),
                 ScheduleRule = new ScheduleModel(),
                 LogErrors = true
             };

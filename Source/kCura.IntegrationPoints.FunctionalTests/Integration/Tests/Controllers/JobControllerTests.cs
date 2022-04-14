@@ -18,6 +18,7 @@ using Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
 using SystemInterface.IO;
+using static kCura.IntegrationPoints.Core.Constants;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 {
@@ -109,6 +110,37 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             // Assert
             response.IsSuccessStatusCode.Should().BeTrue();
             FakeRelativityInstance.JobsInQueue.First().RelatedObjectArtifactID.Should().Be(integrationPoint.ArtifactId);
+        }
+
+        [IdentifiedTest("B7782A2E-2FA6-4CE8-AB8C-D3FB1115765E")]
+        [TestCase(OverwriteModeNames.AppendOnlyModeName, true, OverwriteModeNames.AppendOverlayModeName)]
+        [TestCase(OverwriteModeNames.AppendOnlyModeName, false, OverwriteModeNames.AppendOnlyModeName)]
+        [TestCase(OverwriteModeNames.OverlayOnlyModeName, false, OverwriteModeNames.OverlayOnlyModeName)]
+        [TestCase(OverwriteModeNames.AppendOverlayModeName, false, OverwriteModeNames.AppendOverlayModeName)]
+        public void Retry_ShouldAssignCorrectOverwriteModeToJobHistory(string initialOverwriteMode, bool switchModeToAppendOverlay, string expectedOverwriteMode)
+        {
+            // Arrange
+            IntegrationPointTest integrationPoint =
+                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(_destinationWorkspace);
+            integrationPoint.HasErrors = true;
+            ConvertToOverwriteChoice(integrationPoint, initialOverwriteMode);
+            
+            SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(new JobTest(), integrationPoint);          
+
+            JobController.Payload payload = new JobController.Payload
+            {
+                ArtifactId = integrationPoint.ArtifactId,
+                AppId = SourceWorkspace.ArtifactId
+            };
+
+            JobController sut = PrepareSut(HttpMethod.Post, "/retry");
+
+            // Act
+            sut.Retry(payload, switchModeToAppendOverlay);
+
+            // Assert
+            JobHistoryTest addedJobHistoryForNextRun = SourceWorkspace.JobHistory.LastOrDefault();
+            addedJobHistoryForNextRun.Overwrite.Should().Be(expectedOverwriteMode);           
         }
 
         [IdentifiedTest("EEDDA654-F7C0-4843-BAF6-ADBDB57EFC22")]
@@ -378,6 +410,22 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             sut.Request = request;
 
             return sut;
+        }
+
+        private void ConvertToOverwriteChoice(IntegrationPointTest integrationPoint, string overwriteMode)
+        {
+            switch (overwriteMode)
+            {
+                case OverwriteModeNames.AppendOnlyModeName:
+                    integrationPoint.OverwriteFields = OverwriteFieldsChoices.IntegrationPointAppendOnly;
+                    break;
+                case OverwriteModeNames.AppendOverlayModeName:
+                    integrationPoint.OverwriteFields = OverwriteFieldsChoices.IntegrationPointAppendOverlay;
+                    break;
+                case OverwriteModeNames.OverlayOnlyModeName:
+                    integrationPoint.OverwriteFields = OverwriteFieldsChoices.IntegrationPointOverlayOnly;
+                    break;                              
+            }
         }
     }
 }
