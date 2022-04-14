@@ -11,6 +11,8 @@ namespace Relativity.Sync.Logging
 {
     internal class ItemLevelErrorLogAggregator : IItemLevelErrorLogAggregator
     {
+        internal int LogBatchSize { get; set; } = 200;
+
         private readonly IAPILog _logger;
         private readonly Dictionary<string, List<int>> _errorsAggregate;
         private readonly BlockingCollection<(ItemLevelError, int)> _queue = new BlockingCollection<(ItemLevelError, int)>();
@@ -32,6 +34,49 @@ namespace Relativity.Sync.Logging
             _errorsAggregate = new Dictionary<string, List<int>>();
 
             _processingTask = StartProcessing();
+        }
+
+        public void AddItemLevelError(ItemLevelError itemLevelError, int artifactId)
+        {
+            if (!_queue.IsAddingCompleted)
+            {
+                _queue.Add((itemLevelError, artifactId));
+            }
+        }
+
+        public async Task LogAllItemLevelErrorsAsync()
+        {
+            try
+            {
+                Stopwatch stopwatch = Stopwatch.StartNew();
+                _queue.CompleteAdding();
+                await _processingTask.ConfigureAwait(false);
+                stopwatch.Stop();
+
+                _logger.LogInformation("Waited {time} ms for log queue to be processed", stopwatch.ElapsedMilliseconds);
+                _logger.LogWarning("Total count of item level errors in batch: {count}  Aggregated errors count: {errorsAggregateCount}", _itemLevelErrorCount, _errorsAggregate.Count);
+
+                foreach (KeyValuePair<string, List<int>> keyValuePair in _errorsAggregate)
+                {
+                    List<int> items = keyValuePair.Value;
+
+                    for (int i = 0; i < items.Count;)
+                    {
+                        int batchCount = Math.Min(LogBatchSize, items.Count - i);
+                        List<int> batch = items.GetRange(i, batchCount);
+
+                        _logger.LogWarning("Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
+                            keyValuePair.Key,
+                            string.Join(", ", batch));
+
+                        i += batch.Count;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception occurred while logging aggregated item level errors.");
+            }
         }
 
         private Task StartProcessing()
@@ -61,8 +106,6 @@ namespace Relativity.Sync.Logging
                         message = message.Trim();
                         EnsureKeyExists(message);
                         _errorsAggregate[message].Add(artifactId);
-
-                        _logger.LogInformation("Processed log for {artifactId} in {time} ms", artifactId, stopwatch.ElapsedMilliseconds);
                     }
                 }
                 catch (Exception e)
@@ -70,14 +113,6 @@ namespace Relativity.Sync.Logging
                     _logger.LogError(e, "Error when aggregating item level errors");
                 }
             });
-        }
-
-        public void AddItemLevelError(ItemLevelError itemLevelError, int artifactId)
-        {
-            if (!_queue.IsAddingCompleted)
-            {
-                _queue.Add((itemLevelError, artifactId));
-            }
         }
 
         private void EnsureKeyExists(string messageTemplate)
@@ -88,24 +123,6 @@ namespace Relativity.Sync.Logging
             }
         }
 
-        public async Task LogAllItemLevelErrorsAsync()
-        {
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            _queue.CompleteAdding();
-            await _processingTask.ConfigureAwait(false);
-            stopwatch.Stop();
-            
-            _logger.LogWarning("Waited {time} ms for log queue to be processed", stopwatch.ElapsedMilliseconds);
-            _logger.LogWarning("Total count of item level errors in batch: {count}", _itemLevelErrorCount);
-            
-            foreach (var keyValuePair in _errorsAggregate)
-            {
-                _logger.LogWarning("Item level error occured: {message} -> [{items}]", 
-                    keyValuePair.Key,
-                    string.Join(", ", keyValuePair.Value));
-            }
-        }
-        
         #region Standarization functions
         
         private static (bool matched, string newMessage) ReplaceIdentifier(string message, ItemLevelError error)

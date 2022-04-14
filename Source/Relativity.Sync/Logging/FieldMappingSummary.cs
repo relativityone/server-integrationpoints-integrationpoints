@@ -31,23 +31,27 @@ namespace Relativity.Sync.Logging
 
         public async Task<Dictionary<string, object>> GetFieldsMappingSummaryAsync(CancellationToken token)
         {
-            IList<FieldInfoDto> nonDocumentFields = await _fieldManager.GetMappedFieldsAsync(token).ConfigureAwait(false);
+            IList<FieldInfoDto> mappedFields = await _fieldManager.GetMappedFieldsAsync(token).ConfigureAwait(false);
 
             Task<Dictionary<string, RelativityObjectSlim>> sourceFieldsDetailsTask = GetFieldsDetailsAsync(_configuration.SourceWorkspaceArtifactId,
-                nonDocumentFields.Where(x => x.RelativityDataType == RelativityDataType.LongText)
-                    .Select(x => x.SourceFieldName), _configuration.RdoArtifactTypeId, token);
+                mappedFields
+                    .Where(x => x.RelativityDataType == RelativityDataType.LongText)
+                    .Select(x => x.SourceFieldName)
+                    .ToList(), _configuration.RdoArtifactTypeId, token);
 
             Task<Dictionary<string, RelativityObjectSlim>> destinationFieldsDetailsTask = GetFieldsDetailsAsync(_configuration.DestinationWorkspaceArtifactId,
-                nonDocumentFields.Where(x => x.RelativityDataType == RelativityDataType.LongText)
-                    .Select(x => x.DestinationFieldName), _configuration.RdoArtifactTypeId, token);
+                mappedFields
+                    .Where(x => x.RelativityDataType == RelativityDataType.LongText)
+                    .Select(x => x.DestinationFieldName)
+                    .ToList(), _configuration.DestinationRdoArtifactTypeId, token);
 
             await Task.WhenAll(sourceFieldsDetailsTask, destinationFieldsDetailsTask).ConfigureAwait(false);
-            Dictionary<string, object> fieldsMappingSummary = GetFieldsMappingSummary(nonDocumentFields, sourceFieldsDetailsTask.Result, destinationFieldsDetailsTask.Result);
+            Dictionary<string, object> fieldsMappingSummary = GetFieldsMappingSummary(mappedFields, sourceFieldsDetailsTask.Result, destinationFieldsDetailsTask.Result);
             return fieldsMappingSummary;
         }
 
 		private async Task<Dictionary<string, RelativityObjectSlim>> GetFieldsDetailsAsync(int workspaceId,
-			IEnumerable<string> fieldNames, int rdoArtifactTypeId, CancellationToken token)
+			List<string> fieldNames, int rdoArtifactTypeId, CancellationToken token)
 		{
 			if (fieldNames == null || !fieldNames.Any())
 			{
@@ -55,9 +59,7 @@ namespace Relativity.Sync.Logging
 			}
 
 			ICollection<string> requestedFieldNames = new HashSet<string>(fieldNames);
-
-			IEnumerable<string> formattedFieldNames =
-				requestedFieldNames.Select(KeplerQueryHelpers.EscapeForSingleQuotes).Select(f => $"'{f}'");
+            IEnumerable<string> formattedFieldNames = requestedFieldNames.Select(KeplerQueryHelpers.EscapeForSingleQuotes).Select(f => $"'{f}'");
 			string concatenatedFieldNames = string.Join(", ", formattedFieldNames);
 
 			QueryRequest request = new QueryRequest
@@ -114,26 +116,31 @@ namespace Relativity.Sync.Logging
 				.GroupBy(x => x.RelativityDataType, x => x)
 				.ToDictionary(x => x.Key.ToString(), x => x.Count());
 
-			Dictionary<string, Dictionary<string, Dictionary<string, object>>> longTextFields = mappings
-				.Where(x => x.RelativityDataType == RelativityDataType.LongText)
-				.ToDictionary(x => string.Format(keyFormat, x.SourceFieldName, x.DestinationFieldName), x =>
-					new Dictionary<string, Dictionary<string, object>>
-					{
-						{
-							"Source", new Dictionary<string, object>()
-							{
-								{"ArtifactId", sourceLongTextFieldsDetails[x.SourceFieldName].ArtifactID},
-								{"DataGridEnabled", sourceLongTextFieldsDetails[x.SourceFieldName].Values[1]}
-							}
-						},
-						{
-							"Destination", new Dictionary<string, object>()
-							{
-								{"ArtifactId", destinationLongTextFieldsDetails[x.DestinationFieldName].ArtifactID},
-								{"DataGridEnabled", destinationLongTextFieldsDetails[x.DestinationFieldName].Values[1]}
-							}
-						}
-					});
+            Dictionary<string, Dictionary<string, Dictionary<string, object>>> longTextFields = mappings
+                .Where(x => x.RelativityDataType == RelativityDataType.LongText)
+                .ToDictionary(x => string.Format(keyFormat, x.SourceFieldName, x.DestinationFieldName), x =>
+                {
+                    RelativityObjectSlim sourceField = sourceLongTextFieldsDetails[x.SourceFieldName];
+                    RelativityObjectSlim destinationField = destinationLongTextFieldsDetails[x.DestinationFieldName];
+
+                    return new Dictionary<string, Dictionary<string, object>>
+                    {
+                        {
+                            "Source", new Dictionary<string, object>()
+                            {
+                                { "ArtifactId", sourceField.ArtifactID },
+                                { "DataGridEnabled", sourceField.Values[1] }
+                            }
+                        },
+                        {
+                            "Destination", new Dictionary<string, object>()
+                            {
+                                { "ArtifactId", destinationField.ArtifactID },
+                                { "DataGridEnabled", destinationField.Values[1] }
+                            }
+                        }
+                    };
+                });
 
 			const string extractedTextFieldName = "Extracted Text";
 			string extractedTextKey = string.Format(keyFormat, extractedTextFieldName, extractedTextFieldName);
