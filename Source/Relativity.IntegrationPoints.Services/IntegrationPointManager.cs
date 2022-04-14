@@ -129,7 +129,7 @@ namespace Relativity.IntegrationPoints.Services
 			}
 		}
 		
-		public async Task<object> RetryIntegrationPointAsync(int workspaceArtifactId, int integrationPointArtifactId)
+		public async Task<object> RetryIntegrationPointAsync(int workspaceArtifactId, int integrationPointArtifactId, bool switchToAppendOverlayMode)
 		{
 			LogInvocation(nameof(RunIntegrationPointAsync));
 
@@ -140,7 +140,7 @@ namespace Relativity.IntegrationPoints.Services
 				using (var container = GetDependenciesContainer(workspaceArtifactId))
 				{
 					IIntegrationPointRepository integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
-					return await Task.Run(() => integrationPointRepository.RetryIntegrationPoint(workspaceArtifactId, integrationPointArtifactId)).ConfigureAwait(false);
+					return await Task.Run(() => integrationPointRepository.RetryIntegrationPoint(workspaceArtifactId, integrationPointArtifactId, switchToAppendOverlayMode)).ConfigureAwait(false);
 				}
 			}
 			catch (Exception e)

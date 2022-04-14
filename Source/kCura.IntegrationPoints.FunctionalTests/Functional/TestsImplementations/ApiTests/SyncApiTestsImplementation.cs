@@ -115,7 +115,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 
             //1. Job first run:
 
-            //Arrange
+            // Arrange
             List<RelativityObject> sourceWorkspaceAlldocs = await GetDocumentsFromWorkspace(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
             List<RelativityObject> destinationWorkspaceAllDocs = await GetDocumentsFromWorkspace(destinationWorkspace.ArtifactID).ConfigureAwait(false);
 
@@ -127,37 +127,26 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 
             int expectedItemErrorsToRetry = sourceWorkspaceAlldocs.Count() - destinationWorkspaceAllDocs.Count();
 
-            //Act
+            // Act
             int jobHistoryId = await _ripApi.RunIntegrationPointAsync(integrationPoint, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
 
-            //Assert
-            Func<Task> runTask = async () => 
-            { 
-                await _ripApi.WaitForJobToFinishAsync(jobHistoryId, _sourceWorkspace.ArtifactID,
-                    expectedStatus: JobStatusChoices.JobHistoryCompletedWithErrors.Name).ConfigureAwait(false);
-            };
-            runTask.ShouldNotThrow();
-            
+            // Assert
+            await _ripApi.WaitForJobToFinishAsync(jobHistoryId, _sourceWorkspace.ArtifactID,
+                expectedStatus: JobStatusChoices.JobHistoryCompletedWithErrors.Name).ConfigureAwait(false);
+
             (int RunTransferredItems, int RunItemsWithErrors) = await GetTransferredItemsFromJobHistory(jobHistoryId).ConfigureAwait(false);
 
             RunItemsWithErrors.Should().Be(expectedItemErrorsToRetry);
 
             //2. Job retry:
 
-            //Arrange
-            integrationPoint.OverwriteFieldsChoiceId = await _sourceWorkspaceDataService.GetOverwriteFieldsChoiceIdAsync(ImportOverwriteModeEnum.AppendOverlay).ConfigureAwait(false);
+            // Act
+            int retryJobHistoryId = await _ripApi.RetryIntegrationPointAsync(integrationPoint, _sourceWorkspace.ArtifactID, true);
 
-            //Act
-            int retryJobHistoryId = await _ripApi.RetryIntegrationPointAsync(integrationPoint, _sourceWorkspace.ArtifactID);
+            // Assert
+            await _ripApi.WaitForJobToFinishAsync(retryJobHistoryId, _sourceWorkspace.ArtifactID,
+                expectedStatus: JobStatusChoices.JobHistoryCompleted.Name).ConfigureAwait(false);
 
-            //Assert
-            Func<Task> retryTask = async () =>
-            { 
-                await _ripApi.WaitForJobToFinishAsync(retryJobHistoryId, _sourceWorkspace.ArtifactID,
-                    expectedStatus: JobStatusChoices.JobHistoryCompleted.Name).ConfigureAwait(false);
-            };
-            retryTask.ShouldNotThrow();
-            
             (int RetryTransferredItems, int RetryItemsWithErrors) = await GetTransferredItemsFromJobHistory(retryJobHistoryId).ConfigureAwait(false);
 
             RetryItemsWithErrors.Should().Be(0);
