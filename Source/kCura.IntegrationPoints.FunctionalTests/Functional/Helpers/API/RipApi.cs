@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data;
@@ -43,14 +42,14 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
             return await GetJobHistoryId(integrationPoint.Name, workspaceId);
         }
 
-        public async Task<int> RetryIntegrationPointAsync(IntegrationPointModel integrationPoint, int workspaceId)
+        public async Task<int> RetryIntegrationPointAsync(IntegrationPointModel integrationPoint, int workspaceId, bool switchToAppendOverlayMode)
         {
             using (var manager = _serviceFactory.GetServiceProxy<IIntegrationPointManager>())
             {
-                await manager.RetryIntegrationPointAsync(workspaceId, integrationPoint.ArtifactId).ConfigureAwait(false);
+                await manager.RetryIntegrationPointAsync(workspaceId, integrationPoint.ArtifactId, switchToAppendOverlayMode).ConfigureAwait(false);
             }
 
-            return await GetJobHistoryId(integrationPoint.Name, workspaceId);           
+            return await GetJobHistoryId(integrationPoint.Name, workspaceId);
         }
 
         public async Task<int> GetJobHistoryId(string integrationPointName, int workspaceId)
@@ -97,7 +96,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
             }
         }
 
-        public Task WaitForJobToFinishAsync(int jobHistoryId, int workspaceId, int checkDelayInMs = 500, string expectedStatus = "Completed")
+        public async Task WaitForJobToFinishAsync(int jobHistoryId, int workspaceId, int checkDelayInMs = 500, string expectedStatus = "Completed")
         {
             Task waitForJobStatus = Task.Run(() => WaitForJobStatus(jobHistoryId, workspaceId, status =>
                 status == expectedStatus, checkDelayInMs));
@@ -105,11 +104,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
             int waitingTimeout = 300;
             if (!waitForJobStatus.Wait(TimeSpan.FromSeconds(waitingTimeout)))
             {
-                throw new TimeoutException($"Waiting for job to finish timeout ({waitingTimeout}) exceeded.");
-            }
-            else
-            {
-                return waitForJobStatus;
+                string status = await GetJobHistoryStatus(jobHistoryId, workspaceId).ConfigureAwait(false);
+
+                throw new TimeoutException($"Waiting for job to finish timeout ({waitingTimeout}) exceeded. - JobStatus is {status}");
             }
         }
 
