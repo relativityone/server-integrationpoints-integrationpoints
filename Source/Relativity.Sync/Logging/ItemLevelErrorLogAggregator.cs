@@ -10,7 +10,7 @@ namespace Relativity.Sync.Logging
 {
     internal class ItemLevelErrorLogAggregator : IItemLevelErrorLogAggregator
     {
-        internal int LogBatchSize { get; set; } = 100;
+        internal int LogBatchSize { get; set; } = 200;
 
         private readonly ISyncLog _logger;
         private readonly Dictionary<string, List<int>> _errorsAggregate;
