@@ -56,21 +56,16 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 					return validationResult;
 				}
 
-				if (_toggleProvider.IsEnabledByName(_ENABLE_NON_ADMIN_SYNC_LINKS_TOGGLE))
-				{
-					_logger.LogInformation("Toggle {toggleName} is set to TRUE. Skipping Native File links copy Restriction validation",
-						_ENABLE_NON_ADMIN_SYNC_LINKS_TOGGLE);
-					return validationResult;
-				}
-
 				bool isRestrictReferentialFileLinksOnImport = _managerFactory.CreateInstanceSettingsManager()
 					.RetrieveRestrictReferentialFileLinksOnImport();
 				bool executingUserIsAdmin = UserIsAdmin(validationModel.UserId);
+				bool nonAdminCanSyncUsingLinks = _toggleProvider.IsEnabledByName(_ENABLE_NON_ADMIN_SYNC_LINKS_TOGGLE);
 
-				_logger.LogInformation("Restrict Referential File Links on Import : {isRestricted}, User is Admin : {isAdmin}",
-					isRestrictReferentialFileLinksOnImport, executingUserIsAdmin);
+				_logger.LogInformation("Restrict Referential File Links on Import : {isRestricted}, User is Admin : {isAdmin}, Toggle {toggleName}: {toggleValue}",
+					isRestrictReferentialFileLinksOnImport, executingUserIsAdmin, _ENABLE_NON_ADMIN_SYNC_LINKS_TOGGLE, nonAdminCanSyncUsingLinks );
+				
 
-				if (isRestrictReferentialFileLinksOnImport && !executingUserIsAdmin)
+				if (isRestrictReferentialFileLinksOnImport && !executingUserIsAdmin && !nonAdminCanSyncUsingLinks)
 				{
 					validationResult.Add(_COPY_NATIVE_FILES_BY_LINKS_LACK_OF_PERMISSION);
 				}
