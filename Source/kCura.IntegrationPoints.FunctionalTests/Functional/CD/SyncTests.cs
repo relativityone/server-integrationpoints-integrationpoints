@@ -16,7 +16,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CD
 		{
 		}
 
-		[Test, TestExecutionCategory.RAPCD.Verification.Functional]
+		[IdentifiedTest("1C37F97A-9DB3-4FED-BDAC-685864C03152")]
+		[TestExecutionCategory.RAPCD.Verification.Functional]
 		public void SyncLoadFirstPage()
 		{
 			// Arrange
