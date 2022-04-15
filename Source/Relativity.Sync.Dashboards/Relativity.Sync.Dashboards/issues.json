@@ -754,5 +754,33 @@
 	{
 		"Jira": "REL-644534",
 		"Exception": "System.AggregateException: One or more errors occurred. ---> Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API. ---> kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException:*Some supplied choice ids are invalid*"
+	},
+	{
+		"Jira": "REL-624513",
+		"Exception": "*Relativity.Services.Exceptions.ConflictException: Create Ancestry Failed*"
+	},
+	{
+		"Jira": "REL-671246",
+		"Exception": "*Error occured while executing 'ImportNativesStage'. Category: 'Unknown', message: 'Failed to acquire app lock for Objects*"
+	},
+	{
+		"Jira": "REL-671266",
+		"Exception": "Relativity.Sync.Transfer.SourceDataReaderException: Failed to get next batch from exporter. ---> Relativity.Services.Exceptions.ServiceException: SQL Statement Failed*"
+	},
+	{
+		"Jira": "REL-671269",
+		"Exception": "Relativity.Sync.Transfer.SourceDataReaderException: Failed to get next batch from exporter*Relativity.Services.Exceptions.ServiceException: Error during readpreview *Error reading documents from Data Grid file system*"
+	},
+	{
+		"Jira": "REL-671274",
+		"Exception": "kCura.WinEDDS.Exceptions.InvalidLoginException: Login failed*System.Exception: Unknown failure during authentication*Relativity.DataExchange.HttpServiceException: The 'query Relativity get version' HTTP Web service 'POST' method failed with an HTTP 401 status code*"
+	},
+	{
+		"Jira": "REL-671278",
+		"Exception": "System.AggregateException: One or more errors occurred*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*System.Web.Services.Protocols.SoapException: The service endpoint denied the request*Relativity.Services.Exceptions.NotAuthorizedException: The service endpoint denied the request.*"
+	},
+	{
+		"Jira": "REL-671281",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*/api/webapi-replacement/v1/bulk-import/BulkImportNativeAsync*"
 	}
 ]
