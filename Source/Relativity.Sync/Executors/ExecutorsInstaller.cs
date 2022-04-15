@@ -38,6 +38,8 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<DocumentTagger>().As<IDocumentTagger>();
 			builder.RegisterType<ImportJobFactory>().As<IImportJobFactory>();
 			builder.RegisterType<ImportApiFactory>().As<IImportApiFactory>();
+			builder.RegisterType<ExtendedImportAPI>().As<IExtendedImportAPI>();
+			
 			builder.RegisterType<AutomatedWorkflowsManager>().As<IAutomatedWorkflowsManager>();
 
 			builder.RegisterType<DocumentJobStartMetricsExecutorConstrains>().As<IExecutionConstrains<IDocumentJobStartMetricsConfiguration>>();

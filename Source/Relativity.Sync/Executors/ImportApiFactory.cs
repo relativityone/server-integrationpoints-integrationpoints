@@ -5,7 +5,6 @@ using Relativity.DataExchange;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Authentication;
 using kCura.Relativity.ImportAPI;
-using Relativity.Sync.Toggles;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
@@ -19,6 +18,7 @@ namespace Relativity.Sync.Executors
 		private readonly IAuthTokenGenerator _tokenGenerator;
 		private readonly INonAdminCanSyncUsingLinks _nonAdminCanSyncUsingLinks;
 		private readonly IUserService _userService;
+		private readonly IExtendedImportAPI _extendedImportApi;
 		private readonly ISyncLog _logger;
 		private const int _ADMIN_USER_ID = 777;
 
@@ -41,12 +41,13 @@ namespace Relativity.Sync.Executors
 		}
 #pragma warning restore RG0001
 
-		public ImportApiFactory(IUserContextConfiguration userContextConfiguration, IAuthTokenGenerator tokenGenerator, INonAdminCanSyncUsingLinks nonAdminCanSyncUsingLinks, IUserService userService, ISyncLog logger)
+		public ImportApiFactory(IUserContextConfiguration userContextConfiguration, IAuthTokenGenerator tokenGenerator, INonAdminCanSyncUsingLinks nonAdminCanSyncUsingLinks, IUserService userService, IExtendedImportAPI extendedImportApi, ISyncLog logger)
 		{
 			_userContextConfiguration = userContextConfiguration;
 			_tokenGenerator = tokenGenerator;
 			_nonAdminCanSyncUsingLinks = nonAdminCanSyncUsingLinks;
 			_userService = userService;
+			_extendedImportApi = extendedImportApi;
 			_logger = logger;
 		}
 		
@@ -58,11 +59,12 @@ namespace Relativity.Sync.Executors
 			{
 				executingUserId = _ADMIN_USER_ID;
 			}
-			//AD UT for logs
+			
 			_logger.LogInformation("Creating IAPI as userId: {executingUserId}", executingUserId);
 			IRelativityTokenProvider relativityTokenProvider = new RelativityTokenProvider(executingUserId, _tokenGenerator);
 
-			return Task.FromResult<IImportAPI>(ExtendedImportAPI.CreateByTokenProvider(webServiceUrl.AbsoluteUri, relativityTokenProvider));
+			var byTokenProvider = _extendedImportApi.CreateByTokenProvider(webServiceUrl.AbsoluteUri, relativityTokenProvider);
+			return Task.FromResult<IImportAPI>(byTokenProvider);
 		}
 	}
 #pragma warning restore RG2002

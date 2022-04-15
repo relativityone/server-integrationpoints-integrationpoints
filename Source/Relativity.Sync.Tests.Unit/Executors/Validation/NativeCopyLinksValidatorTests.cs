@@ -88,13 +88,12 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			result.Messages.Should().NotBeEmpty();
 		}
 
-		[Test]
 		[TestCase(_USER_IS_ADMIN_ID)]
 		[TestCase(_USER_IS_NON_ADMIN_ID)]
 		public async Task ValidateAsync_ShouldSkipValidationIndependentOfUser_WhenResponsibleInstanceSettingIsFalse(int userId)
 		{
 			// Arrange
-			SetupValidator(userId, ImportNativeFileCopyMode.SetFileLinks, false);
+			SetupValidator(userId, ImportNativeFileCopyMode.SetFileLinks, false, false);
 
 			// Act
 			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
@@ -143,8 +142,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsync_ShouldSkipValidationOfUser_WhenNonAdminCanSyncUsingLinkToggleIsTrue()
 		{
 			// Arrange
-			SetupValidator(_USER_IS_NON_ADMIN_ID, ImportNativeFileCopyMode.SetFileLinks, true);
-			_nonAdminCanSyncUsingLinksFake.Setup(t => t.IsEnabled()).Returns(true);
+			SetupValidator(_USER_IS_NON_ADMIN_ID, ImportNativeFileCopyMode.SetFileLinks, true, true);
 
 			// Act
 			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
@@ -154,19 +152,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			result.Messages.Should().BeEmpty();
 		}
 
-		private void SetupValidator(int userId, ImportNativeFileCopyMode copyMode, bool isRestrictedCopyLinksOnly)
+		private void SetupValidator(int userId, ImportNativeFileCopyMode copyMode, bool isRestrictedCopyLinksOnly, bool toggleNonAdminCanSyncUsingLinks = false)
 		{
 			_userContextFake.Setup(c => c.ExecutingUserId).Returns(userId);
 			_configurationFake.Setup(c => c.ImportNativeFileCopyMode).Returns(copyMode);
 			_instanceSettingsFake.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default(bool))).ReturnsAsync(isRestrictedCopyLinksOnly);
-
-			List<RelativityObjectSlim> groups = userId == _USER_IS_ADMIN_ID
-				? new List<RelativityObjectSlim> { new RelativityObjectSlim() }
-				: new List<RelativityObjectSlim>();
-			QueryResultSlim queryResultSlim = new QueryResultSlim { Objects = groups };
-
-			_groupManagerFake.Setup(m => m.QueryGroupsByUserAsync(It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), userId))
-				.Returns(Task.FromResult(queryResultSlim));
+			_nonAdminCanSyncUsingLinksFake.Setup(t => t.IsEnabled()).Returns(toggleNonAdminCanSyncUsingLinks);
+			_userServiceFake.Setup(u => u.ExecutingUserIsAdminAsync(It.IsAny<IUserContextConfiguration>())).Returns(Task.FromResult(userId == _USER_IS_ADMIN_ID));
 		}
 	}
 }
