@@ -31,7 +31,8 @@ namespace Relativity.Sync.Transfer
 		private readonly ISyncLog _logger;
 
 		public FieldManager(IFieldConfiguration configuration, IObjectFieldTypeRepository objectFieldTypeRepository,
-			IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders, IEnumerable<IImageSpecialFieldBuilder> imageSpecialFieldBuilders, ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger)
+			IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders, IEnumerable<IImageSpecialFieldBuilder> imageSpecialFieldBuilders,
+            ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger)
 		{
 			_configuration = configuration;
 			_objectFieldTypeRepository = objectFieldTypeRepository;
@@ -39,7 +40,7 @@ namespace Relativity.Sync.Transfer
 			_imageSpecialFieldBuilders = imageSpecialFieldBuilders.ToList();
 			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_logger = logger;
-		}
+        }
 
 		public IEnumerable<FieldInfoDto> GetNativeSpecialFields()
 			=> _nativeSpecialFieldBuilders.SelectMany(b => b.BuildColumns());
@@ -137,7 +138,7 @@ namespace Relativity.Sync.Transfer
             return fieldInfos;
         }
 
-		public async Task<IReadOnlyList<FieldInfoDto>> GetMappedFieldsNonDocumentWithoutLinksAsync(
+        public async Task<IReadOnlyList<FieldInfoDto>> GetMappedFieldsNonDocumentWithoutLinksAsync(
 			CancellationToken token)
 		{
 			IList<FieldInfoDto> fieldInfos = await GetMappedFieldsAsync(token).ConfigureAwait(false);
@@ -323,5 +324,5 @@ namespace Relativity.Sync.Transfer
 		{
 			return FieldInfoDto.DocumentField(fieldMap.SourceField.DisplayName, fieldMap.DestinationField.DisplayName, fieldMap.SourceField.IsIdentifier);
 		}
-	}
+    }
 }

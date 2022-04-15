@@ -9,6 +9,7 @@ using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Executors.DocumentTaggers;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Extensions;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Executors
@@ -39,6 +40,7 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<ImportApiFactory>().As<IImportApiFactory>();
 			builder.RegisterType<AutomatedWorkflowsManager>().As<IAutomatedWorkflowsManager>();
 
+            builder.RegisterType<FieldMappingSummary>().As<IFieldMappingSummary>();
 			builder.RegisterType<DocumentJobStartMetricsExecutorConstrains>().As<IExecutionConstrains<IDocumentJobStartMetricsConfiguration>>();
 			builder.RegisterType<DocumentJobStartMetricsExecutor>().As<IExecutor<IDocumentJobStartMetricsConfiguration>>();
 			builder.RegisterType<ImageJobStartMetricsExecutorConstrains>().As<IExecutionConstrains<IImageJobStartMetricsConfiguration>>();

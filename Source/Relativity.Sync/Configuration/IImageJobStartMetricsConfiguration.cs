@@ -1,15 +1,7 @@
 ﻿namespace Relativity.Sync.Configuration
 {
-	internal interface IImageJobStartMetricsConfiguration : IConfiguration
+	internal interface IImageJobStartMetricsConfiguration : IJobStartMetricsConfiguration
 	{
-		bool Resuming { get; }
-
-		int? JobHistoryToRetryId { get; }
-
-		int SourceWorkspaceArtifactId { get; }
-
-		int DestinationWorkspaceArtifactId { get; }
-
 		int[] ProductionImagePrecedence { get; }
 
 		bool IncludeOriginalImageIfNotFoundInProductions { get; }
