@@ -17,10 +17,11 @@ using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;
 using SyncFieldMap = Relativity.Sync.Storage.FieldMap;
 using System.Reflection;
-using kCura.ScheduleQueue.Core.Core;
-using kCura.IntegrationPoints.Data.Extensions;
-using Relativity.Services.Objects.DataContracts;
 using kCura.IntegrationPoints.Core.Utils;
+using kCura.IntegrationPoints.Data.Extensions;
+using kCura.ScheduleQueue.Core.Core;
+using Relativity;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
@@ -53,7 +54,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 			ISyncConfigurationBuilder builder = _syncOperations.GetSyncConfigurationBuilder(syncContext);
 
-			if (sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.View)
+			if (importSettings.ArtifactTypeId != (int)ArtifactType.Document)
             {
 				return await CreateNonDocumentSyncConfigurationAsync(builder, job, sourceConfiguration, importSettings).ConfigureAwait(false);
             }
