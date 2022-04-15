@@ -1,5 +1,6 @@
-﻿using System.Threading;
+using System.Threading;
 using Autofac;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.Storage.RdoGuidsProviders;
@@ -61,7 +62,7 @@ namespace Relativity.Sync.Storage
 		private IConfiguration CreateConfiguration(IComponentContext componentContext)
 		{
 			SyncJobParameters syncJobParameters = componentContext.Resolve<SyncJobParameters>();
-			ISyncLog logger = componentContext.Resolve<ISyncLog>();
+			IAPILog logger = componentContext.Resolve<IAPILog>();
             IRdoManager rdoManager = componentContext.Resolve<IRdoManager>();
 			
 			return Configuration.GetAsync(syncJobParameters, logger, new SemaphoreSlimWrapper(new SemaphoreSlim(1)), rdoManager).ConfigureAwait(false).GetAwaiter().GetResult();

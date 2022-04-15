@@ -1,13 +1,11 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Transfer;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
 {

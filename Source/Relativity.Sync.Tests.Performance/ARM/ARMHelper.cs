@@ -1,4 +1,3 @@
-﻿using Relativity.Sync.Tests.Performance.Helpers;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -7,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using Relativity.API;
 using Relativity.ARM.Services.Interfaces.V1.JobAction;
 using Relativity.ARM.Services.Interfaces.V1.JobStatus;
 using Relativity.ARM.Services.Interfaces.V1.Models;
@@ -14,6 +14,7 @@ using Relativity.ARM.Services.Interfaces.V1.Models.JobStatus;
 using Relativity.ARM.Services.Interfaces.V1.Models.Restore;
 using Relativity.ARM.Services.Interfaces.V1.Restore;
 using Relativity.Services.Workspace;
+using Relativity.Sync.Tests.Performance.Helpers;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Testing.Framework;
@@ -44,7 +45,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			Logger = TestLogHelper.GetLogger();
 		}
 
-		protected ISyncLog Logger { get; }
+		protected IAPILog Logger { get; }
 
 		public static ARMHelper CreateInstance()
 		{

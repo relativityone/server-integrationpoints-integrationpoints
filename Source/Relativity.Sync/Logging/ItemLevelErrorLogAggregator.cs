@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Logging
@@ -12,7 +13,7 @@ namespace Relativity.Sync.Logging
     {
         internal int LogBatchSize { get; set; } = 200;
 
-        private readonly ISyncLog _logger;
+        private readonly IAPILog _logger;
         private readonly Dictionary<string, List<int>> _errorsAggregate;
         private readonly BlockingCollection<(ItemLevelError, int)> _queue = new BlockingCollection<(ItemLevelError, int)>();
         private readonly Func<string, ItemLevelError, (bool matched, string newMessage)>[] _standarizationFunctions = {
@@ -27,7 +28,7 @@ namespace Relativity.Sync.Logging
         private readonly Task _processingTask;
         private int _itemLevelErrorCount = 0;
 
-        public ItemLevelErrorLogAggregator(ISyncLog logger)
+        public ItemLevelErrorLogAggregator(IAPILog logger)
         {
             _logger = logger;
             _errorsAggregate = new Dictionary<string, List<int>>();

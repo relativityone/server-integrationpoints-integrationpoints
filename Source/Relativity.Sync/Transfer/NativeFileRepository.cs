@@ -1,5 +1,6 @@
-﻿using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Toggles;
 using Relativity.Toggles;
@@ -10,7 +11,7 @@ namespace Relativity.Sync.Transfer
     {
         private readonly INativeFileRepository _nativeFileRepository;
 
-        public NativeFileRepository(IToggleProvider toggleProvider, ISearchManagerFactory searchManagerFactory, ISourceServiceFactoryForUser serviceFactoryForUser, ISyncLog logger, SyncJobParameters parameters)
+        public NativeFileRepository(IToggleProvider toggleProvider, ISearchManagerFactory searchManagerFactory, ISourceServiceFactoryForUser serviceFactoryForUser, IAPILog logger, SyncJobParameters parameters)
         {
             if (toggleProvider.IsEnabled<EnableKeplerizedImportAPIToggle>())
             {

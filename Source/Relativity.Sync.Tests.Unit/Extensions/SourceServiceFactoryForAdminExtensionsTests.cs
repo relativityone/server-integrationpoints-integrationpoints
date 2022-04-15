@@ -29,7 +29,7 @@ namespace Relativity.Sync.Tests.Unit.Extensions
                 .Returns(objectManagerMock.Object);
 
             // Act
-            await syncServicesManagerMock.Object.PrepareSyncConfigurationForResumeAsync(workspaceId, configurationId, new Mock<ISyncLog>().Object)
+            await syncServicesManagerMock.Object.PrepareSyncConfigurationForResumeAsync(workspaceId, configurationId, new Mock<IAPILog>().Object)
                 .ConfigureAwait(false);
 
             // Assert

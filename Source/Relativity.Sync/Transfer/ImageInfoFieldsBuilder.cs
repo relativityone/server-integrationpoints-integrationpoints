@@ -1,7 +1,8 @@
-﻿using Relativity.Sync.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.API;
+using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Transfer
 {
@@ -9,9 +10,9 @@ namespace Relativity.Sync.Transfer
 	{
 		private readonly IImageFileRepository _imageFileRepository;
 		private readonly IImageRetrieveConfiguration _configuration;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public ImageInfoFieldsBuilder(IImageFileRepository imageFileRepository, IImageRetrieveConfiguration configuration, ISyncLog logger)
+		public ImageInfoFieldsBuilder(IImageFileRepository imageFileRepository, IImageRetrieveConfiguration configuration, IAPILog logger)
 		{
 			_imageFileRepository = imageFileRepository;
 			_configuration = configuration;

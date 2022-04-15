@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Relativity.Sync
+﻿namespace Relativity.Sync
 {
 	/// <summary>
 	///     Represents Sync job execution configuration

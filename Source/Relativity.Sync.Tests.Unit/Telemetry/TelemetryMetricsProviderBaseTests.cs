@@ -13,7 +13,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 {
 	public class TelemetryMetricsProviderBaseTests
 	{
-		private Mock<ISyncLog> _logger;
+		private Mock<IAPILog> _logger;
 		private Mock<TelemetryMetricsProviderBase> _telemetryMetricsProvider;
 		private Mock<IInternalMetricsCollectionManager> _metricsCollectionManager;
 		private List<MetricIdentifier> _metricIdentifierList;
@@ -34,7 +34,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 		public void SetUp()
 		{
 			_metricsCollectionManager = new Mock<IInternalMetricsCollectionManager>();
-			_logger = new Mock<ISyncLog>();
+			_logger = new Mock<IAPILog>();
 
 			_metricsCollectionManager.Setup(x => x.CreateMetricIdentifierAsync(It.IsAny<MetricIdentifier>(), It.Is<bool>(y => y == false)))
 				.Returns(Task.FromResult(1));

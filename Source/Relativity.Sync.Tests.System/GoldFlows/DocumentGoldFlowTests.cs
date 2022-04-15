@@ -1,19 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using FluentAssertions;
-using Relativity.Services.Workspace;
-using Relativity.Sync.Storage;
-using Relativity.Sync.Configuration;
-using Relativity.Testing.Identification;
-using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Tests.System.Core;
-using Relativity.Sync.Tests.System.Core.Helpers;
 using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Services.Workspace;
+using Relativity.Sync.Configuration;
+using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
+using Relativity.Sync.Tests.System.Core;
+using Relativity.Sync.Tests.System.Core.Helpers;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System.GoldFlows
 {

@@ -1,14 +1,11 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Banzai;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Logging;
-using Relativity.Sync.Telemetry;
-using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Unit.Stubs;
 
 namespace Relativity.Sync.Tests.Unit

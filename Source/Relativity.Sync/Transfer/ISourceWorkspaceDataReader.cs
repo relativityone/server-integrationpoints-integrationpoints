@@ -1,5 +1,4 @@
 ﻿using System.Data;
-using System.Collections;
 
 namespace Relativity.Sync.Transfer
 {

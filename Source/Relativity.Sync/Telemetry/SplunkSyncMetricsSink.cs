@@ -1,7 +1,9 @@
-﻿namespace Relativity.Sync.Telemetry
+using Relativity.API;
+
+namespace Relativity.Sync.Telemetry
 {
 	/// <summary>
-	///     Logs <see cref="IMetric"/>s to Splunk. Uses the Relativity <see cref="ISyncLog"/>
+	///     Logs <see cref="IMetric"/>s to Splunk. Uses the Relativity <see cref="IAPILog"/>
 	///     system to perform the logging. The Relativity instance on which this is
 	///     running should:
 	///         1) have logs for this application sent to the Splunk sink;
@@ -9,13 +11,13 @@
 	/// </summary>
 	internal sealed class SplunkSyncMetricsSink : ISyncMetricsSink
 	{
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		/// <summary>
 		///     Creates a new instance of <see cref="SplunkSyncMetricsSink"/>.
 		/// </summary>
 		/// <param name="logger">Logger to use for logging metrics</param>
-		public SplunkSyncMetricsSink(ISyncLog logger)
+		public SplunkSyncMetricsSink(IAPILog logger)
 		{
 			_logger = logger;
 		}

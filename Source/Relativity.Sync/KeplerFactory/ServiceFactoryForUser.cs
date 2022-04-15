@@ -1,5 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.ServiceProxy;
 using Relativity.Sync.Authentication;
 using Relativity.Sync.Configuration;
@@ -19,7 +20,7 @@ namespace Relativity.Sync.KeplerFactory
 
 
 		public ServiceFactoryForUser(IUserContextConfiguration userContextConfiguration, ISyncServiceManager servicesMgr, IAuthTokenGenerator tokenGenerator, IDynamicProxyFactory dynamicProxyFactory,
-			IServiceFactoryFactory serviceFactoryFactory, IRandom random, ISyncLog logger)
+			IServiceFactoryFactory serviceFactoryFactory, IRandom random, IAPILog logger)
 		    : base (random, logger)
 		{
 			_userContextConfiguration = userContextConfiguration;
@@ -34,7 +35,7 @@ namespace Relativity.Sync.KeplerFactory
 		/// </summary>
 		[ExcludeFromCodeCoverage]
 		internal ServiceFactoryForUser(IServiceFactory serviceFactory, IDynamicProxyFactory dynamicProxyFactory,
-            IRandom random, ISyncLog logger)
+            IRandom random, IAPILog logger)
 			: base(random, logger)
 		{
 			_serviceFactory = serviceFactory;

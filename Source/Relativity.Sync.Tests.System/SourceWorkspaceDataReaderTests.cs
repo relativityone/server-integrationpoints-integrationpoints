@@ -10,6 +10,7 @@ using Autofac;
 using Castle.Core.Internal;
 using FluentAssertions;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
@@ -124,7 +125,7 @@ namespace Relativity.Sync.Tests.System
 			// Test SourceWorkspaceDataReader
 			const int resultsBlockSize = 100;
 			object[] tmpTable = new object[resultsBlockSize];
-			ISyncLog logger = new ConsoleLogger();
+			IAPILog logger = new ConsoleLogger();
 
 			IDataReaderRowSetValidator validator = DataReaderRowSetValidator.Create(dataTableWrapper.Data);
 
@@ -247,7 +248,7 @@ namespace Relativity.Sync.Tests.System
 			// Test SourceWorkspaceDataReader
 			const int resultsBlockSize = 100;
 			object[] tmpTable = new object[resultsBlockSize];
-			ISyncLog logger = new ConsoleLogger();
+			IAPILog logger = new ConsoleLogger();
 
 			int imageFilesCount = dataset.GetFiles().Count();
 			bool read;

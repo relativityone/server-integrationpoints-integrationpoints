@@ -12,7 +12,6 @@ using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.InstanceSetting;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Nodes;
 using Relativity.Sync.Tests.Common;

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.RDOs;
@@ -15,7 +16,7 @@ namespace Relativity.Sync.Extensions
         /// Prepares SyncConfiguration for resuming paused job 
         /// </summary>
         public static Task PrepareSyncConfigurationForResumeAsync(this ISyncServiceManager serviceManager, int workspaceId,
-            int syncConfigurationId, ISyncLog logger)
+            int syncConfigurationId, IAPILog logger)
         {
             var rdo = new SyncConfigurationRdo
             {

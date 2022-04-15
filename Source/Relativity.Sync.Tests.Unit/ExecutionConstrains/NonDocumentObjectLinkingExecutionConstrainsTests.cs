@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.ExecutionConstrains;
 using Relativity.Sync.Storage;
@@ -28,7 +29,7 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
                     x.GetAllBatchesIdsToExecuteAsync(It.IsAny<int>(), It.IsAny<int>(), exportRunId))
                 .ReturnsAsync(linkingExportExists ? new[] {1} : Array.Empty<int>());
 
-            var sut = new NonDocumentObjectLinkingExecutionConstrains(batchRepositoryMock.Object, new Mock<ISyncLog>().Object);
+            var sut = new NonDocumentObjectLinkingExecutionConstrains(batchRepositoryMock.Object, new Mock<IAPILog>().Object);
             
             // Act
             bool result = await sut.CanExecuteAsync(configMock.Object, CancellationToken.None).ConfigureAwait(false);
@@ -47,7 +48,7 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 
             Mock<IBatchRepository> batchRepositoryMock = new Mock<IBatchRepository>();
 
-            Mock<ISyncLog> logMock = new Mock<ISyncLog>();
+            Mock<IAPILog> logMock = new Mock<IAPILog>();
             NonDocumentObjectLinkingExecutionConstrains sut = new NonDocumentObjectLinkingExecutionConstrains(batchRepositoryMock.Object, logMock.Object);
             
             // Act

@@ -1,23 +1,24 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services;
-using Relativity.Services.Workspace;
 using Relativity.Services.Permission;
-using Relativity.Sync.Logging;
+using Relativity.Services.Workspace;
+using Relativity.Sync.Authentication;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Authentication;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Stubs;
 using Relativity.Sync.Utils;
 using Relativity.Testing.Framework;
-using Relativity.Testing.Identification;
 using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Models;
+using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
 {
@@ -79,7 +80,7 @@ namespace Relativity.Sync.Tests.System
 			};
 
             Mock<IRandom> randomFake = new Mock<IRandom>();
-            Mock<ISyncLog> syncLogMock = new Mock<ISyncLog>();
+            Mock<IAPILog> syncLogMock = new Mock<IAPILog>();
 
 			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactoryStub();
 			ServiceFactoryForUser sut = new ServiceFactoryForUser(userContextConfiguration.Object, _servicesManager,

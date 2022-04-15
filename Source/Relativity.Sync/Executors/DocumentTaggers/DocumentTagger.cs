@@ -1,18 +1,19 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Executors.DocumentTaggers
 {
     internal class DocumentTagger : IDocumentTagger
     {
-	    private readonly ISyncLog _logger;
+	    private readonly IAPILog _logger;
 	    private readonly IDocumentTagRepository _documentsTagRepository;
 
-	    public DocumentTagger(IDocumentTagRepository documentTagRepository, ISyncLog logger)
+	    public DocumentTagger(IDocumentTagRepository documentTagRepository, IAPILog logger)
 	    {
 		    _documentsTagRepository = documentTagRepository;
 		    _logger = logger;

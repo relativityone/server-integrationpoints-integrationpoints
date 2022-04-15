@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,6 +6,7 @@ using FluentAssertions;
 using Moq;
 using Moq.Language.Flow;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
@@ -18,7 +19,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	[Parallelizable(ParallelScope.Self)]
 	internal sealed class LongTextFieldSanitizerTests
 	{
-		private Mock<ISyncLog> _logger;
+		private Mock<IAPILog> _logger;
 		private Mock<IImportStreamBuilder> _streamBuilder;
 		private Mock<IRetriableStreamBuilder> _retriableStreamBuilder;
 		private Mock<IRetriableStreamBuilderFactory> _retriableStreamBuilderFactory;
@@ -43,7 +44,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_retriableStreamBuilder = new Mock<IRetriableStreamBuilder>();
 			_retriableStreamBuilderFactory = new Mock<IRetriableStreamBuilderFactory>();
 			_retriableStreamBuilderFactory.Setup(f => f.Create(_SOURCE_WORKSPACE_ID, _ITEM_ARTIFACT_ID, _SANITIZING_SOURCE_FIELD_NAME)).Returns(_retriableStreamBuilder.Object);
-			_logger = new Mock<ISyncLog>();
+			_logger = new Mock<IAPILog>();
 		}
 
 		[Test]

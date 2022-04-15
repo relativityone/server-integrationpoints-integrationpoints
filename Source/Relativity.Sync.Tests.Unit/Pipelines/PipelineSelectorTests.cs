@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Pipelines;
 
@@ -16,13 +12,13 @@ namespace Relativity.Sync.Tests.Unit.Pipelines
     {
         private Mock<IPipelineSelectorConfiguration> _configurationMock;
         private PipelineSelector _sut;
-        private Mock<ISyncLog> _loggerMock;
+        private Mock<IAPILog> _loggerMock;
 
         [SetUp]
         public void Setup()
         {
             _configurationMock = new Mock<IPipelineSelectorConfiguration>();
-            _loggerMock = new Mock<ISyncLog>();
+            _loggerMock = new Mock<IAPILog>();
 
             _configurationMock.SetupGet((x => x.RdoArtifactTypeId))
                 .Returns((int)ArtifactType.Document);

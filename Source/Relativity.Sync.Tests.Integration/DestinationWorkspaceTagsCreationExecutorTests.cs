@@ -1,14 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Moq;
 using NUnit.Framework;
-using Relativity.Services.DataContracts.DTOs;
+using Relativity.API;
 using Relativity.Services.Exceptions;
+using Relativity.Services.Interfaces.Workspace;
+using Relativity.Services.Interfaces.Workspace.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -17,8 +18,6 @@ using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Integration.Helpers;
-using Relativity.Services.Interfaces.Workspace;
-using Relativity.Services.Interfaces.Workspace.Models;
 
 namespace Relativity.Sync.Tests.Integration
 {
@@ -55,7 +54,7 @@ namespace Relativity.Sync.Tests.Integration
 			containerBuilder.RegisterInstance(sourceServiceFactoryForUserMock.Object).As<ISourceServiceFactoryForUser>();
 			containerBuilder.RegisterType<DestinationWorkspaceTagsCreationExecutor>().As<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>();
 
-			containerBuilder.RegisterInstance(new EmptyLogger()).As<ISyncLog>();
+			containerBuilder.RegisterInstance(new EmptyLogger()).As<IAPILog>();
 
 			IContainer container = containerBuilder.Build();
 			_executor = container.Resolve<IExecutor<IDestinationWorkspaceTagsCreationConfiguration>>();

@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.ArtifactGuid;
 using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Interfaces.ObjectType.Models;
@@ -14,9 +15,9 @@ namespace Relativity.Sync.Executors
 	internal sealed class SyncObjectTypeManager : ISyncObjectTypeManager
 	{
 		private readonly IDestinationServiceFactoryForAdmin _serviceFactory;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public SyncObjectTypeManager(IDestinationServiceFactoryForAdmin serviceFactory, ISyncLog logger)
+		public SyncObjectTypeManager(IDestinationServiceFactoryForAdmin serviceFactory, IAPILog logger)
 		{
 			_serviceFactory = serviceFactory;
 			_logger = logger;

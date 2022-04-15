@@ -1,8 +1,8 @@
-﻿using Microsoft.Azure.Cosmos.Table;
-using Relativity.Sync.Tests.System.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Azure.Cosmos.Table;
+using Relativity.Sync.Tests.System.Core;
 
 namespace Relativity.Sync.Tests.Performance.Helpers
 {

@@ -1,6 +1,6 @@
-﻿using System;
-using System.Threading;
+using System;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync
@@ -9,9 +9,9 @@ namespace Relativity.Sync
 	{
 		private readonly ISyncJob _syncJob;
 		private readonly IAppDomain _appDomain;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public SyncJobWithUnhandledExceptionLogging(ISyncJob syncJob, IAppDomain appDomain, ISyncLog logger)
+		public SyncJobWithUnhandledExceptionLogging(ISyncJob syncJob, IAppDomain appDomain, IAPILog logger)
 		{
 			_syncJob = syncJob;
 			_appDomain = appDomain;

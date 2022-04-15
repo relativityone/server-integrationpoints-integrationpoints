@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Telemetry;
@@ -19,7 +20,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 
 		private ISyncMetrics _syncMetrics;
 
-		private Mock<ISyncLog> _syncLogMock;
+		private Mock<IAPILog> _syncLogMock;
 		private Mock<IMetricsManager> _metricsManagerMock;
 		private Mock<IAPMClient> _apmMock;
 
@@ -33,7 +34,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 		[SetUp]
 		public void SetUp()
 		{
-			_syncLogMock = new Mock<ISyncLog>();
+			_syncLogMock = new Mock<IAPILog>();
 			_metricsManagerMock = new Mock<IMetricsManager>(MockBehavior.Strict);
 			_metricsManagerMock.Setup(x => x.Dispose());
 			_apmMock = new Mock<IAPMClient>();

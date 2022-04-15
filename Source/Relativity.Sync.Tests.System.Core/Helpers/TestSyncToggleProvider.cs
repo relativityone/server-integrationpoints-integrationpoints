@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
-using Relativity.Services.Exceptions;
 using Relativity.Toggles;
 
 namespace Relativity.Sync.Tests.System.Core.Helpers

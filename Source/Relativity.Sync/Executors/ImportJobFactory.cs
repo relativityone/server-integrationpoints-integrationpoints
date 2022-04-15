@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -7,6 +7,7 @@ using kCura.EDDS.WebAPI.BulkImportManagerBase;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
@@ -22,10 +23,10 @@ namespace Relativity.Sync.Executors
 		private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
 		private readonly SyncJobParameters _syncJobParameters;
 		private readonly IFieldMappings _fieldMappings;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		public ImportJobFactory(IImportApiFactory importApiFactory, ISourceWorkspaceDataReaderFactory dataReaderFactory,
-			IJobHistoryErrorRepository jobHistoryErrorRepository, IInstanceSettings instanceSettings, SyncJobParameters syncJobParameters, IFieldMappings fieldMappings, ISyncLog logger)
+			IJobHistoryErrorRepository jobHistoryErrorRepository, IInstanceSettings instanceSettings, SyncJobParameters syncJobParameters, IFieldMappings fieldMappings, IAPILog logger)
 		{
 			_importApiFactory = importApiFactory;
 			_dataReaderFactory = dataReaderFactory;

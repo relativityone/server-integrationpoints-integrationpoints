@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
@@ -12,7 +13,7 @@ namespace Relativity.Sync.Executors.SumReporting
 {
 	internal class DocumentJobStartMetricsExecutor : IExecutor<IDocumentJobStartMetricsConfiguration>
 	{
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 		private readonly ISyncMetrics _syncMetrics;
         private readonly IFieldMappingSummary _fieldMappingSummary;
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
@@ -20,7 +21,7 @@ namespace Relativity.Sync.Executors.SumReporting
 		private readonly ISnapshotQueryRequestProvider _queryRequestProvider;
 		
 		public DocumentJobStartMetricsExecutor(ISyncMetrics syncMetrics, IFieldMappingSummary fieldMappingSummary, IJobStatisticsContainer jobStatisticsContainer,
-			IFileStatisticsCalculator fileStatisticsCalculator, ISnapshotQueryRequestProvider queryRequestProvider, ISyncLog logger)
+			IFileStatisticsCalculator fileStatisticsCalculator, ISnapshotQueryRequestProvider queryRequestProvider, IAPILog logger)
 		{
 			_syncMetrics = syncMetrics;
             _fieldMappingSummary = fieldMappingSummary;

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Moq;
 using NUnit.Framework;
-using Relativity.Telemetry.APM;
 using Relativity.Sync.Telemetry;
+using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync.Tests.Unit
 {

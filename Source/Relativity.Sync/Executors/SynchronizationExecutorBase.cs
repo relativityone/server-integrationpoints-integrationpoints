@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.DataExchange;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Extensions;
@@ -29,7 +30,7 @@ namespace Relativity.Sync.Executors
 		protected readonly BatchRecordType _recordType;
 		protected readonly IFieldManager _fieldManager;
 		protected readonly IFieldMappings _fieldMappings;
-		protected readonly ISyncLog _logger;
+		protected readonly IAPILog _logger;
 
 		protected SynchronizationExecutorBase(IImportJobFactory importJobFactory,
 			BatchRecordType recordType,
@@ -43,7 +44,7 @@ namespace Relativity.Sync.Executors
 			Func<IStopwatch> stopwatchFactory,
 			ISyncMetrics syncMetrics,
 			IUserContextConfiguration userContextConfiguration,
-			ISyncLog logger)
+			IAPILog logger)
 		{
 			_batchRepository = batchRepository;
 			_jobProgressHandlerFactory = jobProgressHandlerFactory;

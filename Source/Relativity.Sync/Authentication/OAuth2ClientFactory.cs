@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.Security;
 using Relativity.Services.Security.Models;
 using Relativity.Sync.KeplerFactory;
@@ -12,9 +13,9 @@ namespace Relativity.Sync.Authentication
 	{
 		private const string _OAUTH2_CLIENT_NAME_PREFIX = "F6B8C2B4B3E8465CA00775F699375D3C";
 		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public OAuth2ClientFactory(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger)
+		public OAuth2ClientFactory(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IAPILog logger)
 		{
 			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_logger = logger;

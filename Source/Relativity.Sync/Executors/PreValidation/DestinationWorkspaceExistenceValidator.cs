@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
@@ -14,9 +15,9 @@ namespace Relativity.Sync.Executors.PreValidation
 		private const string _DESTINATION_WORKSPACE_DOES_NOT_EXIST_MESSAGE = "Destination Workspace {0} does not exist";
 
 		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public DestinationWorkspaceExistenceValidator(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger)
+		public DestinationWorkspaceExistenceValidator(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IAPILog logger)
 		{
 			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_logger = logger;

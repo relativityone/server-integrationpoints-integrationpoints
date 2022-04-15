@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 
@@ -7,10 +8,10 @@ namespace Relativity.Sync.Executors
 {
     internal abstract class SnapshotPartitionExecutorBase: IExecutor<ISnapshotPartitionConfiguration>
     {
-        private readonly ISyncLog _logger;
+        private readonly IAPILog _logger;
         private readonly IBatchRepository _batchRepository;
 
-        protected SnapshotPartitionExecutorBase(IBatchRepository batchRepository, ISyncLog logger)
+        protected SnapshotPartitionExecutorBase(IBatchRepository batchRepository, IAPILog logger)
         {
             _batchRepository = batchRepository;
             _logger = logger;

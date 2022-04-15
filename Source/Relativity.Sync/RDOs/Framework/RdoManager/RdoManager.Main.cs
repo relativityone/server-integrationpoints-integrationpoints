@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Polly;
+using Relativity.API;
 using Relativity.Kepler.Transport;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -17,11 +18,11 @@ namespace Relativity.Sync.RDOs.Framework
 {
     internal partial class RdoManager : IRdoManager
     {
-        private readonly ISyncLog _logger;
+        private readonly IAPILog _logger;
         private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
         private readonly IRdoGuidProvider _rdoGuidProvider;
 
-        public RdoManager(ISyncLog logger, ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IRdoGuidProvider rdoGuidProvider)
+        public RdoManager(IAPILog logger, ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IRdoGuidProvider rdoGuidProvider)
         {
             _logger = logger;
             _serviceFactoryForAdmin = serviceFactoryForAdmin;

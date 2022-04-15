@@ -18,7 +18,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers.APIHelper
 		public ILogFactory GetLoggerFactory()
 		{
 			var logFactory = new Mock<ILogFactory>();
-			logFactory.Setup(x => x.GetLogger()).Returns(TestLogHelper.GetAPILogger);
+			logFactory.Setup(x => x.GetLogger()).Returns(TestLogHelper.GetLogger());
 
 			return logFactory.Object;
 		}

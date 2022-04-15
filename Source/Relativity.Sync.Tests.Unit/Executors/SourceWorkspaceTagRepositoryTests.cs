@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -29,7 +30,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<ISyncMetrics> _syncMetrics;
 		private Mock<IStopwatch> _stopwatch;
 
-		private ISyncLog _syncLog;
+		private IAPILog _syncLog;
 		private CancellationToken _token;
 
 		private SourceWorkspaceTagRepository _instance;

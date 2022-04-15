@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Executors
 {

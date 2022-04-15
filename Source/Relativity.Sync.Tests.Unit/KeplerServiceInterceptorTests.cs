@@ -1,18 +1,19 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Net.Sockets;
 using Castle.DynamicProxy;
 using Castle.DynamicProxy.Internal;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Kepler.Exceptions;
 using Relativity.Services.Exceptions;
-using Relativity.Sync.Logging;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Unit.Stubs;
 using Relativity.Sync.Utils;
 
@@ -25,7 +26,7 @@ namespace Relativity.Sync.Tests.Unit
 
 		private Mock<IStubForInterception> _stubForInterceptionMock;
 		private Mock<Func<Task<IStubForInterception>>> _stubForInterceptionFactoryFake;
-		private Mock<ISyncLog> _syncLogMock;
+		private Mock<IAPILog> _syncLogMock;
 		private Mock<IRandom> _randomFake;
 
 		private const int _MAX_NUMBER_OF_HTTP_RETRIES = 4;
@@ -39,7 +40,7 @@ namespace Relativity.Sync.Tests.Unit
 			_stubForInterceptionFactoryFake = new Mock<Func<Task<IStubForInterception>>>();
 			_stubForInterceptionFactoryFake.Setup(x => x()).Returns(Task.FromResult(_stubForInterceptionMock.Object));
 
-			_syncLogMock = new Mock<ISyncLog>();
+			_syncLogMock = new Mock<IAPILog>();
 			_randomFake = new Mock<IRandom>();
 
 			Mock<IStopwatch> stopwatchFake = new Mock<IStopwatch>();

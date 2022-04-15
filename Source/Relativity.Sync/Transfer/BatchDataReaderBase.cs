@@ -1,7 +1,8 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading;
-using System.Collections.Generic;
+using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.Sync.Transfer
@@ -20,7 +21,7 @@ namespace Relativity.Sync.Transfer
 		protected readonly IExportDataSanitizer _exportDataSanitizer;
 		protected readonly Action<string, string> _itemLevelErrorHandler;
 		protected readonly CancellationToken _cancellationToken;
-		protected readonly ISyncLog _logger;
+		protected readonly IAPILog _logger;
 
 		protected static readonly Type _typeOfString = typeof(string);
 
@@ -58,7 +59,7 @@ namespace Relativity.Sync.Transfer
 			IExportDataSanitizer exportDataSanitizer,
 			Action<string, string> itemLevelErrorHandler,
 			CancellationToken cancellationToken,
-			ISyncLog logger)
+			IAPILog logger)
 		{
 			_templateDataTable = templateDataTable;
 

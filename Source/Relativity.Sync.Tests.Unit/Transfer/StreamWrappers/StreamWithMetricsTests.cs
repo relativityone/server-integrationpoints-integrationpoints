@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Transfer.StreamWrappers;
 using Relativity.Sync.Utils;
@@ -17,14 +18,14 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 
 		private Mock<IStopwatch> _stopwatchFake;
 		private Mock<IJobStatisticsContainer> _jobStatisticsContainerMock;
-		private Mock<ISyncLog> _loggerMock;
+		private Mock<IAPILog> _loggerMock;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_stopwatchFake = new Mock<IStopwatch>();
 			_jobStatisticsContainerMock = new Mock<IJobStatisticsContainer>();
-			_loggerMock = new Mock<ISyncLog>();
+			_loggerMock = new Mock<IAPILog>();
 		}
 
 		[Test]

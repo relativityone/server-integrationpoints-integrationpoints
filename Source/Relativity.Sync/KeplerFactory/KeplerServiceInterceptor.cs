@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Reflection;
 using System.Threading.Tasks;
-using Polly;
-using Polly.Wrap;
-using Polly.Retry;
 using Castle.DynamicProxy;
+using Polly;
+using Polly.Retry;
+using Polly.Wrap;
+using Relativity.API;
 using Relativity.Kepler.Exceptions;
 using Relativity.Services.Exceptions;
 using Relativity.Sync.Utils;
@@ -21,12 +22,12 @@ namespace Relativity.Sync.KeplerFactory
 		private readonly Func<IStopwatch> _stopwatch;
 		private readonly Func<Task<TService>> _keplerServiceFactory;
 		private readonly IRandom _random;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 		private readonly System.Reflection.FieldInfo _currentInterceptorIndexField;
 
 		private static readonly MethodInfo _handleAsyncMethodInfo = typeof(KeplerServiceInterceptor<TService>).GetMethod(nameof(HandleAsyncWithResultAsync), BindingFlags.Instance | BindingFlags.NonPublic);
 
-		public KeplerServiceInterceptor(Func<IStopwatch> stopwatch, Func<Task<TService>> keplerServiceFactory, IRandom random, ISyncLog logger)
+		public KeplerServiceInterceptor(Func<IStopwatch> stopwatch, Func<Task<TService>> keplerServiceFactory, IRandom random, IAPILog logger)
 		{
 			_stopwatch = stopwatch;
 			_keplerServiceFactory = keplerServiceFactory;

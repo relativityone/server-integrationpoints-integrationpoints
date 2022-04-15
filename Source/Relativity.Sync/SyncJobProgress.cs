@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync
@@ -10,12 +11,12 @@ namespace Relativity.Sync
 		private readonly int _syncConfigurationArtifactId;
 		private readonly IProgressRepository _progressRepository;
 		private readonly IProgressStateCounter _counter;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		public SyncJobProgress(SyncJobParameters jobParameters,
 			IProgressRepository progressRepository,
 			IProgressStateCounter counter,
-			ISyncLog logger)
+			IAPILog logger)
 		{
 			_sourceWorkspaceArtifactId = jobParameters.WorkspaceId;
 			_syncConfigurationArtifactId = jobParameters.SyncConfigurationArtifactId;

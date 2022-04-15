@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
@@ -11,9 +12,9 @@ namespace Relativity.Sync.Executors
 	internal sealed class JobHistoryNameQuery : IJobHistoryNameQuery
 	{
 		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 		
-		public JobHistoryNameQuery(ISourceServiceFactoryForUser serviceFactoryForUser, ISyncLog logger)
+		public JobHistoryNameQuery(ISourceServiceFactoryForUser serviceFactoryForUser, IAPILog logger)
 		{
 			_serviceFactoryForUser = serviceFactoryForUser;
 			_logger = logger;

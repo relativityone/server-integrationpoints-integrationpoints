@@ -1,7 +1,6 @@
-﻿using Relativity.Sync.Configuration;
+using Relativity.API;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Storage;
-using System.Collections.Generic;
 
 namespace Relativity.Sync
 {
@@ -10,9 +9,9 @@ namespace Relativity.Sync
 		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 		private readonly IRdoGuidConfiguration _rdoGuidConfiguration;
 		private readonly ISynchronizationConfiguration _synchronizationConfiguration;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public JobProgressUpdaterFactory(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IRdoGuidConfiguration rdoGuidConfiguration, ISynchronizationConfiguration synchronizationConfiguration, ISyncLog logger)
+		public JobProgressUpdaterFactory(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IRdoGuidConfiguration rdoGuidConfiguration, ISynchronizationConfiguration synchronizationConfiguration, IAPILog logger)
 		{
 			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_rdoGuidConfiguration = rdoGuidConfiguration;

@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 
@@ -10,9 +10,9 @@ namespace Relativity.Sync.Executors.PreValidation
 	internal sealed class PreValidationExecutor : IExecutor<IPreValidationConfiguration>
 	{
 		private readonly IEnumerable<IPreValidator> _validators;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public PreValidationExecutor(IEnumerable<IPreValidator> validators, ISyncLog logger)
+		public PreValidationExecutor(IEnumerable<IPreValidator> validators, IAPILog logger)
 		{
 			_validators = validators;
 			_logger = logger;

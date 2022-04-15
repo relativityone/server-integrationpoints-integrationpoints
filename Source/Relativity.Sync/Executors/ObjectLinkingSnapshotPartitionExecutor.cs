@@ -1,13 +1,14 @@
-﻿using Relativity.Sync.Configuration;
+using Relativity.API;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Executors
 {
     internal sealed class ObjectLinkingSnapshotPartitionExecutor : SnapshotPartitionExecutorBase
     {
-        private readonly ISyncLog _logger;
+        private readonly IAPILog _logger;
 
-        public ObjectLinkingSnapshotPartitionExecutor(IBatchRepository batchRepository, ISyncLog logger)
+        public ObjectLinkingSnapshotPartitionExecutor(IBatchRepository batchRepository, IAPILog logger)
             : base(batchRepository, logger)
         {
             _logger = logger;

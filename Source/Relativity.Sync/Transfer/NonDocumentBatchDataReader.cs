@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
+using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Utils;
 
@@ -20,7 +21,7 @@ namespace Relativity.Sync.Transfer
 			IExportDataSanitizer exportDataSanitizer,
 			Action<string, string> itemLevelErrorHandler,
 			CancellationToken cancellationToken,
-			ISyncLog logger)
+			IAPILog logger)
 			: base(templateDataTable, sourceWorkspaceArtifactId, batch, allFields, fieldManager, exportDataSanitizer,
 				itemLevelErrorHandler, cancellationToken, logger)
         {

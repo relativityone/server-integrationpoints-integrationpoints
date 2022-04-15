@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Relativity.Sync.Transfer;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.System.Helpers
 {

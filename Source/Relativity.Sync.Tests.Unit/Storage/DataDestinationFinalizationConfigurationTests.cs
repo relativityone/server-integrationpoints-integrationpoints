@@ -1,8 +1,5 @@
-﻿using System;
-using FluentAssertions;
-using Moq;
+﻿using FluentAssertions;
 using NUnit.Framework;
-using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.Storage

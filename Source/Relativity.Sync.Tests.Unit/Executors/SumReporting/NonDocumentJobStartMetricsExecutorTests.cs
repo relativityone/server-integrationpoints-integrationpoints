@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Interfaces.Shared;
@@ -28,7 +29,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 
         private const int _NON_DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.View;
 
-        private Mock<ISyncLog> _loggerMock;
+        private Mock<IAPILog> _loggerMock;
         private Mock<ISyncMetrics> _syncMetricsMock;
 
         private Mock<IFieldMappingSummary> _fieldMappingSummaryFake;
@@ -44,7 +45,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 		[SetUp]
 		public void SetUp()
         {
-            _loggerMock = new Mock<ISyncLog>();
+            _loggerMock = new Mock<IAPILog>();
 
             _syncMetricsMock = new Mock<ISyncMetrics>();
 

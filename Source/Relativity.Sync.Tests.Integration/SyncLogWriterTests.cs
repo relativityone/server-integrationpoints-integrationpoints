@@ -1,9 +1,9 @@
-﻿using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Banzai.Logging;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Integration.Helpers;
@@ -14,7 +14,7 @@ namespace Relativity.Sync.Tests.Integration
 	public sealed class SyncLogWriterTests
 	{
 		private ISyncJob _syncJob;
-		private Mock<ISyncLog> _logger;
+		private Mock<IAPILog> _logger;
 
 		[SetUp]
 		public void SetUp()
@@ -23,7 +23,7 @@ namespace Relativity.Sync.Tests.Integration
 			IntegrationTestsContainerBuilder.MockAllSteps(containerBuilder);
 			IntegrationTestsContainerBuilder.MockReportingWithProgress(containerBuilder);
 
-			_logger = new Mock<ISyncLog>();
+			_logger = new Mock<IAPILog>();
 			LogWriter.SetFactory(new SyncLogWriterFactory(_logger.Object));
 
 			_syncJob = containerBuilder.Build().Resolve<ISyncJob>();

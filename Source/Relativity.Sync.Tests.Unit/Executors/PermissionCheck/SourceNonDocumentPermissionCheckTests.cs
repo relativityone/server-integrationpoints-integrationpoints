@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Permission;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.PermissionCheck.NonDocumentPermissionChecks;
@@ -19,7 +20,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 	{
 		private SourceNonDocumentPermissionCheck _instance;
 
-		private Mock<ISyncLog> _logger;
+		private Mock<IAPILog> _logger;
 		private Mock<ISourceServiceFactoryForUser> _serviceFactoryForUser;
 
 		private const int _TEST_WORKSPACE_ARTIFACT_ID = 105789;
@@ -35,7 +36,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 		[SetUp]
 		public void SetUp()
 		{
-			_logger = new Mock<ISyncLog>();
+			_logger = new Mock<IAPILog>();
 			_serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
 			_instance = new SourceNonDocumentPermissionCheck(_logger.Object,_serviceFactoryForUser.Object);
 		}

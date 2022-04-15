@@ -1,11 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Relativity.Sync.Configuration;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Services.Interfaces.Shared.Models;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Telemetry;
@@ -20,9 +21,9 @@ namespace Relativity.Sync.Executors.SumReporting
 		private readonly ISourceServiceFactoryForUser _serviceFactory;
         private readonly IFieldMappingSummary _fieldMappingSummary;
         private readonly ISyncMetrics _syncMetrics;
-        private readonly ISyncLog _logger;
+        private readonly IAPILog _logger;
 
-        public NonDocumentJobStartMetricsExecutor(ISourceServiceFactoryForUser serviceFactory, ISyncMetrics syncMetrics, IFieldMappingSummary fieldMappingSummary, ISyncLog logger)
+        public NonDocumentJobStartMetricsExecutor(ISourceServiceFactoryForUser serviceFactory, ISyncMetrics syncMetrics, IFieldMappingSummary fieldMappingSummary, IAPILog logger)
         {
             _serviceFactory = serviceFactory;
             _syncMetrics = syncMetrics;

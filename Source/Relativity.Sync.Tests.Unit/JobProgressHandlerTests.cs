@@ -4,12 +4,11 @@ using FluentAssertions;
 using Microsoft.Reactive.Testing;
 using Moq;
 using NUnit.Framework;
-using Relativity.Sync.Storage;
-using Relativity.Sync.Transfer;
 using Relativity.Sync.Executors;
+using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common.Stubs;
+using Relativity.Sync.Transfer;
 using Relativity.Sync.Transfer.ImportAPI;
-
 
 namespace Relativity.Sync.Tests.Unit
 {

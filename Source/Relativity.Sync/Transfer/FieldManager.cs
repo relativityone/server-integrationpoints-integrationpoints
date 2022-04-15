@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -28,11 +29,11 @@ namespace Relativity.Sync.Transfer
 
 		private readonly IList<INativeSpecialFieldBuilder> _nativeSpecialFieldBuilders;
 		private readonly IList<IImageSpecialFieldBuilder> _imageSpecialFieldBuilders;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		public FieldManager(IFieldConfiguration configuration, IObjectFieldTypeRepository objectFieldTypeRepository,
 			IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders, IEnumerable<IImageSpecialFieldBuilder> imageSpecialFieldBuilders,
-            ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger)
+            ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IAPILog logger)
 		{
 			_configuration = configuration;
 			_objectFieldTypeRepository = objectFieldTypeRepository;

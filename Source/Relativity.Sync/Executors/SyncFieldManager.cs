@@ -1,22 +1,23 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.ArtifactGuid;
+using Relativity.Services.Exceptions;
 using Relativity.Services.Interfaces.Field.Models;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Services.Exceptions;
 
 namespace Relativity.Sync.Executors
 {
 	internal sealed class SyncFieldManager : ISyncFieldManager
 	{
 		private readonly IDestinationServiceFactoryForAdmin _serviceFactory;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public SyncFieldManager(IDestinationServiceFactoryForAdmin serviceFactory, ISyncLog logger)
+		public SyncFieldManager(IDestinationServiceFactoryForAdmin serviceFactory, IAPILog logger)
 		{
 			_serviceFactory = serviceFactory;
 			_logger = logger;

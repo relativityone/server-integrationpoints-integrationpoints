@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Relativity.API;
 
 namespace Relativity.Sync
 {
@@ -22,7 +23,7 @@ namespace Relativity.Sync
 		/// <param name="syncJobParameters">Parameters of job to be created</param>
 		/// <param name="relativityServices">Access to Relativity Services</param>
 		/// <param name="logger">Logger</param>
-		ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, IRelativityServices relativityServices, ISyncLog logger);
+		ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, IRelativityServices relativityServices, IAPILog logger);
 
 		/// <summary>
 		///     Creates <see cref="ISyncJob" />
@@ -41,6 +42,6 @@ namespace Relativity.Sync
 		/// <param name="relativityServices">Access to Relativity Services</param>
 		/// <param name="configuration">Sync configuration</param>
 		/// <param name="logger">Logger</param>
-		ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, IRelativityServices relativityServices, SyncJobExecutionConfiguration configuration, ISyncLog logger);
+		ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, IRelativityServices relativityServices, SyncJobExecutionConfiguration configuration, IAPILog logger);
 	}
 }

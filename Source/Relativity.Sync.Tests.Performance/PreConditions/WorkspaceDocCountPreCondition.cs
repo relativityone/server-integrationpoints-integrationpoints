@@ -3,7 +3,6 @@ using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ServiceProxy;
-using Relativity.Sync.Extensions;
 
 namespace Relativity.Sync.Tests.Performance.PreConditions
 {
