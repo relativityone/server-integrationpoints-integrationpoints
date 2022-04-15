@@ -230,7 +230,7 @@ NUGET
     Serilog (1.5.14)
     Serilog.Sinks.Seq (1.5.36)
       Serilog (>= 1.5.10)
-    SSH.NET (2016.0.0)
+    SSH.NET (2020.0.1)
     System.AppContext (4.3.0)
     System.Collections (4.3.0)
     System.Collections.Concurrent (4.3.0)
