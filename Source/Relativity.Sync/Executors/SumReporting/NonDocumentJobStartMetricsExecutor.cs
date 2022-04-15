@@ -42,7 +42,7 @@ namespace Relativity.Sync.Executors.SumReporting
             }
             else
 			{
-				string parentApplicationName = await GetParentApplicationNameAsync(configuration);
+				string parentApplicationName = await GetParentApplicationNameAsync(configuration).ConfigureAwait(false);
 
 				_syncMetrics.Send(new NonDocumentJobStartMetric
                 {
