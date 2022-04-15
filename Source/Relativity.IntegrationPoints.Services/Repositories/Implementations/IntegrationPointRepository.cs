@@ -73,11 +73,11 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
 			return null;
 		}
 		
-		public object RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId)
+		public object RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, bool switchToAppendOverlayMode)
 		{
 			IntegrationPoint integrationPoint = _integrationPointLocalService.ReadIntegrationPoint(integrationPointArtifactId);
 			var integrationPointRuntimeService = _serviceFactory.CreateIntegrationPointRuntimeService(kCura.IntegrationPoints.Core.Models.IntegrationPointModel.FromIntegrationPoint(integrationPoint));
-			integrationPointRuntimeService.RetryIntegrationPoint(workspaceArtifactId, integrationPointArtifactId, _userInfo.ArtifactID);
+			integrationPointRuntimeService.RetryIntegrationPoint(workspaceArtifactId, integrationPointArtifactId, _userInfo.ArtifactID, switchToAppendOverlayMode);
 			return null;
 		}
 

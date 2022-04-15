@@ -20,6 +20,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;
+using static kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests
 {
@@ -87,7 +88,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
         {
             // Arrange
             IExtendedJob job = SetupExtendedJob();
-
+            SetupJobHistory(job);
             // Act
             await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
 
@@ -97,6 +98,323 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             _syncConfigurationBuilderMock.Verify(x => x.ConfigureDocumentSync(It.Is<DocumentSyncOptions>(
                 o => o.SavedSearchId == _SAVED_SEARCH_ARTIFACT_ID &&
                      o.DestinationFolderId == _DESTINATION_FOLDER_ARTIFACT_ID)));
+        }
+
+        [Test]
+        public async Task CreateSyncConfigurationAsync_ShouldCreateSyncConfiguration_WhenRetryDefaultIntegrationPoint()
+        {
+            // Arrange
+            IExtendedJob job = SetupExtendedJob(
+                isRetry: true);
+            SetupJobHistory(job);
+            // Act
+            await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
+
+            // Assert
+            _configurationBuilderMock.Verify(x => x.ConfigureRdos(It.IsAny<RdoOptions>()));
+
+            _documentSyncConfigurationBuilderMock.Verify(x => x.IsRetry(It.Is<RetryOptions>(
+                o => o.JobToRetry == _JOB_HISTORY_TO_RETRY)));
+        }
+
+        [TestCase(ImportNativeFileCopyModeEnum.CopyFiles, ImportNativeFileCopyMode.CopyFiles)]
+        [TestCase(ImportNativeFileCopyModeEnum.DoNotImportNativeFiles, ImportNativeFileCopyMode.DoNotImportNativeFiles)]
+        [TestCase(ImportNativeFileCopyModeEnum.SetFileLinks, ImportNativeFileCopyMode.SetFileLinks)]
+        public async Task CreateSyncConfigurationAsync_ShouldCreateSyncConfiguration_WhenDefaultIntegrationPointWithCopyNativesBehavior(
+            ImportNativeFileCopyModeEnum copyMode, ImportNativeFileCopyMode expectedCopyMode)
+        {
+            // Arrange
+            _destinationConfiguration.ImportNativeFileCopyMode = copyMode;
+
+            IExtendedJob job = SetupExtendedJob();
+            SetupJobHistory(job);
+            // Act
+            await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
+
+            // Assert
+            _configurationBuilderMock.Verify(x => x.ConfigureRdos(It.IsAny<RdoOptions>()));
+
+            _syncConfigurationBuilderMock.Verify(x => x.ConfigureDocumentSync(It.Is<DocumentSyncOptions>(
+                o => o.SavedSearchId == _SAVED_SEARCH_ARTIFACT_ID &&
+                     o.DestinationFolderId == _DESTINATION_FOLDER_ARTIFACT_ID &&
+                     o.CopyNativesMode == expectedCopyMode)));
+        }
+
+        [TestCase(OverwriteModeNames.AppendOnlyModeName, ImportOverwriteMode.AppendOnly)]
+        [TestCase(OverwriteModeNames.AppendOverlayModeName, ImportOverwriteMode.AppendOverlay)]
+        [TestCase(OverwriteModeNames.OverlayOnlyModeName, ImportOverwriteMode.OverlayOnly)]
+        public async Task CreateSyncConfigurationAsync_ShouldCreateSyncConfiguration_WithJobHistoryOverwriteModeWhenRetry(
+            string jobHistoryOverwrite, ImportOverwriteMode expectedOverwriteSetting)
+        {
+            // Arrange
+            IExtendedJob job = SetupExtendedJob(isRetry: true);
+            SetupJobHistory(job, jobHistoryOverwrite);
+            // Act        
+
+            await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
+
+            // Assert
+            _documentSyncConfigurationBuilderMock.Verify(x => x.OverwriteMode(It.Is<OverwriteOptions>(
+               o => o.OverwriteMode == expectedOverwriteSetting)));          
+        }
+
+        [Test]
+        public async Task CreateSyncConfigurationAsync_ShouldCreateSyncConfiguration_WhenIntegrationPointEmailNotifications()
+        {
+            // Arrange
+            const string email1 = "test@relativity.com";
+            const string email2 = "test2@relativity.com";
+
+            string emailNotifications = $"    {email1};;  {email2}";
+
+            IExtendedJob job = SetupExtendedJob(
+                emailNotifications: emailNotifications);
+            SetupJobHistory(job);
+            // Act
+            await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
+
+            // Assert
+            _documentSyncConfigurationBuilderMock.Verify(x => x.EmailNotifications(It.Is<EmailNotificationsOptions>(
+                o => o.Emails.Contains(email1) &&
+                     o.Emails.Contains(email2))));
+        }
+
+        [TestCase(ImportOverwriteModeEnum.AppendOnly, "Use Field Settings", ImportOverwriteMode.AppendOnly, FieldOverlayBehavior.UseFieldSettings)]
+        [TestCase(ImportOverwriteModeEnum.AppendOverlay, "Merge Values", ImportOverwriteMode.AppendOverlay, FieldOverlayBehavior.MergeValues)]
+        [TestCase(ImportOverwriteModeEnum.OverlayOnly, "Replace Values", ImportOverwriteMode.OverlayOnly, FieldOverlayBehavior.ReplaceValues)]
+        public async Task CreateSyncConfigurationAsync_ShouldCreateSyncConfiguration_WhenIntegrationPointWithOverlayBehavior(
+            ImportOverwriteModeEnum importOverwriteMode, string fieldOverlayBehavior,
+            ImportOverwriteMode expectedOverwriteMode, FieldOverlayBehavior expectedFieldOverlayMode)
+        {
+            // Arrange
+            _destinationConfiguration.ImportOverwriteMode = importOverwriteMode;
+            _destinationConfiguration.FieldOverlayBehavior = fieldOverlayBehavior;
+
+            IExtendedJob job = SetupExtendedJob();
+            switch (importOverwriteMode)
+            {
+                case ImportOverwriteModeEnum.AppendOnly: 
+                    SetupJobHistory(job, OverwriteModeNames.AppendOnlyModeName); 
+                    break;
+                case ImportOverwriteModeEnum.AppendOverlay:
+                    SetupJobHistory(job, OverwriteModeNames.AppendOverlayModeName);
+                    break;
+                case ImportOverwriteModeEnum.OverlayOnly:
+                    SetupJobHistory(job, OverwriteModeNames.OverlayOnlyModeName);
+                    break;
+            }
+            // Act
+            await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
+
+            // Assert
+            _documentSyncConfigurationBuilderMock.Verify(x => x.OverwriteMode(It.Is<OverwriteOptions>(
+                o => o.OverwriteMode == expectedOverwriteMode &&
+                     o.FieldsOverlayBehavior == expectedFieldOverlayMode)));
+        }
+
+        [TestCase(false, false, 0, false, DestinationFolderStructureBehavior.None)]
+        [TestCase(true, false, 0, true, DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure)]
+        [TestCase(false, true, 1038081, true, DestinationFolderStructureBehavior.ReadFromField)]
+        public async Task CreateSyncConfigurationAsync_ShouldCreateSyncConfiguration_WhenIntegrationPointWithFolderStructureBehavior(
+            bool useDynamicFolderPath, bool useFolderPathInformation, int folderPathSourceFieldId,
+            bool moveExistingDocuments, DestinationFolderStructureBehavior expectedFolderStructureBehavior)
+        {
+            // Arrange
+            _destinationConfiguration.UseDynamicFolderPath = useDynamicFolderPath;
+            _destinationConfiguration.UseFolderPathInformation = useFolderPathInformation;
+            _destinationConfiguration.FolderPathSourceField = folderPathSourceFieldId;
+            _destinationConfiguration.MoveExistingDocuments = moveExistingDocuments;
+
+            IExtendedJob job = SetupExtendedJob();
+            SetupJobHistory(job);
+            // Act
+            await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
+
+            // Assert
+            _configurationBuilderMock.Verify(x => x.ConfigureRdos(It.IsAny<RdoOptions>()));
+
+            _documentSyncConfigurationBuilderMock.Verify(x => x.DestinationFolderStructure(It.Is<DestinationFolderStructureOptions>(
+                o => o.DestinationFolderStructure == expectedFolderStructureBehavior &&
+                     o.FolderPathSourceFieldId == folderPathSourceFieldId &&
+                     o.MoveExistingDocuments == moveExistingDocuments)));
+        }
+
+        [TestCase(ImportNativeFileCopyModeEnum.CopyFiles, ImportImageFileCopyMode.CopyFiles)]
+        [TestCase(ImportNativeFileCopyModeEnum.DoNotImportNativeFiles, ImportImageFileCopyMode.SetFileLinks)]
+        [TestCase(ImportNativeFileCopyModeEnum.SetFileLinks, ImportImageFileCopyMode.SetFileLinks)]
+        public async Task CreateSyncConfigurationAsync_ShouldCreateSyncConfiguration_WhenDefaultIntegrationPointWithCopyImagesBehavior(
+            ImportNativeFileCopyModeEnum copyMode, ImportImageFileCopyMode expectedCopyMode)
+        {
+            // Arrange
+            _destinationConfiguration = CreateImageDestinationConfiguration(
+                importFileCopyMode: copyMode);
+
+            IExtendedJob job = SetupExtendedJob();
+            SetupJobHistory(job);
+            // Act
+            await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
+
+            // Assert
+            _configurationBuilderMock.Verify(x => x.ConfigureRdos(It.IsAny<RdoOptions>()));
+
+            _syncConfigurationBuilderMock.Verify(x => x.ConfigureImageSync(It.Is<ImageSyncOptions>(
+                o => o.DataSourceId == _SAVED_SEARCH_ARTIFACT_ID &&
+                     o.DestinationLocationId == _DESTINATION_FOLDER_ARTIFACT_ID &&
+                     o.CopyImagesMode == expectedCopyMode)));
+        }
+
+        [TestCase(new int[] { 1, 2 }, true)]
+        [TestCase(new int[] { 1, 2 }, false)]
+        public async Task CreateSyncConfigurationAsync_ShouldCreateSyncConfiguration_WhenIntegrationPointWithImageProductionPrecedenceModeSync(
+            int[] imagePrecedence, bool includeOriginalImages)
+        {
+            // Arrange
+            _destinationConfiguration = CreateImageDestinationConfiguration(
+                includeOriginalImages: includeOriginalImages,
+                productionPrecedence: "1",
+                imagePrecedence: imagePrecedence.Select(x => new ProductionDTO { ArtifactID = x.ToString() }));
+            _sourceConfiguration = CreateSourceConfiguration();
+
+            IExtendedJob job = SetupExtendedJob();
+            SetupJobHistory(job);
+            // Act
+            await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
+
+            // Assert
+            _imageSyncConfigurationBuilderMock.Verify(x => x.ProductionImagePrecedence(It.Is<ProductionImagePrecedenceOptions>(
+                o => o.IncludeOriginalImagesIfNotFoundInProductions == includeOriginalImages &&
+                     o.ProductionImagePrecedenceIds.SequenceEqual(imagePrecedence))));
+        }
+
+        [Test]
+        public async Task SyncConfiguration_ShouldBeCreated_WhenIntegrationPointWithOriginalImagesAndImagesPrecedenceSelected()
+        {
+            // Arrange
+            _destinationConfiguration = CreateImageDestinationConfiguration(
+                includeOriginalImages: true,
+                productionPrecedence: "0",
+                imagePrecedence: new[] { new ProductionDTO { ArtifactID = "1" }, new ProductionDTO { ArtifactID = "2" } });
+            _sourceConfiguration = CreateSourceConfiguration();
+
+            IExtendedJob job = SetupExtendedJob();
+            SetupJobHistory(job);
+            // Act
+            await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
+
+            // Assert
+            _imageSyncConfigurationBuilderMock.Verify(x => x.ProductionImagePrecedence(It.Is<ProductionImagePrecedenceOptions>(
+                o => o.IncludeOriginalImagesIfNotFoundInProductions &&
+                     o.ProductionImagePrecedenceIds.ToList().Count == 0)));
+        }
+
+        [Test]
+        public async Task CreateSyncConfigurationAsync_ShouldCreateNonDocumentSyncConfiguration()
+        {
+            // Arrange
+            _destinationConfiguration = CreateNonDocumentDestinationConfiguration();
+            _sourceConfiguration = CreateNonDocumentSourceConfiguration();
+
+            IExtendedJob job = SetupExtendedJob();
+
+            // Act
+            await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
+
+            // Assert
+            _syncConfigurationBuilderMock.Verify(x => x.ConfigureNonDocumentSync(It.Is<NonDocumentSyncOptions>(
+                o => o.SourceViewArtifactId == _SOURCE_VIEW_ARTIFACT_ID &&
+                     o.RdoArtifactTypeId == _SOURCE_ARTIFACT_TYPE_ID &&
+                     o.DestinationRdoArtifactTypeId == _DESTINATION_ARTIFACT_TYPE_ID)));
+        }
+
+        [Test]
+        public async Task CreateSyncConfigurationAsync_ShouldCreateNonDocumentSyncConfiguration_AndDisableLogErrors()
+        {
+            // Arrange
+            _destinationConfiguration = CreateNonDocumentDestinationConfiguration();
+            _sourceConfiguration = CreateNonDocumentSourceConfiguration();
+            IExtendedJob job = SetupExtendedJob();
+            job.IntegrationPointModel.LogErrors = false;
+
+            // Act
+            await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
+
+            // Assert
+            _nonDocumentSyncConfigurationBuilderMock.Verify(x => x.DisableItemLevelErrorLogging(), Times.Once);
+        }
+
+        [TestCase(null)]
+        [TestCase(true)]
+        public async Task CreateSyncConfigurationAsync_ShouldCreateSyncConfiguration_AndLogErrors(bool? logErrors)
+        {
+            // Arrange
+            IExtendedJob job = SetupExtendedJob();
+            job.IntegrationPointModel.LogErrors = logErrors;
+            SetupJobHistory(job);
+            // Act
+            await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
+
+            // Assert
+            _documentSyncConfigurationBuilderMock.Verify(x => x.DisableItemLevelErrorLogging(), Times.Never);
+        }
+
+        [Test]
+        public async Task CreateSyncConfigurationAsync_ShouldCreateSyncConfiguration_AndDisableLogErrors()
+        {
+            // Arrange
+            IExtendedJob job = SetupExtendedJob();
+            job.IntegrationPointModel.LogErrors = false;
+            SetupJobHistory(job);
+            // Act
+            await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
+
+            // Assert
+            _documentSyncConfigurationBuilderMock.Verify(x => x.DisableItemLevelErrorLogging(), Times.Once);
+        }
+
+        [TestCase(null)]
+        [TestCase(true)]
+        public async Task CreateSyncConfigurationAsync_ShouldCreateImageSyncConfiguration_AndLogErrors(bool? logErrors)
+        {
+            // Arrange
+            _destinationConfiguration = CreateImageDestinationConfiguration();
+            IExtendedJob job = SetupExtendedJob();
+            job.IntegrationPointModel.LogErrors = logErrors;
+            SetupJobHistory(job);
+            // Act
+            await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
+
+            // Assert
+            _imageSyncConfigurationBuilderMock.Verify(x => x.DisableItemLevelErrorLogging(), Times.Never);
+        }
+
+        [Test]
+        public async Task CreateSyncConfigurationAsync_ShouldCreateImageSyncConfiguration_AndDisableLogErrors()
+        {
+            // Arrange
+            _destinationConfiguration = CreateImageDestinationConfiguration();
+            IExtendedJob job = SetupExtendedJob();
+            job.IntegrationPointModel.LogErrors = false;
+            SetupJobHistory(job);
+
+            // Act
+            await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
+
+            // Assert
+            _imageSyncConfigurationBuilderMock.Verify(x => x.DisableItemLevelErrorLogging(), Times.Once);
+        }
+
+
+        private static ExtendedImportSettings CreateNativeDestinationConfiguration()
+        {
+            ImportSettings settings = new ImportSettings
+            {
+                DestinationFolderArtifactId = _DESTINATION_FOLDER_ARTIFACT_ID,
+                ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles,
+                ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
+                FieldOverlayBehavior = "Use Field Settings"
+            };
+
+            return new ExtendedImportSettings(settings);
         }
 
         [Test]
@@ -475,7 +793,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             _jobHistoryServiceFake.Setup(x => x.GetRdo(It.IsAny<Guid>()))
                 .Returns(new Data.JobHistory
                 {
-                    JobType = isRetry ? JobTypeChoices.JobHistoryRetryErrors : JobTypeChoices.JobHistoryRun
+                    JobType = isRetry ? JobTypeChoices.JobHistoryRetryErrors : JobTypeChoices.JobHistoryRun                    
                 });
 
             Job job = new JobBuilder()
@@ -491,6 +809,14 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 
             return extendedJob.Object;
         }
+
+        private void SetupJobHistory(IExtendedJob job, string jobHistoryOverwrite = OverwriteModeNames.AppendOnlyModeName)
+        {
+            JobHistory jobHistory = new JobHistory { JobType = JobTypeChoices.JobHistoryRetryErrors, Overwrite = jobHistoryOverwrite };
+            _jobHistoryServiceFake
+                .Setup(x => x.GetJobHistory(It.Is<IList<int>>(l => l.Contains(job.JobHistoryId))))
+                .Returns(new List<JobHistory> { jobHistory });
+        } 
 
         private ISyncOperationsWrapper SetupSyncOperations()
         {

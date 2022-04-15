@@ -73,7 +73,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			HttpResponseMessage httpResponseMessage = RunInternal(
 				payload.AppId, 
 				payload.ArtifactId, 
-				integrationPointService.RunIntegrationPoint
+				integrationPointService,
+				ActionType.Run
 			);
 			return httpResponseMessage;
 		}
@@ -81,7 +82,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		// POST API/Job/Retry
 		[HttpPost]
 		[LogApiExceptionFilter(Message = "Unable to retry run of the transfer job.")]
-		public HttpResponseMessage Retry(Payload payload)
+		public HttpResponseMessage Retry(Payload payload, bool switchToAppendOverlayMode = false)
 		{
 			AuditAction(payload, _RETRY_AUDIT_MESSAGE);
 			
@@ -90,7 +91,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			HttpResponseMessage httpResponseMessage = RunInternal(
 				payload.AppId, 
 				payload.ArtifactId, 
-				integrationPointService.RetryIntegrationPoint
+				integrationPointService,
+				ActionType.Retry,
+				switchToAppendOverlayMode
 			);
 			return httpResponseMessage;
 		}
@@ -138,14 +141,22 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			return response;
 		}
 
-		private HttpResponseMessage RunInternal(int workspaceId, int relatedObjectArtifactId, Action<int, int, int> integrationPointServiceMethod)
+		private HttpResponseMessage RunInternal(int workspaceId, int relatedObjectArtifactId, IIntegrationPointService integrationPointService,
+			ActionType action, bool switchToAppendOverlayMode = false)
 		{
 			string errorMessage = null;
 			HttpStatusCode httpStatusCode = HttpStatusCode.NoContent;
 			try
 			{
 				int userId = GetUserIdIfExists();
-				integrationPointServiceMethod(workspaceId, relatedObjectArtifactId, userId);
+				if (action == ActionType.Run)
+                {
+					integrationPointService.RunIntegrationPoint(workspaceId, relatedObjectArtifactId, userId);
+				}
+                else
+                {
+					integrationPointService.RetryIntegrationPoint(workspaceId, relatedObjectArtifactId, userId, switchToAppendOverlayMode);
+				}								
 			}
 			catch (AggregateException exception)
 			{
@@ -222,5 +233,11 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			public int AppId { get; set; }
 			public int ArtifactId { get; set; }
 		}
+
+		private enum ActionType
+        {
+			Run,
+			Retry
+        }
 	}
 }

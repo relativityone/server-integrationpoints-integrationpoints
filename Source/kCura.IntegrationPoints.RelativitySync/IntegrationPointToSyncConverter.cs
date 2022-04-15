@@ -6,14 +6,10 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.RelativitySync.Models;
 using kCura.IntegrationPoints.RelativitySync.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.SyncConfiguration;
@@ -25,7 +21,7 @@ using Relativity;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
-	public sealed class IntegrationPointToSyncConverter : IIntegrationPointToSyncConverter
+    public sealed class IntegrationPointToSyncConverter : IIntegrationPointToSyncConverter
 	{
 		private readonly ISerializer _serializer;
 		private readonly IJobHistoryService _jobHistoryService;
@@ -58,14 +54,17 @@ namespace kCura.IntegrationPoints.RelativitySync
             {
 				return await CreateNonDocumentSyncConfigurationAsync(builder, job, sourceConfiguration, importSettings).ConfigureAwait(false);
             }
-			else if (importSettings.ImageImport)
-			{
-				return await CreateImageSyncConfigurationAsync(builder, job, sourceConfiguration, importSettings).ConfigureAwait(false);
-			}
-			else
-			{
-				return await CreateDocumentSyncConfigurationAsync(builder, job, sourceConfiguration, importSettings, folderConf).ConfigureAwait(false);
-			}
+            else
+            {
+				JobHistory jobHistory = _jobHistoryService.GetJobHistory(new List<int> { job.JobHistoryId }).FirstOrDefault();
+				
+				if (jobHistory != null)
+					importSettings.ImportOverwriteMode = NameToEnumConvert.GetEnumByModeName(jobHistory.Overwrite);
+
+				return importSettings.ImageImport ?
+					await CreateImageSyncConfigurationAsync(builder, job, sourceConfiguration, importSettings).ConfigureAwait(false)
+					: await CreateDocumentSyncConfigurationAsync(builder, job, sourceConfiguration, importSettings, folderConf).ConfigureAwait(false);
+			}			
 		}
 
 		private Version GetVersion(Assembly assembly)
@@ -109,7 +108,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 				.CreateSavedSearch(
 					new CreateSavedSearchOptions(
 						importSettings.CreateSavedSearchForTagging));
-
 			if (IsRetryingErrors(job.Job))
 			{
 				RelativityObject jobToRetry = await _jobHistorySyncService.GetLastJobHistoryWithErrorsAsync(
@@ -153,7 +151,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 				.CreateSavedSearch(
 					new CreateSavedSearchOptions(
 						importSettings.CreateSavedSearchForTagging));
-
 			if (IsRetryingErrors(job.Job))
 			{
 				RelativityObject jobToRetry = await _jobHistorySyncService.GetLastJobHistoryWithErrorsAsync(

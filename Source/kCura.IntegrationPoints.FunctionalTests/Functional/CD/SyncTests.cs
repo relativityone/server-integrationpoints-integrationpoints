@@ -1,37 +1,40 @@
 ﻿using Relativity.Testing.Identification;
-using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
+using NUnit.Framework;
+using Relativity.Testing.Framework.Web.Navigation;
+using Relativity.IntegrationPoints.Tests.Functional.Web.Components;
+using Atata;
+using Relativity.Testing.Framework.Web.Extensions;
+using FluentAssertions;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CD
 {
-	[TestType.UI, TestType.MainFlow]
+    [TestType.UI, TestType.MainFlow]
 	public class SyncTests : TestsBase
 	{
-		private readonly SyncTestsImplementation _testsImplementation;
-
 		public SyncTests()
 			: base(nameof(SyncTests))
 		{
-			_testsImplementation = new SyncTestsImplementation(this);
 		}
 
-		public override void OneTimeSetUp()
-		{
-			base.OneTimeSetUp();
-			_testsImplementation.OnSetUpFixture();
-		}
-
-		public override void OneTimeTearDown()
-		{
-			base.OneTimeTearDown();
-
-			_testsImplementation.OnTearDownFixture();
-		}
-
-		[IdentifiedTest("11875215-9048-4fa3-91d8-b1cae9b11eef")]
+		[IdentifiedTest("1C37F97A-9DB3-4FED-BDAC-685864C03152")]
 		[TestExecutionCategory.RAPCD.Verification.Functional]
-		public void SavedSearch_NativesAndMetadata_GoldFlow()
+		public void SyncLoadFirstPage()
 		{
-			_testsImplementation.SavedSearchNativesAndMetadataGoldFlow();
+			// Arrange
+			LoginAsStandardUser();
+
+			// Act
+			RelativityProviderConnectToSourcePage relativityProviderPage =
+				Being.On<IntegrationPointListPage>(Workspace.ArtifactID)
+					.NewIntegrationPoint.ClickAndGo()
+					.ApplyModel(new {
+						Name = nameof(SyncLoadFirstPage)
+					})
+					.RelativityProviderNext.ClickAndGo();
+
+			// Assert
+			relativityProviderPage.SavedSearch.IsEnabled
+				.Value.Should().BeTrue();
 		}
 	}
 }

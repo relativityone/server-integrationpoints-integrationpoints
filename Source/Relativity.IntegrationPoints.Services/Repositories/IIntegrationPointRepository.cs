@@ -8,7 +8,7 @@ namespace Relativity.IntegrationPoints.Services.Repositories
 		IntegrationPointModel UpdateIntegrationPoint(UpdateIntegrationPointRequest request);
 		IntegrationPointModel GetIntegrationPoint(int integrationPointArtifactId);
 		object RunIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId);
-		object RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId);
+		object RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, bool switchToAppendOverlayMode = false);
 		IList<IntegrationPointModel> GetAllIntegrationPoints();
 		int GetIntegrationPointArtifactTypeId();
 		IList<OverwriteFieldsModel> GetOverwriteFieldChoices();
