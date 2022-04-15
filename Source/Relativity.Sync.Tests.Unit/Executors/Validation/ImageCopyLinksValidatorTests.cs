@@ -2,13 +2,11 @@
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Interfaces.Group;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Executors;
@@ -63,7 +61,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsync_ShouldHandleValidConfiguration_WhenConditionsAreMet()
 		{
 			// Arrange
-			SetupValidator(_USER_IS_ADMIN_ID, ImportImageFileCopyMode.SetFileLinks, true, false);
+			SetupValidator(_USER_IS_ADMIN_ID, ImportImageFileCopyMode.SetFileLinks, true);
 
 			// Act
 			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
@@ -92,7 +90,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsync_ShouldSkipValidationIndependentOfUser_WhenResponsibleInstanceSettingIsFalse(int userId)
 		{
 			// Arrange
-			SetupValidator(userId, ImportImageFileCopyMode.SetFileLinks, false, false);
+			SetupValidator(userId, ImportImageFileCopyMode.SetFileLinks, false);
 
 			// Act
 			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
@@ -102,12 +100,11 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			result.Messages.Should().BeEmpty();
 		}
 
-		[Test]
 		[TestCase(ImportImageFileCopyMode.CopyFiles)]
 		public async Task ValidateAsync_ShouldSkipValidation_WhenNativeCopyModeIsNotFileLinks(ImportImageFileCopyMode copyMode)
 		{
 			// Arrange
-			SetupValidator(_USER_IS_NON_ADMIN_ID, copyMode, true, false);
+			SetupValidator(_USER_IS_NON_ADMIN_ID, copyMode, true);
 
 			// Act
 			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
@@ -136,7 +133,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 				$"ShouldValidate should return {expectedResult} for pipeline {pipelineType.Name}");
 		}
 
-		private void SetupValidator(int userId, ImportImageFileCopyMode copyMode, bool isRestrictedCopyLinksOnly, bool toggleNonAdminCanSyncUsingLinks)
+		private void SetupValidator(int userId, ImportImageFileCopyMode copyMode, bool isRestrictedCopyLinksOnly, bool toggleNonAdminCanSyncUsingLinks = false)
 		{
 			_userContextFake.Setup(c => c.ExecutingUserId).Returns(userId);
 			_configurationFake.Setup(c => c.ImportImageFileCopyMode).Returns(copyMode);

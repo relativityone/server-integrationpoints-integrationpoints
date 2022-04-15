@@ -2,13 +2,11 @@
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Interfaces.Group;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.Sync.Executors;
@@ -103,7 +101,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			result.Messages.Should().BeEmpty();
 		}
 
-		[Test]
 		[TestCase(ImportNativeFileCopyMode.DoNotImportNativeFiles)]
 		[TestCase(ImportNativeFileCopyMode.CopyFiles)]
 		public async Task ValidateAsync_ShouldSkipValidation_WhenNativeCopyModeIsNotFileLinks(ImportNativeFileCopyMode copyMode)
