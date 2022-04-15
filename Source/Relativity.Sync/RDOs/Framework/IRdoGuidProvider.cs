@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Relativity.Sync.RDOs.Framework
 {
     internal interface IRdoGuidProvider

@@ -1,15 +1,16 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Runtime.Caching;
 using System.Threading.Tasks;
-using Relativity.Sync.Utils;
-using Relativity.Sync.KeplerFactory;
-using Relativity.Services.Objects.DataContracts;
+using Newtonsoft.Json;
+using Relativity.API;
 using Relativity.Services.Interfaces.UserInfo;
 using Relativity.Services.Interfaces.UserInfo.Models;
-using Newtonsoft.Json;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.DbContext;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Toggles;
+using Relativity.Sync.Utils;
 using Relativity.Toggles;
 
 namespace Relativity.Sync.Transfer
@@ -23,7 +24,7 @@ namespace Relativity.Sync.Transfer
 		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 		private readonly IMemoryCache _memoryCache;
 		private readonly IEddsDbContext _eddsDbContext;
-		private readonly ISyncLog _log;
+		private readonly IAPILog _log;
 		private readonly IToggleProvider _toggleProvider;
 		private readonly JSONSerializer _serializer = new JSONSerializer();
 		private readonly CacheItemPolicy _memoryCacheItemPolicy = new CacheItemPolicy { SlidingExpiration = TimeSpan.FromMinutes(5) };
@@ -31,7 +32,7 @@ namespace Relativity.Sync.Transfer
 		public RelativityDataType SupportedType { get; } = RelativityDataType.User;
 
 		public UserFieldSanitizer(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IMemoryCache memoryCache,
-			IEddsDbContext eddsDbContext, ISyncLog log, IToggleProvider toggleProvider)
+			IEddsDbContext eddsDbContext, IAPILog log, IToggleProvider toggleProvider)
 		{
 			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_memoryCache = memoryCache;

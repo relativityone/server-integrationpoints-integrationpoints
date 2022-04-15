@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Threading;
+using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Autofac;
+using Relativity.API;
 
 namespace Relativity.Sync
 {
@@ -12,10 +13,10 @@ namespace Relativity.Sync
 		private readonly SyncJobParameters _syncJobParameters;
 		private readonly IRelativityServices _relativityServices;
 		private readonly SyncJobExecutionConfiguration _configuration;
-		private readonly ISyncLog _logger;
-
+        private readonly IAPILog _logger;
+		
 		public SyncJobInLifetimeScope(IContainerFactory containerFactory, IContainer container, SyncJobParameters syncJobParameters, IRelativityServices relativityServices,
-			SyncJobExecutionConfiguration configuration, ISyncLog logger)
+			SyncJobExecutionConfiguration configuration, IAPILog logger)
 		{
 			_containerFactory = containerFactory;
 			_container = container;
@@ -27,6 +28,7 @@ namespace Relativity.Sync
 
 		public async Task ExecuteAsync(CompositeCancellationToken token)
 		{
+            using (EnrichLogger())
 			using (ILifetimeScope scope = BeginLifetimeScope())
 			{
 				ISyncJob syncJob = CreateSyncJob(scope);
@@ -36,6 +38,7 @@ namespace Relativity.Sync
 
 		public async Task ExecuteAsync(IProgress<SyncJobState> progress, CompositeCancellationToken token)
 		{
+            using (EnrichLogger())
 			using (ILifetimeScope scope = BeginLifetimeScope())
 			{
 				ISyncJob syncJob = CreateSyncJob(scope);
@@ -44,9 +47,20 @@ namespace Relativity.Sync
 		}
 		
 		private ILifetimeScope BeginLifetimeScope()
-		{
+        {
 			return _container.BeginLifetimeScope(builder => _containerFactory.RegisterSyncDependencies(builder, _syncJobParameters, _relativityServices, _configuration, _logger));
 		}
+
+        private IDisposable EnrichLogger()
+        {
+            CompositeDisposable disposables = new CompositeDisposable(
+                _logger.LogContextPushProperty(nameof(SyncJobParameters.WorkflowId), _syncJobParameters.WorkflowId),
+                _logger.LogContextPushProperty(nameof(SyncJobParameters.SyncConfigurationArtifactId), _syncJobParameters.SyncConfigurationArtifactId),
+                _logger.LogContextPushProperty(nameof(SyncJobParameters.SyncBuildVersion), _syncJobParameters.SyncBuildVersion)
+            );
+
+            return disposables;
+        }
 
 		private ISyncJob CreateSyncJob(ILifetimeScope scope)
 		{

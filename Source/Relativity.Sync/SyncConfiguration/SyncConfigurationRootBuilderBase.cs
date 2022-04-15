@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Relativity.Services.ArtifactGuid;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.RDOs;
+using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.SyncConfiguration.Options;
 using Relativity.Sync.Utils;
-using System.Linq.Expressions;
-using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.RDOs.Framework;
 
 namespace Relativity.Sync.SyncConfiguration
 {

@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
 using FluentAssertions;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
@@ -34,7 +35,7 @@ namespace Relativity.Sync.Tests.System
 					SourceWorkspaceArtifactId = _workspace.ArtifactID
 				},
 				toggleProvider: null,
-				cb => cb.RegisterInstance(Logger).As<ISyncLog>()
+				cb => cb.RegisterInstance(Logger).As<IAPILog>()
 			);
 
 			_sut = container.Resolve<IImageFileRepository>();

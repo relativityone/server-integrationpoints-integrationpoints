@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Sync.Logging;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.RDOs.Framework;
@@ -14,7 +15,7 @@ namespace Relativity.Sync.Tests.Unit
 	[TestFixture]
 	public sealed class ConfigurationTests
 	{
-		private ISyncLog _syncLog;
+		private IAPILog _syncLog;
 		private Mock<ISemaphoreSlim> _semaphoreSlim;
 		private SyncJobParameters _syncJobParameters;
 		private Mock<IRdoManager> _rdoManagerMock;

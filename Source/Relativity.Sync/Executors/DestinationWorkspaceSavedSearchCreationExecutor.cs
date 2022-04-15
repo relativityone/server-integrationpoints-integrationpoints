@@ -1,6 +1,6 @@
-﻿using System;
-using System.Threading;
+using System;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Executors
@@ -9,9 +9,9 @@ namespace Relativity.Sync.Executors
 	{
 		private readonly ITagSavedSearch _tagSavedSearch;
 		private readonly ITagSavedSearchFolder _tagSavedSearchFolder;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public DestinationWorkspaceSavedSearchCreationExecutor(ITagSavedSearch tagSavedSearch, ITagSavedSearchFolder tagSavedSearchFolder, ISyncLog logger)
+		public DestinationWorkspaceSavedSearchCreationExecutor(ITagSavedSearch tagSavedSearch, ITagSavedSearchFolder tagSavedSearchFolder, IAPILog logger)
 		{
 			_tagSavedSearch = tagSavedSearch;
 			_tagSavedSearchFolder = tagSavedSearchFolder;

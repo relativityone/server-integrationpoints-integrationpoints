@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Autofac;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -21,7 +22,7 @@ namespace Relativity.Sync.Tests.Integration
 	{
 		private CompositeCancellationToken _token;
 
-		private Mock<ISyncLog> _syncLog;
+		private Mock<IAPILog> _syncLog;
 		private Mock<IObjectManager> _objectManager;
 		private Mock<IRdoManager> _rdoManagerMock;
         private IExecutor<T> _instance;
@@ -37,7 +38,7 @@ namespace Relativity.Sync.Tests.Integration
 		[SetUp]
 		public virtual void SetUp()
 		{
-			_syncLog = new Mock<ISyncLog>();
+			_syncLog = new Mock<IAPILog>();
 			_objectManager = new Mock<IObjectManager>();
 			_rdoManagerMock = new Mock<IRdoManager>();
 
@@ -47,7 +48,7 @@ namespace Relativity.Sync.Tests.Integration
 			}
 			IntegrationTestsContainerBuilder.MockStepsExcept<T>(ContainerBuilder);
 
-            ContainerBuilder.RegisterInstance(_syncLog.Object).As<ISyncLog>();
+            ContainerBuilder.RegisterInstance(_syncLog.Object).As<IAPILog>();
             ContainerBuilder.RegisterInstance(_rdoManagerMock.Object).As<IRdoManager>();
 
 			var serviceFactoryForAdminMock = new Mock<ISourceServiceFactoryForAdmin>();

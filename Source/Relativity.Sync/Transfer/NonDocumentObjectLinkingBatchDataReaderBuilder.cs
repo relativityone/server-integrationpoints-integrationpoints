@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.Sync.Transfer
@@ -11,7 +12,7 @@ namespace Relativity.Sync.Transfer
     /// </summary>
     internal sealed class NonDocumentObjectLinkingBatchDataReaderBuilder : BatchDataReaderBuilderBase
     {
-        public NonDocumentObjectLinkingBatchDataReaderBuilder(IFieldManager fieldManager, IExportDataSanitizer exportDataSanitizer, ISyncLog logger)
+        public NonDocumentObjectLinkingBatchDataReaderBuilder(IFieldManager fieldManager, IExportDataSanitizer exportDataSanitizer, IAPILog logger)
             : base(fieldManager, exportDataSanitizer, logger)
         {
         }

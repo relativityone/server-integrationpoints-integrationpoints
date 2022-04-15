@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using kCura.WinEDDS.Credentials;
+using Relativity.API;
 using Relativity.OAuth2Client.Interfaces;
 
 namespace Relativity.Sync.Authentication
@@ -14,7 +15,7 @@ namespace Relativity.Sync.Authentication
 		private readonly IOAuth2ClientFactory _oAuth2ClientFactory;
 		private readonly ITokenProviderFactoryFactory _tokenProviderFactoryFactory;
 		private readonly Uri _authenticationUri;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 #pragma warning disable RG0001
 		private class OAuth2ClientCredentials : ICredentialsProvider
@@ -40,7 +41,7 @@ namespace Relativity.Sync.Authentication
 		}
 #pragma warning restore RG0001
 
-		public OAuth2TokenGenerator(IOAuth2ClientFactory oAuth2ClientFactory, ITokenProviderFactoryFactory tokenProviderFactoryFactory, Uri authenticationUri, ISyncLog logger)
+		public OAuth2TokenGenerator(IOAuth2ClientFactory oAuth2ClientFactory, ITokenProviderFactoryFactory tokenProviderFactoryFactory, Uri authenticationUri, IAPILog logger)
 		{
 			_oAuth2ClientFactory = oAuth2ClientFactory;
 			_tokenProviderFactoryFactory = tokenProviderFactoryFactory;

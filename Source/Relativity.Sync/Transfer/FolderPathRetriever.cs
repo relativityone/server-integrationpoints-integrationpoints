@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Folder;
 using Relativity.Services.Objects;
@@ -17,9 +18,9 @@ namespace Relativity.Sync.Transfer
 		private const int _BATCH_SIZE = 100_000;
 
 		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public FolderPathRetriever(ISourceServiceFactoryForUser serviceFactoryForUser, ISyncLog logger)
+		public FolderPathRetriever(ISourceServiceFactoryForUser serviceFactoryForUser, IAPILog logger)
 		{
 			_serviceFactoryForUser = serviceFactoryForUser;
 			_logger = logger;

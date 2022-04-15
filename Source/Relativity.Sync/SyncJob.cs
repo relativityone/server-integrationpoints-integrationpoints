@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Banzai;
+using Relativity.API;
 using Relativity.Sync.Executors.Validation;
 
 namespace Relativity.Sync
@@ -13,9 +14,9 @@ namespace Relativity.Sync
 		private readonly ISyncExecutionContextFactory _executionContextFactory;
 		private readonly SyncJobParameters _syncJobParameters;
 		private readonly IProgress<SyncJobState> _syncProgress;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public SyncJob(INode<SyncExecutionContext> pipeline, ISyncExecutionContextFactory executionContextFactory, SyncJobParameters syncJobParameters, IProgress<SyncJobState> syncProgress, ISyncLog logger)
+		public SyncJob(INode<SyncExecutionContext> pipeline, ISyncExecutionContextFactory executionContextFactory, SyncJobParameters syncJobParameters, IProgress<SyncJobState> syncProgress, IAPILog logger)
 		{
 			_pipeline = pipeline;
 			_executionContextFactory = executionContextFactory;

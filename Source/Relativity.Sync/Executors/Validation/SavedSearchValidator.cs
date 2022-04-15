@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -16,13 +17,13 @@ namespace Relativity.Sync.Executors.Validation
 	{
 		private const string _SAVED_SEARCH_NOT_PUBLIC = "The saved search must be public.";
 		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 		private static readonly ValidationMessage SavedSearchNoAccess = new ValidationMessage(
 			errorCode: $"20.004",
 			shortMessage: $"Saved search is not available or has been secured from this user. Contact your system administrator."
 		);
 
-		public SavedSearchValidator(ISourceServiceFactoryForUser serviceFactoryForUser, ISyncLog logger)
+		public SavedSearchValidator(ISourceServiceFactoryForUser serviceFactoryForUser, IAPILog logger)
 		{
 			_serviceFactoryForUser = serviceFactoryForUser;
 			_logger = logger;

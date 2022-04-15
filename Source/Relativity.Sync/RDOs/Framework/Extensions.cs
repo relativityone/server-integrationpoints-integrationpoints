@@ -2,9 +2,6 @@ using System;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using System.Windows;
-using Relativity.Sync.RDOs.Framework.Attributes;
 
 namespace Relativity.Sync.RDOs.Framework
 {

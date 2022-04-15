@@ -1,6 +1,7 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Pipelines;
@@ -39,7 +40,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 			var fieldManager = new Mock<IFieldManager>();
 			var jobStatisticsContainer = new Mock<IJobStatisticsContainer>();
 			var syncMetrics = new Mock<ISyncMetrics>();
-			var logger = new Mock<ISyncLog>();
+			var logger = new Mock<IAPILog>();
 
 			_sut = new JobEndMetricsServiceFactory(
 				_pipelineSelectorFake.Object,

@@ -1,16 +1,16 @@
 ﻿﻿using System;
-using System.Xml;
-using System.Data;
-using System.Threading.Tasks;
-using System.Web.Services.Protocols;
-using kCura.WinEDDS.Service.Export;
-using Castle.DynamicProxy;
-using Moq;
-using NUnit.Framework;
-using FluentAssertions;
-using Relativity.Sync.Transfer;
+ using System.Data;
+ using System.Threading.Tasks;
+ using System.Web.Services.Protocols;
+ using System.Xml;
+ using Castle.DynamicProxy;
+ using FluentAssertions;
+ using kCura.WinEDDS.Service.Export;
+ using Moq;
+ using NUnit.Framework;
+ using Relativity.Sync.Transfer;
 
-namespace Relativity.Sync.Tests.Unit.Transfer
+ namespace Relativity.Sync.Tests.Unit.Transfer
 {
 	public sealed class SearchManagerInterceptorTests
 	{

@@ -1,3 +1,4 @@
+using Relativity.API;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.RDOs.Framework;
@@ -13,9 +14,9 @@ namespace Relativity.Sync.SyncConfiguration
         private readonly ISyncServiceManager _servicesMgr;
         private readonly RdoOptions _rdoOptions;
         private readonly ISerializer _serializer;
-        private readonly ISyncLog _logger;
+        private readonly IAPILog _logger;
 
-        internal SyncJobConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr, RdoOptions rdoOptions, ISerializer serializer, ISyncLog logger)
+        internal SyncJobConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr, RdoOptions rdoOptions, ISerializer serializer, IAPILog logger)
         {
             _syncContext = syncContext;
             _servicesMgr = servicesMgr;

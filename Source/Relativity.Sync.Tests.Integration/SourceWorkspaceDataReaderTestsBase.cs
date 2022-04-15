@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -8,6 +8,7 @@ using Autofac;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Interfaces.UserInfo;
 using Relativity.Services.Interfaces.UserInfo.Models;
 using Relativity.Services.Objects.DataContracts;
@@ -75,7 +76,7 @@ namespace Relativity.Sync.Tests.Integration
 			IRelativityExportBatcher batcher = CreateExporterForGivenBatchSize(batchSize);
 			IBatchDataReaderBuilder batchDataReaderBuilder = CreateBatchDataReaderBuilder();
 			IFieldManager fieldManager = _container.Resolve<IFieldManager>();
-			ISyncLog syncLog = Mock.Of<ISyncLog>();
+			IAPILog syncLog = Mock.Of<IAPILog>();
 
 			return new SourceWorkspaceDataReader(
 				batchDataReaderBuilder,

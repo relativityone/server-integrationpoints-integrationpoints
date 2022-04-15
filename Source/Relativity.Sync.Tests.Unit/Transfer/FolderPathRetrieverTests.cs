@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -8,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Folder;
 using Relativity.Services.Objects;
@@ -21,7 +21,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	[TestFixture]
 	public class FolderPathRetrieverTests
 	{
-		private Mock<ISyncLog> _logger;
+		private Mock<IAPILog> _logger;
 		private FolderPathRetriever _instance;
 		private Mock<IObjectManager> _objectManager;
 		private Mock<IFolderManager> _folderManager;
@@ -44,7 +44,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				.Setup(x => x.CreateProxyAsync<IFolderManager>())
 				.ReturnsAsync(_folderManager.Object);
 
-			_logger = new Mock<ISyncLog>();
+			_logger = new Mock<IAPILog>();
 
 			_instance = new FolderPathRetriever(serviceFactoryForUser.Object, _logger.Object);
 		}

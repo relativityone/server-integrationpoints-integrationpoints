@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
 using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models;
 using Relativity.Sync.KeplerFactory;
@@ -18,7 +19,7 @@ namespace Relativity.Sync.Tests.Unit
 	{
 		private const int WORKSPACE_ID = 5;
 
-		private Mock<ISyncLog> _loggerMock;
+		private Mock<IAPILog> _loggerMock;
 		private ImageFileRepositoryKepler _sut;
 		private Mock<ISearchService> _searchServiceMock;
 		private Mock<ISourceServiceFactoryForUser> _serviceFactoryForUserMock;
@@ -26,7 +27,7 @@ namespace Relativity.Sync.Tests.Unit
 		[SetUp]
 		public void Setup()
 		{
-			_loggerMock = new Mock<ISyncLog>();
+			_loggerMock = new Mock<IAPILog>();
 
 			_searchServiceMock = new Mock<ISearchService>();
 			_serviceFactoryForUserMock = new Mock<ISourceServiceFactoryForUser>();

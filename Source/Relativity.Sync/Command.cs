@@ -1,5 +1,6 @@
-﻿using System.Threading;
+using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync
@@ -10,9 +11,9 @@ namespace Relativity.Sync
 		private readonly T _configuration;
 		private readonly IExecutionConstrains<T> _executionConstrains;
 		private readonly IExecutor<T> _executor;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 		
-		public Command(T configuration, IExecutionConstrains<T> executionConstrains, IExecutor<T> executor, ISyncLog logger)
+		public Command(T configuration, IExecutionConstrains<T> executionConstrains, IExecutor<T> executor, IAPILog logger)
 		{
 			_stepName = typeof(T).Name;
 			_configuration = configuration;

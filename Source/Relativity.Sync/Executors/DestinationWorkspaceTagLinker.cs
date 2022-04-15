@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -11,9 +12,9 @@ namespace Relativity.Sync.Executors
 	{
 		private readonly IRdoGuidConfiguration _rdoGuidConfiguration;
 		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public DestinationWorkspaceTagLinker(IRdoGuidConfiguration rdoGuidConfiguration, ISourceServiceFactoryForUser serviceFactoryForUser, ISyncLog logger)
+		public DestinationWorkspaceTagLinker(IRdoGuidConfiguration rdoGuidConfiguration, ISourceServiceFactoryForUser serviceFactoryForUser, IAPILog logger)
 		{
 			_rdoGuidConfiguration = rdoGuidConfiguration;
 			_serviceFactoryForUser = serviceFactoryForUser;

@@ -5,9 +5,9 @@ using Moq;
 using NUnit.Framework;
 using Relativity.AutomatedWorkflows.SDK;
 using Relativity.AutomatedWorkflows.Services.Interfaces.v1.Models.Triggers;
-using Relativity.Sync.Logging;
-using Relativity.Sync.Executors;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Executors;
+using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {

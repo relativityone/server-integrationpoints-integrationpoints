@@ -1,6 +1,7 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Pipelines;
 
@@ -10,11 +11,11 @@ namespace Relativity.Sync.Executors.Validation
 	{
 		private const string _ERROR_JOB_NAME_EMPTY = "Job name cannot be empty.";
 		private const string _ERROR_JOB_NAME_INVALID = "Job name contains one or more illegal characters (<>:\\\"\\\\\\/|\\?\\* TAB).";
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		private static readonly char[] _allForbiddenCharacters = System.IO.Path.GetInvalidFileNameChars();
 
-		public JobNameValidator(ISyncLog logger)
+		public JobNameValidator(IAPILog logger)
 		{
 			_logger = logger;
 		}

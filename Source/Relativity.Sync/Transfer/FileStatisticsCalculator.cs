@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -20,10 +21,10 @@ namespace Relativity.Sync.Transfer
 		private readonly IImageFileRepository _imageFileRepository;
 		private readonly INativeFileRepository _nativeFileRepository;
 		private readonly IRdoManager _rdoManager;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		public FileStatisticsCalculator(IStatisticsConfiguration configuration, ISourceServiceFactoryForUser serviceFactoryForUser, 
-			IImageFileRepository imageFileRepository, INativeFileRepository nativeFileRepository, IRdoManager rdoManager, ISyncLog logger)
+			IImageFileRepository imageFileRepository, INativeFileRepository nativeFileRepository, IRdoManager rdoManager, IAPILog logger)
 		{
 			_configuration = configuration;
 			_serviceFactoryForUser = serviceFactoryForUser;

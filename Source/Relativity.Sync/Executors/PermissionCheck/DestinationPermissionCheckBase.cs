@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.Permission;
 using Relativity.Sync.Configuration;
@@ -11,9 +12,9 @@ namespace Relativity.Sync.Executors.PermissionCheck
 {
 	internal abstract class DestinationPermissionCheckBase : PermissionCheckBase
 	{
-		protected readonly ISyncLog Logger;
+		protected readonly IAPILog Logger;
 
-		public DestinationPermissionCheckBase(IDestinationServiceFactoryForUser destinationServiceFactory, ISyncLog logger)
+		public DestinationPermissionCheckBase(IDestinationServiceFactoryForUser destinationServiceFactory, IAPILog logger)
 			: base(destinationServiceFactory)
 		{
 			Logger = logger;

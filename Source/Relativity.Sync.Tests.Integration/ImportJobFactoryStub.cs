@@ -1,6 +1,6 @@
-﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Storage;
@@ -12,9 +12,9 @@ namespace Relativity.Sync.Tests.Integration
 		private readonly ISyncImportBulkArtifactJob _importBulkArtifactJob;
 		private readonly ISemaphoreSlim _semaphoreSlim;
 		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public ImportJobFactoryStub(ISyncImportBulkArtifactJob importBulkArtifactJob, ISemaphoreSlim semaphoreSlim, IJobHistoryErrorRepository jobHistoryErrorRepository, ISyncLog logger)
+		public ImportJobFactoryStub(ISyncImportBulkArtifactJob importBulkArtifactJob, ISemaphoreSlim semaphoreSlim, IJobHistoryErrorRepository jobHistoryErrorRepository, IAPILog logger)
 		{
 			_importBulkArtifactJob = importBulkArtifactJob;
 			_semaphoreSlim = semaphoreSlim;

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Castle.DynamicProxy.Internal;
 using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Sync.Telemetry;

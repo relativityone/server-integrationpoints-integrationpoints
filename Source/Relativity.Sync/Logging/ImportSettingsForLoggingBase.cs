@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using kCura.EDDS.WebAPI.BulkImportManagerBase;
 using kCura.Relativity.DataReaderClient;
-using OverlayBehavior = kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior;
 
 namespace Relativity.Sync.Logging
 {

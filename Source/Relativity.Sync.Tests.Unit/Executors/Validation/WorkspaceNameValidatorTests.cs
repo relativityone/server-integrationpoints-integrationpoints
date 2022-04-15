@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Threading;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Sync.Executors.Validation;
 
 namespace Relativity.Sync.Tests.Unit.Executors.Validation
@@ -11,7 +12,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 	{
 		private CancellationToken _cancellationToken;
 
-		private Mock<ISyncLog> _syncLog;
+		private Mock<IAPILog> _syncLog;
 
 		private WorkspaceNameValidator _instance;
 
@@ -20,7 +21,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		{
 			_cancellationToken = CancellationToken.None;
 
-			_syncLog = new Mock<ISyncLog>();
+			_syncLog = new Mock<IAPILog>();
 
 			_instance = new WorkspaceNameValidator(_syncLog.Object);
 		}

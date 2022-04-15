@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Banzai;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Nodes
@@ -8,17 +9,17 @@ namespace Relativity.Sync.Nodes
 	internal abstract class SyncNode<T> : Node<SyncExecutionContext> where T : IConfiguration
 	{
 		private readonly ICommand<T> _command;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		protected string ParallelGroupName { get; set; } = string.Empty;
 
-		protected SyncNode(ICommand<T> command, ISyncLog logger)
+		protected SyncNode(ICommand<T> command, IAPILog logger)
 		{
 			_command = command;
 			_logger = logger;
 		}
 
-		protected SyncNode(ExecutionOptions localOptions, ICommand<T> command, ISyncLog logger) : base(localOptions)
+		protected SyncNode(ExecutionOptions localOptions, ICommand<T> command, IAPILog logger) : base(localOptions)
 		{
 			_command = command;
 			_logger = logger;

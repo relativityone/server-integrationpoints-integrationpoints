@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,6 +10,7 @@ using Moq;
 using Moq.Language.Flow;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Kepler.Transport;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -54,7 +55,7 @@ namespace Relativity.Sync.Tests.Integration
 			builder.RegisterInstance(serviceFactoryForUser.Object).As<ISourceServiceFactoryForUser>();
 			builder.RegisterInstance(serviceFactoryForAdmin.Object).As<ISourceServiceFactoryForAdmin>();
 			IntegrationTestsContainerBuilder.MockReportingWithProgress(builder);
-			builder.RegisterInstance(new EmptyLogger()).As<ISyncLog>();
+			builder.RegisterInstance(new EmptyLogger()).As<IAPILog>();
 
 			var configuration = new ConfigurationStub();
 			builder.RegisterInstance(configuration).AsImplementedInterfaces();

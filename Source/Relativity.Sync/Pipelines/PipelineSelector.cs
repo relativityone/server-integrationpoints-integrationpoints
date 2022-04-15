@@ -1,15 +1,16 @@
-﻿using Relativity.Sync.Configuration;
+using Relativity.API;
+using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Pipelines
 {
 	internal class PipelineSelector : IPipelineSelector
 	{
 		private readonly IPipelineSelectorConfiguration _pipelineSelectorConfiguration;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		private ISyncPipeline _selectedPipeline;
 
-		public PipelineSelector(IPipelineSelectorConfiguration pipelineSelectorConfiguration, ISyncLog logger)
+		public PipelineSelector(IPipelineSelectorConfiguration pipelineSelectorConfiguration, IAPILog logger)
 		{
 			_pipelineSelectorConfiguration = pipelineSelectorConfiguration;
 			_logger = logger;

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.Permission;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
@@ -12,7 +13,7 @@ namespace Relativity.Sync.Executors.PermissionCheck.NonDocumentPermissionChecks
     {
         private string TransferredObjectNoView(int objectTypeArtifactId) => $"User does not have permission to view objects of type {objectTypeArtifactId} in the source workspace.";
         
-        public SourceNonDocumentPermissionCheck(ISyncLog logger, ISourceServiceFactoryForUser serviceFactoryForUser) : base(logger, serviceFactoryForUser)
+        public SourceNonDocumentPermissionCheck(IAPILog logger, ISourceServiceFactoryForUser serviceFactoryForUser) : base(logger, serviceFactoryForUser)
         {
         }
 

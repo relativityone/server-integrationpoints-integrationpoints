@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Services.Interfaces.Workspace;
+using Relativity.Services.Interfaces.Workspace.Models;
 using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
-using Relativity.Services.Interfaces.Workspace;
-using Relativity.Services.Interfaces.Workspace.Models;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {

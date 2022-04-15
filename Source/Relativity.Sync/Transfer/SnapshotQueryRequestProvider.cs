@@ -1,8 +1,8 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.ChoiceQuery;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -19,13 +19,13 @@ namespace Relativity.Sync.Transfer
         private readonly IPipelineSelector _pipelineSelector;
         private readonly IFieldManager _fieldManager;
         private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
-        protected readonly ISyncLog _logger;
+        protected readonly IAPILog _logger;
 
         private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 
         public SnapshotQueryRequestProvider(ISnapshotQueryConfiguration configuration,
             IPipelineSelector pipelineSelector, IFieldManager fieldManager,
-            ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger)
+            ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IAPILog logger)
         {
             _configuration = configuration;
             _pipelineSelector = pipelineSelector;

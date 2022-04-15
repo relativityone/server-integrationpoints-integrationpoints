@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.ServiceProxy;
@@ -28,8 +29,8 @@ namespace Relativity.Sync.Tests.System.Core
 		protected ImportHelper ImportHelper { get; private set; }
 
 		protected User User { get; private set; }
-
-		protected ISyncLog Logger { get; private set; }
+		
+		protected IAPILog Logger { get; private set; }
 
 		[OneTimeSetUp]
 		public async Task SuiteSetup()
@@ -38,7 +39,7 @@ namespace Relativity.Sync.Tests.System.Core
 			User = await Rdos.GetUserAsync(ServiceFactory, 0).ConfigureAwait(false);
 			Environment = new TestEnvironment();
 			ImportHelper = new ImportHelper(ServiceFactory);
-			Logger = TestLogHelper.GetLogger();
+            Logger = TestLogHelper.GetLogger();
 
 			await SetRelativityWebApiCredentialsProviderAsync();
 

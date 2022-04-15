@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -28,10 +29,11 @@ namespace Relativity.Sync.Transfer
 
 		private readonly IList<INativeSpecialFieldBuilder> _nativeSpecialFieldBuilders;
 		private readonly IList<IImageSpecialFieldBuilder> _imageSpecialFieldBuilders;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		public FieldManager(IFieldConfiguration configuration, IObjectFieldTypeRepository objectFieldTypeRepository,
-			IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders, IEnumerable<IImageSpecialFieldBuilder> imageSpecialFieldBuilders, ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger)
+			IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders, IEnumerable<IImageSpecialFieldBuilder> imageSpecialFieldBuilders,
+            ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IAPILog logger)
 		{
 			_configuration = configuration;
 			_objectFieldTypeRepository = objectFieldTypeRepository;
@@ -39,7 +41,7 @@ namespace Relativity.Sync.Transfer
 			_imageSpecialFieldBuilders = imageSpecialFieldBuilders.ToList();
 			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_logger = logger;
-		}
+        }
 
 		public IEnumerable<FieldInfoDto> GetNativeSpecialFields()
 			=> _nativeSpecialFieldBuilders.SelectMany(b => b.BuildColumns());
@@ -137,7 +139,7 @@ namespace Relativity.Sync.Transfer
             return fieldInfos;
         }
 
-		public async Task<IReadOnlyList<FieldInfoDto>> GetMappedFieldsNonDocumentWithoutLinksAsync(
+        public async Task<IReadOnlyList<FieldInfoDto>> GetMappedFieldsNonDocumentWithoutLinksAsync(
 			CancellationToken token)
 		{
 			IList<FieldInfoDto> fieldInfos = await GetMappedFieldsAsync(token).ConfigureAwait(false);
@@ -323,5 +325,5 @@ namespace Relativity.Sync.Transfer
 		{
 			return FieldInfoDto.DocumentField(fieldMap.SourceField.DisplayName, fieldMap.DestinationField.DisplayName, fieldMap.SourceField.IsIdentifier);
 		}
-	}
+    }
 }

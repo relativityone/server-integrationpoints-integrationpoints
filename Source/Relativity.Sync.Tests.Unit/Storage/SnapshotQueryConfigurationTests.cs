@@ -1,8 +1,8 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Utils;
-using System;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {

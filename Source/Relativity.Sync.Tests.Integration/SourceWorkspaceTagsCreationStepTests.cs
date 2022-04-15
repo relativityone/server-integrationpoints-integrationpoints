@@ -1,20 +1,21 @@
-﻿using System;
-using System.Globalization;
-using System.Threading;
+using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using FluentAssertions;
-using NUnit.Framework;
-using Relativity.Sync.Configuration;
-using Relativity.Sync.Executors;
+using System.Globalization;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Autofac;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
+using FluentAssertions;
 using Moq;
+using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.Interfaces.Workspace;
 using Relativity.Services.Interfaces.Workspace.Models;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Configuration;
+using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Common;
@@ -82,7 +83,7 @@ namespace Relativity.Sync.Tests.Integration
 			containerBuilder.RegisterInstance(destinationServiceFactoryMock.Object).As<IDestinationServiceFactoryForUser>();
 			containerBuilder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
 
-			containerBuilder.RegisterInstance(new EmptyLogger()).As<ISyncLog>();
+			containerBuilder.RegisterInstance(new EmptyLogger()).As<IAPILog>();
 
 			IContainer container = containerBuilder.Build();
 			_executor = container.Resolve<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();

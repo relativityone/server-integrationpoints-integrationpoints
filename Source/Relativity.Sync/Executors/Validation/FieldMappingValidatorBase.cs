@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -16,9 +17,9 @@ namespace Relativity.Sync.Executors.Validation
 	{
 		private readonly ISourceServiceFactoryForUser _sourceServiceFactoryForUser;
 		private readonly IDestinationServiceFactoryForUser _destinationServiceFactoryForUser;
-		protected readonly ISyncLog _logger;
+		protected readonly IAPILog _logger;
 
-		protected FieldMappingValidatorBase(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IDestinationServiceFactoryForUser destinationServiceFactoryForUser, ISyncLog logger)
+		protected FieldMappingValidatorBase(ISourceServiceFactoryForUser sourceServiceFactoryForUser, IDestinationServiceFactoryForUser destinationServiceFactoryForUser, IAPILog logger)
 		{
 			_sourceServiceFactoryForUser = sourceServiceFactoryForUser;
 			_destinationServiceFactoryForUser = destinationServiceFactoryForUser;

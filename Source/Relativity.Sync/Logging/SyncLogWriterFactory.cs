@@ -1,13 +1,14 @@
-﻿using System;
+using System;
 using Banzai.Logging;
+using Relativity.API;
 
 namespace Relativity.Sync.Logging
 {
 	internal sealed class SyncLogWriterFactory : ILogWriterFactory
 	{
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public SyncLogWriterFactory(ISyncLog logger)
+		public SyncLogWriterFactory(IAPILog logger)
 		{
 			_logger = logger;
 		}

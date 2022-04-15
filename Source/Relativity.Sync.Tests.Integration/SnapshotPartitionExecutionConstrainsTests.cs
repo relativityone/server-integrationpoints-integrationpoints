@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -22,7 +23,7 @@ namespace Relativity.Sync.Tests.Integration
 	{
 		private CancellationToken _token;
 
-		private Mock<ISyncLog> _syncLog;
+		private Mock<IAPILog> _syncLog;
 		private Mock<IObjectManager> _objectManager;
 		private Mock<ISnapshotPartitionConfiguration> _snapshotPartitionConfiguration;
 		private Mock<IRdoManager> _rdoManagerMock;
@@ -38,14 +39,14 @@ namespace Relativity.Sync.Tests.Integration
 		[SetUp]
 		public void SetUp()
 		{
-			_syncLog = new Mock<ISyncLog>();
+			_syncLog = new Mock<IAPILog>();
 			_objectManager = new Mock<IObjectManager>();
 			_snapshotPartitionConfiguration = new Mock<ISnapshotPartitionConfiguration>(MockBehavior.Loose);
 
 			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
 			IntegrationTestsContainerBuilder.MockStepsExcept<ISnapshotPartitionConfiguration>(containerBuilder);
 
-			containerBuilder.RegisterInstance(_syncLog.Object).As<ISyncLog>();
+			containerBuilder.RegisterInstance(_syncLog.Object).As<IAPILog>();
 
 			var serviceFactoryForAdminMock = new Mock<ISourceServiceFactoryForAdmin>();
 			serviceFactoryForAdminMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);

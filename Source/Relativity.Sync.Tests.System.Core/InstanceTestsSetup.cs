@@ -1,13 +1,14 @@
-﻿using System.Net;
+using System.Net;
 using System.Threading.Tasks;
 using Banzai.Logging;
 using NUnit.Framework;
-using Relativity.Services.ServiceProxy;
+using Relativity.API;
 using Relativity.Services.InstanceSetting;
-using Relativity.Testing.Framework;
-using Relativity.Testing.Framework.Api;
+using Relativity.Services.ServiceProxy;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.System.Core.Helpers;
+using Relativity.Testing.Framework;
+using Relativity.Testing.Framework.Api;
 
 namespace Relativity.Sync.Tests.System.Core
 {
@@ -17,7 +18,7 @@ namespace Relativity.Sync.Tests.System.Core
 	[SetUpFixture]
 	public class InstanceTestsSetup
 	{
-		protected ISyncLog Logger { get; }
+		protected IAPILog Logger { get; }
 
 		public InstanceTestsSetup()
 		{
@@ -48,7 +49,7 @@ namespace Relativity.Sync.Tests.System.Core
 		private void OverrideBanzaiLogger()
 		{
 			Logger.LogInformation("Overriding Banzai logger");
-			LogWriter.SetFactory(new SyncLogWriterFactory(AppSettings.UseLogger ? (ISyncLog)new ConsoleLogger() : new EmptyLogger()));
+			LogWriter.SetFactory(new SyncLogWriterFactory(AppSettings.UseLogger ? (IAPILog)new ConsoleLogger() : new EmptyLogger()));
 		}
 
 		private async Task ConfigureRequiredInstanceSettingsAsync()

@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
+using Relativity.API;
 using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Interfaces.ObjectType.Models;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 
@@ -16,9 +17,9 @@ namespace Relativity.Sync.ExecutionConstrains
 		private const string _AUTOMATED_WORKFLOWS_APPLICATION_NAME = "Automated Workflows";
 
 		private readonly IDestinationServiceFactoryForAdmin _serviceFactory;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public AutomatedWorkflowExecutorConstrains(IDestinationServiceFactoryForAdmin serviceFactory, ISyncLog logger)
+		public AutomatedWorkflowExecutorConstrains(IDestinationServiceFactoryForAdmin serviceFactory, IAPILog logger)
 		{
 			_serviceFactory = serviceFactory;
 			_logger = logger;

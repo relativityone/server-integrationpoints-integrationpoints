@@ -1,11 +1,12 @@
-﻿using System;
+using System;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Storage
 {
 	internal class ObjectLinkingSnapshotPartitionConfiguration : SnapshotPartitionConfiguration, IObjectLinkingSnapshotPartitionConfiguration
 	{
-		public ObjectLinkingSnapshotPartitionConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, IInstanceSettings instanceSettings, ISyncLog syncLog)
+		public ObjectLinkingSnapshotPartitionConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, IInstanceSettings instanceSettings, IAPILog syncLog)
 			: base(cache, syncJobParameters, instanceSettings, syncLog)
 		{
 		}

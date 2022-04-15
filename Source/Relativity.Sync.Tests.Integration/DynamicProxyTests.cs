@@ -31,7 +31,7 @@ namespace Relativity.Sync.Tests.Integration
 			var serviceFactory = new Mock<IServiceFactory>();
 			var dynamicProxyFactory = new Mock<IDynamicProxyFactory>();
 			Mock<IRandom> randomFake = new Mock<IRandom>();
-            Mock<ISyncLog> syncLogMock = new Mock<ISyncLog>();
+            Mock<IAPILog> syncLogMock = new Mock<IAPILog>();
 
 			containerBuilder.RegisterInstance(servicesMgr.Object).As<ISyncServiceManager>();
 			containerBuilder.Register(k => new ServiceFactoryForUser(serviceFactory.Object, dynamicProxyFactory.Object,

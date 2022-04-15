@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.Search;
 using Relativity.Sync.Configuration;
@@ -45,7 +45,7 @@ namespace Relativity.Sync.Tests.Integration
 			containerBuilder.RegisterInstance(serviceFactoryMock.Object).As<IDestinationServiceFactoryForUser>();
 			containerBuilder.RegisterType<DestinationWorkspaceSavedSearchCreationExecutor>().As<IExecutor<IDestinationWorkspaceSavedSearchCreationConfiguration>>();
 
-			containerBuilder.RegisterInstance(new EmptyLogger()).As<ISyncLog>();
+			containerBuilder.RegisterInstance(new EmptyLogger()).As<IAPILog>();
 
 			IContainer container = containerBuilder.Build();
 			_executor = container.Resolve<IExecutor<IDestinationWorkspaceSavedSearchCreationConfiguration>>();

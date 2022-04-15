@@ -2,8 +2,8 @@
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using NUnit.Framework;
 using System.Text;
+using NUnit.Framework;
 
 namespace Relativity.Sync.Tests.System.Core
 {

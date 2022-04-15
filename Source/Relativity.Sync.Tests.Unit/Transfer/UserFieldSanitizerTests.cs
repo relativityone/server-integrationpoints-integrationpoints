@@ -1,18 +1,19 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Runtime.Caching;
 using System.Threading.Tasks;
-using Relativity.Sync.Transfer;
-using Relativity.Sync.Tests.Common;
-using Relativity.Sync.KeplerFactory;
-using Relativity.Services.Interfaces.UserInfo;
-using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.Interfaces.UserInfo.Models;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using FluentAssertions;
+using Relativity.API;
+using Relativity.Services.Interfaces.UserInfo;
+using Relativity.Services.Interfaces.UserInfo.Models;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.DbContext;
+using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Toggles;
+using Relativity.Sync.Transfer;
 using Relativity.Sync.Utils;
 using Relativity.Toggles;
 
@@ -40,7 +41,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			serviceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IUserInfoManager>())
 				.ReturnsAsync(_userInfoManagerMock.Object);
 
-			Mock<ISyncLog> syncLog = new Mock<ISyncLog>();
+			Mock<IAPILog> syncLog = new Mock<IAPILog>();
 
 			_memoryCacheStub = new Mock<IMemoryCache>();
 

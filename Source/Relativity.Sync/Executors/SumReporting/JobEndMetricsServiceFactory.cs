@@ -1,4 +1,5 @@
-﻿using Relativity.Sync.Configuration;
+using Relativity.API;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Pipelines.Extensions;
 using Relativity.Sync.Storage;
@@ -17,11 +18,11 @@ namespace Relativity.Sync.Executors.SumReporting
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
 		private readonly ISyncMetrics _syncMetrics;
 
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		public JobEndMetricsServiceFactory(IPipelineSelector pipelineSelector, IBatchRepository batchRepository,
 			IJobEndMetricsConfiguration configuration, IFieldManager fieldManager,
-			IJobStatisticsContainer jobStatisticsContainer, ISyncMetrics syncMetrics, ISyncLog logger)
+			IJobStatisticsContainer jobStatisticsContainer, ISyncMetrics syncMetrics, IAPILog logger)
 		{
 			_pipelineSelector = pipelineSelector;
 
