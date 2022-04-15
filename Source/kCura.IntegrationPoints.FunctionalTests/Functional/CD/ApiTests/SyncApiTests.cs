@@ -27,7 +27,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CD.ApiTests
             _implementation.OneTimeTeardown();
         }
 
-        [Test]
+        [IdentifiedTest("ACB959DF-6C5A-42A3-AFBC-3E180B500B72")]
         [TestExecutionCategory.RAPCD.Verification.Functional]
         public async Task JobRunTest()
         {
