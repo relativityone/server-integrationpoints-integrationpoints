@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.Core;
 using Moq;
 using NUnit.Framework;
+using Relativity;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -154,7 +155,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 
             // Assert
             _documentSyncConfigurationBuilderMock.Verify(x => x.OverwriteMode(It.Is<OverwriteOptions>(
-               o => o.OverwriteMode == expectedOverwriteSetting)));          
+               o => o.OverwriteMode == expectedOverwriteSetting)));
         }
 
         [Test]
@@ -192,8 +193,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             IExtendedJob job = SetupExtendedJob();
             switch (importOverwriteMode)
             {
-                case ImportOverwriteModeEnum.AppendOnly: 
-                    SetupJobHistory(job, OverwriteModeNames.AppendOnlyModeName); 
+                case ImportOverwriteModeEnum.AppendOnly:
+                    SetupJobHistory(job, OverwriteModeNames.AppendOnlyModeName);
                     break;
                 case ImportOverwriteModeEnum.AppendOverlay:
                     SetupJobHistory(job, OverwriteModeNames.AppendOverlayModeName);
@@ -407,6 +408,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
         {
             ImportSettings settings = new ImportSettings
             {
+                ArtifactTypeId = (int)ArtifactType.Document,
+                DestinationArtifactTypeId = (int)ArtifactType.Document,
                 DestinationFolderArtifactId = _DESTINATION_FOLDER_ARTIFACT_ID,
                 ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles,
                 ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
@@ -424,6 +427,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
         {
             ImportSettings settings = new ImportSettings
             {
+                ArtifactTypeId = (int)ArtifactType.Document,
+                DestinationArtifactTypeId = (int)ArtifactType.Document,
                 DestinationFolderArtifactId = _DESTINATION_FOLDER_ARTIFACT_ID,
                 ImportNativeFileCopyMode = importFileCopyMode,
                 ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
@@ -441,10 +446,10 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
         {
             ImportSettings settings = new ImportSettings
             {
+                ArtifactTypeId = _SOURCE_ARTIFACT_TYPE_ID,
+                DestinationArtifactTypeId = _DESTINATION_ARTIFACT_TYPE_ID,
                 ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
                 FieldOverlayBehavior = "Use Field Settings",
-                ArtifactTypeId = _SOURCE_ARTIFACT_TYPE_ID,
-                DestinationArtifactTypeId = _DESTINATION_ARTIFACT_TYPE_ID
             };
 
             return new ExtendedImportSettings(settings);
@@ -501,7 +506,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             _jobHistoryServiceFake.Setup(x => x.GetRdo(It.IsAny<Guid>()))
                 .Returns(new Data.JobHistory
                 {
-                    JobType = isRetry ? JobTypeChoices.JobHistoryRetryErrors : JobTypeChoices.JobHistoryRun                    
+                    JobType = isRetry ? JobTypeChoices.JobHistoryRetryErrors : JobTypeChoices.JobHistoryRun
                 });
 
             Job job = new JobBuilder()
@@ -524,7 +529,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             _jobHistoryServiceFake
                 .Setup(x => x.GetJobHistory(It.Is<IList<int>>(l => l.Contains(job.JobHistoryId))))
                 .Returns(new List<JobHistory> { jobHistory });
-        } 
+        }
 
         private ISyncOperationsWrapper SetupSyncOperations()
         {

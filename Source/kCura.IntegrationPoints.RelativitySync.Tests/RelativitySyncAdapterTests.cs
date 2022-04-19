@@ -140,7 +140,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 		{
 			Mock<ISyncJobFactory> syncJobFactory = new Mock<ISyncJobFactory>();
 			syncJobFactory.Setup(x => x.Create(It.IsAny<IContainer>(), It.IsAny<SyncJobParameters>(),
-					It.IsAny<IRelativityServices>(), It.IsAny<ISyncLog>()))
+					It.IsAny<IRelativityServices>(), It.IsAny<IAPILog>()))
 				.Returns(_syncJobFake.Object);
 
 			Mock<ISyncOperationsWrapper> syncOperationsWrapper = new Mock<ISyncOperationsWrapper>();

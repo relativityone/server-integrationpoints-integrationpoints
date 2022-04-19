@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		}
 
 		[Test]
-		public void TestExportValidatorDoesNotGetCalled()
+		public void TestExportValidatorGetsCalled()
 		{
 			//arrange
 			var validator = Substitute.For<IPermissionValidator>();
@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			permissionValidator.Validate(_model, _sourceProvider, _destinationProvider, _integrationPointType, _objectTypeGuid, _userId);
 
 			//assert
-			validator.DidNotReceive().Validate(Arg.Any<object>());
+			validator.Received().Validate(Arg.Any<object>());
 		}
 
 		[Test]

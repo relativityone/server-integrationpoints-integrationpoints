@@ -221,7 +221,6 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 			ISyncJobFactory jobFactory = _syncOperations.CreateSyncJobFactory();
 			IRelativityServices relativityServices = _syncOperations.CreateRelativityServices();
-			ISyncLog syncLog = _syncOperations.CreateSyncLog();
 
 			SyncJobParameters parameters = new SyncJobParameters(
 				syncConfigurationArtifactId, _job.WorkspaceId, _job.JobIdentifier)
@@ -229,14 +228,14 @@ namespace kCura.IntegrationPoints.RelativitySync
 				TriggerValue = "rip"
 			};
 
-			return jobFactory.Create(container, parameters, relativityServices, syncLog);
+			return jobFactory.Create(container, parameters, relativityServices, _logger);
 		}
 
 		private async Task<int> PrepareSyncConfigurationAsync()
 		{
 			try
 			{
-				var syncConfigurationId = await _syncConfigurationService.TryGetResumedSyncConfigurationIdAsync(
+				int? syncConfigurationId = await _syncConfigurationService.TryGetResumedSyncConfigurationIdAsync(
 					_job.WorkspaceId, _job.JobHistoryId).ConfigureAwait(false);
 
 				if (syncConfigurationId.HasValue)

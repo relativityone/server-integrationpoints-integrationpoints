@@ -11,9 +11,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		Task PrepareSyncConfigurationForResumeAsync(int workspaceId, int syncConfigurationId);
 
 		IRelativityServices CreateRelativityServices();
-
-		ISyncLog CreateSyncLog();
-
+		
 		ISyncConfigurationBuilder GetSyncConfigurationBuilder(ISyncContext context);
 	}
 }
