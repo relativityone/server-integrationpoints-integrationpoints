@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using kCura.Relativity.ImportAPI;
+using Relativity.API;
 using Relativity.DataExchange;
 using Relativity.Sync.Authentication;
 using Relativity.Sync.Transfer;
@@ -19,7 +20,7 @@ namespace Relativity.Sync.Executors
 		private readonly INonAdminCanSyncUsingLinks _nonAdminCanSyncUsingLinks;
 		private readonly IUserService _userService;
 		private readonly IExtendedImportAPI _extendedImportApi;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 		private const int _ADMIN_USER_ID = 777;
 
 #pragma warning disable RG0001 
@@ -41,7 +42,7 @@ namespace Relativity.Sync.Executors
 		}
 #pragma warning restore RG0001
 
-		public ImportApiFactory(IUserContextConfiguration userContextConfiguration, IAuthTokenGenerator tokenGenerator, INonAdminCanSyncUsingLinks nonAdminCanSyncUsingLinks, IUserService userService, IExtendedImportAPI extendedImportApi, ISyncLog logger)
+		public ImportApiFactory(IUserContextConfiguration userContextConfiguration, IAuthTokenGenerator tokenGenerator, INonAdminCanSyncUsingLinks nonAdminCanSyncUsingLinks, IUserService userService, IExtendedImportAPI extendedImportApi, IAPILog logger)
 		{
 			_userContextConfiguration = userContextConfiguration;
 			_tokenGenerator = tokenGenerator;

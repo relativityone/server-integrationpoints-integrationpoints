@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.Interfaces.Group;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -15,9 +16,9 @@ namespace Relativity.Sync.Executors
 	internal class UserService : IUserService
 	{
 		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 		
-		internal UserService(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger)
+		internal UserService(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IAPILog logger)
 		{
 			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_logger = logger;

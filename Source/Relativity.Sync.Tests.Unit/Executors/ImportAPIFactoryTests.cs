@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using FluentAssertions;
-using kCura.Relativity.ImportAPI;
-using kCura.WinEDDS.Exceptions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Sync.Authentication;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
@@ -22,7 +19,7 @@ namespace Relativity.Sync.Tests.Unit
 		private Mock<IAuthTokenGenerator> _tokenGeneratorFake;
 		private Mock<INonAdminCanSyncUsingLinks> _nonAdminCanSyncUsingLinksFake;
 		private Mock<IUserService> _userServiceFake;
-		private Mock<ISyncLog> _syncLogMock;
+		private Mock<IAPILog> _syncLogMock;
 		private Mock<IExtendedImportAPI> _extendedImportAPIFake;
 		private const int _GLOBAL_ADMIN_USER_ID = 777;
 		private const int _USER_IS_ADMIN_ID = 666;
@@ -38,7 +35,7 @@ namespace Relativity.Sync.Tests.Unit
 			_tokenGeneratorFake = new Mock<IAuthTokenGenerator>();
 			_nonAdminCanSyncUsingLinksFake = new Mock<INonAdminCanSyncUsingLinks>();
 			_extendedImportAPIFake = new Mock<IExtendedImportAPI>();
-			_syncLogMock = new Mock<ISyncLog>();
+			_syncLogMock = new Mock<IAPILog>();
 
 			_sut = new ImportApiFactory(
 				_userContextConfigurationFake.Object,
