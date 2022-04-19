@@ -10,7 +10,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CD.ApiTests
     {
         private readonly SyncApiTestsImplementation _implementation;
 
-        public SyncApiTests() : base(nameof(SyncApiTests))
+        public SyncApiTests() : base(nameof(SyncTests))
         {
             _implementation = new SyncApiTestsImplementation(this);
         }
