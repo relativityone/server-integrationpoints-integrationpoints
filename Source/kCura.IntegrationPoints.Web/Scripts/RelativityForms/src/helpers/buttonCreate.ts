@@ -53,30 +53,93 @@ export function createStopButton(consoleApi, convenienceApi: IConvenienceApi, ct
     });
 }
 
-export function createRetryErrorsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number) {
+export function createRetryErrorsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number, overwriteOption: string) {
+
     return consoleApi.generate.button({
         innerText: "Retry Errors",
         disabled: !enabled,
         onclick: function () {
             function generateRunMessage() {
-                return "Are you sure you want to run this job now?";
+
+                var selectedMessage = "";
+
+                if (overwriteOption === "Append Only") {
+                    selectedMessage = "Select mode for the retry job. Warning: in Append/Overlay mode document metadata with the same identifier will be overwritten in the target workspace.";
+                } else if (overwriteOption === "Overlay Only") {
+                    selectedMessage = "The retry job will run in Overlay mode. Document metadata with the same identifier will be overwritten in the target workspace. Would you still like to proceed?";
+                } else {
+                    selectedMessage = "The retry job will run in Append/Overlay mode. Document metadata with the same identifier will be overwritten in the target workspace. Would you still like to proceed?";
+                }
+                return selectedMessage;
             }
 
-            return convenienceApi.modalService.confirm({
-                title: "Retry Errors",
-                message: generateRunMessage(),
-                acceptText: "Ok",
-                cancelText: "Cancel",
-                acceptAction: function () {
-                    return postJobAPIRequest(convenienceApi, workspaceId, integrationPointId, "Retry")
-                        .then(function (result) {
-                            if (!result.ok) {
-                                console.log(result);
-                                return ctx.setErrorSummary(["Failed to submit retry job. Check Errors tab for details."]);
+            let switchToAppendOverlayMode = false;
+
+            if (overwriteOption === "Append Only") {
+
+                var contentContainer = document.createElement("div");
+                contentContainer.innerHTML = `<span slot="content" id="modal-description">${generateRunMessage()}</span>`;
+
+
+                var model = {
+                    title: "Retry Errors",
+                    theme: "confirmation",
+                    contentElement: contentContainer,
+                    actions: [
+                        {
+                            text: "Switch to Append/Overlay",
+                            click: function click() {
+                                switchToAppendOverlayMode = true;
+                                // @ts-ignore
+                                model.accept("Accept payload");
                             }
-                        });
-                }
-            });
+                        },
+                        {
+                            text: "Use " + overwriteOption + " mode again",
+                            click: function click() {
+                                // @ts-ignore
+                                model.accept("Accept payload");
+                            }
+                        },
+                        {
+                            text: "Cancel",
+                            click: function click() {
+                                // @ts-ignore
+                                model.cancel("Cancel payload");
+                            }
+                        }
+                    ],
+                    acceptAction: function () {
+                        let action = 'Retry?switchToAppendOverlayMode=' + switchToAppendOverlayMode;
+                        return postJobAPIRequest(convenienceApi, workspaceId, integrationPointId, action)
+                            .then(function (result) {
+                                if (!result.ok) {
+                                    console.log(result);
+                                    return ctx.setErrorSummary(["Failed to submit retry job. Check Errors tab for details."]);
+                                }
+                            });
+                    }
+                };
+
+                return convenienceApi.modalService.openCustomModal(model);
+
+            } else {
+                return convenienceApi.modalService.confirm({
+                    title: "Retry Errors",
+                    message: generateRunMessage(),
+                    acceptText: "Ok",
+                    cancelText: "Cancel",
+                    acceptAction: function () {
+                        return postJobAPIRequest(convenienceApi, workspaceId, integrationPointId, "Retry?switchToAppendOverlayMode=false")
+                            .then(function (result) {
+                                if (!result.ok) {
+                                    console.log(result);
+                                    return ctx.setErrorSummary(["Failed to submit retry job. Check Errors tab for details."]);
+                                }
+                            });
+                    }
+                });
+            }
         }
     });
 }

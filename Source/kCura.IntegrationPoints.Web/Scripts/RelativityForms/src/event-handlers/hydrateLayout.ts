@@ -70,10 +70,10 @@ export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sou
     convenienceApi.fieldHelper.setValue("Import Nested Items", formatToYesOrNo(sourceConfiguration["importNested"]));
 
     // import from FTP
-    convenienceApi.fieldHelper.setValue("Host", sourceConfiguration["Host"]);
-    convenienceApi.fieldHelper.setValue("Port", sourceConfiguration["Port"]);
-    convenienceApi.fieldHelper.setValue("Protocol", sourceConfiguration["Protocol"]);
-    convenienceApi.fieldHelper.setValue("Filename Prefix", sourceConfiguration["FileNamePrefix"]);
+    convenienceApi.fieldHelper.setValue("Host", sourceConfiguration["host"]);
+    convenienceApi.fieldHelper.setValue("Port", sourceConfiguration["port"]);
+    convenienceApi.fieldHelper.setValue("Protocol", sourceConfiguration["protocol"]);
+    convenienceApi.fieldHelper.setValue("Filename Prefix", sourceConfiguration["filename_prefix"]);
     convenienceApi.fieldHelper.setValue("Timezone Offset", sourceConfiguration["TimezoneOffset"]);
 
     if (destinationConfiguration["artifactTypeID"] == 10) {
@@ -101,3 +101,4 @@ export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sou
 function importImageFiles(destinationConfiguration: Object) {
     return (destinationConfiguration["ImageImport"] == 'true' && (!destinationConfiguration["ImagePrecedence"] || destinationConfiguration["ImagePrecedence"].length == 0));
 }
+
