@@ -13,6 +13,7 @@ namespace kCura.IntegrationPoints.Core
 			public const string NO_PERMISSION_TO_EDIT_DOCUMENTS = "User does not have permission to edit documents in this workspace.";
 			public const string NO_PERMISSION_TO_EDIT_INTEGRATIONPOINT = "User does not have permission to edit the integration point.";
 			public const string NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE = "User does not have permission to import in this workspace.";
+			public const string NO_PERMISSION_TO_EXPORT_CURRENTWORKSPACE = "User does not have permission to export in this workspace.";
 			public const string NO_SOURCE_PROVIDER_SPECIFIED = "A source provider was not specified for the integration point. Please create a new integration point.";
 			public const string NO_DESTINATION_PROVIDER_SPECIFIED = "A destination provider was not specified for the integration point. Please create a new integration point.";
 			public const string NO_INTEGRATION_POINT_TYPE_SPECIFIED = "Integration point type was not specified. Please create a new integration point.";
