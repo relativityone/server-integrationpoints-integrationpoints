@@ -3,7 +3,7 @@ using Relativity.DataExchange;
 
 namespace Relativity.Sync.Executors
 {
-	public interface IExtendedImportAPI
+	internal interface IExtendedImportAPI
 	{
 		ImportAPI CreateByTokenProvider(string webServiceUrl, IRelativityTokenProvider relativityTokenProvider);
 	}
