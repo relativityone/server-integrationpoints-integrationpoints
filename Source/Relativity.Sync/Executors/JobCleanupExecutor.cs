@@ -1,6 +1,6 @@
-﻿using System;
-using System.Threading;
+using System;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 
@@ -9,9 +9,9 @@ namespace Relativity.Sync.Executors
 	internal sealed class JobCleanupExecutor : IExecutor<IJobCleanupConfiguration>
 	{
 		private readonly IBatchRepository _batchRepository;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public JobCleanupExecutor(IBatchRepository batchRepository, ISyncLog logger)
+		public JobCleanupExecutor(IBatchRepository batchRepository, IAPILog logger)
 		{
 			_batchRepository = batchRepository;
 			_logger = logger;

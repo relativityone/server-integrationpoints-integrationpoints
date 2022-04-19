@@ -1,9 +1,10 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using kCura.WinEDDS.Service.Export;
+using Relativity.API;
 
 namespace Relativity.Sync.Transfer
 {
@@ -20,9 +21,9 @@ namespace Relativity.Sync.Transfer
 		private const string _SIZE_COLUMN_NAME = "Size";
 
 		private readonly ISearchManagerFactory _searchManagerFactory;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public ImageFileRepositoryWebAPI(ISearchManagerFactory searchManagerFactory, ISyncLog logger)
+		public ImageFileRepositoryWebAPI(ISearchManagerFactory searchManagerFactory, IAPILog logger)
 		{
 			_searchManagerFactory = searchManagerFactory;
 			_logger = logger;

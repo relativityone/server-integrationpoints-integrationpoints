@@ -1,6 +1,6 @@
 ﻿using System;
-using Relativity.Services.Objects.DataContracts;
 using System.Collections.Generic;
+using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.Sync.Transfer
 {

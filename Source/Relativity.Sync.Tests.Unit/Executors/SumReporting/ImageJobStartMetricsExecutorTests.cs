@@ -1,7 +1,8 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.SumReporting;
@@ -34,7 +35,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 
 			_jobStatisticsContainer = new JobStatisticsContainer();
 
-			Mock<ISyncLog> syncLog = new Mock<ISyncLog>();
+			Mock<IAPILog> syncLog = new Mock<IAPILog>();
 			Mock<ISnapshotQueryRequestProvider> queryRequestProvider = new Mock<ISnapshotQueryRequestProvider>();
 
 			_sut = new ImageJobStartMetricsExecutor(

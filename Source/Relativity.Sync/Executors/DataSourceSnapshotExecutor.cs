@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -15,10 +16,10 @@ namespace Relativity.Sync.Executors
 		private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
 		private readonly ISnapshotQueryRequestProvider _snapshotQueryRequestProvider;
 
-		protected readonly ISyncLog Logger;
+		protected readonly IAPILog Logger;
 
 		public DataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactoryForUser, 
-			IJobProgressUpdaterFactory jobProgressUpdaterFactory, ISyncLog logger, 
+			IJobProgressUpdaterFactory jobProgressUpdaterFactory, IAPILog logger, 
 			ISnapshotQueryRequestProvider snapshotQueryRequestProvider)
 		{
 			_serviceFactoryForUser = serviceFactoryForUser;

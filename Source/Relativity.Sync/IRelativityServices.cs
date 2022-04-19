@@ -1,6 +1,6 @@
-﻿using Relativity.Telemetry.APM;
-using System;
+﻿using System;
 using Relativity.API;
+using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync
 {

@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Data;
+using System.Linq.Expressions;
+using Relativity.API;
 using Relativity.Sync.SyncConfiguration.Options;
 using Relativity.Sync.Utils;
-using System.Linq.Expressions;
 
 namespace Relativity.Sync.SyncConfiguration
 {
@@ -11,7 +12,7 @@ namespace Relativity.Sync.SyncConfiguration
     {
         private readonly ISyncContext _syncContext;
         private readonly ISyncServiceManager _servicesMgr;
-        private readonly ISyncLog _logger;
+        private readonly IAPILog _logger;
         private readonly ISerializer _serializer;
 
         /// <summary>
@@ -20,7 +21,7 @@ namespace Relativity.Sync.SyncConfiguration
         /// <param name="syncContext">Sync configuration context.</param>
         /// <param name="servicesMgr">Sync Service Manager</param>
         /// <param name="logger">logs data for debug purposes</param>
-        public SyncConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr, ISyncLog logger)
+        public SyncConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr, IAPILog logger)
         {
             _syncContext = syncContext;
             _servicesMgr = servicesMgr;

@@ -1,18 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Relativity.Sync.Utils;
+using FluentAssertions;
 using NUnit.Framework;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
+using Relativity.Sync.Utils;
 using Relativity.Testing.Identification;
-using FluentAssertions;
-using System;
-using Relativity.Sync.Executors.Validation;
 
 namespace Relativity.Sync.Tests.System
 {

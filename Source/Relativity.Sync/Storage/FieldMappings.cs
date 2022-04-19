@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using Relativity.Sync.RDOs;
+using Relativity.API;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Storage
@@ -11,9 +11,9 @@ namespace Relativity.Sync.Storage
 
 		private readonly IConfiguration _configuration;
 		private readonly ISerializer _serializer;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public FieldMappings(IConfiguration configuration, ISerializer serializer, ISyncLog logger)
+		public FieldMappings(IConfiguration configuration, ISerializer serializer, IAPILog logger)
 		{
 			_configuration = configuration;
 			_serializer = serializer;

@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Storage;
 
 namespace Relativity.Sync
 {
@@ -15,9 +14,9 @@ namespace Relativity.Sync
 		private readonly int _jobHistoryArtifactId;
 		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 		private readonly IRdoGuidConfiguration _rdoGuidConfiguration;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public JobProgressUpdater(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IRdoGuidConfiguration rdoGuidConfiguration, int workspaceArtifactId, int jobHistoryArtifactId, ISyncLog logger)
+		public JobProgressUpdater(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IRdoGuidConfiguration rdoGuidConfiguration, int workspaceArtifactId, int jobHistoryArtifactId, IAPILog logger)
 		{
 			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_rdoGuidConfiguration = rdoGuidConfiguration;

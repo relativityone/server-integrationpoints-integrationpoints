@@ -1,9 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.AutomatedWorkflows.SDK;
-using Relativity.Sync.Configuration;
 using Relativity.AutomatedWorkflows.Services.Interfaces.v1.Models.Triggers;
+using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Executors
 {
@@ -11,10 +12,10 @@ namespace Relativity.Sync.Executors
 	{
 		private const string _ERROR_MESSAGE = "Error occured while executing Automated Workflows trigger: {0} for workspace artifact ID : {1}";
 		
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 		private readonly IAutomatedWorkflowsManager _automatedWorkflowsManager;
 
-		public AutomatedWorkflowExecutor(ISyncLog logger, IAutomatedWorkflowsManager automatedWorkflowsManager)
+		public AutomatedWorkflowExecutor(IAPILog logger, IAutomatedWorkflowsManager automatedWorkflowsManager)
 		{
 			_logger = logger;
 			_automatedWorkflowsManager = automatedWorkflowsManager;

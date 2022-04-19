@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Storage
@@ -7,11 +8,11 @@ namespace Relativity.Sync.Storage
 	internal class SnapshotPartitionConfiguration : ISnapshotPartitionConfiguration
 	{
 		private readonly IInstanceSettings _instanceSettings;
-		private readonly ISyncLog _syncLog;
+		private readonly IAPILog _syncLog;
 
 		protected readonly IConfiguration Cache;
 
-        public SnapshotPartitionConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, IInstanceSettings instanceSettings, ISyncLog syncLog)
+        public SnapshotPartitionConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters, IInstanceSettings instanceSettings, IAPILog syncLog)
 		{
 			Cache = cache;
             _instanceSettings = instanceSettings;

@@ -4,12 +4,12 @@ using Autofac;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Services.Interfaces.Workspace;
+using Relativity.Services.Interfaces.Workspace.Models;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Integration.Helpers;
-using Relativity.Services.Interfaces.Workspace;
-using Relativity.Services.Interfaces.Workspace.Models;
 
 namespace Relativity.Sync.Tests.Integration
 {

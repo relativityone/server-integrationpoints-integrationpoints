@@ -1,18 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.Interfaces.ObjectType;
-using Relativity.Services.Interfaces.ObjectType.Models;
-using Relativity.Sync.Logging;
-using Relativity.Sync.Configuration;
-using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.ExecutionConstrains;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using FluentAssertions;
+using Relativity.Services.Interfaces.ObjectType;
+using Relativity.Services.Interfaces.ObjectType.Models;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Configuration;
+using Relativity.Sync.ExecutionConstrains;
+using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 {

@@ -1,7 +1,6 @@
 using System;
 using FluentAssertions;
 using NUnit.Framework;
-using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync.Tests.Unit
 {

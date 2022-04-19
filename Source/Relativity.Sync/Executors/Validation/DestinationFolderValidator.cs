@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.DataContracts.DTOs.Folder;
 using Relativity.Services.Folder;
 using Relativity.Sync.Configuration;
@@ -15,9 +16,9 @@ namespace Relativity.Sync.Executors.Validation
 	{
 		private const string _ARTIFACT_NOT_EXIST_MESSAGE = "Destination folder does not exist. Folder artifact ID: {0}";
 		private readonly IDestinationServiceFactoryForUser _destinationServiceFactoryForUser;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public DestinationFolderValidator(IDestinationServiceFactoryForUser destinationServiceFactoryForUser, ISyncLog logger)
+		public DestinationFolderValidator(IDestinationServiceFactoryForUser destinationServiceFactoryForUser, IAPILog logger)
 		{
 			_destinationServiceFactoryForUser = destinationServiceFactoryForUser;
 			_logger = logger;

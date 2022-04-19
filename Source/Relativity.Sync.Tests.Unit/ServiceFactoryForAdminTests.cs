@@ -25,7 +25,7 @@ namespace Relativity.Sync.Tests.Unit
 			_proxyFactory = new Mock<IDynamicProxyFactory>();
 
             Mock<IRandom> randomFake = new Mock<IRandom>();
-            Mock<ISyncLog> syncLogMock = new Mock<ISyncLog>();
+            Mock<IAPILog> syncLogMock = new Mock<IAPILog>();
 
 
 			_instance = new ServiceFactoryForAdmin(_servicesMgr.Object, _proxyFactory.Object,

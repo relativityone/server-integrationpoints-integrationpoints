@@ -1,15 +1,16 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.Interfaces.Group;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Relativity.Sync.Executors;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Tests.Common.Attributes;
 using Relativity.Sync.Transfer;
@@ -86,6 +87,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			result.Messages.Should().NotBeEmpty();
 		}
 
+		[Test]
 		[TestCase(_USER_IS_ADMIN_ID)]
 		[TestCase(_USER_IS_NON_ADMIN_ID)]
 		public async Task ValidateAsync_ShouldSkipValidationIndependentOfUser_WhenResponsibleInstanceSettingIsFalse(int userId)

@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Diagnostics.CodeAnalysis;
-using Relativity.DataExchange;
-using Relativity.Sync.Configuration;
-using Relativity.Sync.Authentication;
+using System.Threading.Tasks;
 using kCura.Relativity.ImportAPI;
+using Relativity.DataExchange;
+using Relativity.Sync.Authentication;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Executors
 {

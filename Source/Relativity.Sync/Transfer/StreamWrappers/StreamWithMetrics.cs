@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.IO;
+using Relativity.API;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Utils;
 
@@ -11,13 +12,13 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 		private readonly IStopwatch _readTimeStopwatch;
 		private readonly int _documentArtifactID;
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		private bool _disposed;
 		private int _readInvocationCount = 0;
 		private long _totalBytesRead = 0;
 		
-		internal StreamWithMetrics(Stream wrappedStream, IStopwatch readTimeStopwatch, int documentArtifactId, IJobStatisticsContainer jobStatisticsContainer, ISyncLog logger)
+		internal StreamWithMetrics(Stream wrappedStream, IStopwatch readTimeStopwatch, int documentArtifactId, IJobStatisticsContainer jobStatisticsContainer, IAPILog logger)
 		{
 			_wrappedStream = wrappedStream;
 			_readTimeStopwatch = readTimeStopwatch;

@@ -17,4 +17,3 @@
 // this is needed for system tests to access nodes properties
 [assembly: InternalsVisibleTo("Banzai.Autofac")]
 [assembly: InternalsVisibleTo("Banzai")]
-

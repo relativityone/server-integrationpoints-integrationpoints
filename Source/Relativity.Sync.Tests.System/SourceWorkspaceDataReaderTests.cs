@@ -10,6 +10,7 @@ using Autofac;
 using Castle.Core.Internal;
 using FluentAssertions;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
@@ -100,12 +101,8 @@ namespace Relativity.Sync.Tests.System
 
 			// Import documents
 			var importHelper = new ImportHelper(ServiceFactory);
-			ImportDataTableWrapper dataTableWrapper =
-				DataTableFactory.CreateImportDataTable(dataset, extractedText: true, natives: true);
-			ImportJobErrors importJobErrors = await importHelper
-				.ImportDataAsync(sourceWorkspaceArtifactId, dataTableWrapper).ConfigureAwait(false);
-			Assert.IsTrue(importJobErrors.Success,
-				$"IAPI errors: {string.Join(global::System.Environment.NewLine, importJobErrors.Errors)}");
+			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImportDataTable(dataset, extractedText: true, natives: true);
+			await importHelper.ImportDataAsync(sourceWorkspaceArtifactId, dataTableWrapper).ConfigureAwait(false);
 
 			// Initialize container
 			IContainer container = ContainerHelper.Create(configuration);
@@ -128,7 +125,7 @@ namespace Relativity.Sync.Tests.System
 			// Test SourceWorkspaceDataReader
 			const int resultsBlockSize = 100;
 			object[] tmpTable = new object[resultsBlockSize];
-			ISyncLog logger = new ConsoleLogger();
+			IAPILog logger = new ConsoleLogger();
 
 			IDataReaderRowSetValidator validator = DataReaderRowSetValidator.Create(dataTableWrapper.Data);
 
@@ -230,8 +227,7 @@ namespace Relativity.Sync.Tests.System
 			// Import documents
 			var importHelper = new ImportHelper(ServiceFactory);
 			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataset);
-			ImportJobErrors importJobErrors = await importHelper.ImportDataAsync(sourceWorkspaceArtifactId, dataTableWrapper).ConfigureAwait(false);
-			Assert.IsTrue(importJobErrors.Success, $"IAPI errors: {string.Join(global::System.Environment.NewLine, importJobErrors.Errors)}");
+			await importHelper.ImportDataAsync(sourceWorkspaceArtifactId, dataTableWrapper).ConfigureAwait(false);
 
 			// Initialize container
 			IContainer container = ContainerHelper.Create(configuration);
@@ -252,7 +248,7 @@ namespace Relativity.Sync.Tests.System
 			// Test SourceWorkspaceDataReader
 			const int resultsBlockSize = 100;
 			object[] tmpTable = new object[resultsBlockSize];
-			ISyncLog logger = new ConsoleLogger();
+			IAPILog logger = new ConsoleLogger();
 
 			int imageFilesCount = dataset.GetFiles().Count();
 			bool read;

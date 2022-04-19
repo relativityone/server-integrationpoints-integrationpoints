@@ -1,4 +1,5 @@
-﻿using Relativity.Sync.Configuration;
+using Relativity.API;
+using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Pipelines.Extensions;
@@ -8,7 +9,7 @@ namespace Relativity.Sync.Executors.Validation
 {
 	internal sealed class ImageCopyLinksValidator : CopyLinksValidatorBase
 	{
-		public ImageCopyLinksValidator(IInstanceSettings instanceSettings, IUserContextConfiguration userContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin, INonAdminCanSyncUsingLinks nonAdminCanSyncUsingLinks, IUserService userService, ISyncLog logger) : base(instanceSettings, userContext, serviceFactoryForAdmin, nonAdminCanSyncUsingLinks, userService, logger)
+		public ImageCopyLinksValidator(IInstanceSettings instanceSettings, IUserContextConfiguration userContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin, INonAdminCanSyncUsingLinks nonAdminCanSyncUsingLinks, IUserService userService, IAPILog logger) : base(instanceSettings, userContext, serviceFactoryForAdmin, nonAdminCanSyncUsingLinks, userService, logger)
 		{
 		}
 

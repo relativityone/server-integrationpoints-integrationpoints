@@ -1,6 +1,5 @@
 using System;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Storage.RdoGuidsProviders;
 using Relativity.Sync.SyncConfiguration.Options;
 
 namespace Relativity.Sync.Tests.Common.RdoGuidProviderStubs

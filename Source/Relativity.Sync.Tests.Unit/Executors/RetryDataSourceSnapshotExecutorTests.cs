@@ -1,13 +1,8 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Castle.Core.Internal;
 using FluentAssertions;
-using kCura.Vendor.Castle.Components.DictionaryAdapter.Xml;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.DataContracts.DTOs.Results;
@@ -18,7 +13,6 @@ using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Telemetry;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Executors

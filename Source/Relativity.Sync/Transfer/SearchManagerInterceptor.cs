@@ -2,10 +2,10 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Services.Protocols;
-using Polly;
-using Polly.Retry;
 using Castle.DynamicProxy;
 using kCura.WinEDDS.Service.Export;
+using Polly;
+using Polly.Retry;
 
 namespace Relativity.Sync.Transfer
 {

@@ -8,8 +8,12 @@ namespace Relativity.Sync.Configuration
 		DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; }
 
 		int SourceWorkspaceArtifactId { get; }
+
+		int DestinationWorkspaceArtifactId { get; }
 		
 		int RdoArtifactTypeId { get; }
+
+		int DestinationRdoArtifactTypeId { get; }
 
 		string GetFolderPathSourceFieldName();
 

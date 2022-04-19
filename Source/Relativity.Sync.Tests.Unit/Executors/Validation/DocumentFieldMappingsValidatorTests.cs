@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Relativity.Sync.Utils;
 using Moq;
 using NUnit.Framework;
 using Relativity.Services.DataContracts.DTOs;
@@ -17,6 +16,7 @@ using Relativity.Sync.Logging;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common.Attributes;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit.Executors.Validation
 {

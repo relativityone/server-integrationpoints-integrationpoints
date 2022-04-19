@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.InternalMetricsCollection;
 using Relativity.Sync.KeplerFactory;
 
@@ -10,10 +11,10 @@ namespace Relativity.Sync.Telemetry
 	internal sealed class TelemetryMetricsInstaller : ITelemetryManager
 	{
 		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 		private readonly List<ITelemetryMetricProvider> _metricProviders;
 
-		public TelemetryMetricsInstaller(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger)
+		public TelemetryMetricsInstaller(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IAPILog logger)
 		{
 			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_logger = logger;

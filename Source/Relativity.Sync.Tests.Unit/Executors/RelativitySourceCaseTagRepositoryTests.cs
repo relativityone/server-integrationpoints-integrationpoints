@@ -230,7 +230,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 					))));
 		}
 
-		private bool VerifyUpdateRequest(UpdateRequest request, int tagArtifactId, params Predicate<FieldRefValuePair>[] predicates)
+		private bool VerifyUpdateRequest(UpdateRequest request, int tagArtifactId, params System.Predicate<FieldRefValuePair>[] predicates)
 		{
 			List<FieldRefValuePair> fields = request.FieldValues.ToList();
 			bool checkPredicates = true;

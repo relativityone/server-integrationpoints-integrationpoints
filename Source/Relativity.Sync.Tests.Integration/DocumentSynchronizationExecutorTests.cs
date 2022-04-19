@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -7,6 +7,7 @@ using Autofac;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Folder;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -111,7 +112,7 @@ namespace Relativity.Sync.Tests.Integration
 			containerBuilder.RegisterType<DocumentTagger>().As<IDocumentTagger>();
 			containerBuilder.RegisterType<DocumentSynchronizationExecutor>().As<IExecutor<IDocumentSynchronizationConfiguration>>();
 
-			containerBuilder.RegisterInstance(new EmptyLogger()).As<ISyncLog>();
+			containerBuilder.RegisterInstance(new EmptyLogger()).As<IAPILog>();
 			containerBuilder.RegisterInstance(fieldMappings.Object).As<IFieldMappings>();
 
 			IContainer container = containerBuilder.Build();

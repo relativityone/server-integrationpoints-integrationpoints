@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Permission;
@@ -28,7 +29,7 @@ namespace Relativity.Sync.Executors.PermissionCheck.DocumentPermissionChecks
 
         
         public DestinationDocumentPermissionCheck(IDestinationServiceFactoryForUser destinationServiceFactory, 
-            ISyncObjectTypeManager syncObjectTypeManager, ISyncLog logger) : base(destinationServiceFactory, logger)
+            ISyncObjectTypeManager syncObjectTypeManager, IAPILog logger) : base(destinationServiceFactory, logger)
         {
             _syncObjectTypeManager = syncObjectTypeManager;
         }

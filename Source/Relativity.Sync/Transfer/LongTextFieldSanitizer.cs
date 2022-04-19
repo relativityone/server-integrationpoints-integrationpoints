@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
@@ -18,11 +19,11 @@ namespace Relativity.Sync.Transfer
 		private readonly IImportStreamBuilder _importStreamBuilder;
 		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
 		private readonly IRetriableStreamBuilderFactory _streamBuilderFactory;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		public RelativityDataType SupportedType => RelativityDataType.LongText;
 
-		public LongTextFieldSanitizer(ISourceServiceFactoryForUser serviceFactoryForUser, IRetriableStreamBuilderFactory streamBuilderFactory, IImportStreamBuilder importStreamBuilder, ISyncLog logger)
+		public LongTextFieldSanitizer(ISourceServiceFactoryForUser serviceFactoryForUser, IRetriableStreamBuilderFactory streamBuilderFactory, IImportStreamBuilder importStreamBuilder, IAPILog logger)
 		{
 			_serviceFactoryForUser = serviceFactoryForUser;
 			_streamBuilderFactory = streamBuilderFactory;

@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
+using NUnit.Framework;
 using Relativity.Services.ServiceProxy;
 
 namespace Relativity.Sync.Tests.System.Core.Helpers
@@ -19,7 +20,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 			_serviceFactory = serviceFactory;
 		}
 
-		public async Task<ImportJobErrors> ImportDataAsync(int workspaceArtifactId, ImportDataTableWrapper dataTableWrapper, int? productionId = null)
+		public async Task ImportDataAsync(int workspaceArtifactId, ImportDataTableWrapper dataTableWrapper, int? productionId = null)
 		{
 			kCura.WinEDDS.Config.ConfigSettings[nameof(kCura.WinEDDS.Config.TapiForceHttpClient)] = true.ToString(CultureInfo.InvariantCulture);
 			kCura.WinEDDS.Config.ConfigSettings[nameof(kCura.WinEDDS.Config.TapiForceBcpHttpClient)] = true.ToString(CultureInfo.InvariantCulture);
@@ -31,6 +32,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 					AppSettings.RelativityWebApiUrl.ToString());
 
 			ImportJobErrors errors = null;
+
 			if (dataTableWrapper.Images)
 			{
 				errors = await ConfigureAndRunImageImportApiJobAsync(workspaceArtifactId, dataTableWrapper, importApi, productionId)
@@ -41,9 +43,9 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 				errors = await ConfigureAndRunImportApiJobAsync(workspaceArtifactId, dataTableWrapper, importApi)
 					.ConfigureAwait(false);
 			}
-
-			return errors;
-		}
+			
+            Assert.IsTrue(errors.Success, $"Failed to import data to workspace {workspaceArtifactId} due to IAPI errors: {errors}");
+        }
 
 		private async Task<ImportJobErrors> ConfigureAndRunImportApiJobAsync(int workspaceArtifactId, ImportDataTableWrapper dataTable, ImportAPI importApi)
 		{

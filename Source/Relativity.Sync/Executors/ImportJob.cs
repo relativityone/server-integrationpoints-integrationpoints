@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
@@ -29,9 +30,9 @@ namespace Relativity.Sync.Executors
 		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private readonly IItemLevelErrorLogAggregator _itemLevelErrorLogAggregator;
 		private readonly ISemaphoreSlim _semaphoreSlim;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public ImportJob(ISyncImportBulkArtifactJob syncImportBulkArtifactJob, ISemaphoreSlim semaphoreSlim, IJobHistoryErrorRepository jobHistoryErrorRepository, int sourceWorkspaceArtifactId, int jobHistoryArtifactId, ISyncLog syncLog)
+		public ImportJob(ISyncImportBulkArtifactJob syncImportBulkArtifactJob, ISemaphoreSlim semaphoreSlim, IJobHistoryErrorRepository jobHistoryErrorRepository, int sourceWorkspaceArtifactId, int jobHistoryArtifactId, IAPILog syncLog)
 		{
 			_lockObject = new object();
 			_importApiFatalExceptionOccurred = false;

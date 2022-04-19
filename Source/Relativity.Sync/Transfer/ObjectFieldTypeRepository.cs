@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -14,9 +15,9 @@ namespace Relativity.Sync.Transfer
 	internal sealed class ObjectFieldTypeRepository : IObjectFieldTypeRepository
 	{
 		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public ObjectFieldTypeRepository(ISourceServiceFactoryForUser serviceFactoryForUser, ISyncLog logger)
+		public ObjectFieldTypeRepository(ISourceServiceFactoryForUser serviceFactoryForUser, IAPILog logger)
 		{
 			_serviceFactoryForUser = serviceFactoryForUser;
 			_logger = logger;

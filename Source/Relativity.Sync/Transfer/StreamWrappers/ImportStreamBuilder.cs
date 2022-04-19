@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.IO;
+using Relativity.API;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Utils;
 
@@ -15,9 +16,9 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 	{
 		private readonly Func<IStopwatch> _stopwatchFactory;
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public ImportStreamBuilder(Func<IStopwatch> stopwatchFactory, IJobStatisticsContainer jobStatisticsContainer, ISyncLog logger)
+		public ImportStreamBuilder(Func<IStopwatch> stopwatchFactory, IJobStatisticsContainer jobStatisticsContainer, IAPILog logger)
 		{
 			_stopwatchFactory = stopwatchFactory;
 			_jobStatisticsContainer = jobStatisticsContainer;

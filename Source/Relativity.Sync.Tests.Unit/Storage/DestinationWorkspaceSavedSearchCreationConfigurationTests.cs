@@ -2,7 +2,6 @@
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
 using NUnit.Framework;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;

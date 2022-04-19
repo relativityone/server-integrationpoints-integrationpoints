@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Services.Interfaces.Group;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -18,11 +19,11 @@ namespace Relativity.Sync.Executors.Validation
 		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 		private readonly INonAdminCanSyncUsingLinks _nonAdminCanSyncUsingLinks;
 		private readonly IUserService _userService;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		protected abstract string ValidatorKind { get; }
 
-		protected CopyLinksValidatorBase(IInstanceSettings instanceSettings, IUserContextConfiguration userContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin, INonAdminCanSyncUsingLinks nonAdminCanSyncUsingLinks, IUserService userService, ISyncLog logger)
+		protected CopyLinksValidatorBase(IInstanceSettings instanceSettings, IUserContextConfiguration userContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin, INonAdminCanSyncUsingLinks nonAdminCanSyncUsingLinks, IUserService userService, IAPILog logger)
 		{
 			_instanceSettings = instanceSettings;
 			_userContext = userContext;
@@ -59,7 +60,7 @@ namespace Relativity.Sync.Executors.Validation
 				if (isRestrictReferentialFileLinksOnImport && !executingUserIsAdmin && !nonAdminCanSyncUsingLinks)
 				{
 					validationResult.Add(_COPY_NATIVE_FILES_BY_LINKS_LACK_OF_PERMISSION);
-				} 
+				}
 			}
 			catch (Exception ex)
 			{

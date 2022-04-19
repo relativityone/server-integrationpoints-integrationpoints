@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Autofac;
 using Relativity.API;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Tests.System.Core.Helpers.APIHelper;
 using Relativity.Telemetry.APM;
 using Relativity.Toggles;
@@ -18,7 +17,7 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 	{
 		private readonly ISyncServiceManager _servicesMgr;
 		private readonly Uri _relativityUri;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 		private readonly IToggleProvider _toggleProvider;
 		private readonly IAPM _apmClient;
 		private readonly IHelper _helper;
@@ -30,7 +29,7 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 		/// <param name="relativityUri">Host name of relativity - no suffixes</param>
 		/// <param name="apmClient">APM implementation</param>
 		/// <param name="logger">Logger</param>
-		public SyncRunner(ISyncServiceManager servicesMgr, Uri relativityUri, IAPM apmClient, ISyncLog logger, IToggleProvider toggleProvider = null)
+		public SyncRunner(ISyncServiceManager servicesMgr, Uri relativityUri, IAPM apmClient, IAPILog logger, IToggleProvider toggleProvider = null)
 		{
             _servicesMgr = servicesMgr;
 			_relativityUri = relativityUri;

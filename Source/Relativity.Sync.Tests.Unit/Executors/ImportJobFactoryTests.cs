@@ -1,16 +1,16 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Concurrency;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.EDDS.WebAPI.BulkImportManagerBase;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
@@ -24,7 +24,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 	public class ImportJobFactoryTests
 	{
 
-		private ISyncLog _logger;
+		private IAPILog _logger;
 		private Mock<IBatch> _batch;
 		
 		private Mock<IDocumentSynchronizationConfiguration> _documentConfigurationMock;

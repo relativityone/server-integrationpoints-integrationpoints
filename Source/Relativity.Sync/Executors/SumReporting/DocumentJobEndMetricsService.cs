@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
@@ -16,10 +17,10 @@ namespace Relativity.Sync.Executors.SumReporting
 		private readonly IFieldManager _fieldManager;
 		private readonly IJobStatisticsContainer _jobStatisticsContainer;
 		private readonly ISyncMetrics _syncMetrics;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
 		public DocumentJobEndMetricsService(IBatchRepository batchRepository, IJobEndMetricsConfiguration configuration, IFieldManager fieldManager, 
-			IJobStatisticsContainer jobStatisticsContainer, ISyncMetrics syncMetrics, ISyncLog logger)
+			IJobStatisticsContainer jobStatisticsContainer, ISyncMetrics syncMetrics, IAPILog logger)
 			: base(batchRepository, configuration)
 		{
 			_configuration = configuration;

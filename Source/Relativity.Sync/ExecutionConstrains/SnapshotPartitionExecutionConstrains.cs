@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 
@@ -9,9 +10,9 @@ namespace Relativity.Sync.ExecutionConstrains
 	internal sealed class SnapshotPartitionExecutionConstrains : IExecutionConstrains<ISnapshotPartitionConfiguration>
 	{
 		private readonly IBatchRepository _batchRepository;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public SnapshotPartitionExecutionConstrains(IBatchRepository batchRepository, ISyncLog logger)
+		public SnapshotPartitionExecutionConstrains(IBatchRepository batchRepository, IAPILog logger)
 		{
 			_batchRepository = batchRepository;
 			_logger = logger;

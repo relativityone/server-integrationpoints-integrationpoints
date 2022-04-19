@@ -1,8 +1,5 @@
-﻿using System;
+﻿using System.Data.SqlClient;
 using System.IO;
-using System.Net;
-using System.Security;
-using System.Data.SqlClient;
 using System.Linq;
 
 namespace Relativity.Sync.Tests.System.Core.Helpers

@@ -1,11 +1,12 @@
-﻿using System;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
-using Relativity.Sync.Transfer;
-using System.Threading;
-using System.Threading.Tasks;
 using Relativity.Sync.Telemetry.Metrics;
+using Relativity.Sync.Transfer;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors
@@ -18,7 +19,7 @@ namespace Relativity.Sync.Executors
 			IJobCleanupConfiguration jobCleanupConfiguration,
 			IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
 			Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics,
-			ISyncLog logger,
+			IAPILog logger,
 			IUserContextConfiguration userContextConfiguration) : base(importJobFactory, BatchRecordType.NonDocuments, batchRepository, jobProgressHandlerFactory, fieldManager,
 			fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics, userContextConfiguration, logger)
 		{

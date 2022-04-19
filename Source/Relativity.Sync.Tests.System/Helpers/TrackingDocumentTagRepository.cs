@@ -1,11 +1,10 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
-using Relativity.Sync.Storage;
-using Relativity.Sync.Executors;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Executors;
+using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.System.Helpers
 {

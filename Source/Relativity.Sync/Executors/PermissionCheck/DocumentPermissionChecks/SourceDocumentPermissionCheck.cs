@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.KeplerFactory;
@@ -13,7 +14,7 @@ namespace Relativity.Sync.Executors.PermissionCheck.DocumentPermissionChecks
         private const string _SOURCE_WORKSPACE_NO_DOC_EDIT = "User does not have permission to edit Documents in this workspace.";
 
         
-        public SourceDocumentPermissionCheck(ISyncLog logger, ISourceServiceFactoryForUser serviceFactoryForUser) : base(logger, serviceFactoryForUser)
+        public SourceDocumentPermissionCheck(IAPILog logger, ISourceServiceFactoryForUser serviceFactoryForUser) : base(logger, serviceFactoryForUser)
         {
         }
 

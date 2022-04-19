@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Storage
@@ -7,9 +8,9 @@ namespace Relativity.Sync.Storage
 	internal sealed class ProgressRepository : IProgressRepository
 	{
 		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public ProgressRepository(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISyncLog logger)
+		public ProgressRepository(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IAPILog logger)
 		{
 			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_logger = logger;

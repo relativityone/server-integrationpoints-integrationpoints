@@ -19,7 +19,6 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Transfer;
-using Relativity.Toggles;
 
 namespace Relativity.Sync.Tests.Integration.Helpers
 {

@@ -1,14 +1,15 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Relativity.API;
 
 namespace Relativity.Sync.Transfer
 {
 	internal sealed class NativeInfoFieldsBuilder : INativeInfoFieldsBuilder
 	{
 		private readonly INativeFileRepository _nativeFileRepository;
-		private readonly ISyncLog _logger;
+		private readonly IAPILog _logger;
 
-		public NativeInfoFieldsBuilder(INativeFileRepository nativeFileRepository, ISyncLog logger)
+		public NativeInfoFieldsBuilder(INativeFileRepository nativeFileRepository, IAPILog logger)
 		{
 			_nativeFileRepository = nativeFileRepository;
 			_logger = logger;

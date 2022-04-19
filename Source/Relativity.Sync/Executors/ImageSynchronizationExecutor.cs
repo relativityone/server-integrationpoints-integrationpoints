@@ -1,13 +1,14 @@
-﻿using System;
-using Relativity.Sync.Configuration;
-using Relativity.Sync.Storage;
-using Relativity.Sync.Telemetry;
-using Relativity.Sync.Transfer;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
+using Relativity.Sync.Configuration;
+using Relativity.Sync.Storage;
+using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
+using Relativity.Sync.Transfer;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors
@@ -21,7 +22,7 @@ namespace Relativity.Sync.Executors
 			IFieldManager fieldManager, IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer,
 			IJobCleanupConfiguration jobCleanupConfiguration,
 			IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
-			Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics, IDocumentTagger documentTagger, ISyncLog logger,
+			Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics, IDocumentTagger documentTagger, IAPILog logger,
 			IUserContextConfiguration userContextConfiguration)
 			: base(importJobFactory, BatchRecordType.Images, batchRepository, jobProgressHandlerFactory, fieldManager,
 			fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics, userContextConfiguration, logger)

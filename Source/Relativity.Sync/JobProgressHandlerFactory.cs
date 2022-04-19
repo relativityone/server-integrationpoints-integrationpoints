@@ -1,6 +1,6 @@
-﻿using Relativity.Sync.Storage;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reactive.Concurrency;
+using Relativity.Sync.Storage;
 
 namespace Relativity.Sync
 {

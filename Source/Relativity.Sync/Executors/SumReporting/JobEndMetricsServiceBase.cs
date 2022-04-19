@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-using System.Collections.Generic;
-using Relativity.Sync.Storage;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry.Metrics;
 
 namespace Relativity.Sync.Executors.SumReporting

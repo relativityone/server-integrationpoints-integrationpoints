@@ -1,4 +1,7 @@
-﻿using Autofac;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Autofac;
 using kCura.Relativity.DataReaderClient;
 using NUnit.Framework;
 using Relativity.Services.ServiceProxy;
@@ -12,9 +15,6 @@ using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Sync.Tests.System.Core.Stubs;
 using Relativity.Sync.Tests.System.Helpers;
 using Relativity.Sync.Transfer;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using ImportJobFactory = Relativity.Sync.Tests.System.Core.Helpers.ImportJobFactory;
 
 namespace Relativity.Sync.Tests.System.SynchronizationExecutors
@@ -54,11 +54,8 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 		{
 			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImportDataTable(dataSet, extractedText, natives);
 
-			ImportJobErrors importJobErrors = new ImportHelper(ServiceFactory)
-				.ImportDataAsync(SourceWorkspace.ArtifactID, dataTableWrapper).GetAwaiter().GetResult();
-
-			Assert.IsTrue(importJobErrors.Success, $"IAPI errors: {string.Join(global::System.Environment.NewLine, importJobErrors.Errors)}");
-
+			new ImportHelper(ServiceFactory).ImportDataAsync(SourceWorkspace.ArtifactID, dataTableWrapper).GetAwaiter().GetResult();
+			
 			TotalDataCount = dataTableWrapper.Data.Rows.Count;
 
 			TridentHelper.UpdateFilePathToLocalIfNeeded(SourceWorkspace.ArtifactID, dataSet);
@@ -70,11 +67,8 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 		{
 			ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataSet);
 
-			ImportJobErrors importJobErrors = new ImportHelper(ServiceFactory)
-				.ImportDataAsync(SourceWorkspace.ArtifactID, dataTableWrapper).GetAwaiter().GetResult();
-
-			Assert.IsTrue(importJobErrors.Success, $"IAPI errors: {string.Join(global::System.Environment.NewLine, importJobErrors.Errors)}");
-
+			new ImportHelper(ServiceFactory).ImportDataAsync(SourceWorkspace.ArtifactID, dataTableWrapper).GetAwaiter().GetResult();
+			
 			TotalDataCount = dataTableWrapper.Data.Rows.Count;
 
 			TridentHelper.UpdateFilePathToLocalIfNeeded(SourceWorkspace.ArtifactID, dataSet);

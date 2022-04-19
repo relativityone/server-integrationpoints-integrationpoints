@@ -36,7 +36,7 @@ namespace Relativity.Sync.Tests.Unit.RDOs
         private Mock<IFieldManager> _fieldManagerMock;
         private Mock<IObjectTypeManager> _objectTypeManagerMock;
         private Mock<ITabManager> _tabManagerMock;
-        private Mock<ISyncLog> _syncLogMock;
+        private Mock<IAPILog> _syncLogMock;
         private RdoManager _sut;
         private Mock<IRdoGuidProvider> _rdoGuidProviderMock;
         private Mock<IArtifactGuidManager> _artifactGuidManagerMock;
@@ -49,7 +49,7 @@ namespace Relativity.Sync.Tests.Unit.RDOs
             _fieldManagerMock = new Mock<IFieldManager>();
             _objectTypeManagerMock = new Mock<IObjectTypeManager>();
             _tabManagerMock = new Mock<ITabManager>();
-            _syncLogMock = new Mock<ISyncLog>();
+            _syncLogMock = new Mock<IAPILog>();
             _rdoGuidProviderMock = new Mock<IRdoGuidProvider>();
             _artifactGuidManagerMock = new Mock<IArtifactGuidManager>();
 

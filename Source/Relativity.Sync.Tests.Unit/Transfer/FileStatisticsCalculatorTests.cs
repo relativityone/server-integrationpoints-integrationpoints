@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.DataContracts.DTOs.Results;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -54,7 +55,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_rdoManagerMock.Setup(x => x.GetAsync<SyncStatisticsRdo>(_WORKSPACE_ID, _SYNC_STATISTICS_ID))
 				.ReturnsAsync(new SyncStatisticsRdo());
 
-			Mock<ISyncLog> log = new Mock<ISyncLog>();
+			Mock<IAPILog> log = new Mock<IAPILog>();
 
 			_sut = new FileStatisticsCalculator(
 				configuration.Object,
