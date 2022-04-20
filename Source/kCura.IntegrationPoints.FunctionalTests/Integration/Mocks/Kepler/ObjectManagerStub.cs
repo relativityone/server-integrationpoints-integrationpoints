@@ -100,6 +100,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             SetupIntegrationPointType();
             SetupApplications();
             SetupEntity();
+            SetupProvider();            
         }
 
         private void AddObjectToDatabase(ObjectCreationInfo objectCreationInfo)
@@ -319,7 +320,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
             artifactId = new int[0];
             return false;
-        }
+        }     
 
         private List<RelativityObject> GetRelativityObjects(MassCreateRequest request)
         {
