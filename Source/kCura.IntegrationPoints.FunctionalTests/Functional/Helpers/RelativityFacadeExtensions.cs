@@ -69,7 +69,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 				NativeFilePathColumnName = nativeFilePathColumnName,
 				OverwriteMode = overwriteMode,
 				FolderColumnName = folderColumnName,
-				OverlayBehavior = overlayBehavior
+				OverlayBehavior = overlayBehavior,
 			};
 
 			int documentImportTimeout = TestConfig.DocumentImportTimeout;
@@ -80,9 +80,26 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 
 			if (!documentImportTask.Wait(TimeSpan.FromSeconds(documentImportTimeout)))
 			{
-				throw new Exception($"IDocumentService.ImportNativesFromCsv timeout ({documentImportTimeout}) exceeded.");
+				throw new Exception($"IDocumentService.{nameof(documentService.ImportNativesFromCsv)} timeout ({documentImportTimeout}) exceeded.");
 			}
 		}
+
+        public static void ImportImagesFromCsv(this IRelativityFacade instance, Workspace workspace, string pathToFile,
+            ImageImportOptions imageImportOptions)
+        {
+            IDocumentService documentService = instance.Resolve<IDocumentService>();
+
+            int documentImportTimeout = TestConfig.DocumentImportTimeout;
+
+            SetImportMode();
+
+            Task documentImportTask = Task.Run(() => documentService.ImportImagesFromCsv(workspace.ArtifactID, pathToFile, imageImportOptions));
+
+            if (!documentImportTask.Wait(TimeSpan.FromSeconds(documentImportTimeout)))
+            {
+                throw new Exception($"IDocumentService.{nameof(documentService.ImportImagesFromCsv)} timeout ({documentImportTimeout}) exceeded.");
+            }
+        }
 
 		public static void ProduceProduction(this IRelativityFacade instance, Workspace workspace, Testing.Framework.Models.Production production)
 		{
