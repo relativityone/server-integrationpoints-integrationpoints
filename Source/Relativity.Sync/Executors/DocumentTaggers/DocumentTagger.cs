@@ -58,14 +58,14 @@ namespace Relativity.Sync.Executors.DocumentTaggers
 		private async Task<TaggingExecutionResult> TagSourceDocumentsAsync(IImportJob importJob, ISynchronizationConfiguration configuration,
 			CancellationToken token)
 		{
-			_logger.LogInformation("Start tagging documents in source workspace ArtifactID: {workspaceID}", configuration.DestinationWorkspaceArtifactId);
+			_logger.LogInformation("Start tagging documents in source workspace ArtifactID: {workspaceID}", configuration.SourceWorkspaceArtifactId);
 			List<int> pushedDocumentArtifactIds = (await importJob.GetPushedDocumentArtifactIdsAsync().ConfigureAwait(false)).ToList();
 			_logger.LogInformation("Number of pushed documents to tag: {numberOfDocuments}", pushedDocumentArtifactIds.Count);
 
 			TaggingExecutionResult taggingResult =
 				await _documentsTagRepository.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(configuration, pushedDocumentArtifactIds, token).ConfigureAwait(false);
 
-			_logger.LogInformation("Documents tagging in source workspace ArtifactID: {workspaceID} Result: {result}", configuration.DestinationWorkspaceArtifactId,
+			_logger.LogInformation("Documents tagging in source workspace ArtifactID: {workspaceID} Result: {result}", configuration.SourceWorkspaceArtifactId,
 				taggingResult.Status);
 
 			return taggingResult;
