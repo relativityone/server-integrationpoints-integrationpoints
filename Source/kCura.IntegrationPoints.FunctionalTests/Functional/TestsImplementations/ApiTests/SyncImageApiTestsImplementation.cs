@@ -46,9 +46,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
         {
             ImageImportOptions imageImportOptions = new ImageImportOptions
             {
+                ExtractedTextFieldContainsFilePath = false,
                 OverwriteMode = DocumentOverwriteMode.AppendOverlay,
                 OverlayBehavior = DocumentOverlayBehavior.UseRelativityDefaults,
-                FileLocationField = string.Empty
             };
 
             _sourceWorkspace = _testsImplementationTestFixture.Workspace;
