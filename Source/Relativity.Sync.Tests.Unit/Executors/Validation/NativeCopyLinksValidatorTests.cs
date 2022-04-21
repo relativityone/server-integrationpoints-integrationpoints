@@ -62,7 +62,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsync_ShouldHandleValidConfiguration_WhenConditionsAreMet()
 		{
 			// Arrange
-			SetupValidator(_USER_IS_ADMIN_ID, ImportNativeFileCopyMode.SetFileLinks, true);
+			SetupValidator(_USER_IS_ADMIN_ID, ImportNativeFileCopyMode.SetFileLinks, true, false);
 
 			// Act
 			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
@@ -76,7 +76,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsync_ShouldHandleInvalidConfiguration_WhenUserIsNonAdmin()
 		{
 			// Arrange
-			SetupValidator(_USER_IS_NON_ADMIN_ID, ImportNativeFileCopyMode.SetFileLinks, true);
+			SetupValidator(_USER_IS_NON_ADMIN_ID, ImportNativeFileCopyMode.SetFileLinks, true, false);
 
 			// Act
 			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
@@ -107,7 +107,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		public async Task ValidateAsync_ShouldSkipValidation_WhenNativeCopyModeIsNotFileLinks(ImportNativeFileCopyMode copyMode)
 		{
 			// Arrange
-			SetupValidator(_USER_IS_NON_ADMIN_ID, copyMode, true);
+			SetupValidator(_USER_IS_NON_ADMIN_ID, copyMode, true, false);
 
 			// Act
 			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
@@ -150,7 +150,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			result.Messages.Should().BeEmpty();
 		}
 
-		private void SetupValidator(int userId, ImportNativeFileCopyMode copyMode, bool isRestrictedCopyLinksOnly, bool toggleNonAdminCanSyncUsingLinks = false)
+		private void SetupValidator(int userId, ImportNativeFileCopyMode copyMode, bool isRestrictedCopyLinksOnly, bool toggleNonAdminCanSyncUsingLinks)
 		{
 			_userContextFake.Setup(c => c.ExecutingUserId).Returns(userId);
 			_configurationFake.Setup(c => c.ImportNativeFileCopyMode).Returns(copyMode);

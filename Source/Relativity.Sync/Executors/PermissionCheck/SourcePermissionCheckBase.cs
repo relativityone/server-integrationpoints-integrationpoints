@@ -11,15 +11,18 @@ using Relativity.Sync.RDOs;
 
 namespace Relativity.Sync.Executors.PermissionCheck
 {
+	internal class LackOfPermissionMessages
+	{
+		public const string _JOB_HISTORY_TYPE_NO_ADD = "User does not have permission to add Job History RDOs in the source workspace.";
+		public const string _OBJECT_TYPE_NO_ADD = "User does not have permission to add object types in the source workspace.";
+		public const string _CONFIGURATION_TYPE_NO_ADD = "User does not have permission to the Sync Configuration object type in the source workspace.";
+		public const string _BATCH_OBJECT_TYPE_ERROR = "User does not have permission to the Sync Batch object type in the source workspace.";
+		public const string _PROGRESS_OBJECT_TYPE_ERROR = "User does not have permission to the Sync Progress object type in the source workspace.";
+		public const string _SOURCE_WORKSPACE_NO_EXPORT = "User does not have permission to export in the source workspace.";
+	}
+	
 	internal abstract class SourcePermissionCheckBase : PermissionCheckBase
 	{
-		private const string _JOB_HISTORY_TYPE_NO_ADD = "User does not have permission to add Job History RDOs in the source workspace.";
-		private const string _OBJECT_TYPE_NO_ADD = "User does not have permission to add object types in the source workspace.";
-		private const string _CONFIGURATION_TYPE_NO_ADD = "User does not have permission to the Sync Configuration object type in the source workspace.";
-		private const string _BATCH_OBJECT_TYPE_ERROR = "User does not have permission to the Sync Batch object type in the source workspace.";
-		private const string _PROGRESS_OBJECT_TYPE_ERROR = "User does not have permission to the Sync Progress object type in the source workspace.";
-		private const string _SOURCE_WORKSPACE_NO_EXPORT = "User does not have permission to export in the source workspace.";
-
 		private const int _ALLOW_EXPORT_PERMISSION_ID = 159; // 159 is the artifact id of the "Allow Export" permission
 		
 		private readonly Guid _batchObjectTypeGuid = new Guid(SyncBatchGuids.SyncBatchObjectTypeGuid);
@@ -37,15 +40,15 @@ namespace Relativity.Sync.Executors.PermissionCheck
 			var validationResult = new ValidationResult();
 
 			validationResult.Add(await ValidateUserHasPermissionToAccessWorkspaceAsync(configuration).ConfigureAwait(false));
-			validationResult.Add(await ValidatePermissionAsync(configuration, _ALLOW_EXPORT_PERMISSION_ID, _SOURCE_WORKSPACE_NO_EXPORT).ConfigureAwait(false));
+			validationResult.Add(await ValidatePermissionAsync(configuration, _ALLOW_EXPORT_PERMISSION_ID, LackOfPermissionMessages._SOURCE_WORKSPACE_NO_EXPORT).ConfigureAwait(false));
 
-			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, configuration.JobHistoryObjectTypeGuid, PermissionType.Add, _JOB_HISTORY_TYPE_NO_ADD).ConfigureAwait(false));
-			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, ArtifactType.ObjectType, PermissionType.Add, _OBJECT_TYPE_NO_ADD).ConfigureAwait(false));
-			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, new Guid(SyncRdoGuids.SyncConfigurationGuid), PermissionType.Edit, _CONFIGURATION_TYPE_NO_ADD).ConfigureAwait(false));
+			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, configuration.JobHistoryObjectTypeGuid, PermissionType.Add, LackOfPermissionMessages._JOB_HISTORY_TYPE_NO_ADD).ConfigureAwait(false));
+			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, ArtifactType.ObjectType, PermissionType.Add, LackOfPermissionMessages._OBJECT_TYPE_NO_ADD).ConfigureAwait(false));
+			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, new Guid(SyncRdoGuids.SyncConfigurationGuid), PermissionType.Edit, LackOfPermissionMessages._CONFIGURATION_TYPE_NO_ADD).ConfigureAwait(false));
 			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, _batchObjectTypeGuid, new[] { PermissionType.Add, PermissionType.Edit, PermissionType.View },
-				_BATCH_OBJECT_TYPE_ERROR).ConfigureAwait(false));
+				LackOfPermissionMessages._BATCH_OBJECT_TYPE_ERROR).ConfigureAwait(false));
 			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, _progressObjectTypeGuid,
-					new[] { PermissionType.Add, PermissionType.Edit, PermissionType.View }, _PROGRESS_OBJECT_TYPE_ERROR).ConfigureAwait(false));
+					new[] { PermissionType.Add, PermissionType.Edit, PermissionType.View }, LackOfPermissionMessages._PROGRESS_OBJECT_TYPE_ERROR).ConfigureAwait(false));
 
 			await ValidateAsync(validationResult, configuration).ConfigureAwait(false);
 			
