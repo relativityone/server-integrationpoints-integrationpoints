@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -54,8 +55,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             _sourceWorkspace = _testsImplementationTestFixture.Workspace;
 
             const int imagesCount = 10;
-            RelativityFacade.Instance.ImportImagesFromCsv(_testsImplementationTestFixture.Workspace,
-                LoadFilesGenerator.GetOrCreateNativesOptLoadFileWithLimitedItems(imagesCount), imageImportOptions);
+
+            string testDataPath = LoadFilesGenerator.GetOrCreateNativesOptLoadFileWithLimitedItems(imagesCount);
+            string testDataDirectory = Path.GetDirectoryName(testDataPath);
+            LoadFilesGenerator.UploadLoadFileToImportDirectory(_testsImplementationTestFixture.Workspace.ArtifactID, testDataDirectory).Wait();
+            RelativityFacade.Instance.ImportImagesFromCsv(_testsImplementationTestFixture.Workspace, testDataPath
+                , imageImportOptions);
 
             CreateSavedSearch(_testsImplementationTestFixture.Workspace.ArtifactID);
 
