@@ -64,8 +64,8 @@ namespace Relativity.Sync.Executors
 			_logger.LogInformation("Creating IAPI as userId: {executingUserId}", executingUserId);
 			IRelativityTokenProvider relativityTokenProvider = new RelativityTokenProvider(executingUserId, _tokenGenerator);
 
-			var byTokenProvider = _extendedImportApi.CreateByTokenProvider(webServiceUrl.AbsoluteUri, relativityTokenProvider);
-			return Task.FromResult<IImportAPI>(byTokenProvider);
+			ImportAPI importApiInstanceByToken = _extendedImportApi.CreateByTokenProvider(webServiceUrl.AbsoluteUri, relativityTokenProvider);
+			return Task.FromResult<IImportAPI>(importApiInstanceByToken);
 		}
 	}
 #pragma warning restore RG2002

@@ -132,6 +132,21 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			actualResult.Should().Be(expectedResult,
 				$"ShouldValidate should return {expectedResult} for pipeline {pipelineType.Name}");
 		}
+		
+		[Test]
+		public async Task ValidateAsync_ShouldSkipValidationOfUser_WhenNonAdminCanSyncUsingLinkToggleIsTrue()
+		{
+			// Arrange
+			SetupValidator(_USER_IS_NON_ADMIN_ID, ImportImageFileCopyMode.SetFileLinks, true, true);
+
+			// Act
+			ValidationResult result = await _sut.ValidateAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
+
+			// Assert
+			result.IsValid.Should().BeTrue();
+			result.Messages.Should().BeEmpty();
+		}
+
 
 		private void SetupValidator(int userId, ImportImageFileCopyMode copyMode, bool isRestrictedCopyLinksOnly, bool toggleNonAdminCanSyncUsingLinks)
 		{

@@ -8,11 +8,6 @@ using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Executors
 {
-	internal interface IUserService
-	{
-		Task<bool> ExecutingUserIsAdminAsync(IUserContextConfiguration userContext);
-	}
-
 	internal class UserService : IUserService
 	{
 		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;

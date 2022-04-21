@@ -86,7 +86,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			result.Messages.Should().NotBeEmpty();
 		}
 
-		[Test]
 		[TestCase(_USER_IS_ADMIN_ID)]
 		[TestCase(_USER_IS_NON_ADMIN_ID)]
 		public async Task ValidateAsync_ShouldSkipValidationIndependentOfUser_WhenResponsibleInstanceSettingIsFalse(int userId)

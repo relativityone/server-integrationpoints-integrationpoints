@@ -1,5 +1,4 @@
 ﻿using Relativity.API;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.Toggles;
 using Relativity.Toggles;
 
@@ -11,13 +10,11 @@ namespace Relativity.Sync.Transfer
 		
 		private readonly IToggleProvider _toggleProvider;
 		private readonly IAPILog _logger;
-		private readonly IDocumentSynchronizationConfiguration _synchronizationConfiguration;
 
-		public NonAdminCanSyncUsingLinks(IToggleProvider toggleProvider, IAPILog logger, IDocumentSynchronizationConfiguration synchronizationConfiguration)
+		public NonAdminCanSyncUsingLinks(IToggleProvider toggleProvider, IAPILog logger)
 		{
 			_toggleProvider = toggleProvider;
 			_logger = logger;
-			_synchronizationConfiguration = synchronizationConfiguration;
 		}
 		
 		public bool IsEnabled()
@@ -28,13 +25,7 @@ namespace Relativity.Sync.Transfer
 			}
 
 			bool toggleValue = _toggleProvider.IsEnabled<EnableNonAdminSyncLinksToggle>();
-			bool isCopyModeFileLinks = _synchronizationConfiguration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.SetFileLinks;
-			_logger.LogInformation("Validating if NonAdmin user can sync using Links options. Toggle EnableNonAdminSyncLinksToggle: {toggleValue}, CopyMode: {ImportNativeFileCopyMode}", toggleValue, _synchronizationConfiguration.ImportNativeFileCopyMode);
-			if (toggleValue && isCopyModeFileLinks)
-			{
-				_isEnabled = true;
-			}
-			
+			_logger.LogInformation("Toggle EnableNonAdminSyncLinksToggle: {toggleValue}", toggleValue);
 			return (bool)_isEnabled;
 		}
 	}
