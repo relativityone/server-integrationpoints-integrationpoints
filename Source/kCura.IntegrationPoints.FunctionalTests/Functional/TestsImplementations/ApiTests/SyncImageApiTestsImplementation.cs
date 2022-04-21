@@ -48,7 +48,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             {
                 OverwriteMode = DocumentOverwriteMode.AppendOverlay,
                 OverlayBehavior = DocumentOverlayBehavior.UseRelativityDefaults,
-
+                FileLocationField = string.Empty
             };
 
             _sourceWorkspace = _testsImplementationTestFixture.Workspace;
