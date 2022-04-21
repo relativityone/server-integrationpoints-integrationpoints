@@ -131,7 +131,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 					}
 				}
 			}
-			return IMAGES_FOR_LOAD_FILE_FOLDER_PATH;
+			return IMAGES_LIMITED_ITEMS_OPT_LOAD_FILE_PATH;
 		}
 
 		public static async Task UploadLoadFileToImportDirectory(int workspaceId, string testDataPath)

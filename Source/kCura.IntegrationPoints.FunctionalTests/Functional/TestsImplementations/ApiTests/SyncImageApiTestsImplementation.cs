@@ -47,12 +47,15 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             ImageImportOptions imageImportOptions = new ImageImportOptions
             {
                 OverwriteMode = DocumentOverwriteMode.AppendOverlay,
-                OverlayBehavior = DocumentOverlayBehavior.UseRelativityDefaults
+                OverlayBehavior = DocumentOverlayBehavior.UseRelativityDefaults,
+
             };
 
             _sourceWorkspace = _testsImplementationTestFixture.Workspace;
+
+            const int imagesCount = 10;
             RelativityFacade.Instance.ImportImagesFromCsv(_testsImplementationTestFixture.Workspace,
-                LoadFilesGenerator.GetOrCreateNativesOptLoadFile(), imageImportOptions);
+                LoadFilesGenerator.GetOrCreateNativesOptLoadFileWithLimitedItems(imagesCount), imageImportOptions);
 
             CreateSavedSearch(_testsImplementationTestFixture.Workspace.ArtifactID);
 
