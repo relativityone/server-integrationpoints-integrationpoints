@@ -17,7 +17,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             bool IsIntegrationPointCondition(string condition, out int integrationPointId)
             {
                 Match match = Regex.Match(condition,
-                    @"[(]'Integration Point' INTERSECTS MULTIOBJECT \[(\d+)\]");
+                   $@"'Integration Point' INTERSECTS MULTIOBJECT \[(\d+)\]");
 
                 if (match.Success && int.TryParse(match.Groups[1].Value, out int extractedId))
                 {
@@ -42,7 +42,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
                 batchInstance = null;
                 return false;
-            }
+            }          
 
             IList<JobHistoryTest> JobHistoryFilter(QueryRequest request, IList<JobHistoryTest> list)
             {

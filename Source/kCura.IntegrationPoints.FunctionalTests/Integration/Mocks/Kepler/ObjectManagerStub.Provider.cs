@@ -34,34 +34,35 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             }
 
             Mock.Setup(x => x.QueryAsync(It.IsAny<int>(),
-                   It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
+                   It.Is<QueryRequest>(r => IsSourceProviderQuery(r)), It.IsAny<int>(), It.IsAny<int>()))
                .Returns((int workspaceId, QueryRequest request, int start, int length) =>
                {
-                   bool isSourceProvider = request.ObjectType.Guid == ObjectTypeGuids.SourceProviderGuid;
+                   QueryResult result = GetRelativityObjectsForRequest(
+                       x => x.SourceProviders,
+                       SourceProviderByCondition,
+                       workspaceId,
+                       request,
+                       length);
+                   return Task.FromResult(result);
+               });
 
-                   if (isSourceProvider)
-                   {
-                       QueryResult result = GetRelativityObjectsForRequest(
-                        x => x.SourceProviders,
-                        SourceProviderByCondition,
-                        workspaceId,
-                        request,
-                        length);
-                       return Task.FromResult(result);
-                   }
-                   else
-                   {
-                       QueryResult result = GetRelativityObjectsForRequest(
-                        x => x.DestinationProviders,
-                        DestinationProviderByCondition,
-                        workspaceId,
-                        request,
-                        length);
-                       return Task.FromResult(result);
-                   }
-               }
-           );
+            Mock.Setup(x => x.QueryAsync(It.IsAny<int>(),
+                  It.Is<QueryRequest>(r => IsDestinationProviderQuery(r)), It.IsAny<int>(), It.IsAny<int>()))
+              .Returns((int workspaceId, QueryRequest request, int start, int length) =>
+              {
+                  QueryResult result = GetRelativityObjectsForRequest(
+                       x => x.DestinationProviders,
+                       DestinationProviderByCondition,
+                       workspaceId,
+                       request,
+                       length);
+                  return Task.FromResult(result);
+              });               
+           
         }
+
+        private bool IsSourceProviderQuery(QueryRequest query) => query.ObjectType.Guid == ObjectTypeGuids.SourceProviderGuid;
+        private bool IsDestinationProviderQuery(QueryRequest query) => query.ObjectType.Guid == ObjectTypeGuids.DestinationProviderGuid;
 
         private bool IsIdentifierCondition(string condition, out string identifierValue)
         {
