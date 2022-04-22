@@ -93,16 +93,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 
             SetImportMode();
 
-			//Task documentImportTask = Task.Run(() => documentService.ImportImagesFromCsv(workspace.ArtifactID, pathToFile, imageImportOptions));
+            Task documentImportTask = Task.Run(() => documentService.ImportImagesFromCsv(workspace.ArtifactID, pathToFile, imageImportOptions));
 
-
-			//if (!documentImportTask.Wait(TimeSpan.FromSeconds(documentImportTimeout)))
-			//{
-			//    throw new Exception($"IDocumentService.{nameof(documentService.ImportImagesFromCsv)} timeout ({documentImportTimeout}) exceeded.");
-			//}
-
-			documentService.ImportImagesFromCsv(workspace.ArtifactID, pathToFile, imageImportOptions);
-		}
+            if (!documentImportTask.Wait(TimeSpan.FromSeconds(documentImportTimeout)))
+            {
+                throw new Exception($"IDocumentService.{nameof(documentService.ImportImagesFromCsv)} timeout ({documentImportTimeout}) exceeded.");
+            }
+        }
 
 		public static void ProduceProduction(this IRelativityFacade instance, Workspace workspace, Testing.Framework.Models.Production production)
 		{

@@ -50,6 +50,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
                 ExtractedTextFieldContainsFilePath = false,
                 OverwriteMode = DocumentOverwriteMode.AppendOverlay,
                 OverlayBehavior = DocumentOverlayBehavior.UseRelativityDefaults,
+                FileLocationField = "Image File Path",
             };
 
             _sourceWorkspace = _testsImplementationTestFixture.Workspace;
@@ -120,7 +121,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             ImageImportOptions imageImportOptions = new ImageImportOptions
             {
                 OverwriteMode = DocumentOverwriteMode.AppendOverlay,
-                OverlayBehavior = DocumentOverlayBehavior.UseRelativityDefaults
+                OverlayBehavior = DocumentOverlayBehavior.UseRelativityDefaults,
             };
 
             RelativityFacade.Instance.ImportImagesFromCsv(_testsImplementationTestFixture.Workspace,

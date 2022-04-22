@@ -117,7 +117,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 		{
 			if (File.Exists(IMAGES_LIMITED_ITEMS_OPT_LOAD_FILE_PATH))
 			{
-				return IMAGES_FOR_LOAD_FILE_FOLDER_PATH;
+				return IMAGES_LIMITED_ITEMS_OPT_LOAD_FILE_PATH;
 			}
 
 			using (FileStream optLoadFileStream = new FileStream(IMAGES_LIMITED_ITEMS_OPT_LOAD_FILE_PATH, FileMode.Create))
