@@ -4,6 +4,7 @@ using System.Linq;
 using kCura.IntegrationPoints.Data;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Services.Choice;
+using static kCura.IntegrationPoints.Core.Constants;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelpers
 {
@@ -24,6 +25,25 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             integrationPoint.JobHistory = integrationPoint.JobHistory.Concat(new[] {jobHistory.ArtifactId}).ToArray();
             Workspace.JobHistory.Add(jobHistory);
             return jobHistory;
+        }
+
+        public void CreateJobHistoryTestCase(IntegrationPointTest integrationPoint, string destinationName, 
+            DateTime endDate, ChoiceRef status, int itemsTransferred = 0, int totalItems = 0, string overwrite = OverwriteModeNames.AppendOnlyModeName)
+        {
+            JobHistoryTest jobHistory = new JobHistoryTest
+            {
+                Name = integrationPoint.Name,
+                IntegrationPoint = new[] { integrationPoint.ArtifactId },
+                ItemsTransferred = itemsTransferred,
+                TotalItems = totalItems,
+                EndTimeUTC = endDate,
+                JobStatus = status,
+                Overwrite = overwrite,
+                DestinationWorkspace = destinationName,
+                DestinationInstance = destinationName
+            };
+            integrationPoint.JobHistory = integrationPoint.JobHistory.Concat(new[] { jobHistory.ArtifactId }).ToArray();
+            Workspace.JobHistory.Add(jobHistory);           
         }
     }
 }
