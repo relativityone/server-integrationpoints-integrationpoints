@@ -24,8 +24,8 @@ namespace Relativity.Sync.Transfer
 				return (bool)_isEnabled;
 			}
 
-			bool toggleValue = _toggleProvider.IsEnabled<EnableNonAdminSyncLinksToggle>();
-			_logger.LogInformation("Toggle EnableNonAdminSyncLinksToggle: {toggleValue}", toggleValue);
+			_isEnabled = _toggleProvider.IsEnabled<EnableNonAdminSyncLinksToggle>();
+			_logger.LogInformation("Toggle EnableNonAdminSyncLinksToggle: {toggleValue}", _isEnabled);
 			return (bool)_isEnabled;
 		}
 	}
