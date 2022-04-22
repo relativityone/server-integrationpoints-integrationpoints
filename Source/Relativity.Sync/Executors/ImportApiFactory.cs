@@ -52,10 +52,10 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 		
-		public Task<IImportAPI> CreateImportApiAsync(Uri webServiceUrl)
+		public async Task<IImportAPI> CreateImportApiAsync(Uri webServiceUrl)
 		{
 			int executingUserId = _userContextConfiguration.ExecutingUserId;
-			bool executingUserIsAdmin = _userService.ExecutingUserIsAdminAsync(_userContextConfiguration).GetAwaiter().GetResult();
+			bool executingUserIsAdmin = await _userService.ExecutingUserIsAdminAsync(executingUserId).ConfigureAwait(false);
 			if (_nonAdminCanSyncUsingLinks.IsEnabled() && !executingUserIsAdmin)
 			{
 				executingUserId = _ADMIN_USER_ID;
@@ -65,7 +65,7 @@ namespace Relativity.Sync.Executors
 			IRelativityTokenProvider relativityTokenProvider = new RelativityTokenProvider(executingUserId, _tokenGenerator);
 
 			ImportAPI importApiInstanceByToken = _extendedImportApi.CreateByTokenProvider(webServiceUrl.AbsoluteUri, relativityTokenProvider);
-			return Task.FromResult<IImportAPI>(importApiInstanceByToken);
+			return importApiInstanceByToken;
 		}
 	}
 #pragma warning restore RG2002

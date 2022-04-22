@@ -49,7 +49,7 @@ namespace Relativity.Sync.Executors.Validation
 				}
 
 				bool isRestrictReferentialFileLinksOnImport = await _instanceSettings.GetRestrictReferentialFileLinksOnImportAsync().ConfigureAwait(false);
-				bool executingUserIsAdmin = await _userService.ExecutingUserIsAdminAsync(_userContext).ConfigureAwait(false);
+				bool executingUserIsAdmin = await _userService.ExecutingUserIsAdminAsync(_userContext.ExecutingUserId).ConfigureAwait(false);
 				bool nonAdminCanSyncUsingLinks = _nonAdminCanSyncUsingLinks.IsEnabled();
 
 				_logger.LogInformation("Restrict Referential File Links on Import : {isRestricted}, User is Admin : {isAdmin}, EnableNonAdminSyncLinksToggle: {toggleValue}",

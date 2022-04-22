@@ -9,6 +9,5 @@ namespace Relativity.Sync.Executors
 		{
 			return kCura.Relativity.ImportAPI.ExtendedImportAPI.CreateByTokenProvider(webServiceUrl, relativityTokenProvider);
 		}
-
 	}
 }

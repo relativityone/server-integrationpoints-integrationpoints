@@ -19,13 +19,13 @@ namespace Relativity.Sync.Executors
 			_logger = logger;
 		}
 		
-		public async Task<bool> ExecutingUserIsAdminAsync(IUserContextConfiguration userContext)
+		public async Task<bool> ExecutingUserIsAdminAsync(int userId)
 		{
-			_logger.LogInformation("Check if User {userId} is Admin", userContext.ExecutingUserId);
+			_logger.LogInformation("Check if User {userId} is Admin", userId);
 			using (IGroupManager groupManager = await _serviceFactoryForAdmin.CreateProxyAsync<IGroupManager>().ConfigureAwait(false))
 			{
 				QueryRequest request = BuildAdminGroupsQuery();
-				QueryResultSlim result = await groupManager.QueryGroupsByUserAsync(request, 0, 1, userContext.ExecutingUserId).ConfigureAwait(false);
+				QueryResultSlim result = await groupManager.QueryGroupsByUserAsync(request, 0, 1, userId).ConfigureAwait(false);
 
 				return result.Objects.Any();
 			}

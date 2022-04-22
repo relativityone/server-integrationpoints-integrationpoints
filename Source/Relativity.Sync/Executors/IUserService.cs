@@ -5,6 +5,6 @@ namespace Relativity.Sync.Executors
 {
 	internal interface IUserService
 	{
-		Task<bool> ExecutingUserIsAdminAsync(IUserContextConfiguration userContext);
+		Task<bool> ExecutingUserIsAdminAsync(int userId);
 	}
 }

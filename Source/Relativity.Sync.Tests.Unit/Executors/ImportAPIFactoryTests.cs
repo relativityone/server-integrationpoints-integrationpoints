@@ -49,47 +49,47 @@ namespace Relativity.Sync.Tests.Unit
 		
 		[TestCase(_USER_IS_ADMIN_ID)]
 		[TestCase(_USER_IS_NON_ADMIN_ID)]
-		public void CreateImportApiAsync_ShouldCreateIapiWithUserID_WhenToggleIsDisabled(int userId)
+		public async Task CreateImportApiAsync_ShouldCreateIapiWithUserID_WhenToggleIsDisabled(int userId)
 		{
 			//ARRANGE
 			_userContextConfigurationFake.SetupGet(x => x.ExecutingUserId).Returns(userId);
 			
 			//ACT
-			_sut.CreateImportApiAsync(_WEB_SERVICE_URI);
+			await _sut.CreateImportApiAsync(_WEB_SERVICE_URI).ConfigureAwait(false);
 
 			// ASSERT
 			_syncLogMock.Verify(x => x.LogInformation("Creating IAPI as userId: {executingUserId}", userId));
 		}
 		
 		[Test]
-		public void CreateImportApiAsync_ShouldCreateIapiWithGlobalAdminUserID_WhenToggleIsEnabledAndUserIsNotAdmin()
+		public async Task CreateImportApiAsync_ShouldCreateIapiWithGlobalAdminUserID_WhenToggleIsEnabledAndUserIsNotAdmin()
 		{
 			//ARRANGE
 			int userId = _USER_IS_NON_ADMIN_ID;
 			_userContextConfigurationFake.SetupGet(x => x.ExecutingUserId).Returns(userId);
-			_userServiceFake.Setup(x => x.ExecutingUserIsAdminAsync(It.IsAny<IUserContextConfiguration>()))
+			_userServiceFake.Setup(x => x.ExecutingUserIsAdminAsync(It.IsAny<int>()))
 				.Returns(Task.FromResult(false));
 			_nonAdminCanSyncUsingLinksFake.Setup(x => x.IsEnabled()).Returns(true);
 			
 			//ACT
-			_sut.CreateImportApiAsync(_WEB_SERVICE_URI);
+			await _sut.CreateImportApiAsync(_WEB_SERVICE_URI).ConfigureAwait(false);
 
 			// ASSERT
 			_syncLogMock.Verify(x => x.LogInformation("Creating IAPI as userId: {executingUserId}", _GLOBAL_ADMIN_USER_ID));
 		}
 		
 		[Test]
-		public void CreateImportApiAsync_ShouldCreateIapiWithAdminUserID_WhenToggleIsEnabledAndUserAdmin()
+		public async Task CreateImportApiAsync_ShouldCreateIapiWithAdminUserID_WhenToggleIsEnabledAndUserAdmin()
 		{
 			//ARRANGE
 			int userId = _USER_IS_ADMIN_ID;
 			_userContextConfigurationFake.SetupGet(x => x.ExecutingUserId).Returns(userId);
-			_userServiceFake.Setup(x => x.ExecutingUserIsAdminAsync(It.IsAny<IUserContextConfiguration>()))
+			_userServiceFake.Setup(x => x.ExecutingUserIsAdminAsync(It.IsAny<int>()))
 				.Returns(Task.FromResult(true));
 			_nonAdminCanSyncUsingLinksFake.Setup(x => x.IsEnabled()).Returns(true);
 			
 			//ACT
-			_sut.CreateImportApiAsync(_WEB_SERVICE_URI);
+			await _sut.CreateImportApiAsync(_WEB_SERVICE_URI).ConfigureAwait(false);
 
 			// ASSERT
 			_syncLogMock.Verify(x => x.LogInformation("Creating IAPI as userId: {executingUserId}", _USER_IS_ADMIN_ID));

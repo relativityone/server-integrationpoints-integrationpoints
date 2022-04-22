@@ -154,7 +154,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_configurationFake.Setup(c => c.ImportImageFileCopyMode).Returns(copyMode);
 			_instanceSettingsFake.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default(bool))).ReturnsAsync(isRestrictedCopyLinksOnly);
 			_nonAdminCanSyncUsingLinksFake.Setup(t => t.IsEnabled()).Returns(toggleNonAdminCanSyncUsingLinks);
-			_userServiceFake.Setup(u => u.ExecutingUserIsAdminAsync(It.IsAny<IUserContextConfiguration>())).Returns(Task.FromResult(userId == _USER_IS_ADMIN_ID));
+			_userServiceFake.Setup(u => u.ExecutingUserIsAdminAsync(It.IsAny<int>())).Returns(Task.FromResult(userId == _USER_IS_ADMIN_ID));
 		}
 	}
 }
