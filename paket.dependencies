@@ -137,7 +137,7 @@ group Tests
 	nuget Relativity.OAuth2Client 1.5.3
 	nuget Relativity.OAuth2Client.Interfaces 1.5.3
 
-	nuget Relativity.Sync 0.9.15
+	nuget Relativity.Sync 0.9.21
 
 	//RIP packages
 	nuget IntegrationPoints.MyFirstProvider 12.3.10
