@@ -161,15 +161,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
 
         private void SetupJobHistoryTestData(IntegrationPointTest integrationPoint, string destinationName)
         {
-            SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistoryTestCase(integrationPoint, destinationName,
+            SourceWorkspace.Helpers.JobHistoryHelper.CreateCustomJobHistory(integrationPoint, destinationName,
                DateTime.Now, JobStatusChoices.JobHistoryCompleted, itemsTransferred: 17, totalItems: 17, overwrite: OverwriteModeNames.AppendOnlyModeName);
-            SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistoryTestCase(integrationPoint, destinationName,
+            SourceWorkspace.Helpers.JobHistoryHelper.CreateCustomJobHistory(integrationPoint, destinationName,
                  DateTime.Now.AddMinutes(30), JobStatusChoices.JobHistoryCompletedWithErrors, itemsTransferred: 6, totalItems: 8, overwrite: OverwriteModeNames.AppendOverlayModeName);
-            SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistoryTestCase(integrationPoint, destinationName,
+            SourceWorkspace.Helpers.JobHistoryHelper.CreateCustomJobHistory(integrationPoint, destinationName,
                 DateTime.Now.AddHours(2), JobStatusChoices.JobHistoryCompleted, itemsTransferred: 10, totalItems: 10, overwrite: OverwriteModeNames.OverlayOnlyModeName);
-            SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistoryTestCase(integrationPoint, destinationName,
+            SourceWorkspace.Helpers.JobHistoryHelper.CreateCustomJobHistory(integrationPoint, destinationName,
                 DateTime.Now.AddMinutes(10), JobStatusChoices.JobHistoryCompletedWithErrors, itemsTransferred: 2, totalItems: 5, overwrite: OverwriteModeNames.AppendOnlyModeName);
-            SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistoryTestCase(integrationPoint, destinationName,
+            SourceWorkspace.Helpers.JobHistoryHelper.CreateCustomJobHistory(integrationPoint, destinationName,
                 DateTime.Now.AddSeconds(15), JobStatusChoices.JobHistoryErrorJobFailed, itemsTransferred: 0, totalItems: 12, overwrite: OverwriteModeNames.OverlayOnlyModeName);
         }
     }

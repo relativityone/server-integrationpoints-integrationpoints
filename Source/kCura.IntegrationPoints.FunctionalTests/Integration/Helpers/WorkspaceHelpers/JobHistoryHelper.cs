@@ -27,7 +27,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return jobHistory;
         }
 
-        public void CreateJobHistoryTestCase(IntegrationPointTest integrationPoint, string destinationName, 
+        public void CreateCustomJobHistory(IntegrationPointTest integrationPoint, string destinationName, 
             DateTime endDate, ChoiceRef status, int itemsTransferred = 0, int totalItems = 0, string overwrite = OverwriteModeNames.AppendOnlyModeName)
         {
             JobHistoryTest jobHistory = new JobHistoryTest
