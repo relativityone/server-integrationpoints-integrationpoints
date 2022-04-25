@@ -8,6 +8,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Permission;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Executors.PermissionCheck;
 using Relativity.Sync.Executors.PermissionCheck.NonDocumentPermissionChecks;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.KeplerFactory;
@@ -93,7 +94,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should()
-				.Be("User does not have permission to add Job History RDOs in the source workspace.");
+				.Be(LackOfPermissionMessages._JOB_HISTORY_TYPE_NO_ADD);
 		}
 
 		[Test]
@@ -113,7 +114,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should()
-				.Be("User does not have permission to add object types in the source workspace.");
+				.Be(LackOfPermissionMessages._OBJECT_TYPE_NO_ADD);
 		}
 
 		[Test]
@@ -133,7 +134,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should()
-				.Be("User does not have permission to the Batch object type in the source workspace.");
+				.Be(LackOfPermissionMessages._BATCH_OBJECT_TYPE_ERROR);
 		}
 
 		[Test]
@@ -153,7 +154,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should()
-				.Be("User does not have permission to the Progress object type in the source workspace.");
+				.Be(LackOfPermissionMessages._PROGRESS_OBJECT_TYPE_ERROR);
 		}
 
 		[Test]
@@ -173,7 +174,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should()
-				.Be("User does not have permission to the Configuration object type in the source workspace.");
+				.Be(LackOfPermissionMessages._CONFIGURATION_TYPE_NO_ADD);
 		}
 
 		[Test]
@@ -193,7 +194,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 			actualResult.IsValid.Should().BeFalse();
 			actualResult.Messages.Should().HaveCount(1);
 			actualResult.Messages.First().ShortMessage.Should()
-				.Be("User does not have permission to export in the source workspace.");
+				.Be(LackOfPermissionMessages._SOURCE_WORKSPACE_NO_EXPORT);
 		}
 
 		[Test]

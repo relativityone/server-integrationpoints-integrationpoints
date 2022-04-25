@@ -8,6 +8,7 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Pipelines;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors.Validation
 {
@@ -15,16 +16,18 @@ namespace Relativity.Sync.Executors.Validation
 	{
 		private readonly IInstanceSettings _instanceSettings;
 		private readonly IUserContextConfiguration _userContext;
-		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
+		private readonly INonAdminCanSyncUsingLinks _nonAdminCanSyncUsingLinks;
+		private readonly IUserService _userService;
 		private readonly IAPILog _logger;
 
 		protected abstract string ValidatorKind { get; }
 
-		protected CopyLinksValidatorBase(IInstanceSettings instanceSettings, IUserContextConfiguration userContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IAPILog logger)
+		protected CopyLinksValidatorBase(IInstanceSettings instanceSettings, IUserContextConfiguration userContext, INonAdminCanSyncUsingLinks nonAdminCanSyncUsingLinks, IUserService userService, IAPILog logger)
 		{
 			_instanceSettings = instanceSettings;
 			_userContext = userContext;
-			_serviceFactoryForAdmin = serviceFactoryForAdmin;
+			_nonAdminCanSyncUsingLinks = nonAdminCanSyncUsingLinks;
+			_userService = userService;
 			_logger = logger;
 		}
 
@@ -40,18 +43,19 @@ namespace Relativity.Sync.Executors.Validation
 
 			try
 			{
-				if (ShouldValidateReferentialFileLinksRestriction(configuration))
+				if (ShouldNotValidateReferentialFileLinksRestriction(configuration))
 				{
 					return validationResult;
 				}
 
 				bool isRestrictReferentialFileLinksOnImport = await _instanceSettings.GetRestrictReferentialFileLinksOnImportAsync().ConfigureAwait(false);
-				bool executingUserIsAdmin = await ExecutingUserIsAdminAsync().ConfigureAwait(false);
+				bool executingUserIsAdmin = await _userService.ExecutingUserIsAdminAsync(_userContext.ExecutingUserId).ConfigureAwait(false);
+				bool nonAdminCanSyncUsingLinks = _nonAdminCanSyncUsingLinks.IsEnabled();
 
-				_logger.LogInformation("Restrict Referential File Links on Import : {isRestricted}, User is Admin : {isAdmin}",
-					isRestrictReferentialFileLinksOnImport, executingUserIsAdmin);
+				_logger.LogInformation("Restrict Referential File Links on Import : {isRestricted}, User is Admin : {isAdmin}, EnableNonAdminSyncLinksToggle: {toggleValue}",
+					isRestrictReferentialFileLinksOnImport, executingUserIsAdmin, nonAdminCanSyncUsingLinks);
 
-				if (isRestrictReferentialFileLinksOnImport && !executingUserIsAdmin)
+				if (isRestrictReferentialFileLinksOnImport && !executingUserIsAdmin && !nonAdminCanSyncUsingLinks)
 				{
 					validationResult.Add(_COPY_NATIVE_FILES_BY_LINKS_LACK_OF_PERMISSION);
 				}
@@ -68,29 +72,7 @@ namespace Relativity.Sync.Executors.Validation
 
 		public abstract bool ShouldValidate(ISyncPipeline pipeline);
 		
-		protected abstract bool ShouldValidateReferentialFileLinksRestriction(IValidationConfiguration configuration);
+		protected abstract bool ShouldNotValidateReferentialFileLinksRestriction(IValidationConfiguration configuration);
 
-		private async Task<bool> ExecutingUserIsAdminAsync()
-		{
-			_logger.LogInformation("Check if User {userId} is Admin", _userContext.ExecutingUserId);
-			using (IGroupManager groupManager = await _serviceFactoryForAdmin.CreateProxyAsync<IGroupManager>().ConfigureAwait(false))
-			{
-				QueryRequest request = BuildAdminGroupsQuery();
-				QueryResultSlim result = await groupManager.QueryGroupsByUserAsync(request, 0, 1, _userContext.ExecutingUserId).ConfigureAwait(false);
-
-				return result.Objects.Any();
-			}
-		}
-
-		private static QueryRequest BuildAdminGroupsQuery()
-		{
-			const string adminGroupType = "System Admin";
-			var request = new QueryRequest()
-			{
-				Condition = $"'Group Type' == '{adminGroupType}'",
-			};
-
-			return request;
-		}
 	}
 }
