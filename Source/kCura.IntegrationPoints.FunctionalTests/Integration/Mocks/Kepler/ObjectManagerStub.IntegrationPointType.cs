@@ -29,16 +29,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
 		private bool IsIntegrationPointTypeByIdentifierCondition(string condition, out string identifier)
 		{
-			Match match = Regex.Match(condition,
-				$"'{IntegrationPointTypeFields.Identifier}' == '(.*)'");
-
-			if (match.Success)
-			{
-				identifier = match.Groups[1].Value;
-				return true;
-			}
-
 			identifier = null;
+			if (!string.IsNullOrEmpty(condition))
+            {
+				Match match = Regex.Match(condition,
+			$"'{IntegrationPointTypeFields.Identifier}' == '(.*)'");
+
+				if (match.Success)
+				{
+					identifier = match.Groups[1].Value;
+					return true;
+				}
+			}	
 			return false;
 		}
 
