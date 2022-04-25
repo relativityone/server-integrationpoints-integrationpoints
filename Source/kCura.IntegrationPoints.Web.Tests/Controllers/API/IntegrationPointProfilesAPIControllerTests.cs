@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Telemetry.Services.Metrics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -31,6 +32,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		private Mock<IRelativityObjectManager> _objectManagerFake;
 		private Mock<IValidationExecutor> _validationExecutorFake;
 		private Mock<ICryptographyHelper> _cryptographyHelperFake;
+		private Mock<IAPILog> _logFake;
+		private Mock<IAPMManager> _apmManagerFake;
 
 		private IntegrationPointProfilesAPIController _sut;
 
@@ -39,9 +42,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		[SetUp]
 		public override void SetUp()
 		{
+			_apmManagerFake = new Mock<IAPMManager>();
+
 			Mock<IServicesMgr> svcMgrStub = new Mock<IServicesMgr>();
 			svcMgrStub.Setup(m => m.CreateProxy<IAPMManager>(It.IsAny<ExecutionIdentity>()))
-				.Returns(new Mock<IAPMManager>().Object);
+				.Returns(_apmManagerFake.Object);
 			svcMgrStub.Setup(m => m.CreateProxy<IMetricsManager>(It.IsAny<ExecutionIdentity>()))
 				.Returns(new Mock<IMetricsManager>().Object);
 
@@ -54,6 +59,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			_objectManagerFake = new Mock<IRelativityObjectManager>();
 			_validationExecutorFake = new Mock<IValidationExecutor>();
 			_cryptographyHelperFake = new Mock<ICryptographyHelper>();
+			_logFake = new Mock<IAPILog>();
 
 			_sut = new IntegrationPointProfilesAPIController(
 				_cpHelperFake.Object,
@@ -62,7 +68,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 				_urlHelperFake.Object,
 				_objectManagerFake.Object,
 				_validationExecutorFake.Object,
-				_cryptographyHelperFake.Object)
+				_cryptographyHelperFake.Object,
+				_logFake.Object)
 			{
 				Request = new HttpRequestMessage()
 			};
@@ -144,6 +151,35 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 			response.StatusCode.Should().Be(HttpStatusCode.NotAcceptable);
 			contentAsValidationResult.IsValid.Should().BeFalse();
 			contentAsValidationResult.Errors.Should().HaveCount(validationResult.Messages.Count());
+		}
+
+		[Test]
+		public void SaveUsingIntegrationPoint_ShouldReturnOkResponse_WhenProfileWasSavedAndCodeThrewAnError()
+		{
+			// Arrange
+			const int integrationPointArtifactID = 123123;
+			Data.IntegrationPoint integrationPoint = TestRdoGenerator.GetDefault<Data.IntegrationPoint>(integrationPointArtifactID);
+
+			_integrationPointServiceFake.Setup(m => m.ReadIntegrationPoint(integrationPointArtifactID))
+				.Returns(integrationPoint);
+
+			const int integrationPointProfileID = 100;
+			const string profileName = "Integration Point Test Profile";
+
+			_profileServiceFake.Setup(m => m.SaveIntegration(It.IsAny<IntegrationPointProfileModel>()))
+				.Returns(integrationPointProfileID);
+
+			_apmManagerFake.Setup(x => x.Dispose()).Throws<Exception>();
+
+			// Act
+			HttpResponseMessage response = _sut.SaveUsingIntegrationPoint(_WORKSPACE_ID, new IntegrationPointProfileFromIntegrationPointModel
+			{
+				IntegrationPointArtifactId = integrationPointArtifactID,
+				ProfileName = profileName
+			});
+
+			// Assert
+			response.StatusCode.Should().Be(HttpStatusCode.OK);
 		}
 	}
 }

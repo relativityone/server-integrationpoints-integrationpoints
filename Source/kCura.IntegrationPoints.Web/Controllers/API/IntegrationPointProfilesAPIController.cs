@@ -31,20 +31,22 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IRelativityObjectManager _objectManager;
 		private readonly IValidationExecutor _validationExecutor;
 		private readonly ICryptographyHelper _cryptographyHelper;
+		private readonly IAPILog _logger;
 
-		public IntegrationPointProfilesAPIController(ICPHelper cpHelper, IIntegrationPointProfileService profileService, IIntegrationPointService integrationPointService,
-			IRelativityUrlHelper urlHelper, IRelativityObjectManager objectManager, IValidationExecutor validationExecutor, ICryptographyHelper cryptographyHelper)
-		{
-			_cpHelper = cpHelper;
-			_profileService = profileService;
-			_integrationPointService = integrationPointService;
-			_urlHelper = urlHelper;
-			_objectManager = objectManager;
-			_validationExecutor = validationExecutor;
-			_cryptographyHelper = cryptographyHelper;
-		}
+        public IntegrationPointProfilesAPIController(ICPHelper cpHelper, IIntegrationPointProfileService profileService, IIntegrationPointService integrationPointService,
+            IRelativityUrlHelper urlHelper, IRelativityObjectManager objectManager, IValidationExecutor validationExecutor, ICryptographyHelper cryptographyHelper, IAPILog logger)
+        {
+            _cpHelper = cpHelper;
+            _profileService = profileService;
+            _integrationPointService = integrationPointService;
+            _urlHelper = urlHelper;
+            _objectManager = objectManager;
+            _validationExecutor = validationExecutor;
+            _cryptographyHelper = cryptographyHelper;
+            _logger = logger;
+        }
 
-		[HttpGet]
+        [HttpGet]
 		[LogApiExceptionFilter(Message = "Unable to retrieve integration point profiles.")]
 		public HttpResponseMessage GetAll()
 		{
@@ -125,30 +127,46 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to save integration point profile.")]
 		public HttpResponseMessage SaveUsingIntegrationPoint(int workspaceID, IntegrationPointProfileFromIntegrationPointModel model)
 		{
-			using (IAPMManager apmManger = _cpHelper.GetServicesManager().CreateProxy<IAPMManager>(ExecutionIdentity.CurrentUser))
-			{
-				using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
+			HttpResponseMessage response = null;
+			try
+            {
+				using (IAPMManager apmManger = _cpHelper.GetServicesManager().CreateProxy<IAPMManager>(ExecutionIdentity.CurrentUser))
 				{
-					string profileNameHash = _cryptographyHelper.CalculateHash(model.ProfileName);
-					var apmMetricProperties = new APMMetric
+					using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
 					{
-						Name =
-							Core.Constants.IntegrationPoints.Telemetry
-								.BUCKET_INTEGRATION_POINT_PROFILE_SAVE_AS_PROFILE_DURATION_METRIC_COLLECTOR,
-						CustomData = new Dictionary<string, object> { { Core.Constants.IntegrationPoints.Telemetry.CUSTOM_DATA_CORRELATIONID, profileNameHash } }
-					};
-					using (apmManger.LogTimedOperation(apmMetricProperties))
-					{
-						using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_PROFILE_SAVE_AS_PROFILE_DURATION_METRIC_COLLECTOR,
-							Guid.Empty, profileNameHash))
+						string profileNameHash = _cryptographyHelper.CalculateHash(model.ProfileName);
+						var apmMetricProperties = new APMMetric
 						{
-							IntegrationPoint integrationPoint = _integrationPointService.ReadIntegrationPoint(model.IntegrationPointArtifactId);
-							IntegrationPointProfileModel profileModel = IntegrationPointProfileModel.FromIntegrationPoint(integrationPoint, model.ProfileName);
+							Name =
+								Core.Constants.IntegrationPoints.Telemetry
+									.BUCKET_INTEGRATION_POINT_PROFILE_SAVE_AS_PROFILE_DURATION_METRIC_COLLECTOR,
+							CustomData = new Dictionary<string, object> { { Core.Constants.IntegrationPoints.Telemetry.CUSTOM_DATA_CORRELATIONID, profileNameHash } }
+						};
+						using (apmManger.LogTimedOperation(apmMetricProperties))
+						{
+							using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_PROFILE_SAVE_AS_PROFILE_DURATION_METRIC_COLLECTOR,
+								Guid.Empty, profileNameHash))
+							{
+								IntegrationPoint integrationPoint = _integrationPointService.ReadIntegrationPoint(model.IntegrationPointArtifactId);
+								IntegrationPointProfileModel profileModel = IntegrationPointProfileModel.FromIntegrationPoint(integrationPoint, model.ProfileName);
 
-							return SaveIntegrationPointProfile(workspaceID, profileModel);
+								response = SaveIntegrationPointProfile(workspaceID, profileModel);
+
+								return response;
+							}
 						}
 					}
 				}
+			}
+			catch (Exception ex)
+			{
+				if(response != null)
+				{
+					_logger.LogWarning(ex, "Error occurred in SaveUsingIntegrationPoint request, but the profile was saved.");
+					return response;
+				}
+
+				throw;
 			}
 		}
 
@@ -197,5 +215,5 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			var mapper = new ValidationResultMapper();
 			return mapper.Map(validationResult);
 		}
-	}
+    }
 }
