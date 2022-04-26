@@ -50,16 +50,20 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
                 ExtractedTextFieldContainsFilePath = false,
                 OverwriteMode = DocumentOverwriteMode.AppendOverlay,
                 OverlayBehavior = DocumentOverlayBehavior.UseRelativityDefaults,
-                FileLocationField = "Image File Path",
+                FileLocationField = "FileLocation",
+                IdentityFieldId = 0,
+                DocumentIdentifierField = "DocumentIdentifier",
+                ExtractedTextEncoding = null,
+                BatesNumberField = "BatesNumber"
             };
 
             _sourceWorkspace = _testsImplementationTestFixture.Workspace;
 
             const int imagesCount = 10;
 
-            string testDataPath = LoadFilesGenerator.GetOrCreateNativesOptLoadFileWithLimitedItems(imagesCount);
+            string testDataPath = LoadFilesGenerator.GetOrCreateImagesCsvLoadFile(imagesCount);
             string testDataDirectory = Path.GetDirectoryName(testDataPath);
-            LoadFilesGenerator.UploadLoadFileToImportDirectory(_testsImplementationTestFixture.Workspace.ArtifactID, testDataDirectory).Wait();
+            // LoadFilesGenerator.UploadLoadFileToImportDirectory(_testsImplementationTestFixture.Workspace.ArtifactID, testDataDirectory).Wait();
             RelativityFacade.Instance.ImportImagesFromCsv(_testsImplementationTestFixture.Workspace, testDataPath
                 , imageImportOptions);
 
@@ -125,7 +129,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             };
 
             RelativityFacade.Instance.ImportImagesFromCsv(_testsImplementationTestFixture.Workspace,
-                LoadFilesGenerator.GetOrCreateNativesOptLoadFileWithLimitedItems(destinationWorkspaceInitialImportCount), imageImportOptions);
+                LoadFilesGenerator.GetOrCreateImagesCsvLoadFile(destinationWorkspaceInitialImportCount), imageImportOptions);
 
             ICommonIntegrationPointDataService destinationWorkspaceDataService = new CommonIntegrationPointDataService(_serviceFactory, destinationWorkspace.ArtifactID);
 
