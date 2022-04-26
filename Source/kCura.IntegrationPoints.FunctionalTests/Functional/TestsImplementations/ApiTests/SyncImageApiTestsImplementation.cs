@@ -129,7 +129,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             };
 
             RelativityFacade.Instance.ImportImagesFromCsv(_testsImplementationTestFixture.Workspace,
-                LoadFilesGenerator.GetOrCreateImagesCsvLoadFile(destinationWorkspaceInitialImportCount), imageImportOptions);
+                LoadFilesGenerator.GetOrCreateImagesCsvLoadFileWithLimitedItems(destinationWorkspaceInitialImportCount), imageImportOptions);
 
             ICommonIntegrationPointDataService destinationWorkspaceDataService = new CommonIntegrationPointDataService(_serviceFactory, destinationWorkspace.ArtifactID);
 

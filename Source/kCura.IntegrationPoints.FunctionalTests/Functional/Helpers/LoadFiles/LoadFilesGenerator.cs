@@ -106,7 +106,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 				{
 					for (int i=0; i<10; i++)
 					{
-						string line = String.Format("IMPORT_SMALL_IMAGES_000000000{0},.\\IMAGE_62K.tif,1000000,{0},,", i);
+						string line = String.Format("IMPORT_SMALL_IMAGES_000000000{0},1000000,.\\IMAGE_62K.tif,Y,,", i);
 						optLoadFileWriter.WriteLine(line);
 					}
 				}
@@ -127,7 +127,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
                 {
                     for (int i = 0; i < limit; i++)
                     {
-                        string line = String.Format("IMPORT_SMALL_IMAGES_000000000{0},.\\IMAGE_62K.tif,1000000,{0},,", i);
+                        string line = String.Format("IMPORT_SMALL_IMAGES_000000000{0},VOL001,.\\IMAGE_62K.tif,,,,", i);
                         csvLoadFileWriter.WriteLine(line);
                     }
                 }
@@ -135,7 +135,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
             return IMAGES_CSV_LOAD_FILE_PATH;
         }
 
-		public static string GetOrCreateNativesOptLoadFileWithLimitedItems(int limit)
+		public static string GetOrCreateImagesCsvLoadFileWithLimitedItems(int limit)
 		{
 			if (File.Exists(IMAGES_LIMITED_ITEMS_CSV_LOAD_FILE_PATH))
 			{
@@ -148,7 +148,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 				{
 					for (int i=0; i< limit; i++)
 					{
-						string line = String.Format("IMPORT_SMALL_IMAGES_000000000{0},1000000,.\\IMAGE_62K.tif,Y,,", i);
+						string line = String.Format("IMPORT_SMALL_IMAGES_000000000{0},VOL001,.\\IMAGE_62K.tif,,,,", i);
 						optLoadFileWriter.WriteLine(line);
 					}
 				}
