@@ -34,13 +34,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             //Assert
             result.Should().NotBeNull();
             result.Count().Should().Be(expectedIntegrationPointTypes.Count());
-            for(int i = 0; i< result.Count(); i++)
-            {
-                result[i].ArtifactId.Should().Be(expectedIntegrationPointTypes[i].ArtifactId);
-                result[i].Name.Should().Be(expectedIntegrationPointTypes[i].Name);
-            }
+            result.ShouldAllBeEquivalentTo(expectedIntegrationPointTypes);            
         }
-
-
     }
 }
