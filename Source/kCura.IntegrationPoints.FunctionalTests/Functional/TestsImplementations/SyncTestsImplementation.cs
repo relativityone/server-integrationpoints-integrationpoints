@@ -22,16 +22,21 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data;
 using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Interfaces.Shared.Models;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoint.Tests.Core.Validators;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 {
     internal class SyncTestsImplementation
-    {
+    {       
         private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
         private readonly Dictionary<string, Workspace> _destinationWorkspaces = new Dictionary<string, Workspace>();
 
+        private readonly ITestHelper testHelper;
+
         public SyncTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture)
         {
+            testHelper = new Lazy<ITestHelper>(() => new TestHelper()).Value;            
             _testsImplementationTestFixture = testsImplementationTestFixture;
         }
 
@@ -102,6 +107,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             GetCorrectlyTaggedDocumentsCount(sourceDocs, "Relativity Destination Case", expectedDestinationCaseTag).Should().Be(transferredItemsCount);
             GetCorrectlyTaggedDocumentsCount(destinationDocs, "Relativity Source Case", expectedSourceCaseTag).Should().Be(transferredItemsCount);
             GetCorrectlyTaggedDocumentsCount(destinationDocs, "Relativity Source Job", expectedSourceJobTag).Should().Be(transferredItemsCount);
+
+            FileBillingFlagValidator documentFlagValidator = new FileBillingFlagValidator(testHelper, destinationWorkspace.ArtifactID);
+            documentFlagValidator.AssertFiles(true);
         }
 
         public void ProductionImagesGoldFlow()
