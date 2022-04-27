@@ -61,11 +61,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 
             const int imagesCount = 10;
 
-            string testDataPath = LoadFilesGenerator.GetOrCreateImagesCsvLoadFile(imagesCount);
-            string testDataDirectory = Path.GetDirectoryName(testDataPath);
+            string testDataPath = LoadFilesGenerator.GetOrCreateNativesOptLoadFile(imagesCount);
+
+            // string testDataDirectory = Path.GetDirectoryName(testDataPath);
             // LoadFilesGenerator.UploadLoadFileToImportDirectory(_testsImplementationTestFixture.Workspace.ArtifactID, testDataDirectory).Wait();
-            RelativityFacade.Instance.ImportImagesFromCsv(_testsImplementationTestFixture.Workspace, testDataPath
-                , imageImportOptions);
+            RelativityFacade.Instance.ImportImages(_testsImplementationTestFixture.Workspace, testDataPath
+                , imageImportOptions, imagesCount);
 
             CreateSavedSearch(_testsImplementationTestFixture.Workspace.ArtifactID);
 

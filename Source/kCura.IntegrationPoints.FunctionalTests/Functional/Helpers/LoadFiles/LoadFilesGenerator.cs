@@ -17,6 +17,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 	{
 		private const string NATIVES_LOAD_FILE_HEADER = "Control Number,FILE_PATH";
 		private const string NATIVES_DAT_LOAD_FILE_HEADER = "^Control Number^|^FILE_PATH^|^File Size^|^File Name^|^Folder_Path^";
+		private const string IMAGES_CSV_LOAD_FILE_HEADER = "^BatesNumber^|^FileLocation^|^DocumentIdentifier^|^File Name^|^Folder_Path^";
 
 		private static readonly string NATIVES_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles\NativesLoadFile.csv");
 		private static readonly string NATIVES_LIMITED_ITEMS_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles\NativesPartialDataLoadFile.csv");
@@ -93,25 +94,25 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 			return NATIVES_FOR_LOAD_FILE_FOLDER_PATH;
 		}
 
-		public static string GetOrCreateNativesOptLoadFile()
+		public static string GetOrCreateNativesOptLoadFile(int numberOfImages = 10)
 		{
 			if (File.Exists(IMAGES_OPT_LOAD_FILE_PATH))
 			{
-				return IMAGES_FOR_LOAD_FILE_FOLDER_PATH;
+				return IMAGES_OPT_LOAD_FILE_PATH;
 			}
 
 			using (FileStream optLoadFileStream = new FileStream(IMAGES_OPT_LOAD_FILE_PATH, FileMode.Create))
 			{
 				using (StreamWriter optLoadFileWriter = new StreamWriter(optLoadFileStream))
 				{
-					for (int i=0; i<10; i++)
+					for (int i=0; i< numberOfImages; i++)
 					{
 						string line = String.Format("IMPORT_SMALL_IMAGES_000000000{0},1000000,.\\IMAGE_62K.tif,Y,,", i);
 						optLoadFileWriter.WriteLine(line);
 					}
 				}
 			}
-			return IMAGES_FOR_LOAD_FILE_FOLDER_PATH;
+			return IMAGES_OPT_LOAD_FILE_PATH;
 		}
 
         public static string GetOrCreateImagesCsvLoadFile(int limit)
@@ -125,7 +126,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
             {
                 using (StreamWriter csvLoadFileWriter = new StreamWriter(csvLoadFileStream))
                 {
-                    for (int i = 0; i < limit; i++)
+                    csvLoadFileWriter.WriteLine(NATIVES_DAT_LOAD_FILE_HEADER);
+
+					for (int i = 0; i < limit; i++)
                     {
                         string line = String.Format("IMPORT_SMALL_IMAGES_000000000{0},VOL001,.\\IMAGE_62K.tif,,,,", i);
                         csvLoadFileWriter.WriteLine(line);
@@ -135,7 +138,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
             return IMAGES_CSV_LOAD_FILE_PATH;
         }
 
-		public static string GetOrCreateImagesCsvLoadFileWithLimitedItems(int limit)
+        public static string GetOrCreateImagesCsvLoadFileWithLimitedItems(int limit)
 		{
 			if (File.Exists(IMAGES_LIMITED_ITEMS_CSV_LOAD_FILE_PATH))
 			{
@@ -155,6 +158,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 			}
 			return IMAGES_LIMITED_ITEMS_CSV_LOAD_FILE_PATH;
 		}
+
 
 		public static async Task UploadLoadFileToImportDirectory(int workspaceId, string testDataPath)
         {
