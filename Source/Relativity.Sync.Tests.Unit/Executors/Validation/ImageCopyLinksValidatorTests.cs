@@ -23,7 +23,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 		private Mock<IInstanceSettings> _instanceSettingsFake;
 		private Mock<IUserContextConfiguration> _userContextFake;
-		private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdminFake;
 
 		private Mock<IValidationConfiguration> _configurationFake;
 		private Mock<IGroupManager> _groupManagerFake;
@@ -39,10 +38,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_instanceSettingsFake = new Mock<IInstanceSettings>();
 			_userContextFake = new Mock<IUserContextConfiguration>();
 			_groupManagerFake = new Mock<IGroupManager>();
-
-			_serviceFactoryForAdminFake = new Mock<ISourceServiceFactoryForAdmin>();
-			_serviceFactoryForAdminFake.Setup(s => s.CreateProxyAsync<IGroupManager>()).ReturnsAsync(_groupManagerFake.Object);
-
+			
 			_configurationFake = new Mock<IValidationConfiguration>();
 
 			_nonAdminCanSyncUsingLinksFake = new Mock<INonAdminCanSyncUsingLinks>();
@@ -51,7 +47,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_sut = new ImageCopyLinksValidator(
 				_instanceSettingsFake.Object,
 				_userContextFake.Object,
-				_serviceFactoryForAdminFake.Object,
 				_nonAdminCanSyncUsingLinksFake.Object,
 				_userServiceFake.Object,
 				new EmptyLogger());

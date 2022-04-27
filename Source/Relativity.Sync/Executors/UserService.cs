@@ -13,7 +13,7 @@ namespace Relativity.Sync.Executors
 		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 		private readonly IAPILog _logger;
 		
-		internal UserService(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IAPILog logger)
+		public UserService(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IAPILog logger)
 		{
 			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_logger = logger;
