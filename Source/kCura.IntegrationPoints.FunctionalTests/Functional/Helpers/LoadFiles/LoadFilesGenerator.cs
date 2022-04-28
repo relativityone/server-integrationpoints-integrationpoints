@@ -23,10 +23,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 		private static readonly string NATIVES_LIMITED_ITEMS_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles\NativesPartialDataLoadFile.csv");
 		private static readonly string NATIVES_DAT_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles\NativesLoadFile.dat");
 		private static readonly string IMAGES_OPT_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\Images\ImagesLoadFile.opt");
-		private static readonly string IMAGES_CSV_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\Images\ImagesLoadFile.csv");
-		private static readonly string IMAGES_LIMITED_ITEMS_CSV_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\Images\ImagesPartialLoadFile.csv");
-		private static readonly string NATIVES_FOR_LOAD_FILE_FOLDER_PATH = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\LoadFiles");
-		private static readonly string IMAGES_FOR_LOAD_FILE_FOLDER_PATH = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\Images");
+		private static readonly string IMAGES_OPT_LIMITED_ITEMS_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\Images\ImagesPartialDataLoadFile.opt");
+        private static readonly string NATIVES_FOR_LOAD_FILE_FOLDER_PATH = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\LoadFiles");
 
 		public static string CreateNativesLoadFileWithLimitedItems(int limit)
 		{
@@ -115,52 +113,28 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 			return IMAGES_OPT_LOAD_FILE_PATH;
 		}
 
-        public static string GetOrCreateImagesCsvLoadFile(int limit)
+        public static string GetOrCreateNativesOptLoadFileWithLimitedItems(int numberOfImages = 10)
         {
-            if (File.Exists(IMAGES_CSV_LOAD_FILE_PATH))
+            if (File.Exists(IMAGES_OPT_LIMITED_ITEMS_LOAD_FILE_PATH))
             {
-                return IMAGES_CSV_LOAD_FILE_PATH;
+                return IMAGES_OPT_LIMITED_ITEMS_LOAD_FILE_PATH;
             }
 
-            using (FileStream csvLoadFileStream = new FileStream(IMAGES_CSV_LOAD_FILE_PATH, FileMode.Create))
+            using (FileStream optLoadFileStream = new FileStream(IMAGES_OPT_LIMITED_ITEMS_LOAD_FILE_PATH, FileMode.Create))
             {
-                using (StreamWriter csvLoadFileWriter = new StreamWriter(csvLoadFileStream))
+                using (StreamWriter optLoadFileWriter = new StreamWriter(optLoadFileStream))
                 {
-                    csvLoadFileWriter.WriteLine(NATIVES_DAT_LOAD_FILE_HEADER);
-
-					for (int i = 0; i < limit; i++)
+                    for (int i = 0; i < numberOfImages; i++)
                     {
-                        string line = String.Format("IMPORT_SMALL_IMAGES_000000000{0},VOL001,.\\IMAGE_62K.tif,,,,", i);
-                        csvLoadFileWriter.WriteLine(line);
+                        string line = String.Format("IMPORT_SMALL_IMAGES_000000000{0},1000000,.\\IMAGE_62K.tif,Y,,", i);
+                        optLoadFileWriter.WriteLine(line);
                     }
                 }
             }
-            return IMAGES_CSV_LOAD_FILE_PATH;
+            return IMAGES_OPT_LIMITED_ITEMS_LOAD_FILE_PATH;
         }
 
-        public static string GetOrCreateImagesCsvLoadFileWithLimitedItems(int limit)
-		{
-			if (File.Exists(IMAGES_LIMITED_ITEMS_CSV_LOAD_FILE_PATH))
-			{
-				return IMAGES_LIMITED_ITEMS_CSV_LOAD_FILE_PATH;
-			}
-
-			using (FileStream optLoadFileStream = new FileStream(IMAGES_LIMITED_ITEMS_CSV_LOAD_FILE_PATH, FileMode.Create))
-			{
-				using (StreamWriter optLoadFileWriter = new StreamWriter(optLoadFileStream))
-				{
-					for (int i=0; i< limit; i++)
-					{
-						string line = String.Format("IMPORT_SMALL_IMAGES_000000000{0},VOL001,.\\IMAGE_62K.tif,,,,", i);
-						optLoadFileWriter.WriteLine(line);
-					}
-				}
-			}
-			return IMAGES_LIMITED_ITEMS_CSV_LOAD_FILE_PATH;
-		}
-
-
-		public static async Task UploadLoadFileToImportDirectory(int workspaceId, string testDataPath)
+        public static async Task UploadLoadFileToImportDirectory(int workspaceId, string testDataPath)
         {
 			string destinationPath;
 			using (var proxy = RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory.GetServiceProxy<IWorkspaceManager>())

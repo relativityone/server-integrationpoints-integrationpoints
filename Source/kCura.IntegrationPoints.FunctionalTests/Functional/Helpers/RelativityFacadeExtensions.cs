@@ -85,23 +85,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 			}
 		}
 
-        public static void ImportImagesFromCsv(this IRelativityFacade instance, Workspace workspace, string pathToFile,
-            ImageImportOptions imageImportOptions)
-        {
-            IDocumentService documentService = instance.Resolve<IDocumentService>();
-
-            int documentImportTimeout = TestConfig.DocumentImportTimeout;
-
-            SetImportMode();
-
-            Task documentImportTask = Task.Run(() => documentService.ImportImagesFromCsv(workspace.ArtifactID, pathToFile, imageImportOptions));
-
-            if (!documentImportTask.Wait(TimeSpan.FromSeconds(documentImportTimeout)))
-            {
-                throw new Exception($"IDocumentService.{nameof(documentService.ImportImagesFromCsv)} timeout ({documentImportTimeout}) exceeded.");
-            }
-        }
-
         public static void ImportImages(this IRelativityFacade instance, Workspace workspace, string pathToFile,
             ImageImportOptions imageImportOptions, int imagesCount)
         {
@@ -129,7 +112,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 
             if (!documentImportTask.Wait(TimeSpan.FromSeconds(documentImportTimeout)))
             {
-                throw new Exception($"IDocumentService.{nameof(documentService.ImportImagesFromCsv)} timeout ({documentImportTimeout}) exceeded.");
+                throw new Exception($"IDocumentService.{nameof(documentService.ImportImages)} timeout ({documentImportTimeout}) exceeded.");
             }
         }
 
