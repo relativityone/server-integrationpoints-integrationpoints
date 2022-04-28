@@ -20,7 +20,7 @@ namespace Relativity.Sync.Tests.Unit
 		private const int WORKSPACE_ID = 5;
 
 		private Mock<IAPILog> _loggerMock;
-		private ImageFileRepositoryKepler _sut;
+		private ImageFileRepository _sut;
 		private Mock<ISearchService> _searchServiceMock;
 		private Mock<ISourceServiceFactoryForUser> _serviceFactoryForUserMock;
 
@@ -37,7 +37,7 @@ namespace Relativity.Sync.Tests.Unit
 
 			SyncJobParameters parameters = new SyncJobParameters(It.IsAny<int>(), It.IsAny<int>(), Guid.NewGuid());
 
-			_sut = new ImageFileRepositoryKepler(_serviceFactoryForUserMock.Object, _loggerMock.Object, parameters);
+			_sut = new ImageFileRepository(_serviceFactoryForUserMock.Object, _loggerMock.Object, parameters);
 		}
 
 		[Test]
