@@ -35,58 +35,14 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 
         public async Task RunAndRetryIntegrationPoint()
         {
-            //0. Arrange test
-            const int destinationWorkspaceInitialImportCount = 4;
+            void ImportAction(Workspace destinationWorkspace)
+            {
+                const int destinationWorkspaceInitialImportCount = 4;
+                RelativityFacade.Instance.
+                    ImportDocumentsFromCsv(destinationWorkspace, LoadFilesGenerator.CreateNativesLoadFileWithLimitedItems(destinationWorkspaceInitialImportCount), overwriteMode: DocumentOverwriteMode.AppendOverlay);
+            }
 
-            Workspace destinationWorkspace = RelativityFacade.Instance.CreateWorkspace($"SYNC - {Guid.NewGuid()}", _testsImplementationTestFixture.Workspace.Name);
-            _destinationWorkspaces.Add(destinationWorkspace);
-
-            RelativityFacade.Instance.ImportDocumentsFromCsv(destinationWorkspace,
-                LoadFilesGenerator.CreateNativesLoadFileWithLimitedItems(destinationWorkspaceInitialImportCount),
-                overwriteMode: DocumentOverwriteMode.AppendOverlay);
-
-            ICommonIntegrationPointDataService destinationWorkspaceDataService = new CommonIntegrationPointDataService(_serviceFactory, destinationWorkspace.ArtifactID);
-
-            string integrationPointName = $"{nameof(RunAndRetryIntegrationPoint)} - {Guid.NewGuid()}";
-
-            //1. Job first run:
-
-            // Arrange
-            List<RelativityObject> sourceWorkspaceAlldocs = await GetDocumentsFromWorkspace(_sourceWorkspace.ArtifactID).ConfigureAwait(false);
-            List<RelativityObject> destinationWorkspaceAllDocs = await GetDocumentsFromWorkspace(destinationWorkspace.ArtifactID).ConfigureAwait(false);
-
-            IntegrationPointModel integrationPoint = await PrepareIntegrationPointModel(integrationPointName,
-                    ImportOverwriteModeEnum.OverlayOnly, destinationWorkspaceDataService)
-                .ConfigureAwait(false);
-            
-            await _ripApi.CreateIntegrationPointAsync(integrationPoint, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
-
-            int expectedItemErrorsToRetry = sourceWorkspaceAlldocs.Count() - destinationWorkspaceAllDocs.Count();
-
-            // Act
-            int jobHistoryId = await _ripApi.RunIntegrationPointAsync(integrationPoint, _sourceWorkspace.ArtifactID).ConfigureAwait(false);
-
-            // Assert
-            await _ripApi.WaitForJobToFinishAsync(jobHistoryId, _sourceWorkspace.ArtifactID,
-                expectedStatus: JobStatusChoices.JobHistoryCompletedWithErrors.Name).ConfigureAwait(false);
-
-            (int RunTransferredItems, int RunItemsWithErrors) = await GetTransferredItemsFromJobHistory(jobHistoryId).ConfigureAwait(false);
-
-            RunItemsWithErrors.Should().Be(expectedItemErrorsToRetry);
-
-            //2. Job retry:
-
-            // Act
-            int retryJobHistoryId = await _ripApi.RetryIntegrationPointAsync(integrationPoint, _sourceWorkspace.ArtifactID, true);
-
-            // Assert
-            await _ripApi.WaitForJobToFinishAsync(retryJobHistoryId, _sourceWorkspace.ArtifactID,
-                expectedStatus: JobStatusChoices.JobHistoryCompleted.Name).ConfigureAwait(false);
-
-            (int RetryTransferredItems, int RetryItemsWithErrors) = await GetTransferredItemsFromJobHistory(retryJobHistoryId).ConfigureAwait(false);
-
-            RetryItemsWithErrors.Should().Be(0);
-            RetryTransferredItems.Should().Be(expectedItemErrorsToRetry);
+            await RunAndRetryIntegrationPointExecution(ImportAction);
         }
     }
 }
