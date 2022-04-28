@@ -113,6 +113,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 
             DataTable dataTable = new DataTable();
 
+            dataTable.Columns.Add(imageImportOptions.BatesNumberField);
+            dataTable.Columns.Add(imageImportOptions.DocumentIdentifierField);
+            dataTable.Columns.Add(imageImportOptions.FileLocationField);
+
             for (int i = 0; i < imagesCount; i++)
             {
                 dataTable.Rows.Add(
@@ -121,8 +125,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
                     pathToFile);
             }
 
-
-			Task documentImportTask = Task.Run(() => documentService.ImportImages(workspace.ArtifactID, dataTable, imageImportOptions));
+            Task documentImportTask = Task.Run(() => documentService.ImportImages(workspace.ArtifactID, dataTable, imageImportOptions));
 
             if (!documentImportTask.Wait(TimeSpan.FromSeconds(documentImportTimeout)))
             {
