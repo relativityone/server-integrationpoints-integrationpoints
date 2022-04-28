@@ -28,12 +28,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
         private readonly IKeplerServiceFactory _serviceFactory;
         private readonly IRipApi _ripApi;
         private readonly IList<Workspace> _destinationWorkspaces = new List<Workspace>();
-
-        internal readonly ITestsImplementationTestFixture TestsImplementationTestFixture;
+        private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
 
         internal SyncApiTestsImplementationBase(ITestsImplementationTestFixture testsImplementationTestFixture)
         {
-            TestsImplementationTestFixture = testsImplementationTestFixture;
+            _testsImplementationTestFixture = testsImplementationTestFixture;
             _serviceFactory = RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory;
             _ripApi = new RipApi(_serviceFactory);
         }
@@ -44,10 +43,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 
         protected void OneTimeSetupExecution(Action importAction)
         {
-            _sourceWorkspace = TestsImplementationTestFixture.Workspace;
+            _sourceWorkspace = _testsImplementationTestFixture.Workspace;
             importAction();
 
-            CreateSavedSearch(TestsImplementationTestFixture.Workspace.ArtifactID);
+            CreateSavedSearch(_testsImplementationTestFixture.Workspace.ArtifactID);
 
             _sourceWorkspaceDataService = new CommonIntegrationPointDataService(_serviceFactory, _sourceWorkspace.ArtifactID);
         }
@@ -63,7 +62,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
         public async Task RunIntegrationPoint()
         {
             // Arrange
-            Workspace destinationWorkspace = RelativityFacade.Instance.CreateWorkspace($"SYNC - {Guid.NewGuid()}", TestsImplementationTestFixture.Workspace.Name);
+            Workspace destinationWorkspace = RelativityFacade.Instance.CreateWorkspace($"SYNC - {Guid.NewGuid()}", _testsImplementationTestFixture.Workspace.Name);
             _destinationWorkspaces.Add(destinationWorkspace);
 
             ICommonIntegrationPointDataService destinationWorkspaceDataService = new CommonIntegrationPointDataService(_serviceFactory, destinationWorkspace.ArtifactID);
@@ -97,7 +96,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
         protected async Task RunAndRetryIntegrationPointExecution(Action<Workspace> importAction)
         {
             //0. Arrange test
-            Workspace destinationWorkspace = RelativityFacade.Instance.CreateWorkspace($"SYNC - {Guid.NewGuid()}", TestsImplementationTestFixture.Workspace.Name);
+            Workspace destinationWorkspace = RelativityFacade.Instance.CreateWorkspace($"SYNC - {Guid.NewGuid()}", _testsImplementationTestFixture.Workspace.Name);
             _destinationWorkspaces.Add(destinationWorkspace);
 
             importAction(destinationWorkspace);

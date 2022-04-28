@@ -8,16 +8,19 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 {
     internal class SyncApiTestsImplementation : SyncApiTestsImplementationBase
     {
+        private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
+
         public SyncApiTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture) : 
             base(testsImplementationTestFixture)
         {
+            _testsImplementationTestFixture = testsImplementationTestFixture;
         }
 
         public override void OneTimeSetup()
         {
             void ImportAction()
             {
-                RelativityFacade.Instance.ImportDocumentsFromCsv(TestsImplementationTestFixture.Workspace,
+                RelativityFacade.Instance.ImportDocumentsFromCsv(_testsImplementationTestFixture.Workspace,
                     LoadFilesGenerator.GetOrCreateNativesLoadFile(), overwriteMode: DocumentOverwriteMode.AppendOverlay);
             }
 
