@@ -1,15 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using FluentAssertions;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Synchronizers.RDO;
-using Relativity.IntegrationPoints.Services;
+﻿using System.Threading.Tasks;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
-using Relativity.IntegrationPoints.Tests.Functional.Helpers.API;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Models;
 
@@ -17,6 +8,18 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 {
     internal class SyncImageApiTestsImplementation : SyncApiTestsImplementationBase
     {
+        private readonly ImageImportOptions _imageImportOptions = new ImageImportOptions
+        {
+            ExtractedTextFieldContainsFilePath = false,
+            OverwriteMode = DocumentOverwriteMode.AppendOverlay,
+            OverlayBehavior = DocumentOverlayBehavior.UseRelativityDefaults,
+            FileLocationField = "FileLocation",
+            IdentityFieldId = 0,
+            DocumentIdentifierField = "DocumentIdentifier",
+            ExtractedTextEncoding = null,
+            BatesNumberField = "BatesNumber"
+        };
+
         public SyncImageApiTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture) : 
             base(testsImplementationTestFixture)
         {
@@ -24,28 +27,16 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 
         public void OneTimeSetup()
         {
-            ImageImportOptions imageImportOptions = new ImageImportOptions
+            void ImportAction()
             {
-                ExtractedTextFieldContainsFilePath = false,
-                OverwriteMode = DocumentOverwriteMode.AppendOverlay,
-                OverlayBehavior = DocumentOverlayBehavior.UseRelativityDefaults,
-                FileLocationField = "FileLocation",
-                IdentityFieldId = 0,
-                DocumentIdentifierField = "DocumentIdentifier",
-                ExtractedTextEncoding = null,
-                BatesNumberField = "BatesNumber"
-            };
+                const int imagesCount = 10;
+                
+                string testDataPath = LoadFilesGenerator.GetOrCreateNativesOptLoadFile();
+                RelativityFacade.Instance.ImportImages(TestsImplementationTestFixture.Workspace, testDataPath
+                    , _imageImportOptions, imagesCount);
+            }
 
-            _sourceWorkspace = _testsImplementationTestFixture.Workspace;
-
-            const int imagesCount = 10;
-            string testDataPath = LoadFilesGenerator.GetOrCreateNativesOptLoadFile();
-            RelativityFacade.Instance.ImportImages(_testsImplementationTestFixture.Workspace, testDataPath
-                , imageImportOptions, imagesCount);
-
-            CreateSavedSearch(_testsImplementationTestFixture.Workspace.ArtifactID);
-
-            _sourceWorkspaceDataService = new CommonIntegrationPointDataService(_serviceFactory, _sourceWorkspace.ArtifactID);
+            OneTimeSetupExecution(ImportAction);
         }
 
         public async Task RunAndRetryIntegrationPoint()
@@ -53,20 +44,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             void ImportAction(Workspace destinationWorkspace)
             {
                 const int destinationWorkspaceInitialImportCount = 4;
-                ImageImportOptions imageImportOptions = new ImageImportOptions
-                {
-                    ExtractedTextFieldContainsFilePath = false,
-                    OverwriteMode = DocumentOverwriteMode.AppendOverlay,
-                    OverlayBehavior = DocumentOverlayBehavior.UseRelativityDefaults,
-                    FileLocationField = "FileLocation",
-                    IdentityFieldId = 0,
-                    DocumentIdentifierField = "DocumentIdentifier",
-                    ExtractedTextEncoding = null,
-                    BatesNumberField = "BatesNumber"
-                };
                 string testDataPath = LoadFilesGenerator.GetOrCreateNativesOptLoadFileWithLimitedItems(destinationWorkspaceInitialImportCount);
-                RelativityFacade.Instance.ImportImages(_testsImplementationTestFixture.Workspace, testDataPath
-                    , imageImportOptions, destinationWorkspaceInitialImportCount);
+                RelativityFacade.Instance.ImportImages(TestsImplementationTestFixture.Workspace, testDataPath
+                    , _imageImportOptions, destinationWorkspaceInitialImportCount);
             }
 
             await RunAndRetryIntegrationPointExecution(ImportAction);
