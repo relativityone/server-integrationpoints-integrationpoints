@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using kCura.IntegrationPoints.Data.Toggles;
 using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.Testing.Identification;
@@ -48,25 +47,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 		{
 			_testsImplementation.ProductionImagesGoldFlow();
 		}
-
-		[Test]
-		public async Task Production_Images_WithKeplerizedImportAPI()
-		{
-			IToggleProvider toggleProvider = SqlToggleProvider.Create();
-			try
-            {
-                SetIAPICommunicationMode(IAPICommunicationMode.ForceKepler);
-				await toggleProvider.SetAsync<EnableKeplerizedImportAPIToggle>(true).ConfigureAwait(false);
-
-				_testsImplementation.ProductionImagesGoldFlow();
-			}
-			finally
-			{
-				await toggleProvider.SetAsync<EnableKeplerizedImportAPIToggle>(false).ConfigureAwait(false);
-                SetIAPICommunicationMode(IAPICommunicationMode.WebAPI);
-			}
-		}
-
+		
 		[Test]
 		public async Task Entities_GoldFlow()
 		{

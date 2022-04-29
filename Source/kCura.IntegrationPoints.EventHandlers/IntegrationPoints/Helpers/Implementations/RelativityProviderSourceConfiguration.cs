@@ -24,18 +24,18 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 		private const string _SOURCE_RELATIVITY_INSTANCE = "SourceRelativityInstance";
 		private const string _RELATIVITY_THIS_INSTANCE = "This instance";
 
-		private readonly Func<IProductionManager> _productionManagerFactory;
+		private readonly IProductionManager _productionManager;
 		private readonly IManagerFactory _managerFactory;
 		private readonly IInstanceSettingsManager _instanceSettingsManager;
 
 		public RelativityProviderSourceConfiguration(
 			IEHHelper helper,
-			Func<IProductionManager> productionManagerFactory,
+			IProductionManager productionManager,
 			IManagerFactory managerFactory,
 			IInstanceSettingsManager instanceSettingsManager)
 			: base(helper)
 		{
-			_productionManagerFactory = productionManagerFactory;
+			_productionManager = productionManager;
 			_managerFactory = managerFactory;
 			_instanceSettingsManager = instanceSettingsManager;
 		}
@@ -145,9 +145,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 		private string GetProductionSetNameById(int workspaceId, int productionId)
 		{
-			IProductionManager productionManager = _productionManagerFactory();
-
-			ProductionDTO production = productionManager.RetrieveProduction(workspaceId, productionId);
+			ProductionDTO production = _productionManager.RetrieveProduction(workspaceId, productionId);
 
 			return production?.DisplayName;
 		}
