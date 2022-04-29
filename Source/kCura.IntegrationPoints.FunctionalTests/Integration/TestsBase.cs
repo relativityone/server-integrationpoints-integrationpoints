@@ -291,6 +291,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
             Container.Register(Component.For<IImageFileSizeStatistics>().ImplementedBy<FakeDocumentStatistics>().Named("IImageFileSizeStatistics").LifestyleTransient().IsDefault());
             Container.Register(Component.For<INativeFileSizeStatistics>().ImplementedBy<FakeDocumentStatistics>().Named("INativeFileSizeStatistics").LifestyleTransient().IsDefault());
             Container.Register(Component.For<IStatisticsManager>().ImplementedBy<StatisticsManager>().LifestyleTransient());
+			Container.Register(Component.For<IProviderManager>().ImplementedBy<ProviderManager>().LifestyleTransient());
 		}
 
 		private void SetupGlobalSettings()
