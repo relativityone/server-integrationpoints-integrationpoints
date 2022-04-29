@@ -31,13 +31,14 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
         {
             SqlConnection connection = CreateConnectionFromAppConfig(workspaceArtifactId);
             DataTable dataTable = new DataTable();
-
-            connection.Open();
-            using (SqlCommand command = new SqlCommand(sqlQuery, connection))
-            {                             
-                dataTable.Load(command.ExecuteReader());                
-            }
-            connection.Close();
+            using (connection)
+            {
+                connection.Open();
+                using (SqlCommand command = new SqlCommand(sqlQuery, connection))
+                {
+                    dataTable.Load(command.ExecuteReader());
+                }
+            }           
             return dataTable;
         }
     }
