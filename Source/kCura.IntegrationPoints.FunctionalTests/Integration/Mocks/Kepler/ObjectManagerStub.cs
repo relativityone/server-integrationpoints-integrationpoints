@@ -255,6 +255,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     collectionGetter(workspace).Where(x => artifactIds.Contains(x.ArtifactId))
                     , foundObjects);
             }
+            else if(string.IsNullOrEmpty(request.Condition) && request.ObjectType.Guid == ObjectTypeGuids.IntegrationPointTypeGuid)
+            {
+                AddRelativityObjectsToResult(collectionGetter(workspace), foundObjects);
+            }
 
             return foundObjects;
         }
@@ -282,7 +286,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     collectionGetter(workspace).Where(x => artifactIds.Contains(x.ArtifactId))
                     , foundObjects);
             }
-
             return foundObjects;
         }
 
@@ -294,33 +297,37 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
         private bool IsArtifactIdCondition(string condition, out int artifactId)
         {
-            var match = Regex.Match(condition,
-          @"'Artifact[ ]?ID' == (\d+)");
-
-            if (match.Success && int.TryParse(match.Groups[1].Value, out int extractedArtifactId))
-            {
-                artifactId = extractedArtifactId;
-                return true;
-            }
-
             artifactId = -1;
+            if (!string.IsNullOrEmpty(condition))
+            {
+                var match = Regex.Match(condition,
+               @"'Artifact[ ]?ID' == (\d+)");
+
+                if (match.Success && int.TryParse(match.Groups[1].Value, out int extractedArtifactId))
+                {
+                    artifactId = extractedArtifactId;
+                    return true;
+                }
+            }
             return false;
         }
 
         private bool IsArtifactIdListCondition(string condition, out int[] artifactId)
         {
-            var match = Regex.Match(condition,
-          @"'Artifact[ ]?ID' in \[(.*)\]");
-
-            if (match.Success)
-            {
-                artifactId = match.Groups[1].Value.Split(',').Select(x => int.TryParse(x, out int r) ? r : -1)
-                    .Where(x => x > 0)
-                    .ToArray();
-                return true;
-            }
-
             artifactId = new int[0];
+            if (!string.IsNullOrEmpty(condition))
+            {
+                var match = Regex.Match(condition,
+                @"'Artifact[ ]?ID' in \[(.*)\]");
+
+                if (match.Success)
+                {
+                    artifactId = match.Groups[1].Value.Split(',').Select(x => int.TryParse(x, out int r) ? r : -1)
+                        .Where(x => x > 0)
+                        .ToArray();
+                    return true;
+                }
+            }
             return false;
         }
 

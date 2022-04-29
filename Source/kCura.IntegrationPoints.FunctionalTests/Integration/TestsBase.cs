@@ -292,6 +292,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
             Container.Register(Component.For<INativeFileSizeStatistics>().ImplementedBy<FakeDocumentStatistics>().Named("INativeFileSizeStatistics").LifestyleTransient().IsDefault());
             Container.Register(Component.For<IStatisticsManager>().ImplementedBy<StatisticsManager>().LifestyleTransient());
 			Container.Register(Component.For<IJobHistoryManager>().ImplementedBy<JobHistoryManager>().LifestyleTransient());
+			Container.Register(Component.For<IIntegrationPointTypeManager>().ImplementedBy<IntegrationPointTypeManager>().LifestyleTransient());
 		}
 
 		private void SetupGlobalSettings()
