@@ -4,36 +4,37 @@ using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.ApiTest
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI.ApiTests
 {
-    public abstract class SyncApiTestsBase : TestsBase
+    public class SyncApiTestsBase : TestsBase
     {
-        protected abstract SyncApiTestsImplementationBase Implementation { get;}
+        private readonly SyncApiTestsImplementationBase _implementation;
 
-        protected SyncApiTestsBase(string workspaceName) : base(workspaceName)
+        protected SyncApiTestsBase(string workspaceName, SyncApiTestsImplementationBase implementation) : base(workspaceName)
         {
+            _implementation = implementation;
         }
 
         [OneTimeSetUp]
         public void OneTimeSetup()
         {
-            Implementation.OneTimeSetup();
+            _implementation.OneTimeSetup();
         }
 
         [OneTimeTearDown]
         public void OneTimeTeardown()
         {
-            Implementation.OneTimeTeardown();
+            _implementation.OneTimeTeardown();
         }
 
         [Test]
         public async Task JobRetryTest()
         {
-            await Implementation.RunAndRetryIntegrationPoint().ConfigureAwait(false);
+            await _implementation.RunAndRetryIntegrationPoint().ConfigureAwait(false);
         }
 
         [Test]
         public async Task JobRunTest()
         {
-            await Implementation.RunIntegrationPoint().ConfigureAwait(false);
+            await _implementation.RunIntegrationPoint().ConfigureAwait(false);
         }
     }
 }

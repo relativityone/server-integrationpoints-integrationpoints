@@ -8,7 +8,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 {
     internal class SyncImageApiTestsImplementation : SyncApiTestsImplementationBase
     {
-        private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
         private readonly ImageImportOptions _imageImportOptions = new ImageImportOptions
         {
             ExtractedTextFieldContainsFilePath = false,
@@ -24,7 +23,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
         public SyncImageApiTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture) : 
             base(testsImplementationTestFixture)
         {
-            _testsImplementationTestFixture = testsImplementationTestFixture;
         }
 
         public override void OneTimeSetup()
@@ -34,7 +32,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
                 const int imagesCount = 10;
                 
                 string testDataPath = LoadFilesGenerator.GetOrCreateNativesOptLoadFile();
-                RelativityFacade.Instance.ImportImages(_testsImplementationTestFixture.Workspace, testDataPath
+                RelativityFacade.Instance.ImportImages(TestsImplementationTestFixture.Workspace, testDataPath
                     , _imageImportOptions, imagesCount);
             }
 
@@ -47,7 +45,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             {
                 const int destinationWorkspaceInitialImportCount = 4;
                 string testDataPath = LoadFilesGenerator.GetOrCreateNativesOptLoadFileWithLimitedItems(destinationWorkspaceInitialImportCount);
-                RelativityFacade.Instance.ImportImages(_testsImplementationTestFixture.Workspace, testDataPath
+                RelativityFacade.Instance.ImportImages(TestsImplementationTestFixture.Workspace, testDataPath
                     , _imageImportOptions, destinationWorkspaceInitialImportCount);
             }
 

@@ -10,7 +10,5 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI.ApiTests
         {
             Implementation = new SyncApiTestsImplementation(this);
         }
-
-        protected override SyncApiTestsImplementationBase Implementation { get; }
     }
 }
