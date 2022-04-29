@@ -85,7 +85,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 			}
 		}
 
-        public static void ImportImages(this IRelativityFacade instance, Workspace workspace, string pathToFile, int imagesCount)
+        public static void ImportImages(this IRelativityFacade instance, Workspace workspace, string pathToFile,
+            ImageImportOptions imageImportOptions, int imagesCount)
         {
             IDocumentService documentService = instance.Resolve<IDocumentService>();
 
@@ -95,9 +96,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 
             DataTable dataTable = new DataTable();
 
-		    dataTable.Columns.Add("BatesNumber");
-            dataTable.Columns.Add("DocumentIdentifier");
-            dataTable.Columns.Add("FileLocation");
+            dataTable.Columns.Add(imageImportOptions.BatesNumberField);
+            dataTable.Columns.Add(imageImportOptions.DocumentIdentifierField);
+            dataTable.Columns.Add(imageImportOptions.FileLocationField);
 
             for (int i = 0; i < imagesCount; i++)
             {
@@ -107,7 +108,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
                     pathToFile);
             }
 
-            Task documentImportTask = Task.Run(() => documentService.ImportImages(workspace.ArtifactID, dataTable));
+            Task documentImportTask = Task.Run(() => documentService.ImportImages(workspace.ArtifactID, dataTable, imageImportOptions));
 
             if (!documentImportTask.Wait(TimeSpan.FromSeconds(documentImportTimeout)))
             {
