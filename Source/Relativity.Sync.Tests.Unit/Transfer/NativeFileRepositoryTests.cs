@@ -16,7 +16,7 @@ using Relativity.Sync.Transfer;
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
 	[TestFixture]
-	internal sealed class NativeFileRepositoryKeplerTests
+	internal sealed class NativeFileRepositoryTests
 	{
 		private Mock<ISearchService> _searchService;
 		private Mock<IObjectManager> _objectManager;

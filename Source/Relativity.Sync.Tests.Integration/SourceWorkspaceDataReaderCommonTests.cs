@@ -125,9 +125,7 @@ namespace Relativity.Sync.Tests.Integration
 			Tuple<Action<DocumentTransferServicesMocker>, string>[] failureActionAndNamePairs =
 			{
 				new Tuple<Action<DocumentTransferServicesMocker>, string>(dtsm => dtsm.SetupFailingObjectManagerCreation(), "Failing object manager creation"),
-
-				new Tuple<Action<DocumentTransferServicesMocker>, string>(dtsm => dtsm.SetupFailingSearchManagerCreation(), "Failing file manager creation"),
-
+				
 				new Tuple<Action<DocumentTransferServicesMocker>, string>(dtsm => dtsm.SetupFailingObjectManagerCall(om =>
 						om.RetrieveResultsBlockFromExportAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<int>(), It.Is<int>(x => x == 0))),
 					"Failing first RetrieveResultsBlockFromExportAsync object manager call"),
@@ -140,10 +138,6 @@ namespace Relativity.Sync.Tests.Integration
 						fm.RetrieveNativesForSearchAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>())),
 					"Failing GetNativesForSearchAsync search manager call"),
                 
-                new Tuple<Action<DocumentTransferServicesMocker>, string>(dtsm => dtsm.SetupFailingSearchManagerCall(fm =>
-                        fm.RetrieveNativesForSearch(It.IsAny<int>(), It.IsAny<string>())),
-                    "Failing GetNativesForSearchAsync search manager call"),
-
 				new Tuple<Action<DocumentTransferServicesMocker>, string>(dtsm => dtsm.SetupFailingObjectManagerCall(om =>
 						om.QuerySlimAsync(It.IsAny<int>(), It.Is<QueryRequest>(r => r.ObjectType.Name == "Field"), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())),
 					"Failing QuerySlimAsync object manager call")

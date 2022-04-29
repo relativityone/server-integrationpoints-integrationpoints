@@ -15,7 +15,7 @@ using Relativity.Sync.Transfer;
 namespace Relativity.Sync.Tests.Unit
 {
 	[TestFixture]
-	public class ImageFileRepositoryKeplerTests
+	public class ImageFileRepositoryTests
 	{
 		private const int WORKSPACE_ID = 5;
 
