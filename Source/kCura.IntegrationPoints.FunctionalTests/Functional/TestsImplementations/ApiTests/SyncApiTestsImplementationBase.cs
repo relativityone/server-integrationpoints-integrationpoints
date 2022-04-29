@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.IntegrationPoints.Services;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers.API;
+using Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Framework;
@@ -20,7 +21,7 @@ using Relativity.Testing.Framework.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.ApiTests
 {
-    public abstract class SyncApiTestsImplementationBase
+    internal class SyncApiTestsImplementationBase
     {
         private Workspace _sourceWorkspace;
         private ICommonIntegrationPointDataService _sourceWorkspaceDataService;
@@ -29,18 +30,14 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
         private readonly IRipApi _ripApi;
         private readonly IList<Workspace> _destinationWorkspaces = new List<Workspace>();
 
-        internal readonly ITestsImplementationTestFixture TestsImplementationTestFixture;
+        protected readonly ITestsImplementationTestFixture TestsImplementationTestFixture;
 
-        internal SyncApiTestsImplementationBase(ITestsImplementationTestFixture testsImplementationTestFixture)
+        protected SyncApiTestsImplementationBase(ITestsImplementationTestFixture testsImplementationTestFixture)
         {
             TestsImplementationTestFixture = testsImplementationTestFixture;
             _serviceFactory = RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory;
             _ripApi = new RipApi(_serviceFactory);
         }
-
-        public abstract void OneTimeSetup();
-
-        public abstract Task RunAndRetryIntegrationPoint();
 
         protected void OneTimeSetupExecution(Action importAction)
         {

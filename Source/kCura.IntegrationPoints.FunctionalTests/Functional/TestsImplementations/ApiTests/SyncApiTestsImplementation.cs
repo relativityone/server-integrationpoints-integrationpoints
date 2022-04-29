@@ -13,7 +13,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
         {
         }
 
-        public override void OneTimeSetup()
+        public void OneTimeSetup()
         {
             void ImportAction()
             {
@@ -24,7 +24,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             OneTimeSetupExecution(ImportAction);
         }
 
-        public override async Task RunAndRetryIntegrationPoint()
+        public async Task RunAndRetryIntegrationPoint()
         {
             void ImportAction(Workspace destinationWorkspace)
             {
@@ -33,7 +33,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
                     ImportDocumentsFromCsv(destinationWorkspace, LoadFilesGenerator.CreateNativesLoadFileWithLimitedItems(destinationWorkspaceInitialImportCount), overwriteMode: DocumentOverwriteMode.AppendOverlay);
             }
 
-            await RunAndRetryIntegrationPointExecution(ImportAction).ConfigureAwait(false);
+            await RunAndRetryIntegrationPointExecution(ImportAction);
         }
     }
 }
