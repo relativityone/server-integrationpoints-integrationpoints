@@ -10,7 +10,6 @@ namespace Relativity.Sync.Transfer
 		{
 			builder.RegisterType<ObjectFieldTypeRepository>().As<IObjectFieldTypeRepository>();
 			builder.RegisterType<RelativityExportBatcher>().As<IRelativityExportBatcher>();
-            builder.RegisterType<SearchManagerFactory>().As<ISearchManagerFactory>().SingleInstance();
 			builder.RegisterType<NativeFileRepository>().As<INativeFileRepository>();
 			builder.RegisterType<ImageFileRepository>().As<IImageFileRepository>();
 			builder.RegisterType<FileStatisticsCalculator>().As<IFileStatisticsCalculator>();
