@@ -44,22 +44,27 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 		private List<RelativityObject> GetWorkspaces(QueryRequest request)
 		{
 			List<RelativityObject> foundObjects = new List<RelativityObject>();
-
-			if (IsArtifactIdCondition(request.Condition, out int artifactId))
-			{
-				AddRelativityObjectsToResult(
-					Relativity.Workspaces.Where(
-						x => x.ArtifactId == artifactId)
-					, foundObjects);
+            if (string.IsNullOrEmpty(request.Condition))
+            {
+				AddRelativityObjectsToResult(Relativity.Workspaces, foundObjects);
 			}
-			else if (IsArtifactIdListCondition(request.Condition, out int[] artifactIds))
-			{
-				AddRelativityObjectsToResult(
-					Relativity.Workspaces.Where(
-						x => artifactIds.Contains(x.ArtifactId))
-					, foundObjects);
+            else
+            {
+				if (IsArtifactIdCondition(request.Condition, out int artifactId))
+				{
+					AddRelativityObjectsToResult(
+						Relativity.Workspaces.Where(
+							x => x.ArtifactId == artifactId)
+						, foundObjects);
+				}
+				else if (IsArtifactIdListCondition(request.Condition, out int[] artifactIds))
+				{
+					AddRelativityObjectsToResult(
+						Relativity.Workspaces.Where(
+							x => artifactIds.Contains(x.ArtifactId))
+						, foundObjects);
+				}
 			}
-
 			return foundObjects;
 		}
 	}

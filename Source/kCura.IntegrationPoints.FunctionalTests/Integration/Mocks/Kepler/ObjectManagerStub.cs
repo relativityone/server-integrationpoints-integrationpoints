@@ -89,6 +89,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             SetupSavedSearchDocuments();
             SetupProductionDocuments();
             SetupFolderDocuments();
+            SetupIntegrationPoint();
             SetupIntegrationPointLongTextStreaming();
             SetupIntegrationPointProfile();
             SetupIntegrationPointProfileLongTextStreaming();
@@ -100,6 +101,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             SetupIntegrationPointType();
             SetupApplications();
             SetupEntity();
+            SetupSourceProvider();
+            SetupDestinationProvider();
         }
 
         private void AddObjectToDatabase(ObjectCreationInfo objectCreationInfo)

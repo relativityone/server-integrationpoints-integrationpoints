@@ -208,7 +208,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
 			Container.Register(Component.For<ISecretStore>().UsingFactoryMethod(c => c.Resolve<IHelper>().GetSecretStore()).Named(Guid.NewGuid().ToString()).IsDefault());
 			Container.Register(Component.For<Lazy<ISecretStore>>().UsingFactoryMethod(c =>
-				new Lazy<ISecretStore>(() => c.Resolve<IHelper>().GetSecretStore())).Named(Guid.NewGuid().ToString()).IsDefault());
+				new Lazy<ISecretStore>(() => c.Resolve<IHelper>().GetSecretStore())).Named(Guid.NewGuid().ToString()).IsDefault());			
 
 			Container.Register(Component.For<Job>().UsingFactoryMethod(k =>
 			{
@@ -250,9 +250,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 			Container.Register(Component.For<IRepositoryFactory>().UsingFactoryMethod(kernel =>
 				new FakeRepositoryFactory(kernel.Resolve<RelativityInstanceTest>(), new RepositoryFactory(kernel.Resolve<IHelper>(), kernel.Resolve<IServicesMgr>()))).IsDefault());
 			Container.Register(Component.For<IJobStatisticsQuery>().ImplementedBy<FakeJobStatisticsQuery>().IsDefault());
-			Container.Register(Component.For<IRelativityUrlHelper>().ImplementedBy<FakeRelativityUrlHelper>());
+			Container.Register(Component.For<IRelativityUrlHelper>().ImplementedBy<FakeRelativityUrlHelper>());			
 
-            // LDAP Entity
+			// LDAP Entity
 			Container.Register(Component.For<IEntityManagerLinksSanitizer>().ImplementedBy<OpenLDAPEntityManagerLinksSanitizer>().IsDefault());
 
 			// IAPI
@@ -291,6 +291,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
             Container.Register(Component.For<IImageFileSizeStatistics>().ImplementedBy<FakeDocumentStatistics>().Named("IImageFileSizeStatistics").LifestyleTransient().IsDefault());
             Container.Register(Component.For<INativeFileSizeStatistics>().ImplementedBy<FakeDocumentStatistics>().Named("INativeFileSizeStatistics").LifestyleTransient().IsDefault());
             Container.Register(Component.For<IStatisticsManager>().ImplementedBy<StatisticsManager>().LifestyleTransient());
+			Container.Register(Component.For<IJobHistoryManager>().ImplementedBy<JobHistoryManager>().LifestyleTransient());
 			Container.Register(Component.For<IIntegrationPointTypeManager>().ImplementedBy<IntegrationPointTypeManager>().LifestyleTransient());
 		}
 
