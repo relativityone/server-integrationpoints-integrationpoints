@@ -27,16 +27,18 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
             ? TestConfig.ConnectionStringEDDS
             : TestConfig.ConnectionStringWorkspace(workspaceArtifactId);
 
-        public static DataTable ExecuteSqlStatementAsDataTable(SqlConnection connection, string sqlQuery)
+        public static DataTable ExecuteSqlStatementAsDataTable(int workspaceArtifactId, string sqlQuery)
         {
-            DataTable dataTable = new DataTable();            
-            using (connection)
+            SqlConnection connection = CreateConnectionFromAppConfig(workspaceArtifactId);
+            DataTable dataTable = new DataTable();
+
+            connection.Open();
             using (SqlCommand command = new SqlCommand(sqlQuery, connection))
-            {
-                connection.Open();                
-                dataTable.Load(command.ExecuteReader());
-                return dataTable;
-            }           
+            {                             
+                dataTable.Load(command.ExecuteReader());                
+            }
+            connection.Close();
+            return dataTable;
         }
     }
 }

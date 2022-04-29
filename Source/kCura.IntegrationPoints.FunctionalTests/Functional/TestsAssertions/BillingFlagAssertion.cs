@@ -1,25 +1,15 @@
 ﻿using FluentAssertions;
-using Moq;
-using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
-using Relativity.IntegrationPoints.Tests.Integration;
-using Relativity.IntegrationPoints.Tests.Integration.Mocks;
-using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsAssertions
 {
     public class BillingFlagAssertion
-    {        
-        private int _workspaceArtifactID { get; set; }
-       
-        private SqlConnection connection => SqlHelper.CreateConnectionFromAppConfig(_workspaceArtifactID);
-        private DataTable fileDataTable => SqlHelper.ExecuteSqlStatementAsDataTable(connection, "SELECT * FROM [File]");
+    {
+        private DataTable _fileDataTable;
+        private int _workspaceArtifactID { get; set; }         
           
         public BillingFlagAssertion(int targetWorkspaceArtifactID)
         {           
@@ -36,7 +26,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsAssertions
 
         private IEnumerable<FileRow> GetFiles()
         {
-            return fileDataTable.Select().Select(x => new FileRow
+            _fileDataTable = SqlHelper.ExecuteSqlStatementAsDataTable(_workspaceArtifactID, "SELECT * FROM [File]");
+            return _fileDataTable.Select().Select(x => new FileRow
             {
                 InRepository = (bool)x["InRepository"],
                 Billable = (bool)x["Billable"]
