@@ -70,7 +70,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 				NativeFilePathColumnName = nativeFilePathColumnName,
 				OverwriteMode = overwriteMode,
 				FolderColumnName = folderColumnName,
-				OverlayBehavior = overlayBehavior,
+				OverlayBehavior = overlayBehavior
 			};
 
 			int documentImportTimeout = TestConfig.DocumentImportTimeout;

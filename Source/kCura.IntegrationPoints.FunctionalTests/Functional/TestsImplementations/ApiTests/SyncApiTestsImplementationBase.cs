@@ -195,7 +195,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
                 ArtifactTypeID = (int)ArtifactType.Document,
                 DestinationFolderArtifactId = destinationFolderId,
                 FolderPathSourceField = 0,
-                UseFolderPathInformation = false
+                UseFolderPathInformation = false,
+                ImageImport = false
             };
         }
 
