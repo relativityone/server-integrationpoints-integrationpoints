@@ -2,11 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Threading.Tasks;
-using kCura.EDDS.WebAPI.ProductionManagerBase;
-using kCura.IntegrationPoints.Core.Factories.Implementations;
-using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -15,21 +10,16 @@ using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Productions.Services;
-using Relativity.Toggles;
-using IProductionManager = kCura.IntegrationPoints.Core.Managers.IProductionManager;
-using ProductionManager = kCura.IntegrationPoints.Core.Managers.Implementations.ProductionManager;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
 	[TestFixture, Category("Unit")]
 	public class ProductionManagerTests
 	{
+        private kCura.IntegrationPoints.Core.Managers.IProductionManager _sut;
+
 		private IRepositoryFactory _repositoryFactory;
 		private IProductionRepository _productionRepository;
-		private IProductionManager _sut;
-		private IServiceManagerProvider _serviceManagerProvider;
-		private WinEDDS.Service.Export.IProductionManager _productionManagerService;
-        private IProductionManagerWrapper _productionManagerWrapper;
         private IAPILog _logger;
 
 		private const int _WORKSPACE_ARTIFACT_ID = 101810;
@@ -38,13 +28,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		[SetUp]
 		public void SetUp()
 		{
-			_repositoryFactory = Substitute.For<IRepositoryFactory>();
-			_productionRepository = Substitute.For<IProductionRepository>();
-			_productionManagerService = Substitute.For<WinEDDS.Service.Export.IProductionManager>();
-			_serviceManagerProvider = Substitute.For<IServiceManagerProvider>();
-            _logger = Substitute.For<IAPILog>();
+            _productionRepository = Substitute.For<IProductionRepository>();
 
-            _sut = GetSut(false);
+			_repositoryFactory = Substitute.For<IRepositoryFactory>();
+            _repositoryFactory.GetProductionRepository(_WORKSPACE_ARTIFACT_ID).Returns(_productionRepository);
+
+			_logger = Substitute.For<IAPILog>();
+
+            _sut = new kCura.IntegrationPoints.Core.Managers.Implementations.ProductionManager(_repositoryFactory, _logger);
 		}
 
 		[Test]
@@ -59,7 +50,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 				DisplayName = expectedDisplayName
 			};
 			_productionRepository.GetProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Returns(production);
-			_repositoryFactory.GetProductionRepository(_WORKSPACE_ARTIFACT_ID).Returns(_productionRepository);
 
 			// Act 
 			ProductionDTO actual = _sut.RetrieveProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
@@ -75,7 +65,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		{
 			// Arrange
 			_productionRepository.GetProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Throws(new Exception());
-			_repositoryFactory.GetProductionRepository(_WORKSPACE_ARTIFACT_ID).Returns(_productionRepository);
 
 			// Act & Assert
 			Assert.Throws<Exception>(() => _sut.RetrieveProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID));
@@ -88,7 +77,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			var production = new Production();
 			const int expectedResult = 99;
 			_productionRepository.CreateSingle(_WORKSPACE_ARTIFACT_ID, production).Returns(expectedResult);
-			_repositoryFactory.GetProductionRepository(_WORKSPACE_ARTIFACT_ID).Returns(_productionRepository);
 
 			// Act
 			int actualResult = _sut.CreateSingle(_WORKSPACE_ARTIFACT_ID, production);
@@ -103,97 +91,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			// Arrange
 			var production = new Production();
 			_productionRepository.CreateSingle(_WORKSPACE_ARTIFACT_ID, production).Throws(new Exception());
-			_repositoryFactory.GetProductionRepository(_WORKSPACE_ARTIFACT_ID).Returns(_productionRepository);
 
 			// Act & Assert
 			Assert.Throws<Exception>(() => _sut.CreateSingle(_WORKSPACE_ARTIFACT_ID, production),
 				"Unable to create production");
 		}
-
-		[Test]
-		public void ItShouldGetProductionsForExportForWebApi()
-		{
-			// Arrange
-			const string expectedArtifactId = "123456";
-			const string expectedDisplayName = "expectedDisplayName";
-			DataSet expectedResult = CreateNewProductionDataTable(expectedArtifactId, expectedDisplayName);
-
-			_productionManagerService.RetrieveProducedByContextArtifactID(_WORKSPACE_ARTIFACT_ID).Returns(expectedResult);
-			_serviceManagerProvider.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>()
-				.Returns(_productionManagerService);
-
-			// Act
-			List<ProductionDTO> actualProductionDto = _sut.GetProductionsForExport(_WORKSPACE_ARTIFACT_ID).ToList();
-
-			// Assert
-			Assert.That(actualProductionDto.Count, Is.EqualTo(1));
-			Assert.That(actualProductionDto.First().ArtifactID, Is.EqualTo(expectedArtifactId));
-			Assert.That(actualProductionDto.First().DisplayName, Is.EqualTo(expectedDisplayName));
-		}
-
-		[Test]
-		public void ItShouldGetProductionsForImportForWebApi()
-		{
-			// Arrange
-			const string expectedArtifactId = "123456";
-			const string expectedDisplayName = "expectedDisplayName";
-			DataSet expectedResult = CreateNewProductionDataTable(expectedArtifactId, expectedDisplayName);
-
-			_productionManagerService.RetrieveImportEligibleByContextArtifactID(_WORKSPACE_ARTIFACT_ID).Returns(expectedResult);
-			_serviceManagerProvider
-				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>()
-				.Returns(_productionManagerService);
-
-			// Act
-			List<ProductionDTO> actualProductionDto = _sut.GetProductionsForImport(_WORKSPACE_ARTIFACT_ID).ToList();
-
-			// Assert
-			Assert.That(actualProductionDto.Count, Is.EqualTo(1));
-			Assert.That(actualProductionDto.First().ArtifactID, Is.EqualTo(expectedArtifactId));
-			Assert.That(actualProductionDto.First().DisplayName, Is.EqualTo(expectedDisplayName));
-		}
-
-		[Test]
-		public void IsProductionInDestinationWorkspaceAvailable_ShouldReturnTrue_WhenProductionManagerReturnsNonNullObjectForWebApi()
-		{
-			// arrange
-			var productionInfo = new ProductionInfo();
-			_productionManagerService.Read(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Returns(productionInfo);
-			_serviceManagerProvider
-				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>()
-				.Returns(_productionManagerService);
-
-			// act
-			bool result = _sut.IsProductionInDestinationWorkspaceAvailable(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
-
-			// assert
-			Assert.IsTrue(result);
-		}
-
-		[Test]
-		public void IsProductionInDestinationWorkspaceAvailable_ShouldReturnFalse_WhenProductionManagerReturnsNullObjectForWebApi()
-		{
-			// arrange
-			ProductionInfo productionInfo = null;
-			_productionManagerService.Read(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Returns(productionInfo);
-			_serviceManagerProvider
-				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>()
-				.Returns(_productionManagerService);
-
-			// act
-			bool result = _sut.IsProductionInDestinationWorkspaceAvailable(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
-
-			// assert
-			Assert.IsFalse(result);
-		}
-
+		
 		[Test]
 		public void IsProductionInDestinationWorkspaceAvailable_ShouldReturnFalse_WhenProductionManagerThrowsException()
 		{
-			_productionManagerService.Read(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Throws<Exception>();
-			_serviceManagerProvider
-				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>()
-				.Returns(_productionManagerService);
+            _productionRepository.GetProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Throws<Exception>();
 
 			// act
 			bool result = _sut.IsProductionInDestinationWorkspaceAvailable(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
@@ -201,33 +108,45 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 			// assert
 			Assert.IsFalse(result);
 		}
-
-		[Test]
-		public void IsProductionEligibleForImport_ShouldReturnTrue_WhenProductionManagerReturnsThisProductionForWebApi()
-		{
+		
+        [Test]
+        public void IsProductionEligibleForImport_ShouldReturnTrue_WhenProductionManagerReturnsThisProduction()
+        {
 			// Arrange
-			DataSet expectedResult = CreateNewProductionDataTable(_PRODUCTION_ARTIFACT_ID);
-			_productionManagerService.RetrieveImportEligibleByContextArtifactID(_WORKSPACE_ARTIFACT_ID).Returns(expectedResult);
-			_serviceManagerProvider
-				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>()
-				.Returns(_productionManagerService);
+			ProductionDTO productionDto = new ProductionDTO()
+            {
+                ArtifactID = _PRODUCTION_ARTIFACT_ID.ToString()
+            };
+			_productionRepository.GetProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Returns(productionDto);
 
             // Act
-			bool result = _sut.IsProductionEligibleForImport(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
+            bool result = _sut.IsProductionInDestinationWorkspaceAvailable(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
 
-			// Assert
-			Assert.IsTrue(result);
-		}
+            // Assert
+            Assert.IsTrue(result);
+        }
 
+        [Test]
+        public void IsProductionInDestinationWorkspaceAvailable_ShouldReturnFalse_WhenProductionManagerReturnsNullObject()
+        {
+            // Arrange
+            ProductionDTO productionDto = null;
+            _productionRepository.GetProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Returns(productionDto);
+
+            // Act
+            bool result = _sut.IsProductionInDestinationWorkspaceAvailable(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
+
+            // assert
+            Assert.IsFalse(result);
+        }
+		
 		[Test]
 		public void IsProductionEligibleForImport_ShouldReturnFalse_WhenProductionManagerReturnsEmptyList()
 		{
 			// Arrange
-			DataSet expectedResult = CreateEmptyProductionDataSet();
-			_productionManagerService.RetrieveImportEligibleByContextArtifactID(_WORKSPACE_ARTIFACT_ID).Returns(expectedResult);
-			_serviceManagerProvider
-				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>()
-				.Returns(_productionManagerService);
+            List<ProductionDTO> expected = GetProductionDtos();
+
+            _productionRepository.GetProductionsForImport(_WORKSPACE_ARTIFACT_ID).Returns(expected);
 
 			// Act
 			bool result = _sut.IsProductionEligibleForImport(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
@@ -240,11 +159,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		public void IsProductionEligibleForImport_ShouldReturnFalse_WhenProductionManagerReturnsListWithoutThisProduction()
 		{
 			// Arrange
-			DataSet expectedResult = CreateNewProductionDataTable(_PRODUCTION_ARTIFACT_ID + 1);
-			_productionManagerService.RetrieveImportEligibleByContextArtifactID(_WORKSPACE_ARTIFACT_ID).Returns(expectedResult);
-			_serviceManagerProvider
-				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>()
-				.Returns(_productionManagerService);
+            _productionRepository.GetProductionsForImport(_WORKSPACE_ARTIFACT_ID).Returns(new List<ProductionDTO>()
+            {
+				new ProductionDTO()
+                {
+					ArtifactID = "99999"
+                }
+            });
 
 			// Act
 			bool result = _sut.IsProductionEligibleForImport(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
@@ -256,11 +177,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		[Test]
 		public void IsProductionEligibleForImport_ShouldReturnFalse_WhenProductionManagerThrowsException()
 		{
-			_productionManagerService.RetrieveImportEligibleByContextArtifactID(_WORKSPACE_ARTIFACT_ID)
-				.Throws<Exception>();
-			_serviceManagerProvider
-				.Create<WinEDDS.Service.Export.IProductionManager, ProductionManagerFactory>()
-				.Returns(_productionManagerService);
+            _productionRepository.GetProductionsForImport(_WORKSPACE_ARTIFACT_ID).Throws<Exception>();
 
 			// Act
 			bool result = _sut.IsProductionEligibleForImport(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
@@ -270,15 +187,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		}
 
 		[Test]
-		public void ItShouldGetProductionsForExportForKeplerizedIApi()
+		public void ItShouldGetProductionsForExport()
 		{
 			// Arrange
             List<ProductionDTO> productionDtos = GetProductionDtos();
             _productionRepository.GetProductionsForExport(_WORKSPACE_ARTIFACT_ID).Returns(productionDtos);
-            ProductionManager sut = GetSut(true);
 
 			// Act
-			List<ProductionDTO> actualProductionDto = sut.GetProductionsForExport(_WORKSPACE_ARTIFACT_ID).ToList();
+			List<ProductionDTO> actualProductionDto = _sut.GetProductionsForExport(_WORKSPACE_ARTIFACT_ID).ToList();
 
 			// Assert
 			Assert.That(actualProductionDto.Count, Is.EqualTo(productionDtos.Count));
@@ -287,15 +203,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		}
 
 		[Test]
-		public void ItShouldGetProductionsForImportForKeplerizedIApi()
+		public void ItShouldGetProductionsForImport()
 		{
             // Arrange
             List<ProductionDTO> productionDtos = GetProductionDtos();
             _productionRepository.GetProductionsForImport(_WORKSPACE_ARTIFACT_ID).Returns(productionDtos);
-            ProductionManager sut = GetSut(true);
 
             // Act
-            List<ProductionDTO> actualProductionDto = sut.GetProductionsForImport(_WORKSPACE_ARTIFACT_ID).ToList();
+            List<ProductionDTO> actualProductionDto = _sut.GetProductionsForImport(_WORKSPACE_ARTIFACT_ID).ToList();
 
             // Assert
             Assert.That(actualProductionDto.Count, Is.EqualTo(productionDtos.Count));
@@ -304,90 +219,23 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 		}
 
 		[Test]
-		public void IsProductionInDestinationWorkspaceAvailable_ShouldReturnTrue_WhenProductionManagerReturnsNonNullObjectForKeplerizedIApi()
+		public void IsProductionInDestinationWorkspaceAvailable_ShouldReturnTrue_WhenProductionManagerReturnsNonNullObject()
 		{
 			// Arrange
-            ProductionDTO productionDto = new ProductionDTO();
-            _productionRepository.GetProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Returns(productionDto);
-            ProductionManager sut = GetSut(true);
+            ProductionDTO productionDto = new ProductionDTO()
+            {
+                ArtifactID = _PRODUCTION_ARTIFACT_ID.ToString()
+            };
+
+			_productionRepository.GetProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Returns(productionDto);
 
 			// Act
-			bool result = sut.IsProductionInDestinationWorkspaceAvailable(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
+			bool result = _sut.IsProductionInDestinationWorkspaceAvailable(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
 
 			// Assert
 			Assert.IsTrue(result);
 		}
-
-        [Test]
-        public void IsProductionEligibleForImport_ShouldReturnTrue_WhenProductionManagerReturnsThisProductionForKeplerizedIApi()
-        {
-			// Arrange
-            ProductionDTO productionDto = GetProductionDtos().First();
-            _productionRepository.GetProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Returns(productionDto);
-            ProductionManager sut = GetSut(true);
-
-            // Act
-            bool result = sut.IsProductionInDestinationWorkspaceAvailable(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
-
-            // Assert
-            Assert.IsTrue(result);
-		}
-
-        [Test]
-        public void IsProductionInDestinationWorkspaceAvailable_ShouldReturnFalse_WhenProductionManagerReturnsNullObjectForKeplerizedIApi()
-        {
-			// Arrange
-            ProductionDTO productionDto = null;
-            _productionRepository.GetProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Returns(productionDto);
-            ProductionManager sut = GetSut(true);
-
-            // Act
-            bool result = sut.IsProductionInDestinationWorkspaceAvailable(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
-
-			// assert
-			Assert.IsFalse(result);
-        }
-
-		private ProductionManager GetSut(bool enableKeplerizedImportAPIToggleValue)
-        {
-            IToggleProvider toggleProvider = new ToggleProviderFake(enableKeplerizedImportAPIToggleValue);
-            _productionManagerWrapper = new ProductionManagerWrapper(toggleProvider, _productionRepository, _serviceManagerProvider, _logger);
-
-            ProductionManager sut = new ProductionManager(_logger, _repositoryFactory, _productionManagerWrapper);
-            return sut;
-        }
-
-        private DataSet CreateNewProductionDataTable(int expectedArtifactId, string expectedDisplayName = null)
-		{
-			return CreateNewProductionDataTable(expectedArtifactId.ToString(), expectedDisplayName ?? string.Empty);
-		}
-
-		private DataSet CreateNewProductionDataTable(string expectedArtifactId, string expectedDisplayName)
-		{
-			var dataTable = new DataTable();
-			dataTable.Columns.Add("ArtifactID", typeof(string));
-			dataTable.Columns.Add("Name", typeof(string));
-			DataRow row = dataTable.NewRow();
-			row["ArtifactID"] = expectedArtifactId;
-			row["Name"] = expectedDisplayName;
-			dataTable.Rows.Add(row);
-			var dataSet = new DataSet();
-			dataSet.Tables.Add(dataTable);
-
-			return dataSet;
-		}
-
-		private DataSet CreateEmptyProductionDataSet()
-		{
-			var dataTable = new DataTable();
-			dataTable.Columns.Add("ArtifactID", typeof(string));
-			dataTable.Columns.Add("Name", typeof(string));
-			var dataSet = new DataSet();
-			dataSet.Tables.Add(dataTable);
-
-			return dataSet;
-		}
-
+		
         private List<ProductionDTO> GetProductionDtos()
         {
             List<ProductionDTO> productionsDtos = new List<ProductionDTO>
@@ -415,47 +263,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             };
 
             return productionsDtos;
-        }
-
-		private class ToggleProviderFake : IToggleProvider
-        {
-            private bool _toggleValue;
-
-            public ToggleProviderFake(bool toggleValue)
-            {
-                _toggleValue = toggleValue;
-            }
-
-            public bool IsEnabled<T>() where T : IToggle
-            {
-                return _toggleValue;
-            }
-
-            public Task<bool> IsEnabledAsync<T>() where T : IToggle
-            {
-                throw new NotImplementedException();
-            }
-
-            public bool IsEnabledByName(string toggleName)
-            {
-                throw new NotImplementedException();
-            }
-
-            public Task<bool> IsEnabledByNameAsync(string toggleName)
-            {
-                throw new NotImplementedException();
-            }
-
-            public Task SetAsync<T>(bool enabled) where T : IToggle
-            {
-                _toggleValue = enabled;
-
-				return Task.CompletedTask;
-            }
-
-            public MissingFeatureBehavior DefaultMissingFeatureBehavior { get; }
-            public bool CacheEnabled { get; set; }
-            public int CacheTimeoutInSeconds { get; set; }
         }
     }
 }

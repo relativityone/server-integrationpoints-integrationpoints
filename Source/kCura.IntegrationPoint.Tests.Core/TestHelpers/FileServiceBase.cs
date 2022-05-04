@@ -1,16 +1,12 @@
-﻿using System;
-using kCura.WinEDDS.Service.Export;
-
-namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
+﻿namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
 	public abstract class FileServiceBase
 	{
-		protected readonly Lazy<ISearchManager> SearchManagerLazy;
-		protected ISearchManager SearchManager => SearchManagerLazy.Value;
+        protected readonly ITestHelper TestHelper;
 
-		protected FileServiceBase(ITestHelper testHelper)
-		{
-			SearchManagerLazy = new Lazy<ISearchManager>(testHelper.CreateSearchManager);
-		}
+        protected FileServiceBase(ITestHelper testHelper)
+        {
+            TestHelper = testHelper;
+        }
 	}
 }

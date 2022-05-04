@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
@@ -11,20 +12,14 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
 	public class ProductionManager : IProductionManager
 	{
-		private readonly IAPILog _logger;
 		private readonly IRepositoryFactory _repositoryFactory;
-        private readonly IProductionManagerWrapper _productionManagerWrapper;
-        
-		public ProductionManager(
-			IAPILog logger, 
-			IRepositoryFactory repositoryFactory,
-            IProductionManagerWrapper productionManagerWrapper)
-		{
-			_logger = logger?.ForContext<ProductionManager>();
-			_repositoryFactory = repositoryFactory;
+        private readonly IAPILog _logger;
 
-            _productionManagerWrapper = productionManagerWrapper;
-        }
+		public ProductionManager(IRepositoryFactory repositoryFactory, IAPILog logger)
+		{
+			_repositoryFactory = repositoryFactory;
+            _logger = logger?.ForContext<ProductionManager>();
+		}
 
 		public ProductionDTO RetrieveProduction(int workspaceArtifactId, int productionArtifactId)
 		{
@@ -39,20 +34,31 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		}
 
 		public IEnumerable<ProductionDTO> GetProductionsForExport(int workspaceArtifactId)
-        {
-            return _productionManagerWrapper.GetProductionsForExport(workspaceArtifactId);
-        }
+		{
+			IEnumerable<ProductionDTO> productions = Task.Run(() => _repositoryFactory.GetProductionRepository(workspaceArtifactId).GetProductionsForExport(workspaceArtifactId)).GetAwaiter().GetResult();
+            return productions;
+		}
 
 		public IEnumerable<ProductionDTO> GetProductionsForImport(int workspaceArtifactId, int? federatedInstanceId = null, string federatedInstanceCredentials = null)
 		{
-            return _productionManagerWrapper.GetProductionsForImport(workspaceArtifactId, federatedInstanceId, federatedInstanceCredentials);
+            IEnumerable<ProductionDTO> productions = Task.Run(() => _repositoryFactory.GetProductionRepository(workspaceArtifactId).GetProductionsForImport(workspaceArtifactId)).GetAwaiter().GetResult();
+            return productions;
 		}
 
 		public bool IsProductionInDestinationWorkspaceAvailable(int workspaceArtifactId, int productionId, int? federatedInstanceId = null,
 			string federatedInstanceCredentials = null)
 		{
-            return _productionManagerWrapper.IsProductionInDestinationWorkspaceAvailable(workspaceArtifactId, productionId, federatedInstanceId, federatedInstanceCredentials);
-        }
+            try
+            {
+                ProductionDTO production = _repositoryFactory.GetProductionRepository(workspaceArtifactId).GetProduction(workspaceArtifactId, productionId);
+                return production != null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to retrieve production Artifact ID {productionId} from workspace Artifact ID {workspaceArtifactId}", productionId, workspaceArtifactId);
+                return false;
+            }
+		}
 
 		public bool IsProductionEligibleForImport(int workspaceArtifactId, int productionId, int? federatedInstanceId = null,
 			string federatedInstanceCredentials = null)

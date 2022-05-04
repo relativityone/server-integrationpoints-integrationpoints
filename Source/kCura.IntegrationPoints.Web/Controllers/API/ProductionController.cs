@@ -6,11 +6,9 @@ using System.Web.Http;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Toggles;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
 using Relativity;
-using Relativity.Toggles;
 using PageLevelNumbering = Relativity.Productions.Services.PageLevelNumbering;
 using Production = Relativity.Productions.Services.Production;
 
