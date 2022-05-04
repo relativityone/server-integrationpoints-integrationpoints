@@ -1,7 +1,6 @@
 using kCura.IntegrationPoint.Tests.Core.Models;
 using Relativity.Services.Search;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Constants;
@@ -45,22 +44,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				throw new TestException("Importing documents does not succeeded." + errorsDetails);
 			}
 		}
-
-		public void ImportDataToProduction(int workspaceID, int productionID, DataTable testData)
-		{
-			bool success = _importHelper.ImportToProductionSet(workspaceID, productionID, testData);
-			if (!success)
-			{
-				string errorsDetails = _importHelper.ErrorMessages.Any() ? $"Error messages: {string.Join("; ", _importHelper.ErrorMessages)}" : "No error messages.";
-				throw new TestException("Importing documents to production failed. " + errorsDetails);
-			}
-		}
-
-        public void DeleteWorkspace(int artifactID)
-		{
-			Workspace.DeleteWorkspaceAsync(artifactID).GetAwaiter().GetResult();
-		}
-
+		
 		public async Task<int> CreateProductionAsync(int workspaceID, string productionName)
 		{
 			using (var productionManager = _testHelper.CreateProxy<IProductionManager>())
@@ -127,11 +111,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 				Fields = fields
 			};
 			return SavedSearch.Create(workspaceID, search);
-		}
-
-		public int GetView(int workspaceID, string viewName)
-		{
-			return View.QueryView(workspaceID, viewName);
 		}
 	}
 }

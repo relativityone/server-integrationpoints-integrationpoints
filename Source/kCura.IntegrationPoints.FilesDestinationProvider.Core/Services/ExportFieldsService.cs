@@ -42,7 +42,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 			using (ISearchService searchService = _servicesMgr.CreateProxy<ISearchService>(ExecutionIdentity.CurrentUser))
 			{
 				DataSet allExportableViewFieldsDataSet = searchService.RetrieveAllExportableViewFieldsAsync(workspaceArtifactID, artifactTypeID, string.Empty).GetAwaiter().GetResult()?.Unwrap();
-				DataSet defaultViewFieldsDataSet = searchService.RetrieveDefaultViewFieldsForIdListAsync(workspaceArtifactID, artifactTypeID, new[] { viewArtifactID }, isProduction, string.Empty).GetAwaiter().GetResult()?.Unwrap();
+				DataSet defaultViewFieldsDataSet = searchService
+                    .RetrieveDefaultViewFieldsForIdListAsync(workspaceArtifactID, artifactTypeID, new[] { viewArtifactID }, isProduction, string.Empty)
+                    .GetAwaiter()
+                    .GetResult()?
+                    .Unwrap();
 
 				if (ContainsTable(allExportableViewFieldsDataSet) && ContainsTable(defaultViewFieldsDataSet))
 				{
