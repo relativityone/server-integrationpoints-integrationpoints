@@ -1,4 +1,6 @@
 ﻿using System.Threading.Tasks;
+using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
+using Relativity.IntegrationPoints.Tests.Functional.DataModels;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles;
 using Relativity.Testing.Framework;
@@ -50,6 +52,23 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             }
 
             await RunAndRetryIntegrationPointExecution(ImportAction);
+        }
+
+        protected override DestinationConfiguration GetDestinationConfiguration(int destinationWorkspaceId,
+            int destinationFolderId)
+        {
+            DestinationConfiguration destinationConfiguration = new DestinationConfiguration
+            {
+                ImageImport = true,
+                CaseArtifactId = destinationWorkspaceId,
+                FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
+                ImportNativeFile = false,
+                ArtifactTypeID = (int)ArtifactType.Document,
+                DestinationFolderArtifactId = destinationFolderId,
+                FolderPathSourceField = 0,
+                UseFolderPathInformation = false
+            };
+            return destinationConfiguration;
         }
     }
 }

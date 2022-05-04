@@ -8,9 +8,9 @@ using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.IntegrationPoints.Services;
+using Relativity.IntegrationPoints.Tests.Functional.DataModels;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers.API;
-using Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Framework;
@@ -185,9 +185,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
             };
         }
 
-        private RelativityProviderDestinationConfiguration GetDestinationConfiguration(int destinationWorkspaceId, int destinationFolderId)
+        protected virtual DestinationConfiguration GetDestinationConfiguration(int destinationWorkspaceId, int destinationFolderId)
         {
-            return new RelativityProviderDestinationConfiguration
+            return new DestinationConfiguration
             {
                 CaseArtifactId = destinationWorkspaceId,
                 FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
