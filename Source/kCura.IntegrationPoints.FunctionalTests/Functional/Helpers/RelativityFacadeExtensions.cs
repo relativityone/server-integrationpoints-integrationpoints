@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Diagnostics;
@@ -80,9 +81,40 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 
 			if (!documentImportTask.Wait(TimeSpan.FromSeconds(documentImportTimeout)))
 			{
-				throw new Exception($"IDocumentService.ImportNativesFromCsv timeout ({documentImportTimeout}) exceeded.");
+				throw new Exception($"IDocumentService.{nameof(documentService.ImportNativesFromCsv)} timeout ({documentImportTimeout}) exceeded.");
 			}
 		}
+
+        public static void ImportImages(this IRelativityFacade instance, Workspace workspace, string pathToFile,
+            ImageImportOptions imageImportOptions, int imagesCount)
+        {
+            IDocumentService documentService = instance.Resolve<IDocumentService>();
+
+            int documentImportTimeout = TestConfig.DocumentImportTimeout;
+
+            SetImportMode();
+
+            DataTable dataTable = new DataTable();
+
+            dataTable.Columns.Add(imageImportOptions.BatesNumberField);
+            dataTable.Columns.Add(imageImportOptions.DocumentIdentifierField);
+            dataTable.Columns.Add(imageImportOptions.FileLocationField);
+
+            for (int i = 0; i < imagesCount; i++)
+            {
+                dataTable.Rows.Add(
+                    $"DOC{i}",
+                    $"DOC{i}",
+                    pathToFile);
+            }
+
+            Task documentImportTask = Task.Run(() => documentService.ImportImages(workspace.ArtifactID, dataTable, imageImportOptions));
+
+            if (!documentImportTask.Wait(TimeSpan.FromSeconds(documentImportTimeout)))
+            {
+                throw new Exception($"IDocumentService.{nameof(documentService.ImportImages)} timeout ({documentImportTimeout}) exceeded.");
+            }
+        }
 
 		public static void ProduceProduction(this IRelativityFacade instance, Workspace workspace, Testing.Framework.Models.Production production)
 		{
