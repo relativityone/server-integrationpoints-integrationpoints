@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Application xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ArtifactViewFields />
+  <Assemblies />
+  <ResourceFiles />
+  <ExternalTabs />
+  <ExtractionDate>2019-05-06T15:32:28.6965752Z</ExtractionDate>
+  <Guid>D765EE0A-2541-434B-80E4-FAE05E1EC275</Guid>
+  <Name>Sync</Name>
+  <Objects />
+  <ParentTabs />
+  <RelativityVersion>10.1.0.0</RelativityVersion>
+  <Version>0.0.0.1</Version>
+  <TabDisplay>false</TabDisplay>
+  <OriginSignature>4f050142-2091-416f-9411-a023e105be75</OriginSignature>
+  <MasterScripts />
+  <ApplicationScripts />
+  <CustomPages />
+  <AgentTypes />
+  <IsRelativityApplication>true</IsRelativityApplication>
+  <InstallEventHandlers />
+  <SavedSearches />
+  <SearchContainers />
+  <SearchProviders />
+  <EnvironmentVariables>
+    <SearchAsConditionCriteriaID>1000471</SearchAsConditionCriteriaID>
+    <FullTextAll>1000182</FullTextAll>
+  </EnvironmentVariables>
+  <GlobalApplication>false</GlobalApplication>
+  <RelativityScriptIds />
+  <ViewIds />
+  <DashboardIds />
+  <LayoutIds />
+  <FieldIds />
+  <ChoiceIds />
+  <ObjectTypeIds />
+  <TabIds />
+  <CustomPageIds />
+  <Locked>true</Locked>
+</Application>

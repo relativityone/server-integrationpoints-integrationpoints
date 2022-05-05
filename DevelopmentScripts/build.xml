@@ -1,0 +1,15 @@
+<BuildTools>
+  <RAPBuilder>
+    <Applications>
+      <Application name="Sync" generatenuspec="true">
+        <Destination>Artifacts\Sync.rap</Destination>
+        <ApplicationSchema>ApplicationsXML/application.xml</ApplicationSchema>
+        <TestDirectory>Source\Relativity.Sync.Tests.System\bin\</TestDirectory>
+        <Assemblies>
+        </Assemblies>
+        <ResourceFiles />
+        <CustomPages />
+      </Application>
+    </Applications>
+  </RAPBuilder>
+</BuildTools>

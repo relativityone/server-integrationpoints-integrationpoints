@@ -11,7 +11,13 @@ This Powershell script will download NuGet if missing, restore build tools using
 and execute your build tasks with the parameters you provide.
 
 .PARAMETER TaskList
-List of build tasks to execute.
+List of build tasks to execute. Individual tasks can be tab-completed.
+
+.PARAMETER PackageVersion
+Version to use in the nuget package during the Package task.
+
+.PARAMETER RAPVersion
+Version to use for the RAP during the Package task.
 
 .PARAMETER Configuration
 The build configuration to use. Either Debug or Release. Defaults to Debug.
@@ -22,21 +28,31 @@ The build configuration to use. Either Debug or Release. Defaults to Debug.
 
 [CmdletBinding()]
 param(
-    [string[]]$taskList = @(),
+	[ArgumentCompleter({
+		param($Command, $Parameter, $WordToComplete, $CommandAst, $FakeBoundParams)
+		$null = Import-Module (Resolve-Path "$PSScriptRoot\buildtools\psake\tools\psake\psake.psd1" | Select-Object -Last 1) -ErrorAction Ignore
+		(Get-PSakeScriptTasks).Name | Where-Object { $PSItem -like "$WordToComplete*" } | Sort-Object
+	})]
+	[string[]]$TaskList = @(),
+	
+	[Parameter(Mandatory=$False)]
+	[String]$RAPVersion = "1.0.0.0",
 
-    [Parameter(Mandatory=$False)]
-    [ValidateSet("Debug","Release")]
-    [string]$Configuration = "Debug",
-
-    # <-- Test section -->
+	[Parameter(Mandatory=$False)]
+	[String]$PackageVersion = "1.0.0",
+	
+	[Parameter(Mandatory=$False)]
+	[ValidateSet("Debug","Release")]
+	[string]$Configuration = "Debug",
+	
 	[Parameter(Mandatory=$False)]
 	[String]$TestFilter
-)
-
+	)
+	
 Set-StrictMode -Version 2.0
 
 $BaseDir = $PSScriptRoot
-$NugetUrl = "https://dist.nuget.org/win-x86-commandline/v5.10.0/nuget.exe"
+$NugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
 $ToolsDir = Join-Path $BaseDir "buildtools"
 $NugetExe = Join-Path $ToolsDir "nuget.exe"
 
@@ -63,32 +79,38 @@ Import-Module (Join-Path $ToolsDir "kCura.PSBuildTools\PSBuildTools.psd1") -Erro
 Install-Module VSSetup -Scope CurrentUser -Force
 
 $Params = @{
-    taskList = $TaskList
-    nologo = $true
-    parameters = @{	
-        BuildConfig = $Configuration
-        BuildToolsDir = $ToolsDir
-		# <-- Test section -->
+	taskList = $TaskList
+	nologo = $true
+	framework = "4.6"
+	parameters = @{	
+		NugetExe = $NugetExe
+		BuildConfig = $Configuration
+		BuildToolsDir = $ToolsDir
+		RAPVersion = $RAPVersion
+		PackageVersion = $PackageVersion
 		TestFilter = $TestFilter
-    }
-    Verbose = $VerbosePreference
-    Debug = $DebugPreference
+	}
+	properties = @{
+		build_config = $Configuration
+	}
+	Verbose = $VerbosePreference
+	Debug = $DebugPreference
 }
 
 Try
 {
-    Invoke-PSake @Params
+	Invoke-PSake @Params
 }
 Finally
 {
-    $ExitCode = 0
-    If ($psake.build_success -eq $False)
-    {
-        $ExitCode = 1
-    }
+	$ExitCode = 0
+	If ($psake.build_success -eq $False)
+	{
+		$ExitCode = 1
+	}
 
-    Remove-Module PSake -Force -ErrorAction SilentlyContinue
-    Remove-Module PSBuildTools -Force -ErrorAction SilentlyContinue
+	Remove-Module PSake -Force -ErrorAction SilentlyContinue
+	Remove-Module PSBuildTools -Force -ErrorAction SilentlyContinue
 }
 
 Exit $ExitCode
