@@ -22,7 +22,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             _sut = Container.Resolve<IProviderManager>();
         }
 
-        [IdentifiedTest("61397fae-fa20-4192-b8c6-845bccf01d0f")]
         [IdentifiedTestCase("61397fae-fa20-4192-b8c6-845bccf01d0f", SourceProviders.RELATIVITY)]
         [IdentifiedTestCase("d49f14dc-eed5-452e-b574-62353cf1583e", SourceProviders.FTP)]
         [IdentifiedTestCase("010f515f-286e-491c-8efb-221d4c7df0b5", SourceProviders.LDAP)]
@@ -30,12 +29,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         public async Task GetSourceProviderArtifactIdAsync_ShouldReturnCorrectValues(string sourceProviderGuidIdentifier)
         {
             //Arrange           
+            Models.SourceProviderTest expectedArtifactId = SourceWorkspace.SourceProviders.Where(x => x.Identifier == sourceProviderGuidIdentifier).First();
 
             //Act
             int result = await _sut.GetSourceProviderArtifactIdAsync(SourceWorkspace.ArtifactId, sourceProviderGuidIdentifier).ConfigureAwait(false);
 
             //Assert
-            result.Should().Be(10);
+            result.Should().Be(expectedArtifactId.ArtifactId);
 
         }
 
@@ -44,37 +44,60 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         public async Task GetDestinationProviderArtifactIdAsync_ShouldReturnCorrectValues(string destinationProviderGuidIdentifier)
         {
             //Arrange           
+            Models.DestinationProviderTest expectedArtifactId = SourceWorkspace.DestinationProviders.Where(x => x.Identifier == destinationProviderGuidIdentifier).First();
 
             //Act
             int result = await _sut.GetDestinationProviderArtifactIdAsync(SourceWorkspace.ArtifactId, destinationProviderGuidIdentifier).ConfigureAwait(false);
 
             //Assert
-            result.Should().Be(10);
+            result.Should().Be(expectedArtifactId.ArtifactId);
 
         }
 
         [IdentifiedTest("61397fae-fa20-4192-b8c6-845bccf01d0f")]
         public async Task GetSourceProviders_ShouldReturnCorrectValues()
         {
-            //Arrange           
+            //Arrange
+            IList<ProviderModel> expected = new List<ProviderModel>();
+            foreach(var x in SourceWorkspace.SourceProviders)
+            {
+                expected.Add(new ProviderModel
+                {
+                    ArtifactId = x.ArtifactId,
+                    Name = x.Name
+                });
+            }
 
             //Act
             IList<ProviderModel> result = await _sut.GetSourceProviders(SourceWorkspace.ArtifactId).ConfigureAwait(false);
 
             //Assert
-
+            result.Should().NotBeNull();
+            result.Should().HaveCount(expected.Count);
+            result.ShouldAllBeEquivalentTo(expected);
         }
 
         [IdentifiedTest("61397fae-fa20-4192-b8c6-845bccf01d0f")]
         public async Task GetDestinationProviders_ShouldReturnCorrectValues()
         {
             //Arrange           
+            IList<ProviderModel> expected = new List<ProviderModel>();
+            foreach (var x in SourceWorkspace.DestinationProviders)
+            {
+                expected.Add(new ProviderModel
+                {
+                    ArtifactId = x.ArtifactId,
+                    Name = x.Name
+                });
+            }
 
             //Act
             IList<ProviderModel> result = await _sut.GetDestinationProviders(SourceWorkspace.ArtifactId).ConfigureAwait(false);
 
             //Assert
-
+            result.Should().NotBeNull();
+            result.Should().HaveCount(expected.Count);
+            result.ShouldAllBeEquivalentTo(expected);
         }
     }
 }

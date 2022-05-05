@@ -89,6 +89,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             SetupSavedSearchDocuments();
             SetupProductionDocuments();
             SetupFolderDocuments();
+            SetupIntegrationPoint();
             SetupIntegrationPointLongTextStreaming();
             SetupIntegrationPointProfile();
             SetupIntegrationPointProfileLongTextStreaming();
@@ -100,6 +101,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             SetupIntegrationPointType();
             SetupApplications();
             SetupEntity();
+            SetupSourceProvider();
+            SetupDestinationProvider();
         }
 
         private void AddObjectToDatabase(ObjectCreationInfo objectCreationInfo)
@@ -240,13 +243,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 foundObjects.AddRange(customFilter(request, collectionGetter(workspace))
                     .Select(x => x.ToRelativityObject()));
             }
-            if (IsArtifactIdCondition(request.Condition, out int artifactId))
+            if (request.Condition != null && IsArtifactIdCondition(request.Condition, out int artifactId))
             {
                 AddRelativityObjectsToResult(
                     collectionGetter(workspace).Where(x => x.ArtifactId == artifactId)
                     , foundObjects);
             }
-            else if (IsArtifactIdListCondition(request.Condition, out int[] artifactIds))
+            else if (request.Condition != null && IsArtifactIdListCondition(request.Condition, out int[] artifactIds))
             {
                 AddRelativityObjectsToResult(
                     collectionGetter(workspace).Where(x => artifactIds.Contains(x.ArtifactId))
@@ -267,13 +270,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     .Select(x => x.ToRelativityObject()));
             }
 
-            if (IsArtifactIdCondition(request.Condition, out int artifactId))
+            if (request.Condition != null && IsArtifactIdCondition(request.Condition, out int artifactId))
             {
                 AddRelativityObjectsToResult(
                     collectionGetter(workspace).Where(x => x.ArtifactId == artifactId)
                     , foundObjects);
             }
-            else if (IsArtifactIdListCondition(request.Condition, out int[] artifactIds))
+            else if (request.Condition != null && IsArtifactIdListCondition(request.Condition, out int[] artifactIds))
             {
                 AddRelativityObjectsToResult(
                     collectionGetter(workspace).Where(x => artifactIds.Contains(x.ArtifactId))
@@ -292,7 +295,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
         private bool IsArtifactIdCondition(string condition, out int artifactId)
         {
             var match = Regex.Match(condition,
-                @"'Artifact[ ]?ID' == (\d+)");
+          @"'Artifact[ ]?ID' == (\d+)");
 
             if (match.Success && int.TryParse(match.Groups[1].Value, out int extractedArtifactId))
             {
@@ -307,7 +310,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
         private bool IsArtifactIdListCondition(string condition, out int[] artifactId)
         {
             var match = Regex.Match(condition,
-                @"'Artifact[ ]?ID' in \[(.*)\]");
+          @"'Artifact[ ]?ID' in \[(.*)\]");
 
             if (match.Success)
             {
@@ -372,7 +375,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     },
                     Value = x.Value
                 }).ToList(),
-                ParentObject = new RelativityObjectRef {ArtifactID = rdo.ParentObjectArtifactId}
+                ParentObject = new RelativityObjectRef { ArtifactID = rdo.ParentObjectArtifactId }
             };
         }
 
