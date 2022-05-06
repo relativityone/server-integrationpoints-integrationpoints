@@ -1,10 +1,17 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Application xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <ArtifactViewFields />
-  <Assemblies />
+  <Assemblies>
+    <Assembly>
+      <ArtifactId>5537283</ArtifactId>
+      <Keywords />
+      <Name>Relativity.Sync.dll</Name>
+      <Notes />
+    </Assembly>
+  </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2022-05-06T10:22:05.768548Z</ExtractionDate>
+  <ExtractionDate>2022-05-06T11:05:31.8296062Z</ExtractionDate>
   <Guid>d765ee0a-2541-434b-80e4-fae05e1ec275</Guid>
   <Name>Sync</Name>
   <Objects />

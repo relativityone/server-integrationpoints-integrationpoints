@@ -6,6 +6,7 @@
         <ApplicationSchema>ApplicationsXML/application.xml</ApplicationSchema>
         <TestDirectory>Source\Relativity.Sync.Tests.System\bin\</TestDirectory>
         <Assemblies>
+			<Assembly>Source\Relativity.Sync\bin\Relativity.Sync.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages />
