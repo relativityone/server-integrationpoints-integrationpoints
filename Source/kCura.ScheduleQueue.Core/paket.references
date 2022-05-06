@@ -5,5 +5,4 @@ Relativity
 Relativity.API
 Relativity.IntegrationPoints.Contracts
 Relativity.Toggles
-Relativity.DataMigration.MigrateFileshareAccess
 Relativity.Services.Interfaces.Private
