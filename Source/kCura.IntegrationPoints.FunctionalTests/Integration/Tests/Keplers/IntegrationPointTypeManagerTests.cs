@@ -3,10 +3,8 @@ using NUnit.Framework;
 using Relativity.IntegrationPoints.Services;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
