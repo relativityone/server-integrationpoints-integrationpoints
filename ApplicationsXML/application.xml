@@ -4,13 +4,14 @@
   <Assemblies />
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2019-05-06T15:32:28.6965752Z</ExtractionDate>
-  <Guid>D765EE0A-2541-434B-80E4-FAE05E1EC275</Guid>
+  <ExtractionDate>2022-05-06T10:22:05.768548Z</ExtractionDate>
+  <Guid>d765ee0a-2541-434b-80e4-fae05e1ec275</Guid>
   <Name>Sync</Name>
   <Objects />
   <ParentTabs />
-  <RelativityVersion>10.1.0.0</RelativityVersion>
-  <Version>0.0.0.1</Version>
+  <RelativityVersion>16.0.30.0</RelativityVersion>
+  <Version>0.0.1.2</Version>
+  <SchemaVersion>0.0.1</SchemaVersion>
   <TabDisplay>false</TabDisplay>
   <OriginSignature>4f050142-2091-416f-9411-a023e105be75</OriginSignature>
   <MasterScripts />
@@ -35,6 +36,5 @@
   <ChoiceIds />
   <ObjectTypeIds />
   <TabIds />
-  <CustomPageIds />
   <Locked>true</Locked>
 </Application>

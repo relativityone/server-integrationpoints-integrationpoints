@@ -53,12 +53,16 @@ Task Sign -Description "Sign all files" {
 Task Package -Description "Package up the build artifacts" {
 	Initialize-Folder $ArtifactsDir -Safe
 	
+	# Pack Relativity.Sync.dll
+	
 	exec { dotnet @("pack", $Solution,
 	("--no-build"),
 	("/property:Configuration=$BuildConfig"),
 	("/consoleloggerparameters:Summary"),
 	("/maxcpucount"),
 	("/nologo"))
+	
+	# Pack Sync RAP
 	
     $buildTools = Join-Path $PSScriptRoot "buildtools"
     $developmentScripts = Join-Path $PSScriptRoot "DevelopmentScripts"
