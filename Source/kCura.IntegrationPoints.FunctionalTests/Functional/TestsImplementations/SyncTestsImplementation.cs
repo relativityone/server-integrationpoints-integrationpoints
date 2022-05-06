@@ -22,16 +22,17 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data;
 using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Interfaces.Shared.Models;
+using Relativity.IntegrationPoints.Tests.Functional.TestsAssertions;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 {
     internal class SyncTestsImplementation
-    {
+    {       
         private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
-        private readonly Dictionary<string, Workspace> _destinationWorkspaces = new Dictionary<string, Workspace>();
+        private readonly Dictionary<string, Workspace> _destinationWorkspaces = new Dictionary<string, Workspace>();      
 
         public SyncTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture)
-        {
+        {           
             _testsImplementationTestFixture = testsImplementationTestFixture;
         }
 
@@ -102,6 +103,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             GetCorrectlyTaggedDocumentsCount(sourceDocs, "Relativity Destination Case", expectedDestinationCaseTag).Should().Be(transferredItemsCount);
             GetCorrectlyTaggedDocumentsCount(destinationDocs, "Relativity Source Case", expectedSourceCaseTag).Should().Be(transferredItemsCount);
             GetCorrectlyTaggedDocumentsCount(destinationDocs, "Relativity Source Job", expectedSourceJobTag).Should().Be(transferredItemsCount);
+
+            BillingFlagAssertion documentFlagValidator = new BillingFlagAssertion(destinationWorkspace.ArtifactID);
+            documentFlagValidator.AssertFiles(true);
         }
 
         public void ProductionImagesGoldFlow()

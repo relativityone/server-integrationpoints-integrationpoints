@@ -1,6 +1,7 @@
 ﻿using Relativity.Services.ResourceServer;
 using Relativity.Services.Workspace;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using ARMTestServices.Services.Interfaces;
@@ -15,72 +16,40 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 {
 	internal static class LoadFilesGenerator
 	{
-		private const string NATIVES_LOAD_FILE_HEADER = "Control Number,FILE_PATH";
-		private const string NATIVES_DAT_LOAD_FILE_HEADER = "^Control Number^|^FILE_PATH^|^File Size^|^File Name^|^Folder_Path^";
+		private const string _NATIVES_LOAD_FILE_HEADER = "Control Number,FILE_PATH";
+		private const string _NATIVES_DAT_LOAD_FILE_HEADER = "^Control Number^|^FILE_PATH^|^File Size^|^File Name^|^Folder_Path^";
 
-		private static readonly string NATIVES_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles\NativesLoadFile.csv");
-		private static readonly string NATIVES_LIMITED_ITEMS_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles\NativesPartialDataLoadFile.csv");
-		private static readonly string NATIVES_DAT_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles\NativesLoadFile.dat");
-		private static readonly string IMAGES_OPT_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\Images\ImagesLoadFile.opt");
-		private static readonly string NATIVES_FOR_LOAD_FILE_FOLDER_PATH = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\LoadFiles");
-		private static readonly string IMAGES_FOR_LOAD_FILE_FOLDER_PATH = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\Images");
-
-		public static string CreateNativesLoadFileWithLimitedItems(int limit)
-		{
-			if (File.Exists(NATIVES_LIMITED_ITEMS_LOAD_FILE_PATH))
-			{
-				return NATIVES_LIMITED_ITEMS_LOAD_FILE_PATH;
-			}
-
-			using (FileStream nativesLoadFileStream = new FileStream(NATIVES_LIMITED_ITEMS_LOAD_FILE_PATH, FileMode.Create))
-			{
-				using (StreamWriter nativesLoadFileWriter = new StreamWriter(nativesLoadFileStream))
-				{
-					nativesLoadFileWriter.WriteLine(NATIVES_LOAD_FILE_HEADER);
-
-					foreach (var native in Natives.NATIVES.Take(limit))
-					{
-						nativesLoadFileWriter.WriteLine($"{native.Key},{native.Value}");
-					}
-				}
-			}
-			return NATIVES_LIMITED_ITEMS_LOAD_FILE_PATH;
-		}
+		private static readonly string _NATIVES_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles\NativesLoadFile.csv");
+		private static readonly string _NATIVES_LIMITED_ITEMS_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles\NativesPartialDataLoadFile.csv");
+		private static readonly string _NATIVES_DAT_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\LoadFiles\NativesLoadFile.dat");
+		private static readonly string _IMAGES_OPT_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\Images\ImagesLoadFile.opt");
+		private static readonly string _IMAGES_OPT_LIMITED_ITEMS_LOAD_FILE_PATH = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Functional\Helpers\Images\ImagesPartialDataLoadFile.opt");
+        private static readonly string _NATIVES_FOR_LOAD_FILE_FOLDER_PATH = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Functional\Helpers\LoadFiles");
 
 		public static string GetOrCreateNativesLoadFile()
-		{
-			if (File.Exists(NATIVES_LOAD_FILE_PATH))
-			{
-				return NATIVES_LOAD_FILE_PATH;
-			}
-
-			using (FileStream nativesLoadFileStream = new FileStream(NATIVES_LOAD_FILE_PATH, FileMode.Create))
-			{
-				using (StreamWriter nativesLoadFileWriter = new StreamWriter(nativesLoadFileStream))
-				{
-					nativesLoadFileWriter.WriteLine(NATIVES_LOAD_FILE_HEADER);
-
-					foreach (var native in Natives.NATIVES)
-					{
-						nativesLoadFileWriter.WriteLine($"{native.Key},{native.Value}");
-					}
-				}
-			}
-			return NATIVES_LOAD_FILE_PATH;
+        {
+            CreateNativesLoadFile(Natives.NATIVES, _NATIVES_LOAD_FILE_PATH);
+            return _NATIVES_LOAD_FILE_PATH;
 		}
 
-		public static string GetOrCreateNativesDatLoadFile()
+        public static string CreateNativesLoadFileWithLimitedItems(int limit)
+        {
+            CreateNativesLoadFile(Natives.NATIVES.Take(limit), _NATIVES_LIMITED_ITEMS_LOAD_FILE_PATH);
+            return _NATIVES_LIMITED_ITEMS_LOAD_FILE_PATH;
+        }
+
+        public static string GetOrCreateNativesDatLoadFile()
 		{
-			if (File.Exists(NATIVES_DAT_LOAD_FILE_PATH))
+			if (File.Exists(_NATIVES_DAT_LOAD_FILE_PATH))
 			{
-				return NATIVES_FOR_LOAD_FILE_FOLDER_PATH;
+				return _NATIVES_FOR_LOAD_FILE_FOLDER_PATH;
 			}
 
-			using (FileStream nativesLoadFileStream = new FileStream(NATIVES_DAT_LOAD_FILE_PATH, FileMode.Create))
+			using (FileStream nativesLoadFileStream = new FileStream(_NATIVES_DAT_LOAD_FILE_PATH, FileMode.Create))
 			{
 				using (StreamWriter nativesLoadFileWriter = new StreamWriter(nativesLoadFileStream))
 				{
-					nativesLoadFileWriter.WriteLine(NATIVES_DAT_LOAD_FILE_HEADER);
+					nativesLoadFileWriter.WriteLine(_NATIVES_DAT_LOAD_FILE_HEADER);
 
 					foreach (var native in Natives.GenerateNativesForLoadFileImport())
 					{
@@ -88,31 +57,22 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
 					}
 				}
 			}
-			return NATIVES_FOR_LOAD_FILE_FOLDER_PATH;
+			return _NATIVES_FOR_LOAD_FILE_FOLDER_PATH;
 		}
 
-		public static string GetOrCreateNativesOptLoadFile()
+		public static string GetOrCreateNativesOptLoadFile(int imagesCount = 10)
 		{
-			if (File.Exists(IMAGES_OPT_LOAD_FILE_PATH))
-			{
-				return IMAGES_FOR_LOAD_FILE_FOLDER_PATH;
-			}
-
-			using (FileStream optLoadFileStream = new FileStream(IMAGES_OPT_LOAD_FILE_PATH, FileMode.Create))
-			{
-				using (StreamWriter optLoadFileWriter = new StreamWriter(optLoadFileStream))
-				{
-					for (int i=0; i<10; i++)
-					{
-						string line = String.Format("IMPORT_SMALL_IMAGES_000000000{0},1000000,.\\IMAGE_62K.tif,Y,,", i);
-						optLoadFileWriter.WriteLine(line);
-					}
-				}
-			}
-			return IMAGES_FOR_LOAD_FILE_FOLDER_PATH;
+            GetOrCreateNativesOptLoadFile(imagesCount, _IMAGES_OPT_LOAD_FILE_PATH);
+            return _IMAGES_OPT_LOAD_FILE_PATH;
 		}
 
-		public static async Task UploadLoadFileToImportDirectory(int workspaceId, string testDataPath)
+        public static string GetOrCreateNativesOptLoadFileWithLimitedItems(int imagesCount = 10)
+        {
+            GetOrCreateNativesOptLoadFile(imagesCount, _IMAGES_OPT_LIMITED_ITEMS_LOAD_FILE_PATH);
+            return _IMAGES_OPT_LIMITED_ITEMS_LOAD_FILE_PATH;
+        }
+
+        public static async Task UploadLoadFileToImportDirectory(int workspaceId, string testDataPath)
         {
 			string destinationPath;
 			using (var proxy = RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory.GetServiceProxy<IWorkspaceManager>())
@@ -143,5 +103,46 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles
                 }
             }
 		}
+
+        private static void CreateNativesLoadFile(IEnumerable<KeyValuePair<string, string>> natives, string itemsLoadFilePath)
+        {
+            if (File.Exists(itemsLoadFilePath))
+            {
+                return;
+            }
+
+            using (FileStream nativesLoadFileStream = new FileStream(itemsLoadFilePath, FileMode.Create))
+            {
+                using (StreamWriter nativesLoadFileWriter = new StreamWriter(nativesLoadFileStream))
+                {
+                    nativesLoadFileWriter.WriteLine(_NATIVES_LOAD_FILE_HEADER);
+
+                    foreach (var native in natives)
+                    {
+                        nativesLoadFileWriter.WriteLine($"{native.Key},{native.Value}");
+                    }
+                }
+            }
+        }
+
+        private static void GetOrCreateNativesOptLoadFile(int imagesCount, string imageFilePath)
+        {
+            if (File.Exists(imageFilePath))
+            {
+                return;
+            }
+
+            using (FileStream optLoadFileStream = new FileStream(imageFilePath, FileMode.Create))
+            {
+                using (StreamWriter optLoadFileWriter = new StreamWriter(optLoadFileStream))
+                {
+                    for (int i = 0; i < imagesCount; i++)
+                    {
+                        string line = String.Format("IMPORT_SMALL_IMAGES_000000000{0},1000000,.\\IMAGE_62K.tif,Y,,", i);
+                        optLoadFileWriter.WriteLine(line);
+                    }
+                }
+            }
+        }
     }
 }

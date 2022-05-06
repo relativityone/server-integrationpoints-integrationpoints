@@ -16,9 +16,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using kCura.WinEDDS.Service.Export;
 using Relativity.API;
 using System;
 using Castle.MicroKernel.Resolvers;
@@ -120,7 +118,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<ExportManager>().ImplementedBy<ExportManager>().LifestyleTransient());
 			container.Register(Component.For<ExportWorker>().ImplementedBy<ExportWorker>().LifestyleTransient());
 			container.Register(Component.For<JobHistoryErrorServiceProvider>().ImplementedBy<JobHistoryErrorServiceProvider>().LifeStyle.BoundTo<ExportWorker>());
-			container.Register(Component.For<IServiceManagerFactory<ISearchManager>>().ImplementedBy<SearchManagerFactory>().LifestyleSingleton());
 			container.Register(Component.For<IAgentValidator>().ImplementedBy<AgentValidator>().LifestyleTransient());
 			container.Register(Component.For<IAutomatedWorkflowsManager>().ImplementedBy<AutomatedWorkflowsManager>());
 

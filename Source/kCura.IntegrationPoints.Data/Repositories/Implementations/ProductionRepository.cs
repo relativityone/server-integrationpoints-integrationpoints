@@ -10,21 +10,21 @@ using Relativity.Productions.Services;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class ProductionRepository : IProductionRepository
-	{
-		private readonly IServicesMgr _servicesMgr;
+    public class ProductionRepository : IProductionRepository
+    {
+        private readonly IServicesMgr _servicesMgr;
 
-		public ProductionRepository(IServicesMgr servicesMgr)
-		{
-			_servicesMgr = servicesMgr;
-		}
+        public ProductionRepository(IServicesMgr servicesMgr)
+        {
+            _servicesMgr = servicesMgr;
+        }
 
         public async Task<IEnumerable<ProductionDTO>> GetProductionsForExport(int workspaceArtifactId)
         {
             IEnumerable<ProductionDTO> productionDtos;
-			using (var productionService = _servicesMgr.CreateProxy<IProductionService>(ExecutionIdentity.CurrentUser))
+            using (var productionService = _servicesMgr.CreateProxy<IProductionService>(ExecutionIdentity.CurrentUser))
             {
-                productionDtos = await GetProductionsAsync(async (i, s) => 
+                productionDtos = await GetProductionsAsync(async (i, s) =>
                 await productionService.RetrieveProducedByContextArtifactIDAsync(workspaceArtifactId, String.Empty), workspaceArtifactId)
                     .ConfigureAwait(false);
             }
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             IEnumerable<ProductionDTO> productionDtos;
             using (var productionService = _servicesMgr.CreateProxy<IProductionService>(ExecutionIdentity.CurrentUser))
             {
-                productionDtos = await GetProductionsAsync(async (i, s) => 
+                productionDtos = await GetProductionsAsync(async (i, s) =>
                         await productionService.RetrieveImportEligibleByContextArtifactIDAsync(workspaceArtifactId, String.Empty), workspaceArtifactId)
                     .ConfigureAwait(false);
             }
@@ -46,44 +46,45 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         }
 
         public ProductionDTO GetProduction(int workspaceArtifactId, int productionArtifactId)
-		{
-			ProductionDTO productionDto;
-			using (var productionManager = _servicesMgr.CreateProxy<IProductionManager>(ExecutionIdentity.CurrentUser))
-			{
-				try { 
-					Production production = productionManager.ReadSingleAsync(workspaceArtifactId, productionArtifactId).Result;
+        {
+            ProductionDTO productionDto;
+            using (var productionManager = _servicesMgr.CreateProxy<IProductionManager>(ExecutionIdentity.CurrentUser))
+            {
+                try
+                {
+                    Production production = productionManager.ReadSingleAsync(workspaceArtifactId, productionArtifactId).Result;
 
-					productionDto = new ProductionDTO
-					{
-						ArtifactID = production.ArtifactID.ToString(),
-						DisplayName = production.Name
-					};
-				}
-				catch (Exception ex)
-				{
-					throw new Exception("Unable to retrieve production", ex);
-				}
-			}
+                    productionDto = new ProductionDTO
+                    {
+                        ArtifactID = production.ArtifactID.ToString(),
+                        DisplayName = production.Name
+                    };
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Unable to retrieve production", ex);
+                }
+            }
 
-			return productionDto;
-		}
+            return productionDto;
+        }
 
-		public int CreateSingle(int workspaceArtifactId, Production production)
-		{
-			int result;
-			using (var productionManager = _servicesMgr.CreateProxy<IProductionManager>(ExecutionIdentity.CurrentUser))
-			{
-				try
-				{
-					result = productionManager.CreateSingleAsync(workspaceArtifactId, production).Result;
-				}
-				catch (Exception ex)
-				{
-					throw new Exception("Unable to create production", ex);
-				}
-			}
-			return result;
-		}
+        public int CreateSingle(int workspaceArtifactId, Production production)
+        {
+            int result;
+            using (var productionManager = _servicesMgr.CreateProxy<IProductionManager>(ExecutionIdentity.CurrentUser))
+            {
+                try
+                {
+                    result = productionManager.CreateSingleAsync(workspaceArtifactId, production).Result;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Unable to create production", ex);
+                }
+            }
+            return result;
+        }
 
         private async Task<IEnumerable<ProductionDTO>> GetProductionsAsync(Func<int, string, Task<DataSetWrapper>> function, int workspaceArtifactId)
         {

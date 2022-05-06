@@ -131,11 +131,9 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 			container.Register(Component.For<IConfigFactory>().ImplementedBy<ConfigFactory>().LifestyleSingleton());
 			container.Register(Component.For<ISqlServiceFactory>().ImplementedBy<HelperConfigSqlServiceFactory>().LifestyleSingleton());
-			container.Register(Component.For<IServiceManagerProvider>().ImplementedBy<ServiceManagerProvider>().LifestyleTransient());
 			container.Register(Component.For<IManagerFactory>().ImplementedBy<ManagerFactory>().LifestyleTransient());
 
 			container.Register(Component.For<IProductionManager>().ImplementedBy<ProductionManager>().LifestyleTransient());
-            container.Register(Component.For<IProductionManagerWrapper>().ImplementedBy<ProductionManagerWrapper>().LifestyleTransient());
             container.Register(Component.For<IProductionRepository>().ImplementedBy<ProductionRepository>().LifestyleTransient());
 			container.Register(Component.For<ISourceWorkspaceManager>().ImplementedBy<SourceWorkspaceManager>().LifestyleTransient());
 			container.Register(Component.For<ISourceJobManager>().ImplementedBy<SourceJobManager>().LifestyleTransient());
