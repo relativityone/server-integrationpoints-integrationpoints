@@ -4,8 +4,11 @@ using System.Linq;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Common.Helpers;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
+using kCura.IntegrationPoints.Domain.Extensions;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -15,7 +18,7 @@ using Relativity.API;
 
 namespace kCura.ScheduleQueue.AgentBase
 {
-    public abstract class ScheduleQueueAgentBase : Agent.AgentBase
+	public abstract class ScheduleQueueAgentBase : Agent.AgentBase
 	{
 		private IAgentService _agentService;
 		private IQueueQueryManager _queryManager;
@@ -23,6 +26,7 @@ namespace kCura.ScheduleQueue.AgentBase
 		private IJobService _jobService;
 		private IQueueJobValidator _queueJobValidator;
 		private IDateTime _dateTime;
+		private ITaskParameterHelper _taskParameterHelper;
 		private const int _MAX_MESSAGE_LENGTH = 10000;
 
 		private readonly Guid _agentGuid;
@@ -48,7 +52,7 @@ namespace kCura.ScheduleQueue.AgentBase
 		protected IJobService JobService => _jobService;
 
 		protected ScheduleQueueAgentBase(Guid agentGuid, IKubernetesMode kubernetesMode = null, IAgentService agentService = null, IJobService jobService = null,
-			IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null, 
+			IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
 			IQueueQueryManager queryManager = null, IDateTime dateTime = null, IAPILog logger = null)
 		{
 			// Lazy init is required for things depending on Helper
@@ -57,7 +61,7 @@ namespace kCura.ScheduleQueue.AgentBase
 				? new Lazy<IAPILog>(() => logger)
 				: new Lazy<IAPILog>(InitializeLogger);
 
-			_kubernetesModeLazy = kubernetesMode != null 
+			_kubernetesModeLazy = kubernetesMode != null
 				? new Lazy<IKubernetesMode>(() => kubernetesMode)
 				: new Lazy<IKubernetesMode>(() => new KubernetesMode(Logger));
 
@@ -67,7 +71,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			_jobService = jobService;
 			_queueJobValidator = queueJobValidator;
 			_dateTime = dateTime;
-            _queryManager = queryManager;
+			_queryManager = queryManager;
 			ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
 
 			_agentId = new Lazy<int>(GetAgentID);
@@ -78,7 +82,7 @@ namespace kCura.ScheduleQueue.AgentBase
 		protected virtual void Initialize()
 		{
 			NotifyAgentTab(LogCategory.Debug, "Initialize Agent core services");
-			
+
 			if (_queryManager == null)
 			{
 				_queryManager = new QueueQueryManager(Helper, _agentGuid);
@@ -104,16 +108,23 @@ namespace kCura.ScheduleQueue.AgentBase
 				_dateTime = new DateTimeWrapper();
 			}
 
-			if(GetResourceGroupIDsFunc == null)
-            {
+			if (GetResourceGroupIDsFunc == null)
+			{
 				GetResourceGroupIDsFunc = () => GetResourceGroupIDs();
 			}
+
+			if (_taskParameterHelper == null)
+            {
+				_taskParameterHelper = new TaskParameterHelper(
+					SerializerWithLogging.Create(Logger),
+					new DefaultGuidService());
+            }
 		}
 
 		public sealed override void Execute()
 		{
 			using (Logger.LogContextPushProperty("AgentRunCorrelationId", Guid.NewGuid()))
-            {
+			{
 				if (ToBeRemoved)
 				{
 					Logger.LogInformation("Agent is marked to be removed. Job will not be processed.");
@@ -138,7 +149,7 @@ namespace kCura.ScheduleQueue.AgentBase
 					_jobService.UnlockJobs(_agentId.Value);
 					DidWork = false;
 				}
-				
+
 				if (IsKubernetesMode)
 				{
 					Logger.LogInformation("Shutting down agent after single job in K8s mode");
@@ -146,7 +157,7 @@ namespace kCura.ScheduleQueue.AgentBase
 				}
 			}
 		}
-		
+
 		private void PreExecute()
 		{
 			Initialize();
@@ -193,7 +204,11 @@ namespace kCura.ScheduleQueue.AgentBase
 
 				while (nextJob != null)
 				{
-					LogJobInformation(nextJob);
+					AgentCorrelationContext context = GetCorrelationContext(nextJob);
+					using (Logger.LogContextPushProperties(context))
+					{
+						LogJobInformation(nextJob);
+					}
 
 					bool isJobValid = PreExecuteJobValidation(nextJob);
 					if (!isJobValid)
@@ -210,7 +225,7 @@ namespace kCura.ScheduleQueue.AgentBase
 					TaskResult jobResult = ProcessJob(nextJob);
 
 					Logger.LogInformation("Job {jobId} has been processed with status {status}", nextJob.JobId, jobResult.Status.ToString());
-					
+
 					// If last job was drain-stopped, assign null to nextJob so it doesn't get executed on next loop iteration.
 					// Also do not finalize the job (i.e. do not remove it from the queue).
 					if (jobResult.Status == TaskStatusEnum.DrainStopped)
@@ -247,6 +262,23 @@ namespace kCura.ScheduleQueue.AgentBase
 				_jobService.UnlockJobs(_agentId.Value);
 				DidWork = false;
 			}
+		}
+
+		private AgentCorrelationContext GetCorrelationContext(Job job)
+        {
+			Guid batchInstanceId = _taskParameterHelper.GetBatchInstance(job);
+			string correlationId = batchInstanceId.ToString();
+
+			return new AgentCorrelationContext
+			{
+				JobId = job.JobId,
+				RootJobId = job.RootJobId,
+				WorkspaceId = job.WorkspaceID,
+				UserId = job.SubmittedBy,
+				IntegrationPointId = job.RelatedObjectArtifactID,
+				WorkflowId = correlationId,
+				ActionName = job.TaskType
+			};
 		}
 
 		private bool PreExecuteJobValidation(Job job)
