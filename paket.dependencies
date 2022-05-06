@@ -42,7 +42,6 @@ nuget Relativity.Telemetry.Services.Interface 3003.0.2
 nuget Relativity.Toggles 1.0.1
 nuget Relativity.AutomatedWorkflows.Services.Interfaces 0.11.0-pre.1
 nuget Relativity.AutomatedWorkflows.SDK 0.11.0-pre.1
-nuget Relativity.DataMigration.MigrateFileshareAccess 0.2.0
 
 // Import API packages
 nuget Relativity.DataExchange.Client.SDK 1.16.26
