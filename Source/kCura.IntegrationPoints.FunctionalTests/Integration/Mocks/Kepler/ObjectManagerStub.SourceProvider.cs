@@ -18,20 +18,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
         {
             IList<SourceProviderTest> SourceProviderByCondition(QueryRequest request, IList<SourceProviderTest> list)
             {
-                if (request.Condition == null)
-                {
-                    IList<SourceProviderTest> providerList = new List<SourceProviderTest>();
-                    foreach (var x in list)
-                    {
-                        providerList.Add(x);
-                    }
-                    return providerList;
-                }
-                else if (IsSourceIdentifierCondition(request.Condition, out string identifier))
+                if (IsSourceIdentifierCondition(request.Condition, out string identifier))
                 {
                     return list.Where(x => x.Identifier.Equals(identifier, StringComparison.OrdinalIgnoreCase)).ToList();
                 }
-                return new List<SourceProviderTest>();
+                return list;
             }
 
             Mock.Setup(x => x.QueryAsync(It.IsAny<int>(),
@@ -54,13 +45,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
         private bool IsSourceIdentifierCondition(string condition, out string identifierValue)
         {
-            System.Text.RegularExpressions.Match match = Regex.Match(condition,
+            if (condition != null)
+            {
+                System.Text.RegularExpressions.Match match = Regex.Match(condition,
                 $"'{SourceProviderFields.Identifier}' == '(.*)'");
 
-            if (match.Success)
-            {
-                identifierValue = match.Groups[1].Value;
-                return true;
+                if (match.Success)
+                {
+                    identifierValue = match.Groups[1].Value;
+                    return true;
+                }
             }
             identifierValue = null;
             return false;

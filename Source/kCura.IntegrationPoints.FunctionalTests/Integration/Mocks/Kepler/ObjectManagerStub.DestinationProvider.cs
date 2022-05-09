@@ -17,20 +17,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
         {
             IList<DestinationProviderTest> DestinationProviderByCondition(QueryRequest request, IList<DestinationProviderTest> list)
             {
-                if (request.Condition == null)
-                {
-                    IList<DestinationProviderTest> providerList = new List<DestinationProviderTest>();
-                    foreach (var x in list)
-                    {
-                        providerList.Add(x);
-                    }
-                    return providerList;
-                }
-                else if (IsDestinationIdentifierCondition(request.Condition, out string identifier))
+                if (IsDestinationIdentifierCondition(request.Condition, out string identifier))
                 {
                     return list.Where(x => x.Identifier.Equals(identifier, StringComparison.OrdinalIgnoreCase)).ToList();
                 }
-                return new List<DestinationProviderTest>();
+                return list;
             }
 
             Mock.Setup(x => x.QueryAsync(It.IsAny<int>(),
@@ -52,13 +43,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
         private bool IsDestinationIdentifierCondition(string condition, out string identifierValue)
         {
-            System.Text.RegularExpressions.Match match = Regex.Match(condition,
+            if (condition != null)
+            {
+                System.Text.RegularExpressions.Match match = Regex.Match(condition,
                 $"'{DestinationProviderFields.Identifier}' == '(.*)'");
 
-            if (match.Success)
-            {
-                identifierValue = match.Groups[1].Value;
-                return true;
+                if (match.Success)
+                {
+                    identifierValue = match.Groups[1].Value;
+                    return true;
+                }
             }
             identifierValue = null;
             return false;
