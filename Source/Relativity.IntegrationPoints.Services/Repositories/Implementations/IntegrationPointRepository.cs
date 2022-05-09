@@ -95,8 +95,9 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
 		public override IList<OverwriteFieldsModel> GetOverwriteFieldChoices()
 		{
 			List<ChoiceRef> choices = _choiceQuery.GetChoicesOnField(Context.WorkspaceID, IntegrationPointFieldGuids.OverwriteFieldsGuid);
-			return choices.Select(Mapper.Map<OverwriteFieldsModel>).ToList();
-		}
+			List<OverwriteFieldsModel> mappedChoiced = choices.Select(Mapper.Map<OverwriteFieldsModel>).ToList();
+            return mappedChoiced;
+        }
 
 		public IntegrationPointModel CreateIntegrationPointFromProfile(int profileArtifactID, string integrationPointName)
 		{
