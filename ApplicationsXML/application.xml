@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Application xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ArtifactViewFields />
+  <Assemblies>
+    <Assembly>
+      <ArtifactId>5537283</ArtifactId>
+      <Keywords />
+      <Name>Relativity.Sync.dll</Name>
+      <Notes />
+    </Assembly>
+  </Assemblies>
+  <ResourceFiles />
+  <ExternalTabs />
+  <ExtractionDate>2022-05-06T11:05:31.8296062Z</ExtractionDate>
+  <Guid>d765ee0a-2541-434b-80e4-fae05e1ec275</Guid>
+  <Name>Sync</Name>
+  <Objects />
+  <ParentTabs />
+  <RelativityVersion>16.0.30.0</RelativityVersion>
+  <Version>0.0.1.2</Version>
+  <SchemaVersion>0.0.1</SchemaVersion>
+  <TabDisplay>false</TabDisplay>
+  <OriginSignature>4f050142-2091-416f-9411-a023e105be75</OriginSignature>
+  <MasterScripts />
+  <ApplicationScripts />
+  <CustomPages />
+  <AgentTypes />
+  <IsRelativityApplication>true</IsRelativityApplication>
+  <InstallEventHandlers />
+  <SavedSearches />
+  <SearchContainers />
+  <SearchProviders />
+  <EnvironmentVariables>
+    <SearchAsConditionCriteriaID>1000471</SearchAsConditionCriteriaID>
+    <FullTextAll>1000182</FullTextAll>
+  </EnvironmentVariables>
+  <GlobalApplication>false</GlobalApplication>
+  <RelativityScriptIds />
+  <ViewIds />
+  <DashboardIds />
+  <LayoutIds />
+  <FieldIds />
+  <ChoiceIds />
+  <ObjectTypeIds />
+  <TabIds />
+  <Locked>true</Locked>
+</Application>
