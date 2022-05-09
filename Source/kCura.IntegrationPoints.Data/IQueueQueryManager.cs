@@ -50,5 +50,7 @@ namespace kCura.IntegrationPoints.Data
 		IQuery<bool> CheckAllSyncWorkerBatchesAreFinished(long rootJobId);
 
 		IQuery<int> GetWorkload();
+
+		IQuery<DataTable> GetJobsQueueDetails();
 	}
 }

@@ -339,7 +339,15 @@ namespace kCura.ScheduleQueue.Core.Properties {
                 return ResourceManager.GetString("GetJobByRelatedObjectIDandTaskType", resourceCulture);
             }
         }
-        
+
+        internal static string GetJobsQueueDetails
+        {
+            get
+            {
+                return ResourceManager.GetString("GetJobsQueueDetails", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to IF EXISTS(SELECT TOP 1 JobID FROM [eddsdbo].[{0}] WHERE [LockedByAgentID] = @AgentID)
         ///BEGIN

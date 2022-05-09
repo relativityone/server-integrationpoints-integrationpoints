@@ -257,6 +257,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 			int workloadCount = _db.JobsInQueue.Count(j => j.NextRunTime <= _context.CurrentDateTime);
 			return new ValueReturnQuery<int>(workloadCount);
 		}
+		public IQuery<DataTable> GetJobsQueueDetails()
+		{
+			var dataTable = new DataTable();
+			dataTable.Columns.Add("Total", typeof(int));
+			dataTable.Columns.Add("Blocked", typeof(int));
+
+			int workloadCount = _db.JobsInQueue.Count(j => j.NextRunTime <= _context.CurrentDateTime);
+
+			dataTable.Rows.Add(new Object[] { workloadCount, 0 });
+			return new ValueReturnQuery<DataTable>(dataTable);
+		}
 
 		#region Test Verification
 

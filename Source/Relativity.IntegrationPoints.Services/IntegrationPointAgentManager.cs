@@ -47,6 +47,8 @@ namespace Relativity.IntegrationPoints.Services
 			{
 				int jobsCount = GetJobsCountForWorkload(container.Resolve<IQueueQueryManager>());
 
+				int test = GetJobsFromQueue(container.Resolve<IQueueQueryManager>());
+
 				IInstanceSettingsManager instanceSettingManager = container.Resolve<IInstanceSettingsManager>();
 				List<WorkloadSizeDefinition> workloadSizeDefinitions = GetWorkloadSizeDefinitions(instanceSettingManager);
 				
@@ -65,6 +67,21 @@ namespace Relativity.IntegrationPoints.Services
 		{
 			return queueQueryManager.GetWorkload().Execute();
 		}
+
+		private int GetJobsFromQueue(IQueueQueryManager queueQueryManager)
+        {
+			DataRow queueItemsCount = queueQueryManager.GetJobsQueueDetails()
+											.Execute()
+											.AsEnumerable()
+											.FirstOrDefault();
+			
+			int totalItems = queueItemsCount.Field<int>("Total");
+			int blockedItems = queueItemsCount.Field<int>("Blocked");
+
+			//TODO: send metrics to NR
+
+			return totalItems;
+        }
 
 		private WorkloadSizeDefinition SelectMatchingWorkloadSize(List<WorkloadSizeDefinition> definitions, int pendingJobsCount)
 		{

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Castle.Windsor;
@@ -37,19 +38,33 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 			_containerFake.Setup(x => x.Resolve<IInstanceSettingsManager>()).Returns(_instanceSettingsManagerFake.Object);
 		}
 
-		private IntegrationPointAgentManager PrepareSut(int jobsCount = 0, string workloadSizeInstanceSettingValue = "")
+		private IntegrationPointAgentManager PrepareSut(int jobsCount = 0, string workloadSizeInstanceSettingValue = "", int blockedJobs = 0)
 		{
 			Mock<IQuery<int>> fakeGetWorkload = new Mock<IQuery<int>>();
-			
+			Mock<IQuery<DataTable>> fakeGetQueueDetails = new Mock<IQuery<DataTable>>();
+
+			DataTable fakeQueueDetails = PrepareFakeQueueDetails(jobsCount, blockedJobs);
+
 			fakeGetWorkload.Setup(x => x.Execute()).Returns(jobsCount);
+			fakeGetQueueDetails.Setup(x => x.Execute()).Returns(fakeQueueDetails);
 			_queueQueryManagerFake.Setup(x => x.GetWorkload()).Returns(fakeGetWorkload.Object);
+			_queueQueryManagerFake.Setup(x => x.GetJobsQueueDetails()).Returns(fakeGetQueueDetails.Object);
 
 			_instanceSettingsManagerFake.Setup(x => x.GetWorkloadSizeSettings()).Returns(workloadSizeInstanceSettingValue);
 
 			return new IntegrationPointAgentManager(_loggerFake.Object, _permissionsFake.Object, _containerFake.Object);
 		}
-		
-		[TestCase(0, WorkloadSize.None)]
+
+        private DataTable PrepareFakeQueueDetails(int jobsCount, int blockedJobs)
+        {
+			var dt = new DataTable();
+			dt.Columns.Add("Total", typeof(int));
+			dt.Columns.Add("Blocked", typeof(int));
+			dt.Rows.Add(new Object[] { jobsCount, blockedJobs });
+			return dt;
+        }
+
+        [TestCase(0, WorkloadSize.None)]
 		[TestCase(1, WorkloadSize.One)]
 		[TestCase(2, WorkloadSize.S)]
 		[TestCase(3, WorkloadSize.S)]
