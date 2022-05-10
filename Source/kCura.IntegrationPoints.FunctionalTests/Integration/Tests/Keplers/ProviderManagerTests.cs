@@ -39,8 +39,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
 
         }
 
-        [IdentifiedTestCase("61397fae-fa20-4192-b8c6-845bccf01d0f", DestinationProviders.LOADFILE)]
-        [IdentifiedTestCase("d49f14dc-eed5-452e-b574-62353cf1583e", DestinationProviders.RELATIVITY)]
+        [IdentifiedTestCase("bb66cd69-c611-4874-affb-0e2ca7ba65ae", DestinationProviders.LOADFILE)]
+        [IdentifiedTestCase("166f7a42-e511-4e49-ae14-361410afc4e8", DestinationProviders.RELATIVITY)]
         public async Task GetDestinationProviderArtifactIdAsync_ShouldReturnCorrectValues(string destinationProviderGuidIdentifier)
         {
             //Arrange           
@@ -54,7 +54,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
 
         }
 
-        [IdentifiedTest("61397fae-fa20-4192-b8c6-845bccf01d0f")]
+        [IdentifiedTest("5bd58099-643c-4244-948f-b630e13881f1")]
         public async Task GetSourceProviders_ShouldReturnCorrectValues()
         {
             //Arrange
@@ -77,7 +77,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             result.ShouldAllBeEquivalentTo(expected);
         }
 
-        [IdentifiedTest("61397fae-fa20-4192-b8c6-845bccf01d0f")]
+        [IdentifiedTest("877eedb3-84e1-45a2-bf19-88bc2a6dd4e5")]
         public async Task GetDestinationProviders_ShouldReturnCorrectValues()
         {
             //Arrange           
