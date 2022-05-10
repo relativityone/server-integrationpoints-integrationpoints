@@ -37,7 +37,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             CreateIntegrationPointRequest request = PrepareIntegrationPoint();
 
             // Act
-            IntegrationPointModel integrationPointModel = await _sut.CreateIntegrationPointAsync(request);
+            IntegrationPointModel integrationPointModel = await _sut.CreateIntegrationPointAsync(request).ConfigureAwait(false);
 
             // Assert
             integrationPointModel.ArtifactId.Should().NotBe(request.IntegrationPoint.ArtifactId);
@@ -58,7 +58,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             };
 
             // Act
-            IntegrationPointModel integrationPointModel = await _sut.UpdateIntegrationPointAsync(updateRequest);
+            IntegrationPointModel integrationPointModel = await _sut.UpdateIntegrationPointAsync(updateRequest).ConfigureAwait(false);
 
             // Assert
             integrationPointModel.ArtifactId.Should().Be(request.IntegrationPoint.ArtifactId);
@@ -72,10 +72,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         {
             // Arrange
             CreateIntegrationPointRequest request = PrepareIntegrationPoint();
-
+            IntegrationPointModel createdIntegrationPointModel = await _sut.CreateIntegrationPointAsync(request).ConfigureAwait(false);
+            
             // Act
-            IntegrationPointModel createdIntegrationPointModel = await _sut.CreateIntegrationPointAsync(request);
-            IntegrationPointModel integrationPointModel =  await _sut.GetIntegrationPointAsync(request.WorkspaceArtifactId, createdIntegrationPointModel.ArtifactId);
+            IntegrationPointModel integrationPointModel =  await _sut
+                .GetIntegrationPointAsync(request.WorkspaceArtifactId, createdIntegrationPointModel.ArtifactId).ConfigureAwait(false);
 
             // Assert
             integrationPointModel.ArtifactId.Should().Be(createdIntegrationPointModel.ArtifactId);
@@ -89,26 +90,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         {
             // Arrange
             CreateIntegrationPointRequest request = PrepareIntegrationPoint();
-
-            DataTable agentDataTable = new DataTable();
-            agentDataTable.Columns.Add("AgentTypeID", typeof(int));
-            agentDataTable.Columns.Add("Name", typeof(string));
-            agentDataTable.Columns.Add("Fullnamespace", typeof(string));
-            agentDataTable.Columns.Add("Guid", typeof(Guid));
-            DataRow row = agentDataTable.NewRow();
-            row["AgentTypeID"] = 0;
-            row["Name"] = "Adler Sieben Agent";
-            row["Fullnamespace"] = "Fullnamespace";
-            row["Guid"] = Guid.NewGuid();
-            agentDataTable.Rows.Add(row);
-            Helper.DbContextMock
-                .Setup(x => x.ExecuteSqlStatementAsDataTable(Resources.GetAgentTypeInformation, It.Is<List<SqlParameter>>(y =>
-                    y[0].ParameterName == "@AgentID" &&
-                    y[1].ParameterName == "@AgentGuid")))
-                .Returns(agentDataTable);
+            IntegrationPointModel createdIntegrationPointModel = await _sut.CreateIntegrationPointAsync(request).ConfigureAwait(false);
+            CreateAgentDataTable();
 
             // Act
-            IntegrationPointModel createdIntegrationPointModel = await _sut.CreateIntegrationPointAsync(request);
             Action action = async () => await _sut.RunIntegrationPointAsync(request.WorkspaceArtifactId, createdIntegrationPointModel.ArtifactId);
 
             // Assert
@@ -120,30 +105,40 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         {
             // Arrange
             CreateIntegrationPointRequest request = PrepareIntegrationPoint();
-
-            DataTable agentDataTable = new DataTable();
-            agentDataTable.Columns.Add("AgentTypeID", typeof(int));
-            agentDataTable.Columns.Add("Name", typeof(string));
-            agentDataTable.Columns.Add("Fullnamespace", typeof(string));
-            agentDataTable.Columns.Add("Guid", typeof(Guid));
-            DataRow row = agentDataTable.NewRow();
-            row["AgentTypeID"] = 0;
-            row["Name"] = "Adler Sieben Agent";
-            row["Fullnamespace"] = "Fullnamespace";
-            row["Guid"] = Guid.NewGuid();
-            agentDataTable.Rows.Add(row);
-            Helper.DbContextMock
-                .Setup(x => x.ExecuteSqlStatementAsDataTable(Resources.GetAgentTypeInformation, It.Is<List<SqlParameter>>(y =>
-                    y[0].ParameterName == "@AgentID" &&
-                    y[1].ParameterName == "@AgentGuid")))
-                .Returns(agentDataTable);
+            IntegrationPointModel createdIntegrationPointModel = await _sut.CreateIntegrationPointAsync(request).ConfigureAwait(false);
+            CreateAgentDataTable();
 
             // Act
-            IntegrationPointModel createdIntegrationPointModel = await _sut.CreateIntegrationPointAsync(request);
             Action action = async () => await _sut.RetryIntegrationPointAsync(request.WorkspaceArtifactId, createdIntegrationPointModel.ArtifactId);
 
             // Assert
             action.ShouldNotThrow();
+        }
+
+        [IdentifiedTest("A04A9599-B4FE-4F7B-8F07-2851F981865A")]
+        public async Task GetAllIntegrationPointsAsync_ShouldReturnAllCreatedIntegrationPoints()
+        {
+            // Arrange
+            CreateIntegrationPointRequest request = PrepareIntegrationPoint();
+
+            const int integrationPointsCount = 5;
+            // integrationPointsCount is decreased because on is already created in PrepareIntegrationPoint
+            for (int i = 0; i < integrationPointsCount - 1; i++)
+            {
+                await _sut.CreateIntegrationPointAsync(request).ConfigureAwait(false);
+            }
+
+            // Act
+            IList<IntegrationPointModel> integrationPoints = await _sut.GetAllIntegrationPointsAsync(SourceWorkspace.ArtifactId);
+
+            // Assert
+            integrationPoints.Count.ShouldBeEquivalentTo(integrationPointsCount);
+            foreach (IntegrationPointModel integrationPointModel in integrationPoints)
+            {
+                integrationPointModel.Name.ShouldBeEquivalentTo(request.IntegrationPoint.Name);
+                integrationPointModel.SourceProvider.ShouldBeEquivalentTo(request.IntegrationPoint.SourceProvider);
+                integrationPointModel.DestinationProvider.ShouldBeEquivalentTo(request.IntegrationPoint.DestinationProvider);
+            }
         }
 
         private CreateIntegrationPointRequest PrepareIntegrationPoint()
@@ -153,10 +148,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
                 Guid = IntegrationPointFieldGuids.OverwriteFieldsGuid,
                 Artifact = { ArtifactId = Const.OVERWRITE_FIELD_ARTIFACT_ID }
             });
-            SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(SourceWorkspace);
-            IntegrationPointTest integrationPoint = SourceWorkspace.IntegrationPoints[SourceWorkspace.IntegrationPoints.Count - 1];
-
-
 
             Helper.DbContextMock
                 .Setup(x => x.ExecuteSqlStatementAsDataTable(It.IsAny<string>(), It.Is<SqlParameter[]>(y => 
@@ -164,6 +155,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
                     y[1].ParameterName == "@RelatedObjectArtifactID")))
                 .Returns(new DataTable());
 
+            SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(SourceWorkspace);
+            IntegrationPointTest integrationPoint = SourceWorkspace.IntegrationPoints[SourceWorkspace.IntegrationPoints.Count - 1];
             CreateIntegrationPointRequest request = new CreateIntegrationPointRequest
             {
                 IntegrationPoint = new IntegrationPointModel
@@ -186,6 +179,26 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             };
 
             return request;
+        }
+
+        private void CreateAgentDataTable()
+        {
+            DataTable agentDataTable = new DataTable();
+            agentDataTable.Columns.Add("AgentTypeID", typeof(int));
+            agentDataTable.Columns.Add("Name", typeof(string));
+            agentDataTable.Columns.Add("Fullnamespace", typeof(string));
+            agentDataTable.Columns.Add("Guid", typeof(Guid));
+            DataRow row = agentDataTable.NewRow();
+            row["AgentTypeID"] = 0;
+            row["Name"] = "Adler Sieben Agent";
+            row["Fullnamespace"] = "Fullnamespace";
+            row["Guid"] = Guid.NewGuid();
+            agentDataTable.Rows.Add(row);
+            Helper.DbContextMock
+                .Setup(x => x.ExecuteSqlStatementAsDataTable(Resources.GetAgentTypeInformation, It.Is<List<SqlParameter>>(y =>
+                    y[0].ParameterName == "@AgentID" &&
+                    y[1].ParameterName == "@AgentGuid")))
+                .Returns(agentDataTable);
         }
     }
 }
