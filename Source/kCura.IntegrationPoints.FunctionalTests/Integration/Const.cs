@@ -12,6 +12,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		public static int OVERWRITE_FIELD_ARTIFACT_ID = ArtifactProvider.NextId();
         public static int FIXED_LENGTH_TEXT_TYPE_ARTIFACT_ID = ArtifactProvider.NextId();
 		public static int LONG_TEXT_TYPE_ARTIFACT_ID = ArtifactProvider.NextId();
+		public static int INTEGRATION_POINTS_ARTIFACT_ID = ArtifactProvider.NextId();
 
 		public static class Agent
 		{

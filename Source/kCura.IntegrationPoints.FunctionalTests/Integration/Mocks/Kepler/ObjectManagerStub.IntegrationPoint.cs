@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Attributes;
 using Moq;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Kepler.Transport;
@@ -96,7 +95,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 .Values
                 .Select(x => x.FieldGuid);
 
-            foreach (var guid in guids)
+            foreach (Guid guid in guids)
             {
                 isGetAllIntegrationPointsCondition &= request.Fields.Select(x => x.Guid).Contains(guid);
             }
