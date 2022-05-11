@@ -15,6 +15,8 @@ using NUnit.Framework;
 using Relativity.IntegrationPoints.Services;
 using Relativity.IntegrationPoints.Services.Interfaces.Private.Models.IntegrationPoint;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
+using Relativity.Services.ChoiceQuery;
+using Relativity.Services.Interfaces.ObjectType.Models;
 using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
@@ -129,7 +131,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             }
 
             // Act
-            IList<IntegrationPointModel> integrationPoints = await _sut.GetAllIntegrationPointsAsync(SourceWorkspace.ArtifactId);
+            IList<IntegrationPointModel> integrationPoints =
+                await _sut.GetAllIntegrationPointsAsync(SourceWorkspace.ArtifactId).ConfigureAwait(false);
 
             // Assert
             integrationPoints.Count.ShouldBeEquivalentTo(integrationPointsCount);
@@ -141,20 +144,62 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             }
         }
 
+        [IdentifiedTest("E7746701-32FF-4725-AB52-DB0325DB1015")]
+        public async Task GetOverwriteFieldsChoicesAsync_ShouldReturnAllOverwriteFieldsChoices()
+        {
+            // Arrange
+            PrepareIntegrationPoint();
+
+            // Act
+            IList<OverwriteFieldsModel> overwriteFieldsChoices = await _sut.GetOverwriteFieldsChoicesAsync(SourceWorkspace.ArtifactId).ConfigureAwait(false);
+
+            // Assert
+            overwriteFieldsChoices.Count.ShouldBeEquivalentTo(Const.Choices.OverwriteFields.Count);
+            foreach (Choice overwriteFieldsChoice in Const.Choices.OverwriteFields)
+            {
+                overwriteFieldsChoices.Select(x => x.ArtifactId).Contains(overwriteFieldsChoice.ArtifactID);
+            }
+        }
+
+        [IdentifiedTest("BAB45AB0-CE27-4708-AC79-744C98D391B7")]
+        public async Task CreateIntegrationPointFromProfileAsync_ShouldCreateIntegrationPointFromProfile()
+        {
+            // Arrange
+            const string IntegrationPointName = "Adler Sieben";
+            IntegrationPointProfileTest integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPoint(SourceWorkspace);
+            PrepareMocks();
+
+            // Act
+            IntegrationPointModel integrationPointModel = await _sut
+                .CreateIntegrationPointFromProfileAsync(SourceWorkspace.ArtifactId, integrationPointProfile.ArtifactId, IntegrationPointName).ConfigureAwait(false);
+
+            // Assert
+            integrationPointModel.ArtifactId.Should().NotBe(integrationPointProfile.ArtifactId);
+            integrationPointModel.Name.ShouldBeEquivalentTo(IntegrationPointName);
+            integrationPointModel.SourceProvider.ShouldBeEquivalentTo(integrationPointProfile.SourceProvider);
+            integrationPointModel.DestinationProvider.ShouldBeEquivalentTo(integrationPointProfile.DestinationProvider);
+        }
+
+        [IdentifiedTest("A5B7851C-2709-4A6B-A12D-2C8C219D4578")]
+        public async Task GetIntegrationPointArtifactTypeIdAsync_ShouldReturnProperIntegrationPointArtifactTypeId()
+        {
+            // Arrange
+            PrepareMocks();
+
+            const int objectTypeArtifactId = 1234;
+            Proxy.ObjectTypeManager.Mock.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<int>()))
+                .Returns(() => Task.FromResult(new ObjectTypeResponse { ArtifactTypeID = objectTypeArtifactId }));
+
+            // Act
+            int integrationPointArtifactTypeId = await _sut.GetIntegrationPointArtifactTypeIdAsync(SourceWorkspace.ArtifactId).ConfigureAwait(false);
+
+            // Assert
+            integrationPointArtifactTypeId.ShouldBeEquivalentTo(objectTypeArtifactId);
+        }
+
         private CreateIntegrationPointRequest PrepareIntegrationPoint()
         {
-            SourceWorkspace.Fields.Add(new FieldTest
-            {
-                Guid = IntegrationPointFieldGuids.OverwriteFieldsGuid,
-                Artifact = { ArtifactId = Const.OVERWRITE_FIELD_ARTIFACT_ID }
-            });
-
-            Helper.DbContextMock
-                .Setup(x => x.ExecuteSqlStatementAsDataTable(It.IsAny<string>(), It.Is<SqlParameter[]>(y => 
-                    y[0].ParameterName == "@WorkspaceID" &&
-                    y[1].ParameterName == "@RelatedObjectArtifactID")))
-                .Returns(new DataTable());
-
+            PrepareMocks();
             SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(SourceWorkspace);
             IntegrationPointTest integrationPoint = SourceWorkspace.IntegrationPoints[SourceWorkspace.IntegrationPoints.Count - 1];
             CreateIntegrationPointRequest request = new CreateIntegrationPointRequest
@@ -179,6 +224,27 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             };
 
             return request;
+        }
+
+        private void PrepareMocks()
+        {
+            SourceWorkspace.Fields.Add(new FieldTest
+            {
+                Guid = IntegrationPointFieldGuids.OverwriteFieldsGuid,
+                Artifact = { ArtifactId = Const.OVERWRITE_FIELD_ARTIFACT_ID }
+            });
+
+            SourceWorkspace.Fields.Add(new FieldTest
+            {
+                Guid = ObjectTypeGuids.IntegrationPointGuid,
+                Artifact = { ArtifactId = Const.INTEGRATION_POINTS_ARTIFACT_ID }
+            });
+
+            Helper.DbContextMock
+                .Setup(x => x.ExecuteSqlStatementAsDataTable(It.IsAny<string>(), It.Is<SqlParameter[]>(y =>
+                    y[0].ParameterName == "@WorkspaceID" &&
+                    y[1].ParameterName == "@RelatedObjectArtifactID")))
+                .Returns(new DataTable());
         }
 
         private void CreateAgentDataTable()
