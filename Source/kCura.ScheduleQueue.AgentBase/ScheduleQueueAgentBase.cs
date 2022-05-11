@@ -202,50 +202,48 @@ namespace kCura.ScheduleQueue.AgentBase
 					return;
 				}
 
+				TaskResult jobResult = new TaskResult() { Status = TaskStatusEnum.None };
 				while (nextJob != null)
 				{
 					AgentCorrelationContext context = GetCorrelationContext(nextJob);
 					using (Logger.LogContextPushProperties(context))
 					{
 						LogJobInformation(nextJob);
+
+						bool isJobValid = PreExecuteJobValidation(nextJob);
+						if (!isJobValid)
+						{
+							Logger.LogInformation("Deleting invalid Job {jobId}...", nextJob.JobId);
+
+							_jobService.DeleteJob(nextJob.JobId);
+							nextJob = GetNextQueueJob();
+							continue;
+						}
+
+						Logger.LogInformation("Starting Job {jobId} processing...", nextJob.JobId);
+
+						jobResult = ProcessJob(nextJob);
+
+						if (jobResult.Status == TaskStatusEnum.DrainStopped)
+						{
+							Logger.LogInformation("Job {jobId} has been drain-stopped. No other jobs will be picked up.", nextJob.JobId);
+							_jobService.FinalizeDrainStoppedJob(nextJob);
+							break;
+						}
+						else
+                        {
+							Logger.LogInformation("Job {jobId} has been processed with status {status}", nextJob.JobId, jobResult.Status.ToString());
+							FinalizeJobExecution(nextJob, jobResult);
+						}
 					}
 
-					bool isJobValid = PreExecuteJobValidation(nextJob);
-					if (!isJobValid)
+					if (!IsKubernetesMode)
 					{
-						Logger.LogInformation("Deleting invalid Job {jobId}...", nextJob.JobId);
-
-						_jobService.DeleteJob(nextJob.JobId);
-						nextJob = GetNextQueueJob();
-						continue;
-					}
-
-					Logger.LogInformation("Starting Job {jobId} processing...", nextJob.JobId);
-
-					TaskResult jobResult = ProcessJob(nextJob);
-
-					Logger.LogInformation("Job {jobId} has been processed with status {status}", nextJob.JobId, jobResult.Status.ToString());
-
-					// If last job was drain-stopped, assign null to nextJob so it doesn't get executed on next loop iteration.
-					// Also do not finalize the job (i.e. do not remove it from the queue).
-					if (jobResult.Status == TaskStatusEnum.DrainStopped)
-					{
-						Logger.LogInformation("Job has been drain-stopped. No other jobs will be picked up.");
-						_jobService.FinalizeDrainStoppedJob(nextJob);
-						nextJob = null;
+						nextJob = GetNextQueueJob(); // assumptions: it will not throw exception
 					}
 					else
 					{
-						FinalizeJobExecution(nextJob, jobResult);
-
-						if (!IsKubernetesMode)
-						{
-							nextJob = GetNextQueueJob(); // assumptions: it will not throw exception
-						}
-						else
-						{
-							nextJob = null;
-						}
+						break;
 					}
 				}
 
