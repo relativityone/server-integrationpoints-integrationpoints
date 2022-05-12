@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core.Data;
 using Relativity.API;
+using Relativity.Telemetry.APM;
 
 namespace Relativity.IntegrationPoints.Services.Installers
 {
@@ -23,6 +24,7 @@ namespace Relativity.IntegrationPoints.Services.Installers
 			container.Register(Component.For<IQueueQueryManager>().ImplementedBy<QueueQueryManager>().DependsOn(Dependency.OnValue<Guid>(agentGuid)).LifestyleTransient());
 			container.Register(Component.For<IInstanceSettingsManager>().ImplementedBy<InstanceSettingsManager>().LifestyleTransient());
 			container.Register(Component.For<IRepositoryFactory>().UsingFactoryMethod(c => new RepositoryFactory(c.Resolve<IHelper>(), c.Resolve<IHelper>().GetServicesManager())));
+			container.Register(Component.For<IAPM>().UsingFactoryMethod(k => Client.APMClient, managedExternally: true).LifestyleSingleton());
 		}
 	}
 }

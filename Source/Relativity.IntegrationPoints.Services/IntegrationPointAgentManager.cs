@@ -4,12 +4,14 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Managers;
 using Newtonsoft.Json;
 using Relativity.IntegrationPoints.Services.Helpers;
 using Relativity.IntegrationPoints.Services.Installers;
 using Relativity.Logging;
+using Relativity.Telemetry.APM;
 using WorkloadDiscovery;
 
 namespace Relativity.IntegrationPoints.Services
@@ -17,6 +19,7 @@ namespace Relativity.IntegrationPoints.Services
 	public class IntegrationPointAgentManager : KeplerServiceBase, IIntegrationPointsAgentManager
 	{
 		private Installer _installer;
+		private static string _METRIC_NAME = "IntegrationPoints.Workloads.WorkloadSize";
 
 		private readonly List<WorkloadSizeDefinition> _workloadSizeDefaultSettings = new List<WorkloadSizeDefinition>()
 		{
@@ -45,9 +48,7 @@ namespace Relativity.IntegrationPoints.Services
 		{
 			using (IWindsorContainer container = GetDependenciesContainer(workspaceArtifactId: -1))
 			{
-				int jobsCount = GetJobsCountForWorkload(container.Resolve<IQueueQueryManager>());
-
-				int test = GetJobsFromQueue(container.Resolve<IQueueQueryManager>());
+				int jobsCount = GetJobsFromQueue(container.Resolve<IQueueQueryManager>(), container.Resolve<IAPM>());
 
 				IInstanceSettingsManager instanceSettingManager = container.Resolve<IInstanceSettingsManager>();
 				List<WorkloadSizeDefinition> workloadSizeDefinitions = GetWorkloadSizeDefinitions(instanceSettingManager);
@@ -61,14 +62,9 @@ namespace Relativity.IntegrationPoints.Services
 					Size = workloadSizeDefinition.WorkloadSize
 				});
 			}
-		}
+		}		
 
-		private int GetJobsCountForWorkload(IQueueQueryManager queueQueryManager)
-		{
-			return queueQueryManager.GetWorkload().Execute();
-		}
-
-		private int GetJobsFromQueue(IQueueQueryManager queueQueryManager)
+		private int GetJobsFromQueue(IQueueQueryManager queueQueryManager, IAPM iApm)
         {
 			DataRow queueItemsCount = queueQueryManager.GetJobsQueueDetails()
 											.Execute()
@@ -78,10 +74,21 @@ namespace Relativity.IntegrationPoints.Services
 			int totalItems = queueItemsCount.Field<int>("Total");
 			int blockedItems = queueItemsCount.Field<int>("Blocked");
 
-			//TODO: send metrics to NR
+			SendMetrics(iApm, totalItems, blockedItems);
 
 			return totalItems;
         }
+
+		private void SendMetrics(IAPM iApm, int totalItems, int blockedItems)
+		{
+			Dictionary<string, object> data = new Dictionary<string, object>()
+				{					
+					{ "TotalWorkloadCount", totalItems },
+					{ "BlockedJobsCount", blockedItems }
+				};
+
+			iApm.CountOperation(_METRIC_NAME, customData: data).Write();
+		}
 
 		private WorkloadSizeDefinition SelectMatchingWorkloadSize(List<WorkloadSizeDefinition> definitions, int pendingJobsCount)
 		{

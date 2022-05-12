@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Castle.Windsor;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Managers;
 using Moq;
@@ -12,6 +13,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Services.Helpers;
 using Relativity.Logging;
+using Relativity.Telemetry.APM;
 using WorkloadDiscovery;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Managers
@@ -24,15 +26,19 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 		private Mock<IWindsorContainer> _containerFake;
 		private Mock<IQueueQueryManager> _queueQueryManagerFake;
 		private Mock<IInstanceSettingsManager> _instanceSettingsManagerFake;
-		
+		private Mock<IAPM> _apmFake;
+
+
 		public override void SetUp()
 		{
 			_loggerFake = new Mock<ILog>();
 			_permissionsFake = new Mock<IPermissionRepositoryFactory>();
 			_containerFake = new Mock<IWindsorContainer>();
+			_apmFake = new Mock<IAPM>();
 
 			_queueQueryManagerFake = new Mock<IQueueQueryManager>();
 			_containerFake.Setup(x => x.Resolve<IQueueQueryManager>()).Returns(_queueQueryManagerFake.Object);
+			_containerFake.Setup(x => x.Resolve<IAPM>()).Returns(_apmFake.Object);
 
 			_instanceSettingsManagerFake = new Mock<IInstanceSettingsManager>();
 			_containerFake.Setup(x => x.Resolve<IInstanceSettingsManager>()).Returns(_instanceSettingsManagerFake.Object);
@@ -42,6 +48,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 		{
 			Mock<IQuery<int>> fakeGetWorkload = new Mock<IQuery<int>>();
 			Mock<IQuery<DataTable>> fakeGetQueueDetails = new Mock<IQuery<DataTable>>();
+			Mock<ICounterMeasure> fakeCounterMeasure = new Mock<ICounterMeasure>();
 
 			DataTable fakeQueueDetails = PrepareFakeQueueDetails(jobsCount, blockedJobs);
 
@@ -49,6 +56,8 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 			fakeGetQueueDetails.Setup(x => x.Execute()).Returns(fakeQueueDetails);
 			_queueQueryManagerFake.Setup(x => x.GetWorkload()).Returns(fakeGetWorkload.Object);
 			_queueQueryManagerFake.Setup(x => x.GetJobsQueueDetails()).Returns(fakeGetQueueDetails.Object);
+			_apmFake.Setup(x => x.CountOperation(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>(), 
+				It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<int?>(), It.IsAny<Dictionary<string, object>>(), null)).Returns(fakeCounterMeasure.Object);
 
 			_instanceSettingsManagerFake.Setup(x => x.GetWorkloadSizeSettings()).Returns(workloadSizeInstanceSettingValue);
 
