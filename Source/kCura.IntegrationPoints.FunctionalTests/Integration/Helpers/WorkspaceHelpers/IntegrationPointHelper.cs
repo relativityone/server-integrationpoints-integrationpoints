@@ -8,7 +8,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using Relativity.IntegrationPoints.Services;
 using Relativity.IntegrationPoints.Tests.Common;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using static Relativity.IntegrationPoints.Tests.Integration.Const;
@@ -33,6 +32,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 			return integrationPoint;
 		}
+
+        public IntegrationPointTest CreateSavedSearchSyncIntegrationPointWithErrors(WorkspaceTest destinationWorkspace)
+        {
+            IntegrationPointTest integrationPoint = CreateSavedSearchSyncIntegrationPoint(destinationWorkspace);
+            integrationPoint.HasErrors = true;
+            return integrationPoint;
+        }
 
         public IntegrationPointTest CreateSavedSearchSyncIntegrationPoint(WorkspaceTest destinationWorkspace)
 		{

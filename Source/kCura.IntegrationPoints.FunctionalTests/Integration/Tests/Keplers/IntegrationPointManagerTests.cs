@@ -15,9 +15,10 @@ using NUnit.Framework;
 using Relativity.IntegrationPoints.Services;
 using Relativity.IntegrationPoints.Services.Interfaces.Private.Models.IntegrationPoint;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
-using Relativity.Services.ChoiceQuery;
 using Relativity.Services.Interfaces.ObjectType.Models;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Identification;
+using Choice = Relativity.Services.ChoiceQuery.Choice;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
 {
@@ -74,60 +75,68 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         {
             // Arrange
             CreateIntegrationPointRequest request = PrepareIntegrationPoint();
-            IntegrationPointModel createdIntegrationPointModel = await _sut.CreateIntegrationPointAsync(request).ConfigureAwait(false);
             
             // Act
-            IntegrationPointModel integrationPointModel =  await _sut
-                .GetIntegrationPointAsync(request.WorkspaceArtifactId, createdIntegrationPointModel.ArtifactId).ConfigureAwait(false);
+            IntegrationPointModel integrationPointModel = await _sut
+                .GetIntegrationPointAsync(request.WorkspaceArtifactId, request.IntegrationPoint.ArtifactId).ConfigureAwait(false);
 
             // Assert
-            integrationPointModel.ArtifactId.Should().Be(createdIntegrationPointModel.ArtifactId);
-            integrationPointModel.Name.ShouldBeEquivalentTo(createdIntegrationPointModel.Name);
-            integrationPointModel.SourceProvider.ShouldBeEquivalentTo(createdIntegrationPointModel.SourceProvider);
-            integrationPointModel.DestinationProvider.ShouldBeEquivalentTo(createdIntegrationPointModel.DestinationProvider);
+            integrationPointModel.ArtifactId.Should().Be(request.IntegrationPoint.ArtifactId);
+            integrationPointModel.Name.ShouldBeEquivalentTo(request.IntegrationPoint.Name);
+            integrationPointModel.SourceProvider.ShouldBeEquivalentTo(request.IntegrationPoint.SourceProvider);
+            integrationPointModel.DestinationProvider.ShouldBeEquivalentTo(request.IntegrationPoint.DestinationProvider);
         }
 
         [IdentifiedTest("FAAD45A6-F2F7-4042-A0A9-8D46700154A1")]
-        public async Task RunIntegrationPointAsync_ShouldNotThrowError()
+        public void RunIntegrationPointAsync_ShouldNotThrowError()
         {
             // Arrange
             CreateIntegrationPointRequest request = PrepareIntegrationPoint();
-            IntegrationPointModel createdIntegrationPointModel = await _sut.CreateIntegrationPointAsync(request).ConfigureAwait(false);
             CreateAgentDataTable();
 
             // Act
-            Action action = async () => await _sut.RunIntegrationPointAsync(request.WorkspaceArtifactId, createdIntegrationPointModel.ArtifactId);
+            Func<Task> func = async () => await _sut.RunIntegrationPointAsync(request.WorkspaceArtifactId, request.IntegrationPoint.ArtifactId);
 
             // Assert
-            action.ShouldNotThrow();
+            func.ShouldNotThrow();
+            Proxy.ObjectManager.Mock.Verify(x => x.ReadAsync(SourceWorkspace.ArtifactId, It.Is<ReadRequest>(y =>
+                    y.Object.ArtifactID == request.IntegrationPoint.ArtifactId &&
+                    y.Fields.Count() == typeof(IntegrationPointFieldGuids).GetFields().Length)), Times.AtLeastOnce);
         }
 
         [IdentifiedTest("2035CBCC-D56D-493C-9B13-D273C2EA2790")]
-        public async Task RetryIntegrationPointAsync_ShouldNotThrowError()
+        public void RetryIntegrationPointAsync_ShouldNotThrowError()
         {
             // Arrange
-            CreateIntegrationPointRequest request = PrepareIntegrationPoint();
-            IntegrationPointModel createdIntegrationPointModel = await _sut.CreateIntegrationPointAsync(request).ConfigureAwait(false);
+            CreateIntegrationPointRequest request = PrepareIntegrationPoint(true);
+            SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(new JobTest(), new IntegrationPointTest
+            {
+                Artifact = { ArtifactId = request.IntegrationPoint.ArtifactId },
+                LastRuntimeUTC = DateTime.Now,
+                HasErrors = true
+            });
+            
             CreateAgentDataTable();
 
             // Act
-            Action action = async () => await _sut.RetryIntegrationPointAsync(request.WorkspaceArtifactId, createdIntegrationPointModel.ArtifactId);
+            Func<Task> func = () => _sut.RetryIntegrationPointAsync(request.WorkspaceArtifactId, request.IntegrationPoint.ArtifactId);
 
             // Assert
-            action.ShouldNotThrow();
+            func.ShouldNotThrow();
+            Proxy.ObjectManager.Mock.Verify(x => x.ReadAsync(SourceWorkspace.ArtifactId, It.Is<ReadRequest>(y =>
+                y.Object.ArtifactID == request.IntegrationPoint.ArtifactId &&
+                y.Fields.Count() == typeof(IntegrationPointFieldGuids).GetFields().Length)), Times.AtLeastOnce);
         }
 
         [IdentifiedTest("A04A9599-B4FE-4F7B-8F07-2851F981865A")]
         public async Task GetAllIntegrationPointsAsync_ShouldReturnAllCreatedIntegrationPoints()
         {
             // Arrange
-            CreateIntegrationPointRequest request = PrepareIntegrationPoint();
-
+            List<IntegrationPointTest> integrationPointsCreated = new List<IntegrationPointTest>();
             const int integrationPointsCount = 5;
-            // integrationPointsCount is decreased because on is already created in PrepareIntegrationPoint
-            for (int i = 0; i < integrationPointsCount - 1; i++)
+            for (int i = 0; i < integrationPointsCount; i++)
             {
-                await _sut.CreateIntegrationPointAsync(request).ConfigureAwait(false);
+                integrationPointsCreated.Add(SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(SourceWorkspace));
             }
 
             // Act
@@ -136,11 +145,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
 
             // Assert
             integrationPoints.Count.ShouldBeEquivalentTo(integrationPointsCount);
-            foreach (IntegrationPointModel integrationPointModel in integrationPoints)
+
+            for(int i = 0;i < integrationPointsCount;i++)
             {
-                integrationPointModel.Name.ShouldBeEquivalentTo(request.IntegrationPoint.Name);
-                integrationPointModel.SourceProvider.ShouldBeEquivalentTo(request.IntegrationPoint.SourceProvider);
-                integrationPointModel.DestinationProvider.ShouldBeEquivalentTo(request.IntegrationPoint.DestinationProvider);
+                integrationPoints[i].ArtifactId.Should().Be(integrationPointsCreated[i].ArtifactId);
+                integrationPoints[i].Name.ShouldBeEquivalentTo(integrationPointsCreated[i].Name);
+                integrationPoints[i].SourceProvider.ShouldBeEquivalentTo(integrationPointsCreated[i].SourceProvider);
+                integrationPoints[i].DestinationProvider.ShouldBeEquivalentTo(integrationPointsCreated[i].DestinationProvider);
             }
         }
 
@@ -157,7 +168,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             overwriteFieldsChoices.Count.ShouldBeEquivalentTo(Const.Choices.OverwriteFields.Count);
             foreach (Choice overwriteFieldsChoice in Const.Choices.OverwriteFields)
             {
-                overwriteFieldsChoices.Select(x => x.ArtifactId).Contains(overwriteFieldsChoice.ArtifactID);
+                overwriteFieldsChoices.Select(x => x.ArtifactId).Contains(overwriteFieldsChoice.ArtifactID)
+                    .ShouldBeEquivalentTo(true);
             }
         }
 
@@ -197,11 +209,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             integrationPointArtifactTypeId.ShouldBeEquivalentTo(objectTypeArtifactId);
         }
 
-        private CreateIntegrationPointRequest PrepareIntegrationPoint()
+        private CreateIntegrationPointRequest PrepareIntegrationPoint(bool integrationPointsWithErrors = false) 
         {
             PrepareMocks();
-            SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(SourceWorkspace);
-            IntegrationPointTest integrationPoint = SourceWorkspace.IntegrationPoints[SourceWorkspace.IntegrationPoints.Count - 1];
+            IntegrationPointTest integrationPoint = integrationPointsWithErrors ? 
+                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPointWithErrors(SourceWorkspace) : 
+                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(SourceWorkspace);
+            
             CreateIntegrationPointRequest request = new CreateIntegrationPointRequest
             {
                 IntegrationPoint = new IntegrationPointModel
