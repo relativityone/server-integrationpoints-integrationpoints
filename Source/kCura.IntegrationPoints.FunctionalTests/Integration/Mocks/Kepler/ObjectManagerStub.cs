@@ -243,13 +243,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 foundObjects.AddRange(customFilter(request, collectionGetter(workspace))
                     .Select(x => x.ToRelativityObject()));
             }
-            if (IsArtifactIdCondition(request.Condition, out int artifactId))
+            if (request.Condition != null && IsArtifactIdCondition(request.Condition, out int artifactId))
             {
                 AddRelativityObjectsToResult(
                     collectionGetter(workspace).Where(x => x.ArtifactId == artifactId)
                     , foundObjects);
             }
-            else if (IsArtifactIdListCondition(request.Condition, out int[] artifactIds))
+            else if (request.Condition != null && IsArtifactIdListCondition(request.Condition, out int[] artifactIds))
             {
                 AddRelativityObjectsToResult(
                     collectionGetter(workspace).Where(x => artifactIds.Contains(x.ArtifactId))
@@ -274,13 +274,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     .Select(x => x.ToRelativityObject()));
             }
 
-            if (IsArtifactIdCondition(request.Condition, out int artifactId))
+            if (request.Condition != null && IsArtifactIdCondition(request.Condition, out int artifactId))
             {
                 AddRelativityObjectsToResult(
                     collectionGetter(workspace).Where(x => x.ArtifactId == artifactId)
                     , foundObjects);
             }
-            else if (IsArtifactIdListCondition(request.Condition, out int[] artifactIds))
+            else if (request.Condition != null && IsArtifactIdListCondition(request.Condition, out int[] artifactIds))
             {
                 AddRelativityObjectsToResult(
                     collectionGetter(workspace).Where(x => artifactIds.Contains(x.ArtifactId))

@@ -21,7 +21,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 {
                     return list.Where(x => x.Identifier.Equals(identifier, StringComparison.OrdinalIgnoreCase)).ToList();
                 }
-                return new List<DestinationProviderTest>();
+                return list;
             }
 
             Mock.Setup(x => x.QueryAsync(It.IsAny<int>(),
@@ -38,18 +38,21 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
              });
         }
 
-
-        private bool IsDestinationProviderQuery(QueryRequest query) => query.ObjectType.Guid == ObjectTypeGuids.DestinationProviderGuid;
+        private bool IsDestinationProviderQuery(QueryRequest query) =>
+            query.ObjectType.Guid == ObjectTypeGuids.DestinationProviderGuid;
 
         private bool IsDestinationIdentifierCondition(string condition, out string identifierValue)
         {
-            System.Text.RegularExpressions.Match match = Regex.Match(condition,
+            if (condition != null)
+            {
+                System.Text.RegularExpressions.Match match = Regex.Match(condition,
                 $"'{DestinationProviderFields.Identifier}' == '(.*)'");
 
-            if (match.Success)
-            {
-                identifierValue = match.Groups[1].Value;
-                return true;
+                if (match.Success)
+                {
+                    identifierValue = match.Groups[1].Value;
+                    return true;
+                }
             }
             identifierValue = null;
             return false;
