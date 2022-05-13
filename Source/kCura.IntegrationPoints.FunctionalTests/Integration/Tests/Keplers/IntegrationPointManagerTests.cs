@@ -43,10 +43,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             IntegrationPointModel integrationPointModel = await _sut.CreateIntegrationPointAsync(request).ConfigureAwait(false);
 
             // Assert
-            integrationPointModel.ArtifactId.Should().NotBe(request.IntegrationPoint.ArtifactId);
-            integrationPointModel.Name.ShouldBeEquivalentTo(request.IntegrationPoint.Name);
-            integrationPointModel.SourceProvider.ShouldBeEquivalentTo(request.IntegrationPoint.SourceProvider);
-            integrationPointModel.DestinationProvider.ShouldBeEquivalentTo(request.IntegrationPoint.DestinationProvider);
+            AssertIntegrationPointModel(integrationPointModel, request, false);
         }
 
         [IdentifiedTest("D0D9F342-EF26-4A6F-BB30-57637C9ED812")]
@@ -64,10 +61,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             IntegrationPointModel integrationPointModel = await _sut.UpdateIntegrationPointAsync(updateRequest).ConfigureAwait(false);
 
             // Assert
-            integrationPointModel.ArtifactId.Should().Be(request.IntegrationPoint.ArtifactId);
-            integrationPointModel.Name.ShouldBeEquivalentTo(request.IntegrationPoint.Name);
-            integrationPointModel.SourceProvider.ShouldBeEquivalentTo(request.IntegrationPoint.SourceProvider);
-            integrationPointModel.DestinationProvider.ShouldBeEquivalentTo(request.IntegrationPoint.DestinationProvider);
+            AssertIntegrationPointModel(integrationPointModel, request);
         }
 
         [IdentifiedTest("1316A6DD-F54E-49C9-AAEE-C7B66D444A09")]
@@ -81,10 +75,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
                 .GetIntegrationPointAsync(request.WorkspaceArtifactId, request.IntegrationPoint.ArtifactId).ConfigureAwait(false);
 
             // Assert
-            integrationPointModel.ArtifactId.Should().Be(request.IntegrationPoint.ArtifactId);
-            integrationPointModel.Name.ShouldBeEquivalentTo(request.IntegrationPoint.Name);
-            integrationPointModel.SourceProvider.ShouldBeEquivalentTo(request.IntegrationPoint.SourceProvider);
-            integrationPointModel.DestinationProvider.ShouldBeEquivalentTo(request.IntegrationPoint.DestinationProvider);
+            AssertIntegrationPointModel(integrationPointModel, request);
         }
 
         [IdentifiedTest("FAAD45A6-F2F7-4042-A0A9-8D46700154A1")]
@@ -140,18 +131,21 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             }
 
             // Act
-            IList<IntegrationPointModel> integrationPoints =
-                await _sut.GetAllIntegrationPointsAsync(SourceWorkspace.ArtifactId).ConfigureAwait(false);
+            IList<IntegrationPointModel> integrationPoints = await _sut.GetAllIntegrationPointsAsync(SourceWorkspace.ArtifactId).ConfigureAwait(false);
 
             // Assert
             integrationPoints.Count.ShouldBeEquivalentTo(integrationPointsCount);
 
-            for(int i = 0;i < integrationPointsCount;i++)
+            for(int i = 0; i < integrationPointsCount; i++)
             {
-                integrationPoints[i].ArtifactId.Should().Be(integrationPointsCreated[i].ArtifactId);
-                integrationPoints[i].Name.ShouldBeEquivalentTo(integrationPointsCreated[i].Name);
-                integrationPoints[i].SourceProvider.ShouldBeEquivalentTo(integrationPointsCreated[i].SourceProvider);
-                integrationPoints[i].DestinationProvider.ShouldBeEquivalentTo(integrationPointsCreated[i].DestinationProvider);
+                IntegrationPointAssert integrationPointExpectedValues = new IntegrationPointAssert
+                {
+                    ArtifactId = integrationPointsCreated[i].ArtifactId,
+                    Name = integrationPointsCreated[i].Name,
+                    SourceProvider = (int)integrationPointsCreated[i].SourceProvider,
+                    DestinationProvider = (int)integrationPointsCreated[i].DestinationProvider
+                };
+                AssertIntegrationPointModel(integrationPoints[i], integrationPointExpectedValues);
             }
         }
 
@@ -177,19 +171,23 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         public async Task CreateIntegrationPointFromProfileAsync_ShouldCreateIntegrationPointFromProfile()
         {
             // Arrange
-            const string IntegrationPointName = "Adler Sieben";
+            const string integrationPointName = "Adler Sieben";
             IntegrationPointProfileTest integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPoint(SourceWorkspace);
             PrepareMocks();
 
             // Act
             IntegrationPointModel integrationPointModel = await _sut
-                .CreateIntegrationPointFromProfileAsync(SourceWorkspace.ArtifactId, integrationPointProfile.ArtifactId, IntegrationPointName).ConfigureAwait(false);
+                .CreateIntegrationPointFromProfileAsync(SourceWorkspace.ArtifactId, integrationPointProfile.ArtifactId, integrationPointName).ConfigureAwait(false);
 
             // Assert
-            integrationPointModel.ArtifactId.Should().NotBe(integrationPointProfile.ArtifactId);
-            integrationPointModel.Name.ShouldBeEquivalentTo(IntegrationPointName);
-            integrationPointModel.SourceProvider.ShouldBeEquivalentTo(integrationPointProfile.SourceProvider);
-            integrationPointModel.DestinationProvider.ShouldBeEquivalentTo(integrationPointProfile.DestinationProvider);
+            IntegrationPointAssert integrationPointExpectedValues = new IntegrationPointAssert
+            {
+                ArtifactId = integrationPointProfile.ArtifactId,
+                Name = integrationPointName,
+                SourceProvider = (int)integrationPointProfile.SourceProvider,
+                DestinationProvider = (int)integrationPointProfile.DestinationProvider
+            };
+            AssertIntegrationPointModel(integrationPointModel, integrationPointExpectedValues, false);
         }
 
         [IdentifiedTest("A5B7851C-2709-4A6B-A12D-2C8C219D4578")]
@@ -240,6 +238,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             return request;
         }
 
+        #region private Methods
+
         private void PrepareMocks()
         {
             SourceWorkspace.Fields.Add(new FieldTest
@@ -261,6 +261,30 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
                 .Returns(new DataTable());
         }
 
+        private void AssertIntegrationPointModel(IntegrationPointModel integrationPointModel, 
+            CreateIntegrationPointRequest request, bool artifactIdShouldBeEqual = true)
+        {
+            IntegrationPointAssert integrationPointExpectedValues = new IntegrationPointAssert(request.IntegrationPoint);
+            AssertIntegrationPointModel(integrationPointModel, integrationPointExpectedValues, artifactIdShouldBeEqual);
+        }
+
+        private void AssertIntegrationPointModel(IntegrationPointModel integrationPointModel,
+            IntegrationPointAssert integrationPointExpectedValues, bool artifactIdShouldBeEqual = true)
+        {
+            if (artifactIdShouldBeEqual)
+            {
+                integrationPointModel.ArtifactId.Should().Be(integrationPointExpectedValues.ArtifactId);
+            }
+            else
+            {
+                integrationPointModel.ArtifactId.Should().NotBe(integrationPointExpectedValues.ArtifactId);
+            }
+
+            integrationPointModel.Name.Should().Be(integrationPointExpectedValues.Name);
+            integrationPointModel.SourceProvider.ShouldBeEquivalentTo(integrationPointExpectedValues.SourceProvider);
+            integrationPointModel.DestinationProvider.ShouldBeEquivalentTo(integrationPointExpectedValues.DestinationProvider);
+        }
+
         private void CreateAgentDataTable()
         {
             DataTable agentDataTable = new DataTable();
@@ -279,6 +303,28 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
                     y[0].ParameterName == "@AgentID" &&
                     y[1].ParameterName == "@AgentGuid")))
                 .Returns(agentDataTable);
+        }
+    }
+
+    #endregion
+
+    internal class IntegrationPointAssert
+    {
+        internal int ArtifactId { get; set; }
+        internal int SourceProvider { get; set; }
+        internal int DestinationProvider { get; set; }
+        internal string Name { get; set; }
+
+        internal IntegrationPointAssert()
+        {
+        }
+
+        public IntegrationPointAssert(IntegrationPointModel integrationPointModel)
+        {
+            ArtifactId = integrationPointModel.ArtifactId;
+            Name = integrationPointModel.Name;
+            SourceProvider = integrationPointModel.SourceProvider;
+            DestinationProvider = integrationPointModel.DestinationProvider;
         }
     }
 }
