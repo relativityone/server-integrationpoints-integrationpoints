@@ -49,10 +49,6 @@ param (
     $RAPDirectory,
 
     [Parameter()]
-    [String]
-    $ChromeBinaryLocation,
-
-    [Parameter()]
     [ValidateScript({Test-Path -PathType leaf $_})]
     [String]
     $AdditionalRunSettingsFilePath = ".\DevelopmentScripts\additional.runsettings"
@@ -106,35 +102,9 @@ if($TestVMName)
     }
 }
 
-if(-not $RestServicesHostAddress)
-{
-    $PSBoundParameters['RestServicesHostAddress'] = "$($PSBoundParameters['RelativityHostAddress'])"
-}
-
-if(-not $RsapiServicesHostAddress)
-{
-    $PSBoundParameters['RsapiServicesHostAddress'] = "$($PSBoundParameters['RelativityHostAddress'])"
-}
-
-if (-not $WebApiHostAddress)
-{
-    $PSBoundParameters['WebApiHostAddress'] = "$($PSBoundParameters['RelativityHostAddress'])"
-}
-
 if(-not $RAPDirectory)
 {
     $PSBoundParameters['RAPDirectory'] = Join-Path $PSScriptRoot ..\Artifacts
-}
-
-if(-not $ChromeBinaryLocation)
-{
-    $BuildToolsDir = Join-Path $PSScriptRoot ..\buildtools
-    $ChromeBinaryDirectory = (Get-ChildItem -Recurse -Directory -Path $BuildToolsDir -Filter "Relativity.Chromium.Portable*")
-    if ($ChromeBinaryDirectory)
-    {
-        $ChromeBinaryLocation = (Get-ChildItem -Recurse -File -Include chrome.exe -Path $ChromeBinaryDirectory.FullName).Directory.FullName
-        $PSBoundParameters['ChromeBinaryLocation'] = $ChromeBinaryLocation
-    }
 }
 
 Remove-Item (Join-Path $PSScriptRoot ..\FunctionalTestSettings) -Force -ErrorAction SilentlyContinue

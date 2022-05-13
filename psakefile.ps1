@@ -22,12 +22,11 @@ Task Compile -Description "Compile code for this repo" {
     exec { dotnet @("build", $Solution,
         ("/property:Configuration=$BuildConfig"),
         ("/consoleloggerparameters:Summary"),
-        ("/property:PublishWebProjects=True"),
         ("/nodeReuse:False"),
         ("/maxcpucount"),
         ("/nologo"),
         ("/fileloggerparameters1:LogFile=`"$LogFilePath`""),
-        ("/fileloggerparameters2:errorsonly;LogFile=`"$ErrorLogFilePath`""))
+        ("/fileloggerparameters2:errorsonly;LogFile=`"$ErrorLogFilePath`"")) 
     }
 }
 
@@ -46,44 +45,22 @@ Task Sign -Description "Sign all files" {
 
     Get-ChildItem $PSScriptRoot -recurse `
     | Where-Object { $_.Directory.FullName -notmatch "Vendor" -and $_.Directory.FullName -notmatch "packages" -and $_.Directory.FullName -notmatch "buildtools" -and $_.Directory.FullName -notmatch "obj" -and @(".dll", ".msi", ".exe") -contains $_.Extension } `
-	| Select-Object -expand FullName `
-	| Set-DigitalSignature -ErrorAction Stop
+    | Select-Object -expand FullName `
+    | Set-DigitalSignature -ErrorAction Stop
 }
 
 Task Package -Description "Package up the build artifacts" {
-	Initialize-Folder $ArtifactsDir -Safe
-	
-	# Pack Relativity.Sync.dll
-	
-	exec { dotnet @("pack", $Solution,
-	("--no-build"),
-	("/property:Configuration=$BuildConfig"),
-	("/consoleloggerparameters:Summary"),
-	("/maxcpucount"),
-	("/nologo"))
-	
-	# Pack Sync RAP
-	
-    $buildTools = Join-Path $PSScriptRoot "buildtools"
-    $developmentScripts = Join-Path $PSScriptRoot "DevelopmentScripts"
-    $RAPBuilder = Join-Path $buildTools "Relativity.RAPBuilder\tools\Relativity.RAPBuilder.exe"
-    $BuildXML = Join-Path $developmentScripts "build.xml"
+    Initialize-Folder $ArtifactsDir -Safe
 
-    exec { & $NuGetEXE install "Relativity.RAPBuilder" "-ExcludeVersion" -o $buildTools }
-
-    exec { & $RAPBuilder `
-        "--source" "$PSScriptRoot" `
-        "--input" "$BuildXML" `
-        "--version" "$RAPVersion"
-    }
-
-    Get-ChildItem -Path $ArtifactsDir -Filter *.nuspec |
-    ForEach-Object {
-        exec { & $NugetExe pack $_.FullName -OutputDirectory (Join-Path $ArtifactsDir "NuGet") -Version $PackageVersion }
+    exec { dotnet @("pack", $Solution,
+        ("--no-build"),
+        ("/property:Configuration=$BuildConfig"),
+        ("/consoleloggerparameters:Summary"),
+        ("/maxcpucount"),
+        ("/nologo"))
     }
 
     Save-PDBs -SourceDir $SourceDir -ArtifactsDir $ArtifactsDir
-	}
 }
 
 Task Clean -Description "Delete build artifacts" {
@@ -91,12 +68,12 @@ Task Clean -Description "Delete build artifacts" {
 
     Write-Verbose "Running Clean target on $Solution"
     exec { dotnet @("msbuild", $Solution,
-        ("/target:Clean"),
-        ("/property:Configuration=$BuildConfig"),
-        ("/consoleloggerparameters:Summary"),
-        ("/nodeReuse:False"),
-        ("/maxcpucount"),
-        ("/nologo"))
+            ("/target:Clean"),
+            ("/property:Configuration=$BuildConfig"),
+            ("/consoleloggerparameters:Summary"),
+            ("/nodeReuse:False"),
+            ("/maxcpucount"),
+            ("/nologo"))
     }
 }
 
@@ -105,15 +82,14 @@ Task Rebuild -Description "Do a rebuild" {
 
     Write-Verbose "Running Rebuild target on $Solution"
     exec { dotnet @("msbuild", $Solution,
-        ("/target:Rebuild"),
-        ("/property:Configuration=$BuildConfig"),
-        ("/consoleloggerparameters:Summary"),
-        ("/property:PublishWebProjects=True"),
-        ("/nodeReuse:False"),
-        ("/maxcpucount"),
-        ("/nologo"),
-        ("/fileloggerparameters1:LogFile=`"$LogFilePath`""),
-        ("/fileloggerparameters2:errorsonly;LogFile=`"$ErrorLogFilePath`""))
+            ("/target:Rebuild"),
+            ("/property:Configuration=$BuildConfig"),
+            ("/consoleloggerparameters:Summary"),
+            ("/nodeReuse:False"),
+            ("/maxcpucount"),
+            ("/nologo"),
+            ("/fileloggerparameters1:LogFile=`"$LogFilePath`""),
+            ("/fileloggerparameters2:errorsonly;LogFile=`"$ErrorLogFilePath`""))
     }
 }
 
@@ -153,7 +129,7 @@ function Invoke-Tests
 
     if(!$TestSettings) { $TestSettings = (Join-Path $PSScriptRoot FunctionalTestSettings) }
     $settings = if(Test-Path $TestSettings) { "@$TestSettings" }
-	
+
     Initialize-Folder $ArtifactsDir -Safe
     Initialize-Folder $LogsDir -Safe
 
@@ -163,7 +139,7 @@ function Invoke-Tests
         $ReportGenerator = Join-Path $BuildToolsDir "reportgenerator\tools\net47\ReportGenerator.exe"
         $CoveragePath = Join-Path $LogsDir "Coverage.xml"
 
-        exec { & $OpenCover -target:$NUnit -targetargs:"$Solution --where=\`"$WhereClause\`" --noheader --labels=On --skipnontestassemblies --result=$OutputFile $settings" -register:path64 -filter:"+[Relativity.Sync*]* -[Relativity.Sync.Tests*]**" -hideskipped:All -output:"$LogsDir\OpenCover.xml" -returntargetcode }
+        exec { & $OpenCover -target:$NUnit -targetargs:"$Solution --where=\`"$WhereClause\`" --noheader --labels=OnOutputOnly --skipnontestassemblies --result=$OutputFile $settings" -register:path64 -filter:"+[Relativity.Sync*]* -[Relativity.Sync.Tests*]**" -hideskipped:All -output:"$LogsDir\OpenCover.xml" -returntargetcode }
         exec { & $ReportGenerator -reports:"$LogsDir\OpenCover.xml" -targetdir:$LogsDir -reporttypes:Cobertura }
         Move-Item (Join-Path $LogsDir Cobertura.xml) $CoveragePath -Force
     }
@@ -172,7 +148,7 @@ function Invoke-Tests
         exec { & $NUnit $Solution `
             "--where=`"$WhereClause`"" `
             "--noheader" `
-            "--labels=On" `
+            "--labels=OnOutputOnly" `
             "--skipnontestassemblies" `
             "--result=$OutputFile" `
             $settings
