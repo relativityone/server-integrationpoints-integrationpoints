@@ -51,6 +51,6 @@ namespace kCura.IntegrationPoints.Data
 
 		IQuery<int> GetWorkload();
 
-		IQuery<DataTable> GetJobsQueueDetails();
+		IQuery<DataTable> GetJobsQueueDetails(int agentTypeId);
 	}
 }

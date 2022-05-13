@@ -8,6 +8,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Managers;
+using kCura.ScheduleQueue.Core;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -48,14 +49,19 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 		{
 			Mock<IQuery<int>> fakeGetWorkload = new Mock<IQuery<int>>();
 			Mock<IQuery<DataTable>> fakeGetQueueDetails = new Mock<IQuery<DataTable>>();
+			Mock<IQuery<DataRow>> fakeAgentInfoRow = new Mock<IQuery<DataRow>>();
 			Mock<ICounterMeasure> fakeCounterMeasure = new Mock<ICounterMeasure>();
 
-			DataTable fakeQueueDetails = PrepareFakeQueueDetails(jobsCount, blockedJobs);
+			Mock<AgentTypeInformation> fakeAgentInformation = new Mock<AgentTypeInformation>();
+
+			DataTable fakeQueueDetails = PrepareFakeQueueDetails(jobsCount, blockedJobs);			
 
 			fakeGetWorkload.Setup(x => x.Execute()).Returns(jobsCount);
 			fakeGetQueueDetails.Setup(x => x.Execute()).Returns(fakeQueueDetails);
 			_queueQueryManagerFake.Setup(x => x.GetWorkload()).Returns(fakeGetWorkload.Object);
-			_queueQueryManagerFake.Setup(x => x.GetJobsQueueDetails()).Returns(fakeGetQueueDetails.Object);
+			_queueQueryManagerFake.Setup(x => x.GetJobsQueueDetails(It.IsAny<int>())).Returns(fakeGetQueueDetails.Object);
+			_queueQueryManagerFake.Setup(x => x.GetAgentTypeInformation(It.IsAny<Guid>())).Returns(fakeAgentInfoRow.Object);
+
 			_apmFake.Setup(x => x.CountOperation(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<string>(), 
 				It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<int?>(), It.IsAny<Dictionary<string, object>>(), null)).Returns(fakeCounterMeasure.Object);
 

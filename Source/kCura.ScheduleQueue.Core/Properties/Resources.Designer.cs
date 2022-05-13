@@ -339,15 +339,26 @@ namespace kCura.ScheduleQueue.Core.Properties {
                 return ResourceManager.GetString("GetJobByRelatedObjectIDandTaskType", resourceCulture);
             }
         }
-
-        internal static string GetJobsQueueDetails
-        {
-            get
-            {
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT count(*) as Total,
+        ///(SELECT count(*) from [eddsdbo].[{0}] q
+        ///			INNER JOIN [eddsdbo].[Case] c 
+        ///			ON q.[WorkspaceID] = c.[ArtifactID]
+        ///				where [NextRunTime] &lt;= GETUTCDATE()
+        ///				AND (q.StopState NOT IN (0,8) 
+        ///					or q.AgentTypeID != @AgentTypeID
+        ///					or c.ResourceGroupArtifactID NOT IN (@ResourceGroupArtifactIDs))) as Blocked
+        ///FROM [eddsdbo].[{0}]
+        ///WHERE [NextRunTime] &lt;= GETUTCDATE()
+        ///.
+        /// </summary>
+        internal static string GetJobsQueueDetails {
+            get {
                 return ResourceManager.GetString("GetJobsQueueDetails", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to IF EXISTS(SELECT TOP 1 JobID FROM [eddsdbo].[{0}] WHERE [LockedByAgentID] = @AgentID)
         ///BEGIN
@@ -397,7 +408,8 @@ namespace kCura.ScheduleQueue.Core.Properties {
         ///			INSERTED.[ScheduleRule],
         ///			INSERTED.[JobDetails],
         ///			INSERTED.[JobFlags],
-        ///			INSERTED [rest of string was truncated]&quot;;.
+        ///			INSERTED.[SubmittedDate],
+        ///		 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GetNextJobWithoutResourceGroup {
             get {

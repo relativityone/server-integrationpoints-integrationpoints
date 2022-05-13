@@ -125,9 +125,9 @@ namespace kCura.ScheduleQueue.Core.Data
 			return new GetWorkload(_queueDbContext);
 		}
 
-		public IQuery<DataTable> GetJobsQueueDetails()
+		public IQuery<DataTable> GetJobsQueueDetails(int agentTypeId)
         {
-			return new GetJobsQueueDetails(_queueDbContext);
+			return new GetJobsQueueDetails(_queueDbContext, agentTypeId);
         }
 	}
 }
