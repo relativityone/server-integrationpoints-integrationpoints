@@ -342,13 +342,10 @@ namespace kCura.ScheduleQueue.Core.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to SELECT count(*) as Total,
-        ///(SELECT count(*) from [eddsdbo].[{0}] q
-        ///			INNER JOIN [eddsdbo].[Case] c 
-        ///			ON q.[WorkspaceID] = c.[ArtifactID]
+        ///(SELECT count(*) from [eddsdbo].[{0}] q WITH (UPDLOCK, READPAST, ROWLOCK, INDEX([IX_{0}_LockedByAgentID_AgentTypeID_NextRunTime]))			
         ///				where [NextRunTime] &lt;= GETUTCDATE()
         ///				AND (q.StopState NOT IN (0,8) 
-        ///					or q.AgentTypeID != @AgentTypeID
-        ///					or c.ResourceGroupArtifactID NOT IN (@ResourceGroupArtifactIDs))) as Blocked
+        ///					or q.AgentTypeID != @AgentTypeID)) as Blocked
         ///FROM [eddsdbo].[{0}]
         ///WHERE [NextRunTime] &lt;= GETUTCDATE()
         ///.
@@ -414,20 +411,6 @@ namespace kCura.ScheduleQueue.Core.Properties {
         internal static string GetNextJobWithoutResourceGroup {
             get {
                 return ResourceManager.GetString("GetNextJobWithoutResourceGroup", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SELECT 
-        ///			COUNT(*)
-        ///FROM
-        ///			[eddsdbo].[{0}] WITH(NOLOCK)
-        ///WHERE
-        ///            [NextRunTime] &lt;= GETUTCDATE().
-        /// </summary>
-        internal static string GetWorkload {
-            get {
-                return ResourceManager.GetString("GetWorkload", resourceCulture);
             }
         }
         

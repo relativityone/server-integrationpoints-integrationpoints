@@ -251,12 +251,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 
 			return new ValueReturnQuery<bool>(tasksFinished);
 		}
-
-		public IQuery<int> GetWorkload()
-		{
-			int workloadCount = _db.JobsInQueue.Count(j => j.NextRunTime <= _context.CurrentDateTime);
-			return new ValueReturnQuery<int>(workloadCount);
-		}
+		
 		public IQuery<DataTable> GetJobsQueueDetails(int agentTypeId)
 		{
 			var dataTable = new DataTable();
