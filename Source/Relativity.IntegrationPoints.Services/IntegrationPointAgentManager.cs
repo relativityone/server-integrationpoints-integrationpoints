@@ -83,7 +83,7 @@ namespace Relativity.IntegrationPoints.Services
             int totalItems = queueItemsCount.Field<int>("Total");
             int blockedItems = queueItemsCount.Field<int>("Blocked");
 
-            SendMetrics(totalItems, blockedItems);
+            SendWorkloadStateMetrics(totalItems, blockedItems);
 
             return totalItems;
         }
@@ -99,7 +99,7 @@ namespace Relativity.IntegrationPoints.Services
             return new AgentTypeInformation(agentTypeInfo);
         }
 
-        private void SendMetrics(int totalItems, int blockedItems)
+        private void SendWorkloadStateMetrics(int totalItems, int blockedItems)
         {
             Dictionary<string, object> data = new Dictionary<string, object>()
                 {
