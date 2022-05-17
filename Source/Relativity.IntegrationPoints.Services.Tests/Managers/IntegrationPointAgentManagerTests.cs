@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Castle.Windsor;
@@ -15,41 +16,66 @@ using WorkloadDiscovery;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Managers
 {
-	[TestFixture, Category("Unit")]
+    [TestFixture, Category("Unit")]
 	public class IntegrationPointAgentManagerTests : TestBase
 	{
 		private Mock<ILog> _loggerFake;
 		private Mock<IPermissionRepositoryFactory> _permissionsFake;
 		private Mock<IWindsorContainer> _containerFake;
 		private Mock<IQueueQueryManager> _queueQueryManagerFake;
-		private Mock<IInstanceSettingsManager> _instanceSettingsManagerFake;
-		
+		private Mock<IInstanceSettingsManager> _instanceSettingsManagerFake;		
+
 		public override void SetUp()
 		{
 			_loggerFake = new Mock<ILog>();
 			_permissionsFake = new Mock<IPermissionRepositoryFactory>();
-			_containerFake = new Mock<IWindsorContainer>();
+			_containerFake = new Mock<IWindsorContainer>();			
 
 			_queueQueryManagerFake = new Mock<IQueueQueryManager>();
-			_containerFake.Setup(x => x.Resolve<IQueueQueryManager>()).Returns(_queueQueryManagerFake.Object);
+			_containerFake.Setup(x => x.Resolve<IQueueQueryManager>()).Returns(_queueQueryManagerFake.Object);			
 
 			_instanceSettingsManagerFake = new Mock<IInstanceSettingsManager>();
 			_containerFake.Setup(x => x.Resolve<IInstanceSettingsManager>()).Returns(_instanceSettingsManagerFake.Object);
 		}
 
-		private IntegrationPointAgentManager PrepareSut(int jobsCount = 0, string workloadSizeInstanceSettingValue = "")
-		{
-			Mock<IQuery<int>> fakeGetWorkload = new Mock<IQuery<int>>();
+		private IntegrationPointAgentManager PrepareSut(int jobsCount = 0, string workloadSizeInstanceSettingValue = "", int blockedJobs = 0)
+		{			
+			Mock<IQuery<DataTable>> fakeGetQueueDetails = new Mock<IQuery<DataTable>>();
+			Mock<IQuery<DataRow>> fakeAgentInfoRow = new Mock<IQuery<DataRow>>();			
 			
-			fakeGetWorkload.Setup(x => x.Execute()).Returns(jobsCount);
-			_queueQueryManagerFake.Setup(x => x.GetWorkload()).Returns(fakeGetWorkload.Object);
+			DataTable fakeQueueDetails = PrepareFakeQueueDetails(jobsCount, blockedJobs);
+			DataRow fakeAgentInfoData = PrepareFakeAgentInfoDataRow();
+			
+			fakeGetQueueDetails.Setup(x => x.Execute()).Returns(fakeQueueDetails);
+			fakeAgentInfoRow.Setup(x => x.Execute()).Returns(fakeAgentInfoData);			
+			_queueQueryManagerFake.Setup(x => x.GetJobsQueueDetails(It.IsAny<int>())).Returns(fakeGetQueueDetails.Object);
+			_queueQueryManagerFake.Setup(x => x.GetAgentTypeInformation(It.IsAny<Guid>())).Returns(fakeAgentInfoRow.Object);			
 
 			_instanceSettingsManagerFake.Setup(x => x.GetWorkloadSizeSettings()).Returns(workloadSizeInstanceSettingValue);
-
 			return new IntegrationPointAgentManager(_loggerFake.Object, _permissionsFake.Object, _containerFake.Object);
 		}
-		
-		[TestCase(0, WorkloadSize.None)]
+
+        private DataTable PrepareFakeQueueDetails(int jobsCount, int blockedJobs)
+        {
+			DataTable dt = new DataTable();
+			dt.Columns.Add("Total", typeof(int));
+			dt.Columns.Add("Blocked", typeof(int));
+			dt.Rows.Add(new Object[] { jobsCount, blockedJobs });
+			return dt;
+        }
+
+		private DataRow PrepareFakeAgentInfoDataRow()
+        {
+			DataTable dt = new DataTable();		
+			dt.Columns.Add("AgentTypeID", typeof(int));
+			dt.Columns.Add("Name", typeof(string));
+			dt.Columns.Add("Fullnamespace", typeof(string));
+			dt.Columns.Add("Guid", typeof(Guid));
+			dt.Rows.Add(new Object[] { 123, "TestName", "TestNameSpace", new Guid() });
+			return dt.Rows[0];
+		}
+
+        [TestCase(0, WorkloadSize.None)]
 		[TestCase(1, WorkloadSize.One)]
 		[TestCase(2, WorkloadSize.S)]
 		[TestCase(3, WorkloadSize.S)]
