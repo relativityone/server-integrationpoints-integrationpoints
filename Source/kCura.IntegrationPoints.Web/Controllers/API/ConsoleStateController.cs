@@ -11,20 +11,25 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 {
     public class ConsoleStateController : ApiController
     {
-        private readonly IButtonStateBuilder _buttonStateBuilder;
+        ICPHelper _helper;
+        IRepositoryFactory _respositoryFactory;
+        IManagerFactory _managerFactory;
 
         public ConsoleStateController(ICPHelper helper,
             IRepositoryFactory respositoryFactory,
             IManagerFactory managerFactory)
         {
-            _buttonStateBuilder = ButtonStateBuilder.CreateButtonStateBuilder(helper, respositoryFactory, managerFactory);
+            _helper = helper;
+            _respositoryFactory = respositoryFactory;
+            _managerFactory = managerFactory;
         }
 
         [HttpGet]
         [LogApiExceptionFilter(Message = "Unable to get ConsoleState")]
         public IHttpActionResult GetConsoleState(int workspaceId, int integrationPointArtifactId)
         {
-            ButtonStateDTO buttonState = _buttonStateBuilder
+            ButtonStateBuilder buttonStateBuilder = ButtonStateBuilder.CreateButtonStateBuilder(_helper, _respositoryFactory, _managerFactory, workspaceId);
+            ButtonStateDTO buttonState = buttonStateBuilder
                 .CreateButtonState(workspaceId, integrationPointArtifactId);
 
             return Ok(buttonState);
