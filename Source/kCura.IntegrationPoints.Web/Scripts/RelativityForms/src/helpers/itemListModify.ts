@@ -18,7 +18,8 @@ export function updeteJobHistoryTable(convenienceApi: IConvenienceApi, currentPa
             try {
                 setTimeout(updeteJobHistoryTable, 5000, convenienceApi, relativityWindow.location.href, workspaceId, artifactTypeID, viewId, integrationPointId, fieldId);
             } catch (err) {
-                console.log(err)
+                console.log("Error occured while updating job history table data, will try once again in 5 secs", err)
+                setTimeout(updeteJobHistoryTable, 5000, convenienceApi, relativityWindow.location.href, workspaceId, artifactTypeID, viewId, integrationPointId, fieldId);
             }
 
         }
