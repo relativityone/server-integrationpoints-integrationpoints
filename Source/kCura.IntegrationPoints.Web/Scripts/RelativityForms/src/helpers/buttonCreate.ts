@@ -19,14 +19,28 @@ export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx
                     return postJobAPIRequest(convenienceApi, workspaceId, integrationPointId)
                         .then(function (result) {
                             if (!result.ok) {
-                                console.log(result);
-                                return ctx.setErrorSummary(["Failed to submit integration job. Check Errors tab for details."]);
+                                let res = result.json();
+
+                                res.then(res => {
+                                    let messages = ["Failed to submit integration job: "];
+                                    res.errors.forEach(x => {
+                                        messages.push(x.message);
+                                    })
+                                    if (messages.length === 2) {
+                                        let message = messages.join(" ");
+                                        return ctx.setErrorSummary([message]);
+                                    }
+                                    return ctx.setErrorSummary(messages, true);
+                                })
                             }
+                        })
+                        .catch(err => {
+                            console.log(err)
                         });
                 }
             });
         }
-    });
+    })
 }
 
 export function createStopButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number) {
