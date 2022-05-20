@@ -43,7 +43,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             IntegrationPointModel integrationPointModel = await _sut.CreateIntegrationPointAsync(request).ConfigureAwait(false);
 
             // Assert
-            AssertIntegrationPointModel(integrationPointModel, request, false);
+            AssertIntegrationPointModel(integrationPointModel, new IntegrationPointDesiredState(request.IntegrationPoint), artifactIdShouldEqual: false);
         }
 
         [IdentifiedTest("D0D9F342-EF26-4A6F-BB30-57637C9ED812")]
@@ -53,15 +53,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             CreateIntegrationPointRequest request = PrepareIntegrationPoint();
             UpdateIntegrationPointRequest updateRequest = new UpdateIntegrationPointRequest
             {
-                IntegrationPoint = request.IntegrationPoint,
-                WorkspaceArtifactId = request.WorkspaceArtifactId
+                 IntegrationPoint = request.IntegrationPoint,
+                 WorkspaceArtifactId = request.WorkspaceArtifactId
             };
 
             // Act
             IntegrationPointModel integrationPointModel = await _sut.UpdateIntegrationPointAsync(updateRequest).ConfigureAwait(false);
 
             // Assert
-            AssertIntegrationPointModel(integrationPointModel, request);
+            AssertIntegrationPointModel(integrationPointModel, new IntegrationPointDesiredState(request.IntegrationPoint), artifactIdShouldEqual: true);
         }
 
         [IdentifiedTest("1316A6DD-F54E-49C9-AAEE-C7B66D444A09")]
@@ -69,13 +69,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         {
             // Arrange
             CreateIntegrationPointRequest request = PrepareIntegrationPoint();
-            
+
             // Act
             IntegrationPointModel integrationPointModel = await _sut
                 .GetIntegrationPointAsync(request.WorkspaceArtifactId, request.IntegrationPoint.ArtifactId).ConfigureAwait(false);
 
             // Assert
-            AssertIntegrationPointModel(integrationPointModel, request);
+            AssertIntegrationPointModel(integrationPointModel, new IntegrationPointDesiredState(request.IntegrationPoint), true);
         }
 
         [IdentifiedTest("FAAD45A6-F2F7-4042-A0A9-8D46700154A1")]
@@ -106,7 +106,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
                 LastRuntimeUTC = DateTime.Now,
                 HasErrors = true
             });
-            
+
             CreateAgentDataTable();
 
             // Act
@@ -123,12 +123,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         public async Task GetAllIntegrationPointsAsync_ShouldReturnAllCreatedIntegrationPoints()
         {
             // Arrange
-            List<IntegrationPointTest> integrationPointsCreated = new List<IntegrationPointTest>();
             const int integrationPointsCount = 5;
-            for (int i = 0; i < integrationPointsCount; i++)
-            {
-                integrationPointsCreated.Add(SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(SourceWorkspace));
-            }
+            List<IntegrationPointTest> integrationPointsCreated =
+                Enumerable.Range(0, integrationPointsCount)
+                    .Select(i => SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(SourceWorkspace))
+                    .ToList();
 
             // Act
             IList<IntegrationPointModel> integrationPoints = await _sut.GetAllIntegrationPointsAsync(SourceWorkspace.ArtifactId).ConfigureAwait(false);
@@ -138,14 +137,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
 
             for(int i = 0; i < integrationPointsCount; i++)
             {
-                IntegrationPointAssert integrationPointExpectedValues = new IntegrationPointAssert
-                {
-                    ArtifactId = integrationPointsCreated[i].ArtifactId,
-                    Name = integrationPointsCreated[i].Name,
-                    SourceProvider = (int)integrationPointsCreated[i].SourceProvider,
-                    DestinationProvider = (int)integrationPointsCreated[i].DestinationProvider
-                };
-                AssertIntegrationPointModel(integrationPoints[i], integrationPointExpectedValues);
+                AssertIntegrationPointModel(
+                    integrationPoints[i],
+                    new IntegrationPointDesiredState(integrationPointsCreated[i]),
+                    artifactIdShouldEqual: true);
             }
         }
 
@@ -180,14 +175,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
                 .CreateIntegrationPointFromProfileAsync(SourceWorkspace.ArtifactId, integrationPointProfile.ArtifactId, integrationPointName).ConfigureAwait(false);
 
             // Assert
-            IntegrationPointAssert integrationPointExpectedValues = new IntegrationPointAssert
+            IntegrationPointDesiredState desiredState = new IntegrationPointDesiredState(integrationPointProfile)
             {
-                ArtifactId = integrationPointProfile.ArtifactId,
-                Name = integrationPointName,
-                SourceProvider = (int)integrationPointProfile.SourceProvider,
-                DestinationProvider = (int)integrationPointProfile.DestinationProvider
+                Name = integrationPointName
             };
-            AssertIntegrationPointModel(integrationPointModel, integrationPointExpectedValues, false);
+            AssertIntegrationPointModel(integrationPointModel, desiredState, false);
         }
 
         [IdentifiedTest("A5B7851C-2709-4A6B-A12D-2C8C219D4578")]
@@ -207,13 +199,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             integrationPointArtifactTypeId.ShouldBeEquivalentTo(objectTypeArtifactId);
         }
 
-        private CreateIntegrationPointRequest PrepareIntegrationPoint(bool integrationPointsWithErrors = false) 
+        private CreateIntegrationPointRequest PrepareIntegrationPoint(bool integrationPointsWithErrors = false)
         {
             PrepareMocks();
-            IntegrationPointTest integrationPoint = integrationPointsWithErrors ? 
-                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPointWithErrors(SourceWorkspace) : 
+            IntegrationPointTest integrationPoint = integrationPointsWithErrors ?
+                SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPointWithErrors(SourceWorkspace) :
                 SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(SourceWorkspace);
-            
+
             CreateIntegrationPointRequest request = new CreateIntegrationPointRequest
             {
                 IntegrationPoint = new IntegrationPointModel
@@ -261,28 +253,21 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
                 .Returns(new DataTable());
         }
 
-        private void AssertIntegrationPointModel(IntegrationPointModel integrationPointModel, 
-            CreateIntegrationPointRequest request, bool artifactIdShouldBeEqual = true)
-        {
-            IntegrationPointAssert integrationPointExpectedValues = new IntegrationPointAssert(request.IntegrationPoint);
-            AssertIntegrationPointModel(integrationPointModel, integrationPointExpectedValues, artifactIdShouldBeEqual);
-        }
-
         private void AssertIntegrationPointModel(IntegrationPointModel integrationPointModel,
-            IntegrationPointAssert integrationPointExpectedValues, bool artifactIdShouldBeEqual = true)
+            IntegrationPointDesiredState integrationPointDesiredExpectedValues, bool artifactIdShouldEqual)
         {
-            if (artifactIdShouldBeEqual)
+            if (artifactIdShouldEqual)
             {
-                integrationPointModel.ArtifactId.Should().Be(integrationPointExpectedValues.ArtifactId);
+                integrationPointModel.ArtifactId.Should().Be(integrationPointDesiredExpectedValues.ArtifactId);
             }
             else
             {
-                integrationPointModel.ArtifactId.Should().NotBe(integrationPointExpectedValues.ArtifactId);
+                integrationPointModel.ArtifactId.Should().NotBe(integrationPointDesiredExpectedValues.ArtifactId);
             }
 
-            integrationPointModel.Name.Should().Be(integrationPointExpectedValues.Name);
-            integrationPointModel.SourceProvider.ShouldBeEquivalentTo(integrationPointExpectedValues.SourceProvider);
-            integrationPointModel.DestinationProvider.ShouldBeEquivalentTo(integrationPointExpectedValues.DestinationProvider);
+            integrationPointModel.Name.Should().Be(integrationPointDesiredExpectedValues.Name);
+            integrationPointModel.SourceProvider.ShouldBeEquivalentTo(integrationPointDesiredExpectedValues.SourceProvider);
+            integrationPointModel.DestinationProvider.ShouldBeEquivalentTo(integrationPointDesiredExpectedValues.DestinationProvider);
         }
 
         private void CreateAgentDataTable()
@@ -308,18 +293,30 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
 
     #endregion
 
-    internal class IntegrationPointAssert
+    internal class IntegrationPointDesiredState
     {
         internal int ArtifactId { get; set; }
         internal int SourceProvider { get; set; }
         internal int DestinationProvider { get; set; }
         internal string Name { get; set; }
 
-        internal IntegrationPointAssert()
+        internal IntegrationPointDesiredState(IntegrationPointTest integrationPointTest)
         {
+            ArtifactId = integrationPointTest.ArtifactId;
+            Name = integrationPointTest.Name;
+            SourceProvider = integrationPointTest.SourceProvider ?? 0;
+            DestinationProvider = integrationPointTest.DestinationProvider ?? 0;
         }
 
-        public IntegrationPointAssert(IntegrationPointModel integrationPointModel)
+        internal IntegrationPointDesiredState(IntegrationPointProfileTest integrationPointProfileTest)
+        {
+            ArtifactId = integrationPointProfileTest.ArtifactId;
+            Name = integrationPointProfileTest.Name;
+            SourceProvider = integrationPointProfileTest.SourceProvider ?? 0;
+            DestinationProvider = integrationPointProfileTest.DestinationProvider ?? 0;
+        }
+
+        public IntegrationPointDesiredState(IntegrationPointModel integrationPointModel)
         {
             ArtifactId = integrationPointModel.ArtifactId;
             Name = integrationPointModel.Name;

@@ -22,12 +22,12 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
 		private readonly IIntegrationPointProfileService _integrationPointProfileService;
 
 		public IntegrationPointRepository(
-			IIntegrationPointRuntimeServiceFactory serviceFactory, 
-			IObjectTypeRepository objectTypeRepository, 
-			IUserInfo userInfo, 
-			IChoiceQuery choiceQuery, 
-			IBackwardCompatibility backwardCompatibility, 
-			IIntegrationPointService integrationPointLocalService, 
+			IIntegrationPointRuntimeServiceFactory serviceFactory,
+			IObjectTypeRepository objectTypeRepository,
+			IUserInfo userInfo,
+			IChoiceQuery choiceQuery,
+			IBackwardCompatibility backwardCompatibility,
+			IIntegrationPointService integrationPointLocalService,
 			IIntegrationPointProfileService integrationPointProfileService,
 			ICaseServiceContext caseServiceContext) : base(backwardCompatibility, caseServiceContext)
 		{
@@ -72,7 +72,7 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
 			integrationPointRuntimeService.RunIntegrationPoint(workspaceArtifactId, integrationPointArtifactId, _userInfo.ArtifactID);
 			return null;
 		}
-		
+
 		public object RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, bool switchToAppendOverlayMode)
 		{
 			IntegrationPoint integrationPoint = _integrationPointLocalService.ReadIntegrationPoint(integrationPointArtifactId);
@@ -95,9 +95,8 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
 		public override IList<OverwriteFieldsModel> GetOverwriteFieldChoices()
 		{
 			List<ChoiceRef> choices = _choiceQuery.GetChoicesOnField(Context.WorkspaceID, IntegrationPointFieldGuids.OverwriteFieldsGuid);
-			List<OverwriteFieldsModel> mappedChoiced = choices.Select(Mapper.Map<OverwriteFieldsModel>).ToList();
-            return mappedChoiced;
-        }
+			return choices.Select(Mapper.Map<OverwriteFieldsModel>).ToList();
+		}
 
 		public IntegrationPointModel CreateIntegrationPointFromProfile(int profileArtifactID, string integrationPointName)
 		{

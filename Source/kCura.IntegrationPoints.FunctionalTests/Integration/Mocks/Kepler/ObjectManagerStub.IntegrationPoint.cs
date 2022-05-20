@@ -69,10 +69,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
         }
         private bool IsIntegrationPointQuery(QueryRequest query) => query.ObjectType.Guid == ObjectTypeGuids.IntegrationPointGuid;
 
-        private bool IsProviderCondition(string condition, out int sourceId, out int destinationId)
+        private bool IsProviderCondition(string condition, out int sourceProviderId, out int destinationProviderId)
         {
             Match match = Match.Empty;
-            if (condition != null && condition != String.Empty)
+            if (!string.IsNullOrEmpty(condition))
             {
                 match = Regex.Match(condition,
                     $"'{IntegrationPointFields.SourceProvider}' == (.*) AND '{IntegrationPointFields.DestinationProvider}' == (.*)");
@@ -80,27 +80,21 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
             if (match.Success)
             {
-                int.TryParse(match.Groups[1].Value, out sourceId);
-                int.TryParse(match.Groups[2].Value, out destinationId);                
+                int.TryParse(match.Groups[1].Value, out sourceProviderId);
+                int.TryParse(match.Groups[2].Value, out destinationProviderId);
                 return true;
             }
-            sourceId = destinationId = 0;
+            sourceProviderId = destinationProviderId = 0;
             return false;
         }
 
         private static bool IsGetAllIntegrationPointsCondition(QueryRequest request)
         {
-            bool isGetAllIntegrationPointsCondition = true;
             IEnumerable<Guid> guids = BaseRdo.GetFieldMetadata(typeof(IntegrationPoint))
                 .Values
                 .Select(x => x.FieldGuid);
 
-            foreach (Guid guid in guids)
-            {
-                isGetAllIntegrationPointsCondition &= request.Fields.Select(x => x.Guid).Contains(guid);
-            }
-
-            return isGetAllIntegrationPointsCondition;
+            return guids.All(x => request.Fields.Any(y => y.Guid == x));
         }
     }
 }
