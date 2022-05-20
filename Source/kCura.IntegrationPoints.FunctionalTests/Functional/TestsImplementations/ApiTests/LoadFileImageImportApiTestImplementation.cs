@@ -11,6 +11,7 @@ using Relativity.Testing.Framework.Api;
 using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Models;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using static kCura.IntegrationPoints.Core.Constants.IntegrationPoints;
@@ -35,7 +36,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
         public void OnSetUpFixture()
         {
-            string testDataPath = LoadFilesGenerator.GetOrCreateNativesOptLoadFile();
+            string testDataPath = Path.GetDirectoryName(LoadFilesGenerator.GetOrCreateNativesOptLoadFile());
             LoadFilesGenerator.UploadLoadFileToImportDirectory(_testsImplementationTestFixture.Workspace.ArtifactID, testDataPath).Wait();
         }
 

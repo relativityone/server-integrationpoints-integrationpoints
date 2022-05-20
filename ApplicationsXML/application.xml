@@ -1760,12 +1760,6 @@
       <Name>System.Threading.Tasks.Extensions.dll</Name>
       <Notes />
     </Assembly>
-    <Assembly>
-      <ArtifactId>5511576</ArtifactId>
-      <Keywords />
-      <Name>Relativity.DataMigration.MigrateFileshareAccess.dll</Name>
-      <Notes />
-    </Assembly>
   </Assemblies>
   <ResourceFiles>
     <ResourceFile>
@@ -1785,7 +1779,7 @@
     </ResourceFile>
   </ResourceFiles>
   <ExternalTabs />
-  <ExtractionDate>2022-04-28T11:29:19.3109297Z</ExtractionDate>
+  <ExtractionDate>2022-05-05T14:00:21.0483894Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -11846,7 +11840,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>16.0.30.0</RelativityVersion>
-  <Version>12.2.15.22</Version>
+  <Version>12.2.15.23</Version>
   <SchemaVersion>11.3.10.18</SchemaVersion>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>5e8b02a8-6e33-4426-a0f0-3594d83725d0</OriginSignature>

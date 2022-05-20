@@ -15,14 +15,14 @@ export function transformLayout(layoutData, convenienceApi: IConvenienceApi, bac
             case "Relativity":
                 if (destinationConfiguration["Provider"] === "relativity") {
                     let fieldsForRelativityExport = prepareFieldsForRelativityExport(sourceConfiguration, destinationConfiguration)
-                    addFieldsToLayout(layoutData, existingFields, fieldsForRelativityExport)
+                    addFieldsToLayout(layoutData, existingFields, fieldsForRelativityExport, false)
                     if (destinationConfiguration["artifactTypeID"] == 10) {
                         let fieldsForRelativityExportSecondColumn = prepareFieldsForRelativityExportSecondColumn(destinationConfiguration);
                         addFieldsToLayoutSecondColumn(layoutData, fieldsForRelativityExportSecondColumn);
                     }
                 } else if (destinationConfiguration["Provider"] === "Load File") {
                     let fieldsForLoadFileExport = prepareFieldsForLoadFileExport(sourceConfiguration, destinationConfiguration);
-                    addFieldsToLayout(layoutData, existingFields, fieldsForLoadFileExport)
+                    addFieldsToLayout(layoutData, existingFields, fieldsForLoadFileExport, false)
                 } 
                 break;
             case "Load File":
@@ -37,6 +37,8 @@ export function transformLayout(layoutData, convenienceApi: IConvenienceApi, bac
             default:
                 console.log("other case?");
         }
+
+        removeUnnecessaryField(existingFields, "Promote Eligible")
 
         return [sourceConfiguration, destinationConfiguration];
     } catch (err) {
@@ -54,13 +56,20 @@ function extractFieldsValuesFromBackingModelData(backingModelData: Object) {
     return [sourceConfiguration, destinationConfiguration, sourceProvider];
 }
 
-function addFieldsToLayout(layoutData, existingFields, fields: Array<String>) {
+function addFieldsToLayout(layoutData, existingFields, fields: Array<String>, sourceProvider = true) {
     let pos = 6;
-
     existingFields[3].Row = 2;
     existingFields[5].Row = 3;
     existingFields[7].Row = 4;
     existingFields[8].Row = 5;
+
+    if (!sourceProvider) {
+        let fieldPos = existingFields.findIndex(x => x.DisplayName === "Source Provider")
+        existingFields[fieldPos].IsVisible = false
+        existingFields[7].Row = 3;
+        existingFields[8].Row = 4;
+        pos = 5;
+    }
 
     fields.forEach((label, index) => {
 
@@ -97,8 +106,13 @@ function addFieldsToLayout(layoutData, existingFields, fields: Array<String>) {
     })
 }
 
+function removeUnnecessaryField(existingFields, fieldName: string) {
+    let fieldPos = existingFields.findIndex(x => x.DisplayName === fieldName)
+    existingFields[fieldPos].IsVisible = false
+}
+
 function addFieldsToLayoutSecondColumn(layoutData, fields: Array<String>) {
-    let pos = 6;
+    let pos = 5;
     fields.forEach((label, index) => {
 
         // the rest of new fields are added below - starting at row 7 

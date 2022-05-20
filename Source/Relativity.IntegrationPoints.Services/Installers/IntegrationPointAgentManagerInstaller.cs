@@ -13,7 +13,7 @@ using Relativity.API;
 
 namespace Relativity.IntegrationPoints.Services.Installers
 {
-	public class IntegrationPointAgentManagerInstaller : Installer
+    public class IntegrationPointAgentManagerInstaller : Installer
 	{
 		protected override IList<IWindsorInstaller> Dependencies { get; } = new List<IWindsorInstaller>();
 
@@ -22,7 +22,7 @@ namespace Relativity.IntegrationPoints.Services.Installers
 			Guid agentGuid = Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
 			container.Register(Component.For<IQueueQueryManager>().ImplementedBy<QueueQueryManager>().DependsOn(Dependency.OnValue<Guid>(agentGuid)).LifestyleTransient());
 			container.Register(Component.For<IInstanceSettingsManager>().ImplementedBy<InstanceSettingsManager>().LifestyleTransient());
-			container.Register(Component.For<IRepositoryFactory>().UsingFactoryMethod(c => new RepositoryFactory(c.Resolve<IHelper>(), c.Resolve<IHelper>().GetServicesManager())));
+			container.Register(Component.For<IRepositoryFactory>().UsingFactoryMethod(c => new RepositoryFactory(c.Resolve<IHelper>(), c.Resolve<IHelper>().GetServicesManager())));			
 		}
 	}
 }
