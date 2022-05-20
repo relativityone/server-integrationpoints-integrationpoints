@@ -1,5 +1,5 @@
 @Library('ProjectMayhem@v1') _
 
 libraryCD {
-    slackChannel = "cd_sync"
+    slackChannel = "ci-sync"
 }
