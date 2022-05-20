@@ -9,13 +9,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsAssertions
     public class BillingFlagAssertion
     {
         private DataTable _fileDataTable;
-        private int _workspaceArtifactID { get; set; }         
-          
+        private int _workspaceArtifactID { get; set; }
+
         public BillingFlagAssertion(int targetWorkspaceArtifactID)
-        {           
-            _workspaceArtifactID = targetWorkspaceArtifactID;           
+        {
+            _workspaceArtifactID = targetWorkspaceArtifactID;
         }
-        
+
         public void AssertFiles(bool expectBillable)
         {
             IEnumerable<FileRow> fileRows = GetFiles();
@@ -39,7 +39,5 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsAssertions
             public bool InRepository { get; set; }
             public bool Billable { get; set; }
         }
-
-
     }
 }

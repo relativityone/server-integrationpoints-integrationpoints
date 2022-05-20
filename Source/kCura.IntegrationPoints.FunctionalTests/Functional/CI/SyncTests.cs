@@ -42,12 +42,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			_testsImplementation.SavedSearchNativesAndMetadataGoldFlow();
 		}
 
-		[Test]
-		public void Production_Images_GoldFlow()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void Production_Images_GoldFlow(bool copyFilesToDocumentRepository)
 		{
-			_testsImplementation.ProductionImagesGoldFlow();
+			_testsImplementation.ProductionImagesGoldFlow(copyFilesToDocumentRepository);
 		}
-		
+
 		[Test]
 		public async Task Entities_GoldFlow()
 		{

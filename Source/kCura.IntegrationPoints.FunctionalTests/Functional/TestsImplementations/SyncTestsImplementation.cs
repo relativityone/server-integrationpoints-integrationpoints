@@ -27,12 +27,12 @@ using Relativity.IntegrationPoints.Tests.Functional.TestsAssertions;
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 {
     internal class SyncTestsImplementation
-    {       
+    {
         private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
-        private readonly Dictionary<string, Workspace> _destinationWorkspaces = new Dictionary<string, Workspace>();      
+        private readonly Dictionary<string, Workspace> _destinationWorkspaces = new Dictionary<string, Workspace>();
 
         public SyncTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture)
-        {           
+        {
             _testsImplementationTestFixture = testsImplementationTestFixture;
         }
 
@@ -108,7 +108,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             documentFlagValidator.AssertFiles(true);
         }
 
-        public void ProductionImagesGoldFlow()
+        public void ProductionImagesGoldFlow(bool copyFilesToDocumentRepository)
         {
             // Arrange
             _testsImplementationTestFixture.LoginAsStandardUser();
@@ -188,7 +188,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             IntegrationPointEditPage integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
 
             IntegrationPointViewPage integrationPointViewPage = integrationPointEditPage
-                .CreateProductionToFolderIntegrationPoint(integrationPointName, destinationWorkspace, production);
+                .CreateProductionToFolderIntegrationPoint(
+                    integrationPointName, destinationWorkspace, production, copyFilesToDocumentRepository);
 
             integrationPointViewPage = integrationPointViewPage.RunIntegrationPoint(integrationPointName);
 
@@ -208,13 +209,17 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             GetCorrectlyTaggedDocumentsCount(sourceDocs, "Relativity Destination Case", expectedDestinationCaseTag).Should().Be(transferredItemsCount);
             GetCorrectlyTaggedDocumentsCount(destinationDocs, "Relativity Source Case", expectedSourceCaseTag).Should().Be(transferredItemsCount);
             GetCorrectlyTaggedDocumentsCount(destinationDocs, "Relativity Source Job", expectedSourceJobTag).Should().Be(transferredItemsCount);
+
+            // why not to make it static?
+            BillingFlagAssertion documentFlagValidator = new BillingFlagAssertion(destinationWorkspace.ArtifactID);
+            documentFlagValidator.AssertFiles(copyFilesToDocumentRepository);
         }
 
         public void EntitiesPushGoldFlow()
         {
             // Arrange
             _testsImplementationTestFixture.LoginAsStandardUser();
-            
+
             string integrationPointName = nameof(EntitiesPushGoldFlow);
 
             Workspace destinationWorkspace = CreateDestinationWorkspace();

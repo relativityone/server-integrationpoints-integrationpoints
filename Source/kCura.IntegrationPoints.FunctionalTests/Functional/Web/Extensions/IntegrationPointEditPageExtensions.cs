@@ -35,20 +35,33 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 		}
 
 		public static IntegrationPointViewPage CreateProductionToFolderIntegrationPoint(
-			this IntegrationPointEditPage integrationPointEditPage, string integrationPointName, 
-			Workspace destinationWorkspace, Testing.Framework.Models.Production production,
+			this IntegrationPointEditPage integrationPointEditPage,
+			string integrationPointName,
+			Workspace destinationWorkspace,
+			Testing.Framework.Models.Production production,
+			bool copyFilesToDocumentRepository,
 			RelativityProviderOverwrite overwriteMode = RelativityProviderOverwrite.AppendOnly)
 		{
-            RelativityProviderConnectToSourcePage relativityProviderConnectToSourcePage = FillOutIntegrationPointEditPageForRelativityProvider(integrationPointEditPage, integrationPointName);
+			RelativityProviderConnectToSourcePage relativityProviderConnectToSourcePage =
+				FillOutIntegrationPointEditPageForRelativityProvider(integrationPointEditPage, integrationPointName);
 
-            RelativityProviderMapFieldsPage relativityProviderMapFieldsPage = FillOutRelativityProviderConnectToSourcePage(
-				relativityProviderConnectToSourcePage, destinationWorkspace, 
-				RelativityProviderSources.Production, productionSetName: production.Name);
+			RelativityProviderMapFieldsPage relativityProviderMapFieldsPage =
+				FillOutRelativityProviderConnectToSourcePage(
+					relativityProviderConnectToSourcePage, destinationWorkspace,
+					RelativityProviderSources.Production, productionSetName: production.Name);
 
-            IntegrationPointViewPage integrationPointViewPage = relativityProviderMapFieldsPage.ApplyModel(new
-			{
-				Overwrite = overwriteMode
-			}).Save.ClickAndGo();
+			IntegrationPointViewPage integrationPointViewPage = relativityProviderMapFieldsPage
+				.ApplyModel(new RelativityProviderMapFields
+				{
+					Overwrite = overwriteMode,
+					//CopyFilesToDocumentRepository = copyFilesToDocumentRepository,
+
+					CopyNativeFiles = copyFilesToDocumentRepository
+						? RelativityProviderCopyNativeFiles.PhysicalFiles
+						: RelativityProviderCopyNativeFiles.No,
+
+					//ImportNativeFile = copyFilesToDocumentRepository,
+				}).Save.ClickAndGo();
 
 			return integrationPointViewPage;
 		}
