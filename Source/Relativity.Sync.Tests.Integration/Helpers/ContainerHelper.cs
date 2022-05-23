@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Autofac;
 using Banzai;
 using Banzai.Factories;
-using kCura.WinEDDS.Service.Export;
 using Moq;
 using Relativity.API;
 using Relativity.Services;
@@ -15,7 +13,6 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Nodes;
 using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Transfer;
 using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync.Tests.Integration.Helpers
@@ -81,9 +78,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 
 			containerFactory.RegisterSyncDependencies(containerBuilder, parameters,
 				relativityServices, new SyncJobExecutionConfiguration(), new EmptyLogger());
-
-            MockSearchManagerFactory(containerBuilder);
-
+			
 			return containerBuilder;
 		}
 
@@ -122,15 +117,5 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			IHelper helper = Mock.Of<IHelper>();
 			return new RelativityServices(apm, servicesMgr.Object, authenticationUri, helper);
 		}
-
-        public static void MockSearchManagerFactory(ContainerBuilder containerBuilder)
-        {
-            Mock<ISearchManager> searchManager = new Mock<ISearchManager>();
-            Mock<ISearchManagerFactory> searchManagerFactory = new Mock<ISearchManagerFactory>();
-            searchManagerFactory.Setup(x => x.CreateSearchManagerAsync())
-                .Returns(Task.FromResult(searchManager.Object));
-
-            containerBuilder.RegisterInstance(searchManagerFactory.Object).As<ISearchManagerFactory>().SingleInstance();
-        }
 	}
 }

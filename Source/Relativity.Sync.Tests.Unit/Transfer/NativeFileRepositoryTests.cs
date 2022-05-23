@@ -16,12 +16,12 @@ using Relativity.Sync.Transfer;
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
 	[TestFixture]
-	internal sealed class NativeFileRepositoryKeplerTests
+	internal sealed class NativeFileRepositoryTests
 	{
 		private Mock<ISearchService> _searchService;
 		private Mock<IObjectManager> _objectManager;
 
-		private NativeFileRepositoryKepler _instance;
+		private NativeFileRepository _instance;
 		private Mock<ISourceServiceFactoryForUser> _serviceFactoryForUser;
 
 		private const string _DOCUMENT_ARTIFACT_ID_COLUMN_NAME = "DocumentArtifactID";
@@ -41,7 +41,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			SyncJobParameters parameters = new SyncJobParameters(It.IsAny<int>(), It.IsAny<int>(), Guid.NewGuid());
 
-			_instance = new NativeFileRepositoryKepler(_serviceFactoryForUser.Object, new EmptyLogger(), parameters);
+			_instance = new NativeFileRepository(_serviceFactoryForUser.Object, new EmptyLogger(), parameters);
 		}
 
 		[Test]
