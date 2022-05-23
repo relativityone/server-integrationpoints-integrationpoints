@@ -276,7 +276,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			SetupNewBatch(newBatchArtifactId, totalItemsCount);
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
-			CompositeCancellationToken compositeCancellationToken = new CompositeCancellationToken(tokenSource.Token, CancellationToken.None);
+			CompositeCancellationToken compositeCancellationToken = new CompositeCancellationToken(tokenSource.Token, CancellationToken.None, new EmptyLogger());
 
 			// act
 			tokenSource.Cancel();

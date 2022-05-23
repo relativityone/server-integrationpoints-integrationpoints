@@ -156,6 +156,7 @@ namespace Relativity.Sync.Executors
 			}
 			if (token.IsDrainStopRequested)
 			{
+				_logger.LogInformation("Drain-Stop was requested. IAPI job won't be run. Returning Paused execution result.");
 				executionResult = ExecutionResult.Paused();
 				return new ImportJobResult(executionResult, GetMetadataSize(), GetFilesSize(), GetJobSize());
 			}

@@ -3,6 +3,7 @@ using System.Threading;
 using Banzai;
 using FluentAssertions;
 using NUnit.Framework;
+using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Tests.Unit
 {
@@ -41,7 +42,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void ItShouldCreateSyncExecutionContext()
 		{
 			IProgress<SyncJobState> progress = new EmptyProgress<SyncJobState>();
-			CompositeCancellationToken token = new CompositeCancellationToken(CancellationToken.None, CancellationToken.None);
+			CompositeCancellationToken token = new CompositeCancellationToken(CancellationToken.None, CancellationToken.None, new EmptyLogger());
 
 			// ACT
 			IExecutionContext<SyncExecutionContext> context = _instance.Create(progress, token);
@@ -55,7 +56,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void ItShouldBindExecutionContextWithCancellationToken()
 		{
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
-			CompositeCancellationToken token = new CompositeCancellationToken(tokenSource.Token, CancellationToken.None);
+			CompositeCancellationToken token = new CompositeCancellationToken(tokenSource.Token, CancellationToken.None, new EmptyLogger());
 
 			IExecutionContext<SyncExecutionContext> context = _instance.Create(new EmptyProgress<SyncJobState>(), token);
 			context.CancelProcessing.Should().BeFalse();
