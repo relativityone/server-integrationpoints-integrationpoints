@@ -22,14 +22,20 @@ export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx
                                 let res = result.json();
 
                                 res.then(res => {
-                                    let messages = ["Failed to submit integration job: "];
+                                    let messages = ["Failed to submit integration job: "]; // header
                                     res.errors.forEach(x => {
                                         messages.push(x.message);
                                     })
+
+                                    // if there is only header and one error message, then header would be omitted 
+                                    // and error message would be displayed alone 
+                                    // issue - https://jira.kcura.com/browse/REL-334906 <- probably won't be fixed
+                                    // as workaround we join header and error and display them both in place of header
                                     if (messages.length === 2) {
                                         let message = messages.join(" ");
                                         return ctx.setErrorSummary([message]);
                                     }
+
                                     return ctx.setErrorSummary(messages, true);
                                 })
                             }
