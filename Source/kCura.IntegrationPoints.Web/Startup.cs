@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Web.SignalRHubs;
+﻿using kCura.IntegrationPoints.Web.Helpers;
+using kCura.IntegrationPoints.Web.SignalRHubs;
 using Microsoft.AspNet.SignalR;
 using Microsoft.Owin;
 using Owin;
@@ -14,8 +15,14 @@ namespace kCura.IntegrationPoints.Web
         {
 	        ICPHelper helper = ConnectionHelper.Helper();
 	        IAPILog logger = helper.GetLoggerFactory().GetLogger();
-			GlobalHost.HubPipeline.AddModule(new IntegrationPointDataHubErrorHandlingPipelineModule(logger));
-			app.MapSignalR();
+
+            ILiquidFormsHelper liquidFormsHelper = new LiquidFormsHelper(helper.GetServicesManager(), logger);
+            bool isLiquidForms = liquidFormsHelper.IsLiquidForms(0).GetAwaiter().GetResult();
+            if (!isLiquidForms)
+            {
+                GlobalHost.HubPipeline.AddModule(new IntegrationPointDataHubErrorHandlingPipelineModule(logger));
+                app.MapSignalR();
+            }
         }
     }
 }
