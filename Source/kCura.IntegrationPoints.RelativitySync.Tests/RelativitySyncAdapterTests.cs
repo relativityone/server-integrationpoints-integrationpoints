@@ -26,15 +26,18 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 		private Mock<ICancellationAdapter> _cancellationAdapterFake;
 		private Mock<ISyncJob> _syncJobFake;
 		private Mock<ISyncConfigurationService> _syncConfigurationServiceFake;
+		private Mock<IAPILog> _logFake;
 
 		[SetUp]
 		public void SetUp()
 		{
+			_logFake = new Mock<IAPILog>();
+
 			_jobHistorySyncServiceMock = new Mock<IJobHistorySyncService>();
 
 			_cancellationAdapterFake = new Mock<ICancellationAdapter>();
 			_cancellationAdapterFake.Setup(x => x.GetCancellationToken(It.IsAny<Action>()))
-				.Returns(new CompositeCancellationToken(It.IsAny<CancellationToken>(), It.IsAny<CancellationToken>()));
+				.Returns(new CompositeCancellationToken(It.IsAny<CancellationToken>(), It.IsAny<CancellationToken>(), _logFake.Object));
 
 			_syncJobFake = new Mock<ISyncJob>();
 
@@ -43,14 +46,13 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			_syncOperationsMock = PrepareSyncOperations();
 
 			Mock<IExtendedJob> job = new Mock<IExtendedJob>();
-			Mock<IAPILog> log = new Mock<IAPILog>();
 			Mock<IAPM> apmMetrics = new Mock<IAPM>();
 			Mock<ISyncJobMetric> metrics = new Mock<ISyncJobMetric>();
 			Mock<IIntegrationPointToSyncConverter> integrationPointsToSyncConverter = new Mock<IIntegrationPointToSyncConverter>();
 
 			_sut = new RelativitySyncAdapter(
 				job.Object,
-				log.Object,
+				_logFake.Object,
 				apmMetrics.Object,
 				metrics.Object,
 				_jobHistorySyncServiceMock.Object,
@@ -156,7 +158,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			CancellationToken drainStopToken = new CancellationToken(isDrainStopped);
 
 			_cancellationAdapterFake.Setup(x => x.GetCancellationToken(It.IsAny<Action>()))
-				.Returns(new CompositeCancellationToken(stopToken, drainStopToken));
+				.Returns(new CompositeCancellationToken(stopToken, drainStopToken, _logFake.Object));
 		}
 	}
 }
