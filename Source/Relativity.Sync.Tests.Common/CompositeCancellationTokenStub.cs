@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Relativity.Sync.Logging;
+using System;
 using System.Threading;
 
 namespace Relativity.Sync.Tests.Common
@@ -13,7 +14,7 @@ namespace Relativity.Sync.Tests.Common
 
 		public Func<bool> IsDrainStopRequestedFunc { get; set; }
 
-		public CompositeCancellationTokenStub() : base(CancellationToken.None, CancellationToken.None)
+		public CompositeCancellationTokenStub() : base(CancellationToken.None, CancellationToken.None, new EmptyLogger())
 		{
 		}
 	}

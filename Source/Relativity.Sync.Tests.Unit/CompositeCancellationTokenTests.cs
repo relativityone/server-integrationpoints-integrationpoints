@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
+using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Tests.Unit
 {
@@ -17,7 +18,7 @@ namespace Relativity.Sync.Tests.Unit
 
             CompositeCancellationToken sut =
                 new CompositeCancellationToken(cancelCancellationTokenSource.Token,
-                    drainStopCancellationTokenSource.Token);
+                    drainStopCancellationTokenSource.Token, new EmptyLogger());
 
             // Act & Assert
             Action action = () =>
@@ -39,7 +40,7 @@ namespace Relativity.Sync.Tests.Unit
 
             CompositeCancellationToken sut =
                 new CompositeCancellationToken(cancelCancellationTokenSource.Token,
-                    drainStopCancellationTokenSource.Token);
+                    drainStopCancellationTokenSource.Token, new EmptyLogger());
             
             // Act
             cancelCancellationTokenSource.Cancel();
@@ -57,7 +58,7 @@ namespace Relativity.Sync.Tests.Unit
 
             CompositeCancellationToken sut =
                 new CompositeCancellationToken(cancelCancellationTokenSource.Token,
-                    drainStopCancellationTokenSource.Token);
+                    drainStopCancellationTokenSource.Token, new EmptyLogger());
             
             // Act
             drainStopCancellationTokenSource.Cancel();

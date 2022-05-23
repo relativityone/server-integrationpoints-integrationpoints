@@ -8,6 +8,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors.SumReporting;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Nodes;
 
 namespace Relativity.Sync.Tests.Unit
@@ -35,7 +36,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void SetUp()
 		{
 			_drainStopTokenSource = new CancellationTokenSource();
-			_token = new CompositeCancellationToken(CancellationToken.None, _drainStopTokenSource.Token);
+			_token = new CompositeCancellationToken(CancellationToken.None, _drainStopTokenSource.Token, new EmptyLogger());
 
 			var progress = new Mock<IProgress<SyncJobState>>();
 			_syncExecutionContext = new SyncExecutionContext(progress.Object, _token);

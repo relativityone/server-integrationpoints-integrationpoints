@@ -78,19 +78,11 @@ namespace Relativity.Sync.Transfer
 						while ((batch = await GetNextBatchAsync(workspaceId, syncStatistics).ConfigureAwait(false)) !=
 						       null)
 						{
-							_logger.LogInformation(
-								"Calculating total files size for {documentsCount} in chunk {batchIndex}.",
-								batch.Count, batchIndex);
-
 							FileSizeResult result = await filesCalculationFunc(batch).ConfigureAwait(false);
 
 							syncStatistics.CalculatedFilesSize += result.FilesSize;
 							syncStatistics.CalculatedFilesCount += result.FilesCount;
 							syncStatistics.CalculatedDocuments += batch.Count;
-
-							_logger.LogInformation(
-								"Calculated total files size for {documentsCount} in chunk {batchIndex}.",
-								batch.Count, batchIndex++);
 
 							if (token.IsDrainStopRequested)
 							{

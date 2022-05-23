@@ -322,7 +322,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetupBatchRepository(numberOfBatches);
 
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
-			CompositeCancellationToken compositeCancellationToken = new CompositeCancellationToken(tokenSource.Token, CancellationToken.None);
+			CompositeCancellationToken compositeCancellationToken = new CompositeCancellationToken(tokenSource.Token, CancellationToken.None, new EmptyLogger());
 			tokenSource.Cancel();
 
 			// Act
@@ -477,7 +477,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetupBatchRepository(batchCount);
 
 			CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-			CompositeCancellationToken compositeCancellationToken = new CompositeCancellationToken(cancellationTokenSource.Token, CancellationToken.None);
+			CompositeCancellationToken compositeCancellationToken = new CompositeCancellationToken(cancellationTokenSource.Token, CancellationToken.None, new EmptyLogger());
 
 			_importJobFake.Setup(x => x.RunAsync(It.IsAny<CompositeCancellationToken>()))
 				.ReturnsAsync(CreateJobResult(ExecutionResult.Success()))
@@ -501,7 +501,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			SetupBatchRepository(batchCount);
 
 			CancellationTokenSource drainStopCancellationTokenSource = new CancellationTokenSource();
-			CompositeCancellationToken compositeCancellationToken = new CompositeCancellationToken(CancellationToken.None, drainStopCancellationTokenSource.Token);
+			CompositeCancellationToken compositeCancellationToken = new CompositeCancellationToken(CancellationToken.None, drainStopCancellationTokenSource.Token, new EmptyLogger());
 
 			_importJobFake.SetupSequence(x => x.RunAsync(It.IsAny<CompositeCancellationToken>()))
 				.Returns(Task.FromResult(CreateJobResult()))

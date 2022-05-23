@@ -6,6 +6,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Utils;
@@ -103,7 +104,7 @@ namespace Relativity.Sync.Tests.Unit
 		public void ExecuteAsync_ShouldReportCanceledStatusWhenExecutionCanceledByThrowingException()
 		{
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
-			CompositeCancellationToken compositeCancellationToken = new CompositeCancellationToken(tokenSource.Token, CancellationToken.None);
+			CompositeCancellationToken compositeCancellationToken = new CompositeCancellationToken(tokenSource.Token, CancellationToken.None, new EmptyLogger());
 			_innerCommandMock.Setup(x => x.ExecuteAsync(compositeCancellationToken)).Throws<OperationCanceledException>();
 
 			// ACT
@@ -121,7 +122,7 @@ namespace Relativity.Sync.Tests.Unit
 		public async Task ExecuteAsync_ShouldReportCanceledStatusWhenExecutionCanceledGracefuly()
 		{
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
-			CompositeCancellationToken compositeCancellationToken = new CompositeCancellationToken(tokenSource.Token, CancellationToken.None);
+			CompositeCancellationToken compositeCancellationToken = new CompositeCancellationToken(tokenSource.Token, CancellationToken.None, new EmptyLogger());
 
 			// ACT
 			tokenSource.Cancel();
