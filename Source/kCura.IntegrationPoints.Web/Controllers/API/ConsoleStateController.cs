@@ -11,9 +11,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 {
     public class ConsoleStateController : ApiController
     {
-        ICPHelper _helper;
-        IRepositoryFactory _respositoryFactory;
-        IManagerFactory _managerFactory;
+        private readonly ICPHelper _helper;
+        private readonly IRepositoryFactory _respositoryFactory;
+        private readonly IManagerFactory _managerFactory;
 
         public ConsoleStateController(ICPHelper helper,
             IRepositoryFactory respositoryFactory,
