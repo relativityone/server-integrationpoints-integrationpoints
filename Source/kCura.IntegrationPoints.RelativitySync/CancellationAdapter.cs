@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
+using Relativity.API;
 using Relativity.Sync;
 
 namespace kCura.IntegrationPoints.RelativitySync
@@ -17,18 +18,20 @@ namespace kCura.IntegrationPoints.RelativitySync
 		private readonly IManagerFactory _managerFactory;
 		private readonly IJobService _jobService;
 		private readonly IJobHistoryService _jobHistoryService;
+		private readonly IAPILog _log;
 
-		public CancellationAdapter(IWindsorContainer container, IExtendedJob job, IManagerFactory managerFactory,
-			IJobService jobService, IJobHistoryService jobHistoryService)
-		{
-			_container = container;
-			_job = job;
-			_managerFactory = managerFactory;
-			_jobService = jobService;
-			_jobHistoryService = jobHistoryService;
-		}
+        public CancellationAdapter(IWindsorContainer container, IExtendedJob job, IManagerFactory managerFactory,
+            IJobService jobService, IJobHistoryService jobHistoryService, IAPILog log)
+        {
+            _container = container;
+            _job = job;
+            _managerFactory = managerFactory;
+            _jobService = jobService;
+            _jobHistoryService = jobHistoryService;
+            _log = log;
+        }
 
-		public CompositeCancellationToken GetCancellationToken(Action drainStopTokenCallback = null)
+        public CompositeCancellationToken GetCancellationToken(Action drainStopTokenCallback = null)
 		{
 			CancellationTokenSource stopTokenSource = new CancellationTokenSource();
 			CancellationTokenSource drainStopTokenSource = new CancellationTokenSource();
@@ -41,7 +44,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 				drainStopTokenSource.Token.Register(drainStopTokenCallback);
 			}
 
-			return new CompositeCancellationToken(stopTokenSource.Token, drainStopTokenSource.Token);
+			return new CompositeCancellationToken(stopTokenSource.Token, drainStopTokenSource.Token, _log);
 		}
 	}
 }

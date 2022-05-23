@@ -10,11 +10,17 @@ namespace kCura.IntegrationPoints.Data
 		private readonly ISerializer _serializerImplementation;
 		private readonly IAPILog _logger;
 
-		public SerializerWithLogging(ISerializer serializer, IAPILog logger)
+		private SerializerWithLogging(ISerializer serializer, IAPILog logger)
 		{
 			_serializerImplementation = serializer;
 			_logger = logger?.ForContext<SerializerWithLogging>();
 		}
+
+		public static SerializerWithLogging Create(IAPILog logger)
+        {
+			var serializer = new JSONSerializer();
+			return new SerializerWithLogging(serializer, logger);
+        }
 
 		public string Serialize(object @object)
 		{
