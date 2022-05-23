@@ -1,5 +1,6 @@
 ﻿using kCura.IntegrationPoints.Data;
 using Moq;
+using Relativity.IntegrationPoints.Services;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Services.Objects.DataContracts;
 using System;
@@ -21,8 +22,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 {
                     return list.Where(x => x.Identifier.Equals(identifier, StringComparison.OrdinalIgnoreCase)).ToList();
                 }
-                return new List<SourceProviderTest>();
-            }         
+                return list;
+            }
 
             Mock.Setup(x => x.QueryAsync(It.IsAny<int>(),
                    It.Is<QueryRequest>(r => IsSourceProviderQuery(r)), It.IsAny<int>(), It.IsAny<int>()))
@@ -35,21 +36,25 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                        request,
                        length);
                    return Task.FromResult(result);
-               });           
+               });
         }
 
-        private bool IsSourceProviderQuery(QueryRequest query) => query.ObjectType.Guid == ObjectTypeGuids.SourceProviderGuid;
-      
+        private bool IsSourceProviderQuery(QueryRequest query) => 
+            query.ObjectType.Guid == ObjectTypeGuids.SourceProviderGuid;
+
 
         private bool IsSourceIdentifierCondition(string condition, out string identifierValue)
         {
-            System.Text.RegularExpressions.Match match = Regex.Match(condition,
+            if (condition != null)
+            {
+                System.Text.RegularExpressions.Match match = Regex.Match(condition,
                 $"'{SourceProviderFields.Identifier}' == '(.*)'");
 
-            if (match.Success)
-            {
-                identifierValue = match.Groups[1].Value;
-                return true;
+                if (match.Success)
+                {
+                    identifierValue = match.Groups[1].Value;
+                    return true;
+                }
             }
             identifierValue = null;
             return false;

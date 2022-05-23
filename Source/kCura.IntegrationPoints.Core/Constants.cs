@@ -94,6 +94,8 @@ namespace kCura.IntegrationPoints.Core
 
 				public const string CUSTOM_DATA_CORRELATIONID = "CorrelationID";
 
+				public const string WORKLOAD_METRICS_CORRELATION_ID_GUID = "BAF1FB8F-1DF0-4BB6-A38D-3013620B3439";
+
 				#region Custom Page
 
 				public const string BUCKET_INTEGRATION_POINT_CUSTOMPAGE_RESPONSE_TIME = "IntegrationPoint.CustomPage.ResponseTime";

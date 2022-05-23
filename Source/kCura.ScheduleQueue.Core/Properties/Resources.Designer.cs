@@ -341,6 +341,22 @@ namespace kCura.ScheduleQueue.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SELECT count(*) as Total,
+        ///(SELECT count(*) from [eddsdbo].[{0}] q WITH (UPDLOCK, READPAST, ROWLOCK, INDEX([IX_{0}_LockedByAgentID_AgentTypeID_NextRunTime]))			
+        ///				where [NextRunTime] &lt;= GETUTCDATE()
+        ///				AND (q.StopState NOT IN (0,8) 
+        ///					or q.AgentTypeID != @AgentTypeID)) as Blocked
+        ///FROM [eddsdbo].[{0}]
+        ///WHERE [NextRunTime] &lt;= GETUTCDATE()
+        ///.
+        /// </summary>
+        internal static string GetJobsQueueDetails {
+            get {
+                return ResourceManager.GetString("GetJobsQueueDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to IF EXISTS(SELECT TOP 1 JobID FROM [eddsdbo].[{0}] WHERE [LockedByAgentID] = @AgentID)
         ///BEGIN
         ///	--This Agent has stopped before finalizing this job previously
@@ -389,25 +405,12 @@ namespace kCura.ScheduleQueue.Core.Properties {
         ///			INSERTED.[ScheduleRule],
         ///			INSERTED.[JobDetails],
         ///			INSERTED.[JobFlags],
-        ///			INSERTED [rest of string was truncated]&quot;;.
+        ///			INSERTED.[SubmittedDate],
+        ///		 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GetNextJobWithoutResourceGroup {
             get {
                 return ResourceManager.GetString("GetNextJobWithoutResourceGroup", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SELECT 
-        ///			COUNT(*)
-        ///FROM
-        ///			[eddsdbo].[{0}] WITH(NOLOCK)
-        ///WHERE
-        ///            [NextRunTime] &lt;= GETUTCDATE().
-        /// </summary>
-        internal static string GetWorkload {
-            get {
-                return ResourceManager.GetString("GetWorkload", resourceCulture);
             }
         }
         

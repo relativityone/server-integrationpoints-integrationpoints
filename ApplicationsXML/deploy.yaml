@@ -5,3 +5,10 @@ agents:
     container_resources: # Container memory and CPU in GB. Notes: 1. Global default (mem: 1, cpu: 1) is used if not specified here 2. Max value for each is 8
       mem: 8
       cpu: 4
+    workload_scaling: # Control how agent scales based on Workload Discovery response
+      default: # Agent default container count based on Workload Discovery t-shirt response. Notes: 1. Global default (S:2, M:4, L:8, XL:12, XXL:16) is used if not specified here 2. Max count is 128 3. Values must be increasing or equal
+        s: 2
+        m: 4
+        l: 6
+        xl: 6
+        xxl: 6
