@@ -9,16 +9,16 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Web.Helpers
 {
-    public class LiquidFormsHelper
+    public class LiquidFormsHelper : ILiquidFormsHelper
     {
         private bool? _isLiquidForms;
 
-        private readonly IServicesMgr _serviceManager;
+        private readonly IServicesMgr _servicesManager;
         private readonly IAPILog _logger;
 
-        public LiquidFormsHelper(IServicesMgr serviceManager, IAPILog logger)
+        public LiquidFormsHelper(IServicesMgr servicesManager, IAPILog logger) 
         {
-            _serviceManager = serviceManager;
+            _servicesManager = servicesManager;
             _logger = logger;
         }
 
@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Web.Helpers
             }
 
             _logger.LogVerbose("Querying for object type Integration Point");
-            using (IObjectManager objectManager = _serviceManager.CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser))
+            using (IObjectManager objectManager = _servicesManager.CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser))
             {
                 QueryRequest queryRequest = new QueryRequest()
                 {
@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Web.Helpers
                 };
                 QueryResult queryResult = await objectManager.QueryAsync(workspaceArtifactId, queryRequest, 0, 1).ConfigureAwait(false);
 
-                using (IObjectTypeManager objectTypeManager = _serviceManager.CreateProxy<IObjectTypeManager>(ExecutionIdentity.CurrentUser))
+                using (IObjectTypeManager objectTypeManager = _servicesManager.CreateProxy<IObjectTypeManager>(ExecutionIdentity.CurrentUser))
                 {
                     ObjectTypeResponse result = await objectTypeManager.ReadAsync(workspaceArtifactId, queryResult.Objects.First().ArtifactID);
                     _isLiquidForms = result.UseRelativityForms;
