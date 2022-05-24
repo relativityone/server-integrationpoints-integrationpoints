@@ -27,11 +27,6 @@ namespace Relativity.Sync.Storage
 		Task DeleteAllForConfigurationAsync(int workspaceArtifactId, int syncConfigurationArtifactId);
 
 		/// <summary>
-		/// Deletes all batches older than specified time span, that are belonging to the particular job.
-		/// </summary>
-		Task DeleteAllOlderThanAsync(int workspaceArtifactId, TimeSpan olderThan);
-
-		/// <summary>
 		/// Returns batch with highest starting index, which is always the last batch. Null if no batches found.
 		/// </summary>
 		Task<IBatch> GetLastAsync(int workspaceArtifactId, int syncConfigurationId, Guid exportRunId);
