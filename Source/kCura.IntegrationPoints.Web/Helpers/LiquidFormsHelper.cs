@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Relativity;
 using Relativity.API;
@@ -29,26 +30,39 @@ namespace kCura.IntegrationPoints.Web.Helpers
                 return (bool)_isLiquidForms;
             }
 
-            _logger.LogVerbose("Querying for object type Integration Point");
-            using (IObjectManager objectManager = _servicesManager.CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser))
+            try
             {
-                QueryRequest queryRequest = new QueryRequest()
+                _logger.LogInformation("Querying for object type Integration Point for workspaceArtifactId - {workspaceArtifactId}", workspaceArtifactId);
+                using (IObjectManager objectManager =
+                       _servicesManager.CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser))
                 {
-                    ObjectType = new ObjectTypeRef()
+                    QueryRequest queryRequest = new QueryRequest()
                     {
-                        ArtifactTypeID = (int)ArtifactType.ObjectType
-                    },
-                    Condition = $"'Name' == 'Integration Point'"
-                };
-                QueryResult queryResult = await objectManager.QueryAsync(workspaceArtifactId, queryRequest, 0, 1).ConfigureAwait(false);
+                        ObjectType = new ObjectTypeRef()
+                        {
+                            ArtifactTypeID = (int)ArtifactType.ObjectType
+                        },
+                        Condition = $"'Name' == 'Integration Point'"
+                    };
+                    QueryResult queryResult = await objectManager.QueryAsync(workspaceArtifactId, queryRequest, 0, 1)
+                        .ConfigureAwait(false);
 
-                using (IObjectTypeManager objectTypeManager = _servicesManager.CreateProxy<IObjectTypeManager>(ExecutionIdentity.CurrentUser))
-                {
-                    ObjectTypeResponse result = await objectTypeManager.ReadAsync(workspaceArtifactId, queryResult.Objects.First().ArtifactID);
-                    _isLiquidForms = result.UseRelativityForms;
-                    return _isLiquidForms ?? false;
+                    using (IObjectTypeManager objectTypeManager =
+                           _servicesManager.CreateProxy<IObjectTypeManager>(ExecutionIdentity.CurrentUser))
+                    {
+                        ObjectTypeResponse result = await objectTypeManager.ReadAsync(workspaceArtifactId,
+                            queryResult.Objects.First().ArtifactID);
+                        _isLiquidForms = result.UseRelativityForms;
+                        return _isLiquidForms ?? false;
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                _logger.LogError("Unable to get Integration Point type for workspace Artifact Id - {workspaceArtifactId}. Exception - {ex}", workspaceArtifactId, ex);
+            }
+
+            return false;
         }
     }
 }

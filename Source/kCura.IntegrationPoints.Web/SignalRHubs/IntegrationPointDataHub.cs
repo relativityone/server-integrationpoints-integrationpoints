@@ -22,6 +22,7 @@ using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Web.Helpers;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using Relativity.API;
@@ -48,12 +49,12 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		private readonly IStateManager _stateManager;
 		private readonly IServicesMgr _serviceManager;
 
-		public IntegrationPointDataHub() : this(ConnectionHelper.Helper(), new HelperClassFactory())
+        public IntegrationPointDataHub() : this(ConnectionHelper.Helper(), new HelperClassFactory())
 		{ }
 
 		internal IntegrationPointDataHub(ICPHelper helper, IHelperClassFactory helperClassFactory)
 		{
-			_helper = helper;
+            _helper = helper;
 			_helperClassFactory = helperClassFactory;
 
 			_logger = _helper.GetLoggerFactory().GetLogger();
@@ -72,12 +73,22 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 				_tasks = new ConcurrentDictionary<IntegrationPointDataHubKey, HashSet<string>>();
 			}
 
-			if (_updateTimer == null)
+            ILiquidFormsHelper liquidFormsHelper = new LiquidFormsHelper(_serviceManager, _logger);
+            bool isLiquidFormsEnabled = liquidFormsHelper.IsLiquidForms(helper.GetActiveCaseID()).GetAwaiter().GetResult();
+
+            if (_updateTimer == null && !isLiquidFormsEnabled)
 			{
 				_updateTimer = new Timer(_updateInterval);
 				_updateTimer.Elapsed += UpdateTimerElapsed;
 				_updateTimer.Start();
 			}
+
+            if (_updateTimer != null && isLiquidFormsEnabled)
+            {
+                _updateTimer.Stop();
+                _updateTimer.Close();
+                _updateTimer = null;
+            }
 		}
 
 		public override Task OnDisconnected(bool stopCalled)
