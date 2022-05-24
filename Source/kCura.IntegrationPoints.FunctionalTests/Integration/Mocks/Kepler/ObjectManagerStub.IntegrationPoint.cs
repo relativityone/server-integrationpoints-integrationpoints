@@ -10,6 +10,7 @@ using Moq;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Kepler.Transport;
 using Relativity.Services.Objects.DataContracts;
+using Match = System.Text.RegularExpressions.Match;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
@@ -35,8 +36,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                             x.Field.Guids.Single() == fieldRef.Guid.GetValueOrDefault()).Value.ToString())
                     }));
                 });
-
-
         }
 
         private void SetupIntegrationPoint()
@@ -46,6 +45,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 if (IsProviderCondition(request.Condition, out int sourceId, out int destinationId))
                 {
                     return list.Where(x => x.SourceProvider == sourceId && x.DestinationProvider == destinationId).ToList();
+                }
+                if (IsGetAllIntegrationPointsCondition(request))
+                {
+                    return list;
                 }
                 return new List<IntegrationPointTest>();
             }
@@ -64,22 +67,34 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                }
            );
         }
-
         private bool IsIntegrationPointQuery(QueryRequest query) => query.ObjectType.Guid == ObjectTypeGuids.IntegrationPointGuid;
 
-        private bool IsProviderCondition(string condition, out int sourceId, out int destinationId)
+        private bool IsProviderCondition(string condition, out int sourceProviderId, out int destinationProviderId)
         {
-            System.Text.RegularExpressions.Match match = Regex.Match(condition,
-                $"'{IntegrationPointFields.SourceProvider}' == (.*) AND '{IntegrationPointFields.DestinationProvider}' == (.*)");
-            
+            Match match = Match.Empty;
+            if (!string.IsNullOrEmpty(condition))
+            {
+                match = Regex.Match(condition,
+                    $"'{IntegrationPointFields.SourceProvider}' == (.*) AND '{IntegrationPointFields.DestinationProvider}' == (.*)");
+            }
+
             if (match.Success)
             {
-                int.TryParse(match.Groups[1].Value, out sourceId);
-                int.TryParse(match.Groups[2].Value, out destinationId);                
+                int.TryParse(match.Groups[1].Value, out sourceProviderId);
+                int.TryParse(match.Groups[2].Value, out destinationProviderId);
                 return true;
             }
-            sourceId = destinationId = 0;
+            sourceProviderId = destinationProviderId = 0;
             return false;
+        }
+
+        private static bool IsGetAllIntegrationPointsCondition(QueryRequest request)
+        {
+            IEnumerable<Guid> guids = BaseRdo.GetFieldMetadata(typeof(IntegrationPoint))
+                .Values
+                .Select(x => x.FieldGuid);
+
+            return guids.All(x => request.Fields.Any(y => y.Guid == x));
         }
     }
 }

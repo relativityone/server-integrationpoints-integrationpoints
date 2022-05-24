@@ -3,12 +3,10 @@ using kCura.IntegrationPoints.Data;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Services;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
-using Relativity.Services.Choice;
 using Relativity.Testing.Identification;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using static kCura.IntegrationPoints.Core.Constants;
 

@@ -6,6 +6,7 @@ using Relativity.Services.ChoiceQuery;
 using Relativity.Services.Error;
 using Relativity.Services.InstanceSetting;
 using Relativity.Services.Interfaces.Group;
+using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Objects;
 using Relativity.Services.Permission;
 using Relativity.Services.Search;
@@ -34,6 +35,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			_user = user;
 
 			RegisterProxyInServiceManagerMock<IObjectManager>(proxy.ObjectManager.Object);
+			RegisterProxyInServiceManagerMock<IObjectTypeManager>(proxy.ObjectTypeManager.Object);
 			RegisterProxyInServiceManagerMock<IWorkspaceManager>(proxy.WorkspaceManager.Object);
 			RegisterProxyInServiceManagerMock<IPermissionManager>(proxy.PermissionManager.Object);
 			RegisterProxyInServiceManagerMock<IInstanceSettingManager>(proxy.InstanceSettingManager.Object);
