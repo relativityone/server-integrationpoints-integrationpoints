@@ -105,8 +105,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             GetCorrectlyTaggedDocumentsCount(destinationDocs, "Relativity Source Case", expectedSourceCaseTag).Should().Be(transferredItemsCount);
             GetCorrectlyTaggedDocumentsCount(destinationDocs, "Relativity Source Job", expectedSourceJobTag).Should().Be(transferredItemsCount);
 
-            BillingFlagAssertion documentFlagValidator = new BillingFlagAssertion(destinationWorkspace.ArtifactID);
-            documentFlagValidator.AssertFiles(true);
+            BillingFlagAssertion.AssertFiles(destinationWorkspace.ArtifactID, expectBillable: true);
         }
 
         public void ProductionImagesGoldFlow(YesNo copyFilesToRepository)
@@ -214,9 +213,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             GetCorrectlyTaggedDocumentsCount(destinationDocs, "Relativity Source Case", expectedSourceCaseTag).Should().Be(transferredItemsCount);
             GetCorrectlyTaggedDocumentsCount(destinationDocs, "Relativity Source Job", expectedSourceJobTag).Should().Be(transferredItemsCount);
 
-            // why not to make it static?
-            BillingFlagAssertion documentFlagValidator = new BillingFlagAssertion(destinationWorkspace.ArtifactID);
-            documentFlagValidator.AssertFiles(copyFilesToRepository == YesNo.Yes);
+            BillingFlagAssertion.AssertFiles(destinationWorkspace.ArtifactID, expectBillable: copyFilesToRepository == YesNo.Yes);
         }
 
         public void EntitiesPushGoldFlow()
