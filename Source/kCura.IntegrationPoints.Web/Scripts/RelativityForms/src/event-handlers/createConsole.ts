@@ -26,9 +26,12 @@ export function createConsole(convenienceApi: IConvenienceApi): void {
 
 function checkIfRefreshIsNeeded(btnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, currentPage): void {
     var buttonState = getButtonStateObject(convenienceApi, ctx, workspaceId, integrationPointId);
+    let relativityWindow = convenienceApi.utilities.getRelativityPageBaseWindow();
     buttonState.then(function (newBtnStateObj: ButtonState) {
-        let relativityWindow = convenienceApi.utilities.getRelativityPageBaseWindow();
-        if (compareButtonStates(btnStateObj, newBtnStateObj)) {
+        if (typeof newBtnStateObj === 'undefined') {
+            throw new TypeError("Button state is undefined");
+        }
+        else if(compareButtonStates(btnStateObj, newBtnStateObj)) {
             if (currentPage === relativityWindow.location.href) {
                 setTimeout(checkIfRefreshIsNeeded, 5000, newBtnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, relativityWindow.location.href);
             }
@@ -43,6 +46,11 @@ function checkIfRefreshIsNeeded(btnStateObj, convenienceApi, ctx, workspaceId, i
                     setTimeout(checkIfRefreshIsNeeded, 5000, newBtnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, relativityWindow.location.href);
                 }
             });
+        }
+    }).catch(err => {
+        console.log("Error occured while getting button state, will try once again in 5 secs", err)
+        if (currentPage === relativityWindow.location.href) {
+            setTimeout(checkIfRefreshIsNeeded, 5000, btnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, relativityWindow.location.href);
         }
     })
 }
@@ -69,7 +77,7 @@ async function getButtonStateObject(convenienceApi, ctx, workspaceId, integratio
     var resp = await convenienceApi.relativityHttpClient.get(request.url, request.options)
         .then(function (result) {
             if (!result.ok) {
-                return ctx.setErrorSummary(["Failed to get permissions."]);
+                return ctx.setErrorSummary(["Unable to generate button console - failed to get button state."]);
             } else if (result.ok) {
                 return result.json();
             }
