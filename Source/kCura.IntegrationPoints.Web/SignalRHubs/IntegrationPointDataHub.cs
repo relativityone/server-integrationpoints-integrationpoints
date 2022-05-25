@@ -49,10 +49,10 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		private readonly IStateManager _stateManager;
 		private readonly IServicesMgr _serviceManager;
 
-        public IntegrationPointDataHub(ILiquidFormsHelper liquidFormsHelper) : this(ConnectionHelper.Helper(), new HelperClassFactory(), liquidFormsHelper)
+        public IntegrationPointDataHub() : this(ConnectionHelper.Helper(), new HelperClassFactory())
 		{ }
 
-		internal IntegrationPointDataHub(ICPHelper helper, IHelperClassFactory helperClassFactory, ILiquidFormsHelper liquidFormsHelper)
+		internal IntegrationPointDataHub(ICPHelper helper, IHelperClassFactory helperClassFactory)
 		{
             _helper = helper;
 			_helperClassFactory = helperClassFactory;
@@ -64,8 +64,8 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			_jobHistoryManager = _managerFactory.CreateJobHistoryManager();
 			_stateManager = _managerFactory.CreateStateManager();
 			_serviceManager = _helper.GetServicesManager();
-			
-			IRepositoryFactory repositoryFactory = new RepositoryFactory(_helper, _serviceManager);
+
+            IRepositoryFactory repositoryFactory = new RepositoryFactory(_helper, _serviceManager);
 			_permissionValidator = new IntegrationPointPermissionValidator(new[]{new ViewErrorsPermissionValidator(repositoryFactory)}, new IntegrationPointSerializer(_logger));
 
 			if (_tasks == null)
@@ -73,6 +73,8 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 				_tasks = new ConcurrentDictionary<IntegrationPointDataHubKey, HashSet<string>>();
 			}
 
+            IRelativityObjectManager objectManager = new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(helper.GetActiveCaseID());
+            LiquidFormsHelper liquidFormsHelper = new LiquidFormsHelper(_serviceManager, _logger, objectManager);
             bool isLiquidFormsEnabled = liquidFormsHelper.IsLiquidForms(helper.GetActiveCaseID()).GetAwaiter().GetResult();
 
             if (_updateTimer == null && !isLiquidFormsEnabled)
