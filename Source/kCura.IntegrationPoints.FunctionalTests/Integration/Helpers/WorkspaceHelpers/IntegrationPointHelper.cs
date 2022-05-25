@@ -75,7 +75,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 				DestinationArtifactTypeId = (int) ArtifactType.Document,
 				DestinationFolderArtifactId = destinationFolder.ArtifactId,
 				CaseArtifactId = destinationWorkspace.ArtifactId,
-				WebServiceURL = @"//some/service/url/relativity"
+				WebServiceURL = @"//some/service/url/relativity"				
 			});
 			integrationPoint.SourceProvider = sourceProvider.ArtifactId;
 			integrationPoint.EnableScheduler = true;
@@ -338,7 +338,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 				NextRun = integrationPoint.NextScheduledRuntimeUTC,
 				Map = integrationPoint.FieldMappings
 			};
-		}
+		}		
 
 		public void RemoveIntegrationPoint(int integrationPointId)
 		{
