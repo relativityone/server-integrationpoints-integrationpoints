@@ -32,6 +32,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		[FindByPrecedingDivContent]
 		public RadioButtonList<RelativityProviderCopyNativeFiles, _> CopyNativeFiles { get; private set; }
 
+		[FindByPrecedingDivContent]
+		public RadioButtonList<YesNo, _> CopyFilesToRepository { get; private set; }
+
 		[FindById("s2id_folderPathInformationSelect")]
 		public Select2<RelativityProviderFolderPathInformation, _> PathInformation { get; private set; }
 	}

@@ -11,10 +11,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 {
 	internal static class IntegrationPointEditPageExtensions
 	{
-		public static IntegrationPointViewPage CreateSavedSearchToFolderIntegrationPoint(this IntegrationPointEditPage integrationPointEditPage,
-			string integrationPointName, Workspace destinationWorkspace, string savedSearchName,
-			RelativityProviderOverwrite overwriteMode = RelativityProviderOverwrite.AppendOnly,
-			YesNo copyImages = YesNo.No, RelativityProviderCopyNativeFiles copyNativesMode = RelativityProviderCopyNativeFiles.No)
+		public static IntegrationPointViewPage CreateSavedSearchToFolderIntegrationPoint(
+			this IntegrationPointEditPage integrationPointEditPage,
+			string integrationPointName,
+			Workspace destinationWorkspace,
+			string savedSearchName,
+			RelativityProviderCopyNativeFiles copyNativesMode)
 		{
 			RelativityProviderConnectToSourcePage relativityProviderConnectToSourcePage = FillOutIntegrationPointEditPageForRelativityProvider(integrationPointEditPage, integrationPointName);
 
@@ -25,8 +27,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 			IntegrationPointViewPage integrationPointViewPage = relativityProviderMapFieldsPage.MapAllFields
 				.Click().ApplyModel(new RelativityProviderMapFields
 				{
-					Overwrite = overwriteMode,
-					CopyImages = copyImages,
+					Overwrite = RelativityProviderOverwrite.AppendOnly,
+					CopyImages = YesNo.No,
 					CopyNativeFiles = copyNativesMode,
 					PathInformation = RelativityProviderFolderPathInformation.No
 				}).Save.ClickAndGo();
@@ -35,20 +37,26 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 		}
 
 		public static IntegrationPointViewPage CreateProductionToFolderIntegrationPoint(
-			this IntegrationPointEditPage integrationPointEditPage, string integrationPointName, 
-			Workspace destinationWorkspace, Testing.Framework.Models.Production production,
-			RelativityProviderOverwrite overwriteMode = RelativityProviderOverwrite.AppendOnly)
+			this IntegrationPointEditPage integrationPointEditPage,
+			string integrationPointName,
+			Workspace destinationWorkspace,
+			Testing.Framework.Models.Production production,
+			YesNo copyFilesToRepository)
 		{
-            RelativityProviderConnectToSourcePage relativityProviderConnectToSourcePage = FillOutIntegrationPointEditPageForRelativityProvider(integrationPointEditPage, integrationPointName);
+			RelativityProviderConnectToSourcePage relativityProviderConnectToSourcePage =
+				FillOutIntegrationPointEditPageForRelativityProvider(integrationPointEditPage, integrationPointName);
 
-            RelativityProviderMapFieldsPage relativityProviderMapFieldsPage = FillOutRelativityProviderConnectToSourcePage(
-				relativityProviderConnectToSourcePage, destinationWorkspace, 
-				RelativityProviderSources.Production, productionSetName: production.Name);
+			RelativityProviderMapFieldsPage relativityProviderMapFieldsPage =
+				FillOutRelativityProviderConnectToSourcePage(
+					relativityProviderConnectToSourcePage, destinationWorkspace,
+					RelativityProviderSources.Production, productionSetName: production.Name);
 
-            IntegrationPointViewPage integrationPointViewPage = relativityProviderMapFieldsPage.ApplyModel(new
-			{
-				Overwrite = overwriteMode
-			}).Save.ClickAndGo();
+			IntegrationPointViewPage integrationPointViewPage = relativityProviderMapFieldsPage
+				.ApplyModel(new
+				{
+					Overwrite = RelativityProviderOverwrite.AppendOnly,
+					CopyFilesToRepository = copyFilesToRepository,
+				}).Save.ClickAndGo();
 
 			return integrationPointViewPage;
 		}
