@@ -1,5 +1,4 @@
-﻿using kCura.IntegrationPoints.Web.Helpers;
-using kCura.IntegrationPoints.Web.SignalRHubs;
+﻿using kCura.IntegrationPoints.Web.SignalRHubs;
 using Microsoft.AspNet.SignalR;
 using Microsoft.Owin;
 using Owin;

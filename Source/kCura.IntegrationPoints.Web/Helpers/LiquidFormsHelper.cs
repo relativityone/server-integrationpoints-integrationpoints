@@ -12,7 +12,7 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Web.Helpers
 {
-    public class LiquidFormsHelper : ILiquidFormsHelper
+    public class LiquidFormsHelper
     {
         private readonly ConcurrentDictionary<int, bool> _isLiquidFormsDictionary = new ConcurrentDictionary<int, bool>();
 
