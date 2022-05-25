@@ -6,6 +6,7 @@ using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Models;
+using Relativity.Testing.Framework.Web.Models;
 using Relativity.Toggles;
 using kCura.IntegrationPoints.Common.Toggles;
 using NUnit.Framework;
@@ -42,11 +43,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			_testsImplementation.SavedSearchNativesAndMetadataGoldFlow();
 		}
 
-		[TestCase(true)]
-		[TestCase(false)]
-		public void Production_Images_GoldFlow(bool copyFilesToDocumentRepository)
+		[TestCase(YesNo.No)]
+		[TestCase(YesNo.Yes)]
+		public void Production_Images_GoldFlow(YesNo copyFilesToRepository)
 		{
-			_testsImplementation.ProductionImagesGoldFlow(copyFilesToDocumentRepository);
+			_testsImplementation.ProductionImagesGoldFlow(copyFilesToRepository);
 		}
 
 		[Test]

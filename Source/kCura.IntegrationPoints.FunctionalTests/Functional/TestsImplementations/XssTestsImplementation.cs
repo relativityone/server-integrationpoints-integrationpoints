@@ -50,7 +50,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			const string integrationPointName = nameof(IntegrationPointSaveAsProfilePreventXssInjection);
 
 			var integrationPointViewPage = integrationPointEditPage.CreateSavedSearchToFolderIntegrationPoint(
-				integrationPointName, destinationWorkspace, _savedSearch);
+				integrationPointName, destinationWorkspace, _savedSearch, RelativityProviderCopyNativeFiles.No);
 
 			// Act
 			integrationPointViewPage
@@ -206,7 +206,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			AssertXss();
 		}
 
-		private void RunFirstPageXssPreventionTestCase<T>(Func<T, Button<IntegrationPointEditPage, T>> newButtonFunc, IntegrationPointEdit integrationPointEdit) 
+		private void RunFirstPageXssPreventionTestCase<T>(Func<T, Button<IntegrationPointEditPage, T>> newButtonFunc, IntegrationPointEdit integrationPointEdit)
 			where T: WorkspacePage<T>, new()
 		{
 			// Arrange

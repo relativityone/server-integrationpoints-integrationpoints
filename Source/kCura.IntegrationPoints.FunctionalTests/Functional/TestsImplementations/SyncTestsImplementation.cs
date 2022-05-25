@@ -16,6 +16,7 @@ using Relativity.IntegrationPoints.Tests.Common.Extensions;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Objects;
 using Relativity.Testing.Framework.Api;
+using Relativity.Testing.Framework.Web.Models;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -83,7 +84,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             IntegrationPointEditPage integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
 
             IntegrationPointViewPage integrationPointViewPage = integrationPointEditPage.CreateSavedSearchToFolderIntegrationPoint(integrationPointName,
-                destinationWorkspace, keywordSearch.Name, copyNativesMode: RelativityProviderCopyNativeFiles.PhysicalFiles);
+                destinationWorkspace, keywordSearch.Name, RelativityProviderCopyNativeFiles.PhysicalFiles);
 
             integrationPointViewPage = integrationPointViewPage.RunIntegrationPoint(integrationPointName);
 
@@ -108,7 +109,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             documentFlagValidator.AssertFiles(true);
         }
 
-        public void ProductionImagesGoldFlow(bool copyFilesToDocumentRepository)
+        public void ProductionImagesGoldFlow(YesNo copyFilesToRepository)
         {
             // Arrange
             _testsImplementationTestFixture.LoginAsStandardUser();
@@ -189,7 +190,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
             IntegrationPointViewPage integrationPointViewPage = integrationPointEditPage
                 .CreateProductionToFolderIntegrationPoint(
-                    integrationPointName, destinationWorkspace, production, copyFilesToDocumentRepository);
+                    integrationPointName,
+                    destinationWorkspace,
+                    production,
+                    copyFilesToRepository);
 
             integrationPointViewPage = integrationPointViewPage.RunIntegrationPoint(integrationPointName);
 
@@ -212,7 +216,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
             // why not to make it static?
             BillingFlagAssertion documentFlagValidator = new BillingFlagAssertion(destinationWorkspace.ArtifactID);
-            documentFlagValidator.AssertFiles(copyFilesToDocumentRepository);
+            documentFlagValidator.AssertFiles(copyFilesToRepository == YesNo.Yes);
         }
 
         public void EntitiesPushGoldFlow()
