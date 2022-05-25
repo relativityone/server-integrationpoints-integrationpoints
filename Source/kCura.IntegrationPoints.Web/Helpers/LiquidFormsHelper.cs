@@ -2,11 +2,12 @@
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.UtilityDTO;
 using Relativity;
 using Relativity.API;
 using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Interfaces.ObjectType.Models;
-using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Web.Helpers
@@ -17,11 +18,13 @@ namespace kCura.IntegrationPoints.Web.Helpers
 
         private readonly IServicesMgr _servicesManager;
         private readonly IAPILog _logger;
+        private readonly IRelativityObjectManager _relativityObjectManager;
 
-        public LiquidFormsHelper(IServicesMgr servicesManager, IAPILog logger) 
+        public LiquidFormsHelper(IServicesMgr servicesManager, IAPILog logger, IRelativityObjectManager relativityObjectManager) 
         {
             _servicesManager = servicesManager;
             _logger = logger;
+            _relativityObjectManager = relativityObjectManager;
         }
 
         public async Task<bool> IsLiquidForms(int workspaceArtifactId)
@@ -34,8 +37,6 @@ namespace kCura.IntegrationPoints.Web.Helpers
             try
             {
                 _logger.LogInformation("Querying for object type Integration Point for workspaceArtifactId - {workspaceArtifactId}", workspaceArtifactId);
-                using (IObjectManager objectManager =
-                       _servicesManager.CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser))
                 using (IObjectTypeManager objectTypeManager =
                        _servicesManager.CreateProxy<IObjectTypeManager>(ExecutionIdentity.CurrentUser))
                 {
@@ -47,16 +48,16 @@ namespace kCura.IntegrationPoints.Web.Helpers
                         },
                         Condition = $"'Name' == 'Integration Point'"
                     };
-                    QueryResult queryResult = await objectManager.QueryAsync(workspaceArtifactId, queryRequest, 0, 1)
+                    ResultSet<RelativityObject> queryResult = await _relativityObjectManager.QueryAsync(queryRequest, 0, 1)
                         .ConfigureAwait(false);
 
-                    if (queryResult.Objects.Count < 1)
+                    if (queryResult.Items.Count < 1)
                     {
                         return false;
                     }
 
                     ObjectTypeResponse result = await objectTypeManager.ReadAsync(workspaceArtifactId,
-                        queryResult.Objects.First().ArtifactID);
+                        queryResult.Items.First().ArtifactID).ConfigureAwait(false);
                     bool isLiquidForms = result.UseRelativityForms ?? false;
                     _isLiquidFormsDictionary.TryAdd(workspaceArtifactId, isLiquidForms);
 

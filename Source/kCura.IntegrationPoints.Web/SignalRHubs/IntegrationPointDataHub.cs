@@ -73,7 +73,6 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 				_tasks = new ConcurrentDictionary<IntegrationPointDataHubKey, HashSet<string>>();
 			}
 
-            liquidFormsHelper = new LiquidFormsHelper(_serviceManager, _logger);
             bool isLiquidFormsEnabled = liquidFormsHelper.IsLiquidForms(helper.GetActiveCaseID()).GetAwaiter().GetResult();
 
             if (_updateTimer == null && !isLiquidFormsEnabled)
