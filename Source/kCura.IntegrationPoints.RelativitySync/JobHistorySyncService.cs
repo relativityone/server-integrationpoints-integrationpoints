@@ -205,9 +205,25 @@ namespace kCura.IntegrationPoints.RelativitySync
 			};
 			QueryResult itemLevelErrors = await manager.QueryAsync(job.WorkspaceId, request, 0, 1).ConfigureAwait(false);
 
-			JobHistory jobHistory = _relativityObjectManager.Read<JobHistory>(job.JobHistoryId, ExecutionIdentity.System);
+			QueryRequest requestForJobHistory = new QueryRequest()
+			{
+				ObjectType = JobHistoryRef(),
+				Condition = $"'{JobHistoryFields.JobID} == '{job.JobId}'",
+				Fields = new[]
+				{
+					new FieldRef()
+					{
+						Name = $"{JobHistoryFields.ItemsWithErrors}"
+					}
+				}
+			};
 
-			return itemLevelErrors.ResultCount > 0 || jobHistory.ItemsWithErrors > 0;
+			QueryResult jobHistoryFromQuery =
+				await manager.QueryAsync(job.WorkspaceId, requestForJobHistory, 0, 1).ConfigureAwait(false);
+
+			int jobHistoryItemsWithErrors = (int)jobHistoryFromQuery.Objects.Single().FieldValues.Single().Value;
+
+			return itemLevelErrors.ResultCount > 0 || jobHistoryItemsWithErrors > 0;
 		}
 
 		private static Task MarkJobAsFailedAsync(IExtendedJob job, IObjectManager manager)
@@ -295,6 +311,14 @@ namespace kCura.IntegrationPoints.RelativitySync
 			return new RelativityObjectRef
 			{
 				ArtifactID = job.JobHistoryId
+			};
+		}
+		
+		private static ObjectTypeRef JobHistoryRef()
+		{
+			return new ObjectTypeRef
+			{
+				Guid = ObjectTypeGuids.JobHistoryGuid
 			};
 		}
 
