@@ -49,10 +49,10 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		private readonly IStateManager _stateManager;
 		private readonly IServicesMgr _serviceManager;
 
-        public IntegrationPointDataHub() : this(ConnectionHelper.Helper(), new HelperClassFactory())
+        public IntegrationPointDataHub(ILiquidFormsHelper liquidFormsHelper) : this(ConnectionHelper.Helper(), new HelperClassFactory(), liquidFormsHelper)
 		{ }
 
-		internal IntegrationPointDataHub(ICPHelper helper, IHelperClassFactory helperClassFactory)
+		internal IntegrationPointDataHub(ICPHelper helper, IHelperClassFactory helperClassFactory, ILiquidFormsHelper liquidFormsHelper)
 		{
             _helper = helper;
 			_helperClassFactory = helperClassFactory;
@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 				_tasks = new ConcurrentDictionary<IntegrationPointDataHubKey, HashSet<string>>();
 			}
 
-            ILiquidFormsHelper liquidFormsHelper = new LiquidFormsHelper(_serviceManager, _logger);
+            liquidFormsHelper = new LiquidFormsHelper(_serviceManager, _logger);
             bool isLiquidFormsEnabled = liquidFormsHelper.IsLiquidForms(helper.GetActiveCaseID()).GetAwaiter().GetResult();
 
             if (_updateTimer == null && !isLiquidFormsEnabled)

@@ -15,14 +15,8 @@ namespace kCura.IntegrationPoints.Web
         {
 	        ICPHelper helper = ConnectionHelper.Helper();
 	        IAPILog logger = helper.GetLoggerFactory().GetLogger();
-            
-            ILiquidFormsHelper liquidFormsHelper = new LiquidFormsHelper(helper.GetServicesManager(), logger);
-            bool isLiquidForms = liquidFormsHelper.IsLiquidForms(helper.GetActiveCaseID()).GetAwaiter().GetResult();
-            if (!isLiquidForms)
-            {
-                GlobalHost.HubPipeline.AddModule(new IntegrationPointDataHubErrorHandlingPipelineModule(logger));
-                app.MapSignalR();
-            }
+            GlobalHost.HubPipeline.AddModule(new IntegrationPointDataHubErrorHandlingPipelineModule(logger));
+            app.MapSignalR();
         }
     }
 }

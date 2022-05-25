@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity;
@@ -12,7 +13,7 @@ namespace kCura.IntegrationPoints.Web.Helpers
 {
     public class LiquidFormsHelper : ILiquidFormsHelper
     {
-        private bool? _isLiquidForms;
+        private readonly ConcurrentDictionary<int, bool> _isLiquidFormsDictionary = new ConcurrentDictionary<int, bool>();
 
         private readonly IServicesMgr _servicesManager;
         private readonly IAPILog _logger;
@@ -25,9 +26,9 @@ namespace kCura.IntegrationPoints.Web.Helpers
 
         public async Task<bool> IsLiquidForms(int workspaceArtifactId)
         {
-            if (_isLiquidForms.HasValue)
+            if (_isLiquidFormsDictionary.ContainsKey(workspaceArtifactId))
             {
-                return (bool)_isLiquidForms;
+                return _isLiquidFormsDictionary[workspaceArtifactId];
             }
 
             try
@@ -35,10 +36,12 @@ namespace kCura.IntegrationPoints.Web.Helpers
                 _logger.LogInformation("Querying for object type Integration Point for workspaceArtifactId - {workspaceArtifactId}", workspaceArtifactId);
                 using (IObjectManager objectManager =
                        _servicesManager.CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser))
+                using (IObjectTypeManager objectTypeManager =
+                       _servicesManager.CreateProxy<IObjectTypeManager>(ExecutionIdentity.CurrentUser))
                 {
-                    QueryRequest queryRequest = new QueryRequest()
+                    QueryRequest queryRequest = new QueryRequest
                     {
-                        ObjectType = new ObjectTypeRef()
+                        ObjectType = new ObjectTypeRef
                         {
                             ArtifactTypeID = (int)ArtifactType.ObjectType
                         },
@@ -47,19 +50,22 @@ namespace kCura.IntegrationPoints.Web.Helpers
                     QueryResult queryResult = await objectManager.QueryAsync(workspaceArtifactId, queryRequest, 0, 1)
                         .ConfigureAwait(false);
 
-                    using (IObjectTypeManager objectTypeManager =
-                           _servicesManager.CreateProxy<IObjectTypeManager>(ExecutionIdentity.CurrentUser))
+                    if (queryResult.Objects.Count < 1)
                     {
-                        ObjectTypeResponse result = await objectTypeManager.ReadAsync(workspaceArtifactId,
-                            queryResult.Objects.First().ArtifactID);
-                        _isLiquidForms = result.UseRelativityForms;
-                        return _isLiquidForms ?? false;
+                        return false;
                     }
+
+                    ObjectTypeResponse result = await objectTypeManager.ReadAsync(workspaceArtifactId,
+                        queryResult.Objects.First().ArtifactID);
+                    bool isLiquidForms = result.UseRelativityForms ?? false;
+                    _isLiquidFormsDictionary.TryAdd(workspaceArtifactId, isLiquidForms);
+
+                    return isLiquidForms;
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError("Unable to get Integration Point type for workspace Artifact Id - {workspaceArtifactId}. Exception - {ex}", workspaceArtifactId, ex);
+                _logger.LogError("Unable to get Integration Point type for workspace Artifact Id - {workspaceArtifactId}. Exception - {ex}", workspaceArtifactId, ex.Message);
             }
 
             return false;
