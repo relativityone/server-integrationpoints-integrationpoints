@@ -162,7 +162,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 return Task.FromResult(result);
             }
             );
-        }
+        }     
 
         private QueryResultSlim GetQuerySlimsForRequest<T>(Func<WorkspaceTest, IList<T>> collectionGetter,
             Func<QueryRequest, IList<T>, IList<T>> customFilter, int workspaceId,
