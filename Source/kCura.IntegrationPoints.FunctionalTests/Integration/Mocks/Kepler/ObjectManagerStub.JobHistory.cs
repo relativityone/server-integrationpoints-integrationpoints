@@ -28,6 +28,21 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 integrationPointId = -1;
                 return false;
             }
+            
+            bool IsArtifactIdCondition(string condition, out int artifactId)
+            {
+                Match match = Regex.Match(condition,
+                    $@"'Artifact ID' == '(\d+)'");
+
+                if (match.Success && int.TryParse(match.Groups[1].Value, out int extractedId))
+                {
+                    artifactId = extractedId;
+                    return true;
+                }
+
+                artifactId = -1;
+                return false;
+            }
 
             bool IsBatchInstanceCondition(string condition, out string batchInstance)
             {
@@ -44,23 +59,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 return false;
             }
 
-            bool IsItemsWithErrorsOnlyFieldAndJobIdCondition(string condition, FieldRef[] fields, out string jobId)
-            {
-                Match matchJobId = Regex.Match(condition,
-                    $@"'{JobHistoryFields.JobID} == '(\d+)'");
-                bool isItemsWithErrorsOnlyField = fields.All(x => x.Name == JobHistoryFields.ItemsWithErrors);
-                
-                if (matchJobId.Success && isItemsWithErrorsOnlyField)
-                {
-                    jobId = matchJobId.Groups[1].Value;
-                    return true;
-                }
-
-                jobId = null;
-                return false;
-            }
-
-
             IList<JobHistoryTest> JobHistoryFilter(QueryRequest request, IList<JobHistoryTest> list)
             {
                 if (IsIntegrationPointCondition(request.Condition, out int integrationPointId))
@@ -73,9 +71,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                     return list.Where(x => x.BatchInstance == batchInstance).ToList();
                 }
 
-                if (IsItemsWithErrorsOnlyFieldAndJobIdCondition(request.Condition, request.Fields.ToArray(), out string jobId))
+                if (IsArtifactIdCondition(request.Condition, out int artifactId))
                 {
-                    return list.Where(x=>x.JobID == jobId).ToList();
+                    return list.Where(x => x.ArtifactId == artifactId).ToList();
                 }
 
                 return new List<JobHistoryTest>();

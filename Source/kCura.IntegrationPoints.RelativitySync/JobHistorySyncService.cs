@@ -16,11 +16,13 @@ namespace kCura.IntegrationPoints.RelativitySync
 	{
 		private readonly IHelper _helper;
         private readonly IRelativityObjectManager _relativityObjectManager;
+        private readonly IAPILog _logger;
 
         public JobHistorySyncService(IHelper helper, IRelativityObjectManager relativityObjectManager)
 		{
 			_helper = helper;
 			_relativityObjectManager = relativityObjectManager;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<JobHistorySyncService>();
 		}
 
 		public async Task<RelativityObject> GetLastJobHistoryWithErrorsAsync(int workspaceID,
@@ -119,7 +121,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		{
 			using (IObjectManager manager = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
-				bool hasErrors = await HasErrorsAsync(job, manager).ConfigureAwait(false);
+				bool hasErrors = await HasErrorsAsync(job).ConfigureAwait(false);
 				await UpdateFinishedJobAsync(job, JobStoppedStateRef(), manager, hasErrors).ConfigureAwait(false);
 			}
 		}
@@ -128,7 +130,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		{
 			using (IObjectManager manager = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
-				bool hasErrors = await HasErrorsAsync(job, manager).ConfigureAwait(false);
+				bool hasErrors = await HasErrorsAsync(job).ConfigureAwait(false);
 				await UpdateFinishedJobAsync(job, JobSuspendingStateRef(), manager, hasErrors).ConfigureAwait(false);
 			}
 		}
@@ -137,7 +139,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		{
 			using (IObjectManager manager = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
-				bool hasErrors = await HasErrorsAsync(job, manager).ConfigureAwait(false);
+				bool hasErrors = await HasErrorsAsync(job).ConfigureAwait(false);
 				await UpdateFinishedJobAsync(job, JobSuspendedStateRef(), manager, hasErrors).ConfigureAwait(false);
 			}
 		}
@@ -181,7 +183,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			using (IObjectManager manager = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
 				ChoiceRef status;
-				bool hasErrors = await HasErrorsAsync(job, manager).ConfigureAwait(false);
+				bool hasErrors = await HasErrorsAsync(job).ConfigureAwait(false);
 				if (hasErrors)
 				{
 					status = JobCompletedWithErrorsStateRef();
@@ -195,7 +197,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		private async Task<bool> HasErrorsAsync(IExtendedJob job, IObjectManager manager)
+		private async Task<bool> HasErrorsAsync(IExtendedJob job)
 		{
 			QueryRequest request = new QueryRequest
 			{
@@ -203,25 +205,21 @@ namespace kCura.IntegrationPoints.RelativitySync
 				Condition =
 					$"('{Data.JobHistoryErrorFields.JobHistory}' IN OBJECT [{job.JobHistoryId}]) AND ('{Data.JobHistoryErrorFields.ErrorType}' == CHOICE {ErrorTypeChoices.JobHistoryErrorItem.Guids[0]})"
 			};
-			QueryResult itemLevelErrors = await manager.QueryAsync(job.WorkspaceId, request, 0, 1).ConfigureAwait(false);
+			Data.UtilityDTO.ResultSet<RelativityObject> itemLevelErrors = await _relativityObjectManager.QueryAsync(request, 0, 1).ConfigureAwait(false);
+			_logger.LogInformation("JobHistorySyncService.HasErrors(): Found {itemLevelErrors} from JobHistoryErrorObjects", itemLevelErrors.ResultCount);
 
 			QueryRequest requestForJobHistory = new QueryRequest()
 			{
 				ObjectType = JobHistoryRef(),
-				Condition = $"'{JobHistoryFields.JobID} == '{job.JobId}'",
-				Fields = new[]
-				{
-					new FieldRef()
-					{
-						Name = $"{JobHistoryFields.ItemsWithErrors}"
-					}
-				}
+				Condition = $"'Artifact ID' == '{job.JobHistoryId}'"
 			};
 
-			QueryResult jobHistoryFromQuery =
-				await manager.QueryAsync(job.WorkspaceId, requestForJobHistory, 0, 1).ConfigureAwait(false);
+			List<JobHistory> jobHistoryFromQuery =
+				await _relativityObjectManager.QueryAsync<JobHistory>(requestForJobHistory).ConfigureAwait(false);
 
-			int jobHistoryItemsWithErrors = (int)jobHistoryFromQuery.Objects.Single().FieldValues.Single().Value;
+			int? jobHistoryItemsWithErrors = jobHistoryFromQuery.Single().ItemsWithErrors;
+			
+			_logger.LogInformation("JobHistorySyncService.HasErrors(): Found {jobHistoryItemsWithErrors} from JobHistory.ItemsWithErrors", jobHistoryItemsWithErrors);
 
 			return itemLevelErrors.ResultCount > 0 || jobHistoryItemsWithErrors > 0;
 		}
