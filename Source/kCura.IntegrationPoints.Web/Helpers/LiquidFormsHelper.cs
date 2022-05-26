@@ -53,6 +53,7 @@ namespace kCura.IntegrationPoints.Web.Helpers
 
                     if (queryResult.Items.Count < 1)
                     {
+                        _logger.LogWarning("Integration Point Object Type not found for workspaceArtifactId - {workspaceArtifactId}", workspaceArtifactId);
                         return false;
                     }
 
