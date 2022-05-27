@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Services;
+using Relativity.IntegrationPoints.Services.Models;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
 using System.Collections.Generic;
@@ -15,12 +16,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
     public class IntegrationPointProfileManagerTests : TestsBase
     {
         private IIntegrationPointProfileManager _sut;
+        private WorkspaceTest _destinationWorkspace;
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
             _sut = Container.Resolve<IIntegrationPointProfileManager>();
+            PrepareDestinationWorkspace();
         }
 
         [IdentifiedTestCase("A3D65A1A-F453-4DD3-9772-169F69D6FA11", false, true, "email@email.com", "Use Field Settings", ImportOverwriteModeEnum.AppendOnly)]
@@ -30,7 +33,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             string emailNotificationRecipients, string fieldOverlayBehavior, ImportOverwriteModeEnum overwriteMode)
         {
             //Arrange         
-            CreateIntegrationPointRequest request = GetRequestForIntegrationPointProfile(importNativeFile, logErrors, emailNotificationRecipients, fieldOverlayBehavior, overwriteMode);
+            CreateIntegrationPointRequest request = SetUpInitialDataAndGetRequest(RequestType.Create, importNativeFile, logErrors, emailNotificationRecipients, fieldOverlayBehavior, overwriteMode);
 
             //Act
             IntegrationPointModel result = await _sut.CreateIntegrationPointProfileAsync(request).ConfigureAwait(false);
@@ -38,17 +41,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             //Assert
             IntegrationPointProfileTest expectedProfile = SourceWorkspace.IntegrationPointProfiles.Where(x => x.ArtifactId == result.ArtifactId).FirstOrDefault();
             expectedProfile.Should().NotBeNull();
-            AssertIntegrationPointProfile(request.IntegrationPoint, expectedProfile);
-            AssertIntegrationPointProfile(result, expectedProfile);
+            AssertCreatedIntegrationPointProfile(request.IntegrationPoint, expectedProfile);
         }
 
         [IdentifiedTest("6CD0B0CB-0EB2-4291-A22C-4EFFBAC614D6")]
         public async Task CreateIntegrationPointProfileFromIntegrationPointAsync_ShouldReturnCorrectProfile()
         {
             //Arrange         
-            CreateIntegrationPointRequest request = GetRequestForIntegrationPointProfile(importNativeFile: false,
-                logErrors: true, emailNotificationRecipients: string.Empty, fieldOverlayBehavior: "Use Field Settings", ImportOverwriteModeEnum.AppendOverlay);
-            
+            CreateIntegrationPointRequest request = SetUpInitialDataAndGetRequest(RequestType.CreateFromIntegrationPoint);
             string profileName = $"Test profile from Integration Point {request.IntegrationPoint.ArtifactId}";
             //Act
             IntegrationPointModel result = await _sut.CreateIntegrationPointProfileFromIntegrationPointAsync(SourceWorkspace.ArtifactId, request.IntegrationPoint.ArtifactId, profileName).ConfigureAwait(false);
@@ -56,10 +56,25 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             //Assert
             IntegrationPointProfileTest expectedProfile = SourceWorkspace.IntegrationPointProfiles.Where(x => x.ArtifactId == result.ArtifactId).FirstOrDefault();
             expectedProfile.Should().NotBeNull();
-            AssertIntegrationPointProfile(request.IntegrationPoint, expectedProfile);
-            AssertIntegrationPointProfile(result, expectedProfile);
+            expectedProfile.Name.Should().Be(profileName);
+            AssertCreatedIntegrationPointProfile(request.IntegrationPoint, expectedProfile);
         }
 
+        [IdentifiedTest("EC4158B6-785B-42BD-9779-CA8851F6CA03")]
+        public async Task UpdateIntegrationPointProfileAsync_ShouldChangeProfileCorrectly()
+        {
+            //Arrange
+            CreateIntegrationPointRequest request = SetUpInitialDataAndGetRequest(RequestType.Update, importNativeFile: false,
+                logErrors: true, emailNotificationRecipients: "test@test.com", fieldOverlayBehavior: "Replace Values", ImportOverwriteModeEnum.OverlayOnly);
+
+            //Act
+            IntegrationPointModel result = await _sut.UpdateIntegrationPointProfileAsync(request).ConfigureAwait(false);
+
+            //Assert
+            IntegrationPointProfileTest expectedProfile = SourceWorkspace.IntegrationPointProfiles.Where(x => x.ArtifactId == result.ArtifactId).FirstOrDefault();
+            expectedProfile.Should().NotBeNull();
+            AssertCreatedIntegrationPointProfile(request.IntegrationPoint, expectedProfile);
+        }
 
         [IdentifiedTest("C994A507-5495-42D3-BE10-62A56B971C78")]
         public async Task GetOverwriteFieldsChoicesAsync_ShouldReturnCorrectSetOfValues()
@@ -84,29 +99,25 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         [IdentifiedTest("BB68F9F2-A8BD-49D6-AAF7-0AFBE748F24A")]
         public async Task GetIntegrationPointProfileAsync_ShouldReturnCorrectObject()
         {
-            //Arrange
-            int destinationWorkspaceArtifactId = ArtifactProvider.NextId();
-            WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace(destinationWorkspaceArtifactId);
-            IntegrationPointProfileTest expectedProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
+            //Arrange           
+            IntegrationPointProfileTest expectedProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(_destinationWorkspace);
 
             //Act
             IntegrationPointModel result = await _sut.GetIntegrationPointProfileAsync(SourceWorkspace.ArtifactId, expectedProfile.ArtifactId).ConfigureAwait(false);
 
             //Assert
             result.Should().NotBeNull();
-            AssertIntegrationPointProfile(result, expectedProfile);
+            AssertObtainedIntegrationPointProfile(result, expectedProfile);
         }
 
         [IdentifiedTest("6DD5E1C4-F767-4BBB-B336-56216464846F")]
         public async Task GetAllIntegrationPointProfilesAsync_ShouldReturnCorrectObjectSet()
         {
-            //Arrange
-            int destinationWorkspaceArtifactId = ArtifactProvider.NextId();
-            WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace(destinationWorkspaceArtifactId);
+            //Arrange           
             List<IntegrationPointProfileTest> expectedProfiles = new List<IntegrationPointProfileTest>();
-            expectedProfiles.Add(SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateEmptyIntegrationPointProfile());
-            expectedProfiles.Add(SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(destinationWorkspace));
-            
+            expectedProfiles.Add(SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(_destinationWorkspace));
+            expectedProfiles.Add(SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(_destinationWorkspace));
+
             //Act
             IList<IntegrationPointModel> results = await _sut.GetAllIntegrationPointProfilesAsync(SourceWorkspace.ArtifactId).ConfigureAwait(false);
 
@@ -114,51 +125,60 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             results.Should().NotBeNull();
             results.Should().NotBeEmpty();
             results.Should().HaveSameCount(expectedProfiles);
-            foreach(var result in results)
+            foreach (var result in results)
             {
-                AssertIntegrationPointProfile(result, expectedProfiles.Single(x => x.ArtifactId == result.ArtifactId));
-            }            
-        }
+                AssertObtainedIntegrationPointProfile(result, expectedProfiles.Single(x => x.ArtifactId == result.ArtifactId));
+            }
+        }     
 
-        private void AssertIntegrationPointProfile(IntegrationPointModel integrationPoint, IntegrationPointProfileTest expectedProfile)
+        private CreateIntegrationPointRequest SetUpInitialDataAndGetRequest(RequestType requestType, bool importNativeFile = false, bool logErrors = true, string emailNotificationRecipients = "",
+            string fieldOverlayBehavior = "Use Field Settings", ImportOverwriteModeEnum overwriteMode = ImportOverwriteModeEnum.AppendOnly)
         {
-            expectedProfile.SourceProvider.Should().Be(integrationPoint.SourceProvider);
-            expectedProfile.DestinationProvider.Should().Be(integrationPoint.DestinationProvider);
-            expectedProfile.EmailNotificationRecipients.Should().BeEquivalentTo(integrationPoint.EmailNotificationRecipients);
-            expectedProfile.Type.Should().Be(integrationPoint.Type);
-            expectedProfile.LogErrors.Should().Be(integrationPoint.LogErrors);
-            //assert destination config
-            //assert source config
-        }
+            string name = string.Empty;
+            int artifactId = 0;
+            int sourceProviderId = 0;
+            int destinationProviderId = 0;
+            int type = 0;
 
-        private CreateIntegrationPointRequest GetRequestForIntegrationPointProfile(bool importNativeFile, bool logErrors, string emailNotificationRecipients,
-            string fieldOverlayBehavior, ImportOverwriteModeEnum overwriteMode)
-        {
-            int destinationWorkspaceArtifactId = ArtifactProvider.NextId();
-            WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace(destinationWorkspaceArtifactId);
-            IntegrationPointModel integrationPointModel = CreateIntegrationPointModel(destinationWorkspace, importNativeFile, logErrors, emailNotificationRecipients, fieldOverlayBehavior, overwriteMode);
-            return new CreateIntegrationPointRequest
+            switch (requestType)
             {
-                WorkspaceArtifactId = SourceWorkspace.ArtifactId,
-                IntegrationPoint = integrationPointModel
-            };
-        }
-
-        private IntegrationPointModel CreateIntegrationPointModel(WorkspaceTest destinationWorkspace, bool importNativeFile, bool logErrors, string emailNotificationRecipients,
-            string fieldOverlayBehavior, ImportOverwriteModeEnum overwriteMode)
-        {
-            IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(destinationWorkspace);
-            List<FieldMap> fieldMap = GetFieldMapping(destinationWorkspace, (int)ArtifactType.Document);
+                case RequestType.Create:
+                    artifactId = ArtifactProvider.NextId();
+                    name = $"Integration Point {artifactId}";
+                    sourceProviderId = SourceWorkspace.SourceProviders.Where(x => x.Name == "Relativity").Single().ArtifactId;
+                    destinationProviderId = SourceWorkspace.DestinationProviders.Where(x => x.Name == "Relativity").Single().ArtifactId;
+                    type = SourceWorkspace.IntegrationPointTypes.First(x =>
+                x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString()).ArtifactId;
+                    break;
+                case RequestType.CreateFromIntegrationPoint:
+                    IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(_destinationWorkspace);
+                    artifactId = integrationPoint.ArtifactId;
+                    name = integrationPoint.Name;
+                    sourceProviderId = (int)integrationPoint.SourceProvider;
+                    destinationProviderId = (int)integrationPoint.DestinationProvider;
+                    type = (int)integrationPoint.Type;
+                    emailNotificationRecipients = integrationPoint.EmailNotificationRecipients ?? "";
+                    logErrors = integrationPoint.LogErrors == null ? false : logErrors;
+                    break;
+                case RequestType.Update:
+                    IntegrationPointProfileTest integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(_destinationWorkspace);
+                    artifactId = integrationPointProfile.ArtifactId;
+                    name = integrationPointProfile.Name;
+                    sourceProviderId = (int)integrationPointProfile.SourceProvider;
+                    destinationProviderId = (int)integrationPointProfile.DestinationProvider;
+                    type = (int)integrationPointProfile.Type;
+                    break;
+            }
 
             RelativityProviderDestinationConfiguration destinationConfig = new RelativityProviderDestinationConfiguration
             {
                 ArtifactTypeID = (int)ArtifactType.Document,
-                CaseArtifactId = destinationWorkspace.ArtifactId,
+                CaseArtifactId = _destinationWorkspace.ArtifactId,
                 ImportNativeFile = importNativeFile,
                 UseFolderPathInformation = false,
                 FolderPathSourceField = 0,
                 FieldOverlayBehavior = fieldOverlayBehavior,
-                DestinationFolderArtifactId = destinationWorkspace.Folders.First().ArtifactId
+                DestinationFolderArtifactId = _destinationWorkspace.Folders.First().ArtifactId
             };
             RelativityProviderSourceConfiguration sourceConfig = new RelativityProviderSourceConfiguration
             {
@@ -169,30 +189,77 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
 
             IntegrationPointModel integrationPointModel = new IntegrationPointModel
             {
-                Name = integrationPoint.Name,
-                ArtifactId = integrationPoint.ArtifactId,
+                Name = name,
+                ArtifactId = artifactId,
                 OverwriteFieldsChoiceId = Const.Choices.OverwriteFields.Where(x => x.Name == overwriteMode.GetDescription()).SingleOrDefault().ArtifactID,
-                SourceProvider = integrationPoint.SourceProvider.GetValueOrDefault(0),
+                SourceProvider = sourceProviderId,
                 DestinationConfiguration = destinationConfig,
                 SourceConfiguration = sourceConfig,
-                DestinationProvider = integrationPoint.DestinationProvider.GetValueOrDefault(0),
-                Type = integrationPoint.Type.GetValueOrDefault(0),
+                DestinationProvider = destinationProviderId,
+                Type = type,
                 EmailNotificationRecipients = emailNotificationRecipients,
                 LogErrors = logErrors,
                 ScheduleRule = new ScheduleModel
                 {
                     EnableScheduler = false
                 },
-                FieldMappings = fieldMap
+                FieldMappings = GetFieldMapping((int)ArtifactType.Document)
             };
 
-            return integrationPointModel;
+            return new CreateIntegrationPointRequest
+            {
+                WorkspaceArtifactId = SourceWorkspace.ArtifactId,
+                IntegrationPoint = integrationPointModel
+            };
         }
 
-        public List<FieldMap> GetFieldMapping(WorkspaceTest destinationWorkspace, int artifactTypeId)
+        private void AssertObtainedIntegrationPointProfile(IntegrationPointModel integrationPointModel, IntegrationPointProfileTest expectedProfile)
+        {
+            expectedProfile.ArtifactId.Should().Be(integrationPointModel.ArtifactId);
+            expectedProfile.Name.Should().Be(integrationPointModel.Name);
+            expectedProfile.SourceProvider.Should().Be(integrationPointModel.SourceProvider);
+            expectedProfile.DestinationProvider.Should().Be(integrationPointModel.DestinationProvider);
+        }
+
+        private void AssertCreatedIntegrationPointProfile(IntegrationPointModel integrationPoint, IntegrationPointProfileTest expectedProfile)
+        {
+            expectedProfile.SourceProvider.Should().Be(integrationPoint.SourceProvider);
+            expectedProfile.DestinationProvider.Should().Be(integrationPoint.DestinationProvider);
+            expectedProfile.EmailNotificationRecipients.Should().BeEquivalentTo(integrationPoint.EmailNotificationRecipients);
+            expectedProfile.Type.Should().Be(integrationPoint.Type);
+            expectedProfile.LogErrors.Should().Be(integrationPoint.LogErrors);
+            expectedProfile.OverwriteFields.ArtifactID = integrationPoint.OverwriteFieldsChoiceId;
+
+            //if (!string.IsNullOrEmpty(expectedProfile.DestinationConfiguration))
+            //{
+            //    RelativityProviderDestinationConfigurationBackwardCompatibility expectedProfileDestinationConfig = Serializer.Deserialize<RelativityProviderDestinationConfigurationBackwardCompatibility>(expectedProfile.DestinationConfiguration);
+            //    expectedProfileDestinationConfig.ArtifactTypeID.Should().Be(((RelativityProviderDestinationConfiguration)integrationPoint.DestinationConfiguration).ArtifactTypeID);
+            //    expectedProfileDestinationConfig.CaseArtifactId.Should().Be(((RelativityProviderDestinationConfiguration)integrationPoint.DestinationConfiguration).CaseArtifactId);
+            //    expectedProfileDestinationConfig.ImportNativeFile.Should().Be(((RelativityProviderDestinationConfiguration)integrationPoint.DestinationConfiguration).ImportNativeFile);
+            //    expectedProfileDestinationConfig.UseFolderPathInformation.Should().Be(((RelativityProviderDestinationConfiguration)integrationPoint.DestinationConfiguration).UseFolderPathInformation);
+            //    expectedProfileDestinationConfig.FolderPathSourceField.Should().Be(((RelativityProviderDestinationConfiguration)integrationPoint.DestinationConfiguration).FolderPathSourceField);
+            //    expectedProfileDestinationConfig.FieldOverlayBehavior.Should().Be(((RelativityProviderDestinationConfiguration)integrationPoint.DestinationConfiguration).FieldOverlayBehavior);
+            //    expectedProfileDestinationConfig.DestinationFolderArtifactId.Should().Be(((RelativityProviderDestinationConfiguration)integrationPoint.DestinationConfiguration).DestinationFolderArtifactId);
+            //}
+            //if (!string.IsNullOrEmpty(expectedProfile.SourceConfiguration))
+            //{
+            //    RelativityProviderSourceConfigurationBackwardCompatibility expectedProfileSourceConfig = Serializer.Deserialize<RelativityProviderSourceConfigurationBackwardCompatibility>(expectedProfile.SourceConfiguration);
+            //    expectedProfileSourceConfig.SavedSearchArtifactId.Should().Be(((RelativityProviderSourceConfiguration)integrationPoint.SourceConfiguration).SavedSearchArtifactId);
+            //    expectedProfileSourceConfig.SourceWorkspaceArtifactId.Should().Be(((RelativityProviderSourceConfiguration)integrationPoint.SourceConfiguration).SourceWorkspaceArtifactId);
+            //    expectedProfileSourceConfig.TypeOfExport.Should().Be(((RelativityProviderSourceConfiguration)integrationPoint.SourceConfiguration).TypeOfExport);                
+            //}
+        }
+
+        private void PrepareDestinationWorkspace()
+        {
+            int destinationWorkspaceArtifactId = ArtifactProvider.NextId();
+            _destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace(destinationWorkspaceArtifactId);
+        }    
+
+        private List<FieldMap> GetFieldMapping(int artifactTypeId)
         {
             FieldTest sourceIdentifier = SourceWorkspace.Fields.First(x => x.ObjectTypeId == artifactTypeId && x.IsIdentifier);
-            FieldTest destinationIdentifier = destinationWorkspace.Fields.First(x => x.ObjectTypeId == artifactTypeId && x.IsIdentifier);
+            FieldTest destinationIdentifier = _destinationWorkspace.Fields.First(x => x.ObjectTypeId == artifactTypeId && x.IsIdentifier);
 
             return new List<FieldMap>
             {
@@ -220,6 +287,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
                 }
             };
         }
-    }
 
+        private enum RequestType
+        {
+            Create,
+            CreateFromIntegrationPoint,
+            Update
+        }
+    }
 }
+
+
