@@ -6,28 +6,20 @@ using System.Linq;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsAssertions
 {
-    public class BillingFlagAssertion
+    public static class BillingFlagAssertion
     {
-        private DataTable _fileDataTable;
-        private int _workspaceArtifactID { get; set; }         
-          
-        public BillingFlagAssertion(int targetWorkspaceArtifactID)
-        {           
-            _workspaceArtifactID = targetWorkspaceArtifactID;           
-        }
-        
-        public void AssertFiles(bool expectBillable)
+        public static void AssertFiles(int workspaceArtifactId, bool expectBillable)
         {
-            IEnumerable<FileRow> fileRows = GetFiles();
+            IEnumerable<FileRow> fileRows = GetFiles(workspaceArtifactId);
 
             fileRows.Should().NotBeEmpty()
                 .And.OnlyContain(x => x.InRepository == expectBillable && x.Billable == expectBillable);
         }
 
-        private IEnumerable<FileRow> GetFiles()
+        private static IEnumerable<FileRow> GetFiles(int workspaceArtifactId)
         {
-            _fileDataTable = SqlHelper.ExecuteSqlStatementAsDataTable(_workspaceArtifactID, "SELECT * FROM [File]");
-            return _fileDataTable.Select().Select(x => new FileRow
+            DataTable dataTable = SqlHelper.ExecuteSqlStatementAsDataTable(workspaceArtifactId, "SELECT * FROM [File]");
+            return dataTable.Select().Select(x => new FileRow
             {
                 InRepository = (bool)x["InRepository"],
                 Billable = (bool)x["Billable"]
@@ -39,7 +31,5 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsAssertions
             public bool InRepository { get; set; }
             public bool Billable { get; set; }
         }
-
-
     }
 }

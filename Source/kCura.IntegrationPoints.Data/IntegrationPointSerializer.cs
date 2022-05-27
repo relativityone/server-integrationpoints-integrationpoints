@@ -10,8 +10,7 @@ namespace kCura.IntegrationPoints.Data
 
 		public IntegrationPointSerializer(IAPILog logger)
 		{
-			var serializerToDecorate = new JSONSerializer();
-			_serializer = new SerializerWithLogging(serializerToDecorate, logger);
+			_serializer = SerializerWithLogging.Create(logger);
 		}
 
 		public string Serialize(object o)

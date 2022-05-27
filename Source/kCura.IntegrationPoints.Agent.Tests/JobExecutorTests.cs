@@ -23,9 +23,6 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		private Mock<IAPILog> _logMock;
 		private Mock<ITaskProvider> _taskProviderFake;
 		private Mock<IJobService> _jobServiceFake;
-		private Mock<ITaskParameterHelper> _taskParameterFake;
-
-		private const string _RIP_PREFIX = "RIP.";
 
 		[SetUp]
 		public void SetUp()
@@ -40,54 +37,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 			Mock<IAgentNotifier> agentNotifier = new Mock<IAgentNotifier>();
 			_jobServiceFake = new Mock<IJobService>();
-			_taskParameterFake = new Mock<ITaskParameterHelper>();
-			_sut = new JobExecutor(_taskProviderFake.Object, agentNotifier.Object, _jobServiceFake.Object, _taskParameterFake.Object, _logMock.Object);
-		}
-
-		[Test]
-		public void ProcessJob_ShouldPushEmptyRootJobIdToLogContext_WhenRootJobIdIsNull()
-		{
-			// Arrange
-			Job job = new JobBuilder()
-				.WithRootJobId(null)
-				.Build();
-
-			// Act
-			_sut.ProcessJob(job);
-
-			// Assert
-			_logMock.Verify(x => x.LogContextPushProperty($"{_RIP_PREFIX}{nameof(AgentCorrelationContext.RootJobId)}", string.Empty));
-		}
-
-		[Test]
-		public void ProcessJob_ShouldRegisterProperLogContext()
-		{
-			// Arrange
-			string expectedVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
-			const long expectedJobId = 123;
-			const long expectedRootJobId = 879;
-			const int expectedUserId = 9;
-			const int expectedWorkspaceId = 11;
-			Guid expectedWorkflowIdGuid = Guid.NewGuid();
-			Job job = new JobBuilder()
-				.WithJobId(expectedJobId)
-				.WithRootJobId(expectedRootJobId)
-				.WithSubmittedBy(expectedUserId)
-				.WithWorkspaceId(expectedWorkspaceId)
-				.Build();
-
-			_taskParameterFake.Setup(x => x.GetBatchInstance(job)).Returns(expectedWorkflowIdGuid);
-
-			// Act
-			_sut.ProcessJob(job);
-
-			// Assert
-			VerifyLoggerJobContextProperty(nameof(AgentCorrelationContext.JobId), expectedJobId);
-			VerifyLoggerJobContextProperty(nameof(AgentCorrelationContext.ApplicationBuildVersion), expectedVersion);
-			VerifyLoggerJobContextProperty(nameof(AgentCorrelationContext.RootJobId), expectedRootJobId);
-			VerifyLoggerJobContextProperty(nameof(AgentCorrelationContext.UserId), expectedUserId);
-			VerifyLoggerJobContextProperty(nameof(AgentCorrelationContext.WorkspaceId), expectedWorkspaceId);
-			VerifyLoggerJobContextProperty(nameof(AgentCorrelationContext.WorkflowId), expectedWorkflowIdGuid.ToString());
+			_sut = new JobExecutor(_taskProviderFake.Object, agentNotifier.Object, _jobServiceFake.Object, _logMock.Object);
 		}
 
 		[Test]
@@ -155,12 +105,6 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
 			// Assert
 			result.Status.Should().Be(TaskStatusEnum.Fail);
-		}
-
-		private void VerifyLoggerJobContextProperty(string name, object value)
-		{
-			string contextFormat = $"{_RIP_PREFIX}{name}";
-			_logMock.Verify(x => x.LogContextPushProperty(contextFormat, value.ToString()));
 		}
 	}
 }

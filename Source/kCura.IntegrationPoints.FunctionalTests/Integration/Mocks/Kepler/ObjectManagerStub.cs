@@ -127,6 +127,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 newRdo.LoadRelativityObjectByGuid<IntegrationPointProfileTest>(objectCreationInfo.CreatedObject);
                 workspace.IntegrationPointProfiles.Add(newRdo);
             }
+            else if (objectCreationInfo.ObjectTypeGuid == ObjectTypeGuids.IntegrationPointGuid)
+            {
+                var newRdo = new IntegrationPointTest();
+                newRdo.LoadRelativityObjectByGuid<IntegrationPointTest>(objectCreationInfo.CreatedObject);
+                workspace.IntegrationPoints.Add(newRdo);
+            }
             else
             {
                 Debugger.Break();

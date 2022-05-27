@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.Agent
         protected override void Initialize()
         {
             base.Initialize();
-            JobExecutor = new JobExecutor(this, this, JobService, _agentLevelContainer.Value.Resolve<ITaskParameterHelper>(), Logger);
+            JobExecutor = new JobExecutor(this, this, JobService, Logger);
             JobExecutor.JobExecutionError += OnJobExecutionError;
         }
 

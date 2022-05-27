@@ -16,6 +16,7 @@ using Relativity.IntegrationPoints.Tests.Common.Extensions;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Objects;
 using Relativity.Testing.Framework.Api;
+using Relativity.Testing.Framework.Web.Models;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,12 +28,12 @@ using Relativity.IntegrationPoints.Tests.Functional.TestsAssertions;
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 {
     internal class SyncTestsImplementation
-    {       
+    {
         private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
-        private readonly Dictionary<string, Workspace> _destinationWorkspaces = new Dictionary<string, Workspace>();      
+        private readonly Dictionary<string, Workspace> _destinationWorkspaces = new Dictionary<string, Workspace>();
 
         public SyncTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture)
-        {           
+        {
             _testsImplementationTestFixture = testsImplementationTestFixture;
         }
 
@@ -83,7 +84,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             IntegrationPointEditPage integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
 
             IntegrationPointViewPage integrationPointViewPage = integrationPointEditPage.CreateSavedSearchToFolderIntegrationPoint(integrationPointName,
-                destinationWorkspace, keywordSearch.Name, copyNativesMode: RelativityProviderCopyNativeFiles.PhysicalFiles);
+                destinationWorkspace, keywordSearch.Name, RelativityProviderCopyNativeFiles.PhysicalFiles);
 
             integrationPointViewPage = integrationPointViewPage.RunIntegrationPoint(integrationPointName);
 
@@ -104,11 +105,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             GetCorrectlyTaggedDocumentsCount(destinationDocs, "Relativity Source Case", expectedSourceCaseTag).Should().Be(transferredItemsCount);
             GetCorrectlyTaggedDocumentsCount(destinationDocs, "Relativity Source Job", expectedSourceJobTag).Should().Be(transferredItemsCount);
 
-            BillingFlagAssertion documentFlagValidator = new BillingFlagAssertion(destinationWorkspace.ArtifactID);
-            documentFlagValidator.AssertFiles(true);
+            BillingFlagAssertion.AssertFiles(destinationWorkspace.ArtifactID, expectBillable: true);
         }
 
-        public void ProductionImagesGoldFlow()
+        public void ProductionImagesGoldFlow(YesNo copyFilesToRepository)
         {
             // Arrange
             _testsImplementationTestFixture.LoginAsStandardUser();
@@ -188,7 +188,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             IntegrationPointEditPage integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
 
             IntegrationPointViewPage integrationPointViewPage = integrationPointEditPage
-                .CreateProductionToFolderIntegrationPoint(integrationPointName, destinationWorkspace, production);
+                .CreateProductionToFolderIntegrationPoint(
+                    integrationPointName,
+                    destinationWorkspace,
+                    production,
+                    copyFilesToRepository);
 
             integrationPointViewPage = integrationPointViewPage.RunIntegrationPoint(integrationPointName);
 
@@ -208,13 +212,15 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             GetCorrectlyTaggedDocumentsCount(sourceDocs, "Relativity Destination Case", expectedDestinationCaseTag).Should().Be(transferredItemsCount);
             GetCorrectlyTaggedDocumentsCount(destinationDocs, "Relativity Source Case", expectedSourceCaseTag).Should().Be(transferredItemsCount);
             GetCorrectlyTaggedDocumentsCount(destinationDocs, "Relativity Source Job", expectedSourceJobTag).Should().Be(transferredItemsCount);
+
+            BillingFlagAssertion.AssertFiles(destinationWorkspace.ArtifactID, expectBillable: copyFilesToRepository == YesNo.Yes);
         }
 
         public void EntitiesPushGoldFlow()
         {
             // Arrange
             _testsImplementationTestFixture.LoginAsStandardUser();
-            
+
             string integrationPointName = nameof(EntitiesPushGoldFlow);
 
             Workspace destinationWorkspace = CreateDestinationWorkspace();

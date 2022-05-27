@@ -50,11 +50,12 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
         public static ButtonStateBuilder CreateButtonStateBuilder(
             ICPHelper helper,
             IRepositoryFactory respositoryFactory,
-            IManagerFactory managerFactory)
+            IManagerFactory managerFactory,
+			int workspaceId)
         {
 
             var logger = helper.GetLoggerFactory().GetLogger();
-            IRelativityObjectManager objectManager = new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(helper.GetActiveCaseID());
+            IRelativityObjectManager objectManager = new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(workspaceId);
             IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer(logger);
             ISecretsRepository secretsRepository = new SecretsRepository(
                     SecretStoreFacadeFactory_Deprecated.Create(helper.GetSecretStore, logger),
@@ -68,7 +69,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             var permissionValidator = new IntegrationPointPermissionValidator(new[] {
                 new ViewErrorsPermissionValidator(respositoryFactory) },
                 new IntegrationPointSerializer(logger));
-            IPermissionRepository permissionRepository = new PermissionRepository(helper, helper.GetActiveCaseID());
+            IPermissionRepository permissionRepository = new PermissionRepository(helper, workspaceId);
 
             var buttonStateBuilder = new ButtonStateBuilder(providerTypeService, queueManager, jobHistoryManager, stateManager,
                         permissionRepository, permissionValidator, integrationPointRepository);

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data.UtilityDTO;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests
 {
@@ -28,11 +29,16 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 		private const int _INTEGRATION_POINT_ID = 110;
 
 		private JobHistory _jobHistory;
+		private List<JobHistory> _jobHistoryList;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_jobHistory = new JobHistory { ItemsWithErrors = 0 };
+			_jobHistoryList = new List<JobHistory>
+			{
+				_jobHistory
+			};
 
 			_jobFake = new Mock<IExtendedJob>();
 			_jobFake.SetupGet(x => x.JobHistoryId).Returns(_JOB_HISTORY_ID);
@@ -47,11 +53,15 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 				.Returns(_objectManagerMock.Object);
 
 			Mock<IHelper> helper = new Mock<IHelper>();
+			Mock<IAPILog> _loggerFake = new Mock<IAPILog>();
 			helper.Setup(x => x.GetServicesManager()).Returns(servicesMgr.Object);
+			helper.Setup(x => x.GetLoggerFactory().GetLogger().ForContext<JobHistorySyncService>()).Returns(_loggerFake.Object);
 
 			_relativityObjectManagerFake = new Mock<IRelativityObjectManager>();
-			_relativityObjectManagerFake.Setup(x => x.Read<JobHistory>(_JOB_HISTORY_ID, It.IsAny<ExecutionIdentity>()))
-				.Returns(_jobHistory);
+			_relativityObjectManagerFake.Setup(x => x.QueryAsync<JobHistory>(It.IsAny<QueryRequest>(),It.IsAny<bool>(),It.IsAny<ExecutionIdentity>()))
+				.ReturnsAsync(_jobHistoryList);
+			_relativityObjectManagerFake.Setup(x => x.QueryAsync(It.IsAny<QueryRequest>(),It.IsAny<int>(),It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<ExecutionIdentity>()))
+				.ReturnsAsync(new ResultSet<RelativityObject>());
 
 			_sut = new JobHistorySyncService(helper.Object, _relativityObjectManagerFake.Object);
 		}
@@ -233,9 +243,9 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 
 		private void SetupHasErrors(bool hasErrors)
 		{
-			_objectManagerMock.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(
-				q => q.ObjectType.Guid == ObjectTypeGuids.JobHistoryErrorGuid), It.IsAny<int>(), It.IsAny<int>()))
-					.ReturnsAsync(new QueryResult
+			_relativityObjectManagerFake.Setup(x => x.QueryAsync(It.Is<QueryRequest>(
+				q => q.ObjectType.Guid == ObjectTypeGuids.JobHistoryErrorGuid), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<ExecutionIdentity>()))
+					.ReturnsAsync(new ResultSet<RelativityObject>()
 					{
 						ResultCount = hasErrors ? 1 : 0
 					});

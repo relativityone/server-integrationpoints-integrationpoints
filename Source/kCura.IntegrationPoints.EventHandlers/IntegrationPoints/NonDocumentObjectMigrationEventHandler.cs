@@ -11,7 +11,7 @@ using kCura.IntegrationPoints.EventHandlers.Commands.Context;
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
     [Description("Performs tasks related to non-document object introduction in RIP Sync, such as migrating existing Integration Points configuration.")]
-    [RunOnce(false)]
+    [RunOnce(true)]
 	[Guid("3F606321-8B7E-4850-825E-08DBC598A348")]
     public class NonDocumentObjectMigrationEventHandler : PostInstallEventHandlerBase, IEventHandler
     {

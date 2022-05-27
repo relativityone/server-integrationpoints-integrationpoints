@@ -80,10 +80,10 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		internal void TerminateIfRequested(Job job)
 		{
-			if (_supportsDrainStop && _agent.ToBeRemoved)
+			if (_supportsDrainStop && _agent.ToBeRemoved && !_isDrainStopping)
 			{
-				_logger.LogInformation("Drain-Stop was requested: SupportsDrainStop - {supportsDrainStop}, AgentToBeRemoved {agentToBeRemoved}",
-					_supportsDrainStop, _agent.ToBeRemoved);
+				_logger.LogInformation("Drain-Stop was requested: SupportsDrainStop - {supportsDrainStop}, AgentToBeRemoved - {agentToBeRemoved}, StopState - {stopState}",
+					_supportsDrainStop, _agent.ToBeRemoved, job.StopState);
 
 				_isDrainStopping = true;
 

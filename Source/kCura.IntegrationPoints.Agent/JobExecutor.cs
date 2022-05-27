@@ -27,12 +27,11 @@ namespace kCura.IntegrationPoints.Agent
 		private readonly ITaskProvider _taskProvider;
 		private readonly IAgentNotifier _agentNotifier;
 		private readonly IJobService _jobService;
-		private readonly ITaskParameterHelper _taskParameterHelper;
 		private IAPILog _logger { get; }
 
 		public event ExceptionEventHandler JobExecutionError;
 
-		public JobExecutor(ITaskProvider taskProvider, IAgentNotifier agentNotifier, IJobService jobService, ITaskParameterHelper taskParameterHelper, IAPILog logger)
+		public JobExecutor(ITaskProvider taskProvider, IAgentNotifier agentNotifier, IJobService jobService, IAPILog logger)
 		{
 			if (taskProvider == null)
 			{
@@ -57,7 +56,6 @@ namespace kCura.IntegrationPoints.Agent
 			_taskProvider = taskProvider;
 			_agentNotifier = agentNotifier;
 			_jobService = jobService;
-			_taskParameterHelper = taskParameterHelper;
 			_logger = logger;
 		}
 
@@ -68,24 +66,8 @@ namespace kCura.IntegrationPoints.Agent
 				throw new ArgumentNullException(nameof(job));
 			}
 
-			Guid batchInstanceId = _taskParameterHelper.GetBatchInstance(job);
-			string correlationId = batchInstanceId.ToString();
-
-			var correlationContext = new AgentCorrelationContext
-			{
-				JobId = job.JobId,
-				RootJobId = job.RootJobId,
-				WorkspaceId = job.WorkspaceID,
-				UserId = job.SubmittedBy,
-				IntegrationPointId = job.RelatedObjectArtifactID,
-				WorkflowId = correlationId
-			};
-
-			using (_logger.LogContextPushProperties(correlationContext))
-			{
-				InitializeJobExecution(job);
-				return ExecuteJob(job, correlationContext);
-			}
+			InitializeJobExecution(job);
+			return ExecuteJob(job);
 		}
 
 		private TaskResult GetTask(Job job, ref ITask task)
@@ -111,7 +93,7 @@ namespace kCura.IntegrationPoints.Agent
 			}
 		}
 
-		private TaskResult ExecuteJob(Job job, AgentCorrelationContext correlationContext)
+		private TaskResult ExecuteJob(Job job)
 		{
 			LogJobState(job, JobLogState.Started);
 			LogStartingExecuteTask(job);
@@ -123,36 +105,32 @@ namespace kCura.IntegrationPoints.Agent
 				return resultOfGetTask;
 			}
 
-			correlationContext.ActionName = task.GetType().Name;
-			return ExecuteTask(task, job, correlationContext);
+			return ExecuteTask(task, job);
 		}
 
-		private TaskResult ExecuteTask(ITask task, Job job, AgentCorrelationContext correlationContext)
+		private TaskResult ExecuteTask(ITask task, Job job)
 		{
-			using (_logger.LogContextPushProperties(correlationContext))
+			try
 			{
-				try
-				{
-					_logger.LogInformation("StartTask - Before Execute");
-					task.Execute(job);
-					_logger.LogInformation("StartTask - After Execute");
+				_logger.LogInformation("StartTask - Before Execute");
+				task.Execute(job);
+				_logger.LogInformation("StartTask - After Execute");
 
-					LogJobState(job, JobLogState.Finished);
-					string msg = string.Format(FINISHED_PROCESSING_JOB_MESSAGE_TEMPLATE, job.JobId, job.WorkspaceID, job.TaskType);
-					_agentNotifier.NotifyAgent(LogCategory.Info, msg);
-					LogFinishingExecuteTask(job);
+				LogJobState(job, JobLogState.Finished);
+				string msg = string.Format(FINISHED_PROCESSING_JOB_MESSAGE_TEMPLATE, job.JobId, job.WorkspaceID, job.TaskType);
+				_agentNotifier.NotifyAgent(LogCategory.Info, msg);
+				LogFinishingExecuteTask(job);
 
-					return GetTaskResult(job.JobId);
-				}
-				catch (Exception ex)
-				{
-					RaiseJobExecutionErrorEvent(job, task, ex);
-					return new TaskResult { Status = TaskStatusEnum.Fail, Exceptions = new List<Exception> { ex } };
-				}
-				finally
-				{
-					_taskProvider.ReleaseTask(task);
-				}
+				return GetTaskResult(job.JobId);
+			}
+			catch (Exception ex)
+			{
+				RaiseJobExecutionErrorEvent(job, task, ex);
+				return new TaskResult { Status = TaskStatusEnum.Fail, Exceptions = new List<Exception> { ex } };
+			}
+			finally
+			{
+				_taskProvider.ReleaseTask(task);
 			}
 		}
 

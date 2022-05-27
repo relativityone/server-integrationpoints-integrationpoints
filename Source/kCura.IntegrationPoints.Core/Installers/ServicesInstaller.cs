@@ -64,9 +64,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 		{
 			container.Register(Component.For<ISerializer>().ImplementedBy<JSONSerializer>().UsingFactoryMethod(x =>
 			{
-				var serializer = new JSONSerializer();
 				IAPILog logger = container.Resolve<IHelper>().GetLoggerFactory().GetLogger();
-				return new SerializerWithLogging(serializer, logger);
+				return SerializerWithLogging.Create(logger);
 			}).LifestyleSingleton());
 
 			container.Register(Component.For<IObjectTypeRepository>().ImplementedBy<ObjectTypeRepository>().UsingFactoryMethod(x =>

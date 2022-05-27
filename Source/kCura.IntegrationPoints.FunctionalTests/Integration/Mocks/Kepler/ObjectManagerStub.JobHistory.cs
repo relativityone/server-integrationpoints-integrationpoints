@@ -28,6 +28,21 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 integrationPointId = -1;
                 return false;
             }
+            
+            bool IsArtifactIdCondition(string condition, out int artifactId)
+            {
+                Match match = Regex.Match(condition,
+                    $@"'Artifact ID' == '(\d+)'");
+
+                if (match.Success && int.TryParse(match.Groups[1].Value, out int extractedId))
+                {
+                    artifactId = extractedId;
+                    return true;
+                }
+
+                artifactId = -1;
+                return false;
+            }
 
             bool IsBatchInstanceCondition(string condition, out string batchInstance)
             {
@@ -42,7 +57,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
                 batchInstance = null;
                 return false;
-            }          
+            }
 
             IList<JobHistoryTest> JobHistoryFilter(QueryRequest request, IList<JobHistoryTest> list)
             {
@@ -54,6 +69,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 if (IsBatchInstanceCondition(request.Condition, out string batchInstance))
                 {
                     return list.Where(x => x.BatchInstance == batchInstance).ToList();
+                }
+
+                if (IsArtifactIdCondition(request.Condition, out int artifactId))
+                {
+                    return list.Where(x => x.ArtifactId == artifactId).ToList();
                 }
 
                 return new List<JobHistoryTest>();
