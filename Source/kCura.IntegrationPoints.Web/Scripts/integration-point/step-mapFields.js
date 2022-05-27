@@ -323,6 +323,20 @@ ko.validation.insertValidationMessage = function (element) {
 		this.ImageImport.subscribe(function (value) {
 			setCopyFilesLabel(value);
 			if (value === "true") {
+				// 
+				// HERE PROBABLY WE SHOULD TEMPORARILY SAVE CURRENT MAPPING - TO BE ABLE TO RESTORE IT IF USER COMEC BACK TO ImageImport == false
+				//
+				try {
+					console.log(self)
+					console.log(self.sourceMapped)
+					console.log(self.sourceMapped["Symbol(_latestValue)"])
+					console.log(self.sourceMapped[_latestValue])
+					console.log(ko)
+					console.log(ko.sourceMapped)
+				} catch (e) {
+					console.log(e)
+                }
+				
 				root.utils.UI.disable("#fieldMappings", true);
 				self.UseFolderPathInformation("false");
 				self.UseDynamicFolderPath("false");
@@ -779,6 +793,7 @@ ko.validation.insertValidationMessage = function (element) {
 		}
 
 		this.applyMapping = function (mapping) {
+			console.log("Mapping in applyMapping", mapping);
 			var mapped = mapHelper.getMapped(self.sourceFields, self.destinationFields, mapping, 'sourceField', 'destinationField');
 			var sourceMapped = mapped[0];
 			var destinationMapped = mapped[1];
