@@ -11,8 +11,8 @@ namespace kCura.IntegrationPoints.Web.Installers
 		public static IWindsorContainer AddControllers(this IWindsorContainer container)
 		{
 			container.Register(Classes.FromThisAssembly().BasedOn<IController>().LifestyleTransient());
-			container.Register(Classes.FromThisAssembly().BasedOn<IHub>().LifestyleTransient());
-			container.Register(Classes.FromThisAssembly().BasedOn<IHttpController>().LifestyleTransient());
+            container.Register(Classes.FromThisAssembly().BasedOn<IHub>().LifestyleTransient());
+            container.Register(Classes.FromThisAssembly().BasedOn<IHttpController>().LifestyleTransient());
 
 			return container;
 		}
