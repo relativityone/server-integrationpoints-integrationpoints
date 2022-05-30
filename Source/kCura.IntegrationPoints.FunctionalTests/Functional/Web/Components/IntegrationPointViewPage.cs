@@ -6,12 +6,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 {
 	using _ = IntegrationPointViewPage;
 
+	[UseExternalFrame]
 	[WaitUntilOverlayMissing(TriggerEvents.Init, PresenceTimeout = 10, AbsenceTimeout = 30, ThrowOnPresenceFailure = false, ThrowOnAbsenceFailure = false)]
-	internal class IntegrationPointViewPage : WorkspacePage<_>
+	internal class IntegrationPointViewPage : ExternalFramedPage<_>
 	{
-		[WaitUntilEnabled]
+		[FindById("runId")]
 		[WaitUntilOverlayMissing(TriggerEvents.BeforeAccess, PresenceTimeout = 10, AbsenceTimeout = 30, ThrowOnPresenceFailure = false, ThrowOnAbsenceFailure = false)]
-		public Link<IntegrationPointRunPopup, _> Run { get; private set; }
+		public ConsoleButton<IntegrationPointRunPopup, _> Run { get; private set; }
 
 		[FindByTitle("Save as a Profile")]
 		public Link<IntegrationPointSaveAsProfilePopup, _> SaveAsProfile { get; private set; }
@@ -20,9 +21,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		
 		public _ RunIntegrationPoint(string integrationPointName)
 		{
-			return Run.WaitTo.Within(60).BeVisible()
-				.Run.ClickAndGo()
-				.OK.ClickAndGo()
+			var runResult = Run.WaitTo.Within(60).BeVisible();
+				
+			var runResult1 = runResult.Run.ClickAndGo();
+				
+			return runResult1.OK.ClickAndGo()
 				.WaitUntilJobCompleted(integrationPointName);
 		}
 

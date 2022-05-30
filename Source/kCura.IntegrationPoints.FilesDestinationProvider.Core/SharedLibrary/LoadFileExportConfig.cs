@@ -43,5 +43,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 		public int HttpErrorNumberOfRetries { get; } = 20;
 
 		public int HttpErrorWaitTimeInSeconds { get; } = 10;
-	}
+
+        public string WebApiServiceUrl => throw new System.NotImplementedException();
+    }
 }

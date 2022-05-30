@@ -94,7 +94,7 @@ function generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPoi
     var integrationPoint = {};
 
     ctx.fieldNameToFieldIdMap.forEach(function (value, key) {
-        var trimmedKey = key.replaceAll(" ", "");
+        var trimmedKey = key.toString().replace(/\s/g, '');
         try {
             var val = JSON.parse(ctx.backingModelData[value]);
         } catch (e) {

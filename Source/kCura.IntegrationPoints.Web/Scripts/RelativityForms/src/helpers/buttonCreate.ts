@@ -4,6 +4,7 @@ import { postCreateIntegrationPointProfileRequest, postJobAPIRequest, prepareGet
 export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number) {
     return consoleApi.generate.button({
         innerText: "Run",
+        id: "runId",
         disabled: !enabled,
         onclick: function () {
             function generateRunMessage() {
