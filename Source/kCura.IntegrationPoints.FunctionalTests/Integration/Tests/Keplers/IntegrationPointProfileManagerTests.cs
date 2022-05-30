@@ -7,6 +7,7 @@ using Relativity.IntegrationPoints.Services;
 using Relativity.IntegrationPoints.Services.Models;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -54,10 +55,20 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             IntegrationPointModel result = await _sut.CreateIntegrationPointProfileFromIntegrationPointAsync(SourceWorkspace.ArtifactId, request.IntegrationPoint.ArtifactId, profileName).ConfigureAwait(false);
 
             //Assert
+            IntegrationPointTest existingIntegrationPoint = SourceWorkspace.IntegrationPoints.Where(x => x.ArtifactId == request.IntegrationPoint.ArtifactId).FirstOrDefault();
             IntegrationPointProfileTest expectedProfile = SourceWorkspace.IntegrationPointProfiles.Where(x => x.ArtifactId == result.ArtifactId).FirstOrDefault();
+            //existingIntegrationPoint.EmailNotificationRecipients = existingIntegrationPoint.EmailNotificationRecipients ?? "";
+            //existingIntegrationPoint.LogErrors = existingIntegrationPoint.LogErrors ?? false;
+
             expectedProfile.Should().NotBeNull();
             expectedProfile.Name.Should().Be(profileName);
-            AssertCreatedIntegrationPointProfile(request.IntegrationPoint, expectedProfile);
+            expectedProfile.SourceProvider.Should().Be(existingIntegrationPoint.SourceProvider);
+            expectedProfile.DestinationProvider.Should().Be(existingIntegrationPoint.DestinationProvider);
+            expectedProfile.EmailNotificationRecipients.Should().BeEquivalentTo(existingIntegrationPoint.EmailNotificationRecipients);
+            expectedProfile.Type.Should().Be(existingIntegrationPoint.Type);
+            expectedProfile.LogErrors.Should().Be(existingIntegrationPoint.LogErrors);
+            expectedProfile.OverwriteFields = existingIntegrationPoint.OverwriteFields;
+            existingIntegrationPoint.DestinationConfiguration.Should().BeEquivalentTo(expectedProfile.DestinationConfiguration);           
         }
 
         [IdentifiedTest("EC4158B6-785B-42BD-9779-CA8851F6CA03")]
@@ -157,8 +168,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
                     sourceProviderId = (int)integrationPoint.SourceProvider;
                     destinationProviderId = (int)integrationPoint.DestinationProvider;
                     type = (int)integrationPoint.Type;
-                    emailNotificationRecipients = integrationPoint.EmailNotificationRecipients ?? "";
-                    logErrors = integrationPoint.LogErrors == null ? false : logErrors;
+                    emailNotificationRecipients = integrationPoint.EmailNotificationRecipients;
+                    logErrors = (bool)integrationPoint.LogErrors;
                     break;
                 case RequestType.Update:
                     IntegrationPointProfileTest integrationPointProfile = SourceWorkspace.Helpers.IntegrationPointProfileHelper.CreateSavedSearchIntegrationPointProfile(_destinationWorkspace);
@@ -230,26 +241,19 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             expectedProfile.LogErrors.Should().Be(integrationPoint.LogErrors);
             expectedProfile.OverwriteFields.ArtifactID = integrationPoint.OverwriteFieldsChoiceId;
 
-            //if (!string.IsNullOrEmpty(expectedProfile.DestinationConfiguration))
-            //{
-            //    RelativityProviderDestinationConfigurationBackwardCompatibility expectedProfileDestinationConfig = Serializer.Deserialize<RelativityProviderDestinationConfigurationBackwardCompatibility>(expectedProfile.DestinationConfiguration);
-            //    expectedProfileDestinationConfig.ArtifactTypeID.Should().Be(((RelativityProviderDestinationConfiguration)integrationPoint.DestinationConfiguration).ArtifactTypeID);
-            //    expectedProfileDestinationConfig.CaseArtifactId.Should().Be(((RelativityProviderDestinationConfiguration)integrationPoint.DestinationConfiguration).CaseArtifactId);
-            //    expectedProfileDestinationConfig.ImportNativeFile.Should().Be(((RelativityProviderDestinationConfiguration)integrationPoint.DestinationConfiguration).ImportNativeFile);
-            //    expectedProfileDestinationConfig.UseFolderPathInformation.Should().Be(((RelativityProviderDestinationConfiguration)integrationPoint.DestinationConfiguration).UseFolderPathInformation);
-            //    expectedProfileDestinationConfig.FolderPathSourceField.Should().Be(((RelativityProviderDestinationConfiguration)integrationPoint.DestinationConfiguration).FolderPathSourceField);
-            //    expectedProfileDestinationConfig.FieldOverlayBehavior.Should().Be(((RelativityProviderDestinationConfiguration)integrationPoint.DestinationConfiguration).FieldOverlayBehavior);
-            //    expectedProfileDestinationConfig.DestinationFolderArtifactId.Should().Be(((RelativityProviderDestinationConfiguration)integrationPoint.DestinationConfiguration).DestinationFolderArtifactId);
-            //}
-            //if (!string.IsNullOrEmpty(expectedProfile.SourceConfiguration))
-            //{
-            //    RelativityProviderSourceConfigurationBackwardCompatibility expectedProfileSourceConfig = Serializer.Deserialize<RelativityProviderSourceConfigurationBackwardCompatibility>(expectedProfile.SourceConfiguration);
-            //    expectedProfileSourceConfig.SavedSearchArtifactId.Should().Be(((RelativityProviderSourceConfiguration)integrationPoint.SourceConfiguration).SavedSearchArtifactId);
-            //    expectedProfileSourceConfig.SourceWorkspaceArtifactId.Should().Be(((RelativityProviderSourceConfiguration)integrationPoint.SourceConfiguration).SourceWorkspaceArtifactId);
-            //    expectedProfileSourceConfig.TypeOfExport.Should().Be(((RelativityProviderSourceConfiguration)integrationPoint.SourceConfiguration).TypeOfExport);                
-            //}
+            if (!string.IsNullOrEmpty(expectedProfile.DestinationConfiguration))
+            {
+                RelativityProviderDestinationConfiguration expectedProfileDestinationConfig = Serializer.Deserialize<RelativityProviderDestinationConfiguration>(expectedProfile.DestinationConfiguration);
+                expectedProfileDestinationConfig.ArtifactTypeID.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).ArtifactTypeID);
+                expectedProfileDestinationConfig.CaseArtifactId.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).CaseArtifactId);
+                expectedProfileDestinationConfig.ImportNativeFile.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).ImportNativeFile);
+                expectedProfileDestinationConfig.UseFolderPathInformation.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).UseFolderPathInformation);
+                expectedProfileDestinationConfig.FolderPathSourceField.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).FolderPathSourceField);
+                expectedProfileDestinationConfig.FieldOverlayBehavior.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).FieldOverlayBehavior);
+                expectedProfileDestinationConfig.DestinationFolderArtifactId.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).DestinationFolderArtifactId);
+            }           
         }
-
+        
         private void PrepareDestinationWorkspace()
         {
             int destinationWorkspaceArtifactId = ArtifactProvider.NextId();

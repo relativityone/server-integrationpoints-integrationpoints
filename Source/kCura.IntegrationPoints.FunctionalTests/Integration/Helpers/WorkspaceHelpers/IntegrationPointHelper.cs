@@ -77,6 +77,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 				CaseArtifactId = destinationWorkspace.ArtifactId,
 				WebServiceURL = @"//some/service/url/relativity"				
 			});
+			integrationPoint.LogErrors = false;
+			integrationPoint.EmailNotificationRecipients = string.Empty;
 			integrationPoint.SourceProvider = sourceProvider.ArtifactId;
 			integrationPoint.EnableScheduler = true;
 			integrationPoint.ScheduleRule = ScheduleRuleTest.CreateWeeklyRule(
