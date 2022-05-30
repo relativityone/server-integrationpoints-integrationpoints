@@ -1,7 +1,6 @@
 ﻿using System;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
@@ -15,7 +14,6 @@ using Moq;
 using NUnit.Framework;
 using Relativity;
 using Relativity.API;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Agent.Tests
 {
@@ -39,7 +37,6 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		private readonly string _destinationConfigurationString = "Destination Configuration";
 
 		private RelativitySyncConstrainsChecker _instance;
-		private Mock<IToggleProvider> _toggleProvider;
 
 		[SetUp]
 		public void SetUp()
@@ -84,13 +81,10 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			_providerTypeService.Setup(s => s.GetProviderType(_sourceProviderId, _destinationProviderId))
 				.Returns(ProviderType.Relativity);
 
-			_toggleProvider = new Mock<IToggleProvider>();
-			_toggleProvider.Setup(x => x.IsEnabled<EnableSyncImageFlowToggle>()).Returns(true);
-
 			_jobHistoryService = new Mock<IJobHistoryService>();
 
 			_instance = new RelativitySyncConstrainsChecker(_integrationPointService.Object,
-				_providerTypeService.Object, _toggleProvider.Object, _configurationDeserializer.Object, log.Object);
+				_providerTypeService.Object, _configurationDeserializer.Object, log.Object);
 		}
 
 		[Test]
@@ -128,24 +122,6 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			_sourceConfiguration.TypeOfExport = typeOfExport;
 			_importSettings.ImageImport = imageImport;
 			_importSettings.ProductionImport = productionImport;
-
-			// Act
-			bool result = _instance.ShouldUseRelativitySync(_job);
-
-			// Assert
-			return result;
-		}
-
-		[TestCase(SourceConfiguration.ExportType.SavedSearch, true, ExpectedResult = true)]
-		[TestCase(SourceConfiguration.ExportType.SavedSearch, false, ExpectedResult = false)]
-		public bool ShouldUseRelativitySync_ShouldRespectSyncImageFlowToggle(SourceConfiguration.ExportType typeOfExport, bool toggleEnabled)
-		{
-			// Arrange
-			_sourceConfiguration.TypeOfExport = typeOfExport;
-			_importSettings.ImageImport = true;
-			_importSettings.ProductionImport = false;
-
-			_toggleProvider.Setup(x => x.IsEnabled<EnableSyncImageFlowToggle>()).Returns(toggleEnabled);
 
 			// Act
 			bool result = _instance.ShouldUseRelativitySync(_job);
