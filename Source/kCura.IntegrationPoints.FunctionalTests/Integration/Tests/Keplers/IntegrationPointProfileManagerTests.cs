@@ -74,7 +74,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         {
             //Arrange
             CreateIntegrationPointRequest request = SetUpInitialDataAndGetRequest(RequestType.Update, importNativeFile: false,
-                logErrors: true, emailNotificationRecipients: "test@test.com", fieldOverlayBehavior: "Replace Values", ImportOverwriteModeEnum.OverlayOnly);
+                logErrors: true, emailNotificationRecipients: "test@test.com", fieldOverlayBehavior: Const.FieldOverlayBehaviorName.REPLACE_VALUES, ImportOverwriteModeEnum.OverlayOnly);
 
             //Act
             IntegrationPointModel result = await _sut.UpdateIntegrationPointProfileAsync(request).ConfigureAwait(false);
