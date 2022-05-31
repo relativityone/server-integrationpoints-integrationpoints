@@ -16,11 +16,13 @@ namespace kCura.IntegrationPoints.RelativitySync
 	{
 		private readonly IHelper _helper;
         private readonly IRelativityObjectManager _relativityObjectManager;
+        private readonly IAPILog _logger;
 
         public JobHistorySyncService(IHelper helper, IRelativityObjectManager relativityObjectManager)
 		{
 			_helper = helper;
 			_relativityObjectManager = relativityObjectManager;
+			_logger = helper.GetLoggerFactory().GetLogger().ForContext<JobHistorySyncService>();
 		}
 
 		public async Task<RelativityObject> GetLastJobHistoryWithErrorsAsync(int workspaceID,
@@ -119,7 +121,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		{
 			using (IObjectManager manager = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
-				bool hasErrors = await HasErrorsAsync(job, manager).ConfigureAwait(false);
+				bool hasErrors = await HasErrorsAsync(job).ConfigureAwait(false);
 				await UpdateFinishedJobAsync(job, JobStoppedStateRef(), manager, hasErrors).ConfigureAwait(false);
 			}
 		}
@@ -128,7 +130,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		{
 			using (IObjectManager manager = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
-				bool hasErrors = await HasErrorsAsync(job, manager).ConfigureAwait(false);
+				bool hasErrors = await HasErrorsAsync(job).ConfigureAwait(false);
 				await UpdateFinishedJobAsync(job, JobSuspendingStateRef(), manager, hasErrors).ConfigureAwait(false);
 			}
 		}
@@ -137,7 +139,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		{
 			using (IObjectManager manager = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
-				bool hasErrors = await HasErrorsAsync(job, manager).ConfigureAwait(false);
+				bool hasErrors = await HasErrorsAsync(job).ConfigureAwait(false);
 				await UpdateFinishedJobAsync(job, JobSuspendedStateRef(), manager, hasErrors).ConfigureAwait(false);
 			}
 		}
@@ -181,7 +183,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			using (IObjectManager manager = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
 				ChoiceRef status;
-				bool hasErrors = await HasErrorsAsync(job, manager).ConfigureAwait(false);
+				bool hasErrors = await HasErrorsAsync(job).ConfigureAwait(false);
 				if (hasErrors)
 				{
 					status = JobCompletedWithErrorsStateRef();
@@ -195,7 +197,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 			}
 		}
 
-		private async Task<bool> HasErrorsAsync(IExtendedJob job, IObjectManager manager)
+		private async Task<bool> HasErrorsAsync(IExtendedJob job)
 		{
 			QueryRequest request = new QueryRequest
 			{
@@ -203,11 +205,23 @@ namespace kCura.IntegrationPoints.RelativitySync
 				Condition =
 					$"('{Data.JobHistoryErrorFields.JobHistory}' IN OBJECT [{job.JobHistoryId}]) AND ('{Data.JobHistoryErrorFields.ErrorType}' == CHOICE {ErrorTypeChoices.JobHistoryErrorItem.Guids[0]})"
 			};
-			QueryResult itemLevelErrors = await manager.QueryAsync(job.WorkspaceId, request, 0, 1).ConfigureAwait(false);
+			Data.UtilityDTO.ResultSet<RelativityObject> itemLevelErrors = await _relativityObjectManager.QueryAsync(request, 0, 1).ConfigureAwait(false);
+			_logger.LogInformation("JobHistorySyncService.HasErrors(): Found {itemLevelErrors} from JobHistoryErrorObjects", itemLevelErrors.ResultCount);
 
-			JobHistory jobHistory = _relativityObjectManager.Read<JobHistory>(job.JobHistoryId, ExecutionIdentity.System);
+			QueryRequest requestForJobHistory = new QueryRequest()
+			{
+				ObjectType = JobHistoryRef(),
+				Condition = $"'Artifact ID' == '{job.JobHistoryId}'"
+			};
 
-			return itemLevelErrors.ResultCount > 0 || jobHistory.ItemsWithErrors > 0;
+			List<JobHistory> jobHistoryFromQuery =
+				await _relativityObjectManager.QueryAsync<JobHistory>(requestForJobHistory).ConfigureAwait(false);
+
+			int? jobHistoryItemsWithErrors = jobHistoryFromQuery.Single().ItemsWithErrors;
+			
+			_logger.LogInformation("JobHistorySyncService.HasErrors(): Found {jobHistoryItemsWithErrors} from JobHistory.ItemsWithErrors", jobHistoryItemsWithErrors);
+
+			return itemLevelErrors.ResultCount > 0 || jobHistoryItemsWithErrors > 0;
 		}
 
 		private static Task MarkJobAsFailedAsync(IExtendedJob job, IObjectManager manager)
@@ -295,6 +309,14 @@ namespace kCura.IntegrationPoints.RelativitySync
 			return new RelativityObjectRef
 			{
 				ArtifactID = job.JobHistoryId
+			};
+		}
+		
+		private static ObjectTypeRef JobHistoryRef()
+		{
+			return new ObjectTypeRef
+			{
+				Guid = ObjectTypeGuids.JobHistoryGuid
 			};
 		}
 
