@@ -27,9 +27,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             PrepareDestinationWorkspace();
         }
 
-        [IdentifiedTestCase("A3D65A1A-F453-4DD3-9772-169F69D6FA11", false, true, "email@email.com", "Use Field Settings", ImportOverwriteModeEnum.AppendOnly)]
-        [IdentifiedTestCase("6FBF4847-587C-46F3-945C-325D5AECC441", true, false, "", "Replace Values", ImportOverwriteModeEnum.OverlayOnly)]
-        [IdentifiedTestCase("109F0C6E-6A57-449B-B0CD-700017633865", false, false, "", "Use Field Settings", ImportOverwriteModeEnum.AppendOverlay)]
+        [IdentifiedTestCase("A3D65A1A-F453-4DD3-9772-169F69D6FA11", false, true, "email@email.com", Const.FieldOverlayBehaviorName.USE_FIELD_SETTINGS, ImportOverwriteModeEnum.AppendOnly)]
+        [IdentifiedTestCase("6FBF4847-587C-46F3-945C-325D5AECC441", true, false, "", Const.FieldOverlayBehaviorName.REPLACE_VALUES, ImportOverwriteModeEnum.OverlayOnly)]
+        [IdentifiedTestCase("109F0C6E-6A57-449B-B0CD-700017633865", false, false, "", Const.FieldOverlayBehaviorName.USE_FIELD_SETTINGS, ImportOverwriteModeEnum.AppendOverlay)]
         public async Task CreateIntegrationPointProfileAsync_ShouldReturnCorrectProfile(bool importNativeFile, bool logErrors,
             string emailNotificationRecipients, string fieldOverlayBehavior, ImportOverwriteModeEnum overwriteMode)
         {
@@ -57,8 +57,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             //Assert
             IntegrationPointTest existingIntegrationPoint = SourceWorkspace.IntegrationPoints.Where(x => x.ArtifactId == request.IntegrationPoint.ArtifactId).FirstOrDefault();
             IntegrationPointProfileTest expectedProfile = SourceWorkspace.IntegrationPointProfiles.Where(x => x.ArtifactId == result.ArtifactId).FirstOrDefault();
-            //existingIntegrationPoint.EmailNotificationRecipients = existingIntegrationPoint.EmailNotificationRecipients ?? "";
-            //existingIntegrationPoint.LogErrors = existingIntegrationPoint.LogErrors ?? false;
 
             expectedProfile.Should().NotBeNull();
             expectedProfile.Name.Should().Be(profileName);
@@ -68,7 +66,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             expectedProfile.Type.Should().Be(existingIntegrationPoint.Type);
             expectedProfile.LogErrors.Should().Be(existingIntegrationPoint.LogErrors);
             expectedProfile.OverwriteFields = existingIntegrationPoint.OverwriteFields;
-            existingIntegrationPoint.DestinationConfiguration.Should().BeEquivalentTo(expectedProfile.DestinationConfiguration);           
+            existingIntegrationPoint.DestinationConfiguration.Should().BeEquivalentTo(expectedProfile.DestinationConfiguration);
         }
 
         [IdentifiedTest("EC4158B6-785B-42BD-9779-CA8851F6CA03")]
@@ -140,10 +138,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             {
                 AssertObtainedIntegrationPointProfile(result, expectedProfiles.Single(x => x.ArtifactId == result.ArtifactId));
             }
-        }     
+        }
 
         private CreateIntegrationPointRequest SetUpInitialDataAndGetRequest(RequestType requestType, bool importNativeFile = false, bool logErrors = true, string emailNotificationRecipients = "",
-            string fieldOverlayBehavior = "Use Field Settings", ImportOverwriteModeEnum overwriteMode = ImportOverwriteModeEnum.AppendOnly)
+            string fieldOverlayBehavior = Const.FieldOverlayBehaviorName.USE_FIELD_SETTINGS, ImportOverwriteModeEnum overwriteMode = ImportOverwriteModeEnum.AppendOnly)
         {
             string name = string.Empty;
             int artifactId = 0;
@@ -156,8 +154,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
                 case RequestType.Create:
                     artifactId = ArtifactProvider.NextId();
                     name = $"Integration Point {artifactId}";
-                    sourceProviderId = SourceWorkspace.SourceProviders.Where(x => x.Name == "Relativity").Single().ArtifactId;
-                    destinationProviderId = SourceWorkspace.DestinationProviders.Where(x => x.Name == "Relativity").Single().ArtifactId;
+                    sourceProviderId = SourceWorkspace.SourceProviders.Where(x => x.Name == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY_NAME).Single().ArtifactId;
+                    destinationProviderId = SourceWorkspace.DestinationProviders.Where(x => x.Name == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY_NAME).Single().ArtifactId;
                     type = SourceWorkspace.IntegrationPointTypes.First(x =>
                 x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString()).ArtifactId;
                     break;
@@ -251,14 +249,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
                 expectedProfileDestinationConfig.FolderPathSourceField.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).FolderPathSourceField);
                 expectedProfileDestinationConfig.FieldOverlayBehavior.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).FieldOverlayBehavior);
                 expectedProfileDestinationConfig.DestinationFolderArtifactId.Should().Be(((RelativityProviderDestinationConfigurationBackwardCompatibility)integrationPoint.DestinationConfiguration).DestinationFolderArtifactId);
-            }           
+            }
         }
-        
+
         private void PrepareDestinationWorkspace()
         {
             int destinationWorkspaceArtifactId = ArtifactProvider.NextId();
             _destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace(destinationWorkspaceArtifactId);
-        }    
+        }
 
         private List<FieldMap> GetFieldMapping(int artifactTypeId)
         {
