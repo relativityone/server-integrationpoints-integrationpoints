@@ -14,7 +14,7 @@ In the first stage of decoupling, we should keep all RDO logic unchanged (Job Hi
 ### Run
 
 - User runs the job
-- RIP calls Sync's Kepler endpoint (`SubmitJobAsync`) and pass job configuration in parameters (for example `SyncDocumentJobParameters` DTO for document flow)
+- RIP calls Sync's Kepler endpoint (`SubmitJobAsync`) and pass job configuration in parameters (for example `SyncDocumentJobParameters` DTO for document flow) or we can use SDK and create SyncJobConfiguration on client side and pass just Configuration Artifact ID. Advantage of the first approach is that we will have full control over Sync via Keplers - client don't have to worry about including SDK and its dependencies. He will just instantiate configuration DTOs and pass them as parameters to Kepler - it's the cleanest and I think best possible way. If he wants to utilize our helpers for preparing for example fields mapping, then he can still use SDK.
 - `SubmitJobAsync` returns job ID
 - RIP should not add the job to `ScheduleAgentQueue`, but instead an Integration Point should remember Sync Job ID (for example we can add new field in Job History) and RIP should check if it's completed or errored to change state of `Run`, `Stop` or `Retry Errors` buttons. This can be done via polling, or better - using Azure Event Grid
 - Sync validates parameters and if they are correct stores the job configuration in SyncConfiguration RDO (just like before in `IntegrationPointToSyncConverter`)
