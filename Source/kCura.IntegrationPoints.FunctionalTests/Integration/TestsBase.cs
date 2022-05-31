@@ -295,6 +295,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
             Container.Register(Component.For<IIntegrationPointManager>().ImplementedBy<IntegrationPointManager>().LifestyleTransient());
 			Container.Register(Component.For<IProviderManager>().ImplementedBy<ProviderManager>().LifestyleTransient());
 			Container.Register(Component.For<IIntegrationPointTypeManager>().ImplementedBy<IntegrationPointTypeManager>().LifestyleTransient());
+			Container.Register(Component.For<IIntegrationPointProfileManager>().ImplementedBy<IntegrationPointProfileManager>().LifestyleTransient());
 		}
 
 		private void SetupGlobalSettings()
