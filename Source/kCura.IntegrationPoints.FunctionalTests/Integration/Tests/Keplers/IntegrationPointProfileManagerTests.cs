@@ -40,9 +40,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             IntegrationPointModel result = await _sut.CreateIntegrationPointProfileAsync(request).ConfigureAwait(false);
 
             //Assert
-            IntegrationPointProfileTest expectedProfile = SourceWorkspace.IntegrationPointProfiles.Where(x => x.ArtifactId == result.ArtifactId).FirstOrDefault();
-            expectedProfile.Should().NotBeNull();
-            AssertCreatedIntegrationPointProfile(request.IntegrationPoint, expectedProfile);
+            IntegrationPointProfileTest testedProfile = SourceWorkspace.IntegrationPointProfiles.Where(x => x.ArtifactId == result.ArtifactId).FirstOrDefault();
+            testedProfile.Should().NotBeNull();
+            AssertCreatedIntegrationPointProfile(request.IntegrationPoint, testedProfile);
         }
 
         [IdentifiedTest("6CD0B0CB-0EB2-4291-A22C-4EFFBAC614D6")]
@@ -56,17 +56,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
 
             //Assert
             IntegrationPointTest existingIntegrationPoint = SourceWorkspace.IntegrationPoints.Where(x => x.ArtifactId == request.IntegrationPoint.ArtifactId).FirstOrDefault();
-            IntegrationPointProfileTest expectedProfile = SourceWorkspace.IntegrationPointProfiles.Where(x => x.ArtifactId == result.ArtifactId).FirstOrDefault();
+            IntegrationPointProfileTest testedProfile = SourceWorkspace.IntegrationPointProfiles.Where(x => x.ArtifactId == result.ArtifactId).FirstOrDefault();
 
-            expectedProfile.Should().NotBeNull();
-            expectedProfile.Name.Should().Be(profileName);
-            expectedProfile.SourceProvider.Should().Be(existingIntegrationPoint.SourceProvider);
-            expectedProfile.DestinationProvider.Should().Be(existingIntegrationPoint.DestinationProvider);
-            expectedProfile.EmailNotificationRecipients.Should().BeEquivalentTo(existingIntegrationPoint.EmailNotificationRecipients);
-            expectedProfile.Type.Should().Be(existingIntegrationPoint.Type);
-            expectedProfile.LogErrors.Should().Be(existingIntegrationPoint.LogErrors);
-            expectedProfile.OverwriteFields = existingIntegrationPoint.OverwriteFields;
-            existingIntegrationPoint.DestinationConfiguration.Should().BeEquivalentTo(expectedProfile.DestinationConfiguration);
+            testedProfile.Should().NotBeNull();
+            testedProfile.Name.Should().Be(profileName);
+            testedProfile.SourceProvider.Should().Be(existingIntegrationPoint.SourceProvider);
+            testedProfile.DestinationProvider.Should().Be(existingIntegrationPoint.DestinationProvider);
+            testedProfile.EmailNotificationRecipients.Should().BeEquivalentTo(existingIntegrationPoint.EmailNotificationRecipients);
+            testedProfile.Type.Should().Be(existingIntegrationPoint.Type);
+            testedProfile.LogErrors.Should().Be(existingIntegrationPoint.LogErrors);           
+            Const.Choices.OverwriteFields.Where(x => x.ArtifactID == testedProfile.OverwriteFields.ArtifactID).FirstOrDefault().Name.Should().Be(existingIntegrationPoint.OverwriteFields.Name);            
+            existingIntegrationPoint.DestinationConfiguration.Should().BeEquivalentTo(testedProfile.DestinationConfiguration);
         }
 
         [IdentifiedTest("EC4158B6-785B-42BD-9779-CA8851F6CA03")]
@@ -80,9 +80,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             IntegrationPointModel result = await _sut.UpdateIntegrationPointProfileAsync(request).ConfigureAwait(false);
 
             //Assert
-            IntegrationPointProfileTest expectedProfile = SourceWorkspace.IntegrationPointProfiles.Where(x => x.ArtifactId == result.ArtifactId).FirstOrDefault();
-            expectedProfile.Should().NotBeNull();
-            AssertCreatedIntegrationPointProfile(request.IntegrationPoint, expectedProfile);
+            IntegrationPointProfileTest testedProfile = SourceWorkspace.IntegrationPointProfiles.Where(x => x.ArtifactId == result.ArtifactId).FirstOrDefault();
+            testedProfile.Should().NotBeNull();
+            AssertCreatedIntegrationPointProfile(request.IntegrationPoint, testedProfile);
         }
 
         [IdentifiedTest("C994A507-5495-42D3-BE10-62A56B971C78")]
