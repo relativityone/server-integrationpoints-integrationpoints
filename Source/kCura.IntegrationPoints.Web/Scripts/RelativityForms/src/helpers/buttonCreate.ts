@@ -1,52 +1,98 @@
 ﻿import { IConvenienceApi } from "../types/convenienceApi";
 import { postCreateIntegrationPointProfileRequest, postJobAPIRequest, prepareGetImportProviderDocumentAPIRequest, prepareGetViewErrorsPath } from "./buttonFunctionalities";
+//import  "./../media/";
 
-export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number) {
+export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number, lqMessageContainer:Element) {
     return consoleApi.generate.button({
         innerText: "Run",
         disabled: !enabled,
-        onclick: function () {
+        onclick: function (e) {
             function generateRunMessage() {
                 return "Are you sure you want to run this job now?";
             }
 
-            return convenienceApi.modalService.confirm({
+            var contentContainer = document.createElement("div");
+            contentContainer.innerText = generateRunMessage();
+
+            var model = {
                 title: "Run",
-                message: generateRunMessage(),
-                acceptText: "Ok",
-                cancelText: "Cancel",
-                acceptAction: function () {
-                    return postJobAPIRequest(convenienceApi, workspaceId, integrationPointId)
-                        .then(function (result) {
-                            if (!result.ok) {
-                                let res = result.json();
+                theme: "confirmation",
+                contentElement: contentContainer,
+                actions: [
+                    {
+                        text: "Ok",
+                        click: function click() {
+                            contentContainer.innerHTML = '<rwc-leaderboard loading loading-header="Validating your data..." loading-information="Please wait a few seconds..."></rwc-leaderboard>'
+                            model.actions = [];
 
-                                res.then(res => {
-                                    let messages = ["Failed to submit integration job: "]; // header
-                                    res.errors.forEach(x => {
-                                        messages.push(x.message);
+                            let promise = postJobAPIRequest(convenienceApi, workspaceId, integrationPointId);
+                            promise.then(function (result) {
+                                console.log(result.ok);
+                                if (!result.ok) {
+                                    let res = result.json();
+
+                                    res.then(res => {
+                                        let header = "Failed to submit integration job: ";
+                                        let messages = '["';
+                                        res.errors.forEach(x => {
+                                            messages += x.message + '",';
+                                        })
+
+                                        messages = messages.slice(0, -1) + ']';
+
+                                        createMessageContainer(messages, "error", lqMessageContainer, header);
+
+                                        // @ts-ignore
+                                        model.close("Close model");
                                     })
+                                } else {
+                                    createMessageContainer('["Job started!"]', "success", lqMessageContainer, "");
 
-                                    // if there is only header and one error message, then header would be omitted 
-                                    // and error message would be displayed alone 
-                                    // issue - https://jira.kcura.com/browse/REL-334906 <- probably won't be fixed
-                                    // as workaround we join header and error and display them both in place of header
-                                    if (messages.length === 2) {
-                                        let message = messages.join(" ");
-                                        return ctx.setErrorSummary([message]);
-                                    }
+                                    // @ts-ignore
+                                    model.accept("Accept run");
+                                }
+                            })
+                                .catch(err => {
+                                    console.log(err);
+                                    // @ts-ignore
+                                    model.cancel("Unable to run");
+                                });
+                        }
+                    },
+                    {
+                        text: "Cancel",
+                        click: function click() {
+                            // @ts-ignore
+                            model.cancel("Cancel run");
+                        }
+                    }
+                ]
+            };
 
-                                    return ctx.setErrorSummary(messages, true);
-                                })
-                            }
-                        })
-                        .catch(err => {
-                            console.log(err)
-                        });
-                }
-            });
+            return convenienceApi.modalService.openCustomModal(model);
         }
-    })
+    });
+}
+
+function createMessageContainer(message: string, theme: string, lqMessageContainer: Element, title: string) {
+    let messageContainer = document.createElement("rwc-message-container");
+    messageContainer.setAttribute("theme", theme);
+    if (theme === "error") {
+        messageContainer.setAttribute("message-collection-title-prefix", title);
+    }
+    messageContainer.setAttribute("messages", message);
+    lqMessageContainer.appendChild(messageContainer); 
+}
+
+export function removeMessageContainers(lqMessageContainer: Element) {
+    let children = lqMessageContainer.childNodes.length;
+    if (children > 1) {
+        for (let i = children-1; i >0; i--) {
+            let parent = lqMessageContainer.childNodes[i].parentNode;
+            parent.removeChild(lqMessageContainer.childNodes[i])
+        }
+    }
+    console.log("cleaned messages");
 }
 
 export function createStopButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number) {
