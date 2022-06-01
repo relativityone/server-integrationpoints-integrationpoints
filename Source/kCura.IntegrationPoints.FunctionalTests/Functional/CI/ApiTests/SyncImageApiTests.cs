@@ -5,7 +5,7 @@ using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI.ApiTests
 {
-    [TestType.MainFlow]
+    [TestType.UI, TestType.MainFlow]
     internal class SyncImageApiTests : TestsBase
     {
         private readonly SyncImageApiTestsImplementation _implementation;

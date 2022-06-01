@@ -1,5 +1,4 @@
 ﻿using Relativity.Testing.Identification;
-using NUnit.Framework;
 using Relativity.Testing.Framework.Web.Navigation;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Components;
 using Atata;
