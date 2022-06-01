@@ -123,7 +123,7 @@ public enum SyncJobStatus
 
 ## Summary
 
-Hhopefully now we have overall look of how separated Sync should work. However there are still some implementation details to figure out and decisions to make:
+Hopefully now we have overall look of how separated Sync should work. However there are still some implementation details to figure out and decisions to make:
 
 - where to store list of jobs? (preferred option: Azure Cosmos DB)
 - how to check job status / cancel the job? (preferred option: Azure Event Grid)
