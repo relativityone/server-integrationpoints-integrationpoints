@@ -1,6 +1,5 @@
 ﻿import { IConvenienceApi } from "../types/convenienceApi";
 import { postCreateIntegrationPointProfileRequest, postJobAPIRequest, prepareGetImportProviderDocumentAPIRequest, prepareGetViewErrorsPath } from "./buttonFunctionalities";
-//import  "./../media/";
 
 export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number, lqMessageContainer:Element) {
     return consoleApi.generate.button({
@@ -22,7 +21,7 @@ export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx
                     {
                         text: "Ok",
                         click: function click() {
-                            contentContainer.innerHTML = '<rwc-leaderboard loading loading-header="Validating your data..." loading-information="Please wait a few seconds..."></rwc-leaderboard>'
+                            contentContainer.innerHTML = '<rwc-leaderboard loading loading-header="Submitting your job..." loading-information="Please wait a few seconds..."></rwc-leaderboard>'
                             model.actions = [];
 
                             let promise = postJobAPIRequest(convenienceApi, workspaceId, integrationPointId);
