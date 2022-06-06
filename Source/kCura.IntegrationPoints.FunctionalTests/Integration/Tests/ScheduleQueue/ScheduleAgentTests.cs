@@ -159,7 +159,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 				.VerifyJobsAreNotLockedByAgent(sut.AgentID, jobsInQueue);
 		}
 
-        [IdentifiedTest("6D71DE00-B990-40C7-AFBB-1F1245A68176")]
+        [IdentifiedTest("DED49CD4-5B3A-4FD9-81C9-CBCCD419CDC5")]
         public void Agent_ShouldProcessAndDelete_WhenUserDoesNotExist()
         {
             // Arrange
