@@ -298,7 +298,7 @@ namespace kCura.ScheduleQueue.AgentBase
                     LogValidationJobFailed(job, result);
                 }
 
-                return true;
+                return result.IsValid;
             }
             catch (NotFoundException ex)
             {
