@@ -21,6 +21,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Logging;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Extensions;
@@ -35,6 +36,7 @@ using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Choice;
+using Relativity.Services.Exceptions;
 using Component = Castle.MicroKernel.Registration.Component;
 
 namespace kCura.IntegrationPoints.Agent
@@ -104,7 +106,7 @@ namespace kCura.IntegrationPoints.Agent
             JobExecutor.JobExecutionError += OnJobExecutionError;
         }
 
-        protected override TaskResult ProcessJob(Job job)
+        protected override TaskResult ProcessJob(Job job, ValidationResult validationResult = null)
         {
             using (StartMemoryUsageMetricReporting(job))
             {
@@ -112,6 +114,12 @@ namespace kCura.IntegrationPoints.Agent
                 using (ripContainerForSync.Resolve<IJobContextProvider>().StartJobContext(job))
                 {
                     SetWebApiTimeout();
+
+                    if (validationResult != null && !validationResult.IsValid)
+                    {
+                        CreateJobHistoryOnFailedValidation(job, validationResult);
+                        return new TaskResult();
+                    }
 
                     if (ShouldUseRelativitySync(job, ripContainerForSync))
                     {
@@ -153,6 +161,7 @@ namespace kCura.IntegrationPoints.Agent
             }
         }
 
+
         private IDisposable StartMemoryUsageMetricReporting(Job job)
         {
             return _agentLevelContainer.Value.Resolve<IMemoryUsageReporter>().ActivateTimer(_TIMER_INTERVAL, job.JobId,
@@ -183,6 +192,31 @@ namespace kCura.IntegrationPoints.Agent
                 int timeoutMs = (int)timeout.Value.TotalMilliseconds;
                 kCura.WinEDDS.Service.Settings.DefaultTimeOut = timeoutMs;
                 Logger.LogInformation("Relativity WebAPI timeout set to {timeout}ms.", timeoutMs);
+            }
+        }
+
+        private void CreateJobHistoryOnFailedValidation(Job job, ValidationResult validationResult)
+        {
+            using (_agentLevelContainer.Value.Resolve<IJobContextProvider>().StartJobContext(job))
+            {
+                ITaskFactoryJobHistoryServiceFactory taskFactoryJobHistoryServiceFactory =
+                    _agentLevelContainer.Value.Resolve<ITaskFactoryJobHistoryServiceFactory>();
+                IIntegrationPointRepository integrationPointRepository =
+                    _agentLevelContainer.Value.Resolve<IIntegrationPointRepository>();
+                IntegrationPoint integrationPoint =
+                    integrationPointRepository.ReadWithFieldMappingAsync(job.RelatedObjectArtifactID).GetAwaiter().GetResult();
+
+                if (integrationPoint == null)
+                {
+                    throw new NullReferenceException(
+                        $"Unable to retrieve the integration point for the following job: {job.JobId}");
+                }
+
+                ITaskFactoryJobHistoryService taskFactoryJobHistoryService =
+                    taskFactoryJobHistoryServiceFactory.CreateJobHistoryService(integrationPoint);
+                taskFactoryJobHistoryService.SetJobIdOnJobHistory(job);
+                taskFactoryJobHistoryService.UpdateJobHistoryOnFailedValidation(job,
+                    new NotFoundException(validationResult.Message));
             }
         }
 

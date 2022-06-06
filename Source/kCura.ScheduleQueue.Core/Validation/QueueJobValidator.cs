@@ -2,6 +2,7 @@
 using kCura.IntegrationPoints.Data;
 using Relativity;
 using Relativity.API;
+using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 
@@ -24,7 +25,7 @@ namespace kCura.ScheduleQueue.Core.Validation
 				return validationResult;
 			}
 
-            validationResult = await ValidateUserExists(job.SubmittedBy).ConfigureAwait(false);
+            validationResult = await ValidateUserExistsAsync(job.SubmittedBy).ConfigureAwait(false);
             if (!validationResult.IsValid)
             {
                 return validationResult;
@@ -66,7 +67,7 @@ namespace kCura.ScheduleQueue.Core.Validation
 			}
 		}
 
-		private async Task<ValidationResult> ValidateUserExists(int userId)
+		private async Task<ValidationResult> ValidateUserExistsAsync(int userId)
         {
             using (IObjectManager proxy = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
             {
@@ -78,7 +79,12 @@ namespace kCura.ScheduleQueue.Core.Validation
 
                 QueryResultSlim result = await proxy.QuerySlimAsync(-1, request, 0, 1).ConfigureAwait(false);
 
-                return result.TotalCount > 0 ? ValidationResult.Success : ValidationResult.Failed($"User {userId} does not exist anymore");
+                if (result.TotalCount > 0)
+                {
+                    return ValidationResult.Success;
+                }
+                
+                throw new NotFoundException($"User (userId - {userId}) who scheduled the job no longer exists, so the job schedule will be cancelled. To enable the schedule again, edit the Integration Point and on Save schedule will be restored");
             }
 		}
 	}

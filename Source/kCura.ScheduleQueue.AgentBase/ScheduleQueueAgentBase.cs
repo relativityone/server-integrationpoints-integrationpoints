@@ -15,6 +15,7 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Services;
 using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
+using Relativity.Services.Exceptions;
 
 namespace kCura.ScheduleQueue.AgentBase
 {
@@ -192,68 +193,76 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void ProcessQueueJobs()
 		{
-			try
-			{
-				Job nextJob = GetNextQueueJob();
-				if (nextJob == null)
-				{
-					Logger.LogInformation("No active job found in Schedule Agent Queue table");
-					DidWork = false;
-					return;
-				}
+            try
+            {
+                Job nextJob = GetNextQueueJob();
+                if (nextJob == null)
+                {
+                    Logger.LogInformation("No active job found in Schedule Agent Queue table");
+                    DidWork = false;
+                    return;
+                }
 
-				TaskResult jobResult = new TaskResult() { Status = TaskStatusEnum.None };
-				while (nextJob != null)
-				{
-					AgentCorrelationContext context = GetCorrelationContext(nextJob);
-					using (Logger.LogContextPushProperties(context))
-					{
-						LogJobInformation(nextJob);
-
-						bool isJobValid = PreExecuteJobValidation(nextJob);
-						if (!isJobValid)
-						{
-							Logger.LogInformation("Deleting invalid Job {jobId}...", nextJob.JobId);
-
-							_jobService.DeleteJob(nextJob.JobId);
-							nextJob = GetNextQueueJob();
-							continue;
-						}
-
-						Logger.LogInformation("Starting Job {jobId} processing...", nextJob.JobId);
-
-						jobResult = ProcessJob(nextJob);
-
-						if (jobResult.Status == TaskStatusEnum.DrainStopped)
-						{
-							Logger.LogInformation("Job {jobId} has been drain-stopped. No other jobs will be picked up.", nextJob.JobId);
-							_jobService.FinalizeDrainStoppedJob(nextJob);
-							break;
-						}
-						else
+                TaskResult jobResult = new TaskResult() { Status = TaskStatusEnum.None };
+                while (nextJob != null)
+                {
+                    AgentCorrelationContext context = GetCorrelationContext(nextJob);
+                    using (Logger.LogContextPushProperties(context))
+                    {
+                        LogJobInformation(nextJob);
+                        bool isJobValid = false;
+                        try
                         {
-							Logger.LogInformation("Job {jobId} has been processed with status {status}", nextJob.JobId, jobResult.Status.ToString());
-							FinalizeJobExecution(nextJob, jobResult);
-						}
-					}
+                            isJobValid = PreExecuteJobValidation(nextJob);
+                        }
+                        catch (NotFoundException ex)
+                        {
+                            ProcessJob(nextJob, ValidationResult.Failed(ex.Message));
+                        }
 
-					if (!IsKubernetesMode)
-					{
-						nextJob = GetNextQueueJob(); // assumptions: it will not throw exception
-					}
-					else
-					{
-						break;
-					}
-				}
+                        if (!isJobValid)
+                        {
+                            Logger.LogInformation("Deleting invalid Job {jobId}...", nextJob.JobId);
 
-				if (ToBeRemoved)
-				{
-					_jobService.UnlockJobs(_agentId.Value); // what if exception
-				}
+                            _jobService.DeleteJob(nextJob.JobId);
+                            nextJob = GetNextQueueJob();
+                            continue;
+                        }
 
-				DidWork = true;
-			}
+                        Logger.LogInformation("Starting Job {jobId} processing...", nextJob.JobId);
+
+                        jobResult = ProcessJob(nextJob);
+
+                        if (jobResult.Status == TaskStatusEnum.DrainStopped)
+                        {
+                            Logger.LogInformation(
+                                "Job {jobId} has been drain-stopped. No other jobs will be picked up.", nextJob.JobId);
+                            _jobService.FinalizeDrainStoppedJob(nextJob);
+                            break;
+                        }
+
+                        Logger.LogInformation("Job {jobId} has been processed with status {status}", nextJob.JobId,
+                            jobResult.Status.ToString());
+                        FinalizeJobExecution(nextJob, jobResult);
+                    }
+
+                    if (!IsKubernetesMode)
+                    {
+                        nextJob = GetNextQueueJob(); // assumptions: it will not throw exception
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                if (ToBeRemoved)
+                {
+                    _jobService.UnlockJobs(_agentId.Value); // what if exception
+                }
+
+                DidWork = true;
+            }
 			catch (Exception ex)
 			{
 				Logger.LogError(ex, "Unhandled exception occurred while processing queue jobs. Unlocking the job");
@@ -280,17 +289,22 @@ namespace kCura.ScheduleQueue.AgentBase
 		}
 
 		private bool PreExecuteJobValidation(Job job)
-		{
-			try
-			{
-				ValidationResult result = _queueJobValidator.ValidateAsync(job).GetAwaiter().GetResult();
-				if (!result.IsValid)
-				{
-					LogValidationJobFailed(job, result);
-				}
+        {
+            try
+            {
+                ValidationResult result = _queueJobValidator.ValidateAsync(job).GetAwaiter().GetResult();
+                if (!result.IsValid)
+                {
+                    LogValidationJobFailed(job, result);
+                }
 
-				return result.IsValid;
-			}
+                return true;
+            }
+            catch (NotFoundException ex)
+            {
+                Logger.LogError(ex.Message);
+                throw;
+            }
 			catch (Exception e)
 			{
 				Logger.LogError(e, "Error occurred during Queue Job Validation. Return job as valid and try to run.");
@@ -299,7 +313,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		}
 
-		protected abstract TaskResult ProcessJob(Job job);
+		protected abstract TaskResult ProcessJob(Job job, ValidationResult validationResult = null);
 
 		private void FinalizeJobExecution(Job job, TaskResult taskResult)
 		{
