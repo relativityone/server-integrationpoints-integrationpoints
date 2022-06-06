@@ -12,7 +12,8 @@ using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Tests.Common.Attributes;
-using Relativity.Sync.Transfer;
+using Relativity.Sync.Toggles;
+using Relativity.Sync.Toggles.Service;
 
 namespace Relativity.Sync.Tests.Unit.Executors.Validation
 {
@@ -27,7 +28,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
 		private Mock<IValidationConfiguration> _configurationFake;
 		private Mock<IGroupManager> _groupManagerFake;
-		private Mock<INonAdminCanSyncUsingLinks> _nonAdminCanSyncUsingLinksFake; 
+		private Mock<ISyncToggles> _nonAdminCanSyncUsingLinksFake; 
 		private Mock<IUserService> _userServiceFake; 
 
 
@@ -45,7 +46,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_serviceFactoryForAdminFake.Setup(s => s.CreateProxyAsync<IGroupManager>()).ReturnsAsync(_groupManagerFake.Object);
 
 			_configurationFake = new Mock<IValidationConfiguration>();
-			_nonAdminCanSyncUsingLinksFake = new Mock<INonAdminCanSyncUsingLinks>();
+			_nonAdminCanSyncUsingLinksFake = new Mock<ISyncToggles>();
 			_userServiceFake = new Mock<IUserService>();
 			
 
@@ -154,7 +155,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_userContextFake.Setup(c => c.ExecutingUserId).Returns(userId);
 			_configurationFake.Setup(c => c.ImportNativeFileCopyMode).Returns(copyMode);
 			_instanceSettingsFake.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default(bool))).ReturnsAsync(isRestrictedCopyLinksOnly);
-			_nonAdminCanSyncUsingLinksFake.Setup(t => t.IsEnabled()).Returns(toggleNonAdminCanSyncUsingLinks);
+			_nonAdminCanSyncUsingLinksFake.Setup(t => t.IsEnabled<EnableNonAdminSyncLinksToggle>()).Returns(toggleNonAdminCanSyncUsingLinks);
 			_userServiceFake.Setup(u => u.ExecutingUserIsAdminAsync(It.IsAny<int>())).Returns(Task.FromResult(userId == _USER_IS_ADMIN_ID));
 		}
 	}
