@@ -3,7 +3,7 @@
 namespace Relativity.Sync.Toggles
 {
     /// <summary>
-    ///     Toggle for disabling User Map with SQL when the workspace was restored.
+    /// Toggle can be used to enable or disable File Movement Service (ADLS) for copying native files. 
     /// </summary>
     [DefaultValue(false)]
     [Description("When true, forces Sync to use File Movement Service to copy native files between workspaces.", "Adler Sieben")]
