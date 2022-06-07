@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 	{
 		void SetJobIdOnJobHistory(Job job);
 		void UpdateJobHistoryOnFailure(Job job, Exception e);
-        void UpdateJobHistoryOnFailedValidation(Job job, Exception e);
+        void UpdateJobHistoryOnValidationFailed(Job job, Exception e);
 		void RemoveJobHistoryFromIntegrationPoint(Job job);
 	}
 }

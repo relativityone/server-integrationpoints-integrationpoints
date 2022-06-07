@@ -215,7 +215,7 @@ namespace kCura.IntegrationPoints.Agent
                 ITaskFactoryJobHistoryService taskFactoryJobHistoryService =
                     taskFactoryJobHistoryServiceFactory.CreateJobHistoryService(integrationPoint);
                 taskFactoryJobHistoryService.SetJobIdOnJobHistory(job);
-                taskFactoryJobHistoryService.UpdateJobHistoryOnFailedValidation(job,
+                taskFactoryJobHistoryService.UpdateJobHistoryOnValidationFailed(job,
                     new NotFoundException(validationResult.Message));
             }
         }
