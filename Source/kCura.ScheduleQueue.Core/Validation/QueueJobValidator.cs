@@ -25,13 +25,13 @@ namespace kCura.ScheduleQueue.Core.Validation
 				return validationResult;
 			}
 
-            validationResult = await ValidateUserExistsAsync(job.SubmittedBy).ConfigureAwait(false);
-            if (!validationResult.IsValid)
+            validationResult = await ValidateIntegrationPointExistsAsync(job.RelatedObjectArtifactID, job.WorkspaceID).ConfigureAwait(false);
+			if (!validationResult.IsValid)
             {
                 return validationResult;
             }
 
-			validationResult = await ValidateIntegrationPointExistsAsync(job.RelatedObjectArtifactID, job.WorkspaceID).ConfigureAwait(false);
+            validationResult = await ValidateUserExistsAsync(job.SubmittedBy).ConfigureAwait(false);
 
 			return validationResult;
 		}
@@ -83,8 +83,9 @@ namespace kCura.ScheduleQueue.Core.Validation
                 {
                     return ValidationResult.Success;
                 }
-                
-                throw new NotFoundException($"User (userId - {userId}) who scheduled the job no longer exists, so the job schedule will be cancelled. To enable the schedule again, edit the Integration Point and on Save schedule will be restored");
+
+				return result.TotalCount > 0 ? ValidationResult.Success : ValidationResult.Failed($"User (userId - {userId}) who scheduled the job no longer exists, so the job schedule will be cancelled. To enable the schedule again, edit the Integration Point and on Save schedule will be restored",
+                    true);
             }
 		}
 	}

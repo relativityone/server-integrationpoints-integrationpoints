@@ -15,7 +15,6 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Services;
 using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
-using Relativity.Services.Exceptions;
 
 namespace kCura.ScheduleQueue.AgentBase
 {
@@ -210,17 +209,15 @@ namespace kCura.ScheduleQueue.AgentBase
                     using (Logger.LogContextPushProperties(context))
                     {
                         LogJobInformation(nextJob);
-                        bool isJobValid = false;
-                        try
-                        {
-                            isJobValid = PreExecuteJobValidation(nextJob);
-                        }
-                        catch (NotFoundException ex)
-                        {
-                            ProcessJob(nextJob, ValidationResult.Failed(ex.Message));
-                        }
 
-                        if (!isJobValid)
+                        ValidationResult validationResult = PreExecuteJobValidation(nextJob);
+
+                        if (validationResult.CreateValidationFailedJobHistory)
+                        {
+                            ProcessJob(nextJob, validationResult);
+						}
+
+                        if (!validationResult.IsValid)
                         {
                             Logger.LogInformation("Deleting invalid Job {jobId}...", nextJob.JobId);
 
@@ -288,7 +285,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			};
 		}
 
-		private bool PreExecuteJobValidation(Job job)
+		private ValidationResult PreExecuteJobValidation(Job job)
         {
             try
             {
@@ -298,17 +295,12 @@ namespace kCura.ScheduleQueue.AgentBase
                     LogValidationJobFailed(job, result);
                 }
 
-                return result.IsValid;
+                return result;
             }
-            catch (NotFoundException ex)
-            {
-                Logger.LogError(ex.Message);
-                throw;
-            }
-			catch (Exception e)
+            catch (Exception e)
 			{
 				Logger.LogError(e, "Error occurred during Queue Job Validation. Return job as valid and try to run.");
-				return true;
+				return ValidationResult.Success;
 			}
 
 		}
