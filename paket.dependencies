@@ -1,6 +1,5 @@
 framework: net462
 strategy: min
-source C:\_Work\RelativitySync\Artifacts\NuGet
 source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 
 //RIP packages
@@ -98,7 +97,6 @@ nuget ARMTestServices 1.1.1
 group Tests
 	framework: auto-detect
 	strategy: min
-	source C:\_Work\RelativitySync\Artifacts\NuGet
 	source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 	
 	nuget kCura 14.2.5
@@ -138,7 +136,7 @@ group Tests
 	nuget Relativity.OAuth2Client 1.5.3
 	nuget Relativity.OAuth2Client.Interfaces 1.5.3
 
-	nuget Relativity.Sync 0.1.7-local
+	nuget Relativity.Sync 0.9.0-pre.34
 
 	//RIP packages
 	nuget IntegrationPoints.MyFirstProvider 12.3.10
@@ -149,10 +147,9 @@ group Tests
 group Sync
 	framework: auto-detect
 	strategy: min
-	source C:\_Work\RelativitySync\Artifacts\NuGet
 	source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 	
-	nuget Relativity.Sync 0.1.7-local
+	nuget Relativity.Sync 0.9.0-pre.34
 	nuget SSH.NET 2020.0.1
 	nuget Newtonsoft.Json 6.0.8
 	nuget Autofac 4.9.4

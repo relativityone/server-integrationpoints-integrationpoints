@@ -39,7 +39,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
         public void OnSetUpFixture()
         {
-            //RelativityFacade.Instance.ImportDocumentsFromCsv(_testsImplementationTestFixture.Workspace, LoadFilesGenerator.GetOrCreateNativesLoadFile());
+            RelativityFacade.Instance.ImportDocumentsFromCsv(_testsImplementationTestFixture.Workspace, LoadFilesGenerator.GetOrCreateNativesLoadFile());
         }
 
         public void OnTearDownFixture()
@@ -57,7 +57,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
             string integrationPointName = nameof(SavedSearchNativesAndMetadataGoldFlow);
 
-            Workspace destinationWorkspace = new Workspace { ArtifactID = 1018838, Name = "SyncTests-cb842e65-cc70-43ed-b054-fe9d42334e95" };//CreateDestinationWorkspace();
+            Workspace destinationWorkspace = CreateDestinationWorkspace();
             const int keywordSearchDocumentsCount = 5;
             KeywordSearch keywordSearch = new KeywordSearch
             {

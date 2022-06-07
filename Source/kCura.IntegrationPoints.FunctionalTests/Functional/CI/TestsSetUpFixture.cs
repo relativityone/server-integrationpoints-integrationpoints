@@ -41,7 +41,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 
 			InstallDataTransferLegacy();
 
-			//workspace.InstallLegalHold();
+			workspace.InstallLegalHold();
 		}
 
 		[OneTimeTearDown]
