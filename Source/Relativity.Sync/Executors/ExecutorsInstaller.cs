@@ -95,7 +95,7 @@ namespace Relativity.Sync.Executors
 			builder.RegisterTypesInExecutingAssembly<IPermissionCheck>();
 			builder.RegisterTypesInExecutingAssembly<IPreValidator>();
 			builder.RegisterType<UserService>().As<IUserService>();
-			builder.RegisterType<SyncToggles>().As<ISyncToggles>();
+			builder.RegisterType<SyncToggles>().As<ISyncToggles>().SingleInstance();
 
 			builder.RegisterType<BatchRepository>().As<IBatchRepository>();
 			builder.RegisterType<ProgressRepository>().As<IProgressRepository>();
