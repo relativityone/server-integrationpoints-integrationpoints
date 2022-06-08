@@ -215,7 +215,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 				int jobId = await CreateRestoreJobAsync(remoteArchiveLocation).ConfigureAwait(false);
 				Logger.LogInformation($"Restore job {jobId} has been created");
 
-                await RunAndWaitUntilJobIsCompletedAsync(jobId);
+                await RunAndWaitUntilJobIsCompletedAsync(jobId).ConfigureAwait(false);
 
 				int restoredWorkspaceId = await environment.GetWorkspaceArtifactIdByNameAsync(workspaceName).ConfigureAwait(true);
 
@@ -337,7 +337,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 				Logger.LogInformation("Restore job has been completed successfully.");
 			}
 
-			await RetryPolicyRunAsync(maxNumberOfRetries, OnRetryAction, ExecutionFunction);
+			await RetryPolicyRunAsync(maxNumberOfRetries, OnRetryAction, ExecutionFunction).ConfigureAwait(false);
 		}
 
 		private async Task RunJobAsync(int jobId)
