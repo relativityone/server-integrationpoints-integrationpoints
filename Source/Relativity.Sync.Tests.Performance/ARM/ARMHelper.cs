@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using Polly;
 using Relativity.API;
 using Relativity.ARM.Services.Interfaces.V1.JobAction;
 using Relativity.ARM.Services.Interfaces.V1.JobStatus;
@@ -227,7 +228,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			}
 			catch (Exception ex)
 			{
-				Logger.LogInformation(ex.Message);
+				Logger.LogError(ex.Message);
 				throw;
 			}
 		}
@@ -305,11 +306,33 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
 		private async Task RunJobAsync(int jobId)
 		{
-			using (var armJobActionManager = _serviceFactory.GetServiceProxy<IArmJobActionManager>())
-			{
-				await armJobActionManager.RunAsync(jobId).ConfigureAwait(false);
-			}
-		}
+            const int maxNumberOfRetries = 2;
+
+            await Policy
+                .Handle<Exception>()
+                .WaitAndRetryAsync(maxNumberOfRetries, retryAttempt =>
+                {
+                    const int maxJitterMs = 100;
+                    const int secondsBetweenRetriesBase = 2;
+                    TimeSpan delay = TimeSpan.FromSeconds(Math.Pow(secondsBetweenRetriesBase, retryAttempt));
+                    TimeSpan jitter = TimeSpan.FromMilliseconds(new Random().Next(0, maxJitterMs));
+                    return delay + jitter;
+				}, 
+                (ex, waitTime, retryCount, context) =>
+                {
+                    Logger.LogWarning(ex,
+                        "Encountered issue while Running ARM Job, attempting to retry. Retry count: {retryCount} Wait time: {waitTimeMs} (ms)",
+                        retryCount, waitTime.TotalMilliseconds);
+                })
+                .ExecuteAsync(async () =>
+                {
+                    using (var armJobActionManager = _serviceFactory.GetServiceProxy<IArmJobActionManager>())
+                    {
+                        await armJobActionManager.RunAsync(jobId).ConfigureAwait(false);
+                    }
+                })
+                .ConfigureAwait(false);
+        }
 
 		private async Task WaitUntilJobIsCompletedAsync(int jobId)
 		{
