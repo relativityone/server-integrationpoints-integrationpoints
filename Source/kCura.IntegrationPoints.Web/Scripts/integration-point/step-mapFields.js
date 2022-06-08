@@ -320,22 +320,17 @@ ko.validation.insertValidationMessage = function (element) {
 		/********** Temporary UI Toggle**********/
 		this.ImageImportVisible = ko.observable(self.IsRelativityProvider());
 
+		self.storeCurrentConfiguration = [];
+
 		this.ImageImport.subscribe(function (value) {
 			setCopyFilesLabel(value);
 			if (value === "true") {
-				// 
-				// HERE PROBABLY WE SHOULD TEMPORARILY SAVE CURRENT MAPPING - TO BE ABLE TO RESTORE IT IF USER COMEC BACK TO ImageImport == false
-				//
-				try {
-					console.log(self)
-					console.log(self.sourceMapped)
-					console.log(self.sourceMapped["Symbol(_latestValue)"])
-					console.log(self.sourceMapped[_latestValue])
-					console.log(ko)
-					console.log(ko.sourceMapped)
-				} catch (e) {
-					console.log(e)
-                }
+				self.storeCurrentConfiguration = {
+					workspaceFields: [...self.workspaceFields()],
+					mappedWorkspace: [...self.mappedWorkspace()],
+					sourceField: [...self.sourceField()],
+					sourceMapped: [...self.sourceMapped()]
+				}
 				
 				root.utils.UI.disable("#fieldMappings", true);
 				self.UseFolderPathInformation("false");
@@ -349,6 +344,11 @@ ko.validation.insertValidationMessage = function (element) {
 				self.ImportNativeFileCopyModeEnabled("false");
 			}
 			else {
+				self.workspaceFields(self.storeCurrentConfiguration.workspaceFields);
+				self.mappedWorkspace(self.storeCurrentConfiguration.mappedWorkspace);
+				self.sourceField(self.storeCurrentConfiguration.sourceField);
+				self.sourceMapped(self.storeCurrentConfiguration.sourceMapped);
+
 				root.utils.UI.disable("#fieldMappings", false);
 				self.ImportNativeFileCopyModeEnabled("true");
 				self.importNativeFileCopyMode("DoNotImportNativeFiles");
