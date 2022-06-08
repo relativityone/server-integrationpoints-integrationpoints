@@ -32,4 +32,7 @@
 	  <Reference Include="System.Runtime.Caching" />
 	  <Reference Include="System.Web.Services" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Toggles\" />
+	</ItemGroup>
 </Project>

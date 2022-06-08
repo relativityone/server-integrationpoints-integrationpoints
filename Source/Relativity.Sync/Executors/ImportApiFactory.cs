@@ -5,8 +5,9 @@ using kCura.Relativity.ImportAPI;
 using Relativity.API;
 using Relativity.DataExchange;
 using Relativity.Sync.Authentication;
-using Relativity.Sync.Transfer;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Toggles;
+using Relativity.Sync.Toggles.Service;
 
 namespace Relativity.Sync.Executors
 {
@@ -17,7 +18,7 @@ namespace Relativity.Sync.Executors
 	{
 		private readonly IUserContextConfiguration _userContextConfiguration;
 		private readonly IAuthTokenGenerator _tokenGenerator;
-		private readonly INonAdminCanSyncUsingLinks _nonAdminCanSyncUsingLinks;
+		private readonly ISyncToggles _syncToggles;
 		private readonly IUserService _userService;
 		private readonly IExtendedImportAPI _extendedImportApi;
 		private readonly IAPILog _logger;
@@ -42,11 +43,11 @@ namespace Relativity.Sync.Executors
 		}
 #pragma warning restore RG0001
 
-		public ImportApiFactory(IUserContextConfiguration userContextConfiguration, IAuthTokenGenerator tokenGenerator, INonAdminCanSyncUsingLinks nonAdminCanSyncUsingLinks, IUserService userService, IExtendedImportAPI extendedImportApi, IAPILog logger)
+		public ImportApiFactory(IUserContextConfiguration userContextConfiguration, IAuthTokenGenerator tokenGenerator, ISyncToggles syncToggles, IUserService userService, IExtendedImportAPI extendedImportApi, IAPILog logger)
 		{
 			_userContextConfiguration = userContextConfiguration;
 			_tokenGenerator = tokenGenerator;
-			_nonAdminCanSyncUsingLinks = nonAdminCanSyncUsingLinks;
+			_syncToggles = syncToggles;
 			_userService = userService;
 			_extendedImportApi = extendedImportApi;
 			_logger = logger;
@@ -56,7 +57,7 @@ namespace Relativity.Sync.Executors
 		{
 			int executingUserId = _userContextConfiguration.ExecutingUserId;
 			bool executingUserIsAdmin = await _userService.ExecutingUserIsAdminAsync(executingUserId).ConfigureAwait(false);
-			if (_nonAdminCanSyncUsingLinks.IsEnabled() && !executingUserIsAdmin)
+			if (_syncToggles.IsEnabled<EnableNonAdminSyncLinksToggle>() && !executingUserIsAdmin)
 			{
 				executingUserId = _ADMIN_USER_ID;
 			}
