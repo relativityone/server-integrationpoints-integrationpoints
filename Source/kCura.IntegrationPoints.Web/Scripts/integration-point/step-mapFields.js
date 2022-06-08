@@ -793,7 +793,6 @@ ko.validation.insertValidationMessage = function (element) {
 		}
 
 		this.applyMapping = function (mapping) {
-			console.log("Mapping in applyMapping", mapping);
 			var mapped = mapHelper.getMapped(self.sourceFields, self.destinationFields, mapping, 'sourceField', 'destinationField');
 			var sourceMapped = mapped[0];
 			var destinationMapped = mapped[1];
