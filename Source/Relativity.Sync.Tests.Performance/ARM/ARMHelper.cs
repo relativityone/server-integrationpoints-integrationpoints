@@ -329,7 +329,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
 		private async Task WaitUntilJobIsCompletedAsync(int jobId)
 		{
-            const int maxNumberOfRetries = 2;
+            const int maxNumberOfRetries = 5;
 
             void OnRetryAction(Exception ex, TimeSpan waitTime, int retryCount, Context context)
             {
