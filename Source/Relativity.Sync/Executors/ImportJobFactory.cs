@@ -11,6 +11,8 @@ using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Toggles;
+using Relativity.Sync.Toggles.Service;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
@@ -23,10 +25,11 @@ namespace Relativity.Sync.Executors
 		private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
 		private readonly SyncJobParameters _syncJobParameters;
 		private readonly IFieldMappings _fieldMappings;
+        private readonly ISyncToggles _toggles;
 		private readonly IAPILog _logger;
 
 		public ImportJobFactory(IImportApiFactory importApiFactory, ISourceWorkspaceDataReaderFactory dataReaderFactory,
-			IJobHistoryErrorRepository jobHistoryErrorRepository, IInstanceSettings instanceSettings, SyncJobParameters syncJobParameters, IFieldMappings fieldMappings, IAPILog logger)
+			IJobHistoryErrorRepository jobHistoryErrorRepository, IInstanceSettings instanceSettings, SyncJobParameters syncJobParameters, IFieldMappings fieldMappings, ISyncToggles toggles, IAPILog logger)
 		{
 			_importApiFactory = importApiFactory;
 			_dataReaderFactory = dataReaderFactory;
@@ -35,7 +38,8 @@ namespace Relativity.Sync.Executors
 			_syncJobParameters = syncJobParameters;
 			_fieldMappings = fieldMappings;
 			_logger = logger;
-		}
+            _toggles = toggles;
+        }
 
         public async Task<IImportJob> CreateRdoImportJobAsync(INonDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
         {
@@ -140,11 +144,21 @@ namespace Relativity.Sync.Executors
 			importJob.Settings.ArtifactTypeId = configuration.RdoArtifactTypeId;
 			importJob.Settings.FolderPathSourceFieldName = configuration.FolderPathSourceFieldName;
 			importJob.Settings.Billable = configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.CopyFiles;
-			importJob.Settings.NativeFileCopyMode = (NativeFileCopyModeEnum)configuration.ImportNativeFileCopyMode;
-			importJob.Settings.DisableNativeLocationValidation = configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.SetFileLinks;
 
-			importJob.Settings.MultiValueDelimiter = configuration.MultiValueDelimiter;
-			importJob.Settings.NestedValueDelimiter = configuration.NestedValueDelimiter;
+            importJob.Settings.MultiValueDelimiter = configuration.MultiValueDelimiter;
+            importJob.Settings.NestedValueDelimiter = configuration.NestedValueDelimiter;
+
+			if (_toggles.IsEnabled<UseFMS>())
+            {
+				_logger.LogInformation("Using File Movement Service to copy native files. Setting native file copy mode to links only and disabling native location validation.");
+                importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.SetFileLinks;
+                importJob.Settings.DisableNativeLocationValidation = true;
+			}
+            else
+            {
+                importJob.Settings.NativeFileCopyMode = (NativeFileCopyModeEnum)configuration.ImportNativeFileCopyMode;
+                importJob.Settings.DisableNativeLocationValidation = configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.SetFileLinks;
+			}
 
 			if (configuration.ImportNativeFileCopyMode != ImportNativeFileCopyMode.DoNotImportNativeFiles)
 			{
