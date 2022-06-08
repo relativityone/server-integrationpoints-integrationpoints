@@ -218,11 +218,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 				int jobId = await CreateRestoreJobAsync(remoteArchiveLocation).ConfigureAwait(false);
 				Logger.LogInformation($"Restore job {jobId} has been created");
 
-				await RunJobAsync(jobId).ConfigureAwait(false);
-				Logger.LogInformation($"Job {jobId} is running...");
-
-				await WaitUntilJobIsCompletedAsync(jobId).ConfigureAwait(false);
-				Logger.LogInformation("Restore job has been completed successfully.");
+                await RunAndWaitUntilJobIsCompletedAsync(jobId);
 
 				int restoredWorkspaceId = await environment.GetWorkspaceArtifactIdByNameAsync(workspaceName).ConfigureAwait(true);
 
@@ -307,9 +303,9 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			}
 		}
 
-		private async Task RunJobAsync(int jobId)
-		{
-            const int maxNumberOfRetries = 2;
+        private async Task RunAndWaitUntilJobIsCompletedAsync(int jobId)
+        {
+            const int maxNumberOfRetries = 3;
 
             void OnRetryAction(Exception ex, TimeSpan waitTime, int retryCount, Context context)
             {
@@ -318,46 +314,43 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
             async Task ExecutionFunction()
             {
-                using (var armJobActionManager = _serviceFactory.GetServiceProxy<IArmJobActionManager>())
-                {
-                    await armJobActionManager.RunAsync(jobId).ConfigureAwait(false);
-                }
-            }
+				await RunJobAsync(jobId).ConfigureAwait(false);
+                Logger.LogInformation($"Job {jobId} is running...");
+
+                await WaitUntilJobIsCompletedAsync(jobId).ConfigureAwait(false);
+                Logger.LogInformation("Restore job has been completed successfully.");
+			}
 
             await RetryPolicyRunAsync(maxNumberOfRetries, OnRetryAction, ExecutionFunction);
         }
 
+		private async Task RunJobAsync(int jobId)
+		{
+            using (var armJobActionManager = _serviceFactory.GetServiceProxy<IArmJobActionManager>())
+            {
+                await armJobActionManager.RunAsync(jobId).ConfigureAwait(false);
+            }
+        }
+
 		private async Task WaitUntilJobIsCompletedAsync(int jobId)
 		{
-            const int maxNumberOfRetries = 5;
-
-            void OnRetryAction(Exception ex, TimeSpan waitTime, int retryCount, Context context)
+            // restoring workspaces takes a long time
+            const int delay = 30000;
+            ArmJobStatusResponse jobStatus;
+            using (var statusManager = _serviceFactory.GetServiceProxy<IArmJobStatusManager>())
             {
-                Logger.LogWarning(ex, "Encountered issue while checking ARM Job (jobId = {jobId}) status, attempting to retry. Retry count: {retryCount} Wait time: {waitTimeMs} (ms)", jobId, retryCount, waitTime.TotalMilliseconds);
-            }
-
-            async Task ExecutionFunction()
-            {
-				// restoring workspaces takes a long time
-                const int delay = 30000;
-                ArmJobStatusResponse jobStatus;
-                using (var statusManager = _serviceFactory.GetServiceProxy<IArmJobStatusManager>())
+                do
                 {
-                    do
+                    jobStatus = await statusManager.ReadAsync(jobId).ConfigureAwait(false);
+                    Logger.LogInformation($"Job is still processing ({jobStatus.JobState})...");
+                    if (jobStatus.JobState == JobState.Errored)
                     {
-                        jobStatus = await statusManager.ReadAsync(jobId).ConfigureAwait(false);
-                        Logger.LogInformation($"Job is still processing ({jobStatus.JobState})...");
-                        if (jobStatus.JobState == JobState.Errored)
-                        {
-                            throw new InvalidOperationException("Error occurred during restoring workspace");
-                        }
+                        throw new InvalidOperationException("Error occurred during restoring workspace");
+                    }
 
-                        await Task.Delay(delay).ConfigureAwait(false);
-                    } while (jobStatus.JobState != JobState.Complete);
-                }
-			}
-
-            await RetryPolicyRunAsync(maxNumberOfRetries, OnRetryAction, ExecutionFunction);
+                    await Task.Delay(delay).ConfigureAwait(false);
+                } while (jobStatus.JobState != JobState.Complete);
+            }
         }
 
 		private int GetResourcePoolId(string name)
@@ -378,6 +371,8 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			return sqlServers.FirstOrDefault(x => x.Type == ResourceServerType.SqlDistributed)?.ArtifactID
 				   ?? sqlServers.Single(x => x.Type == ResourceServerType.SqlPrimary).ArtifactID;
 		}
+
+        
 
         private async Task RetryPolicyRunAsync(int maxNumberOfRetries, Action<Exception, TimeSpan, int, Context> onRetryAction, Func<Task> executionFunction)
         {
