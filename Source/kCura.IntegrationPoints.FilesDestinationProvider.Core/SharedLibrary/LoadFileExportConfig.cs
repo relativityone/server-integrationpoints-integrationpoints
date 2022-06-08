@@ -5,6 +5,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 {
 	public class LoadFileExportConfig : ConfigBase, IExportConfig
 	{
+		private readonly IWebApiConfig _webApiConfig;
+
 		private const int _DEF_EXPORT_BATCH_SIZE = 1000;
 		private const bool _DEF_TAPI_FORCE_HTTP_CLIENT = false;
 
@@ -21,6 +23,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 
 		private const string _EXPORT_LOADFILE_IO_ERROR_WAIT_TIME_NAME = "Export.LoadFile.IOErrorWaitTime";
 		private const string _TAPI_FORCE_HTTP_CLIENT = "TapiForceHttpClient";
+
+        public LoadFileExportConfig(IWebApiConfig webApiConfig)
+        {
+            _webApiConfig = webApiConfig;
+        }
 
 		public int ExportBatchSize => GetValue(_EXPORT_BATCH_SIZE_SETTING_NAME, _DEF_EXPORT_BATCH_SIZE);
 
@@ -43,5 +50,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 		public int HttpErrorNumberOfRetries { get; } = 20;
 
 		public int HttpErrorWaitTimeInSeconds { get; } = 10;
+
+		public string WebApiServiceUrl => _webApiConfig.GetWebApiUrl;
+
 	}
 }
