@@ -36,6 +36,9 @@ namespace Relativity.Sync.Tests.Performance.ARM
 		private static readonly string _RELATIVE_ARCHIVES_LOCATION = AppSettings.RelativeArchivesLocation;
 		private readonly IKeplerServiceFactory _serviceFactory;
 
+        private const int _MAX_JITTER_MS = 100;
+        private const int _SECCONDS_BETWEEN_RETRIES_BASE = 2;
+
 		private ARMHelper(FileShareHelper fileShare, AzureStorageHelper storage)
 		{
 			_fileShare = fileShare;
@@ -308,52 +311,54 @@ namespace Relativity.Sync.Tests.Performance.ARM
 		{
             const int maxNumberOfRetries = 2;
 
-            await Policy
-                .Handle<Exception>()
-                .WaitAndRetryAsync(maxNumberOfRetries, retryAttempt =>
+            void OnRetryAction(Exception ex, TimeSpan waitTime, int retryCount, Context context)
+            {
+                Logger.LogWarning(ex, "Encountered issue while Running ARM Job, attempting to retry. Retry count: {retryCount} Wait time: {waitTimeMs} (ms)", retryCount, waitTime.TotalMilliseconds);
+            }
+
+            async Task ExecutionFunction()
+            {
+                using (var armJobActionManager = _serviceFactory.GetServiceProxy<IArmJobActionManager>())
                 {
-                    const int maxJitterMs = 100;
-                    const int secondsBetweenRetriesBase = 2;
-                    TimeSpan delay = TimeSpan.FromSeconds(Math.Pow(secondsBetweenRetriesBase, retryAttempt));
-                    TimeSpan jitter = TimeSpan.FromMilliseconds(new Random().Next(0, maxJitterMs));
-                    return delay + jitter;
-				}, 
-                (ex, waitTime, retryCount, context) =>
-                {
-                    Logger.LogWarning(ex,
-                        "Encountered issue while Running ARM Job, attempting to retry. Retry count: {retryCount} Wait time: {waitTimeMs} (ms)",
-                        retryCount, waitTime.TotalMilliseconds);
-                })
-                .ExecuteAsync(async () =>
-                {
-                    using (var armJobActionManager = _serviceFactory.GetServiceProxy<IArmJobActionManager>())
-                    {
-                        await armJobActionManager.RunAsync(jobId).ConfigureAwait(false);
-                    }
-                })
-                .ConfigureAwait(false);
+                    await armJobActionManager.RunAsync(jobId).ConfigureAwait(false);
+                }
+            }
+
+            await RetryPolicyRunAsync(maxNumberOfRetries, OnRetryAction, ExecutionFunction);
         }
 
 		private async Task WaitUntilJobIsCompletedAsync(int jobId)
 		{
-			// restoring workspaces takes a long time
-			const int delay = 30000;
-			ArmJobStatusResponse jobStatus;
-			using (var statusManager = _serviceFactory.GetServiceProxy<IArmJobStatusManager>())
-			{
-				do
-				{
-					jobStatus = await statusManager.ReadAsync(jobId).ConfigureAwait(false);
-					Logger.LogInformation($"Job is still processing ({jobStatus.JobState})...");
-					if (jobStatus.JobState == JobState.Errored)
-					{
-						throw new InvalidOperationException("Error occurred during restoring workspace");
-					}
+            const int maxNumberOfRetries = 2;
 
-					await Task.Delay(delay).ConfigureAwait(false);
-				} while (jobStatus.JobState != JobState.Complete);
+            void OnRetryAction(Exception ex, TimeSpan waitTime, int retryCount, Context context)
+            {
+                Logger.LogWarning(ex, "Encountered issue while checking ARM Job (jobId = {jobId}) status, attempting to retry. Retry count: {retryCount} Wait time: {waitTimeMs} (ms)", jobId, retryCount, waitTime.TotalMilliseconds);
+            }
+
+            async Task ExecutionFunction()
+            {
+				// restoring workspaces takes a long time
+                const int delay = 30000;
+                ArmJobStatusResponse jobStatus;
+                using (var statusManager = _serviceFactory.GetServiceProxy<IArmJobStatusManager>())
+                {
+                    do
+                    {
+                        jobStatus = await statusManager.ReadAsync(jobId).ConfigureAwait(false);
+                        Logger.LogInformation($"Job is still processing ({jobStatus.JobState})...");
+                        if (jobStatus.JobState == JobState.Errored)
+                        {
+                            throw new InvalidOperationException("Error occurred during restoring workspace");
+                        }
+
+                        await Task.Delay(delay).ConfigureAwait(false);
+                    } while (jobStatus.JobState != JobState.Complete);
+                }
 			}
-		}
+
+            await RetryPolicyRunAsync(maxNumberOfRetries, OnRetryAction, ExecutionFunction);
+        }
 
 		private int GetResourcePoolId(string name)
 		{
@@ -372,6 +377,21 @@ namespace Relativity.Sync.Tests.Performance.ARM
 
 			return sqlServers.FirstOrDefault(x => x.Type == ResourceServerType.SqlDistributed)?.ArtifactID
 				   ?? sqlServers.Single(x => x.Type == ResourceServerType.SqlPrimary).ArtifactID;
+		}
+
+        private async Task RetryPolicyRunAsync(int maxNumberOfRetries, Action<Exception, TimeSpan, int, Context> onRetryAction, Func<Task> executionFunction)
+        {
+            await Policy
+                .Handle<Exception>()
+                .WaitAndRetryAsync(maxNumberOfRetries, retryAttempt =>
+                    {
+                        TimeSpan delay = TimeSpan.FromSeconds(Math.Pow(_SECCONDS_BETWEEN_RETRIES_BASE, retryAttempt));
+                        TimeSpan jitter = TimeSpan.FromMilliseconds(new Random().Next(0, _MAX_JITTER_MS));
+                        return delay + jitter;
+                    },
+                    onRetryAction)
+                .ExecuteAsync(executionFunction)
+                .ConfigureAwait(false);
 		}
 	}
 }
