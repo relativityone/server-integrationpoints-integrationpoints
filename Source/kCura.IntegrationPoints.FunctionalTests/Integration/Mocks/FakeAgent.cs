@@ -90,7 +90,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 			return _container;
 		}
 
-		protected override TaskResult ProcessJob(Job job)
+		protected override TaskResult ProcessJob(Job job, ValidationResult validationResult = null)
 		{
 			ProcessedJobIds.Add(job.JobId);
 

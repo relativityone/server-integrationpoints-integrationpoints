@@ -134,7 +134,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 					EntityFieldGuids.FullNameGuid,
 					EntityFieldGuids.ManagerGuid
 				};
-			}
+			}			
+		}
+		public static class FieldOverlayBehaviorName
+		{
+			public const string USE_FIELD_SETTINGS = "Use Field Settings";
+			public const string MERGE_VALUES = "Merge Values";
+			public const string REPLACE_VALUES = "Replace Values";
 		}
 	}
 }

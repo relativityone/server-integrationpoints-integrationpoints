@@ -32,7 +32,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return integrationPoint;
         }
 
-		public IntegrationPointProfileTest CreateSavedSearchIntegrationPoint(WorkspaceTest destinationWorkspace)
+		public IntegrationPointProfileTest CreateSavedSearchIntegrationPointProfile(WorkspaceTest destinationWorkspace)
 		{
 			IntegrationPointProfileTest integrationPoint = CreateEmptyIntegrationPointProfile();
 
@@ -79,9 +79,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			return integrationPoint;
 		}
 
-		public IntegrationPointProfileTest CreateSavedSearchIntegrationPointWithDeserializableSourceConfiguration(WorkspaceTest destinationWorkspace, int longTextLimit)
+		public IntegrationPointProfileTest CreateSavedSearchIntegrationPointProfileWithDeserializableSourceConfiguration(WorkspaceTest destinationWorkspace, int longTextLimit)
 		{
-			IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPoint(destinationWorkspace);
+			IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
 			SavedSearchTest sourceSavedSearch = Workspace.SavedSearches.First();
 			integrationPointProfile.SourceConfiguration = _serializer.Serialize(new 
 			{
@@ -95,9 +95,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			return integrationPointProfile;
 		}
 
-		public IntegrationPointProfileTest CreateSavedSearchIntegrationPointWithDeserializableFieldMappings(WorkspaceTest destinationWorkspace, int longTextLimit)
+		public IntegrationPointProfileTest CreateSavedSearchIntegrationPointProfileWithDeserializableFieldMappings(WorkspaceTest destinationWorkspace, int longTextLimit)
 		{
-			IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPoint(destinationWorkspace);
+			IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
 			List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMapping(destinationWorkspace, (int)ArtifactType.Document);
 			fieldsMapping[0].SourceField.DisplayName = new string(Enumerable.Repeat('-', longTextLimit / 2).ToArray());
 			fieldsMapping[0].DestinationField.DisplayName = new string(Enumerable.Repeat('-', longTextLimit / 2).ToArray());
@@ -106,9 +106,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 			return integrationPointProfile;
 		}
 
-		public IntegrationPointProfileTest CreateSavedSearchIntegrationPointWithDeserializableDestinationConfiguration(WorkspaceTest destinationWorkspace, int longTextLimit)
+		public IntegrationPointProfileTest CreateSavedSearchIntegrationPointProfileWithDeserializableDestinationConfiguration(WorkspaceTest destinationWorkspace, int longTextLimit)
 		{
-			IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPoint(destinationWorkspace);
+			IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
 			FolderTest destinationFolder = destinationWorkspace.Folders.First();
 			integrationPointProfile.DestinationConfiguration = _serializer.Serialize(new
 			{
@@ -126,7 +126,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
 		public IntegrationPointProfileModel CreateSavedSearchIntegrationPointAsIntegrationPointProfileModel(WorkspaceTest destinationWorkspace)
 		{
-			IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPoint(destinationWorkspace);
+			IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
 			IntegrationPointProfileModel integrationPointProfileModel = new IntegrationPointProfileModel
 			{
 				Name = integrationPointProfile.Name,

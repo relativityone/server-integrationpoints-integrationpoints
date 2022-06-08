@@ -86,6 +86,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             SetupDocumentFields();
             SetupSavedSearch();
             SetupView();
+            SetupUser();
             SetupSavedSearchDocuments();
             SetupProductionDocuments();
             SetupFolderDocuments();
@@ -124,7 +125,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             else if (objectCreationInfo.ObjectTypeGuid == ObjectTypeGuids.IntegrationPointProfileGuid)
             {
                 var newRdo = new IntegrationPointProfileTest();
-                newRdo.LoadRelativityObjectByGuid<IntegrationPointProfileTest>(objectCreationInfo.CreatedObject);
+                newRdo.LoadRelativityObjectByName<IntegrationPointProfileTest>(objectCreationInfo.CreatedObject);                
                 workspace.IntegrationPointProfiles.Add(newRdo);
             }
             else if (objectCreationInfo.ObjectTypeGuid == ObjectTypeGuids.IntegrationPointGuid)
@@ -162,7 +163,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 return Task.FromResult(result);
             }
             );
-        }
+        }     
 
         private QueryResultSlim GetQuerySlimsForRequest<T>(Func<WorkspaceTest, IList<T>> collectionGetter,
             Func<QueryRequest, IList<T>, IList<T>> customFilter, int workspaceId,
