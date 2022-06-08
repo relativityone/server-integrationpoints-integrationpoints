@@ -320,9 +320,18 @@ ko.validation.insertValidationMessage = function (element) {
 		/********** Temporary UI Toggle**********/
 		this.ImageImportVisible = ko.observable(self.IsRelativityProvider());
 
+		self.storeCurrentConfiguration = [];
+
 		this.ImageImport.subscribe(function (value) {
 			setCopyFilesLabel(value);
 			if (value === "true") {
+				self.storeCurrentConfiguration = {
+					workspaceFields: [...self.workspaceFields()],
+					mappedWorkspace: [...self.mappedWorkspace()],
+					sourceField: [...self.sourceField()],
+					sourceMapped: [...self.sourceMapped()]
+				}
+				
 				root.utils.UI.disable("#fieldMappings", true);
 				self.UseFolderPathInformation("false");
 				self.UseDynamicFolderPath("false");
@@ -335,6 +344,11 @@ ko.validation.insertValidationMessage = function (element) {
 				self.ImportNativeFileCopyModeEnabled("false");
 			}
 			else {
+				self.workspaceFields(self.storeCurrentConfiguration.workspaceFields);
+				self.mappedWorkspace(self.storeCurrentConfiguration.mappedWorkspace);
+				self.sourceField(self.storeCurrentConfiguration.sourceField);
+				self.sourceMapped(self.storeCurrentConfiguration.sourceMapped);
+
 				root.utils.UI.disable("#fieldMappings", false);
 				self.ImportNativeFileCopyModeEnabled("true");
 				self.importNativeFileCopyMode("DoNotImportNativeFiles");
