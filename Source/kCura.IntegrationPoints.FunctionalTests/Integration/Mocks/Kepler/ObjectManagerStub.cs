@@ -86,6 +86,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             SetupDocumentFields();
             SetupSavedSearch();
             SetupView();
+            SetupUser();
             SetupSavedSearchDocuments();
             SetupProductionDocuments();
             SetupFolderDocuments();

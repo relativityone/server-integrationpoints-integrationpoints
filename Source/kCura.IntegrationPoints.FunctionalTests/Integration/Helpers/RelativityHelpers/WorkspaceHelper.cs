@@ -236,8 +236,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpe
                 HasNatives = false,
             });
 
-
-			return workspace;
+            return workspace;
 		}
 
 		public WorkspaceTest CreateWorkspaceWithIntegrationPointsApp(int? workspaceArtifactId)

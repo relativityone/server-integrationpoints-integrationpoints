@@ -102,7 +102,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			var agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
 			JobTest job = PrepareJob();
-
+			
 			SourceWorkspace.Helpers.IntegrationPointHelper.RemoveIntegrationPoint(job.RelatedObjectArtifactID);
 
 			var jobsInQueue = new[] { job.JobId };
@@ -158,6 +158,27 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 			FakeRelativityInstance.Helpers.JobHelper
 				.VerifyJobsAreNotLockedByAgent(sut.AgentID, jobsInQueue);
 		}
+
+        [IdentifiedTest("DED49CD4-5B3A-4FD9-81C9-CBCCD419CDC5")]
+        public void Agent_ShouldProcessAndDelete_WhenUserDoesNotExist()
+        {
+            // Arrange
+            JobTest job = PrepareJob();
+
+            FakeRelativityInstance.TestContext.User = null;
+
+            var jobsInQueue = new[] { job.JobId };
+
+            var sut = PrepareSut();
+
+            // Act
+            sut.Execute();
+
+            // Assert
+            sut.VerifyJobsWereProcessed(jobsInQueue);
+
+            FakeRelativityInstance.Helpers.JobHelper.VerifyJobsWithIdsWereRemovedFromQueue(jobsInQueue);
+        }
 
 		private FakeAgent PrepareSut()
 		{

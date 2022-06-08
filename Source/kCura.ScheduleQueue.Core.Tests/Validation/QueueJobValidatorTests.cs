@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using FluentAssertions;
-using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core.Validation;
@@ -19,6 +18,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
 
 		private const int _TEST_WORKSPACE_ID = 100;
 		private const int _TEST_INTEGRATION_POINT_ID = 200;
+		private const int _TEST_USER_ID = 300;
 
 		[Test]
 		public async Task ValidateAsync_ShouldValidateJobAsValid_WhenContextWorkspaceAndIntegrationPointsExist()
@@ -27,12 +27,14 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
 			Job job = new JobBuilder()
 				.WithWorkspaceId(_TEST_WORKSPACE_ID)
 				.WithRelatedObjectArtifactId(_TEST_INTEGRATION_POINT_ID)
+                .WithSubmittedBy(_TEST_USER_ID)
 				.Build();
 
 			QueueJobValidator sut = GetSut();
 
 			SetUpWorkspaceExists(true);
 			SetUpIntegrationPointExists(true);
+            SetUpUserExists(true);
 
 			// Act
 			ValidationResult result = await sut.ValidateAsync(job).ConfigureAwait(false);
@@ -49,12 +51,14 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
 			Job job = new JobBuilder()
 				.WithWorkspaceId(_TEST_WORKSPACE_ID)
 				.WithRelatedObjectArtifactId(_TEST_INTEGRATION_POINT_ID)
+                .WithSubmittedBy(_TEST_USER_ID)
 				.Build();
 
 			QueueJobValidator sut = GetSut();
 
 			SetUpWorkspaceExists(false);
 			SetUpIntegrationPointExists(false);
+            SetUpUserExists(true);
 
 			// Act
 			ValidationResult result = await sut.ValidateAsync(job).ConfigureAwait(false);
@@ -71,12 +75,14 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
 			Job job = new JobBuilder()
 				.WithWorkspaceId(_TEST_WORKSPACE_ID)
 				.WithRelatedObjectArtifactId(_TEST_INTEGRATION_POINT_ID)
+                .WithSubmittedBy(_TEST_USER_ID)
 				.Build();
 
 			QueueJobValidator sut = GetSut();
 
 			SetUpWorkspaceExists(true);
 			SetUpIntegrationPointExists(false);
+            SetUpUserExists(true);
 
 			// Act
 			ValidationResult result = await sut.ValidateAsync(job).ConfigureAwait(false);
@@ -93,12 +99,14 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
 			Job job = new JobBuilder()
 				.WithWorkspaceId(_TEST_WORKSPACE_ID)
 				.WithRelatedObjectArtifactId(_TEST_INTEGRATION_POINT_ID)
+                .WithSubmittedBy(_TEST_USER_ID)
 				.Build();
 
 			QueueJobValidator sut = GetSut();
 
 			SetUpWorkspaceExists(false);
 			SetUpIntegrationPointExists(false);
+            SetUpUserExists(true);
 
 			// Act
 			await sut.ValidateAsync(job).ConfigureAwait(false);
@@ -108,7 +116,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
 				Times.Never());
 		}
 
-		private QueueJobValidator GetSut()
+        private QueueJobValidator GetSut()
 		{
 			Mock<IHelper> helper = new Mock<IHelper>();
 			Mock<IServicesMgr> servicesMgr = new Mock<IServicesMgr>();
@@ -134,7 +142,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
 				.Verifiable();
 		}
 
-		private void SetUpIntegrationPointExists(bool exists)
+        private void SetUpIntegrationPointExists(bool exists)
 		{
 			RelativityObject expectedObject = exists ? new RelativityObject() : null;
 
@@ -146,5 +154,18 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
 				})
 				.Verifiable();
 		}
+
+        private void SetUpUserExists(bool exists)
+        {
+            int expectedTotalCount = exists ? 1 : 0;
+
+            _objectManagerMock.Setup(x => x.QuerySlimAsync(-1,
+                    It.Is<QueryRequest>(r => r.Condition.Contains(_TEST_USER_ID.ToString())), 0, 1))
+                .ReturnsAsync(new QueryResultSlim
+                {
+                    TotalCount = expectedTotalCount
+                })
+                .Verifiable();
+        }
 	}
 }

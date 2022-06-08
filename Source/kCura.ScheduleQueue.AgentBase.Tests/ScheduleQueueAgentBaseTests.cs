@@ -261,7 +261,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 				return GetAgentID();
 			}
 			
-			protected override TaskResult ProcessJob(Job job)
+			protected override TaskResult ProcessJob(Job job, ValidationResult validationResult = null)
 			{
 				ProcessedJobs.Add(job);
 

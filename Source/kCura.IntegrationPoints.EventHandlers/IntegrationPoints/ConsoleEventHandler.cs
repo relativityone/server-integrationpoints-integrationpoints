@@ -19,13 +19,12 @@ using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
-using kCura.ScheduleQueue.Core.Data;
 using Relativity.API;
 using Console = kCura.EventHandler.Console;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
-	public class ConsoleEventHandler : EventHandler.ConsoleEventHandler
+    public class ConsoleEventHandler : EventHandler.ConsoleEventHandler
 	{
 		private readonly Guid _agentGuid = new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
 

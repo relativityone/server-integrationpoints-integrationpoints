@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Authentication.WebApi
 			}
 			catch (Exception e)
 			{
-				_logger.LogError(e, $"Error occured while authenticating user. Details: {e.Message}");
+				_logger.LogError(e, $"Error occurred while authenticating user. Details: {e.Message}");
 				throw;
 			}
 		}
