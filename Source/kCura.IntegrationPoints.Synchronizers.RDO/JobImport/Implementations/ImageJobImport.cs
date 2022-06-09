@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 
 		public override void Execute()
 		{
-			_logger.LogDebug("Start preparing Image Import API process");
+			_logger.LogInformation("Start preparing Image Import API process");
 			PrepareJob();
 
 			_logger.LogInformation("Start Image Import API process");

@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to retrieve fields mapping information.")]
 		public HttpResponseMessage Get(int id)
 		{
-			_apiLog.LogDebug("Retriving field mapping for Relativity Provider");
+			_apiLog.LogInformation("Retriving field mapping for Relativity Provider");
 			List<FieldMap> fieldsMaps = _integrationPointReader.GetFieldMap(id).ToList();
 			fieldsMaps.RemoveAll(
 				fieldMap =>

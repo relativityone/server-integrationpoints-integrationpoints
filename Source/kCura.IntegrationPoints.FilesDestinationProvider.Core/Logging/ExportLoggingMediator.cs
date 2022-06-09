@@ -79,17 +79,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 
 		private void LogStatitstics(ExportEventArgs exportEventArgs)
 		{
-			_apiLog.LogVerbose("Statistics update: {message}.", exportEventArgs.Message);
+			_apiLog.LogInformation("Statistics update: {message}.", exportEventArgs.Message);
 		}
 
 		private void LogStatus(ExportEventArgs exportEventArgs)
 		{
-			_apiLog.LogVerbose("Status update: {message}.", exportEventArgs.Message);
+			_apiLog.LogInformation("Status update: {message}.", exportEventArgs.Message);
 		}
 
 		private void LogProgress(ExportEventArgs exportEventArgs)
 		{
-			_apiLog.LogVerbose("Progress update: {message}.", exportEventArgs.Message);
+			_apiLog.LogInformation("Progress update: {message}.", exportEventArgs.Message);
 		}
 
 		private void LogWarning(ExportEventArgs exportEventArgs)
@@ -104,7 +104,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 
 		private void LogDebug(ExportEventArgs exportEventArgs)
 		{
-			_apiLog.LogDebug("Unexpected EventType.{event}. EventArgs: {@eventArgs}", exportEventArgs.EventType, exportEventArgs);
+			_apiLog.LogInformation("Unexpected EventType.{event}. EventArgs: {@eventArgs}", exportEventArgs.EventType, exportEventArgs);
 		}
 	}
 }

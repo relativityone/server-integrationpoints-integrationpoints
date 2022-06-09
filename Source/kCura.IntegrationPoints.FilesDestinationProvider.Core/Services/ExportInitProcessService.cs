@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 
 		public long CalculateDocumentCountToTransfer(ExportUsingSavedSearchSettings exportSettings, int artifactTypeId)
 		{
-			_logger.LogDebug("Start retrieving Total Document count for {exportSettings.ExportType} export type...", exportSettings.ExportType);
+			_logger.LogInformation("Start retrieving Total Document count for {exportSettings.ExportType} export type...", exportSettings.ExportType);
 
 			ExportSettings.ExportType exportType = GetExportType(exportSettings);
 
@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Services
 			long extractedIndex = Math.Min(docsCount, Math.Abs(exportSettings.StartExportAtRecord - 1));
 			long retValue = Math.Max(docsCount - extractedIndex, 0);
 
-			_logger.LogDebug("Calculated Total Document count: {retValue}", retValue);
+			_logger.LogInformation("Calculated Total Document count: {retValue}", retValue);
 			return retValue;
 		}
 

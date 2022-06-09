@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		{
 			try
 			{
-				_logger.LogDebug("JobHistoryErrorBatchUpdateManager OnJobStart. Workspace: {workspaceId}, jobType: {jobType}, errorTypes: {errorType}",
+				_logger.LogInformation("JobHistoryErrorBatchUpdateManager OnJobStart. Workspace: {workspaceId}, jobType: {jobType}, errorTypes: {errorType}",
 					_sourceWorkspaceArtifactID, _updateStatusType.JobType, _updateStatusType.ErrorTypes);
 				IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(_sourceWorkspaceArtifactID);
 
@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		{
 			try
 			{
-				_logger.LogDebug("JobHistoryErrorBatchUpdateManager OnJobComplete. Workspace: {workspaceId}, jobType: {jobType}, errorTypes: {errorType}",
+				_logger.LogInformation("JobHistoryErrorBatchUpdateManager OnJobComplete. Workspace: {workspaceId}, jobType: {jobType}, errorTypes: {errorType}",
 					_sourceWorkspaceArtifactID,
 					_updateStatusType.JobType,
 					_updateStatusType?.ErrorTypes);
