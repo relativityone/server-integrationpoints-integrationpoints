@@ -56,23 +56,5 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 			IWebElement iframe = Driver.FindElement(By.Id("_externalPage"));
 			Driver.SwitchTo().Frame(iframe);
 		}
-
-        public class SummaryPage : EditSection<_>
-        {
-            public ItemTable<Row, _> Table { get; private set; }
-
-            public class Row : ItemTableRow<_>
-            {
-                public Text<_> Name { get; private set; }
-
-                public Text<_> Type { get; private set; }
-
-                public Text<_> LastRuntimeUTC { get; private set; }
-
-                public Text<_> ItemsTransferred { get; private set; }
-
-                public Text<_> TotalItems { get; private set; }
-            }
-		}
-	}
+    }
 }
