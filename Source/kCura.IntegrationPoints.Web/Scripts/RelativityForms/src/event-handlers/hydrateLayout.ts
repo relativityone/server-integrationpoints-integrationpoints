@@ -6,7 +6,6 @@ import { IConvenienceApi } from "../types/convenienceApi";
 export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sourceConfiguration: Object, destinationConfiguration: Object) {
 
     var sourceDetails = getSourceDetails(sourceConfiguration);
-    //var useFolderPathInfo = formatToYesOrNo(destinationConfiguration["UseDynamicFolderPath"]);
     let exportType = getExportType(sourceConfiguration, destinationConfiguration);
 
     // export 
