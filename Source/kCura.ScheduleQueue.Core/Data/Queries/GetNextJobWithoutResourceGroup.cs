@@ -12,14 +12,16 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 
 		private readonly int _agentId;
 		private readonly int _agentTypeId;
+        private readonly long? _rootJobId;
 
-		public GetNextJobWithoutResourceGroup(IQueueDBContext dbContext, int agentId, int agentTypeId)
+        public GetNextJobWithoutResourceGroup(IQueueDBContext dbContext, int agentId, int agentTypeId, long? rootJobId)
 		{
 			_dbContext = dbContext;
 
 			_agentId = agentId;
 			_agentTypeId = agentTypeId;
-		}
+            _rootJobId = rootJobId;
+        }
 
 		public DataTable Execute()
 		{
@@ -28,7 +30,8 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 			List<SqlParameter> sqlParams = new List<SqlParameter>
 			{
 				new SqlParameter("@AgentID", _agentId),
-				new SqlParameter("@AgentTypeID", _agentTypeId)
+				new SqlParameter("@AgentTypeID", _agentTypeId),
+				new SqlParameter("@RootJobID", _rootJobId)
 			};
 
 			DataTable dataTable = _dbContext.EddsDBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams.ToArray());

@@ -66,6 +66,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 			return GetNextJob(agentId, agentTypeId, Array.Empty<int>());
 		}
 
+		public IQuery<DataTable> GetNextJob(int agentId, int agentTypeId, long? rootJobId)
+		{
+			throw new NotImplementedException();
+		}
+
 		public ICommand UpdateScheduledJob(long jobId, DateTime nextUtcRunTime)
 		{
 			return new ActionCommand(() =>
@@ -302,6 +307,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
             return jobTest;
         }
 
-		#endregion
-	}
+        #endregion
+    }
 }

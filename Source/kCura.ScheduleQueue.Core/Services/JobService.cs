@@ -33,13 +33,13 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		public AgentTypeInformation AgentTypeInformation => AgentService.AgentTypeInformation;
 
-		public Job GetNextQueueJob(IEnumerable<int> resourceGroupIds, int agentID)
+		public Job GetNextQueueJob(IEnumerable<int> resourceGroupIds, int agentID, long? rootJobId = null)
 		{
             DataRow row;
 			
 			if (_kubernetesMode.IsEnabled())
 			{
-				row = DataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID);
+				row = DataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID, rootJobId);
 			}
 			else
 			{
@@ -431,6 +431,6 @@ namespace kCura.ScheduleQueue.Core.Services
 								nextRunTime, submittedBy, rootJobID, parentJobID);
 		}
 
-		#endregion
-	}
+        #endregion
+    }
 }

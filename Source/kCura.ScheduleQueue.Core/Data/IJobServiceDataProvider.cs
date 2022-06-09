@@ -9,7 +9,7 @@ namespace kCura.ScheduleQueue.Core.Data
     {
         DataTable GetJobsByIntegrationPointId(long integrationPointId);
         DataRow GetNextQueueJob(int agentId, int agentTypeId, int[] resurceGroupIdsArray);
-        DataRow GetNextQueueJob(int agentId, int agentTypeId);
+        DataRow GetNextQueueJob(int agentId, int agentTypeId, long? rootJobId = null);
 
 	    void CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID,
 		    string taskType,

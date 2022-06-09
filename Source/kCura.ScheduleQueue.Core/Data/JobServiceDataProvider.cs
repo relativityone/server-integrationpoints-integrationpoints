@@ -22,9 +22,9 @@ namespace kCura.ScheduleQueue.Core.Data
 			}
 		}
 
-		public DataRow GetNextQueueJob(int agentId, int agentTypeId)
+		public DataRow GetNextQueueJob(int agentId, int agentTypeId, long? rootJobId = null)
 		{
-			using (DataTable dataTable = _queryManager.GetNextJob(agentId, agentTypeId).Execute())
+			using (DataTable dataTable = _queryManager.GetNextJob(agentId, agentTypeId, rootJobId).Execute())
 			{
 				return GetFirstRowOrDefault(dataTable);
 			}

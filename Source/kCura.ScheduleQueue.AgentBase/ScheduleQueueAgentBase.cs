@@ -249,7 +249,11 @@ namespace kCura.ScheduleQueue.AgentBase
                     }
                     else
                     {
-                        break;
+						nextJob = GetNextQueueJob(nextJob.RootJobId);
+						if (nextJob == null)
+                        {
+							break;
+						}
                     }
                 }
 
@@ -315,7 +319,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			LogFinalizeJob(job, result);
 		}
 
-		private Job GetNextQueueJob()
+		private Job GetNextQueueJob(long? rootJobId = null)
 		{
 			if (!Enabled)
 			{
@@ -336,7 +340,7 @@ namespace kCura.ScheduleQueue.AgentBase
 				LogAllJobsInTheQueue();
 			}
 
-			return _jobService.GetNextQueueJob(GetListOfResourceGroupIDs(), _agentId.Value);
+			return _jobService.GetNextQueueJob(GetListOfResourceGroupIDs(), _agentId.Value, rootJobId);
 		}
 
 		private void CleanupQueueJobs()
