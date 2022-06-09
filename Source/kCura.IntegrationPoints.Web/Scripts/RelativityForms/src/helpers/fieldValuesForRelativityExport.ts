@@ -8,26 +8,21 @@ export async function getFolderPathInformation(convenienceApi: IConvenienceApi, 
                     "content-type": "application/json; charset=utf-8"
                 }
             }),
-                url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/" + workspaceId +  "/api/FolderPath/GetFields"
+            url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/" + workspaceId +  "/api/FolderPath/GetFields"
         };
 
-        let folderPathInfo = convenienceApi.relativityHttpClient.get(request.url, request.options)
+        return convenienceApi.relativityHttpClient.get(request.url, request.options)
             .then(function (result) {
                 if (!result.ok) {
                     console.log("error in get; ", result);
-                } else if (result.ok) {
-                    console.log("result", result);
-                    return result.json();
                 }
+                return result.json();
             }).then(result => {
-            var field = result.find(field => field.fieldIdentifier === destinationConfiguration["FolderPathSourceField"]);
-            if (field) {
-                return "Read From Field:" + field.actualName;
-            }
+                var field = result.find(field => field.fieldIdentifier === destinationConfiguration["FolderPathSourceField"]);
+                if (field) {
+                    return "Read From Field: " + field.actualName;
+                }
             })
-
-        return folderPathInfo;
-
     } else if (convertToBool(destinationConfiguration["UseDynamicFolderPath"])) {
         return "Read From Folder Tree";
     } else {
