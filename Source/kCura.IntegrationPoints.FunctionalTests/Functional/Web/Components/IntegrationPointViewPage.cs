@@ -8,7 +8,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
     using _ = IntegrationPointViewPage;
 
     [WaitUntilOverlayMissing(TriggerEvents.Init, PresenceTimeout = 10, AbsenceTimeout = 30, ThrowOnPresenceFailure = false, ThrowOnAbsenceFailure = false)]
-	internal class IntegrationPointViewPage : WorkspacePage<_>
+	internal partial class IntegrationPointViewPage : WorkspacePage<_>
 	{
 		[WaitUntilEnabled]
         [WaitUntilOverlayMissing(TriggerEvents.BeforeAccess, PresenceTimeout = 10, AbsenceTimeout = 30, ThrowOnPresenceFailure = false, ThrowOnAbsenceFailure = false)]
@@ -18,8 +18,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		public Button<IntegrationPointSaveAsProfilePopup, _> SaveAsProfile { get; private set; }
 
 		public JobHistoryStatusTab Status { get; private set; }
-		
-		public _ RunIntegrationPoint(string integrationPointName)
+
+        public _ RunIntegrationPoint(string integrationPointName)
 		{
 			var integrationPointRunPopup = Run.WaitTo.Within(60).BeVisible()
                 .Run.ClickAndGo();
@@ -56,5 +56,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 			IWebElement iframe = Driver.FindElement(By.Id("_externalPage"));
 			Driver.SwitchTo().Frame(iframe);
 		}
+
+		public 
     }
 }
