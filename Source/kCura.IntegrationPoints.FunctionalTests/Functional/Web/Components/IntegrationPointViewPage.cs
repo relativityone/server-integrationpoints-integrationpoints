@@ -56,7 +56,5 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 			IWebElement iframe = Driver.FindElement(By.Id("_externalPage"));
 			Driver.SwitchTo().Frame(iframe);
 		}
-
-		public 
     }
 }
