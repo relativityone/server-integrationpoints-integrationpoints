@@ -37,6 +37,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			_testsImplementation.OnTearDownFixture();
 		}
 
+		[Ignore("REL-695806")]
 		[Test, TestType.Critical]
 		public void SavedSearch_NativesAndMetadata_GoldFlow()
 		{
