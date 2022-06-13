@@ -33,6 +33,8 @@ namespace kCura.ScheduleQueue.AgentBase
 		private readonly Lazy<int> _agentId;
 		private readonly Lazy<IAPILog> _loggerLazy;
 
+		private readonly bool _shouldReadJobOnce = false; //Only for testing purposes. DO NOT MODIFY IT!
+
 		private readonly Guid _agentInstanceGuid = Guid.NewGuid();
 
 		protected Func<IEnumerable<int>> GetResourceGroupIDsFunc { get; set; }
@@ -339,6 +341,12 @@ namespace kCura.ScheduleQueue.AgentBase
             {
 				LogAllJobsInTheQueue();
 			}
+
+			if(_shouldReadJobOnce)
+            {
+				Logger.LogWarning("This line should not be reached in production! ShouldReadJobOnce - {shouldReadJobOnce}", _shouldReadJobOnce);
+				return null;
+            }
 
 			return _jobService.GetNextQueueJob(GetListOfResourceGroupIDs(), _agentId.Value, rootJobId);
 		}
