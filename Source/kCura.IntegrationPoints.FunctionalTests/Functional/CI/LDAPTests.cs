@@ -1,4 +1,5 @@
-﻿using Relativity.Testing.Identification;
+﻿using NUnit.Framework;
+using Relativity.Testing.Identification;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
