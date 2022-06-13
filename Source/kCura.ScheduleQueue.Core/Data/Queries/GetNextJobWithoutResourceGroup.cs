@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using kCura.IntegrationPoints.Data;
@@ -31,7 +32,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 			{
 				new SqlParameter("@AgentID", _agentId),
 				new SqlParameter("@AgentTypeID", _agentTypeId),
-				new SqlParameter("@RootJobID", _rootJobId)
+				new SqlParameter("@RootJobID", _rootJobId ?? (object) DBNull.Value)
 			};
 
 			DataTable dataTable = _dbContext.EddsDBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams.ToArray());
