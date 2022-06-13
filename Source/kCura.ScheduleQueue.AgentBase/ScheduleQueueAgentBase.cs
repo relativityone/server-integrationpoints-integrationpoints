@@ -256,6 +256,8 @@ namespace kCura.ScheduleQueue.AgentBase
                         {
 							break;
 						}
+
+						Logger.LogInformation("Pick up another Job {jobId} with corresponding RootJobId - {rootJobId}", nextJob.JobId, nextJob.RootJobId);
                     }
                 }
 
