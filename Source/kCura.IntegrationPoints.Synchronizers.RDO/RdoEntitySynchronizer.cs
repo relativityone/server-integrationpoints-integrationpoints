@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			try
 			{
-				_logger.LogDebug("Entity field mapping process started...");
+				_logger.LogInformation("Entity field mapping process started...");
 				List<RelativityObject> allRdoFields = GetAllRdoFields(settings);
 
 				LoadFirstNameFieldId(fieldMap, allRdoFields);
@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 				LoadManagerFieldId(fieldMap, settings, allRdoFields);
 
-				_logger.LogDebug("Entity field mapping process finished");
+				_logger.LogInformation("Entity field mapping process finished");
 
 				return importFieldMap;
 			}
@@ -142,7 +142,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private void LoadUniqueIdSourceField(IEnumerable<FieldMap> fieldMap)
 		{
 			UniqueIDSourceFieldId = fieldMap.Where(x => x.FieldMapType.Equals(FieldMapTypeEnum.Identifier)).Select(x => x.SourceField.FieldIdentifier).First();
-			_logger.LogDebug($"Entity UniqueID source field identifier: {UniqueIDSourceFieldId}");
+			_logger.LogInformation($"Entity UniqueID source field identifier: {UniqueIDSourceFieldId}");
 		}
 
 		private void LoadManagerFieldId(IEnumerable<FieldMap> fieldMap, ImportSettings settings, List<RelativityObject> allRDOFields)
@@ -150,17 +150,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			HandleManagerLink = false;
 
 			int managerFieldId = allRDOFields.Where(x => x.Guids.Contains(new Guid(EntityFieldGuids.Manager))).Select(x => x.ArtifactID).FirstOrDefault();
-			_logger.LogDebug($"Destination workspace entity rdo 'Manager' field artifact id: {managerFieldId}");
+			_logger.LogInformation($"Destination workspace entity rdo 'Manager' field artifact id: {managerFieldId}");
 
 			if ((managerFieldId > 0) && fieldMap.Any(x => x.DestinationField.FieldIdentifier.Equals(managerFieldId.ToString())))
 			{
 				ManagerSourceFieldId = fieldMap.Where(x => x.DestinationField.FieldIdentifier.Equals(managerFieldId.ToString())).Select(x => x.SourceField.FieldIdentifier).First();
 
-				_logger.LogDebug($"Destination workspace entity rdo 'Manager' field artifact id: {managerFieldId} mapped to source provider field identifier: '{ManagerSourceFieldId}'");
+				_logger.LogInformation($"Destination workspace entity rdo 'Manager' field artifact id: {managerFieldId} mapped to source provider field identifier: '{ManagerSourceFieldId}'");
 
 				if (settings.EntityManagerFieldContainsLink)
 				{
-					_logger.LogDebug("Identified entity manager link setting...");
+					_logger.LogInformation("Identified entity manager link setting...");
 					HandleManagerLink = true;
 				}
 			}
@@ -187,7 +187,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				importFieldMap.Add(_LDAP_MAP_FULL_NAME_FIELD_NAME, fullNameFieldId);
 				HandleFullNamePopulation = true;
-				_logger.LogDebug("Enabling entity 'Full Name' auto population process");
+				_logger.LogInformation("Enabling entity 'Full Name' auto population process");
 			}
 		}
 
@@ -266,7 +266,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				return;
 			}
 
-			_logger.LogDebug("Creating new Job for Manager reference import");
+			_logger.LogInformation("Creating new Job for Manager reference import");
 
 			Dictionary<string, string> finalEntityManagerMap = GetEntityManagerMapForTransferredRecords(ImportService.TotalRowsProcessed);
 
@@ -343,7 +343,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 					{
 						managerReferenceLink = _entityManagerLinksSanitizer.SanitizeManagerReferenceLink(managerReferenceLink);
 
-						_logger.LogDebug(
+						_logger.LogInformation(
 							$"Add Manager Ref Link: '{managerReferenceLink}' for entity unique id field value: '{uniqueIdentifier}'");
 						_entityManagerMap.Add(uniqueIdentifier, managerReferenceLink);
 					}
@@ -367,12 +367,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private void LogGeneratingImportRow()
 		{
-			_logger.LogVerbose("Generating import row.");
+			_logger.LogInformation("Generating import row.");
 		}
 
 		private void LogSubmittingJob()
 		{
-			_logger.LogDebug($"Attempting to submit job.");
+			_logger.LogInformation($"Attempting to submit job.");
 		}
 
 		private void LogMissingArguments()
@@ -382,7 +382,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private void LogProcessingManagerReference(string mgrRefLinkId, string entityUniqueIdentifier)
 		{
-			_logger.LogDebug($"Processing manager reference for entity: {entityUniqueIdentifier}, Manager Ref Link Id: '{mgrRefLinkId ?? "<empty>"}'");
+			_logger.LogInformation($"Processing manager reference for entity: {entityUniqueIdentifier}, Manager Ref Link Id: '{mgrRefLinkId ?? "<empty>"}'");
 		}
 
 		#endregion

@@ -21,10 +21,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		
 		public _ RunIntegrationPoint(string integrationPointName)
 		{
-			var integrationPointRunPopup = Run.WaitTo.Within(60).BeVisible()
+			var integrationPointRunPopup = Run.WaitTo.Within(120).BeVisible()
                 .Run.ClickAndGo();
 
-			var integrationPointViewPage = integrationPointRunPopup.Ok.ClickAndGo();
+			var integrationPointViewPage = integrationPointRunPopup.Ok.WaitTo.Within(120).BeVisible()
+                .Ok.ClickAndGo();
 
 			return integrationPointViewPage.WaitUntilJobCompleted(integrationPointName);
 		}

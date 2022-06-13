@@ -366,7 +366,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			{
 				case LogCategory.Debug:
 					RaiseMessageNoLogging(msg, _logCategoryToLogLevelMapping[LogCategory.Debug]);
-					Logger.LogDebug(message);
+					Logger.LogInformation(message);
 					break;
 				case LogCategory.Info:
 					RaiseMessage(msg, _logCategoryToLogLevelMapping[LogCategory.Info]);
@@ -414,18 +414,18 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void LogOnInitializeManagerConfigSettingsFactory()
 		{
-			Logger.LogDebug("Attempting to initialize Config Settings factory in {TypeName}",
+			Logger.LogInformation("Attempting to initialize Config Settings factory in {TypeName}",
 				nameof(ScheduleQueueAgentBase));
 		}
 
 		private void LogOnCleanupJobs()
 		{
-			Logger.LogDebug("Attempting to cleanup jobs in {TypeName}", nameof(ScheduleQueueAgentBase));
+			Logger.LogInformation("Attempting to cleanup jobs in {TypeName}", nameof(ScheduleQueueAgentBase));
 		}
 
 		private void LogExecuteComplete()
 		{
-			Logger.LogDebug("Execution of scheduled jobs completed in {TypeName}", nameof(ScheduleQueueAgentBase));
+			Logger.LogInformation("Execution of scheduled jobs completed in {TypeName}", nameof(ScheduleQueueAgentBase));
 		}
 
 		private void LogExecuteError(Exception ex)

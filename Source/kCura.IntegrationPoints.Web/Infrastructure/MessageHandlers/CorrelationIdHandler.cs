@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Web.Infrastructure.MessageHandlers
 			WebCorrelationContext correlationContext = GetWebActionContext(request, logger);
 			using (logger.LogContextPushProperties(correlationContext))
 			{
-				logger.LogDebug($"Integration Point Web Request: {request.RequestUri}");
+				logger.LogInformation($"Integration Point Web Request: {request.RequestUri}");
 
 				string correlationID = correlationContext.CorrelationId?.ToString();
 				request.Headers.Add(WEB_CORRELATION_ID_HEADER_NAME, correlationID);

@@ -274,17 +274,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 		private void LogPopulatingFields()
 		{
-			_logger.LogVerbose("Attempting to populate export fields.");
+			_logger.LogInformation("Attempting to populate export fields.");
 		}
 
 		private void LogAttachingEventHandlers()
 		{
-			_logger.LogVerbose("Attaching event handlers to IExporter.");
+			_logger.LogInformation("Attaching event handlers to IExporter.");
 		}
 
 		private void LogSubscribingToStatisticEvents(List<ILoggingMediator> loggingMediators)
 		{
-			_logger.LogVerbose("Subscribing {MediatorsCount} logging mediator(s) to statistic service.", loggingMediators.Count);
+			_logger.LogInformation("Subscribing {MediatorsCount} logging mediator(s) to statistic service.", loggingMediators.Count);
 		}
 
 		private void LogCreatingExporterError(Exception e)
