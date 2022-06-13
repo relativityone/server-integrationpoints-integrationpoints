@@ -1,4 +1,5 @@
-﻿using Relativity.Testing.Identification;
+﻿using NUnit.Framework;
+using Relativity.Testing.Identification;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
@@ -20,6 +21,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             _testImplementation.OnSetUpFixture();
         }
 
+        [Ignore("REL-695806")]
         [TestType.Critical]
         [IdentifiedTest("88bf9b08-99c4-4c30-8854-fff22c4dc213")]
         public void LoadNativesFromLoadFileGoldFlow()
