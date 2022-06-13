@@ -161,7 +161,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
             msgBuilder.AppendLine("savedSearchArtifactId {savedSearchArtifactId} ");
             msgBuilder.AppendLine("userImportApiSettings {userImportApiSettings}");
             string msgTemplate = msgBuilder.ToString();
-            _logger.LogDebug(
+            _logger.LogInformation(
                 msgTemplate,
                 mappedFieldsWithoutFieldNames,
                 config,

@@ -501,7 +501,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private void GetImportApiSettingsForUserSuccessfulEnd(Job job, string jsonString)
         {
             Logger.LogInformation("Successfully finished getting Import API settings for user. job: {JobId}", job.JobId);
-            Logger.LogDebug("Getting Import API settings for user returned following json {jsonString}, job: {JobId} ",
+            Logger.LogInformation("Getting Import API settings for user returned following json {jsonString}, job: {JobId} ",
                 jsonString, job.JobId);
         }
 

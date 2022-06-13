@@ -65,7 +65,7 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		private void LogInstallQueueTable()
 		{
-			_logger.LogDebug("Attempting to create Schedule Agent Queue table");
+			_logger.LogInformation("Attempting to create Schedule Agent Queue table");
 		}
 
 		#endregion

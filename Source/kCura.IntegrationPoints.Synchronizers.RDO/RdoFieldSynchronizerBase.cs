@@ -165,7 +165,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private void LogRetrievingRelativityFields()
 		{
-			_logger.LogVerbose("Attempting to retrieve Relativity fields.");
+			_logger.LogInformation("Attempting to retrieve Relativity fields.");
 		}
 		
 		#endregion

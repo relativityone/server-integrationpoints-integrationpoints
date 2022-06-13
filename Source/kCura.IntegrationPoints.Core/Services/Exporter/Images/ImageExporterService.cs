@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter.Images
 				.ToDictionary(x => x.ArtifactID, x => x);
 
 			Logger.LogInformation("Retrieved {count} documents in ImageExporterService [{startArtifactId} - {endArtifactId}]", retrievedData.Count, retrievedData.First().Key, retrievedData.Last().Key);
-			Logger.LogDebug("Retrieved documents Ids: [ids]", string.Join(", ", retrievedData.Keys));
+			Logger.LogInformation("Retrieved documents Ids: [ids]", string.Join(", ", retrievedData.Keys));
 
 			var imagesResult = new List<ArtifactDTO>();
 

@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
 		private void LogCreatingIntegrationPointType(string name)
 		{
-			_logger.LogDebug("Attempting to create Integration Point Type {name}.", name);
+			_logger.LogInformation("Attempting to create Integration Point Type {name}.", name);
 		}
 
 		#endregion

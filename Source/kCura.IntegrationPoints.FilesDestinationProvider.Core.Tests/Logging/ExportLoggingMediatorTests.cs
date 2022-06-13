@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 
 			RaiseStatusMessage(exportEventArgs);
 
-			_apiLog.Received().LogDebug(_unexpectedEventTypeTemplate, givenType, exportEventArgs);
+			_apiLog.Received().LogInformation(_unexpectedEventTypeTemplate, givenType, exportEventArgs);
 		}
 
 		[Test]
@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 
 			RaiseStatusMessage(exportEventArgs);
 
-			_apiLog.Received().LogVerbose(_statusMessageTemplate, exportEventArgs.Message);
+			_apiLog.Received().LogInformation(_statusMessageTemplate, exportEventArgs.Message);
 		}
 
 		[Test]
@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 
 			RaiseStatusMessage(exportEventArgs);
 
-			_apiLog.Received().LogVerbose(_progressMessageTemplate, exportEventArgs.Message);
+			_apiLog.Received().LogInformation(_progressMessageTemplate, exportEventArgs.Message);
 		}
 
 		[Test]

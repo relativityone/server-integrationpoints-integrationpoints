@@ -538,7 +538,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void LogGetImportedManagerArtifactIDsSuccessfulEnd(IDictionary<string, int> managerIDs)
 		{
 			_logger.LogInformation("Successfully retrieved imported manager artifactIDs");
-			_logger.LogDebug("Retrieved manager artifactIDs manager ids: {managerIDs}", managerIDs.Values);
+			_logger.LogInformation("Retrieved manager artifactIDs manager ids: {managerIDs}", managerIDs.Values);
 		}
 
 		private void LogGetEntityManagerFieldArtifactIdSuccessfulEnd(int artifactID)
@@ -554,7 +554,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			_logger.LogInformation("Successfully reconfigured import API settings for: {entityManagerFieldArtifactID}",
 				entityManagerFieldArtifactID);
-			_logger.LogDebug(
+			_logger.LogInformation(
 				"Reconfigured import API settings for: {entityManagerFieldArtifactID}",
 				entityManagerFieldArtifactID);
 		}

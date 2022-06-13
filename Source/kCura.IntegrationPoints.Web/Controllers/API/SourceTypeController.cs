@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[LogApiExceptionFilter(Message = "Unable to retrieve source provider list.")]
 		public HttpResponseMessage Get()
 		{
-			_apiLog.LogDebug("Retriving Source Provider Types...");
+			_apiLog.LogInformation("Retriving Source Provider Types...");
 			Dictionary<Guid, int> rdoTypesCache = _objectTypeRepository.GetRdoGuidToArtifactIdMap();
 			List<SourceTypeModel> list = _factory.GetSourceTypes().Select(x => new SourceTypeModel
 			{
@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				Config = new SourceProviderConfigModel(x.Config, rdoTypesCache)
 			}).ToList();
 
-			_apiLog.LogDebug($"Retriving Source Provider Types completed. Found: {list.Count} types");
+			_apiLog.LogInformation($"Retriving Source Provider Types completed. Found: {list.Count} types");
 
 			return Request.CreateResponse(HttpStatusCode.OK, list);
 		}

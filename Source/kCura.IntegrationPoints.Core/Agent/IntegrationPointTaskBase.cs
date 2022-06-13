@@ -239,7 +239,7 @@ namespace kCura.IntegrationPoints.Core.Agent
 		private void LogGetDestinationProviderSuccesfulEnd(Job job, IDataSynchronizer sourceProvider)
 		{
 			_logger.LogInformation("Integration Point Task Base: Succesfully retrieved destination provider for job: {JobId}. ", job.JobId);
-			_logger.LogDebug("Retrieved source provider: {sourceProvider}", sourceProvider.ToString());
+			_logger.LogInformation("Retrieved source provider: {sourceProvider}", sourceProvider.ToString());
 		}
 
 		private void LogGetDestinationProviderStart(Job job)

@@ -133,7 +133,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 		private void LogTaggingDocumentsStarted()
 		{
-			_logger.LogDebug(
+			_logger.LogInformation(
 				"Tagging documents started in source workspace {workspaceId} for job {jobIInstanceId}.",
 				_destinationWorkspaceID,
 				_jobHistory.ArtifactId);

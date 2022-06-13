@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 
 		public override void Execute()
 		{
-			_logger.LogDebug("Start preparing Native Import API process");
+			_logger.LogInformation("Start preparing Native Import API process");
 			PrepareImportJob();
 
 			_logger.LogInformation("Start Native Import API process");
