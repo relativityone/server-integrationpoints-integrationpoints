@@ -16,6 +16,9 @@ using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using Relativity.Toggles;
+using System.Threading;
+using kCura.Agent;
+using kCura.ScheduleQueue.AgentBase;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
@@ -94,9 +97,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		{
 			ProcessedJobIds.Add(job.JobId);
 
-			if (_shouldRunOnce)
+			bool shouldRunOnceWasSet = (bool)typeof(ScheduleQueueAgentBase).GetField("_shouldReadJobOnce", BindingFlags.NonPublic | BindingFlags.Instance)
+				.GetValue(this);
+			if (_shouldRunOnce && !shouldRunOnceWasSet)
 			{
-				Enabled = false;
+				typeof(AgentBase).GetMethod("StopTimer", BindingFlags.NonPublic | BindingFlags.Instance)
+					.Invoke(this, null);
+
+				typeof(ScheduleQueueAgentBase).GetField("_shouldReadJobOnce", BindingFlags.NonPublic | BindingFlags.Instance)
+					.SetValue(this, _shouldRunOnce);
 			}
 
 			if (ProcessJobMockFunc != null)

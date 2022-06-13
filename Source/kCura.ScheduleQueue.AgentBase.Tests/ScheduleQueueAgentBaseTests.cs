@@ -133,7 +133,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 			sut.Execute();
 
 			// Assert
-			_jobServiceMock.Verify(x => x.GetNextQueueJob(It.IsAny<IEnumerable<int>>(), It.IsAny<int>()),
+			_jobServiceMock.Verify(x => x.GetNextQueueJob(It.IsAny<IEnumerable<int>>(), It.IsAny<int>(), It.IsAny<long?>()),
 				Times.Once);
 		}
 
@@ -226,7 +226,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 		private void SetupJobQueue(params Job[] jobs)
 		{
 			ISetupSequentialResult<Job> sequenceSetup = _jobServiceMock.SetupSequence(x => x.GetNextQueueJob(
-				It.IsAny<IEnumerable<int>>(), It.IsAny<int>()));
+				It.IsAny<IEnumerable<int>>(), It.IsAny<int>(), It.IsAny<long?>()));
 
 			foreach (var job in jobs)
 			{
