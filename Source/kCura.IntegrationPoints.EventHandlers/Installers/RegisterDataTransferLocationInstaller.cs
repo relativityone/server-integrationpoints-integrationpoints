@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 		protected override void Run()
 		{
 			int wkspId = Helper.GetActiveCaseID();
-			Logger.LogDebug("Start creating data transfer folders creation for wksp...{wkspId}", wkspId);
+			Logger.LogInformation("Start creating data transfer folders creation for wksp...{wkspId}", wkspId);
 			DataTransferLocationService.CreateForAllTypes(Helper.GetActiveCaseID());
 		}
 	}

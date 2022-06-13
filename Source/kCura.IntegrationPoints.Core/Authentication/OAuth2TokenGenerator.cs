@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.Core.Authentication
 
 		private void LogRelativityStsUrl(string relativityInstance)
 		{
-			_logger.LogDebug($"Relativity Service Url: {relativityInstance}");
+			_logger.LogInformation($"Relativity Service Url: {relativityInstance}");
 		}
 
 		private void LogGetAuthTokenError(Exception exception)
