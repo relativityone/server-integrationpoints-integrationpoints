@@ -8,9 +8,11 @@ using Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Components;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Extensions;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
+using Relativity.Sync.Configuration;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Models;
+using Relativity.Testing.Framework.Web.Models;
 using Relativity.Testing.Framework.Web.Navigation;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
@@ -75,31 +77,31 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                 destinationWorkspace, keywordSearch.Name, RelativityProviderCopyNativeFiles.PhysicalFiles);
 
             // Assert
-            integrationPointViewPage.SummaryPageGeneralTab.Name.IsVisible;
-            integrationPointViewPage.GetOverwriteMode.ShouldBeEquivalentTo(integrationPointEditPage.Type);
-            integrationPointViewPage.GetExportType.ShouldBeEquivalentTo();
-            integrationPointViewPage.GetSourceDetails.ShouldBeEquivalentTo($"Saved Search; {keywordSearch.Name}");
-            integrationPointViewPage.GetSourceWorkspace.ShouldBeEquivalentTo();
-            integrationPointViewPage.GetSourceRelInstance.ShouldBeEquivalentTo();
-            integrationPointViewPage.GetTransferredObject.ShouldBeEquivalentTo();
-            integrationPointViewPage.GetDestinationWorkspace.ShouldBeEquivalentTo(destinationWorkspace.Name);
-            integrationPointViewPage.GetDestinationFolder.ShouldBeEquivalentTo();
-            integrationPointViewPage.GetMultiSelectOverlay.ShouldBeEquivalentTo();
-            integrationPointViewPage.GetUseFolderPathInfo.ShouldBeEquivalentTo();
-            integrationPointViewPage.GetMoveExistingDocs.ShouldBeEquivalentTo();
+            integrationPointViewPage.SummaryPageGeneralTab.Name.WaitTo.Within(5).BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.Overwrite.WaitTo.Within(5).BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.ExportType.WaitTo.Within(5).BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.SourceDetails.WaitTo.Within(5).BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.SourceWorkspace.WaitTo.Within(5).BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.SourceRelInstance.WaitTo.Within(5).BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.TransferredObject.WaitTo.Within(5).BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.DestinationWorkspace.WaitTo.Within(5).BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.DestinationFolder.WaitTo.Within(5).BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.MultiSelectOverlay.WaitTo.Within(5).BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.UseFolderPathInfo.WaitTo.Within(5).BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.MoveExistingDocs.WaitTo.Within(5).BeVisible();
 
-            integrationPointViewPage.GetName.ShouldBeEquivalentTo(integrationPointName);
-            integrationPointViewPage.GetOverwriteMode.ShouldBeEquivalentTo(integrationPointEditPage.Type);
-            integrationPointViewPage.GetExportType.ShouldBeEquivalentTo();
-            integrationPointViewPage.GetSourceDetails.ShouldBeEquivalentTo($"Saved Search; {keywordSearch.Name}");
-            integrationPointViewPage.GetSourceWorkspace.ShouldBeEquivalentTo();
-            integrationPointViewPage.GetSourceRelInstance.ShouldBeEquivalentTo();
-            integrationPointViewPage.GetTransferredObject.ShouldBeEquivalentTo();
-            integrationPointViewPage.GetDestinationWorkspace.ShouldBeEquivalentTo(destinationWorkspace.Name);
-            integrationPointViewPage.GetDestinationFolder.ShouldBeEquivalentTo();
-            integrationPointViewPage.GetMultiSelectOverlay.ShouldBeEquivalentTo();
-            integrationPointViewPage.GetUseFolderPathInfo.ShouldBeEquivalentTo();
-            integrationPointViewPage.GetMoveExistingDocs.ShouldBeEquivalentTo();
+            integrationPointViewPage.GetName().ShouldBeEquivalentTo(integrationPointName);
+            integrationPointViewPage.GetOverwriteMode().ShouldBeEquivalentTo(RelativityProviderOverwrite.AppendOnly);
+            integrationPointViewPage.GetExportType().ShouldBeEquivalentTo("Workspace; Natives");
+            integrationPointViewPage.GetSourceDetails().ShouldBeEquivalentTo($"Saved Search; {keywordSearch.Name}");
+            integrationPointViewPage.GetSourceWorkspaceName().ShouldBeEquivalentTo(_testsImplementationTestFixture.Workspace.Name);
+            integrationPointViewPage.GetSourceRelInstance().ShouldBeEquivalentTo("This instance(emttest)");
+            integrationPointViewPage.GetTransferredObject().ShouldBeEquivalentTo(ArtifactType.Document);
+            integrationPointViewPage.GetDestinationWorkspaceName().ShouldBeEquivalentTo(destinationWorkspace.Name);
+            integrationPointViewPage.GetDestinationFolderName().ShouldBeEquivalentTo(destinationWorkspace.Name);
+            integrationPointViewPage.GetMultiSelectOverlayMode().ShouldBeEquivalentTo(FieldOverlayBehavior.UseFieldSettings);
+            integrationPointViewPage.GetUseFolderPathInfo().ShouldBeEquivalentTo(RelativityProviderFolderPathInformation.No);
+            integrationPointViewPage.GetMoveExistingDocs().ShouldBeEquivalentTo(YesNo.No);
         }
 
         private Workspace CreateDestinationWorkspace()
