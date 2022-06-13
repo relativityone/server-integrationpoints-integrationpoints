@@ -44,6 +44,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			_testsImplementation.SavedSearchNativesAndMetadataGoldFlow();
 		}
 
+		[Ignore("REL-695806")]
 		[TestCase(YesNo.No)]
 		[TestCase(YesNo.Yes)]
 		public void Production_Images_GoldFlow(YesNo copyFilesToRepository)
@@ -51,6 +52,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 			_testsImplementation.ProductionImagesGoldFlow(copyFilesToRepository);
 		}
 
+        [Ignore("REL-695806")]
 		[Test]
 		public async Task Entities_GoldFlow()
 		{
