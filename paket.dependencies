@@ -44,13 +44,13 @@ nuget Relativity.AutomatedWorkflows.Services.Interfaces 0.11.0-pre.1
 nuget Relativity.AutomatedWorkflows.SDK 0.11.0-pre.1
 
 // Import API packages
-nuget Relativity.DataExchange.Client.SDK 1.16.26
+nuget Relativity.DataExchange.Client.SDK 1.17.14
 nuget Relativity.DataTransfer.Legacy.SDK 0.2.21
 nuget Relativity.Transfer.Client 7.4.8
 
 //Relativity transient packages
 nuget kCura.OutsideIn.FI.Win32 2020.7.0 content: none 		//Relativity.DataExchange.Client.SDK
-nuget Relativity.OutsideIn 2021.8.0 content: none 			//Relativity.DataExchange.Client.SDK
+nuget Relativity.OutsideIn 2022.4.1 content: none 			//Relativity.DataExchange.Client.SDK
 
 //Other packages
 nuget SSH.NET 2020.0.1
@@ -107,7 +107,7 @@ group Tests
 	nuget Relativity.Toggles 1.0.1
 	nuget Relativity.Services.Interfaces.Private ~> 14.1.0
 	nuget Relativity.DataTransfer.MessageService ~> 10.2.0
-	nuget Relativity.OutsideIn 2021.8.0 content: none 			//Relativity.DataExchange.Client.SDK
+	nuget Relativity.OutsideIn 2022.4.1 content: none 			//Relativity.DataExchange.Client.SDK
 	nuget FluentAssertions 4.19.4
 	nuget Polly 5.9
 	nuget Moq 4.5.3
@@ -125,7 +125,7 @@ group Tests
 	nuget Relativity.Telemetry.Services.Interface 3003.0.2
 	nuget Relativity.Services.Interfaces 13.5.0
 	nuget Relativity.Testing.Framework 7.2.1
-	nuget Relativity.Testing.Framework.Api 6.1.4
+	nuget Relativity.Testing.Framework.Api 6.1.7
 	nuget Relativity.Testing.Framework.Web 1.2.0
 	nuget Relativity.Testing.Framework.RingSetup 0.19.1
 	nuget Selenium.Support 4.0.0-beta4
@@ -136,7 +136,7 @@ group Tests
 	nuget Relativity.OAuth2Client 1.5.3
 	nuget Relativity.OAuth2Client.Interfaces 1.5.3
 
-	nuget Relativity.Sync 0.9.0-pre.30
+	nuget Relativity.Sync 0.9.0-pre.34
 
 	//RIP packages
 	nuget IntegrationPoints.MyFirstProvider 12.3.10
@@ -149,7 +149,7 @@ group Sync
 	strategy: min
 	source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 	
-	nuget Relativity.Sync 0.9.0-pre.30
+	nuget Relativity.Sync 0.9.0-pre.34
 	nuget SSH.NET 2020.0.1
 	nuget Newtonsoft.Json 6.0.8
 	nuget Autofac 4.9.4

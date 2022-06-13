@@ -50,16 +50,17 @@ namespace Relativity.IntegrationPoints.Services
             {
                 Size = WorkloadSize.None
             };
-            int jobsCount = 0;
+            int totalJobsCount = 0;
+            int blockedJobsCount = 0;
             try
             {
                 using (IWindsorContainer container = GetDependenciesContainer(workspaceArtifactId: -1))
                 {
-                    jobsCount = GetJobsFromQueue(container.Resolve<IQueueQueryManager>());
+                    (totalJobsCount, blockedJobsCount) = GetJobsFromQueue(container.Resolve<IQueueQueryManager>());
 
                     IInstanceSettingsManager instanceSettingManager = container.Resolve<IInstanceSettingsManager>();
                     List<WorkloadSizeDefinition> workloadSizeDefinitions = GetWorkloadSizeDefinitions(instanceSettingManager);
-                    WorkloadSizeDefinition workloadSizeDefinition = SelectMatchingWorkloadSize(workloadSizeDefinitions, jobsCount);
+                    WorkloadSizeDefinition workloadSizeDefinition = SelectMatchingWorkloadSize(workloadSizeDefinitions, totalJobsCount);
                     workload.Size = workloadSizeDefinition.WorkloadSize;
                 }
             }
@@ -67,11 +68,12 @@ namespace Relativity.IntegrationPoints.Services
             {
                 Logger.LogError(ex, "GetWorkloadAsync_Error");
             }
-            Logger.LogInformation("Selected workload size: {workloadSize} for jobs count: {jobsCount}", workload.Size, jobsCount);
+            Logger.LogInformation("Selected workload size: {workloadSize} for jobs count: {jobsCount} - blockedJobsCount: {blockedJobsCount}",
+                workload.Size, totalJobsCount, blockedJobsCount);
             return Task.FromResult(workload);
         }
 
-        private int GetJobsFromQueue(IQueueQueryManager queueQueryManager)
+        private (int TotalJobsCount, int BlockedJobsCount) GetJobsFromQueue(IQueueQueryManager queueQueryManager)
         {
             AgentTypeInformation agentInfo = GetAgentTypeInfo(queueQueryManager);
       
@@ -85,7 +87,7 @@ namespace Relativity.IntegrationPoints.Services
 
             SendWorkloadStateMetrics(totalItems, blockedItems);
 
-            return totalItems;
+            return (totalItems, blockedItems);
         }
 
         private AgentTypeInformation GetAgentTypeInfo(IQueueQueryManager queueQueryManager)
@@ -108,8 +110,7 @@ namespace Relativity.IntegrationPoints.Services
                 };
 
             Client.APMClient.CountOperation(_METRIC_NAME, correlationID: kCura.IntegrationPoints.Core.Constants.IntegrationPoints.Telemetry.WORKLOAD_METRICS_CORRELATION_ID_GUID,
-                customData: data).Write();           
-            Logger.LogInformation($"Sending metrics {_METRIC_NAME} total workload: {totalItems}, blocked jobs: {blockedItems}");
+                customData: data).Write();
         }
 
         private WorkloadSizeDefinition SelectMatchingWorkloadSize(List<WorkloadSizeDefinition> definitions, int pendingJobsCount)

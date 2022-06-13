@@ -14,8 +14,8 @@ namespace kCura.IntegrationPoints.Web
         {
 	        ICPHelper helper = ConnectionHelper.Helper();
 	        IAPILog logger = helper.GetLoggerFactory().GetLogger();
-			GlobalHost.HubPipeline.AddModule(new IntegrationPointDataHubErrorHandlingPipelineModule(logger));
-			app.MapSignalR();
+            GlobalHost.HubPipeline.AddModule(new IntegrationPointDataHubErrorHandlingPipelineModule(logger));
+            app.MapSignalR();
         }
     }
 }

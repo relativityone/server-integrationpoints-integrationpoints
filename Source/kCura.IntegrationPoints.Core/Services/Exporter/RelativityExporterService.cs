@@ -74,14 +74,14 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		public override ArtifactDTO[] RetrieveData(int size)
 		{
-			Logger.LogDebug("Start retrieving data in RelativityExporterService. Size: {size}, export type: {typeOfExport}, FieldArtifactIds size: {avfIdsSize}",
+			Logger.LogInformation("Start retrieving data in RelativityExporterService. Size: {size}, export type: {typeOfExport}, FieldArtifactIds size: {avfIdsSize}",
 				size, SourceConfiguration?.TypeOfExport, FieldArtifactIds.Length);
 
 			IList<RelativityObjectSlimDto> retrievedData = DocumentRepository
 					.RetrieveResultsBlockFromExportAsync(ExportJobInfo, size, RetrievedDataCount)
 					.GetAwaiter().GetResult();
 
-			Logger.LogDebug($"Retrieved {retrievedData.Count} documents in ImageExporterService");
+			Logger.LogInformation($"Retrieved {retrievedData.Count} documents in ImageExporterService");
 
 			var result = new List<ArtifactDTO>(size);
 
@@ -99,9 +99,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				result.Add(new ArtifactDTO(documentArtifactID, (int) ArtifactType.Document, textIdentifier, fields));
 			}
 
-			Logger.LogDebug("Before setting folder paths for documents");
+			Logger.LogInformation("Before setting folder paths for documents");
 			_folderPathReader.SetFolderPaths(result);
-			Logger.LogDebug("After setting folder paths for documents");
+			Logger.LogInformation("After setting folder paths for documents");
 			RetrievedDataCount += result.Count;
 			return result.ToArray();
 		}

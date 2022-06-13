@@ -14,6 +14,7 @@ using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using kCura.ScheduleQueue.Core.Validation;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -195,7 +196,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 			}
 
 			public override string Name { get; }
-			protected override TaskResult ProcessJob(Job job)
+			protected override TaskResult ProcessJob(Job job, ValidationResult validationResult = null)
 			{
 				throw new NotImplementedException();
 			}

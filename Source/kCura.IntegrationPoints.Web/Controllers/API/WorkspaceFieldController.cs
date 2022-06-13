@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private void LogImportSettings(ImportSettings importSettings)
 		{
 			var settingsForLogging = new ImportSettingsForLogging(importSettings);
-			_apiLog.LogDebug($"Import Settings has been extracted successfully for workspace field retrieval process: {settingsForLogging}");
+			_apiLog.LogInformation($"Import Settings has been extracted successfully for workspace field retrieval process: {settingsForLogging}");
 		}
 	}
 }

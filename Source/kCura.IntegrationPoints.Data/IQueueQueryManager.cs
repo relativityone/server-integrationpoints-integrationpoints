@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Data
 
 		IQuery<DataTable> GetNextJob(int agentId, int agentTypeId, int[] resourceGroupArtifactId);
 
-		IQuery<DataTable> GetNextJob(int agentId, int agentTypeId);
+		IQuery<DataTable> GetNextJob(int agentId, int agentTypeId, long? rootJobId);
 		
 		ICommand UnlockScheduledJob(int agentId);
 

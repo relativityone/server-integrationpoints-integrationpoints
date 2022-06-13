@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 			if (_container == null)
 			{
 				LogContainerNotInitialized(job);
-				throw new InvalidOperationException($"{nameof(TaskFactory)} wasnt properly initialized. Container cannot be null.");
+				throw new InvalidOperationException($"{nameof(TaskFactory)} wasn't properly initialized. Container cannot be null.");
 			}
 
 			IntegrationPoint integrationPointDto = GetIntegrationPoint(job);

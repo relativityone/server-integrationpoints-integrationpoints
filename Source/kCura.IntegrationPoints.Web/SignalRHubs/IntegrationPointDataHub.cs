@@ -22,6 +22,7 @@ using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.IntegrationPoints.Web.Helpers;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using Relativity.API;
@@ -48,12 +49,12 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 		private readonly IStateManager _stateManager;
 		private readonly IServicesMgr _serviceManager;
 
-		public IntegrationPointDataHub() : this(ConnectionHelper.Helper(), new HelperClassFactory())
+        public IntegrationPointDataHub() : this(ConnectionHelper.Helper(), new HelperClassFactory())
 		{ }
 
 		internal IntegrationPointDataHub(ICPHelper helper, IHelperClassFactory helperClassFactory)
 		{
-			_helper = helper;
+            _helper = helper;
 			_helperClassFactory = helperClassFactory;
 
 			_logger = _helper.GetLoggerFactory().GetLogger();
@@ -63,8 +64,8 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			_jobHistoryManager = _managerFactory.CreateJobHistoryManager();
 			_stateManager = _managerFactory.CreateStateManager();
 			_serviceManager = _helper.GetServicesManager();
-			
-			IRepositoryFactory repositoryFactory = new RepositoryFactory(_helper, _serviceManager);
+
+            IRepositoryFactory repositoryFactory = new RepositoryFactory(_helper, _serviceManager);
 			_permissionValidator = new IntegrationPointPermissionValidator(new[]{new ViewErrorsPermissionValidator(repositoryFactory)}, new IntegrationPointSerializer(_logger));
 
 			if (_tasks == null)
@@ -72,12 +73,23 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 				_tasks = new ConcurrentDictionary<IntegrationPointDataHubKey, HashSet<string>>();
 			}
 
-			if (_updateTimer == null)
+            IRelativityObjectManager objectManager = new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(helper.GetActiveCaseID());
+            LiquidFormsHelper liquidFormsHelper = new LiquidFormsHelper(_serviceManager, _logger, objectManager);
+            bool isLiquidFormsEnabled = liquidFormsHelper.IsLiquidForms(helper.GetActiveCaseID()).GetAwaiter().GetResult();
+
+            if (_updateTimer == null && !isLiquidFormsEnabled)
 			{
 				_updateTimer = new Timer(_updateInterval);
 				_updateTimer.Elapsed += UpdateTimerElapsed;
 				_updateTimer.Start();
 			}
+
+            if (_updateTimer != null && isLiquidFormsEnabled)
+            {
+                _updateTimer.Stop();
+                _updateTimer.Close();
+                _updateTimer = null;
+            }
 		}
 
 		public override Task OnDisconnected(bool stopCalled)
@@ -87,7 +99,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			{
 				List<IntegrationPointDataHubKey> removedKeys = RemoveTask(Context.ConnectionId);
 				removedKeysString = String.Join(", ", removedKeys);
-				_logger.LogVerbose("SignalR task removal completed: {method} (removed keys: {keys})", nameof(OnDisconnected), removedKeysString);
+				_logger.LogInformation("SignalR task removal completed: {method} (removed keys: {keys})", nameof(OnDisconnected), removedKeysString);
 			}
 			catch (Exception exception)
 			{
@@ -104,7 +116,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 
 			AddTask(key);
 
-			_logger.LogVerbose("SignalR add task completed: {method} (key = {key})", nameof(GetIntegrationPointUpdate), key);
+			_logger.LogInformation("SignalR add task completed: {method} (key = {key})", nameof(GetIntegrationPointUpdate), key);
 		}
 
 		public void AddTask(IntegrationPointDataHubKey key)
@@ -114,7 +126,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			{
 				if (!_tasks[key].Add(Context.ConnectionId))
 				{
-					_logger.LogDebug("SignalR when adding task: {method} the key is already present", nameof(AddTask));
+					_logger.LogInformation("SignalR when adding task: {method} the key is already present", nameof(AddTask));
 				}
 			}
 		}
@@ -148,7 +160,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			try
 			{
 				await Clients.Group(key.ToString()).updateIntegrationPointJobStatusTable();
-				_logger.LogVerbose("SignalR update completed: {method} (key = {key})", nameof(UpdateIntegrationPointJobStatusTableAsync), key);
+				_logger.LogInformation("SignalR update completed: {method} (key = {key})", nameof(UpdateIntegrationPointJobStatusTableAsync), key);
 			}
 			catch (Exception exception)
 			{
@@ -200,7 +212,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 
 				await Clients.Group(key.ToString()).updateIntegrationPointData(model, buttonStates, onClickEvents, sourceProviderIsRelativity);
 
-				_logger.LogVerbose("SignalR update completed: {method} (key = {key})", nameof(UpdateIntegrationPointDataAsync), key);
+				_logger.LogInformation("SignalR update completed: {method} (key = {key})", nameof(UpdateIntegrationPointDataAsync), key);
 			}
 			catch (Exception exception)
 			{

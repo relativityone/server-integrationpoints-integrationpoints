@@ -33,6 +33,8 @@ namespace kCura.ScheduleQueue.AgentBase
 		private readonly Lazy<int> _agentId;
 		private readonly Lazy<IAPILog> _loggerLazy;
 
+		private readonly bool _shouldReadJobOnce = false; //Only for testing purposes. DO NOT MODIFY IT!
+
 		private readonly Guid _agentInstanceGuid = Guid.NewGuid();
 
 		protected Func<IEnumerable<int>> GetResourceGroupIDsFunc { get; set; }
@@ -192,68 +194,80 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void ProcessQueueJobs()
 		{
-			try
-			{
-				Job nextJob = GetNextQueueJob();
-				if (nextJob == null)
-				{
-					Logger.LogInformation("No active job found in Schedule Agent Queue table");
-					DidWork = false;
-					return;
-				}
+            try
+            {
+                Job nextJob = GetNextQueueJob();
+                if (nextJob == null)
+                {
+                    Logger.LogInformation("No active job found in Schedule Agent Queue table");
+                    DidWork = false;
+                    return;
+                }
 
-				TaskResult jobResult = new TaskResult() { Status = TaskStatusEnum.None };
-				while (nextJob != null)
-				{
-					AgentCorrelationContext context = GetCorrelationContext(nextJob);
-					using (Logger.LogContextPushProperties(context))
-					{
-						LogJobInformation(nextJob);
+                TaskResult jobResult = new TaskResult() { Status = TaskStatusEnum.None };
+                while (nextJob != null)
+                {
+                    AgentCorrelationContext context = GetCorrelationContext(nextJob);
+                    using (Logger.LogContextPushProperties(context))
+                    {
+                        LogJobInformation(nextJob);
 
-						bool isJobValid = PreExecuteJobValidation(nextJob);
-						if (!isJobValid)
-						{
-							Logger.LogInformation("Deleting invalid Job {jobId}...", nextJob.JobId);
+                        ValidationResult validationResult = PreExecuteJobValidation(nextJob);
 
-							_jobService.DeleteJob(nextJob.JobId);
-							nextJob = GetNextQueueJob();
-							continue;
+                        if (validationResult.CreateValidationFailedJobHistory)
+                        {
+                            ProcessJob(nextJob, validationResult);
 						}
 
-						Logger.LogInformation("Starting Job {jobId} processing...", nextJob.JobId);
+                        if (!validationResult.IsValid)
+                        {
+                            Logger.LogInformation("Deleting invalid Job {jobId}...", nextJob.JobId);
 
-						jobResult = ProcessJob(nextJob);
+                            _jobService.DeleteJob(nextJob.JobId);
+                            nextJob = GetNextQueueJob();
+                            continue;
+                        }
 
-						if (jobResult.Status == TaskStatusEnum.DrainStopped)
-						{
-							Logger.LogInformation("Job {jobId} has been drain-stopped. No other jobs will be picked up.", nextJob.JobId);
-							_jobService.FinalizeDrainStoppedJob(nextJob);
+                        Logger.LogInformation("Starting Job {jobId} processing...", nextJob.JobId);
+
+                        jobResult = ProcessJob(nextJob);
+
+                        if (jobResult.Status == TaskStatusEnum.DrainStopped)
+                        {
+                            Logger.LogInformation(
+                                "Job {jobId} has been drain-stopped. No other jobs will be picked up.", nextJob.JobId);
+                            _jobService.FinalizeDrainStoppedJob(nextJob);
+                            break;
+                        }
+
+                        Logger.LogInformation("Job {jobId} has been processed with status {status}", nextJob.JobId,
+                            jobResult.Status.ToString());
+                        FinalizeJobExecution(nextJob, jobResult);
+                    }
+
+                    if (!IsKubernetesMode)
+                    {
+                        nextJob = GetNextQueueJob(); // assumptions: it will not throw exception
+                    }
+                    else
+                    {
+						nextJob = GetNextQueueJob(nextJob.RootJobId);
+						if (nextJob == null)
+                        {
 							break;
 						}
-						else
-                        {
-							Logger.LogInformation("Job {jobId} has been processed with status {status}", nextJob.JobId, jobResult.Status.ToString());
-							FinalizeJobExecution(nextJob, jobResult);
-						}
-					}
 
-					if (!IsKubernetesMode)
-					{
-						nextJob = GetNextQueueJob(); // assumptions: it will not throw exception
-					}
-					else
-					{
-						break;
-					}
-				}
+						Logger.LogInformation("Pick up another Job {jobId} with corresponding RootJobId - {rootJobId}", nextJob.JobId, nextJob.RootJobId);
+                    }
+                }
 
-				if (ToBeRemoved)
-				{
-					_jobService.UnlockJobs(_agentId.Value); // what if exception
-				}
+                if (ToBeRemoved)
+                {
+                    _jobService.UnlockJobs(_agentId.Value); // what if exception
+                }
 
-				DidWork = true;
-			}
+                DidWork = true;
+            }
 			catch (Exception ex)
 			{
 				Logger.LogError(ex, "Unhandled exception occurred while processing queue jobs. Unlocking the job");
@@ -279,27 +293,27 @@ namespace kCura.ScheduleQueue.AgentBase
 			};
 		}
 
-		private bool PreExecuteJobValidation(Job job)
-		{
-			try
-			{
-				ValidationResult result = _queueJobValidator.ValidateAsync(job).GetAwaiter().GetResult();
-				if (!result.IsValid)
-				{
-					LogValidationJobFailed(job, result);
-				}
+		private ValidationResult PreExecuteJobValidation(Job job)
+        {
+            try
+            {
+                ValidationResult result = _queueJobValidator.ValidateAsync(job).GetAwaiter().GetResult();
+                if (!result.IsValid)
+                {
+                    LogValidationJobFailed(job, result);
+                }
 
-				return result.IsValid;
-			}
-			catch (Exception e)
+                return result;
+            }
+            catch (Exception e)
 			{
 				Logger.LogError(e, "Error occurred during Queue Job Validation. Return job as valid and try to run.");
-				return true;
+				return ValidationResult.Success;
 			}
 
 		}
 
-		protected abstract TaskResult ProcessJob(Job job);
+		protected abstract TaskResult ProcessJob(Job job, ValidationResult validationResult = null);
 
 		private void FinalizeJobExecution(Job job, TaskResult taskResult)
 		{
@@ -309,7 +323,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			LogFinalizeJob(job, result);
 		}
 
-		private Job GetNextQueueJob()
+		private Job GetNextQueueJob(long? rootJobId = null)
 		{
 			if (!Enabled)
 			{
@@ -330,7 +344,13 @@ namespace kCura.ScheduleQueue.AgentBase
 				LogAllJobsInTheQueue();
 			}
 
-			return _jobService.GetNextQueueJob(GetListOfResourceGroupIDs(), _agentId.Value);
+			if(_shouldReadJobOnce)
+            {
+				Logger.LogWarning("This line should not be reached in production! ShouldReadJobOnce - {shouldReadJobOnce}", _shouldReadJobOnce);
+				return null;
+            }
+
+			return _jobService.GetNextQueueJob(GetListOfResourceGroupIDs(), _agentId.Value, rootJobId);
 		}
 
 		private void CleanupQueueJobs()
@@ -348,7 +368,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			{
 				case LogCategory.Debug:
 					RaiseMessageNoLogging(msg, _logCategoryToLogLevelMapping[LogCategory.Debug]);
-					Logger.LogDebug(message);
+					Logger.LogInformation(message);
 					break;
 				case LogCategory.Info:
 					RaiseMessage(msg, _logCategoryToLogLevelMapping[LogCategory.Info]);
@@ -396,18 +416,18 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void LogOnInitializeManagerConfigSettingsFactory()
 		{
-			Logger.LogDebug("Attempting to initialize Config Settings factory in {TypeName}",
+			Logger.LogInformation("Attempting to initialize Config Settings factory in {TypeName}",
 				nameof(ScheduleQueueAgentBase));
 		}
 
 		private void LogOnCleanupJobs()
 		{
-			Logger.LogDebug("Attempting to cleanup jobs in {TypeName}", nameof(ScheduleQueueAgentBase));
+			Logger.LogInformation("Attempting to cleanup jobs in {TypeName}", nameof(ScheduleQueueAgentBase));
 		}
 
 		private void LogExecuteComplete()
 		{
-			Logger.LogDebug("Execution of scheduled jobs completed in {TypeName}", nameof(ScheduleQueueAgentBase));
+			Logger.LogInformation("Execution of scheduled jobs completed in {TypeName}", nameof(ScheduleQueueAgentBase));
 		}
 
 		private void LogExecuteError(Exception ex)

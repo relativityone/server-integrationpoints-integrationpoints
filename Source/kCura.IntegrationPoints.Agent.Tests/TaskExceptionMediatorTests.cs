@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		}
 
 		public override string Name { get; }
-		protected override TaskResult ProcessJob(Job job)
+		protected override TaskResult ProcessJob(Job job, ValidationResult validationResult = null)
 		{
 			throw new NotImplementedException();
 		}

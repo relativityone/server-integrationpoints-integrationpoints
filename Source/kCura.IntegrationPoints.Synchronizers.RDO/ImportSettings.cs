@@ -5,7 +5,6 @@ using kCura.Relativity.DataReaderClient;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO

@@ -30,6 +30,7 @@
 		WHERE
 			q.[LockedByAgentID] IS NULL
 			AND q.[AgentTypeID] = @AgentTypeID
+			AND (@RootJobID IS NULL OR q.[RootJobID] = @RootJobID)
 			AND q.[NextRunTime] <= GETUTCDATE()
 			AND q.[StopState] IN (0, 8)
 		ORDER BY

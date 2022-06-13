@@ -350,7 +350,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 			_isJobComplete = false;
 
-			_logger.LogDebug("Initializing Import Job completed.");
+			_logger.LogInformation("Initializing Import Job completed.");
 		}
 
 		protected virtual void WaitUntilTheJobIsDone(bool rowProcessed)
@@ -413,7 +413,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 			importService.Initialize();
 
-			_logger.LogDebug("Initialization Import Service...finished");
+			_logger.LogInformation("Initialization Import Service...finished");
 
 			return importService;
 		}
@@ -434,7 +434,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 				var importSettingsForLogging = new ImportSettingsForLogging(settings);
 
-				_logger.LogDebug("Rip Import Settings:\n {importSettings}", importSettingsForLogging);
+				_logger.LogInformation("Rip Import Settings:\n {importSettings}", importSettingsForLogging);
 				return settings;
 
 			}
@@ -700,12 +700,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private void LogSyncingData()
 		{
-			_logger.LogDebug("Preparing import process in synchronizer...");
+			_logger.LogInformation("Preparing import process in synchronizer...");
 		}
 
 		private void LogRetrievingEmailBody()
 		{
-			_logger.LogVerbose("Retrieving email body.");
+			_logger.LogInformation("Retrieving email body.");
 		}
 
 		private void LogRetrievingRelativityFieldsError(Exception e)
@@ -715,12 +715,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private void LogInitializingImportJob()
 		{
-			_logger.LogDebug("Initializing Import Job.");
+			_logger.LogInformation("Initializing Import Job.");
 		}
 
 		private void LogInitializingImportService()
 		{
-			_logger.LogDebug("Start initializing Import Service...");
+			_logger.LogInformation("Start initializing Import Service...");
 		}
 
 		private void LogMissingIdentifierField()
@@ -730,7 +730,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private void LogRetrievingImportSettings()
 		{
-			_logger.LogDebug("Starting RIP Import Settings creation...");
+			_logger.LogInformation("Starting RIP Import Settings creation...");
 		}
 
 		private void LogInvalidFieldMap(Exception ex)
@@ -750,67 +750,67 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private void LogNewDisableNativeLocationValidationValue()
 		{
-			_logger.LogDebug("New value of DisableNativeLocationValidation retrieved from config: {value}", _disableNativeLocationValidation);
+			_logger.LogInformation("New value of DisableNativeLocationValidation retrieved from config: {value}", _disableNativeLocationValidation);
 		}
 
 		private void LogNewWebAPIPathValue()
 		{
-			_logger.LogDebug("New value of WebAPIPath retrieved from config: {value}", _webApiPath);
+			_logger.LogInformation("New value of WebAPIPath retrieved from config: {value}", _webApiPath);
 		}
 
 		private void LogNewDisableNativeValidationValue()
 		{
-			_logger.LogDebug("New value of DisableNativeValidation retrieved from config: {value}", _disableNativeValidation);
+			_logger.LogInformation("New value of DisableNativeValidation retrieved from config: {value}", _disableNativeValidation);
 		}
 
 		private void LogFieldMapLength(FieldMap[] fieldMaps)
 		{
-			_logger.LogDebug("Number of items in fieldMap: {fieldMapLength}", fieldMaps.Length);
+			_logger.LogInformation("Number of items in fieldMap: {fieldMapLength}", fieldMaps.Length);
 		}
 
 		private void LogDestinationWorkspaceAppendedToEmailBody()
 		{
-			_logger.LogDebug("Adding destination workspace to email body.");
+			_logger.LogInformation("Adding destination workspace to email body.");
 		}
 
 		private void LogNumbersOfFieldAndMappableFields(int fields, int mappableFields)
 		{
-			_logger.LogDebug("Retrieved {numberOfFields} fields, {numberOfMappableFields} are mappable", fields, mappableFields);
+			_logger.LogInformation("Retrieved {numberOfFields} fields, {numberOfMappableFields} are mappable", fields, mappableFields);
 		}
 
 		private void LogCreatingImportApi()
 		{
-			_logger.LogDebug("ImportApi was null - new instance will be created using factory");
+			_logger.LogInformation("ImportApi was null - new instance will be created using factory");
 		}
 
 		private void LogNullWorkspaceReturnedByIAPI()
 		{
-			_logger.LogDebug("ImportApi returned null workspace - creating new WorkspaceRef in GetWorkspace method");
+			_logger.LogInformation("ImportApi returned null workspace - creating new WorkspaceRef in GetWorkspace method");
 		}
 
 		private void LogSettingJobCompleteInFinish()
 		{
-			_logger.LogDebug("_importService locked in Finish method of RdoSynchronizer. Job is complete");
+			_logger.LogInformation("_importService locked in Finish method of RdoSynchronizer. Job is complete");
 		}
 
 		private void LogLockingImportServiceInFinish()
 		{
-			_logger.LogDebug("Trying to lock _importService in Finish method of RdoSynchronizer");
+			_logger.LogInformation("Trying to lock _importService in Finish method of RdoSynchronizer");
 		}
 
 		private void LogSettingJobCompleteInJobError()
 		{
-			_logger.LogDebug("_importService locked in JobError method of RdoSynchronizer. Job is complete");
+			_logger.LogInformation("_importService locked in JobError method of RdoSynchronizer. Job is complete");
 		}
 
 		private void LogLockingImportServiceInJobError()
 		{
-			_logger.LogDebug("Trying to lock _importService in JobError method of RdoSynchronizer");
+			_logger.LogInformation("Trying to lock _importService in JobError method of RdoSynchronizer");
 		}
 
 		private void LogIdentifierFields(RelativityObject field)
 		{
-			_logger.LogDebug("Identifier field: {identifierFieldId}", field.ArtifactID);
+			_logger.LogInformation("Identifier field: {identifierFieldId}", field.ArtifactID);
 		}
 
 		private IEnumerable<FieldMap> CreateFieldMapWithoutFieldNames(IEnumerable<FieldMap> fieldMap)

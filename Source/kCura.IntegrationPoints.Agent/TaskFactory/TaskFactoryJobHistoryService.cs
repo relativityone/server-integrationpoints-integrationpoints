@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
+using Relativity.Services.Choice;
 using Relativity.Telemetry.APM;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 
@@ -52,22 +53,14 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 		}
 
 		public void UpdateJobHistoryOnFailure(Job job, Exception e)
-		{
-			LogUpdateJobHistoryOnFailureStart(job, e);
-			JobHistory jobHistory = GetJobHistory(job);
+        {
+            UpdateJobHistoryOnError(job, JobStatusChoices.JobHistoryErrorJobFailed, e);
+        }
 
-			_jobHistoryErrorService.IntegrationPoint = _integrationPoint;
-			_jobHistoryErrorService.JobHistory = jobHistory;
-			_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
-			_jobHistoryErrorService.CommitErrors();
-			jobHistory.JobStatus = JobStatusChoices.JobHistoryErrorJobFailed;
-			_jobHistoryService.UpdateRdo(jobHistory);
-
-			// No updates to IP since the job history error service handles IP updates
-			IHealthMeasure healthcheck = Client.APMClient.HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK, () => HealthCheck.CreateJobFailedMetric(jobHistory, job.WorkspaceID));
-			healthcheck.Write();
-			LogUpdateJobHistoryOnFailureSuccesfulEnd(job);
-		}
+        public void UpdateJobHistoryOnValidationFailed(Job job, Exception e)
+        {
+            UpdateJobHistoryOnError(job, JobStatusChoices.JobHistoryValidationFailed, e);
+        }
 
 		public void RemoveJobHistoryFromIntegrationPoint(Job job)
 		{
@@ -109,7 +102,25 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 			LogGetJobHistorySuccessfulEnd(job, jobHistory);
 			return jobHistory;
 		}
-		
+
+        private void UpdateJobHistoryOnError(Job job, ChoiceRef jobHistoryStatus , Exception e)
+        {
+            LogUpdateJobHistoryOnFailureStart(job, e);
+            JobHistory jobHistory = GetJobHistory(job);
+
+            _jobHistoryErrorService.IntegrationPoint = _integrationPoint;
+            _jobHistoryErrorService.JobHistory = jobHistory;
+            _jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
+            _jobHistoryErrorService.CommitErrors();
+            jobHistory.JobStatus = jobHistoryStatus;
+            _jobHistoryService.UpdateRdo(jobHistory);
+
+            // No updates to IP since the job history error service handles IP updates
+            IHealthMeasure healthcheck = Client.APMClient.HealthCheckOperation(Constants.IntegrationPoints.Telemetry.APM_HEALTHCHECK, () => HealthCheck.CreateJobFailedMetric(jobHistory, job.WorkspaceID));
+            healthcheck.Write();
+            LogUpdateJobHistoryOnFailureSuccesfulEnd(job);
+        }
+
 		#region logging
 
 		private void LogRemoveJobHistoryFromIntegrationPointSuccessfulEnd()

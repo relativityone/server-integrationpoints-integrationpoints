@@ -135,7 +135,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			sut.Execute();
 			
 			// Assert
-			_loggerMock.Verify(x => x.LogDebug("Attempting to initialize Config Settings factory in {TypeName}",
+			_loggerMock.Verify(x => x.LogInformation("Attempting to initialize Config Settings factory in {TypeName}",
 				nameof(ScheduleQueueAgentBase)), Times.Never);
 		}
 

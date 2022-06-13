@@ -1,13 +1,15 @@
 import { contextProvider } from "../helpers/contextProvider";
 import { IConvenienceApi } from "../types/convenienceApi";
 import { ButtonState } from "../types/buttonState";
-import { createDownloadErrorFileLink, createRetryErrorsButton, createRunButton, createSaveAsProfileButton, createStopButton, createViewErrorsLink } from "../helpers/buttonCreate";
+import { createDownloadErrorFileLink, createRetryErrorsButton, createRunButton, createSaveAsProfileButton, createStopButton, createViewErrorsLink, removeMessageContainers } from "../helpers/buttonCreate";
 
 export function createConsole(convenienceApi: IConvenienceApi): void {
     return contextProvider((ctx) => {
         var consoleApi = convenienceApi.console;
         var integrationPointId = ctx.artifactId;
         var workspaceId = ctx.workspaceId;
+
+        removeMessageContainers(document.getElementsByTagName("lq-message-container")[0]);
 
         var buttonState = getButtonStateObject(convenienceApi, ctx, workspaceId, integrationPointId);
         buttonState.then(function (btnStateObj: ButtonState) {
@@ -94,7 +96,7 @@ function generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPoi
     var integrationPoint = {};
 
     ctx.fieldNameToFieldIdMap.forEach(function (value, key) {
-        var trimmedKey = key.replaceAll(" ", "");
+        var trimmedKey = key.toString().replace(/\s/g, '');
         try {
             var val = JSON.parse(ctx.backingModelData[value]);
         } catch (e) {
@@ -111,7 +113,7 @@ function generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPoi
     var transferSection = [transferOptionsTitle];
 
     if (buttonState.runButtonEnabled) {
-        var runButton = createRunButton(consoleApi, convenienceApi, ctx, buttonState.runButtonEnabled, workspaceId, integrationPointId);
+        var runButton = createRunButton(consoleApi, convenienceApi, ctx, buttonState.runButtonEnabled, workspaceId, integrationPointId, document.getElementsByTagName("lq-message-container")[0]);
         transferSection.push(runButton);
     }
 
