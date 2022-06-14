@@ -1,5 +1,35 @@
 ﻿import { IConvenienceApi } from "../types/convenienceApi";
 
+export async function getFolderPathInformation(convenienceApi: IConvenienceApi, workspaceId: number,  destinationConfiguration: object) {
+    if (convertToBool(destinationConfiguration["UseFolderPathInformation"])) {
+        let request = {
+            options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
+                headers: {
+                    "content-type": "application/json; charset=utf-8"
+                }
+            }),
+            url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/" + workspaceId +  "/api/FolderPath/GetFields"
+        };
+
+        return convenienceApi.relativityHttpClient.get(request.url, request.options)
+            .then(function (result) {
+                if (!result.ok) {
+                    console.log("error in get; ", result);
+                }
+                return result.json();
+            }).then(result => {
+                var field = result.find(field => field.fieldIdentifier === destinationConfiguration["FolderPathSourceField"]);
+                if (field) {
+                    return "Read From Field: " + field.actualName;
+                }
+            })
+    } else if (convertToBool(destinationConfiguration["UseDynamicFolderPath"])) {
+        return "Read From Folder Tree";
+    } else {
+        return "No";
+    }
+}
+
 export async function getNativesStats(convenienceApi: IConvenienceApi, workspaceId: number, savedSearchId: number) {
     let request = {
         options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
