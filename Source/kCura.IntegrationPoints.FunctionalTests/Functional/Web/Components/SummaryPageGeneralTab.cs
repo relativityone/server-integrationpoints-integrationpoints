@@ -1,4 +1,5 @@
-﻿using Relativity.Testing.Framework.Web.Components;
+﻿using Atata;
+using Relativity.Testing.Framework.Web.Components;
 using Relativity.Testing.Framework.Web.Triggers;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
@@ -9,30 +10,59 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
     internal class SummaryPageGeneralTab : RwcTabbableCategory<_>
     {
         #region 1st column
-        public RwcTextInputField<_> Name { get; private set; }
-        public RwcTextInputField<_> Overwrite { get; private set; }
-        public RwcTextInputField<_> ExportType { get; private set; }
-        public RwcTextInputField<_> SourceDetails { get; private set; }
-        public RwcTextInputField<_> SourceWorkspace { get; private set; }
-        public RwcTextInputField<_> SourceRelInstance { get; private set; }
-        public RwcTextInputField<_> TransferredObject { get; private set; }
-        public RwcTextInputField<_> DestinationWorkspace { get; private set; }
-        public RwcTextInputField<_> DestinationFolder { get; private set; }
-        public RwcTextInputField<_> MultiSelectOverlay { get; private set; }
-        public RwcTextInputField<_> UseFolderPathInfo { get; private set; }
-        public RwcTextInputField<_> MoveExistingDocs { get; private set; }
-        public RwcTextInputField<_> ImagePrecedence { get; private set; }
-        public RwcTextInputField<_> CopyFilesToRepository { get; private set; }
+        public RwcTextField<_> Name { get; private set; }
+        
+        [FindByAttribute("label", TermCase.Title, OuterXPath = ".//rwc-radio-button-group-field/self::", As = FindAs.ShadowHost)]
+        [FindByXPath("div[@class = 'rwa-base-field view cell']")]
+        public Content<string, _> Overwrite { get; private set; }
+
+        [FindByAttribute("label", TermCase.Title, OuterXPath = ".//rwc-text-area-field/self::", As = FindAs.ShadowHost)]
+        [FindByXPath("div[@class = 'rwa-base-field view cell']")]
+        public Content<string, _> ExportType { get; private set; }
+
+        [FindByAttribute("label", TermCase.Title, OuterXPath = ".//rwc-text-area-field/self::", As = FindAs.ShadowHost)]
+        [FindByXPath("div[@class = 'rwa-base-field view cell']")]
+        public Content<string, _> SourceDetails { get; private set; }
+
+        public RwcTextField<_> SourceWorkspace { get; private set; }
+
+        public RwcTextField<_> SourceRelativityInstance { get; private set; }
+
+        public RwcTextField<_> TransferedObject { get; private set; }
+
+        public RwcTextField<_> DestinationWorkspace { get; private set; }
+
+        public RwcTextField<_> DestinationFolder { get; private set; }
+
+        public RwcTextField<_> MultiSelectOverlay { get; private set; }
+
+        public RwcTextField<_> UseFolderPathInfo { get; private set; }
+
+        public RwcTextField<_> MoveExistingDocs { get; private set; }
+
+        public RwcTextField<_> ImagePrecedence { get; private set; }
+
+        public RwcTextField<_> CopyFilesToRepository { get; private set; }
+
         #endregion
 
         #region 2nd column
-        public RwcTextInputField<_> LogErrors { get; private set; }
-        public RwcTextInputField<_> HasErrors { get; private set; }
-        public RwcTextInputField<_> EmailNotificationRecipient { get; private set; }
-        public RwcTextInputField<_> TotalDocuments { get; private set; }
-        public RwcTextInputField<_> TotalNatives { get; private set; }
-        public RwcTextInputField<_> TotalImages { get; private set; }
-        public RwcTextInputField<_> CreateSavedSearch { get; private set; }
+
+        public RwcDropdown<bool, _> LogErrors { get; private set; }
+
+        public RwcDropdown<bool, _> HasErrors { get; private set; }
+
+        [FindByAttribute("label", TermCase.Title, OuterXPath = ".//rwc-text-area-field/self::", As = FindAs.ShadowHost)]
+        [FindByXPath("div[@class = 'rwa-base-field view cell']")]
+        public Content<string, _> EmailNotificationRecipient { get; private set; }
+
+        public RwcTextField<_> TotalDocuments { get; private set; }
+
+        public RwcTextField<_> TotalNatives { get; private set; }
+
+        public RwcTextField<_> TotalImages { get; private set; }
+
+        public RwcTextField<_> CreateSavedSearch { get; private set; }
         #endregion
     }
 }

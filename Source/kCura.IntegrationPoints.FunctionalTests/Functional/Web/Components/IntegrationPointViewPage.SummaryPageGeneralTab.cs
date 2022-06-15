@@ -1,7 +1,6 @@
 ﻿using System;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
 using Relativity.Sync.Configuration;
-using Relativity.Testing.Framework.Models;
 using Relativity.Testing.Framework.Web.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
@@ -17,8 +16,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
         public RelativityProviderOverwrite GetOverwriteMode() => ParseEnum<RelativityProviderOverwrite>(SummaryPageGeneralTab.Overwrite.Value);
         public string GetSourceDetails() => SummaryPageGeneralTab.SourceDetails.Value;
         public string GetSourceWorkspaceName() => SummaryPageGeneralTab.SourceWorkspace.Value;
-        public string GetSourceRelInstance() => SummaryPageGeneralTab.SourceRelInstance.Value;
-        public ArtifactType GetTransferredObject() => ParseEnum<ArtifactType>(SummaryPageGeneralTab.TransferredObject.Value);
+        public string GetSourceRelativityInstance() => SummaryPageGeneralTab.SourceRelativityInstance.Value;
+        public ArtifactType GetTransferredObject() => ParseEnum<ArtifactType>(SummaryPageGeneralTab.TransferedObject.Value);
         public string GetDestinationWorkspaceName() => SummaryPageGeneralTab.DestinationWorkspace.Value;
         public string GetDestinationFolderName() => SummaryPageGeneralTab.DestinationFolder.Value;
         public FieldOverlayBehavior GetMultiSelectOverlayMode() => ParseEnum<FieldOverlayBehavior>(SummaryPageGeneralTab.MultiSelectOverlay.Value);
@@ -43,7 +42,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 
         private T ParseEnum<T>(string enumStringValue) where T : struct
         {
-            bool isParsed = Enum.TryParse(enumStringValue,
+            bool isParsed = Enum.TryParse(enumStringValue.Replace(" ", ""),
                 out T parsedEnum);
 
             if (!isParsed)
