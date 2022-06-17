@@ -1,14 +1,11 @@
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.API;
-using Relativity.Services.Interfaces.Group;
-using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Pipelines;
-using Relativity.Sync.Transfer;
+using Relativity.Sync.Toggles;
+using Relativity.Sync.Toggles.Service;
 
 namespace Relativity.Sync.Executors.Validation
 {
@@ -16,17 +13,17 @@ namespace Relativity.Sync.Executors.Validation
 	{
 		private readonly IInstanceSettings _instanceSettings;
 		private readonly IUserContextConfiguration _userContext;
-		private readonly INonAdminCanSyncUsingLinks _nonAdminCanSyncUsingLinks;
+		private readonly ISyncToggles _syncToggles;
 		private readonly IUserService _userService;
 		private readonly IAPILog _logger;
 
 		protected abstract string ValidatorKind { get; }
 
-		protected CopyLinksValidatorBase(IInstanceSettings instanceSettings, IUserContextConfiguration userContext, INonAdminCanSyncUsingLinks nonAdminCanSyncUsingLinks, IUserService userService, IAPILog logger)
+		protected CopyLinksValidatorBase(IInstanceSettings instanceSettings, IUserContextConfiguration userContext, ISyncToggles syncToggles, IUserService userService, IAPILog logger)
 		{
 			_instanceSettings = instanceSettings;
 			_userContext = userContext;
-			_nonAdminCanSyncUsingLinks = nonAdminCanSyncUsingLinks;
+			_syncToggles = syncToggles;
 			_userService = userService;
 			_logger = logger;
 		}
@@ -50,7 +47,7 @@ namespace Relativity.Sync.Executors.Validation
 
 				bool isRestrictReferentialFileLinksOnImport = await _instanceSettings.GetRestrictReferentialFileLinksOnImportAsync().ConfigureAwait(false);
 				bool executingUserIsAdmin = await _userService.ExecutingUserIsAdminAsync(_userContext.ExecutingUserId).ConfigureAwait(false);
-				bool nonAdminCanSyncUsingLinks = _nonAdminCanSyncUsingLinks.IsEnabled();
+				bool nonAdminCanSyncUsingLinks = _syncToggles.IsEnabled<EnableNonAdminSyncLinksToggle>();
 
 				_logger.LogInformation("Restrict Referential File Links on Import : {isRestricted}, User is Admin : {isAdmin}, EnableNonAdminSyncLinksToggle: {toggleValue}",
 					isRestrictReferentialFileLinksOnImport, executingUserIsAdmin, nonAdminCanSyncUsingLinks);

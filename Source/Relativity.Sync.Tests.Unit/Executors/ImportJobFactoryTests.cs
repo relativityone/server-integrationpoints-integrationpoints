@@ -16,6 +16,8 @@ using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
+using Relativity.Sync.Toggles;
+using Relativity.Sync.Toggles.Service;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Executors
@@ -34,7 +36,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepository;
 		private Mock<IJobProgressHandlerFactory> _jobProgressHandlerFactory;
 		private Mock<ISourceWorkspaceDataReaderFactory> _dataReaderFactory;
-		private Mock<IItemLevelErrorLogAggregator> _itemLevelErrorLogAggregator;
+        private Mock<ISyncToggles> _syncToggles;
 		private Mock<IFieldMappings> _fieldMappingsMock;
 		private SyncJobParameters _syncJobParameters;
 		private const string _IMAGE_IDENTIFIER_DISPLAY_NAME = "ImageIdentifier";
@@ -74,8 +76,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_instanceSettings = new Mock<IInstanceSettings>();
 			_instanceSettings.Setup(x => x.GetWebApiPathAsync(default(string))).ReturnsAsync("http://fake.uri");
 			_syncJobParameters = FakeHelper.CreateSyncJobParameters();
+            _syncToggles = new Mock<ISyncToggles>();
 			_logger = new EmptyLogger();
-            _itemLevelErrorLogAggregator = new Mock<IItemLevelErrorLogAggregator>();
 
 			_batch = new Mock<IBatch>(MockBehavior.Loose);
 
@@ -412,26 +414,66 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			importBulkArtifactJob.Settings.FileNameField.Should().Be(_imageConfigurationMock.Object.FileNameColumn);
 		}
 
-		[Test]
-		public async Task CreateRdoLinkingJobAsync_ShouldSetCorrectValues()
-		{
-			// Arrange 
-			ImportBulkArtifactJob importBulkArtifactJob = new ImportBulkArtifactJob();
-			ImportJobFactory instance = GetTestInstance(GetNonDocumentImportAPIFactoryMock(importBulkArtifactJob));
-			
-			
-			// Act
-			Sync.Executors.IImportJob result = await instance.CreateRdoLinkingJobAsync(_nonDocumentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+        [Test]
+        public async Task CreateRdoLinkingJobAsync_ShouldSetCorrectValues()
+        {
+            // Arrange 
+            ImportBulkArtifactJob importBulkArtifactJob = new ImportBulkArtifactJob();
+            ImportJobFactory instance = GetTestInstance(GetNonDocumentImportAPIFactoryMock(importBulkArtifactJob));
 
-			// Assert
-			result.Should().NotBeNull();
-			importBulkArtifactJob.Settings.OverwriteMode.Should().Be(OverwriteModeEnum.Overlay);
-			importBulkArtifactJob.Settings.ArtifactTypeId.Should().Be(_DEST_RDO_ARTIFACT_TYPE);
-			importBulkArtifactJob.Settings.NativeFileCopyMode.Should()
-				.Be(NativeFileCopyModeEnum.DoNotImportNativeFiles);
-			importBulkArtifactJob.Settings.SelectedIdentifierFieldName.Should()
-				.Be(_DOCUMENT_IDENTIFIER_FIELD.DestinationFieldName);
-		}
+
+            // Act
+            Sync.Executors.IImportJob result = await instance.CreateRdoLinkingJobAsync(_nonDocumentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+
+            // Assert
+            result.Should().NotBeNull();
+            importBulkArtifactJob.Settings.OverwriteMode.Should().Be(OverwriteModeEnum.Overlay);
+            importBulkArtifactJob.Settings.ArtifactTypeId.Should().Be(_DEST_RDO_ARTIFACT_TYPE);
+            importBulkArtifactJob.Settings.NativeFileCopyMode.Should()
+                .Be(NativeFileCopyModeEnum.DoNotImportNativeFiles);
+            importBulkArtifactJob.Settings.SelectedIdentifierFieldName.Should()
+                .Be(_DOCUMENT_IDENTIFIER_FIELD.DestinationFieldName);
+        }
+
+        [Test]
+        public async Task CreateNativeImportJobAsync_ShouldSetCorrectValues_WhenFMS_IsEnabled()
+        {
+            // Arrange 
+            ImportBulkArtifactJob importBulkArtifactJob = new ImportBulkArtifactJob();
+            ImportJobFactory instance = GetTestInstance(GetNativesImportAPIFactoryMock(importBulkArtifactJob));
+
+            _documentConfigurationMock.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
+
+            _syncToggles.Setup(x => x.IsEnabled<UseFMS>()).Returns(true);
+
+            // Act
+            Sync.Executors.IImportJob result = await instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+
+            // Assert
+            result.Should().NotBeNull();
+            importBulkArtifactJob.Settings.NativeFileCopyMode.Should().Be(NativeFileCopyModeEnum.SetFileLinks);
+            importBulkArtifactJob.Settings.DisableNativeLocationValidation.Should().BeTrue();
+        }
+
+        [Test]
+        public async Task CreateNativeImportJobAsync_ShouldSetCorrectValues_WhenFMS_IsDisabled()
+        {
+            // Arrange 
+            ImportBulkArtifactJob importBulkArtifactJob = new ImportBulkArtifactJob();
+            ImportJobFactory instance = GetTestInstance(GetNativesImportAPIFactoryMock(importBulkArtifactJob));
+
+            _documentConfigurationMock.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
+
+            _syncToggles.Setup(x => x.IsEnabled<UseFMS>()).Returns(false);
+
+            // Act
+            Sync.Executors.IImportJob result = await instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+
+            // Assert
+            result.Should().NotBeNull();
+            importBulkArtifactJob.Settings.NativeFileCopyMode.Should().Be(NativeFileCopyModeEnum.CopyFiles);
+            importBulkArtifactJob.Settings.DisableNativeLocationValidation.Should().BeFalse();
+        }
 
 		private ImportJobFactory PrepareInstanceForShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0<T>(Expression<Func<IImportAPI, T>> setupAction, T mockObject)
 		{
@@ -505,7 +547,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private ImportJobFactory GetTestInstance(Mock<IImportApiFactory> importApiFactory)
 		{
 			var instance = new ImportJobFactory(importApiFactory.Object, _dataReaderFactory.Object,
-				_jobHistoryErrorRepository.Object, _instanceSettings.Object, _syncJobParameters, _fieldMappingsMock.Object, _logger);
+				_jobHistoryErrorRepository.Object, _instanceSettings.Object, _syncJobParameters,
+                _fieldMappingsMock.Object, _syncToggles.Object, _logger);
 			return instance;
 		}
 

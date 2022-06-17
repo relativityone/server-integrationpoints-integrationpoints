@@ -102,7 +102,7 @@ namespace Relativity.Sync.Tests.Unit
 		public async Task ItShouldCancelPipeline()
 		{
 			CancellationTokenSource tokenSource = new CancellationTokenSource();
-			CompositeCancellationToken compositeCancellationToken = new CompositeCancellationToken(tokenSource.Token, CancellationToken.None);
+			CompositeCancellationToken compositeCancellationToken = new CompositeCancellationToken(tokenSource.Token, CancellationToken.None, new EmptyLogger());
 			SyncExecutionContext context = new SyncExecutionContext(_syncJobProgress, compositeCancellationToken);
 			tokenSource.Cancel();
 			

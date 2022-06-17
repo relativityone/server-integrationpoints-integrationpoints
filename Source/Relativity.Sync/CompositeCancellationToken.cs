@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using Relativity.API;
+using Relativity.Sync.Logging;
+using System.Threading;
 
 namespace Relativity.Sync
 {
@@ -7,10 +9,12 @@ namespace Relativity.Sync
 	/// </summary>
 	public class CompositeCancellationToken
 	{
+		private readonly IAPILog _log;
+
 		/// <summary>
 		/// An empty composite cancellation token.
 		/// </summary>
-		public static CompositeCancellationToken None { get; } = new CompositeCancellationToken(CancellationToken.None, CancellationToken.None);
+		public static CompositeCancellationToken None { get; } = new CompositeCancellationToken(CancellationToken.None, CancellationToken.None, new EmptyLogger());
 
 		/// <summary>
 		/// Regular cancellation token, that should be used to stop a job (e.g. requested by user)
@@ -41,17 +45,32 @@ namespace Relativity.Sync
 		/// <summary>
 		/// Creates new instance of this class.
 		/// </summary>
-		public CompositeCancellationToken(CancellationToken stopCancellationToken, CancellationToken drainStopCancellationToken)
+		public CompositeCancellationToken(CancellationToken stopCancellationToken, CancellationToken drainStopCancellationToken, IAPILog log)
 		{
+			_log = log;
+
 			StopCancellationToken = stopCancellationToken;
 			DrainStopCancellationToken = drainStopCancellationToken;
 
 			CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
-			StopCancellationToken.Register(() => cancellationTokenSource.Cancel());
-			DrainStopCancellationToken.Register(() => cancellationTokenSource.Cancel());
+			StopCancellationToken.Register(() =>
+			{
+				LogTokenWasRequested(nameof(StopCancellationToken));
+				cancellationTokenSource.Cancel();
+			});
+			DrainStopCancellationToken.Register(() =>
+			{
+				LogTokenWasRequested(nameof(DrainStopCancellationToken));
+				cancellationTokenSource.Cancel();
+			});
 
 			AnyReasonCancellationToken = cancellationTokenSource.Token;
+		}
+
+		private void LogTokenWasRequested(string token)
+        {
+			_log.LogInformation("{token} was requested.", token);
 		}
 	}
 }

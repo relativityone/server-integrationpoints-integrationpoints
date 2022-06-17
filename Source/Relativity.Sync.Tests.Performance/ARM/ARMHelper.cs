@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using Polly;
 using Relativity.API;
 using Relativity.ARM.Services.Interfaces.V1.JobAction;
 using Relativity.ARM.Services.Interfaces.V1.JobStatus;
@@ -35,7 +36,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 		private static readonly string _RELATIVE_ARCHIVES_LOCATION = AppSettings.RelativeArchivesLocation;
 		private readonly IKeplerServiceFactory _serviceFactory;
 
-		private ARMHelper(FileShareHelper fileShare, AzureStorageHelper storage)
+        private ARMHelper(FileShareHelper fileShare, AzureStorageHelper storage)
 		{
 			_fileShare = fileShare;
 			_storage = storage;
@@ -214,11 +215,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 				int jobId = await CreateRestoreJobAsync(remoteArchiveLocation).ConfigureAwait(false);
 				Logger.LogInformation($"Restore job {jobId} has been created");
 
-				await RunJobAsync(jobId).ConfigureAwait(false);
-				Logger.LogInformation($"Job {jobId} is running...");
-
-				await WaitUntilJobIsCompletedAsync(jobId).ConfigureAwait(false);
-				Logger.LogInformation("Restore job has been completed successfully.");
+                await RunAndWaitUntilJobIsCompletedAsync(jobId).ConfigureAwait(false);
 
 				int restoredWorkspaceId = await environment.GetWorkspaceArtifactIdByNameAsync(workspaceName).ConfigureAwait(true);
 
@@ -227,7 +224,7 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			}
 			catch (Exception ex)
 			{
-				Logger.LogInformation(ex.Message);
+				Logger.LogError(ex.Message);
 				throw;
 			}
 		}
@@ -303,6 +300,46 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			}
 		}
 
+        private int GetResourcePoolId(string name)
+		{
+			IResourcePoolService resourcePoolService = RelativityFacade.Instance.Resolve<IResourcePoolService>();
+
+			var resourcePool = resourcePoolService.Get(name);
+
+			return resourcePool.ArtifactID;
+		}
+
+		private int GetRestoreSqlServerId()
+		{
+			ResourceServer[] sqlServers = RelativityFacade.Instance.Resolve<IResourceServerService>().GetAll()
+				.Where(x => x.Type == ResourceServerType.SqlDistributed || x.Type == ResourceServerType.SqlPrimary)
+				.ToArray();
+
+			return sqlServers.FirstOrDefault(x => x.Type == ResourceServerType.SqlDistributed)?.ArtifactID
+				   ?? sqlServers.Single(x => x.Type == ResourceServerType.SqlPrimary).ArtifactID;
+		}
+
+		private async Task RunAndWaitUntilJobIsCompletedAsync(int jobId)
+		{
+			const int maxNumberOfRetries = 3;
+
+			void OnRetryAction(Exception ex, TimeSpan waitTime, int retryCount, Context context)
+			{
+				Logger.LogWarning(ex, "Encountered issue while Running ARM Job, attempting to retry. Retry count: {retryCount} Wait time: {waitTimeMs} (ms)", retryCount, waitTime.TotalMilliseconds);
+			}
+
+			async Task ExecutionFunction()
+			{
+				await RunJobAsync(jobId).ConfigureAwait(false);
+				Logger.LogInformation($"Job {jobId} is running...");
+
+				await WaitUntilJobIsCompletedAsync(jobId).ConfigureAwait(false);
+				Logger.LogInformation("Restore job has been completed successfully.");
+			}
+
+			await RetryPolicyRunAsync(maxNumberOfRetries, OnRetryAction, ExecutionFunction).ConfigureAwait(false);
+		}
+
 		private async Task RunJobAsync(int jobId)
 		{
 			using (var armJobActionManager = _serviceFactory.GetServiceProxy<IArmJobActionManager>())
@@ -332,23 +369,22 @@ namespace Relativity.Sync.Tests.Performance.ARM
 			}
 		}
 
-		private int GetResourcePoolId(string name)
-		{
-			IResourcePoolService resourcePoolService = RelativityFacade.Instance.Resolve<IResourcePoolService>();
+		private async Task RetryPolicyRunAsync(int maxNumberOfRetries, Action<Exception, TimeSpan, int, Context> onRetryAction, Func<Task> executionFunction)
+        {
+            const int maxJitterMs = 100;
+            const int betweenRetriesBase = 2;
 
-			var resourcePool = resourcePoolService.Get(name);
-
-			return resourcePool.ArtifactID;
-		}
-
-		private int GetRestoreSqlServerId()
-		{
-			ResourceServer[] sqlServers = RelativityFacade.Instance.Resolve<IResourceServerService>().GetAll()
-				.Where(x => x.Type == ResourceServerType.SqlDistributed || x.Type == ResourceServerType.SqlPrimary)
-				.ToArray();
-
-			return sqlServers.FirstOrDefault(x => x.Type == ResourceServerType.SqlDistributed)?.ArtifactID
-				   ?? sqlServers.Single(x => x.Type == ResourceServerType.SqlPrimary).ArtifactID;
+		    await Policy
+                .Handle<Exception>()
+                .WaitAndRetryAsync(maxNumberOfRetries, retryAttempt =>
+                    {
+                        TimeSpan delay = TimeSpan.FromSeconds(Math.Pow(betweenRetriesBase, retryAttempt));
+                        TimeSpan jitter = TimeSpan.FromMilliseconds(new Random().Next(0, maxJitterMs));
+                        return delay + jitter;
+                    },
+                    onRetryAction)
+                .ExecuteAsync(executionFunction)
+                .ConfigureAwait(false);
 		}
 	}
 }

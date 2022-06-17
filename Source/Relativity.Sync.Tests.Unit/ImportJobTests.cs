@@ -73,7 +73,7 @@ namespace Relativity.Sync.Tests.Unit
 			const string message = "msg";
 
 			CancellationTokenSource drainStopTokenSource = new CancellationTokenSource();
-			CompositeCancellationToken token = new CompositeCancellationToken(CancellationToken.None, drainStopTokenSource.Token);
+			CompositeCancellationToken token = ComposeToken(CancellationToken.None, drainStopTokenSource.Token);
 			
 			_syncImportBulkArtifactJobMock.Setup(x => x.Execute()).Callback(() =>
 			{
@@ -182,7 +182,7 @@ namespace Relativity.Sync.Tests.Unit
 			stopCancellationTokenSource.Cancel();
 
 			// act
-			Func<Task> action = () => _importJob.RunAsync(new CompositeCancellationToken(stopCancellationTokenSource.Token, CancellationToken.None));
+			Func<Task> action = () => _importJob.RunAsync(ComposeToken(stopCancellationTokenSource.Token, CancellationToken.None));
 
 			// assert
 			action.Should().NotThrow<OperationCanceledException>();
@@ -195,7 +195,7 @@ namespace Relativity.Sync.Tests.Unit
 			drainStopCancellationTokenSource.Cancel();
 
 			// act
-			Func<Task> action = () => _importJob.RunAsync(new CompositeCancellationToken(CancellationToken.None, drainStopCancellationTokenSource.Token));
+			Func<Task> action = () => _importJob.RunAsync(ComposeToken(CancellationToken.None, drainStopCancellationTokenSource.Token));
 
 			// assert
 			action.Should().NotThrow<OperationCanceledException>();
@@ -209,7 +209,7 @@ namespace Relativity.Sync.Tests.Unit
 			stopCancellationTokenSource.Cancel();
 
 			// Act
-			await _importJob.RunAsync(new CompositeCancellationToken(stopCancellationTokenSource.Token, CancellationToken.None));
+			await _importJob.RunAsync(ComposeToken(stopCancellationTokenSource.Token, CancellationToken.None));
 
 			// Assert
 			_syncImportBulkArtifactJobMock.Verify(x => x.Execute(), Times.Never);
@@ -223,7 +223,7 @@ namespace Relativity.Sync.Tests.Unit
 			drainStopCancellationTokenSource.Cancel();
 
 			// Act
-			await _importJob.RunAsync(new CompositeCancellationToken(CancellationToken.None, drainStopCancellationTokenSource.Token));
+			await _importJob.RunAsync(ComposeToken(CancellationToken.None, drainStopCancellationTokenSource.Token));
 
 			// Assert
 			_syncImportBulkArtifactJobMock.Verify(x => x.Execute(), Times.Never);
@@ -249,5 +249,10 @@ namespace Relativity.Sync.Tests.Unit
 		{
 			return new ImportApiJobStatistics(totalItems, errorItems, metadataBytes, fileBytes, exception);
 		}
+
+		private CompositeCancellationToken ComposeToken(CancellationToken stopCancellationToken, CancellationToken drainStopCancellationToken)
+        {
+			return new CompositeCancellationToken(stopCancellationToken, drainStopCancellationToken, new EmptyLogger());
+        }
 	}
 }

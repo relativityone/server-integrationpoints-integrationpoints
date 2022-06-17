@@ -4,15 +4,14 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.Services.Interfaces.Group;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Executors.Validation;
-using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Tests.Common.Attributes;
-using Relativity.Sync.Transfer;
+using Relativity.Sync.Toggles;
+using Relativity.Sync.Toggles.Service;
 
 namespace Relativity.Sync.Tests.Unit.Executors.Validation
 {
@@ -25,8 +24,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		private Mock<IUserContextConfiguration> _userContextFake;
 
 		private Mock<IValidationConfiguration> _configurationFake;
-		private Mock<IGroupManager> _groupManagerFake;
-		private Mock<INonAdminCanSyncUsingLinks> _nonAdminCanSyncUsingLinksFake; 
+        private Mock<ISyncToggles> _nonAdminCanSyncUsingLinksFake; 
 		private Mock<IUserService> _userServiceFake; 
 
 		private const int _USER_IS_ADMIN_ID = 1;
@@ -37,11 +35,10 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 		{
 			_instanceSettingsFake = new Mock<IInstanceSettings>();
 			_userContextFake = new Mock<IUserContextConfiguration>();
-			_groupManagerFake = new Mock<IGroupManager>();
 			
 			_configurationFake = new Mock<IValidationConfiguration>();
 
-			_nonAdminCanSyncUsingLinksFake = new Mock<INonAdminCanSyncUsingLinks>();
+			_nonAdminCanSyncUsingLinksFake = new Mock<ISyncToggles>();
 			_userServiceFake = new Mock<IUserService>();
 
 			_sut = new ImageCopyLinksValidator(
@@ -148,7 +145,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 			_userContextFake.Setup(c => c.ExecutingUserId).Returns(userId);
 			_configurationFake.Setup(c => c.ImportImageFileCopyMode).Returns(copyMode);
 			_instanceSettingsFake.Setup(s => s.GetRestrictReferentialFileLinksOnImportAsync(default(bool))).ReturnsAsync(isRestrictedCopyLinksOnly);
-			_nonAdminCanSyncUsingLinksFake.Setup(t => t.IsEnabled()).Returns(toggleNonAdminCanSyncUsingLinks);
+			_nonAdminCanSyncUsingLinksFake.Setup(t => t.IsEnabled<EnableNonAdminSyncLinksToggle>()).Returns(toggleNonAdminCanSyncUsingLinks);
 			_userServiceFake.Setup(u => u.ExecutingUserIsAdminAsync(It.IsAny<int>())).Returns(Task.FromResult(userId == _USER_IS_ADMIN_ID));
 		}
 	}

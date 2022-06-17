@@ -58,13 +58,6 @@ namespace Relativity.Sync.Storage
 			}
 		}
 
-		public async Task DeleteAllOlderThanAsync(int workspaceArtifactId, TimeSpan olderThan)
-		{
-			IEnumerable<int> oldConfiguratiosArtifactIds = await GetConfigurationsOlderThanAsync(_serviceFactoryForAdmin, _dateTime, workspaceArtifactId, olderThan).ConfigureAwait(false);
-			IEnumerable<Task> deleteTasks = oldConfiguratiosArtifactIds.Select(configurationArtifactId => DeleteAllForConfigurationAsync(workspaceArtifactId, configurationArtifactId));
-			await Task.WhenAll(deleteTasks).ConfigureAwait(false);
-		}
-
 		public Task<IBatch> GetLastAsync(int workspaceArtifactId, int syncConfigurationId, Guid exportRunId)
 		{
 			return Batch.GetLastAsync(_rdoManager, _serviceFactoryForAdmin, workspaceArtifactId, syncConfigurationId, exportRunId);

@@ -517,7 +517,7 @@
 	},
 	{
 		"Jira": "REL-558402",
-		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*'SQL Statement Failed'*Violation of PRIMARY KEY constraint*"
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*'ImportNativesStage'*'SQL Statement Failed'*Violation of PRIMARY KEY constraint*"
 	},
 	{
 		"Jira": "REL-558396",
@@ -782,5 +782,9 @@
 	{
 		"Jira": "REL-671281",
 		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*/api/webapi-replacement/v1/bulk-import/BulkImportNativeAsync*"
+	},
+	{
+		"Jira": "REL-691264",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*'CreateFoldersStage'*'SQL Statement Failed'*Violation of PRIMARY KEY constraint*"
 	}
 ]

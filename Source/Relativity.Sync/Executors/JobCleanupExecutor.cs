@@ -21,6 +21,11 @@ namespace Relativity.Sync.Executors
 		{
 			try
 			{
+				if(token.IsDrainStopRequested)
+				{
+					return ExecutionResult.Success();
+				}
+
 				await _batchRepository.DeleteAllForConfigurationAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId).ConfigureAwait(false);
 				return ExecutionResult.Success();
 			}
