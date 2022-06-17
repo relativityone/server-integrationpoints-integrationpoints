@@ -90,6 +90,7 @@ namespace Relativity.Sync.KeplerFactory
 					.Or<TemporarilyUnavailableException>()                                          // Thrown when the service is temporarily unavailable.
 					.Or<ServiceException>(ex => ex.Message.Contains("Failed to determine route"))   // Thrown when there are bad routing entries.
 					.Or<ServiceException>(ex => ex.Message.Contains("Create Failed"))   // Thrown when the create call failed.
+					.Or<ServiceException>(ex => ex.Message.Contains("Bad Gateway"))
 					.Or<TimeoutException>()                                                         // Thrown when there is an infrastructure level timeout.
 					.Or<Exception>(HasInInnerExceptions<Exception>)									// Thrown when there is an issue on networking layer
 					.WaitAndRetryAsync(_MAX_NUMBER_OF_HTTP_RETRIES, retryAttempt =>

@@ -405,6 +405,7 @@ namespace Relativity.Sync.Tests.Unit
 			yield return new TemporarilyUnavailableException();
 			yield return new ServiceException("Failed to determine route");
 			yield return new ServiceException("Create Failed");
+			yield return new ServiceException("An unexpected server error occurred: Bad Gateway - An invalid response was received from the upstream server");
 			yield return new TimeoutException();
 			yield return new Exception("Socket exception", new SocketException());
 		}
