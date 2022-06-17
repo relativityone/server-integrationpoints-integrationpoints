@@ -1725,12 +1725,6 @@
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>5376789</ArtifactId>
-      <Keywords />
-      <Name>Relativity.AutomatedWorkflows.Services.Interfaces.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
       <ArtifactId>5376790</ArtifactId>
       <Keywords />
       <Name>Relativity.IntegrationPoints.FieldsMapping.dll</Name>
@@ -1779,7 +1773,7 @@
     </ResourceFile>
   </ResourceFiles>
   <ExternalTabs />
-  <ExtractionDate>2022-06-06T09:52:08.3924291Z</ExtractionDate>
+  <ExtractionDate>2022-06-17T17:52:34.69732Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -11840,7 +11834,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>16.0.30.0</RelativityVersion>
-  <Version>12.2.15.25</Version>
+  <Version>12.2.15.26</Version>
   <SchemaVersion>11.3.10.20</SchemaVersion>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>5e8b02a8-6e33-4426-a0f0-3594d83725d0</OriginSignature>

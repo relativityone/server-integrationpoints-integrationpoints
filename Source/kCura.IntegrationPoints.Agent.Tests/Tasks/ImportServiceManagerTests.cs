@@ -36,7 +36,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using kCura.IntegrationPoints.Core.Contracts.Import;
 using Relativity.AutomatedWorkflows.SDK;
-using Relativity.AutomatedWorkflows.Services.Interfaces.v1.Models.Triggers;
+using Relativity.AutomatedWorkflows.SDK.V2.Models.Triggers;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
