@@ -49,7 +49,6 @@
     <PackageReference Include="Relativity.Telemetry.APM" Version="[2019.1.1,2019.2.0)" />
     <PackageReference Include="Relativity.Telemetry.DataContracts.Shared" Version="3003.1.0" />
     <PackageReference Include="Relativity.Telemetry.Services.Interface" Version="[3003.0.2]" />
-    <PackageReference Include="Relativity.AutomatedWorkflows.Services.Interfaces" Version="1.0.8" />
     <PackageReference Include="Relativity.AutomatedWorkflows.SDK" Version="1.0.8" />
     <PackageReference Include="Relativity.DataTransfer.Legacy.SDK" Version="0.2.21" />
   </ItemGroup>

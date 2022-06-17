@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.AutomatedWorkflows.SDK;
-using Relativity.AutomatedWorkflows.Services.Interfaces.v1.Models.Triggers;
+using Relativity.AutomatedWorkflows.SDK.V2.Models.Triggers;
 using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Executors
