@@ -34,6 +34,7 @@ using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 using kCura.IntegrationPoints.Core.Contracts.Import;
 using Newtonsoft.Json.Linq;
 using Relativity.AutomatedWorkflows.SDK;
+using Relativity.AutomatedWorkflows.SDK.V2.Models.Triggers;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
