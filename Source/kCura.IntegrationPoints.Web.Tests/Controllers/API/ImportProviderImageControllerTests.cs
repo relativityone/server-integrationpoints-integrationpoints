@@ -6,12 +6,13 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.IntegrationPoints.Web.Controllers.API;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.DataExchange.Service;
+using Relativity.API;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models;
+using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
@@ -19,11 +20,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 	public class ImportProviderImageControllerTests : TestBase
 	{
 		private ImportProviderImageController _controller;
+		private ICaseService _caseService;
 		private IManagerFactory _managerFactory;
 		private IFieldManager _fieldManager;
-		private IWebApiLoginService _credentialProvider;
-		private ICaseManagerFactory _caseManagerFactory;
-		private WinEDDS.Service.Export.ICaseManager _caseManager;
 		private CaseInfo _caseInfo;
 		private string[] _fileRepos = new string[] { "defPath", "ghiPath", "abcPath" };
 
@@ -32,16 +31,17 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		[SetUp]
 		public override void SetUp()
 		{
+			_caseService = Substitute.For<ICaseService>();
+
+			IServicesMgr servicesMgr = Substitute.For<IServicesMgr>();
+			servicesMgr.CreateProxy<ICaseService>(ExecutionIdentity.System).Returns(_caseService);
+
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_fieldManager = Substitute.For<IFieldManager>();
-			_credentialProvider = Substitute.For<IWebApiLoginService>();
-			_caseManagerFactory = Substitute.For<ICaseManagerFactory>();
-			_caseManager = Substitute.For<WinEDDS.Service.Export.ICaseManager>();
 
 			_managerFactory.CreateFieldManager().Returns(_fieldManager);
-			_caseManagerFactory.Create(null, null).ReturnsForAnyArgs(_caseManager);
 
-			_controller = new ImportProviderImageController(_managerFactory, _credentialProvider, _caseManagerFactory);
+			_controller = new ImportProviderImageController(_managerFactory, servicesMgr);
 		}
 
 		[Test]
@@ -60,32 +60,32 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 		}
 
 		[Test]
-		public void ItShouldReturnFileRepos()
+		public async Task ItShouldReturnFileRepos()
 		{
 			//Arrange
 			SetUpCaseInfo();
-			_caseManager.Read(12345).ReturnsForAnyArgs(_caseInfo);
-			_caseManager.GetAllDocumentFolderPathsForCase(12345).ReturnsForAnyArgs(_fileRepos);
+			_caseService.ReadAsync(12345, string.Empty).ReturnsForAnyArgs(_caseInfo);
+			_caseService.GetAllDocumentFolderPathsForCaseAsync(12345, string.Empty).ReturnsForAnyArgs(_fileRepos);
 
 			//Act
-			IHttpActionResult response = _controller.GetFileRepositories(12345);
+			IHttpActionResult response = await _controller.GetFileRepositories(12345).ConfigureAwait(false);
 			string[] actualResult = ExtractStringArrayResponse(response);
 
 			//Assert
 			//Make sure that the result are in alpha order
-			CollectionAssert.AreEqual(_fileRepos.OrderBy(x=>x).ToArray(), actualResult);
+			CollectionAssert.AreEqual(_fileRepos.OrderBy(x => x).ToArray(), actualResult);
 		}
 
 		[Test]
-		public void ItShouldReturnDefaultFileRepo()
+		public async Task ItShouldReturnDefaultFileRepo()
 		{
 			//Arrange
 			SetUpCaseInfo();
-			_caseManager.Read(12345).ReturnsForAnyArgs(_caseInfo);
-			_caseManager.GetAllDocumentFolderPathsForCase(12345).ReturnsForAnyArgs(_fileRepos);
+			_caseService.ReadAsync(12345, string.Empty).ReturnsForAnyArgs(_caseInfo);
+			_caseService.GetAllDocumentFolderPathsForCaseAsync(12345, string.Empty).ReturnsForAnyArgs(_fileRepos);
 
 			//Act
-			IHttpActionResult response = _controller.GetDefaultFileRepo(12345);
+			IHttpActionResult response = await _controller.GetDefaultFileRepo(12345).ConfigureAwait(false);
 			string actualResult = ExtractStringResponse(response);
 
 			//Assert
