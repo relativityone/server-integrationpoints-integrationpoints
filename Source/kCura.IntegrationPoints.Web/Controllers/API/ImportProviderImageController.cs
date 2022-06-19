@@ -1,31 +1,24 @@
 ﻿using System.Linq;
-using System.Net;
 using System.Web.Http;
-using kCura.IntegrationPoints.Core.Authentication.WebApi;
-using kCura.WinEDDS.Service.Export;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
-using Relativity.DataExchange.Service;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
+using System.Threading.Tasks;
+using Relativity.API;
+using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class ImportProviderImageController : ApiController
 	{
-
+		private readonly IServicesMgr _servicesMgr;
 		private readonly IManagerFactory _managerFactory;
-		private readonly ICaseManagerFactory _caseManagerFactory;
-		private readonly IWebApiLoginService _credential;
 
-		public ImportProviderImageController(
-			IManagerFactory managerFactory,
-			IWebApiLoginService credential,
-			ICaseManagerFactory caseManagerFactory)
+		public ImportProviderImageController(IManagerFactory managerFactory, IServicesMgr servicesMgr)
 		{
 			_managerFactory = managerFactory;
-			_credential = credential;
-			_caseManagerFactory = caseManagerFactory;
+			_servicesMgr = servicesMgr;
 		}
 
 		[HttpGet]
@@ -40,25 +33,26 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		[HttpGet]
 		[LogApiExceptionFilter(Message = "Unable to retrieve list of file repository values.")]
-		public IHttpActionResult GetFileRepositories(int workspaceArtifactId)
+		public async Task<IHttpActionResult> GetFileRepositories(int workspaceArtifactId)
 		{
-			CookieContainer cookieContainer = new CookieContainer();
-			ICaseManager caseManager = _caseManagerFactory.Create(_credential.Authenticate(cookieContainer), cookieContainer);
+			string[] folderPathsForCase = null;
+			using (ICaseService caseService = _servicesMgr.CreateProxy<ICaseService>(ExecutionIdentity.System))
+			{
+				folderPathsForCase = await caseService.GetAllDocumentFolderPathsForCaseAsync(workspaceArtifactId, string.Empty).ConfigureAwait(false);
+			}
 
-			CaseInfo caseInfo = caseManager.Read(workspaceArtifactId);
-			string[] fileRepos = caseManager.GetAllDocumentFolderPathsForCase(caseInfo.ArtifactID).OrderBy(x => x).ToArray(); ;
-
-			return Json(fileRepos);
+			return Json(folderPathsForCase.OrderBy(x => x).ToArray());
 		}
 
 		[HttpGet]
 		[LogApiExceptionFilter(Message = "Unable to retrieve the default file repo.")]
-		public IHttpActionResult GetDefaultFileRepo(int workspaceArtifactId)
+		public async Task<IHttpActionResult> GetDefaultFileRepo(int workspaceArtifactId)
 		{
-			CookieContainer cookieContainer = new CookieContainer();
-			ICaseManager caseManager = _caseManagerFactory.Create(_credential.Authenticate(cookieContainer), cookieContainer);
-
-			CaseInfo caseInfo = caseManager.Read(workspaceArtifactId);
+			CaseInfo caseInfo = null;
+			using (ICaseService caseService = _servicesMgr.CreateProxy<ICaseService>(ExecutionIdentity.System))
+			{
+				caseInfo = await caseService.ReadAsync(workspaceArtifactId, string.Empty).ConfigureAwait(false);
+			}
 
 			return Json(caseInfo.DocumentPath);
 		}
