@@ -24,19 +24,19 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
         public RelativityProviderFolderPathInformation GetUseFolderPathInfo() => ParseEnum<RelativityProviderFolderPathInformation>(SummaryPageGeneralTab.UseFolderPathInfo.Value);
         public YesNo GetMoveExistingDocs() => ParseEnum<YesNo>(SummaryPageGeneralTab.MoveExistingDocs.Value);
         public string GetImagePrecedence() => SummaryPageGeneralTab.ImagePrecedence.Value;
-        public bool GetCopyFilesToRepository() => Convert.ToBoolean(SummaryPageGeneralTab.CopyFilesToRepository.Value);
+        public YesNo GetCopyFilesToRepository() => ParseEnum<YesNo>(SummaryPageGeneralTab.CopyFilesToRepository.Value);
 
         #endregion
 
         #region 2nd column
 
-        public bool GetLogErrors() => Convert.ToBoolean(SummaryPageGeneralTab.LogErrors.Value);
-        public bool GetHasErrors() => Convert.ToBoolean(SummaryPageGeneralTab.HasErrors.Value);
-        public string GetEmailNotificationRecipient() => SummaryPageGeneralTab.EmailNotificationRecipient.Value;
-        public int GetTotalDocuments() => Convert.ToInt32(SummaryPageGeneralTab.TotalDocuments.Value);
-        public int GetTotalNatives() => Convert.ToInt32(SummaryPageGeneralTab.TotalNatives.Value);
-        public int GetTotalImages() => Convert.ToInt32(SummaryPageGeneralTab.TotalImages.Value);
-        public bool GetCreateSavedSearch() => Convert.ToBoolean(SummaryPageGeneralTab.CreateSavedSearch.Value);
+        public YesNo GetLogErrors() => ParseEnum<YesNo>(SummaryPageGeneralTab.LogErrors.Value);
+        public YesNo GetHasErrors() => ParseEnum<YesNo>(SummaryPageGeneralTab.HasErrors.Value);
+        public string GetEmailNotificationRecipients() => SummaryPageGeneralTab.EmailNotificationRecipients.Value;
+        public int GetTotalDocuments() => Convert.ToInt32(SummaryPageGeneralTab.TotalOfDocuments.Value);
+        public string GetTotalNatives() => SummaryPageGeneralTab.TotalOfNatives.Value;
+        public string GetTotalImages() => SummaryPageGeneralTab.TotalOfImages.Value;
+        public YesNo GetCreateSavedSearch() => ParseEnum<YesNo>(SummaryPageGeneralTab.CreateSavedSearch.Value);
 
         #endregion
 

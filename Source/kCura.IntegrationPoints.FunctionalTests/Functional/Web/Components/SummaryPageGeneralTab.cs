@@ -48,19 +48,23 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 
         #region 2nd column
 
-        public RwcDropdown<bool, _> LogErrors { get; private set; }
+        [FindByAttribute("label", TermCase.Title, OuterXPath = ".//rwc-boolean-dropdown-input-field/self::", As = FindAs.ShadowHost)]
+        [FindByXPath("div[@class = 'rwa-base-field view cell']")]
+        public Content<string, _> LogErrors { get; private set; }
 
-        public RwcDropdown<bool, _> HasErrors { get; private set; }
+        [FindByAttribute("label", TermCase.Title, OuterXPath = ".//rwc-boolean-dropdown-input-field/self::", As = FindAs.ShadowHost)]
+        [FindByXPath("div[@class = 'rwa-base-field view cell']")]
+        public Content<string, _> HasErrors { get; private set; }
 
         [FindByAttribute("label", TermCase.Title, OuterXPath = ".//rwc-text-area-field/self::", As = FindAs.ShadowHost)]
         [FindByXPath("div[@class = 'rwa-base-field view cell']")]
-        public Content<string, _> EmailNotificationRecipient { get; private set; }
+        public Content<string, _> EmailNotificationRecipients { get; private set; }
 
-        public RwcTextField<_> TotalDocuments { get; private set; }
+        public RwcTextField<_> TotalOfDocuments { get; private set; }
 
-        public RwcTextField<_> TotalNatives { get; private set; }
+        public RwcTextField<_> TotalOfNatives { get; private set; }
 
-        public RwcTextField<_> TotalImages { get; private set; }
+        public RwcTextField<_> TotalOfImages { get; private set; }
 
         public RwcTextField<_> CreateSavedSearch { get; private set; }
         #endregion
