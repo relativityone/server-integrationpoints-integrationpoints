@@ -175,8 +175,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void InitializeManagerConfigSettingsFactory()
 		{
-			NotifyAgentTab(LogCategory.Debug, "Initialize Config Settings factory");
-			LogOnInitializeManagerConfigSettingsFactory();
+			NotifyAgentTab(LogCategory.Debug, "Initialize Config Settings factory");			
 			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 		}
 
@@ -356,8 +355,6 @@ namespace kCura.ScheduleQueue.AgentBase
 		private void CleanupQueueJobs()
 		{
 			NotifyAgentTab(LogCategory.Debug, "Cleanup jobs");
-			LogOnCleanupJobs();
-
 			_jobService.CleanupJobQueueTable();
 		}
 
@@ -367,8 +364,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			switch (category)
 			{
 				case LogCategory.Debug:
-					RaiseMessageNoLogging(msg, _logCategoryToLogLevelMapping[LogCategory.Debug]);
-					Logger.LogInformation(message);
+					RaiseMessageNoLogging(msg, _logCategoryToLogLevelMapping[LogCategory.Debug]);					
 					break;
 				case LogCategory.Info:
 					RaiseMessage(msg, _logCategoryToLogLevelMapping[LogCategory.Info]);
@@ -412,18 +408,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			return logger;
 		}
 
-		#region Logging
-
-		private void LogOnInitializeManagerConfigSettingsFactory()
-		{
-			Logger.LogInformation("Attempting to initialize Config Settings factory in {TypeName}",
-				nameof(ScheduleQueueAgentBase));
-		}
-
-		private void LogOnCleanupJobs()
-		{
-			Logger.LogInformation("Attempting to cleanup jobs in {TypeName}", nameof(ScheduleQueueAgentBase));
-		}
+		#region Logging		
 
 		private void LogExecuteComplete()
 		{

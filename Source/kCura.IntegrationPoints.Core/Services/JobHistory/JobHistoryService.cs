@@ -74,9 +74,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			Guid batchInstance, 
 			DateTime? startTimeUtc)
 		{
-			_logger.LogInformation("Getting JobHistory RDO for BatchInstance: {batchInstance} IntegrationPoint: {integrationPointId}",
-				batchInstance, integrationPoint.ArtifactId);
-
 			Data.JobHistory jobHistory = null;
 
 			try
@@ -108,9 +105,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			ChoiceRef jobType, 
 			DateTime? startTimeUtc)
 		{
-			_logger.LogInformation("Creating JobHistory RDO for BatchInstance: {batchInstance} IntegrationPoint: {integrationPointId}",
-				batchInstance, integrationPoint.ArtifactId);
-
 			Data.JobHistory jobHistory = null;
 
 			try
@@ -223,8 +217,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			Guid batchInstance, 
 			JobHistoryQueryOptions queryOptions)
 		{
-			_logger.LogInformation("Getting JobHistory RDO for BatchInstance: {batchInstance}", batchInstance);
-
 			var request = new QueryRequest
 			{
 				Condition = $"'{JobHistoryFields.BatchInstance}' == '{batchInstance}'",
