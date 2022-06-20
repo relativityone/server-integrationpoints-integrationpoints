@@ -77,7 +77,7 @@ async function getButtonStateObject(convenienceApi, ctx, workspaceId, integratio
     var resp = await convenienceApi.relativityHttpClient.get(request.url, request.options)
         .then(function (result) {
             if (!result.ok) {
-                return ctx.setErrorSummary(["Unable to generate button console - failed to get button state."]);
+                console.log("Unable to generate button console - failed to get button state.");
             } else if (result.ok) {
                 return result.json();
             }
