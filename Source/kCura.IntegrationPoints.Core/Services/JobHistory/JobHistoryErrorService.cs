@@ -103,7 +103,8 @@ namespace kCura.IntegrationPoints.Core.Services
 							if (!result.Success)
 							{
 								throw new IntegrationPointsException($"Mass creation of item level errors was not successful. Message: {result.Message}");
-							}							
+							}
+							_logger.LogInformation("Successfully mass-created item level errors count: {count}", _jobHistoryErrorList.Count);
 						}
 					}
 
