@@ -89,8 +89,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		}
 
 		public void AddRow(Dictionary<string, object> sourceFields)
-		{
-			LogAddingRowToBatchManager();
+		{			
 			Dictionary<string, object> importFields = GenerateImportFields(sourceFields, FieldMappings);
 			if (importFields.Count > 0)
 			{
@@ -127,8 +126,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		}
 
 		public virtual void KickOffImport(IDataTransferContext context)
-		{
-			LogSettingUpImportJob();
+		{			
 			IJobImport importJob = _jobFactory.Create(_importApi, Settings, context, _helper);
 
 			_totalRowsImported = context.TransferredItemsCount;
@@ -331,12 +329,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		private void LogInitializingImportApi()
 		{
 			_logger.LogInformation("Attempting to initialize Import API.");
-		}
-
-		private void LogAddingRowToBatchManager()
-		{
-			_logger.LogInformation("Attempting to add row to batch manager.");
-		}
+		}		
 
 		private void LogPushingBatch(bool forcePush)
 		{
@@ -346,12 +339,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		private void LogImportJobStarted()
 		{
 			_logger.LogInformation("Import Job started.");
-		}
-
-		private void LogSettingUpImportJob()
-		{
-			_logger.LogInformation("Setting up Import Job and attempting to start it.");
-		}
+		}	
 
 		private void LogSettingFieldDictionaryError(Exception e)
 		{

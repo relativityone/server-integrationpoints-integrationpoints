@@ -111,10 +111,8 @@ namespace kCura.IntegrationPoints.Agent
 		private TaskResult ExecuteTask(ITask task, Job job)
 		{
 			try
-			{
-				_logger.LogInformation("StartTask - Before Execute");
-				task.Execute(job);
-				_logger.LogInformation("StartTask - After Execute");
+			{				
+				task.Execute(job);				
 
 				LogJobState(job, JobLogState.Finished);
 				string msg = string.Format(FINISHED_PROCESSING_JOB_MESSAGE_TEMPLATE, job.JobId, job.WorkspaceID, job.TaskType);
