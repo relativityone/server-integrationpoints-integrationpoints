@@ -9,8 +9,6 @@ export function createConsole(convenienceApi: IConvenienceApi): void {
         var integrationPointId = ctx.artifactId;
         var workspaceId = ctx.workspaceId;
 
-        removeMessageContainers(document.getElementsByTagName("lq-message-container")[0]);
-
         var buttonState = getButtonStateObject(convenienceApi, ctx, workspaceId, integrationPointId);
         buttonState.then(function (btnStateObj: ButtonState) {
             var consoleContent = generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPointId, btnStateObj);
