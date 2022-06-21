@@ -104,8 +104,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             integrationPointViewPage.SummaryPageGeneralTab.MultiSelectOverlay.ExpectTo.BeVisible();
             integrationPointViewPage.SummaryPageGeneralTab.UseFolderPathInfo.ExpectTo.BeVisible();
             integrationPointViewPage.SummaryPageGeneralTab.MoveExistingDocs.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.ImagePrecedence.ExpectTo.Not.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.CopyFilesToRepository.ExpectTo.Not.BeVisible();
 
             integrationPointViewPage.GetName().ShouldBeEquivalentTo(integrationPointName);
             integrationPointViewPage.GetOverwriteMode().ShouldBeEquivalentTo(RelativityProviderOverwrite.AppendOnly);
@@ -133,7 +131,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             integrationPointViewPage.SummaryPageGeneralTab.TotalOfDocuments.ExpectTo.BeVisible();
             integrationPointViewPage.SummaryPageGeneralTab.TotalOfNatives.ExpectTo.BeVisible();
             integrationPointViewPage.SummaryPageGeneralTab.CreateSavedSearch.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.TotalOfImages.ExpectTo.Not.BeVisible();
 
             integrationPointViewPage.GetLogErrors().ShouldBeEquivalentTo(YesNo.Yes);
             integrationPointViewPage.GetHasErrors().ShouldBeEquivalentTo(YesNo.No);
@@ -231,21 +228,20 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             integrationPointViewPage.SummaryPageGeneralTab.UseFolderPathInfo.ExpectTo.BeVisible();
             integrationPointViewPage.SummaryPageGeneralTab.ImagePrecedence.ExpectTo.BeVisible();
             integrationPointViewPage.SummaryPageGeneralTab.CopyFilesToRepository.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.MoveExistingDocs.ExpectTo.Not.BeVisible();
 
             integrationPointViewPage.GetName().ShouldBeEquivalentTo(integrationPointName);
-            integrationPointViewPage.GetOverwriteMode().ShouldBeEquivalentTo(RelativityProviderOverwrite.AppendOnly);
-            integrationPointViewPage.GetExportType().ShouldBeEquivalentTo("Workspace; Natives");
+            integrationPointViewPage.GetOverwriteMode().ShouldBeEquivalentTo(RelativityProviderOverwrite.AppendOverlay);
+            integrationPointViewPage.GetExportType().ShouldBeEquivalentTo("Workspace; ImagesNatives");
             integrationPointViewPage.GetSourceDetails().ShouldBeEquivalentTo($"Saved Search: {keywordSearch.Name}");
             integrationPointViewPage.GetSourceWorkspaceName().ShouldBeEquivalentTo(_testsImplementationTestFixture.Workspace.Name);
             integrationPointViewPage.GetSourceRelativityInstance().ShouldBeEquivalentTo("This instance(emttest)");
             integrationPointViewPage.GetTransferredObject().ShouldBeEquivalentTo(ArtifactType.Document);
             integrationPointViewPage.GetDestinationWorkspaceName().ShouldBeEquivalentTo(destinationWorkspace.Name);
             integrationPointViewPage.GetDestinationFolderName().ShouldBeEquivalentTo(destinationWorkspace.Name);
-            integrationPointViewPage.GetMultiSelectOverlayMode().ShouldBeEquivalentTo(FieldOverlayBehavior.UseFieldSettings);
+            integrationPointViewPage.GetMultiSelectOverlayMode().ShouldBeEquivalentTo(FieldOverlayBehavior.MergeValues);
             integrationPointViewPage.GetUseFolderPathInfo().ShouldBeEquivalentTo(RelativityProviderFolderPathInformation.No);
-            integrationPointViewPage.GetImagePrecedence().ShouldBeEquivalentTo("Original");
-            integrationPointViewPage.GetCopyFilesToRepository().ShouldBeEquivalentTo(YesNo.No);
+            integrationPointViewPage.GetImagePrecedence().ShouldBeEquivalentTo(RelativityProviderImagePrecedence.OriginalImages);
+            integrationPointViewPage.GetCopyFilesToRepository().ShouldBeEquivalentTo(YesNo.Yes);
 
             #endregion
 
@@ -257,13 +253,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             integrationPointViewPage.SummaryPageGeneralTab.TotalOfDocuments.ExpectTo.BeVisible();
             integrationPointViewPage.SummaryPageGeneralTab.TotalOfImages.ExpectTo.BeVisible();
             integrationPointViewPage.SummaryPageGeneralTab.CreateSavedSearch.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.TotalOfNatives.ExpectTo.Not.BeVisible();
 
             integrationPointViewPage.GetLogErrors().ShouldBeEquivalentTo(YesNo.Yes);
             integrationPointViewPage.GetHasErrors().ShouldBeEquivalentTo(YesNo.No);
             integrationPointViewPage.GetEmailNotificationRecipients().Should().BeNullOrEmpty();
             integrationPointViewPage.GetTotalDocuments().ShouldBeEquivalentTo(5);
-            integrationPointViewPage.GetTotalImages().ShouldBeEquivalentTo("5 (12.52 KB)");
+            integrationPointViewPage.GetTotalImages().ShouldBeEquivalentTo("0 (0 Bytes)");
             integrationPointViewPage.GetCreateSavedSearch().ShouldBeEquivalentTo(YesNo.No);
 
             #endregion

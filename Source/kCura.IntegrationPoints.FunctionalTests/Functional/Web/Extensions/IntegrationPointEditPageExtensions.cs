@@ -43,18 +43,16 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
             string savedSearchName)
         {
             RelativityProviderConnectToSourcePage relativityProviderConnectToSourcePage = FillOutIntegrationPointEditPageForRelativityProvider(integrationPointEditPage, integrationPointName);
-
-			// Create RelativityProviderMapFieldsPage for Images workflow
+			
 			RelativityProviderMapFieldsPage relativityProviderMapFieldsPage = FillOutRelativityProviderConnectToSourcePage(
                 relativityProviderConnectToSourcePage, destinationWorkspace,
                 RelativityProviderSources.SavedSearch, savedSearchName);
 
             IntegrationPointViewPage integrationPointViewPage = relativityProviderMapFieldsPage
-                .ApplyModel(new { Overwrite = RelativityProviderOverwrite.AppendOverlay })
                 .ApplyModel(new RelativityProviderMapFieldsWithImages
                 {
                     Overwrite = RelativityProviderOverwrite.AppendOverlay,
-                    FieldOverlayBehavior = RelativityProviderMultiSelectField.MergeValues,
+                    MultiSelectField = RelativityProviderMultiSelectField.MergeValues,
 					CopyImages = YesNo.Yes,
                     ImagePrecedence = RelativityProviderImagePrecedence.OriginalImages,
 					CopyFilesToRepository = YesNo.Yes

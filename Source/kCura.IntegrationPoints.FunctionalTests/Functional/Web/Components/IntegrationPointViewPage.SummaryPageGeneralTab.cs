@@ -13,7 +13,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 
         public string GetName() => SummaryPageGeneralTab.Name.Value;
         public string GetExportType() => SummaryPageGeneralTab.ExportType.Value;
-        public RelativityProviderOverwrite GetOverwriteMode() => ParseEnum<RelativityProviderOverwrite>(SummaryPageGeneralTab.Overwrite.Value);
+        public RelativityProviderOverwrite GetOverwriteMode() => ParseEnum<RelativityProviderOverwrite>(SummaryPageGeneralTab.Overwrite.Value.Replace("/", ""));
         public string GetSourceDetails() => SummaryPageGeneralTab.SourceDetails.Value;
         public string GetSourceWorkspaceName() => SummaryPageGeneralTab.SourceWorkspace.Value;
         public string GetSourceRelativityInstance() => SummaryPageGeneralTab.SourceRelativityInstance.Value;
@@ -23,7 +23,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
         public FieldOverlayBehavior GetMultiSelectOverlayMode() => ParseEnum<FieldOverlayBehavior>(SummaryPageGeneralTab.MultiSelectOverlay.Value);
         public RelativityProviderFolderPathInformation GetUseFolderPathInfo() => ParseEnum<RelativityProviderFolderPathInformation>(SummaryPageGeneralTab.UseFolderPathInfo.Value);
         public YesNo GetMoveExistingDocs() => ParseEnum<YesNo>(SummaryPageGeneralTab.MoveExistingDocs.Value);
-        public string GetImagePrecedence() => SummaryPageGeneralTab.ImagePrecedence.Value;
+        public RelativityProviderImagePrecedence GetImagePrecedence() => ParseEnum<RelativityProviderImagePrecedence>(SummaryPageGeneralTab.ImagePrecedence.Value + " Images");
         public YesNo GetCopyFilesToRepository() => ParseEnum<YesNo>(SummaryPageGeneralTab.CopyFilesToRepository.Value);
 
         #endregion
