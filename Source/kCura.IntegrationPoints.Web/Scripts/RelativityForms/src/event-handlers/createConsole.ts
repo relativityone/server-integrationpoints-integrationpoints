@@ -9,8 +9,6 @@ export function createConsole(convenienceApi: IConvenienceApi): void {
         var integrationPointId = ctx.artifactId;
         var workspaceId = ctx.workspaceId;
 
-        removeMessageContainers(document.getElementsByTagName("lq-message-container")[0]);
-
         var buttonState = getButtonStateObject(convenienceApi, ctx, workspaceId, integrationPointId);
         buttonState.then(function (btnStateObj: ButtonState) {
             var consoleContent = generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPointId, btnStateObj);
@@ -79,7 +77,7 @@ async function getButtonStateObject(convenienceApi, ctx, workspaceId, integratio
     var resp = await convenienceApi.relativityHttpClient.get(request.url, request.options)
         .then(function (result) {
             if (!result.ok) {
-                return ctx.setErrorSummary(["Unable to generate button console - failed to get button state."]);
+                console.log("Unable to generate button console - failed to get button state.");
             } else if (result.ok) {
                 return result.json();
             }
