@@ -11,7 +11,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 {
 	internal static class IntegrationPointEditPageExtensions
 	{
-		public static IntegrationPointViewPage CreateSavedSearchToFolderIntegrationPoint(
+		public static IntegrationPointViewPage CreateSavedSearchToFolderIntegrationPointWithNatives(
 			this IntegrationPointEditPage integrationPointEditPage,
 			string integrationPointName,
 			Workspace destinationWorkspace,
@@ -35,6 +35,33 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 
 			return integrationPointViewPage;
 		}
+
+        public static IntegrationPointViewPage CreateSavedSearchToFolderIntegrationPointWithImages(
+            this IntegrationPointEditPage integrationPointEditPage,
+            string integrationPointName,
+            Workspace destinationWorkspace,
+            string savedSearchName)
+        {
+            RelativityProviderConnectToSourcePage relativityProviderConnectToSourcePage = FillOutIntegrationPointEditPageForRelativityProvider(integrationPointEditPage, integrationPointName);
+
+			// Create RelativityProviderMapFieldsPage for Images workflow
+			RelativityProviderMapFieldsPage relativityProviderMapFieldsPage = FillOutRelativityProviderConnectToSourcePage(
+                relativityProviderConnectToSourcePage, destinationWorkspace,
+                RelativityProviderSources.SavedSearch, savedSearchName);
+
+            IntegrationPointViewPage integrationPointViewPage = relativityProviderMapFieldsPage
+                .ApplyModel(new { Overwrite = RelativityProviderOverwrite.AppendOverlay })
+                .ApplyModel(new RelativityProviderMapFieldsWithImages
+                {
+                    Overwrite = RelativityProviderOverwrite.AppendOverlay,
+                    FieldOverlayBehavior = RelativityProviderMultiSelectField.MergeValues,
+					CopyImages = YesNo.Yes,
+                    ImagePrecedence = RelativityProviderImagePrecedence.OriginalImages,
+					CopyFilesToRepository = YesNo.Yes
+                }).Save.ClickAndGo();
+
+            return integrationPointViewPage;
+        }
 
 		public static IntegrationPointViewPage CreateProductionToFolderIntegrationPoint(
 			this IntegrationPointEditPage integrationPointEditPage,

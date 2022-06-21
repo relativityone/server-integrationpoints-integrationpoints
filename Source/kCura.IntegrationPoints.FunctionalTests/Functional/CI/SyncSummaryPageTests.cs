@@ -33,5 +33,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
         {
             _testsImplementation.SavedSearchNativesAndMetadataSummaryPage();
         }
+
+        [Test]
+        public void SavedSearch_Images_GoldFlow()
+        {
+            _testsImplementation.SavedSearchImagesSummaryPage();
+        }
     }
 }
