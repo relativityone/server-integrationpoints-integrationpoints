@@ -232,8 +232,7 @@ namespace kCura.ScheduleQueue.Core.Services
 		}
 
 		public void DeleteJob(long jobID)
-		{
-			LogOnDeleteJob(jobID);
+		{			
 			DataProvider.DeleteJob(jobID);
 		}
 
@@ -279,8 +278,6 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		public void UpdateStopState(IList<long> jobIds, StopState state)
 		{
-			LogOnUpdateJobStopState(state, jobIds);
-
 			if (!jobIds.Any())
 			{
 				return;
@@ -362,11 +359,6 @@ namespace kCura.ScheduleQueue.Core.Services
 				nameof(JobService), workspaceId, relatedObjectArtifactId, taskType, submittedBy);
 		}
 
-		public void LogOnDeleteJob(long jobId)
-		{
-			_log.LogInformation("Attempting to delete Job with ID: ({JobId}) in {TypeName}", jobId, nameof(JobService));
-		}
-
 		public void LogOnGetJob(long jobId)
 		{
 			_log.LogInformation ("Attempting to retrieve Job with ID: ({JobId}) in {TypeName}", jobId, nameof(JobService));
@@ -390,12 +382,7 @@ namespace kCura.ScheduleQueue.Core.Services
 				"An error occured during update of stop states of jobs with IDs ({jobIds}) to state {state} in {TypeName}",
 				string.Join(",", jobIds), state, nameof(JobService));
 		}
-
-		public void LogOnUpdateJobStopState(StopState state, IList<long> jobIds)
-		{
-			_log.LogInformation("Attempting to update Stop state of jobs with IDs ({jobIds}) to {state} state in {TypeName}",
-				string.Join(",", jobIds), state.ToString(), nameof(JobService));
-		}
+		
 
 		private void LogCompletedUpdatedJobStopState(IList<long> jobIds, StopState state, int updatedCount)
 		{
