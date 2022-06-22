@@ -34,6 +34,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 			return ActionCommand.Empty;
 		}
 
+		public ICommand AddHeartbeatColumnToQueueTable()
+		{
+			return ActionCommand.Empty;
+		}
+
 		public IQuery<DataRow> GetAgentTypeInformation(Guid agentGuid)
 		{
 			var agent = _db.Agents.First(x => x.AgentGuid == agentGuid);

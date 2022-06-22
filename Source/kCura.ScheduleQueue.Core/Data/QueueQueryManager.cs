@@ -28,6 +28,11 @@ namespace kCura.ScheduleQueue.Core.Data
 			return new AddStopStateColumnToQueueTable(_queueDbContext);
 		}
 
+		public ICommand AddHeartbeatColumnToQueueTable()
+		{
+			return new AddHeartbeatColumnToQueueTable(_queueDbContext);
+		}
+
 		public IQuery<DataRow> GetAgentTypeInformation(Guid agentGuid)
 		{
 			return new GetAgentTypeInformation(_queueDbContext.EddsDBContext, agentGuid);

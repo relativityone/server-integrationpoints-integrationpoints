@@ -10,6 +10,8 @@ namespace kCura.IntegrationPoints.Data
 
 		ICommand AddStopStateColumnToQueueTable();
 
+		ICommand AddHeartbeatColumnToQueueTable();
+
 		IQuery<DataRow> GetAgentTypeInformation(Guid agentGuid);
 
 		IQuery<DataTable> GetNextJob(int agentId, int agentTypeId, int[] resourceGroupArtifactId);

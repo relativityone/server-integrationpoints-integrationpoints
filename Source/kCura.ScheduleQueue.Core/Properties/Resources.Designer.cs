@@ -19,7 +19,7 @@ namespace kCura.ScheduleQueue.Core.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -57,6 +57,33 @@ namespace kCura.ScheduleQueue.Core.Properties {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to USE [EDDS]
+        ///
+        ///SET ANSI_NULLS ON
+        ///SET QUOTED_IDENTIFIER ON
+        ///
+        ///IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N&apos;[eddsdbo].[{0}]&apos;) AND type in (N&apos;U&apos;))
+        ///BEGIN
+        ///	RAISERROR(&apos;{0} does not exist&apos;, 18, 1)
+        ///END
+        ///
+        ///IF NOT EXISTS(
+        ///    SELECT *
+        ///    FROM sys.columns 
+        ///    WHERE Name      = N&apos;Heartbeat&apos;
+        ///      AND Object_ID = Object_ID(N&apos;[eddsdbo].[{0}]&apos;))
+        ///BEGIN
+        ///    ALTER TABLE [eddsdbo].[{0}]
+        ///	ADD Heartbeat [datetime]
+        ///END.
+        /// </summary>
+        internal static string AddHeartbeatColumnToQueueTable {
+            get {
+                return ResourceManager.GetString("AddHeartbeatColumnToQueueTable", resourceCulture);
             }
         }
         
@@ -405,8 +432,7 @@ namespace kCura.ScheduleQueue.Core.Properties {
         ///			INSERTED.[ScheduleRule],
         ///			INSERTED.[JobDetails],
         ///			INSERTED.[JobFlags],
-        ///			INSERTED.[SubmittedDate],
-        ///		 [rest of string was truncated]&quot;;.
+        ///			INSERTED [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GetNextJobWithoutResourceGroup {
             get {
