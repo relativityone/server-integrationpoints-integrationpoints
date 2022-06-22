@@ -200,9 +200,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				string firstName = (string)importRow[FirstNameSourceFieldId];
 				string lastName = (string)importRow[LastNameSourceFieldId];
-				string fullName = GenerateFullName(lastName, firstName);
-
-				fullName = null;
+				string fullName = GenerateFullName(lastName, firstName);				
 			
 				if (!string.IsNullOrWhiteSpace(fullName))
 				{

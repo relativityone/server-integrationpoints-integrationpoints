@@ -173,11 +173,21 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				IEnumerator<IDictionary<FieldEntry, object>> enumerator = data.GetEnumerator();
 				if (jobStopManager?.ShouldDrainStop != true)
 				{
-					do
-					{
-						try
-						{
-							rowProcessed = ProcessRowForImport(fieldMap, enumerator);
+					_logger.LogInformation("Data processing loop is starting. Items to import: {0}", data.Count());
+					int addedRows = 0;
+					int skippedRows = 0;
+					foreach(var row in data)
+                    {
+                        try
+                        {
+							Dictionary<string, object> importRow = GenerateImportRow(enumerator.Current, fieldMap, ImportSettings);
+							if (importRow != null)
+							{
+								ImportService.AddRow(importRow);
+								addedRows++;
+							}
+							else
+								skippedRows++;
 						}
 						catch (ProviderReadDataException exception)
 						{
@@ -189,9 +199,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 							LogSyncDataError(ex);
 							ItemError(string.Empty, ex.Message);
 						}
-					} while (rowProcessed);
-
-					_logger.LogInformation("All rows processed"); //TESTLog
+					}
+					_logger.LogInformation("Data processing loop ended. Rows added: {0}, rows skipped: {1}", addedRows, skippedRows);					
 
 					if (!jobStopManager?.ShouldDrainStop ?? true)
 					{
@@ -200,8 +209,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 					}
 
 					WaitUntilTheJobIsDone(rowProcessed);
-					FinalizeSyncData(data, fieldMap, ImportSettings, jobStopManager);
-					_logger.LogInformation("Sync data finalized"); //TESTLog
+					FinalizeSyncData(data, fieldMap, ImportSettings, jobStopManager);					
 				}
 				else
 				{
@@ -214,23 +222,23 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 		}
 
-		internal bool ProcessRowForImport(IEnumerable<FieldMap> fieldMap, IEnumerator<IDictionary<FieldEntry, object>> enumerator)
-		{
-			bool rowProcessed = enumerator.MoveNext();
+		//internal bool ProcessRowForImport(IEnumerable<FieldMap> fieldMap, IEnumerator<IDictionary<FieldEntry, object>> enumerator)
+		//{
+		//	bool rowProcessed = enumerator.MoveNext();
 
-			if (!rowProcessed)
-			{
-				return false;
-			}
+		//	if (!rowProcessed)
+		//	{
+		//		return false;
+		//	}
 
-			Dictionary<string, object> importRow = GenerateImportRow(enumerator.Current, fieldMap, ImportSettings);
-			if (importRow != null)
-			{
-				ImportService.AddRow(importRow);
-			}
+		//	Dictionary<string, object> importRow = GenerateImportRow(enumerator.Current, fieldMap, ImportSettings);
+		//	if (importRow != null)
+		//	{
+		//		ImportService.AddRow(importRow);
+		//	}
 
-			return true;
-		}
+		//	return true;
+		//}
 
 		public void SyncData(IDataTransferContext context, IEnumerable<FieldMap> fieldMap, string options,
 			IJobStopManager jobStopManager)

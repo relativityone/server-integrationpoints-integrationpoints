@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public void Execute(Job job)
 		{
-			LogExecuteStart(job);
+			LogExecuteStart(job);			
 
 			foreach (IBatchStatus batchComplete in BatchStatus)
 			{
@@ -159,11 +159,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobHistory = JobHistoryService.GetRdo(batchInstance);
 			int totalRowsCountInBatch = GetRowsCountForBatch(job.JobDetails);
 
-			_logger.LogInformation("Total rows count in batch: {0}", totalRowsCountInBatch); //TESTLog
-
-			bool shouldDrainStopBatch = ShouldDrainStopBatch(dataSynchronizer.TotalRowsProcessed, totalRowsCountInBatch);
-
-			_logger.LogInformation("Should drain stop batch state: {0}", shouldDrainStopBatch); //TESTLog
+			bool shouldDrainStopBatch = ShouldDrainStopBatch(dataSynchronizer.TotalRowsProcessed, totalRowsCountInBatch);			
 
 			if (shouldDrainStopBatch)
 			{
