@@ -75,6 +75,7 @@ export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx
 
 function createMessageContainer(message: string, theme: string, lqMessageContainer: Element, title: string) {
     let messageContainer = document.createElement("rwc-message-container");
+    messageContainer.setAttribute("class", "RIPCustomMessageBar");
     messageContainer.setAttribute("theme", theme);
     if (theme === "error") {
         messageContainer.setAttribute("message-collection-title-prefix", title);
@@ -83,15 +84,16 @@ function createMessageContainer(message: string, theme: string, lqMessageContain
     lqMessageContainer.appendChild(messageContainer); 
 }
 
-export function removeMessageContainers(lqMessageContainer: Element) {
-    let children = lqMessageContainer.childNodes.length;
-    if (children > 1) {
-        for (let i = children-1; i >0; i--) {
-            let parent = lqMessageContainer.childNodes[i].parentNode;
-            parent.removeChild(lqMessageContainer.childNodes[i])
+export function removeMessageContainers() {
+    try {
+        let messages = document.getElementsByClassName("RIPCustomMessageBar")
+        for (let i = 0; i < messages.length; i++) {
+            messages[i].parentNode.removeChild(messages[i])
         }
+    } catch (err) {
+        console.log(err)
     }
-    console.log("cleaned messages");
+    
 }
 
 export function createStopButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number) {

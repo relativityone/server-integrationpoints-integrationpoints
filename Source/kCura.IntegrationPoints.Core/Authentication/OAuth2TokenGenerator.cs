@@ -79,15 +79,9 @@ namespace kCura.IntegrationPoints.Core.Authentication
 		{
 			string relativityInstance = ExtensionPointServiceFinder.ServiceUriProvider
 				.AuthenticationUri().ToString();
-			var relativityStsUri = new Uri(System.IO.Path.Combine(relativityInstance, Constants.IntegrationPoints.RELATIVITY_AUTH_ENDPOINT));
-			LogRelativityStsUrl(relativityInstance);
+			var relativityStsUri = new Uri(System.IO.Path.Combine(relativityInstance, Constants.IntegrationPoints.RELATIVITY_AUTH_ENDPOINT));			
 			return relativityStsUri;
-		}
-
-		private void LogRelativityStsUrl(string relativityInstance)
-		{
-			_logger.LogInformation($"Relativity Service Url: {relativityInstance}");
-		}
+		}		
 
 		private void LogGetAuthTokenError(Exception exception)
 		{
