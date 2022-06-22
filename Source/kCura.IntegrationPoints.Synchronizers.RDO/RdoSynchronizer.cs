@@ -191,6 +191,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 						}
 					} while (rowProcessed);
 
+					_logger.LogInformation("All rows processed"); //TESTLog
+
 					if (!jobStopManager?.ShouldDrainStop ?? true)
 					{
 						ImportService.PushBatchIfFull(true);
@@ -199,6 +201,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 					WaitUntilTheJobIsDone(rowProcessed);
 					FinalizeSyncData(data, fieldMap, ImportSettings, jobStopManager);
+					_logger.LogInformation("Sync data finalized"); //TESTLog
 				}
 				else
 				{

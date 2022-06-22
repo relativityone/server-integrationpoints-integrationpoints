@@ -201,6 +201,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				string firstName = (string)importRow[FirstNameSourceFieldId];
 				string lastName = (string)importRow[LastNameSourceFieldId];
 				string fullName = GenerateFullName(lastName, firstName);
+
+				fullName = null;
+			
 				if (!string.IsNullOrWhiteSpace(fullName))
 				{
 					importRow.Add(_LDAP_MAP_FULL_NAME_FIELD_NAME, fullName);
