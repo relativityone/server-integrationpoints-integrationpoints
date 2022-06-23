@@ -24,6 +24,7 @@ using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.AgentBase;
 using NSubstitute;
 using Relativity.API;
+using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
 
 namespace kCura.IntegrationPoints.Agent.Tests
 {
@@ -33,6 +34,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		private Mock<IMessageService> _messageServiceMock;
 		private Mock<IJobHistoryService> _jobHistoryServiceFake;
 		private Mock<IMemoryUsageReporter> _memoryUsageReporter;
+		private Mock<IHeartbeatReporter> _heartbeatReporter;
 		private Mock<IAPILog> _loggerMock;
 
 		private IWindsorContainer _container;
@@ -47,6 +49,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			_messageServiceMock = new Mock<IMessageService>();
 			_jobHistoryServiceFake = new Mock<IJobHistoryService>();
 			_memoryUsageReporter = new Mock<IMemoryUsageReporter>();
+			_heartbeatReporter = new Mock<IHeartbeatReporter>();
 			_loggerMock = new Mock<IAPILog>();
 			_kubernetesModeMock = new Mock<IKubernetesMode>();
 			_kubernetesModeMock.Setup(x => x.IsEnabled()).Returns(false);
@@ -183,6 +186,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			RegisterMock(integrationPointService);
 			RegisterMock(_jobHistoryServiceFake);
 			RegisterMock(_memoryUsageReporter);
+			RegisterMock(_heartbeatReporter);
 			RegisterMock(providerTypeService);
 			RegisterMock(_messageServiceMock);
 			RegisterMock(_kubernetesModeMock);
