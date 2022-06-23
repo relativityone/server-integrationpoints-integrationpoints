@@ -290,6 +290,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 			return new ValueReturnQuery<DataTable>(dataTable);
 		}
 
+		public IQuery<int> Heartbeat(long jobId, DateTime heartbeatTime)
+		{
+			return new ValueReturnQuery<int>(0);
+		}
+
 		#region Test Verification
 
 		public void ShouldCreateQueueTable()
@@ -328,6 +333,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
             return jobTest;
         }
 
-		#endregion
-	}
+        #endregion
+    }
 }

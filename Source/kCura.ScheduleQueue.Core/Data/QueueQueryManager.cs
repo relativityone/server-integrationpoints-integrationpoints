@@ -129,5 +129,10 @@ namespace kCura.ScheduleQueue.Core.Data
         {
 			return new GetJobsQueueDetails(_queueDbContext, agentTypeId);
         }
-	}
+
+        public IQuery<int> Heartbeat(long jobId, DateTime heartbeatTime)
+        {
+			return new UpdateHeartbeat(_queueDbContext, jobId, heartbeatTime);
+        }
+    }
 }

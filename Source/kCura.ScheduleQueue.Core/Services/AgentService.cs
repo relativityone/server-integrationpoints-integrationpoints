@@ -32,6 +32,9 @@ namespace kCura.ScheduleQueue.Core.Services
 
             _queryManager.AddStopStateColumnToQueueTable()
                 .Execute();
+
+            _queryManager.AddHeartbeatColumnToQueueTable()
+                .Execute();
         }
 
         public void CreateQueueTableOnce()

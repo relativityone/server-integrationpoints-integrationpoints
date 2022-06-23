@@ -98,8 +98,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			sut.ProcessJob_Test(job);
 
 			// Assert
-			_memoryUsageReporter.Verify(x => x.ActivateTimer(
-				It.Is<int>(timeInterval => timeInterval == 30*1000), 
+			_memoryUsageReporter.Verify(x => x.ActivateTimer( 
 				It.IsAny<long>(), 
 				It.IsAny<string>(), 
 				It.Is<string>(jobType => jobType =="ExportService")), Times.Once);

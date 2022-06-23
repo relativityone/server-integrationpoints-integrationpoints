@@ -27,6 +27,8 @@ using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
 using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 using Relativity.AutomatedWorkflows.SDK;
+using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
+using kCura.IntegrationPoints.Common.Helpers;
 
 namespace kCura.IntegrationPoints.Agent.Installer
 {
@@ -61,10 +63,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 
 			container.Register(Component.For<IJobContextProvider>().Instance(new JobContextProvider()).LifestyleSingleton());
 
-			container.Register(Component.For<IAppDomainMonitoringEnabler>().ImplementedBy<AppDomainMonitoringEnabler>().LifestyleSingleton());
-			container.Register(Component.For<IMemoryUsageReporter>().ImplementedBy<MemoryUsageReporter>().LifestyleSingleton());
-
-			container.Register(Component.For<IProcessMemoryHelper>().ImplementedBy<ProcessMemoryHelper>().LifestyleSingleton());
+			ConfigureMonitoring(container);
 
 			container.Register(Component.For<IRelativitySyncConstrainsChecker>().ImplementedBy<RelativitySyncConstrainsChecker>());
 
@@ -167,6 +166,19 @@ namespace kCura.IntegrationPoints.Agent.Installer
 				.For<ILazyComponentLoader>()
 				.ImplementedBy<LazyOfTComponentLoader>()
 			);
+		}
+
+		private static void ConfigureMonitoring(IWindsorContainer container)
+        {
+			container.Register(Component.For<IMonitoringConfig>().ImplementedBy<MonitoringConfig>().LifestyleTransient());
+			container.Register(Component.For<IDateTime>().ImplementedBy<DateTimeWrapper>().LifestyleTransient());
+
+			container.Register(Component.For<IAppDomainMonitoringEnabler>().ImplementedBy<AppDomainMonitoringEnabler>().LifestyleTransient());
+			container.Register(Component.For<IMemoryUsageReporter>().ImplementedBy<MemoryUsageReporter>().LifestyleTransient());
+			container.Register(Component.For<IProcessMemoryHelper>().ImplementedBy<ProcessMemoryHelper>().LifestyleTransient());
+
+			container.Register(Component.For<IHeartbeatReporter>().ImplementedBy<HeartbeatReporter>().LifestyleTransient());
+
 		}
 	}
 }

@@ -509,6 +509,25 @@ namespace kCura.ScheduleQueue.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to BEGIN TRANSACTION
+        ///
+        ///UPDATE
+        ///  [eddsdbo].[{0}]
+        ///SET
+        ///  [Heartbeat] = @HeartbeatTime
+        ///WHERE
+        ///  [JobId] = @JobID
+        ///SELECT @@ROWCOUNT
+        ///
+        ///COMMIT TRANSACTION .
+        /// </summary>
+        internal static string UpdateHeartbeat {
+            get {
+                return ResourceManager.GetString("UpdateHeartbeat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to UPDATE 
         ///				[eddsdbo].[{0}]
         ///SET
