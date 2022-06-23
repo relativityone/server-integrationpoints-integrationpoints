@@ -39,5 +39,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
         {
             _testsImplementation.SavedSearchImagesSummaryPage();
         }
+
+        public void Production_Images_GoldFlow()
+        {
+            _testsImplementation.ProductionImagesGoldFlow();
+        }
     }
 }

@@ -149,7 +149,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             };
             RelativityFacade.Instance.Resolve<IProductionPlaceholderService>().Create(_testsImplementationTestFixture.Workspace.ArtifactID, productionPlaceholder);
 
-            const int productionDocumentsCount = 5;
+            
             Testing.Framework.Models.Production production = new Testing.Framework.Models.Production
             {
                 Name = nameof(ProductionImagesGoldFlow),
@@ -207,6 +207,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             int transferredItemsCount = integrationPointViewPage.GetTransferredItemsCount(integrationPointName);
             int workspaceDocumentCount = RelativityFacade.Instance.Resolve<IDocumentService>().GetAll(destinationWorkspace.ArtifactID).Length;
 
+            const int productionDocumentsCount = 5;
             transferredItemsCount.Should().Be(workspaceDocumentCount).And.Be(productionDocumentsCount);
 
             GetCorrectlyTaggedDocumentsCount(sourceDocs, "Relativity Destination Case", expectedDestinationCaseTag).Should().Be(transferredItemsCount);
