@@ -17,7 +17,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
         public string GetSourceDetails() => SummaryPageGeneralTab.SourceDetails.Value;
         public string GetSourceWorkspaceName() => SummaryPageGeneralTab.SourceWorkspace.Value;
         public string GetSourceRelativityInstance() => SummaryPageGeneralTab.SourceRelativityInstance.Value;
-        public ArtifactType GetTransferredObject() => ParseEnum<ArtifactType>(SummaryPageGeneralTab.TransferedObject.Value);
+        public IntegrationPointTransferredObjects GetTransferredObject() => ParseEnum<IntegrationPointTransferredObjects>(SummaryPageGeneralTab.TransferedObject.Value);
         public string GetDestinationWorkspaceName() => SummaryPageGeneralTab.DestinationWorkspace.Value;
         public string GetDestinationFolderName() => SummaryPageGeneralTab.DestinationFolder.Value;
         public FieldOverlayBehavior GetMultiSelectOverlayMode() => ParseEnum<FieldOverlayBehavior>(SummaryPageGeneralTab.MultiSelectOverlay.Value);

@@ -45,5 +45,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
         {
             _testsImplementation.ProductionImagesSummaryPage();
         }
+
+        [Test]
+        public void Production_Entities_SummaryPageTest()
+        {
+            _testsImplementation.EntitiesPushSummaryPage();
+        }
     }
 }

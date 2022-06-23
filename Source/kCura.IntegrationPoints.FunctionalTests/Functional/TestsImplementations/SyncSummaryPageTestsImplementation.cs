@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Atata;
 using FluentAssertions;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
@@ -8,8 +11,13 @@ using Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Components;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Extensions;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
+using Relativity.Services.Interfaces.ObjectType;
+using Relativity.Services.Interfaces.Shared.Models;
+using Relativity.Services.Objects;
+using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Testing.Framework;
+using Relativity.Testing.Framework.Api;
 using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Models;
 using Relativity.Testing.Framework.Web.Models;
@@ -86,7 +94,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                 integrationPointViewPage.GetSourceDetails().ShouldBeEquivalentTo($"Saved Search: {keywordSearch.Name}");
                 integrationPointViewPage.GetSourceWorkspaceName().ShouldBeEquivalentTo(TestsImplementationTestFixture.Workspace.Name);
                 integrationPointViewPage.GetSourceRelativityInstance().ShouldBeEquivalentTo("This instance(emttest)");
-                integrationPointViewPage.GetTransferredObject().ShouldBeEquivalentTo(ArtifactType.Document);
+                integrationPointViewPage.GetTransferredObject().ShouldBeEquivalentTo(IntegrationPointTransferredObjects.Document);
                 integrationPointViewPage.GetDestinationWorkspaceName().ShouldBeEquivalentTo(destinationWorkspace.Name);
                 integrationPointViewPage.GetDestinationFolderName().ShouldBeEquivalentTo(destinationWorkspace.Name);
                 integrationPointViewPage.GetMultiSelectOverlayMode().ShouldBeEquivalentTo(FieldOverlayBehavior.UseFieldSettings);
@@ -140,6 +148,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             RelativityFacade.Instance.ImportImages(TestsImplementationTestFixture.Workspace,
                 testDataPath, imageImportOptions, imagesCount);
 
+
+            const int hasImagesYesArtifactId = 1034243;
             KeywordSearch keywordSearch = new KeywordSearch
             {
                 Name = nameof(SavedSearchImagesSummaryPage),
@@ -149,7 +159,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                     {
                         new Criteria
                         {
-                            Condition = new CriteriaCondition(new NamedArtifact { Name = "Has Images" }, ConditionOperator.AnyOfThese, new List<int> { 1034243 })
+                            Condition = new CriteriaCondition(new NamedArtifact { Name = "Has Images" }, ConditionOperator.AnyOfThese, new List<int> { hasImagesYesArtifactId })
                         }
                     }
                 }
@@ -188,7 +198,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                 integrationPointViewPage.GetSourceDetails().ShouldBeEquivalentTo($"Saved Search: {keywordSearch.Name}");
                 integrationPointViewPage.GetSourceWorkspaceName().ShouldBeEquivalentTo(TestsImplementationTestFixture.Workspace.Name);
                 integrationPointViewPage.GetSourceRelativityInstance().ShouldBeEquivalentTo("This instance(emttest)");
-                integrationPointViewPage.GetTransferredObject().ShouldBeEquivalentTo(ArtifactType.Document);
+                integrationPointViewPage.GetTransferredObject().ShouldBeEquivalentTo(IntegrationPointTransferredObjects.Document);
                 integrationPointViewPage.GetDestinationWorkspaceName().ShouldBeEquivalentTo(destinationWorkspace.Name);
                 integrationPointViewPage.GetDestinationFolderName().ShouldBeEquivalentTo(destinationWorkspace.Name);
                 integrationPointViewPage.GetMultiSelectOverlayMode().ShouldBeEquivalentTo(FieldOverlayBehavior.MergeValues);
@@ -323,18 +333,18 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             integrationPointViewPage.SummaryPageGeneralTab.CopyFilesToRepository.ExpectTo.BeVisible();
 
             integrationPointViewPage.GetName().ShouldBeEquivalentTo(integrationPointName);
-            integrationPointViewPage.GetOverwriteMode().ShouldBeEquivalentTo(RelativityProviderOverwrite.AppendOverlay);
-            integrationPointViewPage.GetExportType().ShouldBeEquivalentTo("Workspace; Images");
+            integrationPointViewPage.GetOverwriteMode().ShouldBeEquivalentTo(RelativityProviderOverwrite.AppendOnly);
+            integrationPointViewPage.GetExportType().ShouldBeEquivalentTo("Workspace; ImagesNatives");
             integrationPointViewPage.GetSourceDetails().ShouldBeEquivalentTo($"Production Set: {production.Name}");
             integrationPointViewPage.GetSourceWorkspaceName().ShouldBeEquivalentTo(TestsImplementationTestFixture.Workspace.Name);
             integrationPointViewPage.GetSourceRelativityInstance().ShouldBeEquivalentTo("This instance(emttest)");
-            integrationPointViewPage.GetTransferredObject().ShouldBeEquivalentTo(ArtifactType.Document);
+            integrationPointViewPage.GetTransferredObject().ShouldBeEquivalentTo(IntegrationPointTransferredObjects.Document);
             integrationPointViewPage.GetDestinationWorkspaceName().ShouldBeEquivalentTo(destinationWorkspace.Name);
             integrationPointViewPage.GetDestinationFolderName().ShouldBeEquivalentTo(destinationWorkspace.Name);
             integrationPointViewPage.GetMultiSelectOverlayMode().ShouldBeEquivalentTo(FieldOverlayBehavior.UseFieldSettings);
             integrationPointViewPage.GetUseFolderPathInfo().ShouldBeEquivalentTo(RelativityProviderFolderPathInformation.No);
             integrationPointViewPage.GetImagePrecedence().ShouldBeEquivalentTo(RelativityProviderImagePrecedence.OriginalImages);
-            integrationPointViewPage.GetCopyFilesToRepository().ShouldBeEquivalentTo(YesNo.No);
+            integrationPointViewPage.GetCopyFilesToRepository().ShouldBeEquivalentTo(YesNo.Yes);
 
             #endregion
 
@@ -351,10 +361,143 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             integrationPointViewPage.GetHasErrors().ShouldBeEquivalentTo(YesNo.No);
             integrationPointViewPage.GetEmailNotificationRecipients().Should().BeNullOrEmpty();
             integrationPointViewPage.GetTotalDocuments().ShouldBeEquivalentTo(productionDocumentsCount);
-            integrationPointViewPage.GetTotalImages().ShouldBeEquivalentTo($"{productionDocumentsCount} (0 Bytes)");
+            integrationPointViewPage.GetTotalImages().ShouldBeEquivalentTo($"{productionDocumentsCount} (22.72KB)");
             integrationPointViewPage.GetCreateSavedSearch().ShouldBeEquivalentTo(YesNo.No);
 
             #endregion
+        }
+
+        public void EntitiesPushSummaryPage()
+        {
+            // Arrange
+            TestsImplementationTestFixture.LoginAsStandardUser();
+
+            string integrationPointName = nameof(EntitiesPushSummaryPage);
+
+            Workspace destinationWorkspace = CreateDestinationWorkspace();
+            const int entitiesCount = 10;
+            PrepareEntities(entitiesCount).GetAwaiter().GetResult();
+
+            // Act
+            IntegrationPointListPage integrationPointListPage = Being.On<IntegrationPointListPage>(TestsImplementationTestFixture.Workspace.ArtifactID);
+            IntegrationPointEditPage integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
+
+            string viewName = "Entities - Legal Hold View";
+            IntegrationPointViewPage integrationPointViewPage = integrationPointEditPage
+                .CreateSyncRdoIntegrationPoint(integrationPointName, destinationWorkspace, IntegrationPointTransferredObjects.Entity, viewName);
+
+
+            // Assert
+            #region 1st column
+            integrationPointViewPage.SummaryPageGeneralTab.Name.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.Overwrite.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.ExportType.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.SourceDetails.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.SourceWorkspace.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.SourceRelativityInstance.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.TransferedObject.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.DestinationWorkspace.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.DestinationFolder.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.MultiSelectOverlay.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.UseFolderPathInfo.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.ImagePrecedence.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.CopyFilesToRepository.ExpectTo.BeVisible();
+
+            integrationPointViewPage.GetName().ShouldBeEquivalentTo(integrationPointName);
+            integrationPointViewPage.GetOverwriteMode().ShouldBeEquivalentTo(RelativityProviderOverwrite.AppendOnly);
+            integrationPointViewPage.GetExportType().ShouldBeEquivalentTo("Workspace; ImagesNatives");
+            integrationPointViewPage.GetSourceDetails().ShouldBeEquivalentTo($"View Set: {viewName}");
+            integrationPointViewPage.GetSourceWorkspaceName().ShouldBeEquivalentTo(TestsImplementationTestFixture.Workspace.Name);
+            integrationPointViewPage.GetSourceRelativityInstance().ShouldBeEquivalentTo("This instance(emttest)");
+            integrationPointViewPage.GetTransferredObject().ShouldBeEquivalentTo(IntegrationPointTransferredObjects.Entity);
+            integrationPointViewPage.GetDestinationWorkspaceName().ShouldBeEquivalentTo(destinationWorkspace.Name);
+            integrationPointViewPage.GetDestinationFolderName().ShouldBeEquivalentTo(destinationWorkspace.Name);
+            integrationPointViewPage.GetMultiSelectOverlayMode().ShouldBeEquivalentTo(FieldOverlayBehavior.UseFieldSettings);
+            integrationPointViewPage.GetUseFolderPathInfo().ShouldBeEquivalentTo(RelativityProviderFolderPathInformation.No);
+            integrationPointViewPage.GetImagePrecedence().ShouldBeEquivalentTo(RelativityProviderImagePrecedence.OriginalImages);
+            integrationPointViewPage.GetCopyFilesToRepository().ShouldBeEquivalentTo(YesNo.Yes);
+
+            #endregion
+
+            #region 2nd column
+
+            integrationPointViewPage.SummaryPageGeneralTab.LogErrors.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.HasErrors.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.EmailNotificationRecipients.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.TotalOfDocuments.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.TotalOfImages.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.CreateSavedSearch.ExpectTo.BeVisible();
+
+            integrationPointViewPage.GetLogErrors().ShouldBeEquivalentTo(YesNo.Yes);
+            integrationPointViewPage.GetHasErrors().ShouldBeEquivalentTo(YesNo.No);
+            integrationPointViewPage.GetEmailNotificationRecipients().Should().BeNullOrEmpty();
+            integrationPointViewPage.GetTotalDocuments().ShouldBeEquivalentTo(entitiesCount);
+            integrationPointViewPage.GetTotalImages().ShouldBeEquivalentTo($"{entitiesCount} (22.72KB)");
+            integrationPointViewPage.GetCreateSavedSearch().ShouldBeEquivalentTo(YesNo.No);
+
+            #endregion
+        }
+
+        private async Task PrepareEntities(int count)
+        {
+            using (IObjectManager objectManager = RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory.GetServiceProxy<IObjectManager>())
+            {
+                int entityArtifactTypeId = await GetArtifactTypeIdAsync(TestsImplementationTestFixture.Workspace.ArtifactID, "Entity").ConfigureAwait(false);
+
+                ObjectTypeRef entityObjectType = new ObjectTypeRef()
+                {
+                    ArtifactTypeID = entityArtifactTypeId
+                };
+
+                FieldRef[] fields = new[]
+                {
+                    new FieldRef()
+                    {
+                        Name = "Full Name"
+                    },
+                    new FieldRef()
+                    {
+                        Name = "Email"
+                    }
+                };
+
+                IReadOnlyList<IReadOnlyList<object>> values = Enumerable
+                    .Range(1, count)
+                    .Select(i => new List<object>()
+                    {
+                        $"Employee {i}",
+                        $"employee-{i}@company.com"
+                    })
+                    .ToList();
+
+                MassCreateResult massCreateResult = await objectManager.CreateAsync(TestsImplementationTestFixture.Workspace.ArtifactID, new MassCreateRequest()
+                {
+                    ObjectType = entityObjectType,
+                    Fields = fields,
+                    ValueLists = values
+                }, CancellationToken.None).ConfigureAwait(false);
+
+                if (!massCreateResult.Success)
+                {
+                    throw new Exception($"Mass creation of Entities failed: {massCreateResult.Message}");
+                }
+            }
+        }
+
+        private async Task<int> GetArtifactTypeIdAsync(int workspaceId, string artifactTypeName)
+        {
+            using (var service = RelativityFacade.Instance.GetComponent<ApiComponent>().ServiceFactory.GetServiceProxy<IObjectTypeManager>())
+            {
+                List<ObjectTypeIdentifier> artifactTypes = await service.GetAvailableParentObjectTypesAsync(workspaceId).ConfigureAwait(false);
+                ObjectTypeIdentifier artifactType = artifactTypes.FirstOrDefault(x => x.Name == artifactTypeName);
+
+                if (artifactType == null)
+                {
+                    throw new Exception($"Can't find Artifact Type: {artifactTypeName}");
+                }
+
+                return artifactType.ArtifactTypeID;
+            }
         }
     }
 }
