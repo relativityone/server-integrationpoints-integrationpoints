@@ -29,20 +29,21 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
         }
 
         [Test]
-        public void SavedSearch_NativesAndMetadata_GoldFlow()
+        public void SavedSearch_NativesAndMetadata_SummaryPageTest()
         {
             _testsImplementation.SavedSearchNativesAndMetadataSummaryPage();
         }
 
         [Test]
-        public void SavedSearch_Images_GoldFlow()
+        public void SavedSearch_Images_SummaryPageTest()
         {
             _testsImplementation.SavedSearchImagesSummaryPage();
         }
 
-        public void Production_Images_GoldFlow()
+        [Test]
+        public void Production_Images_SummaryPageTest()
         {
-            _testsImplementation.ProductionImagesGoldFlow();
+            _testsImplementation.ProductionImagesSummaryPage();
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using Atata;
 using FluentAssertions;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
@@ -8,8 +10,10 @@ using Relativity.IntegrationPoints.Tests.Functional.Web.Extensions;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
 using Relativity.Sync.Configuration;
 using Relativity.Testing.Framework;
+using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Models;
 using Relativity.Testing.Framework.Web.Models;
+using Relativity.Testing.Framework.Web.Navigation;
 using Criteria = Relativity.Testing.Framework.Models.Criteria;
 using CriteriaCollection = Relativity.Testing.Framework.Models.CriteriaCollection;
 using CriteriaCondition = Relativity.Testing.Framework.Models.CriteriaCondition;
@@ -23,16 +27,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         {
         }
 
-        public override void OnSetUpFixture()
-        {
-        }
-
-
         public void SavedSearchNativesAndMetadataSummaryPage()
         {
-            RelativityFacade.Instance.ImportDocumentsFromCsv(TestsImplementationTestFixture.Workspace,
-                LoadFilesGenerator.GetOrCreateNativesLoadFile());
-
             string integrationPointName = nameof(SavedSearchNativesAndMetadataSummaryPage);
 
             KeywordSearch keywordSearch = new KeywordSearch
@@ -224,10 +220,141 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             ExecuteSavedSearchTest(keywordSearch, CreateIntegrationPointViewPage, Assert);
         }
 
-        public void ProductionImagesGoldFlow()
+        public void ProductionImagesSummaryPage()
         {
+            TestsImplementationTestFixture.LoginAsStandardUser();
 
-            ExecuteProductionTest();
+            string integrationPointName = $"{nameof(ProductionImagesSummaryPage)} - {Guid.NewGuid()}";
+
+            Workspace destinationWorkspace = CreateDestinationWorkspace();
+
+            KeywordSearch keywordSearch = RelativityFacade.Instance.Resolve<IKeywordSearchService>().Require(TestsImplementationTestFixture.Workspace.ArtifactID, new KeywordSearch
+            {
+                Name = nameof(ProductionImagesSummaryPage),
+                SearchCriteria = new CriteriaCollection
+                {
+                    Conditions = new List<BaseCriteria>
+                    {
+                        new Criteria
+                        {
+                            Condition = new CriteriaCondition(new NamedArtifact { Name = "Has Native" }, ConditionOperator.Is, true)
+                        },
+                        new Criteria
+                        {
+                            Condition = new CriteriaCondition(new NamedArtifact { Name = "Control Number" }, ConditionOperator.GreaterThanOrEqualTo, "AZIPPER_0007494")
+                        },
+                        new Criteria
+                        {
+                            Condition = new CriteriaCondition(new NamedArtifact { Name = "Control Number" }, ConditionOperator.LessThanOrEqualTo, "AZIPPER_0007748")
+                        }
+                    }
+                }
+            });
+
+            ProductionPlaceholder productionPlaceholder = new ProductionPlaceholder
+            {
+                Name = nameof(ProductionImagesSummaryPage),
+                PlaceholderType = PlaceholderType.Image,
+                FileName = "Image",
+                FileData = Convert.ToBase64String(File.ReadAllBytes(DataFiles.PLACEHOLDER_IMAGE_PATH))
+            };
+            RelativityFacade.Instance.Resolve<IProductionPlaceholderService>().Create(TestsImplementationTestFixture.Workspace.ArtifactID, productionPlaceholder);
+
+
+            Testing.Framework.Models.Production production = new Testing.Framework.Models.Production
+            {
+                Name = nameof(ProductionImagesSummaryPage),
+                Numbering = new ProductionNumbering
+                {
+                    NumberingType = NumberingType.OriginalImage,
+                    BatesPrefix = "Prefix",
+                    BatesSuffix = "Suffix",
+                    NumberOfDigitsForDocumentNumbering = 7,
+                    BatesStartNumber = 6,
+                    AttachmentRelationalField = new NamedArtifact()
+                },
+
+                DataSources = new List<ProductionDataSource>
+                {
+                    new ProductionDataSource
+                    {
+                        Name = nameof(ProductionImagesSummaryPage),
+                        ProductionType = Testing.Framework.Models.ProductionType.ImagesAndNatives,
+                        SavedSearch = new NamedArtifact
+                        {
+                            ArtifactID = keywordSearch.ArtifactID
+                        },
+                        UseImagePlaceholder = UseImagePlaceholderOption.AlwaysUseImagePlaceholder,
+                        Placeholder = new NamedArtifact
+                        {
+                            ArtifactID = productionPlaceholder.ArtifactID
+                        },
+                    }
+                }
+            };
+            RelativityFacade.Instance.ProduceProduction(TestsImplementationTestFixture.Workspace, production);
+
+            // Act
+            IntegrationPointListPage integrationPointListPage = Being.On<IntegrationPointListPage>(TestsImplementationTestFixture.Workspace.ArtifactID);
+            IntegrationPointEditPage integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
+
+            IntegrationPointViewPage integrationPointViewPage = integrationPointEditPage
+                .CreateProductionToFolderIntegrationPoint(
+                    integrationPointName,
+                    destinationWorkspace,
+                    production,
+                    YesNo.Yes);
+
+            // Assert
+            #region 1st column
+
+            integrationPointViewPage.SummaryPageGeneralTab.Name.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.Overwrite.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.ExportType.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.SourceDetails.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.SourceWorkspace.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.SourceRelativityInstance.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.TransferedObject.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.DestinationWorkspace.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.DestinationFolder.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.MultiSelectOverlay.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.UseFolderPathInfo.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.ImagePrecedence.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.CopyFilesToRepository.ExpectTo.BeVisible();
+
+            integrationPointViewPage.GetName().ShouldBeEquivalentTo(integrationPointName);
+            integrationPointViewPage.GetOverwriteMode().ShouldBeEquivalentTo(RelativityProviderOverwrite.AppendOverlay);
+            integrationPointViewPage.GetExportType().ShouldBeEquivalentTo("Workspace; Images");
+            integrationPointViewPage.GetSourceDetails().ShouldBeEquivalentTo($"Production Set: {production.Name}");
+            integrationPointViewPage.GetSourceWorkspaceName().ShouldBeEquivalentTo(TestsImplementationTestFixture.Workspace.Name);
+            integrationPointViewPage.GetSourceRelativityInstance().ShouldBeEquivalentTo("This instance(emttest)");
+            integrationPointViewPage.GetTransferredObject().ShouldBeEquivalentTo(ArtifactType.Document);
+            integrationPointViewPage.GetDestinationWorkspaceName().ShouldBeEquivalentTo(destinationWorkspace.Name);
+            integrationPointViewPage.GetDestinationFolderName().ShouldBeEquivalentTo(destinationWorkspace.Name);
+            integrationPointViewPage.GetMultiSelectOverlayMode().ShouldBeEquivalentTo(FieldOverlayBehavior.UseFieldSettings);
+            integrationPointViewPage.GetUseFolderPathInfo().ShouldBeEquivalentTo(RelativityProviderFolderPathInformation.No);
+            integrationPointViewPage.GetImagePrecedence().ShouldBeEquivalentTo(RelativityProviderImagePrecedence.OriginalImages);
+            integrationPointViewPage.GetCopyFilesToRepository().ShouldBeEquivalentTo(YesNo.No);
+
+            #endregion
+
+            #region 2nd column
+            const int productionDocumentsCount = 5;
+            integrationPointViewPage.SummaryPageGeneralTab.LogErrors.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.HasErrors.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.EmailNotificationRecipients.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.TotalOfDocuments.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.TotalOfImages.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.CreateSavedSearch.ExpectTo.BeVisible();
+
+            integrationPointViewPage.GetLogErrors().ShouldBeEquivalentTo(YesNo.Yes);
+            integrationPointViewPage.GetHasErrors().ShouldBeEquivalentTo(YesNo.No);
+            integrationPointViewPage.GetEmailNotificationRecipients().Should().BeNullOrEmpty();
+            integrationPointViewPage.GetTotalDocuments().ShouldBeEquivalentTo(productionDocumentsCount);
+            integrationPointViewPage.GetTotalImages().ShouldBeEquivalentTo($"{productionDocumentsCount} (0 Bytes)");
+            integrationPointViewPage.GetCreateSavedSearch().ShouldBeEquivalentTo(YesNo.No);
+
+            #endregion
         }
     }
 }
