@@ -42,7 +42,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
             Workspace destinationWorkspace,
             string savedSearchName)
         {
-            RelativityProviderConnectToSourcePage relativityProviderConnectToSourcePage = FillOutIntegrationPointEditPageForRelativityProvider(integrationPointEditPage, integrationPointName);
+			string emailRecipients = "Adler@Sieben.com";
+            RelativityProviderConnectToSourcePage relativityProviderConnectToSourcePage = FillOutIntegrationPointEditPageForRelativityProvider(integrationPointEditPage, integrationPointName, emailRecipients);
 			
 			RelativityProviderMapFieldsPage relativityProviderMapFieldsPage = FillOutRelativityProviderConnectToSourcePage(
                 relativityProviderConnectToSourcePage, destinationWorkspace,
@@ -105,6 +106,16 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 			{
 				Name = integrationPointName,
 				Destination = IntegrationPointDestinations.Relativity
+			}).RelativityProviderNext.ClickAndGo();
+		}
+
+		private static RelativityProviderConnectToSourcePage FillOutIntegrationPointEditPageForRelativityProvider(IntegrationPointEditPage integrationPointEditPage, string integrationPointName, string emailRecipients)
+		{
+			return integrationPointEditPage.ApplyModel(new IntegrationPointEditExport
+			{
+				Name = integrationPointName,
+				Destination = IntegrationPointDestinations.Relativity,
+				EmailRecipients = emailRecipients
 			}).RelativityProviderNext.ClickAndGo();
 		}
 
