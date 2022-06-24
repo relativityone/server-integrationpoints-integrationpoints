@@ -219,7 +219,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
                 integrationPointViewPage.GetLogErrors().ShouldBeEquivalentTo(YesNo.Yes);
                 integrationPointViewPage.GetHasErrors().ShouldBeEquivalentTo(YesNo.No);
-                integrationPointViewPage.GetEmailNotificationRecipients().Should().BeNullOrEmpty();
+                integrationPointViewPage.GetEmailNotificationRecipients().ShouldBeEquivalentTo("Adler@Sieben.com");
                 integrationPointViewPage.GetTotalDocuments().ShouldBeEquivalentTo(imagesCount);
                 integrationPointViewPage.GetTotalImages().ShouldBeEquivalentTo($"{imagesCount} (0 Bytes)");
                 integrationPointViewPage.GetCreateSavedSearch().ShouldBeEquivalentTo(YesNo.No);
@@ -359,7 +359,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
             integrationPointViewPage.GetLogErrors().ShouldBeEquivalentTo(YesNo.Yes);
             integrationPointViewPage.GetHasErrors().ShouldBeEquivalentTo(YesNo.No);
-            integrationPointViewPage.GetEmailNotificationRecipients().ShouldBeEquivalentTo("Adler@Sieben.com");
+            integrationPointViewPage.GetEmailNotificationRecipients().Should().BeNullOrEmpty();
             integrationPointViewPage.GetTotalDocuments().ShouldBeEquivalentTo(productionDocumentsCount);
             integrationPointViewPage.GetTotalImages().ShouldBeEquivalentTo($"{productionDocumentsCount} (22.72 KB)");
             integrationPointViewPage.GetCreateSavedSearch().ShouldBeEquivalentTo(YesNo.No);
