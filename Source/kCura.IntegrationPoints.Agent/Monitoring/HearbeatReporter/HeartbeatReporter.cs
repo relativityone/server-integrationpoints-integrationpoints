@@ -34,7 +34,11 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter
                 int affectedJobs = _queueManager.Heartbeat(jobId, nowUtc)
                     .Execute();
 
-                HandleHeartbeatError(jobId, affectedJobs);
+                bool isValid = ValidateAffectedJobsCount(jobId, affectedJobs);
+                if (!isValid)
+                {
+                    return;
+                }
 
                 _log.LogInformation("Job {jobId} heartbeat was updated with {dateTime}", jobId, nowUtc);
             }
@@ -44,16 +48,20 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter
             }
         }
 
-        private void HandleHeartbeatError(long jobId, int affectedJobs)
+        private bool ValidateAffectedJobsCount(long jobId, int affectedJobs)
         {
             if (affectedJobs == 0)
             {
-                throw new InvalidOperationException($"Job {jobId} was not updated, because it doesn't exist.");
+                _log.LogWarning("Job {jobId} was not updated, because it doesn't exist.", jobId);
+                return false;
             }
             else if (affectedJobs > 1)
             {
-                throw new InvalidOperationException($"Too many jobs ({affectedJobs}) exist in ScheduleAgentQueue with JobId {jobId}.");
+                _log.LogWarning("Too many jobs ({affectedJobs}) exist in ScheduleAgentQueue with JobId {jobId}.", affectedJobs, jobId);
+                return false;
             }
+
+            return true;
         }
     }
 }

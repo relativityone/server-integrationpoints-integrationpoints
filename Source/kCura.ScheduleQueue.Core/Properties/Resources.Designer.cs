@@ -61,33 +61,6 @@ namespace kCura.ScheduleQueue.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to USE [EDDS]
-        ///
-        ///SET ANSI_NULLS ON
-        ///SET QUOTED_IDENTIFIER ON
-        ///
-        ///IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N&apos;[eddsdbo].[{0}]&apos;) AND type in (N&apos;U&apos;))
-        ///BEGIN
-        ///	RAISERROR(&apos;{0} does not exist&apos;, 18, 1)
-        ///END
-        ///
-        ///IF NOT EXISTS(
-        ///    SELECT *
-        ///    FROM sys.columns 
-        ///    WHERE Name      = N&apos;Heartbeat&apos;
-        ///      AND Object_ID = Object_ID(N&apos;[eddsdbo].[{0}]&apos;))
-        ///BEGIN
-        ///    ALTER TABLE [eddsdbo].[{0}]
-        ///	ADD Heartbeat [datetime]
-        ///END.
-        /// </summary>
-        internal static string AddHeartbeatColumnToQueueTable {
-            get {
-                return ResourceManager.GetString("AddHeartbeatColumnToQueueTable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to /****** 
         ///Script Date:		7/25/2016
         ///Script Creator:		Sorawit Amornborvornwong
@@ -110,9 +83,9 @@ namespace kCura.ScheduleQueue.Core.Properties {
         ///    WHERE Name      = N&apos;StopState&apos;
         ///      AND Object_ID = Object_ID [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string AddStopStateColumnToQueueTable {
+        internal static string AddCustomColumnsToQueueTable {
             get {
-                return ResourceManager.GetString("AddStopStateColumnToQueueTable", resourceCulture);
+                return ResourceManager.GetString("AddCustomColumnsToQueueTable", resourceCulture);
             }
         }
         

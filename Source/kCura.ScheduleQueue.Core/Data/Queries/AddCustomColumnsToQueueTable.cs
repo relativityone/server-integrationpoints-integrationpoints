@@ -3,17 +3,17 @@ using kCura.ScheduleQueue.Core.Properties;
 
 namespace kCura.ScheduleQueue.Core.Data.Queries
 {
-    public class AddHeartbeatColumnToQueueTable : ICommand
-    {
+	public class AddCustomColumnsToQueueTable : ICommand
+	{
 		private readonly IQueueDBContext _queueDbContext;
-		public AddHeartbeatColumnToQueueTable(IQueueDBContext queueDbContext)
+		public AddCustomColumnsToQueueTable(IQueueDBContext queueDbContext)
 		{
 			_queueDbContext = queueDbContext;
 		}
 
 		public void Execute()
 		{
-			string sql = string.Format(Resources.AddHeartbeatColumnToQueueTable, _queueDbContext.TableName);
+			string sql = string.Format(Resources.AddCustomColumnsToQueueTable, _queueDbContext.TableName);
 			_queueDbContext.EddsDBContext.ExecuteNonQuerySQLStatement(sql);
 		}
 	}

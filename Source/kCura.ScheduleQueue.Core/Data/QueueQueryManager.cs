@@ -23,14 +23,9 @@ namespace kCura.ScheduleQueue.Core.Data
 			return new CreateScheduleQueueTable(_queueDbContext);
 		}
 
-		public ICommand AddStopStateColumnToQueueTable()
+		public ICommand AddCustomColumnsToQueueTable()
 		{
-			return new AddStopStateColumnToQueueTable(_queueDbContext);
-		}
-
-		public ICommand AddHeartbeatColumnToQueueTable()
-		{
-			return new AddHeartbeatColumnToQueueTable(_queueDbContext);
+			return new AddCustomColumnsToQueueTable(_queueDbContext);
 		}
 
 		public IQuery<DataRow> GetAgentTypeInformation(Guid agentGuid)

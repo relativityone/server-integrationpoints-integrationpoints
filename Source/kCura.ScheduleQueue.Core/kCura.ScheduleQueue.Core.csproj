@@ -35,9 +35,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Data\Resources\AddHeartbeatColumnToQueueTable.sql" />
     <Content Include="Data\Resources\CleanupJobQueueTable.sql" />
-    <Content Include="Data\Resources\AddStopStateColumnToQueueTable.sql" />
+    <Content Include="Data\Resources\AddCustomColumnsToQueueTable.sql" />
     <Content Include="Data\Resources\CleanupScheduledJobsQueue.sql" />
     <Content Include="Data\Resources\GetAllJobs.sql" />
     <Content Include="Data\Resources\GetJobByRelatedObjectIDandTaskType.sql" />
