@@ -9,7 +9,7 @@ namespace kCura.ScheduleQueue.Core
 	{
 		AgentTypeInformation AgentTypeInformation { get; }
 
-		Job GetNextQueueJob(IEnumerable<int> resourceGroupIds, int agentID);
+		Job GetNextQueueJob(IEnumerable<int> resourceGroupIds, int agentID, long? rootJobId = null);
 
 		DateTime? GetJobNextUtcRunDateTime(Job job, IScheduleRuleFactory scheduleRuleFactory, TaskResult taskResult);
 

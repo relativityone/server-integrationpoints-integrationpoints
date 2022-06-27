@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			{
 				List<IntegrationPointDataHubKey> removedKeys = RemoveTask(Context.ConnectionId);
 				removedKeysString = String.Join(", ", removedKeys);
-				_logger.LogVerbose("SignalR task removal completed: {method} (removed keys: {keys})", nameof(OnDisconnected), removedKeysString);
+				_logger.LogInformation("SignalR task removal completed: {method} (removed keys: {keys})", nameof(OnDisconnected), removedKeysString);
 			}
 			catch (Exception exception)
 			{
@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 
 			AddTask(key);
 
-			_logger.LogVerbose("SignalR add task completed: {method} (key = {key})", nameof(GetIntegrationPointUpdate), key);
+			_logger.LogInformation("SignalR add task completed: {method} (key = {key})", nameof(GetIntegrationPointUpdate), key);
 		}
 
 		public void AddTask(IntegrationPointDataHubKey key)
@@ -126,7 +126,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			{
 				if (!_tasks[key].Add(Context.ConnectionId))
 				{
-					_logger.LogDebug("SignalR when adding task: {method} the key is already present", nameof(AddTask));
+					_logger.LogInformation("SignalR when adding task: {method} the key is already present", nameof(AddTask));
 				}
 			}
 		}
@@ -160,7 +160,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			try
 			{
 				await Clients.Group(key.ToString()).updateIntegrationPointJobStatusTable();
-				_logger.LogVerbose("SignalR update completed: {method} (key = {key})", nameof(UpdateIntegrationPointJobStatusTableAsync), key);
+				_logger.LogInformation("SignalR update completed: {method} (key = {key})", nameof(UpdateIntegrationPointJobStatusTableAsync), key);
 			}
 			catch (Exception exception)
 			{
@@ -212,7 +212,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 
 				await Clients.Group(key.ToString()).updateIntegrationPointData(model, buttonStates, onClickEvents, sourceProviderIsRelativity);
 
-				_logger.LogVerbose("SignalR update completed: {method} (key = {key})", nameof(UpdateIntegrationPointDataAsync), key);
+				_logger.LogInformation("SignalR update completed: {method} (key = {key})", nameof(UpdateIntegrationPointDataAsync), key);
 			}
 			catch (Exception exception)
 			{

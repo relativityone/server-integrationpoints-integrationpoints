@@ -1,7 +1,11 @@
-﻿import { IConvenienceApi } from "../types/convenienceApi";
+﻿import { removeMessageContainers } from "../helpers/buttonCreate";
+import { IConvenienceApi } from "../types/convenienceApi";
 
 export function transformLayout(layoutData, convenienceApi: IConvenienceApi, backingModelData) {
     try {
+        // remove not applicable message containers if there are any
+        removeMessageContainers();
+
         let [sourceConfiguration, destinationConfiguration, sourceProvider] = extractFieldsValuesFromBackingModelData(backingModelData);
 
         var existingFields = convenienceApi.layout.getFields(layoutData);

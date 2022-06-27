@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		private ArtifactDTO[] GetRelativityFields(int sourceWorkspaceId, int rdoTypeId)
 		{
-			_logger.LogDebug("Relativity Fields retrieval process started for workspace id: {sourceWorkspaceId}", sourceWorkspaceId);
+			_logger.LogInformation("Relativity Fields retrieval process started for workspace id: {sourceWorkspaceId}", sourceWorkspaceId);
 			var ignoreFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 			{
 				Domain.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
@@ -64,11 +64,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 				DocumentFields.JobHistory
 			};
 
-			_logger.LogDebug("Retrieving fields from Import API");
+			_logger.LogInformation("Retrieving fields from Import API");
 			HashSet<int> mappableArtifactIds =
 				_importApiFacade.GetMappableArtifactIdsExcludeFields(sourceWorkspaceId, rdoTypeId, ignoreFields);
 
-			_logger.LogDebug("Retrieving fields from Filed Repository");
+			_logger.LogInformation("Retrieving fields from Filed Repository");
 			IFieldQueryRepository fieldQueryRepository = _repositoryFactory.GetFieldQueryRepository(sourceWorkspaceId);
 
 			ArtifactDTO[] fieldArtifacts = fieldQueryRepository.RetrieveFields(
@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			// TODO: Why we need to call Import API and RsAPI to check teh fields are correct???
 			ArtifactDTO[] filteredList = fieldArtifacts.Where(x => mappableArtifactIds.Contains(x.ArtifactId)).ToArray();
 
-			_logger.LogDebug("Relativity Fields retrieval process completed for workspace id: {sourceWorkspaceId}",
+			_logger.LogInformation("Relativity Fields retrieval process completed for workspace id: {sourceWorkspaceId}",
 				sourceWorkspaceId, filteredList);
 			return filteredList;
 		}

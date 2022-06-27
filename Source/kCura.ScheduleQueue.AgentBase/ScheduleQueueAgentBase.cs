@@ -33,6 +33,8 @@ namespace kCura.ScheduleQueue.AgentBase
 		private readonly Lazy<int> _agentId;
 		private readonly Lazy<IAPILog> _loggerLazy;
 
+		private readonly bool _shouldReadJobOnce = false; //Only for testing purposes. DO NOT MODIFY IT!
+
 		private readonly Guid _agentInstanceGuid = Guid.NewGuid();
 
 		protected Func<IEnumerable<int>> GetResourceGroupIDsFunc { get; set; }
@@ -173,8 +175,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void InitializeManagerConfigSettingsFactory()
 		{
-			NotifyAgentTab(LogCategory.Debug, "Initialize Config Settings factory");
-			LogOnInitializeManagerConfigSettingsFactory();
+			NotifyAgentTab(LogCategory.Debug, "Initialize Config Settings factory");			
 			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 		}
 
@@ -249,7 +250,13 @@ namespace kCura.ScheduleQueue.AgentBase
                     }
                     else
                     {
-                        break;
+						nextJob = GetNextQueueJob(nextJob.RootJobId);
+						if (nextJob == null)
+                        {
+							break;
+						}
+
+						Logger.LogInformation("Pick up another Job {jobId} with corresponding RootJobId - {rootJobId}", nextJob.JobId, nextJob.RootJobId);
                     }
                 }
 
@@ -315,7 +322,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			LogFinalizeJob(job, result);
 		}
 
-		private Job GetNextQueueJob()
+		private Job GetNextQueueJob(long? rootJobId = null)
 		{
 			if (!Enabled)
 			{
@@ -336,14 +343,18 @@ namespace kCura.ScheduleQueue.AgentBase
 				LogAllJobsInTheQueue();
 			}
 
-			return _jobService.GetNextQueueJob(GetListOfResourceGroupIDs(), _agentId.Value);
+			if(_shouldReadJobOnce)
+            {
+				Logger.LogWarning("This line should not be reached in production! ShouldReadJobOnce - {shouldReadJobOnce}", _shouldReadJobOnce);
+				return null;
+            }
+
+			return _jobService.GetNextQueueJob(GetListOfResourceGroupIDs(), _agentId.Value, rootJobId);
 		}
 
 		private void CleanupQueueJobs()
 		{
 			NotifyAgentTab(LogCategory.Debug, "Cleanup jobs");
-			LogOnCleanupJobs();
-
 			_jobService.CleanupJobQueueTable();
 		}
 
@@ -353,8 +364,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			switch (category)
 			{
 				case LogCategory.Debug:
-					RaiseMessageNoLogging(msg, _logCategoryToLogLevelMapping[LogCategory.Debug]);
-					Logger.LogDebug(message);
+					RaiseMessageNoLogging(msg, _logCategoryToLogLevelMapping[LogCategory.Debug]);					
 					break;
 				case LogCategory.Info:
 					RaiseMessage(msg, _logCategoryToLogLevelMapping[LogCategory.Info]);
@@ -398,22 +408,11 @@ namespace kCura.ScheduleQueue.AgentBase
 			return logger;
 		}
 
-		#region Logging
-
-		private void LogOnInitializeManagerConfigSettingsFactory()
-		{
-			Logger.LogDebug("Attempting to initialize Config Settings factory in {TypeName}",
-				nameof(ScheduleQueueAgentBase));
-		}
-
-		private void LogOnCleanupJobs()
-		{
-			Logger.LogDebug("Attempting to cleanup jobs in {TypeName}", nameof(ScheduleQueueAgentBase));
-		}
+		#region Logging		
 
 		private void LogExecuteComplete()
 		{
-			Logger.LogDebug("Execution of scheduled jobs completed in {TypeName}", nameof(ScheduleQueueAgentBase));
+			Logger.LogInformation("Execution of scheduled jobs completed in {TypeName}", nameof(ScheduleQueueAgentBase));
 		}
 
 		private void LogExecuteError(Exception ex)

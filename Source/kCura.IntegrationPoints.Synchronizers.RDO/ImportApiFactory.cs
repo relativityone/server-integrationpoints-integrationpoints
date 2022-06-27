@@ -114,7 +114,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private void LogImportApiCreated()
 		{
-			_logger.LogDebug("Successfully created Import API.");
+			_logger.LogInformation("Successfully created Import API.");
 		}
 
 		#endregion

@@ -15,7 +15,6 @@ group Tests
 	Relativity.DataTransfer.MessageService
 	Relativity.IntegrationPoints.Contracts
 	Relativity.OutsideIn
-	Relativity.AutomatedWorkflows.Services.Interfaces
 	Relativity.AutomatedWorkflows.SDK
 
 	Moq

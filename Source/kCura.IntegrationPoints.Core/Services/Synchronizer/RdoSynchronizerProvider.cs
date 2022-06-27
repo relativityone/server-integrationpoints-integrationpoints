@@ -77,12 +77,12 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 
         private void LogCreatingProvider(string name, string providerGuid)
         {
-            _logger.LogVerbose("Creating new destination provider {ProviderName} ({ProviderGuid}).", name, providerGuid);
+            _logger.LogInformation("Creating new destination provider {ProviderName} ({ProviderGuid}).", name, providerGuid);
         }
 
         private void LogUpdatingProvider(string name, string providerGuid)
         {
-            _logger.LogVerbose("Updating existing destination provider {ProviderName} ({ProviderGuid}).", name, providerGuid);
+            _logger.LogInformation("Updating existing destination provider {ProviderName} ({ProviderGuid}).", name, providerGuid);
         }
 
         private string FormatUnableToRetrieveDestinationProviderErrorMessage(string guid)

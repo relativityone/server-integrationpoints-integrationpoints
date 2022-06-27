@@ -66,8 +66,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 		{
 			if (!string.IsNullOrEmpty(ImportSettings.ErrorFilePath))
 			{
-				_logger.LogDebug("Exporting ImportJob Error file.");
-
 				ImportJob.ExportErrorFile(ImportSettings.ErrorFilePath);
 			}
 		}

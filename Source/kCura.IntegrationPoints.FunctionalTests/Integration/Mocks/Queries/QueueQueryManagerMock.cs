@@ -66,6 +66,27 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 			return GetNextJob(agentId, agentTypeId, Array.Empty<int>());
 		}
 
+		public IQuery<DataTable> GetNextJob(int agentId, int agentTypeId, long? rootJobId)
+		{
+			var nextJob = _db.JobsInQueue.Where(x =>
+					x.AgentTypeID == agentTypeId &&
+					x.NextRunTime <= _context.CurrentDateTime &&
+					(rootJobId == null || x.RootJobId == rootJobId) &&
+					(x.StopState.HasFlag(StopState.None) || x.StopState.HasFlag(StopState.DrainStopped)))
+				.OrderByDescending(x => x.StopState)
+				.FirstOrDefault();
+
+			if (nextJob == null)
+			{
+				return new ValueReturnQuery<DataTable>(null);
+			}
+
+			nextJob.LockedByAgentID = agentId;
+			nextJob.StopState = 0;
+
+			return new ValueReturnQuery<DataTable>(nextJob.AsTable());
+		}
+
 		public ICommand UpdateScheduledJob(long jobId, DateTime nextUtcRunTime)
 		{
 			return new ActionCommand(() =>

@@ -89,8 +89,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		}
 
 		public void AddRow(Dictionary<string, object> sourceFields)
-		{
-			LogAddingRowToBatchManager();
+		{			
 			Dictionary<string, object> importFields = GenerateImportFields(sourceFields, FieldMappings);
 			if (importFields.Count > 0)
 			{
@@ -127,8 +126,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		}
 
 		public virtual void KickOffImport(IDataTransferContext context)
-		{
-			LogSettingUpImportJob();
+		{			
 			IJobImport importJob = _jobFactory.Create(_importApi, Settings, context, _helper);
 
 			_totalRowsImported = context.TransferredItemsCount;
@@ -331,27 +329,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		private void LogInitializingImportApi()
 		{
 			_logger.LogInformation("Attempting to initialize Import API.");
-		}
-
-		private void LogAddingRowToBatchManager()
-		{
-			_logger.LogVerbose("Attempting to add row to batch manager.");
-		}
+		}		
 
 		private void LogPushingBatch(bool forcePush)
 		{
-			_logger.LogVerbose("Attempting to push batch (ForcePush: {ForcePush}).", forcePush);
+			_logger.LogInformation("Attempting to push batch (ForcePush: {ForcePush}).", forcePush);
 		}
 
 		private void LogImportJobStarted()
 		{
-			_logger.LogVerbose("Import Job started.");
-		}
-
-		private void LogSettingUpImportJob()
-		{
-			_logger.LogVerbose("Setting up Import Job and attempting to start it.");
-		}
+			_logger.LogInformation("Import Job started.");
+		}	
 
 		private void LogSettingFieldDictionaryError(Exception e)
 		{
@@ -365,33 +353,33 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		private void LogOnBatchCreateEvent(int batchSize)
 		{
-			_logger.LogVerbose("ImportService OnBatchCreate event received with batch size: {BatchSize}.", batchSize);
+			_logger.LogInformation("ImportService OnBatchCreate event received with batch size: {BatchSize}.", batchSize);
 		}
 
 		private void LogOnErrorEvent(Exception fatalException)
 		{
-			_logger.LogVerbose(fatalException, "ImportJob returned FatalException.");
+			_logger.LogInformation(fatalException, "ImportJob returned FatalException.");
 		}
 
 		private void LogOnCompleteEvent()
 		{
-			_logger.LogVerbose("ImportJob OnComplete event received.");
+			_logger.LogInformation("ImportJob OnComplete event received.");
 		}
 
 		private void LogBatchCompleted(DateTime start, DateTime end, int totalRows, int errorRows)
 		{
-			_logger.LogVerbose("Batch completed. Total rows: {TotalRows}. Rows with error: {ErrorRows}. Time in milliseconds: {Time}.", totalRows, errorRows,
+			_logger.LogInformation("Batch completed. Total rows: {TotalRows}. Rows with error: {ErrorRows}. Time in milliseconds: {Time}.", totalRows, errorRows,
 				(end - start).Milliseconds);
 		}
 
 		private void LogOnProgressEvent()
 		{
-			_logger.LogVerbose("ImportJob OnProgress event recevied.");
+			_logger.LogInformation("ImportJob OnProgress event recevied.");
 		}
 
 		private void LogOnMessageEvent(Status status)
 		{
-			_logger.LogVerbose("ImportJob OnMessage event received. Current status: {Status}.", status.Message);
+			_logger.LogInformation("ImportJob OnMessage event received. Current status: {Status}.", status.Message);
 		}
 
 		#endregion

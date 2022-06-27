@@ -21,7 +21,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
             // Arrange
             JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleBasicJob(SourceWorkspace);
 
-            FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container, shouldRunOnce: true);
+            FakeAgent sut = FakeAgent.CreateWithEmptyProcessJob(FakeRelativityInstance, Container, shouldRunOnce: true);
 
             sut.GetResourceGroupIDsMockFunc = () => throw new NotSupportedException();
 
@@ -30,6 +30,35 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 
             // Assert
             sut.VerifyJobsWereProcessed(new long[] { job.JobId });
+        }
+
+        [Test]
+        public void Agent_ShouldExecuteJobsInTheLoop_WhenTheRootJobIdMatch()
+        {
+            // Arrange
+            long? rootJobId = ArtifactProvider.NextId();
+
+            IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateEmptyIntegrationPoint();
+
+            JobTest jobWithSameRootId1 = FakeRelativityInstance.Helpers.JobHelper.ScheduleSyncWorkerJob(SourceWorkspace, integrationPoint, null, rootJobId);
+
+            JobTest jobWithoutRootId = FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
+
+            JobTest jobWithSameRootId2 = FakeRelativityInstance.Helpers.JobHelper.ScheduleSyncWorkerJob(SourceWorkspace, integrationPoint, null, rootJobId);
+            JobTest jobWithSameRootId3 = FakeRelativityInstance.Helpers.JobHelper.ScheduleSyncWorkerJob(SourceWorkspace, integrationPoint, null, rootJobId);
+
+            FakeAgent sut = FakeAgent.CreateWithEmptyProcessJob(FakeRelativityInstance, Container, shouldRunOnce: false);
+
+            // Act
+            sut.Execute();
+
+            // Assert
+            sut.VerifyJobsWereProcessed(new long[] {
+                jobWithSameRootId1.JobId,
+                jobWithSameRootId2.JobId,
+                jobWithSameRootId3.JobId });
+
+            sut.VerifyJobsWereNotProcessed(new long[] { jobWithoutRootId.JobId });
         }
     }
 }

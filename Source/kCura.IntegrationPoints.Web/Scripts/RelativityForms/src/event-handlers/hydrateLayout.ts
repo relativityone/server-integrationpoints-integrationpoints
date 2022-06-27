@@ -1,12 +1,11 @@
 import { getConnectionAuthenticationType, getFilter } from "../helpers/fieldValuesForImport";
 import { getDestinationDetails, getFilePath, getImageFileFormat, getImageFileType, getImagePrecedence, getImportType, getLoadFileFormat, getPrecedenceList, getSubdirectoryInfo, getTextAndNativeFileNames, getTextFileEncoding, getVolume } from "../helpers/fieldValuesForLoadFileExport";
-import { formatToYesOrNo, getExportType, getImagesStatsForProduction, getImagesStatsForSavedSearch, getNativesStats, getPrecenenceSummary, getSourceDetails, prepareStatsInfo } from "../helpers/fieldValuesForRelativityExport";
+import { formatToYesOrNo, getExportType, getFolderPathInformation, getImagesStatsForProduction, getImagesStatsForSavedSearch, getNativesStats, getPrecenenceSummary, getSourceDetails, prepareStatsInfo } from "../helpers/fieldValuesForRelativityExport";
 import { IConvenienceApi } from "../types/convenienceApi";
 
 export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sourceConfiguration: Object, destinationConfiguration: Object) {
 
     var sourceDetails = getSourceDetails(sourceConfiguration);
-    var useFolderPathInfo = formatToYesOrNo(destinationConfiguration["UseDynamicFolderPath"]);
     let exportType = getExportType(sourceConfiguration, destinationConfiguration);
 
     // export 
@@ -21,7 +20,10 @@ export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sou
     convenienceApi.fieldHelper.setValue("Destination Folder", sourceConfiguration["TargetFolder"]);
     convenienceApi.fieldHelper.setValue("Destination Production Set", sourceConfiguration["targetProductionSet"]);
     convenienceApi.fieldHelper.setValue("Multi Select Overlay", destinationConfiguration["FieldOverlayBehavior"]);
-    convenienceApi.fieldHelper.setValue("Use Folder Path Info", useFolderPathInfo);
+    getFolderPathInformation(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], destinationConfiguration)
+        .then(useFolderPathInfo => {
+            convenienceApi.fieldHelper.setValue("Use Folder Path Info", useFolderPathInfo);
+        })
     convenienceApi.fieldHelper.setValue("Move Existing Docs", formatToYesOrNo(destinationConfiguration["MoveExistingDocuments"]));
     convenienceApi.fieldHelper.setValue("Image Precedence", getPrecenenceSummary(destinationConfiguration));
     convenienceApi.fieldHelper.setValue("Copy Files to Repository", formatToYesOrNo(destinationConfiguration["importNativeFile"]));
@@ -75,6 +77,12 @@ export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sou
     convenienceApi.fieldHelper.setValue("Protocol", sourceConfiguration["protocol"]);
     convenienceApi.fieldHelper.setValue("Filename Prefix", sourceConfiguration["filename_prefix"]);
     convenienceApi.fieldHelper.setValue("Timezone Offset", sourceConfiguration["TimezoneOffset"]);
+
+
+    convenienceApi.fieldHelper.setValue("Total of Documents", "Calculating...");
+    convenienceApi.fieldHelper.setValue("Total of Images", "Calculating...");
+    convenienceApi.fieldHelper.setValue("Total of Documents", "Calculating...");
+    convenienceApi.fieldHelper.setValue("Total of Natives", "Calculating...");
 
     if (destinationConfiguration["artifactTypeID"] == 10 && destinationConfiguration["Provider"] === "relativity") {
         if (sourceConfiguration["SourceProductionId"]) {
