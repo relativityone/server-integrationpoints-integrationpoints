@@ -26,7 +26,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
         }
 
-        public override IntegrationPointViewPage CreateIntegrationPointViewPage(Workspace workspace)
+        public override IntegrationPointViewPage CreateIntegrationPointViewPage()
         {
             IntegrationPointName = nameof(SavedSearchImagesSyncTestsImplementation);
 

@@ -40,7 +40,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             }
         }
 
-        public abstract IntegrationPointViewPage CreateIntegrationPointViewPage(Workspace workspace);
+        public abstract IntegrationPointViewPage CreateIntegrationPointViewPage();
 
         public abstract void RunIntegrationPoint(IntegrationPointViewPage integrationPointViewPage);
 

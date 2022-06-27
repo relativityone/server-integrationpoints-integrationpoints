@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Atata;
 using FluentAssertions;
-using Relativity.IntegrationPoints.Tests.Functional.Helpers;
-using Relativity.IntegrationPoints.Tests.Functional.TestsAssertions;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Components;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Extensions;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Models;
@@ -18,11 +15,8 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api;
-using Relativity.Testing.Framework.Api.Services;
-using Relativity.Testing.Framework.Models;
 using Relativity.Testing.Framework.Web.Models;
 using Relativity.Testing.Framework.Web.Navigation;
-using KeywordSearch = Relativity.Testing.Framework.Models.KeywordSearch;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 {
@@ -35,7 +29,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         {
         }
 
-        public override IntegrationPointViewPage CreateIntegrationPointViewPage(Workspace workspace)
+        public override IntegrationPointViewPage CreateIntegrationPointViewPage()
         {
             TestsImplementationTestFixture.LoginAsStandardUser();
 

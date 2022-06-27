@@ -32,7 +32,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             _copyFilesToRepository = copyFilesToRepository;
         }
 
-        public override IntegrationPointViewPage CreateIntegrationPointViewPage(Workspace workspace)
+        public override IntegrationPointViewPage CreateIntegrationPointViewPage()
         {
             TestsImplementationTestFixture.LoginAsStandardUser();
 
