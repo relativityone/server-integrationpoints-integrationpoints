@@ -17,9 +17,9 @@ namespace kCura.ScheduleQueue.Core.Validation
 			_helper = helper;
 		}
 
-		public async Task<ValidationResult> ValidateAsync(Job job)
+		public async Task<PreValidationResult> ValidateAsync(Job job)
 		{
-            ValidationResult validationResult = await ValidateWorkspaceExistsAsync(job.WorkspaceID).ConfigureAwait(false);
+            PreValidationResult validationResult = await ValidateWorkspaceExistsAsync(job.WorkspaceID).ConfigureAwait(false);
 			if (!validationResult.IsValid)
 			{
 				return validationResult;
@@ -36,7 +36,7 @@ namespace kCura.ScheduleQueue.Core.Validation
 			return validationResult;
 		}
 
-		private async Task<ValidationResult> ValidateWorkspaceExistsAsync(int workspaceId)
+		private async Task<PreValidationResult> ValidateWorkspaceExistsAsync(int workspaceId)
 		{
 			using (IObjectManager proxy = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
@@ -48,11 +48,11 @@ namespace kCura.ScheduleQueue.Core.Validation
 
 				QueryResultSlim result = await proxy.QuerySlimAsync(-1, request, 0, 1).ConfigureAwait(false);
 
-				return result.TotalCount > 0 ? ValidationResult.Success : ValidationResult.Failed($"Workspace {workspaceId} does not exist anymore");
+				return result.TotalCount > 0 ? PreValidationResult.Success : PreValidationResult.InvalidJob($"Workspace {workspaceId} does not exist anymore", false);
 			}
 		}
 
-		private async Task<ValidationResult> ValidateIntegrationPointExistsAsync(int integrationPointId, int workspaceId)
+		private async Task<PreValidationResult> ValidateIntegrationPointExistsAsync(int integrationPointId, int workspaceId)
 		{
 			using (IObjectManager proxy = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
 			{
@@ -63,11 +63,11 @@ namespace kCura.ScheduleQueue.Core.Validation
 
 				ReadResult result = await proxy.ReadAsync(workspaceId, request).ConfigureAwait(false);
 
-				return result.Object != null ? ValidationResult.Success : ValidationResult.Failed($"Integration Point {integrationPointId} does not exist anymore");
+				return result.Object != null ? PreValidationResult.Success : PreValidationResult.InvalidJob($"Integration Point {integrationPointId} does not exist anymore", false);
 			}
 		}
 
-		private async Task<ValidationResult> ValidateUserExistsAsync(int userId)
+		private async Task<PreValidationResult> ValidateUserExistsAsync(int userId)
         {
             using (IObjectManager proxy = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
             {
@@ -81,11 +81,12 @@ namespace kCura.ScheduleQueue.Core.Validation
 
                 if (result.TotalCount > 0)
                 {
-                    return ValidationResult.Success;
+                    return PreValidationResult.Success;
                 }
 
-				return result.TotalCount > 0 ? ValidationResult.Success : ValidationResult.Failed($"User (userId - {userId}) who scheduled the job no longer exists, so the job schedule will be cancelled. To enable the schedule again, edit the Integration Point and on Save schedule will be restored",
-                    true);
+				return result.TotalCount > 0 ? PreValidationResult.Success : PreValidationResult.InvalidJob(
+					$"User (userId - {userId}) who scheduled the job no longer exists, so the job schedule will be cancelled. " +
+					$"To enable the schedule again, edit the Integration Point and on Save schedule will be restored", true);
             }
 		}
 	}

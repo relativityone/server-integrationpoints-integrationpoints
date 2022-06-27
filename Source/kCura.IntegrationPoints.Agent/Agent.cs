@@ -106,7 +106,7 @@ namespace kCura.IntegrationPoints.Agent
             JobExecutor.JobExecutionError += OnJobExecutionError;
         }
 
-        protected override TaskResult ProcessJob(Job job, ValidationResult validationResult = null)
+        protected override TaskResult ProcessJob(Job job)
         {
             using (StartMemoryUsageMetricReporting(job))
             using (StartHeartbeatReporting(job))
@@ -115,12 +115,6 @@ namespace kCura.IntegrationPoints.Agent
                 using (ripContainerForSync.Resolve<IJobContextProvider>().StartJobContext(job))
                 {
                     SetWebApiTimeout();
-
-                    if (validationResult != null && !validationResult.IsValid)
-                    {
-                        CreateJobHistoryOnFailedValidation(job, validationResult);
-                        return new TaskResult();
-                    }
 
                     if (ShouldUseRelativitySync(job, ripContainerForSync))
                     {
@@ -199,31 +193,6 @@ namespace kCura.IntegrationPoints.Agent
                 int timeoutMs = (int)timeout.Value.TotalMilliseconds;
                 kCura.WinEDDS.Service.Settings.DefaultTimeOut = timeoutMs;
                 Logger.LogInformation("Relativity WebAPI timeout set to {timeout}ms.", timeoutMs);
-            }
-        }
-
-        private void CreateJobHistoryOnFailedValidation(Job job, ValidationResult validationResult)
-        {
-            using (_agentLevelContainer.Value.Resolve<IJobContextProvider>().StartJobContext(job))
-            {
-                ITaskFactoryJobHistoryServiceFactory taskFactoryJobHistoryServiceFactory =
-                    _agentLevelContainer.Value.Resolve<ITaskFactoryJobHistoryServiceFactory>();
-                IIntegrationPointRepository integrationPointRepository =
-                    _agentLevelContainer.Value.Resolve<IIntegrationPointRepository>();
-                IntegrationPoint integrationPoint =
-                    integrationPointRepository.ReadWithFieldMappingAsync(job.RelatedObjectArtifactID).GetAwaiter().GetResult();
-
-                if (integrationPoint == null)
-                {
-                    throw new NullReferenceException(
-                        $"Unable to retrieve the integration point for the following job: {job.JobId}");
-                }
-
-                ITaskFactoryJobHistoryService taskFactoryJobHistoryService =
-                    taskFactoryJobHistoryServiceFactory.CreateJobHistoryService(integrationPoint);
-                taskFactoryJobHistoryService.SetJobIdOnJobHistory(job);
-                taskFactoryJobHistoryService.UpdateJobHistoryOnValidationFailed(job,
-                    new NotFoundException(validationResult.Message));
             }
         }
 

@@ -211,21 +211,14 @@ namespace kCura.ScheduleQueue.AgentBase
                     {
                         LogJobInformation(nextJob);
 
-                        ValidationResult validationResult = PreExecuteJobValidation(nextJob);
+                        PreValidationResult validationResult = PreExecuteJobValidation(nextJob);
 
-                        if (validationResult.CreateValidationFailedJobHistory)
+						if(!validationResult.ShouldExecute)
                         {
-                            ProcessJob(nextJob, validationResult);
+							FinalizeJobExecution(nextJob, jobResult);
+							nextJob = GetNextQueueJob();
+							continue;
 						}
-
-                        if (!validationResult.IsValid)
-                        {
-                            Logger.LogInformation("Deleting invalid Job {jobId}...", nextJob.JobId);
-
-                            _jobService.DeleteJob(nextJob.JobId);
-                            nextJob = GetNextQueueJob();
-                            continue;
-                        }
 
                         Logger.LogInformation("Starting Job {jobId} processing...", nextJob.JobId);
 
@@ -292,13 +285,14 @@ namespace kCura.ScheduleQueue.AgentBase
 			};
 		}
 
-		private ValidationResult PreExecuteJobValidation(Job job)
+		private PreValidationResult PreExecuteJobValidation(Job job)
         {
             try
             {
-                ValidationResult result = _queueJobValidator.ValidateAsync(job).GetAwaiter().GetResult();
+                PreValidationResult result = _queueJobValidator.ValidateAsync(job).GetAwaiter().GetResult();
                 if (!result.IsValid)
                 {
+					job.MarkJobAsFailed(result.Exception, result.ShouldBreakSchedule);
                     LogValidationJobFailed(job, result);
                 }
 
@@ -307,12 +301,12 @@ namespace kCura.ScheduleQueue.AgentBase
             catch (Exception e)
 			{
 				Logger.LogError(e, "Error occurred during Queue Job Validation. Return job as valid and try to run.");
-				return ValidationResult.Success;
+				return PreValidationResult.Success;
 			}
 
 		}
 
-		protected abstract TaskResult ProcessJob(Job job, ValidationResult validationResult = null);
+		protected abstract TaskResult ProcessJob(Job job);
 
 		private void FinalizeJobExecution(Job job, TaskResult taskResult)
 		{
@@ -443,9 +437,9 @@ namespace kCura.ScheduleQueue.AgentBase
 				nameof(ScheduleQueueAgentBase));
 		}
 
-		private void LogValidationJobFailed(Job job, ValidationResult result)
+		private void LogValidationJobFailed(Job job, PreValidationResult result)
 		{
-			Logger.LogInformation("Job {jobId} validation failed with message: {message}", job.JobId, result.Message);
+			Logger.LogInformation("Job {jobId} validation failed with message: {message}", job.JobId, result.Exception?.Message);
 		}
 
 		private void LogJobInformation(Job job)

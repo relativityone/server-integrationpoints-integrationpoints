@@ -24,6 +24,8 @@ namespace kCura.IntegrationPoints.Data
 		public int SubmittedBy { get; set; }
 		public StopState StopState { get; set; }
 
+		public IsJobFailed JobFailed { get; private set; }
+
 		public Job(DataRow row)
 		{
 			JobId = row.Field<long>("JobID");
@@ -49,6 +51,11 @@ namespace kCura.IntegrationPoints.Data
 		{
 
 		}
+
+		public void MarkJobAsFailed(Exception ex, bool shouldBreakSchedule)
+        {
+			JobFailed = new IsJobFailed(ex, shouldBreakSchedule);
+        }
 
 		/// <summary>
 		/// Creates copy of this object without JobDetails

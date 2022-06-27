@@ -209,7 +209,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 
 			_queueJobValidatorFake = new Mock<IQueueJobValidator>();
 			_queueJobValidatorFake.Setup(x => x.ValidateAsync(It.IsAny<Job>()))
-				.ReturnsAsync(ValidationResult.Success);
+				.ReturnsAsync(PreValidationResult.Success);
 
 			_queryManager = new Mock<IQueueQueryManager>();
 			_kubernetesModeFake = new Mock<IKubernetesMode>();
@@ -237,7 +237,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 		private void SetupJobAsInvalid(Job job)
 		{
 			_queueJobValidatorFake.Setup(x => x.ValidateAsync(job))
-				.ReturnsAsync(ValidationResult.Failed(It.IsAny<string>()));
+				.ReturnsAsync(PreValidationResult.InvalidJob(It.IsAny<string>(), It.IsAny<bool>()));
 		}
 
 		private class TestAgent : ScheduleQueueAgentBase
@@ -261,7 +261,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 				return GetAgentID();
 			}
 			
-			protected override TaskResult ProcessJob(Job job, ValidationResult validationResult = null)
+			protected override TaskResult ProcessJob(Job job)
 			{
 				ProcessedJobs.Add(job);
 

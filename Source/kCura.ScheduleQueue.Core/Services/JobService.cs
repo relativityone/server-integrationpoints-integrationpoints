@@ -101,7 +101,7 @@ namespace kCura.ScheduleQueue.Core.Services
 			var result = new FinalizeJobResult();
 
 			DateTime? nextUtcRunDateTime = GetJobNextUtcRunDateTime(job, scheduleRuleFactory, taskResult);
-			if (nextUtcRunDateTime.HasValue)
+			if (job.JobFailed?.ShouldBreakSchedule == false && nextUtcRunDateTime.HasValue)
 			{
 				_log.LogInformation("Job {jobId} was scheduled with following details: " +
 				                    "NextRunTime - {nextRunTime} " +
@@ -119,7 +119,8 @@ namespace kCura.ScheduleQueue.Core.Services
 			}
 			else
 			{
-				_log.LogInformation("Deleting job {jobId} from the queue since it wasn't scheduled...");
+				_log.LogInformation("Deleting job {jobId} from the queue - InvalidJob {invalidJob}, IsScheduled {isScheduledJob}",
+					job.JobFailed?.ShouldBreakSchedule, nextUtcRunDateTime.HasValue);
 
 				DeleteJob(job.JobId);
 			}

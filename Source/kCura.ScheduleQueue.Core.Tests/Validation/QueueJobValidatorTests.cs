@@ -37,11 +37,11 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
             SetUpUserExists(true);
 
 			// Act
-			ValidationResult result = await sut.ValidateAsync(job).ConfigureAwait(false);
+			PreValidationResult result = await sut.ValidateAsync(job).ConfigureAwait(false);
 
 			// Assert
 			result.IsValid.Should().BeTrue();
-			result.Message.Should().BeEmpty();
+			result.Exception.Should().BeNull();
 		}
 
 		[Test]
@@ -61,11 +61,11 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
             SetUpUserExists(true);
 
 			// Act
-			ValidationResult result = await sut.ValidateAsync(job).ConfigureAwait(false);
+			PreValidationResult result = await sut.ValidateAsync(job).ConfigureAwait(false);
 
 			// Assert
 			result.IsValid.Should().BeFalse();
-			result.Message.Should().Contain(_TEST_WORKSPACE_ID.ToString());
+			result.Exception.Message.Should().Contain(_TEST_WORKSPACE_ID.ToString());
 		}
 
 		[Test]
@@ -85,11 +85,11 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
             SetUpUserExists(true);
 
 			// Act
-			ValidationResult result = await sut.ValidateAsync(job).ConfigureAwait(false);
+			PreValidationResult result = await sut.ValidateAsync(job).ConfigureAwait(false);
 
 			// Assert
 			result.IsValid.Should().BeFalse();
-			result.Message.Should().Contain(_TEST_INTEGRATION_POINT_ID.ToString());
+			result.Exception.Message.Should().Contain(_TEST_INTEGRATION_POINT_ID.ToString());
 		}
 
 		[Test]

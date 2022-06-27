@@ -102,6 +102,7 @@
     <Compile Include="IIntegrationPointSerializer.cs" />
     <Compile Include="IQuery.cs" />
     <Compile Include="IQueueQueryManager.cs" />
+    <Compile Include="IsJobFailed.cs" />
     <Compile Include="Job.cs" />
     <Compile Include="LoadFileInfo.cs" />
     <Compile Include="Installers\HelpersRegistration.cs" />
