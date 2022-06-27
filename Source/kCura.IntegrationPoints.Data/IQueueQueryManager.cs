@@ -8,9 +8,7 @@ namespace kCura.IntegrationPoints.Data
 	{
 		ICommand CreateScheduleQueueTable();
 
-		ICommand AddStopStateColumnToQueueTable();
-
-		ICommand AddHeartbeatColumnToQueueTable();
+		ICommand AddCustomColumnsToQueueTable();
 
 		IQuery<DataRow> GetAgentTypeInformation(Guid agentGuid);
 

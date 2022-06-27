@@ -29,12 +29,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 			});
 		}
 
-		public ICommand AddStopStateColumnToQueueTable()
-		{
-			return ActionCommand.Empty;
-		}
-
-		public ICommand AddHeartbeatColumnToQueueTable()
+		public ICommand AddCustomColumnsToQueueTable()
 		{
 			return ActionCommand.Empty;
 		}
