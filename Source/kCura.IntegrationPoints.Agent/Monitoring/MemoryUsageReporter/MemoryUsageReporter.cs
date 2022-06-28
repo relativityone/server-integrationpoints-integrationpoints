@@ -11,29 +11,33 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 {
     public class MemoryUsageReporter : IMemoryUsageReporter
     {
-        private IAPM _apmClient;
-        private IAPILog _logger;
-        private IRipMetrics _ripMetric;
-        private IProcessMemoryHelper _processMemoryHelper;
-        private IAppDomainMonitoringEnabler _appDomainMonitoringEnabler;
+        private readonly IAPM _apmClient;
+        private readonly IAPILog _logger;
+        private readonly IRipMetrics _ripMetric;
+        private readonly IProcessMemoryHelper _processMemoryHelper;
+        private readonly IAppDomainMonitoringEnabler _appDomainMonitoringEnabler;
+        private readonly IMonitoringConfig _config;
 
         private static string _METRIC_LOG_NAME = "Relativity.IntegrationPoints.Performance.System";
         private static string _METRIC_NAME = "IntegrationPoints.Performance.System";
 
 
-        public MemoryUsageReporter(IAPM apmClient, IAPILog logger, IRipMetrics ripMetric, IProcessMemoryHelper processMemoryHelper, IAppDomainMonitoringEnabler appDomainMonitoringEnabler)
+        public MemoryUsageReporter(IAPM apmClient, IAPILog logger,
+            IRipMetrics ripMetric,IProcessMemoryHelper processMemoryHelper,
+            IAppDomainMonitoringEnabler appDomainMonitoringEnabler, IMonitoringConfig config)
         {
             _processMemoryHelper = processMemoryHelper;
             _apmClient = apmClient;
             _logger = logger;
             _ripMetric = ripMetric;
             _appDomainMonitoringEnabler = appDomainMonitoringEnabler;
+            _config = config;
         }
 
-        public IDisposable ActivateTimer(int timeIntervalMilliseconds, long jobId, string jobDetails, string jobType)
+        public IDisposable ActivateTimer(long jobId, string jobDetails, string jobType)
         {
             return _appDomainMonitoringEnabler.EnableMonitoring()
-                ? new Timer(state => Execute(jobId, jobDetails, jobType), null, 0, timeIntervalMilliseconds)
+                ? new Timer(state => Execute(jobId, jobDetails, jobType), null, TimeSpan.Zero, _config.MemoryUsageInterval)
                 : Disposable.Empty;
         }
 

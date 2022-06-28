@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.Installer;
 using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Logging;
+using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Common.Agent;
@@ -52,7 +53,6 @@ namespace kCura.IntegrationPoints.Agent
         private IJobContextProvider _jobContextProvider;
         private const string _AGENT_NAME = "Integration Points Agent";
         private const string _RELATIVITY_SYNC_JOB_TYPE = "Relativity.Sync";
-        private const int _TIMER_INTERVAL = 30 * 1000;
         private readonly Lazy<IWindsorContainer> _agentLevelContainer;
 
         internal IJobExecutor JobExecutor { get; set; }
@@ -109,6 +109,7 @@ namespace kCura.IntegrationPoints.Agent
         protected override TaskResult ProcessJob(Job job, ValidationResult validationResult = null)
         {
             using (StartMemoryUsageMetricReporting(job))
+            using (StartHeartbeatReporting(job))
             {
                 using (IWindsorContainer ripContainerForSync = CreateAgentLevelContainer())
                 using (ripContainerForSync.Resolve<IJobContextProvider>().StartJobContext(job))
@@ -164,8 +165,14 @@ namespace kCura.IntegrationPoints.Agent
 
         private IDisposable StartMemoryUsageMetricReporting(Job job)
         {
-            return _agentLevelContainer.Value.Resolve<IMemoryUsageReporter>().ActivateTimer(_TIMER_INTERVAL, job.JobId,
+            return _agentLevelContainer.Value.Resolve<IMemoryUsageReporter>().ActivateTimer(job.JobId,
                 GetCorrelationId(job, _agentLevelContainer.Value.Resolve<ISerializer>()), job.TaskType);
+        }
+
+        private IDisposable StartHeartbeatReporting(Job job)
+        {
+            return _agentLevelContainer.Value.Resolve<IHeartbeatReporter>()
+                .ActivateHeartbeat(job.JobId);
         }
 
         private string GetCorrelationId(Job job, ISerializer serializer)

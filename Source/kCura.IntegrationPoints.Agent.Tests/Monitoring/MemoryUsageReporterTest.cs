@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
+﻿using kCura.IntegrationPoints.Agent.Monitoring;
+using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 using kCura.IntegrationPoints.Common.Metrics;
 using Moq;
 using NUnit.Framework;
@@ -18,6 +19,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private Mock<IRipMetrics> _ripMetricMock;
         private Mock<ICounterMeasure> _counterMeasure;
         private Mock<IProcessMemoryHelper> _processMemoryHelper;
+        private Mock<IMonitoringConfig> _configFake;
         private MemoryUsageReporter _sut;
         private Mock<IAppDomainMonitoringEnabler> _appDomainMonitoringEnablerMock;
         private const string _jobDetails = "jobDetails";
@@ -25,9 +27,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private const long _jobId = 123456789;
         private const int _dummyMemorySize = 12345;
 
+        private readonly TimeSpan _MEMORY_USAGE_INTERVAL = TimeSpan.FromMilliseconds(1);
+
         [SetUp]
         public void SetUp()
         {
+            _configFake = new Mock<IMonitoringConfig>();
+            _configFake.Setup(x => x.MemoryUsageInterval).Returns(_MEMORY_USAGE_INTERVAL);
+
             _counterMeasure = new Mock<ICounterMeasure>();
             _loggerMock = new Mock<IAPILog>();
             _ripMetricMock = new Mock<IRipMetrics>();
@@ -59,7 +66,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                     { "CpuUsageProcess",  _dummyMemorySize}
                 });
             _appDomainMonitoringEnablerMock.Setup(x => x.EnableMonitoring()).Returns(true);
-            _sut = new MemoryUsageReporter(_apmMock.Object, _loggerMock.Object, _ripMetricMock.Object, _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object);
+            _sut = new MemoryUsageReporter(_apmMock.Object, _loggerMock.Object, _ripMetricMock.Object,
+                _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object, _configFake.Object);
         }
 
         [Test]
@@ -68,7 +76,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             // Arrange
 
             // Act
-            IDisposable subscription = _sut.ActivateTimer(1, _jobId, _jobDetails, _jobType);
+            IDisposable subscription = _sut.ActivateTimer(_jobId, _jobDetails, _jobType);
             Thread.Sleep(100);
 
             // Assert
@@ -99,7 +107,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             // Arrange
 
             // Act
-            IDisposable subscription = _sut.ActivateTimer(1, _jobId, _jobDetails, _jobType);
+            IDisposable subscription = _sut.ActivateTimer(_jobId, _jobDetails, _jobType);
             subscription.Dispose();
             Thread.Sleep(100);
 
@@ -143,14 +151,15 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 .Returns(_counterMeasure.Object)
                 .Returns(_counterMeasure.Object);
 
-            MemoryUsageReporter sutWithErrors = new MemoryUsageReporter(apmMockWithErrors.Object, _loggerMock.Object, _ripMetricMock.Object, _processMemoryHelper.Object,_appDomainMonitoringEnablerMock.Object);
+            MemoryUsageReporter sutWithErrors = new MemoryUsageReporter(apmMockWithErrors.Object, _loggerMock.Object, _ripMetricMock.Object,
+                _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object, _configFake.Object);
 
             int metricsProperlySend = 3;
             int metricsWithError = 2;
             const string errorMessage = "An error occurred in Execute while sending APM metric";
 
             // Act
-            sutWithErrors.ActivateTimer(1, _jobId, _jobDetails, _jobType);
+            sutWithErrors.ActivateTimer(_jobId, _jobDetails, _jobType);
             Thread.Sleep(1000);
 
             // Assert
@@ -185,7 +194,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             string logMessage = "Sending metric {@metricName} with properties: {@MetricProperties} and correlationID: {@CorrelationId}";
 
             // Act
-            IDisposable subscription = _sut.ActivateTimer(1, _jobId, _jobDetails, _jobType);
+            IDisposable subscription = _sut.ActivateTimer(_jobId, _jobDetails, _jobType);
             Thread.Sleep(10);
 
             // Assert
@@ -215,7 +224,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _appDomainMonitoringEnablerMock.Setup(x => x.EnableMonitoring()).Returns(false);
 
             //Act
-            IDisposable subscription = _sut.ActivateTimer(1, _jobId, _jobDetails, _jobType);
+            IDisposable subscription = _sut.ActivateTimer(_jobId, _jobDetails, _jobType);
             Thread.Sleep(10);
 
             //Assert

@@ -19,7 +19,7 @@ namespace kCura.ScheduleQueue.Core.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -83,9 +83,9 @@ namespace kCura.ScheduleQueue.Core.Properties {
         ///    WHERE Name      = N&apos;StopState&apos;
         ///      AND Object_ID = Object_ID [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string AddStopStateColumnToQueueTable {
+        internal static string AddCustomColumnsToQueueTable {
             get {
-                return ResourceManager.GetString("AddStopStateColumnToQueueTable", resourceCulture);
+                return ResourceManager.GetString("AddCustomColumnsToQueueTable", resourceCulture);
             }
         }
         
@@ -405,8 +405,7 @@ namespace kCura.ScheduleQueue.Core.Properties {
         ///			INSERTED.[ScheduleRule],
         ///			INSERTED.[JobDetails],
         ///			INSERTED.[JobFlags],
-        ///			INSERTED.[SubmittedDate],
-        ///		 [rest of string was truncated]&quot;;.
+        ///			INSERTED [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GetNextJobWithoutResourceGroup {
             get {
@@ -479,6 +478,25 @@ namespace kCura.ScheduleQueue.Core.Properties {
         internal static string UnlockScheduledJob {
             get {
                 return ResourceManager.GetString("UnlockScheduledJob", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BEGIN TRANSACTION
+        ///
+        ///UPDATE
+        ///  [eddsdbo].[{0}]
+        ///SET
+        ///  [Heartbeat] = @HeartbeatTime
+        ///WHERE
+        ///  [JobId] = @JobID
+        ///SELECT @@ROWCOUNT
+        ///
+        ///COMMIT TRANSACTION .
+        /// </summary>
+        internal static string UpdateHeartbeat {
+            get {
+                return ResourceManager.GetString("UpdateHeartbeat", resourceCulture);
             }
         }
         

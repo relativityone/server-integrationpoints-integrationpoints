@@ -23,9 +23,9 @@ namespace kCura.ScheduleQueue.Core.Data
 			return new CreateScheduleQueueTable(_queueDbContext);
 		}
 
-		public ICommand AddStopStateColumnToQueueTable()
+		public ICommand AddCustomColumnsToQueueTable()
 		{
-			return new AddStopStateColumnToQueueTable(_queueDbContext);
+			return new AddCustomColumnsToQueueTable(_queueDbContext);
 		}
 
 		public IQuery<DataRow> GetAgentTypeInformation(Guid agentGuid)
@@ -124,5 +124,10 @@ namespace kCura.ScheduleQueue.Core.Data
         {
 			return new GetJobsQueueDetails(_queueDbContext, agentTypeId);
         }
-	}
+
+        public IQuery<int> Heartbeat(long jobId, DateTime heartbeatTime)
+        {
+			return new UpdateHeartbeat(_queueDbContext, jobId, heartbeatTime);
+        }
+    }
 }
