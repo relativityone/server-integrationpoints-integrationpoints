@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using Moq;
@@ -34,6 +35,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 		private const int _CREATED_WORKSPACE_ARTIFACT_ID = 200111;
 		private const int _FIRST_SYNC_PROFILE_ARTIFACT_ID = 300444;
 		private const int _FIRST_NON_SYNC_PROFILE_ARTIFACT_ID = 400444;
+		private const int _SAVED_SEARCH_ARTIFACT_ID = 123234;
 
 		private static ServiceException TestException => new ServiceException(_TEST_ERROR_MESSAGE);
 
@@ -68,7 +70,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			_sut = new IntegrationPointProfileMigrationEventHandler(
 				_errorServiceFake.Object,
 				() => _relativityObjectManagerFactoryFake.Object,
-				_integrationPointProfilesQueryFake.Object)
+				_integrationPointProfilesQueryFake.Object,
+				BuildRepositoryFactoryMock().Object)
 			{
 				Helper = _eventHandlerHelperFake.Object,
 				TemplateWorkspaceID = _TEMPLATE_WORKSPACE_ARTIFACT_ID
@@ -101,6 +104,33 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			_createdWorkspaceRelativityObjectManagerMock
 				.Setup(x => x.MassDeleteAsync(It.IsAny<IEnumerable<int>>(), It.IsAny<ExecutionIdentity>()))
 				.ReturnsAsync(true);
+		}
+
+		private Mock<IRepositoryFactory> BuildRepositoryFactoryMock()
+		{
+			Mock<ISavedSearchQueryRepository> searchQueryRepositoryMock = new Mock<ISavedSearchQueryRepository>();
+			searchQueryRepositoryMock
+				.Setup(x => x.RetrieveSavedSearch(It.Is<int>(y => y == _SAVED_SEARCH_ARTIFACT_ID)))
+				.Returns(GetSavedSearch(_SAVED_SEARCH_ARTIFACT_ID));
+			searchQueryRepositoryMock
+				.Setup(x => x.RetrievePublicSavedSearches())
+				.Returns(new [] { GetSavedSearch(_SAVED_SEARCH_ARTIFACT_ID) });
+
+			Mock<IRepositoryFactory> repositoryFactoryMock = new Mock<IRepositoryFactory>();
+			repositoryFactoryMock
+				.Setup(x => x.GetSavedSearchQueryRepository(It.IsIn(_TEMPLATE_WORKSPACE_ARTIFACT_ID, _CREATED_WORKSPACE_ARTIFACT_ID)))
+				.Returns(searchQueryRepositoryMock.Object);
+
+			return repositoryFactoryMock;
+
+			SavedSearchDTO GetSavedSearch(int artifactId)
+			{
+				return new SavedSearchDTO
+				{
+					ArtifactId = artifactId,
+					Name = artifactId.ToString()
+				};
+			}
 		}
 
 		[Test]
