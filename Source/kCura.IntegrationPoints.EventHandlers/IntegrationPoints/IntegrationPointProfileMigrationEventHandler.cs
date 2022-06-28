@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 	{
 		private readonly Lazy<IRelativityObjectManagerFactory> _relativityObjectManagerFactory;
 		private readonly IIntegrationPointProfilesQuery _integrationPointProfilesQuery;
-		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly Lazy<IRepositoryFactory> _repositoryFactory;
 
 		protected override string SuccessMessage => "Integration Point Profiles migrated successfully.";
 		protected override string GetFailureMessage(Exception ex) => "Failed to migrate the Integration Point Profiles.";
@@ -40,20 +40,21 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		public IntegrationPointProfileMigrationEventHandler()
 		{
 			_relativityObjectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(() => new RelativityObjectManagerFactory(Helper));
+			_repositoryFactory = new Lazy<IRepositoryFactory>(() => new RepositoryFactory(Helper, Helper.GetServicesManager()));
 			Func<int, IRelativityObjectManager> createRelativityObjectManager = CreateRelativityObjectManager;
 			var objectArtifactIdsByStringFieldValueQuery = new ObjectArtifactIdsByStringFieldValueQuery(createRelativityObjectManager);
 			_integrationPointProfilesQuery = new IntegrationPointProfilesQuery(createRelativityObjectManager, objectArtifactIdsByStringFieldValueQuery);
-			_repositoryFactory = new RepositoryFactory(Helper, Helper.GetServicesManager());
 		}
 
 		internal IntegrationPointProfileMigrationEventHandler(IErrorService errorService,
 			Func<IRelativityObjectManagerFactory> relativityObjectManagerFactoryProvider,
-			IIntegrationPointProfilesQuery integrationPointProfilesQuery,
-			IRepositoryFactory repositoryFactory) : base(errorService)
+			Func<IRepositoryFactory> repositoryFactoryProvider,
+			IIntegrationPointProfilesQuery integrationPointProfilesQuery) : base(errorService)
 		{
 			_relativityObjectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(relativityObjectManagerFactoryProvider);
+			_repositoryFactory = new Lazy<IRepositoryFactory>(repositoryFactoryProvider);
 			_integrationPointProfilesQuery = integrationPointProfilesQuery;
-			_repositoryFactory = repositoryFactory;
+
 		}
 
 		protected override void Run()
@@ -238,11 +239,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		{
 			if (templateSearchId > 0)
 			{
-				ISavedSearchQueryRepository templateSearchQueryRepository = _repositoryFactory.GetSavedSearchQueryRepository(TemplateWorkspaceID);
+				ISavedSearchQueryRepository templateSearchQueryRepository = _repositoryFactory.Value.GetSavedSearchQueryRepository(TemplateWorkspaceID);
 				SavedSearchDTO templateSearch = templateSearchQueryRepository.RetrieveSavedSearch(templateSearchId);
 				if (templateSearch != null)
 				{
-					ISavedSearchQueryRepository destinationSearchQueryRepository = _repositoryFactory.GetSavedSearchQueryRepository(WorkspaceID);
+					ISavedSearchQueryRepository destinationSearchQueryRepository = _repositoryFactory.Value.GetSavedSearchQueryRepository(WorkspaceID);
 					IEnumerable<SavedSearchDTO> destinationSearches = destinationSearchQueryRepository.RetrievePublicSavedSearches();
 					SavedSearchDTO matchedSearch = destinationSearches.FirstOrDefault(x => x.Name == templateSearch.Name);
 					return matchedSearch?.ArtifactId ?? 0;

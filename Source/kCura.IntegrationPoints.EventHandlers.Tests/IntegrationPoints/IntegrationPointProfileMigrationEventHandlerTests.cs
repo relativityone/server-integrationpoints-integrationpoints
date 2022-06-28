@@ -70,8 +70,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 			_sut = new IntegrationPointProfileMigrationEventHandler(
 				_errorServiceFake.Object,
 				() => _relativityObjectManagerFactoryFake.Object,
-				_integrationPointProfilesQueryFake.Object,
-				BuildRepositoryFactoryMock().Object)
+				() => BuildRepositoryFactoryMock().Object,
+				_integrationPointProfilesQueryFake.Object)
 			{
 				Helper = _eventHandlerHelperFake.Object,
 				TemplateWorkspaceID = _TEMPLATE_WORKSPACE_ARTIFACT_ID
