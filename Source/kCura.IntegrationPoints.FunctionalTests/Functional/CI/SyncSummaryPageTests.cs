@@ -21,8 +21,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
         protected override void OnSetUpFixture()
         {
             base.OnSetUpFixture();
-
-            _testsImplementation.OnSetUpFixture();
         }
 
         protected override void OnTearDownFixture()

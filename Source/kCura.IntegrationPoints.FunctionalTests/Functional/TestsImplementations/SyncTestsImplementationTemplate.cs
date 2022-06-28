@@ -25,6 +25,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         protected SyncTestsImplementationTemplate(ITestsImplementationTestFixture testsImplementationTestFixture)
         {
             TestsImplementationTestFixture = testsImplementationTestFixture;
+            OnSetUpFixture();
         }
 
         public virtual void OnSetUpFixture()
