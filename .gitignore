@@ -97,3 +97,4 @@ buildtools/
 FunctionalTest.runsettings
 FunctionalTestSettings
 .idea/
+/package-lock.json
