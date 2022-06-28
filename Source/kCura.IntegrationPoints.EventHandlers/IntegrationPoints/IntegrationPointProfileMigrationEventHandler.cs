@@ -244,8 +244,19 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				if (templateSearch != null)
 				{
 					ISavedSearchQueryRepository destinationSearchQueryRepository = _repositoryFactory.Value.GetSavedSearchQueryRepository(WorkspaceID);
-					IEnumerable<SavedSearchDTO> destinationSearches = destinationSearchQueryRepository.RetrievePublicSavedSearches();
-					SavedSearchDTO matchedSearch = destinationSearches.FirstOrDefault(x => x.Name == templateSearch.Name);
+					IEnumerable<SavedSearchDTO> allDestinationSearches = destinationSearchQueryRepository.RetrievePublicSavedSearches();
+					List<SavedSearchDTO> sameNameSearches = allDestinationSearches.Where(x => x.Name == templateSearch.Name).ToList();
+
+					SavedSearchDTO matchedSearch = null;
+					if (sameNameSearches.Count > 1)
+					{
+						matchedSearch = sameNameSearches.FirstOrDefault(x => x.ArtifactId == templateSearch.ArtifactId);
+					}
+					else if (sameNameSearches.Count == 1)
+					{
+						matchedSearch = sameNameSearches.First();
+					}
+
 					return matchedSearch?.ArtifactId ?? 0;
 				}
 			}
