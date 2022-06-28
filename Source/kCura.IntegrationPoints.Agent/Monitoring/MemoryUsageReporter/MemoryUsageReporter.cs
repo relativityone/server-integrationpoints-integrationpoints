@@ -6,6 +6,7 @@ using System.Reactive.Disposables;
 using kCura.IntegrationPoints.Common.Metrics;
 using Relativity.API;
 using System.Threading;
+using kCura.IntegrationPoints.Common.Agent;
 
 namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 {
@@ -16,18 +17,21 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
         private IRipMetrics _ripMetric;
         private IProcessMemoryHelper _processMemoryHelper;
         private IAppDomainMonitoringEnabler _appDomainMonitoringEnabler;
+        private readonly IRemovableAgent _agent;
 
         private static string _METRIC_LOG_NAME = "Relativity.IntegrationPoints.Performance.System";
         private static string _METRIC_NAME = "IntegrationPoints.Performance.System";
 
 
-        public MemoryUsageReporter(IAPM apmClient, IAPILog logger, IRipMetrics ripMetric, IProcessMemoryHelper processMemoryHelper, IAppDomainMonitoringEnabler appDomainMonitoringEnabler)
+        public MemoryUsageReporter(IAPM apmClient, IAPILog logger, IRipMetrics ripMetric, IProcessMemoryHelper processMemoryHelper, 
+            IAppDomainMonitoringEnabler appDomainMonitoringEnabler, IRemovableAgent agent)
         {
             _processMemoryHelper = processMemoryHelper;
             _apmClient = apmClient;
             _logger = logger;
             _ripMetric = ripMetric;
             _appDomainMonitoringEnabler = appDomainMonitoringEnabler;
+            _agent = agent;
         }
 
         public IDisposable ActivateTimer(int timeIntervalMilliseconds, long jobId, string jobDetails, string jobType)
@@ -39,9 +43,16 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 
         private void Execute(long jobId, string workflowId, string jobType)
         {
+            if (_agent.ToBeRemoved)
+            {
+                Agent agent = _agent as Agent;
+                _logger.LogInformation("Memory metrics can't be sent. Agent, agentId = {agentId}, is marked as ToBeRemoved.", agent.AgentID);
+
+                return;
+            }
+
             try
             {
-
                 Dictionary<string, object> customData = new Dictionary<string, object>()
                 {
                     { "JobId", jobId },
