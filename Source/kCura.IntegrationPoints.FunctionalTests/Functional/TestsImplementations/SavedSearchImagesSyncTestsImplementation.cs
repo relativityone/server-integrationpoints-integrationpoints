@@ -43,8 +43,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             };
 
             string testDataPath = LoadFilesGenerator.GetOrCreateNativesOptLoadFile();
-            RelativityFacade.Instance.ImportImages(TestsImplementationTestFixture.Workspace,
-                testDataPath, imageImportOptions, _imagesCount);
+            RelativityFacade.Instance.ImportImages(TestsImplementationTestFixture.Workspace, testDataPath, imageImportOptions, _imagesCount);
 
             const int hasImagesYesArtifactId = 1034243;
             _keywordSearch = new KeywordSearch
@@ -66,8 +65,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
             IntegrationPointListPage integrationPointListPage = Being.On<IntegrationPointListPage>(TestsImplementationTestFixture.Workspace.ArtifactID);
             IntegrationPointEditPage integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
-            IntegrationPointViewPage integrationPointViewPage = integrationPointEditPage.CreateSavedSearchToFolderIntegrationPointWithNatives(IntegrationPointName,
-                        DestinationWorkspace, _keywordSearch.Name, RelativityProviderCopyNativeFiles.PhysicalFiles);
+            IntegrationPointViewPage integrationPointViewPage = integrationPointEditPage.CreateSavedSearchToFolderIntegrationPointWithImages(IntegrationPointName,
+                    DestinationWorkspace, _keywordSearch.Name);
 
             return integrationPointViewPage;
         }
