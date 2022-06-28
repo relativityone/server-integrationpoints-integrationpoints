@@ -34,12 +34,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
         public override IntegrationPointViewPage CreateIntegrationPointViewPage()
         {
-            TestsImplementationTestFixture.LoginAsStandardUser();
-
-            IntegrationPointName = $"{nameof(ProductionImagesSyncTestsImplemention)} - {Guid.NewGuid()}";
-
-            DestinationWorkspace = CreateDestinationWorkspace();
-
             _keywordSearch = RelativityFacade.Instance.Resolve<IKeywordSearchService>().Require(TestsImplementationTestFixture.Workspace.ArtifactID, new KeywordSearch
             {
                 Name = nameof(ProductionImagesSyncTestsImplemention),
@@ -119,11 +113,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                     YesNo.Yes);
 
             return integrationPointViewPage;
-        }
-
-        public override void RunIntegrationPoint(IntegrationPointViewPage integrationPointViewPage)
-        {
-            integrationPointViewPage = integrationPointViewPage.RunIntegrationPoint(IntegrationPointName);
         }
 
         public override void AssertIntegrationPointSummaryPageGeneralTab(IntegrationPointViewPage integrationPointViewPage)

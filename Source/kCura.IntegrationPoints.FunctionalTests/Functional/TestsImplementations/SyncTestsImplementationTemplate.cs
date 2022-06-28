@@ -30,6 +30,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         public virtual void OnSetUpFixture()
         {
             RelativityFacade.Instance.ImportDocumentsFromCsv(TestsImplementationTestFixture.Workspace, LoadFilesGenerator.GetOrCreateNativesLoadFile());
+            TestsImplementationTestFixture.LoginAsStandardUser();
+            IntegrationPointName = $"Sync - Source {Guid.NewGuid()}";
+            DestinationWorkspace = CreateDestinationWorkspace();
         }
 
         public virtual void OnTearDownFixture()
@@ -42,7 +45,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
         public abstract IntegrationPointViewPage CreateIntegrationPointViewPage();
 
-        public abstract void RunIntegrationPoint(IntegrationPointViewPage integrationPointViewPage);
+        public virtual void RunIntegrationPoint(IntegrationPointViewPage integrationPointViewPage)
+        {
+            integrationPointViewPage = integrationPointViewPage.RunIntegrationPoint(IntegrationPointName);
+        }
 
         public abstract void AssertIntegrationPointSummaryPageGeneralTab(IntegrationPointViewPage integrationPointViewPage);
 

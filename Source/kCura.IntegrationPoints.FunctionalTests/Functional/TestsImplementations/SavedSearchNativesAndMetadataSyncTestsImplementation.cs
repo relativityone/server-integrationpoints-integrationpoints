@@ -27,12 +27,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
         public override IntegrationPointViewPage CreateIntegrationPointViewPage()
         {
-            TestsImplementationTestFixture.LoginAsStandardUser();
-
-            DestinationWorkspace = CreateDestinationWorkspace();
-
-            IntegrationPointName = nameof(SavedSearchNativesSyncTestsImplementation);
-
             _keywordSearch = new KeywordSearch
             {
                 Name = IntegrationPointName,
@@ -62,11 +56,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                         DestinationWorkspace, _keywordSearch.Name, RelativityProviderCopyNativeFiles.PhysicalFiles);
 
             return integrationPointViewPage;
-        }
-
-        public override void RunIntegrationPoint(IntegrationPointViewPage integrationPointViewPage)
-        {
-            integrationPointViewPage = integrationPointViewPage.RunIntegrationPoint(IntegrationPointName);
         }
 
         public override void AssertIntegrationPointSummaryPageGeneralTab(IntegrationPointViewPage integrationPointViewPage)

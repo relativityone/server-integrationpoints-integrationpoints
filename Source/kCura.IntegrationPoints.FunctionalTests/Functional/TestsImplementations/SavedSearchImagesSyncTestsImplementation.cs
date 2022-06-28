@@ -46,7 +46,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             RelativityFacade.Instance.ImportImages(TestsImplementationTestFixture.Workspace,
                 testDataPath, imageImportOptions, _imagesCount);
 
-
             const int hasImagesYesArtifactId = 1034243;
             _keywordSearch = new KeywordSearch
             {
@@ -71,11 +70,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                         DestinationWorkspace, _keywordSearch.Name, RelativityProviderCopyNativeFiles.PhysicalFiles);
 
             return integrationPointViewPage;
-        }
-
-        public override void RunIntegrationPoint(IntegrationPointViewPage integrationPointViewPage)
-        {
-            integrationPointViewPage = integrationPointViewPage.RunIntegrationPoint(IntegrationPointName);
         }
 
         public override void AssertIntegrationPointSummaryPageGeneralTab(IntegrationPointViewPage integrationPointViewPage)

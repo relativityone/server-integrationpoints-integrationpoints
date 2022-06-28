@@ -31,11 +31,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
         public override IntegrationPointViewPage CreateIntegrationPointViewPage()
         {
-            TestsImplementationTestFixture.LoginAsStandardUser();
-
-            IntegrationPointName = nameof(EntitiesPushSyncTestsImplemention);
-
-            DestinationWorkspace = CreateDestinationWorkspace();
             PrepareEntities(_entitiesCount).GetAwaiter().GetResult();
 
             // Act
@@ -47,11 +42,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                 .CreateSyncRdoIntegrationPoint(IntegrationPointName, DestinationWorkspace, IntegrationPointTransferredObjects.Entity, _viewName);
 
             return integrationPointViewPage;
-        }
-
-        public override void RunIntegrationPoint(IntegrationPointViewPage integrationPointViewPage)
-        {
-            integrationPointViewPage = integrationPointViewPage.RunIntegrationPoint(IntegrationPointName);
         }
 
         public override void AssertIntegrationPointSummaryPageGeneralTab(IntegrationPointViewPage integrationPointViewPage)
