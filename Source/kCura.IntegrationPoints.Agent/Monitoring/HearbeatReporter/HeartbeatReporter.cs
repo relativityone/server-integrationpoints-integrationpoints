@@ -1,7 +1,10 @@
-﻿using kCura.IntegrationPoints.Common.Helpers;
+﻿using kCura.IntegrationPoints.Agent.Toggles;
+using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Data;
 using Relativity.API;
+using Relativity.Toggles;
 using System;
+using System.Reactive.Disposables;
 using System.Threading;
 
 namespace kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter
@@ -12,17 +15,26 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter
         private readonly IQueueQueryManager _queueManager;
         private readonly IMonitoringConfig _config;
         private readonly IDateTime _dateTime;
+        private readonly IToggleProvider _toggleProvider;
 
-        public HeartbeatReporter(IQueueQueryManager queueManager, IMonitoringConfig config, IDateTime dateTime, IAPILog log)
+        public HeartbeatReporter(IQueueQueryManager queueManager, IMonitoringConfig config,
+            IDateTime dateTime, IAPILog log, IToggleProvider toggleProvider)
         {
             _queueManager = queueManager;
             _config = config;
             _dateTime = dateTime;
             _log = log;
+            _toggleProvider = toggleProvider;
         }
 
         public IDisposable ActivateHeartbeat(long jobId)
         {
+            if(!_toggleProvider.IsEnabled<EnableHeartbeatToggle>())
+            {
+                _log.LogInformation("EnableHeartbeatToggle is disabled. JobID {jobId} heartbeat won't be updated", jobId);
+                return Disposable.Empty;
+            }
+
             return new Timer(state => Execute(jobId), null, TimeSpan.Zero, _config.HeartbeatInterval);
         }
 
