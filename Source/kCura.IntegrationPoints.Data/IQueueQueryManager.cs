@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoints.Data
 	{
 		ICommand CreateScheduleQueueTable();
 
-		ICommand AddStopStateColumnToQueueTable();
+		ICommand AddCustomColumnsToQueueTable();
 
 		IQuery<DataRow> GetAgentTypeInformation(Guid agentGuid);
 
@@ -50,5 +50,7 @@ namespace kCura.IntegrationPoints.Data
 		IQuery<bool> CheckAllSyncWorkerBatchesAreFinished(long rootJobId);	
 
 		IQuery<DataTable> GetJobsQueueDetails(int agentTypeId);
+
+		IQuery<int> Heartbeat(long jobId, DateTime heartbeatTime);
 	}
 }

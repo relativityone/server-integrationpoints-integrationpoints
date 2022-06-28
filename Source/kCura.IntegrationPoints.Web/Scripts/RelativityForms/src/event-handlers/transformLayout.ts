@@ -3,7 +3,6 @@ import { IConvenienceApi } from "../types/convenienceApi";
 
 export function transformLayout(layoutData, convenienceApi: IConvenienceApi, backingModelData) {
     try {
-        // remove not applicable message containers if there are any
         removeMessageContainers();
 
         let [sourceConfiguration, destinationConfiguration, sourceProvider] = extractFieldsValuesFromBackingModelData(backingModelData);
@@ -171,7 +170,7 @@ function prepareFieldsForRelativityExport(sourceConfiguration: Object, destinati
     var fieldsForRelativityExport = ["Export Type", "Source Details", "Source Workspace"];
 
     if (destinationConfiguration["FederatedInstanceArtifactId"] !== null) {
-        fieldsForRelativityExport.push("Source Rel. Instance");
+        fieldsForRelativityExport.push("Source Relativity Instance");
     }
 
     fieldsForRelativityExport.push("Transfered Object", "Destination Workspace");
@@ -180,7 +179,7 @@ function prepareFieldsForRelativityExport(sourceConfiguration: Object, destinati
         fieldsForRelativityExport.push("Destination Folder");
     }
 
-    fieldsForRelativityExport.push("Multi-Select Overlay");
+    fieldsForRelativityExport.push("Multi Select Overlay");
 
     if (destinationConfiguration["ArtifactTypeName"] === "Document"){
 

@@ -142,7 +142,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private void LoadUniqueIdSourceField(IEnumerable<FieldMap> fieldMap)
 		{
 			UniqueIDSourceFieldId = fieldMap.Where(x => x.FieldMapType.Equals(FieldMapTypeEnum.Identifier)).Select(x => x.SourceField.FieldIdentifier).First();
-			_logger.LogInformation($"Entity UniqueID source field identifier: {UniqueIDSourceFieldId}");
+			_logger.LogInformation("Entity UniqueID source field identifier: {UniqueIDSourceFieldId}", UniqueIDSourceFieldId);
 		}
 
 		private void LoadManagerFieldId(IEnumerable<FieldMap> fieldMap, ImportSettings settings, List<RelativityObject> allRDOFields)
@@ -156,7 +156,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				ManagerSourceFieldId = fieldMap.Where(x => x.DestinationField.FieldIdentifier.Equals(managerFieldId.ToString())).Select(x => x.SourceField.FieldIdentifier).First();
 
-				_logger.LogInformation($"Destination workspace entity rdo 'Manager' field artifact id: {managerFieldId} mapped to source provider field identifier: '{ManagerSourceFieldId}'");
+				_logger.LogInformation("Destination workspace entity rdo 'Manager' field artifact id: {managerFieldId} mapped to source provider field identifier: '{ManagerSourceFieldId}'", managerFieldId, ManagerSourceFieldId);
 
 				if (settings.EntityManagerFieldContainsLink)
 				{
@@ -200,7 +200,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				string firstName = (string)importRow[FirstNameSourceFieldId];
 				string lastName = (string)importRow[LastNameSourceFieldId];
-				string fullName = GenerateFullName(lastName, firstName);
+				string fullName = GenerateFullName(lastName, firstName);				
+			
 				if (!string.IsNullOrWhiteSpace(fullName))
 				{
 					importRow.Add(_LDAP_MAP_FULL_NAME_FIELD_NAME, fullName);
@@ -249,7 +250,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			catch (Exception ex)
 			{
 				string message =
-					$"Error occured while finalizing Entity synchronization";
+					"Error occured while finalizing Entity synchronization";
 				_logger.LogError(ex, message);
 				throw new IntegrationPointsException(message, ex)
 				{
@@ -344,7 +345,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 						managerReferenceLink = _entityManagerLinksSanitizer.SanitizeManagerReferenceLink(managerReferenceLink);
 
 						_logger.LogInformation(
-							$"Add Manager Ref Link: '{managerReferenceLink}' for entity unique id field value: '{uniqueIdentifier}'");
+							"Add Manager Ref Link: '{0}' for entity unique id field value: '{1}'", managerReferenceLink, uniqueIdentifier);
 						_entityManagerMap.Add(uniqueIdentifier, managerReferenceLink);
 					}
 
@@ -372,7 +373,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private void LogSubmittingJob()
 		{
-			_logger.LogInformation($"Attempting to submit job.");
+			_logger.LogInformation("Attempting to submit job.");
 		}
 
 		private void LogMissingArguments()
@@ -382,7 +383,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private void LogProcessingManagerReference(string mgrRefLinkId, string entityUniqueIdentifier)
 		{
-			_logger.LogInformation($"Processing manager reference for entity: {entityUniqueIdentifier}, Manager Ref Link Id: '{mgrRefLinkId ?? "<empty>"}'");
+			mgrRefLinkId = mgrRefLinkId ?? "<empty>";
+			_logger.LogInformation("Processing manager reference for entity: {0}, Manager Ref Link Id: '{1}'", entityUniqueIdentifier, mgrRefLinkId);
 		}
 
 		#endregion

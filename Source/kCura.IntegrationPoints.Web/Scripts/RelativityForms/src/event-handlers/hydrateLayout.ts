@@ -14,12 +14,12 @@ export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sou
 
     // export to relativity
     convenienceApi.fieldHelper.setValue("Source Workspace", sourceConfiguration["SourceWorkspace"]);
-    convenienceApi.fieldHelper.setValue("Source Rel. Instance", sourceConfiguration["SourceRelativityInstance"]);
+    convenienceApi.fieldHelper.setValue("Source Relativity Instance", sourceConfiguration["SourceRelativityInstance"]);
     convenienceApi.fieldHelper.setValue("Transfered Object", destinationConfiguration["ArtifactTypeName"]);
     convenienceApi.fieldHelper.setValue("Destination Workspace", sourceConfiguration["TargetWorkspace"]);
     convenienceApi.fieldHelper.setValue("Destination Folder", sourceConfiguration["TargetFolder"]);
     convenienceApi.fieldHelper.setValue("Destination Production Set", sourceConfiguration["targetProductionSet"]);
-    convenienceApi.fieldHelper.setValue("Multi-Select Overlay", destinationConfiguration["FieldOverlayBehavior"]);
+    convenienceApi.fieldHelper.setValue("Multi Select Overlay", destinationConfiguration["FieldOverlayBehavior"]);
     getFolderPathInformation(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], destinationConfiguration)
         .then(useFolderPathInfo => {
             convenienceApi.fieldHelper.setValue("Use Folder Path Info", useFolderPathInfo);

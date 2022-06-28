@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.Common.Extensions.DotNet;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
@@ -13,6 +12,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -28,6 +28,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 	{
 		private readonly Lazy<IRelativityObjectManagerFactory> _relativityObjectManagerFactory;
 		private readonly IIntegrationPointProfilesQuery _integrationPointProfilesQuery;
+		private readonly Lazy<IRepositoryFactory> _repositoryFactory;
 
 		protected override string SuccessMessage => "Integration Point Profiles migrated successfully.";
 		protected override string GetFailureMessage(Exception ex) => "Failed to migrate the Integration Point Profiles.";
@@ -39,6 +40,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		public IntegrationPointProfileMigrationEventHandler()
 		{
 			_relativityObjectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(() => new RelativityObjectManagerFactory(Helper));
+			_repositoryFactory = new Lazy<IRepositoryFactory>(() => new RepositoryFactory(Helper, Helper.GetServicesManager()));
 			Func<int, IRelativityObjectManager> createRelativityObjectManager = CreateRelativityObjectManager;
 			var objectArtifactIdsByStringFieldValueQuery = new ObjectArtifactIdsByStringFieldValueQuery(createRelativityObjectManager);
 			_integrationPointProfilesQuery = new IntegrationPointProfilesQuery(createRelativityObjectManager, objectArtifactIdsByStringFieldValueQuery);
@@ -46,10 +48,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		internal IntegrationPointProfileMigrationEventHandler(IErrorService errorService,
 			Func<IRelativityObjectManagerFactory> relativityObjectManagerFactoryProvider,
+			Func<IRepositoryFactory> repositoryFactoryProvider,
 			IIntegrationPointProfilesQuery integrationPointProfilesQuery) : base(errorService)
 		{
 			_relativityObjectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(relativityObjectManagerFactoryProvider);
+			_repositoryFactory = new Lazy<IRepositoryFactory>(repositoryFactoryProvider);
 			_integrationPointProfilesQuery = integrationPointProfilesQuery;
+
 		}
 
 		protected override void Run()
@@ -222,11 +227,41 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 			JObject sourceConfiguration = JObject.Parse(sourceConfigurationJson);
             sourceConfiguration[nameof(SourceConfiguration.SourceViewId)] = 0;
-            sourceConfiguration[nameof(SourceConfiguration.SavedSearchArtifactId)] = 0;
-			sourceConfiguration[nameof(SourceConfiguration.SourceWorkspaceArtifactId)] = WorkspaceID;
+            int templateSearchId = sourceConfiguration[nameof(SourceConfiguration.SavedSearchArtifactId)].ToObject<int>();
+            sourceConfiguration[nameof(SourceConfiguration.SavedSearchArtifactId)] = TryMatchSavedSearchArtifactId(templateSearchId);
+            sourceConfiguration[nameof(SourceConfiguration.SourceWorkspaceArtifactId)] = WorkspaceID;
 			sourceConfiguration[destinationFolderArtifactIdPropertyName] = null;
 			string updatedSourceConfiguration = sourceConfiguration.ToString(Formatting.None);
 			return updatedSourceConfiguration;
+		}
+
+		private int TryMatchSavedSearchArtifactId(int templateSearchId)
+		{
+			if (templateSearchId > 0)
+			{
+				ISavedSearchQueryRepository templateSearchQueryRepository = _repositoryFactory.Value.GetSavedSearchQueryRepository(TemplateWorkspaceID);
+				SavedSearchDTO templateSearch = templateSearchQueryRepository.RetrieveSavedSearch(templateSearchId);
+				if (templateSearch != null)
+				{
+					ISavedSearchQueryRepository destinationSearchQueryRepository = _repositoryFactory.Value.GetSavedSearchQueryRepository(WorkspaceID);
+					IEnumerable<SavedSearchDTO> allDestinationSearches = destinationSearchQueryRepository.RetrievePublicSavedSearches();
+					List<SavedSearchDTO> sameNameSearches = allDestinationSearches.Where(x => x.Name == templateSearch.Name).ToList();
+
+					SavedSearchDTO matchedSearch = null;
+					if (sameNameSearches.Count > 1)
+					{
+						matchedSearch = sameNameSearches.FirstOrDefault(x => x.ArtifactId == templateSearch.ArtifactId);
+					}
+					else if (sameNameSearches.Count == 1)
+					{
+						matchedSearch = sameNameSearches.First();
+					}
+
+					return matchedSearch?.ArtifactId ?? 0;
+				}
+			}
+
+			return 0;
 		}
 
 		private string UpdateDestinationConfiguration(string destinationConfigurationJson)

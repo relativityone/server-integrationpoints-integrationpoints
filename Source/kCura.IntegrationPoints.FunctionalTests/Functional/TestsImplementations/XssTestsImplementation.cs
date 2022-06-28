@@ -49,7 +49,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
 			const string integrationPointName = nameof(IntegrationPointSaveAsProfilePreventXssInjection);
 
-			var integrationPointViewPage = integrationPointEditPage.CreateSavedSearchToFolderIntegrationPoint(
+			var integrationPointViewPage = integrationPointEditPage.CreateSavedSearchToFolderIntegrationPointWithNatives(
 				integrationPointName, destinationWorkspace, _savedSearch, RelativityProviderCopyNativeFiles.No);
 
 			// Act

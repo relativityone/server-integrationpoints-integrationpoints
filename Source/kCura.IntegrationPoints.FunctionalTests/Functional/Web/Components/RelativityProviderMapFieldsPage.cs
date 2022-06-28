@@ -23,7 +23,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 		[FindByPrecedingDivContent]
 		public Select2<RelativityProviderOverwrite, _> Overwrite { get; private set; }
 
-		[FindByPrecedingDivContent]
+		[FindById("s2id_overlay-field-behavior")]
 		public Select2<RelativityProviderMultiSelectField, _> MultiSelectField { get; private set; }
 
 		[FindByPrecedingDivContent]
@@ -37,5 +37,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 
 		[FindById("s2id_folderPathInformationSelect")]
 		public Select2<RelativityProviderFolderPathInformation, _> PathInformation { get; private set; }
+
+        [FindById("s2id_image-production-precedence")]
+        public Select2<RelativityProviderImagePrecedence, _> ImagePrecedence { get; private set; }
 	}
 }
