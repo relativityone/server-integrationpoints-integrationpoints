@@ -34,7 +34,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         public void SavedSearchNativesAndMetadataSummaryPage()
         {
             // Arrange
-            SavedSearchNativesAndMetadataSyncTestsImplementation testImplementation = new SavedSearchNativesAndMetadataSyncTestsImplementation(_testsImplementationTestFixture);
+            SavedSearchNativesSyncTestsImplementation testImplementation = new SavedSearchNativesSyncTestsImplementation(_testsImplementationTestFixture);
 
             // Act
             IntegrationPointViewPage integrationPointViewPage = testImplementation.CreateIntegrationPointViewPage();

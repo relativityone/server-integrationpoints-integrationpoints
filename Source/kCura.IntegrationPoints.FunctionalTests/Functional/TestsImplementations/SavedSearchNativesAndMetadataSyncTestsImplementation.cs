@@ -16,12 +16,12 @@ using KeywordSearch = Relativity.Testing.Framework.Models.KeywordSearch;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 {
-    internal class SavedSearchNativesAndMetadataSyncTestsImplementation : SyncTestsImplementationTemplate
+    internal class SavedSearchNativesSyncTestsImplementation : SyncTestsImplementationTemplate
     {
         private int _keywordSearchDocumentsCount = 5;
         private KeywordSearch _keywordSearch;
 
-        public SavedSearchNativesAndMetadataSyncTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture) : base(testsImplementationTestFixture)
+        public SavedSearchNativesSyncTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture) : base(testsImplementationTestFixture)
         {
         }
 
@@ -31,7 +31,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
             DestinationWorkspace = CreateDestinationWorkspace();
 
-            IntegrationPointName = nameof(SavedSearchNativesAndMetadataSyncTestsImplementation);
+            IntegrationPointName = nameof(SavedSearchNativesSyncTestsImplementation);
 
             _keywordSearch = new KeywordSearch
             {
