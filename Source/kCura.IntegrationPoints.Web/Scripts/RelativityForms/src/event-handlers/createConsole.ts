@@ -9,18 +9,19 @@ export function createConsole(convenienceApi: IConvenienceApi): void {
         var integrationPointId = ctx.artifactId;
         var workspaceId = ctx.workspaceId;
 
-        var buttonState = getButtonStateObject(convenienceApi, ctx, workspaceId, integrationPointId);
-        buttonState.then(function (btnStateObj: ButtonState) {
-            var consoleContent = generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPointId, btnStateObj);
 
-            return consoleApi.destroy().then(function () {
-                return consoleApi.containersPromise;
-            }).then(function (containers) {
-                if (consoleContent) {
-                    containers.rootElement.appendChild(consoleContent);
-                }
-                let relativityWindow = convenienceApi.utilities.getRelativityPageBaseWindow();
-                checkIfRefreshIsNeeded(btnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, relativityWindow.location.href);
+        return consoleApi.destroy().then(function () {
+            return consoleApi.containersPromise;
+         }).then(function (containers) {
+               var buttonState = getButtonStateObject(convenienceApi, ctx, workspaceId, integrationPointId);
+               buttonState.then(function (btnStateObj: ButtonState) {
+                    var consoleContent = generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPointId, btnStateObj);
+                   if (consoleContent) {
+                        containers.rootElement.appendChild(consoleContent);
+                    }
+
+                    let relativityWindow = convenienceApi.utilities.getRelativityPageBaseWindow();
+                    checkIfRefreshIsNeeded(btnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, relativityWindow.location.href);
             });
         })
     })
@@ -28,14 +29,14 @@ export function createConsole(convenienceApi: IConvenienceApi): void {
 
 function checkIfRefreshIsNeeded(btnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, currentPage): void {
     var buttonState = getButtonStateObject(convenienceApi, ctx, workspaceId, integrationPointId);
-    let relativityWindow = convenienceApi.utilities.getRelativityPageBaseWindow();
     buttonState.then(function (newBtnStateObj: ButtonState) {
+        let relativityWindow = convenienceApi.utilities.getRelativityPageBaseWindow().location.href;
         if (typeof newBtnStateObj === 'undefined') {
             throw new TypeError("Button state is undefined");
         }
         else if(compareButtonStates(btnStateObj, newBtnStateObj)) {
-            if (currentPage === relativityWindow.location.href) {
-                setTimeout(checkIfRefreshIsNeeded, 5000, newBtnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, relativityWindow.location.href);
+            if (currentPage === relativityWindow) {
+                setTimeout(checkIfRefreshIsNeeded, 5000, newBtnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, relativityWindow);
             }
         } else {
             var consoleContent = generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPointId, newBtnStateObj);
@@ -43,14 +44,18 @@ function checkIfRefreshIsNeeded(btnStateObj, convenienceApi, ctx, workspaceId, i
             return convenienceApi.console.destroy().then(function () {
                 return convenienceApi.console.containersPromise;
             }).then(function (containers) {
-                containers.rootElement.appendChild(consoleContent);
-                if (currentPage === relativityWindow.location.href) {
-                    setTimeout(checkIfRefreshIsNeeded, 5000, newBtnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, relativityWindow.location.href);
+                if (currentPage === relativityWindow) {
+                    console.log("same page")
+                    containers.rootElement.appendChild(consoleContent);
+                    setTimeout(checkIfRefreshIsNeeded, 5000, newBtnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, relativityWindow);
+                } else {
+                    console.log("diff page")
                 }
             });
         }
     }).catch(err => {
         console.log("Error occured while getting button state, will try once again in 5 secs", err)
+        let relativityWindow = convenienceApi.utilities.getRelativityPageBaseWindow();
         if (currentPage === relativityWindow.location.href) {
             setTimeout(checkIfRefreshIsNeeded, 5000, btnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, relativityWindow.location.href);
         }
