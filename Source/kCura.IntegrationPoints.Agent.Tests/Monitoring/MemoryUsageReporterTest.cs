@@ -1,5 +1,4 @@
 ﻿using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
-using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Metrics;
 using Moq;
 using NUnit.Framework;
@@ -7,6 +6,7 @@ using Relativity.API;
 using Relativity.Telemetry.APM;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private Mock<IProcessMemoryHelper> _processMemoryHelper;
         private MemoryUsageReporter _sut;
         private Mock<IAppDomainMonitoringEnabler> _appDomainMonitoringEnablerMock;
-        private Mock<IRemovableAgent> _agentMock;
+        private FakeAgent _agent;
         private const string _jobDetails = "jobDetails";
         private const string _jobType = "jobId";
         private const long _jobId = 123456789;
@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _apmMock = new Mock<IAPM>();
             _processMemoryHelper = new Mock<IProcessMemoryHelper>();
             _appDomainMonitoringEnablerMock = new Mock<IAppDomainMonitoringEnabler>();
-            _agentMock = new Mock<IRemovableAgent>();
+            _agent = new FakeAgent();
 
             _apmMock.Setup(x => x.CountOperation(It.IsAny<string>(),
                     It.IsAny<Guid>(),
@@ -62,9 +62,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                     { "CpuUsageProcess",  _dummyMemorySize}
                 });
             _appDomainMonitoringEnablerMock.Setup(x => x.EnableMonitoring()).Returns(true);
-            _agentMock.Setup(x => x.ToBeRemoved).Returns(false);
+            _agent.SetToBeRemoved(false);
             _sut = new MemoryUsageReporter(_apmMock.Object, _loggerMock.Object, _ripMetricMock.Object, _processMemoryHelper.Object, 
-                _appDomainMonitoringEnablerMock.Object, _agentMock.Object);
+                _appDomainMonitoringEnablerMock.Object, _agent);
         }
 
         [Test]
@@ -149,7 +149,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 .Returns(_counterMeasure.Object);
 
             MemoryUsageReporter sutWithErrors = new MemoryUsageReporter(apmMockWithErrors.Object, _loggerMock.Object, _ripMetricMock.Object, 
-                _processMemoryHelper.Object,_appDomainMonitoringEnablerMock.Object, _agentMock.Object);
+                _processMemoryHelper.Object,_appDomainMonitoringEnablerMock.Object, _agent);
 
             int metricsProperlySend = 3;
             int metricsWithError = 2;
@@ -233,23 +233,15 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 It.IsAny<bool>(),
                 It.IsAny<int?>(),
                 It.IsAny<Dictionary<string, object>>(),
-                It.IsAny<IEnumerable<ISink>>()), 
-                Times.Never);
-
-            _loggerMock.Verify(x => x.LogInformation(
-                //It.Is<string>(message => message == logMessage),
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<Dictionary<string, object>>(),
-                It.IsAny<string>()),
-                Times.Once);
+                It.IsAny<IEnumerable<ISink>>()), Times.Never);
         }
 
         [Test]
         public void Execute_ShouldNotSendMetricsWhenAgentToBeRemovedIsSetToTrue()
         {
             // Arrange
-            _agentMock.Setup(x => x.ToBeRemoved).Returns(true);
+            string logMessage = "Memory metrics can't be sent. Agent, agentId = {agentId}, is marked as ToBeRemoved.";
+            _agent.SetToBeRemoved(true);
 
             // Act
             IDisposable subscription = _sut.ActivateTimer(1, _jobId, _jobDetails, _jobType);
@@ -264,8 +256,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 It.IsAny<bool>(),
                 It.IsAny<int?>(),
                 It.IsAny<Dictionary<string, object>>(),
-                It.IsAny<IEnumerable<ISink>>()), 
-                Times.Never);
+                It.IsAny<IEnumerable<ISink>>()), Times.Never);
+
+            _loggerMock.Verify(x => x.LogInformation(
+                It.Is<string>(message => message == logMessage),
+                0),
+                Times.AtLeastOnce);
 
             subscription.Dispose();
         }
@@ -294,6 +290,22 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 }
             }
             return true;
+        }
+
+        public class FakeAgent : Agent
+        {
+            private int _jobId;
+            public void SetAgentId(int agentId)
+            {
+                _jobId = 1;
+                typeof(Agent).GetField("AgentID", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
+                    .SetValue(this, _jobId);
+            }
+
+            public void SetToBeRemoved(bool toBeRemovedValue)
+            {
+                ToBeRemoved = toBeRemovedValue;
+            }
         }
     }
 }
