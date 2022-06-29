@@ -11,7 +11,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 {
 	internal static class IntegrationPointEditPageExtensions
 	{
-		public static IntegrationPointViewPage CreateSavedSearchToFolderIntegrationPoint(
+		public static IntegrationPointViewPage CreateSavedSearchToFolderIntegrationPointWithNatives(
 			this IntegrationPointEditPage integrationPointEditPage,
 			string integrationPointName,
 			Workspace destinationWorkspace,
@@ -35,6 +35,32 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 
 			return integrationPointViewPage;
 		}
+
+        public static IntegrationPointViewPage CreateSavedSearchToFolderIntegrationPointWithImages(
+            this IntegrationPointEditPage integrationPointEditPage,
+            string integrationPointName,
+            Workspace destinationWorkspace,
+            string savedSearchName)
+        {
+			string emailRecipients = "Adler@Sieben.com";
+            RelativityProviderConnectToSourcePage relativityProviderConnectToSourcePage = FillOutIntegrationPointEditPageForRelativityProvider(integrationPointEditPage, integrationPointName, emailRecipients);
+			
+			RelativityProviderMapFieldsPage relativityProviderMapFieldsPage = FillOutRelativityProviderConnectToSourcePage(
+                relativityProviderConnectToSourcePage, destinationWorkspace,
+                RelativityProviderSources.SavedSearch, savedSearchName);
+
+            IntegrationPointViewPage integrationPointViewPage = relativityProviderMapFieldsPage
+                .ApplyModel(new RelativityProviderMapFieldsWithImages
+                {
+                    Overwrite = RelativityProviderOverwrite.AppendOverlay,
+                    MultiSelectField = RelativityProviderMultiSelectField.MergeValues,
+					CopyImages = YesNo.Yes,
+                    ImagePrecedence = RelativityProviderImagePrecedence.OriginalImages,
+					CopyFilesToRepository = YesNo.Yes
+                }).Save.ClickAndGo();
+
+            return integrationPointViewPage;
+        }
 
 		public static IntegrationPointViewPage CreateProductionToFolderIntegrationPoint(
 			this IntegrationPointEditPage integrationPointEditPage,
@@ -80,6 +106,16 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 			{
 				Name = integrationPointName,
 				Destination = IntegrationPointDestinations.Relativity
+			}).RelativityProviderNext.ClickAndGo();
+		}
+
+		private static RelativityProviderConnectToSourcePage FillOutIntegrationPointEditPageForRelativityProvider(IntegrationPointEditPage integrationPointEditPage, string integrationPointName, string emailRecipients)
+		{
+			return integrationPointEditPage.ApplyModel(new IntegrationPointEditExport
+			{
+				Name = integrationPointName,
+				Destination = IntegrationPointDestinations.Relativity,
+				EmailRecipients = emailRecipients
 			}).RelativityProviderNext.ClickAndGo();
 		}
 

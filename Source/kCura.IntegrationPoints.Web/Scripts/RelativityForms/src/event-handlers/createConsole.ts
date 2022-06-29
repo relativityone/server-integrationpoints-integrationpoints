@@ -16,7 +16,9 @@ export function createConsole(convenienceApi: IConvenienceApi): void {
             return consoleApi.destroy().then(function () {
                 return consoleApi.containersPromise;
             }).then(function (containers) {
-                containers.rootElement.appendChild(consoleContent);
+                if (consoleContent) {
+                    containers.rootElement.appendChild(consoleContent);
+                }
                 let relativityWindow = convenienceApi.utilities.getRelativityPageBaseWindow();
                 checkIfRefreshIsNeeded(btnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, relativityWindow.location.href);
             });
@@ -74,18 +76,28 @@ async function getButtonStateObject(convenienceApi, ctx, workspaceId, integratio
         url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/" + workspaceId + "/api/ConsoleState/GetConsoleState" + '?workspaceId=' + workspaceId + '&integrationPointArtifactId=' + integrationPointId
     };
 
-    var resp = await convenienceApi.relativityHttpClient.get(request.url, request.options)
-        .then(function (result) {
-            if (!result.ok) {
-                console.log("Unable to generate button console - failed to get button state.");
-            } else if (result.ok) {
-                return result.json();
-            }
-        });
-    return resp;
+    try {
+        var resp = await convenienceApi.relativityHttpClient.get(request.url, request.options)
+            .then(function (result) {
+                if (!result.ok) {
+                    console.log("Unable to generate button console - failed to get button state.");
+                } else if (result.ok) {
+                    return result.json();
+                }
+            });
+        return resp;
+    } catch (err) {
+        console.log("error in catch: ", err)
+        setTimeout(getButtonStateObject, 2000, convenienceApi, ctx, workspaceId, integrationPointId);
+    }
+
+    
 }
 
 function generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPointId, btnStateObj) {
+    if (typeof btnStateObj === 'undefined') {
+        return null;
+    }
 
     var buttonState: ButtonState = btnStateObj
 

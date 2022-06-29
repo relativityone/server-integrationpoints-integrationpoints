@@ -572,60 +572,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 			Assert.AreEqual("", returnedString);
 		}
 
-		[Test]
-		public void SyncData_RowErrors_ShouldRaiseRowErrorEventOnException()
-		{
-			//ARRANGE 
-			const int fieldArtifactId = 4000001;
-			IEnumerable<FieldMap> fieldMap = new List<FieldMap>()
-			{
-				new FieldMap()
-				{
-					DestinationField = new FieldEntry()
-					{
-						FieldIdentifier = fieldArtifactId.ToString()
-					},
-					FieldMapType = FieldMapTypeEnum.Identifier,
-					SourceField = new FieldEntry()
-					{
-						FieldIdentifier = "Any"
-					}
-				},
-			};
-
-			//ARRANGE - RDO Synchronizer 
-			_relativityFieldQuery.Setup(x => x.GetFieldsForRdo(It.IsAny<int>())).Returns(new List<RelativityObject>()
-			{
-				new RelativityObject()
-				{
-					ArtifactID = fieldArtifactId
-				}
-			});
-
-			RdoSynchronizer rdoSynchronizer = PrepareSut();
-
-			//ARRANGE - Next row enumerator 
-			Mock<IEnumerable<IDictionary<FieldEntry, object>>> data = new Mock<IEnumerable<IDictionary<FieldEntry, object>>>();
-			Mock<IEnumerator<IDictionary<FieldEntry, object>>> enumerator = new Mock<IEnumerator<IDictionary<FieldEntry, object>>>();
-			enumerator.Setup(x => x.MoveNext()).Throws(new Exception("error"));
-			data.Setup(x => x.GetEnumerator()).Returns(enumerator.Object);
-
-			//ARRANGE - Events endpoint 
-			List<string> receivedEvents = new List<string>();
-			rdoSynchronizer.OnDocumentError += (documentIdentifier, stringError) =>
-			{
-				receivedEvents.Add(stringError);
-			};
-
-			//ACT 
-			rdoSynchronizer.SyncData(data.Object, fieldMap, JsonConvert.SerializeObject(new ImportSettings()), null);
-
-			//ASSERT 
-			Assert.AreEqual(1, receivedEvents.Count);
-			Assert.AreEqual("error", receivedEvents.First());
-
-		}
-
 		/// <summary>
 		/// Test whether options are parsed correctly when getting the mappable fields
 		/// </summary>

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core.Properties;
 
