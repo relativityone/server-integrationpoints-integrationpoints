@@ -6,7 +6,6 @@ using Relativity.API;
 using Relativity.Telemetry.APM;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
