@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
+using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Metrics;
 using Moq;
 using NUnit.Framework;
@@ -20,6 +21,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private Mock<IProcessMemoryHelper> _processMemoryHelper;
         private MemoryUsageReporter _sut;
         private Mock<IAppDomainMonitoringEnabler> _appDomainMonitoringEnablerMock;
+        private Mock<IRemovableAgent> _agentMock;
         private const string _jobDetails = "jobDetails";
         private const string _jobType = "jobId";
         private const long _jobId = 123456789;
@@ -34,6 +36,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _apmMock = new Mock<IAPM>();
             _processMemoryHelper = new Mock<IProcessMemoryHelper>();
             _appDomainMonitoringEnablerMock = new Mock<IAppDomainMonitoringEnabler>();
+            _agentMock = new Mock<IRemovableAgent>();
 
             _apmMock.Setup(x => x.CountOperation(It.IsAny<string>(),
                     It.IsAny<Guid>(),
@@ -59,7 +62,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                     { "CpuUsageProcess",  _dummyMemorySize}
                 });
             _appDomainMonitoringEnablerMock.Setup(x => x.EnableMonitoring()).Returns(true);
-            _sut = new MemoryUsageReporter(_apmMock.Object, _loggerMock.Object, _ripMetricMock.Object, _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object);
+            _agentMock.Setup(x => x.ToBeRemoved).Returns(false);
+            _sut = new MemoryUsageReporter(_apmMock.Object, _loggerMock.Object, _ripMetricMock.Object, _processMemoryHelper.Object, 
+                _appDomainMonitoringEnablerMock.Object, _agentMock.Object);
         }
 
         [Test]
@@ -143,7 +148,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 .Returns(_counterMeasure.Object)
                 .Returns(_counterMeasure.Object);
 
-            MemoryUsageReporter sutWithErrors = new MemoryUsageReporter(apmMockWithErrors.Object, _loggerMock.Object, _ripMetricMock.Object, _processMemoryHelper.Object,_appDomainMonitoringEnablerMock.Object);
+            MemoryUsageReporter sutWithErrors = new MemoryUsageReporter(apmMockWithErrors.Object, _loggerMock.Object, _ripMetricMock.Object, 
+                _processMemoryHelper.Object,_appDomainMonitoringEnablerMock.Object, _agentMock.Object);
 
             int metricsProperlySend = 3;
             int metricsWithError = 2;
@@ -227,8 +233,43 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 It.IsAny<bool>(),
                 It.IsAny<int?>(),
                 It.IsAny<Dictionary<string, object>>(),
-                It.IsAny<IEnumerable<ISink>>()), Times.Never);
+                It.IsAny<IEnumerable<ISink>>()), 
+                Times.Never);
+
+            _loggerMock.Verify(x => x.LogInformation(
+                //It.Is<string>(message => message == logMessage),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, object>>(),
+                It.IsAny<string>()),
+                Times.Once);
         }
+
+        [Test]
+        public void Execute_ShouldNotSendMetricsWhenAgentToBeRemovedIsSetToTrue()
+        {
+            // Arrange
+            _agentMock.Setup(x => x.ToBeRemoved).Returns(true);
+
+            // Act
+            IDisposable subscription = _sut.ActivateTimer(1, _jobId, _jobDetails, _jobType);
+            Thread.Sleep(100);
+
+            // Assert
+            _apmMock.Verify(x => x.CountOperation(
+                It.IsAny<string>(),
+                It.IsAny<Guid>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<bool>(),
+                It.IsAny<int?>(),
+                It.IsAny<Dictionary<string, object>>(),
+                It.IsAny<IEnumerable<ISink>>()), 
+                Times.Never);
+
+            subscription.Dispose();
+        }
+
         private bool CheckIfHasAllValues(Dictionary<string, object> dict)
         {
             Dictionary<string, object> valuesToBeSend = new Dictionary<string, object>
