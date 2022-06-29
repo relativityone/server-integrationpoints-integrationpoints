@@ -250,7 +250,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _agent.SetToBeRemoved(true);
 
             // Act
-            IDisposable subscription = _sut.ActivateTimer(1, _jobId, _jobDetails, _jobType);
+            IDisposable subscription = _sut.ActivateTimer(_jobId, _jobDetails, _jobType);
             Thread.Sleep(100);
 
             // Assert
