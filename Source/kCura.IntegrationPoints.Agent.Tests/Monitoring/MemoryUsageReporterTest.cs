@@ -294,14 +294,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 
         public class FakeAgent : Agent
         {
-            private int _jobId;
-            public void SetAgentId(int agentId)
-            {
-                _jobId = 1;
-                typeof(Agent).GetField("AgentID", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
-                    .SetValue(this, _jobId);
-            }
-
             public void SetToBeRemoved(bool toBeRemovedValue)
             {
                 ToBeRemoved = toBeRemovedValue;
