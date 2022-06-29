@@ -102,7 +102,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 			if (_queueJobValidator == null)
 			{
-				_queueJobValidator = new QueueJobValidator(Helper);
+				_queueJobValidator = new QueueJobValidator(Helper, Logger);
 			}
 
 			if (_dateTime == null)
@@ -209,13 +209,21 @@ namespace kCura.ScheduleQueue.AgentBase
                     AgentCorrelationContext context = GetCorrelationContext(nextJob);
                     using (Logger.LogContextPushProperties(context))
                     {
-                        LogJobInformation(nextJob);
-
                         PreValidationResult validationResult = PreExecuteJobValidation(nextJob);
 
 						if(!validationResult.ShouldExecute)
                         {
-							FinalizeJobExecution(nextJob, jobResult);
+							Logger.LogInformation("Job {jobId} is not valid. It will be removed from the queue.", nextJob.JobId);
+							
+							TaskResult failedJobResult = new TaskResult
+							{ 
+								Status = TaskStatusEnum.Fail,
+								Exceptions = new List<Exception> { validationResult.Exception }
+							};
+
+							nextJob.MarkJobAsFailed(validationResult.Exception, true);
+							FinalizeJobExecution(nextJob, failedJobResult);
+							
 							nextJob = GetNextQueueJob();
 							continue;
 						}
@@ -310,9 +318,13 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void FinalizeJobExecution(Job job, TaskResult taskResult)
 		{
-			Logger.LogInformation("Finalize JobExecution: {job}", job.ToString());
+			Logger.LogInformation("Finalize JobExecution with result: {result}, Job: {job}", taskResult.Status, job.ToString());
+			
 			FinalizeJobResult result = _jobService.FinalizeJob(job, ScheduleRuleFactory, taskResult);
-			LogJobState(job, result.JobState, null, result.Details);
+
+			Exception exception = taskResult.Exceptions.Any() ? new AggregateException(taskResult.Exceptions) : null;
+			LogJobState(job, result.JobState, exception, result.Details);
+			
 			LogFinalizeJob(job, result);
 		}
 
@@ -440,11 +452,6 @@ namespace kCura.ScheduleQueue.AgentBase
 		private void LogValidationJobFailed(Job job, PreValidationResult result)
 		{
 			Logger.LogInformation("Job {jobId} validation failed with message: {message}", job.JobId, result.Exception?.Message);
-		}
-
-		private void LogJobInformation(Job job)
-		{
-			Logger.LogInformation("Job ID {jobId} has been picked up from the queue by Agent ID {agentId}. Job Information: {@job}", job.JobId, _agentId, job.RemoveSensitiveData());
 		}
 
 		private void LogAllJobsInTheQueue()

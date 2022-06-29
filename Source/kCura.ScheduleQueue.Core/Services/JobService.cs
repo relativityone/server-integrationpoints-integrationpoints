@@ -54,7 +54,13 @@ namespace kCura.ScheduleQueue.Core.Services
 				row = DataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID, resurceGroupIdsArray);
 			}
 
-			return CreateJob(row);
+			Job job = CreateJob(row);
+			if(job != null)
+			{
+				LogJobInformation(job, agentID);
+			}	
+
+			return job;
 		}
 
 		public DateTime? GetJobNextUtcRunDateTime(Job job, IScheduleRuleFactory scheduleRuleFactory, TaskResult taskResult)
@@ -334,6 +340,12 @@ namespace kCura.ScheduleQueue.Core.Services
 		}
 
 		#region Logging
+
+		private void LogJobInformation(Job job, int agentId)
+		{
+			_log.LogInformation("Job ID {jobId} has been picked up from the queue by Agent ID {agentId}. Job Information: {@job}", job.JobId, agentId, job.RemoveSensitiveData());
+		}
+
 		private void LogUpdateJobDetails(Job job)
 		{
 			_log.LogInformation("Attempting to update JobDetails for job with ID: {jobId} - JobInfo: {jobInfo}", job.JobId, job.ToString());

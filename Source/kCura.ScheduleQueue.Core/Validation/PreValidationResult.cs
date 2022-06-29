@@ -4,7 +4,7 @@ namespace kCura.ScheduleQueue.Core.Validation
 {
 	public class PreValidationResult
 	{
-		public bool IsValid { get; set; }
+		public bool IsValid { get; private set; } = true;
 
 		public bool ShouldExecute { get; private set; } = true;
 

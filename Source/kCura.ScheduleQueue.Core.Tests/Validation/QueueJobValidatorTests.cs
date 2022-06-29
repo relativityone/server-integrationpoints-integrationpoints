@@ -122,11 +122,13 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
 			Mock<IServicesMgr> servicesMgr = new Mock<IServicesMgr>();
 			_objectManagerMock = new Mock<IObjectManager>();
 
+			Mock<IAPILog> log = new Mock<IAPILog>();
+
 			helper.Setup(x => x.GetServicesManager()).Returns(servicesMgr.Object);
 			servicesMgr.Setup(x => x.CreateProxy<IObjectManager>(It.IsAny<ExecutionIdentity>()))
 				.Returns(_objectManagerMock.Object);
 
-			return new QueueJobValidator(helper.Object);
+			return new QueueJobValidator(helper.Object, log.Object);
 		}
 
 		private void SetUpWorkspaceExists(bool exists)
