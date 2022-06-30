@@ -7,6 +7,7 @@ using Relativity.API;
 using Relativity.Telemetry.APM;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
@@ -28,6 +29,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private const int _dummyMemorySize = 12345;
 
         private readonly TimeSpan _MEMORY_USAGE_INTERVAL = TimeSpan.FromMilliseconds(1);
+        private readonly string _METRIC_RUNNING_JOB_TIME_EXCEEDED_NAME = "Relativity.IntegrationPoints.Performance.RunningJobTimeExceeded";
 
         [SetUp]
         public void SetUp()
@@ -237,6 +239,29 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 It.IsAny<int?>(),
                 It.IsAny<Dictionary<string, object>>(),
                 It.IsAny<IEnumerable<ISink>>()), Times.Never);
+        }
+
+        [Test]
+        public void Execute_RunningJobTimeMetricShouldBeSentWhenThresholdTimeIsExceeded()
+        {
+            //Arrange
+            _appDomainMonitoringEnablerMock.Setup(x => x.EnableMonitoring()).Returns(true);
+
+            //Act
+            IDisposable subscription = _sut.ActivateTimer(_jobId, _jobDetails, _jobType);
+            _sut.GetType().GetField("_startDateTime", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(_sut, DateTime.Parse("2015-05-16T05:50:06"));
+            Thread.Sleep(100);
+
+            //Assert
+            _apmMock.Verify(x => x.CountOperation(
+                _METRIC_RUNNING_JOB_TIME_EXCEEDED_NAME,
+                It.IsAny<Guid>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<bool>(),
+                It.IsAny<int?>(),
+                It.IsAny<Dictionary<string, object>>(),
+                It.IsAny<IEnumerable<ISink>>()), Times.Once);
         }
 
         private bool CheckIfHasAllValues(Dictionary<string, object> dict)
