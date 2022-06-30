@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
         {
             try
             {
-                Dictionary<string, object> customData = new Dictionary<string, object>()
+                Dictionary<string, object> runningJobTimeCustomData = new Dictionary<string, object>()
                 {
                     { "r1.team.id", "PTCI-RIP" },
                     { "JobId", jobId },
@@ -62,11 +62,18 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
                 const int runningJobTimeThreshold = 8;
                 if (_runningJobTimeExceededCheck && (DateTime.Now - _startDateTime).Hours > runningJobTimeThreshold)
                 {
-                    _apmClient.CountOperation(_METRIC_RUNNING_JOB_TIME_EXCEEDED_NAME, correlationID: workflowId, customData: customData)
+                    _apmClient.CountOperation(_METRIC_RUNNING_JOB_TIME_EXCEEDED_NAME, correlationID: workflowId, customData: runningJobTimeCustomData)
                         .Write();
 
                     _runningJobTimeExceededCheck = false;
                 }
+
+                Dictionary<string, object> customData = new Dictionary<string, object>()
+                {
+                    { "JobId", jobId },
+                    { "JobType", jobType },
+                    { "WorkflowId", workflowId}
+                };
 
                 _processMemoryHelper.GetApplicationSystemStats().ToList().ForEach(x => customData.Add(x.Key, x.Value));
 

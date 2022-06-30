@@ -238,6 +238,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 It.IsAny<Dictionary<string, object>>(),
                 It.IsAny<IEnumerable<ISink>>()), Times.Never);
         }
+
         private bool CheckIfHasAllValues(Dictionary<string, object> dict)
         {
             Dictionary<string, object> valuesToBeSend = new Dictionary<string, object>
