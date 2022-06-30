@@ -20,6 +20,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
         private readonly IProcessMemoryHelper _processMemoryHelper;
         private readonly IAppDomainMonitoringEnabler _appDomainMonitoringEnabler;
         private readonly IMonitoringConfig _config;
+        private readonly TimeSpan _runningJobTimeThreshold;
 
         private static string _METRIC_LOG_NAME = "Relativity.IntegrationPoints.Performance.System";
         private static string _METRIC_RUNNING_JOB_TIME_EXCEEDED_NAME = "Relativity.IntegrationPoints.Performance.RunningJobTimeExceeded";
@@ -37,6 +38,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
             _appDomainMonitoringEnabler = appDomainMonitoringEnabler;
             _config = config;
             _runningJobTimeExceededCheck = true;
+            _runningJobTimeThreshold = TimeSpan.FromHours(8);
         }
 
         public IDisposable ActivateTimer(long jobId, string jobDetails, string jobType)
@@ -59,8 +61,8 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
                     { "WorkflowId", workflowId}
                 };
 
-                TimeSpan runningJobTimeThreshold = TimeSpan.FromHours(8);
-                if (_runningJobTimeExceededCheck && (DateTime.Now - _startDateTime) > runningJobTimeThreshold)
+                
+                if (_runningJobTimeExceededCheck && (DateTime.Now - _startDateTime) > _runningJobTimeThreshold)
                 {
                     _apmClient.CountOperation(_METRIC_RUNNING_JOB_TIME_EXCEEDED_NAME, correlationID: workflowId, customData: runningJobTimeCustomData)
                         .Write();
