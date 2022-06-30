@@ -245,7 +245,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         public void Execute_RunningJobTimeMetricShouldBeSentWhenThresholdTimeIsExceeded()
         {
             //Arrange
-            _appDomainMonitoringEnablerMock.Setup(x => x.EnableMonitoring()).Returns(true);
 
             //Act
             IDisposable subscription = _sut.ActivateTimer(_jobId, _jobDetails, _jobType);
