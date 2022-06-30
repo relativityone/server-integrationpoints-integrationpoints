@@ -22,7 +22,6 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter
         private readonly IDateTime _dateTime;
         private readonly IToggleProvider _toggleProvider;
         private readonly IAPM _apmClient;
-        private readonly TimeSpan _runningJobTimeThreshold;
 
         private static readonly string _METRIC_RUNNING_JOB_TIME_EXCEEDED_NAME = "Relativity.IntegrationPoints.Performance.RunningJobTimeExceeded";
 
@@ -36,7 +35,6 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter
             _toggleProvider = toggleProvider;
             _apmClient = apmClient;
             _runningJobTimeExceededCheck = true;
-            _runningJobTimeThreshold = TimeSpan.FromHours(8);
         }
 
         public IDisposable ActivateHeartbeat(long jobId)
@@ -55,8 +53,8 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter
         {
             try
             {
-                SendMetricWhenJobRunningTimeThresholdIsExceeded(jobId);
                 DateTime nowUtc = _dateTime.UtcNow;
+                SendMetricWhenJobRunningTimeThresholdIsExceeded(jobId, nowUtc);
                 int affectedJobs = _queueManager.Heartbeat(jobId, nowUtc)
                     .Execute();
 
@@ -90,9 +88,9 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter
             return true;
         }
 
-        private void SendMetricWhenJobRunningTimeThresholdIsExceeded(long jobId)
+        private void SendMetricWhenJobRunningTimeThresholdIsExceeded(long jobId, DateTime utcNow)
         {
-            if (_runningJobTimeExceededCheck && (_dateTime.UtcNow - _startDateTime) > _runningJobTimeThreshold)
+            if (_runningJobTimeExceededCheck && (utcNow - _startDateTime) > _config.RunningJobTimeThreshold)
             {
                 Dictionary<string, object> runningJobTimeCustomData = new Dictionary<string, object>()
                 {

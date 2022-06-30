@@ -28,9 +28,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 
         private readonly DateTime _EXPECTED_HEARTBEAT_TIME = DateTime.Today;
         private readonly string _METRIC_RUNNING_JOB_TIME_EXCEEDED_NAME = "Relativity.IntegrationPoints.Performance.RunningJobTimeExceeded";
+
         private const long _JOB_ID = 10;
 
-        private readonly TimeSpan _timeToExceedThreshold = TimeSpan.FromHours(10);
+        
 
 
         [SetUp]
@@ -150,13 +151,15 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         public void Execute_ShouldSendMetric_WhenRunningJobTimeThresholdTimeIsExceeded()
         {
             //Arrange
+            TimeSpan timeToExceedThreshold = TimeSpan.FromHours(10);
             _configFake.Setup(x => x.HeartbeatInterval).Returns(TimeSpan.FromMilliseconds(10));
+            _configFake.Setup(x => x.RunningJobTimeThreshold).Returns(TimeSpan.FromHours(8));
 
             //Act
             using (_sut.ActivateHeartbeat(_JOB_ID))
             {
                 Thread.Sleep(100);
-                _dateTimeFake.Setup(x => x.UtcNow).Returns(_EXPECTED_HEARTBEAT_TIME + _timeToExceedThreshold);
+                _dateTimeFake.Setup(x => x.UtcNow).Returns(_EXPECTED_HEARTBEAT_TIME + timeToExceedThreshold);
                 Thread.Sleep(100);
             }
 
