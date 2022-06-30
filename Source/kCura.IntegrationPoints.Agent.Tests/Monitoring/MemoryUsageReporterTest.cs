@@ -8,7 +8,6 @@ using Relativity.Telemetry.APM;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using SystemInterface;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 {
