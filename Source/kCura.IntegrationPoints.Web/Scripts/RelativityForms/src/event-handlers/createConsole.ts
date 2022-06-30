@@ -45,11 +45,8 @@ function checkIfRefreshIsNeeded(btnStateObj, convenienceApi, ctx, workspaceId, i
                 return convenienceApi.console.containersPromise;
             }).then(function (containers) {
                 if (currentPage === relativityWindow) {
-                    console.log("same page")
                     containers.rootElement.appendChild(consoleContent);
                     setTimeout(checkIfRefreshIsNeeded, 5000, newBtnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, relativityWindow);
-                } else {
-                    console.log("diff page")
                 }
             });
         }

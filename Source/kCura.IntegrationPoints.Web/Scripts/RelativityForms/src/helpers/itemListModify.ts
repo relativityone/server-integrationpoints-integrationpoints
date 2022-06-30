@@ -19,7 +19,6 @@ export function updeteJobHistoryTable(convenienceApi: IConvenienceApi, previousP
                 console.log("Error occured while updating job history table data, will try once again in 5 secs", err)
                 setTimeout(updeteJobHistoryTable, 5000, convenienceApi, currentPage, workspaceId, artifactTypeID, viewId, integrationPointId, fieldId);
             }
-        } else {
         }
     })
 }
