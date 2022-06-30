@@ -59,8 +59,8 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
                     { "WorkflowId", workflowId}
                 };
 
-                const int runningJobTimeThreshold = 8;
-                if (_runningJobTimeExceededCheck && (DateTime.Now - _startDateTime).Hours > runningJobTimeThreshold)
+                TimeSpan runningJobTimeThreshold = TimeSpan.FromHours(8);
+                if (_runningJobTimeExceededCheck && (DateTime.Now - _startDateTime) > runningJobTimeThreshold)
                 {
                     _apmClient.CountOperation(_METRIC_RUNNING_JOB_TIME_EXCEEDED_NAME, correlationID: workflowId, customData: runningJobTimeCustomData)
                         .Write();
