@@ -2,8 +2,10 @@
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Data;
 using Relativity.API;
+using Relativity.Telemetry.APM;
 using Relativity.Toggles;
 using System;
+using System.Collections.Generic;
 using System.Reactive.Disposables;
 using System.Threading;
 
@@ -11,25 +13,36 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter
 {
     public class HeartbeatReporter : IHeartbeatReporter
     {
+        private DateTime _startDateTime;
+        private bool _runningJobTimeExceededCheck;
+
         private readonly IAPILog _log;
         private readonly IQueueQueryManager _queueManager;
         private readonly IMonitoringConfig _config;
         private readonly IDateTime _dateTime;
         private readonly IToggleProvider _toggleProvider;
+        private readonly IAPM _apmClient;
+        private readonly TimeSpan _runningJobTimeThreshold;
+
+        private static readonly string _METRIC_RUNNING_JOB_TIME_EXCEEDED_NAME = "Relativity.IntegrationPoints.Performance.RunningJobTimeExceeded";
 
         public HeartbeatReporter(IQueueQueryManager queueManager, IMonitoringConfig config,
-            IDateTime dateTime, IAPILog log, IToggleProvider toggleProvider)
+            IDateTime dateTime, IAPILog log, IToggleProvider toggleProvider, IAPM apmClient)
         {
             _queueManager = queueManager;
             _config = config;
             _dateTime = dateTime;
             _log = log;
             _toggleProvider = toggleProvider;
+            _apmClient = apmClient;
+            _runningJobTimeExceededCheck = true;
+            _runningJobTimeThreshold = TimeSpan.FromHours(8);
         }
 
         public IDisposable ActivateHeartbeat(long jobId)
         {
-            if(!_toggleProvider.IsEnabled<EnableHeartbeatToggle>())
+            _startDateTime = _dateTime.UtcNow;
+            if (!_toggleProvider.IsEnabled<EnableHeartbeatToggle>())
             {
                 _log.LogInformation("EnableHeartbeatToggle is disabled. JobID {jobId} heartbeat won't be updated", jobId);
                 return Disposable.Empty;
@@ -42,6 +55,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter
         {
             try
             {
+                SendMetricWhenJobRunningTimeThresholdIsExceeded(jobId);
                 DateTime nowUtc = _dateTime.UtcNow;
                 int affectedJobs = _queueManager.Heartbeat(jobId, nowUtc)
                     .Execute();
@@ -74,6 +88,23 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter
             }
 
             return true;
+        }
+
+        private void SendMetricWhenJobRunningTimeThresholdIsExceeded(long jobId)
+        {
+            if (_runningJobTimeExceededCheck && (_dateTime.UtcNow - _startDateTime) > _runningJobTimeThreshold)
+            {
+                Dictionary<string, object> runningJobTimeCustomData = new Dictionary<string, object>()
+                {
+                    { "r1.team.id", "PTCI-RIP" },
+                    { "JobId", jobId }
+                };
+
+                _apmClient.CountOperation(_METRIC_RUNNING_JOB_TIME_EXCEEDED_NAME, customData: runningJobTimeCustomData)
+                    .Write();
+
+                _runningJobTimeExceededCheck = false;
+            }
         }
     }
 }

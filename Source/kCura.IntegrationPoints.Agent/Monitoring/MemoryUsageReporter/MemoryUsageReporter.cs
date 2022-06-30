@@ -11,21 +11,15 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 {
     public class MemoryUsageReporter : IMemoryUsageReporter
     {
-        private DateTime _startDateTime;
-        private bool _runningJobTimeExceededCheck;
-
         private readonly IAPM _apmClient;
         private readonly IAPILog _logger;
         private readonly IRipMetrics _ripMetric;
         private readonly IProcessMemoryHelper _processMemoryHelper;
         private readonly IAppDomainMonitoringEnabler _appDomainMonitoringEnabler;
         private readonly IMonitoringConfig _config;
-        private readonly TimeSpan _runningJobTimeThreshold;
 
         private static string _METRIC_LOG_NAME = "Relativity.IntegrationPoints.Performance.System";
-        private static string _METRIC_RUNNING_JOB_TIME_EXCEEDED_NAME = "Relativity.IntegrationPoints.Performance.RunningJobTimeExceeded";
         private static string _METRIC_NAME = "IntegrationPoints.Performance.System";
-
 
         public MemoryUsageReporter(IAPM apmClient, IAPILog logger,
             IRipMetrics ripMetric,IProcessMemoryHelper processMemoryHelper,
@@ -37,13 +31,10 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
             _ripMetric = ripMetric;
             _appDomainMonitoringEnabler = appDomainMonitoringEnabler;
             _config = config;
-            _runningJobTimeExceededCheck = true;
-            _runningJobTimeThreshold = TimeSpan.FromHours(8);
         }
 
         public IDisposable ActivateTimer(long jobId, string jobDetails, string jobType)
         {
-            _startDateTime = DateTime.Now;
             return _appDomainMonitoringEnabler.EnableMonitoring()
                 ? new Timer(state => Execute(jobId, jobDetails, jobType), null, TimeSpan.Zero, _config.MemoryUsageInterval)
                 : Disposable.Empty;
@@ -53,8 +44,6 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
         {
             try
             {
-                SendMetricWhenJobRunningTimeThresholdIsExceeded(jobId, workflowId, jobType);
-
                 Dictionary<string, object> customData = new Dictionary<string, object>()
                 {
                     { "JobId", jobId },
@@ -70,25 +59,6 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred in Execute while sending APM metric");
-            }
-        }
-
-        private void SendMetricWhenJobRunningTimeThresholdIsExceeded(long jobId, string jobType, string workflowId)
-        {
-            if (_runningJobTimeExceededCheck && (DateTime.Now - _startDateTime) > _runningJobTimeThreshold)
-            {
-                Dictionary<string, object> runningJobTimeCustomData = new Dictionary<string, object>()
-                {
-                    { "r1.team.id", "PTCI-RIP" },
-                    { "JobId", jobId },
-                    { "JobType", jobType },
-                    { "WorkflowId", workflowId}
-                };
-
-                _apmClient.CountOperation(_METRIC_RUNNING_JOB_TIME_EXCEEDED_NAME, correlationID: workflowId, customData: runningJobTimeCustomData)
-                    .Write();
-
-                _runningJobTimeExceededCheck = false;
             }
         }
     }
