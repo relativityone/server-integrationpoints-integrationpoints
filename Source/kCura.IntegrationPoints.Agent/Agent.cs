@@ -59,8 +59,6 @@ namespace kCura.IntegrationPoints.Agent
 
         public virtual event ExceptionEventHandler JobExecutionError;
 
-        public Guid AgentGuid => AgentGuid;
-
         public Agent() : base(Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID))
         {
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;

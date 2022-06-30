@@ -12,6 +12,8 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 {
     public class MemoryUsageReporter : IMemoryUsageReporter
     {
+        private Timer _timerThread;
+
         private readonly IRemovableAgent _agent;
         private readonly IAPM _apmClient;
         private readonly IAPILog _logger;
@@ -38,16 +40,21 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 
         public IDisposable ActivateTimer(long jobId, string jobDetails, string jobType)
         {
-            return _appDomainMonitoringEnabler.EnableMonitoring()
-                ? new Timer(state => Execute(jobId, jobDetails, jobType), null, TimeSpan.Zero, _config.MemoryUsageInterval)
-                : Disposable.Empty;
+            if (_appDomainMonitoringEnabler.EnableMonitoring())
+            {
+                _timerThread = new Timer(state => Execute(jobId, jobDetails, jobType), null, TimeSpan.Zero, _config.MemoryUsageInterval); 
+
+                return _timerThread;
+            }
+            return Disposable.Empty;
         }
 
         private void Execute(long jobId, string workflowId, string jobType)
         {
             if (_agent.ToBeRemoved)
             {
-                _logger.LogInformation("Memory metrics can't be sent. Agent, agentGuid = {AgentGuid}, is marked as ToBeRemoved.", _agent.AgentGuid);
+                _timerThread.Change(Timeout.Infinite, Timeout.Infinite);
+                _logger.LogInformation("Memory metrics can't be sent. Agent, AgentInstanceGuid = {AgentInstanceGuid}, is marked as ToBeRemoved.", _agent.AgentInstanceGuid);
                 return;
             }
 

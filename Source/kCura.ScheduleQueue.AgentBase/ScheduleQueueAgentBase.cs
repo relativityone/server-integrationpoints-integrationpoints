@@ -35,7 +35,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private readonly bool _shouldReadJobOnce = false; //Only for testing purposes. DO NOT MODIFY IT!
 
-		private readonly Guid _agentInstanceGuid = Guid.NewGuid();
+		public Guid AgentInstanceGuid => Guid.NewGuid();
 
 		protected Func<IEnumerable<int>> GetResourceGroupIDsFunc { get; set; }
 
@@ -403,7 +403,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 			
 			IAPILog logger = Helper.GetLoggerFactory().GetLogger().ForContext<ScheduleQueueAgentBase>();
-			_loggerAgentInstanceContext = logger.LogContextPushProperty("AgentInstanceGuid", _agentInstanceGuid);
+			_loggerAgentInstanceContext = logger.LogContextPushProperty("AgentInstanceGuid", AgentInstanceGuid);
 			
 			return logger;
 		}

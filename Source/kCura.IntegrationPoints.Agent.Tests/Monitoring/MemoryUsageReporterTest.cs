@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private const int _dummyMemorySize = 12345;
 
         private readonly TimeSpan _MEMORY_USAGE_INTERVAL = TimeSpan.FromMilliseconds(1);
-        private readonly Guid _agentGuid = Guid.NewGuid();
+        private readonly Guid _agentInstanceGuid = Guid.NewGuid();
 
         [SetUp]
         public void SetUp()
@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _appDomainMonitoringEnablerMock.Setup(x => x.EnableMonitoring()).Returns(true);
 
             _agentMock.Setup(x => x.ToBeRemoved).Returns(false);
-            _agentMock.Setup(x => x.AgentGuid).Returns(_agentGuid);
+            _agentMock.Setup(x => x.AgentInstanceGuid).Returns(_agentInstanceGuid);
 
             _sut = new MemoryUsageReporter(_apmMock.Object, _loggerMock.Object, _ripMetricMock.Object,
                 _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object, _configFake.Object, _agentMock.Object);
@@ -252,7 +252,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         public void Execute_ShouldNotSendMetrics_WhenAgentToBeRemovedIsSetToTrue()
         {
             // Arrange
-            string logMessage = "Memory metrics can't be sent. Agent, agentGuid = {AgentGuid}, is marked as ToBeRemoved.";
+            string logMessage = "Memory metrics can't be sent. Agent, AgentInstanceGuid = {AgentInstanceGuid}, is marked as ToBeRemoved.";
 
             _agentMock.Setup(x => x.ToBeRemoved).Returns(true);
 
@@ -273,8 +273,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 
             _loggerMock.Verify(x => x.LogInformation(
                 It.Is<string>(message => message == logMessage),
-                _agentGuid),
-                Times.AtLeastOnce);
+                _agentInstanceGuid),
+                Times.Once);
 
             subscription.Dispose();
         }

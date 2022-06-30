@@ -9,6 +9,6 @@ namespace kCura.IntegrationPoints.Common.Agent
 	{
 		public bool ToBeRemoved { get; set; } = false;
 
-        public Guid AgentGuid => Guid.NewGuid();
+        public Guid AgentInstanceGuid => Guid.NewGuid();
     }
 }
