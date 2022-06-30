@@ -1,5 +1,6 @@
 ﻿using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
+using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Metrics;
 using Moq;
 using NUnit.Framework;
@@ -22,13 +23,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private Mock<IMonitoringConfig> _configFake;
         private MemoryUsageReporter _sut;
         private Mock<IAppDomainMonitoringEnabler> _appDomainMonitoringEnablerMock;
-        private FakeAgent _agent;
+        private Mock<IRemovableAgent> _agentMock;
         private const string _jobDetails = "jobDetails";
         private const string _jobType = "jobId";
         private const long _jobId = 123456789;
         private const int _dummyMemorySize = 12345;
 
         private readonly TimeSpan _MEMORY_USAGE_INTERVAL = TimeSpan.FromMilliseconds(1);
+        private readonly Guid _agentGuid = Guid.NewGuid();
 
         [SetUp]
         public void SetUp()
@@ -42,7 +44,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _apmMock = new Mock<IAPM>();
             _processMemoryHelper = new Mock<IProcessMemoryHelper>();
             _appDomainMonitoringEnablerMock = new Mock<IAppDomainMonitoringEnabler>();
-            _agent = new FakeAgent();
+            _agentMock = new Mock<IRemovableAgent>();
 
             _apmMock.Setup(x => x.CountOperation(It.IsAny<string>(),
                     It.IsAny<Guid>(),
@@ -67,10 +69,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                     { "CpuUsageSystem",  _dummyMemorySize},
                     { "CpuUsageProcess",  _dummyMemorySize}
                 });
+
             _appDomainMonitoringEnablerMock.Setup(x => x.EnableMonitoring()).Returns(true);
-            _agent.SetToBeRemoved(false);
+
+            _agentMock.Setup(x => x.ToBeRemoved).Returns(false);
+            _agentMock.Setup(x => x.AgentGuid).Returns(_agentGuid);
+
             _sut = new MemoryUsageReporter(_apmMock.Object, _loggerMock.Object, _ripMetricMock.Object,
-                _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object, _configFake.Object, _agent);
+                _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object, _configFake.Object, _agentMock.Object);
         }
 
         [Test]
@@ -155,7 +161,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 .Returns(_counterMeasure.Object);
 
             MemoryUsageReporter sutWithErrors = new MemoryUsageReporter(apmMockWithErrors.Object, _loggerMock.Object, _ripMetricMock.Object,
-                _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object, _configFake.Object, _agent);
+                _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object, _configFake.Object, _agentMock.Object);
 
             int metricsProperlySend = 3;
             int metricsWithError = 2;
@@ -243,11 +249,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         }
 
         [Test]
-        public void Execute_ShouldNotSendMetricsWhenAgentToBeRemovedIsSetToTrue()
+        public void Execute_ShouldNotSendMetrics_WhenAgentToBeRemovedIsSetToTrue()
         {
             // Arrange
-            string logMessage = "Memory metrics can't be sent. Agent, agentId = {agentId}, is marked as ToBeRemoved.";
-            _agent.SetToBeRemoved(true);
+            string logMessage = "Memory metrics can't be sent. Agent, agentGuid = {AgentGuid}, is marked as ToBeRemoved.";
+
+            _agentMock.Setup(x => x.ToBeRemoved).Returns(true);
 
             // Act
             IDisposable subscription = _sut.ActivateTimer(_jobId, _jobDetails, _jobType);
@@ -266,7 +273,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 
             _loggerMock.Verify(x => x.LogInformation(
                 It.Is<string>(message => message == logMessage),
-                0),
+                _agentGuid),
                 Times.AtLeastOnce);
 
             subscription.Dispose();
@@ -296,14 +303,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 }
             }
             return true;
-        }
-
-        public class FakeAgent : Agent
-        {
-            public void SetToBeRemoved(bool toBeRemovedValue)
-            {
-                ToBeRemoved = toBeRemovedValue;
-            }
         }
     }
 }
