@@ -3,7 +3,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Executors.Validation;
 using System;
@@ -14,13 +13,12 @@ using kCura.IntegrationPoints.Data.UtilityDTO;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests
 {
-	[TestFixture, Category("Unit")]
+    [TestFixture, Category("Unit")]
 	public class JobHistorySyncServiceTests
 	{
 		private JobHistorySyncService _sut;
 
 		private Mock<IExtendedJob> _jobFake;
-		private Mock<IObjectManager> _objectManagerMock;
 		private Mock<IRelativityObjectManager> _relativityObjectManagerFake;
 
 		private const int _JOB_ID = 1;
@@ -46,11 +44,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			_jobFake.SetupGet(x => x.IntegrationPointId).Returns(_INTEGRATION_POINT_ID);
 			_jobFake.SetupGet(x => x.JobId).Returns(_JOB_ID);
 
-			_objectManagerMock = new Mock<IObjectManager>();
-
 			Mock<IServicesMgr> servicesMgr = new Mock<IServicesMgr>();
-			servicesMgr.Setup(x => x.CreateProxy<IObjectManager>(It.IsAny<ExecutionIdentity>()))
-				.Returns(_objectManagerMock.Object);
 
 			Mock<IHelper> helper = new Mock<IHelper>();
 			Mock<IAPILog> _loggerFake = new Mock<IAPILog>();
@@ -202,43 +196,43 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 
 		private void VerifyJobHistoryStatus(Guid expectedStatusGuid)
 		{
-			_objectManagerMock.Verify(x => x.UpdateAsync(_WORKSPACE_ID,
-				It.Is<UpdateRequest>(r => r.Object.ArtifactID == _JOB_HISTORY_ID &&
-										r.FieldValues.Any(f => 
-											f.Field.Guid == JobHistoryFieldGuids.JobStatusGuid && 
-											((ChoiceRef)f.Value).Guid == expectedStatusGuid))));
+			_relativityObjectManagerFake.Verify(x => x.UpdateAsync(_JOB_HISTORY_ID,
+				It.Is<IList<FieldRefValuePair>>(r => r.Any(f =>
+											f.Field.Guid == JobHistoryFieldGuids.JobStatusGuid &&
+											((ChoiceRef)f.Value).Guid == expectedStatusGuid)), 
+				ExecutionIdentity.System));
 		}
 
 		private void VerifyIntegrationPointWasUpdated(bool hasErrors)
 		{
-			_objectManagerMock.Verify(x => x.UpdateAsync(_WORKSPACE_ID,
-				It.Is<UpdateRequest>(r => r.Object.ArtifactID == _INTEGRATION_POINT_ID &&
-										r.FieldValues.Any(f =>
+			_relativityObjectManagerFake.Verify(x => x.UpdateAsync(_INTEGRATION_POINT_ID,
+				It.Is<IList<FieldRefValuePair>>(r => r.Any(f =>
 											f.Field.Guid == IntegrationPointFieldGuids.HasErrorsGuid &&
-											(bool)f.Value == hasErrors))));
+											(bool)f.Value == hasErrors)),
+				ExecutionIdentity.System));
 
-			_objectManagerMock.Verify(x => x.UpdateAsync(_WORKSPACE_ID,
-				It.Is<UpdateRequest>(r => r.Object.ArtifactID == _INTEGRATION_POINT_ID &&
-											r.FieldValues.Any(f =>
-												f.Field.Guid == IntegrationPointFieldGuids.LastRuntimeUTCGuid &&
-												f.Value != null))));
+			_relativityObjectManagerFake.Verify(x => x.UpdateAsync(_INTEGRATION_POINT_ID,
+				It.Is<IList<FieldRefValuePair>>(r => r.Any(f =>
+											f.Field.Guid == IntegrationPointFieldGuids.LastRuntimeUTCGuid &&
+											f.Value != null)),
+				ExecutionIdentity.System));
 		}
 
 		private void VerifyErrorsWereAdded()
 		{
-			_objectManagerMock.Setup(x => x.CreateAsync(_WORKSPACE_ID, 
-				It.Is<CreateRequest>(r => r.ObjectType.Guid == ObjectTypeGuids.JobHistoryErrorGuid &&
-										r.ParentObject.ArtifactID == _JOB_HISTORY_ID && 
-										r.FieldValues.Select(fv => fv.Field.Guid).SequenceEqual(ExpectedJobHistoryErrorGuids()))));
+			_relativityObjectManagerFake.Verify(x => x.CreateAsync(It.Is<ObjectTypeRef>(o => o.Guid == ObjectTypeGuids.JobHistoryErrorGuid),
+										It.Is<RelativityObjectRef>(r => r.ArtifactID == _JOB_HISTORY_ID),
+										It.Is<List<FieldRefValuePair>>(f => f.Select(fv => fv.Field.Guid).SequenceEqual(ExpectedJobHistoryErrorGuids())),
+				ExecutionIdentity.System));
 		}
 
 		private void VerifyJobHistoryWasUpdatedWithJobId()
 		{
-			_objectManagerMock.Verify(x => x.UpdateAsync(_WORKSPACE_ID,
-				It.Is<UpdateRequest>(r => r.Object.ArtifactID == _JOB_HISTORY_ID &&
-										r.FieldValues.Any(f =>
+			_relativityObjectManagerFake.Verify(x => x.UpdateAsync(_JOB_HISTORY_ID,
+				It.Is<IList<FieldRefValuePair>>(r => r.Any(f =>
 											f.Field.Guid == JobHistoryFieldGuids.JobIDGuid &&
-											f.Value.ToString() == _JOB_ID.ToString()))));
+											f.Value.ToString() == _JOB_ID.ToString())),
+				ExecutionIdentity.System));
 		}
 
 		private void SetupHasErrors(bool hasErrors)
@@ -258,7 +252,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 				JobHistoryErrorFieldGuids.ErrorGuid,
 				JobHistoryErrorFieldGuids.ErrorStatusGuid,
 				JobHistoryErrorFieldGuids.ErrorTypeGuid,
-				JobHistoryErrorFieldGuids.StackTraceGuid
+				JobHistoryErrorFieldGuids.StackTraceGuid,
+				JobHistoryErrorFieldGuids.NameGuid
 			};
 		}
 	}

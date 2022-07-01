@@ -13,13 +13,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 {
     internal class JobHistorySyncService : IJobHistorySyncService
 	{
-		private readonly IHelper _helper;
         private readonly IRelativityObjectManager _relativityObjectManager;
         private readonly IAPILog _logger;
 
         public JobHistorySyncService(IHelper helper, IRelativityObjectManager relativityObjectManager)
 		{
-			_helper = helper;
 			_relativityObjectManager = relativityObjectManager;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<JobHistorySyncService>();
 		}
