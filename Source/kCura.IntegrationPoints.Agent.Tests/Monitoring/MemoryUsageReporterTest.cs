@@ -252,8 +252,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         public void Execute_ShouldNotSendMetrics_WhenAgentToBeRemovedIsSetToTrue()
         {
             // Arrange
-            string logMessage = "Memory metrics can't be sent. Agent, AgentInstanceGuid = {AgentInstanceGuid}, is marked as ToBeRemoved.";
-
             _agentMock.Setup(x => x.ToBeRemoved).Returns(true);
 
             // Act
@@ -270,11 +268,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 It.IsAny<int?>(),
                 It.IsAny<Dictionary<string, object>>(),
                 It.IsAny<IEnumerable<ISink>>()), Times.Never);
-
-            _loggerMock.Verify(x => x.LogInformation(
-                It.Is<string>(message => message == logMessage),
-                _agentInstanceGuid),
-                Times.Once);
 
             subscription.Dispose();
         }
