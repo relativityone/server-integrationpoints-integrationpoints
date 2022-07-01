@@ -19,7 +19,7 @@ namespace kCura.ScheduleQueue.Core.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -81,7 +81,7 @@ namespace kCura.ScheduleQueue.Core.Properties {
         ///    SELECT *
         ///    FROM sys.columns 
         ///    WHERE Name      = N&apos;StopState&apos;
-        ///      AND Object_ID = Object_ID [rest of string was truncated]&quot;;.
+        ///      AND Object_ID = Object_ID(N&apos;[eddsdbo].[{0}]&apos;) [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string AddCustomColumnsToQueueTable {
             get {
@@ -341,22 +341,6 @@ namespace kCura.ScheduleQueue.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT count(*) as Total,
-        ///(SELECT count(*) from [eddsdbo].[{0}] q WITH (UPDLOCK, READPAST, ROWLOCK, INDEX([IX_{0}_LockedByAgentID_AgentTypeID_NextRunTime]))			
-        ///				where [NextRunTime] &lt;= GETUTCDATE()
-        ///				AND (q.StopState NOT IN (0,8) 
-        ///					or q.AgentTypeID != @AgentTypeID)) as Blocked
-        ///FROM [eddsdbo].[{0}]
-        ///WHERE [NextRunTime] &lt;= GETUTCDATE()
-        ///.
-        /// </summary>
-        internal static string GetJobsQueueDetails {
-            get {
-                return ResourceManager.GetString("GetJobsQueueDetails", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to IF EXISTS(SELECT TOP 1 JobID FROM [eddsdbo].[{0}] WHERE [LockedByAgentID] = @AgentID)
         ///BEGIN
         ///	--This Agent has stopped before finalizing this job previously
@@ -405,7 +389,8 @@ namespace kCura.ScheduleQueue.Core.Properties {
         ///			INSERTED.[ScheduleRule],
         ///			INSERTED.[JobDetails],
         ///			INSERTED.[JobFlags],
-        ///			INSERTED [rest of string was truncated]&quot;;.
+        ///			INSERTED.[SubmittedDate],
+        ///		 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GetNextJobWithoutResourceGroup {
             get {
