@@ -22,12 +22,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private Mock<IMonitoringConfig> _configFake;
         private MemoryUsageReporter _sut;
         private Mock<IAppDomainMonitoringEnabler> _appDomainMonitoringEnablerMock;
+        
         private const string _jobDetails = "jobDetails";
         private const string _jobType = "jobId";
         private const long _jobId = 123456789;
         private const int _dummyMemorySize = 12345;
 
         private readonly TimeSpan _MEMORY_USAGE_INTERVAL = TimeSpan.FromMilliseconds(1);
+        
 
         [SetUp]
         public void SetUp()
@@ -238,6 +240,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 It.IsAny<Dictionary<string, object>>(),
                 It.IsAny<IEnumerable<ISink>>()), Times.Never);
         }
+
         private bool CheckIfHasAllValues(Dictionary<string, object> dict)
         {
             Dictionary<string, object> valuesToBeSend = new Dictionary<string, object>

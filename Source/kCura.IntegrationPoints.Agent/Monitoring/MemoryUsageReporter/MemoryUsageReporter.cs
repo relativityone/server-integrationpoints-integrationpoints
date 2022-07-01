@@ -21,7 +21,6 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
         private static string _METRIC_LOG_NAME = "Relativity.IntegrationPoints.Performance.System";
         private static string _METRIC_NAME = "IntegrationPoints.Performance.System";
 
-
         public MemoryUsageReporter(IAPM apmClient, IAPILog logger,
             IRipMetrics ripMetric,IProcessMemoryHelper processMemoryHelper,
             IAppDomainMonitoringEnabler appDomainMonitoringEnabler, IMonitoringConfig config)
@@ -45,7 +44,6 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
         {
             try
             {
-
                 Dictionary<string, object> customData = new Dictionary<string, object>()
                 {
                     { "JobId", jobId },
