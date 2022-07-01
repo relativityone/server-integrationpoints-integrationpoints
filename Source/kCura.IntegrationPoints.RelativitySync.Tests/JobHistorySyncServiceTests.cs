@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 		public async Task UpdateJobStatusAsync_ShouldUpdateStatus_WhenStepsAreValidationRelated(string status)
 		{
 			// Act
-			await _sut.UpdateJobStatus(status, _jobFake.Object).ConfigureAwait(false);
+			await _sut.UpdateJobStatusAsync(status, _jobFake.Object).ConfigureAwait(false);
 
 			// Assert
 			VerifyJobHistoryStatus(JobStatusChoices.JobHistoryValidatingGuid);
@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 		public async Task UpdateJobStatusAsync_ShouldUpdateStatus_WhenStepsAreProcessingRelated(string status)
 		{
 			// Act
-			await _sut.UpdateJobStatus(status, _jobFake.Object).ConfigureAwait(false);
+			await _sut.UpdateJobStatusAsync(status, _jobFake.Object).ConfigureAwait(false);
 
 			// Assert
 			VerifyJobHistoryStatus(JobStatusChoices.JobHistoryProcessingGuid);
