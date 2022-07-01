@@ -78,6 +78,45 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return SendCreateRequest(createRequest, executionIdentity);
 		}
 
+		public async Task<int> CreateAsync<T>(T rdo, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+			where T : BaseRdo, new()
+		{
+			var createRequest = new CreateRequest
+			{
+				ObjectType = rdo.ToObjectType(),
+				FieldValues = rdo.ToFieldValues().ToList()
+			};
+			SetParentArtifactId(createRequest, rdo);
+
+			return await SendCreateRequestAsync(createRequest, executionIdentity).ConfigureAwait(false);
+		}
+
+		public async Task<int> CreateAsync(ObjectTypeRef objectType,
+			List<FieldRefValuePair> fieldValues,
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		{
+			var createRequest = new CreateRequest
+			{
+				ObjectType = objectType,
+				FieldValues = fieldValues
+			};
+			return await SendCreateRequestAsync(createRequest, executionIdentity).ConfigureAwait(false);
+		}
+
+		public async Task<int> CreateAsync(ObjectTypeRef objectType,
+			RelativityObjectRef parentObject,
+			List<FieldRefValuePair> fieldValues,
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		{
+			var createRequest = new CreateRequest
+			{
+				ObjectType = objectType,
+				ParentObject = parentObject,
+				FieldValues = fieldValues
+			};
+			return await SendCreateRequestAsync(createRequest, executionIdentity).ConfigureAwait(false);
+		}
+
 		public T Read<T>(int artifactId, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 			where T : BaseRdo, new()
 		{
@@ -125,6 +164,31 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				FieldValues = rdo.ToFieldValues().ToList()
 			};
 			return SendUpdateRequest(request, executionIdentity, GetRdoType(rdo));
+		}
+
+		public async Task<bool> UpdateAsync(int artifactId,
+			IList<FieldRefValuePair> fieldsValues,
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		{
+			var request = new UpdateRequest
+			{
+				Object = new RelativityObjectRef { ArtifactID = artifactId },
+				FieldValues = fieldsValues
+			};
+
+			string rdoType = GetRdoType(rdo: null);
+			return await SendUpdateRequestAsync(request, executionIdentity, rdoType).ConfigureAwait(false);
+		}
+
+		public async Task<bool> UpdateAsync<T>(T rdo, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+			where T : BaseRdo, new()
+		{
+			var request = new UpdateRequest
+			{
+				Object = rdo.ToObjectRef(),
+				FieldValues = rdo.ToFieldValues().ToList()
+			};
+			return await SendUpdateRequestAsync(request, executionIdentity, GetRdoType(rdo)).ConfigureAwait(false);
 		}
 
 		public Task<bool> MassUpdateAsync(
@@ -695,6 +759,23 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
+		private async Task<int> SendCreateRequestAsync(CreateRequest request, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		{
+			try
+			{
+				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
+				{
+					CreateResult result = await client.CreateAsync(_workspaceArtifactId, request).ConfigureAwait(false);
+					return result.Object.ArtifactID;
+				}
+			}
+			catch (Exception ex)
+			{
+				HandleObjectManagerException(ex, message: GetErrorMessage<CreateRequest>("[RelativityObject]"));
+				throw;
+			}
+		}
+
 		private bool SendUpdateRequest(UpdateRequest request, ExecutionIdentity executionIdentity, string rdoType)
 		{
 			try
@@ -704,6 +785,23 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					UpdateResult result = client.UpdateAsync(_workspaceArtifactId, request)
 						.GetAwaiter()
 						.GetResult();
+					return result.EventHandlerStatuses.All(x => x.Success);
+				}
+			}
+			catch (Exception ex)
+			{
+				HandleObjectManagerException(ex, message: GetErrorMessage<UpdateRequest>(rdoType));
+				throw;
+			}
+		}
+
+		private async Task<bool> SendUpdateRequestAsync(UpdateRequest request, ExecutionIdentity executionIdentity, string rdoType)
+		{
+			try
+			{
+				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
+				{
+					UpdateResult result = await client.UpdateAsync(_workspaceArtifactId, request).ConfigureAwait(false);
 					return result.EventHandlerStatuses.All(x => x.Success);
 				}
 			}
