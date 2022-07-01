@@ -32,10 +32,11 @@ namespace kCura.ScheduleQueue.AgentBase
 		private readonly Guid _agentGuid;
 		private readonly Lazy<int> _agentId;
 		private readonly Lazy<IAPILog> _loggerLazy;
+		private readonly Guid _agentInstanceGuid;
 
 		private readonly bool _shouldReadJobOnce = false; //Only for testing purposes. DO NOT MODIFY IT!
 
-		public Guid AgentInstanceGuid => Guid.NewGuid();
+		public Guid AgentInstanceGuid => _agentInstanceGuid;
 
 		protected Func<IEnumerable<int>> GetResourceGroupIDsFunc { get; set; }
 
@@ -77,6 +78,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
 
 			_agentId = new Lazy<int>(GetAgentID);
+			_agentInstanceGuid = Guid.NewGuid();
 		}
 
 		public IScheduleRuleFactory ScheduleRuleFactory { get; }
