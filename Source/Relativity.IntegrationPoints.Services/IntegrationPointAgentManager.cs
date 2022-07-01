@@ -75,18 +75,37 @@ namespace Relativity.IntegrationPoints.Services
 
         private (int TotalJobsCount, int BlockedJobsCount) GetJobsFromQueue(IQueueQueryManager queueQueryManager)
         {
-            AgentTypeInformation agentInfo = GetAgentTypeInfo(queueQueryManager);
-      
-            DataRow queueItemsCount = queueQueryManager.GetJobsQueueDetails(agentInfo.AgentTypeID)
-                                            .Execute()
-                                            .AsEnumerable()
-                                            .FirstOrDefault();
+            int totalItems = 0;
+            int blockedItems = 0;         
+            
+            DataTable queryResult = queueQueryManager.GetAllJobs().Execute();
 
-            int totalItems = queueItemsCount.Field<int>("Total");
-            int blockedItems = queueItemsCount.Field<int>("Blocked");
+            if(queryResult != null)
+            {
+                AgentTypeInformation agentInfo = GetAgentTypeInfo(queueQueryManager);
+                
+                IEnumerable<Job> allJobs = queryResult.Rows.Cast<DataRow>().Select(row => new Job(row));
+                IEnumerable<Job> jobsReadyForProcessingByTimeCondition = allJobs.Where(x => x.NextRunTime <= DateTime.UtcNow);
+                IEnumerable<long?> existingSyncWorkerTypeRootIds = jobsReadyForProcessingByTimeCondition.Where(x => x.TaskType == JobTaskTypeNames.SYNC_WORKER).Select(x => x.RootJobId);
+                IEnumerable<Job> jobsWithoutSyncEntityManagerWorkers = jobsReadyForProcessingByTimeCondition.Where(x => !(x.TaskType == JobTaskTypeNames.SYNC_ENTITY_WORKER_MANAGER
+                                                                                                                    && existingSyncWorkerTypeRootIds.Contains(x.RootJobId)));     
+               
+                totalItems = jobsWithoutSyncEntityManagerWorkers.Count();
 
-            SendWorkloadStateMetrics(totalItems, blockedItems);
+                // Blocked jobs will not be removed from workload size because newly created Agent should remove them from queue.                
+                blockedItems = allJobs.Where(x => (x.StopState != StopState.None && x.StopState != StopState.DrainStopped && x.LockedByAgentID == null) 
+                                                        || x.AgentTypeID != agentInfo.AgentTypeID).Count();
 
+                int queueCount = allJobs.Count();
+                int jobsExcludedByTimeConditionCount = queueCount - jobsReadyForProcessingByTimeCondition.Count();
+                int jobBlockedBySyncWorkerPriorityCount = jobsReadyForProcessingByTimeCondition.Count() - totalItems;
+
+                SendWorkloadStateMetrics(totalItems, 
+                    blockedItems,
+                    queueCount,
+                    jobsExcludedByTimeConditionCount,
+                    jobBlockedBySyncWorkerPriorityCount);
+            }
             return (totalItems, blockedItems);
         }
 
@@ -101,12 +120,15 @@ namespace Relativity.IntegrationPoints.Services
             return new AgentTypeInformation(agentTypeInfo);
         }
 
-        private void SendWorkloadStateMetrics(int totalItems, int blockedItems)
+        private void SendWorkloadStateMetrics(int totalItems, int blockedItems, int queueCount, int jobsExcludedByTimeConditionCount, int jobBlockedBySyncWorkerPriorityCount)
         {
             Dictionary<string, object> data = new Dictionary<string, object>()
                 {
                     { "TotalWorkloadCount", totalItems },
-                    { "BlockedJobsCount", blockedItems }
+                    { "BlockedJobsCount", blockedItems },
+                    { "AllQueuedItemsCount", queueCount },
+                    { "JobsExcludedByTimeConditionCount", jobsExcludedByTimeConditionCount },
+                    { "JobsExcludedBySyncWorkerPriorityCount", jobBlockedBySyncWorkerPriorityCount }
                 };
 
             Client.APMClient.CountOperation(_METRIC_NAME, correlationID: kCura.IntegrationPoints.Core.Constants.IntegrationPoints.Telemetry.WORKLOAD_METRICS_CORRELATION_ID_GUID,

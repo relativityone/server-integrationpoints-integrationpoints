@@ -84,6 +84,11 @@ namespace kCura.IntegrationPoints.Data
 		
 		public const string POPUP_FILTER_TYPE_NAME = "Popup";
 	}
+	public static class JobTaskTypeNames
+	{
+		public const string SYNC_WORKER = "SyncWorker";
+		public const string SYNC_ENTITY_WORKER_MANAGER = "SyncEntityWorkerManager";
+	}
 
 	public abstract class RdoFieldsConstants
 	{
