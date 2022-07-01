@@ -114,7 +114,7 @@ namespace kCura.IntegrationPoints.Agent
         {
             if(job.JobFailed != null)
             {
-                MarkJobHistoryAsValidationFailedAsync(job).GetAwaiter().GetResult();
+                MarkJobHistoryAsFailedAsync(job).GetAwaiter().GetResult();
                 return new TaskResult
                 {
                     Status = TaskStatusEnum.Fail,
@@ -210,7 +210,7 @@ namespace kCura.IntegrationPoints.Agent
             }
         }
 
-        private async Task MarkJobHistoryAsValidationFailedAsync(Job job)
+        private async Task MarkJobHistoryAsFailedAsync(Job job)
         {
             using (JobContextProvider.StartJobContext(job))
             {
@@ -226,7 +226,7 @@ namespace kCura.IntegrationPoints.Agent
                     Resolve<ITaskFactoryJobHistoryServiceFactory>()
                         .CreateJobHistoryService(integrationPoint);
                 jobHistoryService.SetJobIdOnJobHistory(job);
-                jobHistoryService.UpdateJobHistoryOnValidationFailed(job, job.JobFailed.Exception);
+                jobHistoryService.UpdateJobHistoryOnFailure(job, job.JobFailed.Exception);
             }
         }
 

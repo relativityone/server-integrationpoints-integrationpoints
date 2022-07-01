@@ -4,6 +4,7 @@ using System.Linq;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Common.Helpers;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
@@ -21,12 +22,14 @@ namespace kCura.ScheduleQueue.AgentBase
 	public abstract class ScheduleQueueAgentBase : Agent.AgentBase
 	{
 		private IAgentService _agentService;
-		private IQueueQueryManager _queryManager;
+		private IQueueQueryManager _queueManager;
 		private Lazy<IKubernetesMode> _kubernetesModeLazy;
 		private IJobService _jobService;
 		private IQueueJobValidator _queueJobValidator;
 		private IDateTime _dateTime;
 		private ITaskParameterHelper _taskParameterHelper;
+		private IConfig _config;
+
 		private const int _MAX_MESSAGE_LENGTH = 10000;
 
 		private readonly Guid _agentGuid;
@@ -55,7 +58,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected ScheduleQueueAgentBase(Guid agentGuid, IKubernetesMode kubernetesMode = null, IAgentService agentService = null, IJobService jobService = null,
 			IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
-			IQueueQueryManager queryManager = null, IDateTime dateTime = null, IAPILog logger = null)
+			IQueueQueryManager queryManager = null, IDateTime dateTime = null, IAPILog logger = null, IConfig config = null)
 		{
 			// Lazy init is required for things depending on Helper
 			// Helper property in base class is assigned AFTER object construction
@@ -73,7 +76,8 @@ namespace kCura.ScheduleQueue.AgentBase
 			_jobService = jobService;
 			_queueJobValidator = queueJobValidator;
 			_dateTime = dateTime;
-			_queryManager = queryManager;
+			_queueManager = queryManager;
+			_config = config;
 			ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
 
 			_agentId = new Lazy<int>(GetAgentID);
@@ -85,19 +89,19 @@ namespace kCura.ScheduleQueue.AgentBase
 		{
 			NotifyAgentTab(LogCategory.Debug, "Initialize Agent core services");
 
-			if (_queryManager == null)
+			if (_queueManager == null)
 			{
-				_queryManager = new QueueQueryManager(Helper, _agentGuid);
+				_queueManager = new QueueQueryManager(Helper, _agentGuid);
 			}
 
 			if (_agentService == null)
 			{
-				_agentService = new AgentService(Helper, _queryManager, _agentGuid);
+				_agentService = new AgentService(Helper, _queueManager, _agentGuid);
 			}
 
 			if (_jobService == null)
 			{
-				_jobService = new JobService(_agentService, new JobServiceDataProvider(_queryManager), _kubernetesModeLazy.Value, Helper);
+				_jobService = new JobService(_agentService, new JobServiceDataProvider(_queueManager), _kubernetesModeLazy.Value, Helper);
 			}
 
 			if (_queueJobValidator == null)
@@ -121,6 +125,11 @@ namespace kCura.ScheduleQueue.AgentBase
 					SerializerWithLogging.Create(Logger),
 					new DefaultGuidService());
             }
+
+			if(_config == null)
+            {
+				_config = IntegrationPoints.Config.Config.Instance;
+            }
 		}
 
 		public sealed override void Execute()
@@ -138,6 +147,8 @@ namespace kCura.ScheduleQueue.AgentBase
 				try
 				{
 					PreExecute();
+
+					CleanupInvalidJobs();
 
 					ProcessQueueJobs();
 
@@ -160,7 +171,35 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 		}
 
-		private void PreExecute()
+		private void CleanupInvalidJobs()
+		{
+			IDateTime dateTime = new DateTimeWrapper();
+
+			DateTime utcNow = dateTime.UtcNow;
+			TimeSpan transientStateJobTimeout = _config.TransientStateJobTimeout;
+
+			Logger.LogInformation("Checking if jobs are in transient state: DateTimeUtc - {dateTimeNow}, TransientStateJobTimeout {transientStateJobTimeout}",
+				utcNow, transientStateJobTimeout);
+
+			IEnumerable<Job> transientStateJobs = _jobService.GetAllJobs()
+				.Where(x => (x.Heartbeat != null && utcNow.Subtract(x.Heartbeat.Value) > transientStateJobTimeout)
+					|| (x.LockedByAgentID == null && x.StopState != StopState.None && x.StopState != StopState.DrainStopped));
+			foreach(var job in transientStateJobs)
+			{
+				Logger.LogError("Job {jobId}, will be failed due timeout. " +
+					"LockedByAgent: {lockedByAgent}, " +
+					"StopState: {stopState}, " +
+					"Last Hearbeat: {heartbeat}, " +
+					"DateTimeUtc {utcNow}",
+					job.JobId, job.LockedByAgentID, job.StopState, job.Heartbeat, utcNow);
+
+				job.MarkJobAsFailed(new TimeoutException($"Job {job.JobId} failed due timeout. Contact your system administrator."), false);
+				TaskResult result = ProcessJob(job);
+				FinalizeJobExecution(job, result);
+			}
+		}
+
+        private void PreExecute()
 		{
 			Initialize();
 			InitializeManagerConfigSettingsFactory();

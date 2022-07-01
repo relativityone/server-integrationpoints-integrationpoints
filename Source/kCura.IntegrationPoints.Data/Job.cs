@@ -23,6 +23,7 @@ namespace kCura.IntegrationPoints.Data
 		public DateTime SubmittedDate { get; set; }
 		public int SubmittedBy { get; set; }
 		public StopState StopState { get; set; }
+		public DateTime? Heartbeat { get; set; }
 
 		public IsJobFailed JobFailed { get; private set; }
 
@@ -45,6 +46,7 @@ namespace kCura.IntegrationPoints.Data
 			ScheduleRuleType = row.Field<string>("ScheduleRuleType");
 			SerializedScheduleRule = row.Field<string>("ScheduleRule");
 			StopState = (StopState)row.Field<int>("StopState");
+			Heartbeat = row.Field<DateTime?>("Heartbeat");
 		}
 
 		private Job()
@@ -100,6 +102,7 @@ namespace kCura.IntegrationPoints.Data
 				sb.AppendLine($"SubmitedBy: {SubmittedBy}");
 				sb.AppendLine($"SubmitedDate: {SubmittedDate}");
 				sb.AppendLine($"NextRunTime: {NextRunTime}");
+				sb.AppendLine($"Heartbeat: {Heartbeat}");
 
 				return sb.ToString();
 			}

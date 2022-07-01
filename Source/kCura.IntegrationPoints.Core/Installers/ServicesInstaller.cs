@@ -55,7 +55,6 @@ using kCura.IntegrationPoints.Common.Metrics.Sink;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
 using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
-using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {
@@ -107,7 +106,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IBatchStatus>().ImplementedBy<BatchEmail>().LifestyleTransient());
 			container.Register(Component.For<IBatchStatus>().ImplementedBy<JobHistoryBatchUpdateStatus>().LifestyleTransient());
 			container.Register(Component.For<IBatchStatus>().ImplementedBy<JobLifetimeMetricBatchStatus>().LifestyleTransient());
-			container.Register(Component.For<IBatchStatus>().ImplementedBy<JobHistoryJobFailedUpdateManager>().LifestyleTransient());
 			container.Register(Component.For<ISourceTypeFactory>().ImplementedBy<SourceTypeFactory>().LifestyleTransient());
 			container.Register(Component.For<IDestinationTypeFactory>().ImplementedBy<DestinationTypeFactory>().LifestyleTransient());
 			container.Register(Component.For<IResourceDbProvider>().ImplementedBy<ResourceDbProvider>().LifestyleTransient());

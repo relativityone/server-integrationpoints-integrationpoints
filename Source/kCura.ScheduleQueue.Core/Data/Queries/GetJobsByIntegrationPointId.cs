@@ -19,22 +19,24 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
         public DataTable Execute()
         {
             string query = $@"SELECT [JobID]
-	  ,[RootJobID]
-	  ,[ParentJobID]
-	  ,[AgentTypeID]
-	  ,[LockedByAgentID]
-	  ,[WorkspaceID]
-	  ,[RelatedObjectArtifactID]
-	  ,[TaskType]
-	  ,[NextRunTime]
-	  ,[LastRunTime]
-	  ,[ScheduleRuleType]
-	  ,[ScheduleRule]
-	  ,[JobDetails]
-	  ,[JobFlags]
-	  ,[SubmittedDate]
-	  ,[SubmittedBy]
-	  ,[StopState] FROM [eddsdbo].[{_qDbContext.TableName}] WHERE RelatedObjectArtifactID = @RelatedObjectArtifactID";
+							  ,[RootJobID]
+							  ,[ParentJobID]
+							  ,[AgentTypeID]
+							  ,[LockedByAgentID]
+							  ,[WorkspaceID]
+							  ,[RelatedObjectArtifactID]
+							  ,[TaskType]
+							  ,[NextRunTime]
+							  ,[LastRunTime]
+							  ,[ScheduleRuleType]
+							  ,[ScheduleRule]
+							  ,[JobDetails]
+							  ,[JobFlags]
+							  ,[SubmittedDate]
+							  ,[SubmittedBy]
+							  ,[StopState]
+							  ,[Heartbeat] 
+							FROM [eddsdbo].[{_qDbContext.TableName}] WHERE RelatedObjectArtifactID = @RelatedObjectArtifactID";
 
             List<SqlParameter> sqlParams = new List<SqlParameter>();
             sqlParams.Add(new SqlParameter("@RelatedObjectArtifactID", _integrationPointId));

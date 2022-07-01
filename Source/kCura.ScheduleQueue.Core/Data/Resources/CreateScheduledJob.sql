@@ -16,7 +16,8 @@
 		[JobFlags] [int] NOT NULL,
 		[SubmittedDate] [datetime] NOT NULL,
 		[SubmittedBy] [int] NOT NULL,
-		[StopState] [int] NOT NULL
+		[StopState] [int] NOT NULL,
+		[HeartBeat] [datetime] NULL
 )
 	
 UPDATE 
@@ -44,6 +45,7 @@ OUTPUT
 		,Inserted.[SubmittedDate]
 		,Inserted.[SubmittedBy]
 		,Inserted.[StopState]
+		,Inserted.[HeartBeat]
 INTO
 		@job
 WHERE 
@@ -97,6 +99,7 @@ BEGIN
 			,[SubmittedDate]
 			,[SubmittedBy]
 			,[StopState]
+			,[HeartBeat]
 		)
 		OUTPUT 
 			Inserted.[JobID]
@@ -116,6 +119,7 @@ BEGIN
 			,Inserted.[SubmittedDate]
 			,Inserted.[SubmittedBy]
 			,Inserted.[StopState]
+			,Inserted.[HeartBeat]
 		INTO
 			@job
 		VALUES
@@ -136,6 +140,7 @@ BEGIN
 			,GETUTCDATE()
 			,@SubmittedBy
 			,(CASE WHEN @ParentJobID > 0 AND @ParentJobID IS NOT NULL THEN COALESCE((SELECT TOP 1 COALESCE([StopState], 0) From [eddsdbo].[{0}] Where JobID = @ParentJobID), 0) ELSE 0 END )
+			,NULL
 		)
 	END
 END
@@ -157,5 +162,6 @@ SELECT
 		,[SubmittedDate]
 		,[SubmittedBy]
 		,[StopState]
+		,[HeartBeat]
 FROM
 		@job

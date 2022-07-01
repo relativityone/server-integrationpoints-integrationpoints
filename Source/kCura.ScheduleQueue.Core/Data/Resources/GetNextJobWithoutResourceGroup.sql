@@ -20,7 +20,8 @@
 			INSERTED.[JobFlags],
 			INSERTED.[SubmittedDate],
 			INSERTED.[SubmittedBy],
-			INSERTED.[StopState]
+			INSERTED.[StopState],
+			INSERTED.[Heartbeat]
 	WHERE [JobID] =
 	(
 		SELECT TOP 1 [JobID]

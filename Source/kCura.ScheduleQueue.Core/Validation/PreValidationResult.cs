@@ -24,14 +24,5 @@ namespace kCura.ScheduleQueue.Core.Validation
 			ShouldBreakSchedule = true,
 			Exception = new InvalidOperationException(message)
 		};
-
-		public static PreValidationResult TimedOutJob(string message) => new PreValidationResult
-		{
-			IsValid = false,
-			ShouldExecute = true,
-			ShouldError = true,
-			ShouldBreakSchedule = false,
-			Exception = new TimeoutException(message)
-		};
     }
 }

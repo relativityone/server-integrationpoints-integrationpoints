@@ -14,7 +14,11 @@ namespace kCura.IntegrationPoints.Config
 		private const string _RIP_METRICS_MEASURE_EXTERNAL_CALLS_DURATION = "MeasureDurationOfExternalCalls";
 		private const string _MASS_UPDATE_BATCH_SIZE = "MassUpdateBatchSize";
 		private const int _MASS_UPDATE_BATCH_SIZE_DEFAULT = 10000;
-		
+
+		private const string _TRANSIENT_STATE_RIP_JOB_TIMEOUT = "TransientStateJobTimeout";
+		private const int _TRANSIENT_STATE_RIP_JOB_TIMEOUT_DEFAULT_IN_MINUTES = 8 * 60;
+
+
 		private const string _RELATIVITY_WEBAPI_TIMEOUT_SETTING_NAME = "RelativityWebApiTimeout";
 
 		private static readonly Lazy<Config> _instance = new Lazy<Config>(() => new Config());
@@ -69,6 +73,15 @@ namespace kCura.IntegrationPoints.Config
 			_MASS_UPDATE_BATCH_SIZE,
 			_MASS_UPDATE_BATCH_SIZE_DEFAULT
 			);
+
+		public TimeSpan TransientStateJobTimeout
+		{
+			get
+			{
+				int value = GetValue(_TRANSIENT_STATE_RIP_JOB_TIMEOUT, _TRANSIENT_STATE_RIP_JOB_TIMEOUT_DEFAULT_IN_MINUTES);
+				return TimeSpan.FromMinutes(value);
+			}
+		}
 
 		private bool GetMetricsToggle(Metrics metricName)
 		{

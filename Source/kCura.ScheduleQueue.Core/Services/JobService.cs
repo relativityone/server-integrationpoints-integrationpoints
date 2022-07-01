@@ -107,7 +107,8 @@ namespace kCura.ScheduleQueue.Core.Services
 			var result = new FinalizeJobResult();
 
 			DateTime? nextUtcRunDateTime = GetJobNextUtcRunDateTime(job, scheduleRuleFactory, taskResult);
-			if (job.JobFailed?.ShouldBreakSchedule == false && nextUtcRunDateTime.HasValue)
+			bool shouldBreakSchedule = (bool)job.JobFailed?.ShouldBreakSchedule;
+			if (!shouldBreakSchedule && nextUtcRunDateTime.HasValue)
 			{
 				_log.LogInformation("Job {jobId} was scheduled with following details: " +
 				                    "NextRunTime - {nextRunTime} " +
@@ -304,6 +305,14 @@ namespace kCura.ScheduleQueue.Core.Services
 		{
 			LogOnGetJobs(integrationPointId);
 			using (DataTable data = DataProvider.GetJobsByIntegrationPointId(integrationPointId))
+			{
+				return data.Rows.Cast<DataRow>().Select(row => new Job(row)).ToList();
+			}
+		}
+
+		public IList<Job> GetAllJobs()
+        {
+			using (DataTable data = DataProvider.GetAllJobs())
 			{
 				return data.Rows.Cast<DataRow>().Select(row => new Job(row)).ToList();
 			}
