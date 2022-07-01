@@ -4,9 +4,11 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Core;
 using Newtonsoft.Json;
 using Relativity.IntegrationPoints.Services.Helpers;
 using Relativity.IntegrationPoints.Services.Installers;
@@ -50,63 +52,54 @@ namespace Relativity.IntegrationPoints.Services
             {
                 Size = WorkloadSize.None
             };
-            int totalJobsCount = 0;
-            int blockedJobsCount = 0;
+            QueueInfo queueInfo = null;
             try
             {
                 using (IWindsorContainer container = GetDependenciesContainer(workspaceArtifactId: -1))
                 {
-                    (totalJobsCount, blockedJobsCount) = GetJobsFromQueue(container.Resolve<IQueueQueryManager>());
+                    queueInfo = GetJobsFromQueue(container.Resolve<IQueueQueryManager>(), container.Resolve<IJobService>());
 
                     IInstanceSettingsManager instanceSettingManager = container.Resolve<IInstanceSettingsManager>();
                     List<WorkloadSizeDefinition> workloadSizeDefinitions = GetWorkloadSizeDefinitions(instanceSettingManager);
-                    WorkloadSizeDefinition workloadSizeDefinition = SelectMatchingWorkloadSize(workloadSizeDefinitions, totalJobsCount);
+                    WorkloadSizeDefinition workloadSizeDefinition = SelectMatchingWorkloadSize(workloadSizeDefinitions, queueInfo.WorkloadItems);
                     workload.Size = workloadSizeDefinition.WorkloadSize;
                 }
+
+                Logger.LogInformation("Selected workload size: {workloadSize}. QueueInfo: {@queueInfo}", workload.Size, queueInfo);
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "GetWorkloadAsync_Error");
-            }
-            Logger.LogInformation("Selected workload size: {workloadSize} for jobs count: {jobsCount} - blockedJobsCount: {blockedJobsCount}",
-                workload.Size, totalJobsCount, blockedJobsCount);
+            }           
             return Task.FromResult(workload);
         }
 
-        private (int TotalJobsCount, int BlockedJobsCount) GetJobsFromQueue(IQueueQueryManager queueQueryManager)
+        private QueueInfo GetJobsFromQueue(IQueueQueryManager queueQueryManager, IJobService jobService)
         {
-            int totalItems = 0;
-            int blockedItems = 0;         
-            
-            DataTable queryResult = queueQueryManager.GetAllJobs().Execute();
+            QueueInfo queueInfo = new QueueInfo();
 
-            if(queryResult != null)
+            IEnumerable<Job> allQueueRecords = jobService.GetAllScheduledJobs();
+
+            if (allQueueRecords != null)
             {
                 AgentTypeInformation agentInfo = GetAgentTypeInfo(queueQueryManager);
                 
-                IEnumerable<Job> allJobs = queryResult.Rows.Cast<DataRow>().Select(row => new Job(row));
-                IEnumerable<Job> jobsReadyForProcessingByTimeCondition = allJobs.Where(x => x.NextRunTime <= DateTime.UtcNow);
-                IEnumerable<long?> existingSyncWorkerTypeRootIds = jobsReadyForProcessingByTimeCondition.Where(x => x.TaskType == JobTaskTypeNames.SYNC_WORKER).Select(x => x.RootJobId);
-                IEnumerable<Job> jobsWithoutSyncEntityManagerWorkers = jobsReadyForProcessingByTimeCondition.Where(x => !(x.TaskType == JobTaskTypeNames.SYNC_ENTITY_WORKER_MANAGER
+                List<Job> jobsReadyForProcessingByTimeCondition = allQueueRecords.Where(x => x.NextRunTime <= DateTime.UtcNow).ToList();
+                IEnumerable<long?> existingSyncWorkerTypeRootIds = jobsReadyForProcessingByTimeCondition.Where(x => x.TaskType == nameof(TaskType.SyncWorker)).Select(x => x.RootJobId);
+                IEnumerable<Job> jobsWithoutSyncEntityManagerWorkers = jobsReadyForProcessingByTimeCondition.Where(x => !(x.TaskType == nameof(TaskType.SyncEntityManagerWorker)
                                                                                                                     && existingSyncWorkerTypeRootIds.Contains(x.RootJobId)));     
                
-                totalItems = jobsWithoutSyncEntityManagerWorkers.Count();
+                queueInfo.WorkloadItems = jobsWithoutSyncEntityManagerWorkers.Count();
 
                 // Blocked jobs will not be removed from workload size because newly created Agent should remove them from queue.                
-                blockedItems = allJobs.Where(x => (x.StopState != StopState.None && x.StopState != StopState.DrainStopped && x.LockedByAgentID == null) 
-                                                        || x.AgentTypeID != agentInfo.AgentTypeID).Count();
+                queueInfo.BlockedItems = allQueueRecords.Where(x => x.IsBlocked() || x.AgentTypeID != agentInfo.AgentTypeID).Count();
+                queueInfo.AllQueuedItems = allQueueRecords.Count();
+                queueInfo.ItemsExcludedByTimeCondition = queueInfo.AllQueuedItems - jobsReadyForProcessingByTimeCondition.Count();
+                queueInfo.ItemsExcludedBySyncWorkerPriorityRule = jobsReadyForProcessingByTimeCondition.Count() - queueInfo.WorkloadItems;                
 
-                int queueCount = allJobs.Count();
-                int jobsExcludedByTimeConditionCount = queueCount - jobsReadyForProcessingByTimeCondition.Count();
-                int jobBlockedBySyncWorkerPriorityCount = jobsReadyForProcessingByTimeCondition.Count() - totalItems;
-
-                SendWorkloadStateMetrics(totalItems, 
-                    blockedItems,
-                    queueCount,
-                    jobsExcludedByTimeConditionCount,
-                    jobBlockedBySyncWorkerPriorityCount);
+                SendWorkloadStateMetrics(queueInfo);
             }
-            return (totalItems, blockedItems);
+            return queueInfo;
         }
 
         private AgentTypeInformation GetAgentTypeInfo(IQueueQueryManager queueQueryManager)
@@ -120,15 +113,15 @@ namespace Relativity.IntegrationPoints.Services
             return new AgentTypeInformation(agentTypeInfo);
         }
 
-        private void SendWorkloadStateMetrics(int totalItems, int blockedItems, int queueCount, int jobsExcludedByTimeConditionCount, int jobBlockedBySyncWorkerPriorityCount)
+        private void SendWorkloadStateMetrics(QueueInfo queueInfo)
         {
             Dictionary<string, object> data = new Dictionary<string, object>()
                 {
-                    { "TotalWorkloadCount", totalItems },
-                    { "BlockedJobsCount", blockedItems },
-                    { "AllQueuedItemsCount", queueCount },
-                    { "JobsExcludedByTimeConditionCount", jobsExcludedByTimeConditionCount },
-                    { "JobsExcludedBySyncWorkerPriorityCount", jobBlockedBySyncWorkerPriorityCount }
+                    { "TotalWorkloadCount", queueInfo.WorkloadItems },
+                    { "BlockedJobsCount", queueInfo.BlockedItems },
+                    { "AllQueuedItemsCount", queueInfo.AllQueuedItems },
+                    { "JobsExcludedByTimeConditionCount", queueInfo.ItemsExcludedByTimeCondition },
+                    { "JobsExcludedBySyncWorkerPriorityCount", queueInfo.ItemsExcludedBySyncWorkerPriorityRule }
                 };
 
             Client.APMClient.CountOperation(_METRIC_NAME, correlationID: kCura.IntegrationPoints.Core.Constants.IntegrationPoints.Telemetry.WORKLOAD_METRICS_CORRELATION_ID_GUID,
@@ -170,7 +163,7 @@ namespace Relativity.IntegrationPoints.Services
             }
 
             return workloadSizeDefinitions;
-        }
+        }    
 
         public void Dispose()
         {
