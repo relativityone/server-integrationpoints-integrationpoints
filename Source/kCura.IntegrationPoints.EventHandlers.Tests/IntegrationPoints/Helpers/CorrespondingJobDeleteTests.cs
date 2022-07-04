@@ -71,6 +71,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			dataTable.Columns.Add("ScheduleRuleType", typeof(string));
 			dataTable.Columns.Add("ScheduleRule", typeof(string));
 			dataTable.Columns.Add("StopState", typeof(int));
+			dataTable.Columns.Add("Heartbeat", typeof(DateTime));
 
 			var row = dataTable.NewRow();
 			row["JobID"] = jobId;
@@ -90,6 +91,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			row["ScheduleRuleType"] = "379502";
 			row["ScheduleRule"] = "938601";
 			row["StopState"] = 168546;
+			row["Heartbeat"] = DBNull.Value;
 
 			return row;
 		}

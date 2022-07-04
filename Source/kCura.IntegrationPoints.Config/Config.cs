@@ -18,7 +18,6 @@ namespace kCura.IntegrationPoints.Config
 		private const string _TRANSIENT_STATE_RIP_JOB_TIMEOUT = "TransientStateJobTimeout";
 		private const int _TRANSIENT_STATE_RIP_JOB_TIMEOUT_DEFAULT_IN_MINUTES = 8 * 60;
 
-
 		private const string _RELATIVITY_WEBAPI_TIMEOUT_SETTING_NAME = "RelativityWebApiTimeout";
 
 		private static readonly Lazy<Config> _instance = new Lazy<Config>(() => new Config());

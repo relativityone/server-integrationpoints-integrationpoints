@@ -175,30 +175,37 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private void CleanupInvalidJobs()
 		{
-			IDateTime dateTime = new DateTimeWrapper();
+            try
+            {
+				DateTime utcNow = _dateTime.UtcNow;
+				TimeSpan transientStateJobTimeout = _config.TransientStateJobTimeout;
 
-			DateTime utcNow = dateTime.UtcNow;
-			TimeSpan transientStateJobTimeout = _config.TransientStateJobTimeout;
+				Logger.LogInformation("Checking if jobs are in transient state: DateTimeUtc - {dateTimeNow}, TransientStateJobTimeout {transientStateJobTimeout}",
+					utcNow, transientStateJobTimeout);
 
-			Logger.LogInformation("Checking if jobs are in transient state: DateTimeUtc - {dateTimeNow}, TransientStateJobTimeout {transientStateJobTimeout}",
-				utcNow, transientStateJobTimeout);
+				IEnumerable<Job> transientStateJobs = _jobService.GetAllScheduledJobs();
 
-			IEnumerable<Job> transientStateJobs = _jobService.GetAllJobs()
-				.Where(x => (x.Heartbeat != null && utcNow.Subtract(x.Heartbeat.Value) > transientStateJobTimeout)
-					|| (x.LockedByAgentID == null && x.StopState != StopState.None && x.StopState != StopState.DrainStopped));
-			foreach(var job in transientStateJobs)
-			{
-				Logger.LogError("Job {jobId}, will be failed due timeout. " +
-					"LockedByAgent: {lockedByAgent}, " +
-					"StopState: {stopState}, " +
-					"Last Hearbeat: {heartbeat}, " +
-					"DateTimeUtc {utcNow}",
-					job.JobId, job.LockedByAgentID, job.StopState, job.Heartbeat, utcNow);
 
-				job.MarkJobAsFailed(new TimeoutException($"Job {job.JobId} failed due timeout. Contact your system administrator."), false);
-				TaskResult result = ProcessJob(job);
-				FinalizeJobExecution(job, result);
+					transientStateJobs = transientStateJobs.Where(x => (x.Heartbeat != null && utcNow.Subtract(x.Heartbeat.Value) > transientStateJobTimeout)
+						|| (x.LockedByAgentID == null && x.StopState != StopState.None && x.StopState != StopState.DrainStopped));
+				foreach (var job in transientStateJobs)
+				{
+					Logger.LogError("Job {jobId}, will be failed due timeout. " +
+							"LockedByAgent: {lockedByAgent}, " +
+							"StopState: {stopState}, " +
+							"Last Hearbeat: {heartbeat}, " +
+							"DateTimeUtc {utcNow}",
+						job.JobId, job.LockedByAgentID, job.StopState, job.Heartbeat, utcNow);
+
+					job.MarkJobAsFailed(new TimeoutException($"Job {job.JobId} has failed due timeout. Contact your system administrator."), false);
+					TaskResult result = ProcessJob(job);
+					FinalizeJobExecution(job, result);
+				}
 			}
+            catch (Exception ex)
+            {
+				Logger.LogError(ex, "Error occurred during cleaning invalid jobs from the queue.");
+            }
 		}
 
         private void PreExecute()

@@ -40,7 +40,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 				new DataColumn() {ColumnName = "SubmittedBy", DataType = typeof(int)},
 				new DataColumn() {ColumnName = "ScheduleRuleType", DataType = typeof(string)},
 				new DataColumn() {ColumnName = "ScheduleRule", DataType = typeof(string)},
-				new DataColumn() {ColumnName = "StopState", DataType = typeof(int)}
+				new DataColumn() {ColumnName = "StopState", DataType = typeof(int)},
+				new DataColumn() {ColumnName = "Heartbeat", DataType = typeof(DateTime)},
 			});
 			
 			return dt;

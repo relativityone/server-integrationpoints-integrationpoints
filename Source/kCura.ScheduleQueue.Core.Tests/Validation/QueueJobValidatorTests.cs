@@ -123,6 +123,8 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
 			_objectManagerMock = new Mock<IObjectManager>();
 
 			Mock<IAPILog> log = new Mock<IAPILog>();
+			log.Setup(x => x.ForContext<QueueJobValidator>())
+				.Returns(log.Object);
 
 			helper.Setup(x => x.GetServicesManager()).Returns(servicesMgr.Object);
 			servicesMgr.Setup(x => x.CreateProxy<IObjectManager>(It.IsAny<ExecutionIdentity>()))

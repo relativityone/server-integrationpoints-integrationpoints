@@ -64,6 +64,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 	        row["ScheduleRuleType"] = scheduleRuleType;
 	        row["ScheduleRule"] = serializedScheduleRule;
 	        row["StopState"] = stopState;
+			row["Heartbeat"] = DBNull.Value;
 	        return row;
 	    }
 
@@ -88,8 +89,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 	            new DataColumn() {ColumnName = "SubmittedBy", DataType = typeof(int)},
 	            new DataColumn() {ColumnName = "ScheduleRuleType", DataType = typeof(string)},
 	            new DataColumn() {ColumnName = "ScheduleRule", DataType = typeof(string)},
-	            new DataColumn() {ColumnName = "StopState", DataType = typeof(int)}
-	        });
+	            new DataColumn() {ColumnName = "StopState", DataType = typeof(int)},
+				new DataColumn() {ColumnName = "Heartbeat", DataType = typeof(DateTime), AllowDBNull = true},
+			});
 	        return dt;
 	    }
 

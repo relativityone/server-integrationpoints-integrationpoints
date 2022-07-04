@@ -47,8 +47,6 @@ namespace kCura.ScheduleQueue.Core
 		/// <returns>A list of job DTOs</returns>
 		IList<Job> GetJobs(long integrationPointId);
 
-		IList<Job> GetAllJobs();
-
 		void UpdateJobDetails(Job job);
 
 		void FinalizeDrainStoppedJob(Job job);
