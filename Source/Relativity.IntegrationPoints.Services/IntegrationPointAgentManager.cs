@@ -85,9 +85,9 @@ namespace Relativity.IntegrationPoints.Services
                 AgentTypeInformation agentInfo = GetAgentTypeInfo(queueQueryManager);
                 
                 List<Job> jobsReadyForProcessingByTimeCondition = allQueueRecords.Where(x => x.NextRunTime <= DateTime.UtcNow).ToList();
-                IEnumerable<long?> existingSyncWorkerTypeRootIds = jobsReadyForProcessingByTimeCondition.Where(x => x.TaskType == nameof(TaskType.SyncWorker)).Select(x => x.RootJobId);
-                IEnumerable<Job> jobsWithoutSyncEntityManagerWorkers = jobsReadyForProcessingByTimeCondition.Where(x => !(x.TaskType == nameof(TaskType.SyncEntityManagerWorker)
-                                                                                                                    && existingSyncWorkerTypeRootIds.Contains(x.RootJobId)));     
+                List<long?> existingSyncWorkerTypeRootIds = jobsReadyForProcessingByTimeCondition.Where(x => x.TaskType == nameof(TaskType.SyncWorker)).Select(x => x.RootJobId).ToList();
+                List<Job> jobsWithoutSyncEntityManagerWorkers = jobsReadyForProcessingByTimeCondition.Where(x => !(x.TaskType == nameof(TaskType.SyncEntityManagerWorker)
+                                                                                                                    && existingSyncWorkerTypeRootIds.Contains(x.RootJobId))).ToList();     
                
                 queueInfo.TotalWorkloadCount = jobsWithoutSyncEntityManagerWorkers.Count();
 
