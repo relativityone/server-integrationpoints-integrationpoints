@@ -44,20 +44,15 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 			_jobFake.SetupGet(x => x.IntegrationPointId).Returns(_INTEGRATION_POINT_ID);
 			_jobFake.SetupGet(x => x.JobId).Returns(_JOB_ID);
 
-			Mock<IServicesMgr> servicesMgr = new Mock<IServicesMgr>();
-
-			Mock<IHelper> helper = new Mock<IHelper>();
-			Mock<IAPILog> _loggerFake = new Mock<IAPILog>();
-			helper.Setup(x => x.GetServicesManager()).Returns(servicesMgr.Object);
-			helper.Setup(x => x.GetLoggerFactory().GetLogger().ForContext<JobHistorySyncService>()).Returns(_loggerFake.Object);
-
 			_relativityObjectManagerFake = new Mock<IRelativityObjectManager>();
 			_relativityObjectManagerFake.Setup(x => x.QueryAsync<JobHistory>(It.IsAny<QueryRequest>(),It.IsAny<bool>(),It.IsAny<ExecutionIdentity>()))
 				.ReturnsAsync(_jobHistoryList);
 			_relativityObjectManagerFake.Setup(x => x.QueryAsync(It.IsAny<QueryRequest>(),It.IsAny<int>(),It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<ExecutionIdentity>()))
 				.ReturnsAsync(new ResultSet<RelativityObject>());
 
-			_sut = new JobHistorySyncService(helper.Object, _relativityObjectManagerFake.Object);
+			Mock<IAPILog> loggerFake = new Mock<IAPILog>();
+
+			_sut = new JobHistorySyncService(loggerFake.Object, _relativityObjectManagerFake.Object);
 		}
 
 		[TestCase("validating")]
