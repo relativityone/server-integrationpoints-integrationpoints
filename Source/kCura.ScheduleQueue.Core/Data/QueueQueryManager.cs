@@ -118,14 +118,9 @@ namespace kCura.ScheduleQueue.Core.Data
 		public IQuery<bool> CheckAllSyncWorkerBatchesAreFinished(long rootJobId)
 		{
 			return new CheckAllSyncWorkerBatchesAreFinished(_queueDbContext, rootJobId);
-		}		
-
-		public IQuery<DataTable> GetJobsQueueDetails(int agentTypeId)
-        {
-			return new GetJobsQueueDetails(_queueDbContext, agentTypeId);
-        }
-
-        public IQuery<int> Heartbeat(long jobId, DateTime heartbeatTime)
+		}
+		
+		public IQuery<int> Heartbeat(long jobId, DateTime heartbeatTime)
         {
 			return new UpdateHeartbeat(_queueDbContext, jobId, heartbeatTime);
         }
