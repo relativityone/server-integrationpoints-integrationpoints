@@ -48,110 +48,6 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 
 			_jobServiceFake = new Mock<IJobService>();
 			_containerFake.Setup(x => x.Resolve<IJobService>()).Returns(_jobServiceFake.Object);
-		}
-
-		private IntegrationPointAgentManager PrepareSut(int jobsCount = 0, string workloadSizeInstanceSettingValue = "", int excludedFromProcessingByPriority = 0, int excludedFromProcessingByTimeCondition = 0)
-		{			
-			//Mock<IQuery<DataTable>> fakeGetQueueState = new Mock<IQuery<DataTable>>();
-			Mock<IQuery<DataRow>> fakeAgentInfoRow = new Mock<IQuery<DataRow>>();			
-			
-			IEnumerable<Job> fakeQueueState = GetFakeQueue(jobsCount, excludedFromProcessingByPriority, excludedFromProcessingByTimeCondition);
-			DataRow fakeAgentInfoData = PrepareFakeAgentInfoDataRow();
-			
-			//fakeGetQueueState.Setup(x => x.Execute()).Returns(fakeQueueState);
-			fakeAgentInfoRow.Setup(x => x.Execute()).Returns(fakeAgentInfoData);			
-			_jobServiceFake.Setup(x => x.GetAllScheduledJobs()).Returns(fakeQueueState);
-			_queueQueryManagerFake.Setup(x => x.GetAgentTypeInformation(It.IsAny<Guid>())).Returns(fakeAgentInfoRow.Object);			
-
-			_instanceSettingsManagerFake.Setup(x => x.GetWorkloadSizeSettings()).Returns(workloadSizeInstanceSettingValue);
-			return new IntegrationPointAgentManager(_loggerFake.Object, _permissionsFake.Object, _containerFake.Object);
-		}
-
-		private List<Job> GetFakeQueue(int jobsCount, int excludedFromProcessingByPriority, int excludedFromProcessingByTimeCondition)
-        {
-			DataTable dt = PrepareFakeDbTableState(jobsCount, excludedFromProcessingByPriority, excludedFromProcessingByTimeCondition);
-			return dt.Rows.Cast<DataRow>().Select(row => new Job(row)).ToList();
-		}
-
-        private DataTable PrepareFakeDbTableState(int jobsCount, int excludedFromProcessingByPriority, int excludedFromProcessingByTimeCondition)
-        {
-			DataTable dt = new DataTable();
-			dt.Columns.Add("JobID", typeof(long));
-			dt.Columns.Add("RootJobId", typeof(long));
-			dt.Columns.Add("ParentJobId", typeof(long));
-			dt.Columns.Add("AgentTypeID", typeof(int));
-			dt.Columns.Add("LockedByAgentID", typeof(int));
-			dt.Columns.Add("WorkspaceID", typeof(int));
-			dt.Columns.Add("RelatedObjectArtifactID", typeof(int));
-			dt.Columns.Add("TaskType", typeof(string));
-			dt.Columns.Add("NextRunTime", typeof(DateTime));
-			dt.Columns.Add("LastRunTime", typeof(DateTime));
-			dt.Columns.Add("JobDetails", typeof(string));
-			dt.Columns.Add("JobFlags", typeof(int));
-			dt.Columns.Add("SubmittedDate", typeof(DateTime));
-			dt.Columns.Add("SubmittedBy", typeof(int));
-			dt.Columns.Add("ScheduleRuleType", typeof(string));
-			dt.Columns.Add("ScheduleRule", typeof(string));
-			dt.Columns.Add("StopState", typeof(int));			
-			
-			if (excludedFromProcessingByPriority > 0)
-            {
-				dt.Rows.Add(GetTestRow(dt.Rows.Count + 1, 1, dt.Rows.Count, nameof(TaskType.SyncWorker), 0));
-				AddFakeRowsToDataTable(dt, excludedFromProcessingByPriority, GetTestRow(dt.Rows.Count + 1, 1, dt.Rows.Count, nameof(TaskType.SyncEntityManagerWorker), 0));				
-			}			
-			if(excludedFromProcessingByTimeCondition > 0)
-            {
-				AddFakeRowsToDataTable(dt, excludedFromProcessingByTimeCondition, 
-					GetTestRow(dt.Rows.Count + 1, 0, dt.Rows.Count, nameof(TaskType.SyncEntityManagerWorker), 0, nextRunTimeDiff: 10));
-			}
-			int jobsForProcessingCount = jobsCount - dt.Rows.Count;
-			if(jobsForProcessingCount > 0)
-            {
-				AddFakeRowsToDataTable(dt, jobsForProcessingCount, GetTestRow(dt.Rows.Count + 1, 0, dt.Rows.Count, nameof(TaskType.SyncEntityManagerWorker), 0));
-            }		
-			return dt;
-        }
-
-		private void AddFakeRowsToDataTable(DataTable dt, int itemsCount, object[] data)
-        {			
-			while (itemsCount > 0)
-			{					
-				dt.Rows.Add(data);
-				itemsCount--;
-			}
-		}
-
-		private object[] GetTestRow(long id, long? rootId, long? parentId, string taskTypeName, int stopState, int nextRunTimeDiff = -1)
-        {
-			return new object[]
-						{id,
-						rootId,
-						parentId,
-						_AGENT_TYPE_ID,
-						null,
-						_WORKSPACE_ID,
-						_RELATED_OBJ_ARTIFACT_ID,
-						taskTypeName,
-						DateTime.UtcNow.AddMinutes(nextRunTimeDiff),
-						null,
-						string.Empty,
-						0,
-						DateTime.UtcNow.AddHours(-1),
-						_JOB_SUBMITTED_BY,
-						string.Empty,
-						string.Empty,
-						stopState};
-		}
-
-		private DataRow PrepareFakeAgentInfoDataRow()
-        {
-			DataTable dt = new DataTable();		
-			dt.Columns.Add("AgentTypeID", typeof(int));
-			dt.Columns.Add("Name", typeof(string));
-			dt.Columns.Add("Fullnamespace", typeof(string));
-			dt.Columns.Add("Guid", typeof(Guid));
-			dt.Rows.Add(new Object[] { _AGENT_TYPE_ID, "TestName", "TestNameSpace", new Guid() });
-			return dt.Rows[0];
 		}		
 
 		[TestCase(3, 0, 3, WorkloadSize.None)]
@@ -248,6 +144,111 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 
 			// Assert
 			workload.Size.Should().Be(WorkloadSize.One);
+		}
+
+		private IntegrationPointAgentManager PrepareSut(int jobsCount = 0, string workloadSizeInstanceSettingValue = "", int excludedFromProcessingByPriority = 0, int excludedFromProcessingByTimeCondition = 0)
+		{
+			//Mock<IQuery<DataTable>> fakeGetQueueState = new Mock<IQuery<DataTable>>();
+			Mock<IQuery<DataRow>> fakeAgentInfoRow = new Mock<IQuery<DataRow>>();
+
+			IEnumerable<Job> fakeQueueState = GetFakeQueue(jobsCount, excludedFromProcessingByPriority, excludedFromProcessingByTimeCondition);
+			DataRow fakeAgentInfoData = PrepareFakeAgentInfoDataRow();
+
+			//fakeGetQueueState.Setup(x => x.Execute()).Returns(fakeQueueState);
+			fakeAgentInfoRow.Setup(x => x.Execute()).Returns(fakeAgentInfoData);
+			_jobServiceFake.Setup(x => x.GetAllScheduledJobs()).Returns(fakeQueueState);
+			_queueQueryManagerFake.Setup(x => x.GetAgentTypeInformation(It.IsAny<Guid>())).Returns(fakeAgentInfoRow.Object);
+
+			_instanceSettingsManagerFake.Setup(x => x.GetWorkloadSizeSettings()).Returns(workloadSizeInstanceSettingValue);
+			return new IntegrationPointAgentManager(_loggerFake.Object, _permissionsFake.Object, _containerFake.Object);
+		}
+
+		private List<Job> GetFakeQueue(int jobsCount, int excludedFromProcessingByPriority, int excludedFromProcessingByTimeCondition)
+		{
+			DataTable dt = PrepareFakeDbTableState(jobsCount, excludedFromProcessingByPriority, excludedFromProcessingByTimeCondition);
+			return dt.Rows.Cast<DataRow>().Select(row => new Job(row)).ToList();
+		}
+
+		private DataTable PrepareFakeDbTableState(int jobsCount, int excludedFromProcessingByPriority, int excludedFromProcessingByTimeCondition)
+		{
+			DataTable dt = new DataTable();
+			dt.Columns.Add("JobID", typeof(long));
+			dt.Columns.Add("RootJobId", typeof(long));
+			dt.Columns.Add("ParentJobId", typeof(long));
+			dt.Columns.Add("AgentTypeID", typeof(int));
+			dt.Columns.Add("LockedByAgentID", typeof(int));
+			dt.Columns.Add("WorkspaceID", typeof(int));
+			dt.Columns.Add("RelatedObjectArtifactID", typeof(int));
+			dt.Columns.Add("TaskType", typeof(string));
+			dt.Columns.Add("NextRunTime", typeof(DateTime));
+			dt.Columns.Add("LastRunTime", typeof(DateTime));
+			dt.Columns.Add("JobDetails", typeof(string));
+			dt.Columns.Add("JobFlags", typeof(int));
+			dt.Columns.Add("SubmittedDate", typeof(DateTime));
+			dt.Columns.Add("SubmittedBy", typeof(int));
+			dt.Columns.Add("ScheduleRuleType", typeof(string));
+			dt.Columns.Add("ScheduleRule", typeof(string));
+			dt.Columns.Add("StopState", typeof(int));
+			dt.Columns.Add("Heartbeat", typeof(DateTime));
+
+			if (excludedFromProcessingByPriority > 0)
+			{
+				dt.Rows.Add(GetTestRow(dt.Rows.Count + 1, 1, dt.Rows.Count, nameof(TaskType.SyncWorker), 0));
+				AddFakeRowsToDataTable(dt, excludedFromProcessingByPriority, GetTestRow(dt.Rows.Count + 1, 1, dt.Rows.Count, nameof(TaskType.SyncEntityManagerWorker), 0));
+			}
+			if (excludedFromProcessingByTimeCondition > 0)
+			{
+				AddFakeRowsToDataTable(dt, excludedFromProcessingByTimeCondition,
+					GetTestRow(dt.Rows.Count + 1, 0, dt.Rows.Count, nameof(TaskType.SyncEntityManagerWorker), 0, nextRunTimeDiff: 10));
+			}
+			int jobsForProcessingCount = jobsCount - dt.Rows.Count;
+			if (jobsForProcessingCount > 0)
+			{
+				AddFakeRowsToDataTable(dt, jobsForProcessingCount, GetTestRow(dt.Rows.Count + 1, 0, dt.Rows.Count, nameof(TaskType.SyncEntityManagerWorker), 0));
+			}
+			return dt;
+		}
+
+		private void AddFakeRowsToDataTable(DataTable dt, int itemsCount, object[] data)
+		{
+			while (itemsCount > 0)
+			{
+				dt.Rows.Add(data);
+				itemsCount--;
+			}
+		}
+
+		private object[] GetTestRow(long id, long? rootId, long? parentId, string taskTypeName, int stopState, int nextRunTimeDiff = -1)
+		{
+			return new object[]
+						{id,
+						rootId,
+						parentId,
+						_AGENT_TYPE_ID,
+						null,
+						_WORKSPACE_ID,
+						_RELATED_OBJ_ARTIFACT_ID,
+						taskTypeName,
+						DateTime.UtcNow.AddMinutes(nextRunTimeDiff),
+						null,
+						string.Empty,
+						0,
+						DateTime.UtcNow.AddHours(-1),
+						_JOB_SUBMITTED_BY,
+						string.Empty,
+						string.Empty,
+						stopState};
+		}
+
+		private DataRow PrepareFakeAgentInfoDataRow()
+		{
+			DataTable dt = new DataTable();
+			dt.Columns.Add("AgentTypeID", typeof(int));
+			dt.Columns.Add("Name", typeof(string));
+			dt.Columns.Add("Fullnamespace", typeof(string));
+			dt.Columns.Add("Guid", typeof(Guid));
+			dt.Rows.Add(new Object[] { _AGENT_TYPE_ID, "TestName", "TestNameSpace", new Guid() });
+			return dt.Rows[0];
 		}
 	}
 }

@@ -114,6 +114,12 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			return this;
 		}
 
+		public JobBuilder WithHeartbeat(DateTime heartbeat)
+        {
+			_jobData[_HEARTBEAT] = heartbeat;
+			return this;
+        }
+
 		private void InitializeWithDefaultData()
 		{
 			DataTable table = new DataTable();

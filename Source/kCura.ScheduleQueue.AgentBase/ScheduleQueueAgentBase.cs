@@ -183,11 +183,8 @@ namespace kCura.ScheduleQueue.AgentBase
 				Logger.LogInformation("Checking if jobs are in transient state: DateTimeUtc - {dateTimeNow}, TransientStateJobTimeout {transientStateJobTimeout}",
 					utcNow, transientStateJobTimeout);
 
-				IEnumerable<Job> transientStateJobs = _jobService.GetAllScheduledJobs();
-
-
-					transientStateJobs = transientStateJobs.Where(x => (x.Heartbeat != null && utcNow.Subtract(x.Heartbeat.Value) > transientStateJobTimeout)
-						|| (x.LockedByAgentID == null && x.StopState != StopState.None && x.StopState != StopState.DrainStopped));
+				IEnumerable<Job> transientStateJobs = _jobService.GetAllScheduledJobs()
+					.Where(x => (x.Heartbeat != null && utcNow.Subtract(x.Heartbeat.Value) > transientStateJobTimeout) || x.IsBlocked());
 				foreach (var job in transientStateJobs)
 				{
 					Logger.LogError("Job {jobId}, will be failed due timeout. " +
