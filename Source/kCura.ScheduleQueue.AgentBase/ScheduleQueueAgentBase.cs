@@ -370,7 +370,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			
 			FinalizeJobResult result = _jobService.FinalizeJob(job, ScheduleRuleFactory, taskResult);
 
-			Exception exception = taskResult.Exceptions.Any() ? new AggregateException(taskResult.Exceptions) : null;
+			Exception exception = (taskResult.Exceptions != null && taskResult.Exceptions.Any()) ? new AggregateException(taskResult.Exceptions) : null;
 			LogJobState(job, result.JobState, exception, result.Details);
 			
 			LogFinalizeJob(job, result);
