@@ -8,10 +8,10 @@ namespace kCura.ScheduleQueue.Core.Core
 {
     public class QueueInfo
     {
-        public int AllQueuedItems { get; set; }
-        public int BlockedItems { get; set; }
-        public int ItemsExcludedByTimeCondition { get; set; }
-        public int ItemsExcludedBySyncWorkerPriorityRule { get; set; }
-        public int WorkloadItems { get; set; }
+        public int AllQueuedItemsCount { get; set; }
+        public int BlockedJobsCount { get; set; }
+        public int JobsExcludedByTimeConditionCount { get; set; }
+        public int JobsExcludedBySyncWorkerPriorityCount { get; set; }
+        public int TotalWorkloadCount { get; set; }
     }
 }

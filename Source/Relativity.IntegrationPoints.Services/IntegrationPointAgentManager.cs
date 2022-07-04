@@ -61,7 +61,7 @@ namespace Relativity.IntegrationPoints.Services
 
                     IInstanceSettingsManager instanceSettingManager = container.Resolve<IInstanceSettingsManager>();
                     List<WorkloadSizeDefinition> workloadSizeDefinitions = GetWorkloadSizeDefinitions(instanceSettingManager);
-                    WorkloadSizeDefinition workloadSizeDefinition = SelectMatchingWorkloadSize(workloadSizeDefinitions, queueInfo.WorkloadItems);
+                    WorkloadSizeDefinition workloadSizeDefinition = SelectMatchingWorkloadSize(workloadSizeDefinitions, queueInfo.TotalWorkloadCount);
                     workload.Size = workloadSizeDefinition.WorkloadSize;
                 }
 
@@ -89,13 +89,13 @@ namespace Relativity.IntegrationPoints.Services
                 IEnumerable<Job> jobsWithoutSyncEntityManagerWorkers = jobsReadyForProcessingByTimeCondition.Where(x => !(x.TaskType == nameof(TaskType.SyncEntityManagerWorker)
                                                                                                                     && existingSyncWorkerTypeRootIds.Contains(x.RootJobId)));     
                
-                queueInfo.WorkloadItems = jobsWithoutSyncEntityManagerWorkers.Count();
+                queueInfo.TotalWorkloadCount = jobsWithoutSyncEntityManagerWorkers.Count();
 
                 // Blocked jobs will not be removed from workload size because newly created Agent should remove them from queue.                
-                queueInfo.BlockedItems = allQueueRecords.Where(x => x.IsBlocked() || x.AgentTypeID != agentInfo.AgentTypeID).Count();
-                queueInfo.AllQueuedItems = allQueueRecords.Count();
-                queueInfo.ItemsExcludedByTimeCondition = queueInfo.AllQueuedItems - jobsReadyForProcessingByTimeCondition.Count();
-                queueInfo.ItemsExcludedBySyncWorkerPriorityRule = jobsReadyForProcessingByTimeCondition.Count() - queueInfo.WorkloadItems;                
+                queueInfo.BlockedJobsCount = allQueueRecords.Where(x => x.IsBlocked() || x.AgentTypeID != agentInfo.AgentTypeID).Count();
+                queueInfo.AllQueuedItemsCount = allQueueRecords.Count();
+                queueInfo.JobsExcludedByTimeConditionCount = queueInfo.AllQueuedItemsCount - jobsReadyForProcessingByTimeCondition.Count;
+                queueInfo.JobsExcludedBySyncWorkerPriorityCount = jobsReadyForProcessingByTimeCondition.Count - queueInfo.TotalWorkloadCount;                
 
                 SendWorkloadStateMetrics(queueInfo);
             }
@@ -117,11 +117,11 @@ namespace Relativity.IntegrationPoints.Services
         {
             Dictionary<string, object> data = new Dictionary<string, object>()
                 {
-                    { "TotalWorkloadCount", queueInfo.WorkloadItems },
-                    { "BlockedJobsCount", queueInfo.BlockedItems },
-                    { "AllQueuedItemsCount", queueInfo.AllQueuedItems },
-                    { "JobsExcludedByTimeConditionCount", queueInfo.ItemsExcludedByTimeCondition },
-                    { "JobsExcludedBySyncWorkerPriorityCount", queueInfo.ItemsExcludedBySyncWorkerPriorityRule }
+                    { "TotalWorkloadCount", queueInfo.TotalWorkloadCount },
+                    { "BlockedJobsCount", queueInfo.BlockedJobsCount },
+                    { "AllQueuedItemsCount", queueInfo.AllQueuedItemsCount },
+                    { "JobsExcludedByTimeConditionCount", queueInfo.JobsExcludedByTimeConditionCount },
+                    { "JobsExcludedBySyncWorkerPriorityCount", queueInfo.JobsExcludedBySyncWorkerPriorityCount }
                 };
 
             Client.APMClient.CountOperation(_METRIC_NAME, correlationID: kCura.IntegrationPoints.Core.Constants.IntegrationPoints.Telemetry.WORKLOAD_METRICS_CORRELATION_ID_GUID,
