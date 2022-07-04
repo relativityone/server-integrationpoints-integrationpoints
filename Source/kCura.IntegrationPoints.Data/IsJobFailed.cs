@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.Data
 
         public IsJobFailed(Exception exception, bool shouldBreakSchedule)
         {
-            Exception = exception;
+            Exception = exception ?? throw new ArgumentNullException(nameof(Exception));
             ShouldBreakSchedule = shouldBreakSchedule;
         }
     }

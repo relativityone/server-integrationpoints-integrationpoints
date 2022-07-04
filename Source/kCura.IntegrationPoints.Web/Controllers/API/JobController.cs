@@ -33,9 +33,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly ICPHelper _helper;
 		private readonly IManagerFactory _managerFactory;
 		private readonly IIntegrationPointRepository _integrationPointRepository;
-        private readonly IAPILog _log;
+		private readonly IAPILog _log;
 
-        public JobController(
+		public JobController(
 			IServiceFactory serviceFactory, 
 			ICPHelper helper, 
 			IManagerFactory managerFactory,
@@ -46,8 +46,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			_helper = helper;
 			_managerFactory = managerFactory;
 			_integrationPointRepository = integrationPointRepository;
-            _log = log;
-        }
+			_log = log;
+		}
 
 		// POST API/Job/Run
 		[HttpPost]

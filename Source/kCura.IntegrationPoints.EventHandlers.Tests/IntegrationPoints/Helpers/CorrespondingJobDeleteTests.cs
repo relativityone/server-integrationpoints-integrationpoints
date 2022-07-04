@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Contracts.Helpers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
@@ -35,8 +36,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 
 			var jobs = new List<Job>
 			{
-				new Job(CreateMockJobRow(695)),
-				new Job(CreateMockJobRow(315))
+				new JobBuilder().WithJobId(695).Build(),
+				new JobBuilder().WithJobId(315).Build()
 			};
 
 			_jobService.GetScheduledJobs(workspaceId, integrationPointId, Arg.Is<List<string>>(x => x.SequenceEqual(taskTypes))).Returns(jobs);
@@ -48,52 +49,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
 			{
 				_jobService.Received(1).DeleteJob(job.JobId);
 			}
-		}
-
-		private DataRow CreateMockJobRow(int jobId)
-		{
-			var dataTable = new DataTable();
-			dataTable.Columns.Add();
-			dataTable.Columns.Add("JobID", typeof(long));
-			dataTable.Columns.Add("RootJobId", typeof(long));
-			dataTable.Columns.Add("ParentJobId", typeof(long));
-			dataTable.Columns.Add("AgentTypeID", typeof(int));
-			dataTable.Columns.Add("LockedByAgentID", typeof(int));
-			dataTable.Columns.Add("WorkspaceID", typeof(int));
-			dataTable.Columns.Add("RelatedObjectArtifactID", typeof(int));
-			dataTable.Columns.Add("TaskType", typeof(string));
-			dataTable.Columns.Add("NextRunTime", typeof(DateTime));
-			dataTable.Columns.Add("LastRunTime", typeof(DateTime));
-			dataTable.Columns.Add("JobDetails", typeof(string));
-			dataTable.Columns.Add("JobFlags", typeof(int));
-			dataTable.Columns.Add("SubmittedDate", typeof(DateTime));
-			dataTable.Columns.Add("SubmittedBy", typeof(int));
-			dataTable.Columns.Add("ScheduleRuleType", typeof(string));
-			dataTable.Columns.Add("ScheduleRule", typeof(string));
-			dataTable.Columns.Add("StopState", typeof(int));
-			dataTable.Columns.Add("Heartbeat", typeof(DateTime));
-
-			var row = dataTable.NewRow();
-			row["JobID"] = jobId;
-			row["RootJobId"] = 907165;
-			row["ParentJobId"] = 760852;
-			row["AgentTypeID"] = 256540;
-			row["LockedByAgentID"] = 753340;
-			row["WorkspaceID"] = 111225;
-			row["RelatedObjectArtifactID"] = 436213;
-			row["TaskType"] = "240604";
-			row["NextRunTime"] = new DateTime();
-			row["LastRunTime"] = new DateTime();
-			row["JobDetails"] = "392212";
-			row["JobFlags"] = 587690;
-			row["SubmittedDate"] = new DateTime();
-			row["SubmittedBy"] = 473355;
-			row["ScheduleRuleType"] = "379502";
-			row["ScheduleRule"] = "938601";
-			row["StopState"] = 168546;
-			row["Heartbeat"] = DBNull.Value;
-
-			return row;
 		}
 	}
 }
