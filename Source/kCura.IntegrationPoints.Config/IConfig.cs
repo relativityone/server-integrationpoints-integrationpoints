@@ -67,5 +67,10 @@ namespace kCura.IntegrationPoints.Config
 		/// Gets size of mass update batch
 		/// </summary>
 		int MassUpdateBatchSize { get; }
+
+		/// <summary>
+		/// Get Timeout for Transient State RIP Jobs
+		/// </summary>
+		TimeSpan TransientStateJobTimeout { get; }
 	}
 }

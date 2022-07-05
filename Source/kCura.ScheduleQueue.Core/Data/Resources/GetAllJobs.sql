@@ -16,5 +16,6 @@
 			,[SubmittedDate]
 			,[SubmittedBy]
 			,[StopState]
+			,[Heartbeat]
 FROM
 			[eddsdbo].[{0}] WITH(NOLOCK)

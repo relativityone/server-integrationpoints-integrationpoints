@@ -160,7 +160,6 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 			try
 			{
 				await Clients.Group(key.ToString()).updateIntegrationPointJobStatusTable();
-				_logger.LogInformation("SignalR update completed: {method} (key = {key})", nameof(UpdateIntegrationPointJobStatusTableAsync), key);
 			}
 			catch (Exception exception)
 			{
@@ -211,8 +210,6 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 					integrationPoint.Name, buttonStates);
 
 				await Clients.Group(key.ToString()).updateIntegrationPointData(model, buttonStates, onClickEvents, sourceProviderIsRelativity);
-
-				_logger.LogInformation("SignalR update completed: {method} (key = {key})", nameof(UpdateIntegrationPointDataAsync), key);
 			}
 			catch (Exception exception)
 			{
