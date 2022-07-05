@@ -43,13 +43,6 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter
         {
             _startDateTime = _dateTime.UtcNow;
             _correlationId = Guid.NewGuid().ToString();
-            Dictionary<string, object> runningJobTimeCustomData = new Dictionary<string, object>()
-            {
-                { "r1.team.id", "PTCI-2456712" },
-            };
-
-            _apmClient.CountOperation(_METRIC_RUNNING_JOB_TIME_EXCEEDED_NAME, correlationID: _correlationId, customData: runningJobTimeCustomData)
-                .Write();
             if (!_toggleProvider.IsEnabled<EnableHeartbeatToggle>())
             {
                 _log.LogInformation("EnableHeartbeatToggle is disabled. JobID {jobId} heartbeat won't be updated", jobId);
