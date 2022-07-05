@@ -16,6 +16,7 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Services;
 using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
+using Relativity.Telemetry.APM;
 
 namespace kCura.ScheduleQueue.AgentBase
 {
@@ -29,6 +30,7 @@ namespace kCura.ScheduleQueue.AgentBase
 		private IDateTime _dateTime;
 		private ITaskParameterHelper _taskParameterHelper;
 		private IConfig _config;
+		private IAPM _apm;
 
 		private const int _MAX_MESSAGE_LENGTH = 10000;
 
@@ -59,7 +61,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected ScheduleQueueAgentBase(Guid agentGuid, IKubernetesMode kubernetesMode = null, IAgentService agentService = null, IJobService jobService = null,
 			IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
-			IQueueQueryManager queryManager = null, IDateTime dateTime = null, IAPILog logger = null, IConfig config = null)
+			IQueueQueryManager queryManager = null, IDateTime dateTime = null, IAPILog logger = null, IConfig config = null, IAPM apm = null)
 		{
 			// Lazy init is required for things depending on Helper
 			// Helper property in base class is assigned AFTER object construction
@@ -79,6 +81,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			_dateTime = dateTime;
 			_queueManager = queryManager;
 			_config = config;
+			_apm = apm;
 			ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
 
 			_agentId = new Lazy<int>(GetAgentID);
@@ -132,6 +135,11 @@ namespace kCura.ScheduleQueue.AgentBase
             {
 				_config = IntegrationPoints.Config.Config.Instance;
             }
+
+			if(_apm == null)
+            {
+				_apm = Client.APMClient;
+			}
 		}
 
 		public sealed override void Execute()
@@ -194,6 +202,8 @@ namespace kCura.ScheduleQueue.AgentBase
 							"DateTimeUtc {utcNow}",
 						job.JobId, job.LockedByAgentID, job.StopState, job.Heartbeat, utcNow);
 
+					SendJobInTransientSateMetric(job);
+
 					job.MarkJobAsFailed(new TimeoutException($"Job {job.JobId} has failed due timeout. Contact your system administrator."), false);
 					TaskResult result = ProcessJob(job);
 					FinalizeJobExecution(job, result);
@@ -203,6 +213,22 @@ namespace kCura.ScheduleQueue.AgentBase
             {
 				Logger.LogError(ex, "Error occurred during cleaning invalid jobs from the queue.");
             }
+		}
+
+        private void SendJobInTransientSateMetric(Job job)
+        {
+			Dictionary<string, object> jobInTransientStateCustomData = new Dictionary<string, object>()
+			{
+				{ "r1.team.id", "PTCI-RIP" },
+				{ "JobId", job.JobId },
+				{ "RootJobId", job.RootJobId },
+				{ "LockedByAgentId", job.LockedByAgentID },
+				{ "StopState", job.StopState },
+				{ "LastHeartbeat", job.Heartbeat }
+			};
+
+			_apm.CountOperation("Relativity.IntegrationPoints.Performance.JobInTransientState", customData: jobInTransientStateCustomData)
+				.Write();
 		}
 
         private void PreExecute()

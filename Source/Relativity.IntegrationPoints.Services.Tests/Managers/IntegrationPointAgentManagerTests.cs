@@ -148,13 +148,11 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 
 		private IntegrationPointAgentManager PrepareSut(int jobsCount = 0, string workloadSizeInstanceSettingValue = "", int excludedFromProcessingByPriority = 0, int excludedFromProcessingByTimeCondition = 0)
 		{
-			//Mock<IQuery<DataTable>> fakeGetQueueState = new Mock<IQuery<DataTable>>();
 			Mock<IQuery<DataRow>> fakeAgentInfoRow = new Mock<IQuery<DataRow>>();
 
 			IEnumerable<Job> fakeQueueState = GetFakeQueue(jobsCount, excludedFromProcessingByPriority, excludedFromProcessingByTimeCondition);
 			DataRow fakeAgentInfoData = PrepareFakeAgentInfoDataRow();
 
-			//fakeGetQueueState.Setup(x => x.Execute()).Returns(fakeQueueState);
 			fakeAgentInfoRow.Setup(x => x.Execute()).Returns(fakeAgentInfoData);
 			_jobServiceFake.Setup(x => x.GetAllScheduledJobs()).Returns(fakeQueueState);
 			_queueQueryManagerFake.Setup(x => x.GetAgentTypeInformation(It.IsAny<Guid>())).Returns(fakeAgentInfoRow.Object);
