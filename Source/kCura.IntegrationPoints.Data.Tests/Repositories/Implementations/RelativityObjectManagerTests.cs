@@ -895,13 +895,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 				.Throws(expectedInnerException);
 
 			// act
-			Func<Task> massUpdateAction = () =>
+			Func<Task> updateAction = () =>
 				_sut.UpdateAsync(
 					new JobHistory(),
 					It.IsAny<ExecutionIdentity>());
 
 			// assert
-			massUpdateAction.ShouldThrow<IntegrationPointsException>()
+			updateAction.ShouldThrow<IntegrationPointsException>()
 				.Which.InnerException.Should().Be(expectedInnerException);
 		}
 
@@ -955,6 +955,285 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			_objectManagerFacadeMock.Verify(x => x.UpdateAsync(
 				_WORKSPACE_ARTIFACT_ID,
 				It.Is<UpdateRequest>(request => requestVerifier(request)))
+			);
+		}
+
+		public async Task CreateAsync_ShouldReturnValueFromObjectManagerFacade()
+		{
+            // arrange
+            CreateResult createResult = new CreateResult
+			{
+				Object = new RelativityObject
+                {
+					ArtifactID = 1234
+                }
+			};
+			_objectManagerFacadeMock
+				.Setup(x =>
+					x.CreateAsync(
+						It.IsAny<int>(),
+						It.IsAny<CreateRequest>()))
+				.ReturnsAsync(createResult);
+
+			// act
+			int actualResult = await _sut.CreateAsync(
+					new ObjectTypeRef(),
+					It.IsAny<List<FieldRefValuePair>>(),
+					It.IsAny<ExecutionIdentity>())
+				.ConfigureAwait(false);
+
+			// assert
+			actualResult.Should().Be(createResult.Object.ArtifactID);
+		}
+
+		[Test]
+		public void CreateAsync_ShouldRethrowIntegrationPointException()
+		{
+			// arrange
+			var expectedException = new IntegrationPointsException();
+			_objectManagerFacadeMock
+				.Setup(x =>
+					x.CreateAsync(
+						It.IsAny<int>(),
+						It.IsAny<CreateRequest>()))
+				.Throws(expectedException);
+
+			// act
+			Func<Task> createAction = () =>
+				_sut.CreateAsync(
+					new ObjectTypeRef(),
+					It.IsAny<List<FieldRefValuePair>>(),
+					It.IsAny<ExecutionIdentity>());
+
+			// assert
+			createAction.ShouldThrow<IntegrationPointsException>()
+				.Which.Should().Be(expectedException);
+		}
+
+		[Test]
+		public void CreateAsync_ShouldWrapExceptionInIntegrationPointException()
+		{
+			// arrange
+			var expectedInnerException = new Exception();
+			_objectManagerFacadeMock
+				.Setup(x =>
+					x.CreateAsync(
+						It.IsAny<int>(),
+						It.IsAny<CreateRequest>()))
+				.Throws(expectedInnerException);
+
+			// act
+			Func<Task> createAction = () =>
+				_sut.CreateAsync(
+					new ObjectTypeRef(),
+					It.IsAny<List<FieldRefValuePair>>(),
+					It.IsAny<ExecutionIdentity>());
+
+			// assert
+			createAction.ShouldThrow<IntegrationPointsException>()
+				.Which.InnerException.Should().Be(expectedInnerException);
+		}
+
+		[Test]
+		public async Task CreateAsync_ShouldSendProperRequest()
+		{
+			// arrange
+			const int artifactId = 1234;
+			CreateResult createResult = new CreateResult
+			{
+				Object = new RelativityObject
+				{
+					ArtifactID = artifactId
+				}
+			};
+
+			ObjectTypeRef objectTypeRef = new ObjectTypeRef
+			{
+				ArtifactID = artifactId,
+				ArtifactTypeID = artifactId + 1,
+				Guid = Guid.NewGuid(),
+				Name = "Adler Sieben"
+			};
+
+			List<FieldRefValuePair> fields = new List<FieldRefValuePair>
+			{
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						ArtifactID = 1
+					},
+					Value = "one"
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						ArtifactID = 2
+					},
+					Value = "two"
+				}
+			};
+
+			_objectManagerFacadeMock
+				.Setup(x =>
+					x.CreateAsync(
+						It.IsAny<int>(),
+						It.IsAny<CreateRequest>()))
+				.ReturnsAsync(createResult);
+
+			// act
+			await _sut.CreateAsync(
+					objectTypeRef,
+					fields,
+					It.IsAny<ExecutionIdentity>())
+				.ConfigureAwait(false);
+
+			// assert
+			Func<CreateRequest, bool> requestVerifier = request =>
+			{
+				bool isValid = request.FieldValues.SequenceEqual(fields);
+				isValid &= request.ObjectType.ArtifactID == objectTypeRef.ArtifactID;
+				isValid &= request.ObjectType.ArtifactTypeID == objectTypeRef.ArtifactTypeID;
+				isValid &= request.ObjectType.Guid == objectTypeRef.Guid;
+				isValid &= request.ObjectType.Name == objectTypeRef.Name;
+				return isValid;
+			};
+
+			_objectManagerFacadeMock.Verify(x => x.CreateAsync(
+				_WORKSPACE_ARTIFACT_ID,
+				It.Is<CreateRequest>(request => requestVerifier(request)))
+			);
+		}
+
+		[Test]
+		public async Task CreateAsync_WithSpecifiedParent_ShouldSendProperRequest()
+		{
+			// arrange
+			const int artifactId = 1234;
+			CreateResult createResult = new CreateResult
+			{
+				Object = new RelativityObject
+				{
+					ArtifactID = artifactId
+				}
+			};
+
+			ObjectTypeRef objectTypeRef = new ObjectTypeRef
+			{
+				ArtifactID = artifactId,
+				ArtifactTypeID = artifactId + 1,
+				Guid = Guid.NewGuid(),
+				Name = "Adler Sieben"
+			};
+
+			RelativityObjectRef parentObject = new RelativityObjectRef
+			{
+				ArtifactID = artifactId + 2,
+				Guid = Guid.NewGuid()
+			};
+
+			List<FieldRefValuePair> fields = new List<FieldRefValuePair>
+			{
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						ArtifactID = 1
+					},
+					Value = "one"
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						ArtifactID = 2
+					},
+					Value = "two"
+				}
+			};
+
+			_objectManagerFacadeMock
+				.Setup(x =>
+					x.CreateAsync(
+						It.IsAny<int>(),
+						It.IsAny<CreateRequest>()))
+				.ReturnsAsync(createResult);
+
+			// act
+			await _sut.CreateAsync(
+					objectTypeRef,
+					parentObject,
+					fields,
+					It.IsAny<ExecutionIdentity>())
+				.ConfigureAwait(false);
+
+			// assert
+			Func<CreateRequest, bool> requestVerifier = request =>
+			{
+				bool isValid = request.FieldValues.SequenceEqual(fields);
+				isValid &= request.ObjectType.ArtifactID == objectTypeRef.ArtifactID;
+				isValid &= request.ObjectType.ArtifactTypeID == objectTypeRef.ArtifactTypeID;
+				isValid &= request.ObjectType.Guid == objectTypeRef.Guid;
+				isValid &= request.ObjectType.Name == objectTypeRef.Name;
+				isValid &= request.ParentObject.ArtifactID == parentObject.ArtifactID;
+				isValid &= request.ParentObject.Guid == parentObject.Guid;
+				return isValid;
+			};
+
+			_objectManagerFacadeMock.Verify(x => x.CreateAsync(
+				_WORKSPACE_ARTIFACT_ID,
+				It.Is<CreateRequest>(request => requestVerifier(request)))
+			);
+		}
+
+		[Test]
+		public async Task CreateAsync_T_ShouldSendProperRequest()
+		{
+			// arrange
+			const int artifactId = 1234;
+			CreateResult createResult = new CreateResult
+			{
+				Object = new RelativityObject
+				{
+					ArtifactID = artifactId
+				}
+			};
+
+			JobHistory jobHistory = new JobHistory
+			{
+				ArtifactId = 1234,
+				JobID = "JobID",
+				BatchInstance = "BatchInstance",
+				DestinationInstance = "DestinationInstance"
+			};
+
+			_objectManagerFacadeMock
+				.Setup(x =>
+					x.CreateAsync(
+						It.IsAny<int>(),
+						It.IsAny<CreateRequest>()))
+				.ReturnsAsync(createResult);
+
+			// act
+			await _sut.CreateAsync(
+					jobHistory,
+					It.IsAny<ExecutionIdentity>())
+				.ConfigureAwait(false);
+
+			// assert
+			Func<CreateRequest, bool> requestVerifier = request =>
+			{
+				bool isValid = request.ObjectType.Guid == ObjectTypeGuids.JobHistoryGuid;
+				isValid &= request.FieldValues.SingleOrDefault(x => x.Field.Name == "Batch Instance").Value.ToString() == jobHistory.BatchInstance;
+				isValid &= request.FieldValues.SingleOrDefault(x => x.Field.Name == "Destination Instance").Value.ToString() == jobHistory.DestinationInstance;
+				isValid &= request.FieldValues.SingleOrDefault(x => x.Field.Name == "Job ID").Value.ToString() == jobHistory.JobID;
+				return isValid;
+			};
+
+			_objectManagerFacadeMock.Verify(x => x.CreateAsync(
+				_WORKSPACE_ARTIFACT_ID,
+				It.Is<CreateRequest>(request => requestVerifier(request)))
 			);
 		}
 
