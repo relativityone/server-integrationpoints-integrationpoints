@@ -7,5 +7,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring
         public TimeSpan MemoryUsageInterval => TimeSpan.FromSeconds(30);
 
         public TimeSpan HeartbeatInterval => TimeSpan.FromMinutes(5);
+
+        public TimeSpan RunningJobTimeThreshold => TimeSpan.FromHours(8);
     }
 }

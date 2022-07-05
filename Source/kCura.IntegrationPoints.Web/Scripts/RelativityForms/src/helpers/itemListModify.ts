@@ -1,6 +1,6 @@
 ﻿import { IConvenienceApi } from "../types/convenienceApi";
 
-export function updeteJobHistoryTable(convenienceApi: IConvenienceApi, currentPage: string, workspaceId: number, artifactTypeID: number, viewId: number, integrationPointId: number, fieldId: number) {
+export function updeteJobHistoryTable(convenienceApi: IConvenienceApi, previousPage: string, workspaceId: number, artifactTypeID: number, viewId: number, integrationPointId: number, fieldId: number) {
     getListData(convenienceApi, workspaceId, artifactTypeID, viewId, integrationPointId, fieldId).then(res => {
         let newData = [];
         res.Objects.forEach(el => {
@@ -8,20 +8,17 @@ export function updeteJobHistoryTable(convenienceApi: IConvenienceApi, currentPa
         })
 
         let table = document.getElementById(fieldId.toString());
-        if (checkIfArrayDataShouldBeUpdated(table["data"], newData)) {
-            table["data"] = newData;
-        }
-
-        let relativityWindow = convenienceApi.utilities.getRelativityPageBaseWindow();
-
-        if (currentPage === relativityWindow.location.href) {
+        let currentPage = convenienceApi.utilities.getRelativityPageBaseWindow().location.href;
+        if (currentPage === previousPage) {
+            if (checkIfArrayDataShouldBeUpdated(table["data"], newData)) {
+                table["data"] = newData;
+            }
             try {
-                setTimeout(updeteJobHistoryTable, 5000, convenienceApi, relativityWindow.location.href, workspaceId, artifactTypeID, viewId, integrationPointId, fieldId);
+                setTimeout(updeteJobHistoryTable, 5000, convenienceApi, currentPage, workspaceId, artifactTypeID, viewId, integrationPointId, fieldId);
             } catch (err) {
                 console.log("Error occured while updating job history table data, will try once again in 5 secs", err)
-                setTimeout(updeteJobHistoryTable, 5000, convenienceApi, relativityWindow.location.href, workspaceId, artifactTypeID, viewId, integrationPointId, fieldId);
+                setTimeout(updeteJobHistoryTable, 5000, convenienceApi, currentPage, workspaceId, artifactTypeID, viewId, integrationPointId, fieldId);
             }
-
         }
     })
 }
