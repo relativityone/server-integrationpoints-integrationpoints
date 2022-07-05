@@ -78,6 +78,13 @@ namespace kCura.IntegrationPoints.Data
 			};
 		}
 
+		public bool IsBlocked()
+        {
+			if (StopState != StopState.None && StopState != StopState.DrainStopped && LockedByAgentID == null)
+				return true;
+			return false;
+        }
+
         public override string ToString()
         {
 			try

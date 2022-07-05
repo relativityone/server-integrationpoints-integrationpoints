@@ -41,6 +41,11 @@
 				WHEN 8 
 					THEN 0
 				ELSE 1
+			END,
+			CASE [SubmittedBy]
+				WHEN 777
+					THEN 0
+				ELSE 1
 			END, q.[JobID]
 	)
 END
