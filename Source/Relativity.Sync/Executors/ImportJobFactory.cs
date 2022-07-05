@@ -14,6 +14,7 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Toggles;
 using Relativity.Sync.Toggles.Service;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ADF;
 
 namespace Relativity.Sync.Executors
 {
@@ -26,10 +27,11 @@ namespace Relativity.Sync.Executors
 		private readonly SyncJobParameters _syncJobParameters;
 		private readonly IFieldMappings _fieldMappings;
         private readonly ISyncToggles _toggles;
-		private readonly IAPILog _logger;
+        private readonly IMigrationStatus _migrationStatus;
+        private readonly IAPILog _logger;
 
 		public ImportJobFactory(IImportApiFactory importApiFactory, ISourceWorkspaceDataReaderFactory dataReaderFactory,
-			IJobHistoryErrorRepository jobHistoryErrorRepository, IInstanceSettings instanceSettings, SyncJobParameters syncJobParameters, IFieldMappings fieldMappings, ISyncToggles toggles, IAPILog logger)
+			IJobHistoryErrorRepository jobHistoryErrorRepository, IInstanceSettings instanceSettings, SyncJobParameters syncJobParameters, IFieldMappings fieldMappings, ISyncToggles toggles, IMigrationStatus migrationStatus, IAPILog logger)
 		{
 			_importApiFactory = importApiFactory;
 			_dataReaderFactory = dataReaderFactory;
@@ -39,7 +41,8 @@ namespace Relativity.Sync.Executors
 			_fieldMappings = fieldMappings;
 			_logger = logger;
             _toggles = toggles;
-        }
+            _migrationStatus = migrationStatus;
+		}
 
         public async Task<IImportJob> CreateRdoImportJobAsync(INonDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
         {
@@ -148,7 +151,8 @@ namespace Relativity.Sync.Executors
             importJob.Settings.MultiValueDelimiter = configuration.MultiValueDelimiter;
             importJob.Settings.NestedValueDelimiter = configuration.NestedValueDelimiter;
 
-			if (_toggles.IsEnabled<UseFMS>())
+            var isTenantFullyMigrated = await _migrationStatus.IsTenantFullyMigratedAsync().ConfigureAwait(false);
+            if (_toggles.IsEnabled<UseFMS>() && isTenantFullyMigrated)
             {
 				_logger.LogInformation("Using File Movement Service to copy native files. Setting native file copy mode to links only and disabling native location validation.");
                 importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.SetFileLinks;

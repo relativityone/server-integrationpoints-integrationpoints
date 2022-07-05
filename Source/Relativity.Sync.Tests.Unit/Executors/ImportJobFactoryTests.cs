@@ -19,6 +19,7 @@ using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Toggles;
 using Relativity.Sync.Toggles.Service;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ADF;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
@@ -38,6 +39,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<ISourceWorkspaceDataReaderFactory> _dataReaderFactory;
         private Mock<ISyncToggles> _syncToggles;
 		private Mock<IFieldMappings> _fieldMappingsMock;
+		private Mock<IMigrationStatus> _migrationStatusMock;
 		private SyncJobParameters _syncJobParameters;
 		private const string _IMAGE_IDENTIFIER_DISPLAY_NAME = "ImageIdentifier";
 		private const int _DEST_RDO_ARTIFACT_TYPE = 1234567;
@@ -78,6 +80,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_syncJobParameters = FakeHelper.CreateSyncJobParameters();
             _syncToggles = new Mock<ISyncToggles>();
 			_logger = new EmptyLogger();
+			_migrationStatusMock = new Mock<IMigrationStatus>();
 
 			_batch = new Mock<IBatch>(MockBehavior.Loose);
 
@@ -445,6 +448,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _documentConfigurationMock.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
 
             _syncToggles.Setup(x => x.IsEnabled<UseFMS>()).Returns(true);
+            _migrationStatusMock.Setup(x => x.IsTenantFullyMigratedAsync()).ReturnsAsync(true);
 
             // Act
             Sync.Executors.IImportJob result = await instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
@@ -548,7 +552,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			var instance = new ImportJobFactory(importApiFactory.Object, _dataReaderFactory.Object,
 				_jobHistoryErrorRepository.Object, _instanceSettings.Object, _syncJobParameters,
-                _fieldMappingsMock.Object, _syncToggles.Object, _logger);
+                _fieldMappingsMock.Object, _syncToggles.Object, _migrationStatusMock.Object, _logger);
 			return instance;
 		}
 

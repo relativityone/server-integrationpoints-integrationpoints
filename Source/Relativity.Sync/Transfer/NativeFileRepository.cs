@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
 using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models;
+using Relativity.Services.Interfaces.ResourceServer;
 using Relativity.Sync.KeplerFactory;
+using IResourceServerManager = Relativity.Services.ResourceServer.IResourceServerManager;
 
 namespace Relativity.Sync.Transfer
 {
@@ -33,6 +35,11 @@ namespace Relativity.Sync.Transfer
 			}
 
 			_logger.LogInformation("Searching for native files. Documents count: {numberOfDocuments}", documentIds.Count);
+
+			using (var searchService =
+			      await _serviceFactoryForUser.CreateProxyAsync<IResourceServerManager>().ConfigureAwait(false))
+			{
+			}
 
 			using (ISearchService searchService = await _serviceFactoryForUser.CreateProxyAsync<ISearchService>().ConfigureAwait(false))
 			{

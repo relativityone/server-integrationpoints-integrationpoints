@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace Relativity.Sync
 {
@@ -11,5 +12,8 @@ namespace Relativity.Sync
 		Task<int> GetSyncBatchSizeAsync(int defaultValue = 25000);
 
 		Task<int> GetImportApiBatchSizeAsync(int defaultValue = 1000);
+
+		Task<Guid> GetInstanceIdGuidAsync(string defaultValue = default(string));
+
 	}
 }
