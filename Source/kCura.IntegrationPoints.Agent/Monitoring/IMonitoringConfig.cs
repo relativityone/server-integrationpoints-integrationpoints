@@ -8,6 +8,6 @@ namespace kCura.IntegrationPoints.Agent.Monitoring
 
         TimeSpan HeartbeatInterval { get; }
 
-        TimeSpan RunningJobTimeThreshold { get; }
+        TimeSpan LongRunningJobsTimeThreshold { get; }
     }
 }

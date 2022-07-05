@@ -67,5 +67,10 @@ namespace kCura.IntegrationPoints.Config
 		/// Gets size of mass update batch
 		/// </summary>
 		int MassUpdateBatchSize { get; }
+
+		/// <summary>
+		/// Gets time threshold for long running jobs
+		/// </summary>
+		TimeSpan RunningJobTimeThreshold { get; }
 	}
 }

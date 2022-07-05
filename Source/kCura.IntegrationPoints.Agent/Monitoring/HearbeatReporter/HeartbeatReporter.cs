@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter
 
         private void SendMetricWhenJobRunningTimeThresholdIsExceeded(long jobId, DateTime utcNow)
         {
-            if (_runningJobTimeExceededCheck && (utcNow - _startDateTime) > _config.RunningJobTimeThreshold)
+            if (_runningJobTimeExceededCheck && (utcNow - _startDateTime) > _config.LongRunningJobsTimeThreshold)
             {
                 Dictionary<string, object> runningJobTimeCustomData = new Dictionary<string, object>()
                 {

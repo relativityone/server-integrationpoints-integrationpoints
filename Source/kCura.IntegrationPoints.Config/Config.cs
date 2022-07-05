@@ -13,6 +13,7 @@ namespace kCura.IntegrationPoints.Config
 		private const string _RIP_METRICS_THROTTLING = "MetricsThrottlingSeconds";
 		private const string _RIP_METRICS_MEASURE_EXTERNAL_CALLS_DURATION = "MeasureDurationOfExternalCalls";
 		private const string _MASS_UPDATE_BATCH_SIZE = "MassUpdateBatchSize";
+		private const string _LONG_RUNNING_JOBS_TIME_THRESHOLD = "LongRunningJobsTimeThreshold";
 		private const int _MASS_UPDATE_BATCH_SIZE_DEFAULT = 10000;
 		
 		private const string _RELATIVITY_WEBAPI_TIMEOUT_SETTING_NAME = "RelativityWebApiTimeout";
@@ -69,6 +70,8 @@ namespace kCura.IntegrationPoints.Config
 			_MASS_UPDATE_BATCH_SIZE,
 			_MASS_UPDATE_BATCH_SIZE_DEFAULT
 			);
+
+		public TimeSpan RunningJobTimeThreshold => TimeSpan.FromSeconds(GetValue(_LONG_RUNNING_JOBS_TIME_THRESHOLD, 28800));
 
 		private bool GetMetricsToggle(Metrics metricName)
 		{
