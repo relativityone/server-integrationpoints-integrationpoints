@@ -283,7 +283,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		private void ImportJob_OnMessage(Status status)
 		{
-			// Intentionally left empty to remembed that we always have possibility to log IAPI messages.
+			LogOnMessageEvent(status);
 		}
 
 		private void ImportJob_OnError(System.Collections.IDictionary row)
@@ -375,6 +375,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		private void LogOnProgressEvent()
 		{
 			_logger.LogInformation("ImportJob OnProgress event recevied.");
+		}
+
+		private void LogOnMessageEvent(Status status)
+		{
+			_logger.LogVerbose("ImportJob OnMessage event received. Current status: {Status}.", status.Message);
 		}
 
 		#endregion

@@ -204,7 +204,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 					SendJobInTransientSateMetric(job);
 
-					job.MarkJobAsFailed(new TimeoutException($"Job {job.JobId} has failed due timeout. Contact your system administrator."), false);
+					job.MarkJobAsFailed(new TimeoutException($"Job {job.JobId} has failed due to timeout. Contact your system administrator."), false);
 					TaskResult result = ProcessJob(job);
 					FinalizeJobExecution(job, result);
 				}
