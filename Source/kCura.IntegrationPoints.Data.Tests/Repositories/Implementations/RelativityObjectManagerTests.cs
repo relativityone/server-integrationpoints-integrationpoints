@@ -682,6 +682,282 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 			action.ShouldThrow<IntegrationPointsException>();
 		}
 
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public async Task UpdateAsync_ShouldReturnValueFromObjectManagerFacade(bool isSuccess)
+		{
+			// arrange
+			var updateResult = new UpdateResult
+			{
+				EventHandlerStatuses = new List<EventHandlerStatus>
+                {
+					new EventHandlerStatus
+                    {
+						Success = isSuccess
+                    }
+                }
+			};
+			_objectManagerFacadeMock
+				.Setup(x =>
+					x.UpdateAsync(
+						It.IsAny<int>(),
+						It.IsAny<UpdateRequest>()))
+				.ReturnsAsync(updateResult);
+
+			// act
+			bool actualResult = await _sut.UpdateAsync(
+					_FIELD_ARTIFACT_ID,
+					It.IsAny<IList<FieldRefValuePair>>(),
+					It.IsAny<ExecutionIdentity>())
+				.ConfigureAwait(false);
+
+			// assert
+			actualResult.Should().Be(isSuccess);
+		}
+
+		[Test]
+		public void UpdateAsync_ShouldRethrowIntegrationPointException()
+		{
+			// arrange
+			var expectedException = new IntegrationPointsException();
+			_objectManagerFacadeMock
+				.Setup(x =>
+					x.UpdateAsync(
+						It.IsAny<int>(),
+						It.IsAny<UpdateRequest>()))
+				.Throws(expectedException);
+
+			// act
+			Func<Task> updateAction = () =>
+				_sut.UpdateAsync(
+					_FIELD_ARTIFACT_ID,
+					It.IsAny<IList<FieldRefValuePair>>(),
+					It.IsAny<ExecutionIdentity>());
+
+			// assert
+			updateAction.ShouldThrow<IntegrationPointsException>()
+				.Which.Should().Be(expectedException);
+		}
+
+		[Test]
+		public void UpdateAsync_ShouldWrapExceptionInIntegrationPointException()
+		{
+			// arrange
+			var expectedInnerException = new Exception();
+			_objectManagerFacadeMock
+				.Setup(x =>
+					x.UpdateAsync(
+						It.IsAny<int>(),
+						It.IsAny<UpdateRequest>()))
+				.Throws(expectedInnerException);
+
+			// act
+			Func<Task> massUpdateAction = () =>
+				_sut.UpdateAsync(
+					_FIELD_ARTIFACT_ID,
+					It.IsAny<IList<FieldRefValuePair>>(),
+					It.IsAny<ExecutionIdentity>());
+
+			// assert
+			massUpdateAction.ShouldThrow<IntegrationPointsException>()
+				.Which.InnerException.Should().Be(expectedInnerException);
+		}
+
+		[Test]
+		public async Task UpdateAsync_ShouldSendProperRequest()
+		{
+			// arrange
+			var updateResult = new UpdateResult
+			{
+				EventHandlerStatuses = new List<EventHandlerStatus>
+				{
+					new EventHandlerStatus
+					{
+						Success = true
+					}
+				}
+			};
+
+			FieldRefValuePair[] fields =
+			{
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						ArtifactID = 1
+					},
+					Value = "one"
+				},
+				new FieldRefValuePair
+				{
+					Field = new FieldRef
+					{
+						ArtifactID = 2
+					},
+					Value = "two"
+				}
+			};
+
+			_objectManagerFacadeMock
+				.Setup(x =>
+					x.UpdateAsync(
+						It.IsAny<int>(),
+						It.IsAny<UpdateRequest>()))
+				.ReturnsAsync(updateResult);
+
+			// act
+			await _sut.UpdateAsync(
+					_FIELD_ARTIFACT_ID,
+					fields,
+					It.IsAny<ExecutionIdentity>())
+				.ConfigureAwait(false);
+
+			// assert
+			Func<UpdateRequest, bool> requestVerifier = request =>
+			{
+				bool isValid = true;
+				isValid &= request.FieldValues.SequenceEqual(fields);
+				return isValid;
+			};
+
+			_objectManagerFacadeMock.Verify(x => x.UpdateAsync(
+				_WORKSPACE_ARTIFACT_ID,
+				It.Is<UpdateRequest>(request => requestVerifier(request)))
+			);
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public async Task UpdateAsync_T_ShouldReturnValueFromObjectManagerFacade(bool isSuccess)
+		{
+			// arrange
+			var updateResult = new UpdateResult
+			{
+				EventHandlerStatuses = new List<EventHandlerStatus>
+				{
+					new EventHandlerStatus
+					{
+						Success = isSuccess
+					}
+				}
+			};
+			_objectManagerFacadeMock
+				.Setup(x =>
+					x.UpdateAsync(
+						It.IsAny<int>(),
+						It.IsAny<UpdateRequest>()))
+				.ReturnsAsync(updateResult);
+
+			// act
+			bool actualResult = await _sut.UpdateAsync(
+					new JobHistory(),
+					It.IsAny<ExecutionIdentity>())
+				.ConfigureAwait(false);
+
+			// assert
+			actualResult.Should().Be(isSuccess);
+		}
+
+		[Test]
+		public void UpdateAsync_T_ShouldRethrowIntegrationPointException()
+		{
+			// arrange
+			var expectedException = new IntegrationPointsException();
+			_objectManagerFacadeMock
+				.Setup(x =>
+					x.UpdateAsync(
+						It.IsAny<int>(),
+						It.IsAny<UpdateRequest>()))
+				.Throws(expectedException);
+
+			// act
+			Func<Task> updateAction = () =>
+				_sut.UpdateAsync(
+					new JobHistory(),
+					It.IsAny<ExecutionIdentity>());
+
+			// assert
+			updateAction.ShouldThrow<IntegrationPointsException>()
+				.Which.Should().Be(expectedException);
+		}
+
+		[Test]
+		public void UpdateAsync_T_ShouldWrapExceptionInIntegrationPointException()
+		{
+			// arrange
+			var expectedInnerException = new Exception();
+			_objectManagerFacadeMock
+				.Setup(x =>
+					x.UpdateAsync(
+						It.IsAny<int>(),
+						It.IsAny<UpdateRequest>()))
+				.Throws(expectedInnerException);
+
+			// act
+			Func<Task> massUpdateAction = () =>
+				_sut.UpdateAsync(
+					new JobHistory(),
+					It.IsAny<ExecutionIdentity>());
+
+			// assert
+			massUpdateAction.ShouldThrow<IntegrationPointsException>()
+				.Which.InnerException.Should().Be(expectedInnerException);
+		}
+
+		[Test]
+		public async Task UpdateAsync_T_ShouldSendProperRequest()
+		{
+			// arrange
+			var updateResult = new UpdateResult
+			{
+				EventHandlerStatuses = new List<EventHandlerStatus>
+				{
+					new EventHandlerStatus
+					{
+						Success = true
+					}
+				}
+			};
+
+			JobHistory jobHistory = new JobHistory
+			{
+				ArtifactId = 1234,
+				JobID = "JobID",
+				BatchInstance = "BatchInstance",
+				DestinationInstance = "DestinationInstance"
+			};
+
+			_objectManagerFacadeMock
+				.Setup(x =>
+					x.UpdateAsync(
+						It.IsAny<int>(),
+						It.IsAny<UpdateRequest>()))
+				.ReturnsAsync(updateResult);
+
+			// act
+			await _sut.UpdateAsync(
+					jobHistory,
+					It.IsAny<ExecutionIdentity>())
+				.ConfigureAwait(false);
+
+			// assert
+			Func<UpdateRequest, bool> requestVerifier = request =>
+			{
+				bool isValid = true;
+				isValid &= request.Object.ArtifactID == jobHistory.ArtifactId;
+				isValid &= request.FieldValues.SingleOrDefault(x => x.Field.Name == "Batch Instance").Value.ToString() == jobHistory.BatchInstance;
+				isValid &= request.FieldValues.SingleOrDefault(x => x.Field.Name == "Destination Instance").Value.ToString() == jobHistory.DestinationInstance;
+				isValid &= request.FieldValues.SingleOrDefault(x => x.Field.Name == "Job ID").Value.ToString() == jobHistory.JobID;
+				return isValid;
+			};
+
+			_objectManagerFacadeMock.Verify(x => x.UpdateAsync(
+				_WORKSPACE_ARTIFACT_ID,
+				It.Is<UpdateRequest>(request => requestVerifier(request)))
+			);
+		}
+
 		private static RelativityObjectSlim[] CreateTestRelativityObjectsSlim(int size)
 		{
 			var objects = new RelativityObjectSlim[size];

@@ -20,6 +20,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 		{
 			_relativityObjectManager = relativityObjectManager;
 			_logger = logger;
+			_logger.ForContext<JobHistorySyncService>();
 		}
 
 		public async Task<RelativityObject> GetLastJobHistoryWithErrorsAsync(int workspaceID,
