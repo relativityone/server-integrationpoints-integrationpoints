@@ -15,14 +15,12 @@ using System.Reflection;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
-using Relativity.Toggles;
-using System.Threading;
 using kCura.Agent;
 using kCura.ScheduleQueue.AgentBase;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
-	public class FakeAgent : Agent
+    public class FakeAgent : Agent
 	{
 		private readonly bool _shouldRunOnce;
 		private readonly IWindsorContainer _container;
