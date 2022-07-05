@@ -5,6 +5,7 @@ using System.Reflection;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Common.Helpers;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.Core;
@@ -25,6 +26,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 		private Mock<IQueueQueryManager> _queryManager;
 		private Mock<IKubernetesMode> _kubernetesModeFake;
 		private Mock<IDateTime> _dateTime;
+		private Mock<IConfig> _config;
 
 		[Test]
 		public void Execute_ShouldProcessJobInQueue()
@@ -65,7 +67,31 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 			// Assert
 			sut.ProcessedJobs.ShouldBeEquivalentTo(expectedProcessedJobs);
 
-			_jobServiceMock.Verify(x => x.DeleteJob(invalidJob.JobId));
+			_jobServiceMock.Verify(x => x.FinalizeJob(
+				It.Is<Job>(y => y.JobFailed != null),
+				It.IsAny<IScheduleRuleFactory>(),
+				It.Is<TaskResult>(y => y.Status == TaskStatusEnum.Fail)));
+		}
+
+		[Test]
+		public void Execute_ShouldRunAndFailJob_WhenJobIsInvalidButWithExecution()
+        {
+			// Arrange
+			Job job = new JobBuilder().WithJobId(1).Build();
+
+			TestAgent sut = GetSut();
+
+			SetupJobQueue(job);
+
+			SetupJobAsInvalid(job, true);
+
+			// Act
+			sut.Execute();
+
+			// Assert
+			sut.ProcessedJobs.Should().Contain(job);
+
+			job.JobFailed.Should().NotBeNull();
 		}
 
 		[Test]
@@ -196,6 +222,94 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 			agentId.Should().Be(1290028852);
 		}
 
+		[Test]
+		public void Execute_ShouldCleanUpJob_WhenTimeOutWasExceeded()
+        {
+			// Arrange
+			const int jobId = 100;
+
+			DateTime utcNow = new DateTime(2022, 8, 1);
+			DateTime lastHeartbeat = utcNow.Subtract(TimeSpan.FromHours(10));
+
+			TestAgent sut = GetSut();
+
+			_config.Setup(x => x.TransientStateJobTimeout).Returns(TimeSpan.FromHours(5));
+
+			_dateTime.Setup(x => x.UtcNow).Returns(utcNow);
+
+			Job job = new JobBuilder()
+				.WithJobId(jobId)
+				.WithHeartbeat(lastHeartbeat)
+				.Build();
+			SetupJobQueue(job);
+
+			// Act
+			sut.Execute();
+
+			// Assert
+			_jobServiceMock.Verify(
+				x => x.FinalizeJob(
+					It.Is<Job>(y => y.JobFailed != null),
+					It.IsAny<IScheduleRuleFactory>(),
+					It.IsAny<TaskResult>()));
+
+		}
+
+		[Test]
+		public void Execute_ShouldCleanUp_WhenJobIsStucked()
+		{
+			// Arrange
+			const int jobId = 100;
+
+			TestAgent sut = GetSut();
+
+			Job job = new JobBuilder()
+				.WithJobId(jobId)
+				.WithLockedByAgentId(null)
+				.WithStopState(StopState.DrainStopping)
+				.Build();
+			SetupJobQueue(job);
+
+			// Act
+			sut.Execute();
+
+			// Assert
+			_jobServiceMock.Verify(
+				x => x.FinalizeJob(
+					It.Is<Job>(y => y.JobFailed != null),
+					It.IsAny<IScheduleRuleFactory>(),
+					It.IsAny<TaskResult>()));
+
+		}
+
+		[Test]
+		public void Execute_ShouldNotThrow_WhenInvalidJobsCleanUpErrorsOut()
+        {
+			// Arrange
+			const int jobId = 100;
+
+			TestAgent sut = GetSut();
+
+			Job job = new JobBuilder()
+				.WithJobId(jobId)
+				.WithLockedByAgentId(null)
+				.WithStopState(StopState.DrainStopping)
+				.Build();
+			SetupJobQueue(job);
+
+			_jobServiceMock.Setup(x => x.FinalizeJob(job, It.IsAny<IScheduleRuleFactory>(), It.IsAny<TaskResult>())).Throws<Exception>();
+			_jobServiceMock.Setup(x => x.GetNextQueueJob(It.IsAny<IEnumerable<int>>(), It.IsAny<int>(), It.IsAny<long?>()))
+				.Returns((Job)null);
+
+			// Act
+			Action action = () => sut.Execute();
+
+			// Assert
+			action.ShouldNotThrow();
+
+			_jobServiceMock.Verify(x => x.GetNextQueueJob(It.IsAny<IEnumerable<int>>(), It.IsAny<int>(), It.IsAny<long?>()));
+		}
+
 		private TestAgent GetSut(TaskStatusEnum jobStatus = TaskStatusEnum.Success)
 		{
 			var agentService = new Mock<IAgentService>();
@@ -209,15 +323,18 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 
 			_queueJobValidatorFake = new Mock<IQueueJobValidator>();
 			_queueJobValidatorFake.Setup(x => x.ValidateAsync(It.IsAny<Job>()))
-				.ReturnsAsync(ValidationResult.Success);
+				.ReturnsAsync(PreValidationResult.Success);
 
 			_queryManager = new Mock<IQueueQueryManager>();
 			_kubernetesModeFake = new Mock<IKubernetesMode>();
 			_dateTime = new Mock<IDateTime>();
 
+			_config = new Mock<IConfig>();
+			_config.Setup(x => x.TransientStateJobTimeout).Returns(TimeSpan.MaxValue);
+
 			return new TestAgent(agentService.Object, _jobServiceMock.Object,
 				scheduleRuleFactory.Object, _queueJobValidatorFake.Object, _queryManager.Object, 
-				_kubernetesModeFake.Object, _dateTime.Object, emptyLog.Object)
+				_kubernetesModeFake.Object, _dateTime.Object, emptyLog.Object, _config.Object)
 			{
 				JobResult = jobStatus
 			};
@@ -225,6 +342,8 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 
 		private void SetupJobQueue(params Job[] jobs)
 		{
+			_jobServiceMock.Setup(x => x.GetAllScheduledJobs()).Returns(jobs);
+
 			ISetupSequentialResult<Job> sequenceSetup = _jobServiceMock.SetupSequence(x => x.GetNextQueueJob(
 				It.IsAny<IEnumerable<int>>(), It.IsAny<int>(), It.IsAny<long?>()));
 
@@ -234,25 +353,25 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 			}
 		}
 
-		private void SetupJobAsInvalid(Job job)
+		private void SetupJobAsInvalid(Job job, bool shouldExecute = false)
 		{
 			_queueJobValidatorFake.Setup(x => x.ValidateAsync(job))
-				.ReturnsAsync(ValidationResult.Failed(It.IsAny<string>()));
+				.ReturnsAsync(PreValidationResult.InvalidJob(It.IsAny<string>(), shouldExecute));
 		}
 
 		private class TestAgent : ScheduleQueueAgentBase
 		{
 			public TestAgent(IAgentService agentService = null, IJobService jobService = null, 
 				IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
-				IQueueQueryManager queryManager = null, IKubernetesMode kubernetesMode = null, IDateTime dateTime = null, IAPILog log = null) 
-				: base(Guid.NewGuid(), kubernetesMode, agentService, jobService, scheduleRuleFactory, queueJobValidator, queryManager, dateTime, log)
+				IQueueQueryManager queryManager = null, IKubernetesMode kubernetesMode = null, IDateTime dateTime = null, IAPILog log = null, IConfig config = null) 
+				: base(Guid.NewGuid(), kubernetesMode, agentService, jobService, scheduleRuleFactory, queueJobValidator, queryManager, dateTime, log, config)
 			{
 				//'Enabled = true' triggered Execute() immediately. I needed to set the field only to enable getting job from the queue
 				typeof(Agent.AgentBase).GetField("_enabled", BindingFlags.NonPublic | BindingFlags.Instance)
 					.SetValue(this, true);
 			}
 
-			public TaskStatusEnum JobResult { get; set; } = TaskStatusEnum.Success;
+			public TaskStatusEnum? JobResult { get; set; }
 
 			public override string Name { get; } = "Test";
 
@@ -261,13 +380,13 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 				return GetAgentID();
 			}
 			
-			protected override TaskResult ProcessJob(Job job, ValidationResult validationResult = null)
+			protected override TaskResult ProcessJob(Job job)
 			{
 				ProcessedJobs.Add(job);
 
 				return new TaskResult
 				{
-					Status = JobResult
+					Status = JobResult ?? (job.JobFailed != null ? TaskStatusEnum.Fail : TaskStatusEnum.Success)
 				};
 			}
 

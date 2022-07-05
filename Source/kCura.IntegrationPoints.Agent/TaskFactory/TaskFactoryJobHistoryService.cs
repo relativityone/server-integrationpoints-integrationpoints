@@ -57,11 +57,6 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
             UpdateJobHistoryOnError(job, JobStatusChoices.JobHistoryErrorJobFailed, e);
         }
 
-        public void UpdateJobHistoryOnValidationFailed(Job job, Exception e)
-        {
-            UpdateJobHistoryOnError(job, JobStatusChoices.JobHistoryValidationFailed, e);
-        }
-
 		public void RemoveJobHistoryFromIntegrationPoint(Job job)
 		{
 			LogRemoveJobHistoryFromIntegrationPointStart();

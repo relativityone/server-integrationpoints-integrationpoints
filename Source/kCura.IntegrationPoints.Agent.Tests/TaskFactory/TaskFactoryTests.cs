@@ -196,7 +196,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 			}
 
 			public override string Name { get; }
-			protected override TaskResult ProcessJob(Job job, ValidationResult validationResult = null)
+			protected override TaskResult ProcessJob(Job job)
 			{
 				throw new NotImplementedException();
 			}

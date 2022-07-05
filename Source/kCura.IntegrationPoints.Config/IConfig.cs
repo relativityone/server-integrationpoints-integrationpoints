@@ -72,5 +72,9 @@ namespace kCura.IntegrationPoints.Config
 		/// Gets time threshold for long running jobs
 		/// </summary>
 		TimeSpan RunningJobTimeThreshold { get; }
+		
+		/// Get Timeout for Transient State RIP Jobs
+		/// </summary>
+		TimeSpan TransientStateJobTimeout { get; }
 	}
 }

@@ -19,7 +19,8 @@ BEGIN
 				[JobFlags],
 				[SubmittedDate],
 				[SubmittedBy],
-				[StopState]
+				[StopState],
+				[Heartbeat]
 	FROM
 				[eddsdbo].[{0}]
 	WHERE 
@@ -48,7 +49,8 @@ BEGIN
 			INSERTED.[JobFlags],
 			INSERTED.[SubmittedDate],
 			INSERTED.[SubmittedBy],
-			INSERTED.[StopState]
+			INSERTED.[StopState],
+			INSERTED.[Heartbeat]
 	WHERE [JobID] =
 	(
 		SELECT TOP 1 [JobID]
@@ -61,11 +63,14 @@ BEGIN
 			AND q.[NextRunTime] <= GETUTCDATE()
 			AND c.ResourceGroupArtifactID IN (@ResourceGroupArtifactIDs)
 			AND q.[StopState] IN (0, 8)
+			AND q.[JobID] not in (SELECT JobID FROM [eddsdbo].[{0}]
+												WHERE TaskType = 'SyncEntityManagerWorker' 
+												AND RootJobID in (SELECT RootJobID FROM [eddsdbo].[{0}] where TaskType = 'SyncWorker'))
 		ORDER BY
 			CASE [StopState]
 				WHEN 8 
 					THEN 0
 				ELSE 1
-			END
+			END, q.[JobID]
 	)
 END

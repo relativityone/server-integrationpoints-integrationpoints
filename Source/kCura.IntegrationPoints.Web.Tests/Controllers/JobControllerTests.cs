@@ -65,11 +65,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 			_managerFactory.CreateAuditManager(_WORKSPACE_ARTIFACT_ID).Returns(_auditManager);
 			_auditManager.RelativityAuditRepository.Returns(_auditRepository);
 
+			IAPILog log = Substitute.For<IAPILog>();
+
 			_instance = new JobController(
 				_serviceFactory, 
 				_helper,
 				_managerFactory,
-				_integrationPointRepository)
+				_integrationPointRepository,
+				log)
 			{
 				Request = new HttpRequestMessage()
 			};

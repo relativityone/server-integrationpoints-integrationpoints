@@ -37,11 +37,11 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
             SetUpUserExists(true);
 
 			// Act
-			ValidationResult result = await sut.ValidateAsync(job).ConfigureAwait(false);
+			PreValidationResult result = await sut.ValidateAsync(job).ConfigureAwait(false);
 
 			// Assert
 			result.IsValid.Should().BeTrue();
-			result.Message.Should().BeEmpty();
+			result.Exception.Should().BeNull();
 		}
 
 		[Test]
@@ -61,11 +61,11 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
             SetUpUserExists(true);
 
 			// Act
-			ValidationResult result = await sut.ValidateAsync(job).ConfigureAwait(false);
+			PreValidationResult result = await sut.ValidateAsync(job).ConfigureAwait(false);
 
 			// Assert
 			result.IsValid.Should().BeFalse();
-			result.Message.Should().Contain(_TEST_WORKSPACE_ID.ToString());
+			result.Exception.Message.Should().Contain(_TEST_WORKSPACE_ID.ToString());
 		}
 
 		[Test]
@@ -85,11 +85,11 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
             SetUpUserExists(true);
 
 			// Act
-			ValidationResult result = await sut.ValidateAsync(job).ConfigureAwait(false);
+			PreValidationResult result = await sut.ValidateAsync(job).ConfigureAwait(false);
 
 			// Assert
 			result.IsValid.Should().BeFalse();
-			result.Message.Should().Contain(_TEST_INTEGRATION_POINT_ID.ToString());
+			result.Exception.Message.Should().Contain(_TEST_INTEGRATION_POINT_ID.ToString());
 		}
 
 		[Test]
@@ -122,11 +122,15 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
 			Mock<IServicesMgr> servicesMgr = new Mock<IServicesMgr>();
 			_objectManagerMock = new Mock<IObjectManager>();
 
+			Mock<IAPILog> log = new Mock<IAPILog>();
+			log.Setup(x => x.ForContext<QueueJobValidator>())
+				.Returns(log.Object);
+
 			helper.Setup(x => x.GetServicesManager()).Returns(servicesMgr.Object);
 			servicesMgr.Setup(x => x.CreateProxy<IObjectManager>(It.IsAny<ExecutionIdentity>()))
 				.Returns(_objectManagerMock.Object);
 
-			return new QueueJobValidator(helper.Object);
+			return new QueueJobValidator(helper.Object, log.Object);
 		}
 
 		private void SetUpWorkspaceExists(bool exists)
