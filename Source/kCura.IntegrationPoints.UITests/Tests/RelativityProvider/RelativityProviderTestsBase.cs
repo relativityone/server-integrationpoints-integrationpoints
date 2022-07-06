@@ -35,7 +35,6 @@ namespace kCura.IntegrationPoints.UITests.Tests.RelativityProvider
 			var sw = new Stopwatch();
 			sw.Start();
 			
-			//SourceContext.ExecuteRelativityFolderPathScript();
 			FolderManager = SourceContext.Helper.CreateProxy<IFolderManager>();
 			SourceFieldManager = SourceContext.Helper.CreateProxy<IFieldManager>();
 			NativesService = new NativesService(SourceContext.Helper);
