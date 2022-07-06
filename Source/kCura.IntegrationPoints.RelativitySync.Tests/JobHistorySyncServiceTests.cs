@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 
 			Mock<IAPILog> loggerFake = new Mock<IAPILog>();
 
-			_sut = new JobHistorySyncService(loggerFake.Object, _relativityObjectManagerFake.Object);
+			_sut = new JobHistorySyncService(_relativityObjectManagerFake.Object, loggerFake.Object);
 		}
 
 		[TestCase("validating")]
