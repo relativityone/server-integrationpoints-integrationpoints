@@ -25,6 +25,9 @@ using kCura.ScheduleQueue.AgentBase;
 using NSubstitute;
 using Relativity.API;
 using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
+using kCura.IntegrationPoints.Agent.TaskFactory;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.Agent.Tests
 {
@@ -46,6 +49,8 @@ namespace kCura.IntegrationPoints.Agent.Tests
 		[SetUp]
 		public void SetUp()
 		{
+			_container = new WindsorContainer();
+
 			_messageServiceMock = new Mock<IMessageService>();
 			_jobHistoryServiceFake = new Mock<IJobHistoryService>();
 			_memoryUsageReporter = new Mock<IMemoryUsageReporter>();
@@ -141,10 +146,45 @@ namespace kCura.IntegrationPoints.Agent.Tests
 				nameof(ScheduleQueueAgentBase)), Times.Never);
 		}
 
+		[Test]
+		public void Execute_ShouldReturnFailAndMarkJobHistoryAsFailed_WhenJobWasMarkedAsFailedInQueue()
+        {
+			// Arrange
+			Exception expectedException = new Exception("Test Exception");
+			const long expectedJobId = 100;
+			const int integrationPointId = 200;
+
+			Mock<ITaskFactoryJobHistoryService> jobHistoryServiceMock = new Mock<ITaskFactoryJobHistoryService>();
+
+			Mock<IIntegrationPointRepository> integrationPointRepositoryFake = new Mock<IIntegrationPointRepository>();
+			integrationPointRepositoryFake.Setup(x => x.ReadAsync(integrationPointId)).ReturnsAsync(new Data.IntegrationPoint());
+
+			Mock<ITaskFactoryJobHistoryServiceFactory> jobHistoryServiceFactoryFake = new Mock<ITaskFactoryJobHistoryServiceFactory>();
+			jobHistoryServiceFactoryFake.Setup(x => x.CreateJobHistoryService(It.IsAny<Data.IntegrationPoint>())).Returns(jobHistoryServiceMock.Object);
+
+			RegisterMock(integrationPointRepositoryFake);
+			RegisterMock(jobHistoryServiceFactoryFake);
+
+			TestAgent sut = PrepareSut();
+
+			Job job = new JobBuilder()
+				.WithJobId(expectedJobId)
+				.WithRelatedObjectArtifactId(integrationPointId)
+				.Build();
+			job.MarkJobAsFailed(expectedException, false);
+
+			// Act
+			TaskResult result = sut.ProcessJob_Test(job);
+
+			// Assert
+			result.Status.Should().Be(TaskStatusEnum.Fail);
+			result.Exceptions.Should().Contain(expectedException);
+
+			jobHistoryServiceMock.Verify(x => x.UpdateJobHistoryOnFailure(It.Is<Job>(y => y.JobId == expectedJobId), expectedException));
+        }
+
 		private TestAgent PrepareSut()
 		{
-			_container = new WindsorContainer();
-
 			Mock<IJobExecutor> jobExecutor = new Mock<IJobExecutor>();
 			jobExecutor.Setup(x => x.ProcessJob(It.IsAny<Job>())).Returns(new TaskResult());
 

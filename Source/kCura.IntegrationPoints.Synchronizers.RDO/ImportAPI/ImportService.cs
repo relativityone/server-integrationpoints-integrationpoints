@@ -379,7 +379,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		private void LogOnMessageEvent(Status status)
 		{
-			_logger.LogInformation("ImportJob OnMessage event received. Current status: {Status}.", status.Message);
+			_logger.LogVerbose("ImportJob OnMessage event received. Current status: {Status}.", status.Message);
 		}
 
 		#endregion

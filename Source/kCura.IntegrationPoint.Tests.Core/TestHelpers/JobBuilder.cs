@@ -29,7 +29,9 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 		private const string _SCHEDULE_RULE_TYPE = "ScheduleRuleType";
 		private const string _SCHEDULE_RULE = "ScheduleRule";
 		private const string _STOP_STATE = "StopState";
-		
+		private const string _HEARTBEAT = "Heartbeat";
+
+
 		public JobBuilder()
 		{
 			InitializeWithDefaultData();
@@ -112,6 +114,12 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			return this;
 		}
 
+		public JobBuilder WithHeartbeat(DateTime heartbeat)
+        {
+			_jobData[_HEARTBEAT] = heartbeat;
+			return this;
+        }
+
 		private void InitializeWithDefaultData()
 		{
 			DataTable table = new DataTable();
@@ -133,6 +141,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			table.Columns.Add(new DataColumn(_SCHEDULE_RULE_TYPE, typeof(string)));
 			table.Columns.Add(new DataColumn(_SCHEDULE_RULE, typeof(string)));
 			table.Columns.Add(new DataColumn(_STOP_STATE, typeof(int)));
+			table.Columns.Add(new DataColumn(_HEARTBEAT, typeof(DateTime)));
 
 			_jobData = table.NewRow();
 			_jobData[_JOB_ID] = default(long);
@@ -152,6 +161,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			_jobData[_SCHEDULE_RULE_TYPE] = default(string);
 			_jobData[_SCHEDULE_RULE] = default(string);
 			_jobData[_STOP_STATE] = default(int);
+			_jobData[_HEARTBEAT] = default(DateTime);
 		}
 
 		private void CopyValuesFromJob(Job job)
@@ -173,6 +183,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 			_jobData[_SCHEDULE_RULE_TYPE] = job.ScheduleRuleType;
 			_jobData[_SCHEDULE_RULE] = job.SerializedScheduleRule;
 			_jobData[_STOP_STATE] = (int)job.StopState;
+			_jobData[_HEARTBEAT] = (object)job.Heartbeat ?? DBNull.Value;
 		}
 	}
 }

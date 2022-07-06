@@ -27,6 +27,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 		public DateTime SubmittedDate { get; set; }
 		public int SubmittedBy { get; set; }
 		public StopState StopState { get; set; }
+		public DateTime? Heartbeat { get; set; }
 		
 		public string JobDetails
 		{
@@ -98,6 +99,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 			row["ScheduleRuleType"] = ScheduleRuleType;
 			row["ScheduleRule"] = SerializedScheduleRule;
 			row["StopState"] = StopState;
+			row["Heartbeat"] = (object)Heartbeat ?? DBNull.Value;
 
 			dt.Rows.Add(row);
 

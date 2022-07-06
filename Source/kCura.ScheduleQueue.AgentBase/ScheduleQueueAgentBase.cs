@@ -4,6 +4,7 @@ using System.Linq;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Common.Helpers;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
@@ -15,18 +16,22 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Services;
 using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
+using Relativity.Telemetry.APM;
 
 namespace kCura.ScheduleQueue.AgentBase
 {
 	public abstract class ScheduleQueueAgentBase : Agent.AgentBase
 	{
 		private IAgentService _agentService;
-		private IQueueQueryManager _queryManager;
+		private IQueueQueryManager _queueManager;
 		private Lazy<IKubernetesMode> _kubernetesModeLazy;
 		private IJobService _jobService;
 		private IQueueJobValidator _queueJobValidator;
 		private IDateTime _dateTime;
 		private ITaskParameterHelper _taskParameterHelper;
+		private IConfig _config;
+		private IAPM _apm;
+
 		private const int _MAX_MESSAGE_LENGTH = 10000;
 
 		private readonly Guid _agentGuid;
@@ -56,7 +61,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected ScheduleQueueAgentBase(Guid agentGuid, IKubernetesMode kubernetesMode = null, IAgentService agentService = null, IJobService jobService = null,
 			IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
-			IQueueQueryManager queryManager = null, IDateTime dateTime = null, IAPILog logger = null)
+			IQueueQueryManager queryManager = null, IDateTime dateTime = null, IAPILog logger = null, IConfig config = null, IAPM apm = null)
 		{
 			// Lazy init is required for things depending on Helper
 			// Helper property in base class is assigned AFTER object construction
@@ -74,7 +79,9 @@ namespace kCura.ScheduleQueue.AgentBase
 			_jobService = jobService;
 			_queueJobValidator = queueJobValidator;
 			_dateTime = dateTime;
-			_queryManager = queryManager;
+			_queueManager = queryManager;
+			_config = config;
+			_apm = apm;
 			ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
 
 			_agentId = new Lazy<int>(GetAgentID);
@@ -87,24 +94,24 @@ namespace kCura.ScheduleQueue.AgentBase
 		{
 			NotifyAgentTab(LogCategory.Debug, "Initialize Agent core services");
 
-			if (_queryManager == null)
+			if (_queueManager == null)
 			{
-				_queryManager = new QueueQueryManager(Helper, _agentGuid);
+				_queueManager = new QueueQueryManager(Helper, _agentGuid);
 			}
 
 			if (_agentService == null)
 			{
-				_agentService = new AgentService(Helper, _queryManager, _agentGuid);
+				_agentService = new AgentService(Helper, _queueManager, _agentGuid);
 			}
 
 			if (_jobService == null)
 			{
-				_jobService = new JobService(_agentService, new JobServiceDataProvider(_queryManager), _kubernetesModeLazy.Value, Helper);
+				_jobService = new JobService(_agentService, new JobServiceDataProvider(_queueManager), _kubernetesModeLazy.Value, Helper);
 			}
 
 			if (_queueJobValidator == null)
 			{
-				_queueJobValidator = new QueueJobValidator(Helper);
+				_queueJobValidator = new QueueJobValidator(Helper, Logger);
 			}
 
 			if (_dateTime == null)
@@ -123,6 +130,16 @@ namespace kCura.ScheduleQueue.AgentBase
 					SerializerWithLogging.Create(Logger),
 					new DefaultGuidService());
             }
+
+			if(_config == null)
+            {
+				_config = IntegrationPoints.Config.Config.Instance;
+            }
+
+			if(_apm == null)
+            {
+				_apm = Client.APMClient;
+			}
 		}
 
 		public sealed override void Execute()
@@ -140,6 +157,8 @@ namespace kCura.ScheduleQueue.AgentBase
 				try
 				{
 					PreExecute();
+
+					CleanupInvalidJobs();
 
 					ProcessQueueJobs();
 
@@ -162,7 +181,57 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 		}
 
-		private void PreExecute()
+		private void CleanupInvalidJobs()
+		{
+            try
+            {
+				DateTime utcNow = _dateTime.UtcNow;
+				TimeSpan transientStateJobTimeout = _config.TransientStateJobTimeout;
+
+				Logger.LogInformation("Checking if jobs are in transient state: DateTimeUtc - {dateTimeNow}, TransientStateJobTimeout {transientStateJobTimeout}",
+					utcNow, transientStateJobTimeout);
+
+				IEnumerable<Job> transientStateJobs = _jobService.GetAllScheduledJobs()
+					.Where(x => (x.Heartbeat != null && utcNow.Subtract(x.Heartbeat.Value) > transientStateJobTimeout) || x.IsBlocked());
+				foreach (var job in transientStateJobs)
+				{
+					Logger.LogError("Job {jobId}, will be failed due timeout. " +
+							"LockedByAgent: {lockedByAgent}, " +
+							"StopState: {stopState}, " +
+							"Last Hearbeat: {heartbeat}, " +
+							"DateTimeUtc {utcNow}",
+						job.JobId, job.LockedByAgentID, job.StopState, job.Heartbeat, utcNow);
+
+					SendJobInTransientSateMetric(job);
+
+					job.MarkJobAsFailed(new TimeoutException($"Job {job.JobId} has failed due to timeout. Contact your system administrator."), false);
+					TaskResult result = ProcessJob(job);
+					FinalizeJobExecution(job, result);
+				}
+			}
+            catch (Exception ex)
+            {
+				Logger.LogError(ex, "Error occurred during cleaning invalid jobs from the queue.");
+            }
+		}
+
+        private void SendJobInTransientSateMetric(Job job)
+        {
+			Dictionary<string, object> jobInTransientStateCustomData = new Dictionary<string, object>()
+			{
+				{ "r1.team.id", "PTCI-RIP" },
+				{ "JobId", job.JobId },
+				{ "RootJobId", job.RootJobId },
+				{ "LockedByAgentId", job.LockedByAgentID },
+				{ "StopState", job.StopState },
+				{ "LastHeartbeat", job.Heartbeat }
+			};
+
+			_apm.CountOperation("Relativity.IntegrationPoints.Performance.JobInTransientState", customData: jobInTransientStateCustomData)
+				.Write();
+		}
+
+        private void PreExecute()
 		{
 			Initialize();
 			InitializeManagerConfigSettingsFactory();
@@ -211,23 +280,24 @@ namespace kCura.ScheduleQueue.AgentBase
                     AgentCorrelationContext context = GetCorrelationContext(nextJob);
                     using (Logger.LogContextPushProperties(context))
                     {
-                        LogJobInformation(nextJob);
+                        PreValidationResult validationResult = PreExecuteJobValidation(nextJob);
 
-                        ValidationResult validationResult = PreExecuteJobValidation(nextJob);
-
-                        if (validationResult.CreateValidationFailedJobHistory)
+						if(!validationResult.ShouldExecute)
                         {
-                            ProcessJob(nextJob, validationResult);
+							Logger.LogInformation("Job {jobId} is not valid. It will be removed from the queue.", nextJob.JobId);
+							
+							TaskResult failedJobResult = new TaskResult
+							{ 
+								Status = TaskStatusEnum.Fail,
+								Exceptions = new List<Exception> { validationResult.Exception }
+							};
+
+							nextJob.MarkJobAsFailed(validationResult.Exception, true);
+							FinalizeJobExecution(nextJob, failedJobResult);
+							
+							nextJob = GetNextQueueJob();
+							continue;
 						}
-
-                        if (!validationResult.IsValid)
-                        {
-                            Logger.LogInformation("Deleting invalid Job {jobId}...", nextJob.JobId);
-
-                            _jobService.DeleteJob(nextJob.JobId);
-                            nextJob = GetNextQueueJob();
-                            continue;
-                        }
 
                         Logger.LogInformation("Starting Job {jobId} processing...", nextJob.JobId);
 
@@ -294,13 +364,14 @@ namespace kCura.ScheduleQueue.AgentBase
 			};
 		}
 
-		private ValidationResult PreExecuteJobValidation(Job job)
+		private PreValidationResult PreExecuteJobValidation(Job job)
         {
             try
             {
-                ValidationResult result = _queueJobValidator.ValidateAsync(job).GetAwaiter().GetResult();
+                PreValidationResult result = _queueJobValidator.ValidateAsync(job).GetAwaiter().GetResult();
                 if (!result.IsValid)
                 {
+					job.MarkJobAsFailed(result.Exception, result.ShouldBreakSchedule);
                     LogValidationJobFailed(job, result);
                 }
 
@@ -309,18 +380,22 @@ namespace kCura.ScheduleQueue.AgentBase
             catch (Exception e)
 			{
 				Logger.LogError(e, "Error occurred during Queue Job Validation. Return job as valid and try to run.");
-				return ValidationResult.Success;
+				return PreValidationResult.Success;
 			}
 
 		}
 
-		protected abstract TaskResult ProcessJob(Job job, ValidationResult validationResult = null);
+		protected abstract TaskResult ProcessJob(Job job);
 
 		private void FinalizeJobExecution(Job job, TaskResult taskResult)
 		{
-			Logger.LogInformation("Finalize JobExecution: {job}", job.ToString());
+			Logger.LogInformation("Finalize JobExecution with result: {result}, Job: {job}", taskResult.Status, job.ToString());
+			
 			FinalizeJobResult result = _jobService.FinalizeJob(job, ScheduleRuleFactory, taskResult);
-			LogJobState(job, result.JobState, null, result.Details);
+
+			Exception exception = (taskResult.Exceptions != null && taskResult.Exceptions.Any()) ? new AggregateException(taskResult.Exceptions) : null;
+			LogJobState(job, result.JobState, exception, result.Details);
+			
 			LogFinalizeJob(job, result);
 		}
 
@@ -445,14 +520,9 @@ namespace kCura.ScheduleQueue.AgentBase
 				nameof(ScheduleQueueAgentBase));
 		}
 
-		private void LogValidationJobFailed(Job job, ValidationResult result)
+		private void LogValidationJobFailed(Job job, PreValidationResult result)
 		{
-			Logger.LogInformation("Job {jobId} validation failed with message: {message}", job.JobId, result.Message);
-		}
-
-		private void LogJobInformation(Job job)
-		{
-			Logger.LogInformation("Job ID {jobId} has been picked up from the queue by Agent ID {agentId}. Job Information: {@job}", job.JobId, _agentId, job.RemoveSensitiveData());
+			Logger.LogInformation("Job {jobId} validation failed with message: {message}", job.JobId, result.Exception?.Message);
 		}
 
 		private void LogAllJobsInTheQueue()
