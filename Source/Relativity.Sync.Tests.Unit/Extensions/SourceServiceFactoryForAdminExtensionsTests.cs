@@ -24,7 +24,7 @@ namespace Relativity.Sync.Tests.Unit.Extensions
             var objectManagerMock = new Mock<IObjectManager>();
             objectManagerMock.Setup(x => x.UpdateAsync(workspaceId, It.IsAny<UpdateRequest>())).Returns(Task.FromResult(new UpdateResult()));
 
-            var syncServicesManagerMock = new Mock<ISyncServiceManager>();
+            var syncServicesManagerMock = new Mock<IServicesMgr>();
             syncServicesManagerMock.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.System))
                 .Returns(objectManagerMock.Object);
 

@@ -22,7 +22,7 @@ namespace Relativity.Sync
         /// <summary>
 		///     Relativity authentication endpoint address
 		/// </summary>
-        ISyncServiceManager ServicesMgr { get; }
+        IServicesMgr ServicesMgr { get; }
 
 		/// <summary>
 		///     Interface with helper methods to programmatically interact with Relativity

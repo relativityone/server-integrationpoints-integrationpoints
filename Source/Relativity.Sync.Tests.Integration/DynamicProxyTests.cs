@@ -27,13 +27,13 @@ namespace Relativity.Sync.Tests.Integration
 			IntegrationTestsContainerBuilder.MockAllSteps(containerBuilder);
 			IntegrationTestsContainerBuilder.MockReportingWithProgress(containerBuilder);
 
-			var servicesMgr = new Mock<ISyncServiceManager>();
+			var servicesMgr = new Mock<IServicesMgr>();
 			var serviceFactory = new Mock<IServiceFactory>();
 			var dynamicProxyFactory = new Mock<IDynamicProxyFactory>();
 			Mock<IRandom> randomFake = new Mock<IRandom>();
             Mock<IAPILog> syncLogMock = new Mock<IAPILog>();
 
-			containerBuilder.RegisterInstance(servicesMgr.Object).As<ISyncServiceManager>();
+			containerBuilder.RegisterInstance(servicesMgr.Object).As<IServicesMgr>();
 			containerBuilder.Register(k => new ServiceFactoryForUser(serviceFactory.Object, dynamicProxyFactory.Object,
                 randomFake.Object, syncLogMock.Object)).As<ISourceServiceFactoryForUser>();
 			containerBuilder.Register(k => new ServiceFactoryForUser(serviceFactory.Object, dynamicProxyFactory.Object,

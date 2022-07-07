@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.Unit
 			Mock<IUserContextConfiguration> userContextConfiguration = new Mock<IUserContextConfiguration>();
 			userContextConfiguration.Setup(x => x.ExecutingUserId).Returns(_USER_ID);
 
-			var servicesMgr = new Mock<ISyncServiceManager>();
+			var servicesMgr = new Mock<IServicesMgr>();
 			servicesMgr.Setup(x => x.GetRESTServiceUrl()).Returns(new Uri("", UriKind.Relative));
 
 			_tokenGenerator = new Mock<IAuthTokenGenerator>();

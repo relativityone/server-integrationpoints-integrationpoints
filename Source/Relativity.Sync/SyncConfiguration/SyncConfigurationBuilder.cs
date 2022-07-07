@@ -11,7 +11,7 @@ namespace Relativity.Sync.SyncConfiguration
     public class SyncConfigurationBuilder : ISyncConfigurationBuilder
     {
         private readonly ISyncContext _syncContext;
-        private readonly ISyncServiceManager _servicesMgr;
+        private readonly IServicesMgr _servicesMgr;
         private readonly IAPILog _logger;
         private readonly ISerializer _serializer;
 
@@ -21,7 +21,7 @@ namespace Relativity.Sync.SyncConfiguration
         /// <param name="syncContext">Sync configuration context.</param>
         /// <param name="servicesMgr">Sync Service Manager</param>
         /// <param name="logger">logs data for debug purposes</param>
-        public SyncConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr, IAPILog logger)
+        public SyncConfigurationBuilder(ISyncContext syncContext, IServicesMgr servicesMgr, IAPILog logger)
         {
             _syncContext = syncContext;
             _servicesMgr = servicesMgr;

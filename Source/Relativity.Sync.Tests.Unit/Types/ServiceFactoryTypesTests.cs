@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.SyncConfiguration;
 
@@ -52,8 +53,8 @@ namespace Relativity.Sync.Tests.Unit.Types
                     var parameters = constructor.GetParameters();
                     foreach (var parameter in parameters)
                     {
-                        parameter.ParameterType.Should().NotBe(typeof(ISyncServiceManager), 
-                        $"Class {syncType} should not use {nameof(ISyncServiceManager)} type. Use {nameof(ISourceServiceFactoryForAdmin)} or {nameof(ISourceServiceFactoryForUser)} instead.");
+                        parameter.ParameterType.Should().NotBe(typeof(IServicesMgr), 
+                        $"Class {syncType} should not use {nameof(IServicesMgr)} type. Use {nameof(ISourceServiceFactoryForAdmin)} or {nameof(ISourceServiceFactoryForUser)} instead.");
                     }
                 }
             }
