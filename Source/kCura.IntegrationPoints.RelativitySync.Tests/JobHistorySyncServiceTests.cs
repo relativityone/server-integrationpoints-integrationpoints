@@ -51,6 +51,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 				.ReturnsAsync(new ResultSet<RelativityObject>());
 
 			Mock<IAPILog> loggerFake = new Mock<IAPILog>();
+			loggerFake.Setup(x => x.ForContext<JobHistorySyncService>()).Returns(loggerFake.Object);
 
 			_sut = new JobHistorySyncService(_relativityObjectManagerFake.Object, loggerFake.Object);
 		}
