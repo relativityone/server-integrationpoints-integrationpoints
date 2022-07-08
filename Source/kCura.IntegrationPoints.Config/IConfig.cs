@@ -69,6 +69,10 @@ namespace kCura.IntegrationPoints.Config
 		int MassUpdateBatchSize { get; }
 
 		/// <summary>
+		/// Gets time threshold for long running jobs
+		/// </summary>
+		TimeSpan RunningJobTimeThreshold { get; }
+		
 		/// Get Timeout for Transient State RIP Jobs
 		/// </summary>
 		TimeSpan TransientStateJobTimeout { get; }

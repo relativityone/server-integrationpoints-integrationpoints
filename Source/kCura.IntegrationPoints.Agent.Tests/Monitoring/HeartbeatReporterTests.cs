@@ -31,9 +31,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 
         private const long _JOB_ID = 10;
 
-        
-
-
         [SetUp]
         public void SetUp()
         {
@@ -153,7 +150,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             //Arrange
             TimeSpan timeToExceedThreshold = TimeSpan.FromHours(10);
             _configFake.Setup(x => x.HeartbeatInterval).Returns(TimeSpan.FromMilliseconds(10));
-            _configFake.Setup(x => x.RunningJobTimeThreshold).Returns(TimeSpan.FromHours(8));
+            _configFake.Setup(x => x.LongRunningJobsTimeThreshold).Returns(TimeSpan.FromHours(8));
 
             //Act
             using (_sut.ActivateHeartbeat(_JOB_ID))
