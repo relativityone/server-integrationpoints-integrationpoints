@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		protected IAPILog Logger =>
 			_loggerValue
-			?? (_loggerValue = Helper.GetLoggerFactory().GetLogger().ForContext<DataTransferLocationMigrationEventHandler>());
+			?? (_loggerValue = Helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointMigrationEventHandlerBase>());
 
 		protected ICaseServiceContext WorkspaceTemplateServiceContext =>
 			_workspaceTemplateServiceContext

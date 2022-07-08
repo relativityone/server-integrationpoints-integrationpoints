@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 				.Setup(x => x.GetLogger())
 				.Returns(_loggerFake.Object);
 			_loggerFake
-				.Setup(x => x.ForContext<DataTransferLocationMigrationEventHandler>())
+				.Setup(x => x.ForContext<IntegrationPointMigrationEventHandlerBase>())
 				.Returns(_loggerFake.Object);
 			_eventHandlerHelperFake
 				.Setup(x => x.GetLoggerFactory())
