@@ -4,7 +4,7 @@ using Relativity.Services.ServiceProxy;
 
 namespace Relativity.Sync.Tests.System.Core.Stubs
 {
-	public class ServicesManagerStub : ISyncServiceManager
+	public class ServicesManagerStub : IServicesMgr
 	{
 		public Uri GetServicesURL()
 		{
@@ -16,7 +16,7 @@ namespace Relativity.Sync.Tests.System.Core.Stubs
 			return AppSettings.RelativityRestUrl;
 		}
 
-		public T CreateProxy<T>(ExecutionIdentity ident) where T : class, IDisposable
+		public T CreateProxy<T>(ExecutionIdentity ident) where T : IDisposable
 		{
 			var userCredential = new UsernamePasswordCredentials(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword);
 			var userSettings = new ServiceFactorySettings(AppSettings.RelativityRestUrl, userCredential);

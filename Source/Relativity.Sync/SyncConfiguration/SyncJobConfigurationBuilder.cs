@@ -11,12 +11,12 @@ namespace Relativity.Sync.SyncConfiguration
     internal class SyncJobConfigurationBuilder : ISyncJobConfigurationBuilder
     {
         private readonly ISyncContext _syncContext;
-        private readonly ISyncServiceManager _servicesMgr;
+        private readonly IServicesMgr _servicesMgr;
         private readonly RdoOptions _rdoOptions;
         private readonly ISerializer _serializer;
         private readonly IAPILog _logger;
 
-        internal SyncJobConfigurationBuilder(ISyncContext syncContext, ISyncServiceManager servicesMgr, RdoOptions rdoOptions, ISerializer serializer, IAPILog logger)
+        internal SyncJobConfigurationBuilder(ISyncContext syncContext, IServicesMgr servicesMgr, RdoOptions rdoOptions, ISerializer serializer, IAPILog logger)
         {
             _syncContext = syncContext;
             _servicesMgr = servicesMgr;

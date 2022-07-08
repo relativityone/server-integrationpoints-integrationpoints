@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.System
 	{
 		private WorkspaceRef _workspace;
 		private IUserService _userService;
-		private ISyncServiceManager _servicesManager;
+		private IServicesMgr _servicesManager;
 		private ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 
 		[SetUp]
