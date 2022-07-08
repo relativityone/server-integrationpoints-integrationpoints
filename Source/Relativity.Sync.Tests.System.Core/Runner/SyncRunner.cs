@@ -112,7 +112,7 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 			var relativityServices = new RelativityServices(_apmClient, _servicesMgr, relativityUri, _helper);
 
 
-			return jobFactory.Create(containerBuilder.Build(), parameters, relativityServices, _logger);
+			return jobFactory.Create(parameters, relativityServices, _logger);
 		}
 	}
 }

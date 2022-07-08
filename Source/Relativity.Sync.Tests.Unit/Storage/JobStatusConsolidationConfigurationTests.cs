@@ -10,6 +10,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 	internal class JobStatusConsolidationConfigurationTests : ConfigurationTestBase
 	{
 		private const int _WORKSPACE_ARTIFACT_ID = 567765;
+        private const int _USER_ID = 323454;
 
 		[Test]
 		public void GetSourceWorkspaceArtifactId_ShouldRetrieveSourceWorkspaceArtifactId()
@@ -60,7 +61,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 		private JobStatusConsolidationConfiguration PrepareSut(int syncConfigurationArtifactId)
 		{
-			var syncJobParameters = new SyncJobParameters(syncConfigurationArtifactId, _WORKSPACE_ARTIFACT_ID, It.IsAny<Guid>());
+			var syncJobParameters = new SyncJobParameters(syncConfigurationArtifactId, _WORKSPACE_ARTIFACT_ID, _USER_ID, It.IsAny<Guid>());
 			var sut = new JobStatusConsolidationConfiguration(_configuration, syncJobParameters);
 			return sut;
 		}

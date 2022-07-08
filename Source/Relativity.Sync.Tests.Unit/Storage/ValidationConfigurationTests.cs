@@ -17,13 +17,14 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private Mock<IFieldMappings> _fieldMappings;
 		private Mock<ISourceServiceFactoryForUser> _serviceFactoryForUser;
 		private const int _WORKSPACE_ID = 111;
-		
+        private const int _USER_ID = 323454;
+
 
 		[SetUp]
 		public void SetUp()
 		{
 			_fieldMappings = new Mock<IFieldMappings>();
-			SyncJobParameters jobParameters = new SyncJobParameters(It.IsAny<int>(), _WORKSPACE_ID, It.IsAny<Guid>());
+			SyncJobParameters jobParameters = new SyncJobParameters(It.IsAny<int>(), _WORKSPACE_ID, _USER_ID, It.IsAny<Guid>());
 			_serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
 			_sut = new ValidationConfiguration(_configuration, _fieldMappings.Object, jobParameters, _serviceFactoryForUser.Object);
 		}
