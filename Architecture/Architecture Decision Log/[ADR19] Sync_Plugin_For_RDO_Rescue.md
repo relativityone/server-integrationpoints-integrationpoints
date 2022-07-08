@@ -81,6 +81,9 @@ namespace Product.Feature.Service
 
 In Relativity.Sync we would check if the endpoint was implemented and if we get 404 as response from `PingAsync` we just run standard code flow described above. For impelemented RDOs (`PingAsync` returns 200) we run `CopyObjectAsync` with all required parameters. With all those information RDO owner will be able to re-create the RDO based on `artifactID` and `parentArtifactID` in Destination Workspace and after that Relativity.Sync just link the created RDO with Document.
 
+_Diagram 3. Sync.Plugin flow:_
+![Sync_Plugin_Flow](imgs/019_sync_plugin_flow.png)
+
 ## Decision
 
 ## Consequences
