@@ -34,12 +34,54 @@ _Diagram 1. Single/Multi Object Architecture_
 
 By Non-Document Objects we mean all RDOs except Document. This flow is quite similar standard Documents push between workspace. What differs both flows is Data Source, where for RDOs we take the IDs from View. Under the hood we still use NonDocument Import API Job.
 
+Main issue with current approach is that we blindly copy column values between workspaces so the Artifact IDs to reference objects are not validated. Due to that we get not fully operational RDO.
+
 _Diagram 2. Non-Document SYNC Architecture_
 ![Non_Document_Sync_Architecture](imgs/019_non_document_sync_architecture.jpeg)
 
+## Proposed Design with Relativity.Sync.Plugin
+
+To fullfill above issues with RDOs push between workspaces we are going to invent _Relativity.Sync.Plugin_ (naming can vary), which move the re-creation responsibility to the owners RDOs owners.
+
+Why? - Because RDOs owners have best knowledge about RDO structure and how it should be re-created based on existing one.
+
+We introduce thin interface:
+
+```cs
+public interface IRDOSyncHandler
+{
+    Task<NamedArtifactObject> CopyObjectAsync(int artifactID, int parentArtifactID, int sourceWorkspaceID, int destinationWorkspaceID);
+
+    Task PingAsync();
+}
+```
+
+This method will be called in Kepler based on agreed **route naming convention** where the prefix will be static across all implementations, but the routes will be differ by **RDO Guid**. Route is not determined yet and is under construction, but for need of this document let's assume following route:
+
+> /Relativity.Sync.Plugin/Copy/<RDO_ArtifactID>
+
+Example Kepler interface:
+
+```cs
+namespace Product.Feature.Service
+{
+    [WebService("MyKeplerService")]
+    [ServiceAudience(Audience.Public)]
+    [RoutePrefix("Relativity.Sync.Plugin/<RDO_ArtifactID>")]
+    public interface IExampleService : IRDOSyncHandler, IDisposable
+    {
+        [Route("Copy")]
+        Task<NamedArtifactObject> CopyObjectAsync(int artifactID, int parentArtifactID, int sourceWorkspaceID, int destinationWorkspaceID);
+
+        [Route("Ping")]
+        Task PingAsync();
+    }
+}
+```
+
+In Relativity.Sync we would check if the endpoint was implemented and if we get 404 as response from `PingAsync` we just run standard code flow described above. For impelemented RDOs (`PingAsync` returns 200) we run `CopyObjectAsync` with all required parameters. With all those information RDO owner will be able to re-create the RDO based on `artifactID` and `parentArtifactID` in Destination Workspace and after that Relativity.Sync just link the created RDO with Document.
+
 ## Decision
-
-
 
 ## Consequences
 
