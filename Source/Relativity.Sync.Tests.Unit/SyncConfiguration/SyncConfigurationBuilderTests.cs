@@ -27,7 +27,7 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
         private readonly int _jobHistoryId = 3;
 
         private SyncContext _syncContext;
-        private Mock<ISyncServiceManager> _servicesManager;
+        private Mock<IServicesMgr> _servicesManager;
         private SyncConfigurationBuilder _sut;
         private Mock<IArtifactGuidManager> _guidManagerMock;
         private Mock<IObjectManager> _objectManagerMock;
@@ -37,7 +37,7 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
         public void SetUp()
         {
             _syncContext = new SyncContext(_sourceWorkspaceId, _destinationWorkspaceId, _jobHistoryId);
-            _servicesManager = new Mock<ISyncServiceManager>();
+            _servicesManager = new Mock<IServicesMgr>();
             _guidManagerMock = new Mock<IArtifactGuidManager>();
             _objectManagerMock = new Mock<IObjectManager>();
             _fieldManagerMock = new Mock<IFieldManager>();

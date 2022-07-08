@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Services.Workspace;
@@ -18,7 +19,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 	internal abstract class SyncConfigurationCreationTestsBase : SystemTest
 	{
 		protected ISourceServiceFactoryForAdmin ServiceFactoryForAdmin;
-		protected ISyncServiceManager ServicesMgr;
+		protected IServicesMgr ServicesMgr;
 
 		protected int SourceWorkspaceId;
 		protected int DestinationWorkspaceId;

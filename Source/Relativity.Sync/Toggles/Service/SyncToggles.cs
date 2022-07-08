@@ -28,7 +28,7 @@ namespace Relativity.Sync.Toggles.Service
             {
                 bool isEnabled = _toggleProvider.IsEnabled<T>();
                 _cache[type] = isEnabled;
-                _logger.LogInformation("Toggle {toggleName} is enabled: {isEnabled}", nameof(T), isEnabled);
+                _logger.LogInformation("Toggle {toggleName} is enabled: {isEnabled}", typeof(T).FullName, isEnabled);
             }
 
             return _cache[type];
