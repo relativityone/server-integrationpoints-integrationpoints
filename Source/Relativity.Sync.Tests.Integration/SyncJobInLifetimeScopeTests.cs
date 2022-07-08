@@ -14,7 +14,6 @@ namespace Relativity.Sync.Tests.Integration
 	[TestFixture]
 	public class SyncJobInLifetimeScopeTests
 	{
-		private IContainer _container;
 		private Mock<IContainerFactory> _containerFactory;
 		private IAPILog _logger;
 		private SyncJobParameters _syncJobParameters;
@@ -29,7 +28,6 @@ namespace Relativity.Sync.Tests.Integration
 
 			var containerBuilder = new ContainerBuilder();
 			containerBuilder.RegisterInstance(_syncJob.Object).As<ISyncJob>();
-			_container = containerBuilder.Build();
 
 			_containerFactory = new Mock<IContainerFactory>();
 			_syncJobParameters = FakeHelper.CreateSyncJobParameters();
@@ -41,7 +39,7 @@ namespace Relativity.Sync.Tests.Integration
 		[Test]
 		public async Task ItShouldPassExecuteAsync()
 		{
-			var instance = new SyncJobInLifetimeScope(_containerFactory.Object, _container, _syncJobParameters, _relativityServices, _configuration, _logger);
+			var instance = new SyncJobInLifetimeScope(_containerFactory.Object, _syncJobParameters, _relativityServices, _configuration, _logger);
 
 			await instance.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 
@@ -52,7 +50,7 @@ namespace Relativity.Sync.Tests.Integration
 		public async Task ItShouldPassExecuteWithProgressAsync()
 		{
 			IProgress<SyncJobState> progress = Mock.Of<IProgress<SyncJobState>>();
-			var instance = new SyncJobInLifetimeScope(_containerFactory.Object, _container, _syncJobParameters, _relativityServices, _configuration, _logger);
+			var instance = new SyncJobInLifetimeScope(_containerFactory.Object, _syncJobParameters, _relativityServices, _configuration, _logger);
 
 			await instance.ExecuteAsync(progress, CompositeCancellationToken.None).ConfigureAwait(false);
 
@@ -62,9 +60,7 @@ namespace Relativity.Sync.Tests.Integration
 		[Test]
 		public async Task ItShouldThrowSyncException()
 		{
-			var containerBuilder = new ContainerBuilder();
-			IContainer containerWithoutSyncJob = containerBuilder.Build();
-			var instance = new SyncJobInLifetimeScope(_containerFactory.Object, containerWithoutSyncJob, _syncJobParameters, _relativityServices, _configuration, _logger);
+			var instance = new SyncJobInLifetimeScope(_containerFactory.Object, _syncJobParameters, _relativityServices, _configuration, _logger);
 
 			Func<Task> func = () => instance.ExecuteAsync(CompositeCancellationToken.None);
 

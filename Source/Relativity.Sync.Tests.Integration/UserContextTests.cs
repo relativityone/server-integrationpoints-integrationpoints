@@ -81,11 +81,10 @@ namespace Relativity.Sync.Tests.Integration
 		private void MockProvideServiceUrisToProvideValidUris()
 		{
 			IAPM apm = Mock.Of<IAPM>();
-            IServicesMgr servicesMgr = Mock.Of<IServicesMgr>();
 			Uri authenticationUri = new Uri(_INSTANCE_URL);
 			IHelper helper = Mock.Of<IHelper>();
 
-			IRelativityServices relativityServices = new RelativityServices(apm, servicesMgr, authenticationUri, helper);
+			IRelativityServices relativityServices = new RelativityServices(apm, authenticationUri, helper);
 			_containerBuilder.RegisterInstance(relativityServices).As<IRelativityServices>();
 		}
 

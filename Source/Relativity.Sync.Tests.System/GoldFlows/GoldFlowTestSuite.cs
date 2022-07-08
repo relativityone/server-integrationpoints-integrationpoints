@@ -16,7 +16,6 @@ using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Extensions;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Sync.Tests.System.Core.Runner;
-using Relativity.Sync.Tests.System.Core.Stubs;
 using Relativity.Telemetry.APM;
 using Relativity.Toggles;
 using User = Relativity.Services.User.User;
@@ -130,12 +129,12 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 				ToggleProvider = new TestSyncToggleProvider();
 				_goldFlowTestSuite = goldFlowTestSuite;
 				_configuration = configuration;
-				_parameters = new SyncJobParameters(configurationId, goldFlowTestSuite.SourceWorkspace.ArtifactID, Guid.NewGuid());
+				_parameters = new SyncJobParameters(configurationId, goldFlowTestSuite.SourceWorkspace.ArtifactID, configuration.ExecutingUserId, Guid.NewGuid());
 			}
 
 			public Task<SyncJobState> RunAsync()
 			{
-				var syncRunner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl, new NullAPM(), TestLogHelper.GetLogger(), ToggleProvider);
+				var syncRunner = new SyncRunner(AppSettings.RelativityUrl, new NullAPM(), TestLogHelper.GetLogger(), ToggleProvider);
 
 				return syncRunner.RunAsync(_parameters, _goldFlowTestSuite.User.ArtifactID);
 			}

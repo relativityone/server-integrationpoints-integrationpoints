@@ -15,7 +15,6 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 	/// </summary>
 	public class SyncRunner
 	{
-		private readonly IServicesMgr _servicesMgr;
 		private readonly Uri _relativityUri;
 		private readonly IAPILog _logger;
 		private readonly IToggleProvider _toggleProvider;
@@ -25,13 +24,11 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		/// <param name="servicesMgr">Authenticated service manager</param>
 		/// <param name="relativityUri">Host name of relativity - no suffixes</param>
 		/// <param name="apmClient">APM implementation</param>
 		/// <param name="logger">Logger</param>
-		public SyncRunner(IServicesMgr servicesMgr, Uri relativityUri, IAPM apmClient, IAPILog logger, IToggleProvider toggleProvider = null)
+		public SyncRunner(Uri relativityUri, IAPM apmClient, IAPILog logger, IToggleProvider toggleProvider = null)
 		{
-            _servicesMgr = servicesMgr;
 			_relativityUri = relativityUri;
 			_logger = logger;
 			_toggleProvider = toggleProvider;
@@ -91,8 +88,7 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 		private ISyncJob CreateSyncJobAsync(SyncJobParameters parameters, int userId, Uri relativityUri)
 		{
 			ContainerBuilder containerBuilder = new ContainerBuilder();
-
-
+			
 			containerBuilder.RegisterInstance(new SyncDataAndUserConfiguration(userId, 0)).AsImplementedInterfaces().SingleInstance();
 
 			containerBuilder.RegisterType<EmptyExecutorConfiguration<IDataDestinationInitializationConfiguration>>()
@@ -109,9 +105,8 @@ namespace Relativity.Sync.Tests.System.Core.Runner
 			}
 			
 			var jobFactory = new SyncJobFactory();
-			var relativityServices = new RelativityServices(_apmClient, _servicesMgr, relativityUri, _helper);
-
-
+			var relativityServices = new RelativityServices(_apmClient, relativityUri, _helper);
+			
 			return jobFactory.Create(parameters, relativityServices, _logger);
 		}
 	}

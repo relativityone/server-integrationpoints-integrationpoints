@@ -110,12 +110,11 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 				}
 			});
 			instanceSettingManager.Setup(x => x.QueryAsync(It.IsAny<Services.Query>())).ReturnsAsync(resultSet);
-
-			Mock<IServicesMgr> servicesMgr = new Mock<IServicesMgr>();
+			
             Uri authenticationUri = new Uri("https://localhost", UriKind.RelativeOrAbsolute);
 
 			IHelper helper = Mock.Of<IHelper>();
-			return new RelativityServices(apm, servicesMgr.Object, authenticationUri, helper);
+            return new RelativityServices(apm, authenticationUri, helper);
 		}
 	}
 }

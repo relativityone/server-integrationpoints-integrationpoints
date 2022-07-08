@@ -3,7 +3,6 @@ using Autofac;
 using Relativity.API;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core.Helpers.APIHelper;
-using Relativity.Sync.Tests.System.Core.Stubs;
 using Relativity.Telemetry.APM;
 using Relativity.Toggles;
 
@@ -17,13 +16,13 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
 			ContainerFactory factory = new ContainerFactory();
 
-			SyncJobParameters syncParameters = new SyncJobParameters(configuration.SyncConfigurationArtifactId, configuration.SourceWorkspaceArtifactId, Guid.NewGuid());
+			SyncJobParameters syncParameters = new SyncJobParameters(configuration.SyncConfigurationArtifactId, configuration.SourceWorkspaceArtifactId, configuration.ExecutingUserId, Guid.NewGuid());
 
 			IAPM apm = new NullAPM();
 
 			IHelper helper = new TestHelper();
 
-			IRelativityServices relativityServices = new RelativityServices(apm, new ServicesManagerStub(), AppSettings.RelativityUrl, helper);
+			IRelativityServices relativityServices = new RelativityServices(apm, AppSettings.RelativityUrl, helper);
 
 			factory.RegisterSyncDependencies(containerBuilder, syncParameters, relativityServices, new SyncJobExecutionConfiguration(), new ConsoleLogger());
 
