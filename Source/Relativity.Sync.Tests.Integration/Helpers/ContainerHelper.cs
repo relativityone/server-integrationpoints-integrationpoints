@@ -113,8 +113,11 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 			
             Uri authenticationUri = new Uri("https://localhost", UriKind.RelativeOrAbsolute);
 
-			IHelper helper = Mock.Of<IHelper>();
-            return new RelativityServices(apm, authenticationUri, helper);
+            Mock<IServicesMgr> servicesMgr = new Mock<IServicesMgr>();
+            Mock<IHelper> helper = new Mock<IHelper>();
+            helper.Setup(x => x.GetServicesManager()).Returns(servicesMgr.Object);
+
+            return new RelativityServices(apm, authenticationUri, helper.Object);
 		}
 	}
 }

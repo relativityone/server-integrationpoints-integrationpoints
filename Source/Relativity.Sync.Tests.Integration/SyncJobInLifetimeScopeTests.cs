@@ -25,11 +25,14 @@ namespace Relativity.Sync.Tests.Integration
 		public void SetUp()
 		{
 			_syncJob = new Mock<ISyncJob>();
-
-			var containerBuilder = new ContainerBuilder();
-			containerBuilder.RegisterInstance(_syncJob.Object).As<ISyncJob>();
-
+			
 			_containerFactory = new Mock<IContainerFactory>();
+            _containerFactory
+                .Setup(x => x.RegisterSyncDependencies(It.IsAny<ContainerBuilder>(), It.IsAny<SyncJobParameters>(), It.IsAny<IRelativityServices>(), It.IsAny<SyncJobExecutionConfiguration>(), It.IsAny<IAPILog>()))
+                .Callback((ContainerBuilder builder, SyncJobParameters syncJobParameters, IRelativityServices relativityServices, SyncJobExecutionConfiguration config, IAPILog logger) =>
+                {
+                    builder.RegisterInstance(_syncJob.Object).As<ISyncJob>();
+				});
 			_syncJobParameters = FakeHelper.CreateSyncJobParameters();
 			_relativityServices = ContainerHelper.CreateMockedRelativityServices();
 			_configuration = new SyncJobExecutionConfiguration();
@@ -58,9 +61,9 @@ namespace Relativity.Sync.Tests.Integration
 		}
 		
 		[Test]
-		public async Task ItShouldThrowSyncException()
+		public async Task ItShouldThrowSyncException_WhenCannotResolveSyncJobFromContainer()
 		{
-			var instance = new SyncJobInLifetimeScope(_containerFactory.Object, _syncJobParameters, _relativityServices, _configuration, _logger);
+			var instance = new SyncJobInLifetimeScope(Mock.Of<IContainerFactory>(), _syncJobParameters, _relativityServices, _configuration, _logger);
 
 			Func<Task> func = () => instance.ExecuteAsync(CompositeCancellationToken.None);
 
