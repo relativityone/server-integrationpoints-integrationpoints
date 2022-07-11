@@ -11,27 +11,41 @@ using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Transfer.ADF
 {
-	internal class MigrationStatus : IMigrationStatus
+	internal class MigrationStatusAsync : IMigrationStatus
 	{
 		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 		private readonly IInstanceSettings _instanceSettings;
 		private readonly IAPILog _logger;
+		private readonly IStorageAccessFactory _storageAccessFactory;
 		private const string ADLER_SIEBEN_TEAM_ID = "PTCI-2456712";
 		private const string RELATIVITY_SYNC_SERVICE_NAME = "relativity-sync";
 
-		public MigrationStatus(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IInstanceSettings instanceSettings, IAPILog logger)
+		public MigrationStatusAsync(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IInstanceSettings instanceSettings, IStorageAccessFactory storageAccessFactory, IAPILog logger)
 		{
 			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_instanceSettings = instanceSettings;
+			_storageAccessFactory = storageAccessFactory;
 			_logger = logger;
 		}
 		public async Task<bool> IsTenantFullyMigratedAsync()
 		{
+			_logger.LogInformation("Checking if tenant is fully migrated to ADLS");
 			List<string> filesharesFromResourceServer =
 				await GetListOfFileSharesFromResourceServerAsync().ConfigureAwait(false);
 			List<string> filesharesFromBedrock = await GetListOfFilesharesFromBedrockAsync().ConfigureAwait(false);
 			
-			return filesharesFromResourceServer.Except(filesharesFromBedrock).Count() == 0;
+			var nonMigratedFileshares = filesharesFromResourceServer.Except(filesharesFromBedrock).ToList();
+			bool isTenantFullyMigrated = nonMigratedFileshares.Count == 0;
+			
+			if (!isTenantFullyMigrated)
+			{
+				foreach (var nonMigratedFileshare in nonMigratedFileshares)
+				{
+					_logger.LogInformation("Non migrated fileshare name: {fileshareName}", nonMigratedFileshare);
+				}
+			}
+			_logger.LogInformation("IsTenantFullMigrated check: {isTenantFullyMigrated}", isTenantFullyMigrated);
+			return isTenantFullyMigrated;
 		}
 
 		private async Task<List<string>> GetListOfFileSharesFromResourceServerAsync()
@@ -52,7 +66,7 @@ namespace Relativity.Sync.Transfer.ADF
 
 		private async Task<List<string>> GetListOfFilesharesFromBedrockAsync()
 		{
-			using var storageDiscovery = await StorageAccessFactory.CreateStorageDiscoveryAsync(
+			using IStorageDiscovery storageDiscovery = await _storageAccessFactory.CreateStorageDiscoveryAsync(
 				teamId: ADLER_SIEBEN_TEAM_ID,
 				serviceName: RELATIVITY_SYNC_SERVICE_NAME
 			);

@@ -12,7 +12,6 @@ using Relativity.Sync.Extensions;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Toggles.Service;
-using Relativity.Sync.Transfer;
 using Relativity.Sync.Transfer.ADF;
 
 namespace Relativity.Sync.Executors
@@ -97,7 +96,8 @@ namespace Relativity.Sync.Executors
 			builder.RegisterTypesInExecutingAssembly<IPreValidator>();
 			builder.RegisterType<UserService>().As<IUserService>();
 			builder.RegisterType<SyncToggles>().As<ISyncToggles>().SingleInstance();
-			builder.RegisterType<MigrationStatus>().As<IMigrationStatus>().SingleInstance();
+			builder.RegisterType<MigrationStatusAsync>().As<IMigrationStatus>().SingleInstance();
+			builder.RegisterType<StorageAccessFactoryWrapper>().As<IStorageAccessFactory>();
 
 			builder.RegisterType<BatchRepository>().As<IBatchRepository>();
 			builder.RegisterType<ProgressRepository>().As<IProgressRepository>();
