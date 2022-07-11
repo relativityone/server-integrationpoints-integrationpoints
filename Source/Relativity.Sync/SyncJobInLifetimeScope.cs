@@ -48,8 +48,7 @@ namespace Relativity.Sync
         {
             ContainerBuilder builder = new ContainerBuilder();
             _containerFactory.RegisterSyncDependencies(builder, _syncJobParameters, _relativityServices, _configuration, _logger);
-            IContainer container = builder.Build();
-            return container;
+            return builder.Build();
         }
 
         private IDisposable EnrichLogger()

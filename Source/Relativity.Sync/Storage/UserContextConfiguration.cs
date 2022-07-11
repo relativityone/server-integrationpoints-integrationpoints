@@ -4,13 +4,11 @@ namespace Relativity.Sync.Storage
 {
     internal class UserContextConfiguration : IUserContextConfiguration
     {
-        public int ExecutingUserId => _syncJobParameters.UserId;
-
-        private readonly SyncJobParameters _syncJobParameters;
+        public int ExecutingUserId { get; }
 
         public UserContextConfiguration(SyncJobParameters syncJobParameters)
         {
-            _syncJobParameters = syncJobParameters;
+            ExecutingUserId = syncJobParameters.UserId;
         }
     }
 }
