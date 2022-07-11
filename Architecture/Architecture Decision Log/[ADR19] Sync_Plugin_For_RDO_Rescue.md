@@ -54,6 +54,15 @@ public interface IRDOSyncHandler
 
     Task PingAsync();
 }
+
+public class NamedArtifactObject
+{
+    public string Name { get; set; }
+
+    public int ArtifactID { get; set; }
+
+    public int ParentArtifactID { get; set; }
+}
 ```
 
 This method will be called in Kepler based on agreed **route naming convention** where the prefix will be static across all implementations, but the routes will be differ by **RDO Guid**. Route is not determined yet and is under construction, but for need of this document let's assume following route:
