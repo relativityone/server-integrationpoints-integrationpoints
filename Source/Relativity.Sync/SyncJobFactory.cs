@@ -1,5 +1,4 @@
 ﻿using System;
-using Autofac;
 using Banzai.Logging;
 using Relativity.API;
 using Relativity.Sync.KeplerFactory;
@@ -24,31 +23,26 @@ namespace Relativity.Sync
         }
 
         /// <inheritdoc />
-        public ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, IRelativityServices relativityServices)
+        public ISyncJob Create(SyncJobParameters syncJobParameters, IRelativityServices relativityServices)
         {
-            return Create(container, syncJobParameters, relativityServices, new SyncJobExecutionConfiguration(), new EmptyLogger());
+            return Create(syncJobParameters, relativityServices, new SyncJobExecutionConfiguration(), new EmptyLogger());
         }
 
         /// <inheritdoc />
-        public ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, IRelativityServices relativityServices, IAPILog logger)
+        public ISyncJob Create(SyncJobParameters syncJobParameters, IRelativityServices relativityServices, IAPILog logger)
         {
-            return Create(container, syncJobParameters, relativityServices, new SyncJobExecutionConfiguration(), logger);
+            return Create(syncJobParameters, relativityServices, new SyncJobExecutionConfiguration(), logger);
         }
 
         /// <inheritdoc />
-        public ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, IRelativityServices relativityServices, SyncJobExecutionConfiguration configuration)
+        public ISyncJob Create(SyncJobParameters syncJobParameters, IRelativityServices relativityServices, SyncJobExecutionConfiguration configuration)
         {
-            return Create(container, syncJobParameters, relativityServices, configuration, new EmptyLogger());
+            return Create(syncJobParameters, relativityServices, configuration, new EmptyLogger());
         }
 
         /// <inheritdoc />
-        public ISyncJob Create(IContainer container, SyncJobParameters syncJobParameters, IRelativityServices relativityServices, SyncJobExecutionConfiguration configuration, IAPILog logger)
+        public ISyncJob Create(SyncJobParameters syncJobParameters, IRelativityServices relativityServices, SyncJobExecutionConfiguration configuration, IAPILog logger)
         {
-            if (container == null)
-            {
-                throw new ArgumentNullException(nameof(container));
-            }
-
             if (syncJobParameters == null)
             {
                 throw new ArgumentNullException(nameof(syncJobParameters));
@@ -71,12 +65,12 @@ namespace Relativity.Sync
             
             LogWriter.SetFactory(new SyncLogWriterFactory(logger));
 
-            ServiceFactoryForAdminFactory serviceFactoryForAdminFactory = new ServiceFactoryForAdminFactory(relativityServices.ServicesMgr, logger);
+            ServiceFactoryForAdminFactory serviceFactoryForAdminFactory = new ServiceFactoryForAdminFactory(relativityServices.Helper.GetServicesManager(), logger);
             ISourceServiceFactoryForAdmin serviceFactoryForAdmin = serviceFactoryForAdminFactory.Create();
 
             InstallSumMetrics(serviceFactoryForAdmin, logger);
 
-            return new SyncJobInLifetimeScope(_containerFactory, container, syncJobParameters, relativityServices, configuration, logger);
+            return new SyncJobInLifetimeScope(_containerFactory, syncJobParameters, relativityServices, configuration, logger);
         }
 
         private static void InstallSumMetrics(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IAPILog logger)

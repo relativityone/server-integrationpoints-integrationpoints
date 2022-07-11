@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using Relativity.API;
@@ -10,6 +10,7 @@ using Relativity.Sync.SyncConfiguration.Options;
 using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
+using Relativity.Sync.Tests.System.Core.Stubs;
 using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System.SyncConfiguration
@@ -30,7 +31,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 		{
 			// Arrange
 			WorkspaceRef sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
-			
+
 			Task<WorkspaceRef> destinationWorkspaceTask = Environment.CreateWorkspaceAsync();
 
 			int jobHistoryId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, sourceWorkspace.ArtifactID).ConfigureAwait(false);
@@ -47,7 +48,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			DocumentSyncOptions options = new DocumentSyncOptions(savedSearchId, destinationFolderId);
 			
 			// Act
-			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, Mock.Of<IServicesMgr>(), new EmptyLogger())
+			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, new ServicesManagerStub(), new EmptyLogger())
 				.ConfigureRdos(_rdoOptions)
 				.ConfigureDocumentSync(options)
 				.SaveAsync().ConfigureAwait(false);

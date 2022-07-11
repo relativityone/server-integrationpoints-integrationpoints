@@ -1,6 +1,7 @@
 ﻿using System;
 using Moq;
 using Relativity.API;
+using Relativity.Sync.Tests.System.Core.Stubs;
 
 namespace Relativity.Sync.Tests.System.Core.Helpers.APIHelper
 {
@@ -25,7 +26,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers.APIHelper
 
 		public IServicesMgr GetServicesManager()
 		{
-			return new ServicesMgrStub();
+			return new ServicesManagerStub();
 		}
 
 		#region Not Implemented

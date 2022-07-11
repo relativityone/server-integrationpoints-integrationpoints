@@ -28,9 +28,7 @@ namespace Relativity.Sync.Tests.Unit
 		private Mock<Func<Task<IStubForInterception>>> _stubForInterceptionFactoryFake;
 		private Mock<IAPILog> _syncLogMock;
 		private Mock<IRandom> _randomFake;
-
-		private const int _MAX_NUMBER_OF_HTTP_RETRIES = 4;
-
+		
 		private readonly TimeSpan _executionTime = TimeSpan.FromMinutes(1);
 
 		[SetUp]
@@ -379,7 +377,7 @@ namespace Relativity.Sync.Tests.Unit
 			// assert
 			field.Should().NotBeNull();
 		}
-
+		
 		private static void SetMillisecondsDelayBetweenHttpRetriesBase(IStubForInterception stub, int delayBaseMs)
 		{
 			global::System.Reflection.FieldInfo interceptorsField = stub.GetType().GetAllFields().Single(x => x.Name == "__interceptors");

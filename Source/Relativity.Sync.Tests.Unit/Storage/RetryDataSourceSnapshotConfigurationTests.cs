@@ -1,21 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
-	using RdoExpressionInt = Expression<Func<SyncConfigurationRdo, int>>;
-	using RdoExpressionString = Expression<Func<SyncConfigurationRdo, string>>;
-	using RdoExpressionGuid = Expression<Func<SyncConfigurationRdo, Guid>>;
-	using RdoExpressionGuidNullable = Expression<Func<SyncConfigurationRdo, Guid?>>;
- 
-	
 	[TestFixture]
 	internal sealed class RetryDataSourceSnapshotConfigurationTests : ConfigurationTestBase
 	{
@@ -24,13 +16,14 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private Mock<IFieldMappings> _fieldMappings;
 
 		private const int _WORKSPACE_ID = 589632;
+        private const int _USER_ID = 323454;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_fieldMappings = new Mock<IFieldMappings>();
 
-			SyncJobParameters parameters = new SyncJobParameters(It.IsAny<int>(), _WORKSPACE_ID, It.IsAny<Guid>());
+			SyncJobParameters parameters = new SyncJobParameters(It.IsAny<int>(), _WORKSPACE_ID, _USER_ID, It.IsAny<Guid>());
 
 			_instance = new RetryDataSourceSnapshotConfiguration(_configuration, _fieldMappings.Object, parameters);
 		}

@@ -24,6 +24,7 @@ namespace Relativity.Sync.Tests.Integration
 
 		private const int _WORKSPACE_ID = 458;
 		private const int _ARTIFACT_ID = 365;
+        private const int _USER_ID = 789;
 		private readonly Guid _WORKFLOW_ID = Guid.NewGuid();
 
 		[SetUp]
@@ -48,7 +49,7 @@ namespace Relativity.Sync.Tests.Integration
 
 			const int second = 1000;
 			_semaphoreSlim = new SemaphoreSlimStub(() => Thread.Sleep(second));
-			SyncJobParameters jobParameters = new SyncJobParameters(_ARTIFACT_ID, _WORKSPACE_ID, _WORKFLOW_ID);
+			SyncJobParameters jobParameters = new SyncJobParameters(_ARTIFACT_ID, _WORKSPACE_ID, _USER_ID, _WORKFLOW_ID);
             var rdoManagerMock = new Mock<IRdoManager>();
 			
             rdoManagerMock.Setup(x => x.GetAsync<SyncConfigurationRdo>(It.IsAny<int>(), It.IsAny<int>()))

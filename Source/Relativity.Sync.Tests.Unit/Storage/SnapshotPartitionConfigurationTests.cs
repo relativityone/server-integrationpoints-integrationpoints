@@ -16,12 +16,13 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 		private const int _WORKSPACE_ID = 987432;
 		private const int _JOB_ID = 9687413;
+        private const int _USER_ID = 323454;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_instanceSettings = new Mock<IInstanceSettings>();
-			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _WORKSPACE_ID, It.IsAny<Guid>());
+			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _WORKSPACE_ID, _USER_ID, It.IsAny<Guid>());
 			_sut = new SnapshotPartitionConfiguration(_configuration, syncJobParameters, _instanceSettings.Object, new EmptyLogger());
 		}
 

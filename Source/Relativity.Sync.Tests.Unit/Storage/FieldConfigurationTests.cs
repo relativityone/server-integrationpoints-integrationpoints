@@ -11,6 +11,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 	{
 		private const int _WORKSPACE_ID = 111;
 		private const int _SYNC_CONFIG_ID = 222;
+        private const int _USER_ID = 333;
 		private readonly Guid _workflowId = Guid.NewGuid();
 
 		private Mock<IConfiguration> _cacheFake;
@@ -24,7 +25,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		{
 			_cacheFake = new Mock<IConfiguration>();
 			_fieldMappingsMock = new Mock<IFieldMappings>();
-			_syncJobParameters = new SyncJobParameters(_SYNC_CONFIG_ID, _WORKSPACE_ID, _workflowId);
+			_syncJobParameters = new SyncJobParameters(_SYNC_CONFIG_ID, _WORKSPACE_ID, _USER_ID, _workflowId);
 
 			_sut = PrepareSut();
 		}
