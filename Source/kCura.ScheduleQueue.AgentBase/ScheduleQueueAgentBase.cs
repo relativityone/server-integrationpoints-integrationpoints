@@ -219,7 +219,7 @@ namespace kCura.ScheduleQueue.AgentBase
         {
 			Dictionary<string, object> jobInTransientStateCustomData = new Dictionary<string, object>()
 			{
-				{ "r1.team.id", "PTCI-RIP" },
+				{ "r1.team.id", "PTCI-2456712" },
 				{ "JobId", job.JobId },
 				{ "RootJobId", job.RootJobId },
 				{ "LockedByAgentId", job.LockedByAgentID },
