@@ -21,6 +21,7 @@ namespace Relativity.IntegrationPoints.Services
     public class IntegrationPointAgentManager : KeplerServiceBase, IIntegrationPointsAgentManager
     {
         private Installer _installer;
+
         private static string _METRIC_NAME = "IntegrationPoints.Performance.System";
 
         private readonly List<WorkloadSizeDefinition> _workloadSizeDefaultSettings = new List<WorkloadSizeDefinition>()
@@ -52,9 +53,10 @@ namespace Relativity.IntegrationPoints.Services
             {
                 Size = WorkloadSize.None
             };
-            QueueInfo queueInfo = null;
             try
             {
+                QueueInfo queueInfo = null;
+
                 using (IWindsorContainer container = GetDependenciesContainer(workspaceArtifactId: -1))
                 {
                     queueInfo = GetJobsFromQueue(container.Resolve<IQueueQueryManager>(), container.Resolve<IJobService>());
@@ -70,7 +72,7 @@ namespace Relativity.IntegrationPoints.Services
             catch (Exception ex)
             {
                 Logger.LogError(ex, "GetWorkloadAsync_Error");
-            }           
+            }
             return Task.FromResult(workload);
         }
 
@@ -78,27 +80,28 @@ namespace Relativity.IntegrationPoints.Services
         {
             QueueInfo queueInfo = new QueueInfo();
 
-            IEnumerable<Job> allQueueRecords = jobService.GetAllScheduledJobs();
+            List<Job> allQueueRecords = jobService.GetAllScheduledJobs().ToList();
 
-            if (allQueueRecords != null)
+            if (allQueueRecords.Any())
             {
                 AgentTypeInformation agentInfo = GetAgentTypeInfo(queueQueryManager);
-                
+
                 List<Job> jobsReadyForProcessingByTimeCondition = allQueueRecords.Where(x => x.NextRunTime <= DateTime.UtcNow).ToList();
                 List<long?> existingSyncWorkerTypeRootIds = jobsReadyForProcessingByTimeCondition.Where(x => x.TaskType == nameof(TaskType.SyncWorker)).Select(x => x.RootJobId).ToList();
                 List<Job> jobsWithoutSyncEntityManagerWorkers = jobsReadyForProcessingByTimeCondition.Where(x => !(x.TaskType == nameof(TaskType.SyncEntityManagerWorker)
-                                                                                                                    && existingSyncWorkerTypeRootIds.Contains(x.RootJobId))).ToList();     
-               
+                                                                                                                    && existingSyncWorkerTypeRootIds.Contains(x.RootJobId))).ToList();
+
                 queueInfo.TotalWorkloadCount = jobsWithoutSyncEntityManagerWorkers.Count();
 
                 // Blocked jobs will not be removed from workload size because newly created Agent should remove them from queue.                
-                queueInfo.BlockedJobsCount = allQueueRecords.Where(x => x.IsBlocked() || x.AgentTypeID != agentInfo.AgentTypeID).Count();
-                queueInfo.AllQueuedItemsCount = allQueueRecords.Count();
+                queueInfo.BlockedJobsCount = allQueueRecords.Count(x => x.IsBlocked() || x.AgentTypeID != agentInfo.AgentTypeID);
+                queueInfo.AllQueuedItemsCount = allQueueRecords.Count;
                 queueInfo.JobsExcludedByTimeConditionCount = queueInfo.AllQueuedItemsCount - jobsReadyForProcessingByTimeCondition.Count;
-                queueInfo.JobsExcludedBySyncWorkerPriorityCount = jobsReadyForProcessingByTimeCondition.Count - queueInfo.TotalWorkloadCount;                
+                queueInfo.JobsExcludedBySyncWorkerPriorityCount = jobsReadyForProcessingByTimeCondition.Count - queueInfo.TotalWorkloadCount;
 
                 SendWorkloadStateMetrics(queueInfo);
             }
+
             return queueInfo;
         }
 
@@ -106,7 +109,7 @@ namespace Relativity.IntegrationPoints.Services
         {
             Guid agentGuid = Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
             DataRow agentTypeInfo = queueQueryManager.GetAgentTypeInformation(agentGuid).Execute();
-            if(agentTypeInfo == null)
+            if (agentTypeInfo == null)
             {
                 throw new AgentNotFoundException($"Agent type information for GUID: {agentGuid} is unavailable");
             }
@@ -116,13 +119,13 @@ namespace Relativity.IntegrationPoints.Services
         private void SendWorkloadStateMetrics(QueueInfo queueInfo)
         {
             Dictionary<string, object> data = new Dictionary<string, object>()
-                {
-                    { "TotalWorkloadCount", queueInfo.TotalWorkloadCount },
-                    { "BlockedJobsCount", queueInfo.BlockedJobsCount },
-                    { "AllQueuedItemsCount", queueInfo.AllQueuedItemsCount },
-                    { "JobsExcludedByTimeConditionCount", queueInfo.JobsExcludedByTimeConditionCount },
-                    { "JobsExcludedBySyncWorkerPriorityCount", queueInfo.JobsExcludedBySyncWorkerPriorityCount }
-                };
+            {
+                { "TotalWorkloadCount", queueInfo.TotalWorkloadCount },
+                { "BlockedJobsCount", queueInfo.BlockedJobsCount },
+                { "AllQueuedItemsCount", queueInfo.AllQueuedItemsCount },
+                { "JobsExcludedByTimeConditionCount", queueInfo.JobsExcludedByTimeConditionCount },
+                { "JobsExcludedBySyncWorkerPriorityCount", queueInfo.JobsExcludedBySyncWorkerPriorityCount }
+            };
 
             Client.APMClient.CountOperation(_METRIC_NAME, correlationID: kCura.IntegrationPoints.Core.Constants.IntegrationPoints.Telemetry.WORKLOAD_METRICS_CORRELATION_ID_GUID,
                 customData: data).Write();
@@ -163,7 +166,7 @@ namespace Relativity.IntegrationPoints.Services
             }
 
             return workloadSizeDefinitions;
-        }    
+        }
 
         public void Dispose()
         {

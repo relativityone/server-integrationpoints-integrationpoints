@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
             {
                 DefaultValue = DefaultValue.Mock
             };
-            helper.Setup(x => x.GetLoggerFactory().GetLogger().ForContext<DataTransferLocationMigrationEventHandler>())
+            helper.Setup(x => x.GetLoggerFactory().GetLogger().ForContext<IntegrationPointMigrationEventHandlerBase>())
 	            .Returns(_loggerMock.Object);
 
             _sut = new SubjectUnderTests(

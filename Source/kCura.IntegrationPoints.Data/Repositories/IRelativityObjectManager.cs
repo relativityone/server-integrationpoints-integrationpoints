@@ -14,12 +14,19 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		int Create(ObjectTypeRef objectType, List<FieldRefValuePair> fieldValues, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
 		int Create(ObjectTypeRef objectType, RelativityObjectRef parentObject, List<FieldRefValuePair> fieldValues,
 			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
+		Task<int> CreateAsync<T>(T relativityObject, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new();
+		Task<int> CreateAsync(ObjectTypeRef objectType, List<FieldRefValuePair> fieldValues, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
+		Task<int> CreateAsync(ObjectTypeRef objectType, RelativityObjectRef parentObject, List<FieldRefValuePair> fieldValues,
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
 
 		T Read<T>(int artifactId, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new();
 		T Read<T>(int artifactId, IEnumerable<Guid> fieldsGuids, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new();
 
 		bool Update(int artifactId, IList<FieldRefValuePair> fieldsValues, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
 		bool Update<T>(T relativityObject, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new();
+
+		Task<bool> UpdateAsync(int artifactId, IList<FieldRefValuePair> fieldsValues, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
+		Task<bool> UpdateAsync<T>(T relativityObject, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new();
 
 		Task<bool> MassUpdateAsync(
 			IEnumerable<int> objectsIDs,
