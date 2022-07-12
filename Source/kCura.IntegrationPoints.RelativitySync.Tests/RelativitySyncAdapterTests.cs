@@ -3,12 +3,10 @@ using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Telemetry.APM;
-using Castle.Windsor;
 using System.Threading.Tasks;
 using kCura.ScheduleQueue.Core;
 using FluentAssertions;
 using Relativity.Sync;
-using Autofac;
 using System.Threading;
 using Relativity.Sync.Executors.Validation;
 using System;
@@ -141,8 +139,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 		private Mock<ISyncOperationsWrapper> PrepareSyncOperations()
 		{
 			Mock<ISyncJobFactory> syncJobFactory = new Mock<ISyncJobFactory>();
-			syncJobFactory.Setup(x => x.Create(It.IsAny<IContainer>(), It.IsAny<SyncJobParameters>(),
-					It.IsAny<IRelativityServices>(), It.IsAny<IAPILog>()))
+			syncJobFactory
+                .Setup(x => x.Create(It.IsAny<SyncJobParameters>(), It.IsAny<IRelativityServices>(), It.IsAny<IAPILog>()))
 				.Returns(_syncJobFake.Object);
 
 			Mock<ISyncOperationsWrapper> syncOperationsWrapper = new Mock<ISyncOperationsWrapper>();
