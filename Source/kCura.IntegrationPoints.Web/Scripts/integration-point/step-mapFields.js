@@ -801,6 +801,8 @@ ko.validation.insertValidationMessage = function (element) {
 			var destinationNotMapped = mapHelper.getNotMapped(self.destinationFields, mapping, 'destinationField');
 			var sourceNotMapped = mapHelper.getNotMapped(self.sourceFields, mapping, 'sourceField');
 
+			removeDuplicates(mapping, destinationNotMapped, sourceNotMapped);
+
 			var sourceWithoutPair = mapped[2];
 			var destinationWithoutPair = mapped[3];
 
@@ -837,6 +839,21 @@ ko.validation.insertValidationMessage = function (element) {
 				self.populateExtractedText();
 			});
 		};
+
+		function removeDuplicates(mapping, destinationNotMapped, sourceNotMapped) {
+			var i = 0;
+			while (i < mapping.length) {
+				var destinationDuplicatedFieldIndex = destinationNotMapped.findIndex(x => x.fieldIdentifier === mapping[i].destinationField.fieldIdentifier);
+				var sourceDuplicatedFieldIndex = sourceNotMapped.findIndex(x => x.fieldIdentifier === mapping[i].sourceField.fieldIdentifier);
+				if (destinationDuplicatedFieldIndex > -1) {
+					destinationNotMapped.splice(destinationDuplicatedFieldIndex, 1);
+				}
+				if (sourceDuplicatedFieldIndex > -1) {
+					sourceNotMapped.splice(sourceDuplicatedFieldIndex, 1);
+				}
+				++i;
+			}
+		}
 
 		root.data.deferred().all(promises).then(
 			function (result) {
