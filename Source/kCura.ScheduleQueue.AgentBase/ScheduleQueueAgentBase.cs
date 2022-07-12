@@ -223,7 +223,7 @@ namespace kCura.ScheduleQueue.AgentBase
 				{ "JobId", job.JobId },
 				{ "RootJobId", job.RootJobId },
 				{ "LockedByAgentId", job.LockedByAgentID },
-				{ "StopState", job.StopState },
+				{ "StopState", job.StopState.ToString() },
 				{ "LastHeartbeat", job.Heartbeat }
 			};
 
