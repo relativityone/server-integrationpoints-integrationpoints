@@ -1,11 +1,10 @@
-﻿using Relativity.IntegrationPoints.Contracts.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
 namespace kCura.IntegrationPoints.Core.Services.Conversion
 {
-	public class DataReaderToEnumerableService
+    public class DataReaderToEnumerableService
 	{
 		private readonly IObjectBuilder _objectBuilder;
 		public DataReaderToEnumerableService(IObjectBuilder objectBuilder)
