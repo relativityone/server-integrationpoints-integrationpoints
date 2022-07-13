@@ -90,7 +90,7 @@
   -->
   <Import Project="..\..\..\..\.paket\paket.targets" />
   <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="Newtonsoft.Json">
           <HintPath>..\..\..\..\packages\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
