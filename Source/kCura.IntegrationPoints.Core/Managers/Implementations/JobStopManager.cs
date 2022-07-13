@@ -135,8 +135,16 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		public void ThrowIfStopRequested()
 		{
-			// Will throw OperationCanceledException if task is canceled.
-			_token.ThrowIfCancellationRequested();
+			try
+            {
+				// Will throw OperationCanceledException if task is canceled.
+				_token.ThrowIfCancellationRequested();
+			}
+			catch (Exception)
+            {
+				_logger.LogWarning("Stop was requested for JobId {jobId}", _jobId);
+				throw;
+            }
 		}
 
 		public bool ShouldDrainStop => _isDrainStopping;

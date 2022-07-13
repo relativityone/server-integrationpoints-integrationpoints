@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -168,8 +169,17 @@ namespace kCura.IntegrationPoints.Core.Agent
 
 		protected virtual IEnumerable<IDictionary<FieldEntry, object>> GetSourceData(List<FieldEntry> sourceFields, IDataReader sourceDataReader)
 		{
-			var objectBuilder = new SynchronizerObjectBuilder(sourceFields);
-			return new DataReaderToEnumerableService(objectBuilder).GetData<IDictionary<FieldEntry, object>>(sourceDataReader);
+			_logger.LogInformation("Instantiating {dataReader}...");
+
+			Stopwatch sw = new Stopwatch();
+			sw.Start();
+			var objectBuilder = new SynchronizerObjectBuilder(sourceFields);	
+			var data = new DataReaderToEnumerableService(objectBuilder).GetData<IDictionary<FieldEntry, object>>(sourceDataReader);
+			sw.Stop();
+
+			_logger.LogInformation("DataReader was instantiated in time {seconds} [ms].", sw.ElapsedMilliseconds);
+
+			return data;
 		}
 
 		protected virtual List<FieldEntry> GetSourceFields(IEnumerable<FieldMap> fieldMap)
