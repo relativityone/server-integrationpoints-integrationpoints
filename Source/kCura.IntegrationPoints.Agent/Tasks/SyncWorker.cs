@@ -141,7 +141,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					sourceProvider.GetBatchableIds(sourceFields.Single(x => x.IsIdentifier), configuration);
 				}
 
-				_logger.LogInformation("Start reading data from {sourceProvider}...", sourceProvider?.GetType()?.FullName);
+				_logger.LogInformation("Start reading data from {sourceProvider}...", sourceProvider?.GetType());
 				using (IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, configuration))
 				{
 					_logger.LogInformation("SourceDataReader was created for {entryIDsCount}.", entryIDs.Count);

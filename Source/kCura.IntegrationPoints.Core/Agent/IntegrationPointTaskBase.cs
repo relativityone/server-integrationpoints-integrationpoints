@@ -169,7 +169,7 @@ namespace kCura.IntegrationPoints.Core.Agent
 
 		protected virtual IEnumerable<IDictionary<FieldEntry, object>> GetSourceData(List<FieldEntry> sourceFields, IDataReader sourceDataReader)
 		{
-			_logger.LogInformation("Instantiating {dataReader}...");
+			_logger.LogInformation("Instantiating {dataReader}...", sourceDataReader?.GetType());
 
 			Stopwatch sw = new Stopwatch();
 			sw.Start();
