@@ -1,5 +1,4 @@
-﻿using Autofac;
-using kCura.IntegrationPoints.RelativitySync;
+﻿using kCura.IntegrationPoints.RelativitySync;
 using Moq;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Sync;
@@ -41,8 +40,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync
 		public ISyncJobFactory CreateSyncJobFactory()
 		{
 			Mock<ISyncJobFactory> syncJobFactory = new Mock<ISyncJobFactory>();
-			syncJobFactory.Setup(x => x.Create(It.IsAny<IContainer>(), It.IsAny<SyncJobParameters>(),
-					It.IsAny<IRelativityServices>(), It.IsAny<IAPILog>()))
+			syncJobFactory
+                .Setup(x => x.Create(It.IsAny<SyncJobParameters>(), It.IsAny<IRelativityServices>(), It.IsAny<IAPILog>()))
 				.Returns(_syncJob.Object);
 
 			return syncJobFactory.Object;
