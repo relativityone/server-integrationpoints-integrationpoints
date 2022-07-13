@@ -23,12 +23,13 @@ namespace Relativity.Sync.Tests.Unit
 		private IConfiguration _sut;
 
 		private const int _TEST_WORKSPACE_ID = 789;
+        private const int _TEST_USER_ID = 5677;
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
 			_syncLog = new EmptyLogger();
-			_syncJobParameters = new SyncJobParameters(It.IsAny<int>(), _TEST_WORKSPACE_ID, It.IsAny<Guid>());
+			_syncJobParameters = new SyncJobParameters(It.IsAny<int>(), _TEST_WORKSPACE_ID, _TEST_USER_ID, It.IsAny<Guid>());
 		}
 
 		[SetUp]

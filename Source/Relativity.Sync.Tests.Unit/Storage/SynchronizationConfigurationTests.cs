@@ -16,12 +16,13 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
 		private const int _JOB_ID = 2;
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 3;
+        private const int _USER_ID = 323454;
 
-        [SetUp]
+		[SetUp]
 		public void SetUp()
 		{
 			_instanceSettings = new Mock<IInstanceSettings>();
-			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, Guid.NewGuid());
+			SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, _USER_ID, Guid.NewGuid());
 			_syncConfig = new SynchronizationConfiguration(_configuration, syncJobParameters, _instanceSettings.Object);
 		}
 

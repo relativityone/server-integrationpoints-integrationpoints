@@ -6,12 +6,12 @@ namespace Relativity.Sync.KeplerFactory
 {
     internal class ServiceFactoryForAdminFactory
     {
-        private readonly ISyncServiceManager _serviceManager;
+        private readonly IServicesMgr _serviceManager;
         private readonly IAPILog _logger;
         private readonly IRandom _random;
         private readonly Func<IStopwatch> _stopwatch;
         
-        internal ServiceFactoryForAdminFactory(ISyncServiceManager serviceManager, IAPILog logger)
+        internal ServiceFactoryForAdminFactory(IServicesMgr serviceManager, IAPILog logger)
         {
             _serviceManager = serviceManager;
             _logger = logger;

@@ -34,7 +34,7 @@ namespace Relativity.Sync.Tests.Unit
 				ThrowOnError = true
 			};
 
-			_syncJobParameters = new SyncJobParameters(It.IsAny<int>(), It.IsAny<int>(), _WORKFLOW_ID);
+			_syncJobParameters = new SyncJobParameters(0, 0, 0, _WORKFLOW_ID);
 			_instance = new SyncJob(_pipeline, _executionContextFactory, _syncJobParameters, new EmptyProgress<SyncJobState>(), new EmptyLogger());
 		}
 

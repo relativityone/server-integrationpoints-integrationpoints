@@ -1,21 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
-    using RdoExpressionInt = Expression<Func<SyncConfigurationRdo, int>>;
-    using RdoExpressionString = Expression<Func<SyncConfigurationRdo, string>>;
-    using RdoExpressionGuid = Expression<Func<SyncConfigurationRdo, Guid>>;
-    using RdoExpressionGuidNullable = Expression<Func<SyncConfigurationRdo, Guid?>>;
-
-
     internal sealed class DataSourceSnapshotConfigurationTests : ConfigurationTestBase
     {
         private DataSourceSnapshotConfiguration _instance;
@@ -23,6 +15,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
         private Mock<IFieldMappings> _fieldMappings;
 
         private const int _WORKSPACE_ID = 589632;
+        private const int _USER_ID = 5675467;
         private readonly Guid _WORKFLOW_ID = Guid.NewGuid();
 
         [SetUp]
@@ -31,7 +24,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
             _fieldMappings = new Mock<IFieldMappings>();
 
             _instance = new DataSourceSnapshotConfiguration(_configuration, _fieldMappings.Object,
-                new SyncJobParameters(1, _WORKSPACE_ID, _WORKFLOW_ID));
+                new SyncJobParameters(1, _WORKSPACE_ID, _USER_ID, _WORKFLOW_ID));
         }
 
         [Test]

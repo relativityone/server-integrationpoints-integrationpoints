@@ -22,7 +22,6 @@ using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Extensions;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Sync.Tests.System.Core.Runner;
-using Relativity.Sync.Tests.System.Core.Stubs;
 using Relativity.Telemetry.APM;
 
 namespace Relativity.Sync.Tests.Performance.Tests
@@ -186,17 +185,14 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
 				Logger.LogInformation("Configuration RDO created");
 
-				SyncJobParameters args = new SyncJobParameters(ConfigurationRdoId, SourceWorkspace.ArtifactID,
-					Guid.NewGuid());
-
-				SyncRunner syncRunner = new SyncRunner(new ServicesManagerStub(), AppSettings.RelativityUrl,
-					new NullAPM(), Logger, new TestSyncToggleProvider());
+				SyncJobParameters syncJobParameters = new SyncJobParameters(ConfigurationRdoId, SourceWorkspace.ArtifactID, Configuration.ExecutingUserId, Guid.NewGuid());
+                SyncRunner syncRunner = new SyncRunner(AppSettings.RelativityUrl, new NullAPM(), Logger, new TestSyncToggleProvider());
 
 				Logger.LogInformation("Staring the job");
 
 				// Act
 				Stopwatch stopwatch = Stopwatch.StartNew();
-				SyncJobState jobState = await syncRunner.RunAsync(args, User.ArtifactID).ConfigureAwait(false);
+				SyncJobState jobState = await syncRunner.RunAsync(syncJobParameters, User.ArtifactID).ConfigureAwait(false);
 
 				stopwatch.Stop();
 				var elapsedTime = TimeSpan.FromMilliseconds(stopwatch.ElapsedMilliseconds);

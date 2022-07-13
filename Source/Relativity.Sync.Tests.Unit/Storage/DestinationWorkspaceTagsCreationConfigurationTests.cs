@@ -1,28 +1,24 @@
 ﻿using System;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
-	using RdoExpressionInt = Expression<Func<SyncConfigurationRdo, int>>;
-	using RdoExpressionString = Expression<Func<SyncConfigurationRdo, string>>;
-
-	[TestFixture]
+    [TestFixture]
 	internal sealed class DestinationWorkspaceTagsCreationConfigurationTests : ConfigurationTestBase
 	{
 		private DestinationWorkspaceTagsCreationConfiguration _config;
 
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 2;
+        private const int _USER_ID = 3;
 
 		[SetUp]
 		public void SetUp()
 		{
-			SyncJobParameters syncJobParameters = new SyncJobParameters(It.IsAny<int>(), _SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<Guid>());
+			SyncJobParameters syncJobParameters = new SyncJobParameters(It.IsAny<int>(), _SOURCE_WORKSPACE_ARTIFACT_ID, _USER_ID, It.IsAny<Guid>());
 			_config = new DestinationWorkspaceTagsCreationConfiguration(_configuration, syncJobParameters);
 		}
 

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Relativity.Services.Objects;
-using Relativity.Services.Objects.DataContracts;
+using Moq;
+using Relativity.API;
 using Relativity.Services.Workspace;
-using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.SyncConfiguration;
@@ -21,17 +18,12 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 	class SyncConfigurationBuilderTests : SystemTest
 	{
 		private RdoOptions _rdoOptions;
-
-		private ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
-		private ISyncServiceManager _servicesMgr;
-
+		
         protected override async Task ChildSuiteSetup()
 		{
 			await base.ChildSuiteSetup();
 			
 			_rdoOptions = DefaultGuids.DefaultRdoOptions;
-			_serviceFactoryForAdmin = new SourceServiceFactoryStub();
-            _servicesMgr = new ServicesManagerStub();
 		}
 
 		[IdentifiedTest("08889EA2-DFFB-4F21-8723-5D2C4F23646C")]
@@ -39,7 +31,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 		{
 			// Arrange
 			WorkspaceRef sourceWorkspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
-			
+
 			Task<WorkspaceRef> destinationWorkspaceTask = Environment.CreateWorkspaceAsync();
 
 			int jobHistoryId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, sourceWorkspace.ArtifactID).ConfigureAwait(false);
@@ -56,7 +48,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 			DocumentSyncOptions options = new DocumentSyncOptions(savedSearchId, destinationFolderId);
 			
 			// Act
-			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, _servicesMgr, new EmptyLogger())
+			int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, new ServicesManagerStub(), new EmptyLogger())
 				.ConfigureRdos(_rdoOptions)
 				.ConfigureDocumentSync(options)
 				.SaveAsync().ConfigureAwait(false);
@@ -72,25 +64,6 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 					.ConfigureAwait(false);
 
 			syncStatistics.Should().NotBeNull();
-		}
-		
-		private async Task<RelativityObject> ReadSyncConfiguration(int workspaceId, int configurationId)
-		{
-			using (IObjectManager objectManager = _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false).GetAwaiter().GetResult())
-			{
-				var request = new QueryRequest
-				{
-					ObjectType = new ObjectTypeRef
-					{
-						Guid = new Guid(SyncRdoGuids.SyncConfigurationGuid)
-					},
-					Condition = $"'ArtifactID' == {configurationId}",
-				};
-
-				var result = await objectManager.QueryAsync(workspaceId, request, 0, 1).ConfigureAwait(false);
-
-				return result.Objects.Single();
-			}
 		}
 	}
 }

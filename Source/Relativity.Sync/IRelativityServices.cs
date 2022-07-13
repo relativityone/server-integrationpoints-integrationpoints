@@ -15,15 +15,10 @@ namespace Relativity.Sync
 		IAPM APM { get; }
 
 		/// <summary>
-		///     Used to create handles to Relativity Services
-		/// </summary>
-		Uri AuthenticationUri { get; }
-
-        /// <summary>
 		///     Relativity authentication endpoint address
 		/// </summary>
-        ISyncServiceManager ServicesMgr { get; }
-
+		Uri AuthenticationUri { get; }
+		
 		/// <summary>
 		///     Interface with helper methods to programmatically interact with Relativity
 		/// </summary>

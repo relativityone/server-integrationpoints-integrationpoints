@@ -11,11 +11,12 @@ namespace Relativity.Sync.Tests.Unit.Storage
 		private DocumentJobStartMetricsConfiguration _sut;
 
 		private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 102779;
+        private const int _USER_ID = 323454;
 
 		[SetUp]
 		public void SetUp()
 		{
-			SyncJobParameters parameters = new SyncJobParameters(It.IsAny<int>(), _SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<Guid>());
+			SyncJobParameters parameters = new SyncJobParameters(It.IsAny<int>(), _SOURCE_WORKSPACE_ARTIFACT_ID, _USER_ID, It.IsAny<Guid>());
 
 			_sut = new DocumentJobStartMetricsConfiguration(_configuration, parameters);
 		}
