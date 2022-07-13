@@ -1659,12 +1659,6 @@
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>4663471</ArtifactId>
-      <Keywords />
-      <Name>netstandard.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
       <ArtifactId>4663502</ArtifactId>
       <Keywords />
       <Name>Banzai.dll</Name>
@@ -1754,6 +1748,24 @@
       <Name>System.Threading.Tasks.Extensions.dll</Name>
       <Notes />
     </Assembly>
+    <Assembly>
+      <ArtifactId>5537554</ArtifactId>
+      <Keywords />
+      <Name>Relativity.Storage.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>5537555</ArtifactId>
+      <Keywords />
+      <Name>DnsClient.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>5537556</ArtifactId>
+      <Keywords />
+      <Name>System.Text.Json.dll</Name>
+      <Notes />
+    </Assembly>
   </Assemblies>
   <ResourceFiles>
     <ResourceFile>
@@ -1773,7 +1785,7 @@
     </ResourceFile>
   </ResourceFiles>
   <ExternalTabs />
-  <ExtractionDate>2022-06-17T17:52:34.69732Z</ExtractionDate>
+  <ExtractionDate>2022-07-13T12:21:35.3599286Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -11834,7 +11846,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>16.0.30.0</RelativityVersion>
-  <Version>12.2.15.26</Version>
+  <Version>12.2.15.29</Version>
   <SchemaVersion>11.3.10.20</SchemaVersion>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>5e8b02a8-6e33-4426-a0f0-3594d83725d0</OriginSignature>
