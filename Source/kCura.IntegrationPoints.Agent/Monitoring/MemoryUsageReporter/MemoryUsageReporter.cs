@@ -7,6 +7,8 @@ using kCura.IntegrationPoints.Common.Metrics;
 using Relativity.API;
 using System.Threading;
 using kCura.IntegrationPoints.Common.Agent;
+using Relativity.Toggles;
+using kCura.IntegrationPoints.Agent.Toggles;
 
 namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 {
@@ -15,6 +17,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
         private Timer _timerThread;
 
         private readonly IRemovableAgent _agent;
+        private readonly IToggleProvider _toggleProvider;
         private readonly IAPM _apmClient;
         private readonly IAPILog _logger;
         private readonly IRipMetrics _ripMetric;
@@ -27,7 +30,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 
         public MemoryUsageReporter(IAPM apmClient, IAPILog logger,
             IRipMetrics ripMetric,IProcessMemoryHelper processMemoryHelper,
-            IAppDomainMonitoringEnabler appDomainMonitoringEnabler, IMonitoringConfig config, IRemovableAgent agent)
+            IAppDomainMonitoringEnabler appDomainMonitoringEnabler, IMonitoringConfig config, IRemovableAgent agent, IToggleProvider toggleProvider)
         {
             _processMemoryHelper = processMemoryHelper;
             _apmClient = apmClient;
@@ -35,11 +38,18 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
             _ripMetric = ripMetric;
             _appDomainMonitoringEnabler = appDomainMonitoringEnabler;
             _agent = agent;
+            _toggleProvider = toggleProvider;
             _config = config;
         }
 
         public IDisposable ActivateTimer(long jobId, string jobDetails, string jobType)
         {
+            if (!_toggleProvider.IsEnabled<EnableMemoryUsageReportingToggle>())
+            {
+                _logger.LogInformation("EnableMemoryUsageReportingToggle is disabled. JobID {jobId} memory usage metrics won't be send", jobId);
+                return Disposable.Empty;
+            }
+
             if (_appDomainMonitoringEnabler.EnableMonitoring())
             {
                 _timerThread = new Timer(state => Execute(jobId, jobDetails, jobType), null, TimeSpan.Zero, _config.MemoryUsageInterval); 

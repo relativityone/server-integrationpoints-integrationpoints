@@ -1,11 +1,13 @@
 ﻿using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
+using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Metrics;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Telemetry.APM;
+using Relativity.Toggles;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -24,6 +26,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private MemoryUsageReporter _sut;
         private Mock<IAppDomainMonitoringEnabler> _appDomainMonitoringEnablerMock;
         private Mock<IRemovableAgent> _agentMock;
+        private Mock<IToggleProvider> _toggleProviderFake;
         private const string _jobDetails = "jobDetails";
         private const string _jobType = "jobId";
         private const long _jobId = 123456789;
@@ -75,8 +78,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _agentMock.Setup(x => x.ToBeRemoved).Returns(false);
             _agentMock.Setup(x => x.AgentInstanceGuid).Returns(_agentInstanceGuid);
 
+            _toggleProviderFake = new Mock<IToggleProvider>();
+            _toggleProviderFake.Setup(x => x.IsEnabled<EnableMemoryUsageReportingToggle>()).Returns(true);
+
             _sut = new MemoryUsageReporter(_apmMock.Object, _loggerMock.Object, _ripMetricMock.Object,
-                _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object, _configFake.Object, _agentMock.Object);
+                _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object, _configFake.Object, _agentMock.Object, _toggleProviderFake.Object);
         }
 
         [Test]
@@ -161,7 +167,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 .Returns(_counterMeasure.Object);
 
             MemoryUsageReporter sutWithErrors = new MemoryUsageReporter(apmMockWithErrors.Object, _loggerMock.Object, _ripMetricMock.Object,
-                _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object, _configFake.Object, _agentMock.Object);
+                _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object, _configFake.Object, _agentMock.Object, _toggleProviderFake.Object);
 
             int metricsProperlySend = 3;
             int metricsWithError = 2;
@@ -231,6 +237,28 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         {
             //Arrange
             _appDomainMonitoringEnablerMock.Setup(x => x.EnableMonitoring()).Returns(false);
+
+            //Act
+            IDisposable subscription = _sut.ActivateTimer(_jobId, _jobDetails, _jobType);
+            Thread.Sleep(10);
+
+            //Assert
+            _apmMock.Verify(x => x.CountOperation(
+                It.IsAny<string>(),
+                It.IsAny<Guid>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<bool>(),
+                It.IsAny<int?>(),
+                It.IsAny<Dictionary<string, object>>(),
+                It.IsAny<IEnumerable<ISink>>()), Times.Never);
+        }
+
+        [Test]
+        public void Execute_ShouldNotStartTheTimer_ToggleIsDisabled()
+        {
+            //Arrange
+            _toggleProviderFake.Setup(x => x.IsEnabled<EnableMemoryUsageReportingToggle>()).Returns(false);
 
             //Act
             IDisposable subscription = _sut.ActivateTimer(_jobId, _jobDetails, _jobType);
