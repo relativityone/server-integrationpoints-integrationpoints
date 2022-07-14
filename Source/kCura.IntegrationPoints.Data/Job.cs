@@ -83,7 +83,8 @@ namespace kCura.IntegrationPoints.Data
 				JobFlags = JobFlags,
 				SubmittedDate = SubmittedDate,
 				SubmittedBy = SubmittedBy,
-				StopState = StopState
+				StopState = StopState,
+				Heartbeat = Heartbeat,
 			};
 		}
 
