@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using ARMTestServices.Services.Interfaces;
 using Relativity.Kepler.Transport;
@@ -109,7 +108,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 		{
 			if(!Path.IsPathRooted(directory))
 			{
-				directory = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), directory);
+				directory = string.Empty;//Path.Combine(Path.GetPathRoot(System.Environment.SystemDirectory), directory);
 			}
 
 			string destinationFile = Path.Combine(directory, Path.GetFileName(filePath));
@@ -134,7 +133,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 		{
 			if (!Path.IsPathRooted(directory))
 			{
-				directory = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), directory);
+				directory = string.Empty;//Path.Combine(Path.GetPathRoot(System.Environment.SystemDirectory), directory);
 			}
 
 			using (var directoryManager = _serviceFactory.GetServiceProxy<IDirectoryManager>())

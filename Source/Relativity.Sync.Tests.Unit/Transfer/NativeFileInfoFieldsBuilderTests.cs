@@ -22,7 +22,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		{
 			_nativeFileRepositoryMock = new Mock<INativeFileRepository>();
 
-			_sut = new NativeInfoFieldsBuilder(_nativeFileRepositoryMock.Object, new EmptyLogger());
+			_sut = new NativeInfoFieldsBuilder(_nativeFileRepositoryMock.Object, null, new EmptyLogger());
 		}
 
 		[Test]

@@ -51,6 +51,8 @@
     <PackageReference Include="Relativity.Telemetry.Services.Interface" Version="[3003.0.2]" />
     <PackageReference Include="Relativity.AutomatedWorkflows.SDK" Version="1.0.8" />
     <PackageReference Include="Relativity.DataTransfer.Legacy.SDK" Version="0.2.21" />
+    <PackageReference Include="Relativity.AntiMalware.SDK" Version="1.1.46" />
+    <PackageReference Include="Relativity.Environment.SDK" Version="2.0.4" />
   </ItemGroup>
   <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
   <ItemGroup>

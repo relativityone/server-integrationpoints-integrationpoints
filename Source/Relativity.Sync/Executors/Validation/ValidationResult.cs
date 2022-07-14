@@ -103,7 +103,7 @@ namespace Relativity.Sync.Executors.Validation
 		public override string ToString()
 		{
 			IEnumerable<string> messageStrings = _messages.Select(m => m.ToString());
-			return string.Join(Environment.NewLine, messageStrings);
+			return string.Join(System.Environment.NewLine, messageStrings);
 		}
 
 		internal static ValidationResult Invalid => _invalid;

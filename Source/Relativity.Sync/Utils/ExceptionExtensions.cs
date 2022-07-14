@@ -10,7 +10,7 @@ namespace Relativity.Sync.Utils
 
 			if (ex.InnerException != null)
 			{
-				message += $"{Environment.NewLine}{GetExceptionMessages(ex.InnerException)}";
+				message += $"{System.Environment.NewLine}{GetExceptionMessages(ex.InnerException)}";
 			}
 
 			return message;

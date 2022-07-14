@@ -195,7 +195,7 @@ namespace Relativity.Sync.Tests.Integration
 			string formattedException = exception.ToString();
 
 			// assert
-			string expected = $"Is valid: False{Environment.NewLine}1. {_VALIDATION_MESSAGE}{Environment.NewLine}";
+			string expected = $"Is valid: False{System.Environment.NewLine}1. {_VALIDATION_MESSAGE}{System.Environment.NewLine}";
 			Assert.AreEqual(expected, formattedException);
 		}
 
@@ -211,7 +211,7 @@ namespace Relativity.Sync.Tests.Integration
 			string formattedException = exception.ToString();
 
 			// assert
-			string expected = $"Is valid: False{Environment.NewLine}1. (Error code: {_ERROR_CODE}) {_VALIDATION_MESSAGE}{Environment.NewLine}";
+			string expected = $"Is valid: False{System.Environment.NewLine}1. (Error code: {_ERROR_CODE}) {_VALIDATION_MESSAGE}{System.Environment.NewLine}";
 			Assert.AreEqual(expected, formattedException);
 		}
 
@@ -229,7 +229,7 @@ namespace Relativity.Sync.Tests.Integration
 			string formattedException = exception.ToString();
 
 			// assert
-			string expected = $"Is valid: False{Environment.NewLine}";
+			string expected = $"Is valid: False{System.Environment.NewLine}";
 			Assert.AreEqual(expected, formattedException);
 		}
 	}

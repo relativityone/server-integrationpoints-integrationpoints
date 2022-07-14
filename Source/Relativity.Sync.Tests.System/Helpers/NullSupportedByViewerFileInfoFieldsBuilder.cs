@@ -11,7 +11,7 @@ namespace Relativity.Sync.Tests.System.Helpers
 
 		public NullSupportedByViewerFileInfoFieldsBuilder(INativeFileRepository nativeFileRepository)
 		{
-			_fileInfoFieldsBuilder = new NativeInfoFieldsBuilder(nativeFileRepository, new EmptyLogger());
+			_fileInfoFieldsBuilder = new NativeInfoFieldsBuilder(nativeFileRepository, null, new EmptyLogger());
 		}
 
 		public IEnumerable<FieldInfoDto> BuildColumns()

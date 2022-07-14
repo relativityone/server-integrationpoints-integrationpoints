@@ -4,18 +4,20 @@ using Relativity.API;
 
 namespace Relativity.Sync.Transfer
 {
-	internal sealed class NativeInfoFieldsBuilder : INativeInfoFieldsBuilder
+    internal sealed class NativeInfoFieldsBuilder : INativeInfoFieldsBuilder
 	{
 		private readonly INativeFileRepository _nativeFileRepository;
-		private readonly IAPILog _logger;
+        private readonly IAntiMalwareHandler _antiMalwareHandler;
+        private readonly IAPILog _logger;
 
-		public NativeInfoFieldsBuilder(INativeFileRepository nativeFileRepository, IAPILog logger)
-		{
-			_nativeFileRepository = nativeFileRepository;
-			_logger = logger;
-		}
+        public NativeInfoFieldsBuilder(INativeFileRepository nativeFileRepository, IAntiMalwareHandler antiMalwareHandler, IAPILog logger)
+        {
+            _nativeFileRepository = nativeFileRepository;
+            _antiMalwareHandler = antiMalwareHandler;
+            _logger = logger;
+        }
 
-		public IEnumerable<FieldInfoDto> BuildColumns()
+        public IEnumerable<FieldInfoDto> BuildColumns()
 		{
 			yield return FieldInfoDto.NativeFileFilenameField();
 			yield return FieldInfoDto.NativeFileSizeField();
@@ -45,7 +47,7 @@ namespace Relativity.Sync.Transfer
                 }
             }
 
-            return new NativeInfoRowValuesBuilder(artifactIdToNativeFile);
+            return new NativeInfoRowValuesBuilder(artifactIdToNativeFile, _antiMalwareHandler);
         }
     }
 }

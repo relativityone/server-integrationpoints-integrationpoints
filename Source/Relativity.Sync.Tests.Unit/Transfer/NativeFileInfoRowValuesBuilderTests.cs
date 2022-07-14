@@ -37,7 +37,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				{_DOCUMENT_ARTIFACT_ID, new NativeFile(_DOCUMENT_ARTIFACT_ID, _LOCATION, _FILENAME, _SIZE)}
 			};
 
-			NativeInfoRowValuesBuilder instance = new NativeInfoRowValuesBuilder(artifactIdToNativeFileMap);
+			NativeInfoRowValuesBuilder instance = new NativeInfoRowValuesBuilder(artifactIdToNativeFileMap, null);
 
 			// ACT
 			object result = instance.BuildRowValue(fieldInfoDto, document, _INITIAL_VALUE);
@@ -63,7 +63,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				{_DOCUMENT_ARTIFACT_ID, new NativeFile(_DOCUMENT_ARTIFACT_ID, _LOCATION, _FILENAME, _SIZE)}
 			};
 
-			NativeInfoRowValuesBuilder instance = new NativeInfoRowValuesBuilder(artifactIdToNativeFileMap);
+			NativeInfoRowValuesBuilder instance = new NativeInfoRowValuesBuilder(artifactIdToNativeFileMap, null);
 
 			// ACT
 			Action action = () => instance.BuildRowValue(fieldInfoDto, document, _INITIAL_VALUE);
@@ -85,7 +85,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				IsDuplicated = true
 			});
 
-			NativeInfoRowValuesBuilder instance = new NativeInfoRowValuesBuilder(artifactIdToNativeFileMap);
+			NativeInfoRowValuesBuilder instance = new NativeInfoRowValuesBuilder(artifactIdToNativeFileMap, null);
 
 			// ACT
 			Action action = () => instance.BuildRowValue(fieldInfoDto, document, _INITIAL_VALUE);
@@ -112,7 +112,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			};
 #pragma warning restore RG2009 // Hardcoded Numeric Value
 			RelativityObjectSlim document = new RelativityObjectSlim() {ArtifactID = _DOCUMENT_ARTIFACT_ID };
-			NativeInfoRowValuesBuilder instance = new NativeInfoRowValuesBuilder(artifactIdToNativeFileMap);
+			NativeInfoRowValuesBuilder instance = new NativeInfoRowValuesBuilder(artifactIdToNativeFileMap, null);
 
 			// Act
 			Action action = () => instance.BuildRowValue(fieldInfoDto, document, _INITIAL_VALUE);

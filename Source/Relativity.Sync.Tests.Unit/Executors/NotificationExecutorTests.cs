@@ -149,7 +149,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			actualResult.Status.Should().Be(ExecutionStatus.Completed);
 
 			string expectedBody = GetExpectedBody(_MESSAGE_FAILED, _destinationCaseTag);
-			expectedBody = string.Join($"{Environment.NewLine}{Environment.NewLine}", expectedBody, "Error: ");
+			expectedBody = string.Join($"{System.Environment.NewLine}{System.Environment.NewLine}", expectedBody, "Error: ");
 			_emailManager.Verify(x => x.SendEmailNotificationAsync(It.Is<EmailNotificationRequest>(y => VerifyEmailRequest(y, expectedBody, _subjectFailed))));
 		}
 
@@ -264,14 +264,14 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			string sourceWorkspaceFormat = string.Format(CultureInfo.InvariantCulture, _BODY_SOURCE, _sourceCaseTag);
 			string destinationWorkspaceFormat = string.Format(CultureInfo.InvariantCulture, _BODY_DESTINATION, expectedDestinationCaseTag);
-			string body = string.Join($"{Environment.NewLine}{Environment.NewLine}", expectedMessage, _bodyName, sourceWorkspaceFormat, destinationWorkspaceFormat);
+			string body = string.Join($"{System.Environment.NewLine}{System.Environment.NewLine}", expectedMessage, _bodyName, sourceWorkspaceFormat, destinationWorkspaceFormat);
 			return body;
 		}
 
 		private string GetExpectedBodyWithError(string expectedMessage, string expectedDestinationCaseTag)
 		{
 			string body = GetExpectedBody(expectedMessage, expectedDestinationCaseTag);
-			string errorBody = string.Join($"{Environment.NewLine}{Environment.NewLine}", body, _bodyError);
+			string errorBody = string.Join($"{System.Environment.NewLine}{System.Environment.NewLine}", body, _bodyError);
 			return errorBody;
 		}
 

@@ -30,7 +30,7 @@ namespace Relativity.Sync.Nodes
 
 		protected override void OnBeforeExecute(IExecutionContext<SyncExecutionContext> context)
 		{
-			string mergedStep = string.Join(Environment.NewLine, Children.Select(x => x.Id));
+			string mergedStep = string.Join(System.Environment.NewLine, Children.Select(x => x.Id));
 
 			context.Subject.Progress.ReportStarted(mergedStep, _parallelGroupName);
 		}

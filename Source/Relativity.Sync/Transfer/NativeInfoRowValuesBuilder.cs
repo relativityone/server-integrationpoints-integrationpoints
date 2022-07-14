@@ -1,19 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using Relativity.AntiMalware.SDK;
 using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.Sync.Transfer
 {
 	internal sealed class NativeInfoRowValuesBuilder : INativeSpecialFieldRowValuesBuilder
 	{
-		public IDictionary<int, INativeFile> ArtifactIdToNativeFile { get; set; }
+        private readonly IAntiMalwareHandler _antiMalwareHandler;
 
-		public NativeInfoRowValuesBuilder(IDictionary<int, INativeFile> artifactIdToNativeFile)
-		{
-			ArtifactIdToNativeFile = artifactIdToNativeFile;
-		}
+        public IDictionary<int, INativeFile> ArtifactIdToNativeFile { get; }
 
-		public IEnumerable<SpecialFieldType> AllowedSpecialFieldTypes => new[]
+        public NativeInfoRowValuesBuilder(IDictionary<int, INativeFile> artifactIdToNativeFile, IAntiMalwareHandler antiMalwareHandler)
+        {
+            ArtifactIdToNativeFile = artifactIdToNativeFile;
+            _antiMalwareHandler = antiMalwareHandler;
+        }
+
+        public IEnumerable<SpecialFieldType> AllowedSpecialFieldTypes => new[]
 		{
 			SpecialFieldType.NativeFileFilename,
 			SpecialFieldType.NativeFileLocation,
@@ -38,6 +43,24 @@ namespace Relativity.Sync.Transfer
 			if (nativeFile.IsDuplicated)
 			{
 				throw new SyncItemLevelErrorException($"Database is corrupted - document Artifact ID: {document.ArtifactID} has more than one native file associated with it.");
+			}
+
+            try
+            {
+				// https://git.kcura.com/projects/DTX/repos/transfer-api-legacy/browse/Source/Relativity.Transfer.Client.FileShare/FileShareTransferCommand.cs#661
+				FileStream stream = new FileStream(nativeFile.Location, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            }
+            catch (Exception e)
+            {
+				if(e.ContainsAntiMalwareEvent())
+                {
+					_antiMalwareHandler.HandleEventAsync(e, nativeFile)
+						.GetAwaiter().GetResult();
+
+					throw new SyncItemLevelErrorException(e.Message, e);
+				}
+
+				throw;
 			}
 
 			switch (fieldInfoDto.SpecialFieldType)

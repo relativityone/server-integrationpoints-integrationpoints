@@ -100,7 +100,7 @@ namespace Relativity.Sync.Tests.System.TestGuard
 
 			// Assert
 			List<KeyValuePair<string, List<string>>> testsWithDuplicatedGuids = guidToMethodsDictionary.Where(x => x.Value.Count > 1).ToList();
-			testsWithDuplicatedGuids.Count.Should().Be(0, $"all tests should have unique GUIDs, but the results are:{Environment.NewLine}{JsonConvert.SerializeObject(testsWithDuplicatedGuids, Formatting.Indented)}");
+			testsWithDuplicatedGuids.Count.Should().Be(0, $"all tests should have unique GUIDs, but the results are:\n{JsonConvert.SerializeObject(testsWithDuplicatedGuids, Formatting.Indented)}");
 		}
 	}
 }
