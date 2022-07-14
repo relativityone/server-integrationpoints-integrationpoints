@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.API;
@@ -54,13 +55,18 @@ namespace Relativity.Sync.Transfer.ADF
 			{
 				var resultSet = await resourceServer.QueryAsync(new Services.Query()).ConfigureAwait(false);
 				_logger.LogInformation("Retrieved {fileServersResourceServerCount} file server(s)", resultSet.TotalCount);
-				
+				List<string> serverList = new List<string>();
 				foreach (Result<FileShareResourceServer> result in resultSet.Results)
 				{
 					_logger.LogInformation("Name: {FileServerName} UNC: {fileServerUNC}", result.Artifact.Name, result.Artifact.UNCPath);
+					Uri resultUri = new Uri(result.Artifact.UNCPath);
+					if (!serverList.Contains(resultUri.Host))
+					{
+						serverList.Add(resultUri.Host);
+					}
 				}
 
-				return resultSet.Results.Select(r => r.Artifact.UNCPath).ToList();
+				return serverList;
 			}
 		}
 
@@ -72,7 +78,10 @@ namespace Relativity.Sync.Transfer.ADF
 			);
 			Guid tenantId = await _instanceSettings.GetInstanceIdGuidAsync().ConfigureAwait(false);
 			_logger.LogInformation("StorageDiscovery TenantId: {tenantId}", tenantId );
-			var bedrockEndpoints = await storageDiscovery.GetStorageEndpointsAsync(R1Environment.CommercialRegression, tenantId: tenantId).ConfigureAwait(false);
+			
+			R1Environment r1Environment = R1Environment.CommercialRegression;
+			
+			var bedrockEndpoints = await storageDiscovery.GetStorageEndpointsAsync(r1Environment, tenantId: tenantId).ConfigureAwait(false);
 			_logger.LogInformation("Retrieved {fileServersBedrockCount} file server(s)", bedrockEndpoints.Length);
 			
 			foreach (var endpoint in bedrockEndpoints)

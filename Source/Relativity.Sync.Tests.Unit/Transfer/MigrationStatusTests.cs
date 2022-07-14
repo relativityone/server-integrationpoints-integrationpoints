@@ -24,9 +24,11 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		private Mock<IStorageAccessFactory> _storageAccessFactoryMock;
 		private Mock<IStorageDiscovery> _storageDiscoveryMock;
 		private MigrationStatusAsync _sut;
-		private string _fileshare1Name = "_fileshare1Name";
-		private string _fileshare1UNC = "//files/file1";
-		private string _fileshare2UNC = "//files/file2";
+		private string _fileshare1Name = @"\\files.t035.ctus014128.r1.kcura.com\T035\Files\";
+		private string _fileshare1UNC = @"\\files.t035.ctus014128.r1.kcura.com\T035\\Files\";
+		private string _fileshare2Name = @"\\files2.t035.ctus014128.r1.kcura.com\T035\Files\";
+		private string _fileshare2UNC = @"\\files2.t035.ctus014128.r1.kcura.com\T035\Files\";
+		private string _fileshare1BedrockFQDN = "files2.t035.ctus014128.r1.kcura.com";
 
 		[SetUp]
 		public void SetUp()
@@ -40,7 +42,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			_storageAccessFactoryMock = new Mock<IStorageAccessFactory>();
 
-			var result1 = new Result<FileShareResourceServer>
+			var fileshareResult1 = new Result<FileShareResourceServer>
 			{
 				Artifact = new FileShareResourceServer()
 				{
@@ -48,23 +50,32 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 					UNCPath = _fileshare1UNC
 				}
 			};
+			var fileshareResult2 = new Result<FileShareResourceServer>
+			{
+				Artifact = new FileShareResourceServer()
+				{
+					Name = _fileshare2Name,
+					UNCPath = _fileshare2UNC
+				}
+			};
 			 
-			var resultsSet = new FileShareQueryResultSet()
+			var resultsSetForFileServers = new FileShareQueryResultSet
 			{
 				Results = new List<Result<FileShareResourceServer>>
 				{
-					result1
+					fileshareResult1,
+					fileshareResult2
 				}
 			};
 			
-			_fileShareServerManagerMock.Setup(x => x.QueryAsync(It.IsAny<Services.Query>())).ReturnsAsync(resultsSet);
+			_fileShareServerManagerMock.Setup(x => x.QueryAsync(It.IsAny<Services.Query>())).ReturnsAsync(resultsSetForFileServers);
 			_storageDiscoveryMock = new Mock<IStorageDiscovery>();
 			_storageAccessFactoryMock.Setup(x => x.CreateStorageDiscoveryAsync(It.IsAny<string>(), It.IsAny<string>()))
 				.ReturnsAsync(_storageDiscoveryMock.Object);
 			
 			StorageEndpoint resultsBedrock1 = new StorageEndpoint
 			{
-				EndpointFqdn = _fileshare2UNC,
+				EndpointFqdn = _fileshare1BedrockFQDN,
 				StorageInterface = StorageInterface.Adls2,
 				StorageAccount = default,
 				PrimaryStorageContainer = null,
@@ -86,6 +97,19 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		}
 		
 		[Test]
+		public async Task MigrationStatusAsync_ShouldReturnFalse_WhenThereIsZeroBedrockMigratedFileShare()
+		{
+			StorageEndpoint[] resultFromBedrock = Array.Empty<StorageEndpoint>();
+			_storageDiscoveryMock.Setup(x =>
+					x.GetStorageEndpointsAsync(It.IsAny<R1Environment>(), It.IsAny<Guid>(),
+						It.IsAny<CancellationToken>()))
+				.ReturnsAsync(resultFromBedrock);
+			
+			bool isTenantFullyMigrated = await _sut.IsTenantFullyMigratedAsync().ConfigureAwait(false);
+			isTenantFullyMigrated.Should().BeFalse();
+		}
+		
+		[Test]
 		public async Task MigrationStatusAsync_ShouldReturnTrue_WhenThereIsZeroLegacyFileShare()
 		{
 			var emptyResultsSet = new FileShareQueryResultSet()
@@ -94,6 +118,29 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			};
 			
 			_fileShareServerManagerMock.Setup(x => x.QueryAsync(It.IsAny<Services.Query>())).ReturnsAsync(emptyResultsSet);
+			bool isTenantFullyMigrated = await _sut.IsTenantFullyMigratedAsync().ConfigureAwait(false);
+			isTenantFullyMigrated.Should().BeTrue();
+		}
+		
+		[Test]
+		public async Task MigrationStatusAsync_ShouldReturnTrue_WhenThereIsOnlyMigratedDiskInLegacyFileShare()
+		{
+			var resultsSetForFileServers = new FileShareQueryResultSet
+			{
+				Results = new List<Result<FileShareResourceServer>>
+				{
+					new Result<FileShareResourceServer>
+					{
+						Artifact = new FileShareResourceServer()
+						{
+							Name = _fileshare2Name,
+							UNCPath = _fileshare2UNC
+						}
+					}
+				}
+			};
+
+			_fileShareServerManagerMock.Setup(x => x.QueryAsync(It.IsAny<Services.Query>())).ReturnsAsync(resultsSetForFileServers);
 			bool isTenantFullyMigrated = await _sut.IsTenantFullyMigratedAsync().ConfigureAwait(false);
 			isTenantFullyMigrated.Should().BeTrue();
 		}
