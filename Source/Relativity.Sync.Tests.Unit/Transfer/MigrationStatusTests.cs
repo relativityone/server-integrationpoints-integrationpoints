@@ -9,6 +9,7 @@ using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.ResourceServer;
 using Relativity.Storage;
+using Relativity.Storage.Extensions.Models;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Transfer.ADF;
 
@@ -18,11 +19,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	internal class MigrationStatusTests
 	{
 		private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdminMock;
-		private Mock<IInstanceSettings> _instanceSettingsMock;
+		private Mock<IHelperFactory> _helperFactoryMock;
 		private Mock<IAPILog> _loggerMock;		
 		private Mock<IFileShareServerManager> _fileShareServerManagerMock;
-		private Mock<IStorageAccessFactory> _storageAccessFactoryMock;
-		private Mock<IStorageDiscovery> _storageDiscoveryMock;
 		private MigrationStatusAsync _sut;
 		private string _fileshare1Name = @"\\files.t035.ctus014128.r1.kcura.com\T035\Files\";
 		private string _fileshare1UNC = @"\\files.t035.ctus014128.r1.kcura.com\T035\\Files\";
@@ -34,13 +33,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public void SetUp()
 		{
 			_serviceFactoryForAdminMock = new Mock<ISourceServiceFactoryForAdmin>();
-			_instanceSettingsMock = new Mock<IInstanceSettings>();
 			_loggerMock = new Mock<IAPILog>();
 			_fileShareServerManagerMock = new Mock<IFileShareServerManager>();
 			_serviceFactoryForAdminMock.Setup(x => x.CreateProxyAsync<IFileShareServerManager>())
 				.ReturnsAsync(_fileShareServerManagerMock.Object);
-
-			_storageAccessFactoryMock = new Mock<IStorageAccessFactory>();
 
 			var fileshareResult1 = new Result<FileShareResourceServer>
 			{
@@ -69,9 +65,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			};
 			
 			_fileShareServerManagerMock.Setup(x => x.QueryAsync(It.IsAny<Services.Query>())).ReturnsAsync(resultsSetForFileServers);
-			_storageDiscoveryMock = new Mock<IStorageDiscovery>();
-			_storageAccessFactoryMock.Setup(x => x.CreateStorageDiscoveryAsync(It.IsAny<string>(), It.IsAny<string>()))
-				.ReturnsAsync(_storageDiscoveryMock.Object);
 			
 			StorageEndpoint resultsBedrock1 = new StorageEndpoint
 			{
@@ -81,12 +74,12 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				PrimaryStorageContainer = null,
 			};
 			StorageEndpoint[] resultFromBedrock = { resultsBedrock1 };
-			_storageDiscoveryMock.Setup(x =>
-					x.GetStorageEndpointsAsync(It.IsAny<R1Environment>(), It.IsAny<Guid>(),
-						It.IsAny<CancellationToken>()))
-				.ReturnsAsync(resultFromBedrock);
+			_helperFactoryMock = new Mock<IHelperFactory>();
 			
-			_sut = new MigrationStatusAsync(_serviceFactoryForAdminMock.Object, _instanceSettingsMock.Object, _storageAccessFactoryMock.Object, _loggerMock.Object);
+			_helperFactoryMock.Setup(x =>
+				x.GetStorageEndpointsAsync(It.IsAny<ApplicationDetails>())).ReturnsAsync(resultFromBedrock);
+			
+			_sut = new MigrationStatusAsync(_serviceFactoryForAdminMock.Object, _helperFactoryMock.Object, _loggerMock.Object);
 		}
 
 		[Test]
@@ -100,10 +93,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		public async Task MigrationStatusAsync_ShouldReturnFalse_WhenThereIsZeroBedrockMigratedFileShare()
 		{
 			StorageEndpoint[] resultFromBedrock = Array.Empty<StorageEndpoint>();
-			_storageDiscoveryMock.Setup(x =>
-					x.GetStorageEndpointsAsync(It.IsAny<R1Environment>(), It.IsAny<Guid>(),
-						It.IsAny<CancellationToken>()))
-				.ReturnsAsync(resultFromBedrock);
+			_helperFactoryMock.Setup(x =>
+				x.GetStorageEndpointsAsync(It.IsAny<ApplicationDetails>())).ReturnsAsync(resultFromBedrock);
 			
 			bool isTenantFullyMigrated = await _sut.IsTenantFullyMigratedAsync().ConfigureAwait(false);
 			isTenantFullyMigrated.Should().BeFalse();

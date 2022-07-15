@@ -97,7 +97,7 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<UserService>().As<IUserService>();
 			builder.RegisterType<SyncToggles>().As<ISyncToggles>().SingleInstance();
 			builder.RegisterType<MigrationStatusAsync>().As<IMigrationStatus>().SingleInstance();
-			builder.RegisterType<StorageAccessFactoryWrapper>().As<IStorageAccessFactory>();
+			builder.RegisterType<HelperFactoryWrapper>().As<IHelperFactory>().SingleInstance();
 
 			builder.RegisterType<BatchRepository>().As<IBatchRepository>();
 			builder.RegisterType<ProgressRepository>().As<IProgressRepository>();

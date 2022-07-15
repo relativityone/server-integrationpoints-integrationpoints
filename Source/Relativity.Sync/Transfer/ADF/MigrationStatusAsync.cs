@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.ResourceServer;
-using Relativity.Storage;
+using Relativity.Storage.Extensions.Models;
 using Relativity.Sync.KeplerFactory;
 
 
@@ -15,17 +14,15 @@ namespace Relativity.Sync.Transfer.ADF
 	internal class MigrationStatusAsync : IMigrationStatus
 	{
 		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
-		private readonly IInstanceSettings _instanceSettings;
+		private readonly IHelperFactory _helperFactory;
 		private readonly IAPILog _logger;
-		private readonly IStorageAccessFactory _storageAccessFactory;
 		private const string ADLER_SIEBEN_TEAM_ID = "PTCI-2456712";
 		private const string RELATIVITY_SYNC_SERVICE_NAME = "relativity-sync";
 
-		public MigrationStatusAsync(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IInstanceSettings instanceSettings, IStorageAccessFactory storageAccessFactory, IAPILog logger)
+		public MigrationStatusAsync(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IHelperFactory helperFactory,  IAPILog logger)
 		{
 			_serviceFactoryForAdmin = serviceFactoryForAdmin;
-			_instanceSettings = instanceSettings;
-			_storageAccessFactory = storageAccessFactory;
+			_helperFactory = helperFactory;
 			_logger = logger;
 		}
 		public async Task<bool> IsTenantFullyMigratedAsync()
@@ -71,17 +68,12 @@ namespace Relativity.Sync.Transfer.ADF
 		}
 
 		private async Task<List<string>> GetListOfFilesharesFromBedrockAsync()
-		{
-			using IStorageDiscovery storageDiscovery = await _storageAccessFactory.CreateStorageDiscoveryAsync(
-				teamId: ADLER_SIEBEN_TEAM_ID,
-				serviceName: RELATIVITY_SYNC_SERVICE_NAME
-			);
-			Guid tenantId = await _instanceSettings.GetInstanceIdGuidAsync().ConfigureAwait(false);
-			_logger.LogInformation("StorageDiscovery TenantId: {tenantId}", tenantId );
+		{	
+			ApplicationDetails applicationDetails =
+				new ApplicationDetails(ADLER_SIEBEN_TEAM_ID, RELATIVITY_SYNC_SERVICE_NAME);
+
+			var bedrockEndpoints = await _helperFactory.GetStorageEndpointsAsync(applicationDetails).ConfigureAwait(false);
 			
-			R1Environment r1Environment = R1Environment.CommercialRegression;
-			
-			var bedrockEndpoints = await storageDiscovery.GetStorageEndpointsAsync(r1Environment, tenantId: tenantId).ConfigureAwait(false);
 			_logger.LogInformation("Retrieved {fileServersBedrockCount} file server(s)", bedrockEndpoints.Length);
 			
 			foreach (var endpoint in bedrockEndpoints)
