@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using Relativity.AntiMalware.SDK;
 using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.Sync.Transfer
 {
-	internal sealed class NativeInfoRowValuesBuilder : INativeSpecialFieldRowValuesBuilder
+    internal sealed class NativeInfoRowValuesBuilder : INativeSpecialFieldRowValuesBuilder
 	{
         private readonly IAntiMalwareHandler _antiMalwareHandler;
 
@@ -45,22 +43,10 @@ namespace Relativity.Sync.Transfer
 				throw new SyncItemLevelErrorException($"Database is corrupted - document Artifact ID: {document.ArtifactID} has more than one native file associated with it.");
 			}
 
-            try
-            {
-				// https://git.kcura.com/projects/DTX/repos/transfer-api-legacy/browse/Source/Relativity.Transfer.Client.FileShare/FileShareTransferCommand.cs#661
-				FileStream stream = new FileStream(nativeFile.Location, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            }
-            catch (Exception e)
-            {
-				if(e.ContainsAntiMalwareEvent())
-                {
-					_antiMalwareHandler.HandleEventAsync(e, nativeFile)
-						.GetAwaiter().GetResult();
-
-					throw new SyncItemLevelErrorException(e.Message, e);
-				}
-
-				throw;
+			nativeFile.ValidateMalwareAsync(_antiMalwareHandler).GetAwaiter().GetResult();
+			if(nativeFile.IsMalwareDetected)
+			{
+				throw new SyncItemLevelErrorException($"File contains a virus or potentially unwanted software - File: {nativeFile.Location}");
 			}
 
 			switch (fieldInfoDto.SpecialFieldType)

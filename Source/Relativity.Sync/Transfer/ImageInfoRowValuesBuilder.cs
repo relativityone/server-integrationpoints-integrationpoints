@@ -7,14 +7,17 @@ namespace Relativity.Sync.Transfer
 {
 	internal sealed class ImageInfoRowValuesBuilder : IImageSpecialFieldRowValuesBuilder
 	{
+		private readonly IAntiMalwareHandler _antiMalwareHandler;
+
 		public IDictionary<int, ImageFile[]> DocumentToImageFiles { get; }
 
-		public ImageInfoRowValuesBuilder(IDictionary<int, ImageFile[]> documentToImageFiles)
-		{
-			DocumentToImageFiles = documentToImageFiles;
-		}
+        public ImageInfoRowValuesBuilder(IDictionary<int, ImageFile[]> documentToImageFiles, IAntiMalwareHandler antiMalwareHandler)
+        {
+            DocumentToImageFiles = documentToImageFiles;
+            _antiMalwareHandler = antiMalwareHandler;
+        }
 
-		public IEnumerable<SpecialFieldType> AllowedSpecialFieldTypes => new[]
+        public IEnumerable<SpecialFieldType> AllowedSpecialFieldTypes => new[]
 		{
 			SpecialFieldType.ImageFileName,
 			SpecialFieldType.ImageFileLocation,
@@ -26,6 +29,15 @@ namespace Relativity.Sync.Transfer
 			if (!DocumentToImageFiles.TryGetValue(document.ArtifactID, out ImageFile[] imagesForDocument) || !imagesForDocument.Any())
 			{
 				return Enumerable.Empty<object>();
+			}
+
+			foreach(var imageFile in imagesForDocument)
+            {
+				imageFile.ValidateMalwareAsync(_antiMalwareHandler).GetAwaiter().GetResult();
+				if (imageFile.IsMalwareDetected)
+				{
+					throw new SyncItemLevelErrorException($"File contains a virus or potentially unwanted software - File: {imageFile.Location}");
+				}
 			}
 
 			int numberOfDigits = GetNumberOfDigits(imagesForDocument.Length);

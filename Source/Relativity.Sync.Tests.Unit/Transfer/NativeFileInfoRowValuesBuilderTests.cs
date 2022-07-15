@@ -7,7 +7,7 @@ using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
-	[TestFixture]
+    [TestFixture]
 	internal sealed class NativeFileInfoRowValuesBuilderTests
 	{
 		private const long _SIZE = 100;

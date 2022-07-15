@@ -38,6 +38,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_sut = new ImageInfoFieldsBuilder(
 				_imageFileRepositoryMock.Object,
 				_configurationFake.Object,
+				null,
 				_syncLogMock.Object);
 		}
 

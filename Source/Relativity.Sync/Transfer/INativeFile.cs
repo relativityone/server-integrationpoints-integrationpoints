@@ -1,11 +1,11 @@
-﻿namespace Relativity.Sync.Transfer
+﻿using System.Threading.Tasks;
+
+namespace Relativity.Sync.Transfer
 {
-	internal interface INativeFile
+	internal interface INativeFile : IFile
 	{
-		int DocumentArtifactId { get; }
-		string Location { get; }
-		string Filename { get; }
-		long Size { get; }
 		bool IsDuplicated { get; set; }
+
+		Task ValidateMalwareAsync(IAntiMalwareHandler malwareHandler);
 	}
 }

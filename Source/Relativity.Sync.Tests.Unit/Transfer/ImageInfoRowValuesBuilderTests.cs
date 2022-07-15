@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			var notExistingDocument = new RelativityObjectSlim { ArtifactID = nonExsitingDocumentId };
 
-			_sut = new ImageInfoRowValuesBuilder(DocumentToImageFiles);
+			_sut = new ImageInfoRowValuesBuilder(DocumentToImageFiles, null);
 
 			// Act
 			var result = _sut.BuildRowsValues(It.IsAny<FieldInfoDto>(), notExistingDocument, _ => "");
@@ -52,7 +52,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			var documentWithoutImages = new RelativityObjectSlim { ArtifactID = documentWithouImagesId };
 
-			_sut = new ImageInfoRowValuesBuilder(DocumentToImageFiles);
+			_sut = new ImageInfoRowValuesBuilder(DocumentToImageFiles, null);
 
 			// Act
 			var result = _sut.BuildRowsValues(It.IsAny<FieldInfoDto>(), documentWithoutImages, _ => "");
@@ -81,7 +81,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			var document = new RelativityObjectSlim { ArtifactID = 2 };
 
-			_sut = new ImageInfoRowValuesBuilder(DocumentToImageFiles);
+			_sut = new ImageInfoRowValuesBuilder(DocumentToImageFiles, null);
 
 			// Act
 			var result = _sut.BuildRowsValues(specialField, document, _ => "");
@@ -105,7 +105,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			var document = new RelativityObjectSlim { ArtifactID = documentId };
 
-			_sut = new ImageInfoRowValuesBuilder(DocumentToImageFiles);
+			_sut = new ImageInfoRowValuesBuilder(DocumentToImageFiles, null);
 
 			// Act
 			Func<object> action = () => _sut.BuildRowsValues(field, document, _ => "");
@@ -129,7 +129,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 			var document = new RelativityObjectSlim { ArtifactID = documentId };
 			
-			_sut = new ImageInfoRowValuesBuilder(DocumentToImageFiles);
+			_sut = new ImageInfoRowValuesBuilder(DocumentToImageFiles, null);
 			
 			// Act
 			string controlNumber = "document";
