@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Config
 		private const int _MASS_UPDATE_BATCH_SIZE_DEFAULT = 10000;
 
 		private const string _TRANSIENT_STATE_RIP_JOB_TIMEOUT = "TransientStateJobTimeout";
-		private const int _TRANSIENT_STATE_RIP_JOB_TIMEOUT_DEFAULT_IN_MINUTES = 8 * 60;
+		private const int _TRANSIENT_STATE_RIP_JOB_TIMEOUT_DEFAULT_IN_MINUTES = 2 * 60;
 
 		private const string _RELATIVITY_WEBAPI_TIMEOUT_SETTING_NAME = "RelativityWebApiTimeout";
 
