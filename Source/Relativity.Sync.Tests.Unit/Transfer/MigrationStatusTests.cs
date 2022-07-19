@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -22,9 +21,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		private Mock<IHelperFactory> _helperFactoryMock;
 		private Mock<IAPILog> _loggerMock;		
 		private Mock<IFileShareServerManager> _fileShareServerManagerMock;
-		private MigrationStatusAsync _sut;
+		private MigrationStatus _sut;
 		private string _fileshare1Name = @"\\files.t035.ctus014128.r1.kcura.com\T035\Files\";
-		private string _fileshare1UNC = @"\\files.t035.ctus014128.r1.kcura.com\T035\\Files\";
+		private string _fileshare1UNC = @"\\files.t035.ctus014128.r1.kcura.com\T035\Files\";
 		private string _fileshare2Name = @"\\files2.t035.ctus014128.r1.kcura.com\T035\Files\";
 		private string _fileshare2UNC = @"\\files2.t035.ctus014128.r1.kcura.com\T035\Files\";
 		private string _fileshare1BedrockFQDN = "files2.t035.ctus014128.r1.kcura.com";
@@ -79,7 +78,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 			_helperFactoryMock.Setup(x =>
 				x.GetStorageEndpointsAsync(It.IsAny<ApplicationDetails>())).ReturnsAsync(resultFromBedrock);
 			
-			_sut = new MigrationStatusAsync(_serviceFactoryForAdminMock.Object, _helperFactoryMock.Object, _loggerMock.Object);
+			_sut = new MigrationStatus(_serviceFactoryForAdminMock.Object, _helperFactoryMock.Object, _loggerMock.Object);
 		}
 
 		[Test]

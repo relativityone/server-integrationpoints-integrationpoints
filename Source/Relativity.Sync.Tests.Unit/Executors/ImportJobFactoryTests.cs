@@ -37,9 +37,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepository;
 		private Mock<IJobProgressHandlerFactory> _jobProgressHandlerFactory;
 		private Mock<ISourceWorkspaceDataReaderFactory> _dataReaderFactory;
-        private Mock<ISyncToggles> _syncToggles;
 		private Mock<IFieldMappings> _fieldMappingsMock;
-		private Mock<IMigrationStatus> _migrationStatusMock;
+		private Mock<IADFTransferEnabler> _adlsCheckerMock;
 		private SyncJobParameters _syncJobParameters;
 		private const string _IMAGE_IDENTIFIER_DISPLAY_NAME = "ImageIdentifier";
 		private const int _DEST_RDO_ARTIFACT_TYPE = 1234567;
@@ -77,10 +76,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
 			_fieldMappingsMock.Setup(x => x.GetFieldMappings()).Returns(_MAPPED_FIELDS);
 			_instanceSettings = new Mock<IInstanceSettings>();
 			_instanceSettings.Setup(x => x.GetWebApiPathAsync(default(string))).ReturnsAsync("http://fake.uri");
+			_instanceSettings.Setup(x => x.GetShouldForceADFTransferAsync(default(bool))).ReturnsAsync(false);
 			_syncJobParameters = FakeHelper.CreateSyncJobParameters();
-            _syncToggles = new Mock<ISyncToggles>();
 			_logger = new EmptyLogger();
-			_migrationStatusMock = new Mock<IMigrationStatus>();
+			_adlsCheckerMock = new Mock<IADFTransferEnabler>();
 
 			_batch = new Mock<IBatch>(MockBehavior.Loose);
 
@@ -439,7 +438,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         }
 
         [Test]
-        public async Task CreateNativeImportJobAsync_ShouldSetCorrectValues_WhenFMS_IsEnabled()
+        public async Task CreateNativeImportJobAsync_ShouldSetCorrectValues_WhenAdls_IsEnabled()
         {
             // Arrange 
             ImportBulkArtifactJob importBulkArtifactJob = new ImportBulkArtifactJob();
@@ -447,8 +446,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             _documentConfigurationMock.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
 
-            _syncToggles.Setup(x => x.IsEnabled<UseFMS>()).Returns(true);
-            _migrationStatusMock.Setup(x => x.IsTenantFullyMigratedAsync()).ReturnsAsync(true);
+            _adlsCheckerMock.Setup(x => x.ShouldUseADFTransferAsync()).ReturnsAsync(true);
 
             // Act
             Sync.Executors.IImportJob result = await instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
@@ -460,15 +458,15 @@ namespace Relativity.Sync.Tests.Unit.Executors
         }
 
         [Test]
-        public async Task CreateNativeImportJobAsync_ShouldSetCorrectValues_WhenFMS_IsDisabled()
+        public async Task CreateNativeImportJobAsync_ShouldSetCorrectValues_WhenAdls_IsDisabled()
         {
             // Arrange 
             ImportBulkArtifactJob importBulkArtifactJob = new ImportBulkArtifactJob();
             ImportJobFactory instance = GetTestInstance(GetNativesImportAPIFactoryMock(importBulkArtifactJob));
 
             _documentConfigurationMock.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
-
-            _syncToggles.Setup(x => x.IsEnabled<UseFMS>()).Returns(false);
+            
+            _adlsCheckerMock.Setup(x => x.ShouldUseADFTransferAsync()).ReturnsAsync(false);
 
             // Act
             Sync.Executors.IImportJob result = await instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
@@ -552,7 +550,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 		{
 			var instance = new ImportJobFactory(importApiFactory.Object, _dataReaderFactory.Object,
 				_jobHistoryErrorRepository.Object, _instanceSettings.Object, _syncJobParameters,
-                _fieldMappingsMock.Object, _syncToggles.Object, _migrationStatusMock.Object, _logger);
+                _fieldMappingsMock.Object, _adlsCheckerMock.Object, _logger);
 			return instance;
 		}
 

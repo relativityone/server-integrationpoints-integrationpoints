@@ -42,14 +42,11 @@ namespace Relativity.Sync
 		{
 			return await GetAsync<int>("ImportApiBatchSize", _SYNC_SECTION, defaultValue).ConfigureAwait(false);
 		}
-
-		public async Task<Guid> GetInstanceIdGuidAsync(string defaultValue = default(string))
+		
+		public async Task<bool> GetShouldForceADFTransferAsync(bool defaultValue = false)
 		{
-			string instanceSettingAsString =  await GetAsync<string>("InstanceIdentifier", _RELATIVITY_CORE_SETTING_SECTION, defaultValue)
-				.ConfigureAwait(false);
-			
-			return Guid.Parse(instanceSettingAsString);
-		} 
+			return await GetAsync<bool>("ForceADFTransfer", _SYNC_SECTION, defaultValue).ConfigureAwait(false);
+		}
 
 		private async Task<T> GetAsync<T>(string name, string section, T defaultValue)
 		{

@@ -11,7 +11,7 @@ using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Transfer.ADF
 {
-	internal class MigrationStatusAsync : IMigrationStatus
+	internal class MigrationStatus : IMigrationStatus
 	{
 		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 		private readonly IHelperFactory _helperFactory;
@@ -19,7 +19,7 @@ namespace Relativity.Sync.Transfer.ADF
 		private const string ADLER_SIEBEN_TEAM_ID = "PTCI-2456712";
 		private const string RELATIVITY_SYNC_SERVICE_NAME = "relativity-sync";
 
-		public MigrationStatusAsync(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IHelperFactory helperFactory,  IAPILog logger)
+		public MigrationStatus(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IHelperFactory helperFactory,  IAPILog logger)
 		{
 			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_helperFactory = helperFactory;
@@ -74,7 +74,7 @@ namespace Relativity.Sync.Transfer.ADF
 
 			var bedrockEndpoints = await _helperFactory.GetStorageEndpointsAsync(applicationDetails).ConfigureAwait(false);
 			
-			_logger.LogInformation("Retrieved {fileServersBedrockCount} file server(s)", bedrockEndpoints.Length);
+			_logger.LogInformation("Retrieved {fileServersBedrockCount} bedrock server(s)", bedrockEndpoints.Length);
 			
 			foreach (var endpoint in bedrockEndpoints)
 			{
