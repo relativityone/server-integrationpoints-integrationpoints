@@ -2,8 +2,8 @@
 
 namespace Relativity.Sync.Toggles.Service
 {
-	internal interface ISyncToggles
-	{
+    internal interface ISyncToggles
+    {
         bool IsEnabled<T>() where T : IToggle;
     }
 }

@@ -14,75 +14,75 @@ using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
-	[TestFixture]
-	public sealed class JobHistoryNameQueryTests
-	{
-		private Mock<IObjectManager> _objectManager;
+    [TestFixture]
+    public sealed class JobHistoryNameQueryTests
+    {
+        private Mock<IObjectManager> _objectManager;
 
-		private JobHistoryNameQuery _sut;
+        private JobHistoryNameQuery _sut;
 
-		[SetUp]
-		public void SetUp()
-		{
-			_objectManager = new Mock<IObjectManager>();
-			var serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
-			serviceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+        [SetUp]
+        public void SetUp()
+        {
+            _objectManager = new Mock<IObjectManager>();
+            var serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
+            serviceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
-			_sut = new JobHistoryNameQuery(serviceFactoryForUser.Object, new EmptyLogger());
-		}
+            _sut = new JobHistoryNameQuery(serviceFactoryForUser.Object, new EmptyLogger());
+        }
 
-		[Test]
-		public async Task ItShouldReturnJobName()
-		{
-			const string jobName = "job";
-			QueryResult queryResult = new QueryResult()
-			{
-				Objects = new List<RelativityObject>()
-				{
-					new RelativityObject()
-					{
-						Name = jobName
-					}
-				}
-			};
-			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
-				.ReturnsAsync(queryResult);
+        [Test]
+        public async Task ItShouldReturnJobName()
+        {
+            const string jobName = "job";
+            QueryResult queryResult = new QueryResult()
+            {
+                Objects = new List<RelativityObject>()
+                {
+                    new RelativityObject()
+                    {
+                        Name = jobName
+                    }
+                }
+            };
+            _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(queryResult);
 
-			// act
-			string actualJobName = await _sut.GetJobNameAsync(Guid.Empty, 0, 0, CancellationToken.None).ConfigureAwait(false);
+            // act
+            string actualJobName = await _sut.GetJobNameAsync(Guid.Empty, 0, 0, CancellationToken.None).ConfigureAwait(false);
 
-			// assert
-			Assert.AreEqual(jobName, actualJobName);
-		}
+            // assert
+            Assert.AreEqual(jobName, actualJobName);
+        }
 
-		[Test]
-		public void ItShouldRethrowExceptionWhenObjectManagerQueryFails()
-		{
-			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
-				.Throws<InvalidOperationException>();
+        [Test]
+        public void ItShouldRethrowExceptionWhenObjectManagerQueryFails()
+        {
+            _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
+                .Throws<InvalidOperationException>();
 
-			// act
-			Func<Task> action = () => _sut.GetJobNameAsync(Guid.Empty, 0, 0, CancellationToken.None);
+            // act
+            Func<Task> action = () => _sut.GetJobNameAsync(Guid.Empty, 0, 0, CancellationToken.None);
 
-			// assert
-			action.Should().Throw<InvalidOperationException>();
-		}
+            // assert
+            action.Should().Throw<InvalidOperationException>();
+        }
 
-		[Test]
-		public void ItShouldThrowSyncExceptionWhenObjectManagerReturnsNoResults()
-		{
-			QueryResult queryResult = new QueryResult()
-			{
-				Objects = Enumerable.Empty<RelativityObject>().ToList()
-			};
-			_objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
-				.ReturnsAsync(queryResult);
+        [Test]
+        public void ItShouldThrowSyncExceptionWhenObjectManagerReturnsNoResults()
+        {
+            QueryResult queryResult = new QueryResult()
+            {
+                Objects = Enumerable.Empty<RelativityObject>().ToList()
+            };
+            _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(queryResult);
 
-			// act
-			Func<Task> action = () => _sut.GetJobNameAsync(Guid.Empty, 0, 0, CancellationToken.None);
+            // act
+            Func<Task> action = () => _sut.GetJobNameAsync(Guid.Empty, 0, 0, CancellationToken.None);
 
-			// assert
-			action.Should().Throw<SyncException>();
-		}
-	}
+            // assert
+            action.Should().Throw<SyncException>();
+        }
+    }
 }

@@ -1,7 +1,7 @@
 ﻿namespace Relativity.Sync.Configuration
 {
-	internal interface IUserContextConfiguration
-	{
-		int ExecutingUserId { get; }
-	}
+    internal interface IUserContextConfiguration
+    {
+        int ExecutingUserId { get; }
+    }
 }

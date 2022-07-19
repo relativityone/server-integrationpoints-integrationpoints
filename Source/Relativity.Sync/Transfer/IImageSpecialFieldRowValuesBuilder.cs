@@ -4,10 +4,10 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.Sync.Transfer
 {
-	internal interface IImageSpecialFieldRowValuesBuilder
-	{
-		IEnumerable<SpecialFieldType> AllowedSpecialFieldTypes { get; }
+    internal interface IImageSpecialFieldRowValuesBuilder
+    {
+        IEnumerable<SpecialFieldType> AllowedSpecialFieldTypes { get; }
 
-		IEnumerable<object> BuildRowsValues(FieldInfoDto fieldInfoDto, RelativityObjectSlim document, Func<RelativityObjectSlim, string> identifierFieldValueSelector);
-	}
+        IEnumerable<object> BuildRowsValues(FieldInfoDto fieldInfoDto, RelativityObjectSlim document, Func<RelativityObjectSlim, string> identifierFieldValueSelector);
+    }
 }

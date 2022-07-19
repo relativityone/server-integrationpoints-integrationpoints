@@ -2,7 +2,7 @@
 
 namespace Relativity.Sync.Tests.Integration
 {
-	internal sealed class FieldNotFoundExceptionTests : ExceptionSerializationTestsBase<FieldNotFoundException>
-	{
-	}
+    internal sealed class FieldNotFoundExceptionTests : ExceptionSerializationTestsBase<FieldNotFoundException>
+    {
+    }
 }

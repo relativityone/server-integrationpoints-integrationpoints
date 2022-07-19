@@ -1,9 +1,9 @@
 ﻿namespace Relativity.Sync.Configuration
 {
-	internal interface IImageJobStartMetricsConfiguration : IJobStartMetricsConfiguration
-	{
-		int[] ProductionImagePrecedence { get; }
+    internal interface IImageJobStartMetricsConfiguration : IJobStartMetricsConfiguration
+    {
+        int[] ProductionImagePrecedence { get; }
 
-		bool IncludeOriginalImageIfNotFoundInProductions { get; }
+        bool IncludeOriginalImageIfNotFoundInProductions { get; }
     }
 }

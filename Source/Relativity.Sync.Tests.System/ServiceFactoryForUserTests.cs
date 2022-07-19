@@ -22,80 +22,80 @@ using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
 {
-	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints.Sync]
-	internal sealed class ServiceFactoryForUserTests : SystemTest
-	{
-		private WorkspaceRef _workspace;
-		private IUserService _userService;
-		private IServicesMgr _servicesManager;
-		private ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
+    [TestFixture]
+    [Feature.DataTransfer.IntegrationPoints.Sync]
+    internal sealed class ServiceFactoryForUserTests : SystemTest
+    {
+        private WorkspaceRef _workspace;
+        private IUserService _userService;
+        private IServicesMgr _servicesManager;
+        private ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 
-		[SetUp]
-		public async Task SetUp()
-		{
-			_userService = RelativityFacade.Instance.Resolve<IUserService>();
-			_servicesManager = new ServicesManagerStub();
+        [SetUp]
+        public async Task SetUp()
+        {
+            _userService = RelativityFacade.Instance.Resolve<IUserService>();
+            _servicesManager = new ServicesManagerStub();
             _serviceFactoryForAdmin = new SourceServiceFactoryStub();
-			_workspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
-		}
+            _workspace = await Environment.CreateWorkspaceAsync().ConfigureAwait(false);
+        }
 
-		private void SetUpUser(string userEmail)
-		{
-			IGroupService groupService = RelativityFacade.Instance.Resolve<IGroupService>();
-			IClientService clientService = RelativityFacade.Instance.Resolve<IClientService>();
-			IPermissionService permissionService = RelativityFacade.Instance.Resolve<IPermissionService>();
+        private void SetUpUser(string userEmail)
+        {
+            IGroupService groupService = RelativityFacade.Instance.Resolve<IGroupService>();
+            IClientService clientService = RelativityFacade.Instance.Resolve<IClientService>();
+            IPermissionService permissionService = RelativityFacade.Instance.Resolve<IPermissionService>();
 
-			Group group = groupService.Require(new Group {Name = "Test Group"});
-			
-			_userService.Require(new User
-			{
-				EmailAddress = userEmail,
-				FirstName = "Test",
-				LastName = "Test",
-				Client = clientService.Get("Relativity"),
-				Password = "Test1234!",
-				Groups = new List<Artifact> { group }
-			});
+            Group group = groupService.Require(new Group {Name = "Test Group"});
+            
+            _userService.Require(new User
+            {
+                EmailAddress = userEmail,
+                FirstName = "Test",
+                LastName = "Test",
+                Client = clientService.Get("Relativity"),
+                Password = "Test1234!",
+                Groups = new List<Artifact> { group }
+            });
 
-			permissionService.WorkspacePermissionService.AddWorkspaceToGroup(_workspace.ArtifactID, group.ArtifactID);
-		}
+            permissionService.WorkspacePermissionService.AddWorkspaceToGroup(_workspace.ArtifactID, group.ArtifactID);
+        }
 
-		[IdentifiedTest("219adc9a-e1e4-4de8-bb46-c27fc05239e3")]
-		public async Task UserShouldNotHavePermissionToWorkspace()
-		{
-			const string userEmail = "testuser@relativity.com";
+        [IdentifiedTest("219adc9a-e1e4-4de8-bb46-c27fc05239e3")]
+        public async Task UserShouldNotHavePermissionToWorkspace()
+        {
+            const string userEmail = "testuser@relativity.com";
 
-			SetUpUser(userEmail);
+            SetUpUser(userEmail);
 
-			Mock<IUserContextConfiguration> userContextConfiguration = new Mock<IUserContextConfiguration>();
-			userContextConfiguration.SetupGet(x => x.ExecutingUserId).Returns(_userService.GetByEmail(userEmail).ArtifactID);
+            Mock<IUserContextConfiguration> userContextConfiguration = new Mock<IUserContextConfiguration>();
+            userContextConfiguration.SetupGet(x => x.ExecutingUserId).Returns(_userService.GetByEmail(userEmail).ArtifactID);
 
-			IAuthTokenGenerator authTokenGenerator = new OAuth2TokenGenerator(new OAuth2ClientFactory(_serviceFactoryForAdmin, new EmptyLogger()),
-				new TokenProviderFactoryFactory(), AppSettings.RelativityUrl, new EmptyLogger());
-			PermissionRef permissionRef = new PermissionRef
-			{
-				ArtifactType = new ArtifactTypeIdentifier((int)ArtifactType.Batch),
-				PermissionType = PermissionType.Edit
-			};
+            IAuthTokenGenerator authTokenGenerator = new OAuth2TokenGenerator(new OAuth2ClientFactory(_serviceFactoryForAdmin, new EmptyLogger()),
+                new TokenProviderFactoryFactory(), AppSettings.RelativityUrl, new EmptyLogger());
+            PermissionRef permissionRef = new PermissionRef
+            {
+                ArtifactType = new ArtifactTypeIdentifier((int)ArtifactType.Batch),
+                PermissionType = PermissionType.Edit
+            };
 
             Mock<IRandom> randomFake = new Mock<IRandom>();
             Mock<IAPILog> syncLogMock = new Mock<IAPILog>();
 
-			IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactoryStub();
-			ServiceFactoryForUser sut = new ServiceFactoryForUser(userContextConfiguration.Object, _servicesManager,
+            IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactoryStub();
+            ServiceFactoryForUser sut = new ServiceFactoryForUser(userContextConfiguration.Object, _servicesManager,
                 authTokenGenerator, dynamicProxyFactory, new ServiceFactoryFactory(),
                 randomFake.Object, syncLogMock.Object);
-			List<PermissionValue> permissionValues;
-			using (IPermissionManager permissionManager = await sut.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false))
-			{
-				// ACT
-				permissionValues = await permissionManager.GetPermissionSelectedAsync(_workspace.ArtifactID, new List<PermissionRef> {permissionRef}).ConfigureAwait(false);
-			}
+            List<PermissionValue> permissionValues;
+            using (IPermissionManager permissionManager = await sut.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false))
+            {
+                // ACT
+                permissionValues = await permissionManager.GetPermissionSelectedAsync(_workspace.ArtifactID, new List<PermissionRef> {permissionRef}).ConfigureAwait(false);
+            }
 
-			// ASSERT
-			bool hasPermission = permissionValues.All(x => x.Selected);
-			Assert.False(hasPermission);
-		}
-	}
+            // ASSERT
+            bool hasPermission = permissionValues.All(x => x.Selected);
+            Assert.False(hasPermission);
+        }
+    }
 }

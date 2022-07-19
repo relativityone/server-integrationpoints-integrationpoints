@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 namespace Relativity.Sync.WorkspaceGenerator.FileGenerating
 {
-	public interface IFileGenerator
-	{
-		Task<FileInfo> GenerateAsync();
-	}
+    public interface IFileGenerator
+    {
+        Task<FileInfo> GenerateAsync();
+    }
 }

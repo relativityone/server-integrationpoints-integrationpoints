@@ -2,8 +2,8 @@
 
 namespace Relativity.Sync.WorkspaceGenerator.Import
 {
-	public interface IDataReaderWrapper : IDataReader
-	{
-		DataTable ReadToSimpleDataTable();
-	}
+    public interface IDataReaderWrapper : IDataReader
+    {
+        DataTable ReadToSimpleDataTable();
+    }
 }

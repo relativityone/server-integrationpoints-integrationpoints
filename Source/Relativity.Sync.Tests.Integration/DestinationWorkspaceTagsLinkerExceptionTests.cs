@@ -2,7 +2,7 @@
 
 namespace Relativity.Sync.Tests.Integration
 {
-	internal sealed class DestinationWorkspaceTagsLinkerExceptionTests : ExceptionSerializationTestsBase<DestinationWorkspaceTagsLinkerException>
-	{
-	}
+    internal sealed class DestinationWorkspaceTagsLinkerExceptionTests : ExceptionSerializationTestsBase<DestinationWorkspaceTagsLinkerException>
+    {
+    }
 }

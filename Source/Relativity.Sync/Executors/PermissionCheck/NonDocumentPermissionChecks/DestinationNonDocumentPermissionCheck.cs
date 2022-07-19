@@ -19,9 +19,9 @@ namespace Relativity.Sync.Executors.PermissionCheck.NonDocumentPermissionChecks
 
         protected override async Task ValidateAsync(ValidationResult validationResult, IPermissionsCheckConfiguration configuration)
         {
-			int destinationRdoArtifactTypeId = configuration.DestinationRdoArtifactTypeId;
+            int destinationRdoArtifactTypeId = configuration.DestinationRdoArtifactTypeId;
 
-			validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, destinationRdoArtifactTypeId, new []{ PermissionType.Add }, TransferredObjectNoAdd(destinationRdoArtifactTypeId)).ConfigureAwait(false));
+            validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, destinationRdoArtifactTypeId, new []{ PermissionType.Add }, TransferredObjectNoAdd(destinationRdoArtifactTypeId)).ConfigureAwait(false));
             
             if (configuration.ImportOverwriteMode == ImportOverwriteMode.AppendOverlay ||
                 configuration.ImportOverwriteMode == ImportOverwriteMode.OverlayOnly)

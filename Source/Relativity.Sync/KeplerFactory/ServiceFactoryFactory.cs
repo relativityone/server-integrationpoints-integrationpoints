@@ -2,11 +2,11 @@
 
 namespace Relativity.Sync.KeplerFactory
 {
-	internal sealed class ServiceFactoryFactory : IServiceFactoryFactory
-	{
-		public IServiceFactory Create(ServiceFactorySettings settings)
-		{
-			return new ServiceFactory(settings);
-		}
-	}
+    internal sealed class ServiceFactoryFactory : IServiceFactoryFactory
+    {
+        public IServiceFactory Create(ServiceFactorySettings settings)
+        {
+            return new ServiceFactory(settings);
+        }
+    }
 }

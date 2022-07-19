@@ -7,88 +7,88 @@ using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.SyncConfiguration
 {
-	internal class ImageSyncConfigurationBuilder : SyncConfigurationRootBuilderBase, IImageSyncConfigurationBuilder
-	{
-		private readonly IFieldsMappingBuilder _fieldsMappingBuilder;
+    internal class ImageSyncConfigurationBuilder : SyncConfigurationRootBuilderBase, IImageSyncConfigurationBuilder
+    {
+        private readonly IFieldsMappingBuilder _fieldsMappingBuilder;
 
-		internal ImageSyncConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
-			IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, ImageSyncOptions options,
-			RdoOptions rdoOptions, IRdoManager rdoManager) 
-			: base(syncContext, serviceFactoryForAdmin, rdoOptions, rdoManager, serializer)
-		{
-			_fieldsMappingBuilder = fieldsMappingBuilder;
+        internal ImageSyncConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
+            IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, ImageSyncOptions options,
+            RdoOptions rdoOptions, IRdoManager rdoManager) 
+            : base(syncContext, serviceFactoryForAdmin, rdoOptions, rdoManager, serializer)
+        {
+            _fieldsMappingBuilder = fieldsMappingBuilder;
 
-			SyncConfiguration.ImageImport = true;
-			SyncConfiguration.RdoArtifactTypeId = (int)ArtifactType.Document;
-			SyncConfiguration.DataSourceType = options.DataSourceType;
-			SyncConfiguration.DataSourceArtifactId = options.DataSourceId;
-			SyncConfiguration.DataDestinationType = options.DestinationLocationType;
-			SyncConfiguration.DataDestinationArtifactId = options.DestinationLocationId;
-			SyncConfiguration.ImageFileCopyMode = options.CopyImagesMode;
-			SyncConfiguration.IncludeOriginalImages = true;
-		}
+            SyncConfiguration.ImageImport = true;
+            SyncConfiguration.RdoArtifactTypeId = (int)ArtifactType.Document;
+            SyncConfiguration.DataSourceType = options.DataSourceType;
+            SyncConfiguration.DataSourceArtifactId = options.DataSourceId;
+            SyncConfiguration.DataDestinationType = options.DestinationLocationType;
+            SyncConfiguration.DataDestinationArtifactId = options.DestinationLocationId;
+            SyncConfiguration.ImageFileCopyMode = options.CopyImagesMode;
+            SyncConfiguration.IncludeOriginalImages = true;
+        }
 
-		public new IImageSyncConfigurationBuilder CorrelationId(string correlationId)
-		{
-			base.CorrelationId(correlationId);
+        public new IImageSyncConfigurationBuilder CorrelationId(string correlationId)
+        {
+            base.CorrelationId(correlationId);
 
-			return this;
-		}
+            return this;
+        }
 
-		public new IImageSyncConfigurationBuilder OverwriteMode(OverwriteOptions options)
-		{
-			base.OverwriteMode(options);
+        public new IImageSyncConfigurationBuilder OverwriteMode(OverwriteOptions options)
+        {
+            base.OverwriteMode(options);
 
-			return this;
-		}
+            return this;
+        }
 
-		public new IImageSyncConfigurationBuilder EmailNotifications(EmailNotificationsOptions options)
-		{
-			base.EmailNotifications(options);
+        public new IImageSyncConfigurationBuilder EmailNotifications(EmailNotificationsOptions options)
+        {
+            base.EmailNotifications(options);
 
-			return this;
-		}
+            return this;
+        }
 
-		public new IImageSyncConfigurationBuilder CreateSavedSearch(CreateSavedSearchOptions options)
-		{
-			base.CreateSavedSearch(options);
+        public new IImageSyncConfigurationBuilder CreateSavedSearch(CreateSavedSearchOptions options)
+        {
+            base.CreateSavedSearch(options);
 
-			return this;
-		}
+            return this;
+        }
 
-		public new IImageSyncConfigurationBuilder IsRetry(RetryOptions options)
-		{
-			base.IsRetry(options);
+        public new IImageSyncConfigurationBuilder IsRetry(RetryOptions options)
+        {
+            base.IsRetry(options);
 
-			return this;
-		}
+            return this;
+        }
 
-		public IImageSyncConfigurationBuilder ProductionImagePrecedence(ProductionImagePrecedenceOptions options)
-		{
-			SyncConfiguration.ProductionImagePrecedence = Serializer.Serialize(options.ProductionImagePrecedenceIds);
-			SyncConfiguration.IncludeOriginalImages = options.IncludeOriginalImagesIfNotFoundInProductions;
+        public IImageSyncConfigurationBuilder ProductionImagePrecedence(ProductionImagePrecedenceOptions options)
+        {
+            SyncConfiguration.ProductionImagePrecedence = Serializer.Serialize(options.ProductionImagePrecedenceIds);
+            SyncConfiguration.IncludeOriginalImages = options.IncludeOriginalImagesIfNotFoundInProductions;
 
-			return this;
-		}
-		
-		public new IImageSyncConfigurationBuilder DisableItemLevelErrorLogging()
-		{
-			base.DisableItemLevelErrorLogging();
-			return this;
-		}
+            return this;
+        }
+        
+        public new IImageSyncConfigurationBuilder DisableItemLevelErrorLogging()
+        {
+            base.DisableItemLevelErrorLogging();
+            return this;
+        }
 
-		protected override Task ValidateAsync()
-		{
-			SetFieldsMapping();
+        protected override Task ValidateAsync()
+        {
+            SetFieldsMapping();
 
-			return Task.CompletedTask;
-		}
+            return Task.CompletedTask;
+        }
 
-		private void SetFieldsMapping()
-		{
-			var fieldsMapping = _fieldsMappingBuilder.WithIdentifier().FieldsMapping;
+        private void SetFieldsMapping()
+        {
+            var fieldsMapping = _fieldsMappingBuilder.WithIdentifier().FieldsMapping;
 
-			SyncConfiguration.FieldsMapping = Serializer.Serialize(fieldsMapping);
-		}
-	}
+            SyncConfiguration.FieldsMapping = Serializer.Serialize(fieldsMapping);
+        }
+    }
 }

@@ -2,8 +2,8 @@
 
 namespace Relativity.Sync.Transfer
 {
-	internal interface IChoiceTreeToStringConverter
-	{
-		string ConvertTreeToString(IList<ChoiceWithChildInfo> tree);
-	}
+    internal interface IChoiceTreeToStringConverter
+    {
+        string ConvertTreeToString(IList<ChoiceWithChildInfo> tree);
+    }
 }

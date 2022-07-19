@@ -2,8 +2,8 @@
 
 namespace Relativity.Sync.KeplerFactory
 {
-	internal interface IServiceFactoryFactory
-	{
-		IServiceFactory Create(ServiceFactorySettings settings);
-	}
+    internal interface IServiceFactoryFactory
+    {
+        IServiceFactory Create(ServiceFactorySettings settings);
+    }
 }

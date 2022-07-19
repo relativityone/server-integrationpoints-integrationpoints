@@ -3,8 +3,8 @@ using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Executors
 {
-	internal interface IUserService
-	{
-		Task<bool> ExecutingUserIsAdminAsync(int userId);
-	}
+    internal interface IUserService
+    {
+        Task<bool> ExecutingUserIsAdminAsync(int userId);
+    }
 }

@@ -2,8 +2,8 @@
 
 namespace Relativity.Sync.Transfer
 {
-	internal interface IBatchDataReader : IDataReader
-	{
-		bool CanCancel { get; }
-	}
+    internal interface IBatchDataReader : IDataReader
+    {
+        bool CanCancel { get; }
+    }
 }

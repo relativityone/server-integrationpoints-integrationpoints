@@ -1,11 +1,11 @@
 ﻿namespace Relativity.Sync.Configuration
 {
-	internal interface IJobCleanupConfiguration : IConfiguration
-	{
-		int SourceWorkspaceArtifactId { get; }
+    internal interface IJobCleanupConfiguration : IConfiguration
+    {
+        int SourceWorkspaceArtifactId { get; }
 
-		int SyncConfigurationArtifactId { get; }
+        int SyncConfigurationArtifactId { get; }
 
-		ExecutionResult SynchronizationExecutionResult { get; set; }
-	}
+        ExecutionResult SynchronizationExecutionResult { get; set; }
+    }
 }

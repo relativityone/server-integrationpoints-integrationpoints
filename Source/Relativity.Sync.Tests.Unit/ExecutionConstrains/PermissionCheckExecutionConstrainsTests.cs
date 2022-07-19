@@ -8,28 +8,28 @@ using Relativity.Sync.ExecutionConstrains;
 
 namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 {
-	[TestFixture]
-	public class PermissionCheckExecutionConstrainsTests
-	{
-		private PermissionCheckExecutionConstrains _instance;
+    [TestFixture]
+    public class PermissionCheckExecutionConstrainsTests
+    {
+        private PermissionCheckExecutionConstrains _instance;
 
-		[SetUp]
-		public void SetUp()
-		{
-			_instance = new PermissionCheckExecutionConstrains();
-		}
+        [SetUp]
+        public void SetUp()
+        {
+            _instance = new PermissionCheckExecutionConstrains();
+        }
 
-		[Test]
-		public async Task ItShouldAlwaysCanExecute()
-		{
-			//Arrange
-			var configuration = new Mock<IPermissionsCheckConfiguration>();
+        [Test]
+        public async Task ItShouldAlwaysCanExecute()
+        {
+            //Arrange
+            var configuration = new Mock<IPermissionsCheckConfiguration>();
 
-			//Act
-			bool actualResult = await _instance.CanExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
+            //Act
+            bool actualResult = await _instance.CanExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
 
-			//Assert
-			actualResult.Should().BeTrue();
-		}
-	}
+            //Assert
+            actualResult.Should().BeTrue();
+        }
+    }
 }

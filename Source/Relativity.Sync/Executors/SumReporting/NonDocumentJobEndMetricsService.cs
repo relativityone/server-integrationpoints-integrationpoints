@@ -11,68 +11,68 @@ using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors.SumReporting
 {
-	internal class NonDocumentJobEndMetricsService : JobEndMetricsServiceBase, IJobEndMetricsService
-	{
+    internal class NonDocumentJobEndMetricsService : JobEndMetricsServiceBase, IJobEndMetricsService
+    {
         private readonly IFieldManager _fieldManager;
-		private readonly IJobStatisticsContainer _jobStatisticsContainer;
-		private readonly ISyncMetrics _syncMetrics;
-		private readonly IAPILog _logger;
+        private readonly IJobStatisticsContainer _jobStatisticsContainer;
+        private readonly ISyncMetrics _syncMetrics;
+        private readonly IAPILog _logger;
 
-		public NonDocumentJobEndMetricsService(IBatchRepository batchRepository, IJobEndMetricsConfiguration configuration, IFieldManager fieldManager, 
-			IJobStatisticsContainer jobStatisticsContainer, ISyncMetrics syncMetrics, IAPILog logger)
-			: base(batchRepository, configuration)
-		{
+        public NonDocumentJobEndMetricsService(IBatchRepository batchRepository, IJobEndMetricsConfiguration configuration, IFieldManager fieldManager, 
+            IJobStatisticsContainer jobStatisticsContainer, ISyncMetrics syncMetrics, IAPILog logger)
+            : base(batchRepository, configuration)
+        {
             _fieldManager = fieldManager;
-			_jobStatisticsContainer = jobStatisticsContainer;
-			_syncMetrics = syncMetrics;
-			_logger = logger;
-		}
+            _jobStatisticsContainer = jobStatisticsContainer;
+            _syncMetrics = syncMetrics;
+            _logger = logger;
+        }
 
-		public async Task<ExecutionResult> ExecuteAsync(ExecutionStatus jobExecutionStatus)
-		{
-			try
-			{
-				NonDocumentJobEndMetric metric = new NonDocumentJobEndMetric();
+        public async Task<ExecutionResult> ExecuteAsync(ExecutionStatus jobExecutionStatus)
+        {
+            try
+            {
+                NonDocumentJobEndMetric metric = new NonDocumentJobEndMetric();
 
-				WriteJobDetails(metric, jobExecutionStatus);
+                WriteJobDetails(metric, jobExecutionStatus);
 
-				await WriteRecordsStatisticsAsync(metric).ConfigureAwait(false);
+                await WriteRecordsStatisticsAsync(metric).ConfigureAwait(false);
 
-				await WriteFieldsStatisticsAsync(metric).ConfigureAwait(false);
+                await WriteFieldsStatisticsAsync(metric).ConfigureAwait(false);
 
                 WriteBytesStatistics(metric);
 
-				_syncMetrics.Send(metric);
-			}
-			catch (Exception e)
-			{
-				_logger.LogError(e, "Failed to submit job end metrics.");
-			}
+                _syncMetrics.Send(metric);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to submit job end metrics.");
+            }
 
-			return ExecutionResult.Success();
-		}
+            return ExecutionResult.Success();
+        }
 
-		private async Task WriteFieldsStatisticsAsync(NonDocumentJobEndMetric metric)
-		{
+        private async Task WriteFieldsStatisticsAsync(NonDocumentJobEndMetric metric)
+        {
             metric.TotalAvailableFields = _fieldManager.GetAllAvailableFieldsToMap().Count;
-			IReadOnlyList<FieldInfoDto> totalMappedFields = await _fieldManager.GetMappedFieldsNonDocumentWithoutLinksAsync(CancellationToken.None).ConfigureAwait(false);
+            IReadOnlyList<FieldInfoDto> totalMappedFields = await _fieldManager.GetMappedFieldsNonDocumentWithoutLinksAsync(CancellationToken.None).ConfigureAwait(false);
             metric.TotalMappedFields = totalMappedFields.Count;
             IReadOnlyList<FieldInfoDto> totalLinksMappedFields = await _fieldManager.GetMappedFieldsNonDocumentForLinksAsync(CancellationToken.None).ConfigureAwait(false);
             metric.TotalLinksMappedFields = totalLinksMappedFields.Count;
         }
 
-		private void WriteBytesStatistics(NonDocumentJobEndMetric metric)
-		{
+        private void WriteBytesStatistics(NonDocumentJobEndMetric metric)
+        {
             // If IAPI job has failed, then it reports 0 bytes transferred and we don't want to send such metric.
-			if (_jobStatisticsContainer.MetadataBytesTransferred != 0)
-			{
-				metric.BytesMetadataTransferred = _jobStatisticsContainer.MetadataBytesTransferred;
-			}
+            if (_jobStatisticsContainer.MetadataBytesTransferred != 0)
+            {
+                metric.BytesMetadataTransferred = _jobStatisticsContainer.MetadataBytesTransferred;
+            }
 
-			if (_jobStatisticsContainer.TotalBytesTransferred != 0)
-			{
-				metric.BytesTransferred = _jobStatisticsContainer.TotalBytesTransferred;
-			}
-		}
+            if (_jobStatisticsContainer.TotalBytesTransferred != 0)
+            {
+                metric.BytesTransferred = _jobStatisticsContainer.TotalBytesTransferred;
+            }
+        }
     }
 }

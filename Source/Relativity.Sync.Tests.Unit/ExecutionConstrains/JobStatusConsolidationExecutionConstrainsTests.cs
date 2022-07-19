@@ -8,20 +8,20 @@ using Relativity.Sync.ExecutionConstrains;
 
 namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 {
-	[TestFixture]
-	internal class JobStatusConsolidationExecutionConstrainsTests
-	{
-		[Test]
-		public async Task CanExecuteAsync_ShouldAlwaysReturnTrue()
-		{
-			// Arrange
-			IExecutionConstrains<IJobStatusConsolidationConfiguration> sut = new JobStatusConsolidationExecutionConstrains();
+    [TestFixture]
+    internal class JobStatusConsolidationExecutionConstrainsTests
+    {
+        [Test]
+        public async Task CanExecuteAsync_ShouldAlwaysReturnTrue()
+        {
+            // Arrange
+            IExecutionConstrains<IJobStatusConsolidationConfiguration> sut = new JobStatusConsolidationExecutionConstrains();
 
-			// Act
-			bool result = await sut.CanExecuteAsync(Mock.Of<IJobStatusConsolidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+            // Act
+            bool result = await sut.CanExecuteAsync(Mock.Of<IJobStatusConsolidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
-			// Assert
-			result.Should().BeTrue();
-		}
-	}
+            // Assert
+            result.Should().BeTrue();
+        }
+    }
 }
