@@ -96,7 +96,7 @@ namespace Relativity.Sync.Executors
 			builder.RegisterTypesInExecutingAssembly<IPreValidator>();
 			builder.RegisterType<UserService>().As<IUserService>();
 			builder.RegisterType<SyncToggles>().As<ISyncToggles>().SingleInstance();
-			builder.RegisterType<MigrationStatus>().As<IMigrationStatus>().SingleInstance();
+			builder.RegisterType<AdlsMigrationStatus>().As<IAdlsMigrationStatus>().SingleInstance();
 			builder.RegisterType<ADFTransferEnabler>().As<IADFTransferEnabler>().SingleInstance();
 			builder.RegisterType<HelperFactoryWrapper>().As<IHelperFactory>().SingleInstance();
 

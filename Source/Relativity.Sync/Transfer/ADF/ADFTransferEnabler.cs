@@ -7,14 +7,14 @@ namespace Relativity.Sync.Transfer.ADF
 {
 	internal class ADFTransferEnabler : IADFTransferEnabler
 	{
-		private readonly IMigrationStatus _migrationStatus;
+		private readonly IAdlsMigrationStatus _adlsMigrationStatus;
 		private readonly ISyncToggles _syncToggles;
 		private readonly IInstanceSettings _instanceSettings;
 		private readonly IAPILog _logger;
 
-		public ADFTransferEnabler(IMigrationStatus migrationStatus, ISyncToggles syncToggles, IInstanceSettings instanceSettings, IAPILog logger)
+		public ADFTransferEnabler(IAdlsMigrationStatus adlsMigrationStatus, ISyncToggles syncToggles, IInstanceSettings instanceSettings, IAPILog logger)
 		{
-			_migrationStatus = migrationStatus;
+			_adlsMigrationStatus = adlsMigrationStatus;
 			_syncToggles = syncToggles;
 			_instanceSettings = instanceSettings;
 			_logger = logger;
@@ -26,7 +26,7 @@ namespace Relativity.Sync.Transfer.ADF
 			bool isToggleFMSEnabled = _syncToggles.IsEnabled<UseFMS>();
 			_logger.LogInformation("Toggle {toggleName} status: {toggleValue}", isToggleFMSEnabled, typeof(UseFMS).Name);
 			
-			bool isTenantFullyMigrated = await _migrationStatus.IsTenantFullyMigratedAsync().ConfigureAwait(false);
+			bool isTenantFullyMigrated = await _adlsMigrationStatus.IsTenantFullyMigratedAsync().ConfigureAwait(false);
 			_logger.LogInformation("Is tenant fully migrated to ADLS: {migrationStatus}", isTenantFullyMigrated);
 			
 			bool shouldForceADFTransferAsync = await _instanceSettings.GetShouldForceADFTransferAsync().ConfigureAwait(false);

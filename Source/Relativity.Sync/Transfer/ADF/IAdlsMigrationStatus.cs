@@ -2,7 +2,7 @@
 
 namespace Relativity.Sync.Transfer.ADF
 {
-	internal interface IMigrationStatus
+	internal interface IAdlsMigrationStatus
 	{
 		Task<bool> IsTenantFullyMigratedAsync();
 	}
