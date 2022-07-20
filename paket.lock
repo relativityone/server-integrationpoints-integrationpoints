@@ -168,7 +168,7 @@ NUGET
       Microsoft.Owin.FileSystems (>= 3.0.1)
       Owin (>= 1.0)
     Microsoft.Web.Administration (7.0.0.0)
-    Microsoft.Web.Infrastructure (2.0.0)
+    Microsoft.Web.Infrastructure (1.0.0.0)
     Microsoft.Win32.Registry (4.3.0)
     Mono.TextTransform (1.0.0)
     Moq (4.5.3)

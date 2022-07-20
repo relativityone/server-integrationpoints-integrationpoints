@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Extensions.Moq;
 using kCura.IntegrationPoints.Core.Factories;
 using Relativity.Services.Interfaces.Group;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
 {
@@ -29,10 +30,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 		private Mock<IGroupManager> _groupManager;
 		private Mock<IInstanceSettingsManager> _instanceSettingsFake;
 		private Mock<IManagerFactory> _managerFactoryFake;
+		private Mock<IToggleProvider> _toggleProviderFake;
 
 		private const int _SOURCE_WORKSPACE_ID = 10000;
 		private const int _ADMIN_GROUP_ID = 100;
 		private const int _USER_IS_ADMIN_ID = 1;
+		private const string _ENABLE_NON_ADMIN_SYNC_LINKS_TOGGLE =
+			"Relativity.Sync.Toggles.EnableNonAdminSyncLinksToggle";
 
 		[SetUp]
 		public void SetUp()
@@ -43,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			_groupManager = new Mock<IGroupManager>();
 
 			_servicesMgrFake = new Mock<IServicesMgr>();
-			_servicesMgrFake.Setup(m => m.CreateProxy<IGroupManager>(ExecutionIdentity.System)).Returns(_groupManager.Object); 
+			_servicesMgrFake.Setup(m => m.CreateProxy<IGroupManager>(ExecutionIdentity.System)).Returns(_groupManager.Object);
 
 			_helperFake = new Mock<IHelper>();
 			_helperFake.Setup(m => m.GetServicesManager()).Returns(_servicesMgrFake.Object);
@@ -53,8 +57,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
 			_managerFactoryFake = new Mock<IManagerFactory>();
 			_managerFactoryFake.Setup(m => m.CreateInstanceSettingsManager()).Returns(_instanceSettingsFake.Object);
+			_toggleProviderFake = new Mock<IToggleProvider>();
 
-			_sut = new NativeCopyLinksValidator(_loggerFake.Object, _helperFake.Object, _serializerFake.Object, _managerFactoryFake.Object);
+			_sut = new NativeCopyLinksValidator(_loggerFake.Object, _helperFake.Object, _serializerFake.Object, _managerFactoryFake.Object, _toggleProviderFake.Object);
 		}
 
 		[Test]
@@ -125,10 +130,28 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 			result.Messages.Should().BeEmpty();
 		}
 
+		[Test]
+		public void Validate_ShouldSkipValidation_WhenToggleIsEnabledAndNativeCopyModeIsFileLinks()
+		{
+			//arrange
+			var userIsAdmin = false;
+			var nativeFileCopyMode = ImportNativeFileCopyModeEnum.SetFileLinks;
+			var restrictReferentialFileLinksOnImport = true;
+			_toggleProviderFake.Setup(p => p.IsEnabledByName(_ENABLE_NON_ADMIN_SYNC_LINKS_TOGGLE)).Returns(true);
+			var validationModel = SetupValidator(userIsAdmin, nativeFileCopyMode, restrictReferentialFileLinksOnImport);
+
+			//act
+			ValidationResult result = _sut.Validate(validationModel);
+
+			//assert
+			result.IsValid.Should().BeTrue();
+			result.Messages.Should().BeEmpty();
+		}
+
 		private IntegrationPointProviderValidationModel SetupValidator(
-			bool userIsAdmin, 
-			ImportNativeFileCopyModeEnum fileCopyMode, 
-			bool restrictReferentialFileLinksOnImport)
+				bool userIsAdmin,
+				ImportNativeFileCopyModeEnum fileCopyMode,
+				bool restrictReferentialFileLinksOnImport)
 		{
 			var validationModel = new IntegrationPointProviderValidationModel()
 			{
