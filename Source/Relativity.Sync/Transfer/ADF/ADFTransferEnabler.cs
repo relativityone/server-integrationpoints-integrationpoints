@@ -7,12 +7,12 @@ namespace Relativity.Sync.Transfer.ADF
 {
 	internal class ADFTransferEnabler : IADFTransferEnabler
 	{
-		private readonly IAdlsMigrationStatus _adlsMigrationStatus;
+		private readonly IADLSMigrationStatus _adlsMigrationStatus;
 		private readonly ISyncToggles _syncToggles;
 		private readonly IInstanceSettings _instanceSettings;
 		private readonly IAPILog _logger;
 
-		public ADFTransferEnabler(IAdlsMigrationStatus adlsMigrationStatus, ISyncToggles syncToggles, IInstanceSettings instanceSettings, IAPILog logger)
+		public ADFTransferEnabler(IADLSMigrationStatus adlsMigrationStatus, ISyncToggles syncToggles, IInstanceSettings instanceSettings, IAPILog logger)
 		{
 			_adlsMigrationStatus = adlsMigrationStatus;
 			_syncToggles = syncToggles;

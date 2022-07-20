@@ -10,7 +10,7 @@ using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Transfer.ADF
 {
-	internal class AdlsMigrationStatus : IAdlsMigrationStatus
+	internal class ADLSMigrationStatus : IADLSMigrationStatus
 	{
 		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 		private readonly IHelperWrapper _helperWrapper;
@@ -18,7 +18,7 @@ namespace Relativity.Sync.Transfer.ADF
 		private const string ADLER_SIEBEN_TEAM_ID = "PTCI-2456712";
 		private const string RELATIVITY_SYNC_SERVICE_NAME = "relativity-sync";
 
-		public AdlsMigrationStatus(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IHelperWrapper helperWrapper,  IAPILog logger)
+		public ADLSMigrationStatus(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IHelperWrapper helperWrapper,  IAPILog logger)
 		{
 			_serviceFactoryForAdmin = serviceFactoryForAdmin;
 			_helperWrapper = helperWrapper;

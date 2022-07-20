@@ -13,7 +13,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	internal class ADFTransferEnablerTests
 	{
 		private ADFTransferEnabler _sut;
-		private Mock<IAdlsMigrationStatus> _migrationStatusMock;
+		private Mock<IADLSMigrationStatus> _migrationStatusMock;
 		private Mock<ISyncToggles> _syncTogglesMock;
 		private Mock<IInstanceSettings> _instanceSettingsMock;
 		private Mock<IAPILog> _loggermock;
@@ -21,7 +21,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 		[SetUp]
 		public void SetUp()
 		{
-			_migrationStatusMock = new Mock<IAdlsMigrationStatus>();
+			_migrationStatusMock = new Mock<IADLSMigrationStatus>();
 			_syncTogglesMock = new Mock<ISyncToggles>();
 			_instanceSettingsMock = new Mock<IInstanceSettings>();
 			_loggermock = new Mock<IAPILog>();
