@@ -31,8 +31,11 @@ namespace Relativity.Sync.Transfer.ADF
 			
 			bool shouldForceADFTransferAsync = await _instanceSettings.GetShouldForceADFTransferAsync().ConfigureAwait(false);
 			_logger.LogInformation("Instance Setting shouldForceADFTransferAsync: {settingValue}", shouldForceADFTransferAsync);
+			
+			bool shouldUseADFTransfer = (isToggleFMSEnabled && isTenantFullyMigrated) || shouldForceADFTransferAsync;
+			_logger.LogInformation("Should use ADF to transfer files: {shouldForceADFTransferAsync}", shouldForceADFTransferAsync);
 
-			return (isToggleFMSEnabled && isTenantFullyMigrated) || shouldForceADFTransferAsync;
+			return shouldUseADFTransfer;
 		}
 	}
 }

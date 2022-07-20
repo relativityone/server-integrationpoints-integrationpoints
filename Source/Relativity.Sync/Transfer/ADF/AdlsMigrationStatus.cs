@@ -8,23 +8,23 @@ using Relativity.Services.ResourceServer;
 using Relativity.Storage.Extensions.Models;
 using Relativity.Sync.KeplerFactory;
 
-
 namespace Relativity.Sync.Transfer.ADF
 {
 	internal class AdlsMigrationStatus : IAdlsMigrationStatus
 	{
 		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
-		private readonly IHelperFactory _helperFactory;
+		private readonly IHelperWrapper _helperWrapper;
 		private readonly IAPILog _logger;
 		private const string ADLER_SIEBEN_TEAM_ID = "PTCI-2456712";
 		private const string RELATIVITY_SYNC_SERVICE_NAME = "relativity-sync";
 
-		public AdlsMigrationStatus(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IHelperFactory helperFactory,  IAPILog logger)
+		public AdlsMigrationStatus(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IHelperWrapper helperWrapper,  IAPILog logger)
 		{
 			_serviceFactoryForAdmin = serviceFactoryForAdmin;
-			_helperFactory = helperFactory;
+			_helperWrapper = helperWrapper;
 			_logger = logger;
 		}
+		
 		public async Task<bool> IsTenantFullyMigratedAsync()
 		{
 			_logger.LogInformation("Checking if tenant is fully migrated to ADLS");
@@ -72,7 +72,7 @@ namespace Relativity.Sync.Transfer.ADF
 			ApplicationDetails applicationDetails =
 				new ApplicationDetails(ADLER_SIEBEN_TEAM_ID, RELATIVITY_SYNC_SERVICE_NAME);
 
-			var bedrockEndpoints = await _helperFactory.GetStorageEndpointsAsync(applicationDetails).ConfigureAwait(false);
+			var bedrockEndpoints = await _helperWrapper.GetStorageEndpointsAsync(applicationDetails).ConfigureAwait(false);
 			
 			_logger.LogInformation("Retrieved {fileServersBedrockCount} bedrock server(s)", bedrockEndpoints.Length);
 			

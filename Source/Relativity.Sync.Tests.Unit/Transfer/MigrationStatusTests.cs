@@ -18,7 +18,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 	internal class MigrationStatusTests
 	{
 		private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdminMock;
-		private Mock<IHelperFactory> _helperFactoryMock;
+		private Mock<IHelperWrapper> _helperFactoryMock;
 		private Mock<IAPILog> _loggerMock;		
 		private Mock<IFileShareServerManager> _fileShareServerManagerMock;
 		private AdlsMigrationStatus _sut;
@@ -73,7 +73,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 				PrimaryStorageContainer = null,
 			};
 			StorageEndpoint[] resultFromBedrock = { resultsBedrock1 };
-			_helperFactoryMock = new Mock<IHelperFactory>();
+			_helperFactoryMock = new Mock<IHelperWrapper>();
 			
 			_helperFactoryMock.Setup(x =>
 				x.GetStorageEndpointsAsync(It.IsAny<ApplicationDetails>())).ReturnsAsync(resultFromBedrock);
