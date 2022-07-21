@@ -10,7 +10,7 @@ namespace Relativity.Sync.Transfer.ADF
 	{
 		private readonly IHelper _helper;
 		
-		internal HelperWrapper(IHelper helper)
+		public HelperWrapper(IHelper helper)
 		{
 			_helper = helper;
 		}
