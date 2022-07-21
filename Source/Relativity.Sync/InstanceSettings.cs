@@ -42,6 +42,11 @@ namespace Relativity.Sync
 		{
 			return await GetAsync<int>("ImportApiBatchSize", _SYNC_SECTION, defaultValue).ConfigureAwait(false);
 		}
+		
+		public async Task<bool> GetShouldForceADFTransferAsync(bool defaultValue = false)
+		{
+			return await GetAsync<bool>("ForceADFTransfer", _SYNC_SECTION, defaultValue).ConfigureAwait(false);
+		}
 
 		private async Task<T> GetAsync<T>(string name, string section, T defaultValue)
 		{
