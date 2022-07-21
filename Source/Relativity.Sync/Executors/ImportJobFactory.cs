@@ -11,9 +11,8 @@ using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Toggles;
-using Relativity.Sync.Toggles.Service;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ADF;
 
 namespace Relativity.Sync.Executors
 {
@@ -25,11 +24,11 @@ namespace Relativity.Sync.Executors
 		private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
 		private readonly SyncJobParameters _syncJobParameters;
 		private readonly IFieldMappings _fieldMappings;
-        private readonly ISyncToggles _toggles;
-		private readonly IAPILog _logger;
+		private readonly IADFTransferEnabler _adfTransferEnabler;
+        private readonly IAPILog _logger;
 
 		public ImportJobFactory(IImportApiFactory importApiFactory, ISourceWorkspaceDataReaderFactory dataReaderFactory,
-			IJobHistoryErrorRepository jobHistoryErrorRepository, IInstanceSettings instanceSettings, SyncJobParameters syncJobParameters, IFieldMappings fieldMappings, ISyncToggles toggles, IAPILog logger)
+			IJobHistoryErrorRepository jobHistoryErrorRepository, IInstanceSettings instanceSettings, SyncJobParameters syncJobParameters, IFieldMappings fieldMappings, IADFTransferEnabler adfTransferEnabler, IAPILog logger)
 		{
 			_importApiFactory = importApiFactory;
 			_dataReaderFactory = dataReaderFactory;
@@ -37,9 +36,9 @@ namespace Relativity.Sync.Executors
 			_instanceSettings = instanceSettings;
 			_syncJobParameters = syncJobParameters;
 			_fieldMappings = fieldMappings;
+			_adfTransferEnabler = adfTransferEnabler;
 			_logger = logger;
-            _toggles = toggles;
-        }
+		}
 
         public async Task<IImportJob> CreateRdoImportJobAsync(INonDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
         {
@@ -148,7 +147,8 @@ namespace Relativity.Sync.Executors
             importJob.Settings.MultiValueDelimiter = configuration.MultiValueDelimiter;
             importJob.Settings.NestedValueDelimiter = configuration.NestedValueDelimiter;
 
-			if (_toggles.IsEnabled<UseFMS>())
+            bool shouldUseADFToCopyFiles = await _adfTransferEnabler.ShouldUseADFTransferAsync().ConfigureAwait(false); 
+            if (shouldUseADFToCopyFiles)
             {
 				_logger.LogInformation("Using File Movement Service to copy native files. Setting native file copy mode to links only and disabling native location validation.");
                 importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.SetFileLinks;

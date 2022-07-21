@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>bin\</OutputPath>
     <WarningLevel>4</WarningLevel>
@@ -46,6 +46,8 @@
     <PackageReference Include="Relativity.Kepler.Client" Version="2.17.0" />
     <PackageReference Include="Relativity.OAuth2Client" Version="1.5.3" />
     <PackageReference Include="Relativity.OAuth2Client.Interfaces" Version="1.5.3" />
+    <PackageReference Include="Relativity.Storage" Version="0.6.0" />
+    <PackageReference Include="Relativity.Storage.Extensions" Version="0.6.0" />
     <PackageReference Include="Relativity.Telemetry.APM" Version="[2019.1.1,2019.2.0)" />
     <PackageReference Include="Relativity.Telemetry.DataContracts.Shared" Version="3003.1.0" />
     <PackageReference Include="Relativity.Telemetry.Services.Interface" Version="[3003.0.2]" />
