@@ -467,6 +467,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
       <ItemGroup>
+        <Reference Include="Relativity.Toggles">
+          <HintPath>..\..\packages\sync\Relativity.Toggles\lib\net462\Relativity.Toggles.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6.2'">
+      <ItemGroup>
         <Reference Include="FaspManager">
           <HintPath>..\..\packages\sync\Relativity.Transfer.Client\lib\net462\FaspManager.dll</HintPath>
           <Private>True</Private>

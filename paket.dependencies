@@ -92,7 +92,7 @@ group Sync
 	framework: auto-detect
 	strategy: min
 	source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
-    nuget Relativity.Sync 0.6.75
+    nuget Relativity.Sync 0.6.79
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
 	nuget Polly 5.9
