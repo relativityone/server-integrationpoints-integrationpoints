@@ -10,6 +10,7 @@ using Relativity.Services.Interfaces.Group;
 using Relativity.Services.Objects.DataContracts;
 using System;
 using System.Linq;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
@@ -19,19 +20,24 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 			"You do not have permission to perform this operation because it uses referential links to files. " +
 			"You must either log in as a system administrator or change the settings to upload files.";
 
+		private const string _ENABLE_NON_ADMIN_SYNC_LINKS_TOGGLE =
+			"Relativity.Sync.Toggles.EnableNonAdminSyncLinksToggle";
+
 		private readonly IAPILog _logger;
 		private readonly IHelper _helper;
 		private readonly ISerializer _serializer;
 		private readonly IManagerFactory _managerFactory;
+		private readonly IToggleProvider _toggleProvider;
 
 		public string Key => Constants.IntegrationPoints.Validation.NATIVE_COPY_LINKS_MODE;
 
-		public NativeCopyLinksValidator(IAPILog logger, IHelper helper, ISerializer serializer, IManagerFactory managerFactory)
+		public NativeCopyLinksValidator(IAPILog logger, IHelper helper, ISerializer serializer, IManagerFactory managerFactory, IToggleProvider toggleProvider)
 		{
 			_logger = logger;
 			_helper = helper;
 			_serializer = serializer;
 			_managerFactory = managerFactory;
+			_toggleProvider = toggleProvider;
 		}
 
 		public ValidationResult Validate(object value)
@@ -53,11 +59,12 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 				bool isRestrictReferentialFileLinksOnImport = _managerFactory.CreateInstanceSettingsManager()
 					.RetrieveRestrictReferentialFileLinksOnImport();
 				bool executingUserIsAdmin = UserIsAdmin(validationModel.UserId);
+				bool nonAdminCanSyncUsingLinks = _toggleProvider.IsEnabledByName(_ENABLE_NON_ADMIN_SYNC_LINKS_TOGGLE);
 
-				_logger.LogInformation("Restrict Referential File Links on Import : {isRestricted}, User is Admin : {isAdmin}",
-					isRestrictReferentialFileLinksOnImport, executingUserIsAdmin);
+				_logger.LogInformation("Restrict Referential File Links on Import : {isRestricted}, User is Admin : {isAdmin}, Toggle {toggleName}: {toggleValue}",
+					isRestrictReferentialFileLinksOnImport, executingUserIsAdmin, _ENABLE_NON_ADMIN_SYNC_LINKS_TOGGLE, nonAdminCanSyncUsingLinks);
 
-				if (isRestrictReferentialFileLinksOnImport && !executingUserIsAdmin)
+				if (isRestrictReferentialFileLinksOnImport && !executingUserIsAdmin && !nonAdminCanSyncUsingLinks)
 				{
 					validationResult.Add(_COPY_NATIVE_FILES_BY_LINKS_LACK_OF_PERMISSION);
 				}

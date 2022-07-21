@@ -58,6 +58,7 @@ nuget Microsoft.AspNet.SignalR.Core 2.2.0
 nuget Microsoft.AspNet.Web.Optimization 1.1.3 strategy: max
 nuget Microsoft.AspNet.WebApi 5.2.3
 nuget Microsoft.Net.Http 2.2.29 strategy: max
+nuget Microsoft.Web.Infrastructure 1.0.0.0
 nuget Mono.TextTransform 1.0.0
 nuget System.Reactive 4.0.0
 nuget SystemWrapper.Wrappers 0.25.0.186
@@ -91,7 +92,7 @@ group Sync
 	framework: auto-detect
 	strategy: min
 	source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
-    nuget Relativity.Sync 0.6.75
+    nuget Relativity.Sync 0.6.79
 	nuget Autofac 4.9.4
 	nuget Castle.Core 3.3.0
 	nuget Polly 5.9
