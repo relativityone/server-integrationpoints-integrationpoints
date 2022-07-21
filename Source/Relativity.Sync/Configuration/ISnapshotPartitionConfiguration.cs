@@ -3,16 +3,16 @@ using System.Threading.Tasks;
 
 namespace Relativity.Sync.Configuration
 {
-	internal interface ISnapshotPartitionConfiguration : IConfiguration
-	{
-		int TotalRecordsCount { get; }
+    internal interface ISnapshotPartitionConfiguration : IConfiguration
+    {
+        int TotalRecordsCount { get; }
 
-		int SourceWorkspaceArtifactId { get; }
+        int SourceWorkspaceArtifactId { get; }
 
-		int SyncConfigurationArtifactId { get; }
+        int SyncConfigurationArtifactId { get; }
 
         Guid ExportRunId { get; }
 
-		Task<int> GetSyncBatchSizeAsync();
-	}
+        Task<int> GetSyncBatchSizeAsync();
+    }
 }

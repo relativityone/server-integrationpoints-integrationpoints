@@ -1,182 +1,183 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<TargetFramework>net472</TargetFramework>
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-		<WarningLevel>4</WarningLevel>
-		<CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
-		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-		<ResolveNugetPackages>true</ResolveNugetPackages>
-		<IsTestProject>true</IsTestProject>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-		<OutputPath>bin\</OutputPath>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-		<OutputPath>bin\</OutputPath>
-	</PropertyGroup>
-	<ItemGroup>
-	  <None Include="..\Relativity.Sync.Tests.System.Core\app.config" Link="app.config" />
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj" />
-		<ProjectReference Include="..\Relativity.Sync.Tests.System.Core\Relativity.Sync.Tests.System.Core.csproj" />
-	</ItemGroup>
-  <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
-  <ItemGroup>
-    <PackageReference Include="Relativity.DataExchange.Client.SDK" />
-  </ItemGroup>
-  <!-- Relativity Packages with Unknown Versioning Schema -->
-  <ItemGroup>
-    <PackageReference Include="Relativity.Testing.Identification" Version="3.12.0" />
-  </ItemGroup>
-	<ItemGroup>
-		<Reference Include="System.Web.Services" />
-	</ItemGroup>
-	<ItemGroup>
-		<None Update="Data\ImagesBig\AMEYERS_0000757.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\ImagesBig\AMEYERS_0000975.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\ImagesBig\AMEYERS_0001185.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\ImagesBig\AMEYERS_0001189_001.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\ImagesBig\AZIPPER_0011318.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\Images\AMEYERS_0000757.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\Images\AMEYERS_0000975.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\Images\AMEYERS_0001185.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\Images\AZIPPER_0011318.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\MultipleImagesPerDocument\PRE_0000001.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\MultipleImagesPerDocument\PRE_0000001_1.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\MultipleImagesPerDocument\PRE_0000001_2.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\MultipleImagesPerDocument\PRE_0000002_1.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\MultipleImagesPerDocument\PRE_0000002_2.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\MultipleProductionsWithOriginalImages\OriginalImages\DOC_1.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\MultipleProductionsWithOriginalImages\OriginalImages\DOC_2.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\MultipleProductionsWithOriginalImages\Production1\DOC_3-PROD_1.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\MultipleProductionsWithOriginalImages\Production1\DOC_4-PROD_1.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\MultipleProductionsWithOriginalImages\Production2\DOC_5-PROD_2.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\MultipleProductionsWithOriginalImages\Production2\DOC_4-PROD_2.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\MultipleProductionsWithOriginalImages\WithoutImages\NATIVES\DOC_6.pdf">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\MultipleProductionsWithOriginalImages\WithoutImages\NATIVES\DOC_7.xls">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\IMAGES\AMEYERS_0000757.tif">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\IMAGES\AMEYERS_0000975.tif">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\IMAGES\AMEYERS_0001185.tif">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\IMAGES\AMEYERS_0001185_001.tif">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\NATIVES\AMEYERS_0000757.htm">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\NATIVES\AMEYERS_0000975.pdf">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\NATIVES\AMEYERS_0001185.xls">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\NATIVES\AZIPPER_0011318.msg">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\NATIVES\REL0000above.htm">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\NATIVES\REL0000above.txt">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\NATIVES\REL0000below.htm">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\NATIVES\REL0000below.txt">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\TEXT\AMEYERS_0000757.txt">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\TEXT\AMEYERS_0000975.txt">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\TEXT\AMEYERS_0001185.txt">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\TEXT\AZIPPER_0011318.txt">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\TEXT\REL0000above.txt">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\NativesAndExtractedText\TEXT\REL0000below.txt">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\SingleDocumentProduction\DOC_1.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\ThreeImages\DOC_1.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\ThreeImages\DOC_2.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\ThreeImages\DOC_3.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\TwoDocumentProduction\DOC_1.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Data\TwoDocumentProduction\DOC_2.tif">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Data\Images\" />
-	  <Folder Include="Data\ImagesBig\" />
-	  <Folder Include="Data\MultipleImagesPerDocument\" />
-	</ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>net472</TargetFramework>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <WarningLevel>4</WarningLevel>
+        <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+        <ResolveNugetPackages>true</ResolveNugetPackages>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <OutputPath>bin\</OutputPath>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <OutputPath>bin\</OutputPath>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="..\Relativity.Sync.Tests.System.Core\app.config" Link="app.config" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj" />
+        <ProjectReference Include="..\Relativity.Sync.Tests.System.Core\Relativity.Sync.Tests.System.Core.csproj" />
+    </ItemGroup>
+    <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
+    <ItemGroup>
+        <PackageReference Include="Relativity.DataExchange.Client.SDK" />
+    </ItemGroup>
+    <!-- Relativity Packages with Unknown Versioning Schema -->
+    <ItemGroup>
+        <PackageReference Include="Relativity.Testing.Identification" Version="3.12.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="System.Web.Services" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Update="Data\ImagesBig\AMEYERS_0000757.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\ImagesBig\AMEYERS_0000975.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\ImagesBig\AMEYERS_0001185.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\ImagesBig\AMEYERS_0001189_001.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\ImagesBig\AZIPPER_0011318.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\Images\AMEYERS_0000757.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\Images\AMEYERS_0000975.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\Images\AMEYERS_0001185.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\Images\AZIPPER_0011318.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\MultipleImagesPerDocument\PRE_0000001.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\MultipleImagesPerDocument\PRE_0000001_1.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\MultipleImagesPerDocument\PRE_0000001_2.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\MultipleImagesPerDocument\PRE_0000002_1.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\MultipleImagesPerDocument\PRE_0000002_2.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\MultipleProductionsWithOriginalImages\OriginalImages\DOC_1.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\MultipleProductionsWithOriginalImages\OriginalImages\DOC_2.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\MultipleProductionsWithOriginalImages\Production1\DOC_3-PROD_1.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\MultipleProductionsWithOriginalImages\Production1\DOC_4-PROD_1.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\MultipleProductionsWithOriginalImages\Production2\DOC_5-PROD_2.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\MultipleProductionsWithOriginalImages\Production2\DOC_4-PROD_2.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\MultipleProductionsWithOriginalImages\WithoutImages\NATIVES\DOC_6.pdf">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\MultipleProductionsWithOriginalImages\WithoutImages\NATIVES\DOC_7.xls">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\NativesAndExtractedText\IMAGES\AMEYERS_0000757.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\NativesAndExtractedText\IMAGES\AMEYERS_0000975.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\NativesAndExtractedText\IMAGES\AMEYERS_0001185.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\NativesAndExtractedText\IMAGES\AMEYERS_0001185_001.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\NativesAndExtractedText\NATIVES\AMEYERS_0000757.htm">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\NativesAndExtractedText\NATIVES\AMEYERS_0000975.pdf">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\NativesAndExtractedText\NATIVES\AMEYERS_0001185.xls">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\NativesAndExtractedText\NATIVES\AZIPPER_0011318.msg">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\NativesAndExtractedText\NATIVES\REL0000above.htm">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\NativesAndExtractedText\NATIVES\REL0000above.txt">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\NativesAndExtractedText\NATIVES\REL0000below.htm">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\NativesAndExtractedText\NATIVES\REL0000below.txt">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\NativesAndExtractedText\TEXT\AMEYERS_0000757.txt">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\NativesAndExtractedText\TEXT\AMEYERS_0000975.txt">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\NativesAndExtractedText\TEXT\AMEYERS_0001185.txt">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\NativesAndExtractedText\TEXT\AZIPPER_0011318.txt">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\NativesAndExtractedText\TEXT\REL0000above.txt">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\NativesAndExtractedText\TEXT\REL0000below.txt">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\SingleDocumentProduction\DOC_1.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\ThreeImages\DOC_1.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\ThreeImages\DOC_2.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\ThreeImages\DOC_3.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\TwoDocumentProduction\DOC_1.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\TwoDocumentProduction\DOC_2.tif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Data\Images\" />
+        <Folder Include="Data\ImagesBig\" />
+        <Folder Include="Data\MultipleImagesPerDocument\" />
+    </ItemGroup>
+    <Import Project="..\..\stylecop\StyleCop.props" />
 </Project>

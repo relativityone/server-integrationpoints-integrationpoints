@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Sync.Executors
 {
-	internal interface ISourceWorkspaceTagRepository : IWorkspaceTagRepository<string>
-	{
-	}
+    internal interface ISourceWorkspaceTagRepository : IWorkspaceTagRepository<string>
+    {
+    }
 }

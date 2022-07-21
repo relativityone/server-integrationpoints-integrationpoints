@@ -2,12 +2,12 @@
 
 namespace Relativity.Sync.Storage
 {
-	internal enum ErrorType
-	{
-		[Description("Job")]
-		Job = 0,
+    internal enum ErrorType
+    {
+        [Description("Job")]
+        Job = 0,
 
-		[Description("Item")]
-		Item = 1
-	}
+        [Description("Item")]
+        Item = 1
+    }
 }

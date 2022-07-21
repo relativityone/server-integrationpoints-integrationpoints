@@ -16,77 +16,77 @@ using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
-	[TestFixture]
-	internal sealed class DataSourceSnapshotExecutorTests
-	{
-		private DataSourceSnapshotExecutor _instance;
+    [TestFixture]
+    internal sealed class DataSourceSnapshotExecutorTests
+    {
+        private DataSourceSnapshotExecutor _instance;
 
-		private Mock<IObjectManager> _objectManager;
-		private Mock<IDataSourceSnapshotConfiguration> _configuration;
-		private Mock<IJobProgressUpdater> _jobProgressUpdater;
-		private Mock<ISnapshotQueryRequestProvider> _snapshotQueryRequestProviderFake;
+        private Mock<IObjectManager> _objectManager;
+        private Mock<IDataSourceSnapshotConfiguration> _configuration;
+        private Mock<IJobProgressUpdater> _jobProgressUpdater;
+        private Mock<ISnapshotQueryRequestProvider> _snapshotQueryRequestProviderFake;
 
-		private const int _WORKSPACE_ID = 458712;
-		private const int _DATA_SOURCE_ID = 485219;
+        private const int _WORKSPACE_ID = 458712;
+        private const int _DATA_SOURCE_ID = 485219;
 
-		[SetUp]
-		public void SetUp()
-		{
-			_objectManager = new Mock<IObjectManager>();
+        [SetUp]
+        public void SetUp()
+        {
+            _objectManager = new Mock<IObjectManager>();
 
-			Mock<ISourceServiceFactoryForUser> _serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
-			_serviceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
+            Mock<ISourceServiceFactoryForUser> _serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
+            _serviceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
 
-			_configuration = new Mock<IDataSourceSnapshotConfiguration>();
-			_configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
-			_configuration.Setup(x => x.DataSourceArtifactId).Returns(_DATA_SOURCE_ID);
-			_configuration.Setup(x => x.GetFieldMappings()).Returns(new List<FieldMap>());
+            _configuration = new Mock<IDataSourceSnapshotConfiguration>();
+            _configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
+            _configuration.Setup(x => x.DataSourceArtifactId).Returns(_DATA_SOURCE_ID);
+            _configuration.Setup(x => x.GetFieldMappings()).Returns(new List<FieldMap>());
 
-			_snapshotQueryRequestProviderFake = new Mock<ISnapshotQueryRequestProvider>();
+            _snapshotQueryRequestProviderFake = new Mock<ISnapshotQueryRequestProvider>();
 
-			_jobProgressUpdater = new Mock<IJobProgressUpdater>();
-			Mock<IJobProgressUpdaterFactory> jobProgressUpdaterFactory = new Mock<IJobProgressUpdaterFactory>();
-			jobProgressUpdaterFactory.Setup(x => x.CreateJobProgressUpdater()).Returns(_jobProgressUpdater.Object);
+            _jobProgressUpdater = new Mock<IJobProgressUpdater>();
+            Mock<IJobProgressUpdaterFactory> jobProgressUpdaterFactory = new Mock<IJobProgressUpdaterFactory>();
+            jobProgressUpdaterFactory.Setup(x => x.CreateJobProgressUpdater()).Returns(_jobProgressUpdater.Object);
 
-			_instance = new DataSourceSnapshotExecutor(_serviceFactoryForUser.Object, jobProgressUpdaterFactory.Object,
-				new EmptyLogger(), _snapshotQueryRequestProviderFake.Object);
-		}
+            _instance = new DataSourceSnapshotExecutor(_serviceFactoryForUser.Object, jobProgressUpdaterFactory.Object,
+                new EmptyLogger(), _snapshotQueryRequestProviderFake.Object);
+        }
 
-		[Test]
-		public async Task ItShouldInitializeExportAndSaveResult()
-		{
-			const int totalRecords = 123456789;
-			Guid runId = Guid.NewGuid();
+        [Test]
+        public async Task ItShouldInitializeExportAndSaveResult()
+        {
+            const int totalRecords = 123456789;
+            Guid runId = Guid.NewGuid();
 
-			ExportInitializationResults exportInitializationResults = new ExportInitializationResults
-			{
-				RecordCount = totalRecords,
-				RunID = runId
-			};
-			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).ReturnsAsync(exportInitializationResults);
-			_objectManager.Setup(x => x.RetrieveResultsBlockFromExportAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(Array.Empty<RelativityObjectSlim>());
+            ExportInitializationResults exportInitializationResults = new ExportInitializationResults
+            {
+                RecordCount = totalRecords,
+                RunID = runId
+            };
+            _objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).ReturnsAsync(exportInitializationResults);
+            _objectManager.Setup(x => x.RetrieveResultsBlockFromExportAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(Array.Empty<RelativityObjectSlim>());
 
-			// ACT
-			ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+            // ACT
+            ExecutionResult result = await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
-			// ASSERT
-			result.Status.Should().Be(ExecutionStatus.Completed);
-			_objectManager.Verify(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1));
-			_configuration.Verify(x => x.SetSnapshotDataAsync(runId, totalRecords));
-			_jobProgressUpdater.Verify(x => x.SetTotalItemsCountAsync(totalRecords));
-		}
+            // ASSERT
+            result.Status.Should().Be(ExecutionStatus.Completed);
+            _objectManager.Verify(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1));
+            _configuration.Verify(x => x.SetSnapshotDataAsync(runId, totalRecords));
+            _jobProgressUpdater.Verify(x => x.SetTotalItemsCountAsync(totalRecords));
+        }
 
-		[Test]
-		public async Task ItShouldFailWhenExportApiFails()
-		{
-			_objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).Throws<InvalidOperationException>();
+        [Test]
+        public async Task ItShouldFailWhenExportApiFails()
+        {
+            _objectManager.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1)).Throws<InvalidOperationException>();
 
-			// ACT
-			ExecutionResult executionResult = await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+            // ACT
+            ExecutionResult executionResult = await _instance.ExecuteAsync(_configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
-			// ASSERT
-			executionResult.Status.Should().Be(ExecutionStatus.Failed);
-			executionResult.Exception.Should().BeOfType<InvalidOperationException>();
-		}
-	}
+            // ASSERT
+            executionResult.Status.Should().Be(ExecutionStatus.Failed);
+            executionResult.Exception.Should().BeOfType<InvalidOperationException>();
+        }
+    }
 }

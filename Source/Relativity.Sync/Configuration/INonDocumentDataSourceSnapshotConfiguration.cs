@@ -5,20 +5,20 @@ using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Configuration
 {
-	internal interface INonDocumentDataSourceSnapshotConfiguration : IConfiguration
-	{
-		int SourceWorkspaceArtifactId { get; }
+    internal interface INonDocumentDataSourceSnapshotConfiguration : IConfiguration
+    {
+        int SourceWorkspaceArtifactId { get; }
 
-		int DataSourceArtifactId { get; }
+        int DataSourceArtifactId { get; }
 
-		int RdoArtifactTypeId { get; }
+        int RdoArtifactTypeId { get; }
 
-		IList<FieldMap> GetFieldMappings();
+        IList<FieldMap> GetFieldMappings();
 
-		bool IsSnapshotCreated { get; }
+        bool IsSnapshotCreated { get; }
 
-		Task SetSnapshotDataAsync(Guid runId, int totalRecordsCount);
+        Task SetSnapshotDataAsync(Guid runId, int totalRecordsCount);
 
-		Task SetObjectLinkingSnapshotDataAsync(Guid objectLinkingSnapshotId, int objectLinkingRecordsCount);
-	}
+        Task SetObjectLinkingSnapshotDataAsync(Guid objectLinkingSnapshotId, int objectLinkingRecordsCount);
+    }
 }

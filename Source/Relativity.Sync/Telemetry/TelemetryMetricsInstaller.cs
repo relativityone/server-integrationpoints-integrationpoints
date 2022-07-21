@@ -8,102 +8,102 @@ using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Telemetry
 {
-	internal sealed class TelemetryMetricsInstaller : ITelemetryManager
-	{
-		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
-		private readonly IAPILog _logger;
-		private readonly List<ITelemetryMetricProvider> _metricProviders;
+    internal sealed class TelemetryMetricsInstaller : ITelemetryManager
+    {
+        private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
+        private readonly IAPILog _logger;
+        private readonly List<ITelemetryMetricProvider> _metricProviders;
 
-		public TelemetryMetricsInstaller(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IAPILog logger)
-		{
-			_serviceFactoryForAdmin = serviceFactoryForAdmin;
-			_logger = logger;
-			_metricProviders = new List<ITelemetryMetricProvider>();
-		}
+        public TelemetryMetricsInstaller(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IAPILog logger)
+        {
+            _serviceFactoryForAdmin = serviceFactoryForAdmin;
+            _logger = logger;
+            _metricProviders = new List<ITelemetryMetricProvider>();
+        }
 
-		public void AddMetricProvider(ITelemetryMetricProvider metricProvider)
-		{
-			if (metricProvider == null)
-			{
-				var exception = new ArgumentNullException(nameof(metricProvider));
-				_logger.LogDebug(exception, "Metric provider shouldn't be null.");
-			}
-			else
-			{
-				_metricProviders.Add(metricProvider);
-			}
-		}
+        public void AddMetricProvider(ITelemetryMetricProvider metricProvider)
+        {
+            if (metricProvider == null)
+            {
+                var exception = new ArgumentNullException(nameof(metricProvider));
+                _logger.LogDebug(exception, "Metric provider shouldn't be null.");
+            }
+            else
+            {
+                _metricProviders.Add(metricProvider);
+            }
+        }
 
-		public async Task InstallMetrics()
-		{
-			try
-			{
-				IDictionary<string, CategoryRef> categories = await CreateAndEnableMetricCategoriesIfNotExistAsync(_metricProviders.Select(item => item.CategoryName))
-					.ConfigureAwait(false);
+        public async Task InstallMetrics()
+        {
+            try
+            {
+                IDictionary<string, CategoryRef> categories = await CreateAndEnableMetricCategoriesIfNotExistAsync(_metricProviders.Select(item => item.CategoryName))
+                    .ConfigureAwait(false);
 
-				AddMetricsForCategories(categories);
-			}
-			catch (Exception e)
-			{
-				_logger.LogError(e, "Error occurred when installing SUM metrics. SUM metrics might not be logged.");
-			}
-		}
+                AddMetricsForCategories(categories);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error occurred when installing SUM metrics. SUM metrics might not be logged.");
+            }
+        }
 
-		private void AddMetricsForCategories(IDictionary<string, CategoryRef> categories)
-		{
-			using (var manager = _serviceFactoryForAdmin.CreateProxyAsync<IInternalMetricsCollectionManager>().ConfigureAwait(false).GetAwaiter().GetResult())
-			{
-				_metricProviders.ForEach(item => item.AddMetricsForCategory(manager, categories[item.CategoryName]).GetAwaiter().GetResult());
-			}
-		}
+        private void AddMetricsForCategories(IDictionary<string, CategoryRef> categories)
+        {
+            using (var manager = _serviceFactoryForAdmin.CreateProxyAsync<IInternalMetricsCollectionManager>().ConfigureAwait(false).GetAwaiter().GetResult())
+            {
+                _metricProviders.ForEach(item => item.AddMetricsForCategory(manager, categories[item.CategoryName]).GetAwaiter().GetResult());
+            }
+        }
 
-		private async Task<IDictionary<string, CategoryRef>> CreateAndEnableMetricCategoriesIfNotExistAsync(IEnumerable<string> categoriesNames)
-		{
-			IDictionary<string, CategoryRef> categories = new Dictionary<string, CategoryRef>();
+        private async Task<IDictionary<string, CategoryRef>> CreateAndEnableMetricCategoriesIfNotExistAsync(IEnumerable<string> categoriesNames)
+        {
+            IDictionary<string, CategoryRef> categories = new Dictionary<string, CategoryRef>();
 
-			using (var manager = _serviceFactoryForAdmin.CreateProxyAsync<IInternalMetricsCollectionManager>().ConfigureAwait(false).GetAwaiter().GetResult())
-			{
-				List<CategoryTarget> categoryTargets = await manager.GetCategoryTargetsAsync().ConfigureAwait(false);
+            using (var manager = _serviceFactoryForAdmin.CreateProxyAsync<IInternalMetricsCollectionManager>().ConfigureAwait(false).GetAwaiter().GetResult())
+            {
+                List<CategoryTarget> categoryTargets = await manager.GetCategoryTargetsAsync().ConfigureAwait(false);
 
-				foreach (string categoryName in categoriesNames)
-				{
-					CategoryRef categoryRef = categoryTargets.FirstOrDefault(categoryTarget => categoryTarget.Category.Name.Equals(categoryName, StringComparison.OrdinalIgnoreCase))?.Category;
+                foreach (string categoryName in categoriesNames)
+                {
+                    CategoryRef categoryRef = categoryTargets.FirstOrDefault(categoryTarget => categoryTarget.Category.Name.Equals(categoryName, StringComparison.OrdinalIgnoreCase))?.Category;
 
-					if (categoryRef is null)
-					{
-						categoryRef = await AddCategoryAsync(categoryName, manager).ConfigureAwait(false);
-					}
+                    if (categoryRef is null)
+                    {
+                        categoryRef = await AddCategoryAsync(categoryName, manager).ConfigureAwait(false);
+                    }
 
-					categories.Add(categoryName, categoryRef);
-				}
+                    categories.Add(categoryName, categoryRef);
+                }
 
-				return categories;
-			}
-		}
+                return categories;
+            }
+        }
 
-		private static async Task<CategoryRef> AddCategoryAsync(string categoryName, IInternalMetricsCollectionManager manager)
-		{
-			var categoryRef = new Category
-			{
-				Name = categoryName
-			};
+        private static async Task<CategoryRef> AddCategoryAsync(string categoryName, IInternalMetricsCollectionManager manager)
+        {
+            var categoryRef = new Category
+            {
+                Name = categoryName
+            };
 
-			categoryRef.ID = await manager.CreateCategoryAsync(categoryRef, false).ConfigureAwait(false);
+            categoryRef.ID = await manager.CreateCategoryAsync(categoryRef, false).ConfigureAwait(false);
 
-			await EnableSumMetricTargetForCategoryAsync(categoryRef, manager).ConfigureAwait(false);
+            await EnableSumMetricTargetForCategoryAsync(categoryRef, manager).ConfigureAwait(false);
 
-			return categoryRef;
-		}
+            return categoryRef;
+        }
 
-		private static async Task EnableSumMetricTargetForCategoryAsync(CategoryRef category, IInternalMetricsCollectionManager manager)
-		{
-			CategoryTarget categoryTarget = new CategoryTarget
-			{
-				Category = category,
-				IsCategoryMetricTargetEnabled = new Dictionary<CategoryMetricTarget, bool> { { CategoryMetricTarget.SUM, true } }
-			};
+        private static async Task EnableSumMetricTargetForCategoryAsync(CategoryRef category, IInternalMetricsCollectionManager manager)
+        {
+            CategoryTarget categoryTarget = new CategoryTarget
+            {
+                Category = category,
+                IsCategoryMetricTargetEnabled = new Dictionary<CategoryMetricTarget, bool> { { CategoryMetricTarget.SUM, true } }
+            };
 
-			await manager.UpdateCategoryTargetSingleAsync(categoryTarget).ConfigureAwait(false);
-		}
-	}
+            await manager.UpdateCategoryTargetSingleAsync(categoryTarget).ConfigureAwait(false);
+        }
+    }
 }

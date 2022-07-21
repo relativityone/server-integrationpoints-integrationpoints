@@ -2,8 +2,8 @@
 
 namespace Relativity.Sync.Storage
 {
-	internal interface IFieldMappings
-	{
-		IList<FieldMap> GetFieldMappings();
-	}
+    internal interface IFieldMappings
+    {
+        IList<FieldMap> GetFieldMappings();
+    }
 }
