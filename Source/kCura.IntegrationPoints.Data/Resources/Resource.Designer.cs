@@ -126,7 +126,7 @@ namespace kCura.IntegrationPoints.Data.Resources {
         ///					RF.[ArtifactID] = RFD.[ArtifactID]
         ///WHERE 
         ///					RF.[ApplicationGuid]=@ApplicationGuid
-        ///	.
+        ///	AND				RF.[FileType]=0.
         /// </summary>
         internal static string GetApplicationBinaries {
             get {
@@ -168,7 +168,7 @@ namespace kCura.IntegrationPoints.Data.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT ot.DescriptorArtifactTypeID, ot.Name
+        ///   Looks up a localized string similar to SELECT ot.ArtifactID, ot.DescriptorArtifactTypeID, ot.Name
         ///FROM [EDDSDBO].ObjectType ot WITH(NOLOCK)
         ///WHERE DescriptorArtifactTypeID in
         ///(
@@ -177,8 +177,7 @@ namespace kCura.IntegrationPoints.Data.Resources {
         ///	JOIN [EDDSDBO].[AccessControlListPermission]  acl WITH(NOLOCK) on gu.GroupArtifactID = acl.GroupID
         ///	JOIN [EDDSDBO].[Permission] p WITH(NOLOCK) on p.PermissionID = acl.PermissionID
         ///	JOIN [EDDSDBO].[ArtifactTypeGrouping] atg WITH(NOLOCK) on atg.ArtifactGroupingID = p.ArtifactGrouping
-        ///	WHERE p.[Type] = 1
-        ///	AND  [rest of string was truncated]&quot;;.
+        ///	WHERE p.[T [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GetObjectTypes {
             get {
