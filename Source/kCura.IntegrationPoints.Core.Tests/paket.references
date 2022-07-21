@@ -15,6 +15,7 @@ Relativity.Services.Interfaces.Private
 Relativity.Telemetry.APM
 Relativity.DataGrid
 SystemWrapper.Interfaces
+Relativity.Toggles
 
 group TestPackages
 	FluentAssertions
