@@ -214,7 +214,13 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 		private SqlServerToggleProvider CreateSqlServerToggleProvider(IHelper helper)
 		{
-			return new SqlServerToggleProvider(() => ConnectionFactory(helper), () => AsyncConnectionFactory(helper)) { CacheEnabled = true };
+			return new SqlServerToggleProvider(
+				() => ConnectionFactory(helper),
+				() => AsyncConnectionFactory(helper))
+			{ 
+				CacheEnabled = true,
+				DefaultMissingFeatureBehavior = MissingFeatureBehavior.Disabled
+			};
 		}
 
 		private Task<SqlConnection> AsyncConnectionFactory(IHelper helper)
