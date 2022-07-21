@@ -22,12 +22,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class RelativityObjectManager : IRelativityObjectManager
 	{
+		private const long _QUERY_LOGGING_TIME_THRESHOLD = 5000;
 		private const int _BATCH_SIZE = 1000;
 		private const string _UNKNOWN_OBJECT_TYPE = "[UnknownObjectType]";
 		private readonly int _workspaceArtifactId;
 		private readonly IAPILog _logger;
 		private readonly IObjectManagerFacadeFactory _objectManagerFacadeFactory;
-		private const long QUERY_LOGGING_TIME_THRESHOLD = 5000;
 
 		internal RelativityObjectManager(
 			int workspaceArtifactId,
@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 			SetParentArtifactId(createRequest, rdo);
 
-			return SendCreateRequest(createRequest, executionIdentity);
+			return SendCreateRequestAsync(createRequest, executionIdentity).GetAwaiter().GetResult();
 		}
 
 		public int Create(ObjectTypeRef objectType,
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				ObjectType = objectType,
 				FieldValues = fieldValues
 			};
-			return SendCreateRequest(createRequest, executionIdentity);
+			return SendCreateRequestAsync(createRequest, executionIdentity).GetAwaiter().GetResult();
 		}
 
 		public int Create(ObjectTypeRef objectType,
@@ -75,7 +75,46 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				ParentObject = parentObject,
 				FieldValues = fieldValues
 			};
-			return SendCreateRequest(createRequest, executionIdentity);
+			return SendCreateRequestAsync(createRequest, executionIdentity).GetAwaiter().GetResult();
+		}
+
+		public async Task<int> CreateAsync<T>(T rdo, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+			where T : BaseRdo, new()
+		{
+			var createRequest = new CreateRequest
+			{
+				ObjectType = rdo.ToObjectType(),
+				FieldValues = rdo.ToFieldValues().ToList()
+			};
+			SetParentArtifactId(createRequest, rdo);
+
+			return await SendCreateRequestAsync(createRequest, executionIdentity).ConfigureAwait(false);
+		}
+
+		public async Task<int> CreateAsync(ObjectTypeRef objectType,
+			List<FieldRefValuePair> fieldValues,
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		{
+			var createRequest = new CreateRequest
+			{
+				ObjectType = objectType,
+				FieldValues = fieldValues
+			};
+			return await SendCreateRequestAsync(createRequest, executionIdentity).ConfigureAwait(false);
+		}
+
+		public async Task<int> CreateAsync(ObjectTypeRef objectType,
+			RelativityObjectRef parentObject,
+			List<FieldRefValuePair> fieldValues,
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		{
+			var createRequest = new CreateRequest
+			{
+				ObjectType = objectType,
+				ParentObject = parentObject,
+				FieldValues = fieldValues
+			};
+			return await SendCreateRequestAsync(createRequest, executionIdentity).ConfigureAwait(false);
 		}
 
 		public T Read<T>(int artifactId, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
@@ -86,7 +125,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Object = new RelativityObjectRef { ArtifactID = artifactId },
 				Fields = new T().ToFieldList()
 			};
-			return SendReadRequest<T>(request, executionIdentity: executionIdentity);
+			return SendReadRequestAsync<T>(request, executionIdentity: executionIdentity).GetAwaiter().GetResult();
 		}
 
 		public T Read<T>(int artifactId,
@@ -99,7 +138,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Object = new RelativityObjectRef { ArtifactID = artifactId },
 				Fields = fieldsGuids.Select(x => new FieldRef { Guid = x }).ToArray()
 			};
-			return SendReadRequest<T>(request, executionIdentity: executionIdentity);
+			return SendReadRequestAsync<T>(request, executionIdentity: executionIdentity).GetAwaiter().GetResult();
 		}
 
 		public bool Update(int artifactId,
@@ -113,7 +152,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 
 			string rdoType = GetRdoType(rdo: null);
-			return SendUpdateRequest(request, executionIdentity, rdoType);
+			return SendUpdateRequestAsync(request, executionIdentity, rdoType).GetAwaiter().GetResult();
 		}
 
 		public bool Update<T>(T rdo, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
@@ -124,7 +163,32 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Object = rdo.ToObjectRef(),
 				FieldValues = rdo.ToFieldValues().ToList()
 			};
-			return SendUpdateRequest(request, executionIdentity, GetRdoType(rdo));
+			return SendUpdateRequestAsync(request, executionIdentity, GetRdoType(rdo)).GetAwaiter().GetResult();
+		}
+
+		public async Task<bool> UpdateAsync(int artifactId,
+			IList<FieldRefValuePair> fieldsValues,
+			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		{
+			var request = new UpdateRequest
+			{
+				Object = new RelativityObjectRef { ArtifactID = artifactId },
+				FieldValues = fieldsValues
+			};
+
+			string rdoType = GetRdoType(rdo: null);
+			return await SendUpdateRequestAsync(request, executionIdentity, rdoType).ConfigureAwait(false);
+		}
+
+		public async Task<bool> UpdateAsync<T>(T rdo, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+			where T : BaseRdo, new()
+		{
+			var request = new UpdateRequest
+			{
+				Object = rdo.ToObjectRef(),
+				FieldValues = rdo.ToFieldValues().ToList()
+			};
+			return await SendUpdateRequestAsync(request, executionIdentity, GetRdoType(rdo)).ConfigureAwait(false);
 		}
 
 		public Task<bool> MassUpdateAsync(
@@ -175,7 +239,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				Object = rdo.ToObjectRef()
 			};
-			return SendDeleteRequest(request, executionIdentity, GetRdoType(rdo));
+			return SendDeleteRequestAsync(request, executionIdentity, GetRdoType(rdo)).GetAwaiter().GetResult();
 		}
 
 		public bool Delete(int artifactId, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
@@ -184,7 +248,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				Object = new RelativityObjectRef { ArtifactID = artifactId }
 			};
-			return SendDeleteRequest(request, executionIdentity, rdoType: null);
+			return SendDeleteRequestAsync(request, executionIdentity, rdoType: null).GetAwaiter().GetResult();
 		}
 
 		public ResultSet<T> Query<T>(QueryRequest q,
@@ -229,7 +293,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 					sw.Stop();
 
-					if (sw.ElapsedMilliseconds > QUERY_LOGGING_TIME_THRESHOLD)
+					if (sw.ElapsedMilliseconds > _QUERY_LOGGING_TIME_THRESHOLD)
 					{
 						_logger.LogInformation("Partial query time was over the threshold: {details}", new
 						{
@@ -652,7 +716,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		private T SendReadRequest<T>(ReadRequest request,
+		private async Task<T> SendReadRequestAsync<T>(ReadRequest request,
 			ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 			where T : BaseRdo, new()
 		{
@@ -660,9 +724,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
 				{
-					ReadResult result = client.ReadAsync(_workspaceArtifactId, request)
-						.GetAwaiter()
-						.GetResult();
+					ReadResult result = await client.ReadAsync(_workspaceArtifactId, request).ConfigureAwait(false);
 					return result.Object.ToRDO<T>();
 				}
 			}
@@ -674,18 +736,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		private int SendCreateRequest(CreateRequest request, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+		private async Task<int> SendCreateRequestAsync(CreateRequest request, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
 		{
 			try
 			{
 				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
 				{
-					int artifactId = client.CreateAsync(_workspaceArtifactId, request)
-						.GetAwaiter()
-						.GetResult()
-						.Object
-						.ArtifactID;
-					return artifactId;
+					CreateResult result = await client.CreateAsync(_workspaceArtifactId, request).ConfigureAwait(false);
+					return result.Object.ArtifactID;
 				}
 			}
 			catch (Exception ex)
@@ -695,21 +753,36 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		private bool SendUpdateRequest(UpdateRequest request, ExecutionIdentity executionIdentity, string rdoType)
+		private async Task<bool> SendUpdateRequestAsync(UpdateRequest request, ExecutionIdentity executionIdentity, string rdoType)
 		{
 			try
 			{
 				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
 				{
-					UpdateResult result = client.UpdateAsync(_workspaceArtifactId, request)
-						.GetAwaiter()
-						.GetResult();
+					UpdateResult result = await client.UpdateAsync(_workspaceArtifactId, request).ConfigureAwait(false);
 					return result.EventHandlerStatuses.All(x => x.Success);
 				}
 			}
 			catch (Exception ex)
 			{
 				HandleObjectManagerException(ex, message: GetErrorMessage<UpdateRequest>(rdoType));
+				throw;
+			}
+		}
+
+		private async Task<bool> SendDeleteRequestAsync(DeleteRequest request, ExecutionIdentity executionIdentity, string rdoType)
+		{
+			try
+			{
+				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
+				{
+					DeleteResult result = await client.DeleteAsync(_workspaceArtifactId, request).ConfigureAwait(false);
+					return result.Report.DeletedItems.Any();
+				}
+			}
+			catch (Exception ex)
+			{
+				HandleObjectManagerException(ex, message: GetErrorMessage<DeleteRequest>(rdoType));
 				throw;
 			}
 		}
@@ -732,25 +805,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			catch (Exception ex)
 			{
 				HandleObjectManagerException(ex, message: GetErrorMessage<UpdateRequest>(_UNKNOWN_OBJECT_TYPE));
-				throw;
-			}
-		}
-
-		private bool SendDeleteRequest(DeleteRequest request, ExecutionIdentity executionIdentity, string rdoType)
-		{
-			try
-			{
-				using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
-				{
-					DeleteResult result = client.DeleteAsync(_workspaceArtifactId, request)
-						.GetAwaiter()
-						.GetResult();
-					return result.Report.DeletedItems.Any();
-				}
-			}
-			catch (Exception ex)
-			{
-				HandleObjectManagerException(ex, message: GetErrorMessage<DeleteRequest>(rdoType));
 				throw;
 			}
 		}

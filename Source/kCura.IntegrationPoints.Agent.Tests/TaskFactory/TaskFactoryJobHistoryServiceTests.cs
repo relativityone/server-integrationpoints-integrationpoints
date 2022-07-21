@@ -210,7 +210,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 			_sut.UpdateJobHistoryOnFailure(job, null);
 
 			// Assert
-			_jobHistoryService.Received().UpdateRdo(Arg.Is<JobHistory>(x => x.JobStatus.Name == JobStatusChoices.JobHistoryErrorJobFailed.Name));
+			_jobHistoryService.Received().UpdateRdoWithoutDocuments(Arg.Is<JobHistory>(x => x.JobStatus.Name == JobStatusChoices.JobHistoryErrorJobFailed.Name));
 		}
 
 		[Test]

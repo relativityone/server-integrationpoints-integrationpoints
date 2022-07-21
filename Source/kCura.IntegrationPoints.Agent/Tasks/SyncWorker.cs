@@ -146,9 +146,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					sourceProvider.GetBatchableIds(sourceFields.Single(x => x.IsIdentifier), configuration);
 				}
 
-				_logger.LogInformation("Configuring source data reader");
+				_logger.LogInformation("Start reading data from {sourceProvider}...", sourceProvider?.GetType());
 				using (IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, configuration))
 				{
+					_logger.LogInformation("SourceDataReader was created for {entryIDsCount}.", entryIDs.Count);
 					SetupSubscriptions(dataSynchronizer, job);
 
 					_logger.LogInformation("Reading source data");
@@ -156,8 +157,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						GetSourceData(sourceFields, sourceDataReader);
 					JobStopManager?.ThrowIfStopRequested();
 
-					_logger.LogInformation("Starting data synchronizer");
+					_logger.LogInformation("Start SyndData...");
 					dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration, JobStopManager);
+					_logger.LogInformation("SyncData Completed. Processed rows: {processedRows}", dataSynchronizer.TotalRowsProcessed);
 				}
 			}
 			else
@@ -178,9 +180,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				job.StopState = StopState.DrainStopped;
 				JobService.UpdateStopState(new List<long> { job.JobId }, job.StopState);
-				_logger.LogInformation("Drain stopping batch with id = {id} of job {jobId}", job.JobId, job.RootJobId );
+				_logger.LogInformation("Job {jobId} was Drain-stopped on SyncWorker level.", job.JobId);
 			}
 
+			_logger.LogInformation("Stop checking Drain-Stop.");
 			JobStopManager?.StopCheckingDrainStopAndUpdateStopState(job, shouldDrainStopBatch);
 
 			LogExecuteImportSuccesfulEnd(job);
@@ -191,7 +194,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			bool notAllItemsProcessed = processedItemCount < totalRowsCountInBatch;
 			bool drainStopRequested = JobStopManager?.ShouldDrainStop == true;
 
-			return drainStopRequested && notAllItemsProcessed;
+			bool shouldBeDrainStopped = drainStopRequested && notAllItemsProcessed;
+
+			_logger.LogInformation("Checking if batch should be Drain-Stopped - {shouldBeDrainStopped}: " +
+					"Processed Rows Count - {processedItemsCount}, " +
+					"Total Rows Count - {totalRowsCount} " +
+					"Drain-Stop Requested - {drainStopRequested}",
+				shouldBeDrainStopped, processedItemCount, totalRowsCountInBatch, drainStopRequested);
+
+			return shouldBeDrainStopped;
 		}
 
 		private void MarkJobAsDrainStopped()
@@ -211,9 +222,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			TaskParameters parameters = Serializer.Deserialize<TaskParameters>(jobDetails);
 
-			List<string> list = GetRecordsIds(parameters);
+			List<string> list = GetRecordsIds(parameters)
+				.Skip(processedItemCount).ToList();
 
-			parameters.BatchParameters = list.Skip(processedItemCount);
+			_logger.LogInformation("IDs Count {count} left to be processed after Drain-Stop.", list.Count);
+
+			parameters.BatchParameters = list;
 
 			return Serializer.Serialize(parameters);
 		}
@@ -426,6 +440,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)
 		{
+			_logger.LogInformation("Setup SyncWorker subscriptions for Job {jobId}", job?.JobId);
 			SetupStatisticsSubscriptions(synchronizer, job);
 			SetupJobHistoryErrorSubscriptions(synchronizer);
 		}

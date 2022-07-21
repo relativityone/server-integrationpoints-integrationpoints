@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Autofac;
 using kCura.IntegrationPoints.RelativitySync.Metrics;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
@@ -11,264 +10,245 @@ using Relativity.Telemetry.APM;
 namespace kCura.IntegrationPoints.RelativitySync
 {
 #pragma warning disable CA1031
-	public sealed class RelativitySyncAdapter
-	{
-		private readonly IExtendedJob _job;
-		private readonly IAPILog _logger;
-		private readonly IAPM _apmMetrics;
-		private readonly ISyncJobMetric _jobMetric;
-		private readonly IJobHistorySyncService _jobHistorySyncService;
-		private readonly Guid _correlationId;
-		private readonly IIntegrationPointToSyncConverter _converter;
-		private readonly ISyncOperationsWrapper _syncOperations;
-		private readonly ISyncConfigurationService _syncConfigurationService;
-		private readonly ICancellationAdapter _cancellationAdapter;
+    public sealed class RelativitySyncAdapter
+    {
+        private readonly IExtendedJob _job;
+        private readonly IAPILog _logger;
+        private readonly IAPM _apmMetrics;
+        private readonly ISyncJobMetric _jobMetric;
+        private readonly IJobHistorySyncService _jobHistorySyncService;
+        private readonly Guid _correlationId;
+        private readonly IIntegrationPointToSyncConverter _converter;
+        private readonly ISyncOperationsWrapper _syncOperations;
+        private readonly ISyncConfigurationService _syncConfigurationService;
+        private readonly ICancellationAdapter _cancellationAdapter;
 
-		public RelativitySyncAdapter(IExtendedJob job, IAPILog logger, IAPM apmMetrics,
-			ISyncJobMetric jobMetric, IJobHistorySyncService jobHistorySyncService, IIntegrationPointToSyncConverter converter,
-			ISyncOperationsWrapper syncOperations, ISyncConfigurationService syncConfigurationService, ICancellationAdapter cancellationAdapter)
-		{
-			_job = job;
-			_logger = logger;
-			_apmMetrics = apmMetrics;
-			_jobMetric = jobMetric;
-			_jobHistorySyncService = jobHistorySyncService;
-			_converter = converter;
-			_syncOperations = syncOperations;
-			_syncConfigurationService = syncConfigurationService;
-			_cancellationAdapter = cancellationAdapter;
-			
-			_correlationId = Guid.NewGuid();
-		}
+        public RelativitySyncAdapter(IExtendedJob job, IAPILog logger, IAPM apmMetrics,
+            ISyncJobMetric jobMetric, IJobHistorySyncService jobHistorySyncService, IIntegrationPointToSyncConverter converter,
+            ISyncOperationsWrapper syncOperations, ISyncConfigurationService syncConfigurationService, ICancellationAdapter cancellationAdapter)
+        {
+            _job = job;
+            _logger = logger;
+            _apmMetrics = apmMetrics;
+            _jobMetric = jobMetric;
+            _jobHistorySyncService = jobHistorySyncService;
+            _converter = converter;
+            _syncOperations = syncOperations;
+            _syncConfigurationService = syncConfigurationService;
+            _cancellationAdapter = cancellationAdapter;
 
-		public async Task<TaskResult> RunAsync()
-		{
-			TaskResult taskResult = new TaskResult { Status = TaskStatusEnum.Fail };
-			SyncMetrics metrics = new SyncMetrics(_apmMetrics, _logger);
-			try
-			{
-				CompositeCancellationToken compositeCancellationToken = _cancellationAdapter.GetCancellationToken(drainStopTokenCallback: MarkJobAsSuspending);
-				SyncConfiguration syncConfiguration = new SyncConfiguration(_job.SubmittedById);
-				using (IContainer container = InitializeSyncContainer(syncConfiguration))
-				{
-					metrics.MarkStartTime();
-					await MarkJobAsStartedAsync().ConfigureAwait(false);
+            _correlationId = Guid.NewGuid();
+        }
 
-					ISyncJob syncJob = await CreateSyncJobAsync(container).ConfigureAwait(false);
-					Progress progress = new Progress();
-					progress.SyncProgress += (sender, syncProgress) => UpdateJobStatusAsync(syncProgress.Id).ConfigureAwait(false).GetAwaiter().GetResult();
-					await syncJob.ExecuteAsync(progress, compositeCancellationToken).ConfigureAwait(false);
+        public async Task<TaskResult> RunAsync()
+        {
+            TaskResult taskResult = new TaskResult { Status = TaskStatusEnum.Fail };
+            SyncMetrics metrics = new SyncMetrics(_apmMetrics, _logger);
+            try
+            {
+                CompositeCancellationToken compositeCancellationToken = _cancellationAdapter.GetCancellationToken(drainStopTokenCallback: MarkJobAsSuspending);
+                metrics.MarkStartTime();
+                await MarkJobAsStartedAsync().ConfigureAwait(false);
 
-					if (compositeCancellationToken.StopCancellationToken.IsCancellationRequested)
-					{
-						await MarkJobAsStoppedAsync().ConfigureAwait(false);
-						taskResult = new TaskResult { Status = TaskStatusEnum.Success };
-					}
-					else if (compositeCancellationToken.DrainStopCancellationToken.IsCancellationRequested)
-					{
-						await MarkJobAsSuspendedAsync().ConfigureAwait(false);
-						taskResult = new TaskResult { Status = TaskStatusEnum.DrainStopped };
-					}
-					else
-					{
-						await MarkJobAsCompletedAsync().ConfigureAwait(false);
-						taskResult = new TaskResult { Status = TaskStatusEnum.Success };
-					}
-				}
-			}
-			catch (OperationCanceledException)
-			{
-				await MarkJobAsStoppedAsync().ConfigureAwait(false);
-				taskResult = new TaskResult { Status = TaskStatusEnum.Fail };
-			}
-			catch (ValidationException ex)
-			{
-				await MarkJobAsValidationFailedAsync(ex).ConfigureAwait(false);
-				taskResult = new TaskResult() { Status = TaskStatusEnum.Fail };
-			}
-			catch (Exception e)
-			{
-				await MarkJobAsFailedAsync(e).ConfigureAwait(false);
-				taskResult = new TaskResult { Status = TaskStatusEnum.Fail };
-			}
-			finally
-			{
-				metrics.SendMetric(_correlationId, taskResult);
-			}
+                ISyncJob syncJob = await CreateSyncJobAsync().ConfigureAwait(false);
+                IProgress<SyncJobState> progress = new Progress<SyncJobState>(syncJobState => UpdateJobStatusAsync(syncJobState.Id).ConfigureAwait(false).GetAwaiter().GetResult());
+                await syncJob.ExecuteAsync(progress, compositeCancellationToken).ConfigureAwait(false);
 
-			return taskResult;
-		}
+                if (compositeCancellationToken.StopCancellationToken.IsCancellationRequested)
+                {
+                    await MarkJobAsStoppedAsync().ConfigureAwait(false);
+                    taskResult = new TaskResult { Status = TaskStatusEnum.Success };
+                }
+                else if (compositeCancellationToken.DrainStopCancellationToken.IsCancellationRequested)
+                {
+                    await MarkJobAsSuspendedAsync().ConfigureAwait(false);
+                    taskResult = new TaskResult { Status = TaskStatusEnum.DrainStopped };
+                }
+                else
+                {
+                    await MarkJobAsCompletedAsync().ConfigureAwait(false);
+                    taskResult = new TaskResult { Status = TaskStatusEnum.Success };
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                await MarkJobAsStoppedAsync().ConfigureAwait(false);
+                taskResult = new TaskResult { Status = TaskStatusEnum.Fail };
+            }
+            catch (ValidationException ex)
+            {
+                await MarkJobAsValidationFailedAsync(ex).ConfigureAwait(false);
+                taskResult = new TaskResult() { Status = TaskStatusEnum.Fail };
+            }
+            catch (Exception e)
+            {
+                await MarkJobAsFailedAsync(e).ConfigureAwait(false);
+                taskResult = new TaskResult { Status = TaskStatusEnum.Fail };
+            }
+            finally
+            {
+                metrics.SendMetric(_correlationId, taskResult);
+            }
 
-		private async Task MarkJobAsValidationFailedAsync(ValidationException ex)
-		{
-			try
-			{
-				await _jobHistorySyncService.MarkJobAsValidationFailedAsync(_job, ex).ConfigureAwait(false);
-				await _jobMetric.SendJobFailedAsync(_job.Job, ex).ConfigureAwait(false);
-			}
-			catch (SyncMetricException e)
-			{
-				_logger.LogError(e, "Failed to send job failed metric");
-			}
-			catch (Exception e)
-			{
-				_logger.LogError(e, "Failed to mark job as validation failed.");
-			}
-		}
+            return taskResult;
+        }
 
-		private async Task UpdateJobStatusAsync(string status)
-		{
-			try
-			{
-				await _jobHistorySyncService.UpdateJobStatusAsync(status, _job).ConfigureAwait(false);
-			}
-			catch (Exception e)
-			{
-				_logger.LogError(e, "Failed to update job status.");
-			}
-		}
+        private async Task MarkJobAsValidationFailedAsync(ValidationException ex)
+        {
+            try
+            {
+                await _jobHistorySyncService.MarkJobAsValidationFailedAsync(_job, ex).ConfigureAwait(false);
+                await _jobMetric.SendJobFailedAsync(_job.Job, ex).ConfigureAwait(false);
+            }
+            catch (SyncMetricException e)
+            {
+                _logger.LogError(e, "Failed to send job failed metric");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to mark job as validation failed.");
+            }
+        }
 
-		private async Task MarkJobAsStartedAsync()
-		{
-			try
-			{
-				await _jobHistorySyncService.MarkJobAsStartedAsync(_job).ConfigureAwait(false);
-				await _jobMetric.SendJobStartedAsync(_job.Job).ConfigureAwait(false);
-			}
-			catch (SyncMetricException e)
-			{
-				_logger.LogError(e, "Failed to send job started metric");
-			}
-			catch (Exception e)
-			{
-				_logger.LogError(e, "Failed to mark job as started.");
-			}
-		}
+        private async Task UpdateJobStatusAsync(string status)
+        {
+            try
+            {
+                await _jobHistorySyncService.UpdateJobStatusAsync(status, _job).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to update job status.");
+            }
+        }
 
-		private async Task MarkJobAsCompletedAsync()
-		{
-			try
-			{
-				await _jobHistorySyncService.MarkJobAsCompletedAsync(_job).ConfigureAwait(false);
-				await _jobMetric.SendJobCompletedAsync(_job.Job).ConfigureAwait(false);
-			}
-			catch (SyncMetricException e)
-			{
-				_logger.LogError(e, "Failed to send job completed metric");
-			}
-			catch (Exception e)
-			{
-				_logger.LogError(e, "Failed to mark job as completed.");
-			}
-		}
+        private async Task MarkJobAsStartedAsync()
+        {
+            try
+            {
+                await _jobHistorySyncService.MarkJobAsStartedAsync(_job).ConfigureAwait(false);
+                await _jobMetric.SendJobStartedAsync(_job.Job).ConfigureAwait(false);
+            }
+            catch (SyncMetricException e)
+            {
+                _logger.LogError(e, "Failed to send job started metric");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to mark job as started.");
+            }
+        }
 
-		private async Task MarkJobAsStoppedAsync()
-		{
-			try
-			{
-				await _jobHistorySyncService.MarkJobAsStoppedAsync(_job).ConfigureAwait(false);
-			}
-			catch (Exception e)
-			{
-				_logger.LogError(e, "Failed to mark job as stopped.");
-			}
-		}
+        private async Task MarkJobAsCompletedAsync()
+        {
+            try
+            {
+                await _jobHistorySyncService.MarkJobAsCompletedAsync(_job).ConfigureAwait(false);
+                await _jobMetric.SendJobCompletedAsync(_job.Job).ConfigureAwait(false);
+            }
+            catch (SyncMetricException e)
+            {
+                _logger.LogError(e, "Failed to send job completed metric");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to mark job as completed.");
+            }
+        }
 
-		private void MarkJobAsSuspending()
-		{
-			try
-			{
-				_jobHistorySyncService.MarkJobAsSuspendingAsync(_job).Wait();
-			}
-			catch (Exception e)
-			{
-				_logger.LogError(e, "Failed to mark job as suspending.");
-			}
-		}
+        private async Task MarkJobAsStoppedAsync()
+        {
+            try
+            {
+                await _jobHistorySyncService.MarkJobAsStoppedAsync(_job).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to mark job as stopped.");
+            }
+        }
 
-		private async Task MarkJobAsSuspendedAsync()
-		{
-			try
-			{
-				await _jobHistorySyncService.MarkJobAsSuspendedAsync(_job).ConfigureAwait(false);
-			}
-			catch (Exception e)
-			{
-				_logger.LogError(e, "Failed to mark job as suspended.");
-			}
-		}
+        private void MarkJobAsSuspending()
+        {
+            try
+            {
+                _jobHistorySyncService.MarkJobAsSuspendingAsync(_job).Wait();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to mark job as suspending.");
+            }
+        }
 
-		private async Task MarkJobAsFailedAsync(Exception exception)
-		{
-			try
-			{
-				await _jobHistorySyncService.MarkJobAsFailedAsync(_job, exception).ConfigureAwait(false);
-				await _jobMetric.SendJobFailedAsync(_job.Job, exception).ConfigureAwait(false);
-			}
-			catch (SyncMetricException e)
-			{
-				_logger.LogError(e, "Failed to send job failed metric");
-			}
-			catch (Exception e)
-			{
-				_logger.LogError(e, "Failed to mark job as failed.");
-			}
-		}
+        private async Task MarkJobAsSuspendedAsync()
+        {
+            try
+            {
+                await _jobHistorySyncService.MarkJobAsSuspendedAsync(_job).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to mark job as suspended.");
+            }
+        }
 
-		private async Task<ISyncJob> CreateSyncJobAsync(IContainer container)
-		{
-			int syncConfigurationArtifactId = await PrepareSyncConfigurationAsync().ConfigureAwait(false);
+        private async Task MarkJobAsFailedAsync(Exception exception)
+        {
+            try
+            {
+                await _jobHistorySyncService.MarkJobAsFailedAsync(_job, exception).ConfigureAwait(false);
+                await _jobMetric.SendJobFailedAsync(_job.Job, exception).ConfigureAwait(false);
+            }
+            catch (SyncMetricException e)
+            {
+                _logger.LogError(e, "Failed to send job failed metric");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to mark job as failed.");
+            }
+        }
 
-			ISyncJobFactory jobFactory = _syncOperations.CreateSyncJobFactory();
-			IRelativityServices relativityServices = _syncOperations.CreateRelativityServices();
+        private async Task<ISyncJob> CreateSyncJobAsync()
+        {
+            int syncConfigurationArtifactId = await PrepareSyncConfigurationAsync().ConfigureAwait(false);
 
-			SyncJobParameters parameters = new SyncJobParameters(
-				syncConfigurationArtifactId, _job.WorkspaceId, _job.JobIdentifier)
-			{
-				TriggerValue = "rip"
-			};
+            ISyncJobFactory jobFactory = _syncOperations.CreateSyncJobFactory();
+            IRelativityServices relativityServices = _syncOperations.CreateRelativityServices();
 
-			return jobFactory.Create(container, parameters, relativityServices, _logger);
-		}
+            SyncJobParameters parameters = new SyncJobParameters(syncConfigurationArtifactId, _job.WorkspaceId, _job.SubmittedById, _job.JobIdentifier)
+            {
+                TriggerValue = "rip"
+            };
 
-		private async Task<int> PrepareSyncConfigurationAsync()
-		{
-			try
-			{
-				int? syncConfigurationId = await _syncConfigurationService.TryGetResumedSyncConfigurationIdAsync(
-					_job.WorkspaceId, _job.JobHistoryId).ConfigureAwait(false);
+            return jobFactory.Create(parameters, relativityServices, _logger);
+        }
 
-				if (syncConfigurationId.HasValue)
-				{
-					_logger.LogInformation("SyncConfiguration with ID {configurationId} exists for JobHistory {jobHistory}. Job is resumed.",
-						syncConfigurationId.Value, _job.JobHistoryId);
-					await _syncOperations.PrepareSyncConfigurationForResumeAsync(
-						_job.WorkspaceId, syncConfigurationId.Value).ConfigureAwait(false);
+        private async Task<int> PrepareSyncConfigurationAsync()
+        {
+            try
+            {
+                int? syncConfigurationId = await _syncConfigurationService.TryGetResumedSyncConfigurationIdAsync(
+                    _job.WorkspaceId, _job.JobHistoryId).ConfigureAwait(false);
 
-					return syncConfigurationId.Value;
-				}
+                if (syncConfigurationId.HasValue)
+                {
+                    _logger.LogInformation("SyncConfiguration with ID {configurationId} exists for JobHistory {jobHistory}. Job is resumed.",
+                        syncConfigurationId.Value, _job.JobHistoryId);
+                    await _syncOperations.PrepareSyncConfigurationForResumeAsync(
+                        _job.WorkspaceId, syncConfigurationId.Value).ConfigureAwait(false);
 
-				return await _converter.CreateSyncConfigurationAsync(_job).ConfigureAwait(false);
-			}
-			catch (Exception e)
-			{
-				_logger.LogError(e, "Sync Configuration RDO preparation failed.");
-				throw;
-			}
-		}
+                    return syncConfigurationId.Value;
+                }
 
-		private IContainer InitializeSyncContainer(SyncConfiguration syncConfiguration)
-		{
-			// We are registering types directly related to adapting the new Relativity Sync workflow to the
-			// existing RIP workflow. The Autofac container we are building will only resolve adapters and related
-			// wrappers, and the Windsor container will only resolve existing RIP classes.
-			var containerBuilder = new ContainerBuilder();
-
-			containerBuilder.RegisterInstance(syncConfiguration).AsImplementedInterfaces().SingleInstance();
-
-			IContainer container = containerBuilder.Build();
-			return container;
-		}
-	}
+                return await _converter.CreateSyncConfigurationAsync(_job).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Sync Configuration RDO preparation failed.");
+                throw;
+            }
+        }
+    }
 #pragma warning restore CA1031
 }

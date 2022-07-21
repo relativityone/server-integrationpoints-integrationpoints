@@ -3,7 +3,7 @@ using System.Data;
 
 namespace kCura.IntegrationPoints.Core.Services.Conversion
 {
-	public class DataReaderToEnumerableService
+    public class DataReaderToEnumerableService
 	{
 		private readonly IObjectBuilder _objectBuilder;
 		public DataReaderToEnumerableService(IObjectBuilder objectBuilder)

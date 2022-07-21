@@ -29,7 +29,7 @@ namespace kCura.ScheduleQueue.Core.Validation
 			foreach(var validator in _validators)
             {
 				_log.LogInformation("Validating {validator}...", validator.GetType());
-				PreValidationResult result = await validator.ValidateAsync(job);
+				PreValidationResult result = await validator.ValidateAsync(job).ConfigureAwait(false);
 				if(!result.IsValid)
                 {
 					_log.LogError(result.Exception, "Job {jobId} PreValidation failed.", job.JobId);
