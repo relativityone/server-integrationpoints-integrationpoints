@@ -1791,18 +1791,6 @@
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>5537602</ArtifactId>
-      <Keywords />
-      <Name>Relativity.AntiMalware.SDK.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>5537603</ArtifactId>
-      <Keywords />
-      <Name>Relativity.Environment.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
       <ArtifactId>5537630</ArtifactId>
       <Keywords />
       <Name>Relativity.Storage.Extensions.dll</Name>
