@@ -9,147 +9,153 @@ using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
-	[TestFixture]
-	internal class ImageInfoRowValuesBuilderTests
-	{
-		private ImageInfoRowValuesBuilder _sut;
+    [TestFixture]
+    internal class ImageInfoRowValuesBuilderTests
+    {
+        private ImageInfoRowValuesBuilder _sut;
 
-		[Test]
-		public void BuildRowValues_ShouldReturnEmpty_WhenDocumentDoesNotExistInImageFiles()
-		{
-			// Arrange
-			const int documentId = 1;
-			const int nonExsitingDocumentId = 2;
+        private static IEnumerable<TestCaseData> SpecialFieldExpectedReturnValuesData()
+            => new[]
+                {
+                    new TestCaseData(FieldInfoDto.ImageFileNameField(), new object[] { "Name2a", "Name2b", "Name2c" }),
+                    new TestCaseData(FieldInfoDto.ImageFileLocationField(), new object[] { "Location2a", "Location2b", "Location2c" })
+                };
 
-			var DocumentToImageFiles = new Dictionary<int, ImageFile[]>()
-			{
-				{ documentId, new[] { new ImageFile(documentId, "1","Location1", "Name1", 0) } }
-			};
+        [Test]
+        public void BuildRowValues_ShouldReturnEmpty_WhenDocumentDoesNotExistInImageFiles()
+        {
+            // Arrange
+            const int documentId = 1;
+            const int nonExsitingDocumentId = 2;
 
-			var notExistingDocument = new RelativityObjectSlim { ArtifactID = nonExsitingDocumentId };
+            var documentToImageFiles = new Dictionary<int, ImageFile[]>()
+            {
+                { documentId, new[] { new ImageFile(documentId, "1", "Location1", "Name1", 0) } }
+            };
 
-			_sut = new ImageInfoRowValuesBuilder(DocumentToImageFiles, null);
+            var notExistingDocument = new RelativityObjectSlim { ArtifactID = nonExsitingDocumentId };
 
-			// Act
-			var result = _sut.BuildRowsValues(It.IsAny<FieldInfoDto>(), notExistingDocument, _ => "");
+            _sut = PrepareSut(documentToImageFiles);
 
-			// Assert
-			result.Should().BeEmpty();
-		}
+            // Act
+            var result = _sut.BuildRowsValues(It.IsAny<FieldInfoDto>(), notExistingDocument, _ => string.Empty);
 
-		[Test]
-		public void BuildRowValues_ShouldReturnEmpty_WhenDocumentHasNotAnyImages()
-		{
-			// Arrange
-			const int documentId = 1;
-			const int documentWithouImagesId = 2;
+            // Assert
+            result.Should().BeEmpty();
+        }
 
-			var DocumentToImageFiles = new Dictionary<int, ImageFile[]>()
-			{
-				{ documentId, new[] { new ImageFile(documentId, "1", "Location1", "Name1", 0) } },
-				{ documentWithouImagesId, new ImageFile[] { } }
-			};
+        [Test]
+        public void BuildRowValues_ShouldReturnEmpty_WhenDocumentHasNotAnyImages()
+        {
+            // Arrange
+            const int documentId = 1;
+            const int documentWithouImagesId = 2;
 
-			var documentWithoutImages = new RelativityObjectSlim { ArtifactID = documentWithouImagesId };
+            var documentToImageFiles = new Dictionary<int, ImageFile[]>()
+            {
+                { documentId, new[] { new ImageFile(documentId, "1", "Location1", "Name1", 0) } },
+                { documentWithouImagesId, new ImageFile[] { } }
+            };
 
-			_sut = new ImageInfoRowValuesBuilder(DocumentToImageFiles, null);
+            var documentWithoutImages = new RelativityObjectSlim { ArtifactID = documentWithouImagesId };
 
-			// Act
-			var result = _sut.BuildRowsValues(It.IsAny<FieldInfoDto>(), documentWithoutImages, _ => "");
+            _sut = PrepareSut(documentToImageFiles);
 
-			// Assert
-			result.Should().BeEmpty();
-		}
+            // Act
+            var result = _sut.BuildRowsValues(It.IsAny<FieldInfoDto>(), documentWithoutImages, _ => string.Empty);
 
-		public static IEnumerable<TestCaseData> SpecialFieldExpectedReturnValuesData
-			=> new[]
-				{
-					new TestCaseData(FieldInfoDto.ImageFileNameField(), new object[] { "Name2a", "Name2b", "Name2c" } ),
-					new TestCaseData(FieldInfoDto.ImageFileLocationField(), new object[] { "Location2a", "Location2b", "Location2c" } )
-				};
+            // Assert
+            result.Should().BeEmpty();
+        }
 
-		[TestCaseSource(nameof(SpecialFieldExpectedReturnValuesData))]
-		public void BuildRowValues_ShouldValues_WhenSpecialFieldTypeHasBeenProvided(FieldInfoDto specialField, IEnumerable<object> expectedValues)
-		{
-			// Arrange
-			var DocumentToImageFiles = new Dictionary<int, ImageFile[]>()
-			{
-				{ 1, new[] { new ImageFile(1, "1","Location1", "Name1", 0) } },
-				{ 2, new[] { new ImageFile(2, "2a","Location2a", "Name2a", 0), new ImageFile(2, "2b","Location2b", "Name2b", 0), new ImageFile(2, "2c", "Location2c", "Name2c", 0) } },
-				{ 3, new[] { new ImageFile(3, "3","Location3", "Name3", 0) } }
-			};
+        [TestCaseSource(nameof(SpecialFieldExpectedReturnValuesData))]
+        public void BuildRowValues_ShouldValues_WhenSpecialFieldTypeHasBeenProvided(FieldInfoDto specialField, IEnumerable<object> expectedValues)
+        {
+            // Arrange
+            var documentToImageFiles = new Dictionary<int, ImageFile[]>()
+            {
+                { 1, new[] { new ImageFile(1, "1", "Location1", "Name1", 0) } },
+                { 2, new[] { new ImageFile(2, "2a", "Location2a", "Name2a", 0), new ImageFile(2, "2b", "Location2b", "Name2b", 0), new ImageFile(2, "2c", "Location2c", "Name2c", 0) } },
+                { 3, new[] { new ImageFile(3, "3", "Location3", "Name3", 0) } }
+            };
 
-			var document = new RelativityObjectSlim { ArtifactID = 2 };
+            var document = new RelativityObjectSlim { ArtifactID = 2 };
 
-			_sut = new ImageInfoRowValuesBuilder(DocumentToImageFiles, null);
+            _sut = PrepareSut(documentToImageFiles);
 
-			// Act
-			var result = _sut.BuildRowsValues(specialField, document, _ => "");
+            // Act
+            var result = _sut.BuildRowsValues(specialField, document, _ => string.Empty);
 
-			// Assert
-			result.Should().BeEquivalentTo(expectedValues);
-		}
+            // Assert
+            result.Should().BeEquivalentTo(expectedValues);
+        }
 
-		[Test]
-		public void BuildRowValues_ShouldThrow_WhenSpecialFieldTypeIsNotAllowed()
-		{
-			// Arrange
-			const int documentId = 1;
+        [Test]
+        public void BuildRowValues_ShouldThrow_WhenSpecialFieldTypeIsNotAllowed()
+        {
+            // Arrange
+            const int documentId = 1;
 
-			var DocumentToImageFiles = new Dictionary<int, ImageFile[]>()
-			{
-				{ documentId, new[] { new ImageFile(documentId, "1","Location1", "Name1", 0) } }
-			};
+            var documentToImageFiles = new Dictionary<int, ImageFile[]>()
+            {
+                { documentId, new[] { new ImageFile(documentId, "1", "Location1", "Name1", 0) } }
+            };
 
-			var field = FieldInfoDto.NativeFileLocationField();
+            var field = FieldInfoDto.NativeFileLocationField();
 
-			var document = new RelativityObjectSlim { ArtifactID = documentId };
+            var document = new RelativityObjectSlim { ArtifactID = documentId };
 
-			_sut = new ImageInfoRowValuesBuilder(DocumentToImageFiles, null);
+            _sut = PrepareSut(documentToImageFiles);
 
-			// Act
-			Func<object> action = () => _sut.BuildRowsValues(field, document, _ => "");
+            // Act
+            Func<object> action = () => _sut.BuildRowsValues(field, document, _ => string.Empty);
 
-			// Assert
-			action.Should().Throw<ArgumentException>();
-		}
+            // Assert
+            action.Should().Throw<ArgumentException>();
+        }
 
-		[Test]
-		public void BuildRowValues_Should_GenerateCorrectIdentifier()
-		{
-			// Arrange
-			const int documentId = 1;
+        [Test]
+        public void BuildRowValues_Should_GenerateCorrectIdentifier()
+        {
+            // Arrange
+            const int documentId = 1;
 
-			var DocumentToImageFiles = new Dictionary<int, ImageFile[]>()
-			{
-				{ documentId, Enumerable.Range(1, 1001).Select(x => new ImageFile(documentId, $"identifier_{x}", $"location_{x}", $"filename_{x}", 5)).ToArray() }
-			};
+            var documentToImageFiles = new Dictionary<int, ImageFile[]>()
+            {
+                { documentId, Enumerable.Range(1, 1001).Select(x => new ImageFile(documentId, $"identifier_{x}", $"location_{x}", $"filename_{x}", 5)).ToArray() }
+            };
 
-			var field = FieldInfoDto.ImageIdentifierField();
+            var field = FieldInfoDto.ImageIdentifierField();
 
-			var document = new RelativityObjectSlim { ArtifactID = documentId };
-			
-			_sut = new ImageInfoRowValuesBuilder(DocumentToImageFiles, null);
-			
-			// Act
-			string controlNumber = "document";
-			string[] result = _sut.BuildRowsValues(field, document, _ => controlNumber).Select(x => x.ToString()).ToArray();
+            var document = new RelativityObjectSlim { ArtifactID = documentId };
 
-			// Assert
-			result.All(x => x.StartsWith(controlNumber)).Should().BeTrue("All images identifiers should start with control number");
+            _sut = PrepareSut(documentToImageFiles);
 
-			result.First().Should().Be(controlNumber, "First image identifier should be just control number");
+            // Act
+            string controlNumber = "document";
+            string[] result = _sut.BuildRowsValues(field, document, _ => controlNumber).Select(x => x.ToString()).ToArray();
 
-			AssertIdentifierAt(result, 5, controlNumber + "_0005");
-			AssertIdentifierAt(result, 50, controlNumber + "_0050");
-			AssertIdentifierAt(result, 500, controlNumber + "_0500");
-			AssertIdentifierAt(result, 1000, controlNumber + "_1000");
-		}
+            // Assert
+            result.All(x => x.StartsWith(controlNumber)).Should().BeTrue("All images identifiers should start with control number");
 
-		private static void AssertIdentifierAt(IEnumerable<string> result, int index, string expectedIdentifier)
-		{
-			result.ElementAt(index).Should().Be(expectedIdentifier,
-				"Image identifiers should have a number with leading zeros");
-		}
-	}
+            result.First().Should().Be(controlNumber, "First image identifier should be just control number");
+
+            AssertIdentifierAt(result, 5, controlNumber + "_0005");
+            AssertIdentifierAt(result, 50, controlNumber + "_0050");
+            AssertIdentifierAt(result, 500, controlNumber + "_0500");
+            AssertIdentifierAt(result, 1000, controlNumber + "_1000");
+        }
+
+        private ImageInfoRowValuesBuilder PrepareSut(IDictionary<int, ImageFile[]> documentToImageFiles)
+        {
+            Mock<IAntiMalwareHandler> antiMalwareHandler = new Mock<IAntiMalwareHandler>();
+
+            return new ImageInfoRowValuesBuilder(documentToImageFiles, antiMalwareHandler.Object);
+        }
+
+        private void AssertIdentifierAt(IEnumerable<string> result, int index, string expectedIdentifier)
+        {
+            result.ElementAt(index).Should().Be(expectedIdentifier, "Image identifiers should have a number with leading zeros");
+        }
+    }
 }

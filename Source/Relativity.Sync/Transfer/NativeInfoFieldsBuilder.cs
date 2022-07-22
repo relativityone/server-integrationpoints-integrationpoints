@@ -5,8 +5,8 @@ using Relativity.API;
 namespace Relativity.Sync.Transfer
 {
     internal sealed class NativeInfoFieldsBuilder : INativeInfoFieldsBuilder
-	{
-		private readonly INativeFileRepository _nativeFileRepository;
+    {
+        private readonly INativeFileRepository _nativeFileRepository;
         private readonly IAntiMalwareHandler _antiMalwareHandler;
         private readonly IAPILog _logger;
 
@@ -18,13 +18,13 @@ namespace Relativity.Sync.Transfer
         }
 
         public IEnumerable<FieldInfoDto> BuildColumns()
-		{
-			yield return FieldInfoDto.NativeFileFilenameField();
-			yield return FieldInfoDto.NativeFileSizeField();
-			yield return FieldInfoDto.NativeFileLocationField();
-			yield return FieldInfoDto.SupportedByViewerField();
-			yield return FieldInfoDto.RelativityNativeTypeField();
-		}
+        {
+            yield return FieldInfoDto.NativeFileFilenameField();
+            yield return FieldInfoDto.NativeFileSizeField();
+            yield return FieldInfoDto.NativeFileLocationField();
+            yield return FieldInfoDto.SupportedByViewerField();
+            yield return FieldInfoDto.RelativityNativeTypeField();
+        }
 
         public async Task<INativeSpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, int[] documentArtifactIds)
         {

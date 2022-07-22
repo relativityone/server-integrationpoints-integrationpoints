@@ -18,7 +18,7 @@ namespace Relativity.Sync.Transfer
 
         public async Task ValidateMalwareAsync(IAntiMalwareHandler malwareHandler)
         {
-            if(_wasCheckedForMalware || string.IsNullOrEmpty(Location))
+            if (_wasCheckedForMalware || string.IsNullOrEmpty(Location))
             {
                 return;
             }

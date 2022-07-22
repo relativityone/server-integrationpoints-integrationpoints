@@ -2,10 +2,10 @@
 
 namespace Relativity.Sync.Transfer
 {
-	internal interface INativeFile : IFile
-	{
-		bool IsDuplicated { get; set; }
+    internal interface INativeFile : IFile
+    {
+        bool IsDuplicated { get; set; }
 
-		Task ValidateMalwareAsync(IAntiMalwareHandler malwareHandler);
-	}
+        Task ValidateMalwareAsync(IAntiMalwareHandler malwareHandler);
+    }
 }
