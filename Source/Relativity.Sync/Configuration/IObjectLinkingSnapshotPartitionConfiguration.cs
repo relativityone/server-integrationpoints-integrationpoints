@@ -1,7 +1,7 @@
 ﻿namespace Relativity.Sync.Configuration
 {
-	internal interface IObjectLinkingSnapshotPartitionConfiguration : ISnapshotPartitionConfiguration
-	{
-		bool LinkingExportExists { get; }
-	}
+    internal interface IObjectLinkingSnapshotPartitionConfiguration : ISnapshotPartitionConfiguration
+    {
+        bool LinkingExportExists { get; }
+    }
 }

@@ -2,22 +2,22 @@
 
 namespace Relativity.Sync.Configuration
 {
-	internal interface INotificationConfiguration : IConfiguration
-	{
-		int DestinationWorkspaceArtifactId { get; }
+    internal interface INotificationConfiguration : IConfiguration
+    {
+        int DestinationWorkspaceArtifactId { get; }
 
-		int JobHistoryArtifactId { get; }
+        int JobHistoryArtifactId { get; }
 
-		bool SendEmails { get; }
+        bool SendEmails { get; }
 
-		int SourceWorkspaceArtifactId { get; }
+        int SourceWorkspaceArtifactId { get; }
 
-		int SyncConfigurationArtifactId { get; }
+        int SyncConfigurationArtifactId { get; }
 
-		IEnumerable<string> GetEmailRecipients();
+        IEnumerable<string> GetEmailRecipients();
 
-		string GetJobName();
+        string GetJobName();
 
-		string GetSourceWorkspaceTag();
-	}
+        string GetSourceWorkspaceTag();
+    }
 }

@@ -5,9 +5,9 @@ using Relativity.Sync.Pipelines;
 
 namespace Relativity.Sync.Executors.Validation
 {
-	internal interface IValidator
-	{
-		Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token);
-		bool ShouldValidate(ISyncPipeline pipeline);
-	}
+    internal interface IValidator
+    {
+        Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token);
+        bool ShouldValidate(ISyncPipeline pipeline);
+    }
 }

@@ -18,193 +18,193 @@ using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System
 {
-	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints.Sync]
-	internal sealed class SnapshotPartitionExecutorTests : SystemTest
-	{
-		private int _workspaceId;
-		private int _syncConfigurationId;
-		private SnapshotPartitionExecutor _instance;
-		private IBatchRepository _batchRepository;
-		
-		private static readonly Guid StartingIndexGuid = new Guid("B56F4F70-CEB3-49B8-BC2B-662D481DDC8A");
-		private static readonly Guid TotalDocumentsCountGuid = new Guid("C30CE15E-45D6-49E6-8F62-7C5AA45A4694");
-		private static readonly Guid _SYNC_BATCH_OBJECT_TYPE = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
-		private static readonly Guid _EXPORT_RUN_ID = new Guid("2574E4D4-F067-4D1C-A534-87C9C140FB20");
+    [TestFixture]
+    [Feature.DataTransfer.IntegrationPoints.Sync]
+    internal sealed class SnapshotPartitionExecutorTests : SystemTest
+    {
+        private int _workspaceId;
+        private int _syncConfigurationId;
+        private SnapshotPartitionExecutor _instance;
+        private IBatchRepository _batchRepository;
+        
+        private static readonly Guid StartingIndexGuid = new Guid("B56F4F70-CEB3-49B8-BC2B-662D481DDC8A");
+        private static readonly Guid TotalDocumentsCountGuid = new Guid("C30CE15E-45D6-49E6-8F62-7C5AA45A4694");
+        private static readonly Guid _SYNC_BATCH_OBJECT_TYPE = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
+        private static readonly Guid _EXPORT_RUN_ID = new Guid("2574E4D4-F067-4D1C-A534-87C9C140FB20");
 
-		private static ObjectTypeRef SyncBatchObjectTypeRef => new ObjectTypeRef { Guid = _SYNC_BATCH_OBJECT_TYPE };
+        private static ObjectTypeRef SyncBatchObjectTypeRef => new ObjectTypeRef { Guid = _SYNC_BATCH_OBJECT_TYPE };
 
-		protected override async Task ChildSuiteSetup()
-		{
-			await base.ChildSuiteSetup().ConfigureAwait(false);
+        protected override async Task ChildSuiteSetup()
+        {
+            await base.ChildSuiteSetup().ConfigureAwait(false);
 
-			WorkspaceRef workspace = await Environment.CreateWorkspaceWithFieldsAsync()
-				.ConfigureAwait(false);
-			_workspaceId = workspace.ArtifactID;
+            WorkspaceRef workspace = await Environment.CreateWorkspaceWithFieldsAsync()
+                .ConfigureAwait(false);
+            _workspaceId = workspace.ArtifactID;
 
-			int jobHistoryId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _workspaceId).ConfigureAwait(false);
-			_syncConfigurationId = await Rdos.CreateSyncConfigurationRdoAsync(_workspaceId, jobHistoryId).ConfigureAwait(false);
+            int jobHistoryId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, _workspaceId).ConfigureAwait(false);
+            _syncConfigurationId = await Rdos.CreateSyncConfigurationRdoAsync(_workspaceId, jobHistoryId).ConfigureAwait(false);
 
-			_batchRepository = new BatchRepository(new TestRdoManager(Logger), new ServiceFactoryStub(ServiceFactory), new DateTimeWrapper());
-			_instance = new SnapshotPartitionExecutor(_batchRepository, new EmptyLogger());
-		}
+            _batchRepository = new BatchRepository(new TestRdoManager(Logger), new ServiceFactoryStub(ServiceFactory), new DateTimeWrapper());
+            _instance = new SnapshotPartitionExecutor(_batchRepository, new EmptyLogger());
+        }
 
-		[SetUp]
-		public async Task SetUp()
-		{
-			// Clean up all existing batches
-			using (IObjectManager objectManager = ServiceFactory.CreateProxy<IObjectManager>())
-			{
-				var request = new MassDeleteByCriteriaRequest
-				{
-					ObjectIdentificationCriteria = new ObjectIdentificationCriteria
-					{
-						ObjectType = SyncBatchObjectTypeRef
-					}
-				};
-				await objectManager.DeleteAsync(_workspaceId, request).ConfigureAwait(false);
-			}
-		}
+        [SetUp]
+        public async Task SetUp()
+        {
+            // Clean up all existing batches
+            using (IObjectManager objectManager = ServiceFactory.CreateProxy<IObjectManager>())
+            {
+                var request = new MassDeleteByCriteriaRequest
+                {
+                    ObjectIdentificationCriteria = new ObjectIdentificationCriteria
+                    {
+                        ObjectType = SyncBatchObjectTypeRef
+                    }
+                };
+                await objectManager.DeleteAsync(_workspaceId, request).ConfigureAwait(false);
+            }
+        }
 
-		[IdentifiedTest("e89da746-1af7-4f19-8aef-bc65c9fbe795")]
-		public async Task ItShouldCreateAllBatches()
-		{
-			// Arrange
-			const int totalRecordsCount = 1000;
-			const int batchSize = 100;
-			ConfigurationStub configuration = new ConfigurationStub()
-			{
-				TotalRecordsCount = totalRecordsCount,
-				SyncBatchSize = batchSize,
-				ExportRunId = Guid.Empty,
-				SourceWorkspaceArtifactId = _workspaceId,
-				SyncConfigurationArtifactId = _syncConfigurationId
-			};
+        [IdentifiedTest("e89da746-1af7-4f19-8aef-bc65c9fbe795")]
+        public async Task ItShouldCreateAllBatches()
+        {
+            // Arrange
+            const int totalRecordsCount = 1000;
+            const int batchSize = 100;
+            ConfigurationStub configuration = new ConfigurationStub()
+            {
+                TotalRecordsCount = totalRecordsCount,
+                SyncBatchSize = batchSize,
+                ExportRunId = Guid.Empty,
+                SourceWorkspaceArtifactId = _workspaceId,
+                SyncConfigurationArtifactId = _syncConfigurationId
+            };
 
-			// Act
-			ExecutionResult result = await _instance.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
+            // Act
+            ExecutionResult result = await _instance.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
-			// Assert
-			result.Status.Should().Be(ExecutionStatus.Completed);
+            // Assert
+            result.Status.Should().Be(ExecutionStatus.Completed);
 
-			List<RelativityObject> batches = await GetBatchesAsync(ServiceFactory, _workspaceId, _syncConfigurationId).ConfigureAwait(false);
+            List<RelativityObject> batches = await GetBatchesAsync(ServiceFactory, _workspaceId, _syncConfigurationId).ConfigureAwait(false);
 
-			const int expectedNumBatches = 10;
-			batches.Count.Should().Be(expectedNumBatches);
+            const int expectedNumBatches = 10;
+            batches.Count.Should().Be(expectedNumBatches);
 
-			AssertBatchesInOrder(batches);
-		}
+            AssertBatchesInOrder(batches);
+        }
 
-		[IdentifiedTest("bd3bb990-6ce4-40f5-af37-b2dc918d0afc")]
-		public async Task ItShouldCreateRemainingBatches()
-		{
-			// Arrange
-			const int batchSize = 100;
-			const int firstStartingIndex = 0;
-			const int secondStartingIndex = firstStartingIndex + batchSize;
-			const int thirdStartingIndex = secondStartingIndex + batchSize;
-			await _batchRepository.CreateAsync(_workspaceId, _syncConfigurationId, _EXPORT_RUN_ID, batchSize, firstStartingIndex).ConfigureAwait(false);
-			await _batchRepository.CreateAsync(_workspaceId, _syncConfigurationId, _EXPORT_RUN_ID, batchSize, secondStartingIndex).ConfigureAwait(false);
-			await _batchRepository.CreateAsync(_workspaceId, _syncConfigurationId, _EXPORT_RUN_ID, batchSize, thirdStartingIndex).ConfigureAwait(false);
+        [IdentifiedTest("bd3bb990-6ce4-40f5-af37-b2dc918d0afc")]
+        public async Task ItShouldCreateRemainingBatches()
+        {
+            // Arrange
+            const int batchSize = 100;
+            const int firstStartingIndex = 0;
+            const int secondStartingIndex = firstStartingIndex + batchSize;
+            const int thirdStartingIndex = secondStartingIndex + batchSize;
+            await _batchRepository.CreateAsync(_workspaceId, _syncConfigurationId, _EXPORT_RUN_ID, batchSize, firstStartingIndex).ConfigureAwait(false);
+            await _batchRepository.CreateAsync(_workspaceId, _syncConfigurationId, _EXPORT_RUN_ID, batchSize, secondStartingIndex).ConfigureAwait(false);
+            await _batchRepository.CreateAsync(_workspaceId, _syncConfigurationId, _EXPORT_RUN_ID, batchSize, thirdStartingIndex).ConfigureAwait(false);
 
-			const int totalRecordsCount = 1000;
-			ConfigurationStub configuration = new ConfigurationStub()
-			{
-				TotalRecordsCount = totalRecordsCount,
-				SyncBatchSize = batchSize,
-				ExportRunId = _EXPORT_RUN_ID,
-				SourceWorkspaceArtifactId = _workspaceId,
-				SyncConfigurationArtifactId = _syncConfigurationId
-			};
+            const int totalRecordsCount = 1000;
+            ConfigurationStub configuration = new ConfigurationStub()
+            {
+                TotalRecordsCount = totalRecordsCount,
+                SyncBatchSize = batchSize,
+                ExportRunId = _EXPORT_RUN_ID,
+                SourceWorkspaceArtifactId = _workspaceId,
+                SyncConfigurationArtifactId = _syncConfigurationId
+            };
 
-			// Act
-			ExecutionResult result = await _instance.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
+            // Act
+            ExecutionResult result = await _instance.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
-			// Assert
-			result.Status.Should().Be(ExecutionStatus.Completed);
+            // Assert
+            result.Status.Should().Be(ExecutionStatus.Completed);
 
-			List<RelativityObject> batches = await GetBatchesAsync(ServiceFactory, _workspaceId, _syncConfigurationId).ConfigureAwait(false);
+            List<RelativityObject> batches = await GetBatchesAsync(ServiceFactory, _workspaceId, _syncConfigurationId).ConfigureAwait(false);
 
-			const int expectedNumBatches = 10;
-			batches.Count.Should().Be(expectedNumBatches);
+            const int expectedNumBatches = 10;
+            batches.Count.Should().Be(expectedNumBatches);
 
-			AssertBatchesInOrder(batches);
-		}
+            AssertBatchesInOrder(batches);
+        }
 
-		[IdentifiedTest("5ece6376-9717-461b-9f7d-095e678920ab")]
-		public async Task ItShouldCreateRemainingBatchesWithNewBatchSize()
-		{
-			// Arrange
-			const int originalBatchSize = 100;
-			const int firstStartingIndex = 0;
-			const int secondStartingIndex = firstStartingIndex + originalBatchSize;
-			const int thirdStartingIndex = secondStartingIndex + originalBatchSize;
-			await _batchRepository.CreateAsync(_workspaceId, _syncConfigurationId, _EXPORT_RUN_ID, originalBatchSize, firstStartingIndex).ConfigureAwait(false);
-			await _batchRepository.CreateAsync(_workspaceId, _syncConfigurationId, _EXPORT_RUN_ID, originalBatchSize, secondStartingIndex).ConfigureAwait(false);
-			await _batchRepository.CreateAsync(_workspaceId, _syncConfigurationId, _EXPORT_RUN_ID, originalBatchSize, thirdStartingIndex).ConfigureAwait(false);
+        [IdentifiedTest("5ece6376-9717-461b-9f7d-095e678920ab")]
+        public async Task ItShouldCreateRemainingBatchesWithNewBatchSize()
+        {
+            // Arrange
+            const int originalBatchSize = 100;
+            const int firstStartingIndex = 0;
+            const int secondStartingIndex = firstStartingIndex + originalBatchSize;
+            const int thirdStartingIndex = secondStartingIndex + originalBatchSize;
+            await _batchRepository.CreateAsync(_workspaceId, _syncConfigurationId, _EXPORT_RUN_ID, originalBatchSize, firstStartingIndex).ConfigureAwait(false);
+            await _batchRepository.CreateAsync(_workspaceId, _syncConfigurationId, _EXPORT_RUN_ID, originalBatchSize, secondStartingIndex).ConfigureAwait(false);
+            await _batchRepository.CreateAsync(_workspaceId, _syncConfigurationId, _EXPORT_RUN_ID, originalBatchSize, thirdStartingIndex).ConfigureAwait(false);
 
-			const int totalRecordsCount = 1000;
-			const int newBatchSize = 350;
-			ConfigurationStub configuration = new ConfigurationStub()
-			{
-				TotalRecordsCount = totalRecordsCount,
-				SyncBatchSize = newBatchSize,
-				ExportRunId = _EXPORT_RUN_ID,
-				SourceWorkspaceArtifactId = _workspaceId,
-				SyncConfigurationArtifactId = _syncConfigurationId
-			};
+            const int totalRecordsCount = 1000;
+            const int newBatchSize = 350;
+            ConfigurationStub configuration = new ConfigurationStub()
+            {
+                TotalRecordsCount = totalRecordsCount,
+                SyncBatchSize = newBatchSize,
+                ExportRunId = _EXPORT_RUN_ID,
+                SourceWorkspaceArtifactId = _workspaceId,
+                SyncConfigurationArtifactId = _syncConfigurationId
+            };
 
-			// Act
-			ExecutionResult result = await _instance.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
+            // Act
+            ExecutionResult result = await _instance.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
-			// Assert
-			result.Status.Should().Be(ExecutionStatus.Completed);
+            // Assert
+            result.Status.Should().Be(ExecutionStatus.Completed);
 
-			List<RelativityObject> batches = await GetBatchesAsync(ServiceFactory, _workspaceId, _syncConfigurationId).ConfigureAwait(false);
+            List<RelativityObject> batches = await GetBatchesAsync(ServiceFactory, _workspaceId, _syncConfigurationId).ConfigureAwait(false);
 
-			const int expectedNumBatches = 5;
-			batches.Count.Should().Be(expectedNumBatches);
+            const int expectedNumBatches = 5;
+            batches.Count.Should().Be(expectedNumBatches);
 
-			AssertBatchesInOrder(batches);
-		}
+            AssertBatchesInOrder(batches);
+        }
 
-		private static async Task<List<RelativityObject>> GetBatchesAsync(IServiceFactory serviceFactory, int workspaceId, int syncConfigurationId, int length = 100)
-		{
-			using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())
-			{
-				var request = new QueryRequest
-				{
-					ObjectType = SyncBatchObjectTypeRef,
-					Condition = $"'SyncConfiguration' == OBJECT {syncConfigurationId}",
-					Sorts = new[]
-					{
-						new Sort
-						{
-							FieldIdentifier = new FieldRef { Guid = StartingIndexGuid },
-							Direction = SortEnum.Ascending
-						}
-					},
-					Fields = new []
-					{
-						new FieldRef { Guid = StartingIndexGuid },
-						new FieldRef { Guid = TotalDocumentsCountGuid }
-					}
-				};
+        private static async Task<List<RelativityObject>> GetBatchesAsync(IServiceFactory serviceFactory, int workspaceId, int syncConfigurationId, int length = 100)
+        {
+            using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())
+            {
+                var request = new QueryRequest
+                {
+                    ObjectType = SyncBatchObjectTypeRef,
+                    Condition = $"'SyncConfiguration' == OBJECT {syncConfigurationId}",
+                    Sorts = new[]
+                    {
+                        new Sort
+                        {
+                            FieldIdentifier = new FieldRef { Guid = StartingIndexGuid },
+                            Direction = SortEnum.Ascending
+                        }
+                    },
+                    Fields = new []
+                    {
+                        new FieldRef { Guid = StartingIndexGuid },
+                        new FieldRef { Guid = TotalDocumentsCountGuid }
+                    }
+                };
 
-				QueryResult result = await objectManager.QueryAsync(workspaceId, request, 0, length).ConfigureAwait(false);
-				return result.Objects;
-			}
-		}
+                QueryResult result = await objectManager.QueryAsync(workspaceId, request, 0, length).ConfigureAwait(false);
+                return result.Objects;
+            }
+        }
 
-		private static void AssertBatchesInOrder(IEnumerable<RelativityObject> batches)
-		{
-			int expectedStartIndex = 0;
-			foreach (RelativityObject batch in batches)
-			{
-				batch[StartingIndexGuid].Value.Should().Be(expectedStartIndex);
-				expectedStartIndex += (int)batch[TotalDocumentsCountGuid].Value;
-			}
-		}
+        private static void AssertBatchesInOrder(IEnumerable<RelativityObject> batches)
+        {
+            int expectedStartIndex = 0;
+            foreach (RelativityObject batch in batches)
+            {
+                batch[StartingIndexGuid].Value.Should().Be(expectedStartIndex);
+                expectedStartIndex += (int)batch[TotalDocumentsCountGuid].Value;
+            }
+        }
 
-	}
+    }
 }

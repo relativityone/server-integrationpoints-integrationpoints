@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 namespace Relativity.Sync.Executors
 {
-	internal interface IJobHistoryNameQuery
-	{
-		Task<string> GetJobNameAsync(Guid jobHistoryGuid, int jobHistoryArtifactId, int sourceWorkspaceArtifactId, CancellationToken token);
-	}
+    internal interface IJobHistoryNameQuery
+    {
+        Task<string> GetJobNameAsync(Guid jobHistoryGuid, int jobHistoryArtifactId, int sourceWorkspaceArtifactId, CancellationToken token);
+    }
 }

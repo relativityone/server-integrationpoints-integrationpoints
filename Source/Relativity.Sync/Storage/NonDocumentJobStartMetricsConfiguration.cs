@@ -2,8 +2,8 @@
 
 namespace Relativity.Sync.Storage
 {
-	internal class NonDocumentJobStartMetricsConfiguration : INonDocumentJobStartMetricsConfiguration
-	{
+    internal class NonDocumentJobStartMetricsConfiguration : INonDocumentJobStartMetricsConfiguration
+    {
         private readonly SyncJobParameters _syncJobParameters;
         private readonly IConfiguration _cache;
 

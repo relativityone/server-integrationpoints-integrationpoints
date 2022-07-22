@@ -1,53 +1,54 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
- 	<PropertyGroup>
-		<TargetFramework>net472</TargetFramework>
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-		<WarningLevel>4</WarningLevel>
-		<CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
-		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-		<ResolveNugetPackages>true</ResolveNugetPackages>
-		<IsTestProject>false</IsTestProject>
-	</PropertyGroup>
- 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-		<OutputPath>bin\</OutputPath>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-		<OutputPath>bin\</OutputPath>
-	</PropertyGroup>
-	<ItemGroup>
-	  <None Remove="Resources\Relativity_Sync_Test_Helper.xml" />
-	</ItemGroup>
-	<ItemGroup>
-	  <EmbeddedResource Include="Resources\Relativity_Sync_Test_Helper.xml">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	  <None Remove="Resources\Custom_Relativity_Sync_Test_Helper.xml" />
-	  <EmbeddedResource Include="Resources\Custom_Relativity_Sync_Test_Helper.xml">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </EmbeddedResource>
-	</ItemGroup>
-	<ItemGroup>
-	  <ProjectReference Include="..\Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj" />
-	  <ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
-	</ItemGroup>
-  <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
-  <ItemGroup>
-    <PackageReference Include="Relativity.DataExchange.Client.SDK" />
-  </ItemGroup>
-  <!-- Third Party Packages -->
-  <ItemGroup>
-    <PackageReference Include="Castle.Windsor" Version="3.3.0" />
-  </ItemGroup>
-  <!-- Relativity Packages with Unknown Versioning Schema -->
-  <ItemGroup>
-    <PackageReference Include="Relativity.Testing.Framework" Version="7.2.1" />
-    <PackageReference Include="Relativity.Testing.Framework.Api" Version="6.1.5" />
-    <PackageReference Include="Relativity.Testing.Identification" Version="3.12.0" />
-    <PackageReference Include="Relativity.Productions.Services.Interfaces" Version="11.2.13" />
-  </ItemGroup>
-	<ItemGroup>
-		<Reference Include="System.Web.Services" />
-	</ItemGroup>
+     <PropertyGroup>
+        <TargetFramework>net472</TargetFramework>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <WarningLevel>4</WarningLevel>
+        <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+        <ResolveNugetPackages>true</ResolveNugetPackages>
+        <IsTestProject>false</IsTestProject>
+    </PropertyGroup>
+     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <OutputPath>bin\</OutputPath>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <OutputPath>bin\</OutputPath>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Remove="Resources\Relativity_Sync_Test_Helper.xml" />
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="Resources\Relativity_Sync_Test_Helper.xml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <None Remove="Resources\Custom_Relativity_Sync_Test_Helper.xml" />
+        <EmbeddedResource Include="Resources\Custom_Relativity_Sync_Test_Helper.xml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </EmbeddedResource>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Relativity.Sync.Tests.Common\Relativity.Sync.Tests.Common.csproj" />
+        <ProjectReference Include="..\Relativity.Sync\Relativity.Sync.csproj" />
+    </ItemGroup>
+    <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
+    <ItemGroup>
+        <PackageReference Include="Relativity.DataExchange.Client.SDK" />
+    </ItemGroup>
+    <!-- Third Party Packages -->
+    <ItemGroup>
+        <PackageReference Include="Castle.Windsor" Version="3.3.0" />
+    </ItemGroup>
+    <!-- Relativity Packages with Unknown Versioning Schema -->
+    <ItemGroup>
+        <PackageReference Include="Relativity.Testing.Framework" Version="7.2.1" />
+        <PackageReference Include="Relativity.Testing.Framework.Api" Version="6.1.5" />
+        <PackageReference Include="Relativity.Testing.Identification" Version="3.12.0" />
+        <PackageReference Include="Relativity.Productions.Services.Interfaces" Version="11.2.13" />
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="System.Web.Services" />
+    </ItemGroup>
+    <Import Project="..\..\stylecop\StyleCop.props" />
 </Project>

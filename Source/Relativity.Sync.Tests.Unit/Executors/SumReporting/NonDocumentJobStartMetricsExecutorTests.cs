@@ -21,8 +21,8 @@ using Relativity.Sync.Telemetry.Metrics;
 
 namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 {
-	[TestFixture]
-	internal class NonDocumentJobStartMetricsExecutorTests
+    [TestFixture]
+    internal class NonDocumentJobStartMetricsExecutorTests
     {
         private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 1;
         private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 2;
@@ -42,8 +42,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 
         private NonDocumentJobStartMetricsExecutor _sut;
 
-		[SetUp]
-		public void SetUp()
+        [SetUp]
+        public void SetUp()
         {
             _loggerMock = new Mock<IAPILog>();
 
@@ -60,82 +60,82 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 
             _objectTypeManagerMock = new Mock<IObjectTypeManager>();
 
-			_serviceFactory.Setup(x => x.CreateProxyAsync<IObjectTypeManager>())
+            _serviceFactory.Setup(x => x.CreateProxyAsync<IObjectTypeManager>())
                 .ReturnsAsync(_objectTypeManagerMock.Object);
 
-			_configurationFake = new Mock<INonDocumentJobStartMetricsConfiguration>();
-			_configurationFake.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ARTIFACT_ID);
-			_configurationFake.SetupGet(x => x.DestinationWorkspaceArtifactId).Returns(_DESTINATION_WORKSPACE_ARTIFACT_ID);
-			_configurationFake.SetupGet(x => x.RdoArtifactTypeId).Returns(_NON_DOCUMENT_ARTIFACT_TYPE_ID);
+            _configurationFake = new Mock<INonDocumentJobStartMetricsConfiguration>();
+            _configurationFake.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ARTIFACT_ID);
+            _configurationFake.SetupGet(x => x.DestinationWorkspaceArtifactId).Returns(_DESTINATION_WORKSPACE_ARTIFACT_ID);
+            _configurationFake.SetupGet(x => x.RdoArtifactTypeId).Returns(_NON_DOCUMENT_ARTIFACT_TYPE_ID);
             
-			_sut = new NonDocumentJobStartMetricsExecutor(
+            _sut = new NonDocumentJobStartMetricsExecutor(
                 _serviceFactory.Object,
-				_syncMetricsMock.Object,
-				_fieldMappingSummaryFake.Object,
+                _syncMetricsMock.Object,
+                _fieldMappingSummaryFake.Object,
                 _loggerMock.Object);
         }
 
-		[Test]
-		public async Task ExecuteAsync_ShouldReportJobStartMetric()
-		{
+        [Test]
+        public async Task ExecuteAsync_ShouldReportJobStartMetric()
+        {
             // Act
-			await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+            await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
-			// Assert
-			_syncMetricsMock.Verify(x => x.Send(It.Is<NonDocumentJobStartMetric>(m => 
-				m.Type == TelemetryConstants.PROVIDER_NAME &&
-				m.FlowType == TelemetryConstants.FLOW_TYPE_VIEW_NON_DOCUMENT_OBJECTS)));
-		}
+            // Assert
+            _syncMetricsMock.Verify(x => x.Send(It.Is<NonDocumentJobStartMetric>(m => 
+                m.Type == TelemetryConstants.PROVIDER_NAME &&
+                m.FlowType == TelemetryConstants.FLOW_TYPE_VIEW_NON_DOCUMENT_OBJECTS)));
+        }
 
 
         [Test]
-		public async Task ExecuteAsync_ShouldReportRetryMetric_WhenRetryFlowIsSelected()
-		{
-			// Arrange
-			_configurationFake.SetupGet(x => x.JobHistoryToRetryId).Returns(100);
+        public async Task ExecuteAsync_ShouldReportRetryMetric_WhenRetryFlowIsSelected()
+        {
+            // Arrange
+            _configurationFake.SetupGet(x => x.JobHistoryToRetryId).Returns(100);
 
-			// Act
-			await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+            // Act
+            await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
-			// Assert
+            // Assert
             _syncMetricsMock.Verify(x => x.Send(It.Is<NonDocumentJobStartMetric>(m => m.RetryType != null)));
-		}
+        }
 
-		[Test]
-		public void ExecuteAsync_ShouldComplete_WhenObjectManagerThrows()
-		{
-			// Arrange
+        [Test]
+        public void ExecuteAsync_ShouldComplete_WhenObjectManagerThrows()
+        {
+            // Arrange
             _objectManagerFake
-				.Setup(x => x.QuerySlimAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(),
-					It.IsAny<int>(), It.IsAny<CancellationToken>()))
-				.ThrowsAsync(new Exception());
+                .Setup(x => x.QuerySlimAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(),
+                    It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new Exception());
 
-			// Act
-			Func<Task> action = () => _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None);
+            // Act
+            Func<Task> action = () => _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None);
 
-			// Assert
-			action.Should().NotThrow();
-		}
+            // Assert
+            action.Should().NotThrow();
+        }
 
-		[Test]
-		public void ExecuteAsync_ShouldComplete_WhenFieldManagerThrows()
-		{
-			// Arrange
+        [Test]
+        public void ExecuteAsync_ShouldComplete_WhenFieldManagerThrows()
+        {
+            // Arrange
             _fieldMappingSummaryFake.Setup(x => x.GetFieldsMappingSummaryAsync(It.IsAny<CancellationToken>()))
-				.ThrowsAsync(new Exception());
+                .ThrowsAsync(new Exception());
 
-			// Act
-			Func<Task> action = () => _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None);
+            // Act
+            Func<Task> action = () => _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None);
 
-			// Assert
-			action.Should().NotThrow();
-		}
+            // Assert
+            action.Should().NotThrow();
+        }
 
 
         [Test]
         public async Task ExecuteAsync_ShouldLogFieldsMappingDetails()
         {
-			// Arrange
+            // Arrange
             Dictionary<string, object> summary = new Dictionary<string, object>();
             _fieldMappingSummaryFake.Setup(x => x.GetFieldsMappingSummaryAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(summary);
@@ -206,20 +206,20 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
         }
 
         [Test]
-		public async Task ExecuteAsync_ShouldReportJobResumeMetric_WhenResuming()
-		{
-			// Arrange
-			_configurationFake.SetupGet(x => x.Resuming).Returns(true);
+        public async Task ExecuteAsync_ShouldReportJobResumeMetric_WhenResuming()
+        {
+            // Arrange
+            _configurationFake.SetupGet(x => x.Resuming).Returns(true);
 
-			// Act
-			await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+            // Act
+            await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
-			// Assert
+            // Assert
             _syncMetricsMock.Verify(x => x.Send(It.Is<JobResumeMetric>(metric =>
-				metric.Type == TelemetryConstants.PROVIDER_NAME)), Times.Once);
+                metric.Type == TelemetryConstants.PROVIDER_NAME)), Times.Once);
             _syncMetricsMock.Verify(x => x.Send(It.IsAny<NonDocumentJobStartMetric>()), Times.Never);
 
             _loggerMock.Verify(x => x.LogInformation("Fields map configuration summary: {@summary}", It.IsAny<Dictionary<string, object>>()), Times.Never);
-		}
+        }
     }
 }

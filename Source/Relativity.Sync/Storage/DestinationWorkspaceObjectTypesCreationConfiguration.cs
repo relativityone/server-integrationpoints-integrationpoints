@@ -2,15 +2,15 @@
 
 namespace Relativity.Sync.Storage
 {
-	internal sealed class DestinationWorkspaceObjectTypesCreationConfiguration : IDestinationWorkspaceObjectTypesCreationConfiguration
-	{
-		private readonly IConfiguration _cache;
+    internal sealed class DestinationWorkspaceObjectTypesCreationConfiguration : IDestinationWorkspaceObjectTypesCreationConfiguration
+    {
+        private readonly IConfiguration _cache;
 
-		public DestinationWorkspaceObjectTypesCreationConfiguration(IConfiguration cache)
-		{
-			_cache = cache;
-		}
+        public DestinationWorkspaceObjectTypesCreationConfiguration(IConfiguration cache)
+        {
+            _cache = cache;
+        }
 
-		public int DestinationWorkspaceArtifactId => _cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);
-	}
+        public int DestinationWorkspaceArtifactId => _cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);
+    }
 }

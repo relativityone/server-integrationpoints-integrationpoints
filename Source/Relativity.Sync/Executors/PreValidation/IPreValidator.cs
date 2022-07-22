@@ -5,8 +5,8 @@ using Relativity.Sync.Executors.Validation;
 
 namespace Relativity.Sync.Executors.PreValidation
 {
-	internal interface IPreValidator
-	{
-		Task<ValidationResult> ValidateAsync(IPreValidationConfiguration configuration, CancellationToken token);
-	}
+    internal interface IPreValidator
+    {
+        Task<ValidationResult> ValidateAsync(IPreValidationConfiguration configuration, CancellationToken token);
+    }
 }

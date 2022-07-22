@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 namespace Relativity.Sync.Transfer.StreamWrappers
 {
-	internal interface IRetriableStreamBuilder : IDisposable
-	{
-		Task<Stream> GetStreamAsync();
-	}
+    internal interface IRetriableStreamBuilder : IDisposable
+    {
+        Task<Stream> GetStreamAsync();
+    }
 }

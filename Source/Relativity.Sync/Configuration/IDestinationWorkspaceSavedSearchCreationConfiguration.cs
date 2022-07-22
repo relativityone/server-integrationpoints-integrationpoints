@@ -2,18 +2,18 @@
 
 namespace Relativity.Sync.Configuration
 {
-	internal interface IDestinationWorkspaceSavedSearchCreationConfiguration : IConfiguration
-	{
-		int DestinationWorkspaceArtifactId { get; }
+    internal interface IDestinationWorkspaceSavedSearchCreationConfiguration : IConfiguration
+    {
+        int DestinationWorkspaceArtifactId { get; }
 
-		int SourceJobTagArtifactId { get; }
+        int SourceJobTagArtifactId { get; }
 
-		bool CreateSavedSearchForTags { get; }
+        bool CreateSavedSearchForTags { get; }
 
-		bool IsSavedSearchArtifactIdSet { get; }
+        bool IsSavedSearchArtifactIdSet { get; }
 
-		string GetSourceJobTagName();
+        string GetSourceJobTagName();
 
-		Task SetSavedSearchInDestinationArtifactIdAsync(int artifactId);
-	}
+        Task SetSavedSearchInDestinationArtifactIdAsync(int artifactId);
+    }
 }

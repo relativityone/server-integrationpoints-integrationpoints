@@ -2,7 +2,7 @@
 
 namespace Relativity.Sync.Tests.Integration
 {
-	internal sealed class RelativitySourceJobTagRepositoryExceptionTests : ExceptionSerializationTestsBase<RelativitySourceJobTagRepositoryException>
-	{
-	}
+    internal sealed class RelativitySourceJobTagRepositoryExceptionTests : ExceptionSerializationTestsBase<RelativitySourceJobTagRepositoryException>
+    {
+    }
 }

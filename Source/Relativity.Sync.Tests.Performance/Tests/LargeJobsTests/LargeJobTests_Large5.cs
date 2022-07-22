@@ -6,35 +6,35 @@ using Relativity.Sync.Tests.Performance.Helpers;
 #pragma warning disable RG2009 // Hardcoded Numeric Value
 namespace Relativity.Sync.Tests.Performance.Tests
 {
-	[TestFixture]
-	[Category("LARGE_Jobs-Large-5")]
-	internal class LargeJobTests_Large5 : PerformanceTestBase
-	{
-		protected override async Task ChildSuiteSetup()
-		{
-			await base.ChildSuiteSetup().ConfigureAwait(false);
+    [TestFixture]
+    [Category("LARGE_Jobs-Large-5")]
+    internal class LargeJobTests_Large5 : PerformanceTestBase
+    {
+        protected override async Task ChildSuiteSetup()
+        {
+            await base.ChildSuiteSetup().ConfigureAwait(false);
 
-			await UseExistingWorkspaceAsync(
-					"Large Job Tests [DO NOT DELETE]",
-					null)
-				.ConfigureAwait(false);
-		}
+            await UseExistingWorkspaceAsync(
+                    "Large Job Tests [DO NOT DELETE]",
+                    null)
+                .ConfigureAwait(false);
+        }
 
-		[Test]
-		public async Task RunJob()
-		{
-			PerformanceTestCase testCase = new PerformanceTestCase
-			{
-				TestCaseName = "Large-5",
-				CopyMode = ImportNativeFileCopyMode.CopyFiles,
-				OverwriteMode = ImportOverwriteMode.AppendOnly,
-				MapExtractedText = false,
-				ExpectedItemsTransferred = 250000,
-				NumberOfMappedFields = 200,
-			};
+        [Test]
+        public async Task RunJob()
+        {
+            PerformanceTestCase testCase = new PerformanceTestCase
+            {
+                TestCaseName = "Large-5",
+                CopyMode = ImportNativeFileCopyMode.CopyFiles,
+                OverwriteMode = ImportOverwriteMode.AppendOnly,
+                MapExtractedText = false,
+                ExpectedItemsTransferred = 250000,
+                NumberOfMappedFields = 200,
+            };
 
-			await RunTestCaseAsync(testCase).ConfigureAwait(false);
-		}
-	}
+            await RunTestCaseAsync(testCase).ConfigureAwait(false);
+        }
+    }
 }
 #pragma warning restore RG2009 // Hardcoded Numeric Value

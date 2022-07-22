@@ -57,10 +57,10 @@ namespace Relativity.Sync.Tests.Unit.RDOs
                 .Returns(Task.FromResult(_objectManagerMock.Object));
 
             _serviceFactoryForAdminMock.Setup(x => x.CreateProxyAsync<IObjectTypeManager>())
-	            .Returns(Task.FromResult(_objectTypeManagerMock.Object));
+                .Returns(Task.FromResult(_objectTypeManagerMock.Object));
 
             _serviceFactoryForAdminMock.Setup(x => x.CreateProxyAsync<ITabManager>())
-	            .Returns(Task.FromResult(_tabManagerMock.Object));
+                .Returns(Task.FromResult(_tabManagerMock.Object));
 
             _serviceFactoryForAdminMock.Setup(x => x.CreateProxyAsync<IFieldManager>()).Returns(
                 Task.FromResult(_fieldManagerMock.Object));
@@ -122,85 +122,85 @@ namespace Relativity.Sync.Tests.Unit.RDOs
         [Test]
         public async Task EnsureTypeExist_ShouldCreateType_WhenDoesNotExist()
         {
-	        // Arrange
-	        const int createdTypeArtifactId = 3;
+            // Arrange
+            const int createdTypeArtifactId = 3;
 
-	        _objectManagerMock.Setup(x => x.QueryAsync(WorkspaceId,
-			        It.Is<QueryRequest>(q => q.Condition == $"'Name' == '{SampleRdo.ExpectedRdoInfo.Name}'"), 0, 1))
-		        .ReturnsAsync(new QueryResult() { Objects = new List<RelativityObject>() });
+            _objectManagerMock.Setup(x => x.QueryAsync(WorkspaceId,
+                    It.Is<QueryRequest>(q => q.Condition == $"'Name' == '{SampleRdo.ExpectedRdoInfo.Name}'"), 0, 1))
+                .ReturnsAsync(new QueryResult() { Objects = new List<RelativityObject>() });
 
-	        _objectTypeManagerMock
-		        .Setup(x => x.CreateAsync(WorkspaceId,
-			        It.Is<ObjectTypeRequest>(q => q.Name == SampleRdo.ExpectedRdoInfo.Name)))
-		        .ReturnsAsync(createdTypeArtifactId);
+            _objectTypeManagerMock
+                .Setup(x => x.CreateAsync(WorkspaceId,
+                    It.Is<ObjectTypeRequest>(q => q.Name == SampleRdo.ExpectedRdoInfo.Name)))
+                .ReturnsAsync(createdTypeArtifactId);
 
 
-	        // Act
-	        await _sut.EnsureTypeExistsAsync<SampleRdo>(WorkspaceId);
+            // Act
+            await _sut.EnsureTypeExistsAsync<SampleRdo>(WorkspaceId);
 
-	        // Assert
-	        _artifactGuidManagerMock.Verify(x => x.CreateSingleAsync(WorkspaceId, createdTypeArtifactId,
-		        It.Is<List<Guid>>(l => l.Contains(SampleRdo.ExpectedRdoInfo.TypeGuid))));
+            // Assert
+            _artifactGuidManagerMock.Verify(x => x.CreateSingleAsync(WorkspaceId, createdTypeArtifactId,
+                It.Is<List<Guid>>(l => l.Contains(SampleRdo.ExpectedRdoInfo.TypeGuid))));
 
-	        foreach (RdoFieldInfo fieldInfo in SampleRdo.ExpectedRdoInfo.Fields.Values)
-	        {
-		        _artifactGuidManagerMock.Verify(x => x.CreateSingleAsync(WorkspaceId, CreatedFieldId,
-			        It.Is<List<Guid>>(l => l.Contains(fieldInfo.Guid))));
-	        }
+            foreach (RdoFieldInfo fieldInfo in SampleRdo.ExpectedRdoInfo.Fields.Values)
+            {
+                _artifactGuidManagerMock.Verify(x => x.CreateSingleAsync(WorkspaceId, CreatedFieldId,
+                    It.Is<List<Guid>>(l => l.Contains(fieldInfo.Guid))));
+            }
         }
 
         [Test]
         public async Task EnsureTypeExist_ShouldDeleteTabAfterObjectTypeCreation()
         {
-	        // Arrange
-	        const int tabArtifactId = 4;
-	        _objectManagerMock.Setup(x =>
-			        x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
-		        .ReturnsAsync(new QueryResult()
-		        {
-			        Objects = new List<RelativityObject>(),
+            // Arrange
+            const int tabArtifactId = 4;
+            _objectManagerMock.Setup(x =>
+                    x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new QueryResult()
+                {
+                    Objects = new List<RelativityObject>(),
                     TotalCount = 0
-		        });
+                });
 
             _objectManagerMock.Setup(x => x.QueryAsync(WorkspaceId,
-			        It.Is<QueryRequest>(q => q.ObjectType.ArtifactTypeID == (int) ArtifactType.Tab && q.Condition == $"'Object Type' == '{SampleRdo.ExpectedRdoInfo.Name}'"), 0, 1))
-		        .ReturnsAsync(new QueryResult()
-		        {
-			        Objects = new List<RelativityObject>()
-			        {
-				        new RelativityObject()
-				        {
-					        ArtifactID = tabArtifactId
-				        }
-			        }
-		        });
+                    It.Is<QueryRequest>(q => q.ObjectType.ArtifactTypeID == (int) ArtifactType.Tab && q.Condition == $"'Object Type' == '{SampleRdo.ExpectedRdoInfo.Name}'"), 0, 1))
+                .ReturnsAsync(new QueryResult()
+                {
+                    Objects = new List<RelativityObject>()
+                    {
+                        new RelativityObject()
+                        {
+                            ArtifactID = tabArtifactId
+                        }
+                    }
+                });
 
-	        // Act
-	        await _sut.EnsureTypeExistsAsync<SampleRdo>(WorkspaceId);
+            // Act
+            await _sut.EnsureTypeExistsAsync<SampleRdo>(WorkspaceId);
 
-	        // Assert
-	        _tabManagerMock.Verify(x => x.DeleteAsync(WorkspaceId, tabArtifactId), Times.Once);
+            // Assert
+            _tabManagerMock.Verify(x => x.DeleteAsync(WorkspaceId, tabArtifactId), Times.Once);
         }
 
 
         [Test]
         public async Task EnsureTypeExist_ShouldNotDeleteTab_WhenTabDoesntExist()
         {
-	        // Arrange
-	        const int tabArtifactId = 4;
-	        _objectManagerMock.Setup(x =>
-			        x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
-		        .ReturnsAsync(new QueryResult()
-		        {
-			        Objects = new List<RelativityObject>(),
-			        TotalCount = 0
-		        });
+            // Arrange
+            const int tabArtifactId = 4;
+            _objectManagerMock.Setup(x =>
+                    x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(new QueryResult()
+                {
+                    Objects = new List<RelativityObject>(),
+                    TotalCount = 0
+                });
             
-	        // Act
-	        await _sut.EnsureTypeExistsAsync<SampleRdo>(WorkspaceId);
+            // Act
+            await _sut.EnsureTypeExistsAsync<SampleRdo>(WorkspaceId);
 
-	        // Assert
-	        _tabManagerMock.Verify(x => x.DeleteAsync(WorkspaceId, tabArtifactId), Times.Never);
+            // Assert
+            _tabManagerMock.Verify(x => x.DeleteAsync(WorkspaceId, tabArtifactId), Times.Never);
         }
 
 

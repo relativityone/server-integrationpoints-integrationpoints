@@ -3,49 +3,49 @@ using System.Threading.Tasks;
 
 namespace Relativity.Sync.Configuration
 {
-	internal interface ISynchronizationConfiguration : IConfiguration
-	{
-		bool ImageImport { get; }
+    internal interface ISynchronizationConfiguration : IConfiguration
+    {
+        bool ImageImport { get; }
 
-		int RdoArtifactTypeId { get; }
+        int RdoArtifactTypeId { get; }
 
-		int DestinationWorkspaceArtifactId { get; }
+        int DestinationWorkspaceArtifactId { get; }
 
-		int DestinationFolderArtifactId { get; }
+        int DestinationFolderArtifactId { get; }
 
-		int DestinationWorkspaceTagArtifactId { get; }
+        int DestinationWorkspaceTagArtifactId { get; }
 
-		Guid ExportRunId { get; }
+        Guid ExportRunId { get; }
 
-		int JobHistoryArtifactId { get; }
+        int JobHistoryArtifactId { get; }
 
-		int SourceJobTagArtifactId { get; }
+        int SourceJobTagArtifactId { get; }
 
-		int SourceWorkspaceArtifactId { get; }
+        int SourceWorkspaceArtifactId { get; }
 
-		int SourceWorkspaceTagArtifactId { get; }
+        int SourceWorkspaceTagArtifactId { get; }
 
-		int SyncConfigurationArtifactId { get; }
+        int SyncConfigurationArtifactId { get; }
 
-		int IdentityFieldId { get; set; }
+        int IdentityFieldId { get; set; }
 
-		string FileNameColumn { get; set; }
+        string FileNameColumn { get; set; }
 
-		ImportOverwriteMode ImportOverwriteMode { get; }
+        ImportOverwriteMode ImportOverwriteMode { get; }
 
-		FieldOverlayBehavior FieldOverlayBehavior { get; }
+        FieldOverlayBehavior FieldOverlayBehavior { get; }
 
-		string FolderPathSourceFieldName { get; set; }
+        string FolderPathSourceFieldName { get; set; }
 
-		bool MoveExistingDocuments { get; }
+        bool MoveExistingDocuments { get; }
 
-		int DataSourceArtifactId { get; }
+        int DataSourceArtifactId { get; }
 
-		char MultiValueDelimiter { get; }
+        char MultiValueDelimiter { get; }
 
-		char NestedValueDelimiter { get; }
+        char NestedValueDelimiter { get; }
 
 
-		Task<int> GetImportApiBatchSizeAsync();
-	}
+        Task<int> GetImportApiBatchSizeAsync();
+    }
 }

@@ -13,68 +13,68 @@ using Relativity.Sync.Tests.Integration.Helpers;
 
 namespace Relativity.Sync.Tests.Integration
 {
-	[TestFixture]
-	public sealed class SourceWorkspaceNameValidatorTests
-	{
-		private ConfigurationStub _configuration;
-		private SourceWorkspaceNameValidator _sut;
-		private Mock<IWorkspaceManager> _workspaceManagerMock;
-		private const int _WORKSPACE_ARTIFACT_ID = 123;
+    [TestFixture]
+    public sealed class SourceWorkspaceNameValidatorTests
+    {
+        private ConfigurationStub _configuration;
+        private SourceWorkspaceNameValidator _sut;
+        private Mock<IWorkspaceManager> _workspaceManagerMock;
+        private const int _WORKSPACE_ARTIFACT_ID = 123;
 
-		[SetUp]
-		public void SetUp()
-		{
-			_workspaceManagerMock = new Mock<IWorkspaceManager>();
+        [SetUp]
+        public void SetUp()
+        {
+            _workspaceManagerMock = new Mock<IWorkspaceManager>();
 
-			Mock<ISourceServiceFactoryForUser> serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
-			serviceFactoryForUser.Setup(sf => sf.CreateProxyAsync<IWorkspaceManager>()).ReturnsAsync(_workspaceManagerMock.Object);
+            Mock<ISourceServiceFactoryForUser> serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
+            serviceFactoryForUser.Setup(sf => sf.CreateProxyAsync<IWorkspaceManager>()).ReturnsAsync(_workspaceManagerMock.Object);
 
-			ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
-			containerBuilder.RegisterInstance(serviceFactoryForUser.Object).As<ISourceServiceFactoryForUser>();
-			containerBuilder.RegisterType<SourceWorkspaceNameValidator>();
-			IContainer container = containerBuilder.Build();
+            ContainerBuilder containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
+            containerBuilder.RegisterInstance(serviceFactoryForUser.Object).As<ISourceServiceFactoryForUser>();
+            containerBuilder.RegisterType<SourceWorkspaceNameValidator>();
+            IContainer container = containerBuilder.Build();
 
-			_configuration = new ConfigurationStub();
+            _configuration = new ConfigurationStub();
 
-			_sut = container.Resolve<SourceWorkspaceNameValidator>();
-		}
+            _sut = container.Resolve<SourceWorkspaceNameValidator>();
+        }
 
-		[Test]
-		public async Task ValidateAsync_ShouldHandleValidDestinationWorkspaceName()
-		{
-			// Arrange
-			string validWorkspaceName = "So much valid";
+        [Test]
+        public async Task ValidateAsync_ShouldHandleValidDestinationWorkspaceName()
+        {
+            // Arrange
+            string validWorkspaceName = "So much valid";
 
-			_workspaceManagerMock.Setup(x => x.ReadAsync(_WORKSPACE_ARTIFACT_ID))
-				.ReturnsAsync(new WorkspaceResponse {Name = validWorkspaceName});
+            _workspaceManagerMock.Setup(x => x.ReadAsync(_WORKSPACE_ARTIFACT_ID))
+                .ReturnsAsync(new WorkspaceResponse {Name = validWorkspaceName});
 
-			_configuration.SourceWorkspaceArtifactId = _WORKSPACE_ARTIFACT_ID;
+            _configuration.SourceWorkspaceArtifactId = _WORKSPACE_ARTIFACT_ID;
 
-			// Act
-			ValidationResult result = await _sut.ValidateAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
+            // Act
+            ValidationResult result = await _sut.ValidateAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
 
-			// Assert
-			result.IsValid.Should().BeTrue();
-			result.Messages.Should().BeEmpty();
-		}
+            // Assert
+            result.IsValid.Should().BeTrue();
+            result.Messages.Should().BeEmpty();
+        }
 
-		[Test]
-		public async Task ValidateAsync_ShouldHandleInvalidDestinationWorkspaceName()
-		{
-			// Arrange
-			string invalidWorkspaceName = "So ; much ; invalid";
+        [Test]
+        public async Task ValidateAsync_ShouldHandleInvalidDestinationWorkspaceName()
+        {
+            // Arrange
+            string invalidWorkspaceName = "So ; much ; invalid";
 
-			_workspaceManagerMock.Setup(x => x.ReadAsync(_WORKSPACE_ARTIFACT_ID))
-				.ReturnsAsync(new WorkspaceResponse {Name = invalidWorkspaceName});
+            _workspaceManagerMock.Setup(x => x.ReadAsync(_WORKSPACE_ARTIFACT_ID))
+                .ReturnsAsync(new WorkspaceResponse {Name = invalidWorkspaceName});
 
-			_configuration.SourceWorkspaceArtifactId = _WORKSPACE_ARTIFACT_ID;
+            _configuration.SourceWorkspaceArtifactId = _WORKSPACE_ARTIFACT_ID;
 
-			// Act
-			ValidationResult result = await _sut.ValidateAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
+            // Act
+            ValidationResult result = await _sut.ValidateAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
 
-			// Assert
-			result.IsValid.Should().BeFalse();
-			result.Messages.Should().NotBeEmpty();
-		}
-	}
+            // Assert
+            result.IsValid.Should().BeFalse();
+            result.Messages.Should().NotBeEmpty();
+        }
+    }
 }

@@ -5,22 +5,22 @@ using Relativity.Sync.Executors;
 
 namespace Relativity.Sync.Tests.System.Core.Stubs
 {
-	internal sealed class ImportApiFactoryStub : IImportApiFactory
-	{
-		private readonly string _userName;
-		private readonly string _password;
+    internal sealed class ImportApiFactoryStub : IImportApiFactory
+    {
+        private readonly string _userName;
+        private readonly string _password;
 
-		public ImportApiFactoryStub() : this(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword) { }
+        public ImportApiFactoryStub() : this(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword) { }
 
-		public ImportApiFactoryStub(string userName, string password)
-		{
-			_userName = userName;
-			_password = password;
-		}
+        public ImportApiFactoryStub(string userName, string password)
+        {
+            _userName = userName;
+            _password = password;
+        }
 
-		public async Task<IImportAPI> CreateImportApiAsync(Uri webServiceUrl)
-		{
-			return await Task.Run(() => new ImportAPI(_userName, _password, webServiceUrl.AbsoluteUri)).ConfigureAwait(false);
-		}
-	}
+        public async Task<IImportAPI> CreateImportApiAsync(Uri webServiceUrl)
+        {
+            return await Task.Run(() => new ImportAPI(_userName, _password, webServiceUrl.AbsoluteUri)).ConfigureAwait(false);
+        }
+    }
 }
