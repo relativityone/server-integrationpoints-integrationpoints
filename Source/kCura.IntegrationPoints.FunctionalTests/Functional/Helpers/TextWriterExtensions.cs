@@ -15,13 +15,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
 
         public static void Log(this TextWriter writer, string message, Exception ex)
         {
-            writer.Log(message + Environment.NewLine + ex.ToString());
+            writer.Log(message + System.Environment.NewLine + ex.ToString());
         }
 
         public static void Log(this TextWriter writer, IDictionary<string, object> stuff)
         {
             string message = string.Empty;
-            stuff.ToList().ForEach(pair => message += $"{pair.Key}: {pair.Value?.ToString() ?? "NULL"}{Environment.NewLine}");
+            stuff.ToList().ForEach(pair => message += $"{pair.Key}: {pair.Value?.ToString() ?? "NULL"}{System.Environment.NewLine}");
             writer.Log(message);
         }
     }
