@@ -87,7 +87,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
             string result = validationResult.ToString();
 
-            result.Should().Be($"first message{Environment.NewLine}second message");
+            result.Should().Be($"first message{System.Environment.NewLine}second message");
         }
     }
 }

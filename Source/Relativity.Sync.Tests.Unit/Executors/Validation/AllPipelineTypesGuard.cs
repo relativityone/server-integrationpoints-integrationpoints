@@ -44,7 +44,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
             if (missingPipelinesForMethods.Any())
             {
-                Assert.Fail($"There are missing pipeline test cases for some tests: {Environment.NewLine} [{Environment.NewLine}{{0}}{Environment.NewLine}]", string.Join("," + Environment.NewLine, missingPipelinesForMethods.Select(GetMissingPipelineDescription)));
+                Assert.Fail($"There are missing pipeline test cases for some tests: {System.Environment.NewLine} [{System.Environment.NewLine}{{0}}{System.Environment.NewLine}]", string.Join("," + System.Environment.NewLine, missingPipelinesForMethods.Select(GetMissingPipelineDescription)));
             }
         }
 
