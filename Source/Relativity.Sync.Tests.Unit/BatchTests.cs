@@ -27,7 +27,7 @@ namespace Relativity.Sync.Tests.Unit
         private const int _WORKSPACE_ID = 433;
         private const int _ARTIFACT_ID = 416;
         private const string _PARENT_OBJECT_FIELD_NAME = "SyncConfiguration";
-        internal const string _EXPORT_RUN_ID_NAME = "ExportRunId";
+        private const string _EXPORT_RUN_ID_NAME = "ExportRunId";
 
         private static readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
         private static readonly Guid StatusGuid = new Guid("D16FAF24-BC87-486C-A0AB-6354F36AF38E");

@@ -8,6 +8,7 @@ using Relativity.Testing.Framework.Api;
 using Relativity.Testing.Framework.Api.Kepler;
 using Relativity.Testing.Framework.Api.Services;
 using Relativity.Testing.Framework.Models;
+using SystemEnvironment = System.Environment;
 
 namespace Relativity.Sync.Tests.Performance.Helpers
 {
@@ -109,7 +110,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
         {
             if(!Path.IsPathRooted(directory))
             {
-                directory = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), directory);
+                directory = Path.Combine(Path.GetPathRoot(SystemEnvironment.SystemDirectory), directory);
             }
 
             string destinationFile = Path.Combine(directory, Path.GetFileName(filePath));
@@ -134,7 +135,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
         {
             if (!Path.IsPathRooted(directory))
             {
-                directory = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), directory);
+                directory = Path.Combine(Path.GetPathRoot(SystemEnvironment.SystemDirectory), directory);
             }
 
             using (var directoryManager = _serviceFactory.GetServiceProxy<IDirectoryManager>())

@@ -200,7 +200,7 @@ namespace Relativity.Sync.SyncConfiguration
 
                 if (notExistingGuidErrors.Any())
                 {
-                    throw new InvalidSyncConfigurationException(string.Join(Environment.NewLine,
+                    throw new InvalidSyncConfigurationException(string.Join(System.Environment.NewLine,
                         notExistingGuidErrors));
                 }
             }

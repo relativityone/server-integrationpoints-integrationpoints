@@ -124,14 +124,14 @@ namespace Relativity.Sync.Executors
             string body = await GenerateMessageAsync(configuration, _MESSAGE_FAILED, token).ConfigureAwait(false);
             string errorBody = await GenerateErrorBodyAsync(configuration).ConfigureAwait(false);
 
-            string fullErrorBody = string.Join($"{Environment.NewLine}{Environment.NewLine}", body, errorBody);
+            string fullErrorBody = string.Join($"{System.Environment.NewLine}{System.Environment.NewLine}", body, errorBody);
             return fullErrorBody;
         }
 
         private async Task<string> GenerateMessageAsync(INotificationConfiguration configuration, string headerMessage, CancellationToken token)
         {
             string body = await GenerateJobInfoBodyAsync(configuration, token).ConfigureAwait(false);
-            string fullBody = string.Join($"{Environment.NewLine}{Environment.NewLine}", headerMessage, body);
+            string fullBody = string.Join($"{System.Environment.NewLine}{System.Environment.NewLine}", headerMessage, body);
             return fullBody;
         }
 
@@ -143,7 +143,7 @@ namespace Relativity.Sync.Executors
             string destinationInfo = await GetDestinationWorkspaceInformationAsync(configuration, token).ConfigureAwait(false);
             string destinationBody = string.Format(CultureInfo.InvariantCulture, _BODY_DESTINATION, destinationInfo);
 
-            string body = string.Join($"{Environment.NewLine}{Environment.NewLine}", nameBody, sourceBody, destinationBody);
+            string body = string.Join($"{System.Environment.NewLine}{System.Environment.NewLine}", nameBody, sourceBody, destinationBody);
             return body;
         }
 

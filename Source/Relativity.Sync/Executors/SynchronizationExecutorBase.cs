@@ -342,7 +342,7 @@ namespace Relativity.Sync.Executors
         {
             if (batchesCompletedWithErrorsResults.Any())
             {
-                string exceptionMessage = string.Join(Environment.NewLine, batchesCompletedWithErrorsResults.Select(x => $"BatchID: {x.Key} {x.Value.Message}"));
+                string exceptionMessage = string.Join(System.Environment.NewLine, batchesCompletedWithErrorsResults.Select(x => $"BatchID: {x.Key} {x.Value.Message}"));
                 AggregateException aggregateException = new AggregateException(exceptionMessage,
                     batchesCompletedWithErrorsResults.Select(x => x.Value.Exception).Where(x => x != null));
 
