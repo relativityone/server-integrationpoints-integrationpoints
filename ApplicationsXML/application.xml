@@ -1791,6 +1791,18 @@
       <Notes />
     </Assembly>
     <Assembly>
+      <ArtifactId>5537602</ArtifactId>
+      <Keywords />
+      <Name>Relativity.AntiMalware.SDK.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>5537603</ArtifactId>
+      <Keywords />
+      <Name>Relativity.Environment.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
       <ArtifactId>5537630</ArtifactId>
       <Keywords />
       <Name>Relativity.Storage.Extensions.dll</Name>
@@ -1815,7 +1827,7 @@
     </ResourceFile>
   </ResourceFiles>
   <ExternalTabs />
-  <ExtractionDate>2022-07-19T12:54:29.0945368Z</ExtractionDate>
+  <ExtractionDate>2022-07-22T08:03:50.2747097Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -11876,7 +11888,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>16.0.30.0</RelativityVersion>
-  <Version>12.2.15.35</Version>
+  <Version>12.2.15.40</Version>
   <SchemaVersion>11.3.10.20</SchemaVersion>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>5e8b02a8-6e33-4426-a0f0-3594d83725d0</OriginSignature>

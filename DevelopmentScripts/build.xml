@@ -4,7 +4,7 @@
       <Application name="kCura.IntegrationPoints" generatenuspec="true">
         <Destination>Artifacts\kCura.IntegrationPoints.rap</Destination>
         <ApplicationSchema>ApplicationsXML/application.xml</ApplicationSchema>
-		<TestDirectory>Source\kCura.IntegrationPoints.FunctionalTests\bin\</TestDirectory>
+        <TestDirectory>Source\kCura.IntegrationPoints.FunctionalTests\bin\</TestDirectory>
         <Assemblies>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Castle.Windsor.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Castle.Core.dll</Assembly>
@@ -31,7 +31,7 @@
           <Assembly>Source\kCura.IntegrationPoints.ImportProvider.Parser\bin\kCura.IntegrationPoints.ImportProvider.Parser.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.LDAPProvider\bin\kCura.IntegrationPoints.LDAPProvider.dll</Assembly>
           <Assembly>Source\Relativity.IntegrationPoints.Services\bin\Relativity.IntegrationPoints.Services.dll</Assembly>
-		  <Assembly>Source\Relativity.IntegrationPoints.Services\bin\WorkloadDiscovery.dll</Assembly>
+          <Assembly>Source\Relativity.IntegrationPoints.Services\bin\WorkloadDiscovery.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Synchronizers.RDO\bin\kCura.IntegrationPoints.Synchronizers.RDO.dll</Assembly>
@@ -48,6 +48,8 @@
           <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Autofac.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Banzai.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Banzai.Autofac.dll</Assembly>
+          <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Relativity.AntiMalware.SDK.dll</Assembly>    
+          <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Relativity.Environment.dll</Assembly>  
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\kCura.LongPath.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.DataExchange.Client.SDK.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.DataTransfer.Legacy.SDK.dll</Assembly>
@@ -76,7 +78,7 @@
           <Assembly>Source\Relativity.IntegrationPoints.FieldsMapping\bin\Relativity.IntegrationPoints.FieldsMapping.dll</Assembly>
         </Assemblies>
         <ResourceFiles>
-		  <ResourceFile>ApplicationsXML\deploy.yaml</ResourceFile>
+          <ResourceFile>ApplicationsXML\deploy.yaml</ResourceFile>
           <ResourceFile>Source\kCura.IntegrationPoints.Web\Scripts\RelativityForms\dist\integration-point-profile-event-handler.js</ResourceFile>
           <ResourceFile>Source\kCura.IntegrationPoints.Web\Scripts\RelativityForms\dist\integration-point-event-handler.js</ResourceFile>          
         </ResourceFiles>
