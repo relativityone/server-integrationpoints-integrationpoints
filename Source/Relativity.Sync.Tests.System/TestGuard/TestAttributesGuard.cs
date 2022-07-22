@@ -7,7 +7,6 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity.Testing.Identification;
 
-
 namespace Relativity.Sync.Tests.System.TestGuard
 {
     [TestFixture]
