@@ -2,7 +2,7 @@
 
 namespace Relativity.Sync.Tests.Integration
 {
-	internal sealed class SourceDataReaderExceptionTests : ExceptionSerializationTestsBase<SourceDataReaderException>
-	{
-	}
+    internal sealed class SourceDataReaderExceptionTests : ExceptionSerializationTestsBase<SourceDataReaderException>
+    {
+    }
 }

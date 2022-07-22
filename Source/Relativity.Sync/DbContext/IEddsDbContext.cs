@@ -2,7 +2,7 @@
 
 namespace Relativity.Sync.DbContext
 {
-	internal interface IEddsDbContext : IDBContext
-	{
-	}
+    internal interface IEddsDbContext : IDBContext
+    {
+    }
 }

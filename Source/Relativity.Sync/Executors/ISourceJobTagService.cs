@@ -4,8 +4,8 @@ using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Executors
 {
-	internal interface ISourceJobTagService
-	{
-		Task<RelativitySourceJobTag> CreateOrReadSourceJobTagAsync(IDestinationWorkspaceTagsCreationConfiguration configuration, int sourceCaseTagArtifactId, CancellationToken token);
-	}
+    internal interface ISourceJobTagService
+    {
+        Task<RelativitySourceJobTag> CreateOrReadSourceJobTagAsync(IDestinationWorkspaceTagsCreationConfiguration configuration, int sourceCaseTagArtifactId, CancellationToken token);
+    }
 }

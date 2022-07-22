@@ -4,18 +4,18 @@ using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.KeplerFactory
 {
-	internal sealed class ServiceFactoryForAdmin : ServiceFactoryBase, ISourceServiceFactoryForAdmin, IDestinationServiceFactoryForAdmin
-	{
-		private readonly IServicesMgr _servicesMgr;
-		private readonly IDynamicProxyFactory _proxyFactory;
+    internal sealed class ServiceFactoryForAdmin : ServiceFactoryBase, ISourceServiceFactoryForAdmin, IDestinationServiceFactoryForAdmin
+    {
+        private readonly IServicesMgr _servicesMgr;
+        private readonly IDynamicProxyFactory _proxyFactory;
 
-		public ServiceFactoryForAdmin(IServicesMgr servicesMgr, IDynamicProxyFactory proxyFactory,
+        public ServiceFactoryForAdmin(IServicesMgr servicesMgr, IDynamicProxyFactory proxyFactory,
             IRandom random, IAPILog logger)
-		    : base(random, logger)
-		{
-			_servicesMgr = servicesMgr;
-			_proxyFactory = proxyFactory;
-		}
+            : base(random, logger)
+        {
+            _servicesMgr = servicesMgr;
+            _proxyFactory = proxyFactory;
+        }
 
         protected override async Task<T> CreateProxyInternalAsync<T>()
         {

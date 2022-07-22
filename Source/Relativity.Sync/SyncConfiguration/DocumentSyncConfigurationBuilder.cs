@@ -10,150 +10,150 @@ using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.SyncConfiguration
 {
-	internal class DocumentSyncConfigurationBuilder : SyncConfigurationRootBuilderBase, IDocumentSyncConfigurationBuilder
-	{
-		private readonly IFieldsMappingBuilder _fieldsMappingBuilder;
+    internal class DocumentSyncConfigurationBuilder : SyncConfigurationRootBuilderBase, IDocumentSyncConfigurationBuilder
+    {
+        private readonly IFieldsMappingBuilder _fieldsMappingBuilder;
 
-		private Action<IFieldsMappingBuilder> _fieldsMappingAction;
-		
-		private DestinationFolderStructureOptions _destinationFolderStructureOptions;
+        private Action<IFieldsMappingBuilder> _fieldsMappingAction;
+        
+        private DestinationFolderStructureOptions _destinationFolderStructureOptions;
 
-		internal DocumentSyncConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
-			IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, DocumentSyncOptions options,
-			RdoOptions rdoOptions, IRdoManager rdoManager) 
-			: base(syncContext, serviceFactoryForAdmin, rdoOptions, rdoManager, serializer)
-		{
-			_fieldsMappingBuilder = fieldsMappingBuilder;
+        internal DocumentSyncConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
+            IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, DocumentSyncOptions options,
+            RdoOptions rdoOptions, IRdoManager rdoManager) 
+            : base(syncContext, serviceFactoryForAdmin, rdoOptions, rdoManager, serializer)
+        {
+            _fieldsMappingBuilder = fieldsMappingBuilder;
 
-			SyncConfiguration.RdoArtifactTypeId = (int)ArtifactType.Document;
-			SyncConfiguration.DataSourceType = DataSourceType.SavedSearch;
-			SyncConfiguration.DataDestinationType = DestinationLocationType.Folder;
-			SyncConfiguration.DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None;
+            SyncConfiguration.RdoArtifactTypeId = (int)ArtifactType.Document;
+            SyncConfiguration.DataSourceType = DataSourceType.SavedSearch;
+            SyncConfiguration.DataDestinationType = DestinationLocationType.Folder;
+            SyncConfiguration.DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None;
 
-			SyncConfiguration.DataSourceArtifactId = options.SavedSearchId;
-			SyncConfiguration.DataDestinationArtifactId = options.DestinationFolderId;
-			SyncConfiguration.NativesBehavior = options.CopyNativesMode;
-		}
+            SyncConfiguration.DataSourceArtifactId = options.SavedSearchId;
+            SyncConfiguration.DataDestinationArtifactId = options.DestinationFolderId;
+            SyncConfiguration.NativesBehavior = options.CopyNativesMode;
+        }
 
-		public IDocumentSyncConfigurationBuilder DestinationFolderStructure(DestinationFolderStructureOptions options)
-		{
-			_destinationFolderStructureOptions = options;
+        public IDocumentSyncConfigurationBuilder DestinationFolderStructure(DestinationFolderStructureOptions options)
+        {
+            _destinationFolderStructureOptions = options;
 
-			return this;
-		}
+            return this;
+        }
 
-		public IDocumentSyncConfigurationBuilder WithFieldsMapping(Action<IFieldsMappingBuilder> fieldsMapping)
-		{
-			_fieldsMappingAction = fieldsMapping;
+        public IDocumentSyncConfigurationBuilder WithFieldsMapping(Action<IFieldsMappingBuilder> fieldsMapping)
+        {
+            _fieldsMappingAction = fieldsMapping;
 
-			return this;
-		}
+            return this;
+        }
 
-		public new IDocumentSyncConfigurationBuilder CorrelationId(string correlationId)
-		{
-			base.CorrelationId(correlationId);
+        public new IDocumentSyncConfigurationBuilder CorrelationId(string correlationId)
+        {
+            base.CorrelationId(correlationId);
 
-			return this;
-		}
+            return this;
+        }
 
-		public new IDocumentSyncConfigurationBuilder OverwriteMode(OverwriteOptions options)
-		{
-			base.OverwriteMode(options);
+        public new IDocumentSyncConfigurationBuilder OverwriteMode(OverwriteOptions options)
+        {
+            base.OverwriteMode(options);
 
-			return this;
-		}
+            return this;
+        }
 
-		public new IDocumentSyncConfigurationBuilder EmailNotifications(EmailNotificationsOptions options)
-		{
-			base.EmailNotifications(options);
+        public new IDocumentSyncConfigurationBuilder EmailNotifications(EmailNotificationsOptions options)
+        {
+            base.EmailNotifications(options);
 
-			return this;
-		}
+            return this;
+        }
 
-		public new IDocumentSyncConfigurationBuilder CreateSavedSearch(CreateSavedSearchOptions options)
-		{
-			base.CreateSavedSearch(options);
+        public new IDocumentSyncConfigurationBuilder CreateSavedSearch(CreateSavedSearchOptions options)
+        {
+            base.CreateSavedSearch(options);
 
-			return this;
-		}
+            return this;
+        }
 
-		public new IDocumentSyncConfigurationBuilder IsRetry(RetryOptions options)
-		{
-			base.IsRetry(options);
+        public new IDocumentSyncConfigurationBuilder IsRetry(RetryOptions options)
+        {
+            base.IsRetry(options);
 
-			return this;
-		}
+            return this;
+        }
 
-		public new IDocumentSyncConfigurationBuilder DisableItemLevelErrorLogging()
-		{
-			base.DisableItemLevelErrorLogging();
-			return this;
-		}
+        public new IDocumentSyncConfigurationBuilder DisableItemLevelErrorLogging()
+        {
+            base.DisableItemLevelErrorLogging();
+            return this;
+        }
 
-		protected override Task ValidateAsync()
-		{
-			SetFieldsMapping();
-			return SetDestinationFolderStructureAsync();
-		}
+        protected override Task ValidateAsync()
+        {
+            SetFieldsMapping();
+            return SetDestinationFolderStructureAsync();
+        }
 
-		#region Private methods
+        #region Private methods
 
-		private void SetFieldsMapping()
-		{
-			if (_fieldsMappingAction != null)
-			{
-				_fieldsMappingAction(_fieldsMappingBuilder);
-			}
-			else
-			{
-				_fieldsMappingBuilder.WithIdentifier();
-			}
+        private void SetFieldsMapping()
+        {
+            if (_fieldsMappingAction != null)
+            {
+                _fieldsMappingAction(_fieldsMappingBuilder);
+            }
+            else
+            {
+                _fieldsMappingBuilder.WithIdentifier();
+            }
 
-			SyncConfiguration.FieldsMapping = Serializer.Serialize(
-				_fieldsMappingBuilder.FieldsMapping);
-		}
+            SyncConfiguration.FieldsMapping = Serializer.Serialize(
+                _fieldsMappingBuilder.FieldsMapping);
+        }
 
-		private async Task SetDestinationFolderStructureAsync()
-		{
-			if (_destinationFolderStructureOptions == null)
-			{
-				return;
-			}
+        private async Task SetDestinationFolderStructureAsync()
+        {
+            if (_destinationFolderStructureOptions == null)
+            {
+                return;
+            }
 
-			DestinationFolderStructureCleanup();
+            DestinationFolderStructureCleanup();
 
-			SyncConfiguration.DestinationFolderStructureBehavior = 
-				_destinationFolderStructureOptions.DestinationFolderStructure;
+            SyncConfiguration.DestinationFolderStructureBehavior = 
+                _destinationFolderStructureOptions.DestinationFolderStructure;
 
-			if (_destinationFolderStructureOptions.DestinationFolderStructure == DestinationFolderStructureBehavior.ReadFromField)
-			{
-				using (var fieldManager = await ServiceFactoryForAdmin.CreateProxyAsync<IFieldManager>())
-				{
-					var folderPathField = await fieldManager.ReadAsync(SyncContext.SourceWorkspaceId,
-						_destinationFolderStructureOptions.FolderPathSourceFieldId).ConfigureAwait(false);
+            if (_destinationFolderStructureOptions.DestinationFolderStructure == DestinationFolderStructureBehavior.ReadFromField)
+            {
+                using (var fieldManager = await ServiceFactoryForAdmin.CreateProxyAsync<IFieldManager>())
+                {
+                    var folderPathField = await fieldManager.ReadAsync(SyncContext.SourceWorkspaceId,
+                        _destinationFolderStructureOptions.FolderPathSourceFieldId).ConfigureAwait(false);
 
-					if (folderPathField == null)
-					{
-						throw new InvalidSyncConfigurationException(
-							$"Folder Path Field {_destinationFolderStructureOptions.FolderPathSourceFieldId} not found");
-					}
+                    if (folderPathField == null)
+                    {
+                        throw new InvalidSyncConfigurationException(
+                            $"Folder Path Field {_destinationFolderStructureOptions.FolderPathSourceFieldId} not found");
+                    }
 
-					SyncConfiguration.FolderPathSourceFieldName = folderPathField.Name;
-				}
-			}
+                    SyncConfiguration.FolderPathSourceFieldName = folderPathField.Name;
+                }
+            }
 
-			if (_destinationFolderStructureOptions.DestinationFolderStructure != DestinationFolderStructureBehavior.None)
-			{
-				SyncConfiguration.MoveExistingDocuments = _destinationFolderStructureOptions.MoveExistingDocuments;
-			}
-		}
-		
-		private void DestinationFolderStructureCleanup()
-		{
-			SyncConfiguration.DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None;
-			SyncConfiguration.FolderPathSourceFieldName = null;
-			SyncConfiguration.MoveExistingDocuments = false;
-		}
-		#endregion
-	}
+            if (_destinationFolderStructureOptions.DestinationFolderStructure != DestinationFolderStructureBehavior.None)
+            {
+                SyncConfiguration.MoveExistingDocuments = _destinationFolderStructureOptions.MoveExistingDocuments;
+            }
+        }
+        
+        private void DestinationFolderStructureCleanup()
+        {
+            SyncConfiguration.DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None;
+            SyncConfiguration.FolderPathSourceFieldName = null;
+            SyncConfiguration.MoveExistingDocuments = false;
+        }
+        #endregion
+    }
 }

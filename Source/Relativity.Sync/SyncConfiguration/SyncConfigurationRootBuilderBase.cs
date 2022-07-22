@@ -86,7 +86,7 @@ namespace Relativity.Sync.SyncConfiguration
 
         public void CorrelationId(string correlationId)
         {
-	        SyncConfiguration.CorrelationId = correlationId;
+            SyncConfiguration.CorrelationId = correlationId;
         }
 
         public void OverwriteMode(OverwriteOptions options)
@@ -118,8 +118,8 @@ namespace Relativity.Sync.SyncConfiguration
 
         public async Task<int> SaveAsync()
         {
-	        List<(Guid Guid, string PropertyPath)> allValidationInfos = GetAllValidationInfos();
-	        await ValidateGuidsAsync(allValidationInfos).ConfigureAwait(false);
+            List<(Guid Guid, string PropertyPath)> allValidationInfos = GetAllValidationInfos();
+            await ValidateGuidsAsync(allValidationInfos).ConfigureAwait(false);
             await ValidateAsync().ConfigureAwait(false);
 
             await _rdoManager.EnsureTypeExistsAsync<SyncConfigurationRdo>(SyncContext.SourceWorkspaceId).ConfigureAwait(false);
@@ -208,11 +208,11 @@ namespace Relativity.Sync.SyncConfiguration
 
         private async Task<int> CreateEmptySyncStatisticsAsync()
         {
-			SyncStatisticsRdo syncStatistics = new SyncStatisticsRdo();
+            SyncStatisticsRdo syncStatistics = new SyncStatisticsRdo();
 
-			await _rdoManager.CreateAsync(SyncContext.SourceWorkspaceId, syncStatistics).ConfigureAwait(false);
+            await _rdoManager.CreateAsync(SyncContext.SourceWorkspaceId, syncStatistics).ConfigureAwait(false);
 
-			return syncStatistics.ArtifactId;
+            return syncStatistics.ArtifactId;
         }
 
         protected abstract Task ValidateAsync();

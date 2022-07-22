@@ -16,22 +16,22 @@ namespace Relativity.Sync.Storage
         public int SourceWorkspaceArtifactId { get; }
 
         public ValidationConfiguration(IConfiguration cache, IFieldMappings fieldMappings,
-	        SyncJobParameters syncJobParameters, ISourceServiceFactoryForUser serviceFactoryForUser)
+            SyncJobParameters syncJobParameters, ISourceServiceFactoryForUser serviceFactoryForUser)
         {
-	        _cache = cache;
-	        _fieldMappings = fieldMappings;
-	        SourceWorkspaceArtifactId = syncJobParameters.WorkspaceId;
+            _cache = cache;
+            _fieldMappings = fieldMappings;
+            SourceWorkspaceArtifactId = syncJobParameters.WorkspaceId;
 
-	        _jobNameLazy = new Lazy<string>(() =>
-	        {
-		        using (var objectManager = serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false).GetAwaiter().GetResult())
-		        {
-			        return objectManager.GetObjectNameAsync(syncJobParameters.WorkspaceId,
-					        _cache.GetFieldValue(x => x.JobHistoryId),
-					        _cache.GetFieldValue(x => x.JobHistoryType))
-				        .GetAwaiter().GetResult();
-		        }
-	        });
+            _jobNameLazy = new Lazy<string>(() =>
+            {
+                using (var objectManager = serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false).GetAwaiter().GetResult())
+                {
+                    return objectManager.GetObjectNameAsync(syncJobParameters.WorkspaceId,
+                            _cache.GetFieldValue(x => x.JobHistoryId),
+                            _cache.GetFieldValue(x => x.JobHistoryType))
+                        .GetAwaiter().GetResult();
+                }
+            });
         }
         
         public int DestinationWorkspaceArtifactId => _cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);

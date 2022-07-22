@@ -2,26 +2,26 @@
 
 namespace Relativity.Sync.Configuration
 {
-	internal interface IJobEndMetricsConfiguration : IConfiguration
-	{
-		int? JobHistoryToRetryId { get; }
+    internal interface IJobEndMetricsConfiguration : IConfiguration
+    {
+        int? JobHistoryToRetryId { get; }
 
-		int SourceWorkspaceArtifactId { get; }
+        int SourceWorkspaceArtifactId { get; }
 
-		int DestinationWorkspaceArtifactId { get; }
+        int DestinationWorkspaceArtifactId { get; }
 
-		int SyncConfigurationArtifactId { get; }
+        int SyncConfigurationArtifactId { get; }
 
-		ImportOverwriteMode ImportOverwriteMode { get; }
+        ImportOverwriteMode ImportOverwriteMode { get; }
 
-		DataSourceType DataSourceType { get; }
+        DataSourceType DataSourceType { get; }
 
-		DestinationLocationType DestinationType { get; }
+        DestinationLocationType DestinationType { get; }
 
-		ImportNativeFileCopyMode ImportNativeFileCopyMode { get; }
+        ImportNativeFileCopyMode ImportNativeFileCopyMode { get; }
 
-		ImportImageFileCopyMode ImportImageFileCopyMode { get; }
+        ImportImageFileCopyMode ImportImageFileCopyMode { get; }
 
         Guid ExportRunId { get; }
-	}
+    }
 }

@@ -2,28 +2,28 @@
 
 namespace Relativity.Sync.SyncConfiguration
 {
-	/// <summary>
-	/// Provides methods for creating configuration builder for specific Sync flow.
-	/// </summary>
-	public interface ISyncJobConfigurationBuilder
-	{
-		/// <summary>
-		/// Creates configuration builder for document synchronization flow.
-		/// </summary>
-		/// <param name="options">Document synchronization options.</param>
-		IDocumentSyncConfigurationBuilder ConfigureDocumentSync(DocumentSyncOptions options);
+    /// <summary>
+    /// Provides methods for creating configuration builder for specific Sync flow.
+    /// </summary>
+    public interface ISyncJobConfigurationBuilder
+    {
+        /// <summary>
+        /// Creates configuration builder for document synchronization flow.
+        /// </summary>
+        /// <param name="options">Document synchronization options.</param>
+        IDocumentSyncConfigurationBuilder ConfigureDocumentSync(DocumentSyncOptions options);
 
-		/// <summary>
-		/// Creates configuration builder for image synchronization flow.
-		/// </summary>
-		/// <param name="options">Image synchronization options.</param>
-		IImageSyncConfigurationBuilder ConfigureImageSync(ImageSyncOptions options);
+        /// <summary>
+        /// Creates configuration builder for image synchronization flow.
+        /// </summary>
+        /// <param name="options">Image synchronization options.</param>
+        IImageSyncConfigurationBuilder ConfigureImageSync(ImageSyncOptions options);
 
-		/// <summary>
-		/// Creates configuration builder for non-document objects synchronization flow
-		/// </summary>
-		/// <param name="options">Non-document objects synchronization options</param>
-		/// <returns></returns>
-		INonDocumentSyncConfigurationBuilder ConfigureNonDocumentSync(NonDocumentSyncOptions options);
-	}
+        /// <summary>
+        /// Creates configuration builder for non-document objects synchronization flow
+        /// </summary>
+        /// <param name="options">Non-document objects synchronization options</param>
+        /// <returns></returns>
+        INonDocumentSyncConfigurationBuilder ConfigureNonDocumentSync(NonDocumentSyncOptions options);
+    }
 }

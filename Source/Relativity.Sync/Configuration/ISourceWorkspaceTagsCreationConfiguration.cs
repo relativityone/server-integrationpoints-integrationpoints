@@ -2,16 +2,16 @@
 
 namespace Relativity.Sync.Configuration
 {
-	internal interface ISourceWorkspaceTagsCreationConfiguration : IConfiguration
-	{
-		int DestinationWorkspaceArtifactId { get; }
+    internal interface ISourceWorkspaceTagsCreationConfiguration : IConfiguration
+    {
+        int DestinationWorkspaceArtifactId { get; }
 
-		int SourceWorkspaceArtifactId { get; }
+        int SourceWorkspaceArtifactId { get; }
 
-		int JobHistoryArtifactId { get; }
+        int JobHistoryArtifactId { get; }
 
-		bool IsDestinationWorkspaceTagArtifactIdSet { get; }
+        bool IsDestinationWorkspaceTagArtifactIdSet { get; }
 
-		Task SetDestinationWorkspaceTagArtifactIdAsync(int artifactId);
-	}
+        Task SetDestinationWorkspaceTagArtifactIdAsync(int artifactId);
+    }
 }

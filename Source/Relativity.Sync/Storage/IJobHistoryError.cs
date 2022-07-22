@@ -2,24 +2,24 @@
 
 namespace Relativity.Sync.Storage
 {
-	internal interface IJobHistoryError
-	{
-		int ArtifactId { get; }
+    internal interface IJobHistoryError
+    {
+        int ArtifactId { get; }
 
-		string ErrorMessage { get; }
+        string ErrorMessage { get; }
 
-		ErrorStatus ErrorStatus { get; }
+        ErrorStatus ErrorStatus { get; }
 
-		ErrorType ErrorType { get; }
+        ErrorType ErrorType { get; }
 
-		int JobHistoryArtifactId { get; }
+        int JobHistoryArtifactId { get; }
 
-		string Name { get; }
+        string Name { get; }
 
-		string SourceUniqueId { get; }
+        string SourceUniqueId { get; }
 
-		string StackTrace { get; }
+        string StackTrace { get; }
 
-		DateTime TimestampUtc { get; }
-	}
+        DateTime TimestampUtc { get; }
+    }
 }

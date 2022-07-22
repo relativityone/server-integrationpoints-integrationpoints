@@ -6,15 +6,15 @@ using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
-	[TestFixture]
-	internal sealed class ObjectLinkingSnapshotPartitionExecutorTests : SnapshotPartitionExecutorTestsBase<IObjectLinkingSnapshotPartitionConfiguration>
-	{
-		[SetUp]
-		public override void SetUp()
-		{
-			base.SetUp();
+    [TestFixture]
+    internal sealed class ObjectLinkingSnapshotPartitionExecutorTests : SnapshotPartitionExecutorTestsBase<IObjectLinkingSnapshotPartitionConfiguration>
+    {
+        [SetUp]
+        public override void SetUp()
+        {
+            base.SetUp();
             Instance = new ObjectLinkingSnapshotPartitionExecutor(BatchRepository.Object, new EmptyLogger());
-		}
+        }
 
         protected override IObjectLinkingSnapshotPartitionConfiguration GetConfiguration()
         {

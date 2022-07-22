@@ -1,7 +1,7 @@
 ﻿namespace Relativity.Sync.KeplerFactory
 {
-	internal interface IDestinationServiceFactoryForAdmin : IProxyFactory
-	{
-		
-	}
+    internal interface IDestinationServiceFactoryForAdmin : IProxyFactory
+    {
+        
+    }
 }

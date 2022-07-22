@@ -2,8 +2,8 @@
 
 namespace Relativity.Sync.Utils
 {
-	internal interface IAppDomain
-	{
-		event UnhandledExceptionEventHandler UnhandledException;
-	}
+    internal interface IAppDomain
+    {
+        event UnhandledExceptionEventHandler UnhandledException;
+    }
 }

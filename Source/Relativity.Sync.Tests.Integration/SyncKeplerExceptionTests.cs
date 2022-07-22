@@ -2,7 +2,7 @@
 
 namespace Relativity.Sync.Tests.Integration
 {
-	internal sealed class SyncKeplerExceptionTests : ExceptionSerializationTestsBase<SyncKeplerException>
-	{
-	}
+    internal sealed class SyncKeplerExceptionTests : ExceptionSerializationTestsBase<SyncKeplerException>
+    {
+    }
 }

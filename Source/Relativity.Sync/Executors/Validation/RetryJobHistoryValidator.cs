@@ -12,68 +12,68 @@ using Relativity.Sync.Pipelines.Extensions;
 
 namespace Relativity.Sync.Executors.Validation
 {
-	internal sealed class RetryJobHistoryValidator : IValidator
-	{
-		private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
-		private readonly IAPILog _logger;
+    internal sealed class RetryJobHistoryValidator : IValidator
+    {
+        private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
+        private readonly IAPILog _logger;
 
-		public RetryJobHistoryValidator(ISourceServiceFactoryForUser serviceFactoryForUser, IAPILog logger)
-		{
-			_serviceFactoryForUser = serviceFactoryForUser;
-			_logger = logger;
-		}
+        public RetryJobHistoryValidator(ISourceServiceFactoryForUser serviceFactoryForUser, IAPILog logger)
+        {
+            _serviceFactoryForUser = serviceFactoryForUser;
+            _logger = logger;
+        }
 
-		public async Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token)
-		{
-			ValidationResult validationResult = new ValidationResult();
+        public async Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token)
+        {
+            ValidationResult validationResult = new ValidationResult();
 
-			if (configuration.JobHistoryToRetryId != null)
-			{
-				_logger.LogInformation("Validating JobHistoryToRetry Artifact ID: {artifactId} exists", configuration.JobHistoryToRetryId.Value);
+            if (configuration.JobHistoryToRetryId != null)
+            {
+                _logger.LogInformation("Validating JobHistoryToRetry Artifact ID: {artifactId} exists", configuration.JobHistoryToRetryId.Value);
 
-				try
-				{
-					using (IObjectManager objectManager =
-						await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-					{
-						QueryRequest request = new QueryRequest
-						{
-							ObjectType = new ObjectTypeRef
-							{
-								Guid = configuration.JobHistoryObjectTypeGuid
-							},
-							Condition = $"'ArtifactId' == {configuration.JobHistoryToRetryId.Value}"
-						};
+                try
+                {
+                    using (IObjectManager objectManager =
+                        await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+                    {
+                        QueryRequest request = new QueryRequest
+                        {
+                            ObjectType = new ObjectTypeRef
+                            {
+                                Guid = configuration.JobHistoryObjectTypeGuid
+                            },
+                            Condition = $"'ArtifactId' == {configuration.JobHistoryToRetryId.Value}"
+                        };
 
-						QueryResult result = await objectManager.QueryAsync(configuration.SourceWorkspaceArtifactId, request, 1, 1, token, new EmptyProgress<ProgressReport>())
-							.ConfigureAwait(false);
+                        QueryResult result = await objectManager.QueryAsync(configuration.SourceWorkspaceArtifactId, request, 1, 1, token, new EmptyProgress<ProgressReport>())
+                            .ConfigureAwait(false);
 
-						if (result.ResultCount == 0)
-						{
-							string messageTemplate =
-								"JobHistory with ArtifactId = {jobHistoryToRetryId} does not exist";
-							_logger.LogError(messageTemplate, configuration.JobHistoryToRetryId.Value);
-							validationResult.Add($"JobHistory with ArtifactId = {configuration.JobHistoryToRetryId.Value} does not exist");
-						}
-					}
-				}
-				catch (Exception e)
-				{
-					string message = "Failed to validate JobHistoryToRetry (ArtifactId = {artifactID})";
-					_logger.LogError(e, message, configuration.JobHistoryToRetryId.Value);
-					throw;
-				}
-			}
-			else
-			{
-				var message = "JobHistoryToRetry should be set in configuration for this pipeline";
-				_logger.LogError(message);
-				validationResult.Add(message);
-			}
+                        if (result.ResultCount == 0)
+                        {
+                            string messageTemplate =
+                                "JobHistory with ArtifactId = {jobHistoryToRetryId} does not exist";
+                            _logger.LogError(messageTemplate, configuration.JobHistoryToRetryId.Value);
+                            validationResult.Add($"JobHistory with ArtifactId = {configuration.JobHistoryToRetryId.Value} does not exist");
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    string message = "Failed to validate JobHistoryToRetry (ArtifactId = {artifactID})";
+                    _logger.LogError(e, message, configuration.JobHistoryToRetryId.Value);
+                    throw;
+                }
+            }
+            else
+            {
+                var message = "JobHistoryToRetry should be set in configuration for this pipeline";
+                _logger.LogError(message);
+                validationResult.Add(message);
+            }
 
-			return validationResult;
-		}
+            return validationResult;
+        }
 
-		public bool ShouldValidate(ISyncPipeline pipeline) => pipeline.IsRetryPipeline();
-	}
+        public bool ShouldValidate(ISyncPipeline pipeline) => pipeline.IsRetryPipeline();
+    }
 }

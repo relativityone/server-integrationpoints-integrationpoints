@@ -6,9 +6,9 @@ using Relativity.Sync.Tests.Integration.Helpers;
 
 namespace Relativity.Sync.Tests.Integration
 {
-	[TestFixture]
-	internal class SnapshotPartitionExecutorTests : SnapshotPartitionExecutorTestsBase<ISnapshotPartitionConfiguration>
-	{
+    [TestFixture]
+    internal class SnapshotPartitionExecutorTests : SnapshotPartitionExecutorTestsBase<ISnapshotPartitionConfiguration>
+    {
         public override void SetUp()
         {
             ContainerBuilder = ContainerHelper.CreateInitializedContainerBuilder();

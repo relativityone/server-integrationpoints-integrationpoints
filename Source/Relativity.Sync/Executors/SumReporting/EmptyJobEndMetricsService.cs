@@ -2,11 +2,11 @@
 
 namespace Relativity.Sync.Executors.SumReporting
 {
-	class EmptyJobEndMetricsService : IJobEndMetricsService
-	{
-		public Task<ExecutionResult> ExecuteAsync(ExecutionStatus jobExecutionStatus)
-		{
-			return Task.FromResult(ExecutionResult.Success());
-		}
-	}
+    class EmptyJobEndMetricsService : IJobEndMetricsService
+    {
+        public Task<ExecutionResult> ExecuteAsync(ExecutionStatus jobExecutionStatus)
+        {
+            return Task.FromResult(ExecutionResult.Success());
+        }
+    }
 }

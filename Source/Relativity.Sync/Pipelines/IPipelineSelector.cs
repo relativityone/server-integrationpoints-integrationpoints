@@ -1,7 +1,7 @@
 ﻿namespace Relativity.Sync.Pipelines
 {
-	internal interface IPipelineSelector
-	{
-		ISyncPipeline GetPipeline();
-	}
+    internal interface IPipelineSelector
+    {
+        ISyncPipeline GetPipeline();
+    }
 }

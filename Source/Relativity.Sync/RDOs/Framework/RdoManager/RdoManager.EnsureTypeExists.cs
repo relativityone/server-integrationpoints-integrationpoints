@@ -114,24 +114,24 @@ namespace Relativity.Sync.RDOs.Framework
                         });
 
                 case RdoFieldType.WholeNumber:
-	                return fieldManager.CreateWholeNumberFieldAsync(workspaceId,
-		                new WholeNumberFieldRequest
-		                {
-			                FilterType = FilterType.TextBox,
-			                Name = fieldInfo.Name,
-			                ObjectType = new ObjectTypeIdentifier() { ArtifactID = objectTypeId },
-			                IsRequired = fieldInfo.IsRequired
-		                });
+                    return fieldManager.CreateWholeNumberFieldAsync(workspaceId,
+                        new WholeNumberFieldRequest
+                        {
+                            FilterType = FilterType.TextBox,
+                            Name = fieldInfo.Name,
+                            ObjectType = new ObjectTypeIdentifier() { ArtifactID = objectTypeId },
+                            IsRequired = fieldInfo.IsRequired
+                        });
 
                 case RdoFieldType.Decimal:
-	                return fieldManager.CreateDecimalFieldAsync(workspaceId,
-		                new DecimalFieldRequest
-		                {
-			                FilterType = FilterType.TextBox,
-			                Name = fieldInfo.Name,
-			                ObjectType = new ObjectTypeIdentifier() { ArtifactID = objectTypeId },
-			                IsRequired = fieldInfo.IsRequired
-		                });
+                    return fieldManager.CreateDecimalFieldAsync(workspaceId,
+                        new DecimalFieldRequest
+                        {
+                            FilterType = FilterType.TextBox,
+                            Name = fieldInfo.Name,
+                            ObjectType = new ObjectTypeIdentifier() { ArtifactID = objectTypeId },
+                            IsRequired = fieldInfo.IsRequired
+                        });
 
                 case RdoFieldType.YesNo:
                     return fieldManager.CreateYesNoFieldAsync(workspaceId,
@@ -154,7 +154,7 @@ namespace Relativity.Sync.RDOs.Framework
             using (IObjectTypeManager objectTypeManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectTypeManager>().ConfigureAwait(false))
             using (IArtifactGuidManager guidManager = await _serviceFactoryForAdmin.CreateProxyAsync<IArtifactGuidManager>().ConfigureAwait(false))
             {
-	            ObjectTypeRequest objectTypeRequest = GetObjectTypeDefinition(typeInfo);
+                ObjectTypeRequest objectTypeRequest = GetObjectTypeDefinition(typeInfo);
 
                 int objectTypeArtifactId = await objectTypeManager.CreateAsync(workspaceId, objectTypeRequest).ConfigureAwait(false);
                 await guidManager.CreateSingleAsync(workspaceId, objectTypeArtifactId, new List<Guid>() {typeInfo.TypeGuid}).ConfigureAwait(false);
@@ -168,24 +168,24 @@ namespace Relativity.Sync.RDOs.Framework
         private async Task DeleteTabAsync(int workspaceId, string objectTypeName)
         {
             using (IObjectManager objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-	        using (ITabManager tabManager = await _serviceFactoryForAdmin.CreateProxyAsync<ITabManager>().ConfigureAwait(false))
-	        {
-		        QueryResult queryResult = await objectManager.QueryAsync(workspaceId, new QueryRequest()
-		        {
+            using (ITabManager tabManager = await _serviceFactoryForAdmin.CreateProxyAsync<ITabManager>().ConfigureAwait(false))
+            {
+                QueryResult queryResult = await objectManager.QueryAsync(workspaceId, new QueryRequest()
+                {
                     ObjectType = new ObjectTypeRef()
                     {
                         ArtifactTypeID = (int)ArtifactType.Tab
                     },
                     Condition = $"'Object Type' == '{objectTypeName}'"
-		        }, 0, 1).ConfigureAwait(false);
+                }, 0, 1).ConfigureAwait(false);
 
-		        if (queryResult.Objects == null || queryResult.Objects.Count == 0)
-		        {
-			        return;
-		        }
+                if (queryResult.Objects == null || queryResult.Objects.Count == 0)
+                {
+                    return;
+                }
 
-		        int tabArtifactId = queryResult.Objects.First().ArtifactID;
-		        _logger.LogInformation("Deleting tab Artifact ID: {tabArtifactId} for Object Type: '{objectTypeName}'", tabArtifactId, objectTypeName);
+                int tabArtifactId = queryResult.Objects.First().ArtifactID;
+                _logger.LogInformation("Deleting tab Artifact ID: {tabArtifactId} for Object Type: '{objectTypeName}'", tabArtifactId, objectTypeName);
                 await tabManager.DeleteAsync(workspaceId, tabArtifactId).ConfigureAwait(false);
             }
         }

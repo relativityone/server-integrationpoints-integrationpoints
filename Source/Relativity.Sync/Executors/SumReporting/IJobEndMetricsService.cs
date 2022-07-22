@@ -2,8 +2,8 @@
 
 namespace Relativity.Sync.Executors.SumReporting
 {
-	internal interface IJobEndMetricsService
-	{
-		Task<ExecutionResult> ExecuteAsync(ExecutionStatus jobExecutionStatus);
-	}
+    internal interface IJobEndMetricsService
+    {
+        Task<ExecutionResult> ExecuteAsync(ExecutionStatus jobExecutionStatus);
+    }
 }

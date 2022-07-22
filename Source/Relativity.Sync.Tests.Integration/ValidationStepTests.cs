@@ -5,23 +5,23 @@ using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Tests.Integration
 {
-	[TestFixture]
-	internal sealed class ValidationStepTests : FailingStepsBase<IValidationConfiguration>
-	{
-		protected override void AssertExecutedSteps(List<Type> executorTypes)
-		{
-			// no need to check other steps
-		}
+    [TestFixture]
+    internal sealed class ValidationStepTests : FailingStepsBase<IValidationConfiguration>
+    {
+        protected override void AssertExecutedSteps(List<Type> executorTypes)
+        {
+            // no need to check other steps
+        }
 
-		protected override ICollection<Type> ExpectedExecutedSteps { get; } = new[]
-		{
-			typeof(IPreValidationConfiguration),
-			typeof(IDestinationWorkspaceObjectTypesCreationConfiguration),
-			typeof(IPermissionsCheckConfiguration),
-			typeof(INotificationConfiguration),
-			typeof(IJobStatusConsolidationConfiguration),
-			typeof(IJobCleanupConfiguration),
-			typeof(IAutomatedWorkflowTriggerConfiguration)
-		};
-	}
+        protected override ICollection<Type> ExpectedExecutedSteps { get; } = new[]
+        {
+            typeof(IPreValidationConfiguration),
+            typeof(IDestinationWorkspaceObjectTypesCreationConfiguration),
+            typeof(IPermissionsCheckConfiguration),
+            typeof(INotificationConfiguration),
+            typeof(IJobStatusConsolidationConfiguration),
+            typeof(IJobCleanupConfiguration),
+            typeof(IAutomatedWorkflowTriggerConfiguration)
+        };
+    }
 }

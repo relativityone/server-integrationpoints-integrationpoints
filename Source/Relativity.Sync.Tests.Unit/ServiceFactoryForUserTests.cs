@@ -12,82 +12,82 @@ using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit
 {
-	[TestFixture]
-	public sealed class ServiceFactoryForUserTests
-	{
-		private ServiceFactoryForUser _instance;
+    [TestFixture]
+    public sealed class ServiceFactoryForUserTests
+    {
+        private ServiceFactoryForUser _instance;
 
-		private Mock<IAuthTokenGenerator> _tokenGenerator;
-		private Mock<IDynamicProxyFactory> _dynamicProxyFactory;
+        private Mock<IAuthTokenGenerator> _tokenGenerator;
+        private Mock<IDynamicProxyFactory> _dynamicProxyFactory;
 
         private const int _USER_ID = 139156;
 
-		[SetUp]
-		public void SetUp()
-		{
-			Mock<IUserContextConfiguration> userContextConfiguration = new Mock<IUserContextConfiguration>();
-			userContextConfiguration.Setup(x => x.ExecutingUserId).Returns(_USER_ID);
+        [SetUp]
+        public void SetUp()
+        {
+            Mock<IUserContextConfiguration> userContextConfiguration = new Mock<IUserContextConfiguration>();
+            userContextConfiguration.Setup(x => x.ExecutingUserId).Returns(_USER_ID);
 
-			var servicesMgr = new Mock<IServicesMgr>();
-			servicesMgr.Setup(x => x.GetRESTServiceUrl()).Returns(new Uri("", UriKind.Relative));
+            var servicesMgr = new Mock<IServicesMgr>();
+            servicesMgr.Setup(x => x.GetRESTServiceUrl()).Returns(new Uri("", UriKind.Relative));
 
-			_tokenGenerator = new Mock<IAuthTokenGenerator>();
-			_tokenGenerator.Setup(x => x.GetAuthTokenAsync(_USER_ID)).ReturnsAsync("token");
+            _tokenGenerator = new Mock<IAuthTokenGenerator>();
+            _tokenGenerator.Setup(x => x.GetAuthTokenAsync(_USER_ID)).ReturnsAsync("token");
 
-			_dynamicProxyFactory = new Mock<IDynamicProxyFactory>();
+            _dynamicProxyFactory = new Mock<IDynamicProxyFactory>();
 
             Mock<IRandom> randomFake = new Mock<IRandom>();
-			Mock<IAPILog> syncLogMock = new Mock<IAPILog>();
+            Mock<IAPILog> syncLogMock = new Mock<IAPILog>();
 
-			_instance = new ServiceFactoryForUser(userContextConfiguration.Object, servicesMgr.Object,
+            _instance = new ServiceFactoryForUser(userContextConfiguration.Object, servicesMgr.Object,
                 _tokenGenerator.Object, _dynamicProxyFactory.Object, new ServiceFactoryFactory(), 
                 randomFake.Object, syncLogMock.Object);
 
             _instance.SecondsBetweenRetries = 0.5;
-		}
+        }
 
-		[Test]
-		public async Task ItShouldWrapKeplerServiceWithProxy()
-		{
-			IObjectManager wrappedObjectManager = Mock.Of<IObjectManager>();
+        [Test]
+        public async Task ItShouldWrapKeplerServiceWithProxy()
+        {
+            IObjectManager wrappedObjectManager = Mock.Of<IObjectManager>();
 
-			_dynamicProxyFactory.Setup(x => x.WrapKeplerService(It.IsAny<IObjectManager>(), It.IsAny<Func<Task<IObjectManager>>>())).Returns(wrappedObjectManager);
+            _dynamicProxyFactory.Setup(x => x.WrapKeplerService(It.IsAny<IObjectManager>(), It.IsAny<Func<Task<IObjectManager>>>())).Returns(wrappedObjectManager);
 
-			// ACT
-			IObjectManager actualObjectManager = await _instance.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
+            // ACT
+            IObjectManager actualObjectManager = await _instance.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
 
-			// ASSERT
-			actualObjectManager.Should().Be(wrappedObjectManager);
-			_dynamicProxyFactory.VerifyAll();
-		}
+            // ASSERT
+            actualObjectManager.Should().Be(wrappedObjectManager);
+            _dynamicProxyFactory.VerifyAll();
+        }
 
-		[Test]
-		public async Task ItShouldCreateServiceFactoryOnce()
-		{
-			// ACT
-			await _instance.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
-			await _instance.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
+        [Test]
+        public async Task ItShouldCreateServiceFactoryOnce()
+        {
+            // ACT
+            await _instance.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
+            await _instance.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
 
-			// ASSERT
-			_tokenGenerator.Verify(x => x.GetAuthTokenAsync(_USER_ID), Times.Once);
-		}
+            // ASSERT
+            _tokenGenerator.Verify(x => x.GetAuthTokenAsync(_USER_ID), Times.Once);
+        }
 
-		[Test]
-		public void ItShouldCreateServiceFactoryOnSecondTryIfFirstOneFailed()
-		{
+        [Test]
+        public void ItShouldCreateServiceFactoryOnSecondTryIfFirstOneFailed()
+        {
             _tokenGenerator.SetupSequence(x => x.GetAuthTokenAsync(_USER_ID))
                 .Throws<Exception>().Throws<Exception>().Throws<Exception>().ReturnsAsync("token");
 
-			// ACT
-			Func<Task> firstTry = async () => await _instance.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
-			Func<Task> secondTry = async () => await _instance.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
+            // ACT
+            Func<Task> firstTry = async () => await _instance.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
+            Func<Task> secondTry = async () => await _instance.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
 
-			// ASSERT
-			firstTry.Should().Throw<Exception>();
-			secondTry.Should().NotThrow();
-			const int times = 4;
-			_tokenGenerator.Verify(x => x.GetAuthTokenAsync(_USER_ID), Times.Exactly(times));
-		}
+            // ASSERT
+            firstTry.Should().Throw<Exception>();
+            secondTry.Should().NotThrow();
+            const int times = 4;
+            _tokenGenerator.Verify(x => x.GetAuthTokenAsync(_USER_ID), Times.Exactly(times));
+        }
 
         [Test]
         public void ItShouldThrowExceptionWhenAllRetriesFailed()
@@ -98,8 +98,8 @@ namespace Relativity.Sync.Tests.Unit
             // ACT
             Func<Task> proxy = async () => await _instance.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
 
-			// ASSERT
+            // ASSERT
             proxy.Should().Throw<Exception>();
         }
-	}
+    }
 }
