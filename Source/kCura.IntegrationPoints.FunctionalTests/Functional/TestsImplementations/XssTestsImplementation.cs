@@ -252,7 +252,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 			object scriptResult = AtataContext.Current.Driver.ExecuteScript("return window.relativityXSS === undefined");
 			scriptResult.Should().BeAssignableTo<bool>().Which.Should().BeTrue("XSS attack should not execute malicious code");
 
-			string errors = string.Join(Environment.NewLine, AtataContext.Current.Driver
+			string errors = string.Join(System.Environment.NewLine, AtataContext.Current.Driver
 				.Manage()
 				.Logs
 				.GetLog(LogType.Browser)
