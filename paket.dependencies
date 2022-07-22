@@ -1,6 +1,5 @@
 framework: net472
 strategy: min
-source C:\Projects\DataTransfer\relativitysync\Artifacts\NuGet
 source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 
 //RIP packages
@@ -27,6 +26,7 @@ nuget Relativity.Services.Interfaces.Private 14.1.0
 nuget kCura.Apps.Common.Config 2.1.9
 nuget kCura.FreeImage 3.17.0.1
 nuget kCura.LongPath 1.0.20
+
 nuget Relativity.DataGrid 14.0.0
 nuget Relativity.DataTransfer.MessageService ~> 10.2.0
 nuget Relativity.Kepler 2.17
@@ -73,6 +73,7 @@ nuget ZetaLongPaths 1.0.0.16
 nuget System.ValueTuple
 nuget iTextSharp 5.5.13.1
 nuget SystemWrapper.Interfaces 0.25.0.186
+nuget System.Runtime.CompilerServices.Unsafe ~> 6.0.0 
 
 //Analyzers
 nuget CSharpGuidelineAnalyzer 1.0.3.0
@@ -97,12 +98,12 @@ nuget ARMTestServices 1.1.1
 group Tests
 framework: auto-detect
 strategy: min
-source C:\Projects\DataTransfer\relativitysync\Artifacts\NuGet
 source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 
 nuget kCura 14.2.5
 nuget kCura.Agent ~> 17.4.2
 nuget kCura.Apps.Common.Config 2.1.9
+nuget kCura.EventHandler ~> 17.4.4
 nuget Relativity.API 17.6.2
 nuget Relativity 48.2.10
 nuget Relativity.Toggles 1.0.1
@@ -136,7 +137,7 @@ nuget Relativity.AutomatedWorkflows.SDK 1.0.8
 nuget Relativity.OAuth2Client 1.5.3
 nuget Relativity.OAuth2Client.Interfaces 1.5.3
 
-nuget Relativity.Sync 0.1.5-local
+nuget Relativity.Sync 0.9.0-pre.52
 
 //RIP packages
 nuget IntegrationPoints.MyFirstProvider 12.3.10
@@ -147,10 +148,9 @@ nuget Relativity.IntegrationPoints.Services.Interfaces.Private 1.4.1
 group Sync
 framework: auto-detect
 strategy: min
-source C:\Projects\DataTransfer\relativitysync\Artifacts\NuGet
 source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 
-nuget Relativity.Sync 0.1.5-local
+nuget Relativity.Sync 0.9.0-pre.52
 nuget SSH.NET 2020.0.1
 nuget Newtonsoft.Json 6.0.8
 nuget Autofac 4.9.4
