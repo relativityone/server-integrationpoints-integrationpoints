@@ -2,7 +2,8 @@
 	UPDATE [eddsdbo].[{0}]
 	SET
 			[LockedByAgentID]	= @AgentID,
-			[StopState] = 0
+			[StopState] = 0,
+			[Heartbeat] = GETUTCDATE()
 	OUTPUT 
 			INSERTED.[JobID],
 			INSERTED.[RootJobID],
