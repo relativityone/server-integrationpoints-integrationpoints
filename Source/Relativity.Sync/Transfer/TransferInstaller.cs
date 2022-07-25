@@ -36,6 +36,7 @@ namespace Relativity.Sync.Transfer
             builder.Register(c => c.Resolve<IHelper>().GetAntiMalwareEventHelper()).As<IAntiMalwareEventHelper>();
             builder.RegisterType<AntiMalwareHandler>().As<IAntiMalwareHandler>();
             builder.RegisterType<AntiMalwareConfiguration>().As<IAntiMalwareConfiguration>();
+            builder.RegisterType<FileStreamBuilder>().As<IFileStreamBuilder>();
         }
     }
 }
