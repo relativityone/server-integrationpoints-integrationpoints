@@ -18,7 +18,9 @@ namespace Relativity.Sync.Transfer.ADF
         private const string ADLER_SIEBEN_TEAM_ID = "PTCI-2456712";
         private const string RELATIVITY_SYNC_SERVICE_NAME = "relativity-sync";
 
-        public ADLSMigrationStatus(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IHelperWrapper helperWrapper,
+        public ADLSMigrationStatus(
+            ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
+            IHelperWrapper helperWrapper,
             IAPILog logger)
         {
             _serviceFactoryForAdmin = serviceFactoryForAdmin;
@@ -51,7 +53,7 @@ namespace Relativity.Sync.Transfer.ADF
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, $"Exception when checking if tenant is fully migrated to ADLS. Details: {exception.Message}");
+                _logger.LogError(exception, "Exception when checking if tenant is fully migrated to ADLS.");
                 return false;
             }
         }
@@ -62,13 +64,11 @@ namespace Relativity.Sync.Transfer.ADF
                        .ConfigureAwait(false))
             {
                 var resultSet = await resourceServer.QueryAsync(new Services.Query()).ConfigureAwait(false);
-                _logger.LogInformation("Retrieved {fileServersResourceServerCount} file server(s)",
-                    resultSet.TotalCount);
+                _logger.LogInformation("Retrieved {fileServersResourceServerCount} file server(s)", resultSet.TotalCount);
                 List<string> serverList = new List<string>();
                 foreach (Result<FileShareResourceServer> result in resultSet.Results)
                 {
-                    _logger.LogInformation("Name: {FileServerName} UNC: {fileServerUNC}", result.Artifact.Name,
-                        result.Artifact.UNCPath);
+                    _logger.LogInformation("Name: {FileServerName} UNC: {fileServerUNC}", result.Artifact.Name, result.Artifact.UNCPath);
                     Uri resultUri = new Uri(result.Artifact.UNCPath);
                     if (!serverList.Contains(resultUri.Host))
                     {
