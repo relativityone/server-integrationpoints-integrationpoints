@@ -43,7 +43,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
                 errors = await ConfigureAndRunImportApiJobAsync(workspaceArtifactId, dataTableWrapper, importApi)
                     .ConfigureAwait(false);
             }
-            
+
             Assert.IsTrue(errors.Success, $"Failed to import data to workspace {workspaceArtifactId} due to IAPI errors: {errors}");
         }
 
