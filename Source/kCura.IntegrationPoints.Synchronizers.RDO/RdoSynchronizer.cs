@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public int TotalRowsProcessed => ImportService?.TotalRowsProcessed ?? 0;
 
 		private ImportSettings ImportSettings { get; set; }
-		
+
 		private NativeFileImportService NativeFileImportService { get; set; }
 
 		private HashSet<string> IgnoredList => _ignoredList ?? (_ignoredList = new HashSet<string>
@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 			protected set { _disableNativeLocationValidation = value; }
 		}
-		
+
 		public string WebAPIPath
 		{
 			get
@@ -166,15 +166,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			try
 			{
 				LogSyncingData();
-				
-				InitializeImportJob(fieldMap, options, jobStopManager);			
-				
-				bool rowProcessed = false;				
+
+				InitializeImportJob(fieldMap, options, jobStopManager);
+
+				bool rowProcessed = false;
 				if (jobStopManager?.ShouldDrainStop != true)
 				{
-					_logger.LogInformation("Data processing loop is starting. Items to import: {0}", data.Count());
+					_logger.LogInformation("Data processing loop is starting");
 					int addedRows = 0;
-					int skippedRows = 0;					
+					int skippedRows = 0;
 					foreach(var row in data)
                     {
                         try
@@ -199,7 +199,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 							ItemError(string.Empty, ex.Message);
 						}
 					}
-					_logger.LogInformation("Data processing loop ended. Rows added: {0}, rows skipped: {1}", addedRows, skippedRows);					
+					_logger.LogInformation("Data processing loop ended. Rows added: {0}, rows skipped: {1}", addedRows, skippedRows);
 
 					if (!jobStopManager?.ShouldDrainStop ?? true)
 					{
@@ -208,7 +208,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 					}
 
 					WaitUntilTheJobIsDone(rowProcessed);
-					FinalizeSyncData(data, fieldMap, ImportSettings, jobStopManager);					
+					FinalizeSyncData(data, fieldMap, ImportSettings, jobStopManager);
 				}
 				else
 				{
@@ -219,7 +219,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				throw LogAndCreateSyncDataException(ex, fieldMap, options);
 			}
-		}      
+		}
 
         public void SyncData(IDataTransferContext context, IEnumerable<FieldMap> fieldMap, string options,
 			IJobStopManager jobStopManager)
@@ -267,7 +267,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 			return emailBody.ToString();
 		}
-		
+
 		protected List<RelativityObject> GetRelativityFields(ImportSettings settings)
 		{
 			try
@@ -526,7 +526,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			settings.SupportedByViewerColumn = Constants.SPECIAL_FILE_SUPPORTED_BY_VIEWER_FIELD_NAME;
 			settings.FileSizeMapped = true;
 			settings.FileSizeColumn = Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD_NAME;
-			
+
 			// NOTE :: So that the destination workspace file icons correctly display, we give the import API the file name of the document
 			settings.FileNameColumn = Constants.SPECIAL_FILE_NAME_FIELD_NAME;
 		}
@@ -633,7 +633,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				Dictionary<int, string> workspaces = GetImportApiFacade(settings).GetWorkspaceNames();
 				if (workspaces.ContainsKey(settings.CaseArtifactId))
 				{
-					
 					LogNullWorkspaceReturnedByIAPI();
 					workspaceRef = new WorkspaceRef { Id = settings.CaseArtifactId, Name = workspaces[settings.CaseArtifactId] };
 				}

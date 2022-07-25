@@ -157,7 +157,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						GetSourceData(sourceFields, sourceDataReader);
 					JobStopManager?.ThrowIfStopRequested();
 
-					_logger.LogInformation("Start SyndData...");
+					_logger.LogInformation("Start SyncData...");
 					dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration, JobStopManager);
 					_logger.LogInformation("SyncData Completed. Processed rows: {processedRows}", dataSynchronizer.TotalRowsProcessed);
 				}
