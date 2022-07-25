@@ -46,6 +46,7 @@ namespace Relativity.Sync.Transfer
                         _itemLevelErrorHandler(batchItem.ArtifactID.ToString(CultureInfo.InvariantCulture), ex.GetExceptionMessages());
                         continue;
                     }
+
                     yield return row;
                 }
             }
