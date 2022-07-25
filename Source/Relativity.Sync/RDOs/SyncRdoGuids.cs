@@ -49,6 +49,9 @@ namespace Relativity.Sync.RDOs
         public const string JobHistoryFailedItemsFieldGuid = "3E6CBCC4-ABD2-4C9F-99F6-AE2CFBF97E5C";
         public const string JobHistoryTotalItemsFieldGuid = "E145B019-4451-4339-8CED-96901F1264F9";
         public const string JobHistoryDestinationWorkspaceInformationGuid = "3407317A-FFB4-49A8-A9F0-86A473AA2054";
+        public const string JobHistoryJobIdGuid = "284C9B20-A634-4CF7-B56A-FE39E0994830";
+        public const string JobHistoryStartTimeGuid = "4AC51EE1-A3D8-4B21-8632-4E1E7CB9C8DB";
+
         public const string JobHistoryErrorTypeGuid = "1BD0DEDA-C86A-4E0C-BE16-857D5541783D";
         public const string JobHistoryErrorErrorMessagesGuid = "27FECC80-AED2-41EB-8462-97BB6ACBF8B9";
         public const string JobHistoryErrorErrorStatusGuid = "F99ECDA1-03B9-4C62-AEC4-22EB7374D740";

@@ -33,16 +33,28 @@ namespace Relativity.Sync.SyncConfiguration.Options
         public Guid DestinationWorkspaceInformationGuid { get; private set; }
 
         /// <summary>
+        /// Job ID
+        /// </summary>
+        public Guid JobIdGuid { get; }
+
+        /// <summary>
+        /// Start Time (Date Time)
+        /// </summary>
+        public Guid StartTimeGuid { get; private set; }
+
+        /// <summary>
         /// Constructor. All parameters are mandatory
         /// </summary>
         public JobHistoryOptions(Guid jobHistoryTypeGuid, Guid completedItemsCountGuid, Guid failedItemsCountGuid,
-            Guid totalItemsCountGuid, Guid destinationWorkspaceInformationGuid)
+            Guid totalItemsCountGuid, Guid destinationWorkspaceInformationGuid, Guid startTimeGuid, Guid jobIdGuid)
         {
             JobHistoryTypeGuid = jobHistoryTypeGuid;
             CompletedItemsCountGuid = completedItemsCountGuid;
             FailedItemsCountGuid = failedItemsCountGuid;
             TotalItemsCountGuid = totalItemsCountGuid;
             DestinationWorkspaceInformationGuid = destinationWorkspaceInformationGuid;
+            StartTimeGuid = startTimeGuid;
+            JobIdGuid = jobIdGuid;
         }
     }
 }

@@ -16,12 +16,14 @@ namespace Relativity.Sync.Configuration
         Guid FailedItemsFieldGuid { get; }
         Guid TotalItemsFieldGuid { get; }
         Guid DestinationWorkspaceInformationGuid { get; }
+        Guid JobIdGuid { get; }
+        Guid StartTimeGuid { get; }
     }
 
     internal interface IJobHistoryErrorGuidsProvider
     {
         Guid TypeGuid { get; }
-        
+
         Guid ErrorMessagesGuid { get; }
         Guid ErrorStatusGuid { get; }
         Guid ErrorTypeGuid { get; }
@@ -29,15 +31,15 @@ namespace Relativity.Sync.Configuration
         Guid SourceUniqueIdGuid { get; }
         Guid StackTraceGuid { get; }
         Guid TimeStampGuid { get; }
-        
+
         Guid ItemLevelErrorGuid { get; }
         Guid JobLevelErrorGuid { get; }
-        
+
         Guid JobHistoryRelationGuid { get; }
-        
+
         Guid NewStatusGuid { get; }
     }
-    
+
     internal interface IDestinationWorkspaceTagGuidProvider
     {
         Guid TypeGuid { get; }
