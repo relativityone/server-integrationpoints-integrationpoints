@@ -29,6 +29,12 @@ namespace Relativity.Sync.Tests.System.Core.Helpers.APIHelper
             return new ServicesManagerStub();
         }
 
+        public IInstanceSettingsBundle GetInstanceSettingBundle()
+        {
+            var instanceSettingBundle = new Mock<IInstanceSettingsBundle>();
+            return instanceSettingBundle.Object;
+        }
+
         #region Not Implemented
 
         public IUrlHelper GetUrlHelper()
@@ -57,11 +63,6 @@ namespace Relativity.Sync.Tests.System.Core.Helpers.APIHelper
         }
 
         public ISecretStore GetSecretStore()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IInstanceSettingsBundle GetInstanceSettingBundle()
         {
             throw new NotImplementedException();
         }
