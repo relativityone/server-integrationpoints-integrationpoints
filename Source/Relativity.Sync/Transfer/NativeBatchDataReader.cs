@@ -22,8 +22,16 @@ namespace Relativity.Sync.Transfer
             Action<string, string> itemLevelErrorHandler,
             CancellationToken cancellationToken,
             IAPILog logger)
-            : base(templateDataTable, sourceWorkspaceArtifactId, batch, allFields, fieldManager, exportDataSanitizer,
-                itemLevelErrorHandler, cancellationToken, logger)
+            : base(
+                templateDataTable,
+                sourceWorkspaceArtifactId,
+                batch,
+                allFields,
+                fieldManager,
+                exportDataSanitizer,
+                itemLevelErrorHandler,
+                cancellationToken,
+                logger)
         {
             CanCancel = true;
         }
@@ -51,7 +59,7 @@ namespace Relativity.Sync.Transfer
                 }
             }
         }
-        
+
         private IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder> CreateSpecialFieldRowValuesBuilders()
         {
             // TODO REL-367580: [PERFORMANCE] It looks like we are creating this collection (Int32 x Batch Size) unnecessary.
@@ -85,12 +93,13 @@ namespace Relativity.Sync.Transfer
             return result;
         }
 
-        private static object BuildSpecialFieldValue(IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder> specialFieldBuilders, RelativityObjectSlim batchItem, FieldInfoDto fieldInfo)
+        private object BuildSpecialFieldValue(IDictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder> specialFieldBuilders, RelativityObjectSlim batchItem, FieldInfoDto fieldInfo)
         {
             if (!specialFieldBuilders.ContainsKey(fieldInfo.SpecialFieldType))
             {
                 throw new SourceDataReaderException($"No special field row value builder found for special field type {nameof(SpecialFieldType)}.{fieldInfo.SpecialFieldType}");
             }
+
             object initialFieldValue = fieldInfo.IsDocumentField ? batchItem.Values[fieldInfo.DocumentFieldIndex] : null;
 
             return specialFieldBuilders[fieldInfo.SpecialFieldType].BuildRowValue(fieldInfo, batchItem, initialFieldValue);
@@ -113,6 +122,5 @@ namespace Relativity.Sync.Transfer
 
             return sanitizedValue;
         }
-
     }
 }

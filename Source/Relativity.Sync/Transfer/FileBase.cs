@@ -20,6 +20,7 @@ namespace Relativity.Sync.Transfer
         {
             if (_wasCheckedForMalware || string.IsNullOrEmpty(Location))
             {
+                _wasCheckedForMalware = true;
                 return;
             }
 
