@@ -9,9 +9,9 @@ namespace Relativity.Sync.Tests.System.Helpers
     {
         private readonly NativeInfoFieldsBuilder _fileInfoFieldsBuilder;
 
-        public NullSupportedByViewerFileInfoFieldsBuilder(INativeFileRepository nativeFileRepository)
+        public NullSupportedByViewerFileInfoFieldsBuilder(INativeFileRepository nativeFileRepository, IFileLocationManager fileLocationManager)
         {
-            _fileInfoFieldsBuilder = new NativeInfoFieldsBuilder(nativeFileRepository, null, new EmptyLogger());
+            _fileInfoFieldsBuilder = new NativeInfoFieldsBuilder(nativeFileRepository, null, new EmptyLogger(), fileLocationManager);
         }
 
         public IEnumerable<FieldInfoDto> BuildColumns()
@@ -22,7 +22,8 @@ namespace Relativity.Sync.Tests.System.Helpers
         public async Task<INativeSpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, int[] documentArtifactIds)
         {
             return new NullSupportedByViewerFileInfoRowValuesBuilder(
-                await _fileInfoFieldsBuilder.GetRowValuesBuilderAsync(sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false));
+                await _fileInfoFieldsBuilder.GetRowValuesBuilderAsync(sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false)
+            );
         }
     }
 }

@@ -16,17 +16,17 @@ namespace Relativity.Sync.Tests.Integration
         [Test]
         public async Task Read_ShouldReadMultipleBlocksAndConstructColumns_WhenCopyFilesMode()
         {
-            // Arrange 
+            // Arrange
             const int batchSize = 500;
             const int blockSize = 300;
             SetUp(batchSize, ImportNativeFileCopyMode.CopyFiles);
 
             DocumentImportJob importData = CreateDefaultDocumentImportJob(batchSize, CreateDocumentForNativesTransfer, DefaultIdentifierWithSpecialFields);
-            
+
             _configuration.SetFieldMappings(importData.FieldMappings);
             await _documentTransferServicesMocker.SetupServicesWithNativesTestDataAsync(importData, blockSize).ConfigureAwait(false);
 
-            // Act/Assert 
+            // Act/Assert
             foreach (Document document in importData.Documents)
             {
                 bool hasMoreData = _instance.Read();
@@ -57,7 +57,7 @@ namespace Relativity.Sync.Tests.Integration
         [Test]
         public async Task Read_ShouldReadMultipleBlocksAndConstructColumns_WhenDoNotImportNativeFiles()
         {
-            // Arrange 
+            // Arrange
             const int batchSize = 500;
             const int blockSize = 300;
             SetUp(batchSize, ImportNativeFileCopyMode.DoNotImportNativeFiles);
@@ -67,7 +67,7 @@ namespace Relativity.Sync.Tests.Integration
             _configuration.SetFieldMappings(importData.FieldMappings);
             await _documentTransferServicesMocker.SetupServicesWithNativesTestDataAsync(importData, blockSize).ConfigureAwait(false);
 
-            // Act/Assert 
+            // Act/Assert
             foreach (Document document in importData.Documents)
             {
                 bool hasMoreData = _instance.Read();
