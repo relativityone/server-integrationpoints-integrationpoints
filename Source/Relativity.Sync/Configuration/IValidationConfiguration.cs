@@ -4,44 +4,44 @@ using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Configuration
 {
-	internal interface IValidationConfiguration : IConfiguration
-	{
-		int SourceWorkspaceArtifactId { get; }
+    internal interface IValidationConfiguration : IConfiguration
+    {
+        int SourceWorkspaceArtifactId { get; }
 
-		int DestinationWorkspaceArtifactId { get; }
+        int DestinationWorkspaceArtifactId { get; }
 
-		int SavedSearchArtifactId { get; }
+        int SavedSearchArtifactId { get; }
 
-		int DestinationFolderArtifactId { get; }
-		
-		int RdoArtifactTypeId { get; }
+        int DestinationFolderArtifactId { get; }
+        
+        int RdoArtifactTypeId { get; }
 
-		int DestinationRdoArtifactTypeId { get; }
+        int DestinationRdoArtifactTypeId { get; }
 
-		Guid JobHistoryObjectTypeGuid { get; }
+        Guid JobHistoryObjectTypeGuid { get; }
 
-		ImportOverwriteMode ImportOverwriteMode { get; }
+        ImportOverwriteMode ImportOverwriteMode { get; }
 
-		FieldOverlayBehavior FieldOverlayBehavior { get; }
+        FieldOverlayBehavior FieldOverlayBehavior { get; }
 
-		DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; }
+        DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; }
 
-		ImportNativeFileCopyMode ImportNativeFileCopyMode { get; }
+        ImportNativeFileCopyMode ImportNativeFileCopyMode { get; }
 
-		ImportImageFileCopyMode ImportImageFileCopyMode { get; }
-		
-		int? JobHistoryToRetryId { get; }
+        ImportImageFileCopyMode ImportImageFileCopyMode { get; }
+        
+        int? JobHistoryToRetryId { get; }
 
-		string GetJobName();
+        string GetJobName();
 
-		string GetNotificationEmails();
+        string GetNotificationEmails();
 
-		IList<FieldMap> GetFieldMappings();
+        IList<FieldMap> GetFieldMappings();
 
-		string GetFolderPathSourceFieldName();
-		
-		bool Resuming { get; }
-		
-		Guid? SnapshotId { get; }
-	}
+        string GetFolderPathSourceFieldName();
+        
+        bool Resuming { get; }
+        
+        Guid? SnapshotId { get; }
+    }
 }

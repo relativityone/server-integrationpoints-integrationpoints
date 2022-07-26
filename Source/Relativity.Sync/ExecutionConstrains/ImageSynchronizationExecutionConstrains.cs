@@ -4,10 +4,10 @@ using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.ExecutionConstrains
 {
-	internal sealed class ImageSynchronizationExecutionConstrains : BaseSynchronizationExecutionConstrains<IImageSynchronizationConfiguration>
-	{
-		public ImageSynchronizationExecutionConstrains(IBatchRepository batchRepository, IAPILog syncLog) : base(batchRepository, syncLog)
-		{
-		}
-	}
+    internal sealed class ImageSynchronizationExecutionConstrains : BaseSynchronizationExecutionConstrains<IImageSynchronizationConfiguration>
+    {
+        public ImageSynchronizationExecutionConstrains(IBatchRepository batchRepository, IAPILog syncLog) : base(batchRepository, syncLog)
+        {
+        }
+    }
 }

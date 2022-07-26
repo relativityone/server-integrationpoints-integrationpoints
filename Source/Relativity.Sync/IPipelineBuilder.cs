@@ -2,8 +2,8 @@
 
 namespace Relativity.Sync
 {
-	internal interface IPipelineBuilder
-	{
-		void RegisterFlow(ContainerBuilder containerBuilder);
-	}
+    internal interface IPipelineBuilder
+    {
+        void RegisterFlow(ContainerBuilder containerBuilder);
+    }
 }

@@ -2,24 +2,24 @@
 
 namespace Relativity.Sync.Configuration
 {
-	internal interface IPermissionsCheckConfiguration : IConfiguration
-	{
-		int SourceWorkspaceArtifactId { get; }
+    internal interface IPermissionsCheckConfiguration : IConfiguration
+    {
+        int SourceWorkspaceArtifactId { get; }
 
-		int DestinationWorkspaceArtifactId { get; }
+        int DestinationWorkspaceArtifactId { get; }
 
-		int DestinationFolderArtifactId { get;  }
+        int DestinationFolderArtifactId { get;  }
 
-		int SourceProviderArtifactId { get; }
+        int SourceProviderArtifactId { get; }
 
-		bool CreateSavedSearchForTags { get; }
+        bool CreateSavedSearchForTags { get; }
 
-		Guid JobHistoryObjectTypeGuid { get; }
-		
-		int RdoArtifactTypeId { get; }
+        Guid JobHistoryObjectTypeGuid { get; }
+        
+        int RdoArtifactTypeId { get; }
 
-		int DestinationRdoArtifactTypeId { get; }
-		
-		ImportOverwriteMode ImportOverwriteMode { get; }
-	}
+        int DestinationRdoArtifactTypeId { get; }
+        
+        ImportOverwriteMode ImportOverwriteMode { get; }
+    }
 }

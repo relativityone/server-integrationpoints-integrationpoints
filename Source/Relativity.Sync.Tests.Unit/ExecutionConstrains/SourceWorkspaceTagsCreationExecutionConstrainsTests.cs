@@ -7,23 +7,23 @@ using Relativity.Sync.ExecutionConstrains;
 
 namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 {
-	[TestFixture]
-	public sealed class SourceWorkspaceTagsCreationExecutionConstrainsTests
-	{
-		private SourceWorkspaceTagsCreationExecutionConstrains _sut;
+    [TestFixture]
+    public sealed class SourceWorkspaceTagsCreationExecutionConstrainsTests
+    {
+        private SourceWorkspaceTagsCreationExecutionConstrains _sut;
 
-		[SetUp]
-		public void SetUp()
-		{
-			_sut = new SourceWorkspaceTagsCreationExecutionConstrains();
-		}
+        [SetUp]
+        public void SetUp()
+        {
+            _sut = new SourceWorkspaceTagsCreationExecutionConstrains();
+        }
 
-		[Test]
-		public async Task ItShouldAlwaysCanExecute()
-		{
-			bool canExecute = await _sut.CanExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+        [Test]
+        public async Task ItShouldAlwaysCanExecute()
+        {
+            bool canExecute = await _sut.CanExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
-			Assert.True(canExecute);
-		}
-	}
+            Assert.True(canExecute);
+        }
+    }
 }

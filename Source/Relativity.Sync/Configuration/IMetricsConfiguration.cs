@@ -1,22 +1,22 @@
 ﻿namespace Relativity.Sync.Configuration
 {
-	internal interface IMetricsConfiguration : IConfiguration
-	{
-		string CorrelationId { get; }
-		
-		string ExecutingApplication { get; }
-		
-		string ExecutingApplicationVersion { get; }
+    internal interface IMetricsConfiguration : IConfiguration
+    {
+        string CorrelationId { get; }
+        
+        string ExecutingApplication { get; }
+        
+        string ExecutingApplicationVersion { get; }
 
-		DataSourceType DataSourceType { get; }
+        DataSourceType DataSourceType { get; }
 
-		DestinationLocationType DataDestinationType { get; }
+        DestinationLocationType DataDestinationType { get; }
 
-		bool ImageImport { get; }
+        bool ImageImport { get; }
 
-		int? JobHistoryToRetryId { get; }
+        int? JobHistoryToRetryId { get; }
 
-		string SyncVersion { get; }
+        string SyncVersion { get; }
 
         int RdoArtifactTypeId { get;}
 

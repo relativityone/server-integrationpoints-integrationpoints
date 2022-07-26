@@ -3,8 +3,8 @@
     /// <summary>
     /// Interface for getting Kepler service with admin privileges
     /// </summary>
-	internal interface ISourceServiceFactoryForAdmin : IProxyFactory
-	{
-		
-	}
+    internal interface ISourceServiceFactoryForAdmin : IProxyFactory
+    {
+        
+    }
 }

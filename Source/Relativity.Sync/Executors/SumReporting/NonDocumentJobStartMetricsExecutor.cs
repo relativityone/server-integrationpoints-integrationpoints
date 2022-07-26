@@ -14,11 +14,11 @@ using Relativity.Sync.Telemetry.Metrics;
 
 namespace Relativity.Sync.Executors.SumReporting
 {
-	internal class NonDocumentJobStartMetricsExecutor : IExecutor<INonDocumentJobStartMetricsConfiguration>
-	{
+    internal class NonDocumentJobStartMetricsExecutor : IExecutor<INonDocumentJobStartMetricsConfiguration>
+    {
         private const string _NOT_ASSIGNED_APPLICATION_NAME = "None";
 
-		private readonly ISourceServiceFactoryForUser _serviceFactory;
+        private readonly ISourceServiceFactoryForUser _serviceFactory;
         private readonly IFieldMappingSummary _fieldMappingSummary;
         private readonly ISyncMetrics _syncMetrics;
         private readonly IAPILog _logger;
@@ -33,25 +33,25 @@ namespace Relativity.Sync.Executors.SumReporting
 
         public async Task<ExecutionResult> ExecuteAsync(INonDocumentJobStartMetricsConfiguration configuration, CompositeCancellationToken token)
         {
-			if (configuration.Resuming)
+            if (configuration.Resuming)
             {
                 _syncMetrics.Send(new JobResumeMetric
                 {
                     Type = TelemetryConstants.PROVIDER_NAME,
                     RetryType = configuration.JobHistoryToRetryId != null ? TelemetryConstants.PROVIDER_NAME : null,
-				});
+                });
             }
             else
-			{
-				string parentApplicationName = await GetParentApplicationNameAsync(configuration).ConfigureAwait(false);
+            {
+                string parentApplicationName = await GetParentApplicationNameAsync(configuration).ConfigureAwait(false);
 
-				_syncMetrics.Send(new NonDocumentJobStartMetric
+                _syncMetrics.Send(new NonDocumentJobStartMetric
                 {
                     Type = TelemetryConstants.PROVIDER_NAME,
                     FlowType = TelemetryConstants.FLOW_TYPE_VIEW_NON_DOCUMENT_OBJECTS,
                     RetryType = configuration.JobHistoryToRetryId != null ? TelemetryConstants.PROVIDER_NAME : null,
-					ParentApplicationName = parentApplicationName
-				});
+                    ParentApplicationName = parentApplicationName
+                });
 
                 try
                 {
@@ -65,15 +65,15 @@ namespace Relativity.Sync.Executors.SumReporting
             }
 
             return ExecutionResult.Success();
-		}
+        }
 
         private async Task<string> GetParentApplicationNameAsync(INonDocumentJobStartMetricsConfiguration configuration)
         {
-			string parentApplicationName = _NOT_ASSIGNED_APPLICATION_NAME;
+            string parentApplicationName = _NOT_ASSIGNED_APPLICATION_NAME;
 
             using (IObjectTypeManager objectTypeManager = await _serviceFactory.CreateProxyAsync<IObjectTypeManager>().ConfigureAwait(false))
             {
-				try
+                try
                 {
                     List<ObjectTypeIdentifier> allObjectTypes = await objectTypeManager.GetAvailableParentObjectTypesAsync(configuration.SourceWorkspaceArtifactId).ConfigureAwait(false);
                     ObjectTypeIdentifier objectTypeIdentifier = allObjectTypes.SingleOrDefault(x => x.ArtifactTypeID == configuration.RdoArtifactTypeId);
@@ -96,18 +96,18 @@ namespace Relativity.Sync.Executors.SumReporting
                                                "Response was null - Object Type does not have associated Relativity Application or user does not have permissions to view Applications.",
                                 configuration.RdoArtifactTypeId, objectTypeIdentifier.ArtifactID, configuration.SourceWorkspaceArtifactId);
                         }
-					}
+                    }
                 }
                 catch (Exception ex)
                 {
-					_logger.LogWarning(ex, "Exception occurred while querying for parent application name for Artifact Type ID: {artifactTypeId} in Source Workspace ID: {sourceWorkspaceId}",
+                    _logger.LogWarning(ex, "Exception occurred while querying for parent application name for Artifact Type ID: {artifactTypeId} in Source Workspace ID: {sourceWorkspaceId}",
                         configuration.RdoArtifactTypeId, configuration.SourceWorkspaceArtifactId);
                 }
 
                 return parentApplicationName;
             }
 
-		}
-		
-	}
+        }
+        
+    }
 }

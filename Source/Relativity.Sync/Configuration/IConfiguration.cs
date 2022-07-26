@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Sync.Configuration
 {
-	internal interface IConfiguration
-	{
-	}
+    internal interface IConfiguration
+    {
+    }
 }

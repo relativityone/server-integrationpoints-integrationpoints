@@ -38,5 +38,5 @@ namespace Relativity.Sync.ExecutionConstrains
             }
             return canExecute;
         }
-	}
+    }
 }

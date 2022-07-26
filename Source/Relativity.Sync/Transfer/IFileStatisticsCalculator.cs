@@ -4,10 +4,10 @@ using Relativity.Sync.Telemetry;
 
 namespace Relativity.Sync.Transfer
 {
-	internal interface IFileStatisticsCalculator
-	{
-		Task<long> CalculateNativesTotalSizeAsync(int workspaceId, QueryRequest request, CompositeCancellationToken token);
+    internal interface IFileStatisticsCalculator
+    {
+        Task<long> CalculateNativesTotalSizeAsync(int workspaceId, QueryRequest request, CompositeCancellationToken token);
 
-		Task<ImagesStatistics> CalculateImagesStatisticsAsync(int workspaceId, QueryRequest request, QueryImagesOptions options, CompositeCancellationToken token);
-	}
+        Task<ImagesStatistics> CalculateImagesStatisticsAsync(int workspaceId, QueryRequest request, QueryImagesOptions options, CompositeCancellationToken token);
+    }
 }

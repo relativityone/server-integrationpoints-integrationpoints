@@ -13,18 +13,18 @@ namespace Relativity.Sync.SyncConfiguration
 {
     internal class NonDocumentSyncConfigurationBuilder : SyncConfigurationRootBuilderBase, INonDocumentSyncConfigurationBuilder
     {
-	    private readonly ISyncContext _syncContext;
-	    private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
-	    private readonly IFieldsMappingBuilder _fieldsMappingBuilder;
+        private readonly ISyncContext _syncContext;
+        private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
+        private readonly IFieldsMappingBuilder _fieldsMappingBuilder;
         private Action<IFieldsMappingBuilder> _fieldsMappingAction;
 
         public NonDocumentSyncConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
             IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, NonDocumentSyncOptions options,
             RdoOptions rdoOptions, RdoManager rdoManager) : base(syncContext, serviceFactoryForAdmin, rdoOptions, rdoManager, serializer)
         {
-	        _syncContext = syncContext;
-	        _serviceFactoryForAdmin = serviceFactoryForAdmin;
-	        _fieldsMappingBuilder = fieldsMappingBuilder;
+            _syncContext = syncContext;
+            _serviceFactoryForAdmin = serviceFactoryForAdmin;
+            _fieldsMappingBuilder = fieldsMappingBuilder;
 
             SyncConfiguration.RdoArtifactTypeId = options.RdoArtifactTypeId;
             SyncConfiguration.DestinationRdoArtifactTypeId = options.DestinationRdoArtifactTypeId;
@@ -33,13 +33,13 @@ namespace Relativity.Sync.SyncConfiguration
             SyncConfiguration.DataSourceArtifactId = options.SourceViewArtifactId;
         }
 
-		public INonDocumentSyncConfigurationBuilder WithFieldsMapping(Action<IFieldsMappingBuilder> fieldsMappingAction)
+        public INonDocumentSyncConfigurationBuilder WithFieldsMapping(Action<IFieldsMappingBuilder> fieldsMappingAction)
         {
             _fieldsMappingAction = fieldsMappingAction;
             return this;
-		}
+        }
 
-		protected override async Task ValidateAsync()
+        protected override async Task ValidateAsync()
         {
             SetFieldsMapping();
             await ValidateViewExistsAsync().ConfigureAwait(false);
@@ -58,60 +58,60 @@ namespace Relativity.Sync.SyncConfiguration
 
         private async Task ValidateViewExistsAsync()
         {
-	        using (IObjectManager objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-	        {
-		        QueryRequest request = new QueryRequest()
-		        {
-			        ObjectType = new ObjectTypeRef()
-			        {
-				        ArtifactTypeID = (int)ArtifactType.View
-			        },
-			        Condition = $"'ArtifactID' == {SyncConfiguration.DataSourceArtifactId}"
-		        };
+            using (IObjectManager objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+            {
+                QueryRequest request = new QueryRequest()
+                {
+                    ObjectType = new ObjectTypeRef()
+                    {
+                        ArtifactTypeID = (int)ArtifactType.View
+                    },
+                    Condition = $"'ArtifactID' == {SyncConfiguration.DataSourceArtifactId}"
+                };
 
-		        QueryResult queryResult = await objectManager.QueryAsync(_syncContext.SourceWorkspaceId, request, 0, 1).ConfigureAwait(false);
+                QueryResult queryResult = await objectManager.QueryAsync(_syncContext.SourceWorkspaceId, request, 0, 1).ConfigureAwait(false);
 
-		        if (queryResult.TotalCount == 0)
-		        {
-			        throw new InvalidSyncConfigurationException($"View Artifact ID: {SyncConfiguration.DataSourceArtifactId} does not exist in workspace {_syncContext.SourceWorkspaceId}");
-		        }
-	        }
+                if (queryResult.TotalCount == 0)
+                {
+                    throw new InvalidSyncConfigurationException($"View Artifact ID: {SyncConfiguration.DataSourceArtifactId} does not exist in workspace {_syncContext.SourceWorkspaceId}");
+                }
+            }
         }
 
         public new INonDocumentSyncConfigurationBuilder CorrelationId(string correlationId)
         {
-	        base.CorrelationId(correlationId);
-	        return this;
+            base.CorrelationId(correlationId);
+            return this;
         }
 
         public new INonDocumentSyncConfigurationBuilder OverwriteMode(OverwriteOptions options)
         {
-	        base.OverwriteMode(options);
-	        return this;
+            base.OverwriteMode(options);
+            return this;
         }
 
         public new INonDocumentSyncConfigurationBuilder EmailNotifications(EmailNotificationsOptions options)
         {
-	        base.EmailNotifications(options);
-	        return this;
+            base.EmailNotifications(options);
+            return this;
         }
 
         public new INonDocumentSyncConfigurationBuilder CreateSavedSearch(CreateSavedSearchOptions options)
         {
-	        base.CreateSavedSearch(options);
-	        return this;
+            base.CreateSavedSearch(options);
+            return this;
         }
 
         public new INonDocumentSyncConfigurationBuilder IsRetry(RetryOptions options)
         {
-	        base.IsRetry(options);
-	        return this;
+            base.IsRetry(options);
+            return this;
         }
 
         public new INonDocumentSyncConfigurationBuilder DisableItemLevelErrorLogging()
         {
-	        base.DisableItemLevelErrorLogging();
-	        return this;
+            base.DisableItemLevelErrorLogging();
+            return this;
         }
     }
 }

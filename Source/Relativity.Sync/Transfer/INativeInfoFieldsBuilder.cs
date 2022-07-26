@@ -1,7 +1,7 @@
 ﻿namespace Relativity.Sync.Transfer
 {
-	internal interface INativeInfoFieldsBuilder: INativeSpecialFieldBuilder
-	{
-		
-	}
+    internal interface INativeInfoFieldsBuilder: INativeSpecialFieldBuilder
+    {
+        
+    }
 }

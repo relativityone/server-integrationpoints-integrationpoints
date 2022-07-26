@@ -2,10 +2,10 @@
 
 namespace Relativity.Sync.Utils
 {
-	internal sealed class DateTimeWrapper : IDateTime
-	{
-		public DateTime Now => DateTime.Now;
+    internal sealed class DateTimeWrapper : IDateTime
+    {
+        public DateTime Now => DateTime.Now;
 
-		public DateTime UtcNow => DateTime.UtcNow;
-	}
+        public DateTime UtcNow => DateTime.UtcNow;
+    }
 }

@@ -2,8 +2,8 @@
 
 namespace Relativity.Sync.Transfer
 {
-	internal interface IRelativityExportBatcherFactory
-	{
-		IRelativityExportBatcher CreateRelativityExportBatcher(IBatch batch);
-	}
+    internal interface IRelativityExportBatcherFactory
+    {
+        IRelativityExportBatcher CreateRelativityExportBatcher(IBatch batch);
+    }
 }

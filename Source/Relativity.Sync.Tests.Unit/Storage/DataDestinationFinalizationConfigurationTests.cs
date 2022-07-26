@@ -4,24 +4,24 @@ using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
-	internal sealed class DataDestinationFinalizationConfigurationTests : ConfigurationTestBase
-	{
-		private DataDestinationFinalizationConfiguration _instance;
+    internal sealed class DataDestinationFinalizationConfigurationTests : ConfigurationTestBase
+    {
+        private DataDestinationFinalizationConfiguration _instance;
 
-		[SetUp]
-		public void Setup()
-		{
-			_instance = new DataDestinationFinalizationConfiguration(_configuration);
-		}
+        [SetUp]
+        public void Setup()
+        {
+            _instance = new DataDestinationFinalizationConfiguration(_configuration);
+        }
 
-		[Test]
-		public void ItShouldRetrieveDataDestinationArtifactId()
-		{
-			const int expectedValue = 123;
+        [Test]
+        public void ItShouldRetrieveDataDestinationArtifactId()
+        {
+            const int expectedValue = 123;
 
-			_configurationRdo.DataDestinationArtifactId = expectedValue;
+            _configurationRdo.DataDestinationArtifactId = expectedValue;
 
-			_instance.DataDestinationArtifactId.Should().Be(expectedValue);
-		}
-	}
+            _instance.DataDestinationArtifactId.Should().Be(expectedValue);
+        }
+    }
 }

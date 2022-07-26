@@ -5,12 +5,12 @@ using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Tests.Common
 {
-	[ExcludeFromCodeCoverage]
-	internal sealed class ExecutionConstrainsStub<T> : IExecutionConstrains<T> where T : IConfiguration
-	{
-		public Task<bool> CanExecuteAsync(T configuration, CancellationToken token)
-		{
-			return Task.FromResult(true);
-		}
-	}
+    [ExcludeFromCodeCoverage]
+    internal sealed class ExecutionConstrainsStub<T> : IExecutionConstrains<T> where T : IConfiguration
+    {
+        public Task<bool> CanExecuteAsync(T configuration, CancellationToken token)
+        {
+            return Task.FromResult(true);
+        }
+    }
 }

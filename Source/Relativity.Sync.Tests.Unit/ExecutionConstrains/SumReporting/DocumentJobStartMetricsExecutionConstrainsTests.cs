@@ -8,20 +8,20 @@ using Relativity.Sync.ExecutionConstrains.SumReporting;
 
 namespace Relativity.Sync.Tests.Unit.ExecutionConstrains.SumReporting
 {
-	[TestFixture]
-	internal class DocumentJobStartMetricsExecutionConstrainsTests
-	{
-		[Test]
-		public async Task CanExecuteAsyncShouldReturnTrueTest()
-		{
-			// Arrange
-			var sut = new DocumentJobStartMetricsExecutorConstrains();
+    [TestFixture]
+    internal class DocumentJobStartMetricsExecutionConstrainsTests
+    {
+        [Test]
+        public async Task CanExecuteAsyncShouldReturnTrueTest()
+        {
+            // Arrange
+            var sut = new DocumentJobStartMetricsExecutorConstrains();
 
-			// Act
-			bool actualResult = await sut.CanExecuteAsync(Mock.Of<IDocumentJobStartMetricsConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+            // Act
+            bool actualResult = await sut.CanExecuteAsync(Mock.Of<IDocumentJobStartMetricsConfiguration>(), CancellationToken.None).ConfigureAwait(false);
 
-			// Assert
-			actualResult.Should().BeTrue();
-		}
+            // Assert
+            actualResult.Should().BeTrue();
+        }
     }
 }

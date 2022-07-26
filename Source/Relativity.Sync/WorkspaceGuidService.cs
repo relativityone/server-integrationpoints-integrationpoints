@@ -11,22 +11,22 @@ using Relativity.Sync.Storage;
 
 namespace Relativity.Sync
 {
-	internal sealed class WorkspaceGuidService : IWorkspaceGuidService, IDisposable
-	{
-		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
-		private readonly IDictionary<int, Guid> _cache;
+    internal sealed class WorkspaceGuidService : IWorkspaceGuidService, IDisposable
+    {
+        private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
+        private readonly IDictionary<int, Guid> _cache;
         private readonly ISemaphoreSlim _semaphoreSlim;
 
-		public WorkspaceGuidService(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISemaphoreSlim semaphoreSlim)
-		{
-			_serviceFactoryForAdmin = serviceFactoryForAdmin;
+        public WorkspaceGuidService(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, ISemaphoreSlim semaphoreSlim)
+        {
+            _serviceFactoryForAdmin = serviceFactoryForAdmin;
             _semaphoreSlim = semaphoreSlim;
             _cache = new ConcurrentDictionary<int, Guid>();
-		}
+        }
 
-		public async Task<Guid> GetWorkspaceGuidAsync(int workspaceArtifactId)
-		{
-			Guid workspaceGuid;
+        public async Task<Guid> GetWorkspaceGuidAsync(int workspaceArtifactId)
+        {
+            Guid workspaceGuid;
 
             await _semaphoreSlim.WaitAsync();
             try
@@ -47,30 +47,30 @@ namespace Relativity.Sync
             }
 
             return workspaceGuid;
-		}
+        }
 
-		private async Task<Guid> ReadWorkspaceGuidAsync(int workspaceArtifactId)
-		{
-			using (IObjectManager objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-			{
-				QueryRequest queryRequest = new QueryRequest()
-				{
-					ObjectType = new ObjectTypeRef()
-					{
-						Name = "Workspace"
-					},
-					Condition = $"'ArtifactID' == {workspaceArtifactId}"
-				};
-				QueryResult queryResult = await objectManager.QueryAsync(-1, queryRequest, 0, 1).ConfigureAwait(false);
+        private async Task<Guid> ReadWorkspaceGuidAsync(int workspaceArtifactId)
+        {
+            using (IObjectManager objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+            {
+                QueryRequest queryRequest = new QueryRequest()
+                {
+                    ObjectType = new ObjectTypeRef()
+                    {
+                        Name = "Workspace"
+                    },
+                    Condition = $"'ArtifactID' == {workspaceArtifactId}"
+                };
+                QueryResult queryResult = await objectManager.QueryAsync(-1, queryRequest, 0, 1).ConfigureAwait(false);
 
-				if (queryResult.Objects.Count == 0)
-				{
-					throw new NotFoundException($"Workspace ArtifactID = {workspaceArtifactId} not found.");
-				}
+                if (queryResult.Objects.Count == 0)
+                {
+                    throw new NotFoundException($"Workspace ArtifactID = {workspaceArtifactId} not found.");
+                }
 
-				return queryResult.Objects.First().Guids.FirstOrDefault();
-			}
-		}
+                return queryResult.Objects.First().Guids.FirstOrDefault();
+            }
+        }
 
         public void Dispose()
         {
