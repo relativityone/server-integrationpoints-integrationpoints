@@ -9,7 +9,7 @@ using Relativity.Sync.Transfer;
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
     [TestFixture]
-    internal sealed class NativeFileInfoRowValuesBuilderTests
+    internal sealed class NativeInfoRowValuesBuilderTests
     {
         private const long _SIZE = 100;
         private const int _DOCUMENT_ARTIFACT_ID = 10;
@@ -18,6 +18,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
         private const string _INITIAL_VALUE = "ghj";
         private static readonly Type _INITIAL_VALUE_TYPE = _INITIAL_VALUE.GetType();
+
+        private Mock<IAntiMalwareHandler> _antiMalwareHandlerFake;
 
         public static IEnumerable<TestCaseData> FieldInfoDtos()
         {
@@ -35,7 +37,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         [SetUp]
         public void SetUp()
         {
-
+            _antiMalwareHandlerFake = new Mock<IAntiMalwareHandler>();
         }
 
         [TestCaseSource(nameof(FieldInfoDtos))]
@@ -126,11 +128,38 @@ namespace Relativity.Sync.Tests.Unit.Transfer
                 .Which.Message.Should().Contain("has more than one native file");
         }
 
+        [Test]
+        public void BuildRowValue_ShouldThrowItemLevelException_WhenNativeHasMalware()
+        {
+            // Arrange
+            FieldInfoDto fieldInfoDto = FieldInfoDto.NativeFileSizeField();
+
+            NativeFile malwareNative = new NativeFile(2, "Location", string.Empty, 3);
+
+            IDictionary<int, INativeFile> artifactIdToNativeFileMap = new Dictionary<int, INativeFile>()
+            {
+                {
+                    _DOCUMENT_ARTIFACT_ID, malwareNative
+                }
+            };
+
+            RelativityObjectSlim document = new RelativityObjectSlim() { ArtifactID = _DOCUMENT_ARTIFACT_ID };
+            NativeInfoRowValuesBuilder instance = PrepareSut(artifactIdToNativeFileMap);
+
+            _antiMalwareHandlerFake.Setup(x => x.ContainsMalwareAsync(malwareNative)).ReturnsAsync(true);
+
+            // Act
+            Action action = () => instance.BuildRowValue(fieldInfoDto, document, _INITIAL_VALUE);
+
+            // Assert
+            action
+                .Should().Throw<SyncItemLevelErrorException>()
+                .WithMessage($"*{malwareNative.Location}*");
+        }
+
         private NativeInfoRowValuesBuilder PrepareSut(IDictionary<int, INativeFile> artifactIdsNativeCollection)
         {
-            Mock<IAntiMalwareHandler> antiMalwareHandler = new Mock<IAntiMalwareHandler>();
-
-            return new NativeInfoRowValuesBuilder(artifactIdsNativeCollection, antiMalwareHandler.Object);
+            return new NativeInfoRowValuesBuilder(artifactIdsNativeCollection, _antiMalwareHandlerFake.Object);
         }
     }
 }

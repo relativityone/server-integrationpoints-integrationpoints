@@ -14,12 +14,20 @@ namespace Relativity.Sync.Tests.Unit.Transfer
     {
         private ImageInfoRowValuesBuilder _sut;
 
+        private Mock<IAntiMalwareHandler> _antiMalwareHandlerFake;
+
         private static IEnumerable<TestCaseData> SpecialFieldExpectedReturnValuesData()
             => new[]
                 {
                     new TestCaseData(FieldInfoDto.ImageFileNameField(), new object[] { "Name2a", "Name2b", "Name2c" }),
                     new TestCaseData(FieldInfoDto.ImageFileLocationField(), new object[] { "Location2a", "Location2b", "Location2c" })
                 };
+
+        [SetUp]
+        public void SetUp()
+        {
+            _antiMalwareHandlerFake = new Mock<IAntiMalwareHandler>();
+        }
 
         [Test]
         public void BuildRowValues_ShouldReturnEmpty_WhenDocumentDoesNotExistInImageFiles()
@@ -146,11 +154,76 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             AssertIdentifierAt(result, 1000, controlNumber + "_1000");
         }
 
+        [Test]
+        public void BuildRowValues_ShouldThrowItemLevelError_WhenMalwareWasDetected()
+        {
+            // Arrange
+            const int documentId = 1;
+
+            ImageFile malwareImageFile = new ImageFile(documentId, "1", "Location1", "Name1", 0);
+
+            var documentToImageFiles = new Dictionary<int, ImageFile[]>()
+            {
+                { documentId, new[] { malwareImageFile } }
+            };
+
+            var field = FieldInfoDto.ImageFileNameField();
+
+            var document = new RelativityObjectSlim { ArtifactID = documentId };
+
+            _sut = PrepareSut(documentToImageFiles);
+
+            _antiMalwareHandlerFake.Setup(x => x.ContainsMalwareAsync(malwareImageFile)).ReturnsAsync(true);
+
+            // Act
+            Func<object> action = () => _sut.BuildRowsValues(field, document, _ => string.Empty);
+
+            // Assert
+            action.Should().Throw<SyncItemLevelErrorException>();
+        }
+
+        [Test]
+        public void BuildRowValues_ShouldCheckAllImagesForMalware_WhenMalwareWasDetectedForFirstImage()
+        {
+            // Arrange
+            const int documentId = 1;
+
+            ImageFile malwareImageFile1 = new ImageFile(documentId, "1", "Location1", "Name1", 0);
+            ImageFile malwareImageFile2 = new ImageFile(documentId, "2", "Location2", "Name2", 0);
+            ImageFile malwareImageFile3 = new ImageFile(documentId, "3", "Location3", "Name3", 0);
+
+            var documentToImageFiles = new Dictionary<int, ImageFile[]>()
+            {
+                {
+                    documentId,
+                    new[]
+                    {
+                        malwareImageFile1,
+                        malwareImageFile2,
+                        malwareImageFile3
+                    }
+                }
+            };
+
+            var field = FieldInfoDto.ImageFileNameField();
+
+            var document = new RelativityObjectSlim { ArtifactID = documentId };
+
+            _sut = PrepareSut(documentToImageFiles);
+
+            _antiMalwareHandlerFake.Setup(x => x.ContainsMalwareAsync(malwareImageFile1)).ReturnsAsync(true);
+            _antiMalwareHandlerFake.Setup(x => x.ContainsMalwareAsync(malwareImageFile3)).ReturnsAsync(true);
+
+            // Act
+            Func<object> action = () => _sut.BuildRowsValues(field, document, _ => string.Empty);
+
+            // Assert
+            action.Should().Throw<SyncItemLevelErrorException>().WithMessage($"*{malwareImageFile1.Location}*{malwareImageFile3.Location}*");
+        }
+
         private ImageInfoRowValuesBuilder PrepareSut(IDictionary<int, ImageFile[]> documentToImageFiles)
         {
-            Mock<IAntiMalwareHandler> antiMalwareHandler = new Mock<IAntiMalwareHandler>();
-
-            return new ImageInfoRowValuesBuilder(documentToImageFiles, antiMalwareHandler.Object);
+            return new ImageInfoRowValuesBuilder(documentToImageFiles, _antiMalwareHandlerFake.Object);
         }
 
         private void AssertIdentifierAt(IEnumerable<string> result, int index, string expectedIdentifier)

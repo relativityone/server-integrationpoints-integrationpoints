@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.Sync.Transfer
@@ -31,13 +32,24 @@ namespace Relativity.Sync.Transfer
                 return Enumerable.Empty<object>();
             }
 
+            List<string> malwareFilePaths = new List<string>();
             foreach (var imageFile in imagesForDocument)
             {
                 imageFile.ValidateMalwareAsync(_antiMalwareHandler).GetAwaiter().GetResult();
                 if (imageFile.IsMalwareDetected)
                 {
-                    throw new SyncItemLevelErrorException($"File contains a virus or potentially unwanted software - File: {imageFile.Location}");
+                    malwareFilePaths.Add(imageFile.Location);
                 }
+            }
+
+            if (malwareFilePaths.Any())
+            {
+                StringBuilder sb = new StringBuilder();
+                malwareFilePaths.ForEach(x => sb.AppendLine($"- {x},"));
+
+                string malwareFilePathsMessage = $"File contains a virus or potentially unwanted software - Files:\n {sb}";
+
+                throw new SyncItemLevelErrorException(malwareFilePathsMessage);
             }
 
             int numberOfDigits = GetNumberOfDigits(imagesForDocument.Length);
