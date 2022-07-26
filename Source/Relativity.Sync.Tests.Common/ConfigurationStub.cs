@@ -257,9 +257,9 @@ namespace Relativity.Sync.Tests.Common
         public string ExecutingApplicationVersion { get; set; }
 
         public bool LogItemLevelErrors { get; set; } = true;
-        
+		
         public bool LinkingExportExists => ObjectLinkingSnapshotId.HasValue;
-
+        
         public int ImportApiBatchSize { get; set; } = 1000;
 
         public int SyncBatchSize { get; set; } = 25000;
