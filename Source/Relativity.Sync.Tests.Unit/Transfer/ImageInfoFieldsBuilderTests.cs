@@ -13,16 +13,14 @@ namespace Relativity.Sync.Tests.Unit.Transfer
     [TestFixture]
     public class ImageInfoFieldsBuilderTests
     {
+        private const int _SOURCE_WORKSPACE_ID = 1;
+        private readonly int[] _DOCUMENT_ARTIFACT_IDS = new int[] { 1, 2, 3 };
+
         private ImageInfoFieldsBuilder _sut;
 
         private Mock<IImageFileRepository> _imageFileRepositoryMock;
         private Mock<IImageRetrieveConfiguration> _configurationFake;
         private Mock<IAPILog> _syncLogMock;
-
-        private readonly int[] _DOCUMENT_ARTIFACT_IDS = new int[] { 1, 2, 3 };
-
-        private const int _SOURCE_WORKSPACE_ID = 1;
-
 
         [SetUp]
         public void SetUp()
@@ -38,6 +36,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             _sut = new ImageInfoFieldsBuilder(
                 _imageFileRepositoryMock.Object,
                 _configurationFake.Object,
+                null,
                 _syncLogMock.Object);
         }
 
@@ -83,8 +82,13 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             await _sut.GetRowValuesBuilderAsync(_SOURCE_WORKSPACE_ID, _DOCUMENT_ARTIFACT_IDS).ConfigureAwait(false);
 
             // Assert
-            _imageFileRepositoryMock.Verify(x => x.QueryImagesForDocumentsAsync(_SOURCE_WORKSPACE_ID, _DOCUMENT_ARTIFACT_IDS,
-                It.Is<QueryImagesOptions>(q => q.IncludeOriginalImageIfNotFoundInProductions == expectedIncludeOriginalImageIfNotFoundInProductions && q.ProductionIds == expectedProductionIds)),
+            _imageFileRepositoryMock.Verify(
+                x => x.QueryImagesForDocumentsAsync(
+                    _SOURCE_WORKSPACE_ID,
+                    _DOCUMENT_ARTIFACT_IDS,
+                    It.Is<QueryImagesOptions>(q =>
+                        q.IncludeOriginalImageIfNotFoundInProductions == expectedIncludeOriginalImageIfNotFoundInProductions &&
+                        q.ProductionIds == expectedProductionIds)),
                 Times.Once);
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Transfer;
@@ -8,7 +9,7 @@ using Relativity.Sync.Transfer;
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
     [TestFixture]
-    internal sealed class NativeFileInfoRowValuesBuilderTests
+    internal sealed class NativeInfoRowValuesBuilderTests
     {
         private const long _SIZE = 100;
         private const int _DOCUMENT_ARTIFACT_ID = 10;
@@ -18,6 +19,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         private const string _INITIAL_VALUE = "ghj";
         private static readonly Type _INITIAL_VALUE_TYPE = _INITIAL_VALUE.GetType();
 
+        private Mock<IAntiMalwareHandler> _antiMalwareHandlerFake;
+
         public static IEnumerable<TestCaseData> FieldInfoDtos()
         {
             yield return new TestCaseData(FieldInfoDto.DocumentField("abc", "def", false), _INITIAL_VALUE_TYPE, _INITIAL_VALUE);
@@ -26,7 +29,17 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             yield return new TestCaseData(FieldInfoDto.NativeFileFilenameField(), typeof(string), _FILENAME);
         }
 
-        [Test]
+        private static IEnumerable<TestCaseData> UnsupportedNonDocumentFieldInfoDtos()
+        {
+            yield return new TestCaseData(FieldInfoDto.FolderPathFieldFromSourceWorkspaceStructure());
+        }
+
+        [SetUp]
+        public void SetUp()
+        {
+            _antiMalwareHandlerFake = new Mock<IAntiMalwareHandler>();
+        }
+
         [TestCaseSource(nameof(FieldInfoDtos))]
         public void BuildRowValue_ShouldReturnInitialValue_WhenFieldInfoDtoIsDocumentField(FieldInfoDto fieldInfoDto, Type expectedType, object expectedValue)
         {
@@ -34,10 +47,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             RelativityObjectSlim document = new RelativityObjectSlim() { ArtifactID = _DOCUMENT_ARTIFACT_ID };
             IDictionary<int, INativeFile> artifactIdToNativeFileMap = new Dictionary<int, INativeFile>
             {
-                {_DOCUMENT_ARTIFACT_ID, new NativeFile(_DOCUMENT_ARTIFACT_ID, _LOCATION, _FILENAME, _SIZE)}
+                { _DOCUMENT_ARTIFACT_ID, new NativeFile(_DOCUMENT_ARTIFACT_ID, _LOCATION, _FILENAME, _SIZE) }
             };
 
-            NativeInfoRowValuesBuilder instance = new NativeInfoRowValuesBuilder(artifactIdToNativeFileMap);
+            NativeInfoRowValuesBuilder instance = PrepareSut(artifactIdToNativeFileMap);
 
             // ACT
             object result = instance.BuildRowValue(fieldInfoDto, document, _INITIAL_VALUE);
@@ -47,12 +60,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             result.Should().BeEquivalentTo(expectedValue);
         }
 
-        public static IEnumerable<TestCaseData> UnsupportedNonDocumentFieldInfoDtos()
-        {
-            yield return new TestCaseData(FieldInfoDto.FolderPathFieldFromSourceWorkspaceStructure());
-        }
-
-        [Test]
         [TestCaseSource(nameof(UnsupportedNonDocumentFieldInfoDtos))]
         public void BuildRowValue_ShouldThrowException_WhenNotSupportedNonDocumentSpecialField(FieldInfoDto fieldInfoDto)
         {
@@ -60,10 +67,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             RelativityObjectSlim document = new RelativityObjectSlim() { ArtifactID = _DOCUMENT_ARTIFACT_ID };
             IDictionary<int, INativeFile> artifactIdToNativeFileMap = new Dictionary<int, INativeFile>
             {
-                {_DOCUMENT_ARTIFACT_ID, new NativeFile(_DOCUMENT_ARTIFACT_ID, _LOCATION, _FILENAME, _SIZE)}
+                { _DOCUMENT_ARTIFACT_ID, new NativeFile(_DOCUMENT_ARTIFACT_ID, _LOCATION, _FILENAME, _SIZE) }
             };
 
-            NativeInfoRowValuesBuilder instance = new NativeInfoRowValuesBuilder(artifactIdToNativeFileMap);
+            NativeInfoRowValuesBuilder instance = PrepareSut(artifactIdToNativeFileMap);
 
             // ACT
             Action action = () => instance.BuildRowValue(fieldInfoDto, document, _INITIAL_VALUE);
@@ -79,13 +86,12 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             FieldInfoDto fieldInfoDto = FieldInfoDto.NativeFileSizeField();
             RelativityObjectSlim document = new RelativityObjectSlim() { ArtifactID = _DOCUMENT_ARTIFACT_ID };
             IDictionary<int, INativeFile> artifactIdToNativeFileMap = new Dictionary<int, INativeFile>();
-            artifactIdToNativeFileMap.Add(_DOCUMENT_ARTIFACT_ID, new NativeFile(_DOCUMENT_ARTIFACT_ID, string.Empty,
-                string.Empty, 0)
+            artifactIdToNativeFileMap.Add(_DOCUMENT_ARTIFACT_ID, new NativeFile(_DOCUMENT_ARTIFACT_ID, string.Empty, string.Empty, 0)
             {
                 IsDuplicated = true
             });
 
-            NativeInfoRowValuesBuilder instance = new NativeInfoRowValuesBuilder(artifactIdToNativeFileMap);
+            NativeInfoRowValuesBuilder instance = PrepareSut(artifactIdToNativeFileMap);
 
             // ACT
             Action action = () => instance.BuildRowValue(fieldInfoDto, document, _INITIAL_VALUE);
@@ -98,9 +104,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         public void BuildRowValue_ShouldThrowSyncException_WhenNativesAreDuplicated()
         {
             // Arrange
-
             FieldInfoDto fieldInfoDto = FieldInfoDto.NativeFileSizeField();
-#pragma warning disable RG2009 // Hardcoded Numeric Value
+
             IDictionary<int, INativeFile> artifactIdToNativeFileMap = new Dictionary<int, INativeFile>()
             {
                 {
@@ -110,9 +115,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
                     }
                 }
             };
-#pragma warning restore RG2009 // Hardcoded Numeric Value
-            RelativityObjectSlim document = new RelativityObjectSlim() {ArtifactID = _DOCUMENT_ARTIFACT_ID };
-            NativeInfoRowValuesBuilder instance = new NativeInfoRowValuesBuilder(artifactIdToNativeFileMap);
+
+            RelativityObjectSlim document = new RelativityObjectSlim() { ArtifactID = _DOCUMENT_ARTIFACT_ID };
+            NativeInfoRowValuesBuilder instance = PrepareSut(artifactIdToNativeFileMap);
 
             // Act
             Action action = () => instance.BuildRowValue(fieldInfoDto, document, _INITIAL_VALUE);
@@ -121,6 +126,40 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             action
                 .Should().Throw<SyncException>()
                 .Which.Message.Should().Contain("has more than one native file");
+        }
+
+        [Test]
+        public void BuildRowValue_ShouldThrowItemLevelException_WhenNativeHasMalware()
+        {
+            // Arrange
+            FieldInfoDto fieldInfoDto = FieldInfoDto.NativeFileSizeField();
+
+            NativeFile malwareNative = new NativeFile(2, "Location", string.Empty, 3);
+
+            IDictionary<int, INativeFile> artifactIdToNativeFileMap = new Dictionary<int, INativeFile>()
+            {
+                {
+                    _DOCUMENT_ARTIFACT_ID, malwareNative
+                }
+            };
+
+            RelativityObjectSlim document = new RelativityObjectSlim() { ArtifactID = _DOCUMENT_ARTIFACT_ID };
+            NativeInfoRowValuesBuilder instance = PrepareSut(artifactIdToNativeFileMap);
+
+            _antiMalwareHandlerFake.Setup(x => x.ContainsMalwareAsync(malwareNative)).ReturnsAsync(true);
+
+            // Act
+            Action action = () => instance.BuildRowValue(fieldInfoDto, document, _INITIAL_VALUE);
+
+            // Assert
+            action
+                .Should().Throw<SyncItemLevelErrorException>()
+                .WithMessage($"*{malwareNative.Location}*");
+        }
+
+        private NativeInfoRowValuesBuilder PrepareSut(IDictionary<int, INativeFile> artifactIdsNativeCollection)
+        {
+            return new NativeInfoRowValuesBuilder(artifactIdsNativeCollection, _antiMalwareHandlerFake.Object);
         }
     }
 }
