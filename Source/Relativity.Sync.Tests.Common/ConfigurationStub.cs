@@ -15,7 +15,8 @@ namespace Relativity.Sync.Tests.Common
         ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration, IFieldConfiguration, IImageRetrieveConfiguration,
         IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration, IRetryDataSourceSnapshotConfiguration, IPipelineSelectorConfiguration,
         IDocumentSynchronizationConfiguration, INonDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, IPreValidationConfiguration, IRdoGuidConfiguration,
-        IImageJobStartMetricsConfiguration, IDocumentJobStartMetricsConfiguration, ISnapshotQueryConfiguration, IMetricsConfiguration, IStatisticsConfiguration, INonDocumentJobStartMetricsConfiguration, IJobHistoryErrorRepositoryConfigration, INonDocumentObjectLinkingConfiguration
+        IImageJobStartMetricsConfiguration, IDocumentJobStartMetricsConfiguration, ISnapshotQueryConfiguration, IMetricsConfiguration, IStatisticsConfiguration, INonDocumentJobStartMetricsConfiguration, IJobHistoryErrorRepositoryConfigration, INonDocumentObjectLinkingConfiguration,
+        IAntiMalwareConfiguration
     {
         private IList<FieldMap> _fieldMappings = new List<FieldMap>();
         private string _jobName = String.Empty;
@@ -263,6 +264,8 @@ namespace Relativity.Sync.Tests.Common
         public int ImportApiBatchSize { get; set; } = 1000;
 
         public int SyncBatchSize { get; set; } = 25000;
+
+        public bool IsPhysicalFileCopyMode { get; set; } = false;
 
         public Task<int> GetImportApiBatchSizeAsync()
         {

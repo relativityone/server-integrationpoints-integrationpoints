@@ -26,6 +26,13 @@ namespace Relativity.Sync.Storage
             _logger = logger;
         }
 
+        public static async Task<IConfiguration> GetAsync(SyncJobParameters syncJobParameters, IAPILog logger, ISemaphoreSlim semaphoreSlim, IRdoManager rdoManager)
+        {
+            Configuration configuration = new Configuration(syncJobParameters, rdoManager, semaphoreSlim, logger);
+            await configuration.ReadAsync().ConfigureAwait(false);
+            return configuration;
+        }
+
         public T GetFieldValue<T>(Func<SyncConfigurationRdo, T> valueGetter)
         {
             _semaphoreSlim.Wait();
@@ -39,7 +46,7 @@ namespace Relativity.Sync.Storage
                 _semaphoreSlim.Release();
             }
         }
-        
+
         public async Task UpdateFieldValueAsync<T>(Expression<Func<SyncConfigurationRdo, T>> memberExpression, T value)
         {
             await _semaphoreSlim.WaitAsync().ConfigureAwait(false);
@@ -54,6 +61,11 @@ namespace Relativity.Sync.Storage
             }
         }
 
+        public void Dispose()
+        {
+            _semaphoreSlim?.Dispose();
+        }
+
         private async Task ReadAsync()
         {
             _logger.LogVerbose("Reading Sync Configuration {artifactId}.", _syncConfigurationArtifactId);
@@ -64,24 +76,13 @@ namespace Relativity.Sync.Storage
 
             if (_configuration == null)
             {
-                _logger.LogError("Configuration with Id {artifactId} does not exist in workspace {workspaceId}",
-                    _syncConfigurationArtifactId, _workspaceArtifactId);
+                _logger.LogError(
+                    "Configuration with Id {artifactId} does not exist in workspace {workspaceId}",
+                    _syncConfigurationArtifactId,
+                    _workspaceArtifactId);
                 throw new SyncException(
                     $"Configuration with Id {_syncConfigurationArtifactId} does not exist in workspace {_workspaceArtifactId}");
             }
-        }
-
-        public static async Task<IConfiguration> GetAsync(SyncJobParameters syncJobParameters, IAPILog logger,
-            ISemaphoreSlim semaphoreSlim, IRdoManager rdoManager)
-        {
-            Configuration configuration = new Configuration(syncJobParameters, rdoManager, semaphoreSlim, logger);
-            await configuration.ReadAsync().ConfigureAwait(false);
-            return configuration;
-        }
-
-        public void Dispose()
-        {
-            _semaphoreSlim?.Dispose();
         }
     }
 }
