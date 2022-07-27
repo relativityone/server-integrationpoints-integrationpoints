@@ -22,6 +22,7 @@ namespace Relativity.Sync
         Task SetTotalItemsCountAsync(int totalItemsCount);
         Task SetJobStartedAsync();
         Task UpdateJobProgressAsync(int completedRecordsCount, int failedRecordsCount);
-        Task UpdateJobStatusAsync(JobHistoryStatus status, Exception ex);
+        Task UpdateJobStatusAsync(JobHistoryStatus status);
+        Task AddJobErrorAsync(Exception ex);
     }
 }
