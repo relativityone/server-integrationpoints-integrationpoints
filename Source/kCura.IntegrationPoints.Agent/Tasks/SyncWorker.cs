@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	public class SyncWorker : IntegrationPointTaskBase, ITaskWithJobHistory
 	{
 		private IEnumerable<IBatchStatus> _batchStatus;
-		
+
 		private readonly IProviderTypeService _providerTypeService;
 		private readonly IAPILog _logger;
 		private readonly IJobStatisticsService _statisticsService;
@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_statisticsService = statisticsService;
 			_logger = helper.GetLoggerFactory().GetLogger().ForContext<SyncWorker>();
 		}
-		
+
 		public IEnumerable<IBatchStatus> BatchStatus
 		{
 			get { return _batchStatus ?? (_batchStatus = new List<IBatchStatus>()); }
@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public void Execute(Job job)
 		{
-			LogExecuteStart(job);			
+			LogExecuteStart(job);
 
 			foreach (IBatchStatus batchComplete in BatchStatus)
 			{
@@ -100,9 +100,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			LogExecuteEnd(job);
 		}
 
-		protected virtual void ExecuteImport(IEnumerable<FieldMap> fieldMap, DataSourceProviderConfiguration configuration,
-			string destinationConfiguration, List<string> entryIDs, SourceProvider sourceProviderRdo,
-			DestinationProvider destinationProvider, Job job)
+		protected virtual void ExecuteImport(
+			IEnumerable<FieldMap> fieldMap,
+			DataSourceProviderConfiguration configuration,
+			string destinationConfiguration,
+			List<string> entryIDs,
+			SourceProvider sourceProviderRdo,
+			DestinationProvider destinationProvider,
+			Job job)
 		{
 			LogExecuteImportStart(job);
 
@@ -146,11 +151,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					_logger.LogInformation("SourceDataReader was created for {entryIDsCount}.", entryIDs.Count);
 					SetupSubscriptions(dataSynchronizer, job);
+
+					_logger.LogInformation("Reading source data");
 					IEnumerable<IDictionary<FieldEntry, object>> sourceData =
 						GetSourceData(sourceFields, sourceDataReader);
 					JobStopManager?.ThrowIfStopRequested();
 
-					_logger.LogInformation("Start SyndData...");
+					_logger.LogInformation("Start SyncData...");
 					dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration, JobStopManager);
 					_logger.LogInformation("SyncData Completed. Processed rows: {processedRows}", dataSynchronizer.TotalRowsProcessed);
 				}
@@ -164,7 +171,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobHistory = JobHistoryService.GetRdo(batchInstance);
 			int totalRowsCountInBatch = GetRowsCountForBatch(job.JobDetails);
 
-			bool shouldDrainStopBatch = ShouldDrainStopBatch(dataSynchronizer.TotalRowsProcessed, totalRowsCountInBatch);			
+			bool shouldDrainStopBatch = ShouldDrainStopBatch(dataSynchronizer.TotalRowsProcessed, totalRowsCountInBatch);
 
 			if (shouldDrainStopBatch)
 			{
@@ -192,7 +199,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_logger.LogInformation("Checking if batch should be Drain-Stopped - {shouldBeDrainStopped}: " +
 					"Processed Rows Count - {processedItemsCount}, " +
 					"Total Rows Count - {totalRowsCount} " +
-					"Drain-Stop Requested - {drainStopRequested}", 
+					"Drain-Stop Requested - {drainStopRequested}",
 				shouldBeDrainStopped, processedItemCount, totalRowsCountInBatch, drainStopRequested);
 
 			return shouldBeDrainStopped;
@@ -221,7 +228,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_logger.LogInformation("IDs Count {count} left to be processed after Drain-Stop.", list.Count);
 
 			parameters.BatchParameters = list;
-			
+
 			return Serializer.Serialize(parameters);
 		}
 
@@ -327,7 +334,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				// if there is no StopManager, batch should finish
 				bool isBatchFinished = (!JobStopManager?.ShouldDrainStop) ?? true;
 				bool isJobComplete = JobManager.CheckBatchOnJobComplete(job, BatchInstance.ToString(), isBatchFinished);
-				
+
 				if (isJobComplete)
 				{
 					OnJobComplete(job);
@@ -391,12 +398,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					}
 				}
 			}
-			
+
 			List<long> jobsToUpdate =
 				JobManager.GetJobsByBatchInstanceId(IntegrationPoint.ArtifactId, BatchInstance)
 					.Where(x => x.StopState != StopState.DrainStopped && x.StopState != StopState.DrainStopping)
 					.Select(agentJob => agentJob.JobId)
-					.ToList(); 
+					.ToList();
 
 			if (jobsToUpdate.Any())
 			{
@@ -411,7 +418,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			bool otherBatchesProcessing = batchesStatuses.ProcessingCount > 1; // one is the current batch, so if there are other batches it means at least 2
 			bool atLeastOneSuspended = batchesStatuses.SuspendedCount > 0;
-		
+
 			if (!otherBatchesProcessing)
 			{
 				if (atLeastOneSuspended || (job.StopState == StopState.DrainStopped || job.StopState == StopState.DrainStopping))
@@ -504,7 +511,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				"Failed to set up integration point configuration for statistics service. SourceConfiguration: {sourceConfiguration}. ImportSettings: {importSettings}";
 			_logger.LogError(ex, msg, sourceConfigForLogging, settingsForLogging);
 		}
-		
+
 		private void LogDeserializeIntegrationPointsConfigurationForStatisticsServiceWarning(IntegrationPoint ip, Exception ex)
 		{
 			string msg = "Failed to deserialize integration point configuration for statistics service.";

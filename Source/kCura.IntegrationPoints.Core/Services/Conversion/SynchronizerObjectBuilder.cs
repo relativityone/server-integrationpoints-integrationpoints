@@ -6,24 +6,24 @@ namespace kCura.IntegrationPoints.Core.Services.Conversion
 {
 	public class SynchronizerObjectBuilder : IObjectBuilder
 	{
-		private readonly IEnumerable<FieldEntry> _fields;
+		private readonly Dictionary<string, FieldEntry> _fieldsDictionary;
 		public SynchronizerObjectBuilder(IEnumerable<FieldEntry> fields)
 		{
-			_fields = fields;
+			_fieldsDictionary = fields.ToDictionary(k => k.FieldIdentifier, v => v);
 		}
 
-		public T BuildObject<T>(System.Data.IDataRecord row, IEnumerable<string> columns)
+		public T BuildObject<T>(System.Data.IDataRecord row)
 		{
 			IDictionary<FieldEntry, object> returnValue = new Dictionary<FieldEntry, object>();
-			List<string> colList = columns.ToList();
+
 			for (int i = 0; i < row.FieldCount; i++)
 			{
-				var fieldName = _fields.FirstOrDefault(x => x.FieldIdentifier == colList[i]);
-				if (fieldName != null)
+				if(_fieldsDictionary.TryGetValue(row.GetName(i), out FieldEntry field))
 				{
-					returnValue.Add(fieldName, row[i]);	
+					returnValue.Add(field, row[i]);
 				}
 			}
+
 			return (T)returnValue;
 		}
 	}

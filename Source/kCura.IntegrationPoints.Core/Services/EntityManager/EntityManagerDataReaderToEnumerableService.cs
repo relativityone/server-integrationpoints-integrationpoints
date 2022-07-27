@@ -19,25 +19,19 @@ namespace kCura.IntegrationPoints.Core.Services.EntityManager
 		}
 
 		public IDictionary<string, string> ManagerOldNewKeyMap { get; set; }
+
 		public IEnumerable<T> GetData<T>(IDataReader reader)
 		{
-			try
+			while (reader.Read())
 			{
-				var columns = Enumerable.Range(0, reader.FieldCount).Select(reader.GetName).ToList();
-				while (reader.Read())
+				string oldKey = reader[_oldKeyFieldID].ToString();
+				string newKey = reader[_newKeyFieldID].ToString();
+				if (!ManagerOldNewKeyMap.ContainsKey(oldKey))
 				{
-					string oldKey = reader[_oldKeyFieldID].ToString();
-					string newKey = reader[_newKeyFieldID].ToString();
-					if (!ManagerOldNewKeyMap.ContainsKey(oldKey))
-					{
-						ManagerOldNewKeyMap.Add(oldKey, newKey);
-					}
-					yield return _objectBuilder.BuildObject<T>(reader, columns);
+					ManagerOldNewKeyMap.Add(oldKey, newKey);
 				}
-			}
-			finally
-			{
-				reader.Dispose();
+
+				yield return _objectBuilder.BuildObject<T>(reader);
 			}
 		}
 	}
