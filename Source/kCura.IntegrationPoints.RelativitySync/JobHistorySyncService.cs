@@ -8,18 +8,21 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Extensions;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
     internal class JobHistorySyncService : IJobHistorySyncService
 	{
         private readonly IRelativityObjectManager _relativityObjectManager;
+        private readonly IToggleProvider _toggles;
         private readonly IAPILog _logger;
 
-        public JobHistorySyncService(IRelativityObjectManager relativityObjectManager, IAPILog logger)
+        public JobHistorySyncService(IRelativityObjectManager relativityObjectManager, IToggleProvider toggles, IAPILog logger)
 		{
 			_relativityObjectManager = relativityObjectManager;
-			_logger = logger.ForContext<JobHistorySyncService>();
+            _toggles = toggles;
+            _logger = logger.ForContext<JobHistorySyncService>();
 		}
 
 		public async Task<RelativityObject> GetLastJobHistoryWithErrorsAsync(int workspaceID,
@@ -63,6 +66,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		public async Task UpdateJobStatusAsync(string syncStatus, IExtendedJob job)
 		{
+            if (SyncUpdatesJobHistory())
+            {
+                return;
+            }
+
 			ChoiceRef status;
 
 			const string validating = "validating";
@@ -98,36 +106,66 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		public async Task MarkJobAsValidationFailedAsync(IExtendedJob job, Exception ex)
 		{
+            if (SyncUpdatesJobHistory())
+            {
+                return;
+            }
+
 			await UpdateFinishedJobAsync(job, JobValidationFailedRef(), true).ConfigureAwait(false);
 			await AddJobHistoryErrorAsync(job, ex).ConfigureAwait(false);
 		}
 
 		public async Task MarkJobAsStoppedAsync(IExtendedJob job)
 		{
+            if (SyncUpdatesJobHistory())
+            {
+                return;
+            }
+
 			bool hasErrors = await HasErrorsAsync(job).ConfigureAwait(false);
 			await UpdateFinishedJobAsync(job, JobStoppedStateRef(), hasErrors).ConfigureAwait(false);
 		}
 
 		public async Task MarkJobAsSuspendingAsync(IExtendedJob job)
 		{
+            if (SyncUpdatesJobHistory())
+            {
+                return;
+            }
+
 			bool hasErrors = await HasErrorsAsync(job).ConfigureAwait(false);
 			await UpdateFinishedJobAsync(job, JobSuspendingStateRef(), hasErrors).ConfigureAwait(false);
 		}
 
 		public async Task MarkJobAsSuspendedAsync(IExtendedJob job)
 		{
+            if (SyncUpdatesJobHistory())
+            {
+                return;
+            }
+
 			bool hasErrors = await HasErrorsAsync(job).ConfigureAwait(false);
 			await UpdateFinishedJobAsync(job, JobSuspendedStateRef(), hasErrors).ConfigureAwait(false);
 		}
 
 		public async Task MarkJobAsFailedAsync(IExtendedJob job, Exception e)
 		{
+            if (SyncUpdatesJobHistory())
+            {
+                return;
+            }
+
 			await MarkJobAsFailedAsync(job).ConfigureAwait(false);
 			await AddJobHistoryErrorAsync(job, e).ConfigureAwait(false);
 		}
 
 		public async Task MarkJobAsStartedAsync(IExtendedJob job)
 		{
+            if (SyncUpdatesJobHistory())
+            {
+                return;
+            }
+
 			IList<FieldRefValuePair> fieldValues = new[]
 			{
 				new FieldRefValuePair
@@ -148,6 +186,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 		public async Task MarkJobAsCompletedAsync(IExtendedJob job)
 		{
+            if (SyncUpdatesJobHistory())
+            {
+                return;
+            }
+
 			ChoiceRef status;
 			bool hasErrors = await HasErrorsAsync(job).ConfigureAwait(false);
 			if (hasErrors)
@@ -243,6 +286,11 @@ namespace kCura.IntegrationPoints.RelativitySync
 
 			await _relativityObjectManager.UpdateAsync(job.IntegrationPointId, fieldValues, ExecutionIdentity.System).ConfigureAwait(false);
 		}
+
+        private bool SyncUpdatesJobHistory()
+        {
+            return _toggles.IsEnabledByName("Relativity.Sync.Toggles.EnableJobHistoryStatusUpdate");
+        }
 
 		private static FieldRef JobIdRef()
 		{

@@ -434,12 +434,12 @@ namespace kCura.IntegrationPoints.Data
 
 	public partial class JobStatusChoices
 	{
+        public static Guid JobHistoryPendingGuid = Guid.Parse("24512aba-b8aa-4858-9324-5799033d7e96");
+        public static ChoiceRef JobHistoryPending = new ChoiceRef() { Name = @"Pending", Guids = new List<Guid>() { JobHistoryPendingGuid } };
 		public static Guid JobHistoryValidatingGuid = Guid.Parse("6a2dcef5-5826-4f61-9bac-59fef879ebc2");
 		public static ChoiceRef JobHistoryValidating = new ChoiceRef() {Name=@"Validating", Guids = new List<Guid>(){ JobHistoryValidatingGuid } };
 		public static Guid JobHistoryValidationFailedGuid = Guid.Parse("d0b43a57-bdc8-4c14-b2f0-2928ae4f750a");
 		public static ChoiceRef JobHistoryValidationFailed = new ChoiceRef() {Name=@"Validation Failed", Guids = new List<Guid>(){ JobHistoryValidationFailedGuid } };
-		public static Guid JobHistoryPendingGuid = Guid.Parse("24512aba-b8aa-4858-9324-5799033d7e96");
-		public static ChoiceRef JobHistoryPending = new ChoiceRef() {Name=@"Pending", Guids = new List<Guid>() { JobHistoryPendingGuid } };
 		public static Guid JobHistoryProcessingGuid = Guid.Parse("bb170e53-2264-4708-9b00-86156187ed54");
 		public static ChoiceRef JobHistoryProcessing = new ChoiceRef() {Name=@"Processing", Guids = new List<Guid>() { JobHistoryProcessingGuid } };
 		public static Guid JobHistoryCompletedGuid = Guid.Parse("c7d1eb34-166e-48d0-bce7-0be0df43511c");
