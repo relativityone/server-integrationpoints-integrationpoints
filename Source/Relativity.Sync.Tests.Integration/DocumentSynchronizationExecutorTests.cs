@@ -30,6 +30,14 @@ namespace Relativity.Sync.Tests.Integration
     [TestFixture]
     internal sealed class DocumentSynchronizationExecutorTests
     {
+        private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 10001;
+        private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 20002;
+
+        private readonly ImportApiJobStatistics _emptyJobStatistsics = new ImportApiJobStatistics(0, 0, 0, 0);
+
+        private readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
+        private readonly Guid JobHistoryErrorObjectTypeGuid = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
+
         private ConfigurationStub _config;
         private IExecutor<IDocumentSynchronizationConfiguration> _executor;
         private ISourceWorkspaceDataReaderFactory _dataReaderFactory;
@@ -37,14 +45,6 @@ namespace Relativity.Sync.Tests.Integration
         private Mock<IFolderManager> _folderManagerMock;
         private Mock<ISyncImportBulkArtifactJob> _importBulkArtifactJob;
         private Mock<IRdoManager> _rdoManagerMock;
-
-        private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 10001;
-        private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 20002; 
-
-        private static readonly ImportApiJobStatistics _emptyJobStatistsics = new ImportApiJobStatistics(0, 0, 0, 0);
-
-        private static readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
-        private static readonly Guid JobHistoryErrorObjectTypeGuid = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
 
         [SetUp]
         public void SetUp()
@@ -97,7 +97,7 @@ namespace Relativity.Sync.Tests.Integration
             var destinationServiceFactoryForUser = new Mock<IDestinationServiceFactoryForUser>();
             var sourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
             var sourceServiceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
-            
+
             var fieldMappings = new Mock<IFieldMappings>();
             fieldMappings.Setup(x => x.GetFieldMappings()).Returns(fieldMaps);
 
@@ -140,6 +140,7 @@ namespace Relativity.Sync.Tests.Integration
                 {
                     dataReader.Read();
                 }
+
                 _importBulkArtifactJob.Raise(x => x.OnComplete += null, _emptyJobStatistsics);
             });
 
@@ -154,8 +155,11 @@ namespace Relativity.Sync.Tests.Integration
             // assert
             result.Status.Should().Be(ExecutionStatus.Completed);
             _objectManagerMock.Verify();
-            _objectManagerMock.Verify(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
-                It.Is<CreateRequest>(cr => cr.ObjectType.Guid == JobHistoryErrorObjectTypeGuid)), Times.Never);
+            _objectManagerMock.Verify(
+                x => x.CreateAsync(
+                    _SOURCE_WORKSPACE_ARTIFACT_ID,
+                    It.Is<CreateRequest>(cr => cr.ObjectType.Guid == JobHistoryErrorObjectTypeGuid)),
+                Times.Never);
             _importBulkArtifactJob.Verify(x => x.Execute(), Times.Once);
         }
 
@@ -186,8 +190,7 @@ namespace Relativity.Sync.Tests.Integration
                     dataReader.Read();
                     _importBulkArtifactJob.Raise(x => x.OnItemLevelError += null, new ItemLevelError(
                         document.Values[0].ToString(),
-                        "Some weird error message."
-                    ));
+                        "Some weird error message."));
                 }
 
                 for (int i = 0; i < completedItems; i++)
@@ -202,7 +205,7 @@ namespace Relativity.Sync.Tests.Integration
             SetupFolderQueryResult(documentIds, folderArtifactId);
             SetupFolderPaths(folderArtifactId);
             SetupTaggingOfDocuments(completedItems);
-            
+
             MassCreateResult massCreateResult = new MassCreateResult()
             {
                 Success = true,

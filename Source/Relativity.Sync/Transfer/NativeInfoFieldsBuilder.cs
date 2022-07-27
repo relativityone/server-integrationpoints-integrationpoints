@@ -7,11 +7,13 @@ namespace Relativity.Sync.Transfer
     internal sealed class NativeInfoFieldsBuilder : INativeInfoFieldsBuilder
     {
         private readonly INativeFileRepository _nativeFileRepository;
+        private readonly IAntiMalwareHandler _antiMalwareHandler;
         private readonly IAPILog _logger;
 
-        public NativeInfoFieldsBuilder(INativeFileRepository nativeFileRepository, IAPILog logger)
+        public NativeInfoFieldsBuilder(INativeFileRepository nativeFileRepository, IAntiMalwareHandler antiMalwareHandler, IAPILog logger)
         {
             _nativeFileRepository = nativeFileRepository;
+            _antiMalwareHandler = antiMalwareHandler;
             _logger = logger;
         }
 
@@ -45,7 +47,7 @@ namespace Relativity.Sync.Transfer
                 }
             }
 
-            return new NativeInfoRowValuesBuilder(artifactIdToNativeFile);
+            return new NativeInfoRowValuesBuilder(artifactIdToNativeFile, _antiMalwareHandler);
         }
     }
 }

@@ -10,12 +10,14 @@ namespace Relativity.Sync.Transfer
     {
         private readonly IImageFileRepository _imageFileRepository;
         private readonly IImageRetrieveConfiguration _configuration;
+        private readonly IAntiMalwareHandler _antiMalwareHandler;
         private readonly IAPILog _logger;
 
-        public ImageInfoFieldsBuilder(IImageFileRepository imageFileRepository, IImageRetrieveConfiguration configuration, IAPILog logger)
+        public ImageInfoFieldsBuilder(IImageFileRepository imageFileRepository, IImageRetrieveConfiguration configuration, IAntiMalwareHandler antiMalwareHandler, IAPILog logger)
         {
             _imageFileRepository = imageFileRepository;
             _configuration = configuration;
+            _antiMalwareHandler = antiMalwareHandler;
             _logger = logger;
         }
 
@@ -42,7 +44,7 @@ namespace Relativity.Sync.Transfer
             ILookup<int, ImageFile> imageFilesLookup = imageFiles.ToLookup(x => x.DocumentArtifactId, x => x);
             Dictionary<int, ImageFile[]> documentToImageFiles = documentArtifactIds.ToDictionary(x => x, x => imageFilesLookup[x].ToArray());
 
-            return new ImageInfoRowValuesBuilder(documentToImageFiles);
+            return new ImageInfoRowValuesBuilder(documentToImageFiles, _antiMalwareHandler);
         }
 
         private void LogWarningIfImagesFoundForDocumentsNotSelectedToSync(IEnumerable<ImageFile> imageFiles, IEnumerable<int> documentArtifactIds)
@@ -50,7 +52,8 @@ namespace Relativity.Sync.Transfer
             List<int> retrievedImagesNotFoundInDocumentsToSync = imageFiles.Select(x => x.DocumentArtifactId).Except(documentArtifactIds).ToList();
             if (retrievedImagesNotFoundInDocumentsToSync.Count > 0)
             {
-                _logger.LogWarning("Images has been retrieved for documents which are not selected to push. Potential data loss. Documents: {documents}",
+                _logger.LogWarning(
+                    "Images has been retrieved for documents which are not selected to push. Potential data loss. Documents: {documents}",
                     string.Join(",", retrievedImagesNotFoundInDocumentsToSync));
             }
         }

@@ -13,16 +13,17 @@ namespace Relativity.Sync.Tests.Unit.Transfer
     [TestFixture]
     public class NativeFileInfoFieldsBuilderTests
     {
+        private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 123;
+
         private Mock<INativeFileRepository> _nativeFileRepositoryMock;
         private NativeInfoFieldsBuilder _sut;
-        private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 123;
 
         [SetUp]
         public void SetUp()
         {
             _nativeFileRepositoryMock = new Mock<INativeFileRepository>();
 
-            _sut = new NativeInfoFieldsBuilder(_nativeFileRepositoryMock.Object, new EmptyLogger());
+            _sut = new NativeInfoFieldsBuilder(_nativeFileRepositoryMock.Object, null, new EmptyLogger());
         }
 
         [Test]
