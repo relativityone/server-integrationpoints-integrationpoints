@@ -6,6 +6,8 @@ using Relativity.IntegrationPoints.Services;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Framework.Api.Kepler;
+using WorkloadDiscovery;
+using Choice = Relativity.Services.Objects.DataContracts.Choice;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
 {
@@ -108,6 +110,18 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
 
                 throw new TimeoutException($"Waiting for job to finish timeout ({waitingTimeout}) exceeded. - JobStatus is {status}");
             }
+        }
+
+        public async Task<Workload> GetWorkloadSizeAsync()
+        {
+            Workload workloadSizeReturned = new Workload();
+            using (var integrationPointAgentManager = _serviceFactory.GetServiceProxy<IIntegrationPointsAgentManager>())
+            {
+                workloadSizeReturned = await integrationPointAgentManager.GetWorkloadAsync().ConfigureAwait(false);
+                
+            }
+
+            return workloadSizeReturned;
         }
 
         private async Task WaitForJobStatus(int jobHistoryId, int workspaceId, Func<string, bool> waitUntil, int checkDelayInMs)
