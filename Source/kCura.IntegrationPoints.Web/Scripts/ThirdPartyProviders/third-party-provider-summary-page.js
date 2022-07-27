@@ -1,8 +1,9 @@
 ﻿var IP = IP || {};
 
 var loadData = function(ko, dataContainer) {
-
-	var Model = function(dataContainer) {
+	console.log("in third party provider summary  - load data")
+	var Model = function (dataContainer) {
+		console.log("in third party provider summary 1")
 		this.hasErrors = dataContainer.hasErrors;
 		this.logErrors = dataContainer.logErrors;
 		this.emailNotification = dataContainer.emailNotification;
@@ -75,5 +76,6 @@ var loadData = function(ko, dataContainer) {
 
 	var viewModel = new Model(dataContainer);
 	viewModel.populateSourceConfigurationContainer();
+	console.log("in third party provider summary 2")
 	ko.applyBindings(viewModel, document.getElementById('summaryPage'));
 };

@@ -5,6 +5,8 @@ export function transformLayout(layoutData, convenienceApi: IConvenienceApi, bac
     try {
         removeMessageContainers();
 
+        console.log("Backing model data: ", backingModelData);
+
         let [sourceConfiguration, destinationConfiguration, sourceProvider] = extractFieldsValuesFromBackingModelData(backingModelData);
 
         var existingFields = convenienceApi.layout.getFields(layoutData);
