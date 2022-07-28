@@ -14,15 +14,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
     [TestFixture]
     internal class ADLSUploaderTests
     {
+        private const string _SOURCE_FILE_PATH = @"\\Adler\Sieben";
+        private const string _EXCEPTION_MESSAGE = "Some Exception";
+
         private Mock<IHelperWrapper> _helperMock;
         private Mock<IStorageAccess<string>> _storageAccessMock;
         private Mock<IAPILog> _loggerFake;
         private ADLSUploader _sut;
         private StorageEndpoint[] _storageEndpoints;
         private string _destinationDir;
-
-        private const string _SOURCE_FILE_PATH = @"\\Adler\Sieben";
-        private const string _EXCEPTION_MESSAGE = "Some Exception";
 
         [SetUp]
         public void Setup()
@@ -36,7 +36,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
                 }
             };
 
-            _destinationDir = Path.Combine(@"\\",
+            _destinationDir = Path.Combine(
+                @"\\",
                 _storageEndpoints[0].EndpointFqdn,
                 _storageEndpoints[0].PrimaryStorageContainer,
                 "Files",
@@ -71,7 +72,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
         public void ADLSUploader_UploadFileAsync_ShouldThrowErrorWhenCreateDirectoryAsyncFails()
         {
             // Arrange
-            _storageAccessMock.Setup(x => x.CreateDirectoryAsync(It.IsAny<string>(), 
+            _storageAccessMock.Setup(x => x.CreateDirectoryAsync(
+                It.IsAny<string>(),
                 It.IsAny<CreateDirectoryOptions>(),
                 It.IsAny<CancellationToken>())).Throws(new Exception(_EXCEPTION_MESSAGE));
 
@@ -96,7 +98,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
                 DestinationExistsBehavior = FileExistsBehavior.OverwriteIfExists
             };
 
-            _storageAccessMock.Setup(x => x.CopyFileAsync(It.IsAny<string>(),
+            _storageAccessMock.Setup(x => x.CopyFileAsync(
+                It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.Is<CopyFileOptions>(y => y.DestinationParentDirectoryNotExistsBehavior == copyFileOptions.DestinationParentDirectoryNotExistsBehavior &&
                                             y.DestinationExistsBehavior == copyFileOptions.DestinationExistsBehavior),
@@ -120,7 +123,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
             _helperMock.Setup(x => x.GetStorageEndpointsAsync(CancellationToken.None)).ReturnsAsync(_storageEndpoints);
 
             // Act
-            Func<Task<string>> function = async () => await _sut.UploadFileAsync(String.Empty, CancellationToken.None).ConfigureAwait(false);
+            Func<Task<string>> function = async () => await _sut.UploadFileAsync(string.Empty, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
             function.Should().Throw<ArgumentNullException>();

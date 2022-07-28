@@ -29,7 +29,7 @@ namespace Relativity.Sync.Executors
 
         protected override Task<IImportJob> CreateImportJobAsync(INonDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
         {
-            return _importJobFactory.CreateRdoImportJobAsync(configuration, batch, token);
+            return ImportJobFactory.CreateRdoImportJobAsync(configuration, batch, token);
         }
         
         protected override void UpdateImportSettings(INonDocumentSynchronizationConfiguration configuration)
@@ -40,7 +40,7 @@ namespace Relativity.Sync.Executors
         protected override void ChildReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime,
             TimeSpan importApiTimer)
         {
-            _syncMetrics.Send(new NonDocumentBatchEndMetric()
+            Telemetry.SyncMetrics.Send(new NonDocumentBatchEndMetric()
             {
                 TotalRecordsRequested = batchProcessResult.TotalRecordsRequested,
                 TotalRecordsTransferred = batchProcessResult.TotalRecordsTransferred,

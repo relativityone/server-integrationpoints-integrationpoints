@@ -34,14 +34,14 @@ namespace Relativity.Sync.Executors
 
         protected override Task<IImportJob> CreateImportJobAsync(IImageSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
         {
-            return _importJobFactory.CreateImageImportJobAsync(configuration, batch, token);
+            return ImportJobFactory.CreateImageImportJobAsync(configuration, batch, token);
         }
 
         protected override void UpdateImportSettings(IImageSynchronizationConfiguration configuration)
         {
             configuration.IdentityFieldId = GetDestinationIdentityFieldId();
 
-            IList<FieldInfoDto> specialFields = _fieldManager.GetImageSpecialFields().ToList();
+            IList<FieldInfoDto> specialFields = FieldManager.GetImageSpecialFields().ToList();
             configuration.ImageFilePathSourceFieldName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.ImageFileLocation);
             configuration.FileNameColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.ImageFileName);
             configuration.IdentifierColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.ImageIdentifier);
@@ -49,7 +49,7 @@ namespace Relativity.Sync.Executors
 
         protected override void ChildReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime, TimeSpan importApiTimer)
         {
-            _syncMetrics.Send(new ImageBatchEndMetric()
+            Telemetry.SyncMetrics.Send(new ImageBatchEndMetric()
             {
                 TotalRecordsRequested = batchProcessResult.TotalRecordsRequested,
                 TotalRecordsTransferred = batchProcessResult.TotalRecordsTransferred,

@@ -27,7 +27,7 @@ namespace Relativity.Sync.Executors
 
         protected override Task<IImportJob> CreateImportJobAsync(INonDocumentObjectLinkingConfiguration configuration, IBatch batch, CancellationToken token)
         {
-            return _importJobFactory.CreateRdoLinkingJobAsync(configuration, batch, token);
+            return ImportJobFactory.CreateRdoLinkingJobAsync(configuration, batch, token);
         }
 
         protected override void UpdateImportSettings(INonDocumentObjectLinkingConfiguration configuration)
@@ -38,7 +38,7 @@ namespace Relativity.Sync.Executors
         protected override void ChildReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime,
             TimeSpan importApiTimer)
         {
-            _syncMetrics.Send(new NonDocumentObjectLinkingBatchEndMetric
+            Telemetry.SyncMetrics.Send(new NonDocumentObjectLinkingBatchEndMetric
             {
                 TotalRecordsRequested = batchProcessResult.TotalRecordsRequested,
                 TotalRecordsTransferred = batchProcessResult.TotalRecordsTransferred,
