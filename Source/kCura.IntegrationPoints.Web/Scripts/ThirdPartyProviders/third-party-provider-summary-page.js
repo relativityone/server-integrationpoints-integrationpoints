@@ -43,7 +43,9 @@ var loadData = function(ko, dataContainer) {
 				appID: appID,
 				artifactID: artifactID
 			};
+			console.log("obj: ", obj);
 			var url = IP.utils.format(IP.params['sourceUrl'], obj);
+			console.log("url: ", url);
 			if (url) {
 				IP.data.ajax({
 					url: url,

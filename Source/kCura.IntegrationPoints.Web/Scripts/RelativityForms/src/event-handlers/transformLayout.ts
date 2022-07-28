@@ -5,7 +5,7 @@ export function transformLayout(layoutData, convenienceApi: IConvenienceApi, bac
     try {
         removeMessageContainers();
 
-        console.log("Backing model data: ", backingModelData);
+        console.log("BACKING MODEL: ", backingModelData);
 
         let [sourceConfiguration, destinationConfiguration, sourceProvider] = extractFieldsValuesFromBackingModelData(backingModelData);
 
@@ -14,8 +14,10 @@ export function transformLayout(layoutData, convenienceApi: IConvenienceApi, bac
         var fieldsForLoadFile = ["Destination RDO", "Source Location", "Import Type"];
         var fieldsForLDAP = ["Connection Path", "Object Filter String", "Authentication", "Import Nested Items"];
         var fieldsForFTP = ["Destination RDO", "Host", "Port", "Protocol", "Filename Prefix", "Timezone Offset"];
+        var fieldsForOtherProviders = ["Destination RDO"];
 
         //fields to display depend on source provider type 
+        console.log("in switch, source provider -> ", sourceProvider)
         switch (sourceProvider) {
             case "Relativity":
                 if (destinationConfiguration["Provider"] === "relativity") {
@@ -41,6 +43,8 @@ export function transformLayout(layoutData, convenienceApi: IConvenienceApi, bac
                 break;
             default:
                 console.log("other case?");
+                addFieldsToLayout(layoutData, existingFields, fieldsForOtherProviders)
+                break;
         }
 
         removeUnnecessaryField(existingFields, "Promote Eligible")
