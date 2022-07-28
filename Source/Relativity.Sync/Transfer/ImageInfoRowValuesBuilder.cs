@@ -1,18 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.Sync.Transfer
 {
     internal sealed class ImageInfoRowValuesBuilder : IImageSpecialFieldRowValuesBuilder
     {
-        public IDictionary<int, ImageFile[]> DocumentToImageFiles { get; }
+        private readonly IAntiMalwareHandler _antiMalwareHandler;
 
-        public ImageInfoRowValuesBuilder(IDictionary<int, ImageFile[]> documentToImageFiles)
+        public ImageInfoRowValuesBuilder(IDictionary<int, ImageFile[]> documentToImageFiles, IAntiMalwareHandler antiMalwareHandler)
         {
             DocumentToImageFiles = documentToImageFiles;
+            _antiMalwareHandler = antiMalwareHandler;
         }
+
+        public IDictionary<int, ImageFile[]> DocumentToImageFiles { get; }
 
         public IEnumerable<SpecialFieldType> AllowedSpecialFieldTypes => new[]
         {
@@ -26,6 +30,26 @@ namespace Relativity.Sync.Transfer
             if (!DocumentToImageFiles.TryGetValue(document.ArtifactID, out ImageFile[] imagesForDocument) || !imagesForDocument.Any())
             {
                 return Enumerable.Empty<object>();
+            }
+
+            List<string> malwareFilePaths = new List<string>();
+            foreach (var imageFile in imagesForDocument)
+            {
+                imageFile.ValidateMalwareAsync(_antiMalwareHandler).GetAwaiter().GetResult();
+                if (imageFile.IsMalwareDetected)
+                {
+                    malwareFilePaths.Add(imageFile.Location);
+                }
+            }
+
+            if (malwareFilePaths.Any())
+            {
+                StringBuilder sb = new StringBuilder();
+                malwareFilePaths.ForEach(x => sb.AppendLine($"- {x},"));
+
+                string malwareFilePathsMessage = $"File contains a virus or potentially unwanted software - Files:\n {sb}";
+
+                throw new SyncItemLevelErrorException(malwareFilePathsMessage);
             }
 
             int numberOfDigits = GetNumberOfDigits(imagesForDocument.Length);
@@ -45,7 +69,7 @@ namespace Relativity.Sync.Transfer
             }
         }
 
-        private static string GetIdentifierForImage(string documentIdentifier, int imageIndex, int numberOfDigits)
+        private string GetIdentifierForImage(string documentIdentifier, int imageIndex, int numberOfDigits)
         {
             if (imageIndex == 0)
             {
@@ -56,7 +80,7 @@ namespace Relativity.Sync.Transfer
             return $"{documentIdentifier}_{indexSuffix}";
         }
 
-        private static int GetNumberOfDigits(int totalImageCount)
+        private int GetNumberOfDigits(int totalImageCount)
         {
             return (int)Math.Ceiling(Math.Log10(totalImageCount));
         }

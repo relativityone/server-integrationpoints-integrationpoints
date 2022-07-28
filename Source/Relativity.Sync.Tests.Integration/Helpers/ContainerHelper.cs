@@ -76,9 +76,13 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 
             SyncJobParameters parameters = FakeHelper.CreateSyncJobParameters();
 
-            containerFactory.RegisterSyncDependencies(containerBuilder, parameters,
-                relativityServices, new SyncJobExecutionConfiguration(), new EmptyLogger());
-            
+            containerFactory.RegisterSyncDependencies(
+                containerBuilder,
+                parameters,
+                relativityServices,
+                new SyncJobExecutionConfiguration(),
+                new EmptyLogger());
+
             return containerBuilder;
         }
 
