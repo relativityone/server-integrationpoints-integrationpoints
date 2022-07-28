@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Polly;
+using Polly.Retry;
 using Relativity.API;
 using Relativity.Services.Exceptions;
 using Relativity.Storage;
@@ -29,7 +30,7 @@ namespace Relativity.Sync.Transfer.ADF
             {
                 return String.Empty;
             }
-            
+
             string loadFileHeader = "Source,Destination";
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.AppendLine(loadFileHeader);
@@ -52,18 +53,27 @@ namespace Relativity.Sync.Transfer.ADF
 
         public async Task<string> UploadFileAsync(string sourceFilePath, CancellationToken cancellationToken)
         {
+            const int maxNumberOfRetries = 3;
+
+            void OnRetryAction(Exception ex, TimeSpan waitTime, int retryCount, Context context)
+            {
+                _logger.LogWarning(ex, "Encountered issue while loading file to ADLS, attempting to retry. Retry count: {retryCount} Wait time: {waitTimeMs} (ms)", retryCount, waitTime.TotalMilliseconds);
+            }
+
             if (string.IsNullOrEmpty(sourceFilePath))
             {
                 throw new ArgumentNullException(nameof(sourceFilePath), "Source file path is null or empty.");
             }
 
-            IStorageAccess<string> storageAccess = await _helper.GetStorageAccessorAsync(cancellationToken).ConfigureAwait(false);
-
-            string destinationDir = await GetADLSDestinationDirectory(cancellationToken);
-            string destinationFilePath = Path.Combine(destinationDir, $"BatchFile{Guid.NewGuid()}.csv");
-            _logger.LogInformation("ADLS Batch file Path - {destinationFilePath}", destinationFilePath);
-            try
+            string destinationFilePath;
+            async Task<string> ExecutionFunction()
             {
+                IStorageAccess<string> storageAccess = await _helper.GetStorageAccessorAsync(cancellationToken).ConfigureAwait(false);
+
+                string destinationDir = await GetADLSDestinationDirectory(cancellationToken);
+                destinationFilePath = Path.Combine(destinationDir, $"BatchFile{Guid.NewGuid()}.csv");
+                _logger.LogInformation("ADLS Batch file Path - {destinationFilePath}", destinationFilePath);
+
                 CopyFileOptions copyFileOptions = new CopyFileOptions
                 {
                     DestinationParentDirectoryNotExistsBehavior = DirectoryNotExistsBehavior.CreateIfNotExists,
@@ -71,18 +81,29 @@ namespace Relativity.Sync.Transfer.ADF
                 };
                 await storageAccess.CreateDirectoryAsync(destinationDir, cancellationToken: cancellationToken).ConfigureAwait(false);
                 await storageAccess.CopyFileAsync(sourceFilePath, destinationFilePath, copyFileOptions, cancellationToken).ConfigureAwait(false);
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    _logger.LogWarning("ADLS Batch file upload cancelled.");
-                    return String.Empty;
-                }
+                return destinationFilePath;
             }
-            catch(Exception ex)
+
+            string OnExceptionFunction(Exception exception)
             {
-                _logger.LogError(ex.Message);
-                throw;
+                _logger.LogError(exception.Message);
+                throw exception;
             }
-            
+
+            string OnCancellationFunction(Exception exception)
+            {
+                _logger.LogWarning("ADLS Batch file upload cancelled.");
+                return String.Empty;
+            }
+
+            destinationFilePath = await RetryPolicyRunAsync(
+                maxNumberOfRetries,
+                OnRetryAction,
+                ExecutionFunction,
+                OnExceptionFunction,
+                OnCancellationFunction,
+                cancellationToken)
+                .ConfigureAwait(false);
             return destinationFilePath;
         }
 
@@ -114,12 +135,12 @@ namespace Relativity.Sync.Transfer.ADF
             return destinationDir;
         }
 
-        private async Task RetryPolicyRunAsync(int maxNumberOfRetries, Action<Exception, TimeSpan, int, Context> onRetryAction, Func<Task> executionFunction)
+        private async Task<T> RetryPolicyRunAsync<T>(int maxNumberOfRetries, Action<Exception, TimeSpan, int, Context> onRetryAction, Func<Task<T>> executionFunction, Func<Exception, T> onExceptionFunction, Func<Exception, T> onCancellationFunction, CancellationToken cancellationToken) where T : class
         {
             const int maxJitterMs = 100;
             const int betweenRetriesBase = 2;
 
-            await Policy
+            RetryPolicy policy = Policy
                 .Handle<Exception>()
                 .WaitAndRetryAsync(maxNumberOfRetries, retryAttempt =>
                     {
@@ -127,11 +148,23 @@ namespace Relativity.Sync.Transfer.ADF
                         TimeSpan jitter = TimeSpan.FromMilliseconds(new Random().Next(0, maxJitterMs));
                         return delay + jitter;
                     },
-                    onRetryAction)
-                .ExecuteAsync(executionFunction)
+                    onRetryAction);
+            Context policyContext = new Context("RetryContext");
+            policyContext.Add("CancellationToken", cancellationToken);
+            PolicyResult<T> result = await policy.ExecuteAndCaptureAsync((ctx, ct) => executionFunction(), policyContext, cancellationToken)
                 .ConfigureAwait(false);
+
+            Exception exception = result.FinalException;
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return onCancellationFunction(exception);
+            }
+            if (exception != null)
+            {
+                return onExceptionFunction(exception);
+            }
+
+            return result.Result;
         }
-
-
     }
 }

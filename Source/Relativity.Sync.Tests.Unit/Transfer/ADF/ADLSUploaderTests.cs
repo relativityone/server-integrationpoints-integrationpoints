@@ -83,6 +83,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
             // Assert
             function.Should().Throw<Exception>().WithMessage(_EXCEPTION_MESSAGE);
             _loggerFake.Verify(x => x.LogError(_EXCEPTION_MESSAGE), Times.Once);
+            _loggerFake.Verify(x => x.LogWarning(It.IsAny<Exception>(), It.Is<string>(y => y.Contains("Encountered issue while loading file to ADLS, attempting to retry.")), It.IsAny<int>(), It.IsAny<double>()), Times.Exactly(3));
         }
 
         [Test]
@@ -94,7 +95,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
                 DestinationParentDirectoryNotExistsBehavior = DirectoryNotExistsBehavior.CreateIfNotExists,
                 DestinationExistsBehavior = FileExistsBehavior.OverwriteIfExists
             };
-            
+
             _storageAccessMock.Setup(x => x.CopyFileAsync(It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.Is<CopyFileOptions>(y => y.DestinationParentDirectoryNotExistsBehavior == copyFileOptions.DestinationParentDirectoryNotExistsBehavior &&
@@ -109,6 +110,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
             // Assert
             function.Should().Throw<Exception>().WithMessage(_EXCEPTION_MESSAGE);
             _loggerFake.Verify(x => x.LogError(_EXCEPTION_MESSAGE), Times.Once);
+            _loggerFake.Verify(x => x.LogWarning(It.IsAny<Exception>(), It.Is<string>(y => y.Contains("Encountered issue while loading file to ADLS, attempting to retry.")), It.IsAny<int>(), It.IsAny<double>()), Times.Exactly(3));
         }
 
         [Test]
@@ -138,6 +140,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
             // Assert
             destinationFilePath.Should().BeEmpty();
             _loggerFake.Verify(x => x.LogWarning("ADLS Batch file upload cancelled."), Times.Once);
+            _loggerFake.Verify(x => x.LogWarning(It.IsAny<Exception>(), It.Is<string>(y => y.Contains("Encountered issue while loading file to ADLS, attempting to retry.")), It.IsAny<int>(), It.IsAny<double>()), Times.Never);
         }
     }
 }
