@@ -28,7 +28,7 @@ namespace Relativity.Sync.Transfer.ADF
         {
             if (locationsDictionary == null || locationsDictionary.Count == 0 || cancellationToken.IsCancellationRequested)
             {
-                return String.Empty;
+                return string.Empty;
             }
 
             string loadFileHeader = "Source,Destination";
@@ -41,7 +41,7 @@ namespace Relativity.Sync.Transfer.ADF
                 if (cancellationToken.IsCancellationRequested)
                 {
                     _logger.LogWarning("ADLS Batch file Generation cancelled");
-                    return String.Empty;
+                    return string.Empty;
                 }
             }
 
@@ -93,7 +93,7 @@ namespace Relativity.Sync.Transfer.ADF
             string OnCancellationFunction(Exception exception)
             {
                 _logger.LogWarning("ADLS Batch file upload cancelled.");
-                return String.Empty;
+                return string.Empty;
             }
 
             destinationFilePath = await RetryPolicyRunAsync(
@@ -111,7 +111,7 @@ namespace Relativity.Sync.Transfer.ADF
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return String.Empty;
+                return string.Empty;
             }
 
             StorageEndpoint[] storages = await _helper.GetStorageEndpointsAsync(cancellationToken).ConfigureAwait(false);
@@ -119,7 +119,8 @@ namespace Relativity.Sync.Transfer.ADF
             if (storages != null && storages.Length > 0)
             {
                 StorageEndpoint storageEndpoint = storages.First();
-                destinationDir = Path.Combine(@"\\",
+                destinationDir = Path.Combine(
+                    @"\\",
                     storageEndpoint.EndpointFqdn,
                     storageEndpoint.PrimaryStorageContainer,
                     "Files",
@@ -142,7 +143,9 @@ namespace Relativity.Sync.Transfer.ADF
 
             RetryPolicy policy = Policy
                 .Handle<Exception>()
-                .WaitAndRetryAsync(maxNumberOfRetries, retryAttempt =>
+                .WaitAndRetryAsync(
+                    maxNumberOfRetries,
+                    retryAttempt =>
                     {
                         TimeSpan delay = TimeSpan.FromSeconds(Math.Pow(betweenRetriesBase, retryAttempt));
                         TimeSpan jitter = TimeSpan.FromMilliseconds(new Random().Next(0, maxJitterMs));
@@ -159,6 +162,7 @@ namespace Relativity.Sync.Transfer.ADF
             {
                 return onCancellationFunction(exception);
             }
+
             if (exception != null)
             {
                 return onExceptionFunction(exception);

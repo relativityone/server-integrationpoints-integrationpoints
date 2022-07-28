@@ -19,17 +19,38 @@ namespace Relativity.Sync.Executors
         private readonly IDocumentTagger _documentTagger;
         private readonly IDocumentSynchronizationConfiguration _documentConfiguration;
 
-        public DocumentSynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
-			IJobProgressHandlerFactory jobProgressHandlerFactory, 
-			IFieldManager fieldManager, IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer,
-			IJobCleanupConfiguration jobCleanupConfiguration,
-			IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
-			Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics, IDocumentTagger documentTagger, IAPILog logger,
-			IUserContextConfiguration userContextConfiguration, IDocumentSynchronizationConfiguration documentConfiguration,
-            IADLSUploader uploader, IADFTransferEnabler adfTransferEnabler) : base(importJobFactory, BatchRecordType.Documents, 
-            batchRepository, jobProgressHandlerFactory, fieldManager,
-			fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, 
-            stopwatchFactory, syncMetrics, userContextConfiguration, uploader, adfTransferEnabler, logger)
+        public DocumentSynchronizationExecutor(
+            IImportJobFactory importJobFactory,
+            IBatchRepository batchRepository,
+            IJobProgressHandlerFactory jobProgressHandlerFactory,
+            IFieldManager fieldManager,
+            IFieldMappings fieldMappings,
+            IJobStatisticsContainer jobStatisticsContainer,
+            IJobCleanupConfiguration jobCleanupConfiguration,
+            IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
+            Func<IStopwatch> stopwatchFactory,
+            ISyncMetrics syncMetrics,
+            IDocumentTagger documentTagger,
+            IAPILog logger,
+            IUserContextConfiguration userContextConfiguration,
+            IDocumentSynchronizationConfiguration documentConfiguration,
+            IADLSUploader uploader,
+            IADFTransferEnabler adfTransferEnabler) : base(
+            importJobFactory,
+            BatchRecordType.Documents,
+            batchRepository,
+            jobProgressHandlerFactory,
+            fieldManager,
+            fieldMappings,
+            jobStatisticsContainer,
+            jobCleanupConfiguration,
+            automatedWorkflowTriggerConfiguration,
+            stopwatchFactory,
+            syncMetrics,
+            userContextConfiguration,
+            uploader,
+            adfTransferEnabler,
+            logger)
         {
             _documentTagger = documentTagger;
             _documentConfiguration = documentConfiguration;
@@ -68,7 +89,8 @@ namespace Relativity.Sync.Executors
             LongTextStreamStatistics smallestLongTextStreamStatistics = _jobStatisticsContainer.SmallestLongTextStreamStatistics ?? LongTextStreamStatistics.Empty;
             long medianLongTextStreamSize = _jobStatisticsContainer.CalculateMedianLongTextStreamSize();
 
-            _logger.LogInformation("Long-text statistics for batch {batch}: " +
+            _logger.LogInformation(
+                "Long-text statistics for batch {batch}: " +
                                    "Number of long text streams: {longTextStreamsCount} " +
                                    "Total size of all long text streams (MB): {longTextStreamsTotalSize} " +
                                    "Largest long text stream size (MB): {largestLongTextSize} " +
@@ -117,7 +139,6 @@ namespace Relativity.Sync.Executors
             };
 
             _syncMetrics.Send(documentBatchEndMetric);
-            
             _jobStatisticsContainer.LongTextStatistics.Clear();
         }
 
