@@ -12,14 +12,29 @@ namespace Relativity.Sync.Transfer.ADF
 		private readonly IInstanceSettings _instanceSettings;
 		private readonly IAPILog _logger;
 
-		public ADFTransferEnabler(IADLSMigrationStatus adlsMigrationStatus, ISyncToggles syncToggles, IInstanceSettings instanceSettings, IAPILog logger)
+        private bool? _isAdfTransferEnabled;
+
+        public bool IsAdfTransferEnabled
+        {
+            get
+            {
+                if (!_isAdfTransferEnabled.HasValue)
+                {
+                    _isAdfTransferEnabled = ShouldUseADFTransferAsync().GetAwaiter().GetResult(); 
+                }
+                return _isAdfTransferEnabled.Value;
+            }
+        }
+
+        public ADFTransferEnabler(IADLSMigrationStatus adlsMigrationStatus, ISyncToggles syncToggles, IInstanceSettings instanceSettings, IAPILog logger)
 		{
 			_adlsMigrationStatus = adlsMigrationStatus;
 			_syncToggles = syncToggles;
 			_instanceSettings = instanceSettings;
 			_logger = logger;
 		}
-		public async Task<bool> ShouldUseADFTransferAsync()
+
+		private async Task<bool> ShouldUseADFTransferAsync()
 		{
 			_logger.LogInformation("Checking if should use ADF to transfer files");
 			
@@ -34,6 +49,8 @@ namespace Relativity.Sync.Transfer.ADF
 			
 			bool shouldUseADFTransfer = (isToggleFMSEnabled && isTenantFullyMigrated) || shouldForceADFTransferAsync;
 			_logger.LogInformation("Should use ADF to transfer files: {shouldForceADFTransferAsync}", shouldForceADFTransferAsync);
+
+            _isAdfTransferEnabled = shouldUseADFTransfer;
 
 			return shouldUseADFTransfer;
 		}

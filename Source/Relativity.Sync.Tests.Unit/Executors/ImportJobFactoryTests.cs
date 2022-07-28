@@ -445,7 +445,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             _documentConfigurationMock.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
 
-            _adfTransferEnablerMock.Setup(x => x.ShouldUseADFTransferAsync()).ReturnsAsync(true);
+            _adfTransferEnablerMock.Setup(x => x.IsAdfTransferEnabled).Returns(true);
 
             // Act
             Sync.Executors.IImportJob result = await instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
@@ -465,7 +465,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             _documentConfigurationMock.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
 
-            _adfTransferEnablerMock.Setup(x => x.ShouldUseADFTransferAsync()).ReturnsAsync(false);
+            _adfTransferEnablerMock.Setup(x => x.IsAdfTransferEnabled).Returns(false);
 
             // Act
             Sync.Executors.IImportJob result = await instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);

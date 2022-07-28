@@ -147,7 +147,7 @@ namespace Relativity.Sync.Executors
             importJob.Settings.MultiValueDelimiter = configuration.MultiValueDelimiter;
             importJob.Settings.NestedValueDelimiter = configuration.NestedValueDelimiter;
 
-            bool shouldUseADFToCopyFiles = await _adfTransferEnabler.ShouldUseADFTransferAsync().ConfigureAwait(false);
+            bool shouldUseADFToCopyFiles = _adfTransferEnabler.IsAdfTransferEnabled;
             if (shouldUseADFToCopyFiles)
             {
                 _logger.LogInformation("Using File Movement Service to copy native files. Setting native file copy mode to links only and disabling native location validation.");

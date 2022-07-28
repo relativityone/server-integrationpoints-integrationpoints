@@ -15,6 +15,7 @@ using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Tests.Common.Stubs;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ADF;
 using IStopwatch = Relativity.Sync.Utils.IStopwatch;
 
 namespace Relativity.Sync.Tests.Unit.Executors
@@ -37,6 +38,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<Func<IStopwatch>> _stopwatchFactoryFake;
         private Mock<IStopwatch> _stopwatchFake;
         private Mock<ISyncMetrics> _syncMetricsMock;
+        private Mock<IADLSUploader> _adlsUploaderMock;
+        private Mock<IADFTransferEnabler> _adfTransferEnablerMock;
 
         private Mock<Sync.Executors.IImportJob> _importJobFake;
         private Mock<ISyncImportBulkArtifactJob> _syncImportBulkArtifactJobFake;
@@ -55,7 +58,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private const string _NATIVE_FILE_LOCATION_DISPLAY_NAME = "NativeFileLocation";
         private const string _SUPPORTED_BY_VIEWER_DISPLAY_NAME = "SupportedByViewer";
         private const string _RELATIVITY_NATIVE_TYPE_DISPLAY_NAME = "RelativityNativeType";
-        
+
         private const int _SOURCE_WORKSPACE_ID = 68;
         private const int _USER_ID = 70;
 
@@ -71,7 +74,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
         private Mock<IUserContextConfiguration> _userContextConfigurationStub;
         private BatchStub[] _batchesStubs;
-        
+
         private const int _DATA_SOURCE_ID = 55;
         private const string _CORRELATION_ID = "CORRELATION_ID";
 
@@ -101,6 +104,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _configFake = new Mock<IDocumentSynchronizationConfiguration>();
             _jobProgressHandlerFactoryStub = new Mock<IJobProgressHandlerFactory>();
             _jobCleanupConfigurationMock = new Mock<IJobCleanupConfiguration>();
+            _adlsUploaderMock = new Mock<IADLSUploader>();
             _automatedWorkflowTriggerConfigurationFake = new Mock<IAutomatedWorkflowTriggerConfiguration>();
             _jobProgressUpdaterFactoryStub = new Mock<IJobProgressUpdaterFactory>();
             _documentTaggerFake = new Mock<IDocumentTagger>();
@@ -142,22 +146,25 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _importJobFake = new Mock<Sync.Executors.IImportJob>();
             _importJobFake.SetupGet(x => x.SyncImportBulkArtifactJob).Returns(_syncImportBulkArtifactJobFake.Object);
             _importJobFactoryFake.Setup(x => x.CreateNativeImportJobAsync(It.IsAny<IDocumentSynchronizationConfiguration>(), It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).ReturnsAsync(_importJobFake.Object);
-            
+
             _fieldManagerFake.Setup(x => x.GetNativeSpecialFields()).Returns(_specialFields);
             _userContextConfigurationStub = new Mock<IUserContextConfiguration>();
 
             _batchRepositoryMock.Setup(x => x.GetAllSuccessfullyExecutedBatchesAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>()))
                 .ReturnsAsync(Enumerable.Empty<IBatch>());
 
+            _adfTransferEnablerMock = new Mock<IADFTransferEnabler>();
+
+            Mock<IDocumentSynchronizationConfiguration> documentConfiguration = new Mock<IDocumentSynchronizationConfiguration>();
+            documentConfiguration.Setup(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
+
             _sut = new DocumentSynchronizationExecutor(_importJobFactoryFake.Object, _batchRepositoryMock.Object,
                 _jobProgressHandlerFactoryStub.Object,
                 _fieldManagerFake.Object, _fakeFieldMappings.Object, _jobStatisticsContainerFake.Object,
                 _jobCleanupConfigurationMock.Object, _automatedWorkflowTriggerConfigurationFake.Object,
-                _stopwatchFactoryFake.Object, _syncMetricsMock.Object, _documentTaggerFake.Object, new EmptyLogger(), _userContextConfigurationStub.Object);
+                _stopwatchFactoryFake.Object, _syncMetricsMock.Object, _documentTaggerFake.Object, new EmptyLogger(), _userContextConfigurationStub.Object,
+                documentConfiguration.Object, _adlsUploaderMock.Object, _adfTransferEnablerMock.Object);
         }
-
-
-
 
         [Test]
         public async Task Execute_ShouldSendBatchMetrics()
@@ -256,7 +263,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             IEnumerable<int> batches = new[] { 1 };
             _batchRepositoryMock.Setup(x => x.GetAllBatchesIdsToExecuteAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>())).ReturnsAsync(batches);
-            
+
             BatchStub batchStub = new BatchStub
             {
                 ArtifactId = 1,
@@ -278,7 +285,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                     TotalBytesRead = x * 1024 * 1024,
                     TotalReadTime = TimeSpan.FromSeconds(x)
                 }).ToList());
-            
+
             _syncMetricsMock.Setup(x => x.Send(It.IsAny<IMetric>())).Callback((IMetric m) => m.CorrelationId = _CORRELATION_ID);
 
             _jobCleanupConfigurationMock.Setup(x => x.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ID);
@@ -1006,7 +1013,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             SetupImportJob(ExecutionResult.Paused(), metadataBytesTransferred, filesBytesTransferred, totalBytesTransferred);
 
             SetUpDocumentsTagRepository(ReturnTaggingCompletedResult());
-            
+
             _itemStatusMonitorFake.SetupGet(x => x.FailedItemsCount).Returns(failedCount);
             _itemStatusMonitorFake.SetupGet(x => x.ProcessedItemsCount).Returns(transferredCount);
 
@@ -1023,6 +1030,35 @@ namespace Relativity.Sync.Tests.Unit.Executors
             batch.MetadataBytesTransferred.Should().Be(initialMetadataBytesTransferred + metadataBytesTransferred);
             batch.FilesBytesTransferred.Should().Be(initialFilesBytesTransferred + filesBytesTransferred);
             batch.TotalBytesTransferred.Should().Be(initialTotalBytesTransferred + totalBytesTransferred);
+        }
+
+        [Test]
+        public async Task Execute_ShouldRunSendingADLSLoadFileWhenShouldUseADFTransfer()
+        {
+            // Arrange
+            const int initialTransferredItemsCount = 3;
+            const int transferredItemsCountInRun = 2;
+
+            IBatch batch = new BatchStub
+            {
+                TransferredItemsCount = initialTransferredItemsCount
+            };
+
+            SetupBatch(batch);
+            SetupImportJob();
+            SetUpDocumentsTagRepository(ReturnTaggingCompletedResult());
+
+            _jobProgressHandlerFake.Setup(x => x.GetBatchItemsProcessedCount(It.IsAny<int>()))
+                .Returns(transferredItemsCountInRun);
+            _adfTransferEnablerMock.Setup(x => x.IsAdfTransferEnabled).Returns(true);
+
+            // Act
+            await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None)
+                .ConfigureAwait(false);
+
+            // Assert
+            _adlsUploaderMock.Verify(x => x.CreateBatchFile(It.IsAny<Dictionary<int, FilePathInfo>>(), It.IsAny<CancellationToken>()), Times.Once);
+            _adlsUploaderMock.Verify(x => x.UploadFileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         private void SetupBatch(IBatch batch)
@@ -1042,7 +1078,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 TotalDocumentsCount = itemsPerBatch,
                 StartingIndex = x * itemsPerBatch
             }).ToArray();
-            
 
             _batchRepositoryMock.Setup(x => x.GetAllBatchesIdsToExecuteAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>())).ReturnsAsync(_batchesStubs.Select(x => x.ArtifactId));
             _batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((int workspaceId, int batchId) => _batchesStubs.First(x => x.ArtifactId == batchId));
@@ -1085,7 +1120,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             return new ImportJobResult(jobResult, metadataBytesTransferred, filesBytesTransferred, totalBytesTransferred);
         }
-        
         private static ImportJobResult CreatePausedResult()
         {
             return new ImportJobResult(ExecutionResult.Paused(), 1, 0, 1);

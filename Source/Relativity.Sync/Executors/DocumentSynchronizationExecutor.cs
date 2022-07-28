@@ -9,6 +9,7 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ADF;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors
@@ -16,17 +17,22 @@ namespace Relativity.Sync.Executors
     internal class DocumentSynchronizationExecutor : SynchronizationExecutorBase<IDocumentSynchronizationConfiguration>
     {
         private readonly IDocumentTagger _documentTagger;
+        private readonly IDocumentSynchronizationConfiguration _documentConfiguration;
 
         public DocumentSynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
-            IJobProgressHandlerFactory jobProgressHandlerFactory, 
-            IFieldManager fieldManager, IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer,
-            IJobCleanupConfiguration jobCleanupConfiguration,
-            IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
-            Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics, IDocumentTagger documentTagger, IAPILog logger,
-            IUserContextConfiguration userContextConfiguration) : base(importJobFactory, BatchRecordType.Documents, batchRepository, jobProgressHandlerFactory, fieldManager,
-            fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics,userContextConfiguration, logger)
+			IJobProgressHandlerFactory jobProgressHandlerFactory, 
+			IFieldManager fieldManager, IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer,
+			IJobCleanupConfiguration jobCleanupConfiguration,
+			IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
+			Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics, IDocumentTagger documentTagger, IAPILog logger,
+			IUserContextConfiguration userContextConfiguration, IDocumentSynchronizationConfiguration documentConfiguration,
+            IADLSUploader uploader, IADFTransferEnabler adfTransferEnabler) : base(importJobFactory, BatchRecordType.Documents, 
+            batchRepository, jobProgressHandlerFactory, fieldManager,
+			fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, 
+            stopwatchFactory, syncMetrics, userContextConfiguration, uploader, adfTransferEnabler, logger)
         {
             _documentTagger = documentTagger;
+            _documentConfiguration = documentConfiguration;
         }
 
         protected override Task<IImportJob> CreateImportJobAsync(IDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
@@ -118,6 +124,49 @@ namespace Relativity.Sync.Executors
         protected override Task<TaggingExecutionResult> TagObjectsAsync(IImportJob importJob, ISynchronizationConfiguration configuration, CompositeCancellationToken token)
         {
             return _documentTagger.TagObjectsAsync(importJob, configuration, token);
+        }
+
+        protected override async Task UploadLoadFileWithFilePathsToAdlsAsync(CompositeCancellationToken token, IImportJob importJob)
+        {
+            if (_adfTransferEnabler.IsAdfTransferEnabled && _documentConfiguration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.CopyFiles)
+            {
+                IEnumerable<int> successfullyPushedItemsDocumentArtifactIds = await importJob.GetPushedDocumentArtifactIdsAsync().ConfigureAwait(false);
+
+                #region Debug
+
+                string destinationLocation = "https://T025.blob.core.windows.net/";
+                Dictionary<int, FilePathInfo> locationsDictionary = new Dictionary<int, FilePathInfo>();
+                foreach (int pushedItem in successfullyPushedItemsDocumentArtifactIds)
+                {
+                    Guid guid = Guid.NewGuid();
+                    string sourceLocation = "Files\\EDDS1020227\\RV_" + guid;
+                    locationsDictionary.Add(pushedItem, new FilePathInfo
+                    {
+                        ArtifactId = pushedItem,
+                        SourceLocationShortToLoadFile = sourceLocation,
+                        DestinationLocationFullPathToLink =
+                            destinationLocation + sourceLocation.Replace('\\', '/')
+                    });
+                }
+
+                Guid guid1 = Guid.NewGuid();
+                string sourceLocation1 = "Files\\EDDS1020227\\RV_" + guid1;
+                locationsDictionary.Add(1, new FilePathInfo
+                {
+                    ArtifactId = 1,
+                    SourceLocationShortToLoadFile = sourceLocation1,
+                    DestinationLocationFullPathToLink =
+                        destinationLocation + sourceLocation1.Replace('\\', '/')
+                });
+
+                #endregion
+
+                locationsDictionary = locationsDictionary.Where(x =>
+                        successfullyPushedItemsDocumentArtifactIds.Contains(x.Key))
+                    .ToDictionary(pair => pair.Key, pair => pair.Value);
+                string loadFilePath = _adlsUploader.CreateBatchFile(locationsDictionary, token.AnyReasonCancellationToken);
+                string adlsLoadFilePath = await _adlsUploader.UploadFileAsync(loadFilePath, token.AnyReasonCancellationToken).ConfigureAwait(false);
+            }
         }
     }
 }

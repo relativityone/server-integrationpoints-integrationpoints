@@ -4,6 +4,6 @@ namespace Relativity.Sync.Transfer.ADF
 {
 	internal interface IADFTransferEnabler
 	{
-		Task<bool> ShouldUseADFTransferAsync();
-	}
+        bool IsAdfTransferEnabled { get; }
+    }
 }

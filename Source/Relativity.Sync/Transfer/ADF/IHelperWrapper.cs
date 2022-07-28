@@ -1,11 +1,14 @@
+using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Storage;
-using Relativity.Storage.Extensions.Models;
 
 namespace Relativity.Sync.Transfer.ADF
 {
 	internal interface IHelperWrapper
-	{	
-		Task<StorageEndpoint[]> GetStorageEndpointsAsync(ApplicationDetails applicationDetails);
-	}
+    {
+        public IAPILog GetLogger();
+		Task<StorageEndpoint[]> GetStorageEndpointsAsync(CancellationToken cancellationToken = default);
+        Task<IStorageAccess<string>> GetStorageAccessorAsync(CancellationToken cancellationToken);
+    }
 }

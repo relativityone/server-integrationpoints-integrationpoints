@@ -9,6 +9,7 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ADF;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors
@@ -17,18 +18,19 @@ namespace Relativity.Sync.Executors
     {
         private readonly IDocumentTagger _documentTagger;
 
-        public ImageSynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
-            IJobProgressHandlerFactory jobProgressHandlerFactory, 
-            IFieldManager fieldManager, IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer,
-            IJobCleanupConfiguration jobCleanupConfiguration,
-            IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
-            Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics, IDocumentTagger documentTagger, IAPILog logger,
-            IUserContextConfiguration userContextConfiguration)
-            : base(importJobFactory, BatchRecordType.Images, batchRepository, jobProgressHandlerFactory, fieldManager,
-            fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics, userContextConfiguration, logger)
-        {
-            _documentTagger = documentTagger;
-        }
+		public ImageSynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
+			IJobProgressHandlerFactory jobProgressHandlerFactory, 
+			IFieldManager fieldManager, IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer,
+			IJobCleanupConfiguration jobCleanupConfiguration,
+			IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
+			Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics, IDocumentTagger documentTagger, IAPILog logger,
+            IADLSUploader uploader, IUserContextConfiguration userContextConfiguration, IADFTransferEnabler adfTransferEnabler)
+			: base(importJobFactory, BatchRecordType.Images, batchRepository, jobProgressHandlerFactory, fieldManager,
+			fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, 
+            stopwatchFactory, syncMetrics, userContextConfiguration, uploader, adfTransferEnabler, logger)
+		{
+			_documentTagger = documentTagger;
+		}
 
         protected override Task<IImportJob> CreateImportJobAsync(IImageSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
         {

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.DataExchange;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Extensions;
@@ -12,53 +11,61 @@ using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Utils;
+using Relativity.API;
+using Relativity.Sync.Transfer.ADF;
 
 namespace Relativity.Sync.Executors
 {
-    internal abstract class SynchronizationExecutorBase<TConfiguration> : IExecutor<TConfiguration> where TConfiguration : ISynchronizationConfiguration
-    {
+	internal abstract class SynchronizationExecutorBase<TConfiguration> : IExecutor<TConfiguration> where TConfiguration : ISynchronizationConfiguration
+	{
         private readonly IBatchRepository _batchRepository;
-        private readonly IJobProgressHandlerFactory _jobProgressHandlerFactory;
-        private readonly IJobCleanupConfiguration _jobCleanupConfiguration;
-        private readonly IAutomatedWorkflowTriggerConfiguration _automatedWorkflowTriggerConfiguration;
-        private readonly Func<IStopwatch> _stopwatchFactory;
+		private readonly IJobProgressHandlerFactory _jobProgressHandlerFactory;
+		private readonly IJobCleanupConfiguration _jobCleanupConfiguration;
+		private readonly IAutomatedWorkflowTriggerConfiguration _automatedWorkflowTriggerConfiguration;
+		private readonly Func<IStopwatch> _stopwatchFactory;
+		private readonly IUserContextConfiguration _userContextConfiguration;
 
         protected readonly ISyncMetrics _syncMetrics;
-        private readonly IUserContextConfiguration _userContextConfiguration;
-        protected readonly IJobStatisticsContainer _jobStatisticsContainer;
-        protected readonly IImportJobFactory _importJobFactory;
-        protected readonly BatchRecordType _recordType;
-        protected readonly IFieldManager _fieldManager;
-        protected readonly IFieldMappings _fieldMappings;
-        protected readonly IAPILog _logger;
+		protected readonly IJobStatisticsContainer _jobStatisticsContainer;
+		protected readonly IImportJobFactory _importJobFactory;
+		protected readonly BatchRecordType _recordType;
+		protected readonly IFieldManager _fieldManager;
+		protected readonly IFieldMappings _fieldMappings;
+		protected readonly IAPILog _logger;
+		protected readonly IADFTransferEnabler _adfTransferEnabler;
+        protected readonly IADLSUploader _adlsUploader;
 
         protected SynchronizationExecutorBase(IImportJobFactory importJobFactory,
-            BatchRecordType recordType,
-            IBatchRepository batchRepository,
-            IJobProgressHandlerFactory jobProgressHandlerFactory,
-            IFieldManager fieldManager,
-            IFieldMappings fieldMappings,
-            IJobStatisticsContainer jobStatisticsContainer,
-            IJobCleanupConfiguration jobCleanupConfiguration,
-            IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
-            Func<IStopwatch> stopwatchFactory,
-            ISyncMetrics syncMetrics,
-            IUserContextConfiguration userContextConfiguration,
+			BatchRecordType recordType,
+			IBatchRepository batchRepository,
+			IJobProgressHandlerFactory jobProgressHandlerFactory,
+			IFieldManager fieldManager,
+			IFieldMappings fieldMappings,
+			IJobStatisticsContainer jobStatisticsContainer,
+			IJobCleanupConfiguration jobCleanupConfiguration,
+			IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
+			Func<IStopwatch> stopwatchFactory,
+			ISyncMetrics syncMetrics,
+			IUserContextConfiguration userContextConfiguration,
+            IADLSUploader adlsUploader,
+            IADFTransferEnabler adfTransferEnabler,
             IAPILog logger)
-        {
-            _batchRepository = batchRepository;
-            _jobProgressHandlerFactory = jobProgressHandlerFactory;
-            _importJobFactory = importJobFactory;
-            _recordType = recordType;
-            _fieldManager = fieldManager;
-            _fieldMappings = fieldMappings;
-            _jobStatisticsContainer = jobStatisticsContainer;
-            _jobCleanupConfiguration = jobCleanupConfiguration;
-            _automatedWorkflowTriggerConfiguration = automatedWorkflowTriggerConfiguration;
-            _stopwatchFactory = stopwatchFactory;
-            _syncMetrics = syncMetrics;
+		{
+			_batchRepository = batchRepository;
+			_jobProgressHandlerFactory = jobProgressHandlerFactory;
+			_importJobFactory = importJobFactory;
+			_recordType = recordType;
+			_fieldManager = fieldManager;
+			_fieldMappings = fieldMappings;
+			_jobStatisticsContainer = jobStatisticsContainer;
+			_jobCleanupConfiguration = jobCleanupConfiguration;
+			_automatedWorkflowTriggerConfiguration = automatedWorkflowTriggerConfiguration;
+			_stopwatchFactory = stopwatchFactory;
+			_syncMetrics = syncMetrics;
             _userContextConfiguration = userContextConfiguration;
-            _logger = logger;
+            _adlsUploader = adlsUploader;
+			_logger = logger;
+            _adfTransferEnabler = adfTransferEnabler;
         }
 
         protected abstract Task<IImportJob> CreateImportJobAsync(TConfiguration configuration, IBatch batch, CancellationToken token);
@@ -154,6 +161,8 @@ namespace Relativity.Sync.Executors
                                 BatchProcessResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token).ConfigureAwait(false);
                                 importApiTimer.Stop();
 
+                                await UploadLoadFileWithFilePathsToAdlsAsync(token, importJob).ConfigureAwait(false);
+
                                 TaggingExecutionResult taggingResult = await TagObjectsAsync(importJob, configuration, token).ConfigureAwait(false);
                                 int documentsTaggedCount = taggingResult.TaggedDocumentsCount;
                                 await batch.SetTaggedDocumentsCountAsync(batch.TaggedDocumentsCount + documentsTaggedCount).ConfigureAwait(false);
@@ -168,13 +177,13 @@ namespace Relativity.Sync.Executors
                                 ReportBatchMetrics(batchId, configuration.DataSourceArtifactId, batchProcessingResult, batchTimer.Elapsed, importApiTimer.Elapsed);
 
                                 ExecutionResult failureResult = AggregateFailuresOrCancelled(batch.ArtifactId,
-                                    batchProcessingResult.ExecutionResult, taggingResult);
-                                if (failureResult != null)
-                                {
-                                    return failureResult;
-                                }
-                            }
-                        }
+									batchProcessingResult.ExecutionResult, taggingResult);
+								if (failureResult != null)
+								{
+									return failureResult;
+								}
+							}
+						}
 
                         _logger.LogInformation("Batch ID: {batchId} processed successfully ({index} out of {totalBatches})", batch.ArtifactId, i + 1, batchesIds.Count);
                     }
@@ -205,8 +214,14 @@ namespace Relativity.Sync.Executors
         }
 
         protected virtual Guid GetExportRunId(TConfiguration configuration)
+		{
+			return configuration.ExportRunId;
+		}
+
+
+        protected virtual Task UploadLoadFileWithFilePathsToAdlsAsync(CompositeCancellationToken token, IImportJob importJob)
         {
-            return configuration.ExportRunId;
+            return Task.CompletedTask;
         }
 
         private static ExecutionResult AggregateFailuresOrCancelled(int batchId, params ExecutionResult[] executionResults)
@@ -239,11 +254,11 @@ namespace Relativity.Sync.Executors
             _logger.LogInformation("Batch ID: {batchId} finished processing with status: {status}. Updating batch properties.",
                 batch.ArtifactId, batchProcessResult.ExecutionResult.Status.ToString());
 
-            int failedDocumentsCount = importJob.SyncImportBulkArtifactJob.ItemStatusMonitor.FailedItemsCount;
-            await batch.SetFailedDocumentsCountAsync(batch.FailedDocumentsCount + failedDocumentsCount).ConfigureAwait(false);
-
-            int processedDocumentsCount = importJob.SyncImportBulkArtifactJob.ItemStatusMonitor.ProcessedItemsCount;
-            await batch.SetTransferredDocumentsCountAsync(batch.TransferredDocumentsCount + processedDocumentsCount).ConfigureAwait(false);
+			int failedDocumentsCount = importJob.SyncImportBulkArtifactJob.ItemStatusMonitor.FailedItemsCount;
+			await batch.SetFailedDocumentsCountAsync(batch.FailedDocumentsCount + failedDocumentsCount).ConfigureAwait(false);
+				
+			int processedDocumentsCount = importJob.SyncImportBulkArtifactJob.ItemStatusMonitor.ProcessedItemsCount;
+			await batch.SetTransferredDocumentsCountAsync(batch.TransferredDocumentsCount + processedDocumentsCount).ConfigureAwait(false);
 
             int failedItemsCount = progressHandler.GetBatchItemsFailedCount(batch.ArtifactId);
             await batch.SetFailedItemsCountAsync(batch.FailedItemsCount + failedItemsCount).ConfigureAwait(false);
@@ -338,13 +353,13 @@ namespace Relativity.Sync.Executors
             };
         }
 
-        private static ExecutionResult AggregateBatchesCompletedWithErrorsResults(Dictionary<int, ExecutionResult> batchesCompletedWithErrorsResults)
-        {
-            if (batchesCompletedWithErrorsResults.Any())
-            {
-                string exceptionMessage = string.Join(System.Environment.NewLine, batchesCompletedWithErrorsResults.Select(x => $"BatchID: {x.Key} {x.Value.Message}"));
-                AggregateException aggregateException = new AggregateException(exceptionMessage,
-                    batchesCompletedWithErrorsResults.Select(x => x.Value.Exception).Where(x => x != null));
+		private static ExecutionResult AggregateBatchesCompletedWithErrorsResults(Dictionary<int, ExecutionResult> batchesCompletedWithErrorsResults)
+		{
+			if (batchesCompletedWithErrorsResults.Any())
+			{
+				string exceptionMessage = string.Join(System.Environment.NewLine, batchesCompletedWithErrorsResults.Select(x => $"BatchID: {x.Key} {x.Value.Message}"));
+				AggregateException aggregateException = new AggregateException(exceptionMessage,
+					batchesCompletedWithErrorsResults.Select(x => x.Value.Exception).Where(x => x != null));
 
                 return ExecutionResult.SuccessWithErrors(aggregateException);
             }
@@ -385,16 +400,16 @@ namespace Relativity.Sync.Executors
             return timer;
         }
 
-        protected class BatchProcessResult
-        {
-            public ExecutionResult ExecutionResult { get; set; }
-            public int TotalRecordsRequested { get; set; }
-            public int TotalRecordsTransferred { get; set; }
-            public int TotalRecordsFailed { get; set; }
-            public int TotalRecordsTagged { get; set; }
-            public long MetadataBytesTransferred { get; set; }
-            public long FilesBytesTransferred { get; set; }
-            public long BytesTransferred { get; set; }
-        }
-    }
+		protected class BatchProcessResult
+		{
+			public ExecutionResult ExecutionResult { get; set; }
+			public int TotalRecordsRequested { get; set; }
+			public int TotalRecordsTransferred { get; set; }
+			public int TotalRecordsFailed { get; set; }
+			public int TotalRecordsTagged { get; set; }
+			public long MetadataBytesTransferred { get; set; }
+			public long FilesBytesTransferred { get; set; }
+			public long BytesTransferred { get; set; }
+		}
+	}
 }

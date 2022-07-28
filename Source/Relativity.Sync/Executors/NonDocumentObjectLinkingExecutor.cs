@@ -7,6 +7,7 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ADF;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors
@@ -17,9 +18,10 @@ namespace Relativity.Sync.Executors
             IBatchRepository batchRepository, IJobProgressHandlerFactory jobProgressHandlerFactory, IFieldManager fieldManager,
             IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer, IJobCleanupConfiguration jobCleanupConfiguration,
             IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration, Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics,
-            IUserContextConfiguration userContextConfiguration, IAPILog logger) 
+            IUserContextConfiguration userContextConfiguration, IADLSUploader uploader, IAPILog logger, IADFTransferEnabler adfTransferEnabler) 
             : base(importJobFactory, BatchRecordType.NonDocuments, batchRepository, jobProgressHandlerFactory, fieldManager, fieldMappings, 
-                jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics, userContextConfiguration, logger)
+                jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, 
+                stopwatchFactory, syncMetrics, userContextConfiguration, uploader, adfTransferEnabler, logger)
         {
         }
 
