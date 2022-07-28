@@ -6,12 +6,15 @@ namespace Relativity.Sync.Transfer
 {
     internal sealed class NativeInfoRowValuesBuilder : INativeSpecialFieldRowValuesBuilder
     {
-        public IDictionary<int, INativeFile> ArtifactIdToNativeFile { get; set; }
+        private readonly IAntiMalwareHandler _antiMalwareHandler;
 
-        public NativeInfoRowValuesBuilder(IDictionary<int, INativeFile> artifactIdToNativeFile)
+        public NativeInfoRowValuesBuilder(IDictionary<int, INativeFile> artifactIdToNativeFile, IAntiMalwareHandler antiMalwareHandler)
         {
             ArtifactIdToNativeFile = artifactIdToNativeFile;
+            _antiMalwareHandler = antiMalwareHandler;
         }
+
+        public IDictionary<int, INativeFile> ArtifactIdToNativeFile { get; }
 
         public IEnumerable<SpecialFieldType> AllowedSpecialFieldTypes => new[]
         {
@@ -40,6 +43,12 @@ namespace Relativity.Sync.Transfer
                 throw new SyncItemLevelErrorException($"Database is corrupted - document Artifact ID: {document.ArtifactID} has more than one native file associated with it.");
             }
 
+            nativeFile.ValidateMalwareAsync(_antiMalwareHandler).GetAwaiter().GetResult();
+            if (nativeFile.IsMalwareDetected)
+            {
+                throw new SyncItemLevelErrorException($"File contains a virus or potentially unwanted software - File: {nativeFile.Location}");
+            }
+
             switch (fieldInfoDto.SpecialFieldType)
             {
                 case SpecialFieldType.NativeFileSize:
@@ -49,7 +58,7 @@ namespace Relativity.Sync.Transfer
                 case SpecialFieldType.NativeFileFilename:
                     return nativeFile.Filename;
                 default:
-                    throw new ArgumentException($"Cannot build value for {nameof(SpecialFieldType)}.{fieldInfoDto.SpecialFieldType.ToString()}.", nameof(fieldInfoDto));
+                    throw new ArgumentException($"Cannot build value for {nameof(SpecialFieldType)}.{fieldInfoDto.SpecialFieldType}.", nameof(fieldInfoDto));
             }
         }
     }
