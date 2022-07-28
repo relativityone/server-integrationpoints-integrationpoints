@@ -138,16 +138,27 @@ namespace Relativity.Sync
                     {
                         Guid = statusGuid
                     }
-                },
-                new FieldRefValuePair()
-                {
-                    Field = new FieldRef()
-                    {
-                        Guid = _rdoGuidConfiguration.JobHistory.EndTimeGuid
-                    },
-                    Value = endTime
                 }
             };
+
+            switch (status)
+            {
+                case JobHistoryStatus.Stopped:
+                case JobHistoryStatus.Completed:
+                case JobHistoryStatus.CompletedWithErrors:
+                case JobHistoryStatus.Failed:
+                {
+                    fields.Add(new FieldRefValuePair()
+                    {
+                        Field = new FieldRef()
+                        {
+                            Guid = _rdoGuidConfiguration.JobHistory.EndTimeGuid
+                        },
+                        Value = endTime
+                    });
+                    break;
+                }
+            }
 
             await TryUpdateJobHistory(fields).ConfigureAwait(false);
             await TryUpdateIntegrationPoint(hasErrors, endTime).ConfigureAwait(false);

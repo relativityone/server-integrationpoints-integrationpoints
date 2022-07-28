@@ -52,6 +52,8 @@ namespace Relativity.Sync
 
                 IJobProgressUpdater jobProgressUpdater = _jobProgressUpdaterFactory.CreateJobProgressUpdater();
 
+                token.DrainStopCancellationToken.Register(() => jobProgressUpdater.UpdateJobStatusAsync(JobHistoryStatus.Suspending).GetAwaiter().GetResult());
+
                 try
                 {
                     await jobProgressUpdater.SetJobStartedAsync().ConfigureAwait(false);
