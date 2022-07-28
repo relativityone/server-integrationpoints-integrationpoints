@@ -7,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Unit.Stubs;
+using Relativity.Sync.Toggles.Service;
 
 namespace Relativity.Sync.Tests.Unit
 {
@@ -19,6 +20,9 @@ namespace Relativity.Sync.Tests.Unit
         private ISyncExecutionContextFactory _executionContextFactory;
         private SyncJobParameters _syncJobParameters;
         private ExecutionOptions _executionOptions;
+        private Mock<ISyncToggles> _syncToggles;
+        private Mock<IJobProgressUpdaterFactory> _jobProgressUpdaterFactoryMock;
+        private Mock<IJobProgressUpdater> _jobProgressUpdater;
 
         private readonly Guid _WORKFLOW_ID = Guid.NewGuid();
 
@@ -34,8 +38,13 @@ namespace Relativity.Sync.Tests.Unit
                 ThrowOnError = true
             };
 
+            _syncToggles = new Mock<ISyncToggles>();
+            _jobProgressUpdaterFactoryMock = new Mock<IJobProgressUpdaterFactory>();
+            _jobProgressUpdater = new Mock<IJobProgressUpdater>();
+            _jobProgressUpdaterFactoryMock.Setup(x => x.CreateJobProgressUpdater()).Returns(_jobProgressUpdater.Object);
+
             _syncJobParameters = new SyncJobParameters(0, 0, 0, _WORKFLOW_ID);
-            _instance = new SyncJob(_pipeline, _executionContextFactory, _syncJobParameters, new EmptyProgress<SyncJobState>(), new EmptyLogger());
+            _instance = PrepareSut(_pipeline);
         }
 
         [TestCase(NodeResultStatus.Succeeded)]
@@ -67,7 +76,7 @@ namespace Relativity.Sync.Tests.Unit
         public void ItShouldPassOperationCanceledException()
         {
             FailingNodeStub<OperationCanceledException> pipeline = new FailingNodeStub<OperationCanceledException>(_executionOptions);
-            SyncJob instance = new SyncJob(pipeline, _executionContextFactory, _syncJobParameters, new EmptyProgress<SyncJobState>(), new EmptyLogger());
+            SyncJob instance = PrepareSut(pipeline);
 
             // ACT
             Func<Task> action = () => instance.ExecuteAsync(CompositeCancellationToken.None);
@@ -80,7 +89,7 @@ namespace Relativity.Sync.Tests.Unit
         public void ItShouldPassSyncException()
         {
             FailingNodeStub<SyncException> pipeline = new FailingNodeStub<SyncException>(_executionOptions);
-            SyncJob instance = new SyncJob(pipeline, _executionContextFactory, _syncJobParameters, new EmptyProgress<SyncJobState>(), new EmptyLogger());
+            SyncJob instance = PrepareSut(pipeline);
 
             // ACT
             Func<Task> action = () => instance.ExecuteAsync(CompositeCancellationToken.None);
@@ -93,7 +102,7 @@ namespace Relativity.Sync.Tests.Unit
         public void ItShouldChangeExceptionToSyncException()
         {
             FailingNodeStub<IOException> pipeline = new FailingNodeStub<IOException>(_executionOptions);
-            SyncJob instance = new SyncJob(pipeline, _executionContextFactory, _syncJobParameters, new EmptyProgress<SyncJobState>(), new EmptyLogger());
+            SyncJob instance = PrepareSut(pipeline);
 
             // ACT
             Func<Task> action = () => instance.ExecuteAsync(CompositeCancellationToken.None);
@@ -107,7 +116,7 @@ namespace Relativity.Sync.Tests.Unit
         {
             INode<SyncExecutionContext> pipeline = new NodeWithProgressStub();
             var syncProgressMock = new Mock<IProgress<SyncJobState>>();
-            _instance = new SyncJob(pipeline, _executionContextFactory, _syncJobParameters, syncProgressMock.Object, new EmptyLogger());
+            _instance = PrepareSut(pipeline);
 
             // ACT
             await _instance.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
@@ -122,7 +131,7 @@ namespace Relativity.Sync.Tests.Unit
             INode<SyncExecutionContext> pipeline = new NodeWithProgressStub();
             var syncProgressMock = new Mock<IProgress<SyncJobState>>();
             var customProgressMock = new Mock<IProgress<SyncJobState>>();
-            _instance = new SyncJob(pipeline, _executionContextFactory, _syncJobParameters, syncProgressMock.Object, new EmptyLogger());
+            _instance = PrepareSut(pipeline);
 
             // ACT
             await _instance.ExecuteAsync(customProgressMock.Object, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -138,13 +147,18 @@ namespace Relativity.Sync.Tests.Unit
             INode<SyncExecutionContext> pipeline = new NodeWithProgressStub();
             var progressMock = new Mock<IProgress<SyncJobState>>();
             progressMock.Setup(x => x.Report(It.IsAny<SyncJobState>())).Throws<InvalidOperationException>();
-            _instance = new SyncJob(pipeline, _executionContextFactory, _syncJobParameters, new EmptyProgress<SyncJobState>(), new EmptyLogger());
+            _instance = PrepareSut(pipeline);
 
             // ACT
             await _instance.ExecuteAsync(progressMock.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
             // ASSERT
             progressMock.Verify(x => x.Report(It.IsAny<SyncJobState>()));
+        }
+
+        private SyncJob PrepareSut(INode<SyncExecutionContext> pipeline)
+        {
+            return new SyncJob(pipeline, _executionContextFactory, _syncJobParameters, new EmptyProgress<SyncJobState>(), _syncToggles.Object, _jobProgressUpdaterFactoryMock.Object, new EmptyLogger());
         }
     }
 }

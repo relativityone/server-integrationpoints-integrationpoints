@@ -9,6 +9,7 @@ using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Integration.Helpers;
+using Relativity.Sync.Toggles.Service;
 
 namespace Relativity.Sync.Tests.Integration
 {
@@ -65,6 +66,8 @@ namespace Relativity.Sync.Tests.Integration
                 container.Resolve<ISyncExecutionContextFactory>(),
                 FakeHelper.CreateSyncJobParameters(), 
                 Mock.Of<IProgress<SyncJobState>>(),
+                container.Resolve<ISyncToggles>(),
+                container.Resolve<IJobProgressUpdaterFactory>(),
                 Mock.Of<IAPILog>());
         }
     }
