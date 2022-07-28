@@ -14,14 +14,37 @@ namespace Relativity.Sync.Executors
 {
     internal class NonDocumentObjectLinkingExecutor : SynchronizationExecutorBase<INonDocumentObjectLinkingConfiguration>
     {
-        public NonDocumentObjectLinkingExecutor(IImportJobFactory importJobFactory,
-            IBatchRepository batchRepository, IJobProgressHandlerFactory jobProgressHandlerFactory, IFieldManager fieldManager,
-            IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer, IJobCleanupConfiguration jobCleanupConfiguration,
-            IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration, Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics,
-            IUserContextConfiguration userContextConfiguration, IADLSUploader uploader, IAPILog logger, IADFTransferEnabler adfTransferEnabler) 
-            : base(importJobFactory, BatchRecordType.NonDocuments, batchRepository, jobProgressHandlerFactory, fieldManager, fieldMappings, 
-                jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, 
-                stopwatchFactory, syncMetrics, userContextConfiguration, uploader, adfTransferEnabler, logger)
+        public NonDocumentObjectLinkingExecutor(
+            IImportJobFactory importJobFactory,
+            IBatchRepository batchRepository,
+            IJobProgressHandlerFactory jobProgressHandlerFactory,
+            IFieldManager fieldManager,
+            IFieldMappings fieldMappings,
+            IJobStatisticsContainer jobStatisticsContainer,
+            IJobCleanupConfiguration jobCleanupConfiguration,
+            IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
+            Func<IStopwatch> stopwatchFactory,
+            ISyncMetrics syncMetrics,
+            IUserContextConfiguration userContextConfiguration,
+            IADLSUploader uploader,
+            IAPILog logger,
+            IADFTransferEnabler adfTransferEnabler)
+            : base(
+                importJobFactory,
+                BatchRecordType.NonDocuments,
+                batchRepository,
+                jobProgressHandlerFactory,
+                fieldManager,
+                fieldMappings,
+                jobStatisticsContainer,
+                jobCleanupConfiguration,
+                automatedWorkflowTriggerConfiguration,
+                stopwatchFactory,
+                syncMetrics,
+                userContextConfiguration,
+                uploader,
+                adfTransferEnabler,
+                logger)
         {
         }
 
@@ -35,10 +58,9 @@ namespace Relativity.Sync.Executors
             configuration.IdentityFieldId = GetDestinationIdentityFieldId();
         }
 
-        protected override void ChildReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime,
-            TimeSpan importApiTimer)
+        protected override void ChildReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime, TimeSpan importApiTimer)
         {
-            Telemetry.SyncMetrics.Send(new NonDocumentObjectLinkingBatchEndMetric
+            SyncMetrics.Send(new NonDocumentObjectLinkingBatchEndMetric
             {
                 TotalRecordsRequested = batchProcessResult.TotalRecordsRequested,
                 TotalRecordsTransferred = batchProcessResult.TotalRecordsTransferred,
@@ -50,15 +72,14 @@ namespace Relativity.Sync.Executors
             });
         }
 
-        protected override Task<TaggingExecutionResult> TagObjectsAsync(IImportJob importJob, ISynchronizationConfiguration configuration,
-            CompositeCancellationToken token)
+        protected override Task<TaggingExecutionResult> TagObjectsAsync(IImportJob importJob, ISynchronizationConfiguration configuration, CompositeCancellationToken token)
         {
             return Task.FromResult(TaggingExecutionResult.Success());
         }
 
         protected override Guid GetExportRunId(INonDocumentObjectLinkingConfiguration configuration)
         {
-            return configuration.ObjectLinkingSnapshotId 
+            return configuration.ObjectLinkingSnapshotId
                    ?? throw new NullReferenceException($"{nameof(INonDocumentObjectLinkingConfiguration.ObjectLinkingSnapshotId)} cannot be null at this stage");
         }
     }

@@ -58,14 +58,14 @@ namespace Relativity.Sync.Executors
 
         protected override Task<IImportJob> CreateImportJobAsync(IDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
         {
-            return _importJobFactory.CreateNativeImportJobAsync(configuration, batch, token);
+            return ImportJobFactory.CreateNativeImportJobAsync(configuration, batch, token);
         }
 
         protected override void UpdateImportSettings(IDocumentSynchronizationConfiguration configuration)
         {
             configuration.IdentityFieldId = GetDestinationIdentityFieldId();
 
-            IList<FieldInfoDto> specialFields = _fieldManager.GetNativeSpecialFields().ToList();
+            IList<FieldInfoDto> specialFields = FieldManager.GetNativeSpecialFields().ToList();
             if (configuration.DestinationFolderStructureBehavior != DestinationFolderStructureBehavior.None)
             {
                 configuration.FolderPathSourceFieldName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.FolderPath);
@@ -83,13 +83,13 @@ namespace Relativity.Sync.Executors
 
         protected override void ChildReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime, TimeSpan importApiTimer)
         {
-            int longTextStreamsCount = _jobStatisticsContainer.LongTextStreamsCount;
-            long longTextStreamsTotalSizeInBytes = _jobStatisticsContainer.LongTextStreamsTotalSizeInBytes;
-            LongTextStreamStatistics largestLongTextStreamStatistics = _jobStatisticsContainer.LargestLongTextStreamStatistics ?? LongTextStreamStatistics.Empty;
-            LongTextStreamStatistics smallestLongTextStreamStatistics = _jobStatisticsContainer.SmallestLongTextStreamStatistics ?? LongTextStreamStatistics.Empty;
-            long medianLongTextStreamSize = _jobStatisticsContainer.CalculateMedianLongTextStreamSize();
+            int longTextStreamsCount = JobStatisticsContainer.LongTextStreamsCount;
+            long longTextStreamsTotalSizeInBytes = JobStatisticsContainer.LongTextStreamsTotalSizeInBytes;
+            LongTextStreamStatistics largestLongTextStreamStatistics = JobStatisticsContainer.LargestLongTextStreamStatistics ?? LongTextStreamStatistics.Empty;
+            LongTextStreamStatistics smallestLongTextStreamStatistics = JobStatisticsContainer.SmallestLongTextStreamStatistics ?? LongTextStreamStatistics.Empty;
+            long medianLongTextStreamSize = JobStatisticsContainer.CalculateMedianLongTextStreamSize();
 
-            _logger.LogInformation(
+            Logger.LogInformation(
                 "Long-text statistics for batch {batch}: " +
                                    "Number of long text streams: {longTextStreamsCount} " +
                                    "Total size of all long text streams (MB): {longTextStreamsTotalSize} " +
@@ -103,12 +103,12 @@ namespace Relativity.Sync.Executors
                 UnitsConverter.BytesToMegabytes(smallestLongTextStreamStatistics.TotalBytesRead),
                 UnitsConverter.BytesToMegabytes(medianLongTextStreamSize));
 
-            Tuple<double, double> avgForLessThan1MB = _jobStatisticsContainer.CalculateAverageLongTextStreamSizeAndTime(size => size < UnitsConverter.MegabyteToBytes(1));
-            Tuple<double, double> avgBetween1And10MB = _jobStatisticsContainer.CalculateAverageLongTextStreamSizeAndTime(size => size >= UnitsConverter.MegabyteToBytes(1) && size < UnitsConverter.MegabyteToBytes(10));
-            Tuple<double, double> avgBetween10And20MB = _jobStatisticsContainer.CalculateAverageLongTextStreamSizeAndTime(streamSize => streamSize >= UnitsConverter.MegabyteToBytes(10) && streamSize < UnitsConverter.MegabyteToBytes(20));
-            Tuple<double, double> avgOver20MB = _jobStatisticsContainer.CalculateAverageLongTextStreamSizeAndTime(streamSize => streamSize >= UnitsConverter.MegabyteToBytes(20));
+            Tuple<double, double> avgForLessThan1MB = JobStatisticsContainer.CalculateAverageLongTextStreamSizeAndTime(size => size < UnitsConverter.MegabyteToBytes(1));
+            Tuple<double, double> avgBetween1And10MB = JobStatisticsContainer.CalculateAverageLongTextStreamSizeAndTime(size => size >= UnitsConverter.MegabyteToBytes(1) && size < UnitsConverter.MegabyteToBytes(10));
+            Tuple<double, double> avgBetween10And20MB = JobStatisticsContainer.CalculateAverageLongTextStreamSizeAndTime(streamSize => streamSize >= UnitsConverter.MegabyteToBytes(10) && streamSize < UnitsConverter.MegabyteToBytes(20));
+            Tuple<double, double> avgOver20MB = JobStatisticsContainer.CalculateAverageLongTextStreamSizeAndTime(streamSize => streamSize >= UnitsConverter.MegabyteToBytes(20));
 
-            List<LongTextStreamStatistics> top10LongTexts = _jobStatisticsContainer
+            List<LongTextStreamStatistics> top10LongTexts = JobStatisticsContainer
                 .LongTextStatistics
                 .OrderByDescending(x => x.TotalBytesRead)
                 .Take(10)
@@ -138,8 +138,8 @@ namespace Relativity.Sync.Executors
                 TopLongTexts = top10LongTexts
             };
 
-            _syncMetrics.Send(documentBatchEndMetric);
-            _jobStatisticsContainer.LongTextStatistics.Clear();
+            SyncMetrics.Send(documentBatchEndMetric);
+            JobStatisticsContainer.LongTextStatistics.Clear();
         }
 
         protected override Task<TaggingExecutionResult> TagObjectsAsync(IImportJob importJob, ISynchronizationConfiguration configuration, CompositeCancellationToken token)
@@ -149,7 +149,7 @@ namespace Relativity.Sync.Executors
 
         protected override async Task UploadLoadFileWithFilePathsToAdlsAsync(CompositeCancellationToken token, IImportJob importJob)
         {
-            if (_adfTransferEnabler.IsAdfTransferEnabled && _documentConfiguration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.CopyFiles)
+            if (AdfTransferEnabler.IsAdfTransferEnabled && _documentConfiguration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.CopyFiles)
             {
                 IEnumerable<int> successfullyPushedItemsDocumentArtifactIds = await importJob.GetPushedDocumentArtifactIdsAsync().ConfigureAwait(false);
 
@@ -185,8 +185,8 @@ namespace Relativity.Sync.Executors
                 locationsDictionary = locationsDictionary.Where(x =>
                         successfullyPushedItemsDocumentArtifactIds.Contains(x.Key))
                     .ToDictionary(pair => pair.Key, pair => pair.Value);
-                string loadFilePath = _adlsUploader.CreateBatchFile(locationsDictionary, token.AnyReasonCancellationToken);
-                string adlsLoadFilePath = await _adlsUploader.UploadFileAsync(loadFilePath, token.AnyReasonCancellationToken).ConfigureAwait(false);
+                string loadFilePath = AdlsUploader.CreateBatchFile(locationsDictionary, token.AnyReasonCancellationToken);
+                string adlsLoadFilePath = await AdlsUploader.UploadFileAsync(loadFilePath, token.AnyReasonCancellationToken).ConfigureAwait(false);
             }
         }
     }
