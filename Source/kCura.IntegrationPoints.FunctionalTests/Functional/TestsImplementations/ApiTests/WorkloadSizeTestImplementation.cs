@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers.API;
 using Relativity.Testing.Framework;
@@ -37,12 +38,14 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 
 		private string InsertScheduleMockJobStatement()
 		{
+			var currentDate = DateTime.UtcNow;
+			var currentDatePlusOneDay = currentDate.AddDays(1);
 			string insertStatement =
 				"INSERT INTO [ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D] " +
 				"([RootJobID], [ParentJobID], [AgentTypeID] ,[LockedByAgentID], [WorkspaceID] ,[RelatedObjectArtifactID] ,[TaskType] " +
 				",[NextRunTime] ,[LastRunTime] ,[ScheduleRuleType] ,[ScheduleRule] ,[JobDetails] ,[JobFlags] ,[SubmittedDate] " +
 				",[SubmittedBy] ,[StopState] ,[Heartbeat] ) " +
-				"VALUES (1 ,2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 6969, 12, 13, 14, 15, 16 )";
+				$"VALUES (1 ,2, 3, 4, 5, 6, 7, '{currentDate}', 9, 10, 11, 6969, 12, 13, 14, 15, '{currentDate}')";
 			return insertStatement;
 		}
 
