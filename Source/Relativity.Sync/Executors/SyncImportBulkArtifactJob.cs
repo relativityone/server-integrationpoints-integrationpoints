@@ -1,6 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using kCura.Relativity.DataReaderClient;
+using Relativity.AntiMalware.SDK;
+using Relativity.API;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Transfer.ImportAPI;
 
@@ -9,47 +12,59 @@ namespace Relativity.Sync.Executors
     [ExcludeFromCodeCoverage]
     internal sealed class SyncImportBulkArtifactJob : ISyncImportBulkArtifactJob
     {
-        private int _sourceWorkspaceErrorItemsCount = 0;
-
         private const string _IAPI_DOCUMENT_IDENTIFIER_COLUMN = "Identifier";
         private const string _IAPI_IMAGE_IDENTIFIER_COLUMN = "DocumentID";
         private const string _IAPI_MESSAGE_COLUMN = "Message";
+        private const string _IAPI_MALWARE_COLUMN = "Malware";
 
+        private readonly IAntiMalwareEventHelper _antiMalwareEventHelper;
         private readonly IImportBulkArtifactJob _importBulkArtifactJob;
+        private readonly int _workspaceId;
+        private readonly IAPILog _logger;
 
-        private SyncImportBulkArtifactJob(ISourceWorkspaceDataReader sourceWorkspaceDataReader)
-        {
-            ItemStatusMonitor = sourceWorkspaceDataReader.ItemStatusMonitor;
-            sourceWorkspaceDataReader.OnItemReadError += HandleSourceWorkspaceDataItemReadError;
-        }
+        private int _sourceWorkspaceErrorItemsCount = 0;
 
-        public SyncImportBulkArtifactJob(ImportBulkArtifactJob importBulkArtifactJob, ISourceWorkspaceDataReader sourceWorkspaceDataReader)
-            : this(sourceWorkspaceDataReader)
+        public SyncImportBulkArtifactJob(ImportBulkArtifactJob importBulkArtifactJob, ISourceWorkspaceDataReader sourceWorkspaceDataReader, IAntiMalwareEventHelper antiMalwareEventHelper, int workspaceId, IAPILog logger)
+            : this(sourceWorkspaceDataReader, antiMalwareEventHelper, workspaceId, logger)
         {
             importBulkArtifactJob.OnProgress += RaiseOnProgress;
             importBulkArtifactJob.OnError += HandleIapiDocumentItemLevelError;
+            importBulkArtifactJob.OnError += HandleMalware;
             importBulkArtifactJob.OnComplete += HandleIapiJobComplete;
             importBulkArtifactJob.OnFatalException += HandleIapiFatalException;
 
             _importBulkArtifactJob = importBulkArtifactJob;
         }
 
-        public SyncImportBulkArtifactJob(ImageImportBulkArtifactJob imageImportBulkArtifactJob, ISourceWorkspaceDataReader sourceWorkspaceDataReader)
-            : this(sourceWorkspaceDataReader)
+        public SyncImportBulkArtifactJob(ImageImportBulkArtifactJob imageImportBulkArtifactJob, ISourceWorkspaceDataReader sourceWorkspaceDataReader, IAntiMalwareEventHelper antiMalwareEventHelper, int workspaceId, IAPILog logger)
+            : this(sourceWorkspaceDataReader, antiMalwareEventHelper, workspaceId, logger)
         {
             imageImportBulkArtifactJob.OnProgress += RaiseOnProgress;
             imageImportBulkArtifactJob.OnError += HandleIapiImageItemLevelError;
+            imageImportBulkArtifactJob.OnError += HandleMalware;
             imageImportBulkArtifactJob.OnComplete += HandleIapiJobComplete;
             imageImportBulkArtifactJob.OnFatalException += HandleIapiFatalException;
 
             _importBulkArtifactJob = imageImportBulkArtifactJob;
         }
 
+        private SyncImportBulkArtifactJob(ISourceWorkspaceDataReader sourceWorkspaceDataReader, IAntiMalwareEventHelper antiMalwareEventHelper, int workspaceId, IAPILog logger)
+        {
+            _antiMalwareEventHelper = antiMalwareEventHelper;
+            _workspaceId = workspaceId;
+            _logger = logger.ForContext<SyncImportBulkArtifactJob>();
+            ItemStatusMonitor = sourceWorkspaceDataReader.ItemStatusMonitor;
+            sourceWorkspaceDataReader.OnItemReadError += HandleSourceWorkspaceDataItemReadError;
+        }
+
         public IItemStatusMonitor ItemStatusMonitor { get; }
 
         public event SyncJobEventHandler<ItemLevelError> OnItemLevelError;
+
         public event SyncJobEventHandler<ImportApiJobProgress> OnProgress;
+
         public event SyncJobEventHandler<ImportApiJobStatistics> OnComplete;
+
         public event SyncJobEventHandler<ImportApiJobStatistics> OnFatalException;
 
         public void Execute()
@@ -74,6 +89,33 @@ namespace Relativity.Sync.Executors
             RaiseOnItemLevelError(
                 CreateItemLevelError(row, _IAPI_IMAGE_IDENTIFIER_COLUMN, _IAPI_MESSAGE_COLUMN)
             );
+        }
+
+        private void HandleMalware(IDictionary row)
+        {
+            string infectedFilePath = GetValueOrNull(row, _IAPI_MALWARE_COLUMN);
+            if (!string.IsNullOrWhiteSpace(infectedFilePath))
+            {
+                try
+                {
+                    string documentIdentifier = GetValueOrNull(row, _IAPI_DOCUMENT_IDENTIFIER_COLUMN) ?? GetValueOrNull(row, _IAPI_IMAGE_IDENTIFIER_COLUMN) ?? string.Empty;
+
+                    _logger.LogWarning("Malware detected for document: {documentIdentifier} in file: {filePath}", documentIdentifier, infectedFilePath);
+
+                    AntiMalwareEvent antiMalwareEvent = new AntiMalwareEvent
+                    {
+                        WorkspaceID = _workspaceId,
+                        UncOrUri = infectedFilePath,
+                        Exception = new Exception($"Malware detected for document: {documentIdentifier} in file: {infectedFilePath}")
+                    };
+
+                    _antiMalwareEventHelper.ReportAntiMalwareEventAsync(antiMalwareEvent).GetAwaiter().GetResult();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Exception occurred when trying to report anti-malware event.");
+                }
+            }
         }
 
         private void HandleIapiJobComplete(JobReport jobReport)
