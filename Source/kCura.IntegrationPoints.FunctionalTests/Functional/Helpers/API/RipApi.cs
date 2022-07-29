@@ -114,11 +114,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
 
         public async Task<Workload> GetWorkloadSizeAsync()
         {
-            Workload workloadSizeReturned = new Workload();
+            Workload workloadSizeReturned = null;
             using (var integrationPointAgentManager = _serviceFactory.GetServiceProxy<IIntegrationPointsAgentManager>())
             {
                 workloadSizeReturned = await integrationPointAgentManager.GetWorkloadAsync().ConfigureAwait(false);
-                
             }
 
             return workloadSizeReturned;

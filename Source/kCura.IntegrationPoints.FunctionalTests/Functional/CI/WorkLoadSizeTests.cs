@@ -26,9 +26,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 
             // ASSERT
             workloadSizeReturned.Should().Be(expectedValue);
-            
-            // CLEANUP
+        }
+
+        protected override void OnTearDownFixture()
+        {
             _workloadSizeTestImplementation.RemoveMockJobFromSqlTable();
+            base.OnTearDownFixture();
         }
     }
 }
