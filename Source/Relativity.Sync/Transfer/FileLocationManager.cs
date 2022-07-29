@@ -25,18 +25,14 @@ namespace Relativity.Sync.Transfer
             {
                 IDictionary<int, NativeFilePathStructure> pathStructures = GetNativeFilesPathStructure(nativeFiles);
 
-                if (pathStructures.Any())
+                var commonSourcePathGroups = pathStructures.GroupBy(x => x.Value.FullDirectoryPath);
+                foreach (var filePathComponents in commonSourcePathGroups)
                 {
-                    HashSet<string> distinctSourcePaths = new HashSet<string>(pathStructures.Values.Select(x => x.FullDirectoryPath));
+                    var filesWithinGroup = filePathComponents.AsEnumerable();
+                    FmsBatchInfo batchInfo = new FmsBatchInfo(_configuration.DestinationWorkspaceArtifactId, filePathComponents.ToDictionary(x => x.Key, x => x.Value), filePathComponents.Key);
+                    _fmsBatchesStorage.Add(batchInfo);
 
-                    foreach (string distinctPath in distinctSourcePaths)
-                    {
-                        IDictionary<int, NativeFilePathStructure> filePathComponents = pathStructures.Where(x => x.Value.FullDirectoryPath == distinctPath).ToDictionary(d => d.Key, d => d.Value);
-                        FmsBatchInfo batchInfo = new FmsBatchInfo(_configuration.DestinationWorkspaceArtifactId, filePathComponents, distinctPath);
-                        _fmsBatchesStorage.Add(batchInfo);
-
-                        SetNewPathForIapiTransfer(batchInfo, nativeFiles);
-                    }
+                    SetNewPathForIapiTransfer(batchInfo, nativeFiles);
                 }
             }
             catch (Exception ex)

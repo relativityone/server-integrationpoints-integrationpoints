@@ -30,15 +30,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         [Test]
         public void TranslateAndStoreFilePaths_ShouldCreateCorrectNumberOfDistinctFmsBatches()
         {
-            //Arrange
+            // Arrange
             IDictionary<int, INativeFile> testNativesSet = PrepareTestNativeFilesSet();
             int expectedNumberOfFmsBatches = 4;
 
-            //Act
+            // Act
             _sut.TranslateAndStoreFilePaths(testNativesSet);
             IList<FmsBatchInfo> result = _sut.GetStoredLocations();
 
-            //Assert
+            // Assert
             result.Count.Should().Be(expectedNumberOfFmsBatches);
             result.Should().OnlyHaveUniqueItems(x => x.SourceLocationShortPath);
             result.Should().OnlyHaveUniqueItems(x => x.DestinationLocationShortPath);
@@ -48,17 +48,17 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         [Test]
         public void TranslateAndStoreFilePaths_ShouldCreateCorrectPathsForFmsBatch()
         {
-            //Arrange
+            // Arrange
             IDictionary<int, INativeFile> testInput = new Dictionary<int, INativeFile> { { 1,
                     new NativeFile(1, $@"{_EXAMPLE_SERVER_PATH}\EDDS1018439\RV_1\5dcd0d81-13f0-4194-9a11-4a56c0fd8159", string.Empty, 1) } };
             string expectedSourceShortPath = @"EDDS1018439/RV_1";
             int expectedNumberOfFilesWithinBatch = 1;
 
-            //Act
+            // Act
             _sut.TranslateAndStoreFilePaths(testInput);
             IList<FmsBatchInfo> result = _sut.GetStoredLocations();
 
-            //Assert
+            // Assert
             string expectedDestinationShortPath = $@"Files/EDDS{_DESTINATION_WORKSPACE_ARTIFACT_ID}/RV_{result.Select(x => x.TraceId).First()}";
             string expectedLinkForIAPI = $@"{_EXAMPLE_SERVER_PATH}\{expectedDestinationShortPath}\5dcd0d81-13f0-4194-9a11-4a56c0fd8159".Replace("/", @"\");
 
