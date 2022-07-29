@@ -193,7 +193,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		protected override Dictionary<string, object> GenerateImportRow(IDictionary<FieldEntry, object> row, IEnumerable<FieldMap> fieldMap, ImportSettings settings)
 		{
-			LogGeneratingImportRow();
 			Dictionary<string, object> importRow = base.GenerateImportRow(row, fieldMap, settings);
             ProcessManagerReference(importRow);
 			if (HandleFullNamePopulation && !importRow.ContainsKey(_LDAP_MAP_FULL_NAME_FIELD_NAME))
@@ -364,11 +363,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private void LogRetrievingFields()
 		{
 			_logger.LogInformation("Attempting to retrieve fields.");
-		}
-
-		private void LogGeneratingImportRow()
-		{
-			_logger.LogInformation("Generating import row.");
 		}
 
 		private void LogSubmittingJob()

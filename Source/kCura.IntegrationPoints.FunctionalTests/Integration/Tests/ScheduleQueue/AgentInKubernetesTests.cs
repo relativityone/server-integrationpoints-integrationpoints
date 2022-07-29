@@ -3,6 +3,7 @@ using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using System;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
+using kCura.ScheduleQueue.Core;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 {
@@ -59,6 +60,47 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
                 jobWithSameRootId3.JobId });
 
             sut.VerifyJobsWereNotProcessed(new long[] { jobWithoutRootId.JobId });
+        }
+
+        [Test]
+        public void Agent_ShouldFinishExecution_WhenMaximumLifeTimeWillBeReached()
+        {
+            // Arrange
+            const int jobDurationInHours = 4;
+
+            DateTime utcNow = new DateTime(2000, 1, 1);
+
+            Context.SetDateTime(utcNow);
+
+            long? rootJobId = ArtifactProvider.NextId();
+
+            IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateEmptyIntegrationPoint();
+
+            JobTest jobWithSameRootId1 = FakeRelativityInstance.Helpers.JobHelper.ScheduleSyncWorkerJob(SourceWorkspace, integrationPoint, null, rootJobId);
+            JobTest jobWithSameRootId2 = FakeRelativityInstance.Helpers.JobHelper.ScheduleSyncWorkerJob(SourceWorkspace, integrationPoint, null, rootJobId);
+
+            FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container, shouldRunOnce: true);
+
+            sut.ProcessJobMockFunc = (job) =>
+            {
+                Context.SetDateTime(utcNow.Add(TimeSpan.FromHours(jobDurationInHours)));
+
+                return new TaskResult { Status = TaskStatusEnum.Success };
+            };
+
+            // Act
+            sut.Execute();
+
+            // Assert
+            sut.VerifyJobsWereProcessed(new long[] 
+            {
+                jobWithSameRootId1.JobId,
+            });
+
+            sut.VerifyJobsWereNotProcessed(new long[]
+            {
+                jobWithSameRootId2.JobId
+            });
         }
     }
 }

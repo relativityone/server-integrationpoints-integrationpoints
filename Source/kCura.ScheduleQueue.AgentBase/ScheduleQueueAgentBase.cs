@@ -32,6 +32,8 @@ namespace kCura.ScheduleQueue.AgentBase
 		private IConfig _config;
 		private IAPM _apm;
 
+		private DateTime _agentStartTime;
+
 		private const int _MAX_MESSAGE_LENGTH = 10000;
 
 		private readonly Guid _agentGuid;
@@ -59,9 +61,18 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		protected IJobService JobService => _jobService;
 
-		protected ScheduleQueueAgentBase(Guid agentGuid, IKubernetesMode kubernetesMode = null, IAgentService agentService = null, IJobService jobService = null,
-			IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
-			IQueueQueryManager queryManager = null, IDateTime dateTime = null, IAPILog logger = null, IConfig config = null, IAPM apm = null)
+		protected ScheduleQueueAgentBase(
+			Guid agentGuid,
+			IKubernetesMode kubernetesMode = null,
+			IAgentService agentService = null,
+			IJobService jobService = null,
+			IScheduleRuleFactory scheduleRuleFactory = null,
+			IQueueJobValidator queueJobValidator = null,
+			IQueueQueryManager queryManager = null,
+			IDateTime dateTime = null,
+			IAPILog logger = null,
+			IConfig config = null,
+			IAPM apm = null)
 		{
 			// Lazy init is required for things depending on Helper
 			// Helper property in base class is assigned AFTER object construction
@@ -140,6 +151,8 @@ namespace kCura.ScheduleQueue.AgentBase
             {
 				_apm = Client.APMClient;
 			}
+
+			_agentStartTime = _dateTime.UtcNow;
 		}
 
 		public sealed override void Execute()
@@ -322,6 +335,18 @@ namespace kCura.ScheduleQueue.AgentBase
                     }
                     else
                     {
+						DateTime utcNow = _dateTime.UtcNow;
+						TimeSpan agentMaximumLifetime = _config.AgentMaximumLifetime;
+						if (utcNow.Subtract(_agentStartTime) > agentMaximumLifetime)
+						{
+							Logger.LogInformation(
+							   "Integration Points Agent reached maximum lifetime value. Agent execution will be finished: " +
+							   "UTCNow - {utcNow}, AgentStartTime - {agentStartTime}, AgentMaximumLifetime - {agentMaximumLifetime}",
+							   utcNow, _agentStartTime, agentMaximumLifetime);
+
+							break;
+                        }
+
 						nextJob = GetNextQueueJob(nextJob.RootJobId);
 						if (nextJob == null)
                         {

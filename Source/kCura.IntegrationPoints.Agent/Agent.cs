@@ -40,6 +40,7 @@ using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Choice;
 using Relativity.Services.Exceptions;
+using Relativity.Telemetry.APM;
 using Component = Castle.MicroKernel.Registration.Component;
 
 namespace kCura.IntegrationPoints.Agent
@@ -76,10 +77,30 @@ namespace kCura.IntegrationPoints.Agent
 #endif
         }
 
-        protected Agent(Guid agentGuid, IAgentService agentService = null, IJobService jobService = null,
-                IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
-                IQueueQueryManager queryManager = null, IKubernetesMode kubernetesMode = null, IDateTime dateTime = null, IAPILog logger = null)
-            : base(agentGuid, kubernetesMode, agentService, jobService, scheduleRuleFactory, queueJobValidator, queryManager, dateTime, logger)
+        protected Agent(
+            Guid agentGuid,
+            IAgentService agentService = null,
+            IJobService jobService = null,
+            IScheduleRuleFactory scheduleRuleFactory = null,
+            IQueueJobValidator queueJobValidator = null,
+            IQueueQueryManager queryManager = null,
+            IKubernetesMode kubernetesMode = null,
+            IDateTime dateTime = null,
+            IAPILog logger = null,
+            IConfig config = null,
+            IAPM apm = null)
+            : base(
+                agentGuid,
+                kubernetesMode,
+                agentService,
+                jobService,
+                scheduleRuleFactory,
+                queueJobValidator,
+                queryManager,
+                dateTime,
+                logger,
+                config,
+                apm)
         {
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
