@@ -5,8 +5,6 @@ export function transformLayout(layoutData, convenienceApi: IConvenienceApi, bac
     try {
         removeMessageContainers();
 
-        console.log("BACKING MODEL: ", backingModelData);
-
         let [sourceConfiguration, destinationConfiguration, sourceProvider] = extractFieldsValuesFromBackingModelData(backingModelData);
 
         var existingFields = convenienceApi.layout.getFields(layoutData);
@@ -17,7 +15,6 @@ export function transformLayout(layoutData, convenienceApi: IConvenienceApi, bac
         var fieldsForOtherProviders = ["Destination RDO"];
 
         //fields to display depend on source provider type 
-        console.log("in switch, source provider -> ", sourceProvider)
         switch (sourceProvider) {
             case "Relativity":
                 if (destinationConfiguration["Provider"] === "relativity") {
@@ -46,7 +43,7 @@ export function transformLayout(layoutData, convenienceApi: IConvenienceApi, bac
                 addFieldsToLayout(layoutData, existingFields, fieldsForOtherProviders)
                 break;
         }
-
+        console.log("in switch, source provider -> ", sourceProvider)
         removeUnnecessaryField(existingFields, "Promote Eligible")
 
         return [sourceConfiguration, destinationConfiguration];

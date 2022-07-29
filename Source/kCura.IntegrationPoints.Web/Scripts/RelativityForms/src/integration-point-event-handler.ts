@@ -12,6 +12,8 @@ export default function (eventNames: typeof EventNames, convenienceApi: IConveni
     let sourceConfiguration;
     let destinationConfiguration;
 
+    console.log("CHANGE!")
+
     eventHandlers[eventNames.TRANSFORM_LAYOUT] = function (layoutData) {
         console.log("Backing data model", this.backingModelData);
         //let configurations = transformLayout(layoutData, convenienceApi, this.backingModelData);
