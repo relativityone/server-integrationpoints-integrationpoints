@@ -106,9 +106,14 @@ namespace Relativity.Sync.Executors
             return configuration.ExportRunId;
         }
 
-        protected virtual Task UploadLoadFileWithFilePathsToAdlsAsync(CompositeCancellationToken token, IImportJob importJob)
+        protected virtual Task<string> CreateTaskToUploadBatchFileToAdlsAsync(CompositeCancellationToken token, IImportJob importJob)
         {
-            return Task.CompletedTask;
+            return Task.FromResult(string.Empty);
+        }
+
+        protected virtual Task<string[]> UploadBatchFilesToAdlsAsync(List<Task<string>> tasks)
+        {
+            return Task.FromResult(Array.Empty<string>());
         }
 
         protected int GetDestinationIdentityFieldId()
@@ -219,6 +224,8 @@ namespace Relativity.Sync.Executors
                 {
                     JobStatisticsContainer.RestoreJobStatistics(executedBatches);
 
+                    List<Task<string>> uploadBatchFilesTasks = new List<Task<string>>();
+
                     for (int i = 0; i < batchesIds.Count; i++)
                     {
                         int batchId = batchesIds[i];
@@ -243,7 +250,8 @@ namespace Relativity.Sync.Executors
                                 BatchProcessResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token).ConfigureAwait(false);
                                 importApiTimer.Stop();
 
-                                await UploadLoadFileWithFilePathsToAdlsAsync(token, importJob).ConfigureAwait(false);
+                                Task<string> uploadBatchFileToAdlsTask = CreateTaskToUploadBatchFileToAdlsAsync(token, importJob);
+                                uploadBatchFilesTasks.Add(uploadBatchFileToAdlsTask);
 
                                 TaggingExecutionResult taggingResult = await TagObjectsAsync(importJob, configuration, token).ConfigureAwait(false);
                                 int documentsTaggedCount = taggingResult.TaggedDocumentsCount;
@@ -271,6 +279,8 @@ namespace Relativity.Sync.Executors
 
                         Logger.LogInformation("Batch ID: {batchId} processed successfully ({index} out of {totalBatches})", batch.ArtifactId, i + 1, batchesIds.Count);
                     }
+
+                    string[] batchFilesPaths = await UploadBatchFilesToAdlsAsync(uploadBatchFilesTasks).ConfigureAwait(false);
 
                     importAndTagResult = AggregateBatchesCompletedWithErrorsResults(batchesCompletedWithErrors);
                 }

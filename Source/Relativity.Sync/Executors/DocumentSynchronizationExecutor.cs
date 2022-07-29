@@ -18,6 +18,7 @@ namespace Relativity.Sync.Executors
     {
         private readonly IDocumentTagger _documentTagger;
         private readonly IDocumentSynchronizationConfiguration _documentConfiguration;
+        private readonly int _maxThreadsCount;
 
         public DocumentSynchronizationExecutor(
             IImportJobFactory importJobFactory,
@@ -31,11 +32,12 @@ namespace Relativity.Sync.Executors
             Func<IStopwatch> stopwatchFactory,
             ISyncMetrics syncMetrics,
             IDocumentTagger documentTagger,
-            IAPILog logger,
             IUserContextConfiguration userContextConfiguration,
             IDocumentSynchronizationConfiguration documentConfiguration,
             IADLSUploader uploader,
-            IADFTransferEnabler adfTransferEnabler) : base(
+            IADFTransferEnabler adfTransferEnabler,
+            IInstanceSettings instanceSettings,
+            IAPILog logger) : base(
             importJobFactory,
             BatchRecordType.Documents,
             batchRepository,
@@ -54,6 +56,7 @@ namespace Relativity.Sync.Executors
         {
             _documentTagger = documentTagger;
             _documentConfiguration = documentConfiguration;
+            _maxThreadsCount = instanceSettings.GetSyncMaxThreadsCountAsync().GetAwaiter().GetResult();
         }
 
         protected override Task<IImportJob> CreateImportJobAsync(IDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
@@ -147,11 +150,11 @@ namespace Relativity.Sync.Executors
             return _documentTagger.TagObjectsAsync(importJob, configuration, token);
         }
 
-        protected override async Task UploadLoadFileWithFilePathsToAdlsAsync(CompositeCancellationToken token, IImportJob importJob)
+        protected override Task<string> CreateTaskToUploadBatchFileToAdlsAsync(CompositeCancellationToken token, IImportJob importJob)
         {
             if (AdfTransferEnabler.IsAdfTransferEnabled && _documentConfiguration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.CopyFiles)
             {
-                IEnumerable<int> successfullyPushedItemsDocumentArtifactIds = await importJob.GetPushedDocumentArtifactIdsAsync().ConfigureAwait(false);
+                IEnumerable<int> successfullyPushedItemsDocumentArtifactIds = importJob.GetPushedDocumentArtifactIdsAsync().GetAwaiter().GetResult();
 
                 #region Debug
 
@@ -186,8 +189,30 @@ namespace Relativity.Sync.Executors
                         successfullyPushedItemsDocumentArtifactIds.Contains(x.Key))
                     .ToDictionary(pair => pair.Key, pair => pair.Value);
                 string loadFilePath = AdlsUploader.CreateBatchFile(locationsDictionary, token.AnyReasonCancellationToken);
-                string adlsLoadFilePath = await AdlsUploader.UploadFileAsync(loadFilePath, token.AnyReasonCancellationToken).ConfigureAwait(false);
+                return AdlsUploader.UploadFileAsync(loadFilePath, token.AnyReasonCancellationToken);
             }
+
+            return null;
+        }
+
+        protected override async Task<string[]> UploadBatchFilesToAdlsAsync(List<Task<string>> tasks)
+        {
+            if (AdfTransferEnabler.IsAdfTransferEnabled && _documentConfiguration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.CopyFiles)
+            {
+                SemaphoreSlim maxThread = new SemaphoreSlim(_maxThreadsCount);
+
+                for (int i = 0; i < tasks.Count; i++)
+                {
+                    maxThread.Wait();
+                    Task<string[]> task = Task.WhenAll(tasks);
+                    await task.ContinueWith(task => maxThread.Release()).ConfigureAwait(false);
+
+                    string[] batchFilesPaths = await task.ConfigureAwait(false);
+                    return batchFilesPaths;
+                }
+            }
+
+            return Array.Empty<string>();
         }
     }
 }

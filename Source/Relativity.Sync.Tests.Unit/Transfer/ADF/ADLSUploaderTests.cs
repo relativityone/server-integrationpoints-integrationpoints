@@ -20,7 +20,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
         private Mock<IHelperWrapper> _helperMock;
         private Mock<IStorageAccess<string>> _storageAccessMock;
         private Mock<IAPILog> _loggerFake;
-        private ADLSUploader _sut;
+        private AdlsUploader _sut;
         private StorageEndpoint[] _storageEndpoints;
         private string _destinationDir;
 
@@ -46,12 +46,12 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
             _helperMock = new Mock<IHelperWrapper>();
 
             _loggerFake = new Mock<IAPILog>();
-            _loggerFake.Setup(x => x.ForContext<ADLSUploader>()).Returns(_loggerFake.Object);
+            _loggerFake.Setup(x => x.ForContext<AdlsUploader>()).Returns(_loggerFake.Object);
 
             _storageAccessMock = new Mock<IStorageAccess<string>>();
             _helperMock.Setup(x => x.GetStorageAccessorAsync(It.IsAny<CancellationToken>())).ReturnsAsync(_storageAccessMock.Object);
 
-            _sut = new ADLSUploader(_helperMock.Object, _loggerFake.Object);
+            _sut = new AdlsUploader(_helperMock.Object, _loggerFake.Object);
         }
 
         [Test]

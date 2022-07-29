@@ -13,15 +13,15 @@ using Relativity.Storage;
 
 namespace Relativity.Sync.Transfer.ADF
 {
-    internal class ADLSUploader : IADLSUploader
+    internal class AdlsUploader : IADLSUploader
     {
         private readonly IHelperWrapper _helper;
         private readonly IAPILog _logger;
 
-        public ADLSUploader(IHelperWrapper helperWrapper, IAPILog logger)
+        public AdlsUploader(IHelperWrapper helperWrapper, IAPILog logger)
         {
             _helper = helperWrapper;
-            _logger = logger.ForContext<ADLSUploader>();
+            _logger = logger.ForContext<AdlsUploader>();
         }
 
         public string CreateBatchFile(Dictionary<int, FilePathInfo> locationsDictionary, CancellationToken cancellationToken)
@@ -53,16 +53,16 @@ namespace Relativity.Sync.Transfer.ADF
 
         public async Task<string> UploadFileAsync(string sourceFilePath, CancellationToken cancellationToken)
         {
+            if (string.IsNullOrEmpty(sourceFilePath))
+            {
+                throw new ArgumentNullException(nameof(sourceFilePath), "Source file path is null or empty.");
+            }
+
             const int maxNumberOfRetries = 3;
 
             void OnRetryAction(Exception ex, TimeSpan waitTime, int retryCount, Context context)
             {
                 _logger.LogWarning(ex, "Encountered issue while loading file to ADLS, attempting to retry. Retry count: {retryCount} Wait time: {waitTimeMs} (ms)", retryCount, waitTime.TotalMilliseconds);
-            }
-
-            if (string.IsNullOrEmpty(sourceFilePath))
-            {
-                throw new ArgumentNullException(nameof(sourceFilePath), "Source file path is null or empty.");
             }
 
             string destinationFilePath;
@@ -170,5 +170,7 @@ namespace Relativity.Sync.Transfer.ADF
 
             return result.Result;
         }
+
+        
     }
 }
