@@ -76,5 +76,9 @@ namespace kCura.IntegrationPoints.Config
 		/// Get Timeout for Transient State RIP Jobs
 		/// </summary>
 		TimeSpan TransientStateJobTimeout { get; }
+
+		/// Get max Agent lifetime
+		/// </summary>
+		TimeSpan AgentMaximumLifetime { get; }
 	}
 }
