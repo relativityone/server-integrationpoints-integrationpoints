@@ -13,6 +13,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 	{
 		private readonly IKeplerServiceFactory _serviceFactory;
 		private readonly RipApi _ripApi;
+		private string QUEUE_NAME = "ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D";
 
 		public WorkloadSizeTestImplementation()
 		{
@@ -39,9 +40,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 		private string InsertScheduleMockJobStatement()
 		{
 			var currentDate = DateTime.UtcNow;
-			var currentDatePlusOneDay = currentDate.AddDays(1);
 			string insertStatement =
-				"INSERT INTO [ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D] " +
+				$"INSERT INTO [{QUEUE_NAME}] " +
 				"([RootJobID], [ParentJobID], [AgentTypeID] ,[LockedByAgentID], [WorkspaceID] ,[RelatedObjectArtifactID] ,[TaskType] " +
 				",[NextRunTime] ,[LastRunTime] ,[ScheduleRuleType] ,[ScheduleRule] ,[JobDetails] ,[JobFlags] ,[SubmittedDate] " +
 				",[SubmittedBy] ,[StopState] ,[Heartbeat] ) " +
@@ -51,7 +51,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.Api
 
 		private string DeleteMockJobStatement()
 		{
-			return "DELETE FROM [ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D] WHERE [JobDetails] = 6969";
+			return $"DELETE FROM [{QUEUE_NAME}] WHERE [JobDetails] = 6969";
 		}
 	}
 }
