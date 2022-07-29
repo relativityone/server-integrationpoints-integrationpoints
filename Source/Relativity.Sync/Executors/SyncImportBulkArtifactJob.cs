@@ -98,15 +98,17 @@ namespace Relativity.Sync.Executors
             {
                 try
                 {
-                    string documentIdentifier = GetValueOrNull(row, _IAPI_DOCUMENT_IDENTIFIER_COLUMN) ?? GetValueOrNull(row, _IAPI_IMAGE_IDENTIFIER_COLUMN) ?? string.Empty;
+                    string documentIdentifier = GetValueOrNull(row, _IAPI_DOCUMENT_IDENTIFIER_COLUMN) ?? 
+                                                GetValueOrNull(row, _IAPI_IMAGE_IDENTIFIER_COLUMN) ?? 
+                                                string.Empty;
 
-                    _logger.LogWarning("Malware detected for document: {documentIdentifier} in file: {filePath}", documentIdentifier, infectedFilePath);
+                    _logger.LogWarning("Malware detected in document: {documentIdentifier}", documentIdentifier);
 
                     AntiMalwareEvent antiMalwareEvent = new AntiMalwareEvent
                     {
                         WorkspaceID = _workspaceId,
                         UncOrUri = infectedFilePath,
-                        Exception = new Exception($"Malware detected for document: {documentIdentifier} in file: {infectedFilePath}")
+                        Exception = new Exception($"Malware detected in document: {documentIdentifier}")
                     };
 
                     _antiMalwareEventHelper.ReportAntiMalwareEventAsync(antiMalwareEvent).GetAwaiter().GetResult();
