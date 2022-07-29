@@ -73,11 +73,11 @@ namespace kCura.IntegrationPoints.Config
 		/// </summary>
 		TimeSpan RunningJobTimeThreshold { get; }
 		
-		/// Get Timeout for Transient State RIP Jobs
+		/// Gets Timeout for Transient State RIP Jobs
 		/// </summary>
 		TimeSpan TransientStateJobTimeout { get; }
 
-		/// Get max Agent lifetime
+		/// Gets max Agent lifetime
 		/// </summary>
 		TimeSpan AgentMaximumLifetime { get; }
 	}
