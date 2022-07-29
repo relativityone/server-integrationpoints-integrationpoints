@@ -3,7 +3,7 @@
     <PropertyGroup>
         <StyleCopDirectoryPath>$(MSBuildThisFileDirectory)</StyleCopDirectoryPath>
         <CodeAnalysisRuleSet>$(StyleCopDirectoryPath)\stylecop.ruleset</CodeAnalysisRuleSet>
-		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
