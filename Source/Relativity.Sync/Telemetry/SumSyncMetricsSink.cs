@@ -66,7 +66,7 @@ namespace Relativity.Sync.Telemetry
                 case MetricType.GaugeOperation:
                     return metricsManager.LogGaugeAsync(metric.Bucket, workspaceGuid, metric.CorrelationId, (long)metric.Value);
                 default:
-                    _logger.LogDebug("Logging metric type '{type}' to SUM is not implemented.", metric.Type);
+                    _logger.LogInformation("Logging metric type '{type}' to SUM is not implemented.", metric.Type);
                     return Task.CompletedTask;
             }
         }
