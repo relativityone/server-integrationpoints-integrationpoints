@@ -32,8 +32,7 @@ namespace Relativity.Sync.Tests.Integration
                 bool hasMoreData = _instance.Read();
                 hasMoreData.Should().Be(true);
 
-                _instance["NativeFileFilename"].ConvertTo<string>().Should().Be(document.NativeFile.Filename);
-                _instance["NativeFileLocation"].ConvertTo<string>().Should().Be(document.NativeFile.Location);
+                _instance["NativeFileFilename"].ConvertTo<string>().Should().Be(document.NativeFile.Filename);               
                 _instance["NativeFileSize"].ConvertTo<long>().Should().Be(document.NativeFile.Size);
 
                 foreach (FieldValue fieldValue in document.FieldValues)
