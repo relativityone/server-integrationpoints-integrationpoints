@@ -55,7 +55,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<Func<IStopwatch>> _stopwatchFactoryFake;
         private Mock<IStopwatch> _stopwatchFake;
         private Mock<ISyncMetrics> _syncMetricsMock;
-        private Mock<IADLSUploader> _adlsUploaderMock;
+        private Mock<IAdlsUploader> _adlsUploaderMock;
         private Mock<IADFTransferEnabler> _adfTransferEnablerMock;
 
         private Mock<Sync.Executors.IImportJob> _importJobFake;
@@ -125,7 +125,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _stopwatchFake = new Mock<IStopwatch>();
             _stopwatchFactoryFake.Setup(x => x()).Returns(_stopwatchFake.Object);
             _syncMetricsMock = new Mock<ISyncMetrics>();
-            _adlsUploaderMock = new Mock<IADLSUploader>();
+            _adlsUploaderMock = new Mock<IAdlsUploader>();
 
             _jobProgressHandlerFake = new Mock<IJobProgressHandler>();
             _jobProgressUpdaterFake = new Mock<IJobProgressUpdater>();

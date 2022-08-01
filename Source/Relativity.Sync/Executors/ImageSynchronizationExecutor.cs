@@ -30,7 +30,7 @@ namespace Relativity.Sync.Executors
             Func<IStopwatch> stopwatchFactory,
             ISyncMetrics syncMetrics,
             IDocumentTagger documentTagger,
-            IADLSUploader uploader,
+            IAdlsUploader uploader,
             IUserContextConfiguration userContextConfiguration,
             IADFTransferEnabler adfTransferEnabler,
             IFileLocationManager fileLocationManager,

@@ -34,7 +34,7 @@ namespace Relativity.Sync.Executors
             IDocumentTagger documentTagger,
             IUserContextConfiguration userContextConfiguration,
             IDocumentSynchronizationConfiguration documentConfiguration,
-            IADLSUploader uploader,
+            IAdlsUploader uploader,
             IADFTransferEnabler adfTransferEnabler,
             IInstanceSettings instanceSettings,
             IFileLocationManager fileLocationManager,
@@ -152,60 +152,58 @@ namespace Relativity.Sync.Executors
             return _documentTagger.TagObjectsAsync(importJob, configuration, token);
         }
 
-        protected override Task<string> CreateTaskToUploadBatchFileToAdlsAsync(CompositeCancellationToken token, IImportJob importJob)
+        protected override async Task<string[]> UploadBatchFilesToAdlsAsync(CompositeCancellationToken token, IImportJob importJob)
         {
             if (AdfTransferEnabler.IsAdfTransferEnabled && _documentConfiguration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.CopyFiles)
             {
-                IEnumerable<FmsBatchInfo> storedLocations = GetSuccessfullyPushedDocuments(importJob);
-                string batchFilePath = AdlsUploader.CreateBatchFile(storedLocations, token.AnyReasonCancellationToken);
-                return AdlsUploader.UploadFileAsync(batchFilePath, token.AnyReasonCancellationToken);
+                IList<FmsBatchInfo> storedLocations = await GetSuccessfullyPushedDocumentsAsync(importJob).ConfigureAwait(false);
+                List<Task<string>> batchesUploadTasks = new List<Task<string>>();
+                foreach (var storedLocation in storedLocations)
+                {
+                    batchesUploadTasks.Add(new Task<string>(() =>
+                    {
+                        string batchFilePath = AdlsUploader.CreateBatchFile(storedLocation, token.AnyReasonCancellationToken);
+                        return AdlsUploader.UploadFileAsync(batchFilePath, token.AnyReasonCancellationToken).GetAwaiter().GetResult();
+                    }));
+                }
+
+                string[] tasksResults = await UploadBatchFilesAsync(batchesUploadTasks).ConfigureAwait(false);
+                return tasksResults;
             }
 
             return null;
         }
 
-        protected override async Task<string[]> UploadBatchFilesToAdlsAsync(List<Task<string>> tasks)
+        private async Task<IList<FmsBatchInfo>> GetSuccessfullyPushedDocumentsAsync(IImportJob importJob)
+        {
+            IList<FmsBatchInfo> storedLocations = FileLocationManager.GetStoredLocations();
+            IEnumerable<int> successfullyPushedItemsDocumentArtifactIds = await importJob.GetPushedDocumentArtifactIdsAsync();
+            for (int i = 0; i < storedLocations.Count; i++)
+            {
+                storedLocations[i].Files = storedLocations[i].Files
+                    .Where(x =>
+                        successfullyPushedItemsDocumentArtifactIds
+                            .Contains(x.DocumentArtifactId))
+                    .ToList();
+            }
+
+            return storedLocations;
+        }
+
+        private async Task<string[]> UploadBatchFilesAsync(List<Task<string>> tasks)
         {
             if (AdfTransferEnabler.IsAdfTransferEnabled && _documentConfiguration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.CopyFiles)
             {
                 SemaphoreSlim maxThread = new SemaphoreSlim(_maxThreadsCount);
+                await maxThread.WaitAsync().ConfigureAwait(false);
+                Task<string[]> task = Task.WhenAll(tasks);
+                await task.ContinueWith(x => maxThread.Release()).ConfigureAwait(false);
+                string[] batchFilesPaths = await task.ConfigureAwait(false);
 
-                for (int i = 0; i < tasks.Count; i++)
-                {
-                    maxThread.Wait();
-                    Task<string[]> task = Task.WhenAll(tasks);
-                    await task.ContinueWith(task => maxThread.Release()).ConfigureAwait(false);
-
-                    string[] batchFilesPaths = await task.ConfigureAwait(false);
-                    return batchFilesPaths;
-                }
+                return batchFilesPaths;
             }
 
             return Array.Empty<string>();
-        }
-
-        private IEnumerable<FmsBatchInfo> GetSuccessfullyPushedDocuments(IImportJob importJob)
-        {
-            IEnumerable<FmsBatchInfo> storedLocations = FileLocationManager.GetStoredLocations();
-            Dictionary<int, FmsBatchInfo> storedLocationsDictionary = new Dictionary<int, FmsBatchInfo>();
-            foreach (FmsBatchInfo storedLocation in storedLocations)
-            {
-                storedLocationsDictionary
-                    .AddMany(
-                        storedLocation.Files
-                            .Select(
-                                x => x.DocumentArtifactId),
-                        storedLocation.Files
-                            .Select(
-                                x => storedLocation));
-            }
-
-            IEnumerable<int> successfullyPushedItemsDocumentArtifactIds =
-                importJob.GetPushedDocumentArtifactIdsAsync().GetAwaiter().GetResult();
-            storedLocations = storedLocationsDictionary
-                .Where(x => successfullyPushedItemsDocumentArtifactIds.Contains(x.Key))
-                .Select(x => x.Value);
-            return storedLocations;
         }
     }
 }

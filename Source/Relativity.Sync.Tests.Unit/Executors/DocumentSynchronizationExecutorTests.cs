@@ -65,7 +65,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<Func<IStopwatch>> _stopwatchFactoryFake;
         private Mock<IStopwatch> _stopwatchFake;
         private Mock<ISyncMetrics> _syncMetricsMock;
-        private Mock<IADLSUploader> _adlsUploaderMock;
+        private Mock<IAdlsUploader> _adlsUploaderMock;
         private Mock<IADFTransferEnabler> _adfTransferEnablerMock;
         private Mock<IInstanceSettings> _instanceSettingsMock;
         private Mock<IFileLocationManager> _fileLocationManager;
@@ -144,7 +144,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _configFake = new Mock<IDocumentSynchronizationConfiguration>();
             _jobProgressHandlerFactoryStub = new Mock<IJobProgressHandlerFactory>();
             _jobCleanupConfigurationMock = new Mock<IJobCleanupConfiguration>();
-            _adlsUploaderMock = new Mock<IADLSUploader>();
+            _adlsUploaderMock = new Mock<IAdlsUploader>();
             _automatedWorkflowTriggerConfigurationFake = new Mock<IAutomatedWorkflowTriggerConfiguration>();
             _jobProgressUpdaterFactoryStub = new Mock<IJobProgressUpdaterFactory>();
             _documentTaggerFake = new Mock<IDocumentTagger>();
@@ -273,7 +273,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
             await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            _syncMetricsMock.Verify(x => x.Send(It.Is<DocumentBatchEndMetric>(m =>
+            _syncMetricsMock.Verify(
+                x => x.Send(It.Is<DocumentBatchEndMetric>(m =>
                 m.AvgSizeLessThan1MB == 1 &&
                 m.AvgTimeLessThan1MB == 2 &&
                 m.AvgSizeLessBetween1and10MB == 1 &&
@@ -370,8 +371,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 && m.JobSizeGB_Metadata == _METADATA_SIZE / bytesInGigabyte
                 && m.JobSizeGB_Files == _FILES_SIZE / bytesInGigabyte
                 && m.UserID == _USER_ID
-                && m.SavedSearchID == _DATA_SOURCE_ID
-                )));
+                && m.SavedSearchID == _DATA_SOURCE_ID)));
         }
 
         [TestCase(ImportNativeFileCopyMode.CopyFiles)]
@@ -427,6 +427,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         public async Task Execute_ShouldCancelTaggingResultTest()
         {
             string expectedMessage = "Executing synchronization was interrupted due to the job being canceled.";
+
             // Arrange
             SetupBatchRepository(1);
             _configFake.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.None);
@@ -1098,7 +1099,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         }
 
         [Test]
-        public async Task Execute_ShouldRunSendingADLSLoadFileWhenShouldUseADFTransfer()
+        public async Task Execute_ShouldRunSendingAdlsBatchFileWhenADFTransferIsUsed()
         {
             // Arrange
             const int initialTransferredItemsCount = 3;
@@ -1118,11 +1119,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _adfTransferEnablerMock.Setup(x => x.IsAdfTransferEnabled).Returns(true);
 
             // Act
-            await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None)
-                .ConfigureAwait(false);
+            await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            _adlsUploaderMock.Verify(x => x.CreateBatchFile(It.IsAny<IEnumerable<FmsBatchInfo>>(), It.IsAny<CancellationToken>()), Times.Once);
+            _adlsUploaderMock.Verify(x => x.CreateBatchFile(It.IsAny<FmsBatchInfo>(), It.IsAny<CancellationToken>()), Times.Once);
             _adlsUploaderMock.Verify(x => x.UploadFileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 

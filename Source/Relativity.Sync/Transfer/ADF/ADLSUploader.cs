@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,7 +12,7 @@ using Relativity.Storage;
 
 namespace Relativity.Sync.Transfer.ADF
 {
-    internal class AdlsUploader : IADLSUploader
+    internal class AdlsUploader : IAdlsUploader
     {
         private readonly IHelperWrapper _helper;
         private readonly IAPILog _logger;
@@ -24,9 +23,9 @@ namespace Relativity.Sync.Transfer.ADF
             _logger = logger.ForContext<AdlsUploader>();
         }
 
-        public string CreateBatchFile(IEnumerable<FmsBatchInfo> storedLocations, CancellationToken cancellationToken)
+        public string CreateBatchFile(FmsBatchInfo storedLocation, CancellationToken cancellationToken)
         {
-            if (storedLocations == null || !storedLocations.Any() || cancellationToken.IsCancellationRequested)
+            if (cancellationToken.IsCancellationRequested)
             {
                 return string.Empty;
             }
@@ -34,26 +33,25 @@ namespace Relativity.Sync.Transfer.ADF
             string loadFileHeader = "Source,Destination";
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.AppendLine(loadFileHeader);
-            foreach (FmsBatchInfo location in storedLocations)
-            {
-                foreach (var file in location.Files)
-                {
-                    string sourcePath = Path.Combine(location.DestinationLocationShortPath, file.FileName);
-                    string destinationPath = Path.Combine(location.DestinationLocationShortPath, file.FileName);
-                    stringBuilder.AppendLine($"{sourcePath},{destinationPath}");
 
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        _logger.LogWarning("ADLS Batch file Generation cancelled");
-                        return string.Empty;
-                    }
+            foreach (var file in storedLocation.Files)
+            {
+                string sourcePath = Path.Combine(storedLocation.DestinationLocationShortPath, file.FileName);
+                string destinationPath = Path.Combine(storedLocation.DestinationLocationShortPath, file.FileName);
+                stringBuilder.AppendLine($"{sourcePath},{destinationPath}");
+
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    _logger.LogWarning("ADLS Batch file Generation cancelled");
+                    return string.Empty;
                 }
             }
 
-            string loadFilePath = Path.Combine(Path.GetTempPath(), "ADLSBatchFile_" + Guid.NewGuid());
-            File.WriteAllText(loadFilePath, stringBuilder.ToString());
 
-            return loadFilePath;
+            string batchFilePath = Path.Combine(Path.GetTempPath(), "ADLSBatchFile_" + Guid.NewGuid());
+            File.WriteAllText(batchFilePath, stringBuilder.ToString());
+
+            return batchFilePath;
         }
 
         public async Task<string> UploadFileAsync(string sourceFilePath, CancellationToken cancellationToken)
@@ -75,7 +73,7 @@ namespace Relativity.Sync.Transfer.ADF
             {
                 IStorageAccess<string> storageAccess = await _helper.GetStorageAccessorAsync(cancellationToken).ConfigureAwait(false);
 
-                string destinationDir = await GetADLSDestinationDirectory(cancellationToken);
+                string destinationDir = await GetAdlsDestinationDirectory(cancellationToken);
                 destinationFilePath = Path.Combine(destinationDir, $"BatchFile{Guid.NewGuid()}.csv");
                 _logger.LogInformation("ADLS Batch file Path - {destinationFilePath}", destinationFilePath);
 
@@ -112,7 +110,7 @@ namespace Relativity.Sync.Transfer.ADF
             return destinationFilePath;
         }
 
-        private async Task<string> GetADLSDestinationDirectory(CancellationToken cancellationToken)
+        private async Task<string> GetAdlsDestinationDirectory(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -128,7 +126,7 @@ namespace Relativity.Sync.Transfer.ADF
                     @"\\",
                     storageEndpoint.EndpointFqdn,
                     storageEndpoint.PrimaryStorageContainer,
-                    "Temp",
+                    "temp",
                     "RIP_BatchFiles");
             }
             else

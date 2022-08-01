@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 
 namespace Relativity.Sync.Transfer.ADF
 {
-    internal interface IADLSUploader
+    internal interface IAdlsUploader
     {
         Task<string> UploadFileAsync(string sourceFilePath, CancellationToken cancellationToken);
 
-        string CreateBatchFile(IEnumerable<FmsBatchInfo> storedLocations, CancellationToken cancellationToken);
+        string CreateBatchFile(FmsBatchInfo storedLocation, CancellationToken cancellationToken);
     }
 }

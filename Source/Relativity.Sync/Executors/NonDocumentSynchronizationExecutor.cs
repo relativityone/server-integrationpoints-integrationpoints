@@ -25,7 +25,7 @@ namespace Relativity.Sync.Executors
             IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
             Func<IStopwatch> stopwatchFactory,
             ISyncMetrics syncMetrics,
-            IADLSUploader uploader,
+            IAdlsUploader uploader,
             IUserContextConfiguration userContextConfiguration,
             IADFTransferEnabler adfTransferEnabler,
             IFileLocationManager fileLocationManager,

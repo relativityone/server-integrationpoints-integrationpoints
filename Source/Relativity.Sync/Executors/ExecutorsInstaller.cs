@@ -99,7 +99,7 @@ namespace Relativity.Sync.Executors
 			builder.RegisterType<ADLSMigrationStatus>().As<IADLSMigrationStatus>().SingleInstance();
 			builder.RegisterType<ADFTransferEnabler>().As<IADFTransferEnabler>().SingleInstance();
 			builder.RegisterType<HelperWrapper>().As<IHelperWrapper>().SingleInstance();
-			builder.RegisterType<AdlsUploader>().As<IADLSUploader>().SingleInstance();
+			builder.RegisterType<AdlsUploader>().As<IAdlsUploader>().SingleInstance();
 
             builder.RegisterType<BatchRepository>().As<IBatchRepository>();
             builder.RegisterType<ProgressRepository>().As<IProgressRepository>();

@@ -40,7 +40,7 @@ namespace Relativity.Sync.Executors
             Func<IStopwatch> stopwatchFactory,
             ISyncMetrics syncMetrics,
             IUserContextConfiguration userContextConfiguration,
-            IADLSUploader adlsUploader,
+            IAdlsUploader adlsUploader,
             IADFTransferEnabler adfTransferEnabler,
             IFileLocationManager fileLocationManager,
             IAPILog logger)
@@ -75,7 +75,7 @@ namespace Relativity.Sync.Executors
 
         protected IADFTransferEnabler AdfTransferEnabler { get; }
 
-        protected IADLSUploader AdlsUploader { get; }
+        protected IAdlsUploader AdlsUploader { get; }
 
         protected IFileLocationManager FileLocationManager { get; }
 
@@ -149,12 +149,7 @@ namespace Relativity.Sync.Executors
             return configuration.ExportRunId;
         }
 
-        protected virtual Task<string> CreateTaskToUploadBatchFileToAdlsAsync(CompositeCancellationToken token, IImportJob importJob)
-        {
-            return Task.FromResult(string.Empty);
-        }
-
-        protected virtual Task<string[]> UploadBatchFilesToAdlsAsync(List<Task<string>> tasks)
+        protected virtual Task<string[]> UploadBatchFilesToAdlsAsync(CompositeCancellationToken token, IImportJob importJob)
         {
             return Task.FromResult(Array.Empty<string>());
         }
@@ -261,8 +256,7 @@ namespace Relativity.Sync.Executors
                                     BatchProcessResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token).ConfigureAwait(false);
                                     importApiTimer.Stop();
 
-                                    Task<string> uploadBatchFileToAdlsTask = CreateTaskToUploadBatchFileToAdlsAsync(token, importJob);
-                                    uploadBatchFilesTasks.Add(uploadBatchFileToAdlsTask);
+                                    string[] batchFilesPaths = await UploadBatchFilesToAdlsAsync(token, importJob).ConfigureAwait(false);
 
                                     TaggingExecutionResult taggingResult = await TagObjectsAsync(importJob, configuration, token).ConfigureAwait(false);
                                     int documentsTaggedCount = taggingResult.TaggedDocumentsCount;
@@ -292,8 +286,6 @@ namespace Relativity.Sync.Executors
                             FileLocationManager.ClearStoredLocations();
                         }
                     }
-
-                    string[] batchFilesPaths = await UploadBatchFilesToAdlsAsync(uploadBatchFilesTasks).ConfigureAwait(false);
                     importAndTagResult = AggregateBatchesCompletedWithErrorsResults(batchesCompletedWithErrors);
                 }
             }
