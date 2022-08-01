@@ -10,6 +10,7 @@ using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using Moq;
 using NUnit.Framework;
+using Relativity.AntiMalware.SDK;
 using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
@@ -38,6 +39,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<ISourceWorkspaceDataReaderFactory> _dataReaderFactory;
         private Mock<IFieldMappings> _fieldMappingsMock;
         private Mock<IADFTransferEnabler> _adfTransferEnablerMock;
+        private Mock<IAntiMalwareEventHelper> _antiMalwareEventHelperMock;
         private SyncJobParameters _syncJobParameters;
         private const string _IMAGE_IDENTIFIER_DISPLAY_NAME = "ImageIdentifier";
         private const int _DEST_RDO_ARTIFACT_TYPE = 1234567;
@@ -77,8 +79,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _instanceSettings.Setup(x => x.GetWebApiPathAsync(default(string))).ReturnsAsync("http://fake.uri");
             _instanceSettings.Setup(x => x.GetShouldForceADFTransferAsync(default(bool))).ReturnsAsync(false);
             _syncJobParameters = FakeHelper.CreateSyncJobParameters();
-            _logger = new EmptyLogger();
             _adfTransferEnablerMock = new Mock<IADFTransferEnabler>();
+            _antiMalwareEventHelperMock = new Mock<IAntiMalwareEventHelper>();
+            _logger = new EmptyLogger();
 
             _batch = new Mock<IBatch>(MockBehavior.Loose);
 
@@ -549,7 +552,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         {
             var instance = new ImportJobFactory(importApiFactory.Object, _dataReaderFactory.Object,
                 _jobHistoryErrorRepository.Object, _instanceSettings.Object, _syncJobParameters,
-                _fieldMappingsMock.Object, _adfTransferEnablerMock.Object, _logger);
+                _fieldMappingsMock.Object, _adfTransferEnablerMock.Object, _antiMalwareEventHelperMock.Object, _logger);
             return instance;
         }
 

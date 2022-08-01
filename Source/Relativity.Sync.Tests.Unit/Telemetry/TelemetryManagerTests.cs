@@ -31,7 +31,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
             Assert.DoesNotThrow(() => _telemetryManager.AddMetricProvider(null));
 
             // ASSERT
-            _logger.Verify(x => x.LogDebug(It.IsAny<Exception>(), It.IsAny<string>()), Times.Once);
+            _logger.Verify(x => x.LogInformation(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         }
 
         [Test]
