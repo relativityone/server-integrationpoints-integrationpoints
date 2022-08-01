@@ -18,13 +18,13 @@ namespace Relativity.Sync.Executors
         private readonly IDocumentTagger _documentTagger;
 
         public DocumentSynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
-            IJobProgressHandlerFactory jobProgressHandlerFactory, 
+            IJobProgressHandlerFactory jobProgressHandlerFactory,
             IFieldManager fieldManager, IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer,
             IJobCleanupConfiguration jobCleanupConfiguration,
             IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
             Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics, IDocumentTagger documentTagger, IAPILog logger,
-            IUserContextConfiguration userContextConfiguration) : base(importJobFactory, BatchRecordType.Documents, batchRepository, jobProgressHandlerFactory, fieldManager,
-            fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics,userContextConfiguration, logger)
+            IUserContextConfiguration userContextConfiguration, IFileLocationManager fileLocationManager) : base(importJobFactory, BatchRecordType.Documents, batchRepository, jobProgressHandlerFactory, fieldManager,
+            fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics,userContextConfiguration, logger, fileLocationManager)
         {
             _documentTagger = documentTagger;
         }
@@ -111,7 +111,7 @@ namespace Relativity.Sync.Executors
             };
 
             _syncMetrics.Send(documentBatchEndMetric);
-            
+
             _jobStatisticsContainer.LongTextStatistics.Clear();
         }
 
