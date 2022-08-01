@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         private Mock<ISyncToggles> _syncTogglesMock;
         private Mock<IInstanceSettings> _instanceSettingsMock;
         private Mock<IAPILog> _loggermock;
-        
+
         [SetUp]
         public void SetUp()
         {
@@ -38,14 +38,14 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             _syncTogglesMock.Setup(x => x.IsEnabled<UseFMS>()).Returns(useFMS);
             _migrationStatusMock.Setup(x => x.IsTenantFullyMigratedAsync()).ReturnsAsync(tenantIsMigrated);
             _instanceSettingsMock.Setup(x => x.GetShouldForceADFTransferAsync(It.IsAny<bool>())).ReturnsAsync(forceADF);
-            
+
             // ACT
             bool shouldUseADFToCopyFiles = await _sut.ShouldUseADFTransferAsync().ConfigureAwait(false);
-            
+
             // ASSERT
             shouldUseADFToCopyFiles.Should().BeTrue();
         }
-        
+
         [TestCase(false, false, false)]
         [TestCase(true, false, false)]
         [TestCase(false, true, false)]
@@ -55,12 +55,25 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             _syncTogglesMock.Setup(x => x.IsEnabled<UseFMS>()).Returns(useFMS);
             _migrationStatusMock.Setup(x => x.IsTenantFullyMigratedAsync()).ReturnsAsync(tenantIsMigrated);
             _instanceSettingsMock.Setup(x => x.GetShouldForceADFTransferAsync(It.IsAny<bool>())).ReturnsAsync(forceADF);
-            
+
             // ACT
             bool shouldUseADFToCopyFiles = await _sut.ShouldUseADFTransferAsync().ConfigureAwait(false);
-            
+
             // ASSERT
             shouldUseADFToCopyFiles.Should().BeFalse();
+        }
+
+        [Test]
+        public async Task ADFEnabler_ShouldNotVerifyTenantsMigrationToADLS_WhenFMSTransferIsDisabled()
+        {
+            // ARRANGE
+            _syncTogglesMock.Setup(x => x.IsEnabled<UseFMS>()).Returns(false);
+
+            // ACT
+            bool shouldUseADFToCopyFiles = await _sut.ShouldUseADFTransferAsync().ConfigureAwait(false);
+
+            // ASSERT
+            _migrationStatusMock.Verify(x => x.IsTenantFullyMigratedAsync(), Times.Never());
         }
     }
 }

@@ -19,6 +19,7 @@ namespace Relativity.Sync.Transfer.ADF
             _instanceSettings = instanceSettings;
             _logger = logger;
         }
+
         public async Task<bool> ShouldUseADFTransferAsync()
         {
             _logger.LogInformation("Checking if should use ADF to transfer files");
@@ -26,7 +27,7 @@ namespace Relativity.Sync.Transfer.ADF
             bool isToggleFMSEnabled = _syncToggles.IsEnabled<UseFMS>();
             _logger.LogInformation("Toggle {toggleName} status: {toggleValue}", typeof(UseFMS).Name, isToggleFMSEnabled);
 
-            bool isTenantFullyMigrated = await _adlsMigrationStatus.IsTenantFullyMigratedAsync().ConfigureAwait(false);
+            bool isTenantFullyMigrated = isToggleFMSEnabled ? await _adlsMigrationStatus.IsTenantFullyMigratedAsync().ConfigureAwait(false) : false;
             _logger.LogInformation("Is tenant fully migrated to ADLS: {migrationStatus}", isTenantFullyMigrated);
 
             bool shouldForceADFTransferAsync = await _instanceSettings.GetShouldForceADFTransferAsync().ConfigureAwait(false);
