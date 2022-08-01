@@ -20,8 +20,8 @@ namespace Relativity.Sync.Executors
             IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
             Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics,
             IAPILog logger,
-            IUserContextConfiguration userContextConfiguration) : base(importJobFactory, BatchRecordType.NonDocuments, batchRepository, jobProgressHandlerFactory, fieldManager,
-            fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics, userContextConfiguration, logger)
+            IUserContextConfiguration userContextConfiguration, IFileLocationManager fileLocationManager) : base(importJobFactory, BatchRecordType.NonDocuments, batchRepository, jobProgressHandlerFactory, fieldManager,
+            fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics, userContextConfiguration, logger, fileLocationManager)
         {
         }
 
@@ -29,7 +29,7 @@ namespace Relativity.Sync.Executors
         {
             return _importJobFactory.CreateRdoImportJobAsync(configuration, batch, token);
         }
-        
+
         protected override void UpdateImportSettings(INonDocumentSynchronizationConfiguration configuration)
         {
             configuration.IdentityFieldId = GetDestinationIdentityFieldId();

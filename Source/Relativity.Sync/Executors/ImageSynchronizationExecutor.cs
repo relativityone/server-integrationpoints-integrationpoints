@@ -18,14 +18,14 @@ namespace Relativity.Sync.Executors
         private readonly IDocumentTagger _documentTagger;
 
         public ImageSynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
-            IJobProgressHandlerFactory jobProgressHandlerFactory, 
+            IJobProgressHandlerFactory jobProgressHandlerFactory,
             IFieldManager fieldManager, IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer,
             IJobCleanupConfiguration jobCleanupConfiguration,
             IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
             Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics, IDocumentTagger documentTagger, IAPILog logger,
-            IUserContextConfiguration userContextConfiguration)
+            IUserContextConfiguration userContextConfiguration, IFileLocationManager fileLocationManager)
             : base(importJobFactory, BatchRecordType.Images, batchRepository, jobProgressHandlerFactory, fieldManager,
-            fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics, userContextConfiguration, logger)
+            fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics, userContextConfiguration, logger, fileLocationManager)
         {
             _documentTagger = documentTagger;
         }
