@@ -73,8 +73,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             bool shouldUseADFToCopyFiles = await _sut.ShouldUseADFTransferAsync().ConfigureAwait(false);
 
             // ASSERT
-            var test = Times.Once();
-
             _migrationStatusMock.Verify(x => x.IsTenantFullyMigratedAsync(), Times.Never());
         }
     }
