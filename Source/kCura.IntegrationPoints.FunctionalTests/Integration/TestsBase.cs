@@ -6,6 +6,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.Installer;
 using kCura.IntegrationPoints.Common.Agent;
+using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Provider;
@@ -185,7 +186,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 		private void RegisterScheduleAgentBase()
 		{
 			Container.Register(Component.For<ITimeService>().UsingFactoryMethod(() => new FakeTimeService(Context)));
+			Container.Register(Component.For<IDateTime>().UsingFactoryMethod(() => new FakeDateTimeWrapper(Context)));
 		}
+
 		private void RegisterRipServices(int sourceWorkspaceId)
 		{
 			Container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(c => new FakeWorkspaceDbContext(SourceWorkspace.ArtifactId, FakeRelativityInstance ))

@@ -294,7 +294,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		private void ImportJob_OnProgress(long item)
 		{
-			LogOnProgressEvent();
 			_jobProgressInfo.ItemTransferred();
 			UpdateStatus();
 		}
@@ -370,11 +369,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		{
 			_logger.LogInformation("Batch completed. Total rows: {TotalRows}. Rows with error: {ErrorRows}. Time in milliseconds: {Time}.", totalRows, errorRows,
 				(end - start).Milliseconds);
-		}
-
-		private void LogOnProgressEvent()
-		{
-			_logger.LogInformation("ImportJob OnProgress event recevied.");
 		}
 
 		private void LogOnMessageEvent(Status status)

@@ -17,6 +17,8 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.Agent;
 using kCura.ScheduleQueue.AgentBase;
+using kCura.IntegrationPoints.Config;
+using Relativity.Telemetry.APM;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
@@ -31,11 +33,33 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
 		public List<long> ProcessedJobIds { get; } = new List<long>();
 
-		public FakeAgent(IWindsorContainer container,  AgentTest agent, IAgentHelper helper, IAgentService agentService = null, IJobService jobService = null,
-				IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
-				IQueueQueryManager queryManager = null, IKubernetesMode kubernetesMode = null, IAPILog logger = null, IDateTime dateTime = null, bool shouldRunOnce = true)
-			: base(agent.AgentGuid, agentService, jobService, scheduleRuleFactory,
-				queueJobValidator, queryManager, kubernetesMode, dateTime, logger)
+		public FakeAgent(
+			IWindsorContainer container,
+			AgentTest agent,
+			IAgentHelper helper,
+			IAgentService agentService = null,
+			IJobService jobService = null,
+			IScheduleRuleFactory scheduleRuleFactory = null,
+			IQueueJobValidator queueJobValidator = null,
+			IQueueQueryManager queryManager = null,
+			IKubernetesMode kubernetesMode = null,
+			IAPILog logger = null,
+			IDateTime dateTime = null,
+			IConfig config = null,
+			IAPM apm = null,
+			bool shouldRunOnce = true)
+			: base(
+				agent.AgentGuid,
+				agentService,
+				jobService,
+				scheduleRuleFactory,
+				queueJobValidator,
+				queryManager,
+				kubernetesMode,
+				dateTime,
+				logger,
+				config,
+				apm)
 		{
 			_shouldRunOnce = shouldRunOnce;
 			_container = container;
@@ -61,13 +85,17 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 		{
 			AgentTest agent = instance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
-			var fakeAgent = new FakeAgent(container, agent,
+			var fakeAgent = new FakeAgent(
+				container,
+				agent,
                 container.Resolve<IAgentHelper>(),
-                queryManager: container.Resolve<IQueueQueryManager>(),
+				queryManager: container.Resolve<IQueueQueryManager>(),
 				jobService: container.Resolve<IJobService>(),
 				shouldRunOnce: shouldRunOnce,
-                kubernetesMode: container.Resolve<IKubernetesMode>()
-                );
+				kubernetesMode: container.Resolve<IKubernetesMode>(),
+				dateTime: container.Resolve<IDateTime>(),
+				config: container.Resolve<IConfig>(),
+				apm: container.Resolve<IAPM>());
 
 			container
 				.Register(Component.For<IRemovableAgent>().UsingFactoryMethod(c => fakeAgent)

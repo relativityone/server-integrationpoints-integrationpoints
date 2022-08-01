@@ -19,6 +19,9 @@ namespace kCura.IntegrationPoints.Config
 		private const string _TRANSIENT_STATE_RIP_JOB_TIMEOUT = "TransientStateJobTimeout";
 		private const int _TRANSIENT_STATE_RIP_JOB_TIMEOUT_DEFAULT_IN_MINUTES = 2 * 60;
 
+		private const string _AGENT_MAXIMUM_LIFETIME = "AgentMaximumLifetime";
+		private const int _AGENT_MAXIMUM_LIFETIME_DEFAULT_IN_MINUTES = 3 * 60;
+
 		private const string _RELATIVITY_WEBAPI_TIMEOUT_SETTING_NAME = "RelativityWebApiTimeout";
 
 		private static readonly Lazy<Config> _instance = new Lazy<Config>(() => new Config());
@@ -81,6 +84,15 @@ namespace kCura.IntegrationPoints.Config
 			get
 			{
 				int value = GetValue(_TRANSIENT_STATE_RIP_JOB_TIMEOUT, _TRANSIENT_STATE_RIP_JOB_TIMEOUT_DEFAULT_IN_MINUTES);
+				return TimeSpan.FromMinutes(value);
+			}
+		}
+
+        public TimeSpan AgentMaximumLifetime
+		{
+			get
+			{
+				int value = GetValue(_AGENT_MAXIMUM_LIFETIME, _AGENT_MAXIMUM_LIFETIME_DEFAULT_IN_MINUTES);
 				return TimeSpan.FromMinutes(value);
 			}
 		}
