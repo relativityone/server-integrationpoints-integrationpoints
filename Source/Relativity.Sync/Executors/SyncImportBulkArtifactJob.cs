@@ -24,8 +24,17 @@ namespace Relativity.Sync.Executors
 
         private int _sourceWorkspaceErrorItemsCount = 0;
 
-        public SyncImportBulkArtifactJob(ImportBulkArtifactJob importBulkArtifactJob, ISourceWorkspaceDataReader sourceWorkspaceDataReader, IAntiMalwareEventHelper antiMalwareEventHelper, int workspaceId, IAPILog logger)
-            : this(sourceWorkspaceDataReader, antiMalwareEventHelper, workspaceId, logger)
+        public SyncImportBulkArtifactJob(
+            ImportBulkArtifactJob importBulkArtifactJob,
+            ISourceWorkspaceDataReader sourceWorkspaceDataReader,
+            IAntiMalwareEventHelper antiMalwareEventHelper,
+            int workspaceId,
+            IAPILog logger)
+            : this(
+                sourceWorkspaceDataReader,
+                antiMalwareEventHelper,
+                workspaceId,
+                logger)
         {
             importBulkArtifactJob.OnProgress += RaiseOnProgress;
             importBulkArtifactJob.OnError += HandleIapiDocumentItemLevelError;
@@ -36,8 +45,17 @@ namespace Relativity.Sync.Executors
             _importBulkArtifactJob = importBulkArtifactJob;
         }
 
-        public SyncImportBulkArtifactJob(ImageImportBulkArtifactJob imageImportBulkArtifactJob, ISourceWorkspaceDataReader sourceWorkspaceDataReader, IAntiMalwareEventHelper antiMalwareEventHelper, int workspaceId, IAPILog logger)
-            : this(sourceWorkspaceDataReader, antiMalwareEventHelper, workspaceId, logger)
+        public SyncImportBulkArtifactJob(
+            ImageImportBulkArtifactJob imageImportBulkArtifactJob,
+            ISourceWorkspaceDataReader sourceWorkspaceDataReader,
+            IAntiMalwareEventHelper antiMalwareEventHelper,
+            int workspaceId,
+            IAPILog logger)
+            : this(
+                sourceWorkspaceDataReader,
+                antiMalwareEventHelper,
+                workspaceId,
+                logger)
         {
             imageImportBulkArtifactJob.OnProgress += RaiseOnProgress;
             imageImportBulkArtifactJob.OnError += HandleIapiImageItemLevelError;
@@ -57,8 +75,6 @@ namespace Relativity.Sync.Executors
             sourceWorkspaceDataReader.OnItemReadError += HandleSourceWorkspaceDataItemReadError;
         }
 
-        public IItemStatusMonitor ItemStatusMonitor { get; }
-
         public event SyncJobEventHandler<ItemLevelError> OnItemLevelError;
 
         public event SyncJobEventHandler<ImportApiJobProgress> OnProgress;
@@ -66,6 +82,8 @@ namespace Relativity.Sync.Executors
         public event SyncJobEventHandler<ImportApiJobStatistics> OnComplete;
 
         public event SyncJobEventHandler<ImportApiJobStatistics> OnFatalException;
+
+        public IItemStatusMonitor ItemStatusMonitor { get; }
 
         public void Execute()
         {
@@ -80,15 +98,19 @@ namespace Relativity.Sync.Executors
         private void HandleIapiDocumentItemLevelError(IDictionary row)
         {
             RaiseOnItemLevelError(
-                CreateItemLevelError(row, _IAPI_DOCUMENT_IDENTIFIER_COLUMN, _IAPI_MESSAGE_COLUMN)
-            );
+                CreateItemLevelError(
+                    row,
+                    _IAPI_DOCUMENT_IDENTIFIER_COLUMN,
+                    _IAPI_MESSAGE_COLUMN));
         }
 
         private void HandleIapiImageItemLevelError(IDictionary row)
         {
             RaiseOnItemLevelError(
-                CreateItemLevelError(row, _IAPI_IMAGE_IDENTIFIER_COLUMN, _IAPI_MESSAGE_COLUMN)
-            );
+                CreateItemLevelError(
+                    row,
+                    _IAPI_IMAGE_IDENTIFIER_COLUMN,
+                    _IAPI_MESSAGE_COLUMN));
         }
 
         private void HandleMalware(IDictionary row)
@@ -98,8 +120,8 @@ namespace Relativity.Sync.Executors
             {
                 try
                 {
-                    string documentIdentifier = GetValueOrNull(row, _IAPI_DOCUMENT_IDENTIFIER_COLUMN) ?? 
-                                                GetValueOrNull(row, _IAPI_IMAGE_IDENTIFIER_COLUMN) ?? 
+                    string documentIdentifier = GetValueOrNull(row, _IAPI_DOCUMENT_IDENTIFIER_COLUMN) ??
+                                                GetValueOrNull(row, _IAPI_IMAGE_IDENTIFIER_COLUMN) ??
                                                 string.Empty;
 
                     _logger.LogWarning("Malware detected in document: {documentIdentifier}", documentIdentifier);
@@ -134,8 +156,7 @@ namespace Relativity.Sync.Executors
         {
             return new ItemLevelError(
                 GetValueOrNull(rawItemLevelError, identifierColumnName),
-                $"IAPI {GetValueOrNull(rawItemLevelError, messageColumnName)}"
-            );
+                $"IAPI {GetValueOrNull(rawItemLevelError, messageColumnName)}");
         }
 
         private void RaiseOnItemLevelError(ItemLevelError itemLevelError)
@@ -158,8 +179,7 @@ namespace Relativity.Sync.Executors
                 jobReport.ErrorRowCount + _sourceWorkspaceErrorItemsCount,
                 jobReport.MetadataBytes,
                 jobReport.FileBytes,
-                jobReport.FatalException
-            );
+                jobReport.FatalException);
 
             return statistics;
         }
