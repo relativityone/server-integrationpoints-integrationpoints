@@ -37,6 +37,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<Func<IStopwatch>> _stopwatchFactoryFake;
         private Mock<IStopwatch> _stopwatchFake;
         private Mock<ISyncMetrics> _syncMetricsMock;
+        private Mock<IFileLocationManager> _fileLocationManager;
 
         private Mock<Sync.Executors.IImportJob> _importJobFake;
         private Mock<ISyncImportBulkArtifactJob> _syncImportBulkArtifactJobFake;
@@ -55,7 +56,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private const string _NATIVE_FILE_LOCATION_DISPLAY_NAME = "NativeFileLocation";
         private const string _SUPPORTED_BY_VIEWER_DISPLAY_NAME = "SupportedByViewer";
         private const string _RELATIVITY_NATIVE_TYPE_DISPLAY_NAME = "RelativityNativeType";
-        
+
         private const int _SOURCE_WORKSPACE_ID = 68;
         private const int _USER_ID = 70;
 
@@ -71,7 +72,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
         private Mock<IUserContextConfiguration> _userContextConfigurationStub;
         private BatchStub[] _batchesStubs;
-        
+
         private const int _DATA_SOURCE_ID = 55;
         private const string _CORRELATION_ID = "CORRELATION_ID";
 
@@ -111,6 +112,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _stopwatchFake = new Mock<IStopwatch>();
             _stopwatchFactoryFake.Setup(x => x()).Returns(_stopwatchFake.Object);
             _syncMetricsMock = new Mock<ISyncMetrics>();
+            _fileLocationManager = new Mock<IFileLocationManager>();
             _jobStatisticsContainerFake.Setup(x => x.CalculateAverageLongTextStreamSizeAndTime(It.IsAny<Func<long, bool>>()))
                 .Returns(new Tuple<double, double>(0, 0));
             _jobStatisticsContainerFake.SetupGet(x => x.LongTextStatistics).Returns(new List<LongTextStreamStatistics>());
@@ -142,7 +144,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _importJobFake = new Mock<Sync.Executors.IImportJob>();
             _importJobFake.SetupGet(x => x.SyncImportBulkArtifactJob).Returns(_syncImportBulkArtifactJobFake.Object);
             _importJobFactoryFake.Setup(x => x.CreateNativeImportJobAsync(It.IsAny<IDocumentSynchronizationConfiguration>(), It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).ReturnsAsync(_importJobFake.Object);
-            
+
             _fieldManagerFake.Setup(x => x.GetNativeSpecialFields()).Returns(_specialFields);
             _userContextConfigurationStub = new Mock<IUserContextConfiguration>();
 
@@ -153,7 +155,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 _jobProgressHandlerFactoryStub.Object,
                 _fieldManagerFake.Object, _fakeFieldMappings.Object, _jobStatisticsContainerFake.Object,
                 _jobCleanupConfigurationMock.Object, _automatedWorkflowTriggerConfigurationFake.Object,
-                _stopwatchFactoryFake.Object, _syncMetricsMock.Object, _documentTaggerFake.Object, new EmptyLogger(), _userContextConfigurationStub.Object);
+                _stopwatchFactoryFake.Object, _syncMetricsMock.Object, _documentTaggerFake.Object, new EmptyLogger(), _userContextConfigurationStub.Object, _fileLocationManager.Object);
         }
 
 
@@ -162,7 +164,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [Test]
         public async Task Execute_ShouldSendBatchMetrics()
         {
-            // Arrange 
+            // Arrange
             const int totalRecordsTransferred = 111;
             const int totalRecordsRequested = 222;
             const int totalRecordsFailed = 333;
@@ -230,11 +232,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 m.BatchImportAPITime == iapiTime &&
                 m.TopLongTexts.Count == 10)), Times.Once);
         }
-        
+
         [Test]
         public async Task Execute_ShouldSendPerformanceMetrics()
         {
-            // Arrange 
+            // Arrange
             const int totalRecordsTransferred = 111;
             const int totalRecordsRequested = 222;
             const int totalRecordsFailed = 333;
@@ -256,7 +258,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             IEnumerable<int> batches = new[] { 1 };
             _batchRepositoryMock.Setup(x => x.GetAllBatchesIdsToExecuteAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>())).ReturnsAsync(batches);
-            
+
             BatchStub batchStub = new BatchStub
             {
                 ArtifactId = 1,
@@ -278,7 +280,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                     TotalBytesRead = x * 1024 * 1024,
                     TotalReadTime = TimeSpan.FromSeconds(x)
                 }).ToList());
-            
+
             _syncMetricsMock.Setup(x => x.Send(It.IsAny<IMetric>())).Callback((IMetric m) => m.CorrelationId = _CORRELATION_ID);
 
             _jobCleanupConfigurationMock.Setup(x => x.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ID);
@@ -315,7 +317,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [TestCase(ImportNativeFileCopyMode.SetFileLinks)]
         public async Task Execute_ShouldSetImportApiSettings_WhenImportingNatives(ImportNativeFileCopyMode importNativeCopyMode)
         {
-            // Arrange 
+            // Arrange
             SetupBatchRepository(1);
             _configFake.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.ReadFromField);
             _configFake.SetupGet(x => x.ImportNativeFileCopyMode).Returns(importNativeCopyMode);
@@ -339,7 +341,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [Test]
         public async Task Execute_ShouldSetImportApiSettings_WhenDoNotImportNatives()
         {
-            // Arrange 
+            // Arrange
             SetupBatchRepository(1);
             _configFake.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.ReadFromField);
             _configFake.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.DoNotImportNativeFiles);
@@ -364,7 +366,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         public async Task Execute_ShouldCancelTaggingResultTest()
         {
             string expectedMessage = "Executing synchronization was interrupted due to the job being canceled.";
-            // Arrange 
+            // Arrange
             SetupBatchRepository(1);
             _configFake.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.None);
 
@@ -459,7 +461,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [Test]
         public void Execute_ShouldThrowException_WhenDestinationIdentityFieldNotExistsInFieldMappings()
         {
-            // Arrange 
+            // Arrange
             SetupBatchRepository(1);
             _fakeFieldMappings.Setup(x => x.GetFieldMappings()).Returns(new List<FieldMap>());
 
@@ -473,7 +475,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [Test]
         public void Execute_ShouldThrowException_WhenSpecialFieldIsNotFound()
         {
-            // Arrange 
+            // Arrange
             SpecialFieldType missingSpecialField = SpecialFieldType.NativeFileSize;
             _configFake.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
             List<FieldInfoDto> specialFields = _specialFields.Where(x => x.SpecialFieldType != missingSpecialField).ToList();
@@ -547,7 +549,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [Test]
         public async Task Execute_ShouldCancelImportJob()
         {
-            // Arrange 
+            // Arrange
             const int numberOfBatches = 1;
             SetupBatchRepository(numberOfBatches);
 
@@ -565,7 +567,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [Test]
         public async Task Execute_ShouldDisposeImportJob()
         {
-            // Arrange 
+            // Arrange
             const int numberOfBatches = 1;
             SetupBatchRepository(numberOfBatches);
             _importJobFake.Setup(x => x.RunAsync(It.IsAny<CompositeCancellationToken>())).ReturnsAsync(CreateJobResult());
@@ -629,7 +631,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [Test]
         public async Task Execute_ShouldProperlyHandleImportSyncException()
         {
-            // Arrange 
+            // Arrange
             const int numberOfBatches = 1;
             SetupBatchRepository(numberOfBatches);
             _importJobFake.Setup(x => x.RunAsync(It.IsAny<CompositeCancellationToken>())).Throws<ImportFailedException>();
@@ -645,7 +647,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [Test]
         public async Task Execute_ShouldProperlyHandleAnyImportException()
         {
-            // Arrange 
+            // Arrange
             const int numberOfBatches = 1;
             SetupBatchRepository(numberOfBatches);
             _importJobFake.Setup(x => x.RunAsync(It.IsAny<CompositeCancellationToken>())).Throws<InvalidOperationException>();
@@ -662,7 +664,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [Test]
         public async Task Execute_ShouldReturnFailed()
         {
-            // Arrange 
+            // Arrange
             const int numberOfBatches = 1;
             SetupBatchRepository(numberOfBatches);
             _importJobFake.Setup(x => x.RunAsync(It.IsAny<CompositeCancellationToken>())).ReturnsAsync(CreateJobResult());
@@ -679,7 +681,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [Test]
         public async Task Execute_ShouldProperlyHandleImportAndTagDocumentExceptions()
         {
-            // Arrange 
+            // Arrange
             const int numberOfBatches = 2;
             SetupBatchRepository(numberOfBatches);
             _importJobFake.Setup(x => x.RunAsync(It.IsAny<CompositeCancellationToken>())).Throws<InvalidOperationException>();
@@ -696,7 +698,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [Test]
         public async Task Execute_ShouldSetExecutionResultForJobCleanupConfiguration_WhenCompletedSuccessfully()
         {
-            // Arrange 
+            // Arrange
             const int numberOfBatches = 1;
             SetupBatchRepository(numberOfBatches);
             _importJobFake.Setup(x => x.RunAsync(It.IsAny<CompositeCancellationToken>())).ReturnsAsync(CreateJobResult());
@@ -792,7 +794,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                     drainStopCancellationTokenSource.Cancel();
                     return Task.FromResult(CreatePausedResult());
                 }));
-                
+
 
             // Act
             ExecutionResult result = await _sut
@@ -819,11 +821,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             _importJobFake.Setup(x => x.RunAsync(It.IsAny<CompositeCancellationToken>()))
                 .ReturnsAsync( new ImportJobResult(new ExecutionResult(executionStatus, "", null), 0 ,0, 0));
-            
+
             // Act
             ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None)
                 .ConfigureAwait(false);
-            
+
             // Assert
             result.Status.Should().Be(executionStatus);
             _batchesStubs.First().Status.Should().Be(batchStatus);
@@ -848,14 +850,14 @@ namespace Relativity.Sync.Tests.Unit.Executors
             SetUpDocumentsTagRepository(ReturnTaggingCompletedResult());
 
             _itemStatusMonitorFake.SetupGet(x => x.FailedItemsCount).Returns(failedDocumentsCountInRun);
-            
+
             // Act
             await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None)
                 .ConfigureAwait(false);
 
             // Assert
             const int expectedFailedDocumentsCount = initialFailedDocumentsCount + failedDocumentsCountInRun;
-            
+
             batch.FailedDocumentsCount.Should().Be(expectedFailedDocumentsCount);
         }
 
@@ -1006,7 +1008,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             SetupImportJob(ExecutionResult.Paused(), metadataBytesTransferred, filesBytesTransferred, totalBytesTransferred);
 
             SetUpDocumentsTagRepository(ReturnTaggingCompletedResult());
-            
+
             _itemStatusMonitorFake.SetupGet(x => x.FailedItemsCount).Returns(failedCount);
             _itemStatusMonitorFake.SetupGet(x => x.ProcessedItemsCount).Returns(transferredCount);
 
@@ -1042,7 +1044,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 TotalDocumentsCount = itemsPerBatch,
                 StartingIndex = x * itemsPerBatch
             }).ToArray();
-            
+
 
             _batchRepositoryMock.Setup(x => x.GetAllBatchesIdsToExecuteAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>())).ReturnsAsync(_batchesStubs.Select(x => x.ArtifactId));
             _batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((int workspaceId, int batchId) => _batchesStubs.First(x => x.ArtifactId == batchId));
@@ -1085,7 +1087,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             return new ImportJobResult(jobResult, metadataBytesTransferred, filesBytesTransferred, totalBytesTransferred);
         }
-        
+
         private static ImportJobResult CreatePausedResult()
         {
             return new ImportJobResult(ExecutionResult.Paused(), 1, 0, 1);

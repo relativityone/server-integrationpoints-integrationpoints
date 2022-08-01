@@ -16,14 +16,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 123;
 
         private Mock<INativeFileRepository> _nativeFileRepositoryMock;
+        private Mock<IFileLocationManager> _fileLocationManager;
         private NativeInfoFieldsBuilder _sut;
 
         [SetUp]
         public void SetUp()
         {
             _nativeFileRepositoryMock = new Mock<INativeFileRepository>();
-
-            _sut = new NativeInfoFieldsBuilder(_nativeFileRepositoryMock.Object, null, new EmptyLogger());
+            _fileLocationManager = new Mock<IFileLocationManager>();
+            _sut = new NativeInfoFieldsBuilder(_nativeFileRepositoryMock.Object, null, new EmptyLogger(), _fileLocationManager.Object);
         }
 
         [Test]
