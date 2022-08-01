@@ -25,7 +25,6 @@ namespace Relativity.Sync.Executors
         private readonly IJobCleanupConfiguration _jobCleanupConfiguration;
         private readonly IAutomatedWorkflowTriggerConfiguration _automatedWorkflowTriggerConfiguration;
         private readonly Func<IStopwatch> _stopwatchFactory;
-        private readonly IFileLocationManager _fileLocationManager;
         private readonly IUserContextConfiguration _userContextConfiguration;
 
         protected SynchronizationExecutorBase(
@@ -60,7 +59,7 @@ namespace Relativity.Sync.Executors
             _userContextConfiguration = userContextConfiguration;
             AdlsUploader = adlsUploader;
             AdfTransferEnabler = adfTransferEnabler;
-            _fileLocationManager = fileLocationManager;
+            FileLocationManager = fileLocationManager;
             Logger = logger;
         }
 
@@ -77,6 +76,8 @@ namespace Relativity.Sync.Executors
         protected IADFTransferEnabler AdfTransferEnabler { get; }
 
         protected IADLSUploader AdlsUploader { get; }
+
+        protected IFileLocationManager FileLocationManager { get; }
 
         private static ExecutionResult AggregateFailuresOrCancelled(int batchId, params ExecutionResult[] executionResults)
         {
@@ -284,15 +285,15 @@ namespace Relativity.Sync.Executors
                                 }
                             }
 
-                            string[] batchFilesPaths = await UploadBatchFilesToAdlsAsync(uploadBatchFilesTasks).ConfigureAwait(false);
                             Logger.LogInformation("Batch ID: {batchId} processed successfully ({index} out of {totalBatches})", batch.ArtifactId, i + 1, batchesIds.Count);
                         }
                         finally
                         {
-                            _fileLocationManager.ClearStoredLocations();
+                            FileLocationManager.ClearStoredLocations();
                         }
                     }
 
+                    string[] batchFilesPaths = await UploadBatchFilesToAdlsAsync(uploadBatchFilesTasks).ConfigureAwait(false);
                     importAndTagResult = AggregateBatchesCompletedWithErrorsResults(batchesCompletedWithErrors);
                 }
             }

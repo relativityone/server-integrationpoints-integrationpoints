@@ -1,8 +1,8 @@
-﻿using Relativity.API;
-using Relativity.Sync.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Relativity.API;
+using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Transfer
 {
@@ -28,7 +28,6 @@ namespace Relativity.Sync.Transfer
                 var commonSourcePathGroups = pathStructures.GroupBy(x => x.Value.FullDirectoryPath);
                 foreach (var filePathComponents in commonSourcePathGroups)
                 {
-                    var filesWithinGroup = filePathComponents.AsEnumerable();
                     FmsBatchInfo batchInfo = new FmsBatchInfo(_configuration.DestinationWorkspaceArtifactId, filePathComponents.ToDictionary(x => x.Key, x => x.Value), filePathComponents.Key);
                     _fmsBatchesStorage.Add(batchInfo);
 

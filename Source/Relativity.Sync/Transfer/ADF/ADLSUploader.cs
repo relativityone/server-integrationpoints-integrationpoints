@@ -24,9 +24,9 @@ namespace Relativity.Sync.Transfer.ADF
             _logger = logger.ForContext<AdlsUploader>();
         }
 
-        public string CreateBatchFile(Dictionary<int, FilePathInfo> locationsDictionary, CancellationToken cancellationToken)
+        public string CreateBatchFile(IEnumerable<FmsBatchInfo> storedLocations, CancellationToken cancellationToken)
         {
-            if (locationsDictionary == null || locationsDictionary.Count == 0 || cancellationToken.IsCancellationRequested)
+            if (storedLocations == null || !storedLocations.Any() || cancellationToken.IsCancellationRequested)
             {
                 return string.Empty;
             }
@@ -34,14 +34,19 @@ namespace Relativity.Sync.Transfer.ADF
             string loadFileHeader = "Source,Destination";
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.AppendLine(loadFileHeader);
-            foreach (FilePathInfo location in locationsDictionary.Values)
+            foreach (FmsBatchInfo location in storedLocations)
             {
-                stringBuilder.AppendLine($"{location.SourceLocationShortToLoadFile},{location.DestinationLocationFullPathToLink}");
-
-                if (cancellationToken.IsCancellationRequested)
+                foreach (var file in location.Files)
                 {
-                    _logger.LogWarning("ADLS Batch file Generation cancelled");
-                    return string.Empty;
+                    string sourcePath = Path.Combine(location.DestinationLocationShortPath, file.FileName);
+                    string destinationPath = Path.Combine(location.DestinationLocationShortPath, file.FileName);
+                    stringBuilder.AppendLine($"{sourcePath},{destinationPath}");
+
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        _logger.LogWarning("ADLS Batch file Generation cancelled");
+                        return string.Empty;
+                    }
                 }
             }
 
@@ -123,7 +128,7 @@ namespace Relativity.Sync.Transfer.ADF
                     @"\\",
                     storageEndpoint.EndpointFqdn,
                     storageEndpoint.PrimaryStorageContainer,
-                    "Files",
+                    "Temp",
                     "RIP_BatchFiles");
             }
             else
@@ -170,7 +175,5 @@ namespace Relativity.Sync.Transfer.ADF
 
             return result.Result;
         }
-
-        
     }
 }

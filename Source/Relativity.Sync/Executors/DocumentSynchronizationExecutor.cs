@@ -156,42 +156,9 @@ namespace Relativity.Sync.Executors
         {
             if (AdfTransferEnabler.IsAdfTransferEnabled && _documentConfiguration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.CopyFiles)
             {
-                IEnumerable<int> successfullyPushedItemsDocumentArtifactIds = importJob.GetPushedDocumentArtifactIdsAsync().GetAwaiter().GetResult();
-
-                #region Debug
-
-                string destinationLocation = "https://T025.blob.core.windows.net/";
-                Dictionary<int, FilePathInfo> locationsDictionary = new Dictionary<int, FilePathInfo>();
-                foreach (int pushedItem in successfullyPushedItemsDocumentArtifactIds)
-                {
-                    Guid guid = Guid.NewGuid();
-                    string sourceLocation = "Files\\EDDS1020227\\RV_" + guid;
-                    locationsDictionary.Add(pushedItem, new FilePathInfo
-                    {
-                        ArtifactId = pushedItem,
-                        SourceLocationShortToLoadFile = sourceLocation,
-                        DestinationLocationFullPathToLink =
-                            destinationLocation + sourceLocation.Replace('\\', '/')
-                    });
-                }
-
-                Guid guid1 = Guid.NewGuid();
-                string sourceLocation1 = "Files\\EDDS1020227\\RV_" + guid1;
-                locationsDictionary.Add(1, new FilePathInfo
-                {
-                    ArtifactId = 1,
-                    SourceLocationShortToLoadFile = sourceLocation1,
-                    DestinationLocationFullPathToLink =
-                        destinationLocation + sourceLocation1.Replace('\\', '/')
-                });
-
-                #endregion
-
-                locationsDictionary = locationsDictionary.Where(x =>
-                        successfullyPushedItemsDocumentArtifactIds.Contains(x.Key))
-                    .ToDictionary(pair => pair.Key, pair => pair.Value);
-                string loadFilePath = AdlsUploader.CreateBatchFile(locationsDictionary, token.AnyReasonCancellationToken);
-                return AdlsUploader.UploadFileAsync(loadFilePath, token.AnyReasonCancellationToken);
+                IEnumerable<FmsBatchInfo> storedLocations = GetSuccessfullyPushedDocuments(importJob);
+                string batchFilePath = AdlsUploader.CreateBatchFile(storedLocations, token.AnyReasonCancellationToken);
+                return AdlsUploader.UploadFileAsync(batchFilePath, token.AnyReasonCancellationToken);
             }
 
             return null;
@@ -215,6 +182,30 @@ namespace Relativity.Sync.Executors
             }
 
             return Array.Empty<string>();
+        }
+
+        private IEnumerable<FmsBatchInfo> GetSuccessfullyPushedDocuments(IImportJob importJob)
+        {
+            IEnumerable<FmsBatchInfo> storedLocations = FileLocationManager.GetStoredLocations();
+            Dictionary<int, FmsBatchInfo> storedLocationsDictionary = new Dictionary<int, FmsBatchInfo>();
+            foreach (FmsBatchInfo storedLocation in storedLocations)
+            {
+                storedLocationsDictionary
+                    .AddMany(
+                        storedLocation.Files
+                            .Select(
+                                x => x.DocumentArtifactId),
+                        storedLocation.Files
+                            .Select(
+                                x => storedLocation));
+            }
+
+            IEnumerable<int> successfullyPushedItemsDocumentArtifactIds =
+                importJob.GetPushedDocumentArtifactIdsAsync().GetAwaiter().GetResult();
+            storedLocations = storedLocationsDictionary
+                .Where(x => successfullyPushedItemsDocumentArtifactIds.Contains(x.Key))
+                .Select(x => x.Value);
+            return storedLocations;
         }
     }
 }

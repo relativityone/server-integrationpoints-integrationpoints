@@ -1122,7 +1122,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 .ConfigureAwait(false);
 
             // Assert
-            _adlsUploaderMock.Verify(x => x.CreateBatchFile(It.IsAny<Dictionary<int, FilePathInfo>>(), It.IsAny<CancellationToken>()), Times.Once);
+            _adlsUploaderMock.Verify(x => x.CreateBatchFile(It.IsAny<IEnumerable<FmsBatchInfo>>(), It.IsAny<CancellationToken>()), Times.Once);
             _adlsUploaderMock.Verify(x => x.UploadFileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 

@@ -7,6 +7,7 @@ namespace Relativity.Sync.Transfer.ADF
     internal interface IADLSUploader
     {
         Task<string> UploadFileAsync(string sourceFilePath, CancellationToken cancellationToken);
-        string CreateBatchFile(Dictionary<int, FilePathInfo> locationsDictionary, CancellationToken cancellationToken);
+
+        string CreateBatchFile(IEnumerable<FmsBatchInfo> storedLocations, CancellationToken cancellationToken);
     }
 }
