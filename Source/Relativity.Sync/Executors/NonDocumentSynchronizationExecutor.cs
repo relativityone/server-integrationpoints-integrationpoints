@@ -25,10 +25,11 @@ namespace Relativity.Sync.Executors
             IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
             Func<IStopwatch> stopwatchFactory,
             ISyncMetrics syncMetrics,
-            IAPILog logger,
             IADLSUploader uploader,
             IUserContextConfiguration userContextConfiguration,
-            IADFTransferEnabler adfTransferEnabler) : base(
+            IADFTransferEnabler adfTransferEnabler,
+            IFileLocationManager fileLocationManager,
+            IAPILog logger) : base(
             importJobFactory,
             BatchRecordType.NonDocuments,
             batchRepository,
@@ -43,6 +44,7 @@ namespace Relativity.Sync.Executors
             userContextConfiguration,
             uploader,
             adfTransferEnabler,
+            fileLocationManager,
             logger)
         {
         }

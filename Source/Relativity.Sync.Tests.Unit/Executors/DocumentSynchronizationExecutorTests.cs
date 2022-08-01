@@ -68,6 +68,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IADLSUploader> _adlsUploaderMock;
         private Mock<IADFTransferEnabler> _adfTransferEnablerMock;
         private Mock<IInstanceSettings> _instanceSettingsMock;
+        private Mock<IFileLocationManager> _fileLocationManager;
 
         private Mock<Sync.Executors.IImportJob> _importJobFake;
         private Mock<ISyncImportBulkArtifactJob> _syncImportBulkArtifactJobFake;
@@ -80,6 +81,35 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private BatchStub[] _batchesStubs;
 
         public static IEnumerable<ExecutionResult> BrakingExecutionResults => new[] { ExecutionResult.Failure(new SyncException()), ExecutionResult.Canceled() };
+        private const long _METADATA_SIZE = 2L;
+        private const long _FILES_SIZE = 10L;
+        private const long _JOB_SIZE = 12L;
+
+        private const string _FOLDER_PATH_FROM_WORKSPACE_DISPLAY_NAME = "FolderPath_76B270CB-7CA9-4121-B9A1-BC0D655E5B2D";
+        private const string _NATIVE_FILE_FILENAME_DISPLAY_NAME = "NativeFileFilename";
+        private const string _NATIVE_FILE_SIZE_DISPLAY_NAME = "NativeFileSize";
+        private const string _NATIVE_FILE_LOCATION_DISPLAY_NAME = "NativeFileLocation";
+        private const string _SUPPORTED_BY_VIEWER_DISPLAY_NAME = "SupportedByViewer";
+        private const string _RELATIVITY_NATIVE_TYPE_DISPLAY_NAME = "RelativityNativeType";
+
+        private const int _SOURCE_WORKSPACE_ID = 68;
+        private const int _USER_ID = 70;
+
+        private readonly List<FieldInfoDto> _specialFields = new List<FieldInfoDto>
+        {
+            FieldInfoDto.FolderPathFieldFromDocumentField(_FOLDER_PATH_FROM_WORKSPACE_DISPLAY_NAME),
+            FieldInfoDto.NativeFileSizeField(),
+            FieldInfoDto.NativeFileLocationField(),
+            FieldInfoDto.NativeFileFilenameField(),
+            FieldInfoDto.RelativityNativeTypeField(),
+            FieldInfoDto.SupportedByViewerField()
+        };
+
+        private Mock<IUserContextConfiguration> _userContextConfigurationStub;
+        private BatchStub[] _batchesStubs;
+
+        private const int _DATA_SOURCE_ID = 55;
+        private const string _CORRELATION_ID = "CORRELATION_ID";
 
         public static (object[] BatchResults, object ExpectedResult)[] AggregationTestCaseSource { get; } =
         {
@@ -154,6 +184,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _stopwatchFake = new Mock<IStopwatch>();
             _stopwatchFactoryFake.Setup(x => x()).Returns(_stopwatchFake.Object);
             _syncMetricsMock = new Mock<ISyncMetrics>();
+            _fileLocationManager = new Mock<IFileLocationManager>();
             _jobStatisticsContainerFake.Setup(x => x.CalculateAverageLongTextStreamSizeAndTime(It.IsAny<Func<long, bool>>()))
                 .Returns(new Tuple<double, double>(0, 0));
             _jobStatisticsContainerFake.SetupGet(x => x.LongTextStatistics).Returns(new List<LongTextStreamStatistics>());
@@ -217,6 +248,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 _adlsUploaderMock.Object,
                 _adfTransferEnablerMock.Object,
                 _instanceSettingsMock.Object,
+                _fileLocationManager.Object,
                 new EmptyLogger());
         }
 
@@ -424,7 +456,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
         public async Task Execute_ShouldCancelTaggingResultTest()
         {
             string expectedMessage = "Executing synchronization was interrupted due to the job being canceled.";
-
             // Arrange
             SetupBatchRepository(1);
             _configFake.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.None);
@@ -1159,6 +1190,46 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _documentTaggerFake
                 .Setup(x => x.TagObjectsAsync(It.IsAny<Sync.Executors.IImportJob>(), It.IsAny<ISynchronizationConfiguration>(), It.IsAny<CompositeCancellationToken>()))
                 .ReturnsAsync(executionResult);
+        }
+
+        private static TaggingExecutionResult ReturnTaggingCompletedResult(int taggedCount = 0)
+        {
+            return new TaggingExecutionResult(ExecutionStatus.Completed, "Completed", new Exception())
+            {
+                TaggedDocumentsCount = taggedCount
+            };
+        }
+
+        private static TaggingExecutionResult ReturnTaggingFailedResult()
+        {
+            return new TaggingExecutionResult(ExecutionStatus.Failed, "Failed", new Exception());
+        }
+
+        private static TaggingExecutionResult CastToTaggingResult(ExecutionResult result)
+            => new TaggingExecutionResult(result.Status, result.Message, result.Exception);
+
+        private static ImportJobResult CreateJobResult(ExecutionResult result = null, int metadataBytesTransferred = 1, int filesBytesTransferred = 0, int totalBytesTransferred = 1)
+        {
+            ExecutionResult jobResult = result ?? ExecutionResult.Success();
+
+            return new ImportJobResult(jobResult, metadataBytesTransferred, filesBytesTransferred, totalBytesTransferred);
+        }
+
+        private static ImportJobResult CreatePausedResult()
+        {
+            return new ImportJobResult(ExecutionResult.Paused(), 1, 0, 1);
+        }
+
+        private static ImportJobResult GetJobResult(ExecutionStatus status, string message = null, Exception exception = null)
+        {
+            return new ImportJobResult(new ExecutionResult(status, message ?? exception?.Message, exception), 1, 0, 1);
+        }
+
+        private static Mock<IStopwatch> CreateFakeStopwatch(int elapsedMs)
+        {
+            Mock<IStopwatch> batchTimer = new Mock<IStopwatch>();
+            batchTimer.SetupGet(x => x.Elapsed).Returns(TimeSpan.FromMilliseconds(elapsedMs));
+            return batchTimer;
         }
     }
 }

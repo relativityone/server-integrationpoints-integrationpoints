@@ -30,10 +30,11 @@ namespace Relativity.Sync.Executors
             Func<IStopwatch> stopwatchFactory,
             ISyncMetrics syncMetrics,
             IDocumentTagger documentTagger,
-            IAPILog logger,
             IADLSUploader uploader,
             IUserContextConfiguration userContextConfiguration,
-            IADFTransferEnabler adfTransferEnabler)
+            IADFTransferEnabler adfTransferEnabler,
+            IFileLocationManager fileLocationManager,
+            IAPILog logger)
             : base(
                 importJobFactory,
                 BatchRecordType.Images,
@@ -49,6 +50,7 @@ namespace Relativity.Sync.Executors
                 userContextConfiguration,
                 uploader,
                 adfTransferEnabler,
+                fileLocationManager,
                 logger)
         {
             _documentTagger = documentTagger;

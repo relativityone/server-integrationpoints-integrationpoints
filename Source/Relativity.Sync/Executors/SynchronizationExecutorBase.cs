@@ -25,6 +25,7 @@ namespace Relativity.Sync.Executors
         private readonly IJobCleanupConfiguration _jobCleanupConfiguration;
         private readonly IAutomatedWorkflowTriggerConfiguration _automatedWorkflowTriggerConfiguration;
         private readonly Func<IStopwatch> _stopwatchFactory;
+        private readonly IFileLocationManager _fileLocationManager;
         private readonly IUserContextConfiguration _userContextConfiguration;
 
         protected SynchronizationExecutorBase(
@@ -42,6 +43,7 @@ namespace Relativity.Sync.Executors
             IUserContextConfiguration userContextConfiguration,
             IADLSUploader adlsUploader,
             IADFTransferEnabler adfTransferEnabler,
+            IFileLocationManager fileLocationManager,
             IAPILog logger)
         {
             _batchRepository = batchRepository;
@@ -56,9 +58,10 @@ namespace Relativity.Sync.Executors
             _stopwatchFactory = stopwatchFactory;
             SyncMetrics = syncMetrics;
             _userContextConfiguration = userContextConfiguration;
+            _fileLocationManager = fileLocationManager;
             AdlsUploader = adlsUploader;
-            Logger = logger;
             AdfTransferEnabler = adfTransferEnabler;
+            Logger = logger;
         }
 
         protected ISyncMetrics SyncMetrics { get; }
@@ -99,6 +102,141 @@ namespace Relativity.Sync.Executors
         {
             SyncMetrics.Send(GetBatchPerformanceMetric(batchId, savedSearchId, batchProcessResult, importApiTimer));
             ChildReportBatchMetrics(batchId, batchProcessResult, batchTime, importApiTimer);
+        }
+
+        private IMetric GetBatchPerformanceMetric(int batchId, int savedSearchId, BatchProcessResult batchProcessResult, TimeSpan importApiTimer)
+        {
+            var metric = new BatchEndPerformanceMetric
+            {
+                Elapsed = (long)importApiTimer.TotalSeconds,
+                JobID = batchId,
+                WorkspaceID = _jobCleanupConfiguration.SourceWorkspaceArtifactId,
+                RecordNumber = batchProcessResult.TotalRecordsTransferred,
+                JobSizeGB = UnitsConverter.BytesToGigabytes(batchProcessResult.BytesTransferred),
+                JobSizeGB_Metadata = UnitsConverter.BytesToGigabytes(batchProcessResult.MetadataBytesTransferred),
+                JobSizeGB_Files = UnitsConverter.BytesToGigabytes(batchProcessResult.FilesBytesTransferred),
+                UserID = _userContextConfiguration.ExecutingUserId,
+                SavedSearchID = savedSearchId,
+                RecordType = _recordType,
+                JobStatus = batchProcessResult.ExecutionResult.Status
+            };
+
+            return metric;
+        }
+
+        public async Task<ExecutionResult> ExecuteAsync(TConfiguration configuration, CompositeCancellationToken token)
+        {
+            _logger.LogInformation("Creating settings for ImportAPI.");
+            UpdateImportSettings(configuration);
+
+            ExecutionResult importAndTagResult = await ExecuteSynchronizationAsync(configuration, token).ConfigureAwait(false);
+
+            _jobCleanupConfiguration.SynchronizationExecutionResult = importAndTagResult;
+            _automatedWorkflowTriggerConfiguration.SynchronizationExecutionResult = importAndTagResult;
+            return importAndTagResult;
+        }
+
+        private async Task<ExecutionResult> ExecuteSynchronizationAsync(TConfiguration configuration, CompositeCancellationToken token)
+        {
+            ExecutionResult importAndTagResult;
+            try
+            {
+                _logger.LogInformation("Gathering batches to execute.");
+
+                List<int> batchesIds = (await _batchRepository
+                    .GetAllBatchesIdsToExecuteAsync(configuration.SourceWorkspaceArtifactId,
+                        configuration.SyncConfigurationArtifactId, GetExportRunId(configuration)).ConfigureAwait(false)).ToList();
+
+                Dictionary<int, ExecutionResult> batchesCompletedWithErrors = new Dictionary<int, ExecutionResult>();
+
+                List<IBatch> executedBatches = (await _batchRepository.GetAllSuccessfullyExecutedBatchesAsync(
+                    configuration.SourceWorkspaceArtifactId,
+                    configuration.SyncConfigurationArtifactId, GetExportRunId(configuration))
+                .ConfigureAwait(false)).ToList();
+
+                using (IJobProgressHandler progressHandler = _jobProgressHandlerFactory.CreateJobProgressHandler(executedBatches))
+                {
+                    _jobStatisticsContainer.RestoreJobStatistics(executedBatches);
+
+                    for (int i = 0; i < batchesIds.Count; i++)
+                    {
+                        try
+                        {
+                            int batchId = batchesIds[i];
+                            if (token.StopCancellationToken.IsCancellationRequested)
+                            {
+                                _logger.LogInformation("Import job has been canceled.");
+                                return ExecutionResult.Canceled();
+                            }
+
+                            await SetImportApiBatchSizeAsync(configuration).ConfigureAwait(false);
+
+                            _logger.LogInformation("Processing batch ID: {batchId} ({index} out of {totalBatches})", batchId, i + 1, batchesIds.Count);
+
+                            IStopwatch batchTimer = GetStartedTimer();
+                            IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
+
+                            using (IImportJob importJob = await CreateImportJobAsync(configuration, batch, token.AnyReasonCancellationToken).ConfigureAwait(false))
+                            {
+                                using (progressHandler.AttachToImportJob(importJob.SyncImportBulkArtifactJob, batch))
+                                {
+                                    IStopwatch importApiTimer = GetStartedTimer();
+                                    BatchProcessResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token).ConfigureAwait(false);
+                                    importApiTimer.Stop();
+
+                                    TaggingExecutionResult taggingResult = await TagObjectsAsync(importJob, configuration, token).ConfigureAwait(false);
+                                    int documentsTaggedCount = taggingResult.TaggedDocumentsCount;
+                                    await batch.SetTaggedDocumentsCountAsync(batch.TaggedDocumentsCount + documentsTaggedCount).ConfigureAwait(false);
+                                    batchProcessingResult.TotalRecordsTagged = documentsTaggedCount;
+
+                                    if (batchProcessingResult.ExecutionResult.Status == ExecutionStatus.CompletedWithErrors)
+                                    {
+                                        batchesCompletedWithErrors[batch.ArtifactId] = batchProcessingResult.ExecutionResult;
+                                    }
+
+                                    batchTimer.Stop();
+                                    ReportBatchMetrics(batchId, configuration.DataSourceArtifactId, batchProcessingResult, batchTimer.Elapsed, importApiTimer.Elapsed);
+
+                                    ExecutionResult failureResult = AggregateFailuresOrCancelled(batch.ArtifactId,
+                                        batchProcessingResult.ExecutionResult, taggingResult);
+                                    if (failureResult != null)
+                                    {
+                                        return failureResult;
+                                    }
+                                }
+                            }
+
+                            _logger.LogInformation("Batch ID: {batchId} processed successfully ({index} out of {totalBatches})", batch.ArtifactId, i + 1, batchesIds.Count);
+                        }
+                        finally
+                        {
+                            _fileLocationManager.ClearStoredLocations();
+                        }
+                    }
+
+                    importAndTagResult = AggregateBatchesCompletedWithErrorsResults(batchesCompletedWithErrors);
+                }
+            }
+            catch (ImportFailedException ex)
+            {
+                const string message = "Fatal exception occurred while executing import job.";
+                _logger.LogError(ex, message);
+                importAndTagResult = ExecutionResult.Failure(message, ex);
+            }
+            catch (OperationCanceledException oce)
+            {
+                const string taggingCanceledMessage = "Executing synchronization was interrupted due to the job being canceled.";
+                _logger.LogInformation(oce, taggingCanceledMessage);
+                importAndTagResult = new ExecutionResult(ExecutionStatus.Canceled, taggingCanceledMessage, oce);
+            }
+            catch (Exception ex)
+            {
+                const string message = "Unexpected exception occurred while executing synchronization.";
+                _logger.LogError(ex, message);
+                importAndTagResult = ExecutionResult.Failure(message, ex);
+            }
+
+            return importAndTagResult;
         }
 
         protected virtual Guid GetExportRunId(TConfiguration configuration)

@@ -895,7 +895,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 TotalDocumentsCount = itemsPerBatch,
                 StartingIndex = x * itemsPerBatch
             }).ToArray();
-            
+
 
             _batchRepositoryMock.Setup(x => x.GetAllBatchesIdsToExecuteAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>())).ReturnsAsync(_batchesStubs.Select(x => x.ArtifactId));
             _batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((int workspaceId, int batchId) => _batchesStubs.First(x => x.ArtifactId == batchId));
@@ -955,7 +955,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         {
             return new ImportJobResult(new ExecutionResult(status, message ?? exception?.Message, exception), 1, 0, 1);
         }
-        
+
         private static Mock<IStopwatch> CreateFakeStopwatch(int elapsedMs)
         {
             Mock<IStopwatch> batchTimer = new Mock<IStopwatch>();

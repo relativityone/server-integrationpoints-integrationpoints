@@ -22,7 +22,7 @@ namespace Relativity.Sync.Transfer
         private List<FieldInfoDto> _mappedFieldsCache;
         private IReadOnlyList<FieldInfoDto> _imageAllFields;
         private IReadOnlyList<FieldInfoDto> _nativeAllFields;
-        
+
         private readonly IFieldConfiguration _configuration;
         private readonly IObjectFieldTypeRepository _objectFieldTypeRepository;
         private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
@@ -104,7 +104,7 @@ namespace Relativity.Sync.Transfer
 
             return _imageAllFields;
         }
-        
+
         public async Task<IList<FieldInfoDto>> GetDocumentTypeFieldsAsync(CancellationToken token)
         {
             IReadOnlyList<FieldInfoDto> fields = await GetNativeAllFieldsAsync(token).ConfigureAwait(false);
@@ -163,7 +163,7 @@ namespace Relativity.Sync.Transfer
         public async Task<string[]> GetSameTypeFieldNamesAsync(int workspaceId)
         {
             string rdoTypeName = await GetRdoTypeNameAsync(_configuration.SourceWorkspaceArtifactId, _configuration.RdoArtifactTypeId);
-            
+
             using (var objectManager =
                 await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
@@ -206,7 +206,7 @@ namespace Relativity.Sync.Transfer
                     _logger.LogError("Rdo with ArtifactTypeId {artifactTypeId} does not exist", rdoArtifactTypeId);
                     throw new SyncException($"Rdo with ArtifactTypeId {rdoArtifactTypeId} does not exist");
                 }
-                
+
                 return result.Objects.Single().Name;
             }
         }
@@ -217,7 +217,6 @@ namespace Relativity.Sync.Transfer
             {
                 nativeSpecialFieldBuilders = nativeSpecialFieldBuilders.Where(x => !(x is INativeInfoFieldsBuilder));
             }
-
             return nativeSpecialFieldBuilders;
         }
 
