@@ -37,6 +37,7 @@ namespace Relativity.Sync.Executors
             IADLSUploader uploader,
             IADFTransferEnabler adfTransferEnabler,
             IInstanceSettings instanceSettings,
+            IFileLocationManager fileLocationManager,
             IAPILog logger) : base(
             importJobFactory,
             BatchRecordType.Documents,
@@ -52,6 +53,7 @@ namespace Relativity.Sync.Executors
             userContextConfiguration,
             uploader,
             adfTransferEnabler,
+            fileLocationManager,
             logger)
         {
             _documentTagger = documentTagger;
