@@ -14,8 +14,13 @@ namespace Relativity.Sync.Transfer.ADF
 {
     internal class AdlsUploader : IAdlsUploader
     {
+        private const int _MAX_NUMBER_OF_RETRIES = 3;
+        private const int _MAX_JITTER_MS = 100;
+
         private readonly IHelperWrapper _helper;
         private readonly IAPILog _logger;
+
+        private double _betweenRetriesBase = 2;
 
         public AdlsUploader(IHelperWrapper helperWrapper, IAPILog logger)
         {
@@ -60,8 +65,6 @@ namespace Relativity.Sync.Transfer.ADF
                 throw new ArgumentNullException(nameof(sourceFilePath), "Source file path is null or empty.");
             }
 
-            const int maxNumberOfRetries = 3;
-
             void OnRetryAction(Exception ex, TimeSpan waitTime, int retryCount, Context context)
             {
                 _logger.LogWarning(ex, "Encountered issue while loading file to ADLS, attempting to retry. Retry count: {retryCount} Wait time: {waitTimeMs} (ms)", retryCount, waitTime.TotalMilliseconds);
@@ -99,7 +102,6 @@ namespace Relativity.Sync.Transfer.ADF
             }
 
             destinationFilePath = await RetryPolicyRunAsync(
-                maxNumberOfRetries,
                 OnRetryAction,
                 ExecutionFunction,
                 OnExceptionFunction,
@@ -109,7 +111,7 @@ namespace Relativity.Sync.Transfer.ADF
             return destinationFilePath;
         }
 
-        public async Task DeleteFileOnAdlsAsync(string filePath, CancellationToken cancellationToken)
+        public async Task DeleteFileAsync(string filePath, CancellationToken cancellationToken)
         {
             IStorageAccess<string> storageAccess = await _helper.GetStorageAccessorAsync(cancellationToken).ConfigureAwait(false);
             DeleteFileOptions deleteFileOptions = new DeleteFileOptions
@@ -122,6 +124,11 @@ namespace Relativity.Sync.Transfer.ADF
             if (deleteResultObject == DeleteFileResult.FileNotFound)
             {
                 _logger.LogWarning("Unable to delete file, because it was not found - {filePath}", filePath);
+            }
+
+            if (deleteResultObject != DeleteFileResult.Success && cancellationToken.IsCancellationRequested)
+            {
+                _logger.LogWarning("Adls file deletion cancelled, file path - {filePath}", filePath);
             }
         }
 
@@ -154,19 +161,16 @@ namespace Relativity.Sync.Transfer.ADF
             return destinationDir;
         }
 
-        private async Task<T> RetryPolicyRunAsync<T>(int maxNumberOfRetries, Action<Exception, TimeSpan, int, Context> onRetryAction, Func<Task<T>> executionFunction, Func<Exception, T> onExceptionFunction, Func<Exception, T> onCancellationFunction, CancellationToken cancellationToken) where T : class
+        private async Task<T> RetryPolicyRunAsync<T>(Action<Exception, TimeSpan, int, Context> onRetryAction, Func<Task<T>> executionFunction, Func<Exception, T> onExceptionFunction, Func<Exception, T> onCancellationFunction, CancellationToken cancellationToken) where T : class
         {
-            const int maxJitterMs = 100;
-            const int betweenRetriesBase = 2;
-
             RetryPolicy policy = Policy
                 .Handle<Exception>()
                 .WaitAndRetryAsync(
-                    maxNumberOfRetries,
+                    _MAX_NUMBER_OF_RETRIES,
                     retryAttempt =>
                     {
-                        TimeSpan delay = TimeSpan.FromSeconds(Math.Pow(betweenRetriesBase, retryAttempt));
-                        TimeSpan jitter = TimeSpan.FromMilliseconds(new Random().Next(0, maxJitterMs));
+                        TimeSpan delay = TimeSpan.FromSeconds(Math.Pow(_betweenRetriesBase, retryAttempt));
+                        TimeSpan jitter = TimeSpan.FromMilliseconds(new Random().Next(0, _MAX_JITTER_MS));
                         return delay + jitter;
                     },
                     onRetryAction);

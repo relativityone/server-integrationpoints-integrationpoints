@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -52,6 +53,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
             _helperMock.Setup(x => x.GetStorageAccessorAsync(It.IsAny<CancellationToken>())).ReturnsAsync(_storageAccessMock.Object);
 
             _sut = new AdlsUploader(_helperMock.Object, _loggerFake.Object);
+
+            typeof(AdlsUploader)
+                .GetField("_betweenRetriesBase", BindingFlags.NonPublic | BindingFlags.Instance)
+                .SetValue(_sut, 0.1);
         }
 
         [Test]
@@ -144,6 +149,40 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
             destinationFilePath.Should().BeEmpty();
             _loggerFake.Verify(x => x.LogWarning("ADLS Batch file upload cancelled."), Times.Once);
             _loggerFake.Verify(x => x.LogWarning(It.IsAny<Exception>(), It.Is<string>(y => y.Contains("Encountered issue while loading file to ADLS, attempting to retry.")), It.IsAny<int>(), It.IsAny<double>()), Times.Never);
+        }
+
+        [Test]
+        public void ADLSUploader_DeleteFileAsync_ShouldLogWarningWhenDeletionFailed()
+        {
+            // Arrange
+            _storageAccessMock.Setup(x =>
+                    x.DeleteFileAsync(It.IsAny<string>(), It.IsAny<DeleteFileOptions>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(DeleteFileResult.FileNotFound);
+
+            // Act
+            Func<Task> function = async () => await _sut.DeleteFileAsync(_SOURCE_FILE_PATH, CancellationToken.None).ConfigureAwait(false);
+
+            // Assert
+            function.Should().NotThrow<Exception>();
+            _loggerFake.Verify(x => x.LogWarning("Unable to delete file, because it was not found - {filePath}", _SOURCE_FILE_PATH), Times.Once);
+        }
+
+        [Test]
+        public void ADLSUploader_DeleteFileAsync_ShouldLogWarningWhenCancellationRequested()
+        {
+            // Arrange
+            CancellationTokenSource token = new CancellationTokenSource();
+            _storageAccessMock.Setup(x =>
+                    x.DeleteFileAsync(It.IsAny<string>(), It.IsAny<DeleteFileOptions>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(DeleteFileResult.FileNotFound);
+
+            // Act
+            token.Cancel();
+            Func<Task> function = async () => await _sut.DeleteFileAsync(_SOURCE_FILE_PATH, token.Token).ConfigureAwait(false);
+
+            // Assert
+            function.Should().NotThrow<Exception>();
+            _loggerFake.Verify(x => x.LogWarning("Adls file deletion cancelled, file path - {filePath}", _SOURCE_FILE_PATH), Times.Once);
         }
     }
 }

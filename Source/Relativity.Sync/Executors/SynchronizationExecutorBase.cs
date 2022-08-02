@@ -440,7 +440,7 @@ namespace Relativity.Sync.Executors
                         Task.Run(
                             () =>
                         {
-                            AdlsUploader.DeleteFileOnAdlsAsync(filePath, token);
+                            AdlsUploader.DeleteFileAsync(filePath, token);
                         },
                             token));
                 }
