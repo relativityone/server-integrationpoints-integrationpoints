@@ -47,7 +47,6 @@ namespace Relativity.Sync.Transfer.ADF
                 }
             }
 
-
             string batchFilePath = Path.Combine(Path.GetTempPath(), "ADLSBatchFile_" + Guid.NewGuid());
             File.WriteAllText(batchFilePath, stringBuilder.ToString());
 
@@ -110,6 +109,22 @@ namespace Relativity.Sync.Transfer.ADF
             return destinationFilePath;
         }
 
+        public async Task DeleteFileOnAdlsAsync(string filePath, CancellationToken cancellationToken)
+        {
+            IStorageAccess<string> storageAccess = await _helper.GetStorageAccessorAsync(cancellationToken).ConfigureAwait(false);
+            DeleteFileOptions deleteFileOptions = new DeleteFileOptions
+            {
+                FileNotExistsBehavior = FileNotExistsBehavior.ReturnResultObjIfNotExists,
+                Force = true
+            };
+
+            DeleteFileResult deleteResultObject = await storageAccess.DeleteFileAsync(filePath, deleteFileOptions, cancellationToken).ConfigureAwait(false);
+            if (deleteResultObject == DeleteFileResult.FileNotFound)
+            {
+                _logger.LogWarning("Unable to delete file, because it was not found - {filePath}", filePath);
+            }
+        }
+
         private async Task<string> GetAdlsDestinationDirectory(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
@@ -126,7 +141,7 @@ namespace Relativity.Sync.Transfer.ADF
                     @"\\",
                     storageEndpoint.EndpointFqdn,
                     storageEndpoint.PrimaryStorageContainer,
-                    "temp",
+                    "Files",
                     "RIP_BatchFiles");
             }
             else

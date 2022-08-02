@@ -9,5 +9,7 @@ namespace Relativity.Sync.Transfer.ADF
         Task<string> UploadFileAsync(string sourceFilePath, CancellationToken cancellationToken);
 
         string CreateBatchFile(FmsBatchInfo storedLocation, CancellationToken cancellationToken);
+
+        Task DeleteFileOnAdlsAsync(string filePath, CancellationToken cancellationToken);
     }
 }

@@ -47,16 +47,16 @@ namespace Relativity.Sync.Executors
         {
             _batchRepository = batchRepository;
             _jobProgressHandlerFactory = jobProgressHandlerFactory;
-            ImportJobFactory = importJobFactory;
             _recordType = recordType;
-            FieldManager = fieldManager;
             _fieldMappings = fieldMappings;
-            JobStatisticsContainer = jobStatisticsContainer;
             _jobCleanupConfiguration = jobCleanupConfiguration;
             _automatedWorkflowTriggerConfiguration = automatedWorkflowTriggerConfiguration;
             _stopwatchFactory = stopwatchFactory;
-            SyncMetrics = syncMetrics;
             _userContextConfiguration = userContextConfiguration;
+            ImportJobFactory = importJobFactory;
+            JobStatisticsContainer = jobStatisticsContainer;
+            FieldManager = fieldManager;
+            SyncMetrics = syncMetrics;
             AdlsUploader = adlsUploader;
             AdfTransferEnabler = adfTransferEnabler;
             FileLocationManager = fileLocationManager;
@@ -224,14 +224,13 @@ namespace Relativity.Sync.Executors
                     GetExportRunId(configuration))
                 .ConfigureAwait(false)).ToList();
 
-                List<Task<string>> uploadBatchFilesTasks = new List<Task<string>>();
-
                 using (IJobProgressHandler progressHandler = _jobProgressHandlerFactory.CreateJobProgressHandler(executedBatches))
                 {
                     JobStatisticsContainer.RestoreJobStatistics(executedBatches);
 
                     for (int i = 0; i < batchesIds.Count; i++)
                     {
+                        string[] batchFilesPaths = Array.Empty<string>();
                         try
                         {
                             int batchId = batchesIds[i];
@@ -256,7 +255,7 @@ namespace Relativity.Sync.Executors
                                     BatchProcessResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token).ConfigureAwait(false);
                                     importApiTimer.Stop();
 
-                                    string[] batchFilesPaths = await UploadBatchFilesToAdlsAsync(token, importJob).ConfigureAwait(false);
+                                    batchFilesPaths = await UploadBatchFilesToAdlsAsync(token, importJob).ConfigureAwait(false);
 
                                     TaggingExecutionResult taggingResult = await TagObjectsAsync(importJob, configuration, token).ConfigureAwait(false);
                                     int documentsTaggedCount = taggingResult.TaggedDocumentsCount;
@@ -284,8 +283,10 @@ namespace Relativity.Sync.Executors
                         finally
                         {
                             FileLocationManager.ClearStoredLocations();
+                            await CleanUpAdlsBatchFilesAsync(batchFilesPaths, token.AnyReasonCancellationToken).ConfigureAwait(false);
                         }
                     }
+
                     importAndTagResult = AggregateBatchesCompletedWithErrorsResults(batchesCompletedWithErrors);
                 }
             }
@@ -426,6 +427,26 @@ namespace Relativity.Sync.Executors
             IStopwatch timer = _stopwatchFactory();
             timer.Start();
             return timer;
+        }
+
+        private async Task CleanUpAdlsBatchFilesAsync(string[] batchFiles, CancellationToken token)
+        {
+            if (batchFiles.Any())
+            {
+                List<Task> batchFilesDeleteTasks = new List<Task>();
+                foreach (string filePath in batchFiles)
+                {
+                    batchFilesDeleteTasks.Add(
+                        Task.Run(
+                            () =>
+                        {
+                            AdlsUploader.DeleteFileOnAdlsAsync(filePath, token);
+                        },
+                            token));
+                }
+
+                await Task.WhenAll(batchFilesDeleteTasks).ConfigureAwait(false);
+            }
         }
 
         protected class BatchProcessResult
