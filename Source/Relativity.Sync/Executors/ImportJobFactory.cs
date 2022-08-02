@@ -177,7 +177,9 @@ namespace Relativity.Sync.Executors
             }
 
             importJob.Settings.SelectedIdentifierFieldName = GetSelectedIdentifierFieldName(
-                importApi, configuration.DestinationWorkspaceArtifactId, configuration.RdoArtifactTypeId,
+                importApi,
+                configuration.DestinationWorkspaceArtifactId,
+                configuration.RdoArtifactTypeId,
                 configuration.IdentityFieldId);
 
             var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);

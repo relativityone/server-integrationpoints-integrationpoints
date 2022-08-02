@@ -158,29 +158,36 @@ namespace Relativity.Sync.Executors
             {
                 IList<FmsBatchInfo> storedLocations = await GetSuccessfullyPushedDocumentsAsync(importJob).ConfigureAwait(false);
                 List<Task<string>> batchesUploadTasks = new List<Task<string>>();
-                foreach (var storedLocation in storedLocations)
+                foreach (FmsBatchInfo storedLocation in storedLocations)
                 {
-                    batchesUploadTasks.Add(new Task<string>(() =>
+                    if (storedLocation.Files.Count > 0)
                     {
-                        string batchFilePath = AdlsUploader.CreateBatchFile(storedLocation, token.AnyReasonCancellationToken);
-                        return AdlsUploader.UploadFileAsync(batchFilePath, token.AnyReasonCancellationToken).GetAwaiter().GetResult();
-                    }));
+                        batchesUploadTasks.Add(new Task<string>(() =>
+                        {
+                            string batchFilePath = AdlsUploader.CreateBatchFile(storedLocation, token.AnyReasonCancellationToken);
+                            return AdlsUploader.UploadFileAsync(batchFilePath, token.AnyReasonCancellationToken).GetAwaiter().GetResult();
+                        }));
+                    }
+                    else
+                    {
+                        Logger.LogWarning("Successfully pushed documents not found for FMSBatchInfo.TraceId - {TraceId}", storedLocation.TraceId);
+                    }
                 }
 
-                string[] tasksResults = await UploadBatchFilesAsync(batchesUploadTasks).ConfigureAwait(false);
-                return tasksResults;
+                string[] batchFilesPaths = await UploadBatchFilesAsync(batchesUploadTasks).ConfigureAwait(false);
+                return batchFilesPaths;
             }
 
-            return null;
+            return Array.Empty<string>();
         }
 
         private async Task<IList<FmsBatchInfo>> GetSuccessfullyPushedDocumentsAsync(IImportJob importJob)
         {
             IList<FmsBatchInfo> storedLocations = FileLocationManager.GetStoredLocations();
             IEnumerable<int> successfullyPushedItemsDocumentArtifactIds = await importJob.GetPushedDocumentArtifactIdsAsync();
-            for (int i = 0; i < storedLocations.Count; i++)
+            foreach (FmsBatchInfo storedLocation in storedLocations)
             {
-                storedLocations[i].Files = storedLocations[i].Files
+                storedLocation.Files = storedLocation.Files
                     .Where(x =>
                         successfullyPushedItemsDocumentArtifactIds
                             .Contains(x.DocumentArtifactId))
@@ -196,9 +203,10 @@ namespace Relativity.Sync.Executors
             {
                 SemaphoreSlim maxThread = new SemaphoreSlim(_maxThreadsCount);
                 await maxThread.WaitAsync().ConfigureAwait(false);
-                Task<string[]> task = Task.WhenAll(tasks);
-                await task.ContinueWith(x => maxThread.Release()).ConfigureAwait(false);
-                string[] batchFilesPaths = await task.ConfigureAwait(false);
+                Parallel.ForEach(tasks, t => t.Start());
+                Task<string[]> allTasks = Task.WhenAll(tasks);
+                await allTasks.ContinueWith(x => maxThread.Release()).ConfigureAwait(false);
+                string[] batchFilesPaths = await allTasks.ConfigureAwait(false);
 
                 return batchFilesPaths;
             }

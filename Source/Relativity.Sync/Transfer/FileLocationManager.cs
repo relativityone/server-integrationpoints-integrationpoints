@@ -8,7 +8,7 @@ namespace Relativity.Sync.Transfer
 {
     internal sealed class FileLocationManager : IFileLocationManager
     {
-        private IList<FmsBatchInfo> _fmsBatchesStorage;
+        private readonly IList<FmsBatchInfo> _fmsBatchesStorage;
         private readonly IAPILog _logger;
         private readonly ISynchronizationConfiguration _configuration;
 
@@ -37,15 +37,6 @@ namespace Relativity.Sync.Transfer
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Could not translate and store paths for FMS batches");
-            }
-        }
-
-        private void SetNewPathForIapiTransfer(FmsBatchInfo batchInfo, IDictionary<int, INativeFile> nativeFiles)
-        {
-            foreach (FmsDocument document in batchInfo.Files)
-            {
-                INativeFile oldConfiguration = nativeFiles[document.DocumentArtifactId];
-                nativeFiles[document.DocumentArtifactId] = new NativeFile(oldConfiguration.DocumentArtifactId, document.LinkForIAPI, oldConfiguration.Filename, oldConfiguration.Size);
             }
         }
 
@@ -79,7 +70,17 @@ namespace Relativity.Sync.Transfer
                     _logger.LogError(ex, "Could not get correct structure of file path {filepath}", file.Value.Location);
                 }
             }
+
             return structures;
+        }
+
+        private void SetNewPathForIapiTransfer(FmsBatchInfo batchInfo, IDictionary<int, INativeFile> nativeFiles)
+        {
+            foreach (FmsDocument document in batchInfo.Files)
+            {
+                INativeFile oldConfiguration = nativeFiles[document.DocumentArtifactId];
+                nativeFiles[document.DocumentArtifactId] = new NativeFile(oldConfiguration.DocumentArtifactId, document.LinkForIAPI, oldConfiguration.Filename, oldConfiguration.Size);
+            }
         }
     }
 }

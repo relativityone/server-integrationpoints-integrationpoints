@@ -65,20 +65,20 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<Func<IStopwatch>> _stopwatchFactoryFake;
         private Mock<IStopwatch> _stopwatchFake;
         private Mock<ISyncMetrics> _syncMetricsMock;
-        private Mock<IAdlsUploader> _adlsUploaderMock;
+        private Mock<IAdlsUploader> _adlsUploaderFake;
         private Mock<IADFTransferEnabler> _adfTransferEnablerMock;
         private Mock<IInstanceSettings> _instanceSettingsMock;
-        private Mock<IFileLocationManager> _fileLocationManager;
+        private Mock<IFileLocationManager> _fileLocationManagerMock;
 
         private Mock<Sync.Executors.IImportJob> _importJobFake;
         private Mock<ISyncImportBulkArtifactJob> _syncImportBulkArtifactJobFake;
         private Mock<IItemStatusMonitor> _itemStatusMonitorFake;
         private Mock<IDocumentSynchronizationConfiguration> _configFake;
+        private Mock<IUserContextConfiguration> _userContextConfigurationStub;
+
+        private BatchStub[] _batchesStubs;
 
         private DocumentSynchronizationExecutor _sut;
-
-        private Mock<IUserContextConfiguration> _userContextConfigurationStub;
-        private BatchStub[] _batchesStubs;
 
         public static IEnumerable<ExecutionResult> BrakingExecutionResults => new[] { ExecutionResult.Failure(new SyncException()), ExecutionResult.Canceled() };
 
@@ -144,7 +144,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _configFake = new Mock<IDocumentSynchronizationConfiguration>();
             _jobProgressHandlerFactoryStub = new Mock<IJobProgressHandlerFactory>();
             _jobCleanupConfigurationMock = new Mock<IJobCleanupConfiguration>();
-            _adlsUploaderMock = new Mock<IAdlsUploader>();
+            _adlsUploaderFake = new Mock<IAdlsUploader>();
             _automatedWorkflowTriggerConfigurationFake = new Mock<IAutomatedWorkflowTriggerConfiguration>();
             _jobProgressUpdaterFactoryStub = new Mock<IJobProgressUpdaterFactory>();
             _documentTaggerFake = new Mock<IDocumentTagger>();
@@ -155,7 +155,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _stopwatchFake = new Mock<IStopwatch>();
             _stopwatchFactoryFake.Setup(x => x()).Returns(_stopwatchFake.Object);
             _syncMetricsMock = new Mock<ISyncMetrics>();
-            _fileLocationManager = new Mock<IFileLocationManager>();
+
             _jobStatisticsContainerFake.Setup(x => x.CalculateAverageLongTextStreamSizeAndTime(It.IsAny<Func<long, bool>>()))
                 .Returns(new Tuple<double, double>(0, 0));
             _jobStatisticsContainerFake.SetupGet(x => x.LongTextStatistics).Returns(new List<LongTextStreamStatistics>());
@@ -202,6 +202,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
             Mock<IDocumentSynchronizationConfiguration> documentConfiguration = new Mock<IDocumentSynchronizationConfiguration>();
             documentConfiguration.Setup(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
 
+            _fileLocationManagerMock = new Mock<IFileLocationManager>();
+
             _sut = new DocumentSynchronizationExecutor(
                 _importJobFactoryFake.Object,
                 _batchRepositoryMock.Object,
@@ -216,10 +218,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 _documentTaggerFake.Object,
                 _userContextConfigurationStub.Object,
                 documentConfiguration.Object,
-                _adlsUploaderMock.Object,
+                _adlsUploaderFake.Object,
                 _adfTransferEnablerMock.Object,
                 _instanceSettingsMock.Object,
-                _fileLocationManager.Object,
+                _fileLocationManagerMock.Object,
                 new EmptyLogger());
         }
 
@@ -1099,31 +1101,45 @@ namespace Relativity.Sync.Tests.Unit.Executors
         }
 
         [Test]
-        public async Task Execute_ShouldRunSendingAdlsBatchFileWhenADFTransferIsUsed()
+        public async Task Execute_ShouldRunSendingAdlsBatchFileWhenAdfTransferIsUsed()
         {
             // Arrange
-            const int initialTransferredItemsCount = 3;
-            const int transferredItemsCountInRun = 2;
-
-            IBatch batch = new BatchStub
-            {
-                TransferredItemsCount = initialTransferredItemsCount
-            };
-
-            SetupBatch(batch);
-            SetupImportJob();
-            SetUpDocumentsTagRepository(ReturnTaggingCompletedResult());
-
-            _jobProgressHandlerFake.Setup(x => x.GetBatchItemsProcessedCount(It.IsAny<int>()))
-                .Returns(transferredItemsCountInRun);
-            _adfTransferEnablerMock.Setup(x => x.IsAdfTransferEnabled).Returns(true);
+            List<FmsBatchInfo> storageLocations = PrepareAdlsTests();
 
             // Act
             await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            _adlsUploaderMock.Verify(x => x.CreateBatchFile(It.IsAny<FmsBatchInfo>(), It.IsAny<CancellationToken>()), Times.Once);
-            _adlsUploaderMock.Verify(x => x.UploadFileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+            _adlsUploaderFake.Verify(x => x.CreateBatchFile(It.IsAny<FmsBatchInfo>(), It.IsAny<CancellationToken>()), Times.Exactly(storageLocations.Count));
+            _adlsUploaderFake.Verify(x => x.UploadFileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(storageLocations.Count));
+        }
+
+        [Test]
+        public async Task Execute_ShouldNotSendAdlsBatchFilesWhenAdfTransferIsNotUsed()
+        {
+            // Arrange
+            PrepareAdlsTests(adfTransferEnabled: false);
+
+            // Act
+            await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+
+            // Assert
+            _adlsUploaderFake.Verify(x => x.CreateBatchFile(It.IsAny<FmsBatchInfo>(), It.IsAny<CancellationToken>()), Times.Never);
+            _adlsUploaderFake.Verify(x => x.UploadFileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Test]
+        public async Task Execute_ShouldNotAddFailedDocumentsToAdlsBatchFile()
+        {
+            // Arrange
+            PrepareAdlsTests(10);
+
+            // Act
+            await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+
+            // Assert
+            _adlsUploaderFake.Verify(x => x.CreateBatchFile(It.IsAny<FmsBatchInfo>(), It.IsAny<CancellationToken>()), Times.Once);
+            _adlsUploaderFake.Verify(x => x.UploadFileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         private void SetupBatch(IBatch batch)
@@ -1161,6 +1177,67 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _documentTaggerFake
                 .Setup(x => x.TagObjectsAsync(It.IsAny<Sync.Executors.IImportJob>(), It.IsAny<ISynchronizationConfiguration>(), It.IsAny<CompositeCancellationToken>()))
                 .ReturnsAsync(executionResult);
+        }
+
+        private List<FmsBatchInfo> PrepareAdlsTests(int successfullyPushedDocuments = 0, bool adfTransferEnabled = true)
+        {
+            const string uploadedFile = "uploadedFile";
+            IBatch batch = new BatchStub();
+
+            SetupBatch(batch);
+            SetupImportJob();
+            List<FmsBatchInfo> storageLocations = CreateStoredLocations();
+
+            _adfTransferEnablerMock.Setup(x => x.IsAdfTransferEnabled).Returns(adfTransferEnabled);
+            _adlsUploaderFake
+                .Setup(
+                    x =>
+                        x.UploadFileAsync(
+                            It.IsAny<string>(),
+                            It.IsAny<CancellationToken>()))
+                .ReturnsAsync(uploadedFile);
+            IEnumerable<int> sendDocumentArtifactIds = storageLocations.SelectMany(x => x.Files.Select(y => y.DocumentArtifactId));
+
+            if (successfullyPushedDocuments > 0)
+            {
+                _importJobFake.Setup(x => x.GetPushedDocumentArtifactIdsAsync()).ReturnsAsync(sendDocumentArtifactIds.Take(successfullyPushedDocuments));
+            }
+            else
+            {
+                _importJobFake.Setup(x => x.GetPushedDocumentArtifactIdsAsync()).ReturnsAsync(sendDocumentArtifactIds);
+            }
+
+            return storageLocations;
+        }
+
+        private List<FmsBatchInfo> CreateStoredLocations()
+        {
+            List<FmsBatchInfo> storageLocations = new List<FmsBatchInfo>();
+
+            for (int i = 0; i < 10; i++)
+            {
+                List<FmsDocument> files = new List<FmsDocument>();
+                for (int j = 0; j < 10; j++)
+                {
+                    Guid guid = Guid.NewGuid();
+                    files.Add(new FmsDocument(int.Parse($"{i}{j}"), guid.ToString(), $@"\\{guid}"));
+                }
+
+                storageLocations.Add(
+                    new FmsBatchInfo(
+                        i,
+                        new Dictionary<int, NativeFilePathStructure>
+                        {
+                            { i, new NativeFilePathStructure($@"/path/1/2/3/4/{i}/") }
+                        },
+                        $@"//path_{i}")
+                    {
+                        Files = files,
+                    });
+            }
+
+            _fileLocationManagerMock.Setup(x => x.GetStoredLocations()).Returns(storageLocations);
+            return storageLocations;
         }
     }
 }
