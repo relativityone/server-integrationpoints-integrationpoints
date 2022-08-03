@@ -706,7 +706,7 @@
 	{
 		"Jira": "REL-623912",
 		"Exception": "*System.AggregateException*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*System.NullReferenceException: Object reference not set to an instance of an object*kCura.WinEDDS.ImportExtension.DataReaderImageImporter.get_TotalRecords*"
-	}	,
+	},
 	{
 		"Jira": "REL-609259",
 		"Exception": "*Relativity.Sync.SyncException: Maximum number of retries * has been reached for Mass creation of item level errors*"
@@ -786,5 +786,38 @@
 	{
 		"Jira": "REL-691264",
 		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*'CreateFoldersStage'*'SQL Statement Failed'*Violation of PRIMARY KEY constraint*"
+	},
+	{
+		"Jira": "REL-717738",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*System.IO.IOException: Illegal operation attempted on a registry key that has been marked for deletion*"
+	},
+	{
+		"Jira": "REL-718334",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*System.Web.Services.Protocols.SoapException: An unexpected server error occurred: Bad Gateway*"
+	},
+	{
+		"Jira": "REL-718336",
+		"Exception": "*Relativity.OAuth2Client.Exceptions.IdentityProviderConnectionException: Failed to retrieve access token: A task was canceled*System.Threading.Tasks.TaskCanceledException: A task was canceled*"
+	},
+	{
+		"Jira": "REL-718348",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException: Error: Error occured while executing 'ImportNativesStage'. Category: 'Unknown', message: 'The given key was not present in the dictionary.'*"
+	},
+	{
+		"Jira": "REL-718375",
+		"Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API*System.IO.IOException: Unable to read data from the transport connection: The connection was closed.*"
+	},
+	{
+		"Jira": "REL-718377",
+		"Exception": "*Relativity.Sync.Transfer.SourceDataReaderException: Failed to get next batch from exporter*Relativity.Services.Exceptions.ServiceException: SQL Statement Failed*Relativity.Services.Proxy.RPC.KeplerRPCClient.<ExecuteHttpCall>*"
+	},
+	{
+		"Jira": "REL-718385",
+		"Exception": "*kCura.Data.RowDataGateway.ExecuteSQLStatementFailedException: SQL Statement Failed*kCura.Data.RowDataGateway.TemporarilyUnavailableException: A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections*"
+	},
+	{
+		"Jira": "REL-718390",
+		"Exception": "*Relativity.Sync.KeplerFactory.SyncMaxKeplerRetriesException: Maximum number of retries (4) has been performed for IObjectManager Kepler Service*System.Net.Http.HttpRequestException: An error occurred while sending the request*System.Net.WebException: The remote name could not be resolved*"
 	}
+
 ]
