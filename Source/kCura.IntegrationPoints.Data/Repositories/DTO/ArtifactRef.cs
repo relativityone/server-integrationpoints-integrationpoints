@@ -4,14 +4,14 @@ using Relativity.API.Foundation;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations.DTO
 {
-	internal class ArtifactRef : IArtifactRef
-	{
-		public int ArtifactID { get; set; }
-		public IList<Guid> Guids { get; set; }
+    internal class ArtifactRef : IArtifactRef
+    {
+        public int ArtifactID { get; set; }
+        public IList<Guid> Guids { get; set; }
 
-		public ArtifactRef()
-		{
-			Guids = new List<Guid>();
-		}
-	}
+        public ArtifactRef()
+        {
+            Guids = new List<Guid>();
+        }
+    }
 }

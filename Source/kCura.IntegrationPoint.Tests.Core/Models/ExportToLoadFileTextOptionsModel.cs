@@ -3,21 +3,21 @@ using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 
 namespace kCura.IntegrationPoint.Tests.Core.Models
 {
-	using System.ComponentModel;
+    using System.ComponentModel;
 
-	public class ExportToLoadFileTextOptionsModel
-	{
-		[DefaultValue("Unicode")]
-		public string TextFileEncoding { get; set; }
+    public class ExportToLoadFileTextOptionsModel
+    {
+        [DefaultValue("Unicode")]
+        public string TextFileEncoding { get; set; }
 
-		public string TextPrecedence { get; set; }
+        public string TextPrecedence { get; set; }
 
-		[DefaultValue("TEXT")]
-		public string TextSubdirectoryPrefix { get; set; }
+        [DefaultValue("TEXT")]
+        public string TextSubdirectoryPrefix { get; set; }
 
-		public ExportToLoadFileTextOptionsModel()
-		{
-			this.InitializePropertyDefaultValues();
-		}
-	}
+        public ExportToLoadFileTextOptionsModel()
+        {
+            this.InitializePropertyDefaultValues();
+        }
+    }
 }

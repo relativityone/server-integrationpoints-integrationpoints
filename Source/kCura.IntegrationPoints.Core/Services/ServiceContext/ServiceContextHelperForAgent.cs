@@ -3,31 +3,31 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 {
-	public class ServiceContextHelperForAgent : IServiceContextHelper
-	{
-		private readonly IAgentHelper _helper;
+    public class ServiceContextHelperForAgent : IServiceContextHelper
+    {
+        private readonly IAgentHelper _helper;
 
-		public ServiceContextHelperForAgent(IAgentHelper helper, int workspaceId)
-		{
-			_helper = helper;
-			WorkspaceID = workspaceId;
-		}
-		
-		public int WorkspaceID { get; }
+        public ServiceContextHelperForAgent(IAgentHelper helper, int workspaceId)
+        {
+            _helper = helper;
+            WorkspaceID = workspaceId;
+        }
+        
+        public int WorkspaceID { get; }
 
-		public int GetEddsUserID() => _helper.GetAuthenticationManager().UserInfo.ArtifactID;
+        public int GetEddsUserID() => _helper.GetAuthenticationManager().UserInfo.ArtifactID;
 
-		public int GetWorkspaceUserID() => _helper.GetAuthenticationManager().UserInfo.WorkspaceUserArtifactID;
+        public int GetWorkspaceUserID() => _helper.GetAuthenticationManager().UserInfo.WorkspaceUserArtifactID;
 
-		public IDBContext GetDBContext() => _helper.GetDBContext(this.WorkspaceID);
+        public IDBContext GetDBContext() => _helper.GetDBContext(this.WorkspaceID);
 
-		public IRelativityObjectManagerService GetRelativityObjectManagerService()
-		{
-			return WorkspaceID > 0
-				? ServiceContextFactory.CreateRelativityObjectManagerService(_helper, WorkspaceID)
-				: null;
-		}
+        public IRelativityObjectManagerService GetRelativityObjectManagerService()
+        {
+            return WorkspaceID > 0
+                ? ServiceContextFactory.CreateRelativityObjectManagerService(_helper, WorkspaceID)
+                : null;
+        }
 
-		public IDBContext GetDBContext(int workspaceID = -1) => _helper.GetDBContext(workspaceID);
-	}
+        public IDBContext GetDBContext(int workspaceID = -1) => _helper.GetDBContext(workspaceID);
+    }
 }

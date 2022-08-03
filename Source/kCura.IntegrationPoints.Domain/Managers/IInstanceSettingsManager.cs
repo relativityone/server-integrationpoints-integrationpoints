@@ -2,18 +2,18 @@
 
 namespace kCura.IntegrationPoints.Domain.Managers
 {
-	public interface IInstanceSettingsManager
-	{
-		string RetriveCurrentInstanceFriendlyName();
+    public interface IInstanceSettingsManager
+    {
+        string RetriveCurrentInstanceFriendlyName();
 
-		bool RetrieveAllowNoSnapshotImport();
+        bool RetrieveAllowNoSnapshotImport();
 
-		bool RetrieveRestrictReferentialFileLinksOnImport();
+        bool RetrieveRestrictReferentialFileLinksOnImport();
 
-		string RetrieveBlockedIPs();
+        string RetrieveBlockedIPs();
 
-		TimeSpan GetDrainStopTimeout();
+        TimeSpan GetDrainStopTimeout();
 
-		string GetWorkloadSizeSettings();
-	}
+        string GetWorkloadSizeSettings();
+    }
 }

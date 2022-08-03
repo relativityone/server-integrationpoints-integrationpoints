@@ -30,82 +30,82 @@ using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 {
-	public static class SetTypeOfExportDefaultValueCommandFactory
-	{
-		public static SetTypeOfExportDefaultValueCommand Create(IEHHelper helper, int workspaceArtifactId)
-		{
-			IServiceContextHelper serviceContextHelper = new ServiceContextHelperForEventHandlers(helper, helper.GetActiveCaseID());
-			ICaseServiceContext caseServiceContext = new CaseServiceContext(serviceContextHelper);
-			
-			IAPILog logger = helper.GetLoggerFactory().GetLogger();
-			IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer(logger);
+    public static class SetTypeOfExportDefaultValueCommandFactory
+    {
+        public static SetTypeOfExportDefaultValueCommand Create(IEHHelper helper, int workspaceArtifactId)
+        {
+            IServiceContextHelper serviceContextHelper = new ServiceContextHelperForEventHandlers(helper, helper.GetActiveCaseID());
+            ICaseServiceContext caseServiceContext = new CaseServiceContext(serviceContextHelper);
+            
+            IAPILog logger = helper.GetLoggerFactory().GetLogger();
+            IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer(logger);
 
-			IServicesMgr servicesManager = helper.GetServicesManager();
-			IChoiceQuery choiceQuery = new ChoiceQuery(servicesManager);
+            IServicesMgr servicesManager = helper.GetServicesManager();
+            IChoiceQuery choiceQuery = new ChoiceQuery(servicesManager);
 
-			Guid agentGuid = new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
+            Guid agentGuid = new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
 
-			IQueueQueryManager queryManager = new QueueQueryManager(helper, agentGuid);
-			IAgentService agentService = new AgentService(helper, queryManager, agentGuid);
-			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
+            IQueueQueryManager queryManager = new QueueQueryManager(helper, agentGuid);
+            IAgentService agentService = new AgentService(helper, queryManager, agentGuid);
+            IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
             IJobService jobService = new JobService(agentService, jobServiceDataProvider, new KubernetesMode(logger), helper);
-			IEddsServiceContext eddsServiceContext = new EddsServiceContext(serviceContextHelper);
-			IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, servicesManager);
-			IDBContext dbContext = helper.GetDBContext(helper.GetActiveCaseID());
-			IWorkspaceDBContext workspaceDbContext = new WorkspaceDBContext(dbContext);
-			IJobTrackerQueryManager jobTrackerQueryManager = new JobTrackerQueryManager(repositoryFactory, workspaceDbContext);
-			IJobResourceTracker jobResourceTracker = new JobResourceTracker(jobTrackerQueryManager, queryManager);
-			IJobTracker jobTracker = new JobTracker(jobResourceTracker, logger);
-			IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager();
-			IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
-			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, helper, integrationPointSerializer, jobTracker);
-			RelativityObjectManagerFactory relativityObjectManagerFactory = new RelativityObjectManagerFactory(helper);
-			IRelativityObjectManager objectManager = relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId);
-			IProviderTypeService providerTypeService = new ProviderTypeService(objectManager);
-			IMessageService messageService = new MessageService();
+            IEddsServiceContext eddsServiceContext = new EddsServiceContext(serviceContextHelper);
+            IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, servicesManager);
+            IDBContext dbContext = helper.GetDBContext(helper.GetActiveCaseID());
+            IWorkspaceDBContext workspaceDbContext = new WorkspaceDBContext(dbContext);
+            IJobTrackerQueryManager jobTrackerQueryManager = new JobTrackerQueryManager(repositoryFactory, workspaceDbContext);
+            IJobResourceTracker jobResourceTracker = new JobResourceTracker(jobTrackerQueryManager, queryManager);
+            IJobTracker jobTracker = new JobTracker(jobResourceTracker, logger);
+            IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager();
+            IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
+            IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, helper, integrationPointSerializer, jobTracker);
+            RelativityObjectManagerFactory relativityObjectManagerFactory = new RelativityObjectManagerFactory(helper);
+            IRelativityObjectManager objectManager = relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId);
+            IProviderTypeService providerTypeService = new ProviderTypeService(objectManager);
+            IMessageService messageService = new MessageService();
 
-			IJobHistoryService jobHistoryService = new JobHistoryService(
-				caseServiceContext.RelativityObjectManagerService.RelativityObjectManager, 
-				federatedInstanceManager, 
-				workspaceManager, 
-				logger, 
-				integrationPointSerializer);
+            IJobHistoryService jobHistoryService = new JobHistoryService(
+                caseServiceContext.RelativityObjectManagerService.RelativityObjectManager, 
+                federatedInstanceManager, 
+                workspaceManager, 
+                logger, 
+                integrationPointSerializer);
 
-			IManagerFactory managerFactory = new ManagerFactory(helper, new FakeNonRemovableAgent());
+            IManagerFactory managerFactory = new ManagerFactory(helper, new FakeNonRemovableAgent());
 
-			IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), integrationPointSerializer, relativityObjectManagerFactory);
+            IIntegrationPointProviderValidator ipValidator = new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), integrationPointSerializer, relativityObjectManagerFactory);
 
-			IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), integrationPointSerializer);
+            IIntegrationPointPermissionValidator permissionValidator = new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(), integrationPointSerializer);
 
-			IValidationExecutor validationExecutor = new ValidationExecutor(ipValidator, permissionValidator, helper);
+            IValidationExecutor validationExecutor = new ValidationExecutor(ipValidator, permissionValidator, helper);
 
-			ISecretsRepository secretsRepository = new SecretsRepository(
-				SecretStoreFacadeFactory_Deprecated.Create(helper.GetSecretStore, logger), 
-				logger
-			);
-			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
-				caseServiceContext.RelativityObjectManagerService.RelativityObjectManager,
-				integrationPointSerializer,
-				secretsRepository,
-				logger);
+            ISecretsRepository secretsRepository = new SecretsRepository(
+                SecretStoreFacadeFactory_Deprecated.Create(helper.GetSecretStore, logger), 
+                logger
+            );
+            IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
+                caseServiceContext.RelativityObjectManagerService.RelativityObjectManager,
+                integrationPointSerializer,
+                secretsRepository,
+                logger);
 
-			IIntegrationPointProfileService integrationPointProfileService = new IntegrationPointProfileService(
-				helper,
-				caseServiceContext, 
-				integrationPointSerializer, 
-				choiceQuery,
-				managerFactory, 
-				validationExecutor, 
-				objectManager);
+            IIntegrationPointProfileService integrationPointProfileService = new IntegrationPointProfileService(
+                helper,
+                caseServiceContext, 
+                integrationPointSerializer, 
+                choiceQuery,
+                managerFactory, 
+                validationExecutor, 
+                objectManager);
 
-			ISourceConfigurationTypeOfExportUpdater sourceConfigurationTypeOfExpertUpdater = new SourceConfigurationTypeOfExportUpdater(providerTypeService);
+            ISourceConfigurationTypeOfExportUpdater sourceConfigurationTypeOfExpertUpdater = new SourceConfigurationTypeOfExportUpdater(providerTypeService);
 
-			return new SetTypeOfExportDefaultValueCommand(
-				integrationPointRepository, 
-				integrationPointProfileService,
-				objectManager, 
-				sourceConfigurationTypeOfExpertUpdater
-			);
-		}
-	}
+            return new SetTypeOfExportDefaultValueCommand(
+                integrationPointRepository, 
+                integrationPointProfileService,
+                objectManager, 
+                sourceConfigurationTypeOfExpertUpdater
+            );
+        }
+    }
 }

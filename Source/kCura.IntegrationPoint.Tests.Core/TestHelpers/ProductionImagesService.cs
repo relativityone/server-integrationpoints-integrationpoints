@@ -8,14 +8,14 @@ using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
-	public class ProductionImagesService : FileServiceBase, IProductionImagesService
-	{
-		public ProductionImagesService(ITestHelper testHelper) : base(testHelper)
-		{
-		}
+    public class ProductionImagesService : FileServiceBase, IProductionImagesService
+    {
+        public ProductionImagesService(ITestHelper testHelper) : base(testHelper)
+        {
+        }
 
-		public IList<FileTestDto> GetProductionImagesFileInfo(int workspaceId, int documentArtifactId)
-		{
+        public IList<FileTestDto> GetProductionImagesFileInfo(int workspaceId, int documentArtifactId)
+        {
             using (ISearchService searchService = TestHelper.CreateProxy<ISearchService>())
             {
                 DataSet dataSet = searchService
@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
                     .Cast<DataRow>()
                     .Select(row => row.ToFileTestDto())
                     .ToList();
-			}
+            }
         }
-	}
+    }
 }

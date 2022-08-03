@@ -8,51 +8,51 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factories
 {
-	public static class IntegrationPointSecretDeleteFactory
-	{
-		public static IIntegrationPointSecretDelete Create(IEHHelper helper)
-		{
-			IAPILog logger = helper.GetLoggerFactory().GetLogger();
-			ISecretsRepository secretsRepository = new SecretsRepository(
-				SecretStoreFacadeFactory_Deprecated.Create(helper.GetSecretStore, logger), 
-				logger
-			);
-			IRelativityObjectManager relativityObjectManager = CreateObjectManager(helper);
-			IIntegrationPointSerializer integrationPointSerializer = CreateIntegrationPointSerializer(logger);
-			IIntegrationPointRepository integrationPointRepository =
-				CreateIntegrationPointRepository(
-					relativityObjectManager, 
-					integrationPointSerializer,
-					secretsRepository,
-					logger);
-			return new IntegrationPointSecretDelete(
-				helper.GetActiveCaseID(), 
-				secretsRepository, 
-				integrationPointRepository);
-		}
+    public static class IntegrationPointSecretDeleteFactory
+    {
+        public static IIntegrationPointSecretDelete Create(IEHHelper helper)
+        {
+            IAPILog logger = helper.GetLoggerFactory().GetLogger();
+            ISecretsRepository secretsRepository = new SecretsRepository(
+                SecretStoreFacadeFactory_Deprecated.Create(helper.GetSecretStore, logger), 
+                logger
+            );
+            IRelativityObjectManager relativityObjectManager = CreateObjectManager(helper);
+            IIntegrationPointSerializer integrationPointSerializer = CreateIntegrationPointSerializer(logger);
+            IIntegrationPointRepository integrationPointRepository =
+                CreateIntegrationPointRepository(
+                    relativityObjectManager, 
+                    integrationPointSerializer,
+                    secretsRepository,
+                    logger);
+            return new IntegrationPointSecretDelete(
+                helper.GetActiveCaseID(), 
+                secretsRepository, 
+                integrationPointRepository);
+        }
 
-		private static IRelativityObjectManager CreateObjectManager(IEHHelper helper)
-		{
-			return new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(helper.GetActiveCaseID());
-		}
+        private static IRelativityObjectManager CreateObjectManager(IEHHelper helper)
+        {
+            return new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(helper.GetActiveCaseID());
+        }
 
-		private static IIntegrationPointSerializer CreateIntegrationPointSerializer(IAPILog logger)
-		{
-			return new IntegrationPointSerializer(logger);
-		}
+        private static IIntegrationPointSerializer CreateIntegrationPointSerializer(IAPILog logger)
+        {
+            return new IntegrationPointSerializer(logger);
+        }
 
-		private static IIntegrationPointRepository CreateIntegrationPointRepository(
-			IRelativityObjectManager objectManager,
-			IIntegrationPointSerializer serializer,
-			ISecretsRepository secretsRepository,
-			IAPILog logger)
-		{
-			return new IntegrationPointRepository(
-				objectManager, 
-				serializer,
-				secretsRepository,
-				logger
-			);
-		}
-	}
+        private static IIntegrationPointRepository CreateIntegrationPointRepository(
+            IRelativityObjectManager objectManager,
+            IIntegrationPointSerializer serializer,
+            ISecretsRepository secretsRepository,
+            IAPILog logger)
+        {
+            return new IntegrationPointRepository(
+                objectManager, 
+                serializer,
+                secretsRepository,
+                logger
+            );
+        }
+    }
 }

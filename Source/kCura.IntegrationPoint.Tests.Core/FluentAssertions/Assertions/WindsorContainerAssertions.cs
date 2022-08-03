@@ -144,25 +144,25 @@ namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
             return new AndConstraint<WindsorContainerAssertions>(this);
         }
 
-	    public AndConstraint<WindsorContainerAssertions> HaveRegisteredFactoryMethod<TInterface>(
-		    string because = "",
-		    params object[] becauseArgs
-	    ) where TInterface : class
-	    {
-		    Type registeredType = GetImplementationType<TInterface>();
+        public AndConstraint<WindsorContainerAssertions> HaveRegisteredFactoryMethod<TInterface>(
+            string because = "",
+            params object[] becauseArgs
+        ) where TInterface : class
+        {
+            Type registeredType = GetImplementationType<TInterface>();
 
-		    Execute.Assertion
-			    .BecauseOf(because, becauseArgs)
-			    .ForCondition(registeredType == typeof(LateBoundComponent))
-			    .FailWith("Expected {context:IWindsorContainer} to have a factory method registered for {0}{reason}, but it has {1}.",
-				    typeof(TInterface).Name,
-				    registeredType?.Name
-			    );
+            Execute.Assertion
+                .BecauseOf(because, becauseArgs)
+                .ForCondition(registeredType == typeof(LateBoundComponent))
+                .FailWith("Expected {context:IWindsorContainer} to have a factory method registered for {0}{reason}, but it has {1}.",
+                    typeof(TInterface).Name,
+                    registeredType?.Name
+                );
 
-		    return new AndConstraint<WindsorContainerAssertions>(this);
-	    }
+            return new AndConstraint<WindsorContainerAssertions>(this);
+        }
 
-		private ComponentModel GetRegisteredComponent<T>()
+        private ComponentModel GetRegisteredComponent<T>()
         {
             try
             {
@@ -202,5 +202,5 @@ namespace kCura.IntegrationPoint.Tests.Core.FluentAssertions.Assertions
                 return null;
             }
         }
-	}
+    }
 }

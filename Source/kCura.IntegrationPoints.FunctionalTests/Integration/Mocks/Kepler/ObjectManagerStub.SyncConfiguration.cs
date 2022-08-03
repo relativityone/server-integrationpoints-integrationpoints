@@ -10,38 +10,38 @@ using System.Threading.Tasks;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
-	public partial class ObjectManagerStub
+    public partial class ObjectManagerStub
     {
         private void SetupSyncConfiguration()
         {
-			Mock.Setup(x => x.QuerySlimAsync(It.IsAny<int>(), It.Is<QueryRequest>(
-					q => IsSyncConfigurationByJobHistoryIdQuery(q)), It.IsAny<int>(), It.IsAny<int>()))
-				.Returns((int workspaceId, QueryRequest request, int start, int length) =>
-				{
-					WorkspaceTest workspace = Relativity.Workspaces.Single(x => x.ArtifactId == workspaceId);
+            Mock.Setup(x => x.QuerySlimAsync(It.IsAny<int>(), It.Is<QueryRequest>(
+                    q => IsSyncConfigurationByJobHistoryIdQuery(q)), It.IsAny<int>(), It.IsAny<int>()))
+                .Returns((int workspaceId, QueryRequest request, int start, int length) =>
+                {
+                    WorkspaceTest workspace = Relativity.Workspaces.Single(x => x.ArtifactId == workspaceId);
 
-					string jobHistory = Regex.Match(request.Condition, @"'JobHistoryId' == (\d+)").Groups[1].Value;
-					int jobHistoryId = int.Parse(jobHistory);
+                    string jobHistory = Regex.Match(request.Condition, @"'JobHistoryId' == (\d+)").Groups[1].Value;
+                    int jobHistoryId = int.Parse(jobHistory);
 
-					var configs = workspace.SyncConfigurations.Where(x => x.JobHistoryId == jobHistoryId);
+                    var configs = workspace.SyncConfigurations.Where(x => x.JobHistoryId == jobHistoryId);
 
-					List<RelativityObjectSlim> result = configs
-						.Select(x => x.ToRelativityObject())
-						.Select(x => ToSlim(x, request.Fields))
-						.ToList();
+                    List<RelativityObjectSlim> result = configs
+                        .Select(x => x.ToRelativityObject())
+                        .Select(x => ToSlim(x, request.Fields))
+                        .ToList();
 
-					return Task.FromResult(new QueryResultSlim
-					{
-						Objects = result,
-						TotalCount = result.Count,
-						ResultCount = result.Count
-					});
+                    return Task.FromResult(new QueryResultSlim
+                    {
+                        Objects = result,
+                        TotalCount = result.Count,
+                        ResultCount = result.Count
+                    });
 
-				});
-		}
+                });
+        }
 
-		private bool IsSyncConfigurationByJobHistoryIdQuery(QueryRequest query) =>
-			query.ObjectType.Guid == ObjectTypeGuids.SyncConfigurationGuid &&
-			Regex.Match(query.Condition, @"'JobHistoryId' == (\d+)").Success;
-	}
+        private bool IsSyncConfigurationByJobHistoryIdQuery(QueryRequest query) =>
+            query.ObjectType.Guid == ObjectTypeGuids.SyncConfigurationGuid &&
+            Regex.Match(query.Condition, @"'JobHistoryId' == (\d+)").Success;
+    }
 }

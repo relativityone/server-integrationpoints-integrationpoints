@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.Core.Helpers
 {
-	public interface IButtonStateBuilder
-	{
-		ButtonStateDTO CreateButtonState(int applicationArtifactId, int integrationPointArtifactId);
-	}
+    public interface IButtonStateBuilder
+    {
+        ButtonStateDTO CreateButtonState(int applicationArtifactId, int integrationPointArtifactId);
+    }
 }

@@ -373,30 +373,30 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 
             int destinationWorkspaceArtifactId = ArtifactProvider.NextId();
             WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper
-	            .CreateWorkspaceWithIntegrationPointsApp(destinationWorkspaceArtifactId);
+                .CreateWorkspaceWithIntegrationPointsApp(destinationWorkspaceArtifactId);
             IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
-	            .CreateSavedSearchSyncIntegrationPoint(destinationWorkspace);
+                .CreateSavedSearchSyncIntegrationPoint(destinationWorkspace);
 
-	        JobController.Payload payload = new JobController.Payload
-	        {
-		        ArtifactId = integrationPoint.ArtifactId,
-		        AppId = SourceWorkspace.ArtifactId
-	        };
+            JobController.Payload payload = new JobController.Payload
+            {
+                ArtifactId = integrationPoint.ArtifactId,
+                AppId = SourceWorkspace.ArtifactId
+            };
 
-	        JobController sut = PrepareSut(HttpMethod.Post, "/run");
+            JobController sut = PrepareSut(HttpMethod.Post, "/run");
 
-	        // Act
-	        HttpResponseMessage response = await sut.Run(payload).ConfigureAwait(false);
+            // Act
+            HttpResponseMessage response = await sut.Run(payload).ConfigureAwait(false);
 
-	        // Assert
-	        response.IsSuccessStatusCode.Should().BeFalse();
-	        response.Content.Should()
-		        .BeAssignableTo<ObjectContent<ValidationResultDTO>>()
-		        .Which.Value.Should().BeAssignableTo<ValidationResultDTO>()
-		        .Which.IsValid.Should().BeFalse();
+            // Assert
+            response.IsSuccessStatusCode.Should().BeFalse();
+            response.Content.Should()
+                .BeAssignableTo<ObjectContent<ValidationResultDTO>>()
+                .Which.Value.Should().BeAssignableTo<ValidationResultDTO>()
+                .Which.IsValid.Should().BeFalse();
 
-	        FakeRelativityInstance.Errors.Should().OnlyContain(error => error.Message == "Failed to submit integration job. Integration Point validation failed.");
-	        FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
+            FakeRelativityInstance.Errors.Should().OnlyContain(error => error.Message == "Failed to submit integration job. Integration Point validation failed.");
+            FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
         }
 
         private JobController PrepareSut(HttpMethod method, string requestUri)

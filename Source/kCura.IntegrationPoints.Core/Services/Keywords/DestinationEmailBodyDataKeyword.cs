@@ -19,55 +19,55 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Services.Keywords
 {
-	public class DestinationEmailBodyDataKeyword : IntegrationPointTaskBase, IKeyword
-	{
-		private readonly Job _job;
+    public class DestinationEmailBodyDataKeyword : IntegrationPointTaskBase, IKeyword
+    {
+        private readonly Job _job;
 
-		public string KeywordName => "\\[RIP.DESTINATIONEMAILBODYDATA]";
+        public string KeywordName => "\\[RIP.DESTINATIONEMAILBODYDATA]";
 
-		public DestinationEmailBodyDataKeyword(Job job,
-			ICaseServiceContext caseServiceContext,
-			IHelper helper,
-			IDataProviderFactory dataProviderFactory,
-			Apps.Common.Utils.Serializers.ISerializer serializer,
-			ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
-			IJobHistoryService jobHistoryService,
-			IJobHistoryErrorService jobHistoryErrorService,
-			IJobManager jobManager,
-			IManagerFactory managerFactory,
-			IJobService jobService,
-			IIntegrationPointRepository integrationPointRepository)
-			: base(caseServiceContext,
-				helper,
-				dataProviderFactory,
-				serializer,
-				appDomainRdoSynchronizerFactoryFactory,
-				jobHistoryService,
-				jobHistoryErrorService,
-				jobManager,
-				managerFactory,
-				jobService,
-				integrationPointRepository)
-		{
-			_job = job;
-		}
+        public DestinationEmailBodyDataKeyword(Job job,
+            ICaseServiceContext caseServiceContext,
+            IHelper helper,
+            IDataProviderFactory dataProviderFactory,
+            Apps.Common.Utils.Serializers.ISerializer serializer,
+            ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
+            IJobHistoryService jobHistoryService,
+            IJobHistoryErrorService jobHistoryErrorService,
+            IJobManager jobManager,
+            IManagerFactory managerFactory,
+            IJobService jobService,
+            IIntegrationPointRepository integrationPointRepository)
+            : base(caseServiceContext,
+                helper,
+                dataProviderFactory,
+                serializer,
+                appDomainRdoSynchronizerFactoryFactory,
+                jobHistoryService,
+                jobHistoryErrorService,
+                jobManager,
+                managerFactory,
+                jobService,
+                integrationPointRepository)
+        {
+            _job = job;
+        }
 
-		public string Convert()
-		{
-			SetIntegrationPoint(_job);
-			string destinationConfiguration = this.IntegrationPoint.DestinationConfiguration;
-			IEnumerable<FieldMap> fieldMap = GetFieldMap(this.IntegrationPoint.FieldMappings);
-			FieldMap[] fieldMaps = fieldMap as FieldMap[] ?? fieldMap.ToArray();
-			List<FieldEntry> destinationFields = GetDestinationFields(fieldMaps);
-			IDataSynchronizer destinationProvider = GetDestinationProvider(base.DestinationProvider, destinationConfiguration, _job);
+        public string Convert()
+        {
+            SetIntegrationPoint(_job);
+            string destinationConfiguration = this.IntegrationPoint.DestinationConfiguration;
+            IEnumerable<FieldMap> fieldMap = GetFieldMap(this.IntegrationPoint.FieldMappings);
+            FieldMap[] fieldMaps = fieldMap as FieldMap[] ?? fieldMap.ToArray();
+            List<FieldEntry> destinationFields = GetDestinationFields(fieldMaps);
+            IDataSynchronizer destinationProvider = GetDestinationProvider(base.DestinationProvider, destinationConfiguration, _job);
 
-			string returnValue = string.Empty;
-			if (destinationProvider is IEmailBodyData)
-			{
-				returnValue = ((IEmailBodyData)destinationProvider).GetEmailBodyData(destinationFields, destinationConfiguration);
-			}
+            string returnValue = string.Empty;
+            if (destinationProvider is IEmailBodyData)
+            {
+                returnValue = ((IEmailBodyData)destinationProvider).GetEmailBodyData(destinationFields, destinationConfiguration);
+            }
 
-			return returnValue;
-		}
-	}
+            return returnValue;
+        }
+    }
 }

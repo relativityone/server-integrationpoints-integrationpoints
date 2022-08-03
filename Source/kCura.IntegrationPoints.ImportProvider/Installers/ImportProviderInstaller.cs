@@ -5,12 +5,12 @@ using Relativity.IntegrationPoints.Contracts.Provider;
 
 namespace kCura.IntegrationPoints.ImportProvider.Installers
 {
-	public class ImportProviderInstaller : IWindsorInstaller
-	{
-		public void Install(IWindsorContainer container, IConfigurationStore store)
-		{
-			container.Register(Component.For<IDataSourceProvider>().ImplementedBy<ImportProvider>()
-				.Named(Core.Constants.IntegrationPoints.SourceProviders.IMPORTLOADFILE));
-		}
-	}
+    public class ImportProviderInstaller : IWindsorInstaller
+    {
+        public void Install(IWindsorContainer container, IConfigurationStore store)
+        {
+            container.Register(Component.For<IDataSourceProvider>().ImplementedBy<ImportProvider>()
+                .Named(Core.Constants.IntegrationPoints.SourceProviders.IMPORTLOADFILE));
+        }
+    }
 }

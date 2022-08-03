@@ -14,44 +14,44 @@ using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
-	public class FolderPathController : ApiController
-	{
-		private readonly IFieldService _fieldService;
-		private readonly IChoiceService _choiceService;
-		private readonly IWorkspaceContext _workspaceIdProvider;
-		private readonly IImportApiFacade _importApiFacade;
+    public class FolderPathController : ApiController
+    {
+        private readonly IFieldService _fieldService;
+        private readonly IChoiceService _choiceService;
+        private readonly IWorkspaceContext _workspaceIdProvider;
+        private readonly IImportApiFacade _importApiFacade;
         private readonly IAPILog _logger;
 
-		public FolderPathController(
-			IFieldService fieldService,
-			IChoiceService choiceService,
-			IWorkspaceContext workspaceIdProvider,
-			IImportApiFacade importApiFacade,
-			IHelper helper
-			)
-		{
-			_fieldService = fieldService;
-			_choiceService = choiceService; 
-			_workspaceIdProvider = workspaceIdProvider;
-			_importApiFacade = importApiFacade;
+        public FolderPathController(
+            IFieldService fieldService,
+            IChoiceService choiceService,
+            IWorkspaceContext workspaceIdProvider,
+            IImportApiFacade importApiFacade,
+            IHelper helper
+            )
+        {
+            _fieldService = fieldService;
+            _choiceService = choiceService; 
+            _workspaceIdProvider = workspaceIdProvider;
+            _importApiFacade = importApiFacade;
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<FolderPathController>();
         }
-		
-		[HttpGet]
-		[LogApiExceptionFilter(Message = "Unable to retrieve fields data.")]
-		public HttpResponseMessage GetFields()
-		{
-			List<FieldEntry> textFields = _fieldService.GetAllTextFields(_workspaceIdProvider.GetWorkspaceID(), (int)ArtifactType.Document).ToList();
+        
+        [HttpGet]
+        [LogApiExceptionFilter(Message = "Unable to retrieve fields data.")]
+        public HttpResponseMessage GetFields()
+        {
+            List<FieldEntry> textFields = _fieldService.GetAllTextFields(_workspaceIdProvider.GetWorkspaceID(), (int)ArtifactType.Document).ToList();
 
-			IEnumerable<FieldEntry> textMappableFields = GetFieldCategory(textFields);
+            IEnumerable<FieldEntry> textMappableFields = GetFieldCategory(textFields);
 
-			return Request.CreateResponse(HttpStatusCode.OK, textMappableFields, Configuration.Formatters.JsonFormatter);
-		}
+            return Request.CreateResponse(HttpStatusCode.OK, textMappableFields, Configuration.Formatters.JsonFormatter);
+        }
 
-		[HttpGet]
-		[LogApiExceptionFilter(Message = "Unable to retrieve long text fields data.")]
-		public HttpResponseMessage GetLongTextFields()
-		{
+        [HttpGet]
+        [LogApiExceptionFilter(Message = "Unable to retrieve long text fields data.")]
+        public HttpResponseMessage GetLongTextFields()
+        {
             try
             {
                 List<FieldEntry> textFields = _fieldService.GetLongTextFields(_workspaceIdProvider.GetWorkspaceID(), (int)ArtifactType.Document).ToList();
@@ -65,29 +65,29 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                 _logger.LogError(ex, $"Exception occurred in {nameof(FolderPathController)}.{nameof(GetLongTextFields)}");
                 throw;
             }
-		}
+        }
 
-		[HttpGet]
-		[LogApiExceptionFilter(Message = "Unable to retrieve choice fields data.")]
-		public HttpResponseMessage GetChoiceFields()
-		{
-			List<FieldEntry> choiceFields = _choiceService.GetChoiceFields(_workspaceIdProvider.GetWorkspaceID(),(int)ArtifactType.Document);
+        [HttpGet]
+        [LogApiExceptionFilter(Message = "Unable to retrieve choice fields data.")]
+        public HttpResponseMessage GetChoiceFields()
+        {
+            List<FieldEntry> choiceFields = _choiceService.GetChoiceFields(_workspaceIdProvider.GetWorkspaceID(),(int)ArtifactType.Document);
 
-			IEnumerable<FieldEntry> choiceMappableFields = GetFieldCategory(choiceFields);
+            IEnumerable<FieldEntry> choiceMappableFields = GetFieldCategory(choiceFields);
 
-			return Request.CreateResponse(HttpStatusCode.OK, choiceMappableFields, Configuration.Formatters.JsonFormatter);
-		}
+            return Request.CreateResponse(HttpStatusCode.OK, choiceMappableFields, Configuration.Formatters.JsonFormatter);
+        }
 
-		private IEnumerable<FieldEntry> GetTextMappableFields(int workspaceId, List<FieldEntry> textFields)
-		{
-			HashSet<int> mappableArtifactIds = _importApiFacade.GetMappableArtifactIdsWithNotIdentifierFieldCategory(workspaceId, Convert.ToInt32(ArtifactType.Document));
-			return textFields.Where(x => mappableArtifactIds.Contains(Convert.ToInt32(x.FieldIdentifier)));
-		}
+        private IEnumerable<FieldEntry> GetTextMappableFields(int workspaceId, List<FieldEntry> textFields)
+        {
+            HashSet<int> mappableArtifactIds = _importApiFacade.GetMappableArtifactIdsWithNotIdentifierFieldCategory(workspaceId, Convert.ToInt32(ArtifactType.Document));
+            return textFields.Where(x => mappableArtifactIds.Contains(Convert.ToInt32(x.FieldIdentifier)));
+        }
 
-		private IEnumerable<FieldEntry> GetFieldCategory(List<FieldEntry> textFields)
-		{
-			int workspaceId = _workspaceIdProvider.GetWorkspaceID();
-			return GetTextMappableFields(workspaceId, textFields);
-		}
-	}
+        private IEnumerable<FieldEntry> GetFieldCategory(List<FieldEntry> textFields)
+        {
+            int workspaceId = _workspaceIdProvider.GetWorkspaceID();
+            return GetTextMappableFields(workspaceId, textFields);
+        }
+    }
 }

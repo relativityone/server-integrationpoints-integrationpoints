@@ -12,163 +12,163 @@ using Relativity.Logging;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Managers
 {
-	[TestFixture, Category("Unit")]
-	public class JobHistoryManagerTests : TestBase
-	{
-		private const int _WORKSPACE_ID = 784838;
-		private JobHistoryManager _jobHistoryManager;
-		private IPermissionRepository _permissionRepository;
-		private ILog _logger;
-		private IWindsorContainer _container;
+    [TestFixture, Category("Unit")]
+    public class JobHistoryManagerTests : TestBase
+    {
+        private const int _WORKSPACE_ID = 784838;
+        private JobHistoryManager _jobHistoryManager;
+        private IPermissionRepository _permissionRepository;
+        private ILog _logger;
+        private IWindsorContainer _container;
 
-		public override void SetUp()
-		{
-			_logger = Substitute.For<ILog>();
-			_permissionRepository = Substitute.For<IPermissionRepository>();
-			_container = Substitute.For<IWindsorContainer>();
+        public override void SetUp()
+        {
+            _logger = Substitute.For<ILog>();
+            _permissionRepository = Substitute.For<IPermissionRepository>();
+            _container = Substitute.For<IWindsorContainer>();
 
-			var permissionRepositoryFactory = Substitute.For<IPermissionRepositoryFactory>();
-			permissionRepositoryFactory.Create(Arg.Any<IHelper>(), _WORKSPACE_ID).Returns(_permissionRepository);
+            var permissionRepositoryFactory = Substitute.For<IPermissionRepositoryFactory>();
+            permissionRepositoryFactory.Create(Arg.Any<IHelper>(), _WORKSPACE_ID).Returns(_permissionRepository);
 
-			_jobHistoryManager = new JobHistoryManager(_logger, permissionRepositoryFactory, _container);
-		}
+            _jobHistoryManager = new JobHistoryManager(_logger, permissionRepositoryFactory, _container);
+        }
 
-		[Test]
-		public void ItShouldGrantAccess()
-		{
-			MockValidPermissions();
+        [Test]
+        public void ItShouldGrantAccess()
+        {
+            MockValidPermissions();
 
-			_jobHistoryManager.GetJobHistoryAsync(new JobHistoryRequest
-			{
-				WorkspaceArtifactId = _WORKSPACE_ID
-			}).Wait();
+            _jobHistoryManager.GetJobHistoryAsync(new JobHistoryRequest
+            {
+                WorkspaceArtifactId = _WORKSPACE_ID
+            }).Wait();
 
-			_permissionRepository.Received(1).UserHasPermissionToAccessWorkspace();
-			_permissionRepository.Received(1).UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View);
-		}
+            _permissionRepository.Received(1).UserHasPermissionToAccessWorkspace();
+            _permissionRepository.Received(1).UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View);
+        }
 
-		[Test]
-		[TestCase(false, false)]
-		[TestCase(true, false)]
-		[TestCase(false, true)]
-		public void ItShouldDenyAccess(bool workspaceAccess, bool jobHistoryAccess)
-		{
-			_permissionRepository.UserHasPermissionToAccessWorkspace().Returns(workspaceAccess);
-			_permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View).Returns(jobHistoryAccess);
+        [Test]
+        [TestCase(false, false)]
+        [TestCase(true, false)]
+        [TestCase(false, true)]
+        public void ItShouldDenyAccess(bool workspaceAccess, bool jobHistoryAccess)
+        {
+            _permissionRepository.UserHasPermissionToAccessWorkspace().Returns(workspaceAccess);
+            _permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View).Returns(jobHistoryAccess);
 
-			var jobHistoryRequest = new JobHistoryRequest
-			{
-				WorkspaceArtifactId = _WORKSPACE_ID
-			};
+            var jobHistoryRequest = new JobHistoryRequest
+            {
+                WorkspaceArtifactId = _WORKSPACE_ID
+            };
 
-			Assert.That(() => _jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).Wait(),
-				Throws.Exception.With.InnerException.TypeOf<InsufficientPermissionException>()
-					.And.With.InnerException.Message.EqualTo("You do not have permission to access this service."));
+            Assert.That(() => _jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).Wait(),
+                Throws.Exception.With.InnerException.TypeOf<InsufficientPermissionException>()
+                    .And.With.InnerException.Message.EqualTo("You do not have permission to access this service."));
 
-			_permissionRepository.Received(1).UserHasPermissionToAccessWorkspace();
-			_permissionRepository.Received(1).UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View);
-		}
+            _permissionRepository.Received(1).UserHasPermissionToAccessWorkspace();
+            _permissionRepository.Received(1).UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View);
+        }
 
-		[Test]
-		[TestCase(false, false, "Workspace, Job History - View")]
-		[TestCase(true, false, "Job History - View")]
-		[TestCase(false, true, "Workspace")]
-		public void ItShouldLogDenyingAccess(bool workspaceAccess, bool jobHistoryAccess, string missingPermissions)
-		{
-			_permissionRepository.UserHasPermissionToAccessWorkspace().Returns(workspaceAccess);
-			_permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View).Returns(jobHistoryAccess);
+        [Test]
+        [TestCase(false, false, "Workspace, Job History - View")]
+        [TestCase(true, false, "Job History - View")]
+        [TestCase(false, true, "Workspace")]
+        public void ItShouldLogDenyingAccess(bool workspaceAccess, bool jobHistoryAccess, string missingPermissions)
+        {
+            _permissionRepository.UserHasPermissionToAccessWorkspace().Returns(workspaceAccess);
+            _permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View).Returns(jobHistoryAccess);
 
-			var jobHistoryRequest = new JobHistoryRequest
-			{
-				WorkspaceArtifactId = _WORKSPACE_ID
-			};
+            var jobHistoryRequest = new JobHistoryRequest
+            {
+                WorkspaceArtifactId = _WORKSPACE_ID
+            };
 
-			try
-			{
-				_jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).Wait();
-			}
-			catch (Exception)
-			{
-				//Ignore as this test checks logging only
-			}
+            try
+            {
+                _jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).Wait();
+            }
+            catch (Exception)
+            {
+                //Ignore as this test checks logging only
+            }
 
-			_logger.Received(1)
-				.LogError("User doesn't have permission to access endpoint {endpointName}. Missing permissions {missingPermissions}.", "GetJobHistoryAsync", missingPermissions);
-		}
+            _logger.Received(1)
+                .LogError("User doesn't have permission to access endpoint {endpointName}. Missing permissions {missingPermissions}.", "GetJobHistoryAsync", missingPermissions);
+        }
 
-		[Test]
-		public void ItShouldGetJobHistory()
-		{
-			MockValidPermissions();
+        [Test]
+        public void ItShouldGetJobHistory()
+        {
+            MockValidPermissions();
 
-			var jobHistoryRepository = Substitute.For<Services.Repositories.IJobHistoryRepository>();
-			_container.Resolve<Services.Repositories.IJobHistoryRepository>().Returns(jobHistoryRepository);
+            var jobHistoryRepository = Substitute.For<Services.Repositories.IJobHistoryRepository>();
+            _container.Resolve<Services.Repositories.IJobHistoryRepository>().Returns(jobHistoryRepository);
 
-			var expectedResult = new JobHistorySummaryModel();
+            var expectedResult = new JobHistorySummaryModel();
 
-			var jobHistoryRequest = new JobHistoryRequest
-			{
-				WorkspaceArtifactId = _WORKSPACE_ID
-			};
-			jobHistoryRepository.GetJobHistory(jobHistoryRequest).Returns(expectedResult);
+            var jobHistoryRequest = new JobHistoryRequest
+            {
+                WorkspaceArtifactId = _WORKSPACE_ID
+            };
+            jobHistoryRepository.GetJobHistory(jobHistoryRequest).Returns(expectedResult);
 
-			var actualResult = _jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).Result;
+            var actualResult = _jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).Result;
 
-			jobHistoryRepository.Received(1).GetJobHistory(jobHistoryRequest);
+            jobHistoryRepository.Received(1).GetJobHistory(jobHistoryRequest);
 
-			Assert.That(actualResult, Is.EqualTo(expectedResult));
-		}
+            Assert.That(actualResult, Is.EqualTo(expectedResult));
+        }
 
-		[Test]
-		public void ItShouldHideException()
-		{
-			MockValidPermissions();
+        [Test]
+        public void ItShouldHideException()
+        {
+            MockValidPermissions();
 
-			var jobHistoryRepository = Substitute.For<Services.Repositories.IJobHistoryRepository>();
-			jobHistoryRepository.GetJobHistory(Arg.Any<JobHistoryRequest>()).Throws(new ArgumentException());
-			_container.Resolve<Services.Repositories.IJobHistoryRepository>().Returns(jobHistoryRepository);
+            var jobHistoryRepository = Substitute.For<Services.Repositories.IJobHistoryRepository>();
+            jobHistoryRepository.GetJobHistory(Arg.Any<JobHistoryRequest>()).Throws(new ArgumentException());
+            _container.Resolve<Services.Repositories.IJobHistoryRepository>().Returns(jobHistoryRepository);
 
-			JobHistoryRequest jobHistoryRequest = new JobHistoryRequest
-			{
-				WorkspaceArtifactId = _WORKSPACE_ID
-			};
-			Assert.That(() => _jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).Wait(),
-				Throws.Exception.With.InnerException.TypeOf<InternalServerErrorException>()
-					.And.With.InnerException.Message.EqualTo("Error occurred during request processing. Please contact your administrator."));
-		}
+            JobHistoryRequest jobHistoryRequest = new JobHistoryRequest
+            {
+                WorkspaceArtifactId = _WORKSPACE_ID
+            };
+            Assert.That(() => _jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).Wait(),
+                Throws.Exception.With.InnerException.TypeOf<InternalServerErrorException>()
+                    .And.With.InnerException.Message.EqualTo("Error occurred during request processing. Please contact your administrator."));
+        }
 
-		[Test]
-		public void ItShouldLogException()
-		{
-			MockValidPermissions();
+        [Test]
+        public void ItShouldLogException()
+        {
+            MockValidPermissions();
 
-			var expectedException = new ArgumentException();
+            var expectedException = new ArgumentException();
 
-			var jobHistoryRepository = Substitute.For<Services.Repositories.IJobHistoryRepository>();
-			jobHistoryRepository.GetJobHistory(Arg.Any<JobHistoryRequest>()).Throws(expectedException);
-			_container.Resolve<Services.Repositories.IJobHistoryRepository>().Returns(jobHistoryRepository);
+            var jobHistoryRepository = Substitute.For<Services.Repositories.IJobHistoryRepository>();
+            jobHistoryRepository.GetJobHistory(Arg.Any<JobHistoryRequest>()).Throws(expectedException);
+            _container.Resolve<Services.Repositories.IJobHistoryRepository>().Returns(jobHistoryRepository);
 
-			JobHistoryRequest jobHistoryRequest = new JobHistoryRequest
-			{
-				WorkspaceArtifactId = _WORKSPACE_ID
-			};
+            JobHistoryRequest jobHistoryRequest = new JobHistoryRequest
+            {
+                WorkspaceArtifactId = _WORKSPACE_ID
+            };
 
-			try
-			{
-				_jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).Wait();
-			}
-			catch (Exception)
-			{
-				//Ignore as this test checks logging only
-			}
+            try
+            {
+                _jobHistoryManager.GetJobHistoryAsync(jobHistoryRequest).Wait();
+            }
+            catch (Exception)
+            {
+                //Ignore as this test checks logging only
+            }
 
-			_logger.Received(1).LogError(expectedException, "Error occurred during request processing in {endpointName}.", "GetJobHistoryAsync");
-		}
+            _logger.Received(1).LogError(expectedException, "Error occurred during request processing in {endpointName}.", "GetJobHistoryAsync");
+        }
 
-		private void MockValidPermissions()
-		{
-			_permissionRepository.UserHasPermissionToAccessWorkspace().Returns(true);
-			_permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View).Returns(true);
-		}
-	}
+        private void MockValidPermissions()
+        {
+            _permissionRepository.UserHasPermissionToAccessWorkspace().Returns(true);
+            _permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View).Returns(true);
+        }
+    }
 }

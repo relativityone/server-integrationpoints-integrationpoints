@@ -2,10 +2,10 @@
 
 namespace kCura.IntegrationPoints.Domain
 {
-	public interface IValidator
-	{
-		string Key { get; }
+    public interface IValidator
+    {
+        string Key { get; }
 
-		ValidationResult Validate(object value);
-	}
+        ValidationResult Validate(object value);
+    }
 }

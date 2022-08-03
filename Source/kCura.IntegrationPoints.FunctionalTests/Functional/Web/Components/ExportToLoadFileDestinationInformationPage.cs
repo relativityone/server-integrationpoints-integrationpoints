@@ -113,16 +113,16 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 
         public _ SetDestinationFolder(int workspaceId)
         {
-	        string dataTransferExportLocation = $".\\EDDS{workspaceId}\\DataTransfer\\Export";
+            string dataTransferExportLocation = $".\\EDDS{workspaceId}\\DataTransfer\\Export";
 
             return DestinationFolder
-		        .Click()
-		        .SetTreeItem(dataTransferExportLocation);
+                .Click()
+                .SetTreeItem(dataTransferExportLocation);
         }
 
         public _ SetUserPrefix(string userPrefix)
         {
-	        return UserPrefix.Set(userPrefix);
+            return UserPrefix.Set(userPrefix);
         }
     }
 }

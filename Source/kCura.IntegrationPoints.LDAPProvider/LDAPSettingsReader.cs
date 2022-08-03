@@ -20,27 +20,27 @@ namespace kCura.IntegrationPoints.LDAPProvider
                 throw new ArgumentException($"Parameter named '{nameof(sourceConfiguration)}' cannot be empty");
             }
 
-	        string unwoundSourceConfiguration = UnwindIfNecessary(sourceConfiguration);
+            string unwoundSourceConfiguration = UnwindIfNecessary(sourceConfiguration);
 
-			LDAPSettings settings = Deserialize(unwoundSourceConfiguration);
+            LDAPSettings settings = Deserialize(unwoundSourceConfiguration);
             SetDefaultValues(settings);
 
             return settings;
         }
 
-		public LDAPSettings Deserialize(string sourceConfiguration)
-	    {
-		    try
-		    {
-			    return JsonConvert.DeserializeObject<LDAPSettings>(sourceConfiguration);
-		    }
-		    catch (Exception ex)
-		    {
-			    throw new LDAPProviderException("Could not deserialize LDAP settings.", ex);
-		    }
-	    }
+        public LDAPSettings Deserialize(string sourceConfiguration)
+        {
+            try
+            {
+                return JsonConvert.DeserializeObject<LDAPSettings>(sourceConfiguration);
+            }
+            catch (Exception ex)
+            {
+                throw new LDAPProviderException("Could not deserialize LDAP settings.", ex);
+            }
+        }
 
-		private string UnwindIfNecessary(string options)
+        private string UnwindIfNecessary(string options)
         {
             try
             {

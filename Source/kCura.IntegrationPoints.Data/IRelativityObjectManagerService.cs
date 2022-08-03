@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.Data
 {
-	public interface IRelativityObjectManagerService
-	{
-		IRelativityObjectManager RelativityObjectManager { get; }
-	}
+    public interface IRelativityObjectManagerService
+    {
+        IRelativityObjectManager RelativityObjectManager { get; }
+    }
 }

@@ -18,48 +18,48 @@ using Relativity.IntegrationPoints.FieldsMapping.Helpers;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
-	public class WorkspaceFieldController : ApiController
-	{
-		private readonly ISynchronizerFactory _appDomainRdoSynchronizerFactory;
-		private readonly ISerializer _serializer;
-		private readonly IAPILog _apiLog;
+    public class WorkspaceFieldController : ApiController
+    {
+        private readonly ISynchronizerFactory _appDomainRdoSynchronizerFactory;
+        private readonly ISerializer _serializer;
+        private readonly IAPILog _apiLog;
 
-		public WorkspaceFieldController(ISynchronizerFactory appDomainRdoSynchronizerFactory, ISerializer serializer, ICPHelper helper)
-		{
-			_appDomainRdoSynchronizerFactory = appDomainRdoSynchronizerFactory;
-			_serializer = serializer;
-			_apiLog = helper.GetLoggerFactory().GetLogger().ForContext<WorkspaceFieldController>();
-		}
+        public WorkspaceFieldController(ISynchronizerFactory appDomainRdoSynchronizerFactory, ISerializer serializer, ICPHelper helper)
+        {
+            _appDomainRdoSynchronizerFactory = appDomainRdoSynchronizerFactory;
+            _serializer = serializer;
+            _apiLog = helper.GetLoggerFactory().GetLogger().ForContext<WorkspaceFieldController>();
+        }
 
-		[HttpPost]
-		[LogApiExceptionFilter(Message = "Unable to retrieve workspace fields.")]
-		public HttpResponseMessage Post([FromBody] SynchronizerSettings settings)
-		{
-			ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(settings.Settings);
-			importSettings.FederatedInstanceCredentials = settings.Credentials;
+        [HttpPost]
+        [LogApiExceptionFilter(Message = "Unable to retrieve workspace fields.")]
+        public HttpResponseMessage Post([FromBody] SynchronizerSettings settings)
+        {
+            ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(settings.Settings);
+            importSettings.FederatedInstanceCredentials = settings.Credentials;
 
-			LogImportSettings(importSettings);
+            LogImportSettings(importSettings);
 
-			IDataSynchronizer synchronizer = _appDomainRdoSynchronizerFactory.CreateSynchronizer(Guid.Empty, settings.Settings);
-			List<FieldEntry> fields = synchronizer.GetFields(new DataSourceProviderConfiguration(_serializer.Serialize(importSettings), settings.Credentials)).ToList();
+            IDataSynchronizer synchronizer = _appDomainRdoSynchronizerFactory.CreateSynchronizer(Guid.Empty, settings.Settings);
+            List<FieldEntry> fields = synchronizer.GetFields(new DataSourceProviderConfiguration(_serializer.Serialize(importSettings), settings.Credentials)).ToList();
 
-			List<ClassifiedFieldDTO> result = fields.Select(x => new ClassifiedFieldDTO
-			{
-				ClassificationLevel = ClassificationLevel.AutoMap,
-				FieldIdentifier = x.FieldIdentifier,
-				Name = x.ActualName,
-				Type = x.Type,
-				IsIdentifier = x.IsIdentifier,
-				IsRequired = x.IsRequired
-			}).ToList();
+            List<ClassifiedFieldDTO> result = fields.Select(x => new ClassifiedFieldDTO
+            {
+                ClassificationLevel = ClassificationLevel.AutoMap,
+                FieldIdentifier = x.FieldIdentifier,
+                Name = x.ActualName,
+                Type = x.Type,
+                IsIdentifier = x.IsIdentifier,
+                IsRequired = x.IsRequired
+            }).ToList();
 
-			return Request.CreateResponse(HttpStatusCode.OK, result, Configuration.Formatters.JsonFormatter);
-		}
+            return Request.CreateResponse(HttpStatusCode.OK, result, Configuration.Formatters.JsonFormatter);
+        }
 
-		private void LogImportSettings(ImportSettings importSettings)
-		{
-			var settingsForLogging = new ImportSettingsForLogging(importSettings);
-			_apiLog.LogInformation($"Import Settings has been extracted successfully for workspace field retrieval process: {settingsForLogging}");
-		}
-	}
+        private void LogImportSettings(ImportSettings importSettings)
+        {
+            var settingsForLogging = new ImportSettingsForLogging(importSettings);
+            _apiLog.LogInformation($"Import Settings has been extracted successfully for workspace field retrieval process: {settingsForLogging}");
+        }
+    }
 }

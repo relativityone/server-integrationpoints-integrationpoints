@@ -6,18 +6,18 @@ using kCura.EventHandler.CustomAttributes;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
-	[Guid("A65C496B-C885-4263-9E91-DC8308700DBA")]
-	[Description("Removes ability to edit the Job History field on the Job History Error object")]
-	public class JobHistoryErrorPageInteraction : EventHandler.PageInteractionEventHandler
-	{
-		public override Response PopulateScriptBlocks()
-		{
-			Response response = new Response {Success = true};
+    [Guid("A65C496B-C885-4263-9E91-DC8308700DBA")]
+    [Description("Removes ability to edit the Job History field on the Job History Error object")]
+    public class JobHistoryErrorPageInteraction : EventHandler.PageInteractionEventHandler
+    {
+        public override Response PopulateScriptBlocks()
+        {
+            Response response = new Response {Success = true};
 
-			string applicationPath = PageInteractionHelper.GetApplicationRelativeUri();
-			RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/job-history.js");
+            string applicationPath = PageInteractionHelper.GetApplicationRelativeUri();
+            RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/job-history.js");
 
-			return response;
-		}
-	}
+            return response;
+        }
+    }
 }

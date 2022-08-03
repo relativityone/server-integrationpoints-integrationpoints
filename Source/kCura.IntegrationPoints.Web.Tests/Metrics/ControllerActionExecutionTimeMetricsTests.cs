@@ -7,46 +7,46 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests.Metrics
 {
-	[TestFixture]
-	public class ControllerActionExecutionTimeMetricsTests
-	{
-		private Mock<IDateTimeHelper> _dateTimeFake;
-		private Mock<IRipMetrics> _ripMetricsMock;
+    [TestFixture]
+    public class ControllerActionExecutionTimeMetricsTests
+    {
+        private Mock<IDateTimeHelper> _dateTimeFake;
+        private Mock<IRipMetrics> _ripMetricsMock;
 
-		[SetUp]
-		public void SetUp()
-		{
-			_dateTimeFake = new Mock<IDateTimeHelper>();
-			_ripMetricsMock = new Mock<IRipMetrics>();
-		}
+        [SetUp]
+        public void SetUp()
+        {
+            _dateTimeFake = new Mock<IDateTimeHelper>();
+            _ripMetricsMock = new Mock<IRipMetrics>();
+        }
 
-		[Test]
-		public void LogExecutionTime_ShouldReportTimedOperation()
-		{
-			// Arrange
-			const string metricName = "IntegrationPoint.CustomPage.ResponseTime";
-			DateTime startTime = new DateTime(2020, 10, 1, 10, 0, 0);
-			DateTime endTime = startTime.AddSeconds(1);
-			TimeSpan expectedDuration = endTime - startTime;
-			_dateTimeFake.Setup(x => x.Now()).Returns(endTime);
-			const string url = "/fake/url";
-			const string method = "POST";
-			ControllerActionExecutionTimeMetrics sut = new ControllerActionExecutionTimeMetrics(_dateTimeFake.Object, _ripMetricsMock.Object);
+        [Test]
+        public void LogExecutionTime_ShouldReportTimedOperation()
+        {
+            // Arrange
+            const string metricName = "IntegrationPoint.CustomPage.ResponseTime";
+            DateTime startTime = new DateTime(2020, 10, 1, 10, 0, 0);
+            DateTime endTime = startTime.AddSeconds(1);
+            TimeSpan expectedDuration = endTime - startTime;
+            _dateTimeFake.Setup(x => x.Now()).Returns(endTime);
+            const string url = "/fake/url";
+            const string method = "POST";
+            ControllerActionExecutionTimeMetrics sut = new ControllerActionExecutionTimeMetrics(_dateTimeFake.Object, _ripMetricsMock.Object);
 
-			// Act
-			sut.LogExecutionTime(url, startTime, method);
+            // Act
+            sut.LogExecutionTime(url, startTime, method);
 
-			// Assert
-			_ripMetricsMock.Verify(x => x.TimedOperation(
-				It.Is<string>(name => name == metricName),
-				It.Is<TimeSpan>(time => time == expectedDuration),
-				It.Is<Dictionary<string, object>>(dictionary => dictionary.ContainsKey("ActionURL") &&
-				                                                dictionary["ActionURL"].ToString() == url &&
-																dictionary.ContainsKey("ResponseTimeMs") &&
-																(long)dictionary["ResponseTimeMs"] == (long)expectedDuration.TotalMilliseconds &&
-																dictionary.ContainsKey("Method") &&
-																dictionary["Method"].ToString() == method
-				                                                )));
-		}
-	}
+            // Assert
+            _ripMetricsMock.Verify(x => x.TimedOperation(
+                It.Is<string>(name => name == metricName),
+                It.Is<TimeSpan>(time => time == expectedDuration),
+                It.Is<Dictionary<string, object>>(dictionary => dictionary.ContainsKey("ActionURL") &&
+                                                                dictionary["ActionURL"].ToString() == url &&
+                                                                dictionary.ContainsKey("ResponseTimeMs") &&
+                                                                (long)dictionary["ResponseTimeMs"] == (long)expectedDuration.TotalMilliseconds &&
+                                                                dictionary.ContainsKey("Method") &&
+                                                                dictionary["Method"].ToString() == method
+                                                                )));
+        }
+    }
 }

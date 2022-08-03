@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.RelativitySync.RdoCleanup
 {
-	public interface ISyncRdoCleanupService
-	{
-		Task DeleteSyncRdosAsync(int workspaceId);
-	}
+    public interface ISyncRdoCleanupService
+    {
+        Task DeleteSyncRdosAsync(int workspaceId);
+    }
 }

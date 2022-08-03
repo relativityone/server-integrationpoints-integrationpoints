@@ -9,43 +9,43 @@ using Castle.Windsor;
 
 namespace kCura.IntegrationPoints.Web
 {
-	public class WindsorCompositionRoot : IHttpControllerActivator
-	{
-		private readonly IWindsorContainer container;
+    public class WindsorCompositionRoot : IHttpControllerActivator
+    {
+        private readonly IWindsorContainer container;
 
-		public WindsorCompositionRoot(IWindsorContainer container)
-		{
-			this.container = container;
-		}
+        public WindsorCompositionRoot(IWindsorContainer container)
+        {
+            this.container = container;
+        }
 
-		public IHttpController Create(
-				HttpRequestMessage request,
-				HttpControllerDescriptor controllerDescriptor,
-				Type controllerType)
-		{
-			var controller =
-					(IHttpController)this.container.Resolve(controllerType);
+        public IHttpController Create(
+                HttpRequestMessage request,
+                HttpControllerDescriptor controllerDescriptor,
+                Type controllerType)
+        {
+            var controller =
+                    (IHttpController)this.container.Resolve(controllerType);
 
-			request.RegisterForDispose(
-					new Release(
-							() => this.container.Release(controller)));
+            request.RegisterForDispose(
+                    new Release(
+                            () => this.container.Release(controller)));
 
-			return controller;
-		}
+            return controller;
+        }
 
-		private class Release : IDisposable
-		{
-			private readonly Action release;
+        private class Release : IDisposable
+        {
+            private readonly Action release;
 
-			public Release(Action release)
-			{
-				this.release = release;
-			}
+            public Release(Action release)
+            {
+                this.release = release;
+            }
 
-			public void Dispose()
-			{
-				this.release();
-			}
-		}
-	}
+            public void Dispose()
+            {
+                this.release();
+            }
+        }
+    }
 }

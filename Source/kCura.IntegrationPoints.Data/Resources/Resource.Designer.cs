@@ -73,13 +73,13 @@ namespace kCura.IntegrationPoints.Data.Resources {
         /// <summary>
         ///   Looks up a localized string similar to IF NOT EXISTS (SELECT * FROM [eddsdbo].[Configuration] WHERE [Section] = &apos;kCura.IntegrationPoints&apos; AND [Name] = &apos;WebAPIPath&apos;)
         ///BEGIN
-        ///	INSERT INTO [eddsdbo].[Configuration] VALUES (&apos;kCura.IntegrationPoints&apos;, &apos;WebAPIPath&apos;, &apos;http://localhost/RelativityWebAPI/&apos;, &apos;&apos;, &apos;Relativity WebAPI URL for Relativity Integration Points&apos;)
+        ///    INSERT INTO [eddsdbo].[Configuration] VALUES (&apos;kCura.IntegrationPoints&apos;, &apos;WebAPIPath&apos;, &apos;http://localhost/RelativityWebAPI/&apos;, &apos;&apos;, &apos;Relativity WebAPI URL for Relativity Integration Points&apos;)
         ///END
         ///ELSE
         ///BEGIN
-        ///	UPDATE	[eddsdbo].[Configuration] 
-        ///	SET			[Description] = &apos;Relativity WebAPI URL for Relativity Integration Points&apos;
-        ///	WHERE		[Section] = &apos;kCura.IntegrationPoints&apos; AND [N [rest of string was truncated]&quot;;.
+        ///    UPDATE    [eddsdbo].[Configuration] 
+        ///    SET            [Description] = &apos;Relativity WebAPI URL for Relativity Integration Points&apos;
+        ///    WHERE        [Section] = &apos;kCura.IntegrationPoints&apos; AND [N [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string AddWebApiConfig {
             get {
@@ -90,22 +90,22 @@ namespace kCura.IntegrationPoints.Data.Resources {
         /// <summary>
         ///   Looks up a localized string similar to IF OBJECT_ID(N&apos;{0}.[{1}]&apos;,N&apos;U&apos;) IS NULL
         ///BEGIN
-        ///	CREATE TABLE {0}.[{1}] 
-        ///	([JobID] bigint,
-        ///	[TotalRecords] int,
-        ///	[ErrorRecords] int,
-        ///	[ImportApiErrors] int,
-        ///	[Completed] bit,
-        ///	CONSTRAINT [PK_{1}] PRIMARY KEY CLUSTERED 
-        ///	(
-        ///		[JobID] ASC
-        ///	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-        ///	) ON [PRIMARY]
+        ///    CREATE TABLE {0}.[{1}] 
+        ///    ([JobID] bigint,
+        ///    [TotalRecords] int,
+        ///    [ErrorRecords] int,
+        ///    [ImportApiErrors] int,
+        ///    [Completed] bit,
+        ///    CONSTRAINT [PK_{1}] PRIMARY KEY CLUSTERED 
+        ///    (
+        ///        [JobID] ASC
+        ///    )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+        ///    ) ON [PRIMARY]
         ///END
         ///
         ///IF (NOT EXISTS (SELECT * FROM {0}.[{1}] WHERE JobID = @jobID))
         ///BEGIN
-        ///	insert into {0}.[{1}] ([JobID] ,[To [rest of string was truncated]&quot;;.
+        ///    insert into {0}.[{1}] ([JobID] ,[To [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string CreateJobTrackingEntry {
             get {
@@ -115,18 +115,18 @@ namespace kCura.IntegrationPoints.Data.Resources {
         
         /// <summary>
         ///   Looks up a localized string similar to SELECT 
-        ///					RF.[ArtifactID]
-        ///					,RF.[Name]
-        ///					,RFD.[FileData]
+        ///                    RF.[ArtifactID]
+        ///                    ,RF.[Name]
+        ///                    ,RFD.[FileData]
         ///FROM 
-        ///					[EDDSDBO].[ResourceFile] RF WITH(NOLOCK)
-        ///	JOIN  
-        ///					[EDDSDBO].[ResourceFileData] RFD WITH(NOLOCK)
-        ///		ON		
-        ///					RF.[ArtifactID] = RFD.[ArtifactID]
+        ///                    [EDDSDBO].[ResourceFile] RF WITH(NOLOCK)
+        ///    JOIN  
+        ///                    [EDDSDBO].[ResourceFileData] RFD WITH(NOLOCK)
+        ///        ON        
+        ///                    RF.[ArtifactID] = RFD.[ArtifactID]
         ///WHERE 
-        ///					RF.[ApplicationGuid]=@ApplicationGuid
-        ///	AND				RF.[FileType]=0.
+        ///                    RF.[ApplicationGuid]=@ApplicationGuid
+        ///    AND                RF.[FileType]=0.
         /// </summary>
         internal static string GetApplicationBinaries {
             get {
@@ -135,9 +135,9 @@ namespace kCura.IntegrationPoints.Data.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT		[ArtifactGuid]
-        ///FROM			[EDDSDBO].[ArtifactGuid] AG WITH(NOLOCK)
-        ///WHERE 		AG.[ArtifactID] = @ApplicationID.
+        ///   Looks up a localized string similar to SELECT        [ArtifactGuid]
+        ///FROM            [EDDSDBO].[ArtifactGuid] AG WITH(NOLOCK)
+        ///WHERE         AG.[ArtifactID] = @ApplicationID.
         /// </summary>
         internal static string GetApplicationGuid {
             get {
@@ -147,9 +147,9 @@ namespace kCura.IntegrationPoints.Data.Resources {
         
         /// <summary>
         ///   Looks up a localized string similar to SELECT
-        ///	ArtifactId
+        ///    ArtifactId
         ///FROM
-        ///	[EDDSDBO].[ArtifactGuid] WITH (NOLOCK)
+        ///    [EDDSDBO].[ArtifactGuid] WITH (NOLOCK)
         ///WHERE [ArtifactGuid]= @ArtifactGuid.
         /// </summary>
         internal static string GetArtifactIDByGuid {
@@ -172,12 +172,12 @@ namespace kCura.IntegrationPoints.Data.Resources {
         ///FROM [EDDSDBO].ObjectType ot WITH(NOLOCK)
         ///WHERE DescriptorArtifactTypeID in
         ///(
-        ///	SELECT atg.ArtifactTypeID
-        ///	FROM [EDDSDBO].[GroupUser] gu WITH(NOLOCK)
-        ///	JOIN [EDDSDBO].[AccessControlListPermission]  acl WITH(NOLOCK) on gu.GroupArtifactID = acl.GroupID
-        ///	JOIN [EDDSDBO].[Permission] p WITH(NOLOCK) on p.PermissionID = acl.PermissionID
-        ///	JOIN [EDDSDBO].[ArtifactTypeGrouping] atg WITH(NOLOCK) on atg.ArtifactGroupingID = p.ArtifactGrouping
-        ///	WHERE p.[T [rest of string was truncated]&quot;;.
+        ///    SELECT atg.ArtifactTypeID
+        ///    FROM [EDDSDBO].[GroupUser] gu WITH(NOLOCK)
+        ///    JOIN [EDDSDBO].[AccessControlListPermission]  acl WITH(NOLOCK) on gu.GroupArtifactID = acl.GroupID
+        ///    JOIN [EDDSDBO].[Permission] p WITH(NOLOCK) on p.PermissionID = acl.PermissionID
+        ///    JOIN [EDDSDBO].[ArtifactTypeGrouping] atg WITH(NOLOCK) on atg.ArtifactGroupingID = p.ArtifactGrouping
+        ///    WHERE p.[T [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GetObjectTypes {
             get {
@@ -193,12 +193,12 @@ namespace kCura.IntegrationPoints.Data.Resources {
         ///DECLARE @table varchar(255) 
         ///DECLARE @dropCommand varchar(300) 
         ///DECLARE tableCursor CURSOR FOR 
-        ///		SELECT &apos;{0}.&apos; + QUOTENAME(t.name) 
-        ///		FROM {1}.[sys].[tables] AS t 
-        ///		INNER JOIN {1}.[sys].[schemas] AS s 
-        ///		ON t.[schema_id] = s.[schema_id] 
-        ///		WHERE DATEDIFF(HOUR,t.create_date,GETUTCDATE())&gt;72
-        ///		AND t.name LIKE &apos;RIP_JobTracker_%&apos;
+        ///        SELECT &apos;{0}.&apos; + QUOTENAME(t.name) 
+        ///        FROM {1}.[sys].[tables] AS t 
+        ///        INNER JOIN {1}.[sys].[schemas] AS s 
+        ///        ON t.[schema_id] = s.[schema_id] 
+        ///        WHERE DATEDIFF(HOUR,t.create_date,GETUTCDATE())&gt;72
+        ///        AND t.name LIKE &apos;RIP_JobTracker_%&apos;
         ///
         ///OPEN tableCursor 
         ///FETCH next FROM tableCursor INTO @table 
@@ -224,17 +224,17 @@ namespace kCura.IntegrationPoints.Data.Resources {
         
         /// <summary>
         ///   Looks up a localized string similar to UPDATE {0}.[{1}]
-        ///	SET
-        ///		[TotalRecords] += @total,
-        ///		[ErrorRecords] += @errored,
-        ///		[ImportApiErrors] += @importApiErrors
-        ///	WHERE
-        ///		[JobId] = @jobID
+        ///    SET
+        ///        [TotalRecords] += @total,
+        ///        [ErrorRecords] += @errored,
+        ///        [ImportApiErrors] += @importApiErrors
+        ///    WHERE
+        ///        [JobId] = @jobID
         ///
         ///SELECT
-        ///	SUM(COALESCE([TotalRecords],0)) as [TotalRecords],
-        ///	SUM(COALESCE([ErrorRecords],0)) as [ErrorRecords],
-        ///	SUM(COALESCE([ImportApiErrors],0)) as [ImportApiErrors]
+        ///    SUM(COALESCE([TotalRecords],0)) as [TotalRecords],
+        ///    SUM(COALESCE([ErrorRecords],0)) as [ErrorRecords],
+        ///    SUM(COALESCE([ImportApiErrors],0)) as [ImportApiErrors]
         ///FROM {0}.[{1}]
         ///.
         /// </summary>

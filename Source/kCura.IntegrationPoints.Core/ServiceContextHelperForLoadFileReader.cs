@@ -5,33 +5,33 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core
 {
-	public class ServiceContextHelperForLoadFileReader : IServiceContextHelper
-	{
-		public ServiceContextHelperForLoadFileReader(int workspaceId)
-		{
-			WorkspaceID = workspaceId;
-		}
+    public class ServiceContextHelperForLoadFileReader : IServiceContextHelper
+    {
+        public ServiceContextHelperForLoadFileReader(int workspaceId)
+        {
+            WorkspaceID = workspaceId;
+        }
 
-		public int WorkspaceID { get; }
+        public int WorkspaceID { get; }
 
-		public IDBContext GetDBContext(int workspaceID = -1)
-		{
-			throw new NotImplementedException();
-		}
+        public IDBContext GetDBContext(int workspaceID = -1)
+        {
+            throw new NotImplementedException();
+        }
 
-		public int GetEddsUserID()
-		{
-			throw new NotImplementedException();
-		}
+        public int GetEddsUserID()
+        {
+            throw new NotImplementedException();
+        }
 
-		public IRelativityObjectManagerService GetRelativityObjectManagerService()
-		{
-			throw new NotImplementedException();
-		}
+        public IRelativityObjectManagerService GetRelativityObjectManagerService()
+        {
+            throw new NotImplementedException();
+        }
 
-		public int GetWorkspaceUserID()
-		{
-			throw new NotImplementedException();
-		}
-	}
+        public int GetWorkspaceUserID()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

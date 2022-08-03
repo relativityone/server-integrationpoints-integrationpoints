@@ -4,8 +4,8 @@ using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
-	public interface ITaskExceptionMediator
-	{
-		void RegisterEvent(ScheduleQueueAgentBase agent);
-	}
+    public interface ITaskExceptionMediator
+    {
+        void RegisterEvent(ScheduleQueueAgentBase agent);
+    }
 }

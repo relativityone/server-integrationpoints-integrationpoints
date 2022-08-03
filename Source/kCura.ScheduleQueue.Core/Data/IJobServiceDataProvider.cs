@@ -11,13 +11,13 @@ namespace kCura.ScheduleQueue.Core.Data
         DataRow GetNextQueueJob(int agentId, int agentTypeId, int[] resurceGroupIdsArray);
         DataRow GetNextQueueJob(int agentId, int agentTypeId, long? rootJobId = null);
 
-	    void CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID,
-		    string taskType,
-		    DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
-		    string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID);
+        void CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID,
+            string taskType,
+            DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
+            string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID);
 
 
-		DataRow CreateScheduledJob(int workspaceID, int relatedObjectArtifactID, string taskType,
+        DataRow CreateScheduledJob(int workspaceID, int relatedObjectArtifactID, string taskType,
             DateTime nextRunTime, int agentTypeId, string scheduleRuleType, string serializedScheduleRule,
             string jobDetails, int jobFlags, int submittedBy, long? rootJobID, long? parentJobID);
 
@@ -26,8 +26,8 @@ namespace kCura.ScheduleQueue.Core.Data
 
         DataTable GetJobs(int workspaceId, int relatedObjectArtifactId, string taskType);
         DataTable GetJobs(int workspaceId, int relatedObjectArtifactId, List<string> taskTypes);
-	    DataTable GetAllJobs();
-		int UpdateStopState(IList<long> jobIds, StopState state);
+        DataTable GetAllJobs();
+        int UpdateStopState(IList<long> jobIds, StopState state);
         void CleanupJobQueueTable();
         void CleanupScheduledJobsQueue();
         void UnlockScheduledJob(int agentId);

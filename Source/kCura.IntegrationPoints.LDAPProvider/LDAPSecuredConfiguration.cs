@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.LDAPProvider
 {
-	public class LDAPSecuredConfiguration
-	{
-		/// <summary>
-		/// The user name to use when authenticating the client. 
-		/// </summary>
-		public string UserName { get; set; }
+    public class LDAPSecuredConfiguration
+    {
+        /// <summary>
+        /// The user name to use when authenticating the client. 
+        /// </summary>
+        public string UserName { get; set; }
 
-		/// <summary>
-		/// The password to use when authenticating the client. 
-		/// </summary>
-		public string Password { get; set; }
-	}
+        /// <summary>
+        /// The password to use when authenticating the client. 
+        /// </summary>
+        public string Password { get; set; }
+    }
 }

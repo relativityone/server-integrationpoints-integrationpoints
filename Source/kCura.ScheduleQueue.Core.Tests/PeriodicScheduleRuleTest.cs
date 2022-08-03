@@ -744,9 +744,9 @@ namespace kCura.ScheduleQueue.Core.Tests
         [TestCase("Central European Standard Time", "6:30 AM", "10/25/2016", "Central Standard Time", "10/26/2016 4:30 AM")]
         [TestCase("Central European Standard Time", "12:45 AM", "10/25/2016", "Central Standard Time", "10/25/2016 10:45 PM")]
         // Daylight Saving Time (DST) changes
-        [TestCase("Central Standard Time", "11:15 PM", "03/10/2016", "Central Standard Time", "03/17/2016 4:15 AM")]    //stat day: 11:15PM 03/10/2016 CST = 5:15AM 03/11/2016 UTC;		CST → CDT change 03/12/2016 
-        [TestCase("Central European Standard Time", "1:20 AM", "03/25/2016", "Central Standard Time", "03/29/2016 11:20 PM")]    //stat day: 1:20AM 03/25/2016 CET = 12:20AM 03/25/2016 UTC;		CET → CEST change 03/26/2016 
-        [TestCase("Central European Standard Time", "2:25 AM", "10/28/2016", "Central Standard Time", "11/2/2016 1:25 AM")]    //stat day: 2:25AM 10/28/2016 CEST = 12:25AM 10/28/2016 UTC;		CEST → CET change 10/30/2016
+        [TestCase("Central Standard Time", "11:15 PM", "03/10/2016", "Central Standard Time", "03/17/2016 4:15 AM")]    //stat day: 11:15PM 03/10/2016 CST = 5:15AM 03/11/2016 UTC;        CST → CDT change 03/12/2016 
+        [TestCase("Central European Standard Time", "1:20 AM", "03/25/2016", "Central Standard Time", "03/29/2016 11:20 PM")]    //stat day: 1:20AM 03/25/2016 CET = 12:20AM 03/25/2016 UTC;        CET → CEST change 03/26/2016 
+        [TestCase("Central European Standard Time", "2:25 AM", "10/28/2016", "Central Standard Time", "11/2/2016 1:25 AM")]    //stat day: 2:25AM 10/28/2016 CEST = 12:25AM 10/28/2016 UTC;        CEST → CET change 10/30/2016
         public void CalculateLastDayOfScheduledWeeklyJob(string clientTimeZone, string clientLocalTime, string clientStartDate, string serverTimeZone, string expectedRunUtcTime)
         {
             // arrange
@@ -826,9 +826,9 @@ namespace kCura.ScheduleQueue.Core.Tests
         [TestCase("Central European Standard Time", "01:45 AM", "05/01/2016", 1, "Central Standard Time", "04/30/2016 11:45 PM")]
         [TestCase("Central Standard Time", "08:15 PM", "05/05/2016", 31, "Central Standard Time", "06/01/2016 1:15 AM")]
         [TestCase("Central Standard Time", "08:15 PM", "02/05/2016", 31, "Central Standard Time", "03/01/2016 2:15 AM")]
-        [TestCase("Central Standard Time", "11:15 PM", "03/10/2016", 17, "Central Standard Time", "03/18/2016 4:15 AM")]    //stat day: 11:15PM 03/10/2016 CST = 5:15AM 03/11/2016 UTC;		CST → CDT change 03/12/2016 
-        [TestCase("Central European Standard Time", "1:20 AM", "03/25/2016", 29, "Central Standard Time", "03/28/2016 11:20 PM")]    //stat day: 1:20AM 03/25/2016 CET = 12:20AM 03/25/2016 UTC;		CET → CEST change 03/26/2016 
-        [TestCase("Central European Standard Time", "2:25 AM", "10/28/2016", 2, "Central Standard Time", "11/2/2016 1:25 AM")]    //stat day: 2:25AM 10/28/2016 CEST = 12:25AM 10/28/2016 UTC;		CEST → CET change 10/30/2016
+        [TestCase("Central Standard Time", "11:15 PM", "03/10/2016", 17, "Central Standard Time", "03/18/2016 4:15 AM")]    //stat day: 11:15PM 03/10/2016 CST = 5:15AM 03/11/2016 UTC;        CST → CDT change 03/12/2016 
+        [TestCase("Central European Standard Time", "1:20 AM", "03/25/2016", 29, "Central Standard Time", "03/28/2016 11:20 PM")]    //stat day: 1:20AM 03/25/2016 CET = 12:20AM 03/25/2016 UTC;        CET → CEST change 03/26/2016 
+        [TestCase("Central European Standard Time", "2:25 AM", "10/28/2016", 2, "Central Standard Time", "11/2/2016 1:25 AM")]    //stat day: 2:25AM 10/28/2016 CEST = 12:25AM 10/28/2016 UTC;        CEST → CET change 10/30/2016
         public void CalculateLastDayOfScheduledMonthlyJob(string clientTimeZone, string clientLocalTime, string clientStartDate, int? dayOfMonth,
             string serverTimeZone, string expectedRunUtcTime)
         {

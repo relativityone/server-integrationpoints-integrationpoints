@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.Core.Services
 {
-	public interface IErrorService
-	{
-		void Log(ErrorModel error);
-	}
+    public interface IErrorService
+    {
+        void Log(ErrorModel error);
+    }
 }

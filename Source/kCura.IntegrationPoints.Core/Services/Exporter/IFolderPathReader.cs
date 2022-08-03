@@ -3,8 +3,8 @@ using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
-	public interface IFolderPathReader
-	{
-		void SetFolderPaths(List<ArtifactDTO> artifacts);
-	}
+    public interface IFolderPathReader
+    {
+        void SetFolderPaths(List<ArtifactDTO> artifacts);
+    }
 }

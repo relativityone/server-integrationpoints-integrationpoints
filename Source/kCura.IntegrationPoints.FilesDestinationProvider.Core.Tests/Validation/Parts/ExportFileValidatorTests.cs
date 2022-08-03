@@ -10,24 +10,24 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation.Parts
 {
-	[TestFixture, Category("Unit")]
-	public class ExportFileValidatorTests
-	{
-		[Test]
-		public void ItShouldThrowForInvalidModel()
-		{
-			// arrange
-			var serializer = Substitute.For<ISerializer>();
-			var settingsBuilder = Substitute.For<IExportSettingsBuilder>();
-			var initProcessService = Substitute.For<IExportInitProcessService>();
-			var fileBuilder = Substitute.For<IExportFileBuilder>();
+    [TestFixture, Category("Unit")]
+    public class ExportFileValidatorTests
+    {
+        [Test]
+        public void ItShouldThrowForInvalidModel()
+        {
+            // arrange
+            var serializer = Substitute.For<ISerializer>();
+            var settingsBuilder = Substitute.For<IExportSettingsBuilder>();
+            var initProcessService = Substitute.For<IExportInitProcessService>();
+            var fileBuilder = Substitute.For<IExportFileBuilder>();
 
-			var validator = new ExportFileValidator(serializer, settingsBuilder, initProcessService, fileBuilder);
+            var validator = new ExportFileValidator(serializer, settingsBuilder, initProcessService, fileBuilder);
 
-			var model = new IntegrationPointProviderValidationModel();
+            var model = new IntegrationPointProviderValidationModel();
 
-			// act & assert
-			Assert.Throws<NullReferenceException>(() => validator.Validate(model));
-		}
-	}
+            // act & assert
+            Assert.Throws<NullReferenceException>(() => validator.Validate(model));
+        }
+    }
 }

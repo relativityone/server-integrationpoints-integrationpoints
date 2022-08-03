@@ -12,8 +12,8 @@ namespace kCura.IntegrationPoints.LDAPProvider.Installers
         {
             container.Register(Component.For<ILDAPSettingsReader>().ImplementedBy<LDAPSettingsReader>().LifestyleTransient());
             container.Register(Component.For<ILDAPServiceFactory>().ImplementedBy<LdapServiceFactory>().LifestyleSingleton());
-			container.Register(Component.For<IDataSourceProvider>().ImplementedBy<LDAPProvider>()
-				.Named(new Guid(Core.Constants.IntegrationPoints.SourceProviders.LDAP).ToString()));
-		}
+            container.Register(Component.For<IDataSourceProvider>().ImplementedBy<LDAPProvider>()
+                .Named(new Guid(Core.Constants.IntegrationPoints.SourceProviders.LDAP).ToString()));
+        }
     }
 }

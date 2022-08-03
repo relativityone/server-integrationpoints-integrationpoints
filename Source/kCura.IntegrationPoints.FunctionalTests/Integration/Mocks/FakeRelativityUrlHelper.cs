@@ -9,9 +9,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
     public class FakeRelativityUrlHelper: IRelativityUrlHelper
     {
-		public string GetRelativityViewUrl(int workspaceID, int artifactID, string objectTypeName)
-		{
-			return "RelativityViewUrlMock";
-		}
-	}
+        public string GetRelativityViewUrl(int workspaceID, int artifactID, string objectTypeName)
+        {
+            return "RelativityViewUrlMock";
+        }
+    }
 }

@@ -1,9 +1,9 @@
 ﻿namespace kCura.IntegrationPoints.Synchronizers.RDO.Entity
 {
-	public interface IEntityManagerLinksSanitizer
-	{
-		string ManagerLinksFieldIdentifier { get; }
+    public interface IEntityManagerLinksSanitizer
+    {
+        string ManagerLinksFieldIdentifier { get; }
 
-		string SanitizeManagerReferenceLink(string managerLink);
-	}
+        string SanitizeManagerReferenceLink(string managerLink);
+    }
 }

@@ -9,72 +9,72 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation.RelativityProviderValidator
 {
-	[TestFixture, Category("Unit")]
-	public class SavedSearchValidatorTests
-	{
-		private const int _SAVED_SEARCH_ID = 1;
+    [TestFixture, Category("Unit")]
+    public class SavedSearchValidatorTests
+    {
+        private const int _SAVED_SEARCH_ID = 1;
 
-		[Test]
-		public void ItShouldValidateSavedSearch()
-		{
-			// arrange
-			var savedSearch = new SavedSearchDTO();
-			
-			var savedSearchRepositoryMock = Substitute.For<ISavedSearchQueryRepository>();
-			savedSearchRepositoryMock.RetrieveSavedSearch(_SAVED_SEARCH_ID)
-				.Returns(savedSearch);
-			IAPILog logger = Substitute.For<IAPILog>();
-			var validator = new SavedSearchValidator(logger, savedSearchRepositoryMock);
+        [Test]
+        public void ItShouldValidateSavedSearch()
+        {
+            // arrange
+            var savedSearch = new SavedSearchDTO();
+            
+            var savedSearchRepositoryMock = Substitute.For<ISavedSearchQueryRepository>();
+            savedSearchRepositoryMock.RetrieveSavedSearch(_SAVED_SEARCH_ID)
+                .Returns(savedSearch);
+            IAPILog logger = Substitute.For<IAPILog>();
+            var validator = new SavedSearchValidator(logger, savedSearchRepositoryMock);
 
-			// act
-			var actual = validator.Validate(_SAVED_SEARCH_ID);
+            // act
+            var actual = validator.Validate(_SAVED_SEARCH_ID);
 
-			// assert
-			Assert.IsTrue(actual.IsValid);
-			Assert.That(actual.MessageTexts.Count(), Is.EqualTo(0));
-		}
+            // assert
+            Assert.IsTrue(actual.IsValid);
+            Assert.That(actual.MessageTexts.Count(), Is.EqualTo(0));
+        }
 
-		[Test]
-		public void ItShouldFailForNotFoundSavedSearch()
-		{
-			// arrange
-			var savedSearch = default(SavedSearchDTO);
+        [Test]
+        public void ItShouldFailForNotFoundSavedSearch()
+        {
+            // arrange
+            var savedSearch = default(SavedSearchDTO);
 
-			var savedSearchRepositoryMock = Substitute.For<ISavedSearchQueryRepository>();
-			savedSearchRepositoryMock.RetrieveSavedSearch(_SAVED_SEARCH_ID)
-				.Returns(savedSearch);
+            var savedSearchRepositoryMock = Substitute.For<ISavedSearchQueryRepository>();
+            savedSearchRepositoryMock.RetrieveSavedSearch(_SAVED_SEARCH_ID)
+                .Returns(savedSearch);
 
-			IAPILog logger = Substitute.For<IAPILog>();
-			var validator = new SavedSearchValidator(logger, savedSearchRepositoryMock);
+            IAPILog logger = Substitute.For<IAPILog>();
+            var validator = new SavedSearchValidator(logger, savedSearchRepositoryMock);
 
-			// act
-			var actual = validator.Validate(_SAVED_SEARCH_ID);
+            // act
+            var actual = validator.Validate(_SAVED_SEARCH_ID);
 
-			// assert
-			Assert.IsFalse(actual.IsValid);
-			Assert.AreEqual(1, actual.Messages.Count());
-			Assert.AreEqual(ValidationMessages.SavedSearchNoAccess, actual.Messages.First());
-		}
+            // assert
+            Assert.IsFalse(actual.IsValid);
+            Assert.AreEqual(1, actual.Messages.Count());
+            Assert.AreEqual(ValidationMessages.SavedSearchNoAccess, actual.Messages.First());
+        }
 
-		[Test]
-		public void ItShouldFailForNotPublicSavedSearch()
-		{
-			// arrange
-			var savedSearch = new SavedSearchDTO() { Owner = "owner" };
+        [Test]
+        public void ItShouldFailForNotPublicSavedSearch()
+        {
+            // arrange
+            var savedSearch = new SavedSearchDTO() { Owner = "owner" };
 
-			var savedSearchRepositoryMock = Substitute.For<ISavedSearchQueryRepository>();
-			savedSearchRepositoryMock.RetrieveSavedSearch(_SAVED_SEARCH_ID)
-				.Returns(savedSearch);
+            var savedSearchRepositoryMock = Substitute.For<ISavedSearchQueryRepository>();
+            savedSearchRepositoryMock.RetrieveSavedSearch(_SAVED_SEARCH_ID)
+                .Returns(savedSearch);
 
-			IAPILog logger = Substitute.For<IAPILog>();
-			var validator = new SavedSearchValidator(logger, savedSearchRepositoryMock);
+            IAPILog logger = Substitute.For<IAPILog>();
+            var validator = new SavedSearchValidator(logger, savedSearchRepositoryMock);
 
-			// act
-			var actual = validator.Validate(_SAVED_SEARCH_ID);
+            // act
+            var actual = validator.Validate(_SAVED_SEARCH_ID);
 
-			// assert
-			Assert.IsFalse(actual.IsValid);
-			Assert.IsTrue(actual.MessageTexts.Contains(Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NOT_PUBLIC));
-		}
-	}
+            // assert
+            Assert.IsFalse(actual.IsValid);
+            Assert.IsTrue(actual.MessageTexts.Contains(Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NOT_PUBLIC));
+        }
+    }
 }

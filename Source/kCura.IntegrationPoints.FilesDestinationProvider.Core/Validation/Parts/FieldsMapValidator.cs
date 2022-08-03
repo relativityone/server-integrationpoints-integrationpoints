@@ -13,91 +13,91 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 {
-	public class FieldsMapValidator : BasePartsValidator<IntegrationPointProviderValidationModel>
-	{
-		private readonly IAPILog _logger;
-		private readonly ISerializer _serializer;
-		private readonly IExportFieldsService _exportFieldsService;
+    public class FieldsMapValidator : BasePartsValidator<IntegrationPointProviderValidationModel>
+    {
+        private readonly IAPILog _logger;
+        private readonly ISerializer _serializer;
+        private readonly IExportFieldsService _exportFieldsService;
 
-		public FieldsMapValidator(IAPILog logger, ISerializer serializer, IExportFieldsService exportFieldsService)
-		{
-			_logger = logger.ForContext<FieldsMapValidator>();
-			_serializer = serializer;
-			_exportFieldsService = exportFieldsService;
-		}
+        public FieldsMapValidator(IAPILog logger, ISerializer serializer, IExportFieldsService exportFieldsService)
+        {
+            _logger = logger.ForContext<FieldsMapValidator>();
+            _serializer = serializer;
+            _exportFieldsService = exportFieldsService;
+        }
 
-		public override ValidationResult Validate(IntegrationPointProviderValidationModel value)
-		{
-			var result = new ValidationResult();
+        public override ValidationResult Validate(IntegrationPointProviderValidationModel value)
+        {
+            var result = new ValidationResult();
 
-			if (string.IsNullOrWhiteSpace(value.FieldsMap))
-			{
-				result.Add(FileDestinationProviderValidationMessages.FIELD_MAP_NO_FIELDS);
-				return result;
-			}
+            if (string.IsNullOrWhiteSpace(value.FieldsMap))
+            {
+                result.Add(FileDestinationProviderValidationMessages.FIELD_MAP_NO_FIELDS);
+                return result;
+            }
 
-			var fieldMap = _serializer.Deserialize<IEnumerable<FieldMap>>(value.FieldsMap);
+            var fieldMap = _serializer.Deserialize<IEnumerable<FieldMap>>(value.FieldsMap);
 
-			if (fieldMap.Count() == 0)
-			{
-				result.Add(FileDestinationProviderValidationMessages.FIELD_MAP_NO_FIELDS);
-			}
-			else
-			{
-				var exportSettings = _serializer.Deserialize<ExportUsingSavedSearchSettings>(value.SourceConfiguration);
+            if (fieldMap.Count() == 0)
+            {
+                result.Add(FileDestinationProviderValidationMessages.FIELD_MAP_NO_FIELDS);
+            }
+            else
+            {
+                var exportSettings = _serializer.Deserialize<ExportUsingSavedSearchSettings>(value.SourceConfiguration);
 
-				var exportableFields = RetrieveExportableFields(value, exportSettings);
-				var selectedFields = fieldMap.Select(x => x.SourceField);
+                var exportableFields = RetrieveExportableFields(value, exportSettings);
+                var selectedFields = fieldMap.Select(x => x.SourceField);
 
-				var orphanedFields = selectedFields.Except(exportableFields, new FieldEntryEqualityComparer());
+                var orphanedFields = selectedFields.Except(exportableFields, new FieldEntryEqualityComparer());
 
-				foreach (var field in orphanedFields)
-				{
-					result.Add($"{field.DisplayName ?? "<empty>"} {FileDestinationProviderValidationMessages.FIELD_MAP_UNKNOWN_FIELD}");
-				}
-			}
+                foreach (var field in orphanedFields)
+                {
+                    result.Add($"{field.DisplayName ?? "<empty>"} {FileDestinationProviderValidationMessages.FIELD_MAP_UNKNOWN_FIELD}");
+                }
+            }
 
-			return result;
-		}
+            return result;
+        }
 
-		private FieldEntry[] RetrieveExportableFields(IntegrationPointProviderValidationModel value,
-			ExportUsingSavedSearchSettings exportSettings)
-		{
-			try
-			{
-				return _exportFieldsService.GetAllExportableFields(exportSettings.SourceWorkspaceArtifactId, value.ArtifactTypeId);
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "An error occurred while retriving exportable fields in {validator}", nameof(FieldsMapValidator));
-				string message =
-					IntegrationPointsExceptionMessages.CreateErrorMessageRetryOrContactAdministrator(
-						"while retrieving exportable fields");
-				throw new IntegrationPointsException(message, ex);
-			}
-		}
+        private FieldEntry[] RetrieveExportableFields(IntegrationPointProviderValidationModel value,
+            ExportUsingSavedSearchSettings exportSettings)
+        {
+            try
+            {
+                return _exportFieldsService.GetAllExportableFields(exportSettings.SourceWorkspaceArtifactId, value.ArtifactTypeId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retriving exportable fields in {validator}", nameof(FieldsMapValidator));
+                string message =
+                    IntegrationPointsExceptionMessages.CreateErrorMessageRetryOrContactAdministrator(
+                        "while retrieving exportable fields");
+                throw new IntegrationPointsException(message, ex);
+            }
+        }
 
-		private class FieldEntryEqualityComparer : IEqualityComparer<FieldEntry>
-		{
-			public bool Equals(FieldEntry x, FieldEntry y)
-			{
-				if ((x == null) && (y == null))
-				{
-					return true;
-				}
+        private class FieldEntryEqualityComparer : IEqualityComparer<FieldEntry>
+        {
+            public bool Equals(FieldEntry x, FieldEntry y)
+            {
+                if ((x == null) && (y == null))
+                {
+                    return true;
+                }
 
-				if ((x == null) || (y == null))
-				{
-					return false;
-				}
+                if ((x == null) || (y == null))
+                {
+                    return false;
+                }
 
-				return (x.FieldIdentifier == y.FieldIdentifier);
-			}
+                return (x.FieldIdentifier == y.FieldIdentifier);
+            }
 
-			public int GetHashCode(FieldEntry obj)
-			{
-				return (obj?.FieldIdentifier == null) ? 0 : obj.FieldIdentifier.GetHashCode();
-			}
-		}
-	}
+            public int GetHashCode(FieldEntry obj)
+            {
+                return (obj?.FieldIdentifier == null) ? 0 : obj.FieldIdentifier.GetHashCode();
+            }
+        }
+    }
 }

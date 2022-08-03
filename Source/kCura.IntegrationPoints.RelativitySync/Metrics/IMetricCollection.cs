@@ -2,9 +2,9 @@
 
 namespace kCura.IntegrationPoints.RelativitySync.Metrics
 {
-	public interface IMetricCollection
-	{
-		IMetricCollection AddMetric<T>(T metric) where T: IMetric;
-		Task SendAsync();
-	}
+    public interface IMetricCollection
+    {
+        IMetricCollection AddMetric<T>(T metric) where T: IMetric;
+        Task SendAsync();
+    }
 }

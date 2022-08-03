@@ -2,10 +2,10 @@
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 {
-	public interface IUserMessageNotification
-	{
-		event EventHandler<UserMessageEventArgs> UserFatalMessageEvent;
+    public interface IUserMessageNotification
+    {
+        event EventHandler<UserMessageEventArgs> UserFatalMessageEvent;
 
-		event EventHandler<UserMessageEventArgs> UserWarningMessageEvent;
-	}
+        event EventHandler<UserMessageEventArgs> UserWarningMessageEvent;
+    }
 }

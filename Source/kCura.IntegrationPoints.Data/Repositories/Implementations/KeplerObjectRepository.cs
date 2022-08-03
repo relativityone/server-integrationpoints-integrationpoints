@@ -6,31 +6,31 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class KeplerObjectRepository : IObjectRepository
-	{
-		private readonly IRelativityObjectManager _relativityObjectManager;
-		private readonly int ArtifactTypeId;
+    public class KeplerObjectRepository : IObjectRepository
+    {
+        private readonly IRelativityObjectManager _relativityObjectManager;
+        private readonly int ArtifactTypeId;
 
-		public KeplerObjectRepository(IRelativityObjectManager relativityObjectManager, int objectTypeId)
-		{
-			_relativityObjectManager = relativityObjectManager;
-			ArtifactTypeId = objectTypeId;
-		}
+        public KeplerObjectRepository(IRelativityObjectManager relativityObjectManager, int objectTypeId)
+        {
+            _relativityObjectManager = relativityObjectManager;
+            ArtifactTypeId = objectTypeId;
+        }
 
-		public Task<ArtifactDTO[]> GetFieldsFromObjects(string[] fields)
-		{
-			var query = new QueryRequest
-			{
-				ObjectType = new ObjectTypeRef { ArtifactTypeID = ArtifactTypeId },
-				Fields = fields.Select(x => new FieldRef { Name = x }),
-				SampleParameters = null,
-				RelationalField = null,
-				SearchProviderCondition = null
-			};
+        public Task<ArtifactDTO[]> GetFieldsFromObjects(string[] fields)
+        {
+            var query = new QueryRequest
+            {
+                ObjectType = new ObjectTypeRef { ArtifactTypeID = ArtifactTypeId },
+                Fields = fields.Select(x => new FieldRef { Name = x }),
+                SampleParameters = null,
+                RelationalField = null,
+                SearchProviderCondition = null
+            };
 
-			return _relativityObjectManager
-				.QueryAsync(query)
-				.ToArtifactDTOsArrayAsyncDeprecated();
-		}
-	}
+            return _relativityObjectManager
+                .QueryAsync(query)
+                .ToArtifactDTOsArrayAsyncDeprecated();
+        }
+    }
 }

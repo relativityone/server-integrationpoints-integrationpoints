@@ -13,7 +13,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers
 {
-	[TestFixture, Category("Unit")]
+    [TestFixture, Category("Unit")]
     public class SavedSearchFinderControllerTests
     {
         private const int _WKSP_ID = 1;

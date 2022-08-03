@@ -6,7 +6,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {
-	public interface IJobStatisticsService
+    public interface IJobStatisticsService
     {
         void Subscribe(IBatchReporter reporter, Job job);
         void SetIntegrationPointConfiguration(ImportSettings importSettings, SourceConfiguration sourceConfiguration);

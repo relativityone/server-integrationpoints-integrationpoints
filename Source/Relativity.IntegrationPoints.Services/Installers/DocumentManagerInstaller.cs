@@ -8,26 +8,26 @@ using Relativity.IntegrationPoints.Services.Repositories.Implementations;
 
 namespace Relativity.IntegrationPoints.Services.Installers
 {
-	public class DocumentManagerInstaller : Installer
-	{
-		public DocumentManagerInstaller()
-		{
-			Dependencies = new List<IWindsorInstaller>();
-		}
+    public class DocumentManagerInstaller : Installer
+    {
+        public DocumentManagerInstaller()
+        {
+            Dependencies = new List<IWindsorInstaller>();
+        }
 
-		protected override IList<IWindsorInstaller> Dependencies { get; }
+        protected override IList<IWindsorInstaller> Dependencies { get; }
 
-		protected override void RegisterComponents(
-			IWindsorContainer container, 
-			IConfigurationStore store, 
-			int workspaceID)
-		{
-			container.Register(Component.For<IRelativityObjectManagerFactory>()
-				.ImplementedBy<RelativityObjectManagerFactory>()
-				.LifestyleTransient());
-			container.Register(Component.For<Repositories.IDocumentRepository>()
-				.ImplementedBy<DocumentRepository>()
-				.LifestyleTransient());
-		}
-	}
+        protected override void RegisterComponents(
+            IWindsorContainer container, 
+            IConfigurationStore store, 
+            int workspaceID)
+        {
+            container.Register(Component.For<IRelativityObjectManagerFactory>()
+                .ImplementedBy<RelativityObjectManagerFactory>()
+                .LifestyleTransient());
+            container.Register(Component.For<Repositories.IDocumentRepository>()
+                .ImplementedBy<DocumentRepository>()
+                .LifestyleTransient());
+        }
+    }
 }

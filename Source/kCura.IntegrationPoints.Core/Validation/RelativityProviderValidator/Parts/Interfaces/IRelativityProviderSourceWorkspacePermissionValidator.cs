@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts.Interfaces
 {
-	public interface IRelativityProviderSourceWorkspacePermissionValidator
-	{
-		ValidationResult Validate(int sourceWorkspaceId, int artifactTypeId);
-	}
+    public interface IRelativityProviderSourceWorkspacePermissionValidator
+    {
+        ValidationResult Validate(int sourceWorkspaceId, int artifactTypeId);
+    }
 }

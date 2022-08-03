@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts.Interfaces
 {
-	public interface IRelativityProviderDestinationFolderPermissionValidator
+    public interface IRelativityProviderDestinationFolderPermissionValidator
     {
-		ValidationResult Validate(int destinationFolderArtifactId, bool useFolderPathInfo, bool moveExistingDocuments);
-	}
+        ValidationResult Validate(int destinationFolderArtifactId, bool useFolderPathInfo, bool moveExistingDocuments);
+    }
 }

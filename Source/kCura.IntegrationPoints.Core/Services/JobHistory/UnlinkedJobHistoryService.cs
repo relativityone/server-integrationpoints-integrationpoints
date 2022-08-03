@@ -7,24 +7,24 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {
-	public class UnlinkedJobHistoryService : IUnlinkedJobHistoryService
-	{
-		private readonly IRelativityObjectManagerFactory _relativityObjectManagerFactory;
+    public class UnlinkedJobHistoryService : IUnlinkedJobHistoryService
+    {
+        private readonly IRelativityObjectManagerFactory _relativityObjectManagerFactory;
 
-		public UnlinkedJobHistoryService(IRelativityObjectManagerFactory relativityObjectManagerFactory)
-		{
-			_relativityObjectManagerFactory = relativityObjectManagerFactory;
-		}
+        public UnlinkedJobHistoryService(IRelativityObjectManagerFactory relativityObjectManagerFactory)
+        {
+            _relativityObjectManagerFactory = relativityObjectManagerFactory;
+        }
 
-		public List<int> FindUnlinkedJobHistories(int workspaceArtifactId)
-		{
-			IRelativityObjectManager objectManager = _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId);
+        public List<int> FindUnlinkedJobHistories(int workspaceArtifactId)
+        {
+            IRelativityObjectManager objectManager = _relativityObjectManagerFactory.CreateRelativityObjectManager(workspaceArtifactId);
 
-			var request = new QueryRequest
-			{
-				Condition = $"NOT '{JobHistoryFields.IntegrationPoint}' ISSET"
-			};
-			return objectManager.Query<Data.JobHistory>(request).Select(x => x.ArtifactId).ToList();
-		}
-	}
+            var request = new QueryRequest
+            {
+                Condition = $"NOT '{JobHistoryFields.IntegrationPoint}' ISSET"
+            };
+            return objectManager.Query<Data.JobHistory>(request).Select(x => x.ArtifactId).ToList();
+        }
+    }
 }

@@ -14,118 +14,118 @@ using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestH
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Installers
 {
-	[TestFixture, Category("Unit")]
-	public class DocumentTransferProviderInstallerTests
-	{
-		private IWindsorContainer _sut;
+    [TestFixture, Category("Unit")]
+    public class DocumentTransferProviderInstallerTests
+    {
+        private IWindsorContainer _sut;
 
-		[SetUp]
-		public void SetUp()
-		{
-			_sut = new WindsorContainer()
-				.Install(new DocumentTransferProviderInstaller());
-		}
+        [SetUp]
+        public void SetUp()
+        {
+            _sut = new WindsorContainer()
+                .Install(new DocumentTransferProviderInstaller());
+        }
 
-		[Test]
-		public void IExtendedImportApiFactory_ShouldBeRegisteredWithProperLifestyle()
-		{
-			_sut.Should()
-				.HaveRegisteredSingleComponent<IImportApiFactory>()
-				.Which.Should()
-				.BeRegisteredWithLifestyle(LifestyleType.Singleton);
-		}
+        [Test]
+        public void IExtendedImportApiFactory_ShouldBeRegisteredWithProperLifestyle()
+        {
+            _sut.Should()
+                .HaveRegisteredSingleComponent<IImportApiFactory>()
+                .Which.Should()
+                .BeRegisteredWithLifestyle(LifestyleType.Singleton);
+        }
 
-		[Test]
-		public void IExtendedImportApiFactory_ShouldBeRegisteredWithProperImplementation()
-		{
-			_sut.Should().HaveRegisteredProperImplementation<IImportApiFactory, ImportApiFactory>();
-		}
+        [Test]
+        public void IExtendedImportApiFactory_ShouldBeRegisteredWithProperImplementation()
+        {
+            _sut.Should().HaveRegisteredProperImplementation<IImportApiFactory, ImportApiFactory>();
+        }
 
-		[Test]
-		public void IExtendedImportApiFactory_ShouldBeResolvedAndNotThrow()
-		{
-			//arrange
-			RegisterInstallerDependencies(_sut);
+        [Test]
+        public void IExtendedImportApiFactory_ShouldBeResolvedAndNotThrow()
+        {
+            //arrange
+            RegisterInstallerDependencies(_sut);
 
-			//act & assert
-			_sut.Should().ResolveWithoutThrowing<IImportApiFactory>();
-		}
+            //act & assert
+            _sut.Should().ResolveWithoutThrowing<IImportApiFactory>();
+        }
 
-		[Test]
-		public void IExtendedImportApiFacade_ShouldBeRegisteredWithProperLifestyle()
-		{
-			_sut.Should()
-				.HaveRegisteredSingleComponent<IImportApiFacade>()
-				.Which.Should()
-				.BeRegisteredWithLifestyle(LifestyleType.Transient);
-		}
+        [Test]
+        public void IExtendedImportApiFacade_ShouldBeRegisteredWithProperLifestyle()
+        {
+            _sut.Should()
+                .HaveRegisteredSingleComponent<IImportApiFacade>()
+                .Which.Should()
+                .BeRegisteredWithLifestyle(LifestyleType.Transient);
+        }
 
-		[Test]
-		public void IExtendedImportApiFacade_ShouldBeRegisteredWithProperImplementation()
-		{
-			_sut.Should().HaveRegisteredProperImplementation<IImportApiFacade, ImportApiFacade>();
-		}
+        [Test]
+        public void IExtendedImportApiFacade_ShouldBeRegisteredWithProperImplementation()
+        {
+            _sut.Should().HaveRegisteredProperImplementation<IImportApiFacade, ImportApiFacade>();
+        }
 
-		[Test]
-		public void IExtendedImportApiFacade_ShouldBeResolvedAndNotThrow()
-		{
-			//arrange
-			RegisterInstallerDependencies(_sut);
+        [Test]
+        public void IExtendedImportApiFacade_ShouldBeResolvedAndNotThrow()
+        {
+            //arrange
+            RegisterInstallerDependencies(_sut);
 
-			//act & assert
-			_sut.Should().ResolveWithoutThrowing<IImportApiFacade>();
-		}
+            //act & assert
+            _sut.Should().ResolveWithoutThrowing<IImportApiFacade>();
+        }
 
-		[Test]
-		public void IDataSourceProvider_ShouldBeRegisteredWithProperLifestyle()
-		{
-			_sut.Should()
-				.HaveRegisteredSingleComponent<IDataSourceProvider>()
-				.Which.Should()
-				.BeRegisteredWithLifestyle(LifestyleType.Transient);
-		}
+        [Test]
+        public void IDataSourceProvider_ShouldBeRegisteredWithProperLifestyle()
+        {
+            _sut.Should()
+                .HaveRegisteredSingleComponent<IDataSourceProvider>()
+                .Which.Should()
+                .BeRegisteredWithLifestyle(LifestyleType.Transient);
+        }
 
-		[Test]
-		public void IDataSourceProvider_ShouldBeRegisteredWithProperName()
-		{
-			//arrange
-			string expectedComponentName = new Guid(Domain.Constants.RELATIVITY_PROVIDER_GUID)
-				.ToString();
+        [Test]
+        public void IDataSourceProvider_ShouldBeRegisteredWithProperName()
+        {
+            //arrange
+            string expectedComponentName = new Guid(Domain.Constants.RELATIVITY_PROVIDER_GUID)
+                .ToString();
 
-			//act & assert
-			_sut.Should()
-				.HaveRegisteredSingleComponent<IDataSourceProvider>()
-				.Which.Should()
-				.BeRegisteredWithName(expectedComponentName);
-		}
+            //act & assert
+            _sut.Should()
+                .HaveRegisteredSingleComponent<IDataSourceProvider>()
+                .Which.Should()
+                .BeRegisteredWithName(expectedComponentName);
+        }
 
-		[Test]
-		public void IDataSourceProvider_ShouldBeRegisteredWithProperImplementation()
-		{
-			_sut.Should().HaveRegisteredProperImplementation<IDataSourceProvider, DocumentTransferProvider>();
-		}
+        [Test]
+        public void IDataSourceProvider_ShouldBeRegisteredWithProperImplementation()
+        {
+            _sut.Should().HaveRegisteredProperImplementation<IDataSourceProvider, DocumentTransferProvider>();
+        }
 
-		[Test]
-		public void IDataSourceProvider_ShouldBeResolvedAndNotThrow()
-		{
-			//arrange
-			RegisterInstallerDependencies(_sut);
+        [Test]
+        public void IDataSourceProvider_ShouldBeResolvedAndNotThrow()
+        {
+            //arrange
+            RegisterInstallerDependencies(_sut);
 
-			//act & assert
-			_sut.Should().ResolveWithoutThrowing<IDataSourceProvider>();
-		}
+            //act & assert
+            _sut.Should().ResolveWithoutThrowing<IDataSourceProvider>();
+        }
 
-		private void RegisterInstallerDependencies(IWindsorContainer container)
-		{
-			IRegistration[] dependencies =
-			{
-				CreateDummyObjectRegistration<IWebApiConfig>(),
-				CreateDummyObjectRegistration<IAPILog>(),
-				CreateDummyObjectRegistration<IRepositoryFactory>(),
-				CreateDummyObjectRegistration<IAuthTokenGenerator>()
-			};
+        private void RegisterInstallerDependencies(IWindsorContainer container)
+        {
+            IRegistration[] dependencies =
+            {
+                CreateDummyObjectRegistration<IWebApiConfig>(),
+                CreateDummyObjectRegistration<IAPILog>(),
+                CreateDummyObjectRegistration<IRepositoryFactory>(),
+                CreateDummyObjectRegistration<IAuthTokenGenerator>()
+            };
 
-			container.Register(dependencies);
-		}
-	}
+            container.Register(dependencies);
+        }
+    }
 }

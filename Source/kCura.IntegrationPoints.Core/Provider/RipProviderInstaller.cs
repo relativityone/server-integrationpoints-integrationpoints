@@ -145,7 +145,7 @@ namespace kCura.IntegrationPoints.Core.Provider
 
         private async Task<List<SourceProvider>> GetInstalledRdoProvidersAsync(Guid applicationGuid)
         {
-	        List<SourceProvider> installedSourceProviders = await _sourceProviderRepository
+            List<SourceProvider> installedSourceProviders = await _sourceProviderRepository
                 .GetSourceProviderRdoByApplicationIdentifierAsync(applicationGuid)
                 .ConfigureAwait(false);
 
@@ -153,15 +153,15 @@ namespace kCura.IntegrationPoints.Core.Provider
 
             foreach (SourceProvider installedProvider in installedSourceProviders)
             {
-	            if (deduplicatedProviders.All(x => x.Identifier != installedProvider.Identifier))
-	            {
-		            deduplicatedProviders.Add(installedProvider);
-	            }
+                if (deduplicatedProviders.All(x => x.Identifier != installedProvider.Identifier))
+                {
+                    deduplicatedProviders.Add(installedProvider);
+                }
             }
 
             if (installedSourceProviders.Count > deduplicatedProviders.Count)
             {
-	            // REL-539111
+                // REL-539111
                 _logger.LogWarning("There are duplicated entries in SourceProvider database table.");
             }
             
@@ -221,22 +221,22 @@ namespace kCura.IntegrationPoints.Core.Provider
             }
         }
 
-	    private Either<string, global::Relativity.IntegrationPoints.Contracts.SourceProvider>
-		    UpdateApplicationGuidIfMissing(global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
-	    {
-		    // when we migrate providers, we should already know which app does the provider belong to.
-		    if (provider.ApplicationGUID == Guid.Empty)
-		    {
-			    return _applicationGuidFinder
-				    .GetApplicationGuid(provider.ApplicationID)
-				    .Map(applicationGuid => UpdateApplicationGuid(provider, applicationGuid));
-		    }
+        private Either<string, global::Relativity.IntegrationPoints.Contracts.SourceProvider>
+            UpdateApplicationGuidIfMissing(global::Relativity.IntegrationPoints.Contracts.SourceProvider provider)
+        {
+            // when we migrate providers, we should already know which app does the provider belong to.
+            if (provider.ApplicationGUID == Guid.Empty)
+            {
+                return _applicationGuidFinder
+                    .GetApplicationGuid(provider.ApplicationID)
+                    .Map(applicationGuid => UpdateApplicationGuid(provider, applicationGuid));
+            }
 
-		    return provider;
-	    }
+            return provider;
+        }
 
-	    private global::Relativity.IntegrationPoints.Contracts.SourceProvider UpdateApplicationGuid(
-		    global::Relativity.IntegrationPoints.Contracts.SourceProvider provider, Guid newApplicationGuid)
+        private global::Relativity.IntegrationPoints.Contracts.SourceProvider UpdateApplicationGuid(
+            global::Relativity.IntegrationPoints.Contracts.SourceProvider provider, Guid newApplicationGuid)
         {
             provider.ApplicationGUID = newApplicationGuid;
             return provider;

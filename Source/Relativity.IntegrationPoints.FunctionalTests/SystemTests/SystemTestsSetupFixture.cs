@@ -26,150 +26,150 @@ using Relativity.Services.Workspace;
 
 namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
 {
-	[SetUpFixture]
-	public class SystemTestsSetupFixture
-	{
-		public static IWindsorContainer Container { get; private set; }
-		public static IConfigurationStore ConfigurationStore { get; private set; }
-		public static ITestHelper TestHelper { get; private set; }
+    [SetUpFixture]
+    public class SystemTestsSetupFixture
+    {
+        public static IWindsorContainer Container { get; private set; }
+        public static IConfigurationStore ConfigurationStore { get; private set; }
+        public static ITestHelper TestHelper { get; private set; }
 
-		public static WorkspaceRef SourceWorkspace { get; private set; }
-		public static WorkspaceRef DestinationWorkspace { get; private set; }
+        public static WorkspaceRef SourceWorkspace { get; private set; }
+        public static WorkspaceRef DestinationWorkspace { get; private set; }
 
-		private static readonly IList<int> _managedWorkspacesIDs = new List<int>();
+        private static readonly IList<int> _managedWorkspacesIDs = new List<int>();
 
-		[OneTimeSetUp]
-		public static void InitializeFixture()
-		{
-			Container = new WindsorContainer();
-			ConfigurationStore = new DefaultConfigurationStore();
-			TestHelper = new TestHelper();
+        [OneTimeSetUp]
+        public static void InitializeFixture()
+        {
+            Container = new WindsorContainer();
+            ConfigurationStore = new DefaultConfigurationStore();
+            TestHelper = new TestHelper();
 
-			CreateAndConfigureWorkspacesAsync().GetAwaiter().GetResult();
-			InitializeContainer();
+            CreateAndConfigureWorkspacesAsync().GetAwaiter().GetResult();
+            InitializeContainer();
 
-			InitializeRelativityInstanceSettingsClient();
-		}
+            InitializeRelativityInstanceSettingsClient();
+        }
 
-		private static async Task CreateAndConfigureWorkspacesAsync()
-		{
-			string sourceWorkspaceName = $"Rip.SystemTests-{DateTime.Now.Ticks}";
-			SourceWorkspace = await Workspace.CreateWorkspaceAsync(
-				sourceWorkspaceName,
-				WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME).ConfigureAwait(false);
+        private static async Task CreateAndConfigureWorkspacesAsync()
+        {
+            string sourceWorkspaceName = $"Rip.SystemTests-{DateTime.Now.Ticks}";
+            SourceWorkspace = await Workspace.CreateWorkspaceAsync(
+                sourceWorkspaceName,
+                WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME).ConfigureAwait(false);
 
-			string destinationWorkspaceName = $"Rip.SystemTests.Destination-{DateTime.Now.Ticks}";
-			DestinationWorkspace = await Workspace.CreateWorkspaceAsync(
-				destinationWorkspaceName,
-				WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME).ConfigureAwait(false);
-		}
+            string destinationWorkspaceName = $"Rip.SystemTests.Destination-{DateTime.Now.Ticks}";
+            DestinationWorkspace = await Workspace.CreateWorkspaceAsync(
+                destinationWorkspaceName,
+                WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME).ConfigureAwait(false);
+        }
 
-		private static void InitializeContainer()
-		{
-			Container.Register(Component
-				.For<ILazyComponentLoader>()
-				.ImplementedBy<LazyOfTComponentLoader>()
-			);
-			Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => TestHelper, managedExternally: true));
-			Container.Register(Component.For<IAPILog>().UsingFactoryMethod(k => TestHelper.GetLoggerFactory().GetLogger()));
-			Container.Register(Component.For<IServiceContextHelper>()
-				.UsingFactoryMethod(k =>
-				{
-					IHelper helper = k.Resolve<IHelper>();
-					return new TestServiceContextHelper(helper, SourceWorkspace.ArtifactID);
-				}));
-			Container.Register(
-				Component.For<IWorkspaceDBContext>()
-					.ImplementedBy<WorkspaceDBContext>()
-					.UsingFactoryMethod(k => new WorkspaceDBContext(k.Resolve<IHelper>().GetDBContext(SourceWorkspace.ArtifactID)))
-					.LifeStyle.Transient);
-			Container.Register(Component.For<IRelativityObjectManagerService>().Instance(new RelativityObjectManagerService(Container.Resolve<IHelper>(), SourceWorkspace.ArtifactID)).LifestyleTransient());
-			Container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>());
-			Container.Register(Component.For<IExportServiceObserversFactory>().ImplementedBy<IExportServiceObserversFactory>());
-			Container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
-			Container.Register(Component.For<IExternalServiceInstrumentationProvider>()
-				.ImplementedBy<ExternalServiceInstrumentationProviderWithoutJobContext>()
-				.LifestyleSingleton());
-			Container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>());
-			var dependencies = new IWindsorInstaller[]
-			{
-				new QueryInstallers(),
-				new KeywordInstaller(),
-				new SharedAgentInstaller(),
-				new ServicesInstaller(),
-				new ValidationInstaller(),
-				new kCura.IntegrationPoints.ImportProvider.Parser.Installers.ServicesInstaller()
-			};
+        private static void InitializeContainer()
+        {
+            Container.Register(Component
+                .For<ILazyComponentLoader>()
+                .ImplementedBy<LazyOfTComponentLoader>()
+            );
+            Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => TestHelper, managedExternally: true));
+            Container.Register(Component.For<IAPILog>().UsingFactoryMethod(k => TestHelper.GetLoggerFactory().GetLogger()));
+            Container.Register(Component.For<IServiceContextHelper>()
+                .UsingFactoryMethod(k =>
+                {
+                    IHelper helper = k.Resolve<IHelper>();
+                    return new TestServiceContextHelper(helper, SourceWorkspace.ArtifactID);
+                }));
+            Container.Register(
+                Component.For<IWorkspaceDBContext>()
+                    .ImplementedBy<WorkspaceDBContext>()
+                    .UsingFactoryMethod(k => new WorkspaceDBContext(k.Resolve<IHelper>().GetDBContext(SourceWorkspace.ArtifactID)))
+                    .LifeStyle.Transient);
+            Container.Register(Component.For<IRelativityObjectManagerService>().Instance(new RelativityObjectManagerService(Container.Resolve<IHelper>(), SourceWorkspace.ArtifactID)).LifestyleTransient());
+            Container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>());
+            Container.Register(Component.For<IExportServiceObserversFactory>().ImplementedBy<IExportServiceObserversFactory>());
+            Container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
+            Container.Register(Component.For<IExternalServiceInstrumentationProvider>()
+                .ImplementedBy<ExternalServiceInstrumentationProviderWithoutJobContext>()
+                .LifestyleSingleton());
+            Container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>());
+            var dependencies = new IWindsorInstaller[]
+            {
+                new QueryInstallers(),
+                new KeywordInstaller(),
+                new SharedAgentInstaller(),
+                new ServicesInstaller(),
+                new ValidationInstaller(),
+                new kCura.IntegrationPoints.ImportProvider.Parser.Installers.ServicesInstaller()
+            };
 
-			foreach (IWindsorInstaller dependency in dependencies)
-			{
-				dependency.Install(Container, ConfigurationStore);
-			}
-		}
+            foreach (IWindsorInstaller dependency in dependencies)
+            {
+                dependency.Install(Container, ConfigurationStore);
+            }
+        }
 
-		private static void InitializeRelativityInstanceSettingsClient()
-		{
-			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(TestHelper);
-		}
+        private static void InitializeRelativityInstanceSettingsClient()
+        {
+            Manager.Settings.Factory = new HelperConfigSqlServiceFactory(TestHelper);
+        }
 
-		public static Task<WorkspaceRef> CreateManagedWorkspaceWithDefaultNameAsync(string templateName = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME) =>
-			CreateManagedWorkspaceAsync($"Rip.SystemTests.Managed-{DateTime.Now.Ticks}", templateName);
+        public static Task<WorkspaceRef> CreateManagedWorkspaceWithDefaultNameAsync(string templateName = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME) =>
+            CreateManagedWorkspaceAsync($"Rip.SystemTests.Managed-{DateTime.Now.Ticks}", templateName);
 
-		public static Task<WorkspaceRef> CreateManagedWorkspaceAsync(string workspaceName, string templateName = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME)
-		{
-			return Workspace.CreateWorkspaceAsync(workspaceName, templateName);
-		}
+        public static Task<WorkspaceRef> CreateManagedWorkspaceAsync(string workspaceName, string templateName = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME)
+        {
+            return Workspace.CreateWorkspaceAsync(workspaceName, templateName);
+        }
 
-		[OneTimeTearDown]
-		public static void TearDownFixture()
-		{
-			DeleteSourceAndDestinationWorkspacesAsync().GetAwaiter().GetResult();
+        [OneTimeTearDown]
+        public static void TearDownFixture()
+        {
+            DeleteSourceAndDestinationWorkspacesAsync().GetAwaiter().GetResult();
 
-			foreach (int workspaceId in _managedWorkspacesIDs)
-			{
-				Workspace.DeleteWorkspaceAsync(workspaceId).GetAwaiter().GetResult();
-			}
-		}
+            foreach (int workspaceId in _managedWorkspacesIDs)
+            {
+                Workspace.DeleteWorkspaceAsync(workspaceId).GetAwaiter().GetResult();
+            }
+        }
 
-		private static async Task DeleteSourceAndDestinationWorkspacesAsync()
-		{
-			await Workspace.DeleteWorkspaceAsync(SourceWorkspace.ArtifactID).ConfigureAwait(false);
-			await Workspace.DeleteWorkspaceAsync(DestinationWorkspace.ArtifactID).ConfigureAwait(false);
-		}
+        private static async Task DeleteSourceAndDestinationWorkspacesAsync()
+        {
+            await Workspace.DeleteWorkspaceAsync(SourceWorkspace.ArtifactID).ConfigureAwait(false);
+            await Workspace.DeleteWorkspaceAsync(DestinationWorkspace.ArtifactID).ConfigureAwait(false);
+        }
 
-		public static void Log(string message) =>
-			Console.WriteLine($@"[{nameof(SystemTestsSetupFixture)}] {message}");
+        public static void Log(string message) =>
+            Console.WriteLine($@"[{nameof(SystemTestsSetupFixture)}] {message}");
 
-		public static void ResetFixture(Exception cause = null)
-		{
-			Log($"Resetting fixture... (Caused by {TestContext.CurrentContext.Test.FullName})");
-			if (cause != null)
-			{
-				Log($"[CAUSE] {cause}");
-			}
+        public static void ResetFixture(Exception cause = null)
+        {
+            Log($"Resetting fixture... (Caused by {TestContext.CurrentContext.Test.FullName})");
+            if (cause != null)
+            {
+                Log($"[CAUSE] {cause}");
+            }
 
-			var timer = Stopwatch.StartNew();
+            var timer = Stopwatch.StartNew();
 
-			DeleteSourceAndDestinationWorkspacesAsync().GetAwaiter().GetResult();
-			InitializeFixture();
+            DeleteSourceAndDestinationWorkspacesAsync().GetAwaiter().GetResult();
+            InitializeFixture();
 
-			timer.Stop();
-			Log($"Resetting fixture done in {timer.Elapsed.TotalSeconds} seconds");
-		}
+            timer.Stop();
+            Log($"Resetting fixture done in {timer.Elapsed.TotalSeconds} seconds");
+        }
 
-		public static void InvokeActionsAndResetFixtureOnException(IEnumerable<Action> actions)
-		{
-			try
-			{
-				foreach (var action in actions)
-				{
-					action();
-				}
-			}
-			catch (Exception e)
-			{
-				ResetFixture(e);
-			}
-		}
-	}
+        public static void InvokeActionsAndResetFixtureOnException(IEnumerable<Action> actions)
+        {
+            try
+            {
+                foreach (var action in actions)
+                {
+                    action();
+                }
+            }
+            catch (Exception e)
+            {
+                ResetFixture(e);
+            }
+        }
+    }
 }

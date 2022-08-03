@@ -3,8 +3,8 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Domain
 {
-	public interface IWindsorContainerSetup
-	{
-		IWindsorContainer SetUpCastleWindsor(IHelper helper);
-	}
+    public interface IWindsorContainerSetup
+    {
+        IWindsorContainer SetUpCastleWindsor(IHelper helper);
+    }
 }
