@@ -1112,6 +1112,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Assert
             _adlsUploaderFake.Verify(x => x.CreateBatchFile(It.IsAny<FmsBatchInfo>(), It.IsAny<CancellationToken>()), Times.Exactly(storageLocations.Count));
             _adlsUploaderFake.Verify(x => x.UploadFileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(storageLocations.Count));
+            _adlsUploaderFake.Verify(x => x.DeleteFileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(storageLocations.Count));
         }
 
         [Test]

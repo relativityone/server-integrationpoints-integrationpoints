@@ -76,7 +76,7 @@ namespace Relativity.Sync.Transfer.ADF
                 IStorageAccess<string> storageAccess = await _helper.GetStorageAccessorAsync(cancellationToken).ConfigureAwait(false);
 
                 string destinationDir = await GetAdlsDestinationDirectory(cancellationToken);
-                destinationFilePath = Path.Combine(destinationDir, $"BatchFile{Guid.NewGuid()}.csv");
+                destinationFilePath = Path.Combine(destinationDir, $"BatchFile_{Guid.NewGuid()}.csv");
                 _logger.LogInformation("ADLS Batch file Path - {destinationFilePath}", destinationFilePath);
 
                 CopyFileOptions copyFileOptions = new CopyFileOptions
@@ -120,6 +120,7 @@ namespace Relativity.Sync.Transfer.ADF
                 Force = true
             };
 
+            _logger.LogInformation("Deleting ADLS batch file - {filePath}", filePath);
             DeleteFileResult deleteResultObject = await storageAccess.DeleteFileAsync(filePath, deleteFileOptions, cancellationToken).ConfigureAwait(false);
             if (deleteResultObject == DeleteFileResult.FileNotFound)
             {
@@ -128,7 +129,7 @@ namespace Relativity.Sync.Transfer.ADF
 
             if (deleteResultObject != DeleteFileResult.Success && cancellationToken.IsCancellationRequested)
             {
-                _logger.LogWarning("Adls file deletion cancelled, file path - {filePath}", filePath);
+                _logger.LogWarning("ADLS file deletion cancelled, file path - {filePath}", filePath);
             }
         }
 
@@ -148,7 +149,7 @@ namespace Relativity.Sync.Transfer.ADF
                     @"\\",
                     storageEndpoint.EndpointFqdn,
                     storageEndpoint.PrimaryStorageContainer,
-                    "Files",
+                    "Temp",
                     "RIP_BatchFiles");
             }
             else

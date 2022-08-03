@@ -41,7 +41,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
                 @"\\",
                 _storageEndpoints[0].EndpointFqdn,
                 _storageEndpoints[0].PrimaryStorageContainer,
-                "Files",
+                "Temp",
                 "RIP_BatchFiles");
 
             _helperMock = new Mock<IHelperWrapper>();
@@ -182,7 +182,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
 
             // Assert
             function.Should().NotThrow<Exception>();
-            _loggerFake.Verify(x => x.LogWarning("Adls file deletion cancelled, file path - {filePath}", _SOURCE_FILE_PATH), Times.Once);
+            _loggerFake.Verify(x => x.LogWarning("ADLS file deletion cancelled, file path - {filePath}", _SOURCE_FILE_PATH), Times.Once);
         }
     }
 }
