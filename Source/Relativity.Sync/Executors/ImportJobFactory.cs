@@ -7,6 +7,7 @@ using kCura.EDDS.WebAPI.BulkImportManagerBase;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
+using Relativity.AntiMalware.SDK;
 using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
@@ -25,10 +26,19 @@ namespace Relativity.Sync.Executors
         private readonly SyncJobParameters _syncJobParameters;
         private readonly IFieldMappings _fieldMappings;
         private readonly IADFTransferEnabler _adfTransferEnabler;
+        private readonly IAntiMalwareEventHelper _antiMalwareEventHelper;
         private readonly IAPILog _logger;
 
-        public ImportJobFactory(IImportApiFactory importApiFactory, ISourceWorkspaceDataReaderFactory dataReaderFactory,
-            IJobHistoryErrorRepository jobHistoryErrorRepository, IInstanceSettings instanceSettings, SyncJobParameters syncJobParameters, IFieldMappings fieldMappings, IADFTransferEnabler adfTransferEnabler, IAPILog logger)
+        public ImportJobFactory(
+            IImportApiFactory importApiFactory,
+            ISourceWorkspaceDataReaderFactory dataReaderFactory,
+            IJobHistoryErrorRepository jobHistoryErrorRepository,
+            IInstanceSettings instanceSettings,
+            SyncJobParameters syncJobParameters,
+            IFieldMappings fieldMappings,
+            IADFTransferEnabler adfTransferEnabler,
+            IAntiMalwareEventHelper antiMalwareEventHelper,
+            IAPILog logger)
         {
             _importApiFactory = importApiFactory;
             _dataReaderFactory = dataReaderFactory;
@@ -37,6 +47,7 @@ namespace Relativity.Sync.Executors
             _syncJobParameters = syncJobParameters;
             _fieldMappings = fieldMappings;
             _adfTransferEnabler = adfTransferEnabler;
+            _antiMalwareEventHelper = antiMalwareEventHelper;
             _logger = logger;
         }
 
@@ -57,18 +68,16 @@ namespace Relativity.Sync.Executors
             importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles;
             importJob.Settings.SelectedIdentifierFieldName = GetIdentifierFieldName();
 
-            var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);
+            var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader, _antiMalwareEventHelper, configuration.SourceWorkspaceArtifactId, _logger);
 
             ImportJob job = new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository, configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
 
-            _logger.LogInformation("Import Settings: {@settings}",
-                NonDocumentImportSettingsForLogging.CreateWithoutSensitiveData(importJob.Settings));
+            _logger.LogInformation("Import Settings: {@settings}", NonDocumentImportSettingsForLogging.CreateWithoutSensitiveData(importJob.Settings));
 
             return job;
         }
 
-        public async Task<IImportJob> CreateRdoLinkingJobAsync(INonDocumentSynchronizationConfiguration configuration, IBatch batch,
-            CancellationToken token)
+        public async Task<IImportJob> CreateRdoLinkingJobAsync(INonDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
         {
             ISourceWorkspaceDataReader sourceWorkspaceDataReader = _dataReaderFactory.CreateNonDocumentObjectLinkingSourceWorkspaceDataReader(batch, token);
             IImportAPI importApi = await GetImportApiAsync().ConfigureAwait(false);
@@ -87,12 +96,11 @@ namespace Relativity.Sync.Executors
             importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles;
             importJob.Settings.SelectedIdentifierFieldName = GetIdentifierFieldName();
 
-            var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);
+            var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader, _antiMalwareEventHelper, configuration.SourceWorkspaceArtifactId, _logger);
 
             ImportJob job = new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository, configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
 
-            _logger.LogInformation("Import Settings: {@settings}",
-                NonDocumentImportSettingsForLogging.CreateWithoutSensitiveData(importJob.Settings));
+            _logger.LogInformation("Import Settings: {@settings}", NonDocumentImportSettingsForLogging.CreateWithoutSensitiveData(importJob.Settings));
 
             return job;
         }
@@ -113,19 +121,27 @@ namespace Relativity.Sync.Executors
             importJob.Settings.CopyFilesToDocumentRepository = configuration.ImportImageFileCopyMode == ImportImageFileCopyMode.CopyFiles;
             importJob.Settings.DisableImageTypeValidation = true;
             importJob.Settings.DocumentIdentifierField = GetSelectedIdentifierFieldName(
-                importApi, configuration.DestinationWorkspaceArtifactId, configuration.RdoArtifactTypeId,
+                importApi,
+                configuration.DestinationWorkspaceArtifactId,
+                configuration.RdoArtifactTypeId,
                 configuration.IdentityFieldId);
 
             importJob.Settings.FileNameField = configuration.FileNameColumn;
             importJob.Settings.FileLocationField = configuration.ImageFilePathSourceFieldName;
             importJob.Settings.NativeFileCopyMode = (NativeFileCopyModeEnum)configuration.ImportImageFileCopyMode;
 
-            var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);
+            var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader, _antiMalwareEventHelper, configuration.SourceWorkspaceArtifactId, _logger);
 
-            ImportJob job = new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
-                configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
+            ImportJob job = new ImportJob(
+                syncImportBulkArtifactJob,
+                new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)),
+                _jobHistoryErrorRepository,
+                configuration.SourceWorkspaceArtifactId,
+                configuration.JobHistoryArtifactId,
+                _logger);
 
-            _logger.LogInformation("Import Settings: {@settings}",
+            _logger.LogInformation(
+                "Import Settings: {@settings}",
                 ImageImportSettingsForLogging.CreateWithoutSensitiveData(importJob.Settings));
 
             return job;
@@ -182,12 +198,18 @@ namespace Relativity.Sync.Executors
                 configuration.RdoArtifactTypeId,
                 configuration.IdentityFieldId);
 
-            var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader);
+            var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader, _antiMalwareEventHelper, configuration.SourceWorkspaceArtifactId, _logger);
 
-            ImportJob job = new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository,
-                configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
+            ImportJob job = new ImportJob(
+                syncImportBulkArtifactJob,
+                new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)),
+                _jobHistoryErrorRepository,
+                configuration.SourceWorkspaceArtifactId,
+                configuration.JobHistoryArtifactId,
+                _logger);
 
-            _logger.LogInformation("Import Settings: {@settings}",
+            _logger.LogInformation(
+                "Import Settings: {@settings}",
                 NativeImportSettingsForLogging.CreateWithoutSensitiveData(importJob.Settings));
 
             return job;
@@ -214,7 +236,7 @@ namespace Relativity.Sync.Executors
         private async Task<IImportAPI> GetImportApiAsync()
         {
             string webApiPath = await _instanceSettings.GetWebApiPathAsync().ConfigureAwait(false);
-            if(Uri.IsWellFormedUriString(webApiPath, UriKind.Absolute))
+            if (Uri.IsWellFormedUriString(webApiPath, UriKind.Absolute))
             {
                 var webApiUri = new Uri(webApiPath);
                 return await _importApiFactory.CreateImportApiAsync(webApiUri).ConfigureAwait(false);
