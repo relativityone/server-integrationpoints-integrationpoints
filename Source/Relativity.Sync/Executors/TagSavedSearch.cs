@@ -37,7 +37,7 @@ namespace Relativity.Sync.Executors
                     KeywordSearch keywordSearchDto = CreateKeywordSearchForTagging(configuration, savedSearchFolderArtifactId);
                     int keywordSearchId = await keywordSearchManager.CreateSingleAsync(destinationWorkspaceArtifactId, keywordSearchDto).ConfigureAwait(false);
 
-                    _syncLog.LogDebug("Created tagging keyword search: {keywordSearchId}", keywordSearchId);
+                    _syncLog.LogInformation("Created tagging keyword search: {keywordSearchId}", keywordSearchId);
                     return keywordSearchId;
                 }
             }

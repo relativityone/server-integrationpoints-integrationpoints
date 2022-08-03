@@ -6,18 +6,18 @@ using Relativity.Storage.Extensions.Models;
 
 namespace Relativity.Sync.Transfer.ADF
 {
-	internal class HelperWrapper : IHelperWrapper
-	{
-		private readonly IHelper _helper;
-		
-		public HelperWrapper(IHelper helper)
-		{
-			_helper = helper;
-		}
-		
-		public Task<StorageEndpoint[]> GetStorageEndpointsAsync(ApplicationDetails applicationDetails)
-		{
-			return _helper.GetStorageEndpointsAsync(applicationDetails);
-		}
-	}
+    internal class HelperWrapper : IHelperWrapper
+    {
+        private readonly IHelper _helper;
+        
+        public HelperWrapper(IHelper helper)
+        {
+            _helper = helper;
+        }
+        
+        public Task<StorageEndpoint[]> GetStorageEndpointsAsync(ApplicationDetails applicationDetails)
+        {
+            return _helper.GetStorageEndpointsAsync(applicationDetails);
+        }
+    }
 }
