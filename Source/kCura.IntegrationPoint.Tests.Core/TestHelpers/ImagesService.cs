@@ -7,14 +7,14 @@ using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
-	public class ImagesService : FileServiceBase, IImagesService
-	{
-		public ImagesService(ITestHelper testHelper) : base(testHelper)
-		{
-		}
-		       
-		public IList<FileTestDto> GetImagesFileInfo(int workspaceId, int documentArtifactId)
-		{
+    public class ImagesService : FileServiceBase, IImagesService
+    {
+        public ImagesService(ITestHelper testHelper) : base(testHelper)
+        {
+        }
+               
+        public IList<FileTestDto> GetImagesFileInfo(int workspaceId, int documentArtifactId)
+        {
             using (ISearchService searchService = TestHelper.CreateProxy<ISearchService>())
             {
                 DataTable imagesTable = searchService
@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
                     .Cast<DataRow>()
                     .Select(x => x.ToFileTestDto())
                     .ToList();
-			}
+            }
         }
-	}
+    }
 }

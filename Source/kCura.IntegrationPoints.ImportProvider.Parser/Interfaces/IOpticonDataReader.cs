@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Interfaces
 {
-	public interface IOpticonDataReader
-	{
-		long CountRecords();
-	}
+    public interface IOpticonDataReader
+    {
+        long CountRecords();
+    }
 }

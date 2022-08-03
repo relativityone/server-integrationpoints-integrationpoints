@@ -1,6 +1,6 @@
 ﻿namespace kCura.IntegrationPoints.Core
 {
-	public class ExternalTabs
-	{
-	}
+    public class ExternalTabs
+    {
+    }
 }

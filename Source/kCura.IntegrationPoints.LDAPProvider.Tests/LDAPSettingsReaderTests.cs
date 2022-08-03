@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         private string _faultySettingsString = "Not a proper settings string";
         private IHelper _helper;
 
-		public override void FixtureSetUp()
+        public override void FixtureSetUp()
         {
             base.FixtureSetUp();
             _helper = Substitute.For<IHelper>();
@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
                 ProviderReferralChasing = ReferralChasingOption.External,
                 SizeLimit = 4231
             };
-		}
+        }
 
         [TestCase(null)]
         [TestCase("")]
@@ -165,9 +165,9 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
             Assert.AreEqual(result.MultiValueDelimiter, _fullyFilledSettings.MultiValueDelimiter);
             Assert.AreEqual(result.MultiValueDelimiter, _fullyFilledSettings.MultiValueDelimiter);
             Assert.AreEqual(result.MultiValueDelimiter, _fullyFilledSettings.MultiValueDelimiter);
-		}
+        }
 
-		[Test]
+        [Test]
         public void Deserialize_InputNotCorrect_ThrowsLDAPProviderException()
         {
             var provider = new LDAPSettingsReader(_helper);

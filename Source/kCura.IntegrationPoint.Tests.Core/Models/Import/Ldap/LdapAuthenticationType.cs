@@ -2,15 +2,15 @@ using System.ComponentModel;
 
 namespace kCura.IntegrationPoint.Tests.Core.Models.Import.Ldap
 {
-	public enum LdapAuthenticationType
-	{
-		[Description("Anonymous")]
-		Anonymous,
+    public enum LdapAuthenticationType
+    {
+        [Description("Anonymous")]
+        Anonymous,
 
-		[Description("FastBind")]
-		FastBind,
+        [Description("FastBind")]
+        FastBind,
 
-		[Description("Secure Socket Layer")]
-		SecureSocketLayer
-	}
+        [Description("Secure Socket Layer")]
+        SecureSocketLayer
+    }
 }

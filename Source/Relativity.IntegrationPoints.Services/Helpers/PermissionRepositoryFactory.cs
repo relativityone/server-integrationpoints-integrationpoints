@@ -4,11 +4,11 @@ using Relativity.API;
 
 namespace Relativity.IntegrationPoints.Services.Helpers
 {
-	public class PermissionRepositoryFactory : IPermissionRepositoryFactory
-	{
-		public IPermissionRepository Create(IHelper helper, int workspaceArtifactId)
-		{
-			return new PermissionRepository(helper, workspaceArtifactId);
-		}
-	}
+    public class PermissionRepositoryFactory : IPermissionRepositoryFactory
+    {
+        public IPermissionRepository Create(IHelper helper, int workspaceArtifactId)
+        {
+            return new PermissionRepository(helper, workspaceArtifactId);
+        }
+    }
 }

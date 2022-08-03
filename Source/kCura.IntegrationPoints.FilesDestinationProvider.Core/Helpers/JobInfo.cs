@@ -7,37 +7,37 @@ using kCura.ScheduleQueue.Core.Core;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers
 {
-	public class JobInfo : IJobInfo
-	{
-		private readonly IJobHistoryService _jobHistoryService;
-		private readonly Job _job;
-		private readonly ISerializer _serializer;
+    public class JobInfo : IJobInfo
+    {
+        private readonly IJobHistoryService _jobHistoryService;
+        private readonly Job _job;
+        private readonly ISerializer _serializer;
 
-		public JobInfo(IJobHistoryService jobHistoryService, Job job, ISerializer serializer)
-		{
-			_jobHistoryService = jobHistoryService;
-			_job = job;
-			_serializer = serializer;
-		}
+        public JobInfo(IJobHistoryService jobHistoryService, Job job, ISerializer serializer)
+        {
+            _jobHistoryService = jobHistoryService;
+            _job = job;
+            _serializer = serializer;
+        }
 
-		public DateTime GetStartTimeUtc()
-		{
-			JobHistory jobHistoryRdo = GetJobHistoryRdo();
+        public DateTime GetStartTimeUtc()
+        {
+            JobHistory jobHistoryRdo = GetJobHistoryRdo();
 
-			return jobHistoryRdo.StartTimeUTC ?? DateTime.UtcNow;
-		}
+            return jobHistoryRdo.StartTimeUTC ?? DateTime.UtcNow;
+        }
 
-		public string GetName()
-		{
-			JobHistory jobHistoryRdo = GetJobHistoryRdo();
-			return jobHistoryRdo.Name;
-		}
+        public string GetName()
+        {
+            JobHistory jobHistoryRdo = GetJobHistoryRdo();
+            return jobHistoryRdo.Name;
+        }
 
-		private JobHistory GetJobHistoryRdo()
-		{
-			var taskParameters = _serializer.Deserialize<TaskParameters>(_job.JobDetails);
-			JobHistory jobHistoryRdo = _jobHistoryService.GetRdo(taskParameters.BatchInstance);
-			return jobHistoryRdo;
-		}
-	}
+        private JobHistory GetJobHistoryRdo()
+        {
+            var taskParameters = _serializer.Deserialize<TaskParameters>(_job.JobDetails);
+            JobHistory jobHistoryRdo = _jobHistoryService.GetRdo(taskParameters.BatchInstance);
+            return jobHistoryRdo;
+        }
+    }
 }

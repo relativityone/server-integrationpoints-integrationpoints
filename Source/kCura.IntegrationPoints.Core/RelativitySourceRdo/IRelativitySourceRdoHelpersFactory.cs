@@ -2,10 +2,10 @@
 
 namespace kCura.IntegrationPoints.Core.RelativitySourceRdo
 {
-	public interface IRelativitySourceRdoHelpersFactory
-	{
-		IRelativitySourceRdoDocumentField CreateRelativitySourceRdoDocumentField(IRelativityProviderObjectRepository relativityProviderObjectRepository);
-		IRelativitySourceRdoFields CreateRelativitySourceRdoFields();
-		IRelativitySourceRdoObjectType CreateRelativitySourceRdoObjectType(IRelativityProviderObjectRepository relativityProviderObjectRepository);
-	}
+    public interface IRelativitySourceRdoHelpersFactory
+    {
+        IRelativitySourceRdoDocumentField CreateRelativitySourceRdoDocumentField(IRelativityProviderObjectRepository relativityProviderObjectRepository);
+        IRelativitySourceRdoFields CreateRelativitySourceRdoFields();
+        IRelativitySourceRdoObjectType CreateRelativitySourceRdoObjectType(IRelativityProviderObjectRepository relativityProviderObjectRepository);
+    }
 }

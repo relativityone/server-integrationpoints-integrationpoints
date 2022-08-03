@@ -8,31 +8,31 @@ using kCura.IntegrationPoints.EventHandlers.Commands.Context;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 {
-	public class ContainerFactory : IContainerFactory
-	{
-		public IWindsorContainer Create(IEHContext context)
-		{
-			var container = new WindsorContainer();
+    public class ContainerFactory : IContainerFactory
+    {
+        public IWindsorContainer Create(IEHContext context)
+        {
+            var container = new WindsorContainer();
 
-			ConfigureContainer(container);
+            ConfigureContainer(container);
 
-			container.Install(new EventHandlerInstaller(context));
-			container.Install(new QueryInstallers());
-			container.Install(new SharedAgentInstaller());
-			container.Install(new ServicesInstaller());
-			container.Install(new ImportProvider.Parser.Installers.ServicesInstaller());
+            container.Install(new EventHandlerInstaller(context));
+            container.Install(new QueryInstallers());
+            container.Install(new SharedAgentInstaller());
+            container.Install(new ServicesInstaller());
+            container.Install(new ImportProvider.Parser.Installers.ServicesInstaller());
 
-			return container;
-		}
+            return container;
+        }
 
-		private void ConfigureContainer(IWindsorContainer container)
-		{
-			container.Register(Component
-				.For<ILazyComponentLoader>()
-				.ImplementedBy<LazyOfTComponentLoader>()
-			);
+        private void ConfigureContainer(IWindsorContainer container)
+        {
+            container.Register(Component
+                .For<ILazyComponentLoader>()
+                .ImplementedBy<LazyOfTComponentLoader>()
+            );
 
-			container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel));
-		}
-	}
+            container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel));
+        }
+    }
 }

@@ -8,41 +8,41 @@ using IResourcePoolManagerSvc = Relativity.Services.ResourcePool.IResourcePoolMa
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class ResourcePoolRepository : IResourcePoolRepository
-	{
-		#region Fields
+    public class ResourcePoolRepository : IResourcePoolRepository
+    {
+        #region Fields
 
-		private readonly IHelper _helper;
+        private readonly IHelper _helper;
 
-		#endregion //Fields
+        #endregion //Fields
 
-		#region Constructors
+        #region Constructors
 
-		public ResourcePoolRepository(IHelper helper)
-		{
-			_helper = helper;
-		}
+        public ResourcePoolRepository(IHelper helper)
+        {
+            _helper = helper;
+        }
 
-		#endregion //Constructors
+        #endregion //Constructors
 
-		#region Methods
+        #region Methods
 
-		public List<ProcessingSourceLocationDTO> GetProcessingSourceLocationsByResourcePool(int resourcePoolId)
-		{
-			using (IResourcePoolManagerSvc resourcePoolManagerSvcProxy =
-					_helper.GetServicesManager().CreateProxy<IResourcePoolManagerSvc>(ExecutionIdentity.System))
-			{
-				List<ChoiceRef> choiceRefs = resourcePoolManagerSvcProxy.GetProcessingSourceLocationsAsync(
-					new ResourcePoolRef(resourcePoolId)).ConfigureAwait(false).GetAwaiter().GetResult();
+        public List<ProcessingSourceLocationDTO> GetProcessingSourceLocationsByResourcePool(int resourcePoolId)
+        {
+            using (IResourcePoolManagerSvc resourcePoolManagerSvcProxy =
+                    _helper.GetServicesManager().CreateProxy<IResourcePoolManagerSvc>(ExecutionIdentity.System))
+            {
+                List<ChoiceRef> choiceRefs = resourcePoolManagerSvcProxy.GetProcessingSourceLocationsAsync(
+                    new ResourcePoolRef(resourcePoolId)).ConfigureAwait(false).GetAwaiter().GetResult();
 
-				return choiceRefs.Select(item => new ProcessingSourceLocationDTO
-				{
-					ArtifactId = item.ArtifactID,
-					Location = item.Name
-				}).ToList();
-			}
-		}
+                return choiceRefs.Select(item => new ProcessingSourceLocationDTO
+                {
+                    ArtifactId = item.ArtifactID,
+                    Location = item.Name
+                }).ToList();
+            }
+        }
 
-		#endregion Methods
-	}
+        #endregion Methods
+    }
 }

@@ -2,10 +2,10 @@
 
 namespace kCura.IntegrationPoints.RelativitySync.Metrics
 {
-	public interface IMetricsFactory
-	{
-		IMetric CreateScheduleJobStartedMetric(Job job);
-		IMetric CreateScheduleJobCompletedMetric(Job job);
-		IMetric CreateScheduleJobFailedMetric(Job job);
-	}
+    public interface IMetricsFactory
+    {
+        IMetric CreateScheduleJobStartedMetric(Job job);
+        IMetric CreateScheduleJobCompletedMetric(Job job);
+        IMetric CreateScheduleJobFailedMetric(Job job);
+    }
 }

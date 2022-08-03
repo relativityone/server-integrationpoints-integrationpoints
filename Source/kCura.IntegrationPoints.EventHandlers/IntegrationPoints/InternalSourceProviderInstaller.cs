@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
         }
 
         protected InternalSourceProviderInstaller(IRipProviderInstaller ripProviderInstaller, IKubernetesMode kubernetesMode)
-	        : this()
+            : this()
         {
             _ripProviderInstaller = ripProviderInstaller;
             _kubernetesMode = kubernetesMode;

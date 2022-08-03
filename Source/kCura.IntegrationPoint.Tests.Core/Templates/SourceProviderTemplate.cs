@@ -28,186 +28,186 @@ using kCura.IntegrationPoints.Common.Agent;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
-	[TestFixture]
-	public abstract class SourceProviderTemplate : IntegrationTestBase
-	{
-		private readonly string _workspaceName;
-		private readonly string _workspaceTemplate;
+    [TestFixture]
+    public abstract class SourceProviderTemplate : IntegrationTestBase
+    {
+        private readonly string _workspaceName;
+        private readonly string _workspaceTemplate;
 
-		protected int RelativityDestinationProviderArtifactId { get; private set; }
-		protected IEnumerable<SourceProvider> SourceProviders { get; private set; }
-		protected ICaseServiceContext CaseContext { get; private set; }
-		protected IRelativityObjectManager ObjectManager { get; private set; }
-		protected IIntegrationPointRepository IntegrationPointRepository { get; private set; }
-		protected IIntegrationPointService IntegrationPointService { get; private set; }
-		protected ISerializer Serializer { get; private set; }
-		protected IAPILog Logger { get; private set; }
+        protected int RelativityDestinationProviderArtifactId { get; private set; }
+        protected IEnumerable<SourceProvider> SourceProviders { get; private set; }
+        protected ICaseServiceContext CaseContext { get; private set; }
+        protected IRelativityObjectManager ObjectManager { get; private set; }
+        protected IIntegrationPointRepository IntegrationPointRepository { get; private set; }
+        protected IIntegrationPointService IntegrationPointService { get; private set; }
+        protected ISerializer Serializer { get; private set; }
+        protected IAPILog Logger { get; private set; }
 
-		protected bool CreatingAgentEnabled { get; set; } = true;
-		protected bool CreatingWorkspaceEnabled { get; set; } = true;
+        protected bool CreatingAgentEnabled { get; set; } = true;
+        protected bool CreatingWorkspaceEnabled { get; set; } = true;
 
-		protected int WorkspaceArtifactId { get; private set; }
-		protected int AgentArtifactId { get; private set; }
+        protected int WorkspaceArtifactId { get; private set; }
+        protected int AgentArtifactId { get; private set; }
 
-		protected SourceProviderTemplate(
-			string workspaceName,
-			string workspaceTemplate = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME)
-		{
-			_workspaceName = workspaceName;
-			_workspaceTemplate = workspaceTemplate;
-		}
+        protected SourceProviderTemplate(
+            string workspaceName,
+            string workspaceTemplate = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME)
+        {
+            _workspaceName = workspaceName;
+            _workspaceTemplate = workspaceTemplate;
+        }
 
-		/// <summary>
-		/// Use this constructor if you want to run tests versus existing workspace.
-		/// </summary>
-		/// <param name="workspaceId">Artifact ID of existing workspace.</param>
-		protected SourceProviderTemplate(int workspaceId)
-		{
-			WorkspaceArtifactId = workspaceId;
-			CreatingWorkspaceEnabled = false;
-		}
+        /// <summary>
+        /// Use this constructor if you want to run tests versus existing workspace.
+        /// </summary>
+        /// <param name="workspaceId">Artifact ID of existing workspace.</param>
+        protected SourceProviderTemplate(int workspaceId)
+        {
+            WorkspaceArtifactId = workspaceId;
+            CreatingWorkspaceEnabled = false;
+        }
 
-		public override void SuiteSetup()
-		{
-			base.SuiteSetup();
+        public override void SuiteSetup()
+        {
+            base.SuiteSetup();
 
-			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
+            Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 
-			if (CreatingWorkspaceEnabled)
-			{
-				WorkspaceArtifactId = Workspace.CreateWorkspaceAsync(_workspaceName, _workspaceTemplate)
-					.GetAwaiter().GetResult().ArtifactID;
-			}
+            if (CreatingWorkspaceEnabled)
+            {
+                WorkspaceArtifactId = Workspace.CreateWorkspaceAsync(_workspaceName, _workspaceTemplate)
+                    .GetAwaiter().GetResult().ArtifactID;
+            }
 
-			InitializeIocContainer();
+            InitializeIocContainer();
 
-			CaseContext = Container.Resolve<ICaseServiceContext>();
-			ObjectManager = CaseContext.RelativityObjectManagerService.RelativityObjectManager;
-			IntegrationPointRepository = Container.Resolve<IIntegrationPointRepository>();
-			IntegrationPointService = Container.Resolve<IIntegrationPointService>();
-			Serializer = Container.Resolve<ISerializer>();
-			Logger = Container.Resolve<IAPILog>();
+            CaseContext = Container.Resolve<ICaseServiceContext>();
+            ObjectManager = CaseContext.RelativityObjectManagerService.RelativityObjectManager;
+            IntegrationPointRepository = Container.Resolve<IIntegrationPointRepository>();
+            IntegrationPointService = Container.Resolve<IIntegrationPointService>();
+            Serializer = Container.Resolve<ISerializer>();
+            Logger = Container.Resolve<IAPILog>();
 
-			SourceProviders = GetSourceProviders();
-			RelativityDestinationProviderArtifactId = GetRelativityDestinationProviderArtifactId();
-		}
+            SourceProviders = GetSourceProviders();
+            RelativityDestinationProviderArtifactId = GetRelativityDestinationProviderArtifactId();
+        }
 
-		public override void SuiteTeardown()
-		{
-			if (CreatingWorkspaceEnabled && WorkspaceArtifactId != 0 && !HasTestFailed())
-			{
-				Workspace.DeleteWorkspaceAsync(WorkspaceArtifactId).GetAwaiter().GetResult();
-			}
+        public override void SuiteTeardown()
+        {
+            if (CreatingWorkspaceEnabled && WorkspaceArtifactId != 0 && !HasTestFailed())
+            {
+                Workspace.DeleteWorkspaceAsync(WorkspaceArtifactId).GetAwaiter().GetResult();
+            }
 
-			base.SuiteTeardown();
-		}
+            base.SuiteTeardown();
+        }
 
-		protected virtual void InitializeIocContainer()
-		{
-			Container.Register(Component
-				.For<ILazyComponentLoader>()
-				.ImplementedBy<LazyOfTComponentLoader>()
-			);
+        protected virtual void InitializeIocContainer()
+        {
+            Container.Register(Component
+                .For<ILazyComponentLoader>()
+                .ImplementedBy<LazyOfTComponentLoader>()
+            );
 
-			Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => Helper, managedExternally: true));
-			Container.Register(Component.For<IAPILog>().UsingFactoryMethod(k => Helper.GetLoggerFactory().GetLogger()));
-			Container.Register(Component.For<IServiceContextHelper>()
-				.UsingFactoryMethod(k =>
-				{
-					IHelper helper = k.Resolve<IHelper>();
-					return new TestServiceContextHelper(helper, WorkspaceArtifactId);
-				}));
-			Container.Register(
-				Component.For<IWorkspaceDBContext>()
-					.ImplementedBy<WorkspaceDBContext>()
-					.UsingFactoryMethod(k => new WorkspaceDBContext(k.Resolve<IHelper>().GetDBContext(WorkspaceArtifactId)))
-					.LifeStyle.Transient);
+            Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => Helper, managedExternally: true));
+            Container.Register(Component.For<IAPILog>().UsingFactoryMethod(k => Helper.GetLoggerFactory().GetLogger()));
+            Container.Register(Component.For<IServiceContextHelper>()
+                .UsingFactoryMethod(k =>
+                {
+                    IHelper helper = k.Resolve<IHelper>();
+                    return new TestServiceContextHelper(helper, WorkspaceArtifactId);
+                }));
+            Container.Register(
+                Component.For<IWorkspaceDBContext>()
+                    .ImplementedBy<WorkspaceDBContext>()
+                    .UsingFactoryMethod(k => new WorkspaceDBContext(k.Resolve<IHelper>().GetDBContext(WorkspaceArtifactId)))
+                    .LifeStyle.Transient);
 
-			Container.Register(Component.For<IRelativityObjectManagerService>().Instance(new RelativityObjectManagerService(Container.Resolve<IHelper>(), WorkspaceArtifactId)).LifestyleTransient());
-			Container.Register(Component.For<IntegrationPoints.Core.Factories.IExporterFactory>().ImplementedBy<ExporterFactory>());
-			Container.Register(Component.For<IExportServiceObserversFactory>().ImplementedBy<ExportServiceObserversFactory>());
-			Container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
+            Container.Register(Component.For<IRelativityObjectManagerService>().Instance(new RelativityObjectManagerService(Container.Resolve<IHelper>(), WorkspaceArtifactId)).LifestyleTransient());
+            Container.Register(Component.For<IntegrationPoints.Core.Factories.IExporterFactory>().ImplementedBy<ExporterFactory>());
+            Container.Register(Component.For<IExportServiceObserversFactory>().ImplementedBy<ExportServiceObserversFactory>());
+            Container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
 
-			Container.Register(
-				Component.For<IFolderManager>().UsingFactoryMethod(f =>
-					f.Resolve<IServicesMgr>().CreateProxy<IFolderManager>(ExecutionIdentity.CurrentUser)
-				)
-			);
-			Container.Register(Component.For<FolderWithDocumentsIdRetriever>().ImplementedBy<FolderWithDocumentsIdRetriever>());
-			Container.Register(
-				Component
-					.For<IExternalServiceInstrumentationProvider>()
-					.ImplementedBy<ExternalServiceInstrumentationProviderWithoutJobContext>()
-					.LifestyleSingleton()
-			);
-			Container.Register(Component.For<IFileRepository>().ImplementedBy<FileRepository>().LifestyleTransient());
+            Container.Register(
+                Component.For<IFolderManager>().UsingFactoryMethod(f =>
+                    f.Resolve<IServicesMgr>().CreateProxy<IFolderManager>(ExecutionIdentity.CurrentUser)
+                )
+            );
+            Container.Register(Component.For<FolderWithDocumentsIdRetriever>().ImplementedBy<FolderWithDocumentsIdRetriever>());
+            Container.Register(
+                Component
+                    .For<IExternalServiceInstrumentationProvider>()
+                    .ImplementedBy<ExternalServiceInstrumentationProviderWithoutJobContext>()
+                    .LifestyleSingleton()
+            );
+            Container.Register(Component.For<IFileRepository>().ImplementedBy<FileRepository>().LifestyleTransient());
 
-			Container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>().LifestyleTransient());
+            Container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>().LifestyleTransient());
 
 #pragma warning disable 618
-			var dependencies = new IWindsorInstaller[]
-			{
-				new QueryInstallers(),
-				new KeywordInstaller(),
-				new SharedAgentInstaller(),
-				new IntegrationPoints.Core.Installers.ServicesInstaller(),
-				new ValidationInstaller(),
-				new IntegrationPoints.ImportProvider.Parser.Installers.ServicesInstaller()
-			};
+            var dependencies = new IWindsorInstaller[]
+            {
+                new QueryInstallers(),
+                new KeywordInstaller(),
+                new SharedAgentInstaller(),
+                new IntegrationPoints.Core.Installers.ServicesInstaller(),
+                new ValidationInstaller(),
+                new IntegrationPoints.ImportProvider.Parser.Installers.ServicesInstaller()
+            };
 #pragma warning restore 618
 
-			foreach (IWindsorInstaller dependency in dependencies)
-			{
-				dependency.Install(Container, ConfigurationStore);
-			}
-		}
+            foreach (IWindsorInstaller dependency in dependencies)
+            {
+                dependency.Install(Container, ConfigurationStore);
+            }
+        }
 
-		protected int CreateOrUpdateIntegrationPointRdo(IntegrationPointModel model)
-		{
-			return IntegrationPointService.SaveIntegration(model);
-		}
+        protected int CreateOrUpdateIntegrationPointRdo(IntegrationPointModel model)
+        {
+            return IntegrationPointService.SaveIntegration(model);
+        }
 
-		protected IntegrationPointModel CreateOrUpdateIntegrationPoint(IntegrationPointModel model)
-		{
-			int integrationPointArtifactId = CreateOrUpdateIntegrationPointRdo(model);
+        protected IntegrationPointModel CreateOrUpdateIntegrationPoint(IntegrationPointModel model)
+        {
+            int integrationPointArtifactId = CreateOrUpdateIntegrationPointRdo(model);
 
-			IntegrationPoints.Data.IntegrationPoint rdo = IntegrationPointService.ReadIntegrationPoint(integrationPointArtifactId);
-			IntegrationPointModel newModel = IntegrationPointModel.FromIntegrationPoint(rdo);
-			return newModel;
-		}
+            IntegrationPoints.Data.IntegrationPoint rdo = IntegrationPointService.ReadIntegrationPoint(integrationPointArtifactId);
+            IntegrationPointModel newModel = IntegrationPointModel.FromIntegrationPoint(rdo);
+            return newModel;
+        }
 
-		protected IntegrationPointProfileModel CreateOrUpdateIntegrationPointProfile(IntegrationPointProfileModel model)
-		{
-			IIntegrationPointProfileService service = Container.Resolve<IIntegrationPointProfileService>();
+        protected IntegrationPointProfileModel CreateOrUpdateIntegrationPointProfile(IntegrationPointProfileModel model)
+        {
+            IIntegrationPointProfileService service = Container.Resolve<IIntegrationPointProfileService>();
 
-			int integrationPointArtifactId = service.SaveIntegration(model);
+            int integrationPointArtifactId = service.SaveIntegration(model);
 
-			IntegrationPointProfile rdo = service.ReadIntegrationPointProfile(integrationPointArtifactId);
-			IntegrationPointProfileModel newModel = IntegrationPointProfileModel.FromIntegrationPointProfile(rdo);
-			return newModel;
-		}
+            IntegrationPointProfile rdo = service.ReadIntegrationPointProfile(integrationPointArtifactId);
+            IntegrationPointProfileModel newModel = IntegrationPointProfileModel.FromIntegrationPointProfile(rdo);
+            return newModel;
+        }
         
-		private IEnumerable<SourceProvider> GetSourceProviders()
-		{
-			var queryRequest = new QueryRequest();
-			List<SourceProvider> sourceProviders = ObjectManager.Query<SourceProvider>(queryRequest);
-			return sourceProviders;
-		}
+        private IEnumerable<SourceProvider> GetSourceProviders()
+        {
+            var queryRequest = new QueryRequest();
+            List<SourceProvider> sourceProviders = ObjectManager.Query<SourceProvider>(queryRequest);
+            return sourceProviders;
+        }
 
-		private int GetRelativityDestinationProviderArtifactId()
-		{
-			var queryRequestForIdentifierField = new QueryRequest
-			{
-				Fields = new List<FieldRef>
-				{
-					new FieldRef {Guid = DestinationProviderFieldGuids.IdentifierGuid}
-				}
-			};
+        private int GetRelativityDestinationProviderArtifactId()
+        {
+            var queryRequestForIdentifierField = new QueryRequest
+            {
+                Fields = new List<FieldRef>
+                {
+                    new FieldRef {Guid = DestinationProviderFieldGuids.IdentifierGuid}
+                }
+            };
 
-			return ObjectManager
-				.Query<DestinationProvider>(queryRequestForIdentifierField)
-				.First(x => x.Identifier == IntegrationPoints.Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID)
-				.ArtifactId;
-		}
-	}
+            return ObjectManager
+                .Query<DestinationProvider>(queryRequestForIdentifierField)
+                .First(x => x.Identifier == IntegrationPoints.Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID)
+                .ArtifactId;
+        }
+    }
 }

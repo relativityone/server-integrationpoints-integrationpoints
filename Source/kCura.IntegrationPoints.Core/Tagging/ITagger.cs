@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.Core.Tagging
 {
-	public interface ITagger
-	{
-		void TagDocuments(TagsContainer tagsContainer, IScratchTableRepository scratchTableRepository);
-	}
+    public interface ITagger
+    {
+        void TagDocuments(TagsContainer tagsContainer, IScratchTableRepository scratchTableRepository);
+    }
 }

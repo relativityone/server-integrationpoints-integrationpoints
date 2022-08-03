@@ -99,8 +99,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
         private bool IsJobHistoryQueryRequest(QueryRequest x)
         {
-	        return x.ObjectType.Guid.HasValue &&
-	               x.ObjectType.Guid.Value.Equals(ObjectTypeGuids.JobHistoryGuid);
+            return x.ObjectType.Guid.HasValue &&
+                   x.ObjectType.Guid.Value.Equals(ObjectTypeGuids.JobHistoryGuid);
         }
     }
 }

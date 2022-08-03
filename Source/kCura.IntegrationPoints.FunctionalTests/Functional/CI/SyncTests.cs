@@ -13,72 +13,72 @@ using NUnit.Framework;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
-	[TestType.UI, TestType.MainFlow]
-	public class SyncTests : TestsBase
-	{
-		private readonly SyncTestsImplementation _testsImplementation;
+    [TestType.UI, TestType.MainFlow]
+    public class SyncTests : TestsBase
+    {
+        private readonly SyncTestsImplementation _testsImplementation;
 
-		public SyncTests() : base(nameof(SyncTests))
-		{
-			_testsImplementation = new SyncTestsImplementation(this);
-		}
+        public SyncTests() : base(nameof(SyncTests))
+        {
+            _testsImplementation = new SyncTestsImplementation(this);
+        }
 
-		protected override void OnSetUpFixture()
-		{
-			base.OnSetUpFixture();
-		}
+        protected override void OnSetUpFixture()
+        {
+            base.OnSetUpFixture();
+        }
 
-		protected override void OnTearDownFixture()
-		{
-			base.OnTearDownFixture();
+        protected override void OnTearDownFixture()
+        {
+            base.OnTearDownFixture();
 
-			_testsImplementation.OnTearDownFixture();
-		}
-
-		[Ignore("REL-695806")]
-		[Test, TestType.Critical]
-		public void SavedSearch_NativesAndMetadata_GoldFlow()
-		{
-			_testsImplementation.SavedSearchNativesAndMetadataGoldFlow();
-		}
-
-		[Ignore("REL-695806")]
-		[TestCase(YesNo.No)]
-		[TestCase(YesNo.Yes)]
-		public void Production_Images_GoldFlow(YesNo copyFilesToRepository)
-		{
-			_testsImplementation.ProductionImagesGoldFlow(copyFilesToRepository);
-		}
+            _testsImplementation.OnTearDownFixture();
+        }
 
         [Ignore("REL-695806")]
-		[Test]
-		public async Task Entities_GoldFlow()
-		{
-			IToggleProvider toggleProvider = SqlToggleProvider.Create();
-			try
-			{
-				await toggleProvider.SetAsync<EnableSyncNonDocumentFlowToggle>(true).ConfigureAwait(false);
-				_testsImplementation.EntitiesPushGoldFlow();
-			}
-			finally
-			{
-				await toggleProvider.SetAsync<EnableSyncNonDocumentFlowToggle>(false).ConfigureAwait(false);
-			}
-		}
+        [Test, TestType.Critical]
+        public void SavedSearch_NativesAndMetadata_GoldFlow()
+        {
+            _testsImplementation.SavedSearchNativesAndMetadataGoldFlow();
+        }
 
-		private void SetIAPICommunicationMode(IAPICommunicationMode iapiCommunicationModeValue)
-		{
-			RelativityFacade
-				.Instance
-				.Resolve<IInstanceSettingsService>()
-				.Require(new Testing.Framework.Models.InstanceSetting
-					{
-						Name = "IAPICommunicationMode",
-						Section = "DataTransfer.Legacy",
-						Value = iapiCommunicationModeValue.ToString(),
-						ValueType = InstanceSettingValueType.Text
-					}
-				);
-		}
+        [Ignore("REL-695806")]
+        [TestCase(YesNo.No)]
+        [TestCase(YesNo.Yes)]
+        public void Production_Images_GoldFlow(YesNo copyFilesToRepository)
+        {
+            _testsImplementation.ProductionImagesGoldFlow(copyFilesToRepository);
+        }
+
+        [Ignore("REL-695806")]
+        [Test]
+        public async Task Entities_GoldFlow()
+        {
+            IToggleProvider toggleProvider = SqlToggleProvider.Create();
+            try
+            {
+                await toggleProvider.SetAsync<EnableSyncNonDocumentFlowToggle>(true).ConfigureAwait(false);
+                _testsImplementation.EntitiesPushGoldFlow();
+            }
+            finally
+            {
+                await toggleProvider.SetAsync<EnableSyncNonDocumentFlowToggle>(false).ConfigureAwait(false);
+            }
+        }
+
+        private void SetIAPICommunicationMode(IAPICommunicationMode iapiCommunicationModeValue)
+        {
+            RelativityFacade
+                .Instance
+                .Resolve<IInstanceSettingsService>()
+                .Require(new Testing.Framework.Models.InstanceSetting
+                    {
+                        Name = "IAPICommunicationMode",
+                        Section = "DataTransfer.Legacy",
+                        Value = iapiCommunicationModeValue.ToString(),
+                        ValueType = InstanceSettingValueType.Text
+                    }
+                );
+        }
     }
 }

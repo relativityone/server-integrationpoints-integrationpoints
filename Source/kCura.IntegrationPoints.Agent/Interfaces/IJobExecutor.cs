@@ -3,10 +3,10 @@ using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Agent.Interfaces
 {
-	internal interface IJobExecutor
-	{
-		event ExceptionEventHandler JobExecutionError;
+    internal interface IJobExecutor
+    {
+        event ExceptionEventHandler JobExecutionError;
 
-		TaskResult ProcessJob(Job job);
-	}
+        TaskResult ProcessJob(Job job);
+    }
 }

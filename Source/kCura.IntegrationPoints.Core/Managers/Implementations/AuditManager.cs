@@ -2,13 +2,13 @@
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
-	public class AuditManager : IAuditManager
-	{
-		public AuditManager(IRelativityAuditRepository relativityAuditRepository)
-		{
-			RelativityAuditRepository = relativityAuditRepository;
-		}
+    public class AuditManager : IAuditManager
+    {
+        public AuditManager(IRelativityAuditRepository relativityAuditRepository)
+        {
+            RelativityAuditRepository = relativityAuditRepository;
+        }
 
-		public IRelativityAuditRepository RelativityAuditRepository { get; }
-	}
+        public IRelativityAuditRepository RelativityAuditRepository { get; }
+    }
 }

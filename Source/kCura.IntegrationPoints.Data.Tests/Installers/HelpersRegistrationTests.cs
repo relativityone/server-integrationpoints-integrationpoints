@@ -11,55 +11,55 @@ using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestH
 
 namespace kCura.IntegrationPoints.Data.Tests.Installers
 {
-	[TestFixture, Category("Unit")]
-	public class HelpersRegistrationTests
-	{
-		private IWindsorContainer _sut;
+    [TestFixture, Category("Unit")]
+    public class HelpersRegistrationTests
+    {
+        private IWindsorContainer _sut;
 
-		[SetUp]
-		public void SetUp()
-		{
-			_sut = new WindsorContainer();
-			_sut.AddHelpers();
-		}
+        [SetUp]
+        public void SetUp()
+        {
+            _sut = new WindsorContainer();
+            _sut.AddHelpers();
+        }
 
-		[Test]
-		public void MassUpdateHelper_ShouldBeRegisteredWithProperLifestyle()
-		{
-			// assert
-			_sut.Should()
-				.HaveRegisteredSingleComponent<IMassUpdateHelper>()
-				.Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
-		}
+        [Test]
+        public void MassUpdateHelper_ShouldBeRegisteredWithProperLifestyle()
+        {
+            // assert
+            _sut.Should()
+                .HaveRegisteredSingleComponent<IMassUpdateHelper>()
+                .Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
+        }
 
-		[Test]
-		public void MassUpdateHelper_ShouldBeRegisteredWithProperImplementation()
-		{
-			// assert
-			_sut.Should()
-				.HaveRegisteredProperImplementation<IMassUpdateHelper, MassUpdateHelper>();
-		}
+        [Test]
+        public void MassUpdateHelper_ShouldBeRegisteredWithProperImplementation()
+        {
+            // assert
+            _sut.Should()
+                .HaveRegisteredProperImplementation<IMassUpdateHelper, MassUpdateHelper>();
+        }
 
-		[Test]
-		public void MassUpdateHelper_ShouldBeResolvedWithoutThrowing()
-		{
-			// arrange
-			RegisterDependencies(_sut);
+        [Test]
+        public void MassUpdateHelper_ShouldBeResolvedWithoutThrowing()
+        {
+            // arrange
+            RegisterDependencies(_sut);
 
-			// assert
-			_sut.Should()
-				.ResolveWithoutThrowing<IMassUpdateHelper>();
-		}
+            // assert
+            _sut.Should()
+                .ResolveWithoutThrowing<IMassUpdateHelper>();
+        }
 
-		private static void RegisterDependencies(IWindsorContainer container)
-		{
-			IRegistration[] dependencies =
-			{
-				CreateDummyObjectRegistration<IAPILog>(),
-				CreateDummyObjectRegistration<IConfig>()
-			};
+        private static void RegisterDependencies(IWindsorContainer container)
+        {
+            IRegistration[] dependencies =
+            {
+                CreateDummyObjectRegistration<IAPILog>(),
+                CreateDummyObjectRegistration<IConfig>()
+            };
 
-			container.Register(dependencies);
-		}
-	}
+            container.Register(dependencies);
+        }
+    }
 }

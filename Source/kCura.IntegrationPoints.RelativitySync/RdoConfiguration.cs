@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 {
     internal static class RdoConfiguration
     {
-		public static RdoOptions GetRdoOptions() => new RdoOptions(
+        public static RdoOptions GetRdoOptions() => new RdoOptions(
             new JobHistoryOptions(
                 ObjectTypeGuids.JobHistoryGuid,
                 JobHistoryFieldGuids.ItemsTransferredGuid,

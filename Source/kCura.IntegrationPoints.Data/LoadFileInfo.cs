@@ -2,12 +2,12 @@
 
 namespace kCura.IntegrationPoints.Data
 {
-	public class LoadFileInfo
-	{
-		public long Size { get; set; }
+    public class LoadFileInfo
+    {
+        public long Size { get; set; }
 
-		public DateTime LastModifiedDate { get; set; }
+        public DateTime LastModifiedDate { get; set; }
 
-		public string FullPath { get; set; }
-	}
+        public string FullPath { get; set; }
+    }
 }

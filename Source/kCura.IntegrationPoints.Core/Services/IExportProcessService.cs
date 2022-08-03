@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.Core.Services
 {
-	public interface IExportInitProcessService
-	{
-		long CalculateDocumentCountToTransfer(ExportUsingSavedSearchSettings exportSettings, int artifactTypeId);
-	}
+    public interface IExportInitProcessService
+    {
+        long CalculateDocumentCountToTransfer(ExportUsingSavedSearchSettings exportSettings, int artifactTypeId);
+    }
 }

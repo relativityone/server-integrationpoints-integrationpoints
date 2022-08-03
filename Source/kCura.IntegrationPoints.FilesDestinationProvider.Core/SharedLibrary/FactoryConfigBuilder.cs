@@ -10,36 +10,36 @@ using Relativity.DataExchange.Process;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 {
-	internal class FactoryConfigBuilder : IFactoryConfigBuilder
-	{
-		private readonly JobHistoryErrorServiceProvider _jobHistoryErrorServiceProvider;
-		private readonly IFileNameProvidersDictionaryBuilder _fileNameProvidersDictionaryBuilder;
-		private readonly IExportConfig _exportConfig;
+    internal class FactoryConfigBuilder : IFactoryConfigBuilder
+    {
+        private readonly JobHistoryErrorServiceProvider _jobHistoryErrorServiceProvider;
+        private readonly IFileNameProvidersDictionaryBuilder _fileNameProvidersDictionaryBuilder;
+        private readonly IExportConfig _exportConfig;
 
-		public FactoryConfigBuilder(JobHistoryErrorServiceProvider jobHistoryErrorServiceProvider, IFileNameProvidersDictionaryBuilder fileNameProvidersDictionaryBuilder, IExportConfig exportConfig)
-		{
-			_jobHistoryErrorServiceProvider = jobHistoryErrorServiceProvider;
-			_fileNameProvidersDictionaryBuilder = fileNameProvidersDictionaryBuilder;
-			_exportConfig = exportConfig;
-		}
+        public FactoryConfigBuilder(JobHistoryErrorServiceProvider jobHistoryErrorServiceProvider, IFileNameProvidersDictionaryBuilder fileNameProvidersDictionaryBuilder, IExportConfig exportConfig)
+        {
+            _jobHistoryErrorServiceProvider = jobHistoryErrorServiceProvider;
+            _fileNameProvidersDictionaryBuilder = fileNameProvidersDictionaryBuilder;
+            _exportConfig = exportConfig;
+        }
 
-		public ExporterFactoryConfig BuildFactoryConfig(ExportDataContext exportDataContext, IServiceFactory serviceFactory)
-		{
-			var config = new ExporterFactoryConfig
-			{
-				JobStopManager = _jobHistoryErrorServiceProvider?.JobHistoryErrorService.JobStopManager,
-				Controller = new ProcessContext(),
-				ServiceFactory = serviceFactory,
-				LoadFileFormatterFactory = new ExportFileFormatterFactory(new ExtendedFieldNameProvider(exportDataContext.Settings)),
-				NameTextAndNativesAfterBegBates = exportDataContext.ExportFile.AreSettingsApplicableForProdBegBatesNameCheck(),
-				ExportConfig = _exportConfig
-			};
+        public ExporterFactoryConfig BuildFactoryConfig(ExportDataContext exportDataContext, IServiceFactory serviceFactory)
+        {
+            var config = new ExporterFactoryConfig
+            {
+                JobStopManager = _jobHistoryErrorServiceProvider?.JobHistoryErrorService.JobStopManager,
+                Controller = new ProcessContext(),
+                ServiceFactory = serviceFactory,
+                LoadFileFormatterFactory = new ExportFileFormatterFactory(new ExtendedFieldNameProvider(exportDataContext.Settings)),
+                NameTextAndNativesAfterBegBates = exportDataContext.ExportFile.AreSettingsApplicableForProdBegBatesNameCheck(),
+                ExportConfig = _exportConfig
+            };
 
-			IDictionary<ExportNativeWithFilenameFrom, IFileNameProvider> fileNameProvidersDictionary = _fileNameProvidersDictionaryBuilder.Build(exportDataContext);
+            IDictionary<ExportNativeWithFilenameFrom, IFileNameProvider> fileNameProvidersDictionary = _fileNameProvidersDictionaryBuilder.Build(exportDataContext);
 
-			var fileNameProviderContainerFactory = new FileNameProviderContainerFactory(fileNameProvidersDictionary);
-			config.FileNameProvider = fileNameProviderContainerFactory.Create(exportDataContext.ExportFile);
-			return config;
-		}
-	}
+            var fileNameProviderContainerFactory = new FileNameProviderContainerFactory(fileNameProvidersDictionary);
+            config.FileNameProvider = fileNameProviderContainerFactory.Create(exportDataContext.ExportFile);
+            return config;
+        }
+    }
 }

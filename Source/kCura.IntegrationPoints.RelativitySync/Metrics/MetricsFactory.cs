@@ -9,62 +9,62 @@ using static kCura.IntegrationPoints.Core.Contracts.Configuration.SourceConfigur
 
 namespace kCura.IntegrationPoints.RelativitySync.Metrics
 {
-	public class MetricsFactory : IMetricsFactory
-	{
-		private readonly ISerializer _serializer;
-		private readonly IIntegrationPointService _integrationPointService;
-		private readonly IScheduleRuleFactory _scheduleRuleFactory;
-		private readonly IServicesMgr _servicesMgr;
+    public class MetricsFactory : IMetricsFactory
+    {
+        private readonly ISerializer _serializer;
+        private readonly IIntegrationPointService _integrationPointService;
+        private readonly IScheduleRuleFactory _scheduleRuleFactory;
+        private readonly IServicesMgr _servicesMgr;
 
-		public MetricsFactory(ISerializer serializer, IScheduleRuleFactory scheduleRuleFactory,
-			IIntegrationPointService integrationPointService, IServicesMgr servicesMgr)
-		{
-			_serializer = serializer;
-			_scheduleRuleFactory = scheduleRuleFactory;
-			_integrationPointService = integrationPointService;
-			_servicesMgr = servicesMgr;
-		}
+        public MetricsFactory(ISerializer serializer, IScheduleRuleFactory scheduleRuleFactory,
+            IIntegrationPointService integrationPointService, IServicesMgr servicesMgr)
+        {
+            _serializer = serializer;
+            _scheduleRuleFactory = scheduleRuleFactory;
+            _integrationPointService = integrationPointService;
+            _servicesMgr = servicesMgr;
+        }
 
-		public IMetric CreateScheduleJobStartedMetric(Job job)
-		{
-			IScheduleRule scheduleRule = _scheduleRuleFactory.Deserialize(job);
-			if(scheduleRule == null)
-			{
-				return new EmptyMetric();
-			}
+        public IMetric CreateScheduleJobStartedMetric(Job job)
+        {
+            IScheduleRule scheduleRule = _scheduleRuleFactory.Deserialize(job);
+            if(scheduleRule == null)
+            {
+                return new EmptyMetric();
+            }
 
-			IntegrationPoint integrationPoint = _integrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
-			ExportType type = _serializer.Deserialize<SourceConfiguration>(integrationPoint.SourceConfiguration).TypeOfExport;
+            IntegrationPoint integrationPoint = _integrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
+            ExportType type = _serializer.Deserialize<SourceConfiguration>(integrationPoint.SourceConfiguration).TypeOfExport;
 
-			return ScheduleMetric.CreateScheduleJobStarted(_servicesMgr, integrationPoint.ArtifactId, job.JobId, type, scheduleRule);
-		}
+            return ScheduleMetric.CreateScheduleJobStarted(_servicesMgr, integrationPoint.ArtifactId, job.JobId, type, scheduleRule);
+        }
 
-		public IMetric CreateScheduleJobCompletedMetric(Job job)
-		{
-			IScheduleRule scheduleRule = _scheduleRuleFactory.Deserialize(job);
-			if (scheduleRule == null)
-			{
-				return new EmptyMetric();
-			}
+        public IMetric CreateScheduleJobCompletedMetric(Job job)
+        {
+            IScheduleRule scheduleRule = _scheduleRuleFactory.Deserialize(job);
+            if (scheduleRule == null)
+            {
+                return new EmptyMetric();
+            }
 
-			IntegrationPoint integrationPoint = _integrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
-			ExportType type = _serializer.Deserialize<SourceConfiguration>(integrationPoint.SourceConfiguration).TypeOfExport;
+            IntegrationPoint integrationPoint = _integrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
+            ExportType type = _serializer.Deserialize<SourceConfiguration>(integrationPoint.SourceConfiguration).TypeOfExport;
 
-			return ScheduleMetric.CreateScheduleJobCompleted(_servicesMgr, integrationPoint.ArtifactId, job.JobId, type);
-		}
+            return ScheduleMetric.CreateScheduleJobCompleted(_servicesMgr, integrationPoint.ArtifactId, job.JobId, type);
+        }
 
-		public IMetric CreateScheduleJobFailedMetric(Job job)
-		{
-			IScheduleRule scheduleRule = _scheduleRuleFactory.Deserialize(job);
-			if (scheduleRule == null)
-			{
-				return new EmptyMetric();
-			}
+        public IMetric CreateScheduleJobFailedMetric(Job job)
+        {
+            IScheduleRule scheduleRule = _scheduleRuleFactory.Deserialize(job);
+            if (scheduleRule == null)
+            {
+                return new EmptyMetric();
+            }
 
-			IntegrationPoint integrationPoint = _integrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
-			ExportType type = _serializer.Deserialize<SourceConfiguration>(integrationPoint.SourceConfiguration).TypeOfExport;
+            IntegrationPoint integrationPoint = _integrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
+            ExportType type = _serializer.Deserialize<SourceConfiguration>(integrationPoint.SourceConfiguration).TypeOfExport;
 
-			return ScheduleMetric.CreateScheduleJobFailed(_servicesMgr, integrationPoint.ArtifactId, job.JobId, type);
-		}
-	}
+            return ScheduleMetric.CreateScheduleJobFailed(_servicesMgr, integrationPoint.ArtifactId, job.JobId, type);
+        }
+    }
 }

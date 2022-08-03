@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
         [OneTimeSetUp]
         public void Setup()
         {
-	        _loggerMock = new Mock<IAPILog>();
+            _loggerMock = new Mock<IAPILog>();
             _errorServiceMock = new Mock<IErrorService>();
             _providerInstallerMock = new Mock<IRipProviderInstaller>();
             _kubernetesModeMock = new Mock<IKubernetesMode>();
@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
                 DefaultValue = DefaultValue.Mock
             };
             helper.Setup(x => x.GetLoggerFactory().GetLogger().ForContext<IntegrationPointMigrationEventHandlerBase>())
-	            .Returns(_loggerMock.Object);
+                .Returns(_loggerMock.Object);
 
             _sut = new SubjectUnderTests(
                 helper.Object,
@@ -168,18 +168,18 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
             // arrange
             var providerToInstall = new Data.SourceProvider
             {
-	            ApplicationIdentifier = "72194851-ad15-4769-bec5-04011498a1b4",
-	            Identifier = "e01ff2d2-2ac7-4390-bbc3-64c6c17758bc",
-	            ArtifactId = 789,
-	            Name = "test",
-	            SourceConfigurationUrl = "fake url",
-	            ViewConfigurationUrl = "config url",
-	            Config = new SourceProviderConfiguration()
+                ApplicationIdentifier = "72194851-ad15-4769-bec5-04011498a1b4",
+                Identifier = "e01ff2d2-2ac7-4390-bbc3-64c6c17758bc",
+                ArtifactId = 789,
+                Name = "test",
+                SourceConfigurationUrl = "fake url",
+                ViewConfigurationUrl = "config url",
+                Config = new SourceProviderConfiguration()
             };
             var providersToInstall = new List<Data.SourceProvider>
             {
-	            providerToInstall,
-	            providerToInstall
+                providerToInstall,
+                providerToInstall
             };
             _sut.SourceProvidersToReturn = providersToInstall;
 

@@ -5,14 +5,14 @@ using Relativity.DataExchange.Service;
 
 namespace kCura.IntegrationPoints.Core.Authentication.WebApi.LoginHelperFacade
 {
-	internal class LoginHelperFacade : ILoginHelperFacade
-	{
-		public NetworkCredential LoginUsingAuthToken(string token, CookieContainer cookieContainer)
-		{
-			return LoginHelper.LoginUsernamePassword(AuthConstants._RELATIVITY_BEARER_USERNAME, token, cookieContainer, new RunningContext
-			{
-				ExecutionSource = ExecutionSource.RIP
-			}, () => string.Empty);
-		}
-	}
+    internal class LoginHelperFacade : ILoginHelperFacade
+    {
+        public NetworkCredential LoginUsingAuthToken(string token, CookieContainer cookieContainer)
+        {
+            return LoginHelper.LoginUsernamePassword(AuthConstants._RELATIVITY_BEARER_USERNAME, token, cookieContainer, new RunningContext
+            {
+                ExecutionSource = ExecutionSource.RIP
+            }, () => string.Empty);
+        }
+    }
 }

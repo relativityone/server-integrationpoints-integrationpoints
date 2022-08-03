@@ -2,14 +2,14 @@
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.Models
 {
-	internal class RelativityProviderMapFields
-	{
-		public RelativityProviderOverwrite Overwrite { get; set; }
+    internal class RelativityProviderMapFields
+    {
+        public RelativityProviderOverwrite Overwrite { get; set; }
 
-		public YesNo CopyImages { get; set; }
+        public YesNo CopyImages { get; set; }
 
-		public RelativityProviderCopyNativeFiles CopyNativeFiles { get; set; }
+        public RelativityProviderCopyNativeFiles CopyNativeFiles { get; set; }
 
-		public RelativityProviderFolderPathInformation PathInformation { get; set; }
-	}
+        public RelativityProviderFolderPathInformation PathInformation { get; set; }
+    }
 }

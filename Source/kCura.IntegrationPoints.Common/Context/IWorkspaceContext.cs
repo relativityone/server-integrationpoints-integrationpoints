@@ -1,7 +1,7 @@
 ﻿namespace kCura.IntegrationPoints.Common.Context
 {
-	public interface IWorkspaceContext
-	{
-		int GetWorkspaceID();
-	}
+    public interface IWorkspaceContext
+    {
+        int GetWorkspaceID();
+    }
 }

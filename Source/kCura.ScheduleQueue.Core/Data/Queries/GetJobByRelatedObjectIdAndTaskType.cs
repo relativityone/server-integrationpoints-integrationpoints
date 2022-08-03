@@ -15,10 +15,10 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 
         public GetJobByRelatedObjectIdAndTaskType(IQueueDBContext qDbContext, int workspaceId, int relatedObjectArtifactId, List<string> taskTypes)
         {
-	        _qDbContext = qDbContext;
-	        _workspaceId = workspaceId;
-	        _relatedObjectArtifactId = relatedObjectArtifactId;
-	        _taskTypes = taskTypes;
+            _qDbContext = qDbContext;
+            _workspaceId = workspaceId;
+            _relatedObjectArtifactId = relatedObjectArtifactId;
+            _taskTypes = taskTypes;
         }
 
         public DataTable Execute()

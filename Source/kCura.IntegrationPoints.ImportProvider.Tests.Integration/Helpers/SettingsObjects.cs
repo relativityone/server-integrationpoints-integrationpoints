@@ -6,10 +6,10 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 {
-	public class SettingsObjects
-	{
-		public ImportSettings ImportSettings { get; set; }
-		public ImportProviderSettings ImportProviderSettings { get; set; }
-		public List<FieldMap> FieldMaps { get; set; }
-	}
+    public class SettingsObjects
+    {
+        public ImportSettings ImportSettings { get; set; }
+        public ImportProviderSettings ImportProviderSettings { get; set; }
+        public List<FieldMap> FieldMaps { get; set; }
+    }
 }

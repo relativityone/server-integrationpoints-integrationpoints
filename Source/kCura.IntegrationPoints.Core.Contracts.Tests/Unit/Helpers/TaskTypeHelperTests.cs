@@ -9,17 +9,17 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Contracts.Tests.Unit.Helpers
 {
-	class TaskTypeHelperTests
-	{
-		[Test]
-		[TestCase(TaskType.SyncManager)]
-		[TestCase(TaskType.ExportManager)]
-		[TestCase(TaskType.ExportService)]
-		public void ItShouldReturnMangerTypeTasks(TaskType mgrTaskType)
-		{
-			var mgrTaskTypes = TaskTypeHelper.GetManagerTypes();
+    class TaskTypeHelperTests
+    {
+        [Test]
+        [TestCase(TaskType.SyncManager)]
+        [TestCase(TaskType.ExportManager)]
+        [TestCase(TaskType.ExportService)]
+        public void ItShouldReturnMangerTypeTasks(TaskType mgrTaskType)
+        {
+            var mgrTaskTypes = TaskTypeHelper.GetManagerTypes();
 
-			Assert.That(mgrTaskTypes.Contains(mgrTaskType));
-		}
-	}
+            Assert.That(mgrTaskTypes.Contains(mgrTaskType));
+        }
+    }
 }

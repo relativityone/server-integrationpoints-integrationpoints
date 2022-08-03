@@ -14,172 +14,172 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations
 {
-	internal class IntegrationPointProfilesQuery : IIntegrationPointProfilesQuery
-	{
-		private readonly Func<int, IRelativityObjectManager> _createRelativityObjectManager;
-		private readonly IObjectArtifactIdsByStringFieldValueQuery _objectArtifactIDsByStringFieldValueQuery;
-		private readonly ISerializer _serializer;
+    internal class IntegrationPointProfilesQuery : IIntegrationPointProfilesQuery
+    {
+        private readonly Func<int, IRelativityObjectManager> _createRelativityObjectManager;
+        private readonly IObjectArtifactIdsByStringFieldValueQuery _objectArtifactIDsByStringFieldValueQuery;
+        private readonly ISerializer _serializer;
 
-		private static readonly FieldRef SourceConfigurationField = new FieldRef()
-		{
-			Guid = IntegrationPointProfileFieldGuids.SourceConfigurationGuid
-		};
+        private static readonly FieldRef SourceConfigurationField = new FieldRef()
+        {
+            Guid = IntegrationPointProfileFieldGuids.SourceConfigurationGuid
+        };
 
-		private static readonly FieldRef DestinationConfigurationField = new FieldRef()
-		{
-			Guid = IntegrationPointProfileFieldGuids.DestinationConfigurationGuid
-		};
+        private static readonly FieldRef DestinationConfigurationField = new FieldRef()
+        {
+            Guid = IntegrationPointProfileFieldGuids.DestinationConfigurationGuid
+        };
 
-		public IntegrationPointProfilesQuery(Func<int, IRelativityObjectManager> createRelativityObjectManager, IObjectArtifactIdsByStringFieldValueQuery objectArtifactIDsByStringFieldValueQuery)
-		{
-			_createRelativityObjectManager = createRelativityObjectManager;
-			_objectArtifactIDsByStringFieldValueQuery = objectArtifactIDsByStringFieldValueQuery;
-			_serializer = new JSONSerializer();
-		}
+        public IntegrationPointProfilesQuery(Func<int, IRelativityObjectManager> createRelativityObjectManager, IObjectArtifactIdsByStringFieldValueQuery objectArtifactIDsByStringFieldValueQuery)
+        {
+            _createRelativityObjectManager = createRelativityObjectManager;
+            _objectArtifactIDsByStringFieldValueQuery = objectArtifactIDsByStringFieldValueQuery;
+            _serializer = new JSONSerializer();
+        }
 
-		public async Task<IEnumerable<IntegrationPointProfile>> GetAllProfilesAsync(int workspaceID)
-		{
-			var queryRequest = new QueryRequest
-			{
-				Condition = null,
-				Fields = new[]
-				{
-					new FieldRef()
-					{
-						Guid = IntegrationPointProfileFieldGuids.SourceProviderGuid
-					},
-					new FieldRef()
-					{
-						Guid = IntegrationPointProfileFieldGuids.DestinationProviderGuid
-					},
-					new FieldRef()
-					{
-						Guid = IntegrationPointProfileFieldGuids.TypeGuid
-					}
-				}
-			};
+        public async Task<IEnumerable<IntegrationPointProfile>> GetAllProfilesAsync(int workspaceID)
+        {
+            var queryRequest = new QueryRequest
+            {
+                Condition = null,
+                Fields = new[]
+                {
+                    new FieldRef()
+                    {
+                        Guid = IntegrationPointProfileFieldGuids.SourceProviderGuid
+                    },
+                    new FieldRef()
+                    {
+                        Guid = IntegrationPointProfileFieldGuids.DestinationProviderGuid
+                    },
+                    new FieldRef()
+                    {
+                        Guid = IntegrationPointProfileFieldGuids.TypeGuid
+                    }
+                }
+            };
 
-			IRelativityObjectManager relativityObjectManager = _createRelativityObjectManager(workspaceID);
+            IRelativityObjectManager relativityObjectManager = _createRelativityObjectManager(workspaceID);
 
-			IList<IntegrationPointProfile> integrationPointProfiles = await relativityObjectManager
-				.QueryAsync<IntegrationPointProfile>(queryRequest)
-				.ConfigureAwait(false);
+            IList<IntegrationPointProfile> integrationPointProfiles = await relativityObjectManager
+                .QueryAsync<IntegrationPointProfile>(queryRequest)
+                .ConfigureAwait(false);
 
-			foreach (IntegrationPointProfile profile in integrationPointProfiles)
-			{
-				profile.SourceConfiguration =
-					await GetUnicodeLongTextAsync(relativityObjectManager, profile.ArtifactId, SourceConfigurationField)
-						.ConfigureAwait(false);
+            foreach (IntegrationPointProfile profile in integrationPointProfiles)
+            {
+                profile.SourceConfiguration =
+                    await GetUnicodeLongTextAsync(relativityObjectManager, profile.ArtifactId, SourceConfigurationField)
+                        .ConfigureAwait(false);
 
-				profile.DestinationConfiguration =
-					await GetUnicodeLongTextAsync(relativityObjectManager, profile.ArtifactId, DestinationConfigurationField)
-						.ConfigureAwait(false);
-			}
+                profile.DestinationConfiguration =
+                    await GetUnicodeLongTextAsync(relativityObjectManager, profile.ArtifactId, DestinationConfigurationField)
+                        .ConfigureAwait(false);
+            }
 
-			return integrationPointProfiles;
-		}
+            return integrationPointProfiles;
+        }
 
-		public async Task<IEnumerable<int>> CheckIfProfilesExistAsync(int workspaceID, IEnumerable<int> artifactIds)
-		{
-			List<int> artifactIdsList = artifactIds.ToList();
+        public async Task<IEnumerable<int>> CheckIfProfilesExistAsync(int workspaceID, IEnumerable<int> artifactIds)
+        {
+            List<int> artifactIdsList = artifactIds.ToList();
 
-			if (!artifactIdsList.Any())
-			{
-				return Enumerable.Empty<int>();
-			}
+            if (!artifactIdsList.Any())
+            {
+                return Enumerable.Empty<int>();
+            }
 
-			var queryRequest = new QueryRequest
-			{
-				Condition = $"'ArtifactId' in [{string.Join(", ", artifactIdsList)}]",
-				Fields = new FieldRef[0]
-			};
+            var queryRequest = new QueryRequest
+            {
+                Condition = $"'ArtifactId' in [{string.Join(", ", artifactIdsList)}]",
+                Fields = new FieldRef[0]
+            };
 
-			IRelativityObjectManager relativityObjectManager = _createRelativityObjectManager(workspaceID);
+            IRelativityObjectManager relativityObjectManager = _createRelativityObjectManager(workspaceID);
 
-			IList<IntegrationPointProfile> integrationPointProfiles = await relativityObjectManager
-				.QueryAsync<IntegrationPointProfile>(queryRequest)
-				.ConfigureAwait(false);
+            IList<IntegrationPointProfile> integrationPointProfiles = await relativityObjectManager
+                .QueryAsync<IntegrationPointProfile>(queryRequest)
+                .ConfigureAwait(false);
 
-			return integrationPointProfiles.Select(x => x.ArtifactId);
-		}
+            return integrationPointProfiles.Select(x => x.ArtifactId);
+        }
 
-		private async Task<string> GetUnicodeLongTextAsync(IRelativityObjectManager relativityObjectManager, int artifactID, FieldRef field)
-		{
-			using (Stream stream = relativityObjectManager.StreamUnicodeLongText(artifactID, field))
-			using (var streamReader = new StreamReader(stream, Encoding.UTF8))
-			{
-				string text = await streamReader.ReadToEndAsync().ConfigureAwait(false);
-				return text;
-			}
-		}
+        private async Task<string> GetUnicodeLongTextAsync(IRelativityObjectManager relativityObjectManager, int artifactID, FieldRef field)
+        {
+            using (Stream stream = relativityObjectManager.StreamUnicodeLongText(artifactID, field))
+            using (var streamReader = new StreamReader(stream, Encoding.UTF8))
+            {
+                string text = await streamReader.ReadToEndAsync().ConfigureAwait(false);
+                return text;
+            }
+        }
 
-		public IEnumerable<IntegrationPointProfile> GetProfilesToUpdate(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID)
-		{
-			IEnumerable<IntegrationPointProfile> profilesToUpdate = FilterProfiles(profiles, (profile) =>
-				CanProfileBePreservedAndUpdated(profile, syncSourceProviderArtifactID, syncDestinationProviderArtifactID));
-			return profilesToUpdate;
-		}
+        public IEnumerable<IntegrationPointProfile> GetProfilesToUpdate(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID)
+        {
+            IEnumerable<IntegrationPointProfile> profilesToUpdate = FilterProfiles(profiles, (profile) =>
+                CanProfileBePreservedAndUpdated(profile, syncSourceProviderArtifactID, syncDestinationProviderArtifactID));
+            return profilesToUpdate;
+        }
 
-		public IEnumerable<IntegrationPointProfile> GetProfilesToDelete(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID)
-		{
-			IEnumerable<IntegrationPointProfile> profilesToDelete = FilterProfiles(profiles, (profile) =>
-				!CanProfileBePreservedAndUpdated(profile, syncSourceProviderArtifactID, syncDestinationProviderArtifactID));
-			return profilesToDelete;
-		}
+        public IEnumerable<IntegrationPointProfile> GetProfilesToDelete(IEnumerable<IntegrationPointProfile> profiles, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID)
+        {
+            IEnumerable<IntegrationPointProfile> profilesToDelete = FilterProfiles(profiles, (profile) =>
+                !CanProfileBePreservedAndUpdated(profile, syncSourceProviderArtifactID, syncDestinationProviderArtifactID));
+            return profilesToDelete;
+        }
 
-		private IEnumerable<IntegrationPointProfile> FilterProfiles(IEnumerable<IntegrationPointProfile> profiles, Func<IntegrationPointProfile, bool> filter)
-		{
-			IEnumerable<IntegrationPointProfile> filteredProfiles = profiles
-				.Where(filter);
-			return filteredProfiles;
-		}
+        private IEnumerable<IntegrationPointProfile> FilterProfiles(IEnumerable<IntegrationPointProfile> profiles, Func<IntegrationPointProfile, bool> filter)
+        {
+            IEnumerable<IntegrationPointProfile> filteredProfiles = profiles
+                .Where(filter);
+            return filteredProfiles;
+        }
 
-		private bool CanProfileBePreservedAndUpdated(IntegrationPointProfile integrationPointProfile, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID)
-		{
-			SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(integrationPointProfile.SourceConfiguration);
-			bool isProductionAsSource = sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.ProductionSet;
+        private bool CanProfileBePreservedAndUpdated(IntegrationPointProfile integrationPointProfile, int syncSourceProviderArtifactID, int syncDestinationProviderArtifactID)
+        {
+            SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(integrationPointProfile.SourceConfiguration);
+            bool isProductionAsSource = sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.ProductionSet;
 
-			ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationPointProfile.DestinationConfiguration);
-			bool isProductionAsDestination = destinationConfiguration.ProductionImport;
+            ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(integrationPointProfile.DestinationConfiguration);
+            bool isProductionAsDestination = destinationConfiguration.ProductionImport;
 
-			bool isProductionSelectedAsSourceOrDestination = isProductionAsSource || isProductionAsDestination;
+            bool isProductionSelectedAsSourceOrDestination = isProductionAsSource || isProductionAsDestination;
 
-			return integrationPointProfile.DestinationProvider == syncDestinationProviderArtifactID &&
-				   integrationPointProfile.SourceProvider == syncSourceProviderArtifactID &&
-				   !isProductionSelectedAsSourceOrDestination;
-		}
+            return integrationPointProfile.DestinationProvider == syncDestinationProviderArtifactID &&
+                   integrationPointProfile.SourceProvider == syncSourceProviderArtifactID &&
+                   !isProductionSelectedAsSourceOrDestination;
+        }
 
-		public async Task<int> GetSyncDestinationProviderArtifactIDAsync(int workspaceID)
-		{
-			return await GetSingleObjectArtifactIDByStringFieldValueAsync<DestinationProvider>(workspaceID,
-				destinationProvider => destinationProvider.Identifier,
-				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY).ConfigureAwait(false);
-		}
+        public async Task<int> GetSyncDestinationProviderArtifactIDAsync(int workspaceID)
+        {
+            return await GetSingleObjectArtifactIDByStringFieldValueAsync<DestinationProvider>(workspaceID,
+                destinationProvider => destinationProvider.Identifier,
+                kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY).ConfigureAwait(false);
+        }
 
-		public async Task<int> GetSyncSourceProviderArtifactIDAsync(int workspaceID)
-		{
-			return await GetSingleObjectArtifactIDByStringFieldValueAsync<SourceProvider>(workspaceID,
-				sourceProvider => sourceProvider.Identifier,
-				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY).ConfigureAwait(false);
-		}
+        public async Task<int> GetSyncSourceProviderArtifactIDAsync(int workspaceID)
+        {
+            return await GetSingleObjectArtifactIDByStringFieldValueAsync<SourceProvider>(workspaceID,
+                sourceProvider => sourceProvider.Identifier,
+                kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY).ConfigureAwait(false);
+        }
 
-		public async Task<int> GetIntegrationPointExportTypeArtifactIDAsync(int workspaceID)
-		{
-			return await GetSingleObjectArtifactIDByStringFieldValueAsync<IntegrationPointType>(workspaceID,
-				type => type.Identifier,
-				kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString()).ConfigureAwait(false);
-		}
+        public async Task<int> GetIntegrationPointExportTypeArtifactIDAsync(int workspaceID)
+        {
+            return await GetSingleObjectArtifactIDByStringFieldValueAsync<IntegrationPointType>(workspaceID,
+                type => type.Identifier,
+                kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString()).ConfigureAwait(false);
+        }
 
-		private async Task<int> GetSingleObjectArtifactIDByStringFieldValueAsync<TSource>(int workspaceID,
-			Expression<Func<TSource, string>> propertySelector, string fieldValue) where TSource : BaseRdo, new()
-		{
-			IEnumerable<int> objectsArtifactIDs = await _objectArtifactIDsByStringFieldValueQuery
-				.QueryForObjectArtifactIdsByStringFieldValueAsync(workspaceID, propertySelector, fieldValue)
-				.ConfigureAwait(false);
+        private async Task<int> GetSingleObjectArtifactIDByStringFieldValueAsync<TSource>(int workspaceID,
+            Expression<Func<TSource, string>> propertySelector, string fieldValue) where TSource : BaseRdo, new()
+        {
+            IEnumerable<int> objectsArtifactIDs = await _objectArtifactIDsByStringFieldValueQuery
+                .QueryForObjectArtifactIdsByStringFieldValueAsync(workspaceID, propertySelector, fieldValue)
+                .ConfigureAwait(false);
 
-			int artifactID = objectsArtifactIDs.First();
-			return artifactID;
-		}
+            int artifactID = objectsArtifactIDs.First();
+            return artifactID;
+        }
 
-	}
+    }
 }

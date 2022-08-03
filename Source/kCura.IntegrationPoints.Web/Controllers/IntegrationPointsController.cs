@@ -10,40 +10,40 @@ using kCura.IntegrationPoints.Web.Context.UserContext;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
-	public class IntegrationPointsController : IntegrationPointBaseController
-	{
-		private readonly IIntegrationPointService _integrationPointService;
+    public class IntegrationPointsController : IntegrationPointBaseController
+    {
+        private readonly IIntegrationPointService _integrationPointService;
 
-		public IntegrationPointsController(
-			IObjectTypeRepository objectTypeRepository, 
-			IRepositoryFactory repositoryFactory,
-			ITabService tabService,
-			IIntegrationPointService integrationPointService,
-			IWorkspaceContext workspaceIdProvider,
-			IUserContext userContext
-		) : base(
-			objectTypeRepository, 
-			repositoryFactory, 
-			tabService,
-			workspaceIdProvider,
-			userContext
-		)
-		{
-			_integrationPointService = integrationPointService;
-		}
+        public IntegrationPointsController(
+            IObjectTypeRepository objectTypeRepository, 
+            IRepositoryFactory repositoryFactory,
+            ITabService tabService,
+            IIntegrationPointService integrationPointService,
+            IWorkspaceContext workspaceIdProvider,
+            IUserContext userContext
+        ) : base(
+            objectTypeRepository, 
+            repositoryFactory, 
+            tabService,
+            workspaceIdProvider,
+            userContext
+        )
+        {
+            _integrationPointService = integrationPointService;
+        }
 
-		protected override string ObjectTypeGuid => ObjectTypeGuids.IntegrationPoint;
-		protected override string ObjectType => ObjectTypes.IntegrationPoint;
-		protected override string APIControllerName => Core.Constants.IntegrationPoints.API_CONTROLLER_NAME;
+        protected override string ObjectTypeGuid => ObjectTypeGuids.IntegrationPoint;
+        protected override string ObjectType => ObjectTypes.IntegrationPoint;
+        protected override string APIControllerName => Core.Constants.IntegrationPoints.API_CONTROLLER_NAME;
 
-		protected override IntegrationPointModelBase GetIntegrationPointBaseModel(int id)
-		{
-			return _integrationPointService.ReadIntegrationPointModel(id);
-		}
+        protected override IntegrationPointModelBase GetIntegrationPointBaseModel(int id)
+        {
+            return _integrationPointService.ReadIntegrationPointModel(id);
+        }
 
-		public ActionResult SaveAsProfileModal()
-		{
-			return PartialView();
-		}
-	}
+        public ActionResult SaveAsProfileModal()
+        {
+            return PartialView();
+        }
+    }
 }

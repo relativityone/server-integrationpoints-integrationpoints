@@ -8,8 +8,8 @@ using kCura.IntegrationPoints.Core.Services;
 
 namespace kCura.IntegrationPoints.Core.Factories
 {
-	public interface IDataTransferLocationServiceFactory
-	{
-		IDataTransferLocationService CreateService(int workspaceId);
-	}
+    public interface IDataTransferLocationServiceFactory
+    {
+        IDataTransferLocationService CreateService(int workspaceId);
+    }
 }

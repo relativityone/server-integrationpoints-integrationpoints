@@ -4,8 +4,8 @@ using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Data
 {
-	public interface IObjectTypeQuery
-	{
-		List<ObjectTypeDTO> GetAllTypes(int userId);
-	}
+    public interface IObjectTypeQuery
+    {
+        List<ObjectTypeDTO> GetAllTypes(int userId);
+    }
 }

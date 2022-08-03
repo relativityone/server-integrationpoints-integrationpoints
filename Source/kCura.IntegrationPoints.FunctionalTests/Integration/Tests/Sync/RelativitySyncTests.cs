@@ -12,106 +12,106 @@ using System.Threading.Tasks;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
 {
-	public class RelativitySyncTests : TestsBase
-	{
-		private const int _STOP_MANAGER_TIMEOUT = 10;
+    public class RelativitySyncTests : TestsBase
+    {
+        private const int _STOP_MANAGER_TIMEOUT = 10;
 
         [IdentifiedTest("1228BB49-8C07-4DAA-818F-1D736BDD8243")]
-		public void Agent_ShouldSuccessfullyProcessSyncJob()
-		{
-			// Arrange
-			ScheduleSyncJob();
+        public void Agent_ShouldSuccessfullyProcessSyncJob()
+        {
+            // Arrange
+            ScheduleSyncJob();
 
-			var sut = FakeAgent.Create(FakeRelativityInstance, Container);
+            var sut = FakeAgent.Create(FakeRelativityInstance, Container);
 
-			// Act
-			sut.Execute();
+            // Act
+            sut.Execute();
 
-			// Assert
-			VerifyJobHasBeenCompleted();
-		}
-		
-		[IdentifiedTest("947DBE0E-032B-4A54-A5C0-1B87361FDF65")]
-		public void Agent_ShouldSuccessfullyProcessSyncJob_WhenJobWasDrainStoppedAndResumed()
-		{
-			// Arrange
-			ScheduleSyncJob();
+            // Assert
+            VerifyJobHasBeenCompleted();
+        }
+        
+        [IdentifiedTest("947DBE0E-032B-4A54-A5C0-1B87361FDF65")]
+        public void Agent_ShouldSuccessfullyProcessSyncJob_WhenJobWasDrainStoppedAndResumed()
+        {
+            // Arrange
+            ScheduleSyncJob();
 
-			// (1) Act & Assert
-			var agentMarkedToBeRemoved = PrepareSutWithCustomSyncJob(
-				SyncJobGracefullyDrainStoppedAction);
+            // (1) Act & Assert
+            var agentMarkedToBeRemoved = PrepareSutWithCustomSyncJob(
+                SyncJobGracefullyDrainStoppedAction);
 
-			agentMarkedToBeRemoved.Execute();
+            agentMarkedToBeRemoved.Execute();
 
-			VerifyJobHasBeenDrainStopped();
+            VerifyJobHasBeenDrainStopped();
 
-			// (2) Act & Assert
-			var agentAbleToComplete = PrepareSutWithCustomSyncJob((agent, token) => Task.CompletedTask);
+            // (2) Act & Assert
+            var agentAbleToComplete = PrepareSutWithCustomSyncJob((agent, token) => Task.CompletedTask);
 
-			agentAbleToComplete.Execute();
+            agentAbleToComplete.Execute();
 
-			VerifyJobHasBeenResumed();
-		}
+            VerifyJobHasBeenResumed();
+        }
 
-		private void ScheduleSyncJob()
-		{
-			WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
+        private void ScheduleSyncJob()
+        {
+            WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
 
-			IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
-				.CreateSavedSearchSyncIntegrationPoint(destinationWorkspace);
+            IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper
+                .CreateSavedSearchSyncIntegrationPoint(destinationWorkspace);
 
-			FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
-		}
+            FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
+        }
 
-		private FakeAgent PrepareSutWithCustomSyncJob(Func<FakeAgent, CompositeCancellationToken, Task> action)
-		{
-			FakeAgent agent = FakeAgent.Create(FakeRelativityInstance, Container);
-			
-			var syncOperations = Container.Resolve<IExtendedFakeSyncOperations>();
+        private FakeAgent PrepareSutWithCustomSyncJob(Func<FakeAgent, CompositeCancellationToken, Task> action)
+        {
+            FakeAgent agent = FakeAgent.Create(FakeRelativityInstance, Container);
+            
+            var syncOperations = Container.Resolve<IExtendedFakeSyncOperations>();
 
-			syncOperations.SetupSyncJob(async token => await action(agent, token).ConfigureAwait(false));
+            syncOperations.SetupSyncJob(async token => await action(agent, token).ConfigureAwait(false));
 
-			return agent;
-		}
+            return agent;
+        }
 
-		private void VerifyJobHasBeenCompleted()
-		{
-			FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
+        private void VerifyJobHasBeenCompleted()
+        {
+            FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
 
-			JobHistoryHasStatus(JobStatusChoices.JobHistoryCompletedGuid).Should().BeTrue();
-		}
+            JobHistoryHasStatus(JobStatusChoices.JobHistoryCompletedGuid).Should().BeTrue();
+        }
 
-		private void VerifyJobHasBeenDrainStopped()
-		{
-			JobInQueueHasFlag(StopState.DrainStopped).Should().BeTrue();
+        private void VerifyJobHasBeenDrainStopped()
+        {
+            JobInQueueHasFlag(StopState.DrainStopped).Should().BeTrue();
 
-			JobHistoryHasStatus(JobStatusChoices.JobHistorySuspendedGuid).Should().BeTrue();
-		}
+            JobHistoryHasStatus(JobStatusChoices.JobHistorySuspendedGuid).Should().BeTrue();
+        }
 
-		private void VerifyJobHasBeenResumed()
-		{
-			SourceWorkspace.SyncConfigurations.Single()
-				.Resuming.Should().BeTrue();
+        private void VerifyJobHasBeenResumed()
+        {
+            SourceWorkspace.SyncConfigurations.Single()
+                .Resuming.Should().BeTrue();
 
-			VerifyJobHasBeenCompleted();
-		}
+            VerifyJobHasBeenCompleted();
+        }
 
-		private Func<FakeAgent, CompositeCancellationToken, Task> SyncJobGracefullyDrainStoppedAction =>
-			async (agent, token) =>
-			{
-				agent.MarkAgentToBeRemoved();
-				SpinWait.SpinUntil(
-					() =>token.IsDrainStopRequested && JobInQueueHasFlag(StopState.DrainStopping),
-					TimeSpan.FromSeconds(_STOP_MANAGER_TIMEOUT)
-				);
+        private Func<FakeAgent, CompositeCancellationToken, Task> SyncJobGracefullyDrainStoppedAction =>
+            async (agent, token) =>
+            {
+                agent.MarkAgentToBeRemoved();
+                SpinWait.SpinUntil(
+                    () =>token.IsDrainStopRequested && JobInQueueHasFlag(StopState.DrainStopping),
+                    TimeSpan.FromSeconds(_STOP_MANAGER_TIMEOUT)
+                );
 
-				await Task.Delay(100);
-			};
+                await Task.Delay(100);
+            };
 
-		private bool JobInQueueHasFlag(StopState stopState) => 
-			FakeRelativityInstance.JobsInQueue.All(x => x.StopState.HasFlag(stopState));
+        private bool JobInQueueHasFlag(StopState stopState) => 
+            FakeRelativityInstance.JobsInQueue.All(x => x.StopState.HasFlag(stopState));
 
-		private bool JobHistoryHasStatus(Guid statusGuid) =>
-			SourceWorkspace.JobHistory.Single().JobStatus.Guids[0] == statusGuid;
-	}
+        private bool JobHistoryHasStatus(Guid statusGuid) =>
+            SourceWorkspace.JobHistory.Single().JobStatus.Guids[0] == statusGuid;
+    }
 }

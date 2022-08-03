@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Web.RelativityServices.Exceptions
 {
-	public class BaseCpHelperCannotBeTypeOfRetriableCpHelperException : ArgumentException
-	{
-	}
+    public class BaseCpHelperCannotBeTypeOfRetriableCpHelperException : ArgumentException
+    {
+    }
 }

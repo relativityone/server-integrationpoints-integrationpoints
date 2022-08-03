@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
     [kCura.EventHandler.CustomAttributes.RunOnce(true)]
     [Guid("01E26CBC-98CA-48A6-942E-FD546E2D5F7E")]
     public class RegisterImportProvider : InternalSourceProviderInstaller
-	{
+    {
         public override IDictionary<Guid, SourceProvider> GetSourceProviders()
         {
             return new Dictionary<Guid, SourceProvider>()

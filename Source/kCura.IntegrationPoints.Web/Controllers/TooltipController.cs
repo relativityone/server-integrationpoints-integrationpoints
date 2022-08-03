@@ -2,11 +2,11 @@
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
-	public class TooltipController : Controller
-	{
-		public ActionResult TooltipView()
-		{
-			return PartialView();
-		}
-	}
+    public class TooltipController : Controller
+    {
+        public ActionResult TooltipView()
+        {
+            return PartialView();
+        }
+    }
 }

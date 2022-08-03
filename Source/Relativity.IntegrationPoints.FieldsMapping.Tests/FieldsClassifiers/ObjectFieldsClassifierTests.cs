@@ -7,73 +7,73 @@ using Relativity.IntegrationPoints.FieldsMapping.FieldClassifiers;
 
 namespace Relativity.IntegrationPoints.FieldsMapping.Tests.FieldsClassifiers
 {
-	[TestFixture, Category("Unit")]
-	public class ObjectFieldsClassifierTests
-	{
-		private const string ApiDoesNotSupportAllObjectTypes = "API does not support all object types.";
-		private ObjectFieldsClassifier _sut;
+    [TestFixture, Category("Unit")]
+    public class ObjectFieldsClassifierTests
+    {
+        private const string ApiDoesNotSupportAllObjectTypes = "API does not support all object types.";
+        private ObjectFieldsClassifier _sut;
 
-		[SetUp]
-		public void SetUp()
-		{
-			_sut = new ObjectFieldsClassifier();
-		}
+        [SetUp]
+        public void SetUp()
+        {
+            _sut = new ObjectFieldsClassifier();
+        }
 
-		[Test]
-		public async Task ClassifyAsync_ShouldProperlyClassifySingleObjectFields()
-		{
-			// Arrange 
+        [Test]
+        public async Task ClassifyAsync_ShouldProperlyClassifySingleObjectFields()
+        {
+            // Arrange 
 
-			var fields = new List<FieldInfo>
-			{
-				new FieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Single Object")
-			};
+            var fields = new List<FieldInfo>
+            {
+                new FieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Single Object")
+            };
 
-			// Act
-			FieldClassificationResult[] classifications = (await _sut.ClassifyAsync(fields, 0).ConfigureAwait(false)).ToArray();
+            // Act
+            FieldClassificationResult[] classifications = (await _sut.ClassifyAsync(fields, 0).ConfigureAwait(false)).ToArray();
 
-			// Assert
-			classifications.Length.Should().Be(1);
+            // Assert
+            classifications.Length.Should().Be(1);
 
-			classifications[0].ClassificationLevel.Should().Be(ClassificationLevel.ShowToUser);
-			classifications[0].ClassificationReason.Should().Be(ApiDoesNotSupportAllObjectTypes);
-		}
+            classifications[0].ClassificationLevel.Should().Be(ClassificationLevel.ShowToUser);
+            classifications[0].ClassificationReason.Should().Be(ApiDoesNotSupportAllObjectTypes);
+        }
 
-		[Test]
-		public async Task ClassifyAsync_ShouldProperlyClassifyMultiObjectFields()
-		{
-			// Arrange 
+        [Test]
+        public async Task ClassifyAsync_ShouldProperlyClassifyMultiObjectFields()
+        {
+            // Arrange 
 
-			var fields = new List<FieldInfo>
-			{
-				new FieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Multiple Object")
-			};
+            var fields = new List<FieldInfo>
+            {
+                new FieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Multiple Object")
+            };
 
-			// Act
-			FieldClassificationResult[] classifications = (await _sut.ClassifyAsync(fields, 0).ConfigureAwait(false)).ToArray();
+            // Act
+            FieldClassificationResult[] classifications = (await _sut.ClassifyAsync(fields, 0).ConfigureAwait(false)).ToArray();
 
-			// Assert
-			classifications.Length.Should().Be(1);
+            // Assert
+            classifications.Length.Should().Be(1);
 
-			classifications[0].ClassificationLevel.Should().Be(ClassificationLevel.ShowToUser);
-			classifications[0].ClassificationReason.Should().Be(ApiDoesNotSupportAllObjectTypes);
-		}
+            classifications[0].ClassificationLevel.Should().Be(ClassificationLevel.ShowToUser);
+            classifications[0].ClassificationReason.Should().Be(ApiDoesNotSupportAllObjectTypes);
+        }
 
-		[Test]
-		public async Task ClassifyAsync_ShouldProperlyClassifyNonObjectFields()
-		{
-			// Arrange 
+        [Test]
+        public async Task ClassifyAsync_ShouldProperlyClassifyNonObjectFields()
+        {
+            // Arrange 
 
-			var fields = new List<FieldInfo>
-			{
-				new FieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Other type")
-			};
+            var fields = new List<FieldInfo>
+            {
+                new FieldInfo(fieldIdentifier: "1", name: "Field 1", type: "Other type")
+            };
 
-			// Act
-			FieldClassificationResult[] classifications = (await _sut.ClassifyAsync(fields, 0).ConfigureAwait(false)).ToArray();
+            // Act
+            FieldClassificationResult[] classifications = (await _sut.ClassifyAsync(fields, 0).ConfigureAwait(false)).ToArray();
 
-			// Assert
-			classifications.Length.Should().Be(0);
-		}
-	}
+            // Assert
+            classifications.Length.Should().Be(0);
+        }
+    }
 }

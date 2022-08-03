@@ -5,8 +5,8 @@
     /// unstable tests placed in the quarantine. A test should be marked
     /// with a specific state if it meets following conditions.
     /// </summary>
-	public enum TestQuarantineState
-	{
+    public enum TestQuarantineState
+    {
         /// <summary>
         /// Initial state of a test in the quarantine. 
         /// A test should stay with it no longer than duration of a single 

@@ -5,42 +5,42 @@ using System;
 
 namespace kCura.IntegrationPoints.Core.Contracts.Agent
 {
-	public class TaskParametersBuilder : ITaskParametersBuilder
-	{
-		private readonly IImportFileLocationService _importFileLocationService;
+    public class TaskParametersBuilder : ITaskParametersBuilder
+    {
+        private readonly IImportFileLocationService _importFileLocationService;
 
-		public TaskParametersBuilder(IImportFileLocationService importFileLocationService)
-		{
-			_importFileLocationService = importFileLocationService;
-		}
+        public TaskParametersBuilder(IImportFileLocationService importFileLocationService)
+        {
+            _importFileLocationService = importFileLocationService;
+        }
 
-		public TaskParameters Build(TaskType taskType, Guid batchInstanceId, IntegrationPoint integrationPoint)
-		{
-			TaskParameters parameters = new TaskParameters
-			{
-				BatchInstance = batchInstanceId
-			};
+        public TaskParameters Build(TaskType taskType, Guid batchInstanceId, IntegrationPoint integrationPoint)
+        {
+            TaskParameters parameters = new TaskParameters
+            {
+                BatchInstance = batchInstanceId
+            };
 
-			switch(taskType)
-			{
-				case TaskType.ImportService:
-					parameters.BatchParameters = BuildLoadFileParameters(integrationPoint);
-					break;
-			}
+            switch(taskType)
+            {
+                case TaskType.ImportService:
+                    parameters.BatchParameters = BuildLoadFileParameters(integrationPoint);
+                    break;
+            }
 
-			return parameters;
-		}
+            return parameters;
+        }
 
-		private LoadFileTaskParameters BuildLoadFileParameters(IntegrationPoint integrationPoint)
-		{
-			LoadFileInfo loadFile = _importFileLocationService.LoadFileInfo(integrationPoint);
+        private LoadFileTaskParameters BuildLoadFileParameters(IntegrationPoint integrationPoint)
+        {
+            LoadFileInfo loadFile = _importFileLocationService.LoadFileInfo(integrationPoint);
 
-			return new LoadFileTaskParameters
-			{
-				Size = loadFile.Size,
-				LastModifiedDate = loadFile.LastModifiedDate,
-				ProcessedItemsCount = 0
-			};
-		}
-	}
+            return new LoadFileTaskParameters
+            {
+                Size = loadFile.Size,
+                LastModifiedDate = loadFile.LastModifiedDate,
+                ProcessedItemsCount = 0
+            };
+        }
+    }
 }

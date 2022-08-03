@@ -2,12 +2,12 @@
 
 namespace kCura.IntegrationPoint.Tests.Core.Models
 {
-	public enum IntegrationPointType
-	{
-		[Description("Import")]
-		Import,
+    public enum IntegrationPointType
+    {
+        [Description("Import")]
+        Import,
 
-		[Description("Export")]
-		Export
-	}
+        [Description("Export")]
+        Export
+    }
 }

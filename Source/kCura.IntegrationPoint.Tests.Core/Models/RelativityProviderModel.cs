@@ -6,104 +6,104 @@ using kCura.IntegrationPoint.Tests.Core.Models.Shared;
 namespace kCura.IntegrationPoint.Tests.Core.Models
 {
     public class RelativityProviderModel : IntegrationPointGeneralModel
-	{
+    {
         public RelativityProviderModel(string ripName) : base(ripName)
         {
-	        DestinationProvider = "Relativity";
+            DestinationProvider = "Relativity";
         }
 
-		#region "Source Details"
+        #region "Source Details"
 
-		[DefaultValue(SourceTypeEnum.SavedSearch)]
-		public SourceTypeEnum? Source { get; set; }
-		[DefaultValue("All documents")]
-		public string SavedSearch { get; set; }
-		public string ProductionSet { get; set; }
+        [DefaultValue(SourceTypeEnum.SavedSearch)]
+        public SourceTypeEnum? Source { get; set; }
+        [DefaultValue("All documents")]
+        public string SavedSearch { get; set; }
+        public string ProductionSet { get; set; }
 
-		#endregion
+        #endregion
 
-		#region "Destination Details"
-		public string RelativityInstance { get; set; }
-		public string DestinationWorkspace { get; set; }
-		public LocationEnum? Location { get; set; }
-		
-		#endregion
-
-
-		#region "Field Mappings"
-		public List<Tuple<string, string>> FieldMapping { get; set; }
-		#endregion
+        #region "Destination Details"
+        public string RelativityInstance { get; set; }
+        public string DestinationWorkspace { get; set; }
+        public LocationEnum? Location { get; set; }
+        
+        #endregion
 
 
-		#region "Relativity Provider Settings"
-		
-		
-		[DefaultValue(OverwriteModeEnum.AppendOnly)]
-		public OverwriteModeEnum? Overwrite { get; set; }
-		[DefaultValue(false)]
-		public bool CopyImages;
-		public ImagePrecedence? ImagePrecedence { get; set; }
-		public CopyNativeFilesEnum? CopyNativeFiles { get; set; }
-		[DefaultValue(MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings)]
-		public MultiSelectFieldOverlayBehaviorEnum? MultiSelectFieldOverlay;
-		[DefaultValue(UseFolderPathInformationEnum.No)]
-		public UseFolderPathInformationEnum? UseFolderPathInformation { get; set; }
-		public string FolderPathInformation;
-		public bool? MoveExistingDocuments;
-		public bool? CopyFilesToRepository;
-		public bool? IncludeOriginalImagesIfNotProduced;
+        #region "Field Mappings"
+        public List<Tuple<string, string>> FieldMapping { get; set; }
+        #endregion
 
 
-		#endregion
-		public bool? CreateSavedSearch { get; set; }
-		public string SourceProductionName { get; set; }
-		public string DestinationProductionName { get; set; }
+        #region "Relativity Provider Settings"
+        
+        
+        [DefaultValue(OverwriteModeEnum.AppendOnly)]
+        public OverwriteModeEnum? Overwrite { get; set; }
+        [DefaultValue(false)]
+        public bool CopyImages;
+        public ImagePrecedence? ImagePrecedence { get; set; }
+        public CopyNativeFilesEnum? CopyNativeFiles { get; set; }
+        [DefaultValue(MultiSelectFieldOverlayBehaviorEnum.UseFieldSettings)]
+        public MultiSelectFieldOverlayBehaviorEnum? MultiSelectFieldOverlay;
+        [DefaultValue(UseFolderPathInformationEnum.No)]
+        public UseFolderPathInformationEnum? UseFolderPathInformation { get; set; }
+        public string FolderPathInformation;
+        public bool? MoveExistingDocuments;
+        public bool? CopyFilesToRepository;
+        public bool? IncludeOriginalImagesIfNotProduced;
 
-		public enum LocationEnum
-		{
-			Folder,
-			ProductionSet
-		}
 
-		public enum CopyNativeFilesEnum
-		{
-			PhysicalFiles,
-			LinksOnly,
-			No
-		}
+        #endregion
+        public bool? CreateSavedSearch { get; set; }
+        public string SourceProductionName { get; set; }
+        public string DestinationProductionName { get; set; }
 
-		public enum UseFolderPathInformationEnum
-		{
-			No,
-			ReadFromField,
-			ReadFromFolderTree
-		}
+        public enum LocationEnum
+        {
+            Folder,
+            ProductionSet
+        }
 
-		public enum OverwriteModeEnum
-		{
-			AppendOnly,
-			OverlayOnly,
-			AppendOverlay
-		}
+        public enum CopyNativeFilesEnum
+        {
+            PhysicalFiles,
+            LinksOnly,
+            No
+        }
 
-		public enum MultiSelectFieldOverlayBehaviorEnum
-		{
-			MergeValues,
-			ReplaceValues,
-			UseFieldSettings
-		}
+        public enum UseFolderPathInformationEnum
+        {
+            No,
+            ReadFromField,
+            ReadFromFolderTree
+        }
 
-		public enum SourceTypeEnum
-		{
-			SavedSearch,
-			Production
-		}
+        public enum OverwriteModeEnum
+        {
+            AppendOnly,
+            OverlayOnly,
+            AppendOverlay
+        }
 
-		public string SourceTypeTextUi()
-		{
-			return Source == RelativityProviderModel.SourceTypeEnum.SavedSearch
-				? "Saved Search"
-				: "Production";
-		}
-	}
+        public enum MultiSelectFieldOverlayBehaviorEnum
+        {
+            MergeValues,
+            ReplaceValues,
+            UseFieldSettings
+        }
+
+        public enum SourceTypeEnum
+        {
+            SavedSearch,
+            Production
+        }
+
+        public string SourceTypeTextUi()
+        {
+            return Source == RelativityProviderModel.SourceTypeEnum.SavedSearch
+                ? "Saved Search"
+                : "Production";
+        }
+    }
 }

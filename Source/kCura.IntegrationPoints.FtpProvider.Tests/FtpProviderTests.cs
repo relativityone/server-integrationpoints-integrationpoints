@@ -12,81 +12,81 @@ using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.FtpProvider.Tests
 {
-	[TestFixture, Category("Unit")]
-	public class FtpProviderTests : TestBase
-	{
-		private IConnectorFactory _connectorFactory;
-		private ISettingsManager _settingsManager;
-		private IParserFactory _parserFactory;
-		private IDataReaderFactory _dataReaderFactory;
-		private IHelper _helper;
-		private ParserOptions _parserOptions;
+    [TestFixture, Category("Unit")]
+    public class FtpProviderTests : TestBase
+    {
+        private IConnectorFactory _connectorFactory;
+        private ISettingsManager _settingsManager;
+        private IParserFactory _parserFactory;
+        private IDataReaderFactory _dataReaderFactory;
+        private IHelper _helper;
+        private ParserOptions _parserOptions;
 
-		[SetUp]
-		public override void SetUp()
-		{
-			_connectorFactory = NSubstitute.Substitute.For<IConnectorFactory>();
-			_settingsManager = NSubstitute.Substitute.For<ISettingsManager>();
-			_parserFactory = NSubstitute.Substitute.For<IParserFactory>();
-			_dataReaderFactory = NSubstitute.Substitute.For<IDataReaderFactory>();
-			_helper = NSubstitute.Substitute.For<IHelper>();
-			_parserOptions = ParserOptions.GetDefaultParserOptions();
-		}
+        [SetUp]
+        public override void SetUp()
+        {
+            _connectorFactory = NSubstitute.Substitute.For<IConnectorFactory>();
+            _settingsManager = NSubstitute.Substitute.For<ISettingsManager>();
+            _parserFactory = NSubstitute.Substitute.For<IParserFactory>();
+            _dataReaderFactory = NSubstitute.Substitute.For<IDataReaderFactory>();
+            _helper = NSubstitute.Substitute.For<IHelper>();
+            _parserOptions = ParserOptions.GetDefaultParserOptions();
+        }
 
-		[Test, System.ComponentModel.Description("Validates columns when all match")]
-		[TestCase("AAA, bbb ,CcC")]
-		[TestCase("\"AAA\", \"bbb\"  ,\"CcC\"")]
-		public void ValidateColumns_AllMatch(string columns)
-		{
-			var settings = new Settings()
-			{
-				ColumnList = new List<FieldEntry>()
-				{
-					new FieldEntry() {FieldIdentifier = "aAa"},
-					new FieldEntry() {FieldIdentifier = "BBB"},
-					new FieldEntry() {FieldIdentifier = "CcC"}
-				}
-			};
+        [Test, System.ComponentModel.Description("Validates columns when all match")]
+        [TestCase("AAA, bbb ,CcC")]
+        [TestCase("\"AAA\", \"bbb\"  ,\"CcC\"")]
+        public void ValidateColumns_AllMatch(string columns)
+        {
+            var settings = new Settings()
+            {
+                ColumnList = new List<FieldEntry>()
+                {
+                    new FieldEntry() {FieldIdentifier = "aAa"},
+                    new FieldEntry() {FieldIdentifier = "BBB"},
+                    new FieldEntry() {FieldIdentifier = "CcC"}
+                }
+            };
 
-			var ftpProvider = new FtpProvider(_connectorFactory, _settingsManager, _parserFactory, _dataReaderFactory, _helper);
+            var ftpProvider = new FtpProvider(_connectorFactory, _settingsManager, _parserFactory, _dataReaderFactory, _helper);
 
-			Assert.DoesNotThrow(() => ftpProvider.ValidateColumns(columns, settings, _parserOptions));
-		}
+            Assert.DoesNotThrow(() => ftpProvider.ValidateColumns(columns, settings, _parserOptions));
+        }
 
-		[Test, System.ComponentModel.Description("Validates columns when some of them are missing")]
-		[TestCase("AAA, bbb")]
-		[TestCase("bbb")]
-		[TestCase("")]
-		public void ValidateColumns_SomeMissing(string columns)
-		{
-			var settings = new Settings()
-			{
-				ColumnList = new List<FieldEntry>()
-				{
-					new FieldEntry() {FieldIdentifier = "aAa"},
-					new FieldEntry() {FieldIdentifier = "BBB"},
-					new FieldEntry() {FieldIdentifier = "CcC"}
-				}
+        [Test, System.ComponentModel.Description("Validates columns when some of them are missing")]
+        [TestCase("AAA, bbb")]
+        [TestCase("bbb")]
+        [TestCase("")]
+        public void ValidateColumns_SomeMissing(string columns)
+        {
+            var settings = new Settings()
+            {
+                ColumnList = new List<FieldEntry>()
+                {
+                    new FieldEntry() {FieldIdentifier = "aAa"},
+                    new FieldEntry() {FieldIdentifier = "BBB"},
+                    new FieldEntry() {FieldIdentifier = "CcC"}
+                }
 
-			};
+            };
 
-			var ftpProvider = new FtpProvider(_connectorFactory, _settingsManager, _parserFactory, _dataReaderFactory, _helper);
+            var ftpProvider = new FtpProvider(_connectorFactory, _settingsManager, _parserFactory, _dataReaderFactory, _helper);
 
-			Assert.Throws<Helpers.Exceptions.ColumnsMissmatchException>(() => ftpProvider.ValidateColumns(columns, settings, _parserOptions));
-		}
+            Assert.Throws<Helpers.Exceptions.ColumnsMissmatchException>(() => ftpProvider.ValidateColumns(columns, settings, _parserOptions));
+        }
 
-		[Test, System.ComponentModel.Description("Validates columns when all missing in settings 3 vs 0")]
-		public void ValidateColumns_AllMissingInSettings()
-		{
-			var columns = "AAA,bbb,CcC";
-			var settings = new Settings()
-			{
-				ColumnList = new List<FieldEntry>() { }
-			};
+        [Test, System.ComponentModel.Description("Validates columns when all missing in settings 3 vs 0")]
+        public void ValidateColumns_AllMissingInSettings()
+        {
+            var columns = "AAA,bbb,CcC";
+            var settings = new Settings()
+            {
+                ColumnList = new List<FieldEntry>() { }
+            };
 
-			var ftpProvider = new FtpProvider(_connectorFactory, _settingsManager, _parserFactory, _dataReaderFactory, _helper);
+            var ftpProvider = new FtpProvider(_connectorFactory, _settingsManager, _parserFactory, _dataReaderFactory, _helper);
 
-			Assert.Throws<Helpers.Exceptions.ColumnsMissmatchException>(() => ftpProvider.ValidateColumns(columns, settings, _parserOptions));
-		}
-	}
+            Assert.Throws<Helpers.Exceptions.ColumnsMissmatchException>(() => ftpProvider.ValidateColumns(columns, settings, _parserOptions));
+        }
+    }
 }

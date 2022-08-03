@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Relativity.IntegrationPoints.FieldsMapping
 {
-	public class InvalidFieldMap
-	{
-		public FieldMap FieldMap { get; set; }
-		public IList<string> InvalidReasons { get; set; } = new List<string>();
-	}
+    public class InvalidFieldMap
+    {
+        public FieldMap FieldMap { get; set; }
+        public IList<string> InvalidReasons { get; set; } = new List<string>();
+    }
 }

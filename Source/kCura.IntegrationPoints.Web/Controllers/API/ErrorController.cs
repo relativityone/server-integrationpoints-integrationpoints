@@ -12,9 +12,9 @@ using System.Web.Http;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
-	public class ErrorController : ApiController
-	{
-		private readonly IManagerFactory _managerFactory;
+    public class ErrorController : ApiController
+    {
+        private readonly IManagerFactory _managerFactory;
 
         public ErrorController(IManagerFactory managerFactory)
         {
@@ -22,9 +22,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         }
 
         [HttpGet]
-		[LogApiExceptionFilter(Message = "Unable to build path")]
-		public IHttpActionResult GetViewErrorsLink(int integrationPointId, int workspaceId)
-		{
+        [LogApiExceptionFilter(Message = "Unable to build path")]
+        public IHttpActionResult GetViewErrorsLink(int integrationPointId, int workspaceId)
+        {
             IFieldManager fieldManager = _managerFactory.CreateFieldManager();
             IJobHistoryManager jobHistoryManager = _managerFactory.CreateJobHistoryManager();
             IArtifactGuidManager artifactGuidManager = _managerFactory.CreateArtifactGuidManager();
@@ -54,6 +54,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             List<KeyValuePair<string, string>> result = new List<KeyValuePair<string, string>>();
             result.Add(new KeyValuePair<string, string>("ErrorViewRedirect", UrlVersionDecorator.AppendVersion(newLocation)));
             return Ok(result);
-		}
-	}
+        }
+    }
 }

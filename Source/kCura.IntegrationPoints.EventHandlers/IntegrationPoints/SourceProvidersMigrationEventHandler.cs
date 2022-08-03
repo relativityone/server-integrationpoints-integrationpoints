@@ -54,16 +54,16 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
         {
             List<Data.SourceProvider> sourceProviders = GetSourceProvidersFromPreviousWorkspace();
 
-	        List<SourceProvider> results = sourceProviders.Select(
-		        provider => new SourceProvider
-		        {
-			        Name = provider.Name,
-			        Url = provider.SourceConfigurationUrl,
-			        ViewDataUrl = provider.ViewConfigurationUrl,
-			        ApplicationGUID = new Guid(provider.ApplicationIdentifier),
-			        GUID = new Guid(provider.Identifier),
-			        Configuration = provider.Config
-		        }).ToList();
+            List<SourceProvider> results = sourceProviders.Select(
+                provider => new SourceProvider
+                {
+                    Name = provider.Name,
+                    Url = provider.SourceConfigurationUrl,
+                    ViewDataUrl = provider.ViewConfigurationUrl,
+                    ApplicationGUID = new Guid(provider.ApplicationIdentifier),
+                    GUID = new Guid(provider.Identifier),
+                    Configuration = provider.Config
+                }).ToList();
 
             return results;
         }
@@ -93,37 +93,37 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
             private readonly int _templateWorkspaceId;
             private readonly IAPILog _logger;
 
-	        public SourceProvidersMigration(
-		        List<SourceProvider> sourceProvidersToMigrate,
-		        IEHHelper helper, 
-		        IRipProviderInstaller providerInstaller,
-		        int templateWorkspaceId,
-		        IAPILog logger,
+            public SourceProvidersMigration(
+                List<SourceProvider> sourceProvidersToMigrate,
+                IEHHelper helper, 
+                IRipProviderInstaller providerInstaller,
+                int templateWorkspaceId,
+                IAPILog logger,
                 IKubernetesMode kubernetesMode)
-		        : base(providerInstaller, kubernetesMode)
-	        {
-		        _sourceProviders = sourceProvidersToMigrate;
-		        _templateWorkspaceId = templateWorkspaceId;
-		        _logger = logger;
+                : base(providerInstaller, kubernetesMode)
+            {
+                _sourceProviders = sourceProvidersToMigrate;
+                _templateWorkspaceId = templateWorkspaceId;
+                _logger = logger;
                 Helper = helper;
             }
 
-	        public override IDictionary<Guid, SourceProvider> GetSourceProviders()
-	        {
-		        List<SourceProvider> deduplicatedProviders = new List<SourceProvider>();
-		        foreach (SourceProvider sourceProvider in _sourceProviders)
-		        {
-			        if (deduplicatedProviders.All(x => x.GUID != sourceProvider.GUID))
-			        {
-				        deduplicatedProviders.Add(sourceProvider);
-			        }
+            public override IDictionary<Guid, SourceProvider> GetSourceProviders()
+            {
+                List<SourceProvider> deduplicatedProviders = new List<SourceProvider>();
+                foreach (SourceProvider sourceProvider in _sourceProviders)
+                {
+                    if (deduplicatedProviders.All(x => x.GUID != sourceProvider.GUID))
+                    {
+                        deduplicatedProviders.Add(sourceProvider);
+                    }
                 }
 
-		        if (_sourceProviders.Count > deduplicatedProviders.Count)
-		        {
-			        // REL-539111
+                if (_sourceProviders.Count > deduplicatedProviders.Count)
+                {
+                    // REL-539111
                     _logger.LogWarning("There are duplicated entries in SourceProvider database table in Template Workspace Artifact ID: {templateWorkspaceArtifactId}", _templateWorkspaceId);
-		        }
+                }
 
                 return deduplicatedProviders.ToDictionary(provider => provider.GUID);
             }

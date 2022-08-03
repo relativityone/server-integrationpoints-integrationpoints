@@ -9,9 +9,9 @@ using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
-	public abstract class RdoTestBase
+    public abstract class RdoTestBase
     {
-	    public ArtifactTest Artifact { get; }
+        public ArtifactTest Artifact { get; }
 
         public int ArtifactId => Artifact.ArtifactId;
 
@@ -25,12 +25,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 ArtifactType = artifactTypeName
             };
 
-			Values = Guids.ToDictionary(g => g, g => (object)null);
+            Values = Guids.ToDictionary(g => g, g => (object)null);
         }
 
-		public Dictionary<Guid, object> Values { get; }
+        public Dictionary<Guid, object> Values { get; }
 
-		public abstract List<Guid> Guids { get; }
+        public abstract List<Guid> Guids { get; }
 
         public abstract RelativityObject ToRelativityObject();
 
@@ -64,7 +64,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 fieldValuePair.Field.Name = SanitizeFieldName(fieldValuePair.Field.Name);
             }
 
-			foreach (FieldValuePair fieldValuePair in relativityObject.FieldValues
+            foreach (FieldValuePair fieldValuePair in relativityObject.FieldValues
                 .Where(x => propertiesDictionary.ContainsKey(x.Field.Name)))
             {
                 try
@@ -92,26 +92,26 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             LoadRelativityObjectByGuid(typeof(T), relativityObject);
         }
 
-		public void LoadRelativityObjectByGuid(Type type, RelativityObject relativityObject)
+        public void LoadRelativityObjectByGuid(Type type, RelativityObject relativityObject)
         {
             ParentObjectArtifactId = relativityObject?.ParentObject?.ArtifactID ?? 0;
             Artifact.ArtifactId = relativityObject.ArtifactID;
 
-			foreach (FieldValuePair fieldValuePair in relativityObject.FieldValues)
-			{
-				try
-				{
-					Guid propId = fieldValuePair.Field.Guids.Single();
+            foreach (FieldValuePair fieldValuePair in relativityObject.FieldValues)
+            {
+                try
+                {
+                    Guid propId = fieldValuePair.Field.Guids.Single();
 
-					SetField(propId, fieldValuePair.Value);
-				}
-				catch (Exception)
-				{
-					Debugger.Break();
-					throw;
-				}
-			}
-		}
+                    SetField(propId, fieldValuePair.Value);
+                }
+                catch (Exception)
+                {
+                    Debugger.Break();
+                    throw;
+                }
+            }
+        }
 
         protected object Sanitize(object value)
         {
@@ -135,15 +135,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             }
 
             return value;
-		}
+        }
 
-		protected virtual void SetField(Guid guid, object value) => Values[guid] = Sanitize(value);
+        protected virtual void SetField(Guid guid, object value) => Values[guid] = Sanitize(value);
 
-		protected object GetField(Guid guid)
-		{
-			object value = Values[guid];
+        protected object GetField(Guid guid)
+        {
+            object value = Values[guid];
 
-			return Sanitize(value);
+            return Sanitize(value);
         }
     }
 }

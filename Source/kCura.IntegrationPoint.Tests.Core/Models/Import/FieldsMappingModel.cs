@@ -2,23 +2,23 @@
 
 namespace kCura.IntegrationPoint.Tests.Core.Models.Import
 {
-	public class FieldsMappingModel
-	{
-		public bool MapFieldsAutomatically { get; set; }
+    public class FieldsMappingModel
+    {
+        public bool MapFieldsAutomatically { get; set; }
 
-		public SortedDictionary<string, string> FieldsMapping { get; set; }
+        public SortedDictionary<string, string> FieldsMapping { get; set; }
 
-		public FieldsMappingModel(params string[] mappings)
-		{
-			FieldsMapping = new SortedDictionary<string, string>();
+        public FieldsMappingModel(params string[] mappings)
+        {
+            FieldsMapping = new SortedDictionary<string, string>();
 
-			if (mappings != null)
-			{
-				for (var i = 0; i < mappings.Length; i += 2)
-				{
-					FieldsMapping.Add(mappings[i], mappings[i + 1]);
-				}
-			}
-		}
-	}
+            if (mappings != null)
+            {
+                for (var i = 0; i < mappings.Length; i += 2)
+                {
+                    FieldsMapping.Add(mappings[i], mappings[i + 1]);
+                }
+            }
+        }
+    }
 }

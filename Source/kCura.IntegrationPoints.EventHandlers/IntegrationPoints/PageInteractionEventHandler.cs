@@ -7,60 +7,60 @@ using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Scripts;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
-	public abstract class PageInteractionEventHandler : EventHandler.PageInteractionEventHandler
-	{
-		public abstract ICommonScriptsFactory CommonScriptsFactory { get; set; }
+    public abstract class PageInteractionEventHandler : EventHandler.PageInteractionEventHandler
+    {
+        public abstract ICommonScriptsFactory CommonScriptsFactory { get; set; }
 
-		public override FieldCollection RequiredFields
-		{
-			get
-			{
-				var fieldCollection = new FieldCollection
-				{
-					new Field(IntegrationPointFields.DestinationProvider),
-					new Field(IntegrationPointFields.SourceProvider),
-					new Field(IntegrationPointFields.DestinationConfiguration),
-					new Field(IntegrationPointFields.SourceConfiguration)
-				};
-				return fieldCollection;
-			}
-		}
+        public override FieldCollection RequiredFields
+        {
+            get
+            {
+                var fieldCollection = new FieldCollection
+                {
+                    new Field(IntegrationPointFields.DestinationProvider),
+                    new Field(IntegrationPointFields.SourceProvider),
+                    new Field(IntegrationPointFields.DestinationConfiguration),
+                    new Field(IntegrationPointFields.SourceConfiguration)
+                };
+                return fieldCollection;
+            }
+        }
 
-		public override Response PopulateScriptBlocks()
-		{
-			Response response = new Response
-			{
-				Success = true,
-				Message = string.Empty
-			};
+        public override Response PopulateScriptBlocks()
+        {
+            Response response = new Response
+            {
+                Success = true,
+                Message = string.Empty
+            };
 
 
-			if (PageMode == EventHandler.Helper.PageMode.View)
-			{
-				string applicationPath = PageInteractionHelper.GetApplicationRelativeUri();
+            if (PageMode == EventHandler.Helper.PageMode.View)
+            {
+                string applicationPath = PageInteractionHelper.GetApplicationRelativeUri();
 
-				ICommonScripts commonScripts = CommonScriptsFactory.Create(this);
+                ICommonScripts commonScripts = CommonScriptsFactory.Create(this);
 
-				foreach (var css in commonScripts.LinkedCss())
-				{
-					RegisterLinkedCss(applicationPath + css);
-				}
+                foreach (var css in commonScripts.LinkedCss())
+                {
+                    RegisterLinkedCss(applicationPath + css);
+                }
 
-				foreach (var script in commonScripts.LinkedScripts())
-				{
-					RegisterLinkedClientScript(applicationPath + script);
-				}
+                foreach (var script in commonScripts.LinkedScripts())
+                {
+                    RegisterLinkedClientScript(applicationPath + script);
+                }
 
-				foreach (var scriptBlock in commonScripts.ScriptBlocks())
-				{
-					RegisterClientScriptBlock(new ScriptBlock
-					{
-						Key = Guid.NewGuid().ToString(),
-						Script = scriptBlock
-					});
-				}
-			}
-			return response;
-		}
-	}
+                foreach (var scriptBlock in commonScripts.ScriptBlocks())
+                {
+                    RegisterClientScriptBlock(new ScriptBlock
+                    {
+                        Key = Guid.NewGuid().ToString(),
+                        Script = scriptBlock
+                    });
+                }
+            }
+            return response;
+        }
+    }
 }

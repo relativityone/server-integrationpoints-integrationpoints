@@ -5,28 +5,28 @@ using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 {
-	public class ExportProductionValidator : BasePartsValidator<ExportSettings>
-	{
-		private readonly IProductionManager _productionManager;
+    public class ExportProductionValidator : BasePartsValidator<ExportSettings>
+    {
+        private readonly IProductionManager _productionManager;
 
-		public ExportProductionValidator(IProductionManager productionManager)
-		{
-			_productionManager = productionManager;
-		}
+        public ExportProductionValidator(IProductionManager productionManager)
+        {
+            _productionManager = productionManager;
+        }
 
-		public override ValidationResult Validate(ExportSettings value)
-		{
-			var result = new ValidationResult();
+        public override ValidationResult Validate(ExportSettings value)
+        {
+            var result = new ValidationResult();
 
-			ProductionDTO production = _productionManager.GetProductionsForExport(value.WorkspaceId)
-				.FirstOrDefault(x => x.ArtifactID.Equals(value.ProductionId.ToString()));
+            ProductionDTO production = _productionManager.GetProductionsForExport(value.WorkspaceId)
+                .FirstOrDefault(x => x.ArtifactID.Equals(value.ProductionId.ToString()));
 
-			if (production == null)
-			{
-				result.Add(FileDestinationProviderValidationMessages.PRODUCTION_NOT_EXIST);
-			}
+            if (production == null)
+            {
+                result.Add(FileDestinationProviderValidationMessages.PRODUCTION_NOT_EXIST);
+            }
 
-			return result;
-		}
-	}
+            return result;
+        }
+    }
 }

@@ -20,246 +20,246 @@ using Relativity.Testing.Framework.Web.Navigation;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 {
-	internal class XssTestsImplementation
-	{
-		private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
+    internal class XssTestsImplementation
+    {
+        private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
 
-		private readonly string _savedSearch = nameof(XssTestsImplementation);
+        private readonly string _savedSearch = nameof(XssTestsImplementation);
 
-		public XssTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture)
-		{
-			_testsImplementationTestFixture = testsImplementationTestFixture;
-		}
+        public XssTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture)
+        {
+            _testsImplementationTestFixture = testsImplementationTestFixture;
+        }
 
-		public void OnSetUpFixture()
-		{
-			CreateSavedSearch(_savedSearch);
-		}
+        public void OnSetUpFixture()
+        {
+            CreateSavedSearch(_savedSearch);
+        }
 
-		public void IntegrationPointSaveAsProfilePreventXssInjection(string profileName)
-		{
-			// Arrange
-			string destinationWorkspaceName = $"Test - {Guid.NewGuid()}";
-			Workspace destinationWorkspace = RelativityFacade.Instance.CreateWorkspace(destinationWorkspaceName);
+        public void IntegrationPointSaveAsProfilePreventXssInjection(string profileName)
+        {
+            // Arrange
+            string destinationWorkspaceName = $"Test - {Guid.NewGuid()}";
+            Workspace destinationWorkspace = RelativityFacade.Instance.CreateWorkspace(destinationWorkspaceName);
 
-			_testsImplementationTestFixture.LoginAsStandardUser();
+            _testsImplementationTestFixture.LoginAsStandardUser();
 
-			var integrationPointListPage = Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID);
-			var integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
+            var integrationPointListPage = Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID);
+            var integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
 
-			const string integrationPointName = nameof(IntegrationPointSaveAsProfilePreventXssInjection);
+            const string integrationPointName = nameof(IntegrationPointSaveAsProfilePreventXssInjection);
 
-			var integrationPointViewPage = integrationPointEditPage.CreateSavedSearchToFolderIntegrationPointWithNatives(
-				integrationPointName, destinationWorkspace, _savedSearch, RelativityProviderCopyNativeFiles.No);
+            var integrationPointViewPage = integrationPointEditPage.CreateSavedSearchToFolderIntegrationPointWithNatives(
+                integrationPointName, destinationWorkspace, _savedSearch, RelativityProviderCopyNativeFiles.No);
 
-			// Act
-			integrationPointViewPage
-				.SaveAsProfile.ClickAndGo()
-				.ApplyModel(new IntegrationPointSaveAsProfile
-				{
-					ProfileName = profileName
-				}).SaveAsProfile.ClickAndGo();
+            // Act
+            integrationPointViewPage
+                .SaveAsProfile.ClickAndGo()
+                .ApplyModel(new IntegrationPointSaveAsProfile
+                {
+                    ProfileName = profileName
+                }).SaveAsProfile.ClickAndGo();
 
-			// Assert
-			AssertXss();
-		}
+            // Assert
+            AssertXss();
+        }
 
-		public void IntegrationPointNamePreventXssInjection(string integrationPointName)
-		{
-			RunFirstPageXssPreventionTestCase<IntegrationPointListPage>(
-				p => p.NewIntegrationPoint,
-				ExportIntegrationPointEdit(
-					integrationPointName));
-		}
+        public void IntegrationPointNamePreventXssInjection(string integrationPointName)
+        {
+            RunFirstPageXssPreventionTestCase<IntegrationPointListPage>(
+                p => p.NewIntegrationPoint,
+                ExportIntegrationPointEdit(
+                    integrationPointName));
+        }
 
-		public void IntegrationPointEmailNotificationRecipientsPreventXssInjection(string emailRecipients)
-		{
-			RunFirstPageXssPreventionTestCase<IntegrationPointListPage>(
-				p => p.NewIntegrationPoint,
-				ExportIntegrationPointEdit(
-					emailRecipients: emailRecipients));
-		}
+        public void IntegrationPointEmailNotificationRecipientsPreventXssInjection(string emailRecipients)
+        {
+            RunFirstPageXssPreventionTestCase<IntegrationPointListPage>(
+                p => p.NewIntegrationPoint,
+                ExportIntegrationPointEdit(
+                    emailRecipients: emailRecipients));
+        }
 
-		public void IntegrationPointProfileNamePreventXssInjection(string integrationPointProfileName)
-		{
-			RunFirstPageXssPreventionTestCase<IntegrationPointProfileListPage>(
-				p => p.NewIntegrationPointProfile,
-				ExportIntegrationPointEdit(
-					integrationPointProfileName));
-		}
+        public void IntegrationPointProfileNamePreventXssInjection(string integrationPointProfileName)
+        {
+            RunFirstPageXssPreventionTestCase<IntegrationPointProfileListPage>(
+                p => p.NewIntegrationPointProfile,
+                ExportIntegrationPointEdit(
+                    integrationPointProfileName));
+        }
 
-		public void IntegrationPointProfileEmailNotificationRecipientsPreventXssInjection(string emailRecipients)
-		{
-			RunFirstPageXssPreventionTestCase<IntegrationPointProfileListPage>(
-				p => p.NewIntegrationPointProfile,
-				ExportIntegrationPointEdit(
-					emailRecipients: emailRecipients));
-		}
+        public void IntegrationPointProfileEmailNotificationRecipientsPreventXssInjection(string emailRecipients)
+        {
+            RunFirstPageXssPreventionTestCase<IntegrationPointProfileListPage>(
+                p => p.NewIntegrationPointProfile,
+                ExportIntegrationPointEdit(
+                    emailRecipients: emailRecipients));
+        }
 
-		public void IntegrationPointImportFromLDAPPreventXssInjection(string xssText)
-		{
-			// Arrange
-			_testsImplementationTestFixture.LoginAsStandardUser();
+        public void IntegrationPointImportFromLDAPPreventXssInjection(string xssText)
+        {
+            // Arrange
+            _testsImplementationTestFixture.LoginAsStandardUser();
 
-			// Act
-			var integrationPointEditPage = Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID)
-				.NewIntegrationPoint.ClickAndGo();
+            // Act
+            var integrationPointEditPage = Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID)
+                .NewIntegrationPoint.ClickAndGo();
 
-			integrationPointEditPage.Type.Set(IntegrationPointTypes.Import);
+            integrationPointEditPage.Type.Set(IntegrationPointTypes.Import);
 
-			Thread.Sleep(TimeSpan.FromSeconds(2));
+            Thread.Sleep(TimeSpan.FromSeconds(2));
 
-			integrationPointEditPage.ApplyModel(new IntegrationPointEditImport
-			{
-				Name = nameof(IntegrationPointImportFromLDAPPreventXssInjection),
-				Source = IntegrationPointSources.LDAP,
-				TransferredObject = IntegrationPointTransferredObjects.Document,
-			}).ImportFromLDAPNext.ClickAndGo()
-			.ApplyModel(new ImportFromLDAPConnectToSource
-			{
-				ConnectionPath = xssText,
-				Username = xssText,
-				Password = xssText
-			}).Next.ClickAndGo();
+            integrationPointEditPage.ApplyModel(new IntegrationPointEditImport
+            {
+                Name = nameof(IntegrationPointImportFromLDAPPreventXssInjection),
+                Source = IntegrationPointSources.LDAP,
+                TransferredObject = IntegrationPointTransferredObjects.Document,
+            }).ImportFromLDAPNext.ClickAndGo()
+            .ApplyModel(new ImportFromLDAPConnectToSource
+            {
+                ConnectionPath = xssText,
+                Username = xssText,
+                Password = xssText
+            }).Next.ClickAndGo();
 
-			// Assert
-			AssertXss();
-		}
+            // Assert
+            AssertXss();
+        }
 
-		public void IntegrationPointExportToLoadFilePreventXssInjection(string xssText)
-		{
-			// Arrange
-			_testsImplementationTestFixture.LoginAsStandardUser();
+        public void IntegrationPointExportToLoadFilePreventXssInjection(string xssText)
+        {
+            // Arrange
+            _testsImplementationTestFixture.LoginAsStandardUser();
 
-			// Act
-			ExportToLoadFileDestinationInformationPage exportToLoadFilePage =
-				Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID)
-					.NewIntegrationPoint.ClickAndGo()
-					.ApplyModel(new IntegrationPointEditExport
-			{
-				Name = nameof(IntegrationPointExportToLoadFilePreventXssInjection),
-				Destination = IntegrationPointDestinations.LoadFile
-			}).ExportToLoadFileNext.ClickAndGo()
-			.ApplyModel(new ExportToLoadFileConnectToSavedSearchSource()
-			{
-				StartExportAtRecord = 1,
-				SavedSearch = _savedSearch
-			}).Next.ClickAndGo();
+            // Act
+            ExportToLoadFileDestinationInformationPage exportToLoadFilePage =
+                Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID)
+                    .NewIntegrationPoint.ClickAndGo()
+                    .ApplyModel(new IntegrationPointEditExport
+            {
+                Name = nameof(IntegrationPointExportToLoadFilePreventXssInjection),
+                Destination = IntegrationPointDestinations.LoadFile
+            }).ExportToLoadFileNext.ClickAndGo()
+            .ApplyModel(new ExportToLoadFileConnectToSavedSearchSource()
+            {
+                StartExportAtRecord = 1,
+                SavedSearch = _savedSearch
+            }).Next.ClickAndGo();
 
-			exportToLoadFilePage.Natives.Check();
-			exportToLoadFilePage.Images.Check();
-			exportToLoadFilePage.TextFieldsAsFiles.Check();
+            exportToLoadFilePage.Natives.Check();
+            exportToLoadFilePage.Images.Check();
+            exportToLoadFilePage.TextFieldsAsFiles.Check();
 
-			exportToLoadFilePage.SetDestinationFolder(_testsImplementationTestFixture.Workspace.ArtifactID);
+            exportToLoadFilePage.SetDestinationFolder(_testsImplementationTestFixture.Workspace.ArtifactID);
 
-			exportToLoadFilePage.ApplyModel(new ExportToLoadFileOutputSettingsModel
-			{
-				FilePath = FilePaths.UserPrefix,
-				SubdirectoryImagePrefix = xssText,
-				SubdirectoryNativePrefix = xssText,
-				SubdirectoryTextPrefix = xssText
-			});
+            exportToLoadFilePage.ApplyModel(new ExportToLoadFileOutputSettingsModel
+            {
+                FilePath = FilePaths.UserPrefix,
+                SubdirectoryImagePrefix = xssText,
+                SubdirectoryNativePrefix = xssText,
+                SubdirectoryTextPrefix = xssText
+            });
 
-			exportToLoadFilePage.SetUserPrefix(xssText);
+            exportToLoadFilePage.SetUserPrefix(xssText);
 
-			exportToLoadFilePage.ApplyModel(new VolumeSubdirectoryDetailsModel
-			{
-				SubdirectoryVolumePrefix = xssText
-			});
+            exportToLoadFilePage.ApplyModel(new VolumeSubdirectoryDetailsModel
+            {
+                SubdirectoryVolumePrefix = xssText
+            });
 
-			exportToLoadFilePage
-				.Save.Wait(Until.Visible)
-				.Save.ClickAndGo();
+            exportToLoadFilePage
+                .Save.Wait(Until.Visible)
+                .Save.ClickAndGo();
 
-			// Assert
-			AssertXss();
-		}
+            // Assert
+            AssertXss();
+        }
 
-		public void IntegrationPointImportFromFTPPreventXssInjection(string xssText)
-		{
-			// Arrange
-			_testsImplementationTestFixture.LoginAsStandardUser();
+        public void IntegrationPointImportFromFTPPreventXssInjection(string xssText)
+        {
+            // Arrange
+            _testsImplementationTestFixture.LoginAsStandardUser();
 
-			// Act
-			var integrationPointEditPage = Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID)
-				.NewIntegrationPoint.ClickAndGo();
+            // Act
+            var integrationPointEditPage = Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID)
+                .NewIntegrationPoint.ClickAndGo();
 
-			integrationPointEditPage.Type.Set(IntegrationPointTypes.Import);
+            integrationPointEditPage.Type.Set(IntegrationPointTypes.Import);
 
-			Thread.Sleep(TimeSpan.FromSeconds(2));
+            Thread.Sleep(TimeSpan.FromSeconds(2));
 
-			integrationPointEditPage.ApplyModel(new IntegrationPointEditImport
-			{
-				Name = nameof(IntegrationPointImportFromFTPPreventXssInjection),
-				Source = IntegrationPointSources.FTP,
-				TransferredObject = IntegrationPointTransferredObjects.Document,
-			}).ImportFromFTPNext.ClickAndGo()
-			.ApplyModel(new ImportFromFTPConnectToSource
-			{
-				Host = xssText,
-				Username = xssText,
-				Password = xssText,
-				CSVFilePath = xssText
-			}).Next.ClickAndGo();
+            integrationPointEditPage.ApplyModel(new IntegrationPointEditImport
+            {
+                Name = nameof(IntegrationPointImportFromFTPPreventXssInjection),
+                Source = IntegrationPointSources.FTP,
+                TransferredObject = IntegrationPointTransferredObjects.Document,
+            }).ImportFromFTPNext.ClickAndGo()
+            .ApplyModel(new ImportFromFTPConnectToSource
+            {
+                Host = xssText,
+                Username = xssText,
+                Password = xssText,
+                CSVFilePath = xssText
+            }).Next.ClickAndGo();
 
-			// Assert
-			AssertXss();
-		}
+            // Assert
+            AssertXss();
+        }
 
-		private void RunFirstPageXssPreventionTestCase<T>(Func<T, Button<IntegrationPointEditPage, T>> newButtonFunc, IntegrationPointEdit integrationPointEdit)
-			where T: WorkspacePage<T>, new()
-		{
-			// Arrange
-			_testsImplementationTestFixture.LoginAsStandardUser();
+        private void RunFirstPageXssPreventionTestCase<T>(Func<T, Button<IntegrationPointEditPage, T>> newButtonFunc, IntegrationPointEdit integrationPointEdit)
+            where T: WorkspacePage<T>, new()
+        {
+            // Arrange
+            _testsImplementationTestFixture.LoginAsStandardUser();
 
-			// Act
-			T page = Being.On<T>(_testsImplementationTestFixture.Workspace.ArtifactID);
+            // Act
+            T page = Being.On<T>(_testsImplementationTestFixture.Workspace.ArtifactID);
 
-			newButtonFunc(page).ClickAndGo()
-				.ApplyModel(integrationPointEdit)
-				.RelativityProviderNext.Click();
+            newButtonFunc(page).ClickAndGo()
+                .ApplyModel(integrationPointEdit)
+                .RelativityProviderNext.Click();
 
-			// Assert
-			AssertXss();
-		}
+            // Assert
+            AssertXss();
+        }
 
-		private static IntegrationPointEdit ExportIntegrationPointEdit(string name = null, string emailRecipients = "")
-		{
-			return new IntegrationPointEditExport
-			{
-				Name = name ?? $" XSS Integration Point - {Guid.NewGuid()}",
-				Destination = IntegrationPointDestinations.Relativity,
-				EmailRecipients = emailRecipients
-			};
-		}
+        private static IntegrationPointEdit ExportIntegrationPointEdit(string name = null, string emailRecipients = "")
+        {
+            return new IntegrationPointEditExport
+            {
+                Name = name ?? $" XSS Integration Point - {Guid.NewGuid()}",
+                Destination = IntegrationPointDestinations.Relativity,
+                EmailRecipients = emailRecipients
+            };
+        }
 
-		private void CreateSavedSearch(string name)
-		{
-			RelativityFacade.Instance.Resolve<IKeywordSearchService>()
-				.Require(_testsImplementationTestFixture.Workspace.ArtifactID,
-					new KeywordSearch
-					{
-						Name = name,
-						SearchCriteria = new CriteriaCollection
-						{
-							Conditions = new List<BaseCriteria>()
-						}
-					});
-		}
+        private void CreateSavedSearch(string name)
+        {
+            RelativityFacade.Instance.Resolve<IKeywordSearchService>()
+                .Require(_testsImplementationTestFixture.Workspace.ArtifactID,
+                    new KeywordSearch
+                    {
+                        Name = name,
+                        SearchCriteria = new CriteriaCollection
+                        {
+                            Conditions = new List<BaseCriteria>()
+                        }
+                    });
+        }
 
-		private static void AssertXss()
-		{
-			object scriptResult = AtataContext.Current.Driver.ExecuteScript("return window.relativityXSS === undefined");
-			scriptResult.Should().BeAssignableTo<bool>().Which.Should().BeTrue("XSS attack should not execute malicious code");
+        private static void AssertXss()
+        {
+            object scriptResult = AtataContext.Current.Driver.ExecuteScript("return window.relativityXSS === undefined");
+            scriptResult.Should().BeAssignableTo<bool>().Which.Should().BeTrue("XSS attack should not execute malicious code");
 
-			string errors = string.Join(System.Environment.NewLine, AtataContext.Current.Driver
-				.Manage()
-				.Logs
-				.GetLog(LogType.Browser)
-				.Where(x => x.Level == OpenQA.Selenium.LogLevel.Severe)
-				.Where(x => x.Message.Contains($"/{GlobalConst.INTEGRATION_POINTS_APPLICATION_GUID}/"))
-				.Select(x => x.Message));
-			errors.Should().BeNullOrWhiteSpace("XSS attack should not cause JavaScript errors");
-		}
-	}
+            string errors = string.Join(System.Environment.NewLine, AtataContext.Current.Driver
+                .Manage()
+                .Logs
+                .GetLog(LogType.Browser)
+                .Where(x => x.Level == OpenQA.Selenium.LogLevel.Severe)
+                .Where(x => x.Message.Contains($"/{GlobalConst.INTEGRATION_POINTS_APPLICATION_GUID}/"))
+                .Select(x => x.Message));
+            errors.Should().BeNullOrWhiteSpace("XSS attack should not cause JavaScript errors");
+        }
+    }
 }

@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
-	public interface INativesService
-	{
-		FileTestDto GetNativeFileInfo(int workspaceId, int documentArtifactId);
-	}
+    public interface INativesService
+    {
+        FileTestDto GetNativeFileInfo(int workspaceId, int documentArtifactId);
+    }
 }
