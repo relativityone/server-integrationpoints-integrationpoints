@@ -22,6 +22,7 @@ namespace Relativity.Sync.Executors
         private readonly IJobCleanupConfiguration _jobCleanupConfiguration;
         private readonly IAutomatedWorkflowTriggerConfiguration _automatedWorkflowTriggerConfiguration;
         private readonly Func<IStopwatch> _stopwatchFactory;
+        private readonly IFileLocationManager _fileLocationManager;
 
         protected readonly ISyncMetrics _syncMetrics;
         private readonly IUserContextConfiguration _userContextConfiguration;
@@ -44,7 +45,8 @@ namespace Relativity.Sync.Executors
             Func<IStopwatch> stopwatchFactory,
             ISyncMetrics syncMetrics,
             IUserContextConfiguration userContextConfiguration,
-            IAPILog logger)
+            IAPILog logger,
+            IFileLocationManager fileLocationManager)
         {
             _batchRepository = batchRepository;
             _jobProgressHandlerFactory = jobProgressHandlerFactory;
@@ -59,6 +61,7 @@ namespace Relativity.Sync.Executors
             _syncMetrics = syncMetrics;
             _userContextConfiguration = userContextConfiguration;
             _logger = logger;
+            _fileLocationManager = fileLocationManager;
         }
 
         protected abstract Task<IImportJob> CreateImportJobAsync(TConfiguration configuration, IBatch batch, CancellationToken token);
@@ -132,51 +135,58 @@ namespace Relativity.Sync.Executors
 
                     for (int i = 0; i < batchesIds.Count; i++)
                     {
-                        int batchId = batchesIds[i];
-                        if (token.StopCancellationToken.IsCancellationRequested)
+                        try
                         {
-                            _logger.LogInformation("Import job has been canceled.");
-                            return ExecutionResult.Canceled();
-                        }
-
-                        await SetImportApiBatchSizeAsync(configuration).ConfigureAwait(false);
-
-                        _logger.LogInformation("Processing batch ID: {batchId} ({index} out of {totalBatches})", batchId, i+1, batchesIds.Count);
-
-                        IStopwatch batchTimer = GetStartedTimer();
-                        IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
-
-                        using (IImportJob importJob = await CreateImportJobAsync(configuration, batch, token.AnyReasonCancellationToken).ConfigureAwait(false))
-                        {
-                            using (progressHandler.AttachToImportJob(importJob.SyncImportBulkArtifactJob, batch))
+                            int batchId = batchesIds[i];
+                            if (token.StopCancellationToken.IsCancellationRequested)
                             {
-                                IStopwatch importApiTimer = GetStartedTimer();
-                                BatchProcessResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token).ConfigureAwait(false);
-                                importApiTimer.Stop();
+                                _logger.LogInformation("Import job has been canceled.");
+                                return ExecutionResult.Canceled();
+                            }
 
-                                TaggingExecutionResult taggingResult = await TagObjectsAsync(importJob, configuration, token).ConfigureAwait(false);
-                                int documentsTaggedCount = taggingResult.TaggedDocumentsCount;
-                                await batch.SetTaggedDocumentsCountAsync(batch.TaggedDocumentsCount + documentsTaggedCount).ConfigureAwait(false);
-                                batchProcessingResult.TotalRecordsTagged = documentsTaggedCount;
+                            await SetImportApiBatchSizeAsync(configuration).ConfigureAwait(false);
 
-                                if (batchProcessingResult.ExecutionResult.Status == ExecutionStatus.CompletedWithErrors)
+                            _logger.LogInformation("Processing batch ID: {batchId} ({index} out of {totalBatches})", batchId, i + 1, batchesIds.Count);
+
+                            IStopwatch batchTimer = GetStartedTimer();
+                            IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
+
+                            using (IImportJob importJob = await CreateImportJobAsync(configuration, batch, token.AnyReasonCancellationToken).ConfigureAwait(false))
+                            {
+                                using (progressHandler.AttachToImportJob(importJob.SyncImportBulkArtifactJob, batch))
                                 {
-                                    batchesCompletedWithErrors[batch.ArtifactId] = batchProcessingResult.ExecutionResult;
-                                }
+                                    IStopwatch importApiTimer = GetStartedTimer();
+                                    BatchProcessResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token).ConfigureAwait(false);
+                                    importApiTimer.Stop();
 
-                                batchTimer.Stop();
-                                ReportBatchMetrics(batchId, configuration.DataSourceArtifactId, batchProcessingResult, batchTimer.Elapsed, importApiTimer.Elapsed);
+                                    TaggingExecutionResult taggingResult = await TagObjectsAsync(importJob, configuration, token).ConfigureAwait(false);
+                                    int documentsTaggedCount = taggingResult.TaggedDocumentsCount;
+                                    await batch.SetTaggedDocumentsCountAsync(batch.TaggedDocumentsCount + documentsTaggedCount).ConfigureAwait(false);
+                                    batchProcessingResult.TotalRecordsTagged = documentsTaggedCount;
 
-                                ExecutionResult failureResult = AggregateFailuresOrCancelled(batch.ArtifactId,
-                                    batchProcessingResult.ExecutionResult, taggingResult);
-                                if (failureResult != null)
-                                {
-                                    return failureResult;
+                                    if (batchProcessingResult.ExecutionResult.Status == ExecutionStatus.CompletedWithErrors)
+                                    {
+                                        batchesCompletedWithErrors[batch.ArtifactId] = batchProcessingResult.ExecutionResult;
+                                    }
+
+                                    batchTimer.Stop();
+                                    ReportBatchMetrics(batchId, configuration.DataSourceArtifactId, batchProcessingResult, batchTimer.Elapsed, importApiTimer.Elapsed);
+
+                                    ExecutionResult failureResult = AggregateFailuresOrCancelled(batch.ArtifactId,
+                                        batchProcessingResult.ExecutionResult, taggingResult);
+                                    if (failureResult != null)
+                                    {
+                                        return failureResult;
+                                    }
                                 }
                             }
-                        }
 
-                        _logger.LogInformation("Batch ID: {batchId} processed successfully ({index} out of {totalBatches})", batch.ArtifactId, i + 1, batchesIds.Count);
+                            _logger.LogInformation("Batch ID: {batchId} processed successfully ({index} out of {totalBatches})", batch.ArtifactId, i + 1, batchesIds.Count);
+                        }
+                        finally
+                        {
+                            _fileLocationManager.ClearStoredLocations();
+                        }
                     }
 
                     importAndTagResult = AggregateBatchesCompletedWithErrorsResults(batchesCompletedWithErrors);
