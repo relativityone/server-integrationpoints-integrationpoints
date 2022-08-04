@@ -9,44 +9,44 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 {
-	public static class EmbeddedResource
-	{
-		private const string _RESOURCE_STREAM_ROOT = "kCura.IntegrationPoints.ImportProvider.Tests.Integration.SettingsResources.";
-		private const string _FIELDMAP_RESOURCE = "FieldMaps";
-		private const string _IMPORT_SETTINGS_RESOURCE = "ImportSettings";
-		private const string _IMPORTPROVIDER_SETTINGS_RESOURCE = "ImportProviderSettings";
+    public static class EmbeddedResource
+    {
+        private const string _RESOURCE_STREAM_ROOT = "kCura.IntegrationPoints.ImportProvider.Tests.Integration.SettingsResources.";
+        private const string _FIELDMAP_RESOURCE = "FieldMaps";
+        private const string _IMPORT_SETTINGS_RESOURCE = "ImportSettings";
+        private const string _IMPORTPROVIDER_SETTINGS_RESOURCE = "ImportProviderSettings";
 
-		private static JSONSerializer _serializer = null;
-		private static JSONSerializer Serializer
-		{
-			get
-			{
-				if (_serializer == null)
-				{
-					_serializer = new JSONSerializer();
-				}
-				return _serializer;
-			}
-		}
+        private static JSONSerializer _serializer = null;
+        private static JSONSerializer Serializer
+        {
+            get
+            {
+                if (_serializer == null)
+                {
+                    _serializer = new JSONSerializer();
+                }
+                return _serializer;
+            }
+        }
 
-		public static List<FieldMap> FieldMaps(string resourceName)
-		{
-			return Serializer.Deserialize<List<FieldMap>>(EmbeddedResourceStreamReader(_FIELDMAP_RESOURCE, resourceName).ReadToEnd());
-		}
+        public static List<FieldMap> FieldMaps(string resourceName)
+        {
+            return Serializer.Deserialize<List<FieldMap>>(EmbeddedResourceStreamReader(_FIELDMAP_RESOURCE, resourceName).ReadToEnd());
+        }
 
-		public static ImportProviderSettings ImportProviderSettings(string resourceName)
-		{
-			return Serializer.Deserialize<ImportProviderSettings>(EmbeddedResourceStreamReader(_IMPORTPROVIDER_SETTINGS_RESOURCE, resourceName).ReadToEnd());
-		}
+        public static ImportProviderSettings ImportProviderSettings(string resourceName)
+        {
+            return Serializer.Deserialize<ImportProviderSettings>(EmbeddedResourceStreamReader(_IMPORTPROVIDER_SETTINGS_RESOURCE, resourceName).ReadToEnd());
+        }
 
-		public static ImportSettings ImportSettings(string resourceName)
-		{
-			return Serializer.Deserialize<ImportSettings>(EmbeddedResourceStreamReader(_IMPORT_SETTINGS_RESOURCE, resourceName).ReadToEnd());
-		}
+        public static ImportSettings ImportSettings(string resourceName)
+        {
+            return Serializer.Deserialize<ImportSettings>(EmbeddedResourceStreamReader(_IMPORT_SETTINGS_RESOURCE, resourceName).ReadToEnd());
+        }
 
-		private static StreamReader EmbeddedResourceStreamReader(string category, string resourceName)
-		{
-			return new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream(_RESOURCE_STREAM_ROOT + category  + "." + category + resourceName + ".json"));
-		}
-	}
+        private static StreamReader EmbeddedResourceStreamReader(string category, string resourceName)
+        {
+            return new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream(_RESOURCE_STREAM_ROOT + category  + "." + category + resourceName + ".json"));
+        }
+    }
 }

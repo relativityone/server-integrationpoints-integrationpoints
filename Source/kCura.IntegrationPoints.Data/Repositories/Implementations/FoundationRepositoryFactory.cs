@@ -6,37 +6,37 @@ using Relativity.API.Foundation.Repositories;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class FoundationRepositoryFactory : IFoundationRepositoryFactory
-	{
-		private readonly IServicesMgr _servicesMgr;
-		private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
+    public class FoundationRepositoryFactory : IFoundationRepositoryFactory
+    {
+        private readonly IServicesMgr _servicesMgr;
+        private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
 
-		public FoundationRepositoryFactory(IServicesMgr servicesMgr, IExternalServiceInstrumentationProvider instrumentationProvider)
-		{
-			_servicesMgr = servicesMgr;
-			_instrumentationProvider = instrumentationProvider;
-		}
+        public FoundationRepositoryFactory(IServicesMgr servicesMgr, IExternalServiceInstrumentationProvider instrumentationProvider)
+        {
+            _servicesMgr = servicesMgr;
+            _instrumentationProvider = instrumentationProvider;
+        }
 
-		public T GetRepository<T>(int workspaceId) where T : IRepository
-		{
-			IExternalServiceSimpleInstrumentation gatewayInstrumentation = _instrumentationProvider.CreateSimple(
-				ExternalServiceTypes.API_FOUNDATION, 
-				nameof(IWorkspaceGateway), 
-				nameof(IWorkspaceGateway.GetWorkspaceContext));
+        public T GetRepository<T>(int workspaceId) where T : IRepository
+        {
+            IExternalServiceSimpleInstrumentation gatewayInstrumentation = _instrumentationProvider.CreateSimple(
+                ExternalServiceTypes.API_FOUNDATION, 
+                nameof(IWorkspaceGateway), 
+                nameof(IWorkspaceGateway.GetWorkspaceContext));
 
-			IExternalServiceSimpleInstrumentation contextInstrumentation = _instrumentationProvider.CreateSimple(
-				ExternalServiceTypes.API_FOUNDATION,
-				nameof(IWorkspaceContext),
-				nameof(IWorkspaceContext.CreateRepository));
+            IExternalServiceSimpleInstrumentation contextInstrumentation = _instrumentationProvider.CreateSimple(
+                ExternalServiceTypes.API_FOUNDATION,
+                nameof(IWorkspaceContext),
+                nameof(IWorkspaceContext.CreateRepository));
 
-			using (var workspaceGateway = _servicesMgr.CreateProxy<IWorkspaceGateway>(ExecutionIdentity.CurrentUser))
-			{
-				IWorkspaceContext workspaceContext = gatewayInstrumentation
-					.Execute(() => workspaceGateway.GetWorkspaceContext(workspaceId));
-				T repository = contextInstrumentation
-					.Execute(() => workspaceContext.CreateRepository<T>());
-				return repository;
-			}
-		}
-	}
+            using (var workspaceGateway = _servicesMgr.CreateProxy<IWorkspaceGateway>(ExecutionIdentity.CurrentUser))
+            {
+                IWorkspaceContext workspaceContext = gatewayInstrumentation
+                    .Execute(() => workspaceGateway.GetWorkspaceContext(workspaceId));
+                T repository = contextInstrumentation
+                    .Execute(() => workspaceContext.CreateRepository<T>());
+                return repository;
+            }
+        }
+    }
 }

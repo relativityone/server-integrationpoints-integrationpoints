@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
                 IsClosed = !_itemsEnumerator.MoveNext();
                 if (!IsClosed)
                 {
-	                RecordsAffected++;
+                    RecordsAffected++;
                 }
             }
             return !IsClosed;
@@ -168,10 +168,10 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
         public int GetValues(object[] values)
         {
-	        if (values == null)
-	        {
-		        return 0;
-	        }
+            if (values == null)
+            {
+                return 0;
+            }
 
             int fieldCount = Math.Min(values.Length, FieldCount);
             var newValues = new object[fieldCount];

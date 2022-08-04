@@ -5,23 +5,23 @@ using Relativity.Services.Field;
 
 namespace kCura.IntegrationPoints.Data.Converters
 {
-	internal static class FieldRefExtensions
-	{
-		public static ArtifactFieldDTO ToArtifactFieldDTO(this FieldRef artifactDTO)
-		{
-			if (artifactDTO == null)
-			{
-				return null;
-			}
+    internal static class FieldRefExtensions
+    {
+        public static ArtifactFieldDTO ToArtifactFieldDTO(this FieldRef artifactDTO)
+        {
+            if (artifactDTO == null)
+            {
+                return null;
+            }
 
-			return new ArtifactFieldDTO
-			{
-				ArtifactId = artifactDTO.ArtifactID,
-				Name = artifactDTO.Name
-			};
-		}
+            return new ArtifactFieldDTO
+            {
+                ArtifactId = artifactDTO.ArtifactID,
+                Name = artifactDTO.Name
+            };
+        }
 
-		public static IEnumerable<ArtifactFieldDTO> ToArtifactFieldDTOs(this IEnumerable<FieldRef> artifactDTOs) =>
-			artifactDTOs?.Select(ToArtifactFieldDTO);
-	}
+        public static IEnumerable<ArtifactFieldDTO> ToArtifactFieldDTOs(this IEnumerable<FieldRef> artifactDTOs) =>
+            artifactDTOs?.Select(ToArtifactFieldDTO);
+    }
 }

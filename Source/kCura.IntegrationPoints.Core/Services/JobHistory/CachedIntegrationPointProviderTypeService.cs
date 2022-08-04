@@ -5,87 +5,87 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 
 namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {
-	public class CachedIntegrationPointProviderTypeService : IIntegrationPointProviderTypeService
-	{
-		private DateTime _lastRefreshTime = DateTime.MinValue;
+    public class CachedIntegrationPointProviderTypeService : IIntegrationPointProviderTypeService
+    {
+        private DateTime _lastRefreshTime = DateTime.MinValue;
 
-		private readonly IIntegrationPointService _integrationPointService;
-		private readonly IProviderTypeService _providerTypeService;
+        private readonly IIntegrationPointService _integrationPointService;
+        private readonly IProviderTypeService _providerTypeService;
 
-		private readonly IDateTimeHelper _currentDateTimeProvider;
-		private readonly TimeSpan _cacheRefreshDelay;
-		private readonly Dictionary<int, ProviderType> _providerTypesCache = new Dictionary<int, ProviderType>();
-		private readonly object _providerTypesCacheLock = new object();
+        private readonly IDateTimeHelper _currentDateTimeProvider;
+        private readonly TimeSpan _cacheRefreshDelay;
+        private readonly Dictionary<int, ProviderType> _providerTypesCache = new Dictionary<int, ProviderType>();
+        private readonly object _providerTypesCacheLock = new object();
 
-		public CachedIntegrationPointProviderTypeService(
-			IProviderTypeService providerTypeService,
-			IIntegrationPointService integrationPointService, 
-			IDateTimeHelper currentDateTimeProvider, 
-			TimeSpan cacheRefreshDelay)
-		{
-			_cacheRefreshDelay = cacheRefreshDelay;
-			_providerTypeService = providerTypeService;
-			_currentDateTimeProvider = currentDateTimeProvider;
-			_integrationPointService = integrationPointService;
-		}
+        public CachedIntegrationPointProviderTypeService(
+            IProviderTypeService providerTypeService,
+            IIntegrationPointService integrationPointService, 
+            IDateTimeHelper currentDateTimeProvider, 
+            TimeSpan cacheRefreshDelay)
+        {
+            _cacheRefreshDelay = cacheRefreshDelay;
+            _providerTypeService = providerTypeService;
+            _currentDateTimeProvider = currentDateTimeProvider;
+            _integrationPointService = integrationPointService;
+        }
 
-		public ProviderType GetProviderType(int integrationPointArtifactId)
-		{
-			return GetProviderType(integrationPointArtifactId, null);
-		}
+        public ProviderType GetProviderType(int integrationPointArtifactId)
+        {
+            return GetProviderType(integrationPointArtifactId, null);
+        }
 
-		public ProviderType GetProviderType(Data.IntegrationPoint integrationPoint)
-		{
-			return GetProviderType(integrationPoint.ArtifactId, integrationPoint);
-		}
+        public ProviderType GetProviderType(Data.IntegrationPoint integrationPoint)
+        {
+            return GetProviderType(integrationPoint.ArtifactId, integrationPoint);
+        }
 
-		private ProviderType GetProviderType(int integrationPointArtifactId, Data.IntegrationPoint integrationPoint)
-		{
-			lock (_providerTypesCacheLock)
-			{
-				RefreshCache();
+        private ProviderType GetProviderType(int integrationPointArtifactId, Data.IntegrationPoint integrationPoint)
+        {
+            lock (_providerTypesCacheLock)
+            {
+                RefreshCache();
 
-				return GetProviderTypeFromCache(integrationPointArtifactId, integrationPoint);
-			}
-		}
+                return GetProviderTypeFromCache(integrationPointArtifactId, integrationPoint);
+            }
+        }
 
-		private ProviderType GetProviderTypeFromCache(int integrationPointArtifactId, Data.IntegrationPoint integrationPoint)
-		{
-			ProviderType providerType;
-			if (_providerTypesCache.TryGetValue(integrationPointArtifactId, out providerType))
-			{
-				return providerType;
-			}
+        private ProviderType GetProviderTypeFromCache(int integrationPointArtifactId, Data.IntegrationPoint integrationPoint)
+        {
+            ProviderType providerType;
+            if (_providerTypesCache.TryGetValue(integrationPointArtifactId, out providerType))
+            {
+                return providerType;
+            }
 
-			providerType = GetProviderTypeFromService(integrationPointArtifactId, integrationPoint);
+            providerType = GetProviderTypeFromService(integrationPointArtifactId, integrationPoint);
 
-			_providerTypesCache[integrationPointArtifactId] = providerType;
+            _providerTypesCache[integrationPointArtifactId] = providerType;
 
-			return providerType;
-		}
+            return providerType;
+        }
 
-		
-		private ProviderType GetProviderTypeFromService(int integrationPointArtifactID, Data.IntegrationPoint integrationPoint)
-		{
-			if (integrationPoint == null)
-			{
-				integrationPoint = _integrationPointService.ReadIntegrationPoint(integrationPointArtifactID);
-			}
+        
+        private ProviderType GetProviderTypeFromService(int integrationPointArtifactID, Data.IntegrationPoint integrationPoint)
+        {
+            if (integrationPoint == null)
+            {
+                integrationPoint = _integrationPointService.ReadIntegrationPoint(integrationPointArtifactID);
+            }
 
-			ProviderType providerType = integrationPoint.GetProviderType(_providerTypeService);
+            ProviderType providerType = integrationPoint.GetProviderType(_providerTypeService);
 
-			return providerType;
-		}
+            return providerType;
+        }
 
-		private void RefreshCache()
-		{
-			DateTime currentTime = _currentDateTimeProvider.Now();
-			TimeSpan timeSinceLastRefresh = currentTime - _lastRefreshTime;
-			if (timeSinceLastRefresh > _cacheRefreshDelay)
-			{
-				_providerTypesCache.Clear();
-				_lastRefreshTime = currentTime;
-			}
-		}
-	}
+        private void RefreshCache()
+        {
+            DateTime currentTime = _currentDateTimeProvider.Now();
+            TimeSpan timeSinceLastRefresh = currentTime - _lastRefreshTime;
+            if (timeSinceLastRefresh > _cacheRefreshDelay)
+            {
+                _providerTypesCache.Clear();
+                _lastRefreshTime = currentTime;
+            }
+        }
+    }
 }

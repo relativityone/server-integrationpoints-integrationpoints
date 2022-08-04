@@ -17,18 +17,18 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
         public LDAPProviderException(string message, Exception innerException) : base(message, innerException)
         {
-			Initialize();
+            Initialize();
         }
 
         protected LDAPProviderException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
-			Initialize();
+            Initialize();
         }
 
-	    private void Initialize()
-	    {
-		    ExceptionSource = IntegrationPointsExceptionSource.LDAP;
-		    ShouldAddToErrorsTab = true;
-	    }
+        private void Initialize()
+        {
+            ExceptionSource = IntegrationPointsExceptionSource.LDAP;
+            ShouldAddToErrorsTab = true;
+        }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Data
 {
-	public interface IEddsDBContext : IRipDBContext
-	{
-	}
+    public interface IEddsDBContext : IRipDBContext
+    {
+    }
 }

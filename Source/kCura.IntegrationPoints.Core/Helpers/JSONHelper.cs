@@ -3,21 +3,21 @@ using Newtonsoft.Json.Serialization;
 
 namespace kCura.IntegrationPoints.Core.Helpers
 {
-	public static class JSONHelper
-	{
-		public static JsonSerializerSettings SetupDefaults(this JsonSerializerSettings @this)
-		{
-			if (@this != null)
-			{
-				@this.ContractResolver = new CamelCasePropertyNamesContractResolver();
-			}
+    public static class JSONHelper
+    {
+        public static JsonSerializerSettings SetupDefaults(this JsonSerializerSettings @this)
+        {
+            if (@this != null)
+            {
+                @this.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            }
 
-			return @this;
-		}
+            return @this;
+        }
 
-		public static JsonSerializerSettings GetDefaultSettings()
-		{
-			return new JsonSerializerSettings().SetupDefaults();
-		}
-	}
+        public static JsonSerializerSettings GetDefaultSettings()
+        {
+            return new JsonSerializerSettings().SetupDefaults();
+        }
+    }
 }

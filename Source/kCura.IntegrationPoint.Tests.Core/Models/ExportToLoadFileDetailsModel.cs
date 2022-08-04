@@ -2,33 +2,33 @@
 
 namespace kCura.IntegrationPoint.Tests.Core.Models
 {
-	using System.ComponentModel;
+    using System.ComponentModel;
 
-	public class ExportToLoadFileDetailsModel
-	{
-		[DefaultValue(true)]
-		public bool? LoadFile { get; set; }
+    public class ExportToLoadFileDetailsModel
+    {
+        [DefaultValue(true)]
+        public bool? LoadFile { get; set; }
 
-		[DefaultValue(false)]
-		public bool? ExportImages { get; set; }
+        [DefaultValue(false)]
+        public bool? ExportImages { get; set; }
 
-		[DefaultValue(false)]
-		public bool? ExportNatives { get; set; }
+        [DefaultValue(false)]
+        public bool? ExportNatives { get; set; }
 
-		[DefaultValue(false)]
-		public bool? ExportTextFieldsAsFiles { get; set; }
+        [DefaultValue(false)]
+        public bool? ExportTextFieldsAsFiles { get; set; }
 
-		public ExportToLoadFileProviderModel.DestinationFolderTypeEnum? DestinationFolder { get; set; }
+        public ExportToLoadFileProviderModel.DestinationFolderTypeEnum? DestinationFolder { get; set; }
 
-		[DefaultValue(true)]
-		public bool? CreateExportFolder { get; set; }
+        [DefaultValue(true)]
+        public bool? CreateExportFolder { get; set; }
 
-		[DefaultValue(false)]
-		public bool? OverwriteFiles { get; set; }
+        [DefaultValue(false)]
+        public bool? OverwriteFiles { get; set; }
 
-		public ExportToLoadFileDetailsModel()
-		{
-			this.InitializePropertyDefaultValues();
-		}
-	}
+        public ExportToLoadFileDetailsModel()
+        {
+            this.InitializePropertyDefaultValues();
+        }
+    }
 }

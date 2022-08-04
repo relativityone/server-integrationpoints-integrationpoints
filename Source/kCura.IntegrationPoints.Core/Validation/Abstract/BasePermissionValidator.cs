@@ -5,15 +5,15 @@ using kCura.IntegrationPoints.Domain;
 
 namespace kCura.IntegrationPoints.Core.Validation.Abstract
 {
-	public abstract class BasePermissionValidator : BasePartsValidator<IntegrationPointProviderValidationModel>, IPermissionValidator
-	{
-		protected readonly ISerializer Serializer;
-		protected readonly IServiceContextHelper ContextHelper;
+    public abstract class BasePermissionValidator : BasePartsValidator<IntegrationPointProviderValidationModel>, IPermissionValidator
+    {
+        protected readonly ISerializer Serializer;
+        protected readonly IServiceContextHelper ContextHelper;
 
-		protected BasePermissionValidator(ISerializer serializer, IServiceContextHelper contextHelper)
-		{
-			Serializer = serializer;
-			ContextHelper = contextHelper;
-		}
-	}
+        protected BasePermissionValidator(ISerializer serializer, IServiceContextHelper contextHelper)
+        {
+            Serializer = serializer;
+            ContextHelper = contextHelper;
+        }
+    }
 }

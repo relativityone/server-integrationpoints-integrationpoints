@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.Agent.Interfaces
 {
-	internal interface IAgentNotifier
-	{
-		void NotifyAgent(LogCategory category, string message);
-	}
+    internal interface IAgentNotifier
+    {
+        void NotifyAgent(LogCategory category, string message);
+    }
 }

@@ -6,6 +6,6 @@ namespace kCura.IntegrationPoints.Core.Helpers
     public interface IFolderTreeBuilder
     {
         JsTreeItemDTO CreateItemWithChildren(Folder folder, bool isRoot);
-	    JsTreeItemDTO CreateItemWithoutChildren(Folder folder);
+        JsTreeItemDTO CreateItemWithoutChildren(Folder folder);
     }
 }

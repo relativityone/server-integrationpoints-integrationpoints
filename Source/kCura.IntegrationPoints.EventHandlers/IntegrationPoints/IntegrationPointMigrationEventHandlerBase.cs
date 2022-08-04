@@ -14,98 +14,98 @@ using System.Runtime.InteropServices;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
-	public abstract class IntegrationPointMigrationEventHandlerBase : PostWorkspaceCreateEventHandlerBase
-	{
-		private ICaseServiceContext _workspaceTemplateServiceContext;
-		private IAPILog _loggerValue;
+    public abstract class IntegrationPointMigrationEventHandlerBase : PostWorkspaceCreateEventHandlerBase
+    {
+        private ICaseServiceContext _workspaceTemplateServiceContext;
+        private IAPILog _loggerValue;
 
-		private const string _ACTION_NAME = "Post Workspace Create";
-		private readonly Lazy<IErrorService> _errorService;
+        private const string _ACTION_NAME = "Post Workspace Create";
+        private readonly Lazy<IErrorService> _errorService;
 
-		protected IntegrationPointMigrationEventHandlerBase()
-		{
-			_errorService = new Lazy<IErrorService>(() =>
-				new EhErrorService(new CreateErrorRdoQuery(Helper.GetServicesManager(), new SystemEventLoggingService(), Logger), Logger));
-		}
+        protected IntegrationPointMigrationEventHandlerBase()
+        {
+            _errorService = new Lazy<IErrorService>(() =>
+                new EhErrorService(new CreateErrorRdoQuery(Helper.GetServicesManager(), new SystemEventLoggingService(), Logger), Logger));
+        }
 
-		protected IntegrationPointMigrationEventHandlerBase(IErrorService errorService)
-		{
-			_errorService = new Lazy<IErrorService>(() => errorService);
-		}
+        protected IntegrationPointMigrationEventHandlerBase(IErrorService errorService)
+        {
+            _errorService = new Lazy<IErrorService>(() => errorService);
+        }
 
-		protected IAPILog Logger =>
-			_loggerValue
-			?? (_loggerValue = Helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointMigrationEventHandlerBase>());
+        protected IAPILog Logger =>
+            _loggerValue
+            ?? (_loggerValue = Helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointMigrationEventHandlerBase>());
 
-		protected ICaseServiceContext WorkspaceTemplateServiceContext =>
-			_workspaceTemplateServiceContext
-			?? (_workspaceTemplateServiceContext = ServiceContextFactory.CreateCaseServiceContext(Helper, TemplateWorkspaceID));
+        protected ICaseServiceContext WorkspaceTemplateServiceContext =>
+            _workspaceTemplateServiceContext
+            ?? (_workspaceTemplateServiceContext = ServiceContextFactory.CreateCaseServiceContext(Helper, TemplateWorkspaceID));
 
-		public sealed override Response Execute()
-		{
-			EhCorrelationContext correlationContext = CreateCorrelationContext();
-			using (Logger.LogContextPushProperties(correlationContext))
-			{
-				try
-				{
-					Run();
+        public sealed override Response Execute()
+        {
+            EhCorrelationContext correlationContext = CreateCorrelationContext();
+            using (Logger.LogContextPushProperties(correlationContext))
+            {
+                try
+                {
+                    Run();
 
-					return new Response
-					{
-						Message = SuccessMessage,
-						Success = true
-					};
-				}
-				catch (Exception ex)
-				{
-					return HandleError(correlationContext.WorkspaceId.GetValueOrDefault(), ex, correlationContext.CorrelationId);
-				}
-			}
-		}
+                    return new Response
+                    {
+                        Message = SuccessMessage,
+                        Success = true
+                    };
+                }
+                catch (Exception ex)
+                {
+                    return HandleError(correlationContext.WorkspaceId.GetValueOrDefault(), ex, correlationContext.CorrelationId);
+                }
+            }
+        }
 
-		protected abstract void Run();
+        protected abstract void Run();
 
-		protected abstract string SuccessMessage { get; }
-		protected abstract string GetFailureMessage(Exception ex);
+        protected abstract string SuccessMessage { get; }
+        protected abstract string GetFailureMessage(Exception ex);
 
-		private EhCorrelationContext CreateCorrelationContext()
-		{
-			Guid ehGuid = GetEventHandlerGuid();
+        private EhCorrelationContext CreateCorrelationContext()
+        {
+            Guid ehGuid = GetEventHandlerGuid();
 
-			return new EhCorrelationContext
-			{
-				ActionName = _ACTION_NAME,
-				CorrelationId = Guid.NewGuid(),
-				InstallerGuid = ehGuid,
-				WorkspaceId = LogHelper.GetValueAndLogEx(() => Helper.GetActiveCaseID(), $"Cannot extract Workspace Id in {ehGuid} installer", Logger)
-			};
-		}
+            return new EhCorrelationContext
+            {
+                ActionName = _ACTION_NAME,
+                CorrelationId = Guid.NewGuid(),
+                InstallerGuid = ehGuid,
+                WorkspaceId = LogHelper.GetValueAndLogEx(() => Helper.GetActiveCaseID(), $"Cannot extract Workspace Id in {ehGuid} installer", Logger)
+            };
+        }
 
-		private Response HandleError(int wkspId, Exception ex, Guid correlationId)
-		{
-			string descError = GetFailureMessage(ex);
+        private Response HandleError(int wkspId, Exception ex, Guid correlationId)
+        {
+            string descError = GetFailureMessage(ex);
 
-			var errorModel = new ErrorModel(ex, true/* We want to add each errro to Error tab*/, descError)
-			{
-				WorkspaceId = wkspId,
-				CorrelationId = correlationId
-			};
-			_errorService.Value.Log(errorModel);
+            var errorModel = new ErrorModel(ex, true/* We want to add each errro to Error tab*/, descError)
+            {
+                WorkspaceId = wkspId,
+                CorrelationId = correlationId
+            };
+            _errorService.Value.Log(errorModel);
 
-			return new Response
-			{
-				Exception = ex,
-				Message = descError,
-				Success = false
-			};
-		}
+            return new Response
+            {
+                Exception = ex,
+                Message = descError,
+                Success = false
+            };
+        }
 
-		private Guid GetEventHandlerGuid()
-		{
-			object[] type = GetType().GetCustomAttributes(typeof(GuidAttribute), true);
+        private Guid GetEventHandlerGuid()
+        {
+            object[] type = GetType().GetCustomAttributes(typeof(GuidAttribute), true);
 
-			GuidAttribute guid = type.OfType<GuidAttribute>().FirstOrDefault();
-			return guid == null ? Guid.Empty : new Guid(guid.Value);
-		}
-	}
+            GuidAttribute guid = type.OfType<GuidAttribute>().FirstOrDefault();
+            return guid == null ? Guid.Empty : new Guid(guid.Value);
+        }
+    }
 }

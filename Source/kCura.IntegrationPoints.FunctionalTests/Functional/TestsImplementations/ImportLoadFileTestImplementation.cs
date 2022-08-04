@@ -25,7 +25,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
         public void OnSetUpFixture()
         {
-	        string testDataPath = LoadFilesGenerator.GetOrCreateNativesDatLoadFile();
+            string testDataPath = LoadFilesGenerator.GetOrCreateNativesDatLoadFile();
             LoadFilesGenerator.UploadLoadFileToImportDirectory(_testsImplementationTestFixture.Workspace.ArtifactID, testDataPath).Wait();
         }
 
@@ -38,7 +38,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
             // Act 
             var integrationPointEditPage = Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID)
-	            .NewIntegrationPoint.ClickAndGo();
+                .NewIntegrationPoint.ClickAndGo();
 
             var importFromLoadFileConnectToSourcePage = FillOutIntegrationPointEditPageForImportFromLoadFile(integrationPointEditPage, integrationPointName);
             var importFromLoadFileMapFieldsPage = FillOutIntegrationPointConnectToSourcePageForImportFromLoadFile(importFromLoadFileConnectToSourcePage, _testsImplementationTestFixture.Workspace.Name);
@@ -64,9 +64,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
         private static ImportFromLoadFileConnectToSourcePage FillOutIntegrationPointEditPageForImportFromLoadFile(IntegrationPointEditPage integrationPointEditPage, string integrationPointName)
         {
-	        integrationPointEditPage.Type.Set(IntegrationPointTypes.Import);
+            integrationPointEditPage.Type.Set(IntegrationPointTypes.Import);
 
-	        Thread.Sleep(TimeSpan.FromSeconds(2));
+            Thread.Sleep(TimeSpan.FromSeconds(2));
 
             IntegrationPointEdit integrationPointEdit = new IntegrationPointEditImport
             {

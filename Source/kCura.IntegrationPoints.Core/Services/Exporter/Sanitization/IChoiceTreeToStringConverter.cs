@@ -3,8 +3,8 @@ using kCura.IntegrationPoints.Data.Repositories.DTO;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter.Sanitization
 {
-	internal interface IChoiceTreeToStringConverter
-	{
-		string ConvertTreeToString(IList<ChoiceWithChildInfoDto> choiceTree);
-	}
+    internal interface IChoiceTreeToStringConverter
+    {
+        string ConvertTreeToString(IList<ChoiceWithChildInfoDto> choiceTree);
+    }
 }

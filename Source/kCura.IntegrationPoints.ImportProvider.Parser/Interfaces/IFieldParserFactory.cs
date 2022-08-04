@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Interfaces
 {
-	public interface IFieldParserFactory
-	{
-		IFieldParser GetFieldParser(ImportProviderSettings settings);
-	}
+    public interface IFieldParserFactory
+    {
+        IFieldParser GetFieldParser(ImportProviderSettings settings);
+    }
 }

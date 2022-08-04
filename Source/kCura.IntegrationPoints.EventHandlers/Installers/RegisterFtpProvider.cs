@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
     [kCura.EventHandler.CustomAttributes.RunOnce(true)]
     [Guid("D1578A7B-E662-4DEE-BD59-C224E27F5296")]
     public class RegisterFtpProvider : InternalSourceProviderInstaller
-	{
+    {
         public override IDictionary<Guid, SourceProvider> GetSourceProviders()
         {
             return new Dictionary<Guid, SourceProvider>()

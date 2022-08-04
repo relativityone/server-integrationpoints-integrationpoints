@@ -4,52 +4,52 @@ using kCura.IntegrationPoints.Common.Metrics.Sink;
 
 namespace kCura.IntegrationPoints.Common.Metrics
 {
-	public class RipMetrics : IRipMetrics
-	{
-		private readonly IEnumerable<IRipMetricsSink> _sinks;
-		private readonly Guid _workflowId = Guid.NewGuid();
+    public class RipMetrics : IRipMetrics
+    {
+        private readonly IEnumerable<IRipMetricsSink> _sinks;
+        private readonly Guid _workflowId = Guid.NewGuid();
 
-		public RipMetrics(IEnumerable<IRipMetricsSink> sinks)
-		{
-			_sinks = sinks;
-		}
-
-		public string GetWorkflowId()
+        public RipMetrics(IEnumerable<IRipMetricsSink> sinks)
         {
-			return _workflowId.ToString();
+            _sinks = sinks;
         }
 
-		public void PointInTimeDouble(string name, double value, Dictionary<string, object> customData)
-		{
-			foreach (IRipMetricsSink sink in _sinks)
-			{
-				RipMetric metric = RipMetric.PointInTimeDouble(name, value, _workflowId.ToString());
-				metric.CustomData = customData;
+        public string GetWorkflowId()
+        {
+            return _workflowId.ToString();
+        }
 
-				sink.Log(metric);
-			}
-		}
+        public void PointInTimeDouble(string name, double value, Dictionary<string, object> customData)
+        {
+            foreach (IRipMetricsSink sink in _sinks)
+            {
+                RipMetric metric = RipMetric.PointInTimeDouble(name, value, _workflowId.ToString());
+                metric.CustomData = customData;
 
-		public void PointInTimeLong(string name, long value, Dictionary<string, object> customData)
-		{
-			foreach (IRipMetricsSink sink in _sinks)
-			{
-				RipMetric metric = RipMetric.PointInTimeLong(name, value, _workflowId.ToString());
-				metric.CustomData = customData;
+                sink.Log(metric);
+            }
+        }
 
-				sink.Log(metric);
-			}
-		}
+        public void PointInTimeLong(string name, long value, Dictionary<string, object> customData)
+        {
+            foreach (IRipMetricsSink sink in _sinks)
+            {
+                RipMetric metric = RipMetric.PointInTimeLong(name, value, _workflowId.ToString());
+                metric.CustomData = customData;
 
-		public void TimedOperation(string name, TimeSpan duration, Dictionary<string, object> customData)
-		{
-			foreach (IRipMetricsSink sink in _sinks)
-			{
-				RipMetric metric = RipMetric.TimedOperation(name, duration, _workflowId.ToString());
-				metric.CustomData = customData;
+                sink.Log(metric);
+            }
+        }
 
-				sink.Log(metric);
-			}
-		}
-	}
+        public void TimedOperation(string name, TimeSpan duration, Dictionary<string, object> customData)
+        {
+            foreach (IRipMetricsSink sink in _sinks)
+            {
+                RipMetric metric = RipMetric.TimedOperation(name, duration, _workflowId.ToString());
+                metric.CustomData = customData;
+
+                sink.Log(metric);
+            }
+        }
+    }
 }

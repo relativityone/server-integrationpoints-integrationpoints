@@ -15,258 +15,258 @@ using Relativity.IntegrationPoints.Tests.Common.LDAP.TestData;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 {
-	[TestExecutionCategory.CI, TestLevel.L1]
-	public class SyncWorkerLDAPProviderTests : TestsBase
-	{
-		private readonly ManagementTestData _managementTestData = new ManagementTestData();
+    [TestExecutionCategory.CI, TestLevel.L1]
+    public class SyncWorkerLDAPProviderTests : TestsBase
+    {
+        private readonly ManagementTestData _managementTestData = new ManagementTestData();
 
-		[IdentifiedTest("46988B61-878E-4F9F-95BA-3775E13F492E")]
-		public void SyncWorker_ShouldImportLDAPData()
-		{
-			// Arrange
-			ScheduleImportEntityFromLdapJob(false);
+        [IdentifiedTest("46988B61-878E-4F9F-95BA-3775E13F492E")]
+        public void SyncWorker_ShouldImportLDAPData()
+        {
+            // Arrange
+            ScheduleImportEntityFromLdapJob(false);
 
-			Container.Register(Component.For<IJobImport>().Instance(new FakeJobImport((importJob) => { importJob.Complete(_managementTestData.Data.Count); })).LifestyleSingleton());
+            Container.Register(Component.For<IJobImport>().Instance(new FakeJobImport((importJob) => { importJob.Complete(_managementTestData.Data.Count); })).LifestyleSingleton());
 
-			FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container);
+            FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container);
 
-			// Act
-			sut.Execute();
+            // Act
+            sut.Execute();
 
-			// Assert
-			VerifyJobHistoryStatus(JobStatusChoices.JobHistoryCompletedGuid);
+            // Assert
+            VerifyJobHistoryStatus(JobStatusChoices.JobHistoryCompletedGuid);
 
-			FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
-		}
+            FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
+        }
 
-		[IdentifiedTest("F83AF76A-50C5-4F4E-A097-74C5FB57350A")]
-		public void SyncWorker_ShouldImportLDAPDataAndSubmitLinkManagersJob_WhenLinkManagersWasEnabled()
-		{
-			// Arrange
-			ScheduleImportEntityFromLdapJob(true);
-
-			Container.Register(Component.For<IJobImport>().Instance(new FakeJobImport(ImportEntity))
-				.LifestyleSingleton());
-
-			FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container, true);
-
-			// Act
-			sut.Execute();
-
-			// Assert
-			VerifyJobHistoryStatus(JobStatusChoices.JobHistoryProcessingGuid);
+        [IdentifiedTest("F83AF76A-50C5-4F4E-A097-74C5FB57350A")]
+        public void SyncWorker_ShouldImportLDAPDataAndSubmitLinkManagersJob_WhenLinkManagersWasEnabled()
+        {
+            // Arrange
+            ScheduleImportEntityFromLdapJob(true);
+
+            Container.Register(Component.For<IJobImport>().Instance(new FakeJobImport(ImportEntity))
+                .LifestyleSingleton());
+
+            FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container, true);
+
+            // Act
+            sut.Execute();
+
+            // Assert
+            VerifyJobHistoryStatus(JobStatusChoices.JobHistoryProcessingGuid);
 
-			JobTest linkManagersJob = FakeRelativityInstance.JobsInQueue.Single();
-			linkManagersJob.TaskType.Should().Be(TaskType.SyncEntityManagerWorker.ToString());
-			linkManagersJob.StopState.Should().Be(StopState.None);
-		}
+            JobTest linkManagersJob = FakeRelativityInstance.JobsInQueue.Single();
+            linkManagersJob.TaskType.Should().Be(TaskType.SyncEntityManagerWorker.ToString());
+            linkManagersJob.StopState.Should().Be(StopState.None);
+        }
 
-		[IdentifiedTest("3BDAF07F-FC93-4A74-B60B-A47E404FA85D")]
-		public void SyncWorker_ShouldImportLDAPDataAndReSubmitLinkManagersJob_WhenDrainStoppedOnManagerLinks()
-		{
-			// Arrange
-			const int processedItemsBeforeDrainStopped = 3;
+        [IdentifiedTest("3BDAF07F-FC93-4A74-B60B-A47E404FA85D")]
+        public void SyncWorker_ShouldImportLDAPDataAndReSubmitLinkManagersJob_WhenDrainStoppedOnManagerLinks()
+        {
+            // Arrange
+            const int processedItemsBeforeDrainStopped = 3;
 
-			ScheduleImportEntityFromLdapJob(true);
+            ScheduleImportEntityFromLdapJob(true);
 
-			FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container, false);
+            FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container, false);
 
-			Queue<FakeJobImport> importJobsQueue = new Queue<FakeJobImport>();
-			importJobsQueue.Enqueue(new FakeJobImport(ImportEntity));
-			importJobsQueue.Enqueue(new FakeJobImport(importJob =>
-			{
-				importJob.Complete(processedItemsBeforeDrainStopped);
-				sut.MarkAgentToBeRemoved();
-			}));
+            Queue<FakeJobImport> importJobsQueue = new Queue<FakeJobImport>();
+            importJobsQueue.Enqueue(new FakeJobImport(ImportEntity));
+            importJobsQueue.Enqueue(new FakeJobImport(importJob =>
+            {
+                importJob.Complete(processedItemsBeforeDrainStopped);
+                sut.MarkAgentToBeRemoved();
+            }));
 
-			Container.Register(Component.For<IJobImport>().UsingFactoryMethod(k => importJobsQueue.Dequeue()).LifestyleTransient());
+            Container.Register(Component.For<IJobImport>().UsingFactoryMethod(k => importJobsQueue.Dequeue()).LifestyleTransient());
 
-			// Act
-			sut.Execute();
+            // Act
+            sut.Execute();
 
-			// Assert
-			VerifyJobHistoryStatus(JobStatusChoices.JobHistorySuspendedGuid);
+            // Assert
+            VerifyJobHistoryStatus(JobStatusChoices.JobHistorySuspendedGuid);
 
-			FakeRelativityInstance.JobsInQueue.Single()
-				.DeserializeDetails<EntityManagerJobParameters>()
-				.EntityManagerMap.Should()
-					.HaveCount(_managementTestData.Data.Count - processedItemsBeforeDrainStopped);
-		}
+            FakeRelativityInstance.JobsInQueue.Single()
+                .DeserializeDetails<EntityManagerJobParameters>()
+                .EntityManagerMap.Should()
+                    .HaveCount(_managementTestData.Data.Count - processedItemsBeforeDrainStopped);
+        }
 
-		[IdentifiedTest("431049DF-B069-4570-AA5A-89FE4F329121")]
-		public void SyncWorker_ShouldImportLDAPDataAndLinkManagersJob_WhenAllManagerLinksWereProcessed()
-		{
-			// Arrange
-			ScheduleImportEntityFromLdapJob(true);
+        [IdentifiedTest("431049DF-B069-4570-AA5A-89FE4F329121")]
+        public void SyncWorker_ShouldImportLDAPDataAndLinkManagersJob_WhenAllManagerLinksWereProcessed()
+        {
+            // Arrange
+            ScheduleImportEntityFromLdapJob(true);
 
-			FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container, false);
+            FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container, false);
 
-			Queue<FakeJobImport> importJobsQueue = new Queue<FakeJobImport>();
-			importJobsQueue.Enqueue(new FakeJobImport(ImportEntity));
-			importJobsQueue.Enqueue(new FakeJobImport(importJob =>
-			{
-				importJob.Complete(_managementTestData.Data.Count);
-				sut.MarkAgentToBeRemoved();
-			}));
+            Queue<FakeJobImport> importJobsQueue = new Queue<FakeJobImport>();
+            importJobsQueue.Enqueue(new FakeJobImport(ImportEntity));
+            importJobsQueue.Enqueue(new FakeJobImport(importJob =>
+            {
+                importJob.Complete(_managementTestData.Data.Count);
+                sut.MarkAgentToBeRemoved();
+            }));
 
-			Container.Register(Component.For<IJobImport>().UsingFactoryMethod(k => importJobsQueue.Dequeue()).LifestyleTransient());
+            Container.Register(Component.For<IJobImport>().UsingFactoryMethod(k => importJobsQueue.Dequeue()).LifestyleTransient());
 
-			// Act
-			sut.Execute();
+            // Act
+            sut.Execute();
 
-			// Assert
-			VerifyJobHistoryStatus(JobStatusChoices.JobHistoryCompletedGuid);
+            // Assert
+            VerifyJobHistoryStatus(JobStatusChoices.JobHistoryCompletedGuid);
 
-			FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
-		}
+            FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
+        }
 
-		[IdentifiedTest("81359E78-08A3-4BF2-B0A1-7F8FD62DDFB9")]
-		public void SyncWorker_ShouldImportLDAPDataAndLinkManagers_WhenJobWasDrainStoppedAndResumed()
-		{
-			// Arrange
-			const int processedItemsBeforeDrainStopped = 1;
-			int totalItems = _managementTestData.Data.Count;
-			int processedItemsAfterResume = totalItems - processedItemsBeforeDrainStopped;
+        [IdentifiedTest("81359E78-08A3-4BF2-B0A1-7F8FD62DDFB9")]
+        public void SyncWorker_ShouldImportLDAPDataAndLinkManagers_WhenJobWasDrainStoppedAndResumed()
+        {
+            // Arrange
+            const int processedItemsBeforeDrainStopped = 1;
+            int totalItems = _managementTestData.Data.Count;
+            int processedItemsAfterResume = totalItems - processedItemsBeforeDrainStopped;
 
-			ScheduleImportEntityFromLdapJob(true);
+            ScheduleImportEntityFromLdapJob(true);
 
-			FakeAgent drainStoppedAgent = FakeAgent.Create(FakeRelativityInstance, Container, false);
+            FakeAgent drainStoppedAgent = FakeAgent.Create(FakeRelativityInstance, Container, false);
 
-			Queue<FakeJobImport> importJobsQueue = new Queue<FakeJobImport>();
-			
-			// SyncWorker for Entities
-			importJobsQueue.Enqueue(new FakeJobImport(ImportEntity));
-			
-			// SyncEntityManagerWorker (linking managers)
-			importJobsQueue.Enqueue(new FakeJobImport(importJob =>
-			{
-				importJob.Complete(processedItemsBeforeDrainStopped);
-				drainStoppedAgent.MarkAgentToBeRemoved();
-			}));
+            Queue<FakeJobImport> importJobsQueue = new Queue<FakeJobImport>();
+            
+            // SyncWorker for Entities
+            importJobsQueue.Enqueue(new FakeJobImport(ImportEntity));
+            
+            // SyncEntityManagerWorker (linking managers)
+            importJobsQueue.Enqueue(new FakeJobImport(importJob =>
+            {
+                importJob.Complete(processedItemsBeforeDrainStopped);
+                drainStoppedAgent.MarkAgentToBeRemoved();
+            }));
 
-			// resume SyncEntityManagerWorker (linking managers)
-			FakeJobImport resumedImportJob = new FakeJobImport(importJob => importJob.Complete(processedItemsAfterResume, useDataReader: false));
-			importJobsQueue.Enqueue(resumedImportJob);
+            // resume SyncEntityManagerWorker (linking managers)
+            FakeJobImport resumedImportJob = new FakeJobImport(importJob => importJob.Complete(processedItemsAfterResume, useDataReader: false));
+            importJobsQueue.Enqueue(resumedImportJob);
 
-			Container.Register(Component.For<IJobImport>().UsingFactoryMethod(k => importJobsQueue.Dequeue()).LifestyleTransient());
+            Container.Register(Component.For<IJobImport>().UsingFactoryMethod(k => importJobsQueue.Dequeue()).LifestyleTransient());
 
-			// (1) Act & Assert
-			drainStoppedAgent.Execute();
+            // (1) Act & Assert
+            drainStoppedAgent.Execute();
 
-			VerifyJobHistoryStatus(JobStatusChoices.JobHistorySuspendedGuid);
+            VerifyJobHistoryStatus(JobStatusChoices.JobHistorySuspendedGuid);
 
-			FakeRelativityInstance.JobsInQueue.Single()
-				.DeserializeDetails<EntityManagerJobParameters>()
-				.EntityManagerMap.Should()
-					.HaveCount(processedItemsAfterResume);
+            FakeRelativityInstance.JobsInQueue.Single()
+                .DeserializeDetails<EntityManagerJobParameters>()
+                .EntityManagerMap.Should()
+                    .HaveCount(processedItemsAfterResume);
 
-			// (2) Act & Assert
-			FakeAgent resumedAgent = FakeAgent.Create(FakeRelativityInstance, Container, false);
+            // (2) Act & Assert
+            FakeAgent resumedAgent = FakeAgent.Create(FakeRelativityInstance, Container, false);
 
-			resumedAgent.Execute();
+            resumedAgent.Execute();
 
-			VerifyJobHistoryStatus(JobStatusChoices.JobHistoryCompletedGuid);
+            VerifyJobHistoryStatus(JobStatusChoices.JobHistoryCompletedGuid);
 
-			FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
+            FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
 
-			VerifyFollowingRecordsWereProcessed(resumedImportJob, _managementTestData.EntryIds.Skip(processedItemsBeforeDrainStopped));
-		}
+            VerifyFollowingRecordsWereProcessed(resumedImportJob, _managementTestData.EntryIds.Skip(processedItemsBeforeDrainStopped));
+        }
 
-		[IdentifiedTest("C0D7BD33-F3B3-4B32-8F12-52E08F361875")]
-		public void SyncWorker_ShouldSubmitLinkManagerJob_OnlyForTransferredEntities()
-		{
-			// Arrange
-			JobTest syncWorkerJob = ScheduleImportEntityFromLdapJob(true);
-			const int drainStopAfter = 2;
+        [IdentifiedTest("C0D7BD33-F3B3-4B32-8F12-52E08F361875")]
+        public void SyncWorker_ShouldSubmitLinkManagerJob_OnlyForTransferredEntities()
+        {
+            // Arrange
+            JobTest syncWorkerJob = ScheduleImportEntityFromLdapJob(true);
+            const int drainStopAfter = 2;
 
-			FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container);
+            FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container);
 
-			Container.Register(Component.For<IJobImport>().Instance(new FakeJobImport((importJob) =>
-			{
-				importJob.Complete(drainStopAfter);
-				sut.MarkAgentToBeRemoved();
-			})).LifestyleSingleton());
+            Container.Register(Component.For<IJobImport>().Instance(new FakeJobImport((importJob) =>
+            {
+                importJob.Complete(drainStopAfter);
+                sut.MarkAgentToBeRemoved();
+            })).LifestyleSingleton());
 
-			// Act
-			sut.Execute();
+            // Act
+            sut.Execute();
 
-			// Assert
-			VerifyJobHistoryStatus(JobStatusChoices.JobHistorySuspendedGuid);
+            // Assert
+            VerifyJobHistoryStatus(JobStatusChoices.JobHistorySuspendedGuid);
 
-			FakeRelativityInstance.JobsInQueue.Count.Should().Be(2);
-			syncWorkerJob.StopState.Should().Be(StopState.DrainStopped);
-			syncWorkerJob.DeserializeDetails<string[]>().Should().BeEquivalentTo(_managementTestData.EntryIds.Skip(drainStopAfter));
+            FakeRelativityInstance.JobsInQueue.Count.Should().Be(2);
+            syncWorkerJob.StopState.Should().Be(StopState.DrainStopped);
+            syncWorkerJob.DeserializeDetails<string[]>().Should().BeEquivalentTo(_managementTestData.EntryIds.Skip(drainStopAfter));
 
-			JobTest linkManagersJob = FakeRelativityInstance.JobsInQueue.Last();
-			linkManagersJob.ParentJobId.Should().Be(syncWorkerJob.JobId);
-			linkManagersJob.DeserializeDetails<EntityManagerJobParameters>().EntityManagerMap.Should()
-				.HaveCount(drainStopAfter).And.ContainKeys(_managementTestData.EntryIds.Take(drainStopAfter));
-			linkManagersJob.StopState.Should().Be(StopState.None);
-		}
+            JobTest linkManagersJob = FakeRelativityInstance.JobsInQueue.Last();
+            linkManagersJob.ParentJobId.Should().Be(syncWorkerJob.JobId);
+            linkManagersJob.DeserializeDetails<EntityManagerJobParameters>().EntityManagerMap.Should()
+                .HaveCount(drainStopAfter).And.ContainKeys(_managementTestData.EntryIds.Take(drainStopAfter));
+            linkManagersJob.StopState.Should().Be(StopState.None);
+        }
 
-		private JobTest ScheduleImportEntityFromLdapJob(bool linkEntityManagers)
-		{
-			IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportEntityFromLdapIntegrationPoint(linkEntityManagers);
+        private JobTest ScheduleImportEntityFromLdapJob(bool linkEntityManagers)
+        {
+            IntegrationPointTest integrationPoint = SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportEntityFromLdapIntegrationPoint(linkEntityManagers);
 
-			Helper.SecretStore.Setup(SourceWorkspace, integrationPoint);
+            Helper.SecretStore.Setup(SourceWorkspace, integrationPoint);
 
-			JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleSyncWorkerJob(SourceWorkspace, integrationPoint, _managementTestData.EntryIds);
+            JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleSyncWorkerJob(SourceWorkspace, integrationPoint, _managementTestData.EntryIds);
 
-			JobHistoryTest jobHistory = SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
+            JobHistoryTest jobHistory = SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
 
-			InsertBatchToJobTrackerTable(job, jobHistory);
+            InsertBatchToJobTrackerTable(job, jobHistory);
 
-			return job;
-		}
+            return job;
+        }
 
-		private void InsertBatchToJobTrackerTable(JobTest job, JobHistoryTest jobHistory)
-		{
-			string tableName = string.Format("RIP_JobTracker_{0}_{1}_{2}", job.WorkspaceID, job.RootJobId, jobHistory.BatchInstance);
+        private void InsertBatchToJobTrackerTable(JobTest job, JobHistoryTest jobHistory)
+        {
+            string tableName = string.Format("RIP_JobTracker_{0}_{1}_{2}", job.WorkspaceID, job.RootJobId, jobHistory.BatchInstance);
 
 
-			if (!FakeRelativityInstance.JobTrackerResourceTables.ContainsKey(tableName))
-			{
-				FakeRelativityInstance.JobTrackerResourceTables[tableName] = new List<JobTrackerTest>();
-			}
+            if (!FakeRelativityInstance.JobTrackerResourceTables.ContainsKey(tableName))
+            {
+                FakeRelativityInstance.JobTrackerResourceTables[tableName] = new List<JobTrackerTest>();
+            }
 
-			FakeRelativityInstance.JobTrackerResourceTables[tableName].Add(new JobTrackerTest { JobId = job.JobId });
-		}
+            FakeRelativityInstance.JobTrackerResourceTables[tableName].Add(new JobTrackerTest { JobId = job.JobId });
+        }
 
-		private void VerifyJobHistoryStatus(Guid expectedStatusGuid)
-		{
-			JobHistoryTest jobHistory = SourceWorkspace.JobHistory.Single();
-			jobHistory.JobStatus.Guids.Single().Should().Be(expectedStatusGuid);
-		}
+        private void VerifyJobHistoryStatus(Guid expectedStatusGuid)
+        {
+            JobHistoryTest jobHistory = SourceWorkspace.JobHistory.Single();
+            jobHistory.JobStatus.Guids.Single().Should().Be(expectedStatusGuid);
+        }
 
-		private void VerifyFollowingRecordsWereProcessed(FakeJobImport importJob, IEnumerable<string> expectedProcessedRecords)
-		{
-			List<string> actualProcessedRecords = new List<string>();
+        private void VerifyFollowingRecordsWereProcessed(FakeJobImport importJob, IEnumerable<string> expectedProcessedRecords)
+        {
+            List<string> actualProcessedRecords = new List<string>();
 
-			var reader = importJob.Context.DataReader;
-			while (reader.Read())
-			{
-				actualProcessedRecords.Add(reader.GetString(0));
-			}
+            var reader = importJob.Context.DataReader;
+            while (reader.Read())
+            {
+                actualProcessedRecords.Add(reader.GetString(0));
+            }
 
-			actualProcessedRecords.Should().BeEquivalentTo(expectedProcessedRecords);
-		}
+            actualProcessedRecords.Should().BeEquivalentTo(expectedProcessedRecords);
+        }
 
-		private void ImportEntity(FakeJobImport importJob)
-		{
-			var managementTestData = new ManagementTestData();
+        private void ImportEntity(FakeJobImport importJob)
+        {
+            var managementTestData = new ManagementTestData();
 
-			foreach(var data in managementTestData.Data)
-			{
-				SourceWorkspace.Entities.Add(new EntityTest
-				{
-					UniqueId = data["uid"].ToString(),
-					FirstName = data["givenname"].ToString(),
-					LastName = data["sn"].ToString(),
-					Manager = data["manager"].ToString()
-				});
-			}
+            foreach(var data in managementTestData.Data)
+            {
+                SourceWorkspace.Entities.Add(new EntityTest
+                {
+                    UniqueId = data["uid"].ToString(),
+                    FirstName = data["givenname"].ToString(),
+                    LastName = data["sn"].ToString(),
+                    Manager = data["manager"].ToString()
+                });
+            }
 
-			importJob.Complete(managementTestData.Data.Count);
-		}
-	}
+            importJob.Complete(managementTestData.Data.Count);
+        }
+    }
 }

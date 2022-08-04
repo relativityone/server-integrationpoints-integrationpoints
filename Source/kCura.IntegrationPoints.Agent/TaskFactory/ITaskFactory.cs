@@ -4,8 +4,8 @@ using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Agent.TaskFactory
 {
-	public interface ITaskFactory
-	{
-		ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase);
-	}
+    public interface ITaskFactory
+    {
+        ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase);
+    }
 }

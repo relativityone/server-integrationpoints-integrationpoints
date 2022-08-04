@@ -4,35 +4,35 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Email.Tests.Dto
 {
-	[TestFixture, Category("Unit")]
-	public class ValidEmailAddressTests
-	{
-		[Test]
-		public void This_ShouldBeImplicitlyCastableToString()
-		{
-			// arrange
-			string expectedEmailAddress = "relativity.admin@kcura.com";
-			var validEmailAddress = new ValidEmailAddress(expectedEmailAddress);
+    [TestFixture, Category("Unit")]
+    public class ValidEmailAddressTests
+    {
+        [Test]
+        public void This_ShouldBeImplicitlyCastableToString()
+        {
+            // arrange
+            string expectedEmailAddress = "relativity.admin@kcura.com";
+            var validEmailAddress = new ValidEmailAddress(expectedEmailAddress);
 
-			// act
-			string emailAddress = validEmailAddress;
+            // act
+            string emailAddress = validEmailAddress;
 
-			// assert
-			emailAddress.Should().Be(expectedEmailAddress);
-		}
+            // assert
+            emailAddress.Should().Be(expectedEmailAddress);
+        }
 
-		[Test]
-		public void ToString_ShouldReturnEmailAddress()
-		{
-			// arrange
-			string expectedEmailAddress = "relativity.admin@kcura.com";
-			var validEmailAddress = new ValidEmailAddress(expectedEmailAddress);
+        [Test]
+        public void ToString_ShouldReturnEmailAddress()
+        {
+            // arrange
+            string expectedEmailAddress = "relativity.admin@kcura.com";
+            var validEmailAddress = new ValidEmailAddress(expectedEmailAddress);
 
-			// act
-			string emailAddress = validEmailAddress.ToString();
+            // act
+            string emailAddress = validEmailAddress.ToString();
 
-			// assert
-			emailAddress.Should().Be(expectedEmailAddress);
-		}
-	}
+            // assert
+            emailAddress.Should().Be(expectedEmailAddress);
+        }
+    }
 }

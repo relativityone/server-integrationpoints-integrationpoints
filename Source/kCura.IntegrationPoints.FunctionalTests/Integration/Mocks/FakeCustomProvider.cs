@@ -6,27 +6,27 @@ using System.Data;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
-	public class FakeCustomProvider : IDataSourceProvider
-	{
-		public Func<IDataReader> GetBatchableIdsFunc { get; set; }
+    public class FakeCustomProvider : IDataSourceProvider
+    {
+        public Func<IDataReader> GetBatchableIdsFunc { get; set; }
 
-		public Func<IDataReader> GetDataFunc { get; set; }
+        public Func<IDataReader> GetDataFunc { get; set; }
 
-		public Func<IEnumerable<FieldEntry>> GetFieldsFunc { get; set; }
+        public Func<IEnumerable<FieldEntry>> GetFieldsFunc { get; set; }
 
-		public IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
-		{
-			return GetFieldsFunc() ?? throw new NotImplementedException();
-		}
+        public IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
+        {
+            return GetFieldsFunc() ?? throw new NotImplementedException();
+        }
 
-		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, DataSourceProviderConfiguration providerConfiguration)
-		{
-			return GetDataFunc() ?? throw new NotImplementedException();
-		}
+        public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, DataSourceProviderConfiguration providerConfiguration)
+        {
+            return GetDataFunc() ?? throw new NotImplementedException();
+        }
 
-		public IDataReader GetBatchableIds(FieldEntry identifier, DataSourceProviderConfiguration providerConfiguration)
-		{
-			return GetBatchableIdsFunc() ?? throw new NotImplementedException();
-		}
-	}
+        public IDataReader GetBatchableIds(FieldEntry identifier, DataSourceProviderConfiguration providerConfiguration)
+        {
+            return GetBatchableIdsFunc() ?? throw new NotImplementedException();
+        }
+    }
 }

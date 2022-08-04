@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         private LDAPSettings _fullyFilledSettings;
         private ILDAPServiceFactory _serviceFactory;
         private IAPILog _logger;
-	    private ISerializer _serializer;
+        private ISerializer _serializer;
         private ILDAPService _ldapService;
         private IHelper _helper;
         private List<string> _fieldProperties;
@@ -26,16 +26,16 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
         private ILDAPSettingsReader _ldapSettingsReader;
         private List<string> _entryIds;
         private string _optionsString = "options are mocked anyway";
-	    private LDAPSecuredConfiguration _securedConfiguration;
-	    private string _securedConfigurationString = "secured options too";
+        private LDAPSecuredConfiguration _securedConfiguration;
+        private string _securedConfigurationString = "secured options too";
 
         public override void SetUp()
         {
             _ldapService = Substitute.For<ILDAPService>();
             _serviceFactory = Substitute.For<ILDAPServiceFactory>();
-	        _serializer = Substitute.For<ISerializer>();
+            _serializer = Substitute.For<ISerializer>();
 
-			_serviceFactory.Create(_logger, _serializer, _fullyFilledSettings, _securedConfiguration).ReturnsForAnyArgs(_ldapService);
+            _serviceFactory.Create(_logger, _serializer, _fullyFilledSettings, _securedConfiguration).ReturnsForAnyArgs(_ldapService);
 
             _fullyFilledSettings = new LDAPSettings
             {
@@ -54,13 +54,13 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests
                 SizeLimit = 4231
             };
 
-	        _securedConfiguration = new LDAPSecuredConfiguration()
-	        {
-		        UserName = "username",
-		        Password = "password"
-	        };
+            _securedConfiguration = new LDAPSecuredConfiguration()
+            {
+                UserName = "username",
+                Password = "password"
+            };
 
-			_fieldProperties = new List<string> { "1prop", "2prop", "3prop", "4prop", "5prop", };
+            _fieldProperties = new List<string> { "1prop", "2prop", "3prop", "4prop", "5prop", };
             _fieldEntries = new List<FieldEntry>
             {
                 new FieldEntry(),

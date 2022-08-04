@@ -5,29 +5,29 @@ using kCura.ScheduleQueue.Core.Properties;
 
 namespace kCura.ScheduleQueue.Core.Data.Queries
 {
-	public class UnlockJob : ICommand
-	{
-		private readonly IQueueDBContext _dbContext;
-		
-		private readonly long _jobId;
+    public class UnlockJob : ICommand
+    {
+        private readonly IQueueDBContext _dbContext;
+        
+        private readonly long _jobId;
 
-		public UnlockJob(IQueueDBContext dbContext, long jobId)
-		{
-			_dbContext = dbContext;
-			
-			_jobId = jobId;
-		}
+        public UnlockJob(IQueueDBContext dbContext, long jobId)
+        {
+            _dbContext = dbContext;
+            
+            _jobId = jobId;
+        }
 
-		public void Execute()
-		{
-			string sql = string.Format(Resources.UnlockJob, _dbContext.TableName);
+        public void Execute()
+        {
+            string sql = string.Format(Resources.UnlockJob, _dbContext.TableName);
 
-			List<SqlParameter> sqlParams = new List<SqlParameter>
-			{
-				new SqlParameter("@JobID", _jobId)
-			};
+            List<SqlParameter> sqlParams = new List<SqlParameter>
+            {
+                new SqlParameter("@JobID", _jobId)
+            };
 
-			_dbContext.EddsDBContext.ExecuteNonQuerySQLStatement(sql, sqlParams.ToArray());
-		}
-	}
+            _dbContext.EddsDBContext.ExecuteNonQuerySQLStatement(sql, sqlParams.ToArray());
+        }
+    }
 }

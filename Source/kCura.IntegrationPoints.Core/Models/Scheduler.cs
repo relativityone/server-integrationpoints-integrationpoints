@@ -9,84 +9,84 @@ using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Core.Models
 {
-	public class Scheduler
-	{
-		public Scheduler()
-		{
-		}
+    public class Scheduler
+    {
+        public Scheduler()
+        {
+        }
 
-		public Scheduler(bool enableScheduler, string scheduleRule)
-		{
-			const string defaultDateFormat = "MM/dd/yyyy";
-			EnableScheduler = enableScheduler;
+        public Scheduler(bool enableScheduler, string scheduleRule)
+        {
+            const string defaultDateFormat = "MM/dd/yyyy";
+            EnableScheduler = enableScheduler;
 
-			var rule = ScheduleRuleBase.Deserialize<PeriodicScheduleRule>(scheduleRule);
-			if (rule != null)
-			{
+            var rule = ScheduleRuleBase.Deserialize<PeriodicScheduleRule>(scheduleRule);
+            if (rule != null)
+            {
 
-				if (rule.EndDate.HasValue)
-				{
-					EndDate = rule.EndDate.Value.ToString(defaultDateFormat, CultureInfo.InvariantCulture);
-				}
-				if (rule.StartDate.HasValue)
-				{
-					StartDate = rule.StartDate.Value.ToString(defaultDateFormat, CultureInfo.InvariantCulture);
-				}
-				if (rule.OccuranceInMonth.HasValue)
-				{
-					//we are the more complex month selector
+                if (rule.EndDate.HasValue)
+                {
+                    EndDate = rule.EndDate.Value.ToString(defaultDateFormat, CultureInfo.InvariantCulture);
+                }
+                if (rule.StartDate.HasValue)
+                {
+                    StartDate = rule.StartDate.Value.ToString(defaultDateFormat, CultureInfo.InvariantCulture);
+                }
+                if (rule.OccuranceInMonth.HasValue)
+                {
+                    //we are the more complex month selector
 
-				}
-				switch (rule.Interval)
-				{
-					case ScheduleInterval.Daily:
-						SendOn = string.Empty;
-						break;
-					case ScheduleInterval.Weekly:
-						SendOn =
-							JsonConvert.SerializeObject(new Weekly
-							{
-								SelectedDays = rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday) == DaysOfWeek.Day ? 
-									new List<string> { DaysOfWeek.Day.ToString().ToLowerInvariant() } : 
-									DaysOfWeekConverter.FromDaysOfWeek(rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday)).Select(x => x.ToString()).ToList()
+                }
+                switch (rule.Interval)
+                {
+                    case ScheduleInterval.Daily:
+                        SendOn = string.Empty;
+                        break;
+                    case ScheduleInterval.Weekly:
+                        SendOn =
+                            JsonConvert.SerializeObject(new Weekly
+                            {
+                                SelectedDays = rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday) == DaysOfWeek.Day ? 
+                                    new List<string> { DaysOfWeek.Day.ToString().ToLowerInvariant() } : 
+                                    DaysOfWeekConverter.FromDaysOfWeek(rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday)).Select(x => x.ToString()).ToList()
 
-							}, Formatting.None, JSONHelper.GetDefaultSettings());
-						break;
-					case ScheduleInterval.Monthly:
-						var type = rule.OccuranceInMonth.HasValue ? MonthlyType.Month : MonthlyType.Days;
-						SendOn = JsonConvert.SerializeObject(new Monthly
-						{
-							MonthChoice = type,
-							SelectedDay = rule.DayOfMonth.GetValueOrDefault(1),
-							SelectedDayOfTheMonth = rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday),
-							SelectedType = rule.OccuranceInMonth
-						}, Formatting.None, JSONHelper.GetDefaultSettings());
+                            }, Formatting.None, JSONHelper.GetDefaultSettings());
+                        break;
+                    case ScheduleInterval.Monthly:
+                        var type = rule.OccuranceInMonth.HasValue ? MonthlyType.Month : MonthlyType.Days;
+                        SendOn = JsonConvert.SerializeObject(new Monthly
+                        {
+                            MonthChoice = type,
+                            SelectedDay = rule.DayOfMonth.GetValueOrDefault(1),
+                            SelectedDayOfTheMonth = rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday),
+                            SelectedType = rule.OccuranceInMonth
+                        }, Formatting.None, JSONHelper.GetDefaultSettings());
 
-						break;
-				}
+                        break;
+                }
 
-				Reoccur = rule.Reoccur.GetValueOrDefault(0);
-				SelectedFrequency = rule.Interval.ToString();
-				if (rule.LocalTimeOfDay.HasValue)
-				{
-					var date = DateTime.Today;
-					var ticks = new DateTime(rule.LocalTimeOfDay.Value.Ticks);
-					date = date.AddHours(ticks.Hour);
-					date = date.AddMinutes(ticks.Minute);
-					ScheduledTime = date.Hour + ":" + date.Minute;
-				}
-				TimeZoneId = rule.TimeZoneId ?? TimeZoneInfo.Local.Id;  //PN: We assing server time zone when TimeZoneId is empty for compatibility reasons
-			}
-		}
+                Reoccur = rule.Reoccur.GetValueOrDefault(0);
+                SelectedFrequency = rule.Interval.ToString();
+                if (rule.LocalTimeOfDay.HasValue)
+                {
+                    var date = DateTime.Today;
+                    var ticks = new DateTime(rule.LocalTimeOfDay.Value.Ticks);
+                    date = date.AddHours(ticks.Hour);
+                    date = date.AddMinutes(ticks.Minute);
+                    ScheduledTime = date.Hour + ":" + date.Minute;
+                }
+                TimeZoneId = rule.TimeZoneId ?? TimeZoneInfo.Local.Id;  //PN: We assing server time zone when TimeZoneId is empty for compatibility reasons
+            }
+        }
 
-		public bool EnableScheduler { get; set; }
-		public string EndDate { get; set; }
-		public int TimeZoneOffsetInMinute { get; set; }
-		public string StartDate { get; set; }
-		public string SelectedFrequency { get; set; }
-		public int Reoccur { get; set; }
-		public string ScheduledTime { get; set; }
-		public string SendOn { get; set; }
-		public string TimeZoneId { get; set; }
-	}
+        public bool EnableScheduler { get; set; }
+        public string EndDate { get; set; }
+        public int TimeZoneOffsetInMinute { get; set; }
+        public string StartDate { get; set; }
+        public string SelectedFrequency { get; set; }
+        public int Reoccur { get; set; }
+        public string ScheduledTime { get; set; }
+        public string SendOn { get; set; }
+        public string TimeZoneId { get; set; }
+    }
 }

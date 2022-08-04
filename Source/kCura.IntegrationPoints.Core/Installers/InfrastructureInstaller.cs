@@ -7,21 +7,21 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {
-	public class InfrastructureInstaller : IWindsorInstaller
-	{
-		public void Install(IWindsorContainer container, IConfigurationStore store)
-		{
-			container.Register(Component.For<IAPILog>()
-				.UsingFactoryMethod(CreateLogger)
-				.IsFallback().LifestyleSingleton());
-			container.Register(Component.For<IExternalServiceInstrumentationProvider>()
-				.ImplementedBy<ExternalServiceInstrumentationProviderWithoutJobContext>()
-				.IsFallback().LifestyleSingleton());
-		}
+    public class InfrastructureInstaller : IWindsorInstaller
+    {
+        public void Install(IWindsorContainer container, IConfigurationStore store)
+        {
+            container.Register(Component.For<IAPILog>()
+                .UsingFactoryMethod(CreateLogger)
+                .IsFallback().LifestyleSingleton());
+            container.Register(Component.For<IExternalServiceInstrumentationProvider>()
+                .ImplementedBy<ExternalServiceInstrumentationProviderWithoutJobContext>()
+                .IsFallback().LifestyleSingleton());
+        }
 
-		private IAPILog CreateLogger(IKernel kernel)
-		{
-			return kernel.Resolve<IHelper>().GetLoggerFactory().GetLogger();
-		}
-	}
+        private IAPILog CreateLogger(IKernel kernel)
+        {
+            return kernel.Resolve<IHelper>().GetLoggerFactory().GetLogger();
+        }
+    }
 }

@@ -2,8 +2,8 @@
 
 namespace Relativity.IntegrationPoints.Services.Repositories
 {
-	public interface IIntegrationPointTypeRepository
-	{
-		IList<IntegrationPointTypeModel> GetIntegrationPointTypes();
-	}
+    public interface IIntegrationPointTypeRepository
+    {
+        IList<IntegrationPointTypeModel> GetIntegrationPointTypes();
+    }
 }

@@ -13,82 +13,82 @@ using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestH
 
 namespace kCura.IntegrationPoints.Core.Tests.Installers.Registrations
 {
-	[TestFixture, Category("Unit")]
-	public class ExportSanitizerRegistrationTests
-	{
-		private IWindsorContainer _sut;
+    [TestFixture, Category("Unit")]
+    public class ExportSanitizerRegistrationTests
+    {
+        private IWindsorContainer _sut;
 
-		[SetUp]
-		public void SetUp()
-		{
-			_sut = new WindsorContainer();
-			_sut.AddExportSanitizer();
-		}
+        [SetUp]
+        public void SetUp()
+        {
+            _sut = new WindsorContainer();
+            _sut.AddExportSanitizer();
+        }
 
-		[Test]
-		public void ExportSanitizerComponents_ShouldBeRegisteredWithProperLifestyle()
-		{
-			// assert
-			_sut.Should()
-				.HaveRegisteredSingleComponent<IChoiceTreeToStringConverter>()
-				.Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
-			_sut.Should()
-				.HaveRegisteredSingleComponent<ISanitizationDeserializer>()
-				.Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
-			_sut.Should()
-				.HaveRegisteredMultipleComponents<IExportFieldSanitizer>()
-				.And.AllWithLifestyle(LifestyleType.Transient);
-			_sut.Should()
-				.HaveRegisteredSingleComponent<IExportDataSanitizer>()
-				.Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
-		}
+        [Test]
+        public void ExportSanitizerComponents_ShouldBeRegisteredWithProperLifestyle()
+        {
+            // assert
+            _sut.Should()
+                .HaveRegisteredSingleComponent<IChoiceTreeToStringConverter>()
+                .Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
+            _sut.Should()
+                .HaveRegisteredSingleComponent<ISanitizationDeserializer>()
+                .Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
+            _sut.Should()
+                .HaveRegisteredMultipleComponents<IExportFieldSanitizer>()
+                .And.AllWithLifestyle(LifestyleType.Transient);
+            _sut.Should()
+                .HaveRegisteredSingleComponent<IExportDataSanitizer>()
+                .Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
+        }
 
-		[Test]
-		public void ExportSanitizerComponents_ShouldBeRegisteredWithProperImplementation()
-		{
-			// assert
-			_sut.Should()
-				.HaveRegisteredProperImplementation<IChoiceTreeToStringConverter, ChoiceTreeToStringConverter>();
-			_sut.Should()
-				.HaveRegisteredProperImplementation<ISanitizationDeserializer, SanitizationDeserializer>();
-			_sut.Should()
-				.HaveRegisteredMultipleComponents<IExportFieldSanitizer>()
-				.And.OneOfThemWithImplementation<SingleObjectFieldSanitizer>()
-				.And.OneOfThemWithImplementation<MultipleObjectFieldSanitizer>()
-				.And.OneOfThemWithImplementation<SingleChoiceFieldSanitizer>()
-				.And.OneOfThemWithImplementation<MultipleChoiceFieldSanitizer>()
-				.And.OneOfThemWithImplementation<UserFieldSanitizer>();
-			_sut.Should()
-				.HaveRegisteredProperImplementation<IExportDataSanitizer, ExportDataSanitizer>();
-		}
+        [Test]
+        public void ExportSanitizerComponents_ShouldBeRegisteredWithProperImplementation()
+        {
+            // assert
+            _sut.Should()
+                .HaveRegisteredProperImplementation<IChoiceTreeToStringConverter, ChoiceTreeToStringConverter>();
+            _sut.Should()
+                .HaveRegisteredProperImplementation<ISanitizationDeserializer, SanitizationDeserializer>();
+            _sut.Should()
+                .HaveRegisteredMultipleComponents<IExportFieldSanitizer>()
+                .And.OneOfThemWithImplementation<SingleObjectFieldSanitizer>()
+                .And.OneOfThemWithImplementation<MultipleObjectFieldSanitizer>()
+                .And.OneOfThemWithImplementation<SingleChoiceFieldSanitizer>()
+                .And.OneOfThemWithImplementation<MultipleChoiceFieldSanitizer>()
+                .And.OneOfThemWithImplementation<UserFieldSanitizer>();
+            _sut.Should()
+                .HaveRegisteredProperImplementation<IExportDataSanitizer, ExportDataSanitizer>();
+        }
 
-		[Test]
-		public void ExportSanitizerComponents_ShouldBeResolvedWithoutThrowing()
-		{
-			// arrange
-			RegisterDependencies(_sut);
+        [Test]
+        public void ExportSanitizerComponents_ShouldBeResolvedWithoutThrowing()
+        {
+            // arrange
+            RegisterDependencies(_sut);
 
-			// assert
-			_sut.Should()
-				.ResolveWithoutThrowing<IChoiceTreeToStringConverter>();
-			_sut.Should()
-				.ResolveWithoutThrowing<ISanitizationDeserializer>();
-			_sut.Should()
-				.ResolveWithoutThrowing<IExportDataSanitizer>();
-		}
+            // assert
+            _sut.Should()
+                .ResolveWithoutThrowing<IChoiceTreeToStringConverter>();
+            _sut.Should()
+                .ResolveWithoutThrowing<ISanitizationDeserializer>();
+            _sut.Should()
+                .ResolveWithoutThrowing<IExportDataSanitizer>();
+        }
 
-		private static void RegisterDependencies(IWindsorContainer container)
-		{
-			container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel));
+        private static void RegisterDependencies(IWindsorContainer container)
+        {
+            container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel));
 
-			IRegistration[] dependencies =
-			{
-				CreateDummyObjectRegistration<IChoiceRepository>(),
-				CreateDummyObjectRegistration<ISerializer>(),
-				CreateDummyObjectRegistration<IHelper>()
-			};
+            IRegistration[] dependencies =
+            {
+                CreateDummyObjectRegistration<IChoiceRepository>(),
+                CreateDummyObjectRegistration<ISerializer>(),
+                CreateDummyObjectRegistration<IHelper>()
+            };
 
-			container.Register(dependencies);
-		}
-	}
+            container.Register(dependencies);
+        }
+    }
 }

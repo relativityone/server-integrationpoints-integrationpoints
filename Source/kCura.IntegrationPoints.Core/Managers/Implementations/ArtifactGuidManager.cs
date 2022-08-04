@@ -5,25 +5,25 @@ using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
-	public class ArtifactGuidManager : IArtifactGuidManager
-	{
-		private readonly IRepositoryFactory _repositoryFactory;
+    public class ArtifactGuidManager : IArtifactGuidManager
+    {
+        private readonly IRepositoryFactory _repositoryFactory;
 
-		internal ArtifactGuidManager(IRepositoryFactory repositoryFactory)
-		{
-			_repositoryFactory = repositoryFactory;
-		}
-		
-		public Dictionary<int, Guid> GetGuidsForArtifactIds(int workspaceArtifactId, IEnumerable<int> artifactIds)
-		{
-			IArtifactGuidRepository repository = _repositoryFactory.GetArtifactGuidRepository(workspaceArtifactId);
-			return repository.GetGuidsForArtifactIds(artifactIds);
-		}
+        internal ArtifactGuidManager(IRepositoryFactory repositoryFactory)
+        {
+            _repositoryFactory = repositoryFactory;
+        }
+        
+        public Dictionary<int, Guid> GetGuidsForArtifactIds(int workspaceArtifactId, IEnumerable<int> artifactIds)
+        {
+            IArtifactGuidRepository repository = _repositoryFactory.GetArtifactGuidRepository(workspaceArtifactId);
+            return repository.GetGuidsForArtifactIds(artifactIds);
+        }
 
-		public Dictionary<Guid, int> GetArtifactIdsForGuids(int workspaceArtifactId, IEnumerable<Guid> guids)
-		{
-			IArtifactGuidRepository repository = _repositoryFactory.GetArtifactGuidRepository(workspaceArtifactId);
-			return repository.GetArtifactIdsForGuids(guids);
-		}
-	}
+        public Dictionary<Guid, int> GetArtifactIdsForGuids(int workspaceArtifactId, IEnumerable<Guid> guids)
+        {
+            IArtifactGuidRepository repository = _repositoryFactory.GetArtifactGuidRepository(workspaceArtifactId);
+            return repository.GetArtifactIdsForGuids(guids);
+        }
+    }
 }

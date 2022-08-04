@@ -16,86 +16,86 @@ using Relativity.DataTransfer.MessageService;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {
-	[Description("Update Job History with Relativity Instance information")]
-	[RunOnce(true)]
-	[Guid("72BDF6BC-A222-4D53-B470-F9A521F22121")]
-	public class UpdateJobHistoryDestinationWorkspace : PostInstallEventHandlerBase
-	{
-		private IJobHistoryService _jobHistoryService;
-		private IDestinationParser _destinationParser;
+    [Description("Update Job History with Relativity Instance information")]
+    [RunOnce(true)]
+    [Guid("72BDF6BC-A222-4D53-B470-F9A521F22121")]
+    public class UpdateJobHistoryDestinationWorkspace : PostInstallEventHandlerBase
+    {
+        private IJobHistoryService _jobHistoryService;
+        private IDestinationParser _destinationParser;
 
-		public UpdateJobHistoryDestinationWorkspace()
-		{
-		}
+        public UpdateJobHistoryDestinationWorkspace()
+        {
+        }
 
-		protected override IAPILog CreateLogger()
-		{
-			return Helper.GetLoggerFactory().GetLogger().ForContext<UpdateJobHistoryDestinationWorkspace>();
-		}
+        protected override IAPILog CreateLogger()
+        {
+            return Helper.GetLoggerFactory().GetLogger().ForContext<UpdateJobHistoryDestinationWorkspace>();
+        }
 
-		protected override string SuccessMessage => "Updating Job History/Destination Workspace update completed";
+        protected override string SuccessMessage => "Updating Job History/Destination Workspace update completed";
 
-		protected override string GetFailureMessage(Exception ex)
-		{
-			return "Updating Job History/Destination Workspace failed";
-		}
+        protected override string GetFailureMessage(Exception ex)
+        {
+            return "Updating Job History/Destination Workspace failed";
+        }
 
-		protected override void Run()
-		{
-			ResolveDependencies();
-			ExecuteInternal();
-		}
+        protected override void Run()
+        {
+            ResolveDependencies();
+            ExecuteInternal();
+        }
 
-		internal UpdateJobHistoryDestinationWorkspace(IJobHistoryService jobHistoryService,
-			IDestinationParser destinationParser)
-		{
-			_jobHistoryService = jobHistoryService;
-			_destinationParser = destinationParser;
-		}
+        internal UpdateJobHistoryDestinationWorkspace(IJobHistoryService jobHistoryService,
+            IDestinationParser destinationParser)
+        {
+            _jobHistoryService = jobHistoryService;
+            _destinationParser = destinationParser;
+        }
 
-		internal void ExecuteInternal()
-		{
-			
-			IList<Data.JobHistory> jobHistories = _jobHistoryService.GetAll();
+        internal void ExecuteInternal()
+        {
+            
+            IList<Data.JobHistory> jobHistories = _jobHistoryService.GetAll();
 
-			foreach (Data.JobHistory jobHistory in jobHistories)
-			{
-				string[] elements = _destinationParser.GetElements(jobHistory.DestinationWorkspace);
+            foreach (Data.JobHistory jobHistory in jobHistories)
+            {
+                string[] elements = _destinationParser.GetElements(jobHistory.DestinationWorkspace);
 
-				if (elements.Length == 2)
-				{
-					jobHistory.DestinationWorkspace = FederatedInstanceManager.LocalInstance.Name + " - " + jobHistory.DestinationWorkspace;
-					_jobHistoryService.UpdateRdo(jobHistory);
-				}
-			}
-		}
+                if (elements.Length == 2)
+                {
+                    jobHistory.DestinationWorkspace = FederatedInstanceManager.LocalInstance.Name + " - " + jobHistory.DestinationWorkspace;
+                    _jobHistoryService.UpdateRdo(jobHistory);
+                }
+            }
+        }
 
-		private void ResolveDependencies()
-		{
-			_jobHistoryService = CreateJobHistoryService();
-			_destinationParser = new DestinationParser();
-		}
+        private void ResolveDependencies()
+        {
+            _jobHistoryService = CreateJobHistoryService();
+            _destinationParser = new DestinationParser();
+        }
 
-		private IJobHistoryService CreateJobHistoryService()
-		{
-			var caseContext = ServiceContextFactory.CreateCaseServiceContext(Helper, Helper.GetActiveCaseID());
-			IRepositoryFactory repositoryFactory = new RepositoryFactory(Helper, Helper.GetServicesManager());
-			var federatedInstanceManager = new FederatedInstanceManager();
-			IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
-			IIntegrationPointSerializer serializer = new IntegrationPointSerializer(Logger);
-			IProviderTypeService providerTypeService = new ProviderTypeService(CreateObjectManager(Helper, Helper.GetActiveCaseID()));
-			IMessageService messageService = new MessageService();
-			return new JobHistoryService(
-				caseContext.RelativityObjectManagerService.RelativityObjectManager, 
-				federatedInstanceManager, 
-				workspaceManager, 
-				Logger, 
-				serializer);
-		}
+        private IJobHistoryService CreateJobHistoryService()
+        {
+            var caseContext = ServiceContextFactory.CreateCaseServiceContext(Helper, Helper.GetActiveCaseID());
+            IRepositoryFactory repositoryFactory = new RepositoryFactory(Helper, Helper.GetServicesManager());
+            var federatedInstanceManager = new FederatedInstanceManager();
+            IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
+            IIntegrationPointSerializer serializer = new IntegrationPointSerializer(Logger);
+            IProviderTypeService providerTypeService = new ProviderTypeService(CreateObjectManager(Helper, Helper.GetActiveCaseID()));
+            IMessageService messageService = new MessageService();
+            return new JobHistoryService(
+                caseContext.RelativityObjectManagerService.RelativityObjectManager, 
+                federatedInstanceManager, 
+                workspaceManager, 
+                Logger, 
+                serializer);
+        }
 
-		private IRelativityObjectManager CreateObjectManager(IEHHelper helper, int workspaceId)
-		{
-			return new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(workspaceId);
-		}
-	}
+        private IRelativityObjectManager CreateObjectManager(IEHHelper helper, int workspaceId)
+        {
+            return new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(workspaceId);
+        }
+    }
 }

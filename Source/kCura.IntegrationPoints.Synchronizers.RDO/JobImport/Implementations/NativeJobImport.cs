@@ -8,83 +8,83 @@ using Relativity;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
 {
-	public class NativeJobImport : JobImport<ImportBulkArtifactJob>
-	{
-		private readonly IImportSettingsBaseBuilder<Settings> _builder;
-		private readonly IDataReader _sourceData;
-		private readonly IAPILog _logger;
+    public class NativeJobImport : JobImport<ImportBulkArtifactJob>
+    {
+        private readonly IImportSettingsBaseBuilder<Settings> _builder;
+        private readonly IDataReader _sourceData;
+        private readonly IAPILog _logger;
 
-		public NativeJobImport(ImportSettings importSettings, IImportAPI importApi, IImportSettingsBaseBuilder<Settings> builder, IDataTransferContext context, IHelper helper) :
-			base(importSettings, importApi, helper.GetLoggerFactory().GetLogger().ForContext<NativeJobImport>())
-		{
-			_builder = builder;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<NativeJobImport>();
-			_sourceData = context.DataReader;
-		}
+        public NativeJobImport(ImportSettings importSettings, IImportAPI importApi, IImportSettingsBaseBuilder<Settings> builder, IDataTransferContext context, IHelper helper) :
+            base(importSettings, importApi, helper.GetLoggerFactory().GetLogger().ForContext<NativeJobImport>())
+        {
+            _builder = builder;
+            _logger = helper.GetLoggerFactory().GetLogger().ForContext<NativeJobImport>();
+            _sourceData = context.DataReader;
+        }
 
-		public override void RegisterEventHandlers()
-		{
-			ImportJob.OnMessage += OnMessageEventHandler;
-			ImportJob.OnError += OnErrorEventHandler;
-		}
+        public override void RegisterEventHandlers()
+        {
+            ImportJob.OnMessage += OnMessageEventHandler;
+            ImportJob.OnError += OnErrorEventHandler;
+        }
 
-		private void OnErrorEventHandler(IDictionary row)
-		{
-			OnError?.Invoke(row);
-		}
+        private void OnErrorEventHandler(IDictionary row)
+        {
+            OnError?.Invoke(row);
+        }
 
-		private void OnMessageEventHandler(Status status)
-		{
-			OnMessage?.Invoke(status);
-		}
+        private void OnMessageEventHandler(Status status)
+        {
+            OnMessage?.Invoke(status);
+        }
 
-		public override event OnErrorEventHandler OnError;
-		public override event OnMessageEventHandler OnMessage;
+        public override event OnErrorEventHandler OnError;
+        public override event OnMessageEventHandler OnMessage;
 
-		protected internal override ImportBulkArtifactJob CreateJob()
-		{
-			int artifactTypeId = ImportSettings.ArtifactTypeId;
-			int? federatedInstanceArtifactId = ImportSettings.FederatedInstanceArtifactId;
-			_logger.LogInformation("Creating Import Job. ArtifactTypeId: {artifactTypeId}, FederatedInstanceArtifactId: {federatedInstanceArtifactId}", artifactTypeId, federatedInstanceArtifactId);
+        protected internal override ImportBulkArtifactJob CreateJob()
+        {
+            int artifactTypeId = ImportSettings.ArtifactTypeId;
+            int? federatedInstanceArtifactId = ImportSettings.FederatedInstanceArtifactId;
+            _logger.LogInformation("Creating Import Job. ArtifactTypeId: {artifactTypeId}, FederatedInstanceArtifactId: {federatedInstanceArtifactId}", artifactTypeId, federatedInstanceArtifactId);
 
-			if (artifactTypeId == (int)ArtifactType.Document)
-			{
-				if (federatedInstanceArtifactId == null)
-				{
-					return ImportApi.NewNativeDocumentImportJob();
-				}
-				return ImportApi.NewNativeDocumentImportJob();
-			}
-			return ImportApi.NewObjectImportJob(artifactTypeId);
-		}
+            if (artifactTypeId == (int)ArtifactType.Document)
+            {
+                if (federatedInstanceArtifactId == null)
+                {
+                    return ImportApi.NewNativeDocumentImportJob();
+                }
+                return ImportApi.NewNativeDocumentImportJob();
+            }
+            return ImportApi.NewObjectImportJob(artifactTypeId);
+        }
 
-		public override void Execute()
-		{
-			_logger.LogInformation("Start preparing Native Import API process");
-			PrepareImportJob();
+        public override void Execute()
+        {
+            _logger.LogInformation("Start preparing Native Import API process");
+            PrepareImportJob();
 
-			_logger.LogInformation("Start Native Import API process");
-			ImportJob.Execute();
-			_logger.LogInformation("Native Import API process finished");
+            _logger.LogInformation("Start Native Import API process");
+            ImportJob.Execute();
+            _logger.LogInformation("Native Import API process finished");
 
-			ExportErrorFile();
-		}
+            ExportErrorFile();
+        }
 
-		private void PrepareImportJob()
-		{
-			_builder.PopulateFrom(ImportSettings, ImportJob.Settings);
-			LogJobSettings();
+        private void PrepareImportJob()
+        {
+            _builder.PopulateFrom(ImportSettings, ImportJob.Settings);
+            LogJobSettings();
 
-			ImportJob.SourceData.SourceData = _sourceData;
-		}
+            ImportJob.SourceData.SourceData = _sourceData;
+        }
 
-		private void LogJobSettings()
-		{
-			if (ImportJob.Settings != null)
-			{
-				var settingsForLogging = new ImportSettingsForLogging(ImportSettings);
-				_logger.LogInformation("Import API native import settings: {importApiSettings}", settingsForLogging);
-			}
-		}
-	}
+        private void LogJobSettings()
+        {
+            if (ImportJob.Settings != null)
+            {
+                var settingsForLogging = new ImportSettingsForLogging(ImportSettings);
+                _logger.LogInformation("Import API native import settings: {importApiSettings}", settingsForLogging);
+            }
+        }
+    }
 }

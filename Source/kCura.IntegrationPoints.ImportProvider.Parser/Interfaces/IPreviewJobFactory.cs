@@ -7,8 +7,8 @@ using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Interfaces
 {
-	public interface IPreviewJobFactory
-	{
-		IPreviewJob GetPreviewJob(ImportPreviewSettings settings);
-	}
+    public interface IPreviewJobFactory
+    {
+        IPreviewJob GetPreviewJob(ImportPreviewSettings settings);
+    }
 }

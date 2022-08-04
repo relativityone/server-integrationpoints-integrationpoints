@@ -9,8 +9,8 @@ using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
-	public interface ITaskWithJobHistory : ITask
-	{
-		JobHistory JobHistory { get; }
-	}
+    public interface ITaskWithJobHistory : ITask
+    {
+        JobHistory JobHistory { get; }
+    }
 }

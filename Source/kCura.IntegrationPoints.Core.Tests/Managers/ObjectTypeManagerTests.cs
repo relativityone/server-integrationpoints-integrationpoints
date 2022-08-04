@@ -9,40 +9,40 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
-	[TestFixture, Category("Unit")]
-	public class ObjectTypeManagerTests : TestBase
-	{
-		private IObjectTypeManager _testInstance;
-		private IRepositoryFactory _repositoryFactory;
-		private IObjectTypeRepository _objectTypeRepository;
+    [TestFixture, Category("Unit")]
+    public class ObjectTypeManagerTests : TestBase
+    {
+        private IObjectTypeManager _testInstance;
+        private IRepositoryFactory _repositoryFactory;
+        private IObjectTypeRepository _objectTypeRepository;
 
-		private const int _WORKSPACE_ID = 100532;
+        private const int _WORKSPACE_ID = 100532;
 
-		[SetUp]
-		public override void SetUp()
-		{
-			_repositoryFactory = Substitute.For<IRepositoryFactory>();
-			_objectTypeRepository = Substitute.For<IObjectTypeRepository>();
-			_testInstance = new ObjectTypeManager(_repositoryFactory);
+        [SetUp]
+        public override void SetUp()
+        {
+            _repositoryFactory = Substitute.For<IRepositoryFactory>();
+            _objectTypeRepository = Substitute.For<IObjectTypeRepository>();
+            _testInstance = new ObjectTypeManager(_repositoryFactory);
 
-			_repositoryFactory.GetObjectTypeRepository(_WORKSPACE_ID).Returns(_objectTypeRepository);
-		}
+            _repositoryFactory.GetObjectTypeRepository(_WORKSPACE_ID).Returns(_objectTypeRepository);
+        }
 
-		[Test]
-		public void RetrieveObjectTypeDescriptorArtifactTypeId_GoldFlow()
-		{
-			// ARRANGE
-			Guid objectTypeGuid = Guid.NewGuid();
-			int expectedObjectTypeDescriptorArtifactTypeId = 2342423;
-			_objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(objectTypeGuid)
-				.Returns(expectedObjectTypeDescriptorArtifactTypeId);
+        [Test]
+        public void RetrieveObjectTypeDescriptorArtifactTypeId_GoldFlow()
+        {
+            // ARRANGE
+            Guid objectTypeGuid = Guid.NewGuid();
+            int expectedObjectTypeDescriptorArtifactTypeId = 2342423;
+            _objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(objectTypeGuid)
+                .Returns(expectedObjectTypeDescriptorArtifactTypeId);
 
-			// ACT
-			int result = _testInstance.RetrieveObjectTypeDescriptorArtifactTypeId(_WORKSPACE_ID, objectTypeGuid);
+            // ACT
+            int result = _testInstance.RetrieveObjectTypeDescriptorArtifactTypeId(_WORKSPACE_ID, objectTypeGuid);
 
-			// ASSERT
-			Assert.AreEqual(expectedObjectTypeDescriptorArtifactTypeId, result);
-		}
+            // ASSERT
+            Assert.AreEqual(expectedObjectTypeDescriptorArtifactTypeId, result);
+        }
 
-	}
+    }
 }

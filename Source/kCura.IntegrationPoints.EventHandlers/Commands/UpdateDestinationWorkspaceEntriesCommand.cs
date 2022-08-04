@@ -7,38 +7,38 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands
 {
-	public class UpdateDestinationWorkspaceEntriesCommand : ICommand
-	{
-		private readonly IRelativityObjectManager _relativityObjectManager;
-		private readonly IDestinationWorkspaceRepository _destinationWorkspaceRepository;
+    public class UpdateDestinationWorkspaceEntriesCommand : ICommand
+    {
+        private readonly IRelativityObjectManager _relativityObjectManager;
+        private readonly IDestinationWorkspaceRepository _destinationWorkspaceRepository;
 
-		public UpdateDestinationWorkspaceEntriesCommand(IRelativityObjectManager relativityObjectManager, IDestinationWorkspaceRepository destinationWorkspaceRepository)
-		{
-			_relativityObjectManager = relativityObjectManager;
-			_destinationWorkspaceRepository = destinationWorkspaceRepository;
-		}
+        public UpdateDestinationWorkspaceEntriesCommand(IRelativityObjectManager relativityObjectManager, IDestinationWorkspaceRepository destinationWorkspaceRepository)
+        {
+            _relativityObjectManager = relativityObjectManager;
+            _destinationWorkspaceRepository = destinationWorkspaceRepository;
+        }
 
-		public void Execute()
-		{
-			FederatedInstanceDto thisInstance = FederatedInstanceManager.LocalInstance;
-			IList<DestinationWorkspace> entriesToUpdate = GetDestinationWorkspacesToUpdate();
+        public void Execute()
+        {
+            FederatedInstanceDto thisInstance = FederatedInstanceManager.LocalInstance;
+            IList<DestinationWorkspace> entriesToUpdate = GetDestinationWorkspacesToUpdate();
 
-			foreach (var destinationWorkspace in entriesToUpdate)
-			{
-				destinationWorkspace.DestinationInstanceName = thisInstance.Name;
-				_destinationWorkspaceRepository.Update(destinationWorkspace);
-			}
-		}
+            foreach (var destinationWorkspace in entriesToUpdate)
+            {
+                destinationWorkspace.DestinationInstanceName = thisInstance.Name;
+                _destinationWorkspaceRepository.Update(destinationWorkspace);
+            }
+        }
 
-		private IList<DestinationWorkspace> GetDestinationWorkspacesToUpdate()
-		{
-			string condition = $"NOT '{DestinationWorkspaceFields.DestinationInstanceName}' ISSET";
-			var query = new QueryRequest
-			{
-				Condition = condition
-			};
+        private IList<DestinationWorkspace> GetDestinationWorkspacesToUpdate()
+        {
+            string condition = $"NOT '{DestinationWorkspaceFields.DestinationInstanceName}' ISSET";
+            var query = new QueryRequest
+            {
+                Condition = condition
+            };
 
-			return _relativityObjectManager.Query<DestinationWorkspace>(query);
-		}
-	}
+            return _relativityObjectManager.Query<DestinationWorkspace>(query);
+        }
+    }
 }

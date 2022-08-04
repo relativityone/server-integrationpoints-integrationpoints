@@ -3,17 +3,17 @@ using System.Linq;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 {
-	class OpenLDAPEntityManagerLinksSanitizer : IEntityManagerLinksSanitizer
-	{
-		public string ManagerLinksFieldIdentifier => "cn";
+    class OpenLDAPEntityManagerLinksSanitizer : IEntityManagerLinksSanitizer
+    {
+        public string ManagerLinksFieldIdentifier => "cn";
 
-		public string SanitizeManagerReferenceLink(string managerLink)
-		{
-			string sanitizedManagerLink = managerLink.Split(',')
-				.Single(x => x.StartsWith(ManagerLinksFieldIdentifier))
-				.Split('=').Last();
+        public string SanitizeManagerReferenceLink(string managerLink)
+        {
+            string sanitizedManagerLink = managerLink.Split(',')
+                .Single(x => x.StartsWith(ManagerLinksFieldIdentifier))
+                .Split('=').Last();
 
-			return sanitizedManagerLink;
-		}
-	}
+            return sanitizedManagerLink;
+        }
+    }
 }

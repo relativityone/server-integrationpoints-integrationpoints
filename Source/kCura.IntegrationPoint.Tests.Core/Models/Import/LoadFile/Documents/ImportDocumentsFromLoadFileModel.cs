@@ -1,33 +1,33 @@
 ﻿namespace kCura.IntegrationPoint.Tests.Core.Models.Import.LoadFile.Documents
 {
-	public class ImportDocumentsFromLoadFileModel
-	{
-		public FileEncodingModel FileEncoding { get; set; }
+    public class ImportDocumentsFromLoadFileModel
+    {
+        public FileEncodingModel FileEncoding { get; set; }
 
-		public FieldsMappingModel FieldsMapping { get; set; }
+        public FieldsMappingModel FieldsMapping { get; set; }
 
-		public SettingsModel Settings { get; set; }
+        public SettingsModel Settings { get; set; }
 
-		public LoadFileSettingsModel LoadFileSettings { get; set; }
+        public LoadFileSettingsModel LoadFileSettings { get; set; }
 
-		public IntegrationPointGeneralModel General { get; set; }
+        public IntegrationPointGeneralModel General { get; set; }
 
-		public ImportDocumentsFromLoadFileModel(string name, string transferredObject)
-		{
-			General = new IntegrationPointGeneralModel(name)
-			{
-				Type = IntegrationPointType.Import,
-				SourceProvider = IntegrationPointGeneralModel.INTEGRATION_POINT_PROVIDER_LOADFILE,
-				TransferredObject = transferredObject,
-			};
+        public ImportDocumentsFromLoadFileModel(string name, string transferredObject)
+        {
+            General = new IntegrationPointGeneralModel(name)
+            {
+                Type = IntegrationPointType.Import,
+                SourceProvider = IntegrationPointGeneralModel.INTEGRATION_POINT_PROVIDER_LOADFILE,
+                TransferredObject = transferredObject,
+            };
 
-			LoadFileSettings = new LoadFileSettingsModel();
+            LoadFileSettings = new LoadFileSettingsModel();
 
-			FileEncoding = new FileEncodingModel();
+            FileEncoding = new FileEncodingModel();
 
-			FieldsMapping = new FieldsMappingModel();
+            FieldsMapping = new FieldsMappingModel();
 
-			Settings = new SettingsModel();
-		}
-	}
+            Settings = new SettingsModel();
+        }
+    }
 }

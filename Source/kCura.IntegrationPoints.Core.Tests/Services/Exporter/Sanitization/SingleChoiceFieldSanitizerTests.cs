@@ -11,77 +11,77 @@ using Relativity;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.Exporter.Sanitization
 {
-	[TestFixture, Category("Unit")]
-	internal sealed class SingleChoiceFieldSanitizerTests
-	{
-		private Mock<ISanitizationDeserializer> _sanitizationHelper;
+    [TestFixture, Category("Unit")]
+    internal sealed class SingleChoiceFieldSanitizerTests
+    {
+        private Mock<ISanitizationDeserializer> _sanitizationHelper;
 
-		[SetUp]
-		public void SetUp()
-		{
-			_sanitizationHelper = new Mock<ISanitizationDeserializer>();
-			var jsonSerializer = new JSONSerializer();
-			_sanitizationHelper
-				.Setup(x => x.DeserializeAndValidateExportFieldValue<ChoiceDto>(It.IsAny<object>()))
-				.Returns((object serializedObject) =>
-					jsonSerializer.Deserialize<ChoiceDto>(serializedObject.ToString()));
-		}
+        [SetUp]
+        public void SetUp()
+        {
+            _sanitizationHelper = new Mock<ISanitizationDeserializer>();
+            var jsonSerializer = new JSONSerializer();
+            _sanitizationHelper
+                .Setup(x => x.DeserializeAndValidateExportFieldValue<ChoiceDto>(It.IsAny<object>()))
+                .Returns((object serializedObject) =>
+                    jsonSerializer.Deserialize<ChoiceDto>(serializedObject.ToString()));
+        }
 
-		[Test]
-		public void ItShouldSupportSingleChoice()
-		{
-			// Arrange
-			var sut = new SingleChoiceFieldSanitizer(_sanitizationHelper.Object);
+        [Test]
+        public void ItShouldSupportSingleChoice()
+        {
+            // Arrange
+            var sut = new SingleChoiceFieldSanitizer(_sanitizationHelper.Object);
 
-			// Act
-			FieldTypeHelper.FieldType supportedType = sut.SupportedType;
+            // Act
+            FieldTypeHelper.FieldType supportedType = sut.SupportedType;
 
-			// Assert
-			supportedType.Should().Be(FieldTypeHelper.FieldType.Code);
-		}
+            // Assert
+            supportedType.Should().Be(FieldTypeHelper.FieldType.Code);
+        }
 
-		[Test]
-		public async Task ItShouldReturnNullValueUnchanged()
-		{
-			// Arrange
-			var sut = new SingleChoiceFieldSanitizer(_sanitizationHelper.Object);
+        [Test]
+        public async Task ItShouldReturnNullValueUnchanged()
+        {
+            // Arrange
+            var sut = new SingleChoiceFieldSanitizer(_sanitizationHelper.Object);
 
-			// Act
-			object result = await sut.SanitizeAsync(0, "foo", "bar", "bang", initialValue: null).ConfigureAwait(false);
+            // Act
+            object result = await sut.SanitizeAsync(0, "foo", "bar", "bang", initialValue: null).ConfigureAwait(false);
 
-			// Assert
-			result.Should().BeNull();
-		}
+            // Assert
+            result.Should().BeNull();
+        }
 
-		[Test]
-		public void ItShouldThrowInvalidExportFieldValueExceptionWhenChoiceNameIsNull()
-		{
-			// Arrange
-			var sut = new SingleChoiceFieldSanitizer(_sanitizationHelper.Object);
+        [Test]
+        public void ItShouldThrowInvalidExportFieldValueExceptionWhenChoiceNameIsNull()
+        {
+            // Arrange
+            var sut = new SingleChoiceFieldSanitizer(_sanitizationHelper.Object);
 
-			// Act
-			object initialValue = SanitizationTestUtils.DeserializeJson("{ \"ArtifactID\": 10123, \"Foo\": \"Bar\" }");
-			Func<Task> action = () => sut.SanitizeAsync(0, "foo", "bar", "bang", initialValue);
+            // Act
+            object initialValue = SanitizationTestUtils.DeserializeJson("{ \"ArtifactID\": 10123, \"Foo\": \"Bar\" }");
+            Func<Task> action = () => sut.SanitizeAsync(0, "foo", "bar", "bang", initialValue);
 
-			// Assert
-			action.ShouldThrow<InvalidExportFieldValueException>()
-				.Which.Message.Should()
-					.NotContain(typeof(ChoiceDto).Name);
-		}
+            // Assert
+            action.ShouldThrow<InvalidExportFieldValueException>()
+                .Which.Message.Should()
+                    .NotContain(typeof(ChoiceDto).Name);
+        }
 
-		[Test]
-		public async Task ItShouldReturnChoiceName()
-		{
-			// Arrange
-			var sut = new SingleChoiceFieldSanitizer(_sanitizationHelper.Object);
-			const string expectedName = "Noice Choice";
+        [Test]
+        public async Task ItShouldReturnChoiceName()
+        {
+            // Arrange
+            var sut = new SingleChoiceFieldSanitizer(_sanitizationHelper.Object);
+            const string expectedName = "Noice Choice";
 
-			// Act
-			object initialValue = SanitizationTestUtils.ToJToken<JObject>(new ChoiceDto(artifactID: 0, name: expectedName));
-			object result = await sut.SanitizeAsync(0, "foo", "bar", "bang", initialValue).ConfigureAwait(false);
+            // Act
+            object initialValue = SanitizationTestUtils.ToJToken<JObject>(new ChoiceDto(artifactID: 0, name: expectedName));
+            object result = await sut.SanitizeAsync(0, "foo", "bar", "bang", initialValue).ConfigureAwait(false);
 
-			// Assert
-			result.Should().Be(expectedName);
-		}
-	}
+            // Assert
+            result.Should().Be(expectedName);
+        }
+    }
 }

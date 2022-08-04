@@ -11,7 +11,7 @@ using Moq;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi
 {
-	public class FakeJobImport : IJobImport
+    public class FakeJobImport : IJobImport
     {
         private readonly Action<FakeJobImport> _executeAction;
 
@@ -35,28 +35,28 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
 
         internal void Complete(long maxTransferredItems = Int64.MaxValue, long numberOfItemLevelErrors = 0, bool useDataReader = true)
         {
-	        ConstructorInfo[] constructorInfos = typeof(JobReport).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
-	        JobReport jobReport = (JobReport)constructorInfos.First().Invoke(new object[0]);
+            ConstructorInfo[] constructorInfos = typeof(JobReport).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
+            JobReport jobReport = (JobReport)constructorInfos.First().Invoke(new object[0]);
 
-	        
-	        long i = 0;
+            
+            long i = 0;
 
             for (; i < numberOfItemLevelErrors && i < maxTransferredItems; i++)
-	        {
-		        OnProgress?.Invoke(i);
-		        OnError?.Invoke(Mock.Of<IDictionary>());
-		        jobReport.ErrorRows.Add(new JobReport.RowError(i, "", i.ToString()));
-		        
-		        if (useDataReader && !Context.DataReader.Read())
-		        {
-			        break;
-		        }
+            {
+                OnProgress?.Invoke(i);
+                OnError?.Invoke(Mock.Of<IDictionary>());
+                jobReport.ErrorRows.Add(new JobReport.RowError(i, "", i.ToString()));
+                
+                if (useDataReader && !Context.DataReader.Read())
+                {
+                    break;
+                }
             }
 
-	        while ((!useDataReader || Context.DataReader.Read()) && i < maxTransferredItems)
-	        {
-		        OnProgress?.Invoke(i++);
-	        }
+            while ((!useDataReader || Context.DataReader.Read()) && i < maxTransferredItems)
+            {
+                OnProgress?.Invoke(i++);
+            }
 
             MethodInfo totalRecordsSetter = typeof(JobReport).Properties()
                 .First(x => x.Name == nameof(JobReport.TotalRows))

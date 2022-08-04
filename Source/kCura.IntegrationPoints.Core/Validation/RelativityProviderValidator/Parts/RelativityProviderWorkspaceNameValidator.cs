@@ -5,39 +5,39 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts
 {
-	public class RelativityProviderWorkspaceNameValidator : BasePartsValidator<int>
-	{
-		private const string _WORKSPACE_INVALID_NAME_CHAR = ";";
+    public class RelativityProviderWorkspaceNameValidator : BasePartsValidator<int>
+    {
+        private const string _WORKSPACE_INVALID_NAME_CHAR = ";";
 
-		private readonly IWorkspaceManager _workspaceManager;
+        private readonly IWorkspaceManager _workspaceManager;
 
-		private readonly string _prefix;
+        private readonly string _prefix;
 
-		public RelativityProviderWorkspaceNameValidator(IWorkspaceManager workspaceManager, string prefix)
-		{
-			_workspaceManager = workspaceManager;
-			_prefix = prefix;
-		}
+        public RelativityProviderWorkspaceNameValidator(IWorkspaceManager workspaceManager, string prefix)
+        {
+            _workspaceManager = workspaceManager;
+            _prefix = prefix;
+        }
 
-		public override ValidationResult Validate(int value)
-		{
-			var result = new ValidationResult();
+        public override ValidationResult Validate(int value)
+        {
+            var result = new ValidationResult();
 
-			try
-			{
-				WorkspaceDTO workspaceDto = _workspaceManager.RetrieveWorkspace(value, ExecutionIdentity.System);
+            try
+            {
+                WorkspaceDTO workspaceDto = _workspaceManager.RetrieveWorkspace(value, ExecutionIdentity.System);
 
-				if (workspaceDto.Name.Contains(_WORKSPACE_INVALID_NAME_CHAR))
-				{
-					result.Add($"{_prefix} {RelativityProviderValidationMessages.WORKSPACE_INVALID_NAME}");
-				}
-			}
-			catch
-			{
-				result.Add($"{_prefix} {IntegrationPointProviderValidationMessages.WORKSPACE_NOT_EXIST}");
-			}
+                if (workspaceDto.Name.Contains(_WORKSPACE_INVALID_NAME_CHAR))
+                {
+                    result.Add($"{_prefix} {RelativityProviderValidationMessages.WORKSPACE_INVALID_NAME}");
+                }
+            }
+            catch
+            {
+                result.Add($"{_prefix} {IntegrationPointProviderValidationMessages.WORKSPACE_NOT_EXIST}");
+            }
 
-			return result;
-		}
-	}
+            return result;
+        }
+    }
 }

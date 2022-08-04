@@ -1,7 +1,7 @@
 ﻿namespace kCura.IntegrationPoints.Common.Monitoring.Instrumentation
 {
-	public interface IExternalServiceInstrumentation
-	{
-		IExternalServiceInstrumentationStarted Started();
-	}
+    public interface IExternalServiceInstrumentation
+    {
+        IExternalServiceInstrumentationStarted Started();
+    }
 }

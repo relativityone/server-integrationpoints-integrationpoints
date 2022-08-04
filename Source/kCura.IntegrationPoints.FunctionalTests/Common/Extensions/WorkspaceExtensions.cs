@@ -10,17 +10,17 @@ using System.Threading.Tasks;
 
 namespace Relativity.IntegrationPoints.Tests.Common.Extensions
 {
-	public static class WorkspaceExtensions
-	{
-		public static void InstallApplication(this Workspace workspace, string applicationName)
-		{
-			ILibraryApplicationService applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
-			applicationService.InstallToWorkspace(workspace.ArtifactID, applicationService.Get(applicationName).ArtifactID);
-		}
+    public static class WorkspaceExtensions
+    {
+        public static void InstallApplication(this Workspace workspace, string applicationName)
+        {
+            ILibraryApplicationService applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
+            applicationService.InstallToWorkspace(workspace.ArtifactID, applicationService.Get(applicationName).ArtifactID);
+        }
 
-		public static void InstallLegalHold(this Workspace workspace)
-		{
-			InstallApplication(workspace, Const.Application.LEGAL_HOLD_APPLICATION_NAME);
-		}
-	}
+        public static void InstallLegalHold(this Workspace workspace)
+        {
+            InstallApplication(workspace, Const.Application.LEGAL_HOLD_APPLICATION_NAME);
+        }
+    }
 }

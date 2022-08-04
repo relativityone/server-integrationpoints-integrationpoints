@@ -12,22 +12,22 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Factories
 {
-	public interface IExportServiceObserversFactory
-	{
-		List<IBatchStatus> InitializeExportServiceJobObservers(
-			Job job,
-			ITagsCreator tagsCreator,
-			ITagSavedSearchManager tagSavedSearchManager,
-			ISynchronizerFactory synchronizerFactory,
-			ISerializer serializer,
-			IJobHistoryErrorManager jobHistoryErrorManager,
-			IJobStopManager jobStopManager,
-			ISourceWorkspaceTagCreator sourceWorkspaceTagCreator,
-			FieldMap[] mappedFields,
-			SourceConfiguration configuration,
-			JobHistoryErrorDTO.UpdateStatusType updateStatusType,
-			JobHistory jobHistory,
-			string uniqueJobID,
-			string userImportApiSettings);
-	}
+    public interface IExportServiceObserversFactory
+    {
+        List<IBatchStatus> InitializeExportServiceJobObservers(
+            Job job,
+            ITagsCreator tagsCreator,
+            ITagSavedSearchManager tagSavedSearchManager,
+            ISynchronizerFactory synchronizerFactory,
+            ISerializer serializer,
+            IJobHistoryErrorManager jobHistoryErrorManager,
+            IJobStopManager jobStopManager,
+            ISourceWorkspaceTagCreator sourceWorkspaceTagCreator,
+            FieldMap[] mappedFields,
+            SourceConfiguration configuration,
+            JobHistoryErrorDTO.UpdateStatusType updateStatusType,
+            JobHistory jobHistory,
+            string uniqueJobID,
+            string userImportApiSettings);
+    }
 }

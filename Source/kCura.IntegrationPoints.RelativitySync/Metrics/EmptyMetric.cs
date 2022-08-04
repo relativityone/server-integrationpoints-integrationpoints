@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.RelativitySync.Metrics
 {
-	class EmptyMetric : IMetric
-	{
-		public Task SendAsync()
-		{
-			return Task.CompletedTask;
-		}
-	}
+    class EmptyMetric : IMetric
+    {
+        public Task SendAsync()
+        {
+            return Task.CompletedTask;
+        }
+    }
 }

@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations
         {
             // IAPI always reads the reader once to get the column names
             // it also ignores the first Read invocation result, so we need to read the inner reader at least once
-	        if (_firstReadDone && _stopManager?.ShouldDrainStop == true)
+            if (_firstReadDone && _stopManager?.ShouldDrainStop == true)
             {
                 return false;
             }

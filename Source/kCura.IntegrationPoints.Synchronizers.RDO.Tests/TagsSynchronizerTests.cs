@@ -12,89 +12,89 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
-	[TestFixture, Category("Unit")]
-	public class TagsSynchronizerTests : TestBase
-	{
-		private IEnumerable<FieldMap> _fieldMap;
-		private IEnumerable<IDictionary<FieldEntry, object>> _records;
-		private IDataTransferContext _data;
-		private IDataSynchronizer _dataSynchronizer;
-		private IHelper _helper;
+    [TestFixture, Category("Unit")]
+    public class TagsSynchronizerTests : TestBase
+    {
+        private IEnumerable<FieldMap> _fieldMap;
+        private IEnumerable<IDictionary<FieldEntry, object>> _records;
+        private IDataTransferContext _data;
+        private IDataSynchronizer _dataSynchronizer;
+        private IHelper _helper;
 
-		private TagsSynchronizer _instance;
+        private TagsSynchronizer _instance;
 
-		public override void SetUp()
-		{
-			_fieldMap = Substitute.For<IEnumerable<FieldMap>>();
-			_records = Substitute.For<IEnumerable<IDictionary<FieldEntry, object>>>();
-			_data = Substitute.For<IDataTransferContext>();
-			_dataSynchronizer = Substitute.For<IDataSynchronizer>();
-			_helper = Substitute.For<IHelper>();
+        public override void SetUp()
+        {
+            _fieldMap = Substitute.For<IEnumerable<FieldMap>>();
+            _records = Substitute.For<IEnumerable<IDictionary<FieldEntry, object>>>();
+            _data = Substitute.For<IDataTransferContext>();
+            _dataSynchronizer = Substitute.For<IDataSynchronizer>();
+            _helper = Substitute.For<IHelper>();
 
-			_instance = new TagsSynchronizer(_helper,_dataSynchronizer);
-		}
+            _instance = new TagsSynchronizer(_helper,_dataSynchronizer);
+        }
 
-		[Test]
-		[Combinatorial]
-		public void ItShouldUpdateImportSettingsForSyncData([Values(true, false)] bool imageImport, [Values(true, false)] bool productionImport,
-			[Values(true, false)] bool useDynamicFolderPath)
-		{
-			ImportSettings importSettings = new ImportSettings
-			{
-				ImageImport = imageImport,
-				ProductionImport = productionImport,
-				UseDynamicFolderPath = useDynamicFolderPath
-			};
+        [Test]
+        [Combinatorial]
+        public void ItShouldUpdateImportSettingsForSyncData([Values(true, false)] bool imageImport, [Values(true, false)] bool productionImport,
+            [Values(true, false)] bool useDynamicFolderPath)
+        {
+            ImportSettings importSettings = new ImportSettings
+            {
+                ImageImport = imageImport,
+                ProductionImport = productionImport,
+                UseDynamicFolderPath = useDynamicFolderPath
+            };
 
-			// ACT
-			_instance.SyncData(_data, _fieldMap, JsonConvert.SerializeObject(importSettings), null);
+            // ACT
+            _instance.SyncData(_data, _fieldMap, JsonConvert.SerializeObject(importSettings), null);
 
-			// ASSERT
-			_dataSynchronizer.Received(1).SyncData(_data, _fieldMap, Arg.Is<string>(x => AssertOptions(x)), null);
-		}
+            // ASSERT
+            _dataSynchronizer.Received(1).SyncData(_data, _fieldMap, Arg.Is<string>(x => AssertOptions(x)), null);
+        }
 
-		[Test]
-		[Combinatorial]
-		public void ItShouldUpdateImportSettingsForSyncData_Records([Values(true, false)] bool imageImport, [Values(true, false)] bool productionImport,
-			[Values(true, false)] bool useDynamicFolderPath)
-		{
-			ImportSettings importSettings = new ImportSettings
-			{
-				ImageImport = imageImport,
-				ProductionImport = productionImport,
-				UseDynamicFolderPath = useDynamicFolderPath
-			};
+        [Test]
+        [Combinatorial]
+        public void ItShouldUpdateImportSettingsForSyncData_Records([Values(true, false)] bool imageImport, [Values(true, false)] bool productionImport,
+            [Values(true, false)] bool useDynamicFolderPath)
+        {
+            ImportSettings importSettings = new ImportSettings
+            {
+                ImageImport = imageImport,
+                ProductionImport = productionImport,
+                UseDynamicFolderPath = useDynamicFolderPath
+            };
 
-			// ACT
-			_instance.SyncData(_records, _fieldMap, JsonConvert.SerializeObject(importSettings), (IJobStopManager)null);
+            // ACT
+            _instance.SyncData(_records, _fieldMap, JsonConvert.SerializeObject(importSettings), (IJobStopManager)null);
 
-			// ASSERT
-			_dataSynchronizer.Received(1).SyncData(_records, _fieldMap, Arg.Is<string>(x => AssertOptions(x)), null);
-		}
+            // ASSERT
+            _dataSynchronizer.Received(1).SyncData(_records, _fieldMap, Arg.Is<string>(x => AssertOptions(x)), null);
+        }
 
-		[Test]
-		[Combinatorial]
-		public void ItShouldUpdateImportSettingsForGetFields([Values(true, false)] bool imageImport, [Values(true, false)] bool productionImport,
-			[Values(true, false)] bool useDynamicFolderPath)
-		{
-			ImportSettings importSettings = new ImportSettings
-			{
-				ImageImport = imageImport,
-				ProductionImport = productionImport,
-				UseDynamicFolderPath = useDynamicFolderPath
-			};
+        [Test]
+        [Combinatorial]
+        public void ItShouldUpdateImportSettingsForGetFields([Values(true, false)] bool imageImport, [Values(true, false)] bool productionImport,
+            [Values(true, false)] bool useDynamicFolderPath)
+        {
+            ImportSettings importSettings = new ImportSettings
+            {
+                ImageImport = imageImport,
+                ProductionImport = productionImport,
+                UseDynamicFolderPath = useDynamicFolderPath
+            };
 
-			// ACT
-			_instance.GetFields(new DataSourceProviderConfiguration(JsonConvert.SerializeObject(importSettings)));
+            // ACT
+            _instance.GetFields(new DataSourceProviderConfiguration(JsonConvert.SerializeObject(importSettings)));
 
-			// ASSERT
-			_dataSynchronizer.Received(1).GetFields(Arg.Is<DataSourceProviderConfiguration>(x => AssertOptions(x.Configuration)));
-		}
+            // ASSERT
+            _dataSynchronizer.Received(1).GetFields(Arg.Is<DataSourceProviderConfiguration>(x => AssertOptions(x.Configuration)));
+        }
 
-		private bool AssertOptions(string s)
-		{
-			ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(s);
-			return !importSettings.ImageImport && !importSettings.ProductionImport && !importSettings.UseDynamicFolderPath;
-		}
-	}
+        private bool AssertOptions(string s)
+        {
+            ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(s);
+            return !importSettings.ImageImport && !importSettings.ProductionImport && !importSettings.UseDynamicFolderPath;
+        }
+    }
 }

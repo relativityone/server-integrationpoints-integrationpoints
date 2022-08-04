@@ -6,31 +6,31 @@ using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations
 {
-	public class CorrespondingJobDelete : ICorrespondingJobDelete
-	{
-		private readonly IJobService _jobService;
+    public class CorrespondingJobDelete : ICorrespondingJobDelete
+    {
+        private readonly IJobService _jobService;
 
-		public CorrespondingJobDelete(IJobService jobService)
-		{
-			_jobService = jobService;
-		}
+        public CorrespondingJobDelete(IJobService jobService)
+        {
+            _jobService = jobService;
+        }
 
-		public void DeleteCorrespondingJob(int workspaceId, int integrationPointArtifactId)
-		{
-			List<string> taskTypes = TaskTypeHelper
-				.GetManagerTypes()
-				.Select(taskType => taskType.ToString())
-				.ToList();
+        public void DeleteCorrespondingJob(int workspaceId, int integrationPointArtifactId)
+        {
+            List<string> taskTypes = TaskTypeHelper
+                .GetManagerTypes()
+                .Select(taskType => taskType.ToString())
+                .ToList();
 
-			IEnumerable<Job> jobs = _jobService.GetScheduledJobs(
-				workspaceId,
-				integrationPointArtifactId,
-				taskTypes);
+            IEnumerable<Job> jobs = _jobService.GetScheduledJobs(
+                workspaceId,
+                integrationPointArtifactId,
+                taskTypes);
 
-			foreach (Job job in jobs)
-			{
-				_jobService.DeleteJob(job.JobId);
-			}
-		}
-	}
+            foreach (Job job in jobs)
+            {
+                _jobService.DeleteJob(job.JobId);
+            }
+        }
+    }
 }

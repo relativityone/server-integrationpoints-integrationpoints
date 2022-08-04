@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Data
 {
-	public interface IWorkspaceDBContext : IRipDBContext
-	{
-	}
+    public interface IWorkspaceDBContext : IRipDBContext
+    {
+    }
 }

@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {
-	[TestFixture, Category("Unit")]
+    [TestFixture, Category("Unit")]
     public class ProcessingSourceLocationServiceTests : TestBase
     {
         private const int _WORKSPACE_ID = 1;

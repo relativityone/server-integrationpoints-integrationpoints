@@ -1,6 +1,6 @@
 ﻿namespace Relativity.IntegrationPoints.Services
 {
-	public class IntegrationPointsModule : IIntegrationPointsModule
-	{
-	}
+    public class IntegrationPointsModule : IIntegrationPointsModule
+    {
+    }
 }

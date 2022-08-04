@@ -9,7 +9,6 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <OutputPath>bin\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <PostBuildEvent />

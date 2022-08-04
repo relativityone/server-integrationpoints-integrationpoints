@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Data.Migrations
 {
-	public interface IMigration
-	{
-		void Execute();
-	}
+    public interface IMigration
+    {
+        void Execute();
+    }
 }
