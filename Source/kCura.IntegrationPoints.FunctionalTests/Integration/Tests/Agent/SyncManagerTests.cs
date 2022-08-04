@@ -32,56 +32,56 @@ using static Relativity.IntegrationPoints.Tests.Integration.Const;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 {
-	[TestExecutionCategory.CI, TestLevel.L1]
-	public class SyncManagerTests : TestsBase
-	{
-		[IdentifiedTest("F0F133E0-0101-4E21-93C5-A6365FD720B3")]
-		public void Execute_ShouldAbortGetUnbatchedIDs_WhenDrainStopTimeoutExceeded()
-		{
-			// Arrange
-			Guid customProviderId = Guid.NewGuid();
+    [TestExecutionCategory.CI, TestLevel.L1]
+    public class SyncManagerTests : TestsBase
+    {
+        [IdentifiedTest("F0F133E0-0101-4E21-93C5-A6365FD720B3")]
+        public void Execute_ShouldAbortGetUnbatchedIDs_WhenDrainStopTimeoutExceeded()
+        {
+            // Arrange
+            Guid customProviderId = Guid.NewGuid();
 
-			SourceProviderTest provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateCustomProvider(nameof(FakeCustomProvider), customProviderId);
+            SourceProviderTest provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateCustomProvider(nameof(FakeCustomProvider), customProviderId);
 
-			FakeCustomProvider customProviderImpl = new FakeCustomProvider()
-			{
-				GetBatchableIdsFunc = () =>
-				{
-					Thread.Sleep(TimeSpan.FromSeconds(10));
-					return null;
-				}
-			};
+            FakeCustomProvider customProviderImpl = new FakeCustomProvider()
+            {
+                GetBatchableIdsFunc = () =>
+                {
+                    Thread.Sleep(TimeSpan.FromSeconds(10));
+                    return null;
+                }
+            };
 
-			Context.InstanceSettings.DrainStopTimeout = TimeSpan.FromSeconds(1);
+            Context.InstanceSettings.DrainStopTimeout = TimeSpan.FromSeconds(1);
 
-			JobTest job = PrepareJob(provider, out JobHistoryTest jobHistory);
+            JobTest job = PrepareJob(provider, out JobHistoryTest jobHistory);
 
-			SyncManager sut = PrepareSutWithCustomProvider(customProviderImpl, customProviderId);
+            SyncManager sut = PrepareSutWithCustomProvider(customProviderImpl, customProviderId);
 
-			// Act
-			RunActionWithDrainStop(() => sut.Execute(job.AsJob()));
+            // Act
+            RunActionWithDrainStop(() => sut.Execute(job.AsJob()));
 
-			// Assert
-			VerifyJobHistoryStatus(jobHistory, JobStatusChoices.JobHistorySuspendedGuid);
-		}
+            // Assert
+            VerifyJobHistoryStatus(jobHistory, JobStatusChoices.JobHistorySuspendedGuid);
+        }
 
-		[IdentifiedTest("73B8F442-F0DE-437A-BF8A-493FF0FCC5AB")]
-		public void Execute_ShouldComplete_WhenGetBatchableIdsFitsInTime()
-		{
-			// Arrange
-			const int numberOfRecords = 1500;
-			string xmlPath = PrepareRecords(numberOfRecords);
+        [IdentifiedTest("73B8F442-F0DE-437A-BF8A-493FF0FCC5AB")]
+        public void Execute_ShouldComplete_WhenGetBatchableIdsFitsInTime()
+        {
+            // Arrange
+            const int numberOfRecords = 1500;
+            string xmlPath = PrepareRecords(numberOfRecords);
 
-			SourceProviderTest provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
+            SourceProviderTest provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
 
-			JobTest job = PrepareJob(provider, out JobHistoryTest jobHistory, xmlPath);
-			SyncManager sut = PrepareSut<SyncManager>();
+            JobTest job = PrepareJob(provider, out JobHistoryTest jobHistory, xmlPath);
+            SyncManager sut = PrepareSut<SyncManager>();
 
             int[] batches = SplitNumberIntoBatches(numberOfRecords, sut.BatchSize);
             Context.InstanceSettings.DrainStopTimeout = TimeSpan.FromSeconds(30);
 
-			// Act
-			RunActionWithDrainStop(() => sut.Execute(job.AsJob()));
+            // Act
+            RunActionWithDrainStop(() => sut.Execute(job.AsJob()));
 
             // Assert
             VerifyCreatedSyncWorkerJobs(batches, StopState.None);
@@ -96,7 +96,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             string xmlPath = PrepareRecords(numberOfRecords);
 
             SourceProviderTest provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
-			Container.Register(Component.For<SyncManagerTest>().ImplementedBy<SyncManagerTest>().LifestyleTransient().IsDefault());
+            Container.Register(Component.For<SyncManagerTest>().ImplementedBy<SyncManagerTest>().LifestyleTransient().IsDefault());
 
             JobTest job = PrepareJob(provider, out JobHistoryTest jobHistory, xmlPath);
             SyncManagerTest sut = PrepareSut<SyncManagerTest>();
@@ -104,9 +104,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             int[] batches = SplitNumberIntoBatches(numberOfRecords, sut.BatchSize);
 
             sut.BeforeBatchTaskAction = RemoveAgent;
-			
-			// Act
-			sut.Execute(job.AsJob());
+            
+            // Act
+            sut.Execute(job.AsJob());
 
             // Assert
             VerifyCreatedSyncWorkerJobs(batches, StopState.None);
@@ -129,7 +129,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
             int[] batches = SplitNumberIntoBatches(numberOfRecords, sut.BatchSize);
 
-			sut.BeforeCreateBatchJobAction = (syncManager) =>
+            sut.BeforeCreateBatchJobAction = (syncManager) =>
             {
                 if (syncManager.BatchJobCount == 2)
                 {
@@ -137,8 +137,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
                 }
             }; ;
 
-			// Act
-			sut.Execute(job.AsJob());
+            // Act
+            sut.Execute(job.AsJob());
 
             // Assert
             VerifyCreatedSyncWorkerJobs(batches, StopState.None);
@@ -146,109 +146,109 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
         }
 
         [IdentifiedTest("09663B11-23D1-4114-8F4D-097DE47098BB")]
-		public void Execute_ShouldFail_WhenGetBatchableIdsThrowException()
-		{
-			// Arrange
-			Guid customProviderId = Guid.NewGuid();
+        public void Execute_ShouldFail_WhenGetBatchableIdsThrowException()
+        {
+            // Arrange
+            Guid customProviderId = Guid.NewGuid();
 
-			SourceProviderTest provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateCustomProvider(nameof(FakeCustomProvider), customProviderId);
+            SourceProviderTest provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateCustomProvider(nameof(FakeCustomProvider), customProviderId);
 
-			FakeCustomProvider customProviderImpl = new FakeCustomProvider()
-			{
-				GetBatchableIdsFunc = () =>
-				{
-					throw new InvalidOperationException();
-				}
-			};
+            FakeCustomProvider customProviderImpl = new FakeCustomProvider()
+            {
+                GetBatchableIdsFunc = () =>
+                {
+                    throw new InvalidOperationException();
+                }
+            };
 
-			JobTest job = PrepareJob(provider, out JobHistoryTest jobHistory);
+            JobTest job = PrepareJob(provider, out JobHistoryTest jobHistory);
 
-			SyncManager sut = PrepareSutWithCustomProvider(customProviderImpl, customProviderId);
+            SyncManager sut = PrepareSutWithCustomProvider(customProviderImpl, customProviderId);
 
-			// Act
-			sut.Execute(job.AsJob());
+            // Act
+            sut.Execute(job.AsJob());
 
-			// Assert
-			VerifyJobHistoryStatus(jobHistory, JobStatusChoices.JobHistoryErrorJobFailedGuid);
-		}
+            // Assert
+            VerifyJobHistoryStatus(jobHistory, JobStatusChoices.JobHistoryErrorJobFailedGuid);
+        }
 
-		[IdentifiedTest("D7134532-7560-4F63-B695-384FCD464F11")]
-		public void SyncManager_ShouldSplitJobIntoBatches()
-		{
-			// Arrange
-			const int numberOfRecords = 1500;
-			string xmlPath = PrepareRecords(numberOfRecords);
+        [IdentifiedTest("D7134532-7560-4F63-B695-384FCD464F11")]
+        public void SyncManager_ShouldSplitJobIntoBatches()
+        {
+            // Arrange
+            const int numberOfRecords = 1500;
+            string xmlPath = PrepareRecords(numberOfRecords);
 
-			SourceProviderTest provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
+            SourceProviderTest provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateMyFirstProvider();
 
-			JobTest job = PrepareJob(provider, out JobHistoryTest jobHistory, xmlPath);
+            JobTest job = PrepareJob(provider, out JobHistoryTest jobHistory, xmlPath);
 
-			SyncManager sut = PrepareSut<SyncManager>();
+            SyncManager sut = PrepareSut<SyncManager>();
 
             int[] batches = SplitNumberIntoBatches(numberOfRecords, sut.BatchSize);
 
-			// Act
-			sut.Execute(job.AsJob());
+            // Act
+            sut.Execute(job.AsJob());
 
-			// Assert
-			VerifyCreatedSyncWorkerJobs(batches, StopState.None);
-		}
+            // Assert
+            VerifyCreatedSyncWorkerJobs(batches, StopState.None);
+        }
 
-		private JobTest PrepareJob(SourceProviderTest provider, out JobHistoryTest jobHistory, string xmlPath = null)
-		{
-			FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
+        private JobTest PrepareJob(SourceProviderTest provider, out JobHistoryTest jobHistory, string xmlPath = null)
+        {
+            FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
 
-			IntegrationPointTest integrationPoint =
-				SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportIntegrationPoint(provider, identifierFieldName: "Name", sourceProviderConfiguration: xmlPath);
+            IntegrationPointTest integrationPoint =
+                SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportIntegrationPoint(provider, identifierFieldName: "Name", sourceProviderConfiguration: xmlPath);
 
-			integrationPoint.SourceProvider = provider.ArtifactId;
-			integrationPoint.SourceConfiguration = xmlPath;
+            integrationPoint.SourceProvider = provider.ArtifactId;
+            integrationPoint.SourceConfiguration = xmlPath;
 
-			JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
+            JobTest job = FakeRelativityInstance.Helpers.JobHelper.ScheduleIntegrationPointRun(SourceWorkspace, integrationPoint);
             job.TaskType = TaskType.SyncManager.ToString();
-			jobHistory = SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
+            jobHistory = SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(job, integrationPoint);
 
-			RegisterJobContext(job);
+            RegisterJobContext(job);
 
-			return job;
-		}
+            return job;
+        }
 
-		private SyncManager PrepareSutWithCustomProvider(FakeCustomProvider providerImpl, Guid providerId)
-		{
-			Container.Register(Component.For<IDataSourceProvider>().UsingFactoryMethod(() => providerImpl)
-				.Named(providerId.ToString()));
+        private SyncManager PrepareSutWithCustomProvider(FakeCustomProvider providerImpl, Guid providerId)
+        {
+            Container.Register(Component.For<IDataSourceProvider>().UsingFactoryMethod(() => providerImpl)
+                .Named(providerId.ToString()));
 
-			return PrepareSut<SyncManager>();
-		}
+            return PrepareSut<SyncManager>();
+        }
 
-		private T PrepareSut<T>() where T : SyncManager
-		{
-			Container.Register(Component.For<IDataSourceProvider>().ImplementedBy<MyFirstProvider.Provider.MyFirstProvider>().Named(Provider._MY_FIRST_PROVIDER));
+        private T PrepareSut<T>() where T : SyncManager
+        {
+            Container.Register(Component.For<IDataSourceProvider>().ImplementedBy<MyFirstProvider.Provider.MyFirstProvider>().Named(Provider._MY_FIRST_PROVIDER));
             T sut = Container.Resolve<T>();
-			return sut;
-		}
+            return sut;
+        }
 
-		private void RunActionWithDrainStop(Action action)
-		{
+        private void RunActionWithDrainStop(Action action)
+        {
             Thread thread = new Thread(() => action());
-			thread.Start();
+            thread.Start();
             RemoveAgent();
-			Thread.Sleep(TimeSpan.FromSeconds(1));
-			thread.Join();
-		}
+            Thread.Sleep(TimeSpan.FromSeconds(1));
+            thread.Join();
+        }
 
-		private string PrepareRecords(int numberOfRecords)
-		{
-			string xml = new MyFirstProviderXmlGenerator().GenerateRecords(numberOfRecords);
-			string tmpPath = Path.GetTempFileName();
-			File.WriteAllText(tmpPath, xml);
-			return tmpPath;
-		}
+        private string PrepareRecords(int numberOfRecords)
+        {
+            string xml = new MyFirstProviderXmlGenerator().GenerateRecords(numberOfRecords);
+            string tmpPath = Path.GetTempFileName();
+            File.WriteAllText(tmpPath, xml);
+            return tmpPath;
+        }
 
-		private void VerifyJobHistoryStatus(JobHistoryTest actual, Guid expectedStatus)
-		{
-			actual.JobStatus.Guids.Single().Should().Be(expectedStatus);
-		}
+        private void VerifyJobHistoryStatus(JobHistoryTest actual, Guid expectedStatus)
+        {
+            actual.JobStatus.Guids.Single().Should().Be(expectedStatus);
+        }
 
         private void VerifySyncManagerStopState(StopState stopState)
         {
@@ -269,21 +269,21 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             syncWorkerJobs.Should().HaveCount(documentsInSyncWorkerJobs.Length);
             syncWorkerJobs.Should().OnlyContain(x => x.StopState == stopState);
 
-			FakeRelativityInstance.JobTrackerResourceTables.Single().Value
-				.Should().HaveCount(documentsInSyncWorkerJobs.Length);
-		}
+            FakeRelativityInstance.JobTrackerResourceTables.Single().Value
+                .Should().HaveCount(documentsInSyncWorkerJobs.Length);
+        }
 
         private void AssertNumberOfRecords(JobTest job, int numberOfRecords)
-		{
-			JArray records = JArray.FromObject(JObject.Parse(job.JobDetails)["BatchParameters"]);
-			records.Count.Should().Be(numberOfRecords);
-		}
+        {
+            JArray records = JArray.FromObject(JObject.Parse(job.JobDetails)["BatchParameters"]);
+            records.Count.Should().Be(numberOfRecords);
+        }
 
         private void RemoveAgent()
         {
             IRemovableAgent agent = Container.Resolve<IRemovableAgent>();
             agent.ToBeRemoved = true;
-		}
+        }
 
         private int[] SplitNumberIntoBatches(int number, int batchSize)
         {
@@ -323,5 +323,5 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
                 base.CreateBatchJob(job, batchIDs);
             }
         }
-	}
+    }
 }

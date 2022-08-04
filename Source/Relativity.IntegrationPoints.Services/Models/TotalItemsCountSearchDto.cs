@@ -1,7 +1,7 @@
 ﻿namespace Relativity.IntegrationPoints.Services.Models
 {
-	public class TotalItemsCountSearchDto
-	{
-		 
-	}
+    public class TotalItemsCountSearchDto
+    {
+         
+    }
 }

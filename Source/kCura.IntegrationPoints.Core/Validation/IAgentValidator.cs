@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.Core.Validation
 {
-	public interface IAgentValidator
-	{
-		void Validate(IntegrationPoint integrationPointDto, int submittedByUserId);
-	}
+    public interface IAgentValidator
+    {
+        void Validate(IntegrationPoint integrationPointDto, int submittedByUserId);
+    }
 }

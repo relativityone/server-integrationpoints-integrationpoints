@@ -4,36 +4,36 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation.Parts
 {
-	[TestFixture, Category("Unit")]
-	public class FileCountValidatorTests
-	{
-		[TestCase(-1)]
-		[TestCase(0)]
-		public void ItShouldFailValidationForInvalidCount(int count)
-		{
-			// arrange
-			var validator = new FileCountValidator();
+    [TestFixture, Category("Unit")]
+    public class FileCountValidatorTests
+    {
+        [TestCase(-1)]
+        [TestCase(0)]
+        public void ItShouldFailValidationForInvalidCount(int count)
+        {
+            // arrange
+            var validator = new FileCountValidator();
 
-			// act
-			var actual = validator.Validate(count);
+            // act
+            var actual = validator.Validate(count);
 
-			// assert
-			Assert.IsFalse(actual.IsValid);
-			Assert.That(actual.MessageTexts.FirstOrDefault(), Is.Not.Null.Or.Empty);
-		}
+            // assert
+            Assert.IsFalse(actual.IsValid);
+            Assert.That(actual.MessageTexts.FirstOrDefault(), Is.Not.Null.Or.Empty);
+        }
 
-		[TestCase(42)]
-		public void ItShouldPassForValidCount(int count)
-		{
-			// arrange
-			var validator = new FileCountValidator();
+        [TestCase(42)]
+        public void ItShouldPassForValidCount(int count)
+        {
+            // arrange
+            var validator = new FileCountValidator();
 
-			// act
-			var actual = validator.Validate(count);
+            // act
+            var actual = validator.Validate(count);
 
-			// assert
-			Assert.IsTrue(actual.IsValid);
-			Assert.That(actual.MessageTexts.FirstOrDefault(), Is.Null);
-		}
-	}
+            // assert
+            Assert.IsTrue(actual.IsValid);
+            Assert.That(actual.MessageTexts.FirstOrDefault(), Is.Null);
+        }
+    }
 }

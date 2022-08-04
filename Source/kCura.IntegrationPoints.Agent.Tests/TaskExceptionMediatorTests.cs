@@ -12,81 +12,81 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Agent.Tests
 {
-	[TestFixture, Category("Unit")]
-	public class TaskExceptionMediatorTests
-	{
-		private TaskExceptionMediator _subjectUnderTest;
-		private ITaskExceptionService _taskExceptionServiceMock;
-		private Agent _agentMock;
+    [TestFixture, Category("Unit")]
+    public class TaskExceptionMediatorTests
+    {
+        private TaskExceptionMediator _subjectUnderTest;
+        private ITaskExceptionService _taskExceptionServiceMock;
+        private Agent _agentMock;
 
-		[SetUp]
-		public void SetUp()
-		{
-			_taskExceptionServiceMock = Substitute.For<ITaskExceptionService>();
-			_agentMock = Substitute.For<TestAgentBase>();
-		}
+        [SetUp]
+        public void SetUp()
+        {
+            _taskExceptionServiceMock = Substitute.For<ITaskExceptionService>();
+            _agentMock = Substitute.For<TestAgentBase>();
+        }
 
-		[Test]
-		public void ItShould_TriggerOnTaskExecutionError()
-		{
-			//Arrange
-			_subjectUnderTest = new TaskExceptionMediator(_taskExceptionServiceMock);
-			_subjectUnderTest.RegisterEvent(_agentMock);
-			ITask task = Substitute.For<ITask>();
+        [Test]
+        public void ItShould_TriggerOnTaskExecutionError()
+        {
+            //Arrange
+            _subjectUnderTest = new TaskExceptionMediator(_taskExceptionServiceMock);
+            _subjectUnderTest.RegisterEvent(_agentMock);
+            ITask task = Substitute.For<ITask>();
 
-			//Act
-			_agentMock.JobExecutionError += Raise.Event<ExceptionEventHandler>(null, task, new Exception());
+            //Act
+            _agentMock.JobExecutionError += Raise.Event<ExceptionEventHandler>(null, task, new Exception());
 
-			//Assert
-			_taskExceptionServiceMock.Received(1).EndTaskWithError( Arg.Any<ITask>(), Arg.Any<Exception>());
-		}
+            //Assert
+            _taskExceptionServiceMock.Received(1).EndTaskWithError( Arg.Any<ITask>(), Arg.Any<Exception>());
+        }
 
-		[Test]
-		public void ItShould_TriggerOnJobExecutionError()
-		{
-			//Arrange
-			_subjectUnderTest = new TaskExceptionMediator(_taskExceptionServiceMock);
-			_subjectUnderTest.RegisterEvent(_agentMock);
-			Job job = JobExtensions.CreateJob();
+        [Test]
+        public void ItShould_TriggerOnJobExecutionError()
+        {
+            //Arrange
+            _subjectUnderTest = new TaskExceptionMediator(_taskExceptionServiceMock);
+            _subjectUnderTest.RegisterEvent(_agentMock);
+            Job job = JobExtensions.CreateJob();
 
-			//Act
-			_agentMock.JobExecutionError += Raise.Event<ExceptionEventHandler>(job, null, new Exception());
+            //Act
+            _agentMock.JobExecutionError += Raise.Event<ExceptionEventHandler>(job, null, new Exception());
 
-			//Assert
-			_taskExceptionServiceMock.Received(1).EndJobWithError(Arg.Any<Job>(), Arg.Any<Exception>());
-		}
+            //Assert
+            _taskExceptionServiceMock.Received(1).EndJobWithError(Arg.Any<Job>(), Arg.Any<Exception>());
+        }
 
-		[Test]
-		public void ItShouldNot_TriggerOnTaskExecutionError_AfterDispose()
-		{
-			//Arrange
-			using (_subjectUnderTest = new TaskExceptionMediator(_taskExceptionServiceMock))
-			{
-				_subjectUnderTest.RegisterEvent(_agentMock);
-			}// Dispose called
+        [Test]
+        public void ItShouldNot_TriggerOnTaskExecutionError_AfterDispose()
+        {
+            //Arrange
+            using (_subjectUnderTest = new TaskExceptionMediator(_taskExceptionServiceMock))
+            {
+                _subjectUnderTest.RegisterEvent(_agentMock);
+            }// Dispose called
 
-			//Act
-			_agentMock.JobExecutionError += Raise.Event<ExceptionEventHandler>(null, null, new Exception());
+            //Act
+            _agentMock.JobExecutionError += Raise.Event<ExceptionEventHandler>(null, null, new Exception());
 
-			//Assert
-			_taskExceptionServiceMock.Received(0).EndTaskWithError(Arg.Any<ITask>(), Arg.Any<Exception>());
-		}
-	}
-	
-	public class TestAgentBase : Agent
-	{
-		public TestAgentBase() : base(Guid.Empty, kubernetesMode: Substitute.For<IKubernetesMode>())
-		{
-		}
+            //Assert
+            _taskExceptionServiceMock.Received(0).EndTaskWithError(Arg.Any<ITask>(), Arg.Any<Exception>());
+        }
+    }
+    
+    public class TestAgentBase : Agent
+    {
+        public TestAgentBase() : base(Guid.Empty, kubernetesMode: Substitute.For<IKubernetesMode>())
+        {
+        }
 
-		public override string Name { get; }
-		protected override TaskResult ProcessJob(Job job)
-		{
-			throw new NotImplementedException();
-		}
+        public override string Name { get; }
+        protected override TaskResult ProcessJob(Job job)
+        {
+            throw new NotImplementedException();
+        }
 
-		protected override void LogJobState(Job job, JobLogState state, Exception exception = null, string details = null)
-		{
-		}
-	}
+        protected override void LogJobState(Job job, JobLogState state, Exception exception = null, string details = null)
+        {
+        }
+    }
 }

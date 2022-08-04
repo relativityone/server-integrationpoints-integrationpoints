@@ -10,102 +10,102 @@ using NUnit.Framework;
 [SetUpFixture]
 public class FunctionalTestsSetupFixture
 {
-	private ITestHelper _testHelper;
+    private ITestHelper _testHelper;
 
-	public static bool IsInitialized = true;
+    public static bool IsInitialized = true;
 
-	[OneTimeSetUp]
-	public void InitializeFixture()
-	{
-		_testHelper = new TestHelper();
+    [OneTimeSetUp]
+    public void InitializeFixture()
+    {
+        _testHelper = new TestHelper();
 
-		ImportIntegrationPointsToLibrary();
+        ImportIntegrationPointsToLibrary();
 
-		CreateIntegrationPointAgents();
+        CreateIntegrationPointAgents();
 
-		ConfigureWebAPI();
+        ConfigureWebAPI();
 
-		ConfigureFileShareServices();
+        ConfigureFileShareServices();
 
-		ConfigureDataTransferLegacy();
+        ConfigureDataTransferLegacy();
 
-		if (!FunctionalTemplateWorkspaceExists())
-		{
-			SetupTemplateWorkspace();
-		}
+        if (!FunctionalTemplateWorkspaceExists())
+        {
+            SetupTemplateWorkspace();
+        }
 
-		IsInitialized = true;
-	}
+        IsInitialized = true;
+    }
 
     private void SetupTemplateWorkspace()
-	{
-		int workspaceID = CreateFunctionalTemplateWorkspace();
-		InstallIntegrationPointsFromLibrary(workspaceID);
-	}
+    {
+        int workspaceID = CreateFunctionalTemplateWorkspace();
+        InstallIntegrationPointsFromLibrary(workspaceID);
+    }
 
-	public bool FunctionalTemplateWorkspaceExists() =>
-		Workspace.GetWorkspaceAsync(
-			WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME).GetAwaiter().GetResult() != null;
+    public bool FunctionalTemplateWorkspaceExists() =>
+        Workspace.GetWorkspaceAsync(
+            WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME).GetAwaiter().GetResult() != null;
 
-	public int CreateFunctionalTemplateWorkspace() =>
-		Workspace.CreateWorkspaceAsync(
-			WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME,
-			WorkspaceTemplateNames.RELATIVITY_STARTER_TEMPLATE_NAME).GetAwaiter().GetResult().ArtifactID;
+    public int CreateFunctionalTemplateWorkspace() =>
+        Workspace.CreateWorkspaceAsync(
+            WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME,
+            WorkspaceTemplateNames.RELATIVITY_STARTER_TEMPLATE_NAME).GetAwaiter().GetResult().ArtifactID;
 
-	public void ImportIntegrationPointsToLibrary()
-	{
-		var applicationManager = new RelativityApplicationManager(_testHelper);
-		if (SharedVariables.UseIpRapFile())
-		{
-			Console.WriteLine("Importing Integration Points to Library...");
-			applicationManager.ImportRipToLibraryAsync().GetAwaiter().GetResult();
-		}
-	}
+    public void ImportIntegrationPointsToLibrary()
+    {
+        var applicationManager = new RelativityApplicationManager(_testHelper);
+        if (SharedVariables.UseIpRapFile())
+        {
+            Console.WriteLine("Importing Integration Points to Library...");
+            applicationManager.ImportRipToLibraryAsync().GetAwaiter().GetResult();
+        }
+    }
 
-	public void InstallIntegrationPointsFromLibrary(int workspaceID)
-	{
-		Console.WriteLine($"Importing Integration Points to workspace {workspaceID}...");
+    public void InstallIntegrationPointsFromLibrary(int workspaceID)
+    {
+        Console.WriteLine($"Importing Integration Points to workspace {workspaceID}...");
 
-		var applicationManager = new RelativityApplicationManager(_testHelper);
-		applicationManager.InstallRipFromLibraryAsync(workspaceID).GetAwaiter().GetResult();
-	}
+        var applicationManager = new RelativityApplicationManager(_testHelper);
+        applicationManager.InstallRipFromLibraryAsync(workspaceID).GetAwaiter().GetResult();
+    }
 
-	private void CreateIntegrationPointAgents()
-	{
-		Console.WriteLine("Creating Integration Point Agents...");
+    private void CreateIntegrationPointAgents()
+    {
+        Console.WriteLine("Creating Integration Point Agents...");
 
-		var success = Agent.CreateMaxIntegrationPointAgentsAsync().GetAwaiter().GetResult();
-		if (!success)
-		{
-			throw new TestException("Creating Integration Point Agents has been failed");
-		}
-	}
+        var success = Agent.CreateMaxIntegrationPointAgentsAsync().GetAwaiter().GetResult();
+        if (!success)
+        {
+            throw new TestException("Creating Integration Point Agents has been failed");
+        }
+    }
 
-	public void ConfigureWebAPI()
-	{
-		Console.WriteLine("Configure Web API Path...");
+    public void ConfigureWebAPI()
+    {
+        Console.WriteLine("Configure Web API Path...");
 
-		bool isValid = InstanceSetting.CreateOrUpdateAsync("kCura.IntegrationPoints", "WebAPIPath", SharedVariables.RelativityWebApiUrl).GetAwaiter().GetResult();
-		if (!isValid)
-		{
-			throw new TestException("Upgrading Web API Path has been failed");
-		}
-	}
+        bool isValid = InstanceSetting.CreateOrUpdateAsync("kCura.IntegrationPoints", "WebAPIPath", SharedVariables.RelativityWebApiUrl).GetAwaiter().GetResult();
+        if (!isValid)
+        {
+            throw new TestException("Upgrading Web API Path has been failed");
+        }
+    }
 
-	public void ConfigureFileShareServices()
-	{
-		Console.WriteLine("Import Fileshare Test Services...");
+    public void ConfigureFileShareServices()
+    {
+        Console.WriteLine("Import Fileshare Test Services...");
 
-		InstanceSetting.CreateOrUpdateAsync("kCura.ARM", "DevelopmentMode", "True", Relativity.Services.InstanceSetting.ValueType.TrueFalse).GetAwaiter().GetResult();
+        InstanceSetting.CreateOrUpdateAsync("kCura.ARM", "DevelopmentMode", "True", Relativity.Services.InstanceSetting.ValueType.TrueFalse).GetAwaiter().GetResult();
 
-		var applicationManager = new RelativityApplicationManager(_testHelper);
-		applicationManager.ImportApplicationToLibraryAsync(SharedVariables.FileShareServicesRAP).GetAwaiter().GetResult();
-	}
+        var applicationManager = new RelativityApplicationManager(_testHelper);
+        applicationManager.ImportApplicationToLibraryAsync(SharedVariables.FileShareServicesRAP).GetAwaiter().GetResult();
+    }
 
-	private void ConfigureDataTransferLegacy()
-	{
-		var applicationManager = new RelativityApplicationManager(_testHelper);
-		applicationManager.ImportApplicationToLibraryAsync(SharedVariables.DataTransferLegacyRAP)
-			.GetAwaiter().GetResult();
-	}
+    private void ConfigureDataTransferLegacy()
+    {
+        var applicationManager = new RelativityApplicationManager(_testHelper);
+        applicationManager.ImportApplicationToLibraryAsync(SharedVariables.DataTransferLegacyRAP)
+            .GetAwaiter().GetResult();
+    }
 }

@@ -8,19 +8,19 @@ using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.ImportProvider.Parser.Interfaces
 {
-	public interface IPreviewJob
-	{
-		void Init(LoadFile loadFile, ImportPreviewSettings settings);
-		void StartRead();
-		void DisposePreviewJob();
+    public interface IPreviewJob
+    {
+        void Init(LoadFile loadFile, ImportPreviewSettings settings);
+        void StartRead();
+        void DisposePreviewJob();
 
-		ImportPreviewTable PreviewTable { get;}
+        ImportPreviewTable PreviewTable { get;}
 
-		bool IsComplete { get; }
-		bool IsFailed { get; }
-		string ErrorMessage { get; }
-		long TotalBytes { get; }
-		long BytesRead { get; }
-		long StepSize { get; }
-	}
+        bool IsComplete { get; }
+        bool IsFailed { get; }
+        string ErrorMessage { get; }
+        long TotalBytes { get; }
+        long BytesRead { get; }
+        long StepSize { get; }
+    }
 }

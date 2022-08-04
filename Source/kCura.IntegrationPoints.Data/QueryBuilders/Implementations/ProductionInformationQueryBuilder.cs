@@ -5,55 +5,55 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.QueryBuilders.Implementations
 {
-	public class ProductionInformationQueryBuilder : QueryBuilder
-	{
-		public ProductionInformationQueryBuilder AddProductionSetCondition(int productionSetId)
-		{
-			string productionSetCondition = $"'ProductionSet' == OBJECT {productionSetId}";
-			Conditions.Add(productionSetCondition);
+    public class ProductionInformationQueryBuilder : QueryBuilder
+    {
+        public ProductionInformationQueryBuilder AddProductionSetCondition(int productionSetId)
+        {
+            string productionSetCondition = $"'ProductionSet' == OBJECT {productionSetId}";
+            Conditions.Add(productionSetCondition);
 
-			return this;
-		}
+            return this;
+        }
 
-		public ProductionInformationQueryBuilder AddHasNativeCondition()
-		{
-			string condition = $"'{ProductionConsts.WithNativesFieldName}' == true";
-			Conditions.Add(condition);
+        public ProductionInformationQueryBuilder AddHasNativeCondition()
+        {
+            string condition = $"'{ProductionConsts.WithNativesFieldName}' == true";
+            Conditions.Add(condition);
 
-			return this;
-		}
+            return this;
+        }
 
-		public override QueryRequest Build()
-		{
-			return new QueryRequest
-			{
-				ObjectType = new ObjectTypeRef
-				{
-					Guid = ProductionConsts.ProductionInformationTypeGuid
-				},
-				Fields = Fields,
-				Condition = BuildCondition()
-			};
-		}
+        public override QueryRequest Build()
+        {
+            return new QueryRequest
+            {
+                ObjectType = new ObjectTypeRef
+                {
+                    Guid = ProductionConsts.ProductionInformationTypeGuid
+                },
+                Fields = Fields,
+                Condition = BuildCondition()
+            };
+        }
 
-		public ProductionInformationQueryBuilder NoFields()
-		{
-			Fields = new List<FieldRef>();
-			return this;
-		}
+        public ProductionInformationQueryBuilder NoFields()
+        {
+            Fields = new List<FieldRef>();
+            return this;
+        }
 
-		public ProductionInformationQueryBuilder AddField(Guid fieldGuid)
-		{
-			Fields.Add(new FieldRef { Guid = fieldGuid });
+        public ProductionInformationQueryBuilder AddField(Guid fieldGuid)
+        {
+            Fields.Add(new FieldRef { Guid = fieldGuid });
 
-			return this;
-		}
+            return this;
+        }
 
-		public ProductionInformationQueryBuilder AddFields(List<Guid> fieldGuids)
-		{
-			Fields.AddRange(fieldGuids.Select(x => new FieldRef { Guid = x }));
+        public ProductionInformationQueryBuilder AddFields(List<Guid> fieldGuids)
+        {
+            Fields.AddRange(fieldGuids.Select(x => new FieldRef { Guid = x }));
 
-			return this;
-		}
-	}
+            return this;
+        }
+    }
 }

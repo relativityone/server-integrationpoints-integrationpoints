@@ -8,8 +8,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {
     public class BatchManager
     {
-	    private readonly int _minBatchSize;
-		internal List<IDictionary<string, object>> _dataSource;
+        private readonly int _minBatchSize;
+        internal List<IDictionary<string, object>> _dataSource;
 
         public event BatchCreated OnBatchCreate;
 
@@ -20,11 +20,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
         }
 
         public int MinimumBatchSize => _minBatchSize;
-	    public int CurrentSize => _dataSource.Count;
+        public int CurrentSize => _dataSource.Count;
 
-	    public HashSet<string> ColumnNames { get; set; }
+        public HashSet<string> ColumnNames { get; set; }
 
-	    public void Add(IDictionary<string, object> fileData)
+        public void Add(IDictionary<string, object> fileData)
         {
             _dataSource.Add(fileData);
             if (_dataSource.Count == 1)
@@ -54,13 +54,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
             _dataSource.Clear();
         }
 
-	    /// <summary>
-	    /// Convert a list of data rows to data table
-	    /// </summary>
-	    /// <param name="columnNames"></param>
-	    /// <param name="dataSource"></param>
-	    /// <returns></returns>
-	    public DataTable ConfigureTable(IEnumerable<string> columnNames, List<IDictionary<string, object>> dataSource)
+        /// <summary>
+        /// Convert a list of data rows to data table
+        /// </summary>
+        /// <param name="columnNames"></param>
+        /// <param name="dataSource"></param>
+        /// <returns></returns>
+        public DataTable ConfigureTable(IEnumerable<string> columnNames, List<IDictionary<string, object>> dataSource)
         {
             DataTable finalDt = new DataTable();
             foreach (var column in columnNames)
@@ -68,15 +68,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
                 finalDt.Columns.Add(column);
             }
 
-			// Non Relativity providers will not have the Native File Path column passed in.
-			// We must add it here for them.
-	        bool? dataSourceContainsNativeFilePath = dataSource.FirstOrDefault()?.Keys.Contains(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME);
-	        if (dataSourceContainsNativeFilePath.HasValue 
-				&& dataSourceContainsNativeFilePath.Value 
-				&& !finalDt.Columns.Contains(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME))
-	        {
-		        finalDt.Columns.Add(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME);
-	        }
+            // Non Relativity providers will not have the Native File Path column passed in.
+            // We must add it here for them.
+            bool? dataSourceContainsNativeFilePath = dataSource.FirstOrDefault()?.Keys.Contains(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME);
+            if (dataSourceContainsNativeFilePath.HasValue 
+                && dataSourceContainsNativeFilePath.Value 
+                && !finalDt.Columns.Contains(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME))
+            {
+                finalDt.Columns.Add(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME);
+            }
 
             foreach (var dictionary in dataSource)
             {

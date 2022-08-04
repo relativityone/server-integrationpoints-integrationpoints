@@ -19,28 +19,28 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
     public class FtpProviderControllerTests : TestBase
     {
         private bool _testConnectionResult = false;
-	    private ISettingsManager _settingsManager;
-		private IConnectorFactory _connectorFactory = null;
+        private ISettingsManager _settingsManager;
+        private IConnectorFactory _connectorFactory = null;
         private IFtpConnector _ftpConnector = null;
-		private ICPHelper _helper = null;
-		private ILogFactory _logFactory = null;
-		private IAPILog _logger = null;
+        private ICPHelper _helper = null;
+        private ILogFactory _logFactory = null;
+        private IAPILog _logger = null;
         private FtpProviderController _instance;
 
         public override void SetUp()
         {
             _ftpConnector = Substitute.For<IFtpConnector>();
             _ftpConnector.TestConnection().Returns(_testConnectionResult);
-	        _settingsManager = Substitute.For<ISettingsManager>();
-			_connectorFactory = Substitute.For<IConnectorFactory>();
+            _settingsManager = Substitute.For<ISettingsManager>();
+            _connectorFactory = Substitute.For<IConnectorFactory>();
             _connectorFactory.GetConnector("", "", 777, "", "").ReturnsForAnyArgs(_ftpConnector);
-			_logger = Substitute.For<IAPILog>();
-			_logFactory = Substitute.For<ILogFactory>();
-			_logFactory.GetLogger().Returns(_logger);
-			_helper = Substitute.For<ICPHelper>();
-			_helper.GetLoggerFactory().Returns(_logFactory);
+            _logger = Substitute.For<IAPILog>();
+            _logFactory = Substitute.For<ILogFactory>();
+            _logFactory.GetLogger().Returns(_logger);
+            _helper = Substitute.For<ICPHelper>();
+            _helper.GetLoggerFactory().Returns(_logFactory);
 
-			_instance = new FtpProviderController(_connectorFactory, _settingsManager, _helper);
+            _instance = new FtpProviderController(_connectorFactory, _settingsManager, _helper);
         }
 
         [TestCase("", "test.host", "", "", "", 21, true, HttpStatusCode.BadRequest, ErrorMessage.MISSING_CSV_FILE_NAME)]
@@ -62,32 +62,32 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             // NSubstitute result is passed by value so refreshing TestConnection mockup is needed
             _ftpConnector.TestConnection().Returns(_testConnectionResult);
 
-	        var settings = new Settings()
-	        {
-		        Filename_Prefix = filename,
-		        Host = host,
-		        Protocol = protocol,
-		        Port = port
-	        };
+            var settings = new Settings()
+            {
+                Filename_Prefix = filename,
+                Host = host,
+                Protocol = protocol,
+                Port = port
+            };
 
-			var credentials = new SecuredConfiguration()
-			{
-				Password = password,
-				Username = username,
-			};
+            var credentials = new SecuredConfiguration()
+            {
+                Password = password,
+                Username = username,
+            };
 
-			JsonSerializerSettings jsonSettings = JSONHelper.GetDefaultSettings();
+            JsonSerializerSettings jsonSettings = JSONHelper.GetDefaultSettings();
 
-	        SynchronizerSettings synchronizerSettings = new SynchronizerSettings()
-	        {
-		        Settings = JsonConvert.SerializeObject(settings, jsonSettings),
-		        Credentials = JsonConvert.SerializeObject(credentials, jsonSettings)
-	        };
+            SynchronizerSettings synchronizerSettings = new SynchronizerSettings()
+            {
+                Settings = JsonConvert.SerializeObject(settings, jsonSettings),
+                Credentials = JsonConvert.SerializeObject(credentials, jsonSettings)
+            };
 
-	        _settingsManager.DeserializeSettings(Arg.Is(synchronizerSettings.Settings)).Returns(settings);
-	        _settingsManager.DeserializeCredentials(Arg.Is(synchronizerSettings.Credentials)).Returns(credentials);
+            _settingsManager.DeserializeSettings(Arg.Is(synchronizerSettings.Settings)).Returns(settings);
+            _settingsManager.DeserializeCredentials(Arg.Is(synchronizerSettings.Credentials)).Returns(credentials);
 
-			HttpStatusCodeResult response = _instance.ValidateHostConnection(synchronizerSettings);
+            HttpStatusCodeResult response = _instance.ValidateHostConnection(synchronizerSettings);
 
             Assert.AreEqual((int)expectedStatus, response.StatusCode);
             Assert.AreEqual(expectedDescription, response.StatusDescription);

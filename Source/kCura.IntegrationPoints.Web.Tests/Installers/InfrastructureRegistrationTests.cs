@@ -13,73 +13,73 @@ using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestH
 
 namespace kCura.IntegrationPoints.Web.Tests.Installers
 {
-	[TestFixture, Category("Unit")]
-	public class InfrastructureRegistrationTests
-	{
-		private IWindsorContainer _sut;
+    [TestFixture, Category("Unit")]
+    public class InfrastructureRegistrationTests
+    {
+        private IWindsorContainer _sut;
 
-		[SetUp]
-		public void SetUp()
-		{
-			_sut = new WindsorContainer();
-			_sut.AddInfrastructure();
-		}
+        [SetUp]
+        public void SetUp()
+        {
+            _sut = new WindsorContainer();
+            _sut.AddInfrastructure();
+        }
 
-		[Test]
-		public void ExceptionFilter_ShouldBeRegisteredWithProperLifestyle()
-		{
-			// assert
-			_sut.Should()
-				.HaveRegisteredSingleComponent<IExceptionFilter>()
-				.Which.Should()
-				.BeRegisteredWithLifestyle(LifestyleType.Transient, "because we need to create single exception filter instance per each attribute instance");
-		}
+        [Test]
+        public void ExceptionFilter_ShouldBeRegisteredWithProperLifestyle()
+        {
+            // assert
+            _sut.Should()
+                .HaveRegisteredSingleComponent<IExceptionFilter>()
+                .Which.Should()
+                .BeRegisteredWithLifestyle(LifestyleType.Transient, "because we need to create single exception filter instance per each attribute instance");
+        }
 
-		[Test]
-		public void ExceptionFilter_ShouldBeRegisteredWithProperImplementation()
-		{
-			// assert
-			_sut.Should().HaveRegisteredProperImplementation<IExceptionFilter, ExceptionFilter>();
-		}
-		
-		[Test]
-		public void FilterProvider_ShouldBeRegisteredWithProperLifestyle()
-		{
-			// assert
-			_sut.Should()
-				.HaveRegisteredSingleComponent<IFilterProvider>()
-				.Which.Should()
-				.BeRegisteredWithLifestyle(LifestyleType.Singleton);
-		}
+        [Test]
+        public void ExceptionFilter_ShouldBeRegisteredWithProperImplementation()
+        {
+            // assert
+            _sut.Should().HaveRegisteredProperImplementation<IExceptionFilter, ExceptionFilter>();
+        }
+        
+        [Test]
+        public void FilterProvider_ShouldBeRegisteredWithProperLifestyle()
+        {
+            // assert
+            _sut.Should()
+                .HaveRegisteredSingleComponent<IFilterProvider>()
+                .Which.Should()
+                .BeRegisteredWithLifestyle(LifestyleType.Singleton);
+        }
 
-		[Test]
-		public void FilterProvider_ShouldBeRegisteredWithProperImplementation()
-		{
-			// assert
-			_sut.Should().HaveRegisteredProperImplementation<IFilterProvider, WindsorFilterProvider>();
-		}
+        [Test]
+        public void FilterProvider_ShouldBeRegisteredWithProperImplementation()
+        {
+            // assert
+            _sut.Should().HaveRegisteredProperImplementation<IFilterProvider, WindsorFilterProvider>();
+        }
 
-		[Test]
-		public void FilterProvider_ShouldBeResolvedWithoutThrowing()
-		{
-			// arrange
-			RegisterInstallerDependencies(_sut);
+        [Test]
+        public void FilterProvider_ShouldBeResolvedWithoutThrowing()
+        {
+            // arrange
+            RegisterInstallerDependencies(_sut);
 
-			// act & assert
-			_sut.Should().ResolveWithoutThrowing<IFilterProvider>();
-		}
+            // act & assert
+            _sut.Should().ResolveWithoutThrowing<IFilterProvider>();
+        }
 
-		private void RegisterInstallerDependencies(IWindsorContainer container)
-		{
-			container.AddFacility<TypedFactoryFacility>();
+        private void RegisterInstallerDependencies(IWindsorContainer container)
+        {
+            container.AddFacility<TypedFactoryFacility>();
 
-			IRegistration[] dependencies =
-			{
-				CreateDummyObjectRegistration<ITextSanitizer>(),
-				CreateDummyObjectRegistration<IAPILog>()
-			};
+            IRegistration[] dependencies =
+            {
+                CreateDummyObjectRegistration<ITextSanitizer>(),
+                CreateDummyObjectRegistration<IAPILog>()
+            };
 
-			container.Register(dependencies);
-		}
-	}
+            container.Register(dependencies);
+        }
+    }
 }

@@ -15,59 +15,59 @@ using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestH
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Installer
 {
-	[TestFixture, Category("Unit")]
-	public class ExportRepositoryRegistrationTests
-	{
+    [TestFixture, Category("Unit")]
+    public class ExportRepositoryRegistrationTests
+    {
 
-		[Test]
-		public void FileRepository_ShouldBeRegisteredWithProperLifestyle()
-		{
-			//arrange
-			IWindsorContainer sut = new WindsorContainer();
-			sut.AddExportRepositories();
+        [Test]
+        public void FileRepository_ShouldBeRegisteredWithProperLifestyle()
+        {
+            //arrange
+            IWindsorContainer sut = new WindsorContainer();
+            sut.AddExportRepositories();
 
-			//assert
-			sut.Should()
-				.HaveRegisteredSingleComponent<IFileRepository>()
-				.Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
-		}
+            //assert
+            sut.Should()
+                .HaveRegisteredSingleComponent<IFileRepository>()
+                .Which.Should().BeRegisteredWithLifestyle(LifestyleType.Transient);
+        }
 
-		[Test]
-		public void FileRepository_ShouldBeResolvedWithoutThrowing()
-		{
-			//arrange
-			IWindsorContainer sut = new WindsorContainer();
-			sut.AddExportRepositories();
-			RegisterDependencies(sut);
+        [Test]
+        public void FileRepository_ShouldBeResolvedWithoutThrowing()
+        {
+            //arrange
+            IWindsorContainer sut = new WindsorContainer();
+            sut.AddExportRepositories();
+            RegisterDependencies(sut);
 
-			//assert
-			sut.Should().ResolveWithoutThrowing<IFileRepository>();
-		}
+            //assert
+            sut.Should().ResolveWithoutThrowing<IFileRepository>();
+        }
 
-		[Test]
-		public void FileRepository_ShouldBeRegisteredWithProperImplementation()
-		{
-			//arrange
-			IWindsorContainer sut = new WindsorContainer();
-			sut.AddExportRepositories();
+        [Test]
+        public void FileRepository_ShouldBeRegisteredWithProperImplementation()
+        {
+            //arrange
+            IWindsorContainer sut = new WindsorContainer();
+            sut.AddExportRepositories();
 
-			//assert
-			sut.Should().HaveRegisteredProperImplementation<IFileRepository, FileRepository>();
-		}
+            //assert
+            sut.Should().HaveRegisteredProperImplementation<IFileRepository, FileRepository>();
+        }
 
-		private static void RegisterDependencies(IWindsorContainer container)
-		{
-			var servicesMgrMock = new Mock<IServicesMgr>();
-			
-			IRegistration[] dependencies =
-			{
-				Component.For<IServicesMgr>().Instance(servicesMgrMock.Object),
-				CreateDummyObjectRegistration<IExternalServiceInstrumentationProvider>(),
-				CreateDummyObjectRegistration<IRetryHandlerFactory>(),
-				CreateDummyObjectRegistration<IRetryHandler>(),
-			};
+        private static void RegisterDependencies(IWindsorContainer container)
+        {
+            var servicesMgrMock = new Mock<IServicesMgr>();
+            
+            IRegistration[] dependencies =
+            {
+                Component.For<IServicesMgr>().Instance(servicesMgrMock.Object),
+                CreateDummyObjectRegistration<IExternalServiceInstrumentationProvider>(),
+                CreateDummyObjectRegistration<IRetryHandlerFactory>(),
+                CreateDummyObjectRegistration<IRetryHandler>(),
+            };
 
-			container.Register(dependencies);
-		}
-	}
+            container.Register(dependencies);
+        }
+    }
 }

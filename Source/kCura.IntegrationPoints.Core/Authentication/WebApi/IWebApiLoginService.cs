@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.Core.Authentication.WebApi
 {
-	public interface IWebApiLoginService
-	{
-		NetworkCredential Authenticate(CookieContainer cookieContainer);
-	}
+    public interface IWebApiLoginService
+    {
+        NetworkCredential Authenticate(CookieContainer cookieContainer);
+    }
 }

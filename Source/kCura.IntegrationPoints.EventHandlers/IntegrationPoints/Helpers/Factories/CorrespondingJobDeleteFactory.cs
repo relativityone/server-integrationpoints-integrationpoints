@@ -9,19 +9,19 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factories
 {
-	public static class CorrespondingJobDeleteFactory
-	{
-		private static readonly Guid _agentGuid = new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
+    public static class CorrespondingJobDeleteFactory
+    {
+        private static readonly Guid _agentGuid = new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
 
-		public static ICorrespondingJobDelete Create(IHelper helper)
-		{
-			IQueueQueryManager queryManager = new QueueQueryManager(helper, _agentGuid);
-			IAgentService agentService = new AgentService(helper, queryManager, _agentGuid);
-			IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
+        public static ICorrespondingJobDelete Create(IHelper helper)
+        {
+            IQueueQueryManager queryManager = new QueueQueryManager(helper, _agentGuid);
+            IAgentService agentService = new AgentService(helper, queryManager, _agentGuid);
+            IJobServiceDataProvider jobServiceDataProvider = new JobServiceDataProvider(queryManager);
             IAPILog logger = helper.GetLoggerFactory().GetLogger();
-			IKubernetesMode kubernetesMode = new KubernetesMode(logger);
-			IJobService jobService = new JobService(agentService, jobServiceDataProvider, kubernetesMode, helper);
-			return new CorrespondingJobDelete(jobService);
-		}
-	}
+            IKubernetesMode kubernetesMode = new KubernetesMode(logger);
+            IJobService jobService = new JobService(agentService, jobServiceDataProvider, kubernetesMode, helper);
+            return new CorrespondingJobDelete(jobService);
+        }
+    }
 }

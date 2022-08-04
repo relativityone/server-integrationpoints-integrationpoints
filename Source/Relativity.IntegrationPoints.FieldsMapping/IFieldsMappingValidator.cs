@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 namespace Relativity.IntegrationPoints.FieldsMapping
 {
-	public interface IFieldsMappingValidator
-	{
-		Task<FieldMappingValidationResult> ValidateAsync(IEnumerable<FieldMap> map, int sourceWorkspaceID, int destinationWorkspaceID, int sourceArtifactTypeId, int destinationArtifactTypeId);
-	}
+    public interface IFieldsMappingValidator
+    {
+        Task<FieldMappingValidationResult> ValidateAsync(IEnumerable<FieldMap> map, int sourceWorkspaceID, int destinationWorkspaceID, int sourceArtifactTypeId, int destinationArtifactTypeId);
+    }
 }

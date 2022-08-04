@@ -1,10 +1,10 @@
 ﻿namespace kCura.IntegrationPoints.Core.Services.Keywords
 {
-	public interface IKeyword
-	{
-		string KeywordName { get; }
+    public interface IKeyword
+    {
+        string KeywordName { get; }
 
-		string Convert();
+        string Convert();
 
-	}
+    }
 }

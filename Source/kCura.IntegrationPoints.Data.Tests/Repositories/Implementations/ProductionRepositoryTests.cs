@@ -18,59 +18,59 @@ using Relativity.Productions.Services;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
-	[TestFixture, Category("Unit")]
-	public class ProductionRepositoryTests
-	{
-		private const int _WORKSPACE_ARTIFACT_ID = 1016868;
-		private const int _PRODUCTION_ARTIFACT_ID = 1234;
-		private IServicesMgr _servicesMgr;
-		private IProductionManager _productionManager;
-		private IProductionService _productionService;
-		private IProductionRepository _instance;
+    [TestFixture, Category("Unit")]
+    public class ProductionRepositoryTests
+    {
+        private const int _WORKSPACE_ARTIFACT_ID = 1016868;
+        private const int _PRODUCTION_ARTIFACT_ID = 1234;
+        private IServicesMgr _servicesMgr;
+        private IProductionManager _productionManager;
+        private IProductionService _productionService;
+        private IProductionRepository _instance;
 
         [SetUp]
-		public void SetUp()
-		{
-			_productionManager = Substitute.For<IProductionManager>();
+        public void SetUp()
+        {
+            _productionManager = Substitute.For<IProductionManager>();
             _productionService = Substitute.For<IProductionService>();
 
-			_servicesMgr = Substitute.For<IServicesMgr>();
-			_servicesMgr.CreateProxy<IProductionManager>(ExecutionIdentity.CurrentUser).Returns(_productionManager);
-			_servicesMgr.CreateProxy<IProductionService>(ExecutionIdentity.CurrentUser).Returns(_productionService);
+            _servicesMgr = Substitute.For<IServicesMgr>();
+            _servicesMgr.CreateProxy<IProductionManager>(ExecutionIdentity.CurrentUser).Returns(_productionManager);
+            _servicesMgr.CreateProxy<IProductionService>(ExecutionIdentity.CurrentUser).Returns(_productionService);
 
-			_instance = new ProductionRepository(_servicesMgr);
+            _instance = new ProductionRepository(_servicesMgr);
         }
 
-		[Test]
-		public void ItShouldRetrieveExistingProduction()
-		{
-			// Arrange 
-			const int expectedArtifactId = 4321;
-			const string expectedName = "productionName";
-			var production = new Production()
-			{
-				ArtifactID = expectedArtifactId,
-				Name = expectedName
-			};
-			_productionManager.ReadSingleAsync(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Returns(production);
+        [Test]
+        public void ItShouldRetrieveExistingProduction()
+        {
+            // Arrange 
+            const int expectedArtifactId = 4321;
+            const string expectedName = "productionName";
+            var production = new Production()
+            {
+                ArtifactID = expectedArtifactId,
+                Name = expectedName
+            };
+            _productionManager.ReadSingleAsync(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Returns(production);
 
-			// Act
-			ProductionDTO actualResult = _instance.GetProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
+            // Act
+            ProductionDTO actualResult = _instance.GetProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID);
 
-			// Assert
-			Assert.That(actualResult.ArtifactID, Is.EqualTo(expectedArtifactId.ToString()));
-			Assert.That(actualResult.DisplayName, Is.EqualTo(expectedName));
-		}
+            // Assert
+            Assert.That(actualResult.ArtifactID, Is.EqualTo(expectedArtifactId.ToString()));
+            Assert.That(actualResult.DisplayName, Is.EqualTo(expectedName));
+        }
 
-		[Test]
-		public void ItShouldNoRetrieveAndThrowException()
-		{
-			// Arrange
-			_productionManager.ReadSingleAsync(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Result.Throws(new Exception());
+        [Test]
+        public void ItShouldNoRetrieveAndThrowException()
+        {
+            // Arrange
+            _productionManager.ReadSingleAsync(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID).Result.Throws(new Exception());
 
-			// Act & Assert
-			Assert.Throws<Exception>(() => _instance.GetProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID), "Unable to retrieve production");
-		}
+            // Act & Assert
+            Assert.Throws<Exception>(() => _instance.GetProduction(_WORKSPACE_ARTIFACT_ID, _PRODUCTION_ARTIFACT_ID), "Unable to retrieve production");
+        }
 
         [Test]
         public async Task GetProductionsForExportAsync_ItShouldRetrieveAllAvailableProductions()
@@ -88,11 +88,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             actualResults.Select(x => x.DisplayName).ShouldAllBeEquivalentTo(productionsDtos.Select(x => x.DisplayName));
             actualResults.Select(x => x.ArtifactID).ShouldAllBeEquivalentTo(productionsDtos.Select(x => x.ArtifactID));
         }
-		
-		[Test]
+        
+        [Test]
         public void GetProductionsForExportAsync_ItShouldThrowExceptionWhenExceptionIsThrown()
         {
-			// Arrange 
+            // Arrange 
             _productionService.RetrieveProducedByContextArtifactIDAsync(_WORKSPACE_ARTIFACT_ID, String.Empty).Throws<Exception>();
 
             // Act
@@ -133,31 +133,31 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         }
 
         [Test]
-		public void ItShouldCreateSingleProduction()
-		{
-			// Arrange
-			const int expectedResult = 1000;
-			var production = new Production(); 
-			_productionManager.CreateSingleAsync(_WORKSPACE_ARTIFACT_ID, production).Returns(expectedResult);
+        public void ItShouldCreateSingleProduction()
+        {
+            // Arrange
+            const int expectedResult = 1000;
+            var production = new Production(); 
+            _productionManager.CreateSingleAsync(_WORKSPACE_ARTIFACT_ID, production).Returns(expectedResult);
 
-			// Act
-			int actualResult = _instance.CreateSingle(_WORKSPACE_ARTIFACT_ID, production);
+            // Act
+            int actualResult = _instance.CreateSingle(_WORKSPACE_ARTIFACT_ID, production);
 
-			//Assert
-			Assert.That(actualResult, Is.EqualTo(expectedResult));
-		}
+            //Assert
+            Assert.That(actualResult, Is.EqualTo(expectedResult));
+        }
 
-		[Test]
-		public void ItShouldNotCreateSingleProduction()
-		{
-			// Arrange
-			var production = new Production();
-			_productionManager.CreateSingleAsync(_WORKSPACE_ARTIFACT_ID, production).Result.Throws(new Exception());
+        [Test]
+        public void ItShouldNotCreateSingleProduction()
+        {
+            // Arrange
+            var production = new Production();
+            _productionManager.CreateSingleAsync(_WORKSPACE_ARTIFACT_ID, production).Result.Throws(new Exception());
 
-			// Act & Assert
-			Assert.Throws<Exception>(() => _instance.CreateSingle(_WORKSPACE_ARTIFACT_ID, production),
-				"Unable to create production");
-		}
+            // Act & Assert
+            Assert.Throws<Exception>(() => _instance.CreateSingle(_WORKSPACE_ARTIFACT_ID, production),
+                "Unable to create production");
+        }
 
         private static DataSet CreateDataSet(IEnumerable<ProductionDTO> productionDtos)
         {

@@ -13,7 +13,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
     public partial class ObjectManagerStub
     {
         private void SetupProductionDocuments()
-	    {
+        {
            
             IList<DocumentTest> Filter(QueryRequest request, IList<DocumentTest> list)
             {
@@ -47,10 +47,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 return Task.FromResult(result);
             }
             );
-		}
+        }
 
-	    private bool IsProductionDocumentsQuery(QueryRequest query)
-	    {
+        private bool IsProductionDocumentsQuery(QueryRequest query)
+        {
             if (query.Condition == null)
             {
                 return false;

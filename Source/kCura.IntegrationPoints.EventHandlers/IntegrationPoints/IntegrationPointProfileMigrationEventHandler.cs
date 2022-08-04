@@ -22,259 +22,259 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
-	[Description("This is an event handler to update the Integration Point Profiles after workspace creation.")]
-	[Guid("DC9F2F04-5095-4FAC-96A5-7D8A213A1463")]
-	public class IntegrationPointProfileMigrationEventHandler : IntegrationPointMigrationEventHandlerBase
-	{
-		private readonly Lazy<IRelativityObjectManagerFactory> _relativityObjectManagerFactory;
-		private readonly IIntegrationPointProfilesQuery _integrationPointProfilesQuery;
-		private readonly Lazy<IRepositoryFactory> _repositoryFactory;
+    [Description("This is an event handler to update the Integration Point Profiles after workspace creation.")]
+    [Guid("DC9F2F04-5095-4FAC-96A5-7D8A213A1463")]
+    public class IntegrationPointProfileMigrationEventHandler : IntegrationPointMigrationEventHandlerBase
+    {
+        private readonly Lazy<IRelativityObjectManagerFactory> _relativityObjectManagerFactory;
+        private readonly IIntegrationPointProfilesQuery _integrationPointProfilesQuery;
+        private readonly Lazy<IRepositoryFactory> _repositoryFactory;
 
-		protected override string SuccessMessage => "Integration Point Profiles migrated successfully.";
-		protected override string GetFailureMessage(Exception ex) => "Failed to migrate the Integration Point Profiles.";
+        protected override string SuccessMessage => "Integration Point Profiles migrated successfully.";
+        protected override string GetFailureMessage(Exception ex) => "Failed to migrate the Integration Point Profiles.";
 
-		internal const string _profilesDoNotExistInCreatedWorkspaceMessageTemplate_Migration = @"Following profiles could not be migrated, because they don't exist in created workspace ({workspaceId}): {profiles}";
-		internal const string _profilesDoNotExistInCreatedWorkspaceMessageTemplate_Deletion = @"Following profiles could not be deleted, because they don't exist in created workspace ({workspaceId}): {profiles}";
-
-
-		public IntegrationPointProfileMigrationEventHandler()
-		{
-			_relativityObjectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(() => new RelativityObjectManagerFactory(Helper));
-			_repositoryFactory = new Lazy<IRepositoryFactory>(() => new RepositoryFactory(Helper, Helper.GetServicesManager()));
-			Func<int, IRelativityObjectManager> createRelativityObjectManager = CreateRelativityObjectManager;
-			var objectArtifactIdsByStringFieldValueQuery = new ObjectArtifactIdsByStringFieldValueQuery(createRelativityObjectManager);
-			_integrationPointProfilesQuery = new IntegrationPointProfilesQuery(createRelativityObjectManager, objectArtifactIdsByStringFieldValueQuery);
-		}
-
-		internal IntegrationPointProfileMigrationEventHandler(IErrorService errorService,
-			Func<IRelativityObjectManagerFactory> relativityObjectManagerFactoryProvider,
-			Func<IRepositoryFactory> repositoryFactoryProvider,
-			IIntegrationPointProfilesQuery integrationPointProfilesQuery) : base(errorService)
-		{
-			_relativityObjectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(relativityObjectManagerFactoryProvider);
-			_repositoryFactory = new Lazy<IRepositoryFactory>(repositoryFactoryProvider);
-			_integrationPointProfilesQuery = integrationPointProfilesQuery;
-
-		}
-
-		protected override void Run()
-		{
-			MigrateProfilesAsync().GetAwaiter().GetResult();
-		}
-
-		private async Task MigrateProfilesAsync()
-		{
-			int sourceProviderArtifactID = await _integrationPointProfilesQuery.GetSyncSourceProviderArtifactIDAsync(TemplateWorkspaceID).ConfigureAwait(false);
-			int destinationProviderArtifactID = await _integrationPointProfilesQuery.GetSyncDestinationProviderArtifactIDAsync(TemplateWorkspaceID).ConfigureAwait(false);
-			List<IntegrationPointProfile> allProfiles = (await _integrationPointProfilesQuery.GetAllProfilesAsync(TemplateWorkspaceID).ConfigureAwait(false)).ToList();
-			List<IntegrationPointProfile> profilesToPreserve = _integrationPointProfilesQuery
-				.GetProfilesToUpdate(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ToList();
-			List<IntegrationPointProfile> profilesToDelete = _integrationPointProfilesQuery
-				.GetProfilesToDelete(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ToList();
-
-			var profilesInCreatedWorkspace = new HashSet<int>(await _integrationPointProfilesQuery.CheckIfProfilesExistAsync(WorkspaceID, allProfiles.Select(x => x.ArtifactId)).ConfigureAwait(false));
+        internal const string _profilesDoNotExistInCreatedWorkspaceMessageTemplate_Migration = @"Following profiles could not be migrated, because they don't exist in created workspace ({workspaceId}): {profiles}";
+        internal const string _profilesDoNotExistInCreatedWorkspaceMessageTemplate_Deletion = @"Following profiles could not be deleted, because they don't exist in created workspace ({workspaceId}): {profiles}";
 
 
-			profilesToPreserve = CheckProfilesExistInWorkspace(profilesToPreserve, profilesInCreatedWorkspace, _profilesDoNotExistInCreatedWorkspaceMessageTemplate_Migration);
-			profilesToDelete = CheckProfilesExistInWorkspace(profilesToDelete, profilesInCreatedWorkspace, _profilesDoNotExistInCreatedWorkspaceMessageTemplate_Deletion);
+        public IntegrationPointProfileMigrationEventHandler()
+        {
+            _relativityObjectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(() => new RelativityObjectManagerFactory(Helper));
+            _repositoryFactory = new Lazy<IRepositoryFactory>(() => new RepositoryFactory(Helper, Helper.GetServicesManager()));
+            Func<int, IRelativityObjectManager> createRelativityObjectManager = CreateRelativityObjectManager;
+            var objectArtifactIdsByStringFieldValueQuery = new ObjectArtifactIdsByStringFieldValueQuery(createRelativityObjectManager);
+            _integrationPointProfilesQuery = new IntegrationPointProfilesQuery(createRelativityObjectManager, objectArtifactIdsByStringFieldValueQuery);
+        }
 
-			await Task.WhenAll(
-					DeleteProfilesAsync(profilesToDelete.Select(x => x.ArtifactId).ToList()),
-					UpdateProfilesAsync(profilesToPreserve)
-				).ConfigureAwait(false);
-		}
+        internal IntegrationPointProfileMigrationEventHandler(IErrorService errorService,
+            Func<IRelativityObjectManagerFactory> relativityObjectManagerFactoryProvider,
+            Func<IRepositoryFactory> repositoryFactoryProvider,
+            IIntegrationPointProfilesQuery integrationPointProfilesQuery) : base(errorService)
+        {
+            _relativityObjectManagerFactory = new Lazy<IRelativityObjectManagerFactory>(relativityObjectManagerFactoryProvider);
+            _repositoryFactory = new Lazy<IRepositoryFactory>(repositoryFactoryProvider);
+            _integrationPointProfilesQuery = integrationPointProfilesQuery;
 
-		/// <summary>
-		/// Checks if profile was copied over form template workspace to prevent crashing
-		///
-		/// https://jira.kcura.com/browse/REL-411909
-		/// </summary>
-		/// <param name="profilesFromTemplateWorkspace"></param>
-		/// <returns>Profiles loaded from created workspace selected by ArtifactId</returns>
-		private List<IntegrationPointProfile> CheckProfilesExistInWorkspace(List<IntegrationPointProfile> profilesToCheck, HashSet<int> allExitsingProfilesArtifactIds, string messageTemplate)
-		{
-			List<IntegrationPointProfile> existingProfiles = new List<IntegrationPointProfile>();
-			List<int> missingProfiles = new List<int>();
+        }
 
-			foreach (var profile in profilesToCheck)
-			{
-				if (allExitsingProfilesArtifactIds.Contains(profile.ArtifactId))
-				{
-					existingProfiles.Add(profile);
-				}
-				else
-				{
-					missingProfiles.Add(profile.ArtifactId);
-				}
-			}
+        protected override void Run()
+        {
+            MigrateProfilesAsync().GetAwaiter().GetResult();
+        }
 
-			if (existingProfiles.Count != profilesToCheck.Count)
-			{
-				Logger.LogWarning(messageTemplate, WorkspaceID, missingProfiles);
-			}
+        private async Task MigrateProfilesAsync()
+        {
+            int sourceProviderArtifactID = await _integrationPointProfilesQuery.GetSyncSourceProviderArtifactIDAsync(TemplateWorkspaceID).ConfigureAwait(false);
+            int destinationProviderArtifactID = await _integrationPointProfilesQuery.GetSyncDestinationProviderArtifactIDAsync(TemplateWorkspaceID).ConfigureAwait(false);
+            List<IntegrationPointProfile> allProfiles = (await _integrationPointProfilesQuery.GetAllProfilesAsync(TemplateWorkspaceID).ConfigureAwait(false)).ToList();
+            List<IntegrationPointProfile> profilesToPreserve = _integrationPointProfilesQuery
+                .GetProfilesToUpdate(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ToList();
+            List<IntegrationPointProfile> profilesToDelete = _integrationPointProfilesQuery
+                .GetProfilesToDelete(allProfiles, sourceProviderArtifactID, destinationProviderArtifactID).ToList();
 
-			return existingProfiles;
-		}
+            var profilesInCreatedWorkspace = new HashSet<int>(await _integrationPointProfilesQuery.CheckIfProfilesExistAsync(WorkspaceID, allProfiles.Select(x => x.ArtifactId)).ConfigureAwait(false));
 
-		private async Task DeleteProfilesAsync(IReadOnlyCollection<int> profilesIDs)
-		{
-			if (profilesIDs.IsNullOrEmpty())
-			{
-				return;
-			}
 
-			bool success = await CreateRelativityObjectManager(WorkspaceID)
-				.MassDeleteAsync(profilesIDs)
-				.ConfigureAwait(false);
-			if (!success)
-			{
-				throw new IntegrationPointsException("Deleting Integration Point profiles failed.");
-			}
-		}
+            profilesToPreserve = CheckProfilesExistInWorkspace(profilesToPreserve, profilesInCreatedWorkspace, _profilesDoNotExistInCreatedWorkspaceMessageTemplate_Migration);
+            profilesToDelete = CheckProfilesExistInWorkspace(profilesToDelete, profilesInCreatedWorkspace, _profilesDoNotExistInCreatedWorkspaceMessageTemplate_Deletion);
 
-		private async Task UpdateProfilesAsync(IReadOnlyCollection<IntegrationPointProfile> profilesToUpdate)
-		{
-			if (profilesToUpdate.IsNullOrEmpty())
-			{
-				return;
-			}
+            await Task.WhenAll(
+                    DeleteProfilesAsync(profilesToDelete.Select(x => x.ArtifactId).ToList()),
+                    UpdateProfilesAsync(profilesToPreserve)
+                ).ConfigureAwait(false);
+        }
 
-			IRelativityObjectManager objectManager = CreateRelativityObjectManager(WorkspaceID);
+        /// <summary>
+        /// Checks if profile was copied over form template workspace to prevent crashing
+        ///
+        /// https://jira.kcura.com/browse/REL-411909
+        /// </summary>
+        /// <param name="profilesFromTemplateWorkspace"></param>
+        /// <returns>Profiles loaded from created workspace selected by ArtifactId</returns>
+        private List<IntegrationPointProfile> CheckProfilesExistInWorkspace(List<IntegrationPointProfile> profilesToCheck, HashSet<int> allExitsingProfilesArtifactIds, string messageTemplate)
+        {
+            List<IntegrationPointProfile> existingProfiles = new List<IntegrationPointProfile>();
+            List<int> missingProfiles = new List<int>();
 
-			int sourceProviderArtifactID = await _integrationPointProfilesQuery.GetSyncSourceProviderArtifactIDAsync(WorkspaceID).ConfigureAwait(false);
-			int destinationProviderArtifactID = await _integrationPointProfilesQuery.GetSyncDestinationProviderArtifactIDAsync(WorkspaceID).ConfigureAwait(false);
-			int integrationPointTypeArtifactID = await _integrationPointProfilesQuery.GetIntegrationPointExportTypeArtifactIDAsync(WorkspaceID).ConfigureAwait(false);
+            foreach (var profile in profilesToCheck)
+            {
+                if (allExitsingProfilesArtifactIds.Contains(profile.ArtifactId))
+                {
+                    existingProfiles.Add(profile);
+                }
+                else
+                {
+                    missingProfiles.Add(profile.ArtifactId);
+                }
+            }
 
-			List<IntegrationPointProfile> failedProfiles = new List<IntegrationPointProfile>();
+            if (existingProfiles.Count != profilesToCheck.Count)
+            {
+                Logger.LogWarning(messageTemplate, WorkspaceID, missingProfiles);
+            }
 
-			foreach (IntegrationPointProfile profile in profilesToUpdate)
-			{
-				FieldRefValuePair[] fieldsToUpdate = GetFieldsToUpdate(profile, sourceProviderArtifactID, destinationProviderArtifactID, integrationPointTypeArtifactID);
-				bool success = await objectManager.MassUpdateAsync(new[] { profile.ArtifactId }, fieldsToUpdate, FieldUpdateBehavior.Replace).ConfigureAwait(false);
+            return existingProfiles;
+        }
 
-				if (!success)
-				{
-					failedProfiles.Add(profile);
-				}
-			}
+        private async Task DeleteProfilesAsync(IReadOnlyCollection<int> profilesIDs)
+        {
+            if (profilesIDs.IsNullOrEmpty())
+            {
+                return;
+            }
 
-			if (failedProfiles.Any())
-			{
-				string concatenatedProfiles = string.Join(",", failedProfiles.Select(profile => profile.ArtifactId));
-				throw new IntegrationPointsException($"Failed to migrate {failedProfiles.Count} profiles artifact IDs: {concatenatedProfiles}");
-			}
-		}
+            bool success = await CreateRelativityObjectManager(WorkspaceID)
+                .MassDeleteAsync(profilesIDs)
+                .ConfigureAwait(false);
+            if (!success)
+            {
+                throw new IntegrationPointsException("Deleting Integration Point profiles failed.");
+            }
+        }
 
-		private FieldRefValuePair[] GetFieldsToUpdate(IntegrationPointProfile profile, int sourceProviderArtifactID, int destinationProviderArtifactID, int integrationPointTypeArtifactID)
-		{
-			return new[]
-			{
-				new FieldRefValuePair()
-				{
-					Field = new FieldRef()
-					{
-						Guid = IntegrationPointProfileFieldGuids.SourceConfigurationGuid
-					},
-					Value = UpdateSourceConfiguration(profile.SourceConfiguration)
-				},
-				new FieldRefValuePair()
-				{
-					Field = new FieldRef()
-					{
-						Guid = IntegrationPointProfileFieldGuids.DestinationConfigurationGuid
-					},
-					Value = UpdateDestinationConfiguration(profile.DestinationConfiguration)
-				},
-				new FieldRefValuePair()
-				{
-					Field = new FieldRef
-					{
-						Guid = IntegrationPointProfileFieldGuids.SourceProviderGuid
-					},
-					Value = new RelativityObjectRef()
-					{
-						ArtifactID = sourceProviderArtifactID
-					}
-				},
-				new FieldRefValuePair()
-				{
-					Field = new FieldRef
-					{
-						Guid = IntegrationPointProfileFieldGuids.DestinationProviderGuid
-					},
-					Value = new RelativityObjectRef()
-					{
-						ArtifactID = destinationProviderArtifactID
-					}
-				},
-				new FieldRefValuePair()
-				{
-					Field = new FieldRef()
-					{
-						Guid = IntegrationPointProfileFieldGuids.TypeGuid
-					},
-					Value = new RelativityObjectRef()
-					{
-						ArtifactID = integrationPointTypeArtifactID
-					}
-				}
-			};
-		}
+        private async Task UpdateProfilesAsync(IReadOnlyCollection<IntegrationPointProfile> profilesToUpdate)
+        {
+            if (profilesToUpdate.IsNullOrEmpty())
+            {
+                return;
+            }
 
-		private string UpdateSourceConfiguration(string sourceConfigurationJson)
-		{
-			const string destinationFolderArtifactIdPropertyName = "FolderArtifactId";
+            IRelativityObjectManager objectManager = CreateRelativityObjectManager(WorkspaceID);
 
-			JObject sourceConfiguration = JObject.Parse(sourceConfigurationJson);
+            int sourceProviderArtifactID = await _integrationPointProfilesQuery.GetSyncSourceProviderArtifactIDAsync(WorkspaceID).ConfigureAwait(false);
+            int destinationProviderArtifactID = await _integrationPointProfilesQuery.GetSyncDestinationProviderArtifactIDAsync(WorkspaceID).ConfigureAwait(false);
+            int integrationPointTypeArtifactID = await _integrationPointProfilesQuery.GetIntegrationPointExportTypeArtifactIDAsync(WorkspaceID).ConfigureAwait(false);
+
+            List<IntegrationPointProfile> failedProfiles = new List<IntegrationPointProfile>();
+
+            foreach (IntegrationPointProfile profile in profilesToUpdate)
+            {
+                FieldRefValuePair[] fieldsToUpdate = GetFieldsToUpdate(profile, sourceProviderArtifactID, destinationProviderArtifactID, integrationPointTypeArtifactID);
+                bool success = await objectManager.MassUpdateAsync(new[] { profile.ArtifactId }, fieldsToUpdate, FieldUpdateBehavior.Replace).ConfigureAwait(false);
+
+                if (!success)
+                {
+                    failedProfiles.Add(profile);
+                }
+            }
+
+            if (failedProfiles.Any())
+            {
+                string concatenatedProfiles = string.Join(",", failedProfiles.Select(profile => profile.ArtifactId));
+                throw new IntegrationPointsException($"Failed to migrate {failedProfiles.Count} profiles artifact IDs: {concatenatedProfiles}");
+            }
+        }
+
+        private FieldRefValuePair[] GetFieldsToUpdate(IntegrationPointProfile profile, int sourceProviderArtifactID, int destinationProviderArtifactID, int integrationPointTypeArtifactID)
+        {
+            return new[]
+            {
+                new FieldRefValuePair()
+                {
+                    Field = new FieldRef()
+                    {
+                        Guid = IntegrationPointProfileFieldGuids.SourceConfigurationGuid
+                    },
+                    Value = UpdateSourceConfiguration(profile.SourceConfiguration)
+                },
+                new FieldRefValuePair()
+                {
+                    Field = new FieldRef()
+                    {
+                        Guid = IntegrationPointProfileFieldGuids.DestinationConfigurationGuid
+                    },
+                    Value = UpdateDestinationConfiguration(profile.DestinationConfiguration)
+                },
+                new FieldRefValuePair()
+                {
+                    Field = new FieldRef
+                    {
+                        Guid = IntegrationPointProfileFieldGuids.SourceProviderGuid
+                    },
+                    Value = new RelativityObjectRef()
+                    {
+                        ArtifactID = sourceProviderArtifactID
+                    }
+                },
+                new FieldRefValuePair()
+                {
+                    Field = new FieldRef
+                    {
+                        Guid = IntegrationPointProfileFieldGuids.DestinationProviderGuid
+                    },
+                    Value = new RelativityObjectRef()
+                    {
+                        ArtifactID = destinationProviderArtifactID
+                    }
+                },
+                new FieldRefValuePair()
+                {
+                    Field = new FieldRef()
+                    {
+                        Guid = IntegrationPointProfileFieldGuids.TypeGuid
+                    },
+                    Value = new RelativityObjectRef()
+                    {
+                        ArtifactID = integrationPointTypeArtifactID
+                    }
+                }
+            };
+        }
+
+        private string UpdateSourceConfiguration(string sourceConfigurationJson)
+        {
+            const string destinationFolderArtifactIdPropertyName = "FolderArtifactId";
+
+            JObject sourceConfiguration = JObject.Parse(sourceConfigurationJson);
             sourceConfiguration[nameof(SourceConfiguration.SourceViewId)] = 0;
             int templateSearchId = sourceConfiguration[nameof(SourceConfiguration.SavedSearchArtifactId)].ToObject<int>();
             sourceConfiguration[nameof(SourceConfiguration.SavedSearchArtifactId)] = TryMatchSavedSearchArtifactId(templateSearchId);
             sourceConfiguration[nameof(SourceConfiguration.SourceWorkspaceArtifactId)] = WorkspaceID;
-			sourceConfiguration[destinationFolderArtifactIdPropertyName] = null;
-			string updatedSourceConfiguration = sourceConfiguration.ToString(Formatting.None);
-			return updatedSourceConfiguration;
-		}
+            sourceConfiguration[destinationFolderArtifactIdPropertyName] = null;
+            string updatedSourceConfiguration = sourceConfiguration.ToString(Formatting.None);
+            return updatedSourceConfiguration;
+        }
 
-		private int TryMatchSavedSearchArtifactId(int templateSearchId)
-		{
-			if (templateSearchId > 0)
-			{
-				ISavedSearchQueryRepository templateSearchQueryRepository = _repositoryFactory.Value.GetSavedSearchQueryRepository(TemplateWorkspaceID);
-				SavedSearchDTO templateSearch = templateSearchQueryRepository.RetrieveSavedSearch(templateSearchId);
-				if (templateSearch != null)
-				{
-					ISavedSearchQueryRepository destinationSearchQueryRepository = _repositoryFactory.Value.GetSavedSearchQueryRepository(WorkspaceID);
-					IEnumerable<SavedSearchDTO> allDestinationSearches = destinationSearchQueryRepository.RetrievePublicSavedSearches();
-					List<SavedSearchDTO> sameNameSearches = allDestinationSearches.Where(x => x.Name == templateSearch.Name).ToList();
+        private int TryMatchSavedSearchArtifactId(int templateSearchId)
+        {
+            if (templateSearchId > 0)
+            {
+                ISavedSearchQueryRepository templateSearchQueryRepository = _repositoryFactory.Value.GetSavedSearchQueryRepository(TemplateWorkspaceID);
+                SavedSearchDTO templateSearch = templateSearchQueryRepository.RetrieveSavedSearch(templateSearchId);
+                if (templateSearch != null)
+                {
+                    ISavedSearchQueryRepository destinationSearchQueryRepository = _repositoryFactory.Value.GetSavedSearchQueryRepository(WorkspaceID);
+                    IEnumerable<SavedSearchDTO> allDestinationSearches = destinationSearchQueryRepository.RetrievePublicSavedSearches();
+                    List<SavedSearchDTO> sameNameSearches = allDestinationSearches.Where(x => x.Name == templateSearch.Name).ToList();
 
-					SavedSearchDTO matchedSearch = null;
-					if (sameNameSearches.Count > 1)
-					{
-						matchedSearch = sameNameSearches.FirstOrDefault(x => x.ArtifactId == templateSearch.ArtifactId);
-					}
-					else if (sameNameSearches.Count == 1)
-					{
-						matchedSearch = sameNameSearches.First();
-					}
+                    SavedSearchDTO matchedSearch = null;
+                    if (sameNameSearches.Count > 1)
+                    {
+                        matchedSearch = sameNameSearches.FirstOrDefault(x => x.ArtifactId == templateSearch.ArtifactId);
+                    }
+                    else if (sameNameSearches.Count == 1)
+                    {
+                        matchedSearch = sameNameSearches.First();
+                    }
 
-					return matchedSearch?.ArtifactId ?? 0;
-				}
-			}
+                    return matchedSearch?.ArtifactId ?? 0;
+                }
+            }
 
-			return 0;
-		}
+            return 0;
+        }
 
-		private string UpdateDestinationConfiguration(string destinationConfigurationJson)
-		{
-			JObject destinationConfiguration = JObject.Parse(destinationConfigurationJson);
-			destinationConfiguration[nameof(ImportSettings.ImagePrecedence)] = null;
-			string updatedDestinationConfiguration = destinationConfiguration.ToString(Formatting.None);
-			return updatedDestinationConfiguration;
-		}
+        private string UpdateDestinationConfiguration(string destinationConfigurationJson)
+        {
+            JObject destinationConfiguration = JObject.Parse(destinationConfigurationJson);
+            destinationConfiguration[nameof(ImportSettings.ImagePrecedence)] = null;
+            string updatedDestinationConfiguration = destinationConfiguration.ToString(Formatting.None);
+            return updatedDestinationConfiguration;
+        }
 
-		private IRelativityObjectManager CreateRelativityObjectManager(int workspaceID) =>
-			_relativityObjectManagerFactory.Value.CreateRelativityObjectManager(workspaceID);
+        private IRelativityObjectManager CreateRelativityObjectManager(int workspaceID) =>
+            _relativityObjectManagerFactory.Value.CreateRelativityObjectManager(workspaceID);
 
-		private int WorkspaceID => Helper.GetActiveCaseID();
-	}
+        private int WorkspaceID => Helper.GetActiveCaseID();
+    }
 }

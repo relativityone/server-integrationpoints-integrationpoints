@@ -2,11 +2,11 @@
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.Models
 {
-	internal enum RelativityProviderOverwrite
-	{
-		AppendOnly,
-		OverlayOnly,
-		[Term("Append/Overlay")]
-		AppendOverlay
-	}
+    internal enum RelativityProviderOverwrite
+    {
+        AppendOnly,
+        OverlayOnly,
+        [Term("Append/Overlay")]
+        AppendOverlay
+    }
 }

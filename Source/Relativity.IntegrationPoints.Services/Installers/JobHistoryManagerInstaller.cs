@@ -15,50 +15,50 @@ using Relativity.IntegrationPoints.Services.JobHistory;
 
 namespace Relativity.IntegrationPoints.Services.Installers
 {
-	public class JobHistoryManagerInstaller : Installer
-	{
-		private readonly List<IWindsorInstaller> _dependencies;
+    public class JobHistoryManagerInstaller : Installer
+    {
+        private readonly List<IWindsorInstaller> _dependencies;
 
-		public JobHistoryManagerInstaller()
-		{
-			_dependencies = new List<IWindsorInstaller>
-			{
-				new QueryInstallers(),
-				new SharedAgentInstaller(),
-				new ServicesInstaller()
-			};
-		}
+        public JobHistoryManagerInstaller()
+        {
+            _dependencies = new List<IWindsorInstaller>
+            {
+                new QueryInstallers(),
+                new SharedAgentInstaller(),
+                new ServicesInstaller()
+            };
+        }
 
-		protected override IList<IWindsorInstaller> Dependencies => _dependencies;
+        protected override IList<IWindsorInstaller> Dependencies => _dependencies;
 
-		protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceID)
-		{
-			container.Register(Component.For<IDestinationParser>().ImplementedBy<DestinationParser>().LifestyleTransient());
-			container.Register(Component.For<IJobHistoryAccess>().ImplementedBy<JobHistoryAccess>().LifestyleTransient());
-			container.Register(Component.For<IJobHistorySummaryModelBuilder>().ImplementedBy<JobHistorySummaryModelBuilder>().LifestyleTransient());
-			container.Register(Component.For<Repositories.IJobHistoryRepository>().ImplementedBy<Repositories.Implementations.JobHistoryRepository>().LifestyleTransient());
-			container.Register(Component
-				.For<IRelativityIntegrationPointsRepository>()
-				.ImplementedBy<RelativityIntegrationPointsRepositoryAdminAccess>()
-				.UsingFactoryMethod(k => CreateRelativityIntegrationPointsRepository(k, workspaceID))
-				.LifestyleTransient()
-			);
-			container.Register(Component.For<ICompletedJobsHistoryRepository>().ImplementedBy<CompletedJobsHistoryRepository>().LifestyleTransient());
+        protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceID)
+        {
+            container.Register(Component.For<IDestinationParser>().ImplementedBy<DestinationParser>().LifestyleTransient());
+            container.Register(Component.For<IJobHistoryAccess>().ImplementedBy<JobHistoryAccess>().LifestyleTransient());
+            container.Register(Component.For<IJobHistorySummaryModelBuilder>().ImplementedBy<JobHistorySummaryModelBuilder>().LifestyleTransient());
+            container.Register(Component.For<Repositories.IJobHistoryRepository>().ImplementedBy<Repositories.Implementations.JobHistoryRepository>().LifestyleTransient());
+            container.Register(Component
+                .For<IRelativityIntegrationPointsRepository>()
+                .ImplementedBy<RelativityIntegrationPointsRepositoryAdminAccess>()
+                .UsingFactoryMethod(k => CreateRelativityIntegrationPointsRepository(k, workspaceID))
+                .LifestyleTransient()
+            );
+            container.Register(Component.For<ICompletedJobsHistoryRepository>().ImplementedBy<CompletedJobsHistoryRepository>().LifestyleTransient());
 
-			container
-				.AddWorkspaceContext(workspaceID)
-				.AddAuthTokenGenerator();
-		}
+            container
+                .AddWorkspaceContext(workspaceID)
+                .AddAuthTokenGenerator();
+        }
 
-		private IRelativityIntegrationPointsRepository CreateRelativityIntegrationPointsRepository(IKernel k, int workspaceID)
-		{
-			var relativityObjectManagerServiceAdminAccess = new RelativityObjectManagerServiceAdminAccess(k.Resolve<IHelper>(), workspaceID);
-			IIntegrationPointRepository integrationPointRepository = k.Resolve<IIntegrationPointRepository>();
+        private IRelativityIntegrationPointsRepository CreateRelativityIntegrationPointsRepository(IKernel k, int workspaceID)
+        {
+            var relativityObjectManagerServiceAdminAccess = new RelativityObjectManagerServiceAdminAccess(k.Resolve<IHelper>(), workspaceID);
+            IIntegrationPointRepository integrationPointRepository = k.Resolve<IIntegrationPointRepository>();
 
-			return new RelativityIntegrationPointsRepositoryAdminAccess(
-				relativityObjectManagerServiceAdminAccess,
-				integrationPointRepository
-			);
-		}
-	}
+            return new RelativityIntegrationPointsRepositoryAdminAccess(
+                relativityObjectManagerServiceAdminAccess,
+                integrationPointRepository
+            );
+        }
+    }
 }

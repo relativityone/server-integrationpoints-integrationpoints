@@ -13,46 +13,46 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
-	[TestFixture, Category("Unit")]
-	internal class GetAvailableEncodingsControllerTests : TestBase
-	{
+    [TestFixture, Category("Unit")]
+    internal class GetAvailableEncodingsControllerTests : TestBase
+    {
         #region Fields
 
-	    private GetAvailableEncodingsController _subjectUnderTest;
-	    private EncodingInfo[] _allEncodings;
+        private GetAvailableEncodingsController _subjectUnderTest;
+        private EncodingInfo[] _allEncodings;
 
         #endregion //Fields
 
         [SetUp]
-		public override void SetUp()
-		{
-		    _allEncodings = Encoding.GetEncodings();
+        public override void SetUp()
+        {
+            _allEncodings = Encoding.GetEncodings();
 
             _subjectUnderTest = new GetAvailableEncodingsController()
-		    {
-		        Request = new HttpRequestMessage()
-		    };
+            {
+                Request = new HttpRequestMessage()
+            };
 
-		    _subjectUnderTest.Request.SetConfiguration(new HttpConfiguration());
+            _subjectUnderTest.Request.SetConfiguration(new HttpConfiguration());
         }
 
-		[Test]
-		public void ItShouldGetAllEncodingsOrderedByOrdinalDisplayName()
-		{
-		    // Act
-		    HttpResponseMessage httpResponseMessage = _subjectUnderTest.Get();
+        [Test]
+        public void ItShouldGetAllEncodingsOrderedByOrdinalDisplayName()
+        {
+            // Act
+            HttpResponseMessage httpResponseMessage = _subjectUnderTest.Get();
 
-		    // Assert
-		    List<AvailableEncodingInfo> retValue;
-		    httpResponseMessage.TryGetContentValue(out retValue);
+            // Assert
+            List<AvailableEncodingInfo> retValue;
+            httpResponseMessage.TryGetContentValue(out retValue);
 
-		    Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(httpResponseMessage.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
             Assert.That(retValue.Count, Is.EqualTo(_allEncodings.Length));
-		    Assert.That(retValue.TrueForAll(encodingInfo =>
-		        _allEncodings.Any(e => e.DisplayName == encodingInfo.DisplayName && e.Name == encodingInfo.Name)));
+            Assert.That(retValue.TrueForAll(encodingInfo =>
+                _allEncodings.Any(e => e.DisplayName == encodingInfo.DisplayName && e.Name == encodingInfo.Name)));
 
-		    retValue.Should().BeInAscendingOrder( e => e.DisplayName, StringComparer.Ordinal );
-		}
-	}
+            retValue.Should().BeInAscendingOrder( e => e.DisplayName, StringComparer.Ordinal );
+        }
+    }
 }

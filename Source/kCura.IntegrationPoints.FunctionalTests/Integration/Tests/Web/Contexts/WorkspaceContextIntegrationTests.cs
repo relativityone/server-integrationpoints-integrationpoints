@@ -17,149 +17,149 @@ using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Web.Contexts
 {
-	[TestFixture]
-	[Feature.DataTransfer.IntegrationPoints]
-	public class WorkspaceContextIntegrationTests
-	{
-		private IWindsorContainer _container;
-		private Mock<HttpRequestBase> _httpRequestMock;
-		private Mock<ISessionService> _sessionServiceMock;
+    [TestFixture]
+    [Feature.DataTransfer.IntegrationPoints]
+    public class WorkspaceContextIntegrationTests
+    {
+        private IWindsorContainer _container;
+        private Mock<HttpRequestBase> _httpRequestMock;
+        private Mock<ISessionService> _sessionServiceMock;
 
 
-		[SetUp]
-		public void SetUp()
-		{
-			_httpRequestMock = new Mock<HttpRequestBase>();
-			_sessionServiceMock = new Mock<ISessionService>();
+        [SetUp]
+        public void SetUp()
+        {
+            _httpRequestMock = new Mock<HttpRequestBase>();
+            _sessionServiceMock = new Mock<ISessionService>();
 
-			_container = CreateIoCContainer();
-		}
+            _container = CreateIoCContainer();
+        }
 
-		[IdentifiedTest("12512dc1-e99d-4585-84e0-a547dfb34df5")]		
-		public void ShouldReturnCorrectWorkspaceIdWhenRequestContextContainsData()
-		{
-			// arrange
-			const int requestContextWorkspaceID = 8782;
-			const int sessionWorkspaceID = 4232;
+        [IdentifiedTest("12512dc1-e99d-4585-84e0-a547dfb34df5")]        
+        public void ShouldReturnCorrectWorkspaceIdWhenRequestContextContainsData()
+        {
+            // arrange
+            const int requestContextWorkspaceID = 8782;
+            const int sessionWorkspaceID = 4232;
 
-			SetupRequestContextMock(requestContextWorkspaceID);
-			SetupSessionServiceMock(sessionWorkspaceID);
+            SetupRequestContextMock(requestContextWorkspaceID);
+            SetupSessionServiceMock(sessionWorkspaceID);
 
 
-			TestController sut = _container.Resolve<TestController>();
+            TestController sut = _container.Resolve<TestController>();
 
-			// act
-			int actualWorkspaceID = sut.GetWorkspaceID();
+            // act
+            int actualWorkspaceID = sut.GetWorkspaceID();
 
-			// assert
-			actualWorkspaceID.Should().Be(requestContextWorkspaceID, "because workspaceId was present in RequestContext");
-		}
+            // assert
+            actualWorkspaceID.Should().Be(requestContextWorkspaceID, "because workspaceId was present in RequestContext");
+        }
 
-		[IdentifiedTest("4708e9c8-7e28-414c-815a-db16ffb2e8d2")]		
-		public void ShouldReturnCorrectWorkspaceIdWhenRequestContextIsEmptyAndSessionReturnsData()
-		{
-			// arrange
-			const int sessionWorkspaceID = 4232;
+        [IdentifiedTest("4708e9c8-7e28-414c-815a-db16ffb2e8d2")]        
+        public void ShouldReturnCorrectWorkspaceIdWhenRequestContextIsEmptyAndSessionReturnsData()
+        {
+            // arrange
+            const int sessionWorkspaceID = 4232;
 
-			SetupRequestContextMock(workspaceID: null);
-			SetupSessionServiceMock(sessionWorkspaceID);
+            SetupRequestContextMock(workspaceID: null);
+            SetupSessionServiceMock(sessionWorkspaceID);
 
-			TestController sut = _container.Resolve<TestController>();
+            TestController sut = _container.Resolve<TestController>();
 
-			// act
-			int actualWorkspaceID = sut.GetWorkspaceID();
+            // act
+            int actualWorkspaceID = sut.GetWorkspaceID();
 
-			// assert
-			actualWorkspaceID.Should().Be(sessionWorkspaceID, "because session contains this value and RequestContext was empty.");
-		}
+            // assert
+            actualWorkspaceID.Should().Be(sessionWorkspaceID, "because session contains this value and RequestContext was empty.");
+        }
 
-		[IdentifiedTest("afe02d71-d42b-4db7-96d8-e5f084aa16e7")]		
-		public void ShouldThrowExceptionWhenNoWorkspaceContextIsPresent()
-		{
-			// arrange
-			SetupRequestContextMock(workspaceID: null);
-			SetupSessionServiceMock(workspaceID: null);
+        [IdentifiedTest("afe02d71-d42b-4db7-96d8-e5f084aa16e7")]        
+        public void ShouldThrowExceptionWhenNoWorkspaceContextIsPresent()
+        {
+            // arrange
+            SetupRequestContextMock(workspaceID: null);
+            SetupSessionServiceMock(workspaceID: null);
 
-			TestController sut = _container.Resolve<TestController>();
+            TestController sut = _container.Resolve<TestController>();
 
-			// act
-			Action getWorkspaceIDAction = () => sut.GetWorkspaceID();
+            // act
+            Action getWorkspaceIDAction = () => sut.GetWorkspaceID();
 
-			// assert
-			getWorkspaceIDAction.ShouldThrow<WorkspaceIdNotFoundException>(
-				"because workspace context is not present");
-		}
+            // assert
+            getWorkspaceIDAction.ShouldThrow<WorkspaceIdNotFoundException>(
+                "because workspace context is not present");
+        }
 
-		private void SetupRequestContextMock(int? workspaceID)
-		{
-			var routeData = new RouteData();
-			if (workspaceID.HasValue)
-			{
-				routeData.Values["workspaceID"] = workspaceID.ToString();
-			}
+        private void SetupRequestContextMock(int? workspaceID)
+        {
+            var routeData = new RouteData();
+            if (workspaceID.HasValue)
+            {
+                routeData.Values["workspaceID"] = workspaceID.ToString();
+            }
 
-			var requestContextMock = new Mock<RequestContext>();
-			requestContextMock
-				.Setup(x => x.RouteData)
-				.Returns(routeData);
+            var requestContextMock = new Mock<RequestContext>();
+            requestContextMock
+                .Setup(x => x.RouteData)
+                .Returns(routeData);
 
-			_httpRequestMock
-				.Setup(x => x.RequestContext)
-				.Returns(requestContextMock.Object);
-		}
+            _httpRequestMock
+                .Setup(x => x.RequestContext)
+                .Returns(requestContextMock.Object);
+        }
 
-		private void SetupSessionServiceMock(int? workspaceID)
-		{
-			_sessionServiceMock
-				.Setup(x => x.WorkspaceID)
-				.Returns(workspaceID);
-		}
+        private void SetupSessionServiceMock(int? workspaceID)
+        {
+            _sessionServiceMock
+                .Setup(x => x.WorkspaceID)
+                .Returns(workspaceID);
+        }
 
-		private void RegisterDependencies(IWindsorContainer container)
-		{
-			var loggerMock = new Mock<IAPILog>
-			{
-				DefaultValue = DefaultValue.Mock
-			};
+        private void RegisterDependencies(IWindsorContainer container)
+        {
+            var loggerMock = new Mock<IAPILog>
+            {
+                DefaultValue = DefaultValue.Mock
+            };
 
-			IRegistration[] dependencies =
-			{
-				Component.For<HttpRequestBase>().Instance(_httpRequestMock.Object),
-				Component.For<ISessionService>().Instance(_sessionServiceMock.Object),
-				Component.For<IAPILog>().Instance(loggerMock.Object)
-			};
+            IRegistration[] dependencies =
+            {
+                Component.For<HttpRequestBase>().Instance(_httpRequestMock.Object),
+                Component.For<ISessionService>().Instance(_sessionServiceMock.Object),
+                Component.For<IAPILog>().Instance(loggerMock.Object)
+            };
 
-			container.Register(dependencies);
-		}
+            container.Register(dependencies);
+        }
 
-		private IWindsorContainer CreateIoCContainer()
-		{
-			var container = new WindsorContainer();
-			container.ConfigureChangingLifestyleFromPerWebRequestToTransientBecausePerWebRequestIsNotResolvableInTests();
-			container.AddWorkspaceContext();
-			RegisterDependencies(container);
-			container.Register(
-				Component
-					.For<TestController>()
-					.LifestyleTransient()
-			);
+        private IWindsorContainer CreateIoCContainer()
+        {
+            var container = new WindsorContainer();
+            container.ConfigureChangingLifestyleFromPerWebRequestToTransientBecausePerWebRequestIsNotResolvableInTests();
+            container.AddWorkspaceContext();
+            RegisterDependencies(container);
+            container.Register(
+                Component
+                    .For<TestController>()
+                    .LifestyleTransient()
+            );
 
-			return container;
-		}
+            return container;
+        }
 
-		private class TestController : Controller
-		{
-			private readonly IWorkspaceContext _workspaceContext;
+        private class TestController : Controller
+        {
+            private readonly IWorkspaceContext _workspaceContext;
 
-			public TestController(IWorkspaceContext workspaceContext)
-			{
-				_workspaceContext = workspaceContext;
-			}
+            public TestController(IWorkspaceContext workspaceContext)
+            {
+                _workspaceContext = workspaceContext;
+            }
 
-			public int GetWorkspaceID()
-			{
-				return _workspaceContext.GetWorkspaceID();
-			}
-		}
-	}
+            public int GetWorkspaceID()
+            {
+                return _workspaceContext.GetWorkspaceID();
+            }
+        }
+    }
 }

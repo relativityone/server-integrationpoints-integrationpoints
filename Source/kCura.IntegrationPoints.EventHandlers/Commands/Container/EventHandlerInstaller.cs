@@ -30,91 +30,91 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 {
     internal class EventHandlerInstaller : IWindsorInstaller
-	{
-		private readonly IEHContext _context;
+    {
+        private readonly IEHContext _context;
 
-		public EventHandlerInstaller(IEHContext context)
-		{
-			_context = context;
-		}
+        public EventHandlerInstaller(IEHContext context)
+        {
+            _context = context;
+        }
 
-		public void Install(IWindsorContainer container, IConfigurationStore store)
-		{
-			container.Install(new InfrastructureInstaller());
+        public void Install(IWindsorContainer container, IConfigurationStore store)
+        {
+            container.Install(new InfrastructureInstaller());
 
-			InstallDependencies(container);
-		}
+            InstallDependencies(container);
+        }
 
-		private void InstallDependencies(IWindsorContainer container)
-		{
-			container.Register(Component.For<IEHContext>().Instance(_context).LifestyleSingleton());
-			container.Register(Component.For<IHelper, IEHHelper>().Instance(_context.Helper).LifestyleSingleton());
+        private void InstallDependencies(IWindsorContainer container)
+        {
+            container.Register(Component.For<IEHContext>().Instance(_context).LifestyleSingleton());
+            container.Register(Component.For<IHelper, IEHHelper>().Instance(_context.Helper).LifestyleSingleton());
 
-			container.Register(Component.For<IServiceContextHelper>().UsingFactoryMethod(k =>
-			{
-				IEHContext context = k.Resolve<IEHContext>();
-				return new ServiceContextHelperForEventHandlers(context.Helper, context.Helper.GetActiveCaseID());
-			}).LifestyleSingleton());
+            container.Register(Component.For<IServiceContextHelper>().UsingFactoryMethod(k =>
+            {
+                IEHContext context = k.Resolve<IEHContext>();
+                return new ServiceContextHelperForEventHandlers(context.Helper, context.Helper.GetActiveCaseID());
+            }).LifestyleSingleton());
 
-			container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(k =>
-			{
-				IEHContext context = k.Resolve<IEHContext>();
-				return new WorkspaceDBContext(context.Helper.GetDBContext(context.Helper.GetActiveCaseID()));
-			}).LifestyleTransient());
+            container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(k =>
+            {
+                IEHContext context = k.Resolve<IEHContext>();
+                return new WorkspaceDBContext(context.Helper.GetDBContext(context.Helper.GetActiveCaseID()));
+            }).LifestyleTransient());
 
-			container.Register(Component.For<IWorkspaceContext>()
-				.ImplementedBy<EventHandlerWorkspaceContextService>()
-				.LifestyleTransient()
-			);
+            container.Register(Component.For<IWorkspaceContext>()
+                .ImplementedBy<EventHandlerWorkspaceContextService>()
+                .LifestyleTransient()
+            );
 
-			container.Register(Component.For<IIntegrationPointProviderValidator>().UsingFactoryMethod(k =>
-					new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), k.Resolve<IIntegrationPointSerializer>(),  k.Resolve<IRelativityObjectManagerFactory>()))
-				.LifestyleSingleton());
+            container.Register(Component.For<IIntegrationPointProviderValidator>().UsingFactoryMethod(k =>
+                    new IntegrationPointProviderValidator(Enumerable.Empty<IValidator>(), k.Resolve<IIntegrationPointSerializer>(),  k.Resolve<IRelativityObjectManagerFactory>()))
+                .LifestyleSingleton());
 
-			container.Register(Component.For<IIntegrationPointPermissionValidator>().UsingFactoryMethod(k =>
-				new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(),
-					k.Resolve<IIntegrationPointSerializer>())).LifestyleSingleton());
+            container.Register(Component.For<IIntegrationPointPermissionValidator>().UsingFactoryMethod(k =>
+                new IntegrationPointPermissionValidator(Enumerable.Empty<IPermissionValidator>(),
+                    k.Resolve<IIntegrationPointSerializer>())).LifestyleSingleton());
 
-			container.Register(Component.For<IValidationExecutor>().ImplementedBy<ValidationExecutor>().LifestyleSingleton());
+            container.Register(Component.For<IValidationExecutor>().ImplementedBy<ValidationExecutor>().LifestyleSingleton());
 
-			container.Register(Component.For<IAuthTokenGenerator>().UsingFactoryMethod(kernel =>
-			{
-				IEHContext context = kernel.Resolve<IEHContext>();
-				IOAuth2ClientFactory oauth2ClientFactory = kernel.Resolve<IOAuth2ClientFactory>();
-				ITokenProviderFactoryFactory tokenProviderFactory = kernel.Resolve<ITokenProviderFactoryFactory>();
-				int userID = context.Helper.GetAuthenticationManager().UserInfo.ArtifactID;
-				var contextUser = new CurrentUser(userID);
+            container.Register(Component.For<IAuthTokenGenerator>().UsingFactoryMethod(kernel =>
+            {
+                IEHContext context = kernel.Resolve<IEHContext>();
+                IOAuth2ClientFactory oauth2ClientFactory = kernel.Resolve<IOAuth2ClientFactory>();
+                ITokenProviderFactoryFactory tokenProviderFactory = kernel.Resolve<ITokenProviderFactoryFactory>();
+                int userID = context.Helper.GetAuthenticationManager().UserInfo.ArtifactID;
+                var contextUser = new CurrentUser(userID);
 
-				return new OAuth2TokenGenerator(context.Helper, oauth2ClientFactory, tokenProviderFactory, contextUser);
-			}).LifestyleTransient());
+                return new OAuth2TokenGenerator(context.Helper, oauth2ClientFactory, tokenProviderFactory, contextUser);
+            }).LifestyleTransient());
 
-			container.Register(Component.For<IErrorService>().ImplementedBy<EhErrorService>().LifestyleTransient());
+            container.Register(Component.For<IErrorService>().ImplementedBy<EhErrorService>().LifestyleTransient());
 
-			container.Register(Component.For<DeleteIntegrationPointCommand>().ImplementedBy<DeleteIntegrationPointCommand>().LifestyleTransient());
-			container.Register(Component.For<PreCascadeDeleteIntegrationPointCommand>().ImplementedBy<PreCascadeDeleteIntegrationPointCommand>().LifestyleTransient());
-			container.Register(Component.For<RemoveAgentJobLogTableCommand>().ImplementedBy<RemoveAgentJobLogTableCommand>().LifestyleTransient());
-			container.Register(Component.For<ImportNativeFileCopyModeUpdater>().ImplementedBy<ImportNativeFileCopyModeUpdater>().LifestyleTransient());
-			container.Register(Component.For<SetImportNativeFileCopyModeCommand>().ImplementedBy<SetImportNativeFileCopyModeCommand>().LifestyleTransient());
-			container.Register(Component.For<IRemoveSecuredConfigurationFromIntegrationPointService>().ImplementedBy<RemoveSecuredConfigurationFromIntegrationPointService>().LifestyleSingleton());
-			container.Register(Component.For<UpdateRelativityConfigurationCommand>().ImplementedBy<UpdateRelativityConfigurationCommand>().LifestyleTransient());
-			container.Register(Component.For<IIntegrationPointSecretDelete>().UsingFactoryMethod(k => IntegrationPointSecretDeleteFactory.Create(k.Resolve<IEHContext>().Helper))
-				.LifestyleTransient());
-			container.Register(Component.For<ICorrespondingJobDelete>().ImplementedBy<CorrespondingJobDelete>().LifestyleTransient());
-			container.Register(Component.For<IPreCascadeDeleteEventHandlerValidator>().ImplementedBy<PreCascadeDeleteEventHandlerValidator>().LifestyleTransient());
-			container.Register(Component.For<IArtifactsToDelete>().ImplementedBy<ArtifactsToDelete>().LifestyleTransient());
-			container.Register(Component.For<RenameCustodianToEntityInIntegrationPointConfigurationCommand>().ImplementedBy<RenameCustodianToEntityInIntegrationPointConfigurationCommand>().LifestyleTransient());
-			container.Register(Component.For<MigrateSecretCatalogPathToSecretStorePathCommand>().ImplementedBy<MigrateSecretCatalogPathToSecretStorePathCommand>().LifestyleTransient());
+            container.Register(Component.For<DeleteIntegrationPointCommand>().ImplementedBy<DeleteIntegrationPointCommand>().LifestyleTransient());
+            container.Register(Component.For<PreCascadeDeleteIntegrationPointCommand>().ImplementedBy<PreCascadeDeleteIntegrationPointCommand>().LifestyleTransient());
+            container.Register(Component.For<RemoveAgentJobLogTableCommand>().ImplementedBy<RemoveAgentJobLogTableCommand>().LifestyleTransient());
+            container.Register(Component.For<ImportNativeFileCopyModeUpdater>().ImplementedBy<ImportNativeFileCopyModeUpdater>().LifestyleTransient());
+            container.Register(Component.For<SetImportNativeFileCopyModeCommand>().ImplementedBy<SetImportNativeFileCopyModeCommand>().LifestyleTransient());
+            container.Register(Component.For<IRemoveSecuredConfigurationFromIntegrationPointService>().ImplementedBy<RemoveSecuredConfigurationFromIntegrationPointService>().LifestyleSingleton());
+            container.Register(Component.For<UpdateRelativityConfigurationCommand>().ImplementedBy<UpdateRelativityConfigurationCommand>().LifestyleTransient());
+            container.Register(Component.For<IIntegrationPointSecretDelete>().UsingFactoryMethod(k => IntegrationPointSecretDeleteFactory.Create(k.Resolve<IEHContext>().Helper))
+                .LifestyleTransient());
+            container.Register(Component.For<ICorrespondingJobDelete>().ImplementedBy<CorrespondingJobDelete>().LifestyleTransient());
+            container.Register(Component.For<IPreCascadeDeleteEventHandlerValidator>().ImplementedBy<PreCascadeDeleteEventHandlerValidator>().LifestyleTransient());
+            container.Register(Component.For<IArtifactsToDelete>().ImplementedBy<ArtifactsToDelete>().LifestyleTransient());
+            container.Register(Component.For<RenameCustodianToEntityInIntegrationPointConfigurationCommand>().ImplementedBy<RenameCustodianToEntityInIntegrationPointConfigurationCommand>().LifestyleTransient());
+            container.Register(Component.For<MigrateSecretCatalogPathToSecretStorePathCommand>().ImplementedBy<MigrateSecretCatalogPathToSecretStorePathCommand>().LifestyleTransient());
 
-			container.Register(Component.For<ISyncRdoCleanupService>().ImplementedBy<SyncRdoCleanupService>().LifestyleTransient());
-			container.Register(Component.For<SyncRdoDeleteCommand>().ImplementedBy<SyncRdoDeleteCommand>().LifestyleTransient());
+            container.Register(Component.For<ISyncRdoCleanupService>().ImplementedBy<SyncRdoCleanupService>().LifestyleTransient());
+            container.Register(Component.For<SyncRdoDeleteCommand>().ImplementedBy<SyncRdoDeleteCommand>().LifestyleTransient());
 
-			container.Register(Component.For<NonDocumentObjectMigrationCommand>().ImplementedBy<NonDocumentObjectMigrationCommand>().LifestyleTransient());
+            container.Register(Component.For<NonDocumentObjectMigrationCommand>().ImplementedBy<NonDocumentObjectMigrationCommand>().LifestyleTransient());
 
-			container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>().LifestyleTransient());
+            container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>().LifestyleTransient());
 
-			container.Register(Component.For<RegisterScheduleJobSumMetricsCommand>().ImplementedBy<RegisterScheduleJobSumMetricsCommand>().LifestyleTransient());
-			
-			container.AddSecretStoreMigrator();
-		}
+            container.Register(Component.For<RegisterScheduleJobSumMetricsCommand>().ImplementedBy<RegisterScheduleJobSumMetricsCommand>().LifestyleTransient());
+            
+            container.AddSecretStoreMigrator();
+        }
     }
 }

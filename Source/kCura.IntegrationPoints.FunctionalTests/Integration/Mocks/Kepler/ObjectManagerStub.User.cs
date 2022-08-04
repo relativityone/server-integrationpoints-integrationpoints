@@ -7,9 +7,9 @@ using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
-	public partial class ObjectManagerStub
-	{
-		private void SetupUser()
+    public partial class ObjectManagerStub
+    {
+        private void SetupUser()
         {
             Mock.Setup(x => x.QuerySlimAsync(It.IsAny<int>(),
                     It.Is<QueryRequest>(r => IsUserQuery(r)), It.IsAny<int>(), It.IsAny<int>()))
@@ -26,12 +26,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             );
         }
 
-		private bool IsUserQuery(QueryRequest query)
-		{
-			return query.ObjectType.ArtifactTypeID == (int)ArtifactType.User;
-		}
+        private bool IsUserQuery(QueryRequest query)
+        {
+            return query.ObjectType.ArtifactTypeID == (int)ArtifactType.User;
+        }
 
-		private List<RelativityObject> GetUsers(QueryRequest request)
+        private List<RelativityObject> GetUsers(QueryRequest request)
         {
             List<RelativityObject> foundObjects = new List<RelativityObject>();
 
@@ -57,5 +57,5 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 
             return foundObjects;
         }
-	}
+    }
 }

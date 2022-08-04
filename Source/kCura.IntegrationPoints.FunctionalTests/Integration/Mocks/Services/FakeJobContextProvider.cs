@@ -5,15 +5,15 @@ using kCura.IntegrationPoints.Data;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 {
-	public class FakeJobContextProvider : IJobContextProvider
-	{
-		public Job Job { get; private set; }
+    public class FakeJobContextProvider : IJobContextProvider
+    {
+        public Job Job { get; private set; }
 
-		public IDisposable StartJobContext(Job job)
-		{
-			Job = job;
+        public IDisposable StartJobContext(Job job)
+        {
+            Job = job;
 
-			return Disposable.Create(() => Job = null);
-		}
-	}
+            return Disposable.Create(() => Job = null);
+        }
+    }
 }

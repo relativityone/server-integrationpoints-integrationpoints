@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {
-	public interface IExportFileBuilder
-	{
-		ExtendedExportFile Create(ExportSettings exportSettings);
-	}
+    public interface IExportFileBuilder
+    {
+        ExtendedExportFile Create(ExportSettings exportSettings);
+    }
 }

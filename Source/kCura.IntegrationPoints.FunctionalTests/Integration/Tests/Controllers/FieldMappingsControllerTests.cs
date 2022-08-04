@@ -108,7 +108,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             // Arrange
             FieldMappingsController sut = PrepareSut(HttpMethod.Post, "/AutoMapFields");
 
-			FieldsMapping.FieldInfo[] documentsFieldInfo = ConvertFieldTestListToFieldInfoArray(_fields);
+            FieldsMapping.FieldInfo[] documentsFieldInfo = ConvertFieldTestListToFieldInfoArray(_fields);
             AutomapRequest request = CreateAutomapRequest(documentsFieldInfo);
 
             // Act
@@ -129,7 +129,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             FieldMappingsController sut = PrepareSut(HttpMethod.Post, "/AutoMapFields");
             _fields[0].IsIdentifier = true;
 
-			FieldsMapping.FieldInfo[] documentsFieldInfo = ConvertFieldTestListToFieldInfoArray(_fields);
+            FieldsMapping.FieldInfo[] documentsFieldInfo = ConvertFieldTestListToFieldInfoArray(_fields);
             AutomapRequest request = CreateAutomapRequest(documentsFieldInfo , true);
 
             // Act
@@ -149,7 +149,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             // Arrange
             FieldMappingsController sut = PrepareSut(HttpMethod.Post, "/AutoMapFields");
 
-			FieldsMapping.FieldInfo[] documentsFieldInfo = ConvertFieldTestListToFieldInfoArray(_fields);
+            FieldsMapping.FieldInfo[] documentsFieldInfo = ConvertFieldTestListToFieldInfoArray(_fields);
             AutomapRequest request = CreateAutomapRequest(documentsFieldInfo, true);
 
             // Act
@@ -166,7 +166,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         {
             // Arrange
             FieldMappingsController sut = PrepareSut(HttpMethod.Post, "/AutoMapFieldsFromSavedSearch");
-			FieldsMapping.FieldInfo[] documentsFieldInfo = ConvertFieldTestListToFieldInfoArray(_fields);
+            FieldsMapping.FieldInfo[] documentsFieldInfo = ConvertFieldTestListToFieldInfoArray(_fields);
             AutomapRequest request = CreateAutomapRequest(documentsFieldInfo);
             SavedSearchTest savedSearch = CreateSavedSearchTest(_fields);
 
@@ -186,7 +186,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         {
             // Arrange
             FieldMappingsController sut = PrepareSut(HttpMethod.Post, "/AutoMapFieldsFromSavedSearch");
-			FieldsMapping.FieldInfo[] documentsFieldInfo = ConvertFieldTestListToFieldInfoArray(_fields);
+            FieldsMapping.FieldInfo[] documentsFieldInfo = ConvertFieldTestListToFieldInfoArray(_fields);
             AutomapRequest request = CreateAutomapRequest(documentsFieldInfo);
             SavedSearchTest savedSearch = new SavedSearchTest();
 
@@ -204,7 +204,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         {
             // Arrange
             FieldMappingsController sut = PrepareSut(HttpMethod.Post, "/AutoMapFieldsFromSavedSearch");
-			FieldsMapping.FieldInfo[] documentsFieldInfo = ConvertFieldTestListToFieldInfoArray(_fields);
+            FieldsMapping.FieldInfo[] documentsFieldInfo = ConvertFieldTestListToFieldInfoArray(_fields);
             AutomapRequest request = CreateAutomapRequest(documentsFieldInfo);
             SavedSearchTest savedSearch = CreateSavedSearchTest(new List<FieldTest>());
 
@@ -222,7 +222,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         {
             // Arrange
             FieldMappingsController sut = PrepareSut(HttpMethod.Post, "/AutoMapFieldsFromSavedSearch");
-			FieldsMapping.FieldInfo[] documentsFieldInfo = ConvertFieldTestListToFieldInfoArray(_fields);
+            FieldsMapping.FieldInfo[] documentsFieldInfo = ConvertFieldTestListToFieldInfoArray(_fields);
             AutomapRequest request = CreateAutomapRequest(documentsFieldInfo);
 
             List<FieldTest> savedSearchFields = CreateFieldsWithSpecialCharactersAsync(Const.LONG_TEXT_TYPE_ARTIFACT_ID, _LONG_TEXT_NAME).ToList();
@@ -493,12 +493,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 
         private FieldsMapping.FieldInfo[] ConvertFieldTestListToFieldInfoArray(List<FieldTest> fields)
         {
-			FieldsMapping.FieldInfo[] fieldsInfo = new FieldsMapping.FieldInfo[fields.Count];
+            FieldsMapping.FieldInfo[] fieldsInfo = new FieldsMapping.FieldInfo[fields.Count];
             for (int i = 0; i < fields.Count; i++)
             {
                 FieldTest field = fields[i];
 
-				FieldsMapping.FieldInfo fieldInfo = new FieldsMapping.FieldInfo(
+                FieldsMapping.FieldInfo fieldInfo = new FieldsMapping.FieldInfo(
                     field.ArtifactId.ToString(),
                     field.Name,
                     field.ObjectTypeId == Const.FIXED_LENGTH_TEXT_TYPE_ARTIFACT_ID ? _FIXED_LENGTH_TEXT_NAME : _LONG_TEXT_NAME)

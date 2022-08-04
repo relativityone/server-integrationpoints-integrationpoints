@@ -4,51 +4,51 @@ using System.Data;
 
 namespace kCura.IntegrationPoints.Data
 {
-	public interface IQueueQueryManager
-	{
-		ICommand CreateScheduleQueueTable();
+    public interface IQueueQueryManager
+    {
+        ICommand CreateScheduleQueueTable();
 
-		ICommand AddCustomColumnsToQueueTable();
+        ICommand AddCustomColumnsToQueueTable();
 
-		IQuery<DataRow> GetAgentTypeInformation(Guid agentGuid);
+        IQuery<DataRow> GetAgentTypeInformation(Guid agentGuid);
 
-		IQuery<DataTable> GetNextJob(int agentId, int agentTypeId, int[] resourceGroupArtifactId);
+        IQuery<DataTable> GetNextJob(int agentId, int agentTypeId, int[] resourceGroupArtifactId);
 
-		IQuery<DataTable> GetNextJob(int agentId, int agentTypeId, long? rootJobId);
-		
-		ICommand UnlockScheduledJob(int agentId);
+        IQuery<DataTable> GetNextJob(int agentId, int agentTypeId, long? rootJobId);
+        
+        ICommand UnlockScheduledJob(int agentId);
 
-		ICommand UnlockJob(long jobId);
+        ICommand UnlockJob(long jobId);
 
-		ICommand DeleteJob(long jobId);
+        ICommand DeleteJob(long jobId);
 
-		IQuery<DataTable> CreateScheduledJob(int workspaceID, int relatedObjectArtifactID,
-			string taskType, DateTime nextRunTime, int AgentTypeID, string scheduleRuleType,
-			string serializedScheduleRule, string jobDetails, int jobFlags, int SubmittedBy, long? rootJobID, long? parentJobID = null);
+        IQuery<DataTable> CreateScheduledJob(int workspaceID, int relatedObjectArtifactID,
+            string taskType, DateTime nextRunTime, int AgentTypeID, string scheduleRuleType,
+            string serializedScheduleRule, string jobDetails, int jobFlags, int SubmittedBy, long? rootJobID, long? parentJobID = null);
 
-		ICommand CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID, string taskType,
-			DateTime nextRunTime, int AgentTypeID, string scheduleRuleType, string serializedScheduleRule,
-			string jobDetails, int jobFlags, int SubmittedBy, long? rootJobID, long? parentJobID = null);
+        ICommand CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID, string taskType,
+            DateTime nextRunTime, int AgentTypeID, string scheduleRuleType, string serializedScheduleRule,
+            string jobDetails, int jobFlags, int SubmittedBy, long? rootJobID, long? parentJobID = null);
 
-		ICommand CleanupJobQueueTable();
+        ICommand CleanupJobQueueTable();
 
-		ICommand CleanupScheduledJobsQueue();
+        ICommand CleanupScheduledJobsQueue();
 
-		IQuery<DataTable> GetAllJobs();
-		
-		IQuery<int> UpdateStopState(IList<long> jobIds, StopState state);
+        IQuery<DataTable> GetAllJobs();
+        
+        IQuery<int> UpdateStopState(IList<long> jobIds, StopState state);
 
-		IQuery<DataTable> GetJobByRelatedObjectIdAndTaskType(int workspaceId, int relatedObjectArtifactId,
-			List<string> taskTypes);
+        IQuery<DataTable> GetJobByRelatedObjectIdAndTaskType(int workspaceId, int relatedObjectArtifactId,
+            List<string> taskTypes);
 
-		IQuery<DataTable> GetJobsByIntegrationPointId(long integrationPointId);
+        IQuery<DataTable> GetJobsByIntegrationPointId(long integrationPointId);
 
-		IQuery<DataTable> GetJob(long jobId);
+        IQuery<DataTable> GetJob(long jobId);
 
-		ICommand UpdateJobDetails(long jobId, string jobDetails);
+        ICommand UpdateJobDetails(long jobId, string jobDetails);
 
-		IQuery<bool> CheckAllSyncWorkerBatchesAreFinished(long rootJobId);			
+        IQuery<bool> CheckAllSyncWorkerBatchesAreFinished(long rootJobId);            
 
-		IQuery<int> Heartbeat(long jobId, DateTime heartbeatTime);
-	}
+        IQuery<int> Heartbeat(long jobId, DateTime heartbeatTime);
+    }
 }

@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Tests
         [SetUp]
         public override void SetUp()
         {
-	        _integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
+            _integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 
             _sut = new DeleteHistoryService(_integrationPointRepository);
         }
@@ -47,8 +47,8 @@ namespace kCura.IntegrationPoints.Core.Tests
             // act
             _sut.DeleteHistoriesAssociatedWithIPs(integrationPointsIDs);
 
-			// assert
-			_integrationPointRepository.Received(2).Update(Arg.Is<Data.IntegrationPoint>(x => !x.JobHistory.Any()));
+            // assert
+            _integrationPointRepository.Received(2).Update(Arg.Is<Data.IntegrationPoint>(x => !x.JobHistory.Any()));
         }
 
         [Test]
@@ -60,9 +60,9 @@ namespace kCura.IntegrationPoints.Core.Tests
             // act
             _sut.DeleteHistoriesAssociatedWithIPs(integrationPointsIDs);
 
-			// assert
-			_integrationPointRepository
-				.DidNotReceiveWithAnyArgs()
+            // assert
+            _integrationPointRepository
+                .DidNotReceiveWithAnyArgs()
                 .GetAll(Arg.Any<List<int>>());
         }
 

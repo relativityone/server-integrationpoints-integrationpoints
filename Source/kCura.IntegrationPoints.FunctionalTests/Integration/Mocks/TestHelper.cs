@@ -16,125 +16,125 @@ using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
-	public class TestHelper : IServiceHelper, IAgentHelper, ICPHelper
-	{
-		private readonly Mock<IServicesMgr> _serviceManager;
+    public class TestHelper : IServiceHelper, IAgentHelper, ICPHelper
+    {
+        private readonly Mock<IServicesMgr> _serviceManager;
         private readonly Mock<IDBContext> _dbContext;
-		private readonly FakeUser _user;
+        private readonly FakeUser _user;
 
         public Mock<IDBContext> DbContextMock => _dbContext;
 
-		public FakeSecretStore SecretStore { get; }
+        public FakeSecretStore SecretStore { get; }
 
-		public TestHelper(ProxyMock proxy, FakeUser user)
-		{
-			SecretStore = new FakeSecretStore();
+        public TestHelper(ProxyMock proxy, FakeUser user)
+        {
+            SecretStore = new FakeSecretStore();
 
-			_serviceManager = new Mock<IServicesMgr>();
+            _serviceManager = new Mock<IServicesMgr>();
             _dbContext = new Mock<IDBContext>();
-			_user = user;
+            _user = user;
 
-			RegisterProxyInServiceManagerMock<IObjectManager>(proxy.ObjectManager.Object);
-			RegisterProxyInServiceManagerMock<IObjectTypeManager>(proxy.ObjectTypeManager.Object);
-			RegisterProxyInServiceManagerMock<IWorkspaceManager>(proxy.WorkspaceManager.Object);
-			RegisterProxyInServiceManagerMock<IPermissionManager>(proxy.PermissionManager.Object);
-			RegisterProxyInServiceManagerMock<IInstanceSettingManager>(proxy.InstanceSettingManager.Object);
-			RegisterProxyInServiceManagerMock<IGroupManager>(proxy.GroupManager.Object);
-			RegisterProxyInServiceManagerMock<IArtifactGuidManager>(proxy.ArtifactGuidManager.Object);
-			RegisterProxyInServiceManagerMock<IErrorManager>(proxy.ErrorManager.Object);
-			RegisterProxyInServiceManagerMock<IChoiceQueryManager>(proxy.ChoiceQueryManager.Object);
-			RegisterProxyInServiceManagerMock<IAPMManager>(proxy.APMManager.Object);
-			RegisterProxyInServiceManagerMock<IMetricsManager>(proxy.MetricsManager.Object);
-			RegisterProxyInServiceManagerMock<IKeywordSearchManager>(proxy.KeywordSearchManager.Object);
+            RegisterProxyInServiceManagerMock<IObjectManager>(proxy.ObjectManager.Object);
+            RegisterProxyInServiceManagerMock<IObjectTypeManager>(proxy.ObjectTypeManager.Object);
+            RegisterProxyInServiceManagerMock<IWorkspaceManager>(proxy.WorkspaceManager.Object);
+            RegisterProxyInServiceManagerMock<IPermissionManager>(proxy.PermissionManager.Object);
+            RegisterProxyInServiceManagerMock<IInstanceSettingManager>(proxy.InstanceSettingManager.Object);
+            RegisterProxyInServiceManagerMock<IGroupManager>(proxy.GroupManager.Object);
+            RegisterProxyInServiceManagerMock<IArtifactGuidManager>(proxy.ArtifactGuidManager.Object);
+            RegisterProxyInServiceManagerMock<IErrorManager>(proxy.ErrorManager.Object);
+            RegisterProxyInServiceManagerMock<IChoiceQueryManager>(proxy.ChoiceQueryManager.Object);
+            RegisterProxyInServiceManagerMock<IAPMManager>(proxy.APMManager.Object);
+            RegisterProxyInServiceManagerMock<IMetricsManager>(proxy.MetricsManager.Object);
+            RegisterProxyInServiceManagerMock<IKeywordSearchManager>(proxy.KeywordSearchManager.Object);
             RegisterProxyInServiceManagerMock<IViewManager>(proxy.ViewManager.Object);
-		}
+        }
 
-		private void RegisterProxyInServiceManagerMock<T>(T proxy) 
-			where T : IDisposable
-		{
-			_serviceManager.Setup(x => x.CreateProxy<T>(It.IsAny<ExecutionIdentity>()))
-				.Returns(proxy);
-		}
+        private void RegisterProxyInServiceManagerMock<T>(T proxy) 
+            where T : IDisposable
+        {
+            _serviceManager.Setup(x => x.CreateProxy<T>(It.IsAny<ExecutionIdentity>()))
+                .Returns(proxy);
+        }
 
-		public ILogFactory GetLoggerFactory()
-		{
-			var loggerFactory = new Mock<ILogFactory>();
-			loggerFactory.Setup(x => x.GetLogger()).Returns(new ConsoleLogger());
+        public ILogFactory GetLoggerFactory()
+        {
+            var loggerFactory = new Mock<ILogFactory>();
+            loggerFactory.Setup(x => x.GetLogger()).Returns(new ConsoleLogger());
 
-			return loggerFactory.Object;
-		}
+            return loggerFactory.Object;
+        }
 
-		public IServicesMgr GetServicesManager()
-		{
-			return _serviceManager.Object;
-		}
+        public IServicesMgr GetServicesManager()
+        {
+            return _serviceManager.Object;
+        }
 
-		public ISecretStore GetSecretStore()
-		{
-			return SecretStore;
-		}
+        public ISecretStore GetSecretStore()
+        {
+            return SecretStore;
+        }
 
-		public void Dispose()
-		{
-			SecretStore.Clear();
-		}
+        public void Dispose()
+        {
+            SecretStore.Clear();
+        }
 
         public IDBContext GetDBContext(int caseID)
         {
             return _dbContext.Object;
         }
 
-		#region Not Implemented
+        #region Not Implemented
         public IUrlHelper GetUrlHelper()
-		{
-			throw new NotImplementedException();
-		}
+        {
+            throw new NotImplementedException();
+        }
 
-		public string ResourceDBPrepend()
-		{
-			throw new NotImplementedException();
-		}
+        public string ResourceDBPrepend()
+        {
+            throw new NotImplementedException();
+        }
 
-		public string ResourceDBPrepend(IDBContext context)
-		{
-			throw new NotImplementedException();
-		}
+        public string ResourceDBPrepend(IDBContext context)
+        {
+            throw new NotImplementedException();
+        }
 
-		public string GetSchemalessResourceDataBasePrepend(IDBContext context)
-		{
-			throw new NotImplementedException();
-		}
+        public string GetSchemalessResourceDataBasePrepend(IDBContext context)
+        {
+            throw new NotImplementedException();
+        }
 
-		public Guid GetGuid(int workspaceID, int artifactID)
-		{
-			throw new NotImplementedException();
-		}
+        public Guid GetGuid(int workspaceID, int artifactID)
+        {
+            throw new NotImplementedException();
+        }
 
-		public IInstanceSettingsBundle GetInstanceSettingBundle()
+        public IInstanceSettingsBundle GetInstanceSettingBundle()
         {
             return new FakeInstanceSettingsBundle();
         }
 
-		public IStringSanitizer GetStringSanitizer(int workspaceID)
-		{
-			throw new NotImplementedException();
-		}
+        public IStringSanitizer GetStringSanitizer(int workspaceID)
+        {
+            throw new NotImplementedException();
+        }
 
-		public IAuthenticationMgr GetAuthenticationManager()
-		{
-			return new FakeAuthenticationMgr(_user);
-		}
+        public IAuthenticationMgr GetAuthenticationManager()
+        {
+            return new FakeAuthenticationMgr(_user);
+        }
 
-		public ICSRFManager GetCSRFManager()
-		{
-			throw new NotImplementedException();
-		}
+        public ICSRFManager GetCSRFManager()
+        {
+            throw new NotImplementedException();
+        }
 
-		public int GetActiveCaseID()
-		{
-			throw new NotImplementedException();
-		}
+        public int GetActiveCaseID()
+        {
+            throw new NotImplementedException();
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         private readonly Guid _dataType = new Guid("FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF");
         private readonly Guid _appIdentifier = new Guid("00000000-0000-0000-0000-000000000000");
         private const string _options = "TestOptions";
-	    private const string _credentials = "Credentials";
+        private const string _credentials = "Credentials";
 
         [SetUp]
         public override void SetUp()

@@ -9,42 +9,42 @@ using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 {
-	public class ExportNativeSettingsValidator : ExportFileValidatorBase
-	{
-		private readonly IExportFieldsService _exportFieldsService;
+    public class ExportNativeSettingsValidator : ExportFileValidatorBase
+    {
+        private readonly IExportFieldsService _exportFieldsService;
 
-		public ExportNativeSettingsValidator(
-			ISerializer serializer,
-			IExportSettingsBuilder exportSettingsBuilder,
-			IExportFileBuilder exportFileBuilder,
-			IExportFieldsService exportFieldsService
-		) : base(serializer, exportSettingsBuilder, exportFileBuilder)
-		{
-			_exportFieldsService = exportFieldsService;
-		}
+        public ExportNativeSettingsValidator(
+            ISerializer serializer,
+            IExportSettingsBuilder exportSettingsBuilder,
+            IExportFileBuilder exportFileBuilder,
+            IExportFieldsService exportFieldsService
+        ) : base(serializer, exportSettingsBuilder, exportFileBuilder)
+        {
+            _exportFieldsService = exportFieldsService;
+        }
 
-		protected override ValidationResult PerformValidation(ExportFile exportFile)
-		{
-			var validationResult = new ValidationResult();
+        protected override ValidationResult PerformValidation(ExportFile exportFile)
+        {
+            var validationResult = new ValidationResult();
 
-			if (IsRdoExportMode(exportFile) && exportFile.ExportNative && !FileTypeFieldExists(exportFile))
-			{
-				validationResult.Add(FileDestinationProviderValidationMessages.RDO_INVALID_EXPORT_NATIVE_OPTION);
-			}
+            if (IsRdoExportMode(exportFile) && exportFile.ExportNative && !FileTypeFieldExists(exportFile))
+            {
+                validationResult.Add(FileDestinationProviderValidationMessages.RDO_INVALID_EXPORT_NATIVE_OPTION);
+            }
 
-			return validationResult;
-		}
+            return validationResult;
+        }
 
-		private static bool IsRdoExportMode(ExportFile exportFile)
-		{
-			return exportFile.TypeOfExport == ExportFile.ExportType.AncestorSearch && exportFile.ArtifactTypeID != (int)ArtifactType.Document;
-		}
+        private static bool IsRdoExportMode(ExportFile exportFile)
+        {
+            return exportFile.TypeOfExport == ExportFile.ExportType.AncestorSearch && exportFile.ArtifactTypeID != (int)ArtifactType.Document;
+        }
 
-		private bool FileTypeFieldExists(ExportFile exportFile)
-		{
-			FieldEntry[] fieldEntries = _exportFieldsService.GetAllExportableFields(exportFile.CaseArtifactID, exportFile.ArtifactTypeID);
+        private bool FileTypeFieldExists(ExportFile exportFile)
+        {
+            FieldEntry[] fieldEntries = _exportFieldsService.GetAllExportableFields(exportFile.CaseArtifactID, exportFile.ArtifactTypeID);
 
-			return fieldEntries.Any(field => field.FieldType == FieldType.File);
-		}
-	}
+            return fieldEntries.Any(field => field.FieldType == FieldType.File);
+        }
+    }
 }

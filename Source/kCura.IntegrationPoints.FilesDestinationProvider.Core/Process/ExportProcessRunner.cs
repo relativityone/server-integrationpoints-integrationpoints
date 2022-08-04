@@ -8,45 +8,45 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {
-	public class ExportProcessRunner
-	{
-		private readonly IExportProcessBuilder _exportProcessBuilder;
-		private readonly IExportSettingsBuilder _exportSettingsBuilder;
-		private readonly IAPILog _logger;
+    public class ExportProcessRunner
+    {
+        private readonly IExportProcessBuilder _exportProcessBuilder;
+        private readonly IExportSettingsBuilder _exportSettingsBuilder;
+        private readonly IAPILog _logger;
 
-		public ExportProcessRunner(IExportProcessBuilder exportProcessBuilder, IExportSettingsBuilder exportSettingsBuilder, IHelper helper)
-		{
-			_exportProcessBuilder = exportProcessBuilder;
-			_exportSettingsBuilder = exportSettingsBuilder;
-			_logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportProcessBuilder>();
-		}
+        public ExportProcessRunner(IExportProcessBuilder exportProcessBuilder, IExportSettingsBuilder exportSettingsBuilder, IHelper helper)
+        {
+            _exportProcessBuilder = exportProcessBuilder;
+            _exportSettingsBuilder = exportSettingsBuilder;
+            _logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportProcessBuilder>();
+        }
 
-		public void StartWith(ExportSettings settings, Job job)
-		{
-			LogStartingExport();
-			IExporter exporter = _exportProcessBuilder.Create(settings, job);
-			exporter.ExportSearch();
-			LogFinishingExport();
-		}
+        public void StartWith(ExportSettings settings, Job job)
+        {
+            LogStartingExport();
+            IExporter exporter = _exportProcessBuilder.Create(settings, job);
+            exporter.ExportSearch();
+            LogFinishingExport();
+        }
 
-		public void StartWith(ExportUsingSavedSearchSettings sourceSettings, IEnumerable<FieldMap> fieldMap, int artifactTypeId, Job job)
-		{
-			var exportSettings = _exportSettingsBuilder.Create(sourceSettings, fieldMap, artifactTypeId);
-			StartWith(exportSettings, job);
-		}
+        public void StartWith(ExportUsingSavedSearchSettings sourceSettings, IEnumerable<FieldMap> fieldMap, int artifactTypeId, Job job)
+        {
+            var exportSettings = _exportSettingsBuilder.Create(sourceSettings, fieldMap, artifactTypeId);
+            StartWith(exportSettings, job);
+        }
 
-		#region Logging
+        #region Logging
 
-		private void LogStartingExport()
-		{
-			_logger.LogInformation("Starting Export.");
-		}
+        private void LogStartingExport()
+        {
+            _logger.LogInformation("Starting Export.");
+        }
 
-		private void LogFinishingExport()
-		{
-			_logger.LogInformation("Finishing Export.");
-		}
+        private void LogFinishingExport()
+        {
+            _logger.LogInformation("Finishing Export.");
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

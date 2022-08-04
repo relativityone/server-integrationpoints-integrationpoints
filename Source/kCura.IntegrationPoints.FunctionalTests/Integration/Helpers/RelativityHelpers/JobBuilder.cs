@@ -5,73 +5,73 @@ using Relativity.IntegrationPoints.Tests.Integration.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.RelativityHelpers
 {
-	public class JobBuilder
-	{
-		private readonly JobTest _job;
+    public class JobBuilder
+    {
+        private readonly JobTest _job;
 
-		public JobBuilder()
-		{
-			_job = new JobTest();
-		}
+        public JobBuilder()
+        {
+            _job = new JobTest();
+        }
 
-		public JobTest Build()
-		{
-			return _job;
-		}
+        public JobTest Build()
+        {
+            return _job;
+        }
 
-		public JobBuilder WithIntegrationPoint(IntegrationPointTest integrationPoint)
-		{
-			_job.RelatedObjectArtifactID = integrationPoint.ArtifactId;
+        public JobBuilder WithIntegrationPoint(IntegrationPointTest integrationPoint)
+        {
+            _job.RelatedObjectArtifactID = integrationPoint.ArtifactId;
 
-			return this;
-		}
+            return this;
+        }
 
-		public JobBuilder WithSubmittedBy(int userId)
-		{
-			_job.SubmittedBy = userId;
+        public JobBuilder WithSubmittedBy(int userId)
+        {
+            _job.SubmittedBy = userId;
 
-			return this;
-		}
+            return this;
+        }
 
-		public JobBuilder WithWorkspace(WorkspaceTest workspace)
-		{
-			_job.WorkspaceID = workspace.ArtifactId;
+        public JobBuilder WithWorkspace(WorkspaceTest workspace)
+        {
+            _job.WorkspaceID = workspace.ArtifactId;
 
-			return this;
-		}
+            return this;
+        }
 
-		public JobBuilder WithTaskType(TaskType taskType)
-		{
-			_job.TaskType = taskType.ToString();
+        public JobBuilder WithTaskType(TaskType taskType)
+        {
+            _job.TaskType = taskType.ToString();
 
-			return this;
-		}
+            return this;
+        }
 
-		public JobBuilder WithScheduleRule(ScheduleRuleTest rule)
-		{
-			_job.ScheduleRuleType = kCura.ScheduleQueue.Core.Const._PERIODIC_SCHEDULE_RULE_TYPE;
-			_job.SerializedScheduleRule = rule.Serialize();
+        public JobBuilder WithScheduleRule(ScheduleRuleTest rule)
+        {
+            _job.ScheduleRuleType = kCura.ScheduleQueue.Core.Const._PERIODIC_SCHEDULE_RULE_TYPE;
+            _job.SerializedScheduleRule = rule.Serialize();
 
-			return this;
-		}
+            return this;
+        }
 
-		public JobBuilder WithImportDetails(long loadFileSize, DateTime loadFileModifiedDate, int processedItemsCount)
-		{
-			_job.JobDetailsHelper.BatchParameters = new LoadFileTaskParameters
-			{
-				Size = loadFileSize,
-				LastModifiedDate = loadFileModifiedDate,
-				ProcessedItemsCount = processedItemsCount
-			};
+        public JobBuilder WithImportDetails(long loadFileSize, DateTime loadFileModifiedDate, int processedItemsCount)
+        {
+            _job.JobDetailsHelper.BatchParameters = new LoadFileTaskParameters
+            {
+                Size = loadFileSize,
+                LastModifiedDate = loadFileModifiedDate,
+                ProcessedItemsCount = processedItemsCount
+            };
 
-			return this;
-		}
-		
-		public JobBuilder WithJobDetails(object parameters)
-		{
-			_job.JobDetailsHelper.BatchParameters = parameters;
+            return this;
+        }
+        
+        public JobBuilder WithJobDetails(object parameters)
+        {
+            _job.JobDetailsHelper.BatchParameters = parameters;
 
-			return this;
-		}
-	}
+            return this;
+        }
+    }
 }

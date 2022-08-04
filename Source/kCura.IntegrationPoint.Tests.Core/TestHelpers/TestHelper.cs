@@ -26,165 +26,165 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
     using IFieldManager = global::Relativity.Services.FieldManager.IFieldManager;
 
-	public class TestHelper : ITestHelper
-	{
-		private readonly IServicesMgr _serviceManager;
-		private readonly ILogFactory _logFactory;
-		private readonly IInstanceSettingsBundle _instanceSettingsBundleMock;
+    public class TestHelper : ITestHelper
+    {
+        private readonly IServicesMgr _serviceManager;
+        private readonly ILogFactory _logFactory;
+        private readonly IInstanceSettingsBundle _instanceSettingsBundleMock;
 
-		public string RelativityUserName { get; }
+        public string RelativityUserName { get; }
 
-		public string RelativityPassword { get; }
-		
-		public TestHelper()
-			: this(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword)
-		{ }
+        public string RelativityPassword { get; }
+        
+        public TestHelper()
+            : this(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword)
+        { }
 
-		public TestHelper(string userName, string password)
-		{
-			RelativityUserName = userName;
-			RelativityPassword = password;
+        public TestHelper(string userName, string password)
+        {
+            RelativityUserName = userName;
+            RelativityPassword = password;
 
-			_logFactory = Substitute.For<ILogFactory>();
-			_instanceSettingsBundleMock = Substitute.For<IInstanceSettingsBundle>();
-			_serviceManager = Substitute.For<IServicesMgr>();
-			RegisterProxyInServiceManagerMock<IPermissionManager>(ExecutionIdentity.CurrentUser);
-			RegisterProxyInServiceManagerMock<IPermissionManager>(ExecutionIdentity.System);
-			RegisterProxyInServiceManagerMock<IKeywordSearchManager>(ExecutionIdentity.CurrentUser);
-			RegisterProxyInServiceManagerMock<IKeywordSearchManager>(ExecutionIdentity.System);
-			RegisterProxyInServiceManagerMock<IObjectManager>(ExecutionIdentity.CurrentUser);
-			RegisterProxyInServiceManagerMock<IObjectManager>(ExecutionIdentity.System);
-			RegisterProxyInServiceManagerMock<IObjectTypeManager>(ExecutionIdentity.System);
-			RegisterProxyInServiceManagerMock<IResourceServerManager>(ExecutionIdentity.CurrentUser);
-			RegisterProxyInServiceManagerMock<IResourceServerManager>(ExecutionIdentity.System);
-			RegisterProxyInServiceManagerMock<IWorkspaceManager>(ExecutionIdentity.CurrentUser);
-			RegisterProxyInServiceManagerMock<IArtifactGuidManager>(ExecutionIdentity.System);
-			RegisterProxyInServiceManagerMock<IFieldManager>(ExecutionIdentity.System);
-			RegisterProxyInServiceManagerMock<IFieldManager>(ExecutionIdentity.CurrentUser);
-			RegisterProxyInServiceManagerMock<IInstanceSettingManager>(ExecutionIdentity.System);
-			RegisterProxyInServiceManagerMock<ISearchContainerManager>(ExecutionIdentity.CurrentUser);
-			RegisterProxyInServiceManagerMock<IOAuth2ClientManager>(ExecutionIdentity.System);
-			RegisterProxyInServiceManagerMock<IFolderManager>(ExecutionIdentity.CurrentUser);
-			RegisterProxyInServiceManagerMock<global:: Relativity.Productions.Services.IProductionManager>(ExecutionIdentity.CurrentUser);
-			RegisterProxyInServiceManagerMock<IGroupManager>(ExecutionIdentity.System);
-			RegisterProxyInServiceManagerMock<IGroupManager>(ExecutionIdentity.CurrentUser);
-			RegisterProxyInServiceManagerMock<IUserInfoManager>(ExecutionIdentity.System);
-			RegisterProxyInServiceManagerMock<IUserInfoManager>(ExecutionIdentity.CurrentUser);
-			RegisterProxyInServiceManagerMock<ILoginProfileManager>(ExecutionIdentity.System);
-			RegisterProxyInServiceManagerMock<ILoginProfileManager>(ExecutionIdentity.CurrentUser);
-			RegisterProxyInServiceManagerMock<IFileManager>(ExecutionIdentity.System);
-			RegisterProxyInServiceManagerMock<IFileshareManager>(ExecutionIdentity.System);
-			RegisterProxyInServiceManagerMock<IInternalMetricsCollectionManager>(ExecutionIdentity.System);
-			RegisterProxyInServiceManagerMock<global::Relativity.Services.Interfaces.Field.IFieldManager>(ExecutionIdentity.System);
-			RegisterProxyInServiceManagerMock<global::Relativity.Services.Interfaces.Field.IFieldManager>(ExecutionIdentity.CurrentUser);
-			RegisterProxyInServiceManagerMock<ITabManager>(ExecutionIdentity.CurrentUser);
-			RegisterProxyInServiceManagerMock<ISearchService>(ExecutionIdentity.CurrentUser);
-			RegisterProxyInServiceManagerMock<IViewManager>(ExecutionIdentity.System);
-			RegisterProxyInServiceManagerMock<IChoiceQueryManager>(ExecutionIdentity.System);
-			_serviceManager.GetServicesURL().Returns(SharedVariables.RelativityRestUri);
-		}
-		
-		private void RegisterProxyInServiceManagerMock<T>(ExecutionIdentity executionIdentity) where T : IDisposable
-		{
-			_serviceManager.CreateProxy<T>(executionIdentity).Returns(_ => CreateProxy<T>());
-		}
+            _logFactory = Substitute.For<ILogFactory>();
+            _instanceSettingsBundleMock = Substitute.For<IInstanceSettingsBundle>();
+            _serviceManager = Substitute.For<IServicesMgr>();
+            RegisterProxyInServiceManagerMock<IPermissionManager>(ExecutionIdentity.CurrentUser);
+            RegisterProxyInServiceManagerMock<IPermissionManager>(ExecutionIdentity.System);
+            RegisterProxyInServiceManagerMock<IKeywordSearchManager>(ExecutionIdentity.CurrentUser);
+            RegisterProxyInServiceManagerMock<IKeywordSearchManager>(ExecutionIdentity.System);
+            RegisterProxyInServiceManagerMock<IObjectManager>(ExecutionIdentity.CurrentUser);
+            RegisterProxyInServiceManagerMock<IObjectManager>(ExecutionIdentity.System);
+            RegisterProxyInServiceManagerMock<IObjectTypeManager>(ExecutionIdentity.System);
+            RegisterProxyInServiceManagerMock<IResourceServerManager>(ExecutionIdentity.CurrentUser);
+            RegisterProxyInServiceManagerMock<IResourceServerManager>(ExecutionIdentity.System);
+            RegisterProxyInServiceManagerMock<IWorkspaceManager>(ExecutionIdentity.CurrentUser);
+            RegisterProxyInServiceManagerMock<IArtifactGuidManager>(ExecutionIdentity.System);
+            RegisterProxyInServiceManagerMock<IFieldManager>(ExecutionIdentity.System);
+            RegisterProxyInServiceManagerMock<IFieldManager>(ExecutionIdentity.CurrentUser);
+            RegisterProxyInServiceManagerMock<IInstanceSettingManager>(ExecutionIdentity.System);
+            RegisterProxyInServiceManagerMock<ISearchContainerManager>(ExecutionIdentity.CurrentUser);
+            RegisterProxyInServiceManagerMock<IOAuth2ClientManager>(ExecutionIdentity.System);
+            RegisterProxyInServiceManagerMock<IFolderManager>(ExecutionIdentity.CurrentUser);
+            RegisterProxyInServiceManagerMock<global:: Relativity.Productions.Services.IProductionManager>(ExecutionIdentity.CurrentUser);
+            RegisterProxyInServiceManagerMock<IGroupManager>(ExecutionIdentity.System);
+            RegisterProxyInServiceManagerMock<IGroupManager>(ExecutionIdentity.CurrentUser);
+            RegisterProxyInServiceManagerMock<IUserInfoManager>(ExecutionIdentity.System);
+            RegisterProxyInServiceManagerMock<IUserInfoManager>(ExecutionIdentity.CurrentUser);
+            RegisterProxyInServiceManagerMock<ILoginProfileManager>(ExecutionIdentity.System);
+            RegisterProxyInServiceManagerMock<ILoginProfileManager>(ExecutionIdentity.CurrentUser);
+            RegisterProxyInServiceManagerMock<IFileManager>(ExecutionIdentity.System);
+            RegisterProxyInServiceManagerMock<IFileshareManager>(ExecutionIdentity.System);
+            RegisterProxyInServiceManagerMock<IInternalMetricsCollectionManager>(ExecutionIdentity.System);
+            RegisterProxyInServiceManagerMock<global::Relativity.Services.Interfaces.Field.IFieldManager>(ExecutionIdentity.System);
+            RegisterProxyInServiceManagerMock<global::Relativity.Services.Interfaces.Field.IFieldManager>(ExecutionIdentity.CurrentUser);
+            RegisterProxyInServiceManagerMock<ITabManager>(ExecutionIdentity.CurrentUser);
+            RegisterProxyInServiceManagerMock<ISearchService>(ExecutionIdentity.CurrentUser);
+            RegisterProxyInServiceManagerMock<IViewManager>(ExecutionIdentity.System);
+            RegisterProxyInServiceManagerMock<IChoiceQueryManager>(ExecutionIdentity.System);
+            _serviceManager.GetServicesURL().Returns(SharedVariables.RelativityRestUri);
+        }
+        
+        private void RegisterProxyInServiceManagerMock<T>(ExecutionIdentity executionIdentity) where T : IDisposable
+        {
+            _serviceManager.CreateProxy<T>(executionIdentity).Returns(_ => CreateProxy<T>());
+        }
 
-		public T CreateProxy<T>() where T : IDisposable
-		{
-			return CreateProxy<T>(RelativityUserName);
-		}
-		
-		public T CreateProxy<T>(string username) where T : IDisposable
-		{
-			var userCredential = new UsernamePasswordCredentials(username, RelativityPassword);
-			ServiceFactorySettings userSettings = new ServiceFactorySettings(SharedVariables.RelativityRestUri, userCredential);
-			ServiceFactory userServiceFactory = new ServiceFactory(userSettings);
-			return userServiceFactory.CreateProxy<T>();
-		}
-		
+        public T CreateProxy<T>() where T : IDisposable
+        {
+            return CreateProxy<T>(RelativityUserName);
+        }
+        
+        public T CreateProxy<T>(string username) where T : IDisposable
+        {
+            var userCredential = new UsernamePasswordCredentials(username, RelativityPassword);
+            ServiceFactorySettings userSettings = new ServiceFactorySettings(SharedVariables.RelativityRestUri, userCredential);
+            ServiceFactory userServiceFactory = new ServiceFactory(userSettings);
+            return userServiceFactory.CreateProxy<T>();
+        }
+        
         public void Dispose()
-		{
-			// empty by design
-		}
+        {
+            // empty by design
+        }
 
-		public IDBContext GetDBContext(int caseID)
-		{
-			Data.RowDataGateway.Context baseContext;
-			if (caseID == -1)
-			{
-				baseContext = new Data.RowDataGateway.Context(SharedVariables.EddsConnectionString);
-			}
-			else
-			{
-				string connectionString = string.Format(SharedVariables.WorkspaceConnectionStringFormat, caseID);
-				baseContext = new Data.RowDataGateway.Context(connectionString);
-			}
-			return DBContextMockBuilder.Build(baseContext);
-		}
+        public IDBContext GetDBContext(int caseID)
+        {
+            Data.RowDataGateway.Context baseContext;
+            if (caseID == -1)
+            {
+                baseContext = new Data.RowDataGateway.Context(SharedVariables.EddsConnectionString);
+            }
+            else
+            {
+                string connectionString = string.Format(SharedVariables.WorkspaceConnectionStringFormat, caseID);
+                baseContext = new Data.RowDataGateway.Context(connectionString);
+            }
+            return DBContextMockBuilder.Build(baseContext);
+        }
 
-		public IUrlHelper GetUrlHelper()
-		{
-			throw new NotImplementedException();
-		}
+        public IUrlHelper GetUrlHelper()
+        {
+            throw new NotImplementedException();
+        }
 
-		public ILogFactory GetLoggerFactory()
-		{
-			return _logFactory;
-		}
+        public ILogFactory GetLoggerFactory()
+        {
+            return _logFactory;
+        }
 
-		public string ResourceDBPrepend()
-		{
-			return Helper.GetInstance().GetResourceDataBasePrepend();
-		}
+        public string ResourceDBPrepend()
+        {
+            return Helper.GetInstance().GetResourceDataBasePrepend();
+        }
 
-		public string ResourceDBPrepend(IDBContext context)
-		{
-			return ResourceDBPrepend();
-		}
+        public string ResourceDBPrepend(IDBContext context)
+        {
+            return ResourceDBPrepend();
+        }
 
-		public string GetSchemalessResourceDataBasePrepend(IDBContext context)
-		{
-			return context.Database;
-		}
+        public string GetSchemalessResourceDataBasePrepend(IDBContext context)
+        {
+            return context.Database;
+        }
 
-		public Guid GetGuid(int workspaceID, int artifactID)
-		{
-			throw new NotImplementedException();
-		}
+        public Guid GetGuid(int workspaceID, int artifactID)
+        {
+            throw new NotImplementedException();
+        }
 
-		public ISecretStore GetSecretStore()
-		{
-			throw new NotImplementedException();
-		}
+        public ISecretStore GetSecretStore()
+        {
+            throw new NotImplementedException();
+        }
 
-		public IInstanceSettingsBundle GetInstanceSettingBundle()
-		{
-			return _instanceSettingsBundleMock;
-		}
+        public IInstanceSettingsBundle GetInstanceSettingBundle()
+        {
+            return _instanceSettingsBundleMock;
+        }
 
-		public IStringSanitizer GetStringSanitizer(int workspaceID)
-		{
-			throw new NotImplementedException();
-		}
+        public IStringSanitizer GetStringSanitizer(int workspaceID)
+        {
+            throw new NotImplementedException();
+        }
 
-		public IServicesMgr GetServicesManager()
-		{
-			return _serviceManager;
-		}
+        public IServicesMgr GetServicesManager()
+        {
+            return _serviceManager;
+        }
 
-		public IAuthenticationMgr GetAuthenticationManager()
-		{
-			throw new NotImplementedException();
-		}
+        public IAuthenticationMgr GetAuthenticationManager()
+        {
+            throw new NotImplementedException();
+        }
 
-		public ICSRFManager GetCSRFManager()
-		{
-			throw new NotImplementedException();
-		}
+        public ICSRFManager GetCSRFManager()
+        {
+            throw new NotImplementedException();
+        }
 
-		public int GetActiveCaseID()
-		{
-			throw new NotImplementedException();
-		}
-	}
+        public int GetActiveCaseID()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

@@ -16,18 +16,18 @@ namespace kCura.IntegrationPoints.Web.Controllers
     public class FtpProviderController : Controller
     {
         private readonly IConnectorFactory _connectorFactory;
-	    private readonly ISettingsManager _settingsManager;
-		private readonly ICPHelper _helper;
-		private readonly IAPILog _logger;
+        private readonly ISettingsManager _settingsManager;
+        private readonly ICPHelper _helper;
+        private readonly IAPILog _logger;
 
-		public FtpProviderController(IConnectorFactory connectorFactory, ISettingsManager settingsManager, ICPHelper helper)
+        public FtpProviderController(IConnectorFactory connectorFactory, ISettingsManager settingsManager, ICPHelper helper)
         {
             _connectorFactory = connectorFactory;
-	        _settingsManager = settingsManager;
-			_helper = helper;
-			_logger = _helper.GetLoggerFactory().GetLogger()
-				.ForContext<FtpProviderController>()
-				.ForContext("CorrelationId", Guid.NewGuid(), false);
+            _settingsManager = settingsManager;
+            _helper = helper;
+            _logger = _helper.GetLoggerFactory().GetLogger()
+                .ForContext<FtpProviderController>()
+                .ForContext("CorrelationId", Guid.NewGuid(), false);
         }
 
         public ActionResult GetDefaultFtpSettings()
@@ -44,53 +44,53 @@ namespace kCura.IntegrationPoints.Web.Controllers
         [System.Web.Mvc.HttpPost]
         public HttpStatusCodeResult ValidateHostConnection([FromBody] SynchronizerSettings synchronizerSettings)
         {
-			_logger.LogInformation("Host validation has been started...");
+            _logger.LogInformation("Host validation has been started...");
 
-			var response = new HttpStatusCodeResult(HttpStatusCode.NotImplemented, "Nothing happened");
+            var response = new HttpStatusCodeResult(HttpStatusCode.NotImplemented, "Nothing happened");
 
-	        Settings settings = _settingsManager.DeserializeSettings(synchronizerSettings.Settings);
-			_logger.LogInformation("FTP Settings: {settings}", synchronizerSettings.Settings);
-	        SecuredConfiguration securedConfiguration = _settingsManager.DeserializeCredentials(synchronizerSettings.Credentials);
+            Settings settings = _settingsManager.DeserializeSettings(synchronizerSettings.Settings);
+            _logger.LogInformation("FTP Settings: {settings}", synchronizerSettings.Settings);
+            SecuredConfiguration securedConfiguration = _settingsManager.DeserializeCredentials(synchronizerSettings.Credentials);
 
-			//immediately end if host value is non-standard
-			if (settings.ValidateHost() == false)
+            //immediately end if host value is non-standard
+            if (settings.ValidateHost() == false)
             {
                 response = new HttpStatusCodeResult(HttpStatusCode.BadRequest, ErrorMessage.INVALID_HOST_NAME);
                 return response;
             }
-			_logger.LogInformation("Host has been validated");
+            _logger.LogInformation("Host has been validated");
 
             if (settings.ValidateCSVName() == false)
             {
                 response = new HttpStatusCodeResult(HttpStatusCode.BadRequest, ErrorMessage.MISSING_CSV_FILE_NAME);
                 return response;
             }
-			_logger.LogInformation("CSV file  has been validated");
+            _logger.LogInformation("CSV file  has been validated");
 
             settings.UpdatePort();
 
             try
             {
-				_logger.LogInformation("Trying to establish {protocol} connection", settings.Protocol);
+                _logger.LogInformation("Trying to establish {protocol} connection", settings.Protocol);
                 using (var client = _connectorFactory.GetConnector(settings.Protocol, settings.Host, settings.Port, securedConfiguration.Username, securedConfiguration.Password))
                 {
-					_logger.LogInformation("Test {protocol} connection", settings.Protocol);
+                    _logger.LogInformation("Test {protocol} connection", settings.Protocol);
                     if (client.TestConnection())
                     {
-						_logger.LogInformation("Connected.");
+                        _logger.LogInformation("Connected.");
                         response = new HttpStatusCodeResult(HttpStatusCode.NoContent);
                     }
                     else
                     {
-	                    const string message = "Cannot connect to specified host.";
-	                    _logger.LogInformation(message);
+                        const string message = "Cannot connect to specified host.";
+                        _logger.LogInformation(message);
                         response = new HttpStatusCodeResult(HttpStatusCode.Forbidden, message);
                     }
                 }
             }
             catch (Exception exception)
             {
-				_logger.LogError(exception, "Error occured during establishing the connection");
+                _logger.LogError(exception, "Error occured during establishing the connection");
                 response = new HttpStatusCodeResult(HttpStatusCode.BadRequest, exception.Message);
             }
             return response;

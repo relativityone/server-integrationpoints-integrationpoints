@@ -10,300 +10,300 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
-	[TestFixture, Category("Unit")]
-	public class ImportServiceTests : TestBase
-	{
-		private IHelper _helper;
+    [TestFixture, Category("Unit")]
+    public class ImportServiceTests : TestBase
+    {
+        private IHelper _helper;
 
-		[SetUp]
-		public override void SetUp()
-		{
-			_helper = Substitute.For<IHelper>();
-		}
+        [SetUp]
+        public override void SetUp()
+        {
+            _helper = Substitute.For<IHelper>();
+        }
 
-		[Test]
-		public void GenerateImportFields_Pass()
-		{
-			//ARRANGE
-			int fieldValue1 = 111;
-			DateTime fieldValue2 = DateTime.Parse("11/22/2010 11:22:33");
-			bool fieldValue3 = true;
-			string fieldValue4 = "Abc";
-			object fieldValue5 = null;
-			Dictionary<string, object> sourceFields = new Dictionary<string, object>()
-			{
-				{"sourceField1",fieldValue1},
-				{"sourceField2",fieldValue2},
-				{"sourceField3",fieldValue3},
-				{"sourceField4",fieldValue4},
-				{"sourceField5",fieldValue5}
-			};
+        [Test]
+        public void GenerateImportFields_Pass()
+        {
+            //ARRANGE
+            int fieldValue1 = 111;
+            DateTime fieldValue2 = DateTime.Parse("11/22/2010 11:22:33");
+            bool fieldValue3 = true;
+            string fieldValue4 = "Abc";
+            object fieldValue5 = null;
+            Dictionary<string, object> sourceFields = new Dictionary<string, object>()
+            {
+                {"sourceField1",fieldValue1},
+                {"sourceField2",fieldValue2},
+                {"sourceField3",fieldValue3},
+                {"sourceField4",fieldValue4},
+                {"sourceField5",fieldValue5}
+            };
 
-			Dictionary<string, string> mapping = new Dictionary<string, string>()
-			{
-				{"sourceField1","F1"},
-				{"sourceField2","F2"},
-				{"sourceField3","F3"},
-				{"sourceField4","F4"},
-				{"sourceField5","F5"},
-				{"sourceField6","F6"},
-				{"sourceField7","F7"},
-			};
+            Dictionary<string, string> mapping = new Dictionary<string, string>()
+            {
+                {"sourceField1","F1"},
+                {"sourceField2","F2"},
+                {"sourceField3","F3"},
+                {"sourceField4","F4"},
+                {"sourceField5","F5"},
+                {"sourceField6","F6"},
+                {"sourceField7","F7"},
+            };
 
-			ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null);
+            ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null);
 
-			//ACT
-			Dictionary<string, object> data = importService.GenerateImportFields(sourceFields, mapping);
+            //ACT
+            Dictionary<string, object> data = importService.GenerateImportFields(sourceFields, mapping);
 
-			//ASSERT
-			Assert.AreEqual(5, data.Count);
-			Assert.IsTrue(data.Keys.Contains("F1"));
-			Assert.IsTrue(data.Keys.Contains("F2"));
-			Assert.IsTrue(data.Keys.Contains("F3"));
-			Assert.IsTrue(data.Keys.Contains("F4"));
-			Assert.IsTrue(data.Keys.Contains("F5"));
-			Assert.AreEqual(fieldValue1, data["F1"]);
-			Assert.AreEqual(fieldValue2, data["F2"]);
-			Assert.AreEqual(fieldValue3, data["F3"]);
-			Assert.AreEqual(fieldValue4, data["F4"]);
-			Assert.AreEqual(fieldValue5, data["F5"]);
-		}
+            //ASSERT
+            Assert.AreEqual(5, data.Count);
+            Assert.IsTrue(data.Keys.Contains("F1"));
+            Assert.IsTrue(data.Keys.Contains("F2"));
+            Assert.IsTrue(data.Keys.Contains("F3"));
+            Assert.IsTrue(data.Keys.Contains("F4"));
+            Assert.IsTrue(data.Keys.Contains("F5"));
+            Assert.AreEqual(fieldValue1, data["F1"]);
+            Assert.AreEqual(fieldValue2, data["F2"]);
+            Assert.AreEqual(fieldValue3, data["F3"]);
+            Assert.AreEqual(fieldValue4, data["F4"]);
+            Assert.AreEqual(fieldValue5, data["F5"]);
+        }
 
-		#region ValidateAllMappedFieldsAreInWorkspace
+        #region ValidateAllMappedFieldsAreInWorkspace
 
-		[Test]
-		public void ValidateAllMappedFieldsAreInWorkspace_AllFieldsMatch()
-		{
-			//ARRANGE
-			Dictionary<string, int> fieldMapping = new Dictionary<string, int>(){
-				{"sourceField2",2},
-				{"sourceField3",3},
-				{"sourceField4",4},
-				{"sourceField5",5}
-			};
-			Dictionary<int, string> rdoAllFields = new Dictionary<int, string>()			{
-				{1,"F1"},
-				{2,"F2"},
-				{3,"F3"},
-				{4,"F4"},
-				{5,"F5"},
-				{6,"F6"},
-				{7,"F7"},
-			};
+        [Test]
+        public void ValidateAllMappedFieldsAreInWorkspace_AllFieldsMatch()
+        {
+            //ARRANGE
+            Dictionary<string, int> fieldMapping = new Dictionary<string, int>(){
+                {"sourceField2",2},
+                {"sourceField3",3},
+                {"sourceField4",4},
+                {"sourceField5",5}
+            };
+            Dictionary<int, string> rdoAllFields = new Dictionary<int, string>()            {
+                {1,"F1"},
+                {2,"F2"},
+                {3,"F3"},
+                {4,"F4"},
+                {5,"F5"},
+                {6,"F6"},
+                {7,"F7"},
+            };
 
-			ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null);
-
-
-			//ACT
-			Dictionary<string, string> fieldMap = importService.ValidateAllMappedFieldsAreInWorkspace(fieldMapping, rdoAllFields);
+            ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null);
 
 
-			//ASSERT
-			Assert.AreEqual(4, fieldMap.Count);
-			Assert.IsTrue(fieldMap.Keys.Contains("sourceField2"));
-			Assert.IsTrue(fieldMap.Keys.Contains("sourceField3"));
-			Assert.IsTrue(fieldMap.Keys.Contains("sourceField4"));
-			Assert.IsTrue(fieldMap.Keys.Contains("sourceField5"));
-			fieldMap["sourceField2"].Should().Be("F2");
-			
-			// Assert.AreEqual(2, fieldMap["sourceField2"].ArtifactID);
-			// Assert.AreEqual(3, fieldMap["sourceField3"].ArtifactID);
-			// Assert.AreEqual(4, fieldMap["sourceField4"].ArtifactID);
-			// Assert.AreEqual(5, fieldMap["sourceField5"].ArtifactID);
-		}
-
-		[Test]
-		public void ValidateAllMappedFieldsAreInWorkspace_NoneFieldsMatch()
-		{
-			//ARRANGE
-			Dictionary<string, int> fieldMapping = new Dictionary<string, int>(){
-				{"sourceField2",12},
-				{"sourceField3",13},
-				{"sourceField4",14},
-				{"sourceField5",15}
-			};
-			Dictionary<int, string> rdoAllFields = new Dictionary<int, string>()			{
-				{1,"F1"},
-				{2,"F2"},
-				{3,"F3"},
-				{4,"F4"},
-				{5,"F5"},
-				{6,"F6"},
-				{7,"F7"},
-			};
-
-			ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null);
+            //ACT
+            Dictionary<string, string> fieldMap = importService.ValidateAllMappedFieldsAreInWorkspace(fieldMapping, rdoAllFields);
 
 
-			//ACT
-			Exception ex = Assert.Throws<Exception>(() => importService.ValidateAllMappedFieldsAreInWorkspace(fieldMapping, rdoAllFields));
+            //ASSERT
+            Assert.AreEqual(4, fieldMap.Count);
+            Assert.IsTrue(fieldMap.Keys.Contains("sourceField2"));
+            Assert.IsTrue(fieldMap.Keys.Contains("sourceField3"));
+            Assert.IsTrue(fieldMap.Keys.Contains("sourceField4"));
+            Assert.IsTrue(fieldMap.Keys.Contains("sourceField5"));
+            fieldMap["sourceField2"].Should().Be("F2");
+            
+            // Assert.AreEqual(2, fieldMap["sourceField2"].ArtifactID);
+            // Assert.AreEqual(3, fieldMap["sourceField3"].ArtifactID);
+            // Assert.AreEqual(4, fieldMap["sourceField4"].ArtifactID);
+            // Assert.AreEqual(5, fieldMap["sourceField5"].ArtifactID);
+        }
 
-			Assert.That(ex.Message, Is.EqualTo("Missing mapped field IDs: 12, 13, 14, 15"));
-		}
+        [Test]
+        public void ValidateAllMappedFieldsAreInWorkspace_NoneFieldsMatch()
+        {
+            //ARRANGE
+            Dictionary<string, int> fieldMapping = new Dictionary<string, int>(){
+                {"sourceField2",12},
+                {"sourceField3",13},
+                {"sourceField4",14},
+                {"sourceField5",15}
+            };
+            Dictionary<int, string> rdoAllFields = new Dictionary<int, string>()            {
+                {1,"F1"},
+                {2,"F2"},
+                {3,"F3"},
+                {4,"F4"},
+                {5,"F5"},
+                {6,"F6"},
+                {7,"F7"},
+            };
 
-		[Test]
-		public void ValidateAllMappedFieldsAreInWorkspace_OneOutOfAllFieldsMatch()
-		{
-			//ARRANGE
-			Dictionary<string, int> fieldMapping = new Dictionary<string, int>(){
-				{"sourceField2",2},
-				{"sourceField3",13},
-				{"sourceField4",14},
-				{"sourceField5",15}
-			};
-			Dictionary<int, string> rdoAllFields = new Dictionary<int, string>()			{
-				{1,"F1"},
-				{2,"F2"},
-				{3,"F3"},
-				{4,"F4"},
-				{5,"F5"},
-				{6,"F6"},
-				{7,"F7"},
-			};
-
-			ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null);
-
-
-			//ACT
-			Exception ex = Assert.Throws<Exception>(() => importService.ValidateAllMappedFieldsAreInWorkspace(fieldMapping, rdoAllFields));
-
-			Assert.That(ex.Message, Is.EqualTo("Missing mapped field IDs: 13, 14, 15"));
-		}
-
-		#endregion
-
-		#region GenerateImportFields
-
-		[Test]
-		public void GenerateImportFields_NativeFileImportServiceIsNull_CorrectResult()
-		{
-			//ARRANGE
-			Dictionary<string, object> fieldMapping = new Dictionary<string, object>(){
-				{"sourceField1", "ABC"},
-				{"sourceField2", 123},
-				{"sourceField3", DateTime.MaxValue},
-				{"sourceField4", true},
-				{"MyPath", "\\\\Server1\\path1\\file1"}
-			};
-			Dictionary<string, string> mapping = new Dictionary<string, string>()			{
-				{"sourceField1","F1"},
-				{"sourceField2","F2"},
-				{"sourceField4","F4"}
-			};
-			NativeFileImportService nativeFileImportService = null;
-
-			ImportService importService = new ImportService(null, null, null, nativeFileImportService, null, null, _helper, null);
+            ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null);
 
 
-			//ACT
-			Dictionary<string, object> result = importService.GenerateImportFields(fieldMapping, mapping);
+            //ACT
+            Exception ex = Assert.Throws<Exception>(() => importService.ValidateAllMappedFieldsAreInWorkspace(fieldMapping, rdoAllFields));
+
+            Assert.That(ex.Message, Is.EqualTo("Missing mapped field IDs: 12, 13, 14, 15"));
+        }
+
+        [Test]
+        public void ValidateAllMappedFieldsAreInWorkspace_OneOutOfAllFieldsMatch()
+        {
+            //ARRANGE
+            Dictionary<string, int> fieldMapping = new Dictionary<string, int>(){
+                {"sourceField2",2},
+                {"sourceField3",13},
+                {"sourceField4",14},
+                {"sourceField5",15}
+            };
+            Dictionary<int, string> rdoAllFields = new Dictionary<int, string>()            {
+                {1,"F1"},
+                {2,"F2"},
+                {3,"F3"},
+                {4,"F4"},
+                {5,"F5"},
+                {6,"F6"},
+                {7,"F7"},
+            };
+
+            ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null);
 
 
-			Assert.AreEqual(3, result.Count);
-			Assert.AreEqual("ABC", result["F1"]);
-			Assert.AreEqual(123, result["F2"]);
-			Assert.AreEqual(true, result["F4"]);
-		}
+            //ACT
+            Exception ex = Assert.Throws<Exception>(() => importService.ValidateAllMappedFieldsAreInWorkspace(fieldMapping, rdoAllFields));
 
-		[Test]
-		public void GenerateImportFields_NativeFileImportServiceIsFalse_CorrectResult()
-		{
-			//ARRANGE
-			Dictionary<string, object> fieldMapping = new Dictionary<string, object>(){
-				{"sourceField1", "ABC"},
-				{"sourceField2", 123},
-				{"sourceField3", DateTime.MaxValue},
-				{"sourceField4", true},
-				{"MyPath", "\\\\Server1\\path1\\file1"}
-			};
-			Dictionary<string, string> mapping = new Dictionary<string, string>()			{
-				{"sourceField1","F1"},
-				{"sourceField2","F2"},
-				{"sourceField4","F4"}
-			};
-			NativeFileImportService nativeFileImportService = new NativeFileImportService()
-			{
-				ImportNativeFiles = false
-			};
+            Assert.That(ex.Message, Is.EqualTo("Missing mapped field IDs: 13, 14, 15"));
+        }
 
-			ImportService importService = new ImportService(null, null, null, nativeFileImportService, null, null, _helper, null);
+        #endregion
 
+        #region GenerateImportFields
 
-			//ACT
-			Dictionary<string, object> result = importService.GenerateImportFields(fieldMapping, mapping);
+        [Test]
+        public void GenerateImportFields_NativeFileImportServiceIsNull_CorrectResult()
+        {
+            //ARRANGE
+            Dictionary<string, object> fieldMapping = new Dictionary<string, object>(){
+                {"sourceField1", "ABC"},
+                {"sourceField2", 123},
+                {"sourceField3", DateTime.MaxValue},
+                {"sourceField4", true},
+                {"MyPath", "\\\\Server1\\path1\\file1"}
+            };
+            Dictionary<string, string> mapping = new Dictionary<string, string>()            {
+                {"sourceField1","F1"},
+                {"sourceField2","F2"},
+                {"sourceField4","F4"}
+            };
+            NativeFileImportService nativeFileImportService = null;
+
+            ImportService importService = new ImportService(null, null, null, nativeFileImportService, null, null, _helper, null);
 
 
-			Assert.AreEqual(3, result.Count);
-			Assert.AreEqual("ABC", result["F1"]);
-			Assert.AreEqual(123, result["F2"]);
-			Assert.AreEqual(true, result["F4"]);
-		}
-
-		[Test]
-		public void GenerateImportFields_NativeFileImportServiceIsTrue_CorrectResult()
-		{
-			//ARRANGE
-			Dictionary<string, object> fieldMapping = new Dictionary<string, object>(){
-				{"sourceField1", "ABC"},
-				{"sourceField2", 123},
-				{"sourceField3", DateTime.MaxValue},
-				{"sourceField4", true},
-				{"MyPath", "\\\\Server1\\path1\\file1"}
-			};
-			Dictionary<string, string> mapping = new Dictionary<string, string>()			{
-				{"sourceField1","F1"},
-				{"sourceField2","F2"},
-				{"sourceField4","F4"}
-			};
-			NativeFileImportService nativeFileImportService = new NativeFileImportService()
-			{
-				ImportNativeFiles = true,
-				SourceFieldName = "MyPath"
-			};
-
-			ImportService importService = new ImportService(null, null, null, nativeFileImportService, null, null, _helper, null);
+            //ACT
+            Dictionary<string, object> result = importService.GenerateImportFields(fieldMapping, mapping);
 
 
-			//ACT
-			Dictionary<string, object> result = importService.GenerateImportFields(fieldMapping, mapping);
+            Assert.AreEqual(3, result.Count);
+            Assert.AreEqual("ABC", result["F1"]);
+            Assert.AreEqual(123, result["F2"]);
+            Assert.AreEqual(true, result["F4"]);
+        }
+
+        [Test]
+        public void GenerateImportFields_NativeFileImportServiceIsFalse_CorrectResult()
+        {
+            //ARRANGE
+            Dictionary<string, object> fieldMapping = new Dictionary<string, object>(){
+                {"sourceField1", "ABC"},
+                {"sourceField2", 123},
+                {"sourceField3", DateTime.MaxValue},
+                {"sourceField4", true},
+                {"MyPath", "\\\\Server1\\path1\\file1"}
+            };
+            Dictionary<string, string> mapping = new Dictionary<string, string>()            {
+                {"sourceField1","F1"},
+                {"sourceField2","F2"},
+                {"sourceField4","F4"}
+            };
+            NativeFileImportService nativeFileImportService = new NativeFileImportService()
+            {
+                ImportNativeFiles = false
+            };
+
+            ImportService importService = new ImportService(null, null, null, nativeFileImportService, null, null, _helper, null);
 
 
-			Assert.AreEqual(4, result.Count);
-			Assert.AreEqual("ABC", result["F1"]);
-			Assert.AreEqual(123, result["F2"]);
-			Assert.AreEqual(true, result["F4"]);
-			Assert.AreEqual("\\\\Server1\\path1\\file1", result[nativeFileImportService.DestinationFieldName]);
-		}
+            //ACT
+            Dictionary<string, object> result = importService.GenerateImportFields(fieldMapping, mapping);
 
-		[TestCase("prefix", "message")]
-		[TestCase("Prefix", "Message")]
-		[TestCase("    Prefix", "    Message")]
-		[TestCase("", "    Message")]
-		[TestCase(null, "    Message")]
-		[TestCase("{0}{1}{2}", "{3}{4}{5}{6}")]
-		public void PrependString_NonEmptyOrWhitespaceMessage_ReturnsConcatenatedStrings(string prefix, string message)
-		{
-			ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null);
 
-			string result = importService.PrependString(prefix, message);
+            Assert.AreEqual(3, result.Count);
+            Assert.AreEqual("ABC", result["F1"]);
+            Assert.AreEqual(123, result["F2"]);
+            Assert.AreEqual(true, result["F4"]);
+        }
 
-			Assert.That(string.Equals(result, $"{prefix} {message}", StringComparison.InvariantCulture));
-		}
+        [Test]
+        public void GenerateImportFields_NativeFileImportServiceIsTrue_CorrectResult()
+        {
+            //ARRANGE
+            Dictionary<string, object> fieldMapping = new Dictionary<string, object>(){
+                {"sourceField1", "ABC"},
+                {"sourceField2", 123},
+                {"sourceField3", DateTime.MaxValue},
+                {"sourceField4", true},
+                {"MyPath", "\\\\Server1\\path1\\file1"}
+            };
+            Dictionary<string, string> mapping = new Dictionary<string, string>()            {
+                {"sourceField1","F1"},
+                {"sourceField2","F2"},
+                {"sourceField4","F4"}
+            };
+            NativeFileImportService nativeFileImportService = new NativeFileImportService()
+            {
+                ImportNativeFiles = true,
+                SourceFieldName = "MyPath"
+            };
 
-		[TestCase("")]
-		[TestCase("				     ")]
-		[TestCase(null)]
-		public void PrependString_MessageIsNullOrWhitespace_ReturnsGenericMessageWithPrefix(string message)
-		{
-			string prefix = "Test Prefix";
+            ImportService importService = new ImportService(null, null, null, nativeFileImportService, null, null, _helper, null);
 
-			ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null);
 
-			string result = importService.PrependString(prefix, message);
+            //ACT
+            Dictionary<string, object> result = importService.GenerateImportFields(fieldMapping, mapping);
 
-			Assert.That(string.Equals(result, $"{prefix} [Unknown message]", StringComparison.InvariantCulture));
-		}
 
-		#endregion
-	}
+            Assert.AreEqual(4, result.Count);
+            Assert.AreEqual("ABC", result["F1"]);
+            Assert.AreEqual(123, result["F2"]);
+            Assert.AreEqual(true, result["F4"]);
+            Assert.AreEqual("\\\\Server1\\path1\\file1", result[nativeFileImportService.DestinationFieldName]);
+        }
+
+        [TestCase("prefix", "message")]
+        [TestCase("Prefix", "Message")]
+        [TestCase("    Prefix", "    Message")]
+        [TestCase("", "    Message")]
+        [TestCase(null, "    Message")]
+        [TestCase("{0}{1}{2}", "{3}{4}{5}{6}")]
+        public void PrependString_NonEmptyOrWhitespaceMessage_ReturnsConcatenatedStrings(string prefix, string message)
+        {
+            ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null);
+
+            string result = importService.PrependString(prefix, message);
+
+            Assert.That(string.Equals(result, $"{prefix} {message}", StringComparison.InvariantCulture));
+        }
+
+        [TestCase("")]
+        [TestCase("                     ")]
+        [TestCase(null)]
+        public void PrependString_MessageIsNullOrWhitespace_ReturnsGenericMessageWithPrefix(string message)
+        {
+            string prefix = "Test Prefix";
+
+            ImportService importService = new ImportService(null, null, null, null, null, null, _helper, null);
+
+            string result = importService.PrependString(prefix, message);
+
+            Assert.That(string.Equals(result, $"{prefix} [Unknown message]", StringComparison.InvariantCulture));
+        }
+
+        #endregion
+    }
 }

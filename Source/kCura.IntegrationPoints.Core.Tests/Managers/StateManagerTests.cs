@@ -9,373 +9,373 @@ using static kCura.IntegrationPoints.Core.Contracts.Configuration.SourceConfigur
 
 namespace kCura.IntegrationPoints.Core.Tests.Managers
 {
-	[TestFixture, Category("Unit")]
-	public class StateManagerTests : TestBase
-	{
-		[SetUp]
-		public override void SetUp()
-		{
-			_instance = new StateManager();
-		}
+    [TestFixture, Category("Unit")]
+    public class StateManagerTests : TestBase
+    {
+        [SetUp]
+        public override void SetUp()
+        {
+            _instance = new StateManager();
+        }
 
-		private IStateManager _instance;
+        private IStateManager _instance;
 
-		[Test]
-		[TestCase(ProviderType.FTP)]
-		[TestCase(ProviderType.LDAP)]
-		[TestCase(ProviderType.LoadFile)]
-		[TestCase(ProviderType.ImportLoadFile)]
-		[TestCase(ProviderType.Other)]
-		public void GetNonRelativityProviderButtonState__JobsRunning_CanStop(ProviderType providerType)
-		{
-			//Arrange
-			ExportType exportType = ExportType.SavedSearch;
-			bool hasJobsExecutingOrInQueue = true;
-			bool hasStoppableJobs = true;
-			bool hasErrors = true;
-			bool hasViewPermissions = true;
-			bool hasProfileAddPermission = false;
+        [Test]
+        [TestCase(ProviderType.FTP)]
+        [TestCase(ProviderType.LDAP)]
+        [TestCase(ProviderType.LoadFile)]
+        [TestCase(ProviderType.ImportLoadFile)]
+        [TestCase(ProviderType.Other)]
+        public void GetNonRelativityProviderButtonState__JobsRunning_CanStop(ProviderType providerType)
+        {
+            //Arrange
+            ExportType exportType = ExportType.SavedSearch;
+            bool hasJobsExecutingOrInQueue = true;
+            bool hasStoppableJobs = true;
+            bool hasErrors = true;
+            bool hasViewPermissions = true;
+            bool hasProfileAddPermission = false;
 
-			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, providerType, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
-				hasProfileAddPermission);
+            //Act
+            ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, providerType, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
+                hasProfileAddPermission);
 
-			//Assert
-			Assert.IsFalse(buttonStates.RunButtonEnabled);
-			Assert.IsTrue(buttonStates.StopButtonEnabled);
-			Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
-			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
-			Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
+            //Assert
+            Assert.IsFalse(buttonStates.RunButtonEnabled);
+            Assert.IsTrue(buttonStates.StopButtonEnabled);
+            Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
+            Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
+            Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
 
-			//Assert Visible
-			Assert.IsFalse(buttonStates.RetryErrorsButtonVisible);
-			Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
-			Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
-			Assert.IsTrue(buttonStates.DownloadErrorFileLinkVisible == (providerType == ProviderType.ImportLoadFile));
-		}
+            //Assert Visible
+            Assert.IsFalse(buttonStates.RetryErrorsButtonVisible);
+            Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
+            Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
+            Assert.IsTrue(buttonStates.DownloadErrorFileLinkVisible == (providerType == ProviderType.ImportLoadFile));
+        }
 
-		[Test]
-		[TestCase(ProviderType.FTP)]
-		[TestCase(ProviderType.LDAP)]
-		[TestCase(ProviderType.LoadFile)]
-		[TestCase(ProviderType.ImportLoadFile)]
-		[TestCase(ProviderType.Other)]
-		public void GetNonRelativityProviderButtonState__NoJobsRunning_CantStop(ProviderType providerType)
-		{
-			//Arrange
-			ExportType exportType = ExportType.SavedSearch;
-			bool hasJobsExecutingOrInQueue = false;
-			bool hasStoppableJobs = false;
-			bool hasErrors = true;
-			bool hasViewPermissions = true;
-			bool hasProfileAddPermission = false;
+        [Test]
+        [TestCase(ProviderType.FTP)]
+        [TestCase(ProviderType.LDAP)]
+        [TestCase(ProviderType.LoadFile)]
+        [TestCase(ProviderType.ImportLoadFile)]
+        [TestCase(ProviderType.Other)]
+        public void GetNonRelativityProviderButtonState__NoJobsRunning_CantStop(ProviderType providerType)
+        {
+            //Arrange
+            ExportType exportType = ExportType.SavedSearch;
+            bool hasJobsExecutingOrInQueue = false;
+            bool hasStoppableJobs = false;
+            bool hasErrors = true;
+            bool hasViewPermissions = true;
+            bool hasProfileAddPermission = false;
 
-			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, providerType, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
-				hasProfileAddPermission);
+            //Act
+            ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, providerType, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
+                hasProfileAddPermission);
 
-			//Assert
-			Assert.IsTrue(buttonStates.RunButtonEnabled);
-			Assert.IsFalse(buttonStates.StopButtonEnabled);
-			Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
-			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
-			Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
+            //Assert
+            Assert.IsTrue(buttonStates.RunButtonEnabled);
+            Assert.IsFalse(buttonStates.StopButtonEnabled);
+            Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
+            Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
+            Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
 
-			//Assert Visible
-			Assert.IsFalse(buttonStates.RetryErrorsButtonVisible);
-			Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
-			Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
-			Assert.IsTrue(buttonStates.DownloadErrorFileLinkVisible == (providerType == ProviderType.ImportLoadFile));
-		}
+            //Assert Visible
+            Assert.IsFalse(buttonStates.RetryErrorsButtonVisible);
+            Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
+            Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
+            Assert.IsTrue(buttonStates.DownloadErrorFileLinkVisible == (providerType == ProviderType.ImportLoadFile));
+        }
 
-		[Test]
-		[TestCase(ProviderType.FTP)]
-		[TestCase(ProviderType.LDAP)]
-		[TestCase(ProviderType.LoadFile)]
-		[TestCase(ProviderType.ImportLoadFile)]
-		[TestCase(ProviderType.Other)]
-		public void GetNonRelativityProviderButtonState__StoppingStage_CantStop(ProviderType providerType)
-		{
-			//Arrange
-			ExportType exportType = ExportType.SavedSearch;
-			bool hasJobsExecutingOrInQueue = true;
-			bool hasStoppableJobs = false;
-			bool hasErrors = true;
-			bool hasViewPermissions = true;
-			bool hasProfileAddPermission = false;
+        [Test]
+        [TestCase(ProviderType.FTP)]
+        [TestCase(ProviderType.LDAP)]
+        [TestCase(ProviderType.LoadFile)]
+        [TestCase(ProviderType.ImportLoadFile)]
+        [TestCase(ProviderType.Other)]
+        public void GetNonRelativityProviderButtonState__StoppingStage_CantStop(ProviderType providerType)
+        {
+            //Arrange
+            ExportType exportType = ExportType.SavedSearch;
+            bool hasJobsExecutingOrInQueue = true;
+            bool hasStoppableJobs = false;
+            bool hasErrors = true;
+            bool hasViewPermissions = true;
+            bool hasProfileAddPermission = false;
 
-			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, providerType, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
-				hasProfileAddPermission);
+            //Act
+            ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, providerType, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
+                hasProfileAddPermission);
 
-			//Assert
-			Assert.IsFalse(buttonStates.RunButtonEnabled);
-			Assert.IsFalse(buttonStates.StopButtonEnabled);
-			Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
-			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
-			Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
+            //Assert
+            Assert.IsFalse(buttonStates.RunButtonEnabled);
+            Assert.IsFalse(buttonStates.StopButtonEnabled);
+            Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
+            Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
+            Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
 
-			//Assert Visible
-			Assert.IsFalse(buttonStates.RetryErrorsButtonVisible);
-			Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
-			Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
-			Assert.IsTrue(buttonStates.DownloadErrorFileLinkVisible == (providerType == ProviderType.ImportLoadFile));
-		}
+            //Assert Visible
+            Assert.IsFalse(buttonStates.RetryErrorsButtonVisible);
+            Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
+            Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
+            Assert.IsTrue(buttonStates.DownloadErrorFileLinkVisible == (providerType == ProviderType.ImportLoadFile));
+        }
 
-		[Test]
-		public void GetRelativityProviderButtonState_ButtonsDisabled_JobsRunning()
-		{
-			//Arrange
-			ExportType exportType = ExportType.SavedSearch;
-			bool hasErrors = false;
-			bool hasJobsExecutingOrInQueue = true;
-			bool hasViewPermissions = false;
-			bool hasStoppableJobs = true;
-			bool hasProfileAddPermission = false;
+        [Test]
+        public void GetRelativityProviderButtonState_ButtonsDisabled_JobsRunning()
+        {
+            //Arrange
+            ExportType exportType = ExportType.SavedSearch;
+            bool hasErrors = false;
+            bool hasJobsExecutingOrInQueue = true;
+            bool hasViewPermissions = false;
+            bool hasStoppableJobs = true;
+            bool hasProfileAddPermission = false;
 
-			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, ProviderType.Relativity, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
-				hasProfileAddPermission);
+            //Act
+            ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, ProviderType.Relativity, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
+                hasProfileAddPermission);
 
-			//Assert
-			Assert.IsFalse(buttonStates.RunButtonEnabled);
-			Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
-			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
-			Assert.IsTrue(buttonStates.StopButtonEnabled);
+            //Assert
+            Assert.IsFalse(buttonStates.RunButtonEnabled);
+            Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
+            Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
+            Assert.IsTrue(buttonStates.StopButtonEnabled);
 
-			//Assert Visible
-			Assert.IsTrue(buttonStates.RetryErrorsButtonVisible);
-			Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
-			Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
-		}
+            //Assert Visible
+            Assert.IsTrue(buttonStates.RetryErrorsButtonVisible);
+            Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
+            Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
+        }
 
-		[Test]
-		public void GetRelativityProviderButtonState_GoldFlow_HasErrors()
-		{
-			//Arrange
-			ExportType exportType = ExportType.SavedSearch;
-			bool hasErrors = true;
-			bool hasJobsExecutingOrInQueue = false;
-			bool hasViewPermissions = true;
-			bool hasStoppableJobs = false;
-			bool hasProfileAddPermission = false;
+        [Test]
+        public void GetRelativityProviderButtonState_GoldFlow_HasErrors()
+        {
+            //Arrange
+            ExportType exportType = ExportType.SavedSearch;
+            bool hasErrors = true;
+            bool hasJobsExecutingOrInQueue = false;
+            bool hasViewPermissions = true;
+            bool hasStoppableJobs = false;
+            bool hasProfileAddPermission = false;
 
-			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, ProviderType.Relativity, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
-				hasProfileAddPermission);
+            //Act
+            ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, ProviderType.Relativity, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
+                hasProfileAddPermission);
 
-			//Assert
-			Assert.IsTrue(buttonStates.RunButtonEnabled);
-			Assert.IsTrue(buttonStates.RetryErrorsButtonEnabled);
-			Assert.IsTrue(buttonStates.ViewErrorsLinkEnabled);
-			Assert.IsFalse(buttonStates.StopButtonEnabled);
-			Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
+            //Assert
+            Assert.IsTrue(buttonStates.RunButtonEnabled);
+            Assert.IsTrue(buttonStates.RetryErrorsButtonEnabled);
+            Assert.IsTrue(buttonStates.ViewErrorsLinkEnabled);
+            Assert.IsFalse(buttonStates.StopButtonEnabled);
+            Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
 
-			//Assert Visible
-			Assert.IsTrue(buttonStates.RetryErrorsButtonVisible);
-			Assert.IsTrue(buttonStates.ViewErrorsLinkVisible);
-			Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
-			Assert.IsFalse(buttonStates.DownloadErrorFileLinkVisible);
-		}
+            //Assert Visible
+            Assert.IsTrue(buttonStates.RetryErrorsButtonVisible);
+            Assert.IsTrue(buttonStates.ViewErrorsLinkVisible);
+            Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
+            Assert.IsFalse(buttonStates.DownloadErrorFileLinkVisible);
+        }
 
-		[Test]
-		public void GetRelativityProviderButtonState_GoldFlow_NoJobsRunning()
-		{
-			//Arrange
-			ExportType exportType = ExportType.SavedSearch;
-			bool hasErrors = false;
-			bool hasJobsExecutingOrInQueue = false;
-			bool hasViewPermissions = true;
-			bool hasStoppableJobs = false;
-			bool hasProfileAddPermission = false;
+        [Test]
+        public void GetRelativityProviderButtonState_GoldFlow_NoJobsRunning()
+        {
+            //Arrange
+            ExportType exportType = ExportType.SavedSearch;
+            bool hasErrors = false;
+            bool hasJobsExecutingOrInQueue = false;
+            bool hasViewPermissions = true;
+            bool hasStoppableJobs = false;
+            bool hasProfileAddPermission = false;
 
-			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, ProviderType.Relativity, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
-				hasProfileAddPermission);
+            //Act
+            ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, ProviderType.Relativity, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
+                hasProfileAddPermission);
 
-			//Assert Enable
-			Assert.IsTrue(buttonStates.RunButtonEnabled);
-			Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
-			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
-			Assert.IsFalse(buttonStates.StopButtonEnabled);
-			Assert.IsFalse(buttonStates.DownloadErrorFileLinkEnabled);
+            //Assert Enable
+            Assert.IsTrue(buttonStates.RunButtonEnabled);
+            Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
+            Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
+            Assert.IsFalse(buttonStates.StopButtonEnabled);
+            Assert.IsFalse(buttonStates.DownloadErrorFileLinkEnabled);
 
-			//Assert Visible
-			Assert.IsTrue(buttonStates.RetryErrorsButtonVisible);
-			Assert.IsTrue(buttonStates.ViewErrorsLinkVisible);
-			Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
-			Assert.IsFalse(buttonStates.DownloadErrorFileLinkVisible);
-		}
+            //Assert Visible
+            Assert.IsTrue(buttonStates.RetryErrorsButtonVisible);
+            Assert.IsTrue(buttonStates.ViewErrorsLinkVisible);
+            Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
+            Assert.IsFalse(buttonStates.DownloadErrorFileLinkVisible);
+        }
 
-		[Test]
-		public void GetRelativityProviderButtonState_HasErrors_JobsRunning()
-		{
-			//Arrange
-			ExportType exportType = ExportType.SavedSearch;
-			bool hasErrors = true;
-			bool hasJobsExecutingOrInQueue = true;
-			bool hasViewPermissions = false;
-			bool hasStoppableJobs = true;
-			bool hasProfileAddPermission = false;
+        [Test]
+        public void GetRelativityProviderButtonState_HasErrors_JobsRunning()
+        {
+            //Arrange
+            ExportType exportType = ExportType.SavedSearch;
+            bool hasErrors = true;
+            bool hasJobsExecutingOrInQueue = true;
+            bool hasViewPermissions = false;
+            bool hasStoppableJobs = true;
+            bool hasProfileAddPermission = false;
 
-			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, ProviderType.Relativity, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
-				hasProfileAddPermission);
+            //Act
+            ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, ProviderType.Relativity, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
+                hasProfileAddPermission);
 
-			//Assert
-			Assert.IsFalse(buttonStates.RunButtonEnabled);
-			Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
-			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
-			Assert.IsTrue(buttonStates.StopButtonEnabled);
-			Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
+            //Assert
+            Assert.IsFalse(buttonStates.RunButtonEnabled);
+            Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
+            Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
+            Assert.IsTrue(buttonStates.StopButtonEnabled);
+            Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
 
-			//Assert Visible
-			Assert.IsTrue(buttonStates.RetryErrorsButtonVisible);
-			Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
-			Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
-			Assert.IsFalse(buttonStates.DownloadErrorFileLinkVisible);
-		}
+            //Assert Visible
+            Assert.IsTrue(buttonStates.RetryErrorsButtonVisible);
+            Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
+            Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
+            Assert.IsFalse(buttonStates.DownloadErrorFileLinkVisible);
+        }
 
-		[Test]
-		public void GetRelativityProviderButtonState_HasErrors_NoJobsRunning()
-		{
-			//Arrange
-			ExportType exportType = ExportType.SavedSearch;
-			bool hasErrors = true;
-			bool hasJobsExecutingOrInQueue = false;
-			bool hasViewPermissions = true;
-			bool hasStoppableJobs = false;
-			bool hasProfileAddPermission = false;
+        [Test]
+        public void GetRelativityProviderButtonState_HasErrors_NoJobsRunning()
+        {
+            //Arrange
+            ExportType exportType = ExportType.SavedSearch;
+            bool hasErrors = true;
+            bool hasJobsExecutingOrInQueue = false;
+            bool hasViewPermissions = true;
+            bool hasStoppableJobs = false;
+            bool hasProfileAddPermission = false;
 
-			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, ProviderType.Relativity, hasJobsExecutingOrInQueue,
-				hasErrors, hasViewPermissions, hasStoppableJobs, hasProfileAddPermission);
+            //Act
+            ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, ProviderType.Relativity, hasJobsExecutingOrInQueue,
+                hasErrors, hasViewPermissions, hasStoppableJobs, hasProfileAddPermission);
 
-			//Assert
-			Assert.IsTrue(buttonStates.RunButtonEnabled);
-			Assert.IsTrue(buttonStates.RetryErrorsButtonEnabled);
-			Assert.IsTrue(buttonStates.ViewErrorsLinkEnabled);
-			Assert.IsFalse(buttonStates.StopButtonEnabled);
-			Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
+            //Assert
+            Assert.IsTrue(buttonStates.RunButtonEnabled);
+            Assert.IsTrue(buttonStates.RetryErrorsButtonEnabled);
+            Assert.IsTrue(buttonStates.ViewErrorsLinkEnabled);
+            Assert.IsFalse(buttonStates.StopButtonEnabled);
+            Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
 
-			//Assert Visible
-			Assert.IsTrue(buttonStates.RetryErrorsButtonVisible);
-			Assert.IsTrue(buttonStates.ViewErrorsLinkVisible);
-			Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
-			Assert.IsFalse(buttonStates.DownloadErrorFileLinkVisible);
-		}
+            //Assert Visible
+            Assert.IsTrue(buttonStates.RetryErrorsButtonVisible);
+            Assert.IsTrue(buttonStates.ViewErrorsLinkVisible);
+            Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
+            Assert.IsFalse(buttonStates.DownloadErrorFileLinkVisible);
+        }
 
-		[Test]
-		public void GetRelativityProviderButtonState_HasErrorsAndNoViewPermissions_NoJobsRunning()
-		{
-			//Arrange
-			ExportType exportType = ExportType.SavedSearch;
-			bool hasErrors = true;
-			bool hasJobsExecutingOrInQueue = false;
-			bool hasViewPermissions = false;
-			bool hasStoppableJobs = false;
-			bool hasProfileAddPermission = false;
+        [Test]
+        public void GetRelativityProviderButtonState_HasErrorsAndNoViewPermissions_NoJobsRunning()
+        {
+            //Arrange
+            ExportType exportType = ExportType.SavedSearch;
+            bool hasErrors = true;
+            bool hasJobsExecutingOrInQueue = false;
+            bool hasViewPermissions = false;
+            bool hasStoppableJobs = false;
+            bool hasProfileAddPermission = false;
 
-			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, ProviderType.Relativity, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
-				hasProfileAddPermission);
+            //Act
+            ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, ProviderType.Relativity, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
+                hasProfileAddPermission);
 
-			//Assert
-			Assert.IsTrue(buttonStates.RunButtonEnabled);
-			Assert.IsTrue(buttonStates.RetryErrorsButtonEnabled);
-			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
-			Assert.IsFalse(buttonStates.StopButtonEnabled);
-			Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
+            //Assert
+            Assert.IsTrue(buttonStates.RunButtonEnabled);
+            Assert.IsTrue(buttonStates.RetryErrorsButtonEnabled);
+            Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
+            Assert.IsFalse(buttonStates.StopButtonEnabled);
+            Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
 
-			//Assert Visible
-			Assert.IsTrue(buttonStates.RetryErrorsButtonVisible);
-			Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
-			Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
-			Assert.IsFalse(buttonStates.DownloadErrorFileLinkVisible);
-		}
+            //Assert Visible
+            Assert.IsTrue(buttonStates.RetryErrorsButtonVisible);
+            Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
+            Assert.IsFalse(buttonStates.SaveAsProfileButtonVisible);
+            Assert.IsFalse(buttonStates.DownloadErrorFileLinkVisible);
+        }
 
-		[Test]
-		public void GetRelativityProviderButtonState_HasProfileAddPermission_NoJobsRunning()
-		{
-			//Arrange
-			ExportType exportType = ExportType.SavedSearch;
-			bool hasErrors = true;
-			bool hasJobsExecutingOrInQueue = false;
-			bool hasViewPermissions = false;
-			bool hasStoppableJobs = false;
-			bool hasProfileAddPermission = true;
+        [Test]
+        public void GetRelativityProviderButtonState_HasProfileAddPermission_NoJobsRunning()
+        {
+            //Arrange
+            ExportType exportType = ExportType.SavedSearch;
+            bool hasErrors = true;
+            bool hasJobsExecutingOrInQueue = false;
+            bool hasViewPermissions = false;
+            bool hasStoppableJobs = false;
+            bool hasProfileAddPermission = true;
 
-			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, ProviderType.Relativity, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
-				hasProfileAddPermission);
+            //Act
+            ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, ProviderType.Relativity, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
+                hasProfileAddPermission);
 
-			//Assert
-			Assert.IsTrue(buttonStates.RunButtonEnabled);
-			Assert.IsTrue(buttonStates.RetryErrorsButtonEnabled);
-			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
-			Assert.IsFalse(buttonStates.StopButtonEnabled);
-			Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
+            //Assert
+            Assert.IsTrue(buttonStates.RunButtonEnabled);
+            Assert.IsTrue(buttonStates.RetryErrorsButtonEnabled);
+            Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
+            Assert.IsFalse(buttonStates.StopButtonEnabled);
+            Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
 
-			//Assert Visible
-			Assert.IsTrue(buttonStates.RetryErrorsButtonVisible);
-			Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
-			Assert.IsTrue(buttonStates.SaveAsProfileButtonVisible);
-			Assert.IsFalse(buttonStates.DownloadErrorFileLinkVisible);
-		}
+            //Assert Visible
+            Assert.IsTrue(buttonStates.RetryErrorsButtonVisible);
+            Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
+            Assert.IsTrue(buttonStates.SaveAsProfileButtonVisible);
+            Assert.IsFalse(buttonStates.DownloadErrorFileLinkVisible);
+        }
 
-		[Test]
-		[TestCase(ProviderType.FTP)]
-		[TestCase(ProviderType.LDAP)]
-		[TestCase(ProviderType.LoadFile)]
-		[TestCase(ProviderType.ImportLoadFile)]
-		[TestCase(ProviderType.Other)]
-		public void GetOtherProviderButtonState_HasProfileAddPermission_NoJobsRunning(ProviderType providerType)
-		{
-			//Arrange
-			ExportType exportType = ExportType.SavedSearch;
-			bool hasErrors = true;
-			bool hasJobsExecutingOrInQueue = false;
-			bool hasViewPermissions = false;
-			bool hasStoppableJobs = false;
-			bool hasProfileAddPermission = true;
+        [Test]
+        [TestCase(ProviderType.FTP)]
+        [TestCase(ProviderType.LDAP)]
+        [TestCase(ProviderType.LoadFile)]
+        [TestCase(ProviderType.ImportLoadFile)]
+        [TestCase(ProviderType.Other)]
+        public void GetOtherProviderButtonState_HasProfileAddPermission_NoJobsRunning(ProviderType providerType)
+        {
+            //Arrange
+            ExportType exportType = ExportType.SavedSearch;
+            bool hasErrors = true;
+            bool hasJobsExecutingOrInQueue = false;
+            bool hasViewPermissions = false;
+            bool hasStoppableJobs = false;
+            bool hasProfileAddPermission = true;
 
-			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, providerType, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
-				hasProfileAddPermission);
+            //Act
+            ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, providerType, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
+                hasProfileAddPermission);
 
-			//Assert
-			Assert.IsTrue(buttonStates.RunButtonEnabled);
-			Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
-			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
-			Assert.IsFalse(buttonStates.StopButtonEnabled);
-			Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
+            //Assert
+            Assert.IsTrue(buttonStates.RunButtonEnabled);
+            Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
+            Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
+            Assert.IsFalse(buttonStates.StopButtonEnabled);
+            Assert.IsTrue(buttonStates.DownloadErrorFileLinkEnabled);
 
-			//Assert Visible
-			Assert.IsFalse(buttonStates.RetryErrorsButtonVisible);
-			Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
-			Assert.IsTrue(buttonStates.SaveAsProfileButtonVisible);
-			Assert.IsTrue(buttonStates.DownloadErrorFileLinkVisible == (providerType == ProviderType.ImportLoadFile));
-		}
+            //Assert Visible
+            Assert.IsFalse(buttonStates.RetryErrorsButtonVisible);
+            Assert.IsFalse(buttonStates.ViewErrorsLinkVisible);
+            Assert.IsTrue(buttonStates.SaveAsProfileButtonVisible);
+            Assert.IsTrue(buttonStates.DownloadErrorFileLinkVisible == (providerType == ProviderType.ImportLoadFile));
+        }
 
-		[TestCase(ProviderType.Relativity, ExportType.ProductionSet, true)]
-		[TestCase(ProviderType.Relativity, ExportType.SavedSearch, true)]
-		[TestCase(ProviderType.Relativity, ExportType.View, false)]
-		public void GetRetryErrorsButtonState_WhenHasErrors(ProviderType providerType, ExportType exportType, bool expectedRetryErrorsVisibility)
-		{
-			//Arrange
-			bool hasJobsExecutingOrInQueue = true;
-			bool hasStoppableJobs = true;
-			bool hasErrors = true;
-			bool hasViewPermissions = true;
-			bool hasProfileAddPermission = false;
+        [TestCase(ProviderType.Relativity, ExportType.ProductionSet, true)]
+        [TestCase(ProviderType.Relativity, ExportType.SavedSearch, true)]
+        [TestCase(ProviderType.Relativity, ExportType.View, false)]
+        public void GetRetryErrorsButtonState_WhenHasErrors(ProviderType providerType, ExportType exportType, bool expectedRetryErrorsVisibility)
+        {
+            //Arrange
+            bool hasJobsExecutingOrInQueue = true;
+            bool hasStoppableJobs = true;
+            bool hasErrors = true;
+            bool hasViewPermissions = true;
+            bool hasProfileAddPermission = false;
 
-			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, providerType, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
-				hasProfileAddPermission);
+            //Act
+            ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, providerType, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
+                hasProfileAddPermission);
 
-			//Assert
-			buttonStates.RetryErrorsButtonVisible.Should().Be(expectedRetryErrorsVisibility);
-		}
+            //Assert
+            buttonStates.RetryErrorsButtonVisible.Should().Be(expectedRetryErrorsVisibility);
+        }
 
-	}
+    }
 }

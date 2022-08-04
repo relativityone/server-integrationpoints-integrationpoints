@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 {
-	public interface IExportServiceFactory
-	{
-		IServiceFactory Create(ExportDataContext exportDataContext);
-	}
+    public interface IExportServiceFactory
+    {
+        IServiceFactory Create(ExportDataContext exportDataContext);
+    }
 }

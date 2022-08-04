@@ -7,45 +7,45 @@ using Relativity.IntegrationPoints.Services.Models;
 
 namespace Relativity.IntegrationPoints.Services.Helpers
 {
-	public class BackwardCompatibility : IBackwardCompatibility
-	{
-		private readonly IProviderTypeService _providerTypeService;
-		private readonly IAPILog _apiLog;
+    public class BackwardCompatibility : IBackwardCompatibility
+    {
+        private readonly IProviderTypeService _providerTypeService;
+        private readonly IAPILog _apiLog;
 
-		public BackwardCompatibility(IProviderTypeService providerTypeService, IHelper helper)
-		{
-			_providerTypeService = providerTypeService;
-			_apiLog = helper.GetLoggerFactory().GetLogger().ForContext<BackwardCompatibility>();
-		}
+        public BackwardCompatibility(IProviderTypeService providerTypeService, IHelper helper)
+        {
+            _providerTypeService = providerTypeService;
+            _apiLog = helper.GetLoggerFactory().GetLogger().ForContext<BackwardCompatibility>();
+        }
 
-		public void FixIncompatibilities(IntegrationPointModel integrationPointModel, string overwriteFieldsName)
-		{
-			var providerType = _providerTypeService.GetProviderType(integrationPointModel.SourceProvider, integrationPointModel.DestinationProvider);
+        public void FixIncompatibilities(IntegrationPointModel integrationPointModel, string overwriteFieldsName)
+        {
+            var providerType = _providerTypeService.GetProviderType(integrationPointModel.SourceProvider, integrationPointModel.DestinationProvider);
 
-			if (providerType == ProviderType.Relativity)
-			{
-				FixRelativityIncompatibilities(integrationPointModel, overwriteFieldsName);
-			}
-		}
+            if (providerType == ProviderType.Relativity)
+            {
+                FixRelativityIncompatibilities(integrationPointModel, overwriteFieldsName);
+            }
+        }
 
-		private void FixRelativityIncompatibilities(IntegrationPointModel integrationPointModel, string overwriteFieldsName)
-		{
-			RelativityProviderSourceConfiguration sourceConfiguration;
-			RelativityProviderDestinationConfiguration destinationConfiguration;
-			try
-			{
-				sourceConfiguration = JsonConvert.DeserializeObject<RelativityProviderSourceConfiguration>(JsonConvert.SerializeObject(integrationPointModel.SourceConfiguration));
-				destinationConfiguration =
-					JsonConvert.DeserializeObject<RelativityProviderDestinationConfiguration>(JsonConvert.SerializeObject(integrationPointModel.DestinationConfiguration));
-			}
-			catch (Exception e)
-			{
-				_apiLog.LogError(e, "Error occured during Relativity Provider configuration deserialization.");
-				throw new ArgumentException("Invalid configuration for Relativity Provider specified.", e);
-			}
+        private void FixRelativityIncompatibilities(IntegrationPointModel integrationPointModel, string overwriteFieldsName)
+        {
+            RelativityProviderSourceConfiguration sourceConfiguration;
+            RelativityProviderDestinationConfiguration destinationConfiguration;
+            try
+            {
+                sourceConfiguration = JsonConvert.DeserializeObject<RelativityProviderSourceConfiguration>(JsonConvert.SerializeObject(integrationPointModel.SourceConfiguration));
+                destinationConfiguration =
+                    JsonConvert.DeserializeObject<RelativityProviderDestinationConfiguration>(JsonConvert.SerializeObject(integrationPointModel.DestinationConfiguration));
+            }
+            catch (Exception e)
+            {
+                _apiLog.LogError(e, "Error occured during Relativity Provider configuration deserialization.");
+                throw new ArgumentException("Invalid configuration for Relativity Provider specified.", e);
+            }
 
-			integrationPointModel.SourceConfiguration = new RelativityProviderSourceConfigurationBackwardCompatibility(sourceConfiguration, destinationConfiguration);
-			integrationPointModel.DestinationConfiguration = new RelativityProviderDestinationConfigurationBackwardCompatibility(destinationConfiguration, sourceConfiguration, overwriteFieldsName);
-		}
-	}
+            integrationPointModel.SourceConfiguration = new RelativityProviderSourceConfigurationBackwardCompatibility(sourceConfiguration, destinationConfiguration);
+            integrationPointModel.DestinationConfiguration = new RelativityProviderDestinationConfigurationBackwardCompatibility(destinationConfiguration, sourceConfiguration, overwriteFieldsName);
+        }
+    }
 }

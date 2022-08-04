@@ -32,119 +32,119 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return integrationPoint;
         }
 
-		public IntegrationPointProfileTest CreateSavedSearchIntegrationPointProfile(WorkspaceTest destinationWorkspace)
-		{
-			IntegrationPointProfileTest integrationPoint = CreateEmptyIntegrationPointProfile();
+        public IntegrationPointProfileTest CreateSavedSearchIntegrationPointProfile(WorkspaceTest destinationWorkspace)
+        {
+            IntegrationPointProfileTest integrationPoint = CreateEmptyIntegrationPointProfile();
 
-			FolderTest destinationFolder = destinationWorkspace.Folders.First();
+            FolderTest destinationFolder = destinationWorkspace.Folders.First();
 
-			SavedSearchTest sourceSavedSearch = Workspace.SavedSearches.First();
+            SavedSearchTest sourceSavedSearch = Workspace.SavedSearches.First();
 
-			IntegrationPointTypeTest integrationPointType = Workspace.IntegrationPointTypes.First(x => x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString());
+            IntegrationPointTypeTest integrationPointType = Workspace.IntegrationPointTypes.First(x => x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString());
 
-			SourceProviderTest sourceProvider = Workspace.SourceProviders.First(x =>
-				x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY);
+            SourceProviderTest sourceProvider = Workspace.SourceProviders.First(x =>
+                x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.SourceProviders.RELATIVITY);
 
-			DestinationProviderTest destinationProvider = Workspace.DestinationProviders.First(x =>
-				x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
+            DestinationProviderTest destinationProvider = Workspace.DestinationProviders.First(x =>
+                x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.DestinationProviders.RELATIVITY);
 
-			List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMapping(destinationWorkspace, (int)ArtifactType.Document);
+            List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMapping(destinationWorkspace, (int)ArtifactType.Document);
 
-			integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
-			integrationPoint.SourceConfiguration = _serializer.Serialize(new SourceConfiguration
-			{
-				SourceWorkspaceArtifactId = Workspace.ArtifactId,
-				TargetWorkspaceArtifactId = destinationWorkspace.ArtifactId,
-				TypeOfExport = SourceConfiguration.ExportType.SavedSearch,
-				SavedSearchArtifactId = sourceSavedSearch.ArtifactId,
-			});
-			integrationPoint.DestinationConfiguration = _serializer.Serialize(new ImportSettings
-			{
-				ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
-				FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
-				ArtifactTypeId = (int)ArtifactType.Document,
-				DestinationArtifactTypeId = (int)ArtifactType.Document,
-				DestinationFolderArtifactId = destinationFolder.ArtifactId,
-				CaseArtifactId = destinationWorkspace.ArtifactId,
-				WebServiceURL = @"//some/service/url/relativity"
-			});
-			integrationPoint.SourceProvider = sourceProvider.ArtifactId;
-			integrationPoint.EnableScheduler = true;
-			integrationPoint.ScheduleRule = ScheduleRuleTest.CreateWeeklyRule(
-					new DateTime(2021, 3, 20), new DateTime(2021, 3, 30), TimeZoneInfo.Utc, DaysOfWeek.Friday)
-				.Serialize();
-			integrationPoint.DestinationProvider = destinationProvider.ArtifactId;
-			integrationPoint.Type = integrationPointType.ArtifactId;
+            integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
+            integrationPoint.SourceConfiguration = _serializer.Serialize(new SourceConfiguration
+            {
+                SourceWorkspaceArtifactId = Workspace.ArtifactId,
+                TargetWorkspaceArtifactId = destinationWorkspace.ArtifactId,
+                TypeOfExport = SourceConfiguration.ExportType.SavedSearch,
+                SavedSearchArtifactId = sourceSavedSearch.ArtifactId,
+            });
+            integrationPoint.DestinationConfiguration = _serializer.Serialize(new ImportSettings
+            {
+                ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
+                FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
+                ArtifactTypeId = (int)ArtifactType.Document,
+                DestinationArtifactTypeId = (int)ArtifactType.Document,
+                DestinationFolderArtifactId = destinationFolder.ArtifactId,
+                CaseArtifactId = destinationWorkspace.ArtifactId,
+                WebServiceURL = @"//some/service/url/relativity"
+            });
+            integrationPoint.SourceProvider = sourceProvider.ArtifactId;
+            integrationPoint.EnableScheduler = true;
+            integrationPoint.ScheduleRule = ScheduleRuleTest.CreateWeeklyRule(
+                    new DateTime(2021, 3, 20), new DateTime(2021, 3, 30), TimeZoneInfo.Utc, DaysOfWeek.Friday)
+                .Serialize();
+            integrationPoint.DestinationProvider = destinationProvider.ArtifactId;
+            integrationPoint.Type = integrationPointType.ArtifactId;
 
-			return integrationPoint;
-		}
+            return integrationPoint;
+        }
 
-		public IntegrationPointProfileTest CreateSavedSearchIntegrationPointProfileWithDeserializableSourceConfiguration(WorkspaceTest destinationWorkspace, int longTextLimit)
-		{
-			IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
-			SavedSearchTest sourceSavedSearch = Workspace.SavedSearches.First();
-			integrationPointProfile.SourceConfiguration = _serializer.Serialize(new 
-			{
-				SourceWorkspaceArtifactId = Workspace.ArtifactId,
-				TargetWorkspaceArtifactId = destinationWorkspace.ArtifactId,
-				TypeOfExport = SourceConfiguration.ExportType.SavedSearch,
-				SavedSearchArtifactId = sourceSavedSearch.ArtifactId,
-				Filler = new String(Enumerable.Repeat('-', longTextLimit).ToArray())
-			});
+        public IntegrationPointProfileTest CreateSavedSearchIntegrationPointProfileWithDeserializableSourceConfiguration(WorkspaceTest destinationWorkspace, int longTextLimit)
+        {
+            IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
+            SavedSearchTest sourceSavedSearch = Workspace.SavedSearches.First();
+            integrationPointProfile.SourceConfiguration = _serializer.Serialize(new 
+            {
+                SourceWorkspaceArtifactId = Workspace.ArtifactId,
+                TargetWorkspaceArtifactId = destinationWorkspace.ArtifactId,
+                TypeOfExport = SourceConfiguration.ExportType.SavedSearch,
+                SavedSearchArtifactId = sourceSavedSearch.ArtifactId,
+                Filler = new String(Enumerable.Repeat('-', longTextLimit).ToArray())
+            });
 
-			return integrationPointProfile;
-		}
+            return integrationPointProfile;
+        }
 
-		public IntegrationPointProfileTest CreateSavedSearchIntegrationPointProfileWithDeserializableFieldMappings(WorkspaceTest destinationWorkspace, int longTextLimit)
-		{
-			IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
-			List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMapping(destinationWorkspace, (int)ArtifactType.Document);
-			fieldsMapping[0].SourceField.DisplayName = new string(Enumerable.Repeat('-', longTextLimit / 2).ToArray());
-			fieldsMapping[0].DestinationField.DisplayName = new string(Enumerable.Repeat('-', longTextLimit / 2).ToArray());
-			integrationPointProfile.FieldMappings = _serializer.Serialize(fieldsMapping);
+        public IntegrationPointProfileTest CreateSavedSearchIntegrationPointProfileWithDeserializableFieldMappings(WorkspaceTest destinationWorkspace, int longTextLimit)
+        {
+            IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
+            List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMapping(destinationWorkspace, (int)ArtifactType.Document);
+            fieldsMapping[0].SourceField.DisplayName = new string(Enumerable.Repeat('-', longTextLimit / 2).ToArray());
+            fieldsMapping[0].DestinationField.DisplayName = new string(Enumerable.Repeat('-', longTextLimit / 2).ToArray());
+            integrationPointProfile.FieldMappings = _serializer.Serialize(fieldsMapping);
 
-			return integrationPointProfile;
-		}
+            return integrationPointProfile;
+        }
 
-		public IntegrationPointProfileTest CreateSavedSearchIntegrationPointProfileWithDeserializableDestinationConfiguration(WorkspaceTest destinationWorkspace, int longTextLimit)
-		{
-			IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
-			FolderTest destinationFolder = destinationWorkspace.Folders.First();
-			integrationPointProfile.DestinationConfiguration = _serializer.Serialize(new
-			{
-				ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
-				FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
-				ArtifactTypeId = (int)ArtifactType.Document,
-				DestinationFolderArtifactId = destinationFolder.ArtifactId,
-				CaseArtifactId = destinationWorkspace.ArtifactId,
-				WebServiceURL = @"//some/service/url/relativity",
-				Filler = new String(Enumerable.Repeat('-', longTextLimit).ToArray())
-			});
+        public IntegrationPointProfileTest CreateSavedSearchIntegrationPointProfileWithDeserializableDestinationConfiguration(WorkspaceTest destinationWorkspace, int longTextLimit)
+        {
+            IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
+            FolderTest destinationFolder = destinationWorkspace.Folders.First();
+            integrationPointProfile.DestinationConfiguration = _serializer.Serialize(new
+            {
+                ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly,
+                FieldOverlayBehavior = RelativityProviderValidationMessages.FIELD_MAP_FIELD_OVERLAY_BEHAVIOR_DEFAULT,
+                ArtifactTypeId = (int)ArtifactType.Document,
+                DestinationFolderArtifactId = destinationFolder.ArtifactId,
+                CaseArtifactId = destinationWorkspace.ArtifactId,
+                WebServiceURL = @"//some/service/url/relativity",
+                Filler = new String(Enumerable.Repeat('-', longTextLimit).ToArray())
+            });
 
-			return integrationPointProfile;
-		}
+            return integrationPointProfile;
+        }
 
-		public IntegrationPointProfileModel CreateSavedSearchIntegrationPointAsIntegrationPointProfileModel(WorkspaceTest destinationWorkspace)
-		{
-			IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
-			IntegrationPointProfileModel integrationPointProfileModel = new IntegrationPointProfileModel
-			{
-				Name = integrationPointProfile.Name,
-				SelectedOverwrite = integrationPointProfile.OverwriteFields == null ? string.Empty : integrationPointProfile.OverwriteFields.Name,
-				SourceProvider = integrationPointProfile.SourceProvider.GetValueOrDefault(0),
-				Destination = integrationPointProfile.DestinationConfiguration,
-				SourceConfiguration = integrationPointProfile.SourceConfiguration,
-				DestinationProvider = integrationPointProfile.DestinationProvider.GetValueOrDefault(0),
-				Type = integrationPointProfile.Type,
-				Scheduler = new Scheduler(integrationPointProfile.EnableScheduler.GetValueOrDefault(false), integrationPointProfile.ScheduleRule),
-				NotificationEmails = integrationPointProfile.EmailNotificationRecipients ?? string.Empty,
-				LogErrors = integrationPointProfile.LogErrors.GetValueOrDefault(false),
-				NextRun = integrationPointProfile.NextScheduledRuntimeUTC,
-				Map = integrationPointProfile.FieldMappings
-			};
+        public IntegrationPointProfileModel CreateSavedSearchIntegrationPointAsIntegrationPointProfileModel(WorkspaceTest destinationWorkspace)
+        {
+            IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
+            IntegrationPointProfileModel integrationPointProfileModel = new IntegrationPointProfileModel
+            {
+                Name = integrationPointProfile.Name,
+                SelectedOverwrite = integrationPointProfile.OverwriteFields == null ? string.Empty : integrationPointProfile.OverwriteFields.Name,
+                SourceProvider = integrationPointProfile.SourceProvider.GetValueOrDefault(0),
+                Destination = integrationPointProfile.DestinationConfiguration,
+                SourceConfiguration = integrationPointProfile.SourceConfiguration,
+                DestinationProvider = integrationPointProfile.DestinationProvider.GetValueOrDefault(0),
+                Type = integrationPointProfile.Type,
+                Scheduler = new Scheduler(integrationPointProfile.EnableScheduler.GetValueOrDefault(false), integrationPointProfile.ScheduleRule),
+                NotificationEmails = integrationPointProfile.EmailNotificationRecipients ?? string.Empty,
+                LogErrors = integrationPointProfile.LogErrors.GetValueOrDefault(false),
+                NextRun = integrationPointProfile.NextScheduledRuntimeUTC,
+                Map = integrationPointProfile.FieldMappings
+            };
 
-			Workspace.IntegrationPointProfiles.Remove(integrationPointProfile);
-			return integrationPointProfileModel;
-		}
-	}
+            Workspace.IntegrationPointProfiles.Remove(integrationPointProfile);
+            return integrationPointProfileModel;
+        }
+    }
 }

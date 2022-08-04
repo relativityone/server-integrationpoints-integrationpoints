@@ -16,9 +16,9 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers.Models
 
         public string Filename_Prefix { get; set; } = string.Empty;
 
-		public string ValidationMessage { get; set; } = string.Empty;
+        public string ValidationMessage { get; set; } = string.Empty;
 
-		[DefaultValue(0)]
+        [DefaultValue(0)]
         public int? Timezone_Offset { get; set; }
 
         public List<FieldEntry> ColumnList { get; set; }

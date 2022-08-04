@@ -36,7 +36,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             // Arrange
             const int expectedSearchDocumentsCount = 5;
 
-			_testsImplementationTestFixture.LoginAsStandardUser();
+            _testsImplementationTestFixture.LoginAsStandardUser();
             _workspaceArtifactId = _testsImplementationTestFixture.Workspace.ArtifactID;
             string integrationPointName = nameof(ExportToLoadFileTestImplementation);
 

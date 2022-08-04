@@ -9,37 +9,37 @@ using kCura.IntegrationPoints.Domain.Models;
 
 namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
-	public class ImportPermissionValidator : BasePermissionValidator
-	{
-		private readonly IRepositoryFactory _repositoryFactory;
+    public class ImportPermissionValidator : BasePermissionValidator
+    {
+        private readonly IRepositoryFactory _repositoryFactory;
 
-		public ImportPermissionValidator(IRepositoryFactory repositoryFactoryFactory, ISerializer serializer, IServiceContextHelper contextHelper)
-			: base(serializer, contextHelper)
-		{
-			_repositoryFactory = repositoryFactoryFactory;
-		}
+        public ImportPermissionValidator(IRepositoryFactory repositoryFactoryFactory, ISerializer serializer, IServiceContextHelper contextHelper)
+            : base(serializer, contextHelper)
+        {
+            _repositoryFactory = repositoryFactoryFactory;
+        }
 
-		public override string Key => Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid.ToString();
+        public override string Key => Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid.ToString();
 
-		public override ValidationResult Validate(IntegrationPointProviderValidationModel model)
-		{
-			var result = new ValidationResult();
-			DestinationConfiguration destinationConfiguration = Serializer.Deserialize<DestinationConfiguration>(model.DestinationConfiguration);
+        public override ValidationResult Validate(IntegrationPointProviderValidationModel model)
+        {
+            var result = new ValidationResult();
+            DestinationConfiguration destinationConfiguration = Serializer.Deserialize<DestinationConfiguration>(model.DestinationConfiguration);
 
-			var permissionRepository = _repositoryFactory.GetPermissionRepository(ContextHelper.WorkspaceID);
+            var permissionRepository = _repositoryFactory.GetPermissionRepository(ContextHelper.WorkspaceID);
 
-			if (!permissionRepository.UserCanImport())
-			{
-				result.Add(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE);
-			}
+            if (!permissionRepository.UserCanImport())
+            {
+                result.Add(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE);
+            }
 
-			if (!permissionRepository.UserHasArtifactTypePermissions(destinationConfiguration.ArtifactTypeId,
-				new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create }))
-			{
-				result.Add(Constants.IntegrationPoints.PermissionErrors.MISSING_DESTINATION_RDO_PERMISSIONS);
-			}
+            if (!permissionRepository.UserHasArtifactTypePermissions(destinationConfiguration.ArtifactTypeId,
+                new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create }))
+            {
+                result.Add(Constants.IntegrationPoints.PermissionErrors.MISSING_DESTINATION_RDO_PERMISSIONS);
+            }
 
-			return result;
-		}
-	}
+            return result;
+        }
+    }
 }
