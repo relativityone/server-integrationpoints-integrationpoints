@@ -129,7 +129,6 @@ namespace Relativity.Sync.Tests.Integration
 
             IContainer container = containerBuilder.Build();
             _dataReaderFactory = container.Resolve<ISourceWorkspaceDataReaderFactory>();
-            IHelper helper = container.Resolve<IHelper>();
 
             _executor = container.Resolve<IExecutor<IDocumentSynchronizationConfiguration>>();
         }

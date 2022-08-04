@@ -27,6 +27,7 @@ namespace Relativity.Sync.Executors
         private readonly IFieldMappings _fieldMappings;
         private readonly IIsADFTransferEnabled _adfTransferEnabler;
         private readonly IAntiMalwareEventHelper _antiMalwareEventHelper;
+        private readonly IFileLocationManager _fileLocationManager;
         private readonly IAPILog _logger;
 
         public ImportJobFactory(
@@ -38,6 +39,7 @@ namespace Relativity.Sync.Executors
             IFieldMappings fieldMappings,
             IIsADFTransferEnabled adfTransferEnabler,
             IAntiMalwareEventHelper antiMalwareEventHelper,
+            IFileLocationManager fileLocationManager,
             IAPILog logger)
         {
             _importApiFactory = importApiFactory;
@@ -48,6 +50,7 @@ namespace Relativity.Sync.Executors
             _fieldMappings = fieldMappings;
             _adfTransferEnabler = adfTransferEnabler;
             _antiMalwareEventHelper = antiMalwareEventHelper;
+            _fileLocationManager = fileLocationManager;
             _logger = logger;
         }
 
@@ -68,7 +71,7 @@ namespace Relativity.Sync.Executors
             importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles;
             importJob.Settings.SelectedIdentifierFieldName = GetIdentifierFieldName();
 
-            var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader, _antiMalwareEventHelper, configuration.SourceWorkspaceArtifactId, _logger);
+            var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader, _antiMalwareEventHelper, _fileLocationManager, configuration.SourceWorkspaceArtifactId, _logger);
 
             ImportJob job = new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository, configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
 
@@ -96,7 +99,7 @@ namespace Relativity.Sync.Executors
             importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles;
             importJob.Settings.SelectedIdentifierFieldName = GetIdentifierFieldName();
 
-            var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader, _antiMalwareEventHelper, configuration.SourceWorkspaceArtifactId, _logger);
+            var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader, _antiMalwareEventHelper, _fileLocationManager, configuration.SourceWorkspaceArtifactId, _logger);
 
             ImportJob job = new ImportJob(syncImportBulkArtifactJob, new SemaphoreSlimWrapper(new SemaphoreSlim(0, 1)), _jobHistoryErrorRepository, configuration.SourceWorkspaceArtifactId, configuration.JobHistoryArtifactId, _logger);
 
@@ -130,7 +133,7 @@ namespace Relativity.Sync.Executors
             importJob.Settings.FileLocationField = configuration.ImageFilePathSourceFieldName;
             importJob.Settings.NativeFileCopyMode = (NativeFileCopyModeEnum)configuration.ImportImageFileCopyMode;
 
-            var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader, _antiMalwareEventHelper, configuration.SourceWorkspaceArtifactId, _logger);
+            var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader, _antiMalwareEventHelper, _fileLocationManager, configuration.SourceWorkspaceArtifactId, _logger);
 
             ImportJob job = new ImportJob(
                 syncImportBulkArtifactJob,
@@ -198,7 +201,7 @@ namespace Relativity.Sync.Executors
                 configuration.RdoArtifactTypeId,
                 configuration.IdentityFieldId);
 
-            var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader, _antiMalwareEventHelper, configuration.SourceWorkspaceArtifactId, _logger);
+            var syncImportBulkArtifactJob = new SyncImportBulkArtifactJob(importJob, sourceWorkspaceDataReader, _antiMalwareEventHelper, _fileLocationManager, configuration.SourceWorkspaceArtifactId, _logger);
 
             ImportJob job = new ImportJob(
                 syncImportBulkArtifactJob,
