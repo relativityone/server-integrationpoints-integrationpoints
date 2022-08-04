@@ -35,7 +35,7 @@ namespace Relativity.Sync.Executors
             IUserContextConfiguration userContextConfiguration,
             IDocumentSynchronizationConfiguration documentConfiguration,
             IAdlsUploader uploader,
-            IADFTransferEnabler adfTransferEnabler,
+            IIsADFTransferEnabled adfTransferEnabler,
             IInstanceSettings instanceSettings,
             IFileLocationManager fileLocationManager,
             IAPILog logger) : base(
@@ -154,7 +154,7 @@ namespace Relativity.Sync.Executors
 
         protected override async Task<string[]> UploadBatchFilesToAdlsAsync(CompositeCancellationToken token, IImportJob importJob)
         {
-            if (AdfTransferEnabler.IsAdfTransferEnabled && _documentConfiguration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.CopyFiles)
+            if (AdfTransferEnabler.Value)
             {
                 IList<FmsBatchInfo> storedLocations = await GetSuccessfullyPushedDocumentsAsync(importJob).ConfigureAwait(false);
                 List<Task<string>> batchesUploadTasks = new List<Task<string>>();
@@ -199,7 +199,7 @@ namespace Relativity.Sync.Executors
 
         private async Task<string[]> UploadBatchFilesAsync(List<Task<string>> tasks)
         {
-            if (AdfTransferEnabler.IsAdfTransferEnabled && _documentConfiguration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.CopyFiles)
+            if (AdfTransferEnabler.Value)
             {
                 SemaphoreSlim maxThread = new SemaphoreSlim(_maxThreadsCount);
                 await maxThread.WaitAsync().ConfigureAwait(false);

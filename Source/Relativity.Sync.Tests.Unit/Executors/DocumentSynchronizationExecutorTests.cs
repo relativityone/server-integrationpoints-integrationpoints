@@ -66,7 +66,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IStopwatch> _stopwatchFake;
         private Mock<ISyncMetrics> _syncMetricsMock;
         private Mock<IAdlsUploader> _adlsUploaderFake;
-        private Mock<IADFTransferEnabler> _adfTransferEnablerMock;
+        private Mock<IIsADFTransferEnabled> _adfTransferEnablerMock;
         private Mock<IInstanceSettings> _instanceSettingsMock;
         private Mock<IFileLocationManager> _fileLocationManagerMock;
 
@@ -194,7 +194,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _batchRepositoryMock.Setup(x => x.GetAllSuccessfullyExecutedBatchesAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>()))
                 .ReturnsAsync(Enumerable.Empty<IBatch>());
 
-            _adfTransferEnablerMock = new Mock<IADFTransferEnabler>();
+            _adfTransferEnablerMock = new Mock<IIsADFTransferEnabled>();
 
             _instanceSettingsMock = new Mock<IInstanceSettings>();
             _instanceSettingsMock.Setup(x => x.GetSyncMaxThreadsCountAsync(It.IsAny<int>())).ReturnsAsync(4);
@@ -1189,7 +1189,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             SetupImportJob();
             List<FmsBatchInfo> storageLocations = CreateStoredLocations();
 
-            _adfTransferEnablerMock.Setup(x => x.IsAdfTransferEnabled).Returns(adfTransferEnabled);
+            _adfTransferEnablerMock.Setup(x => x.Value).Returns(adfTransferEnabled);
             _adlsUploaderFake
                 .Setup(
                     x =>
