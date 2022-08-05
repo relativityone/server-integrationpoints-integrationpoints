@@ -3,9 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net472</TargetFramework>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <WarningLevel>4</WarningLevel>
-        <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
         <ResolveNugetPackages>true</ResolveNugetPackages>
         <IsTestProject>false</IsTestProject>
@@ -30,5 +28,5 @@
         <PackageReference Include="Newtonsoft.Json" Version="12.0.0" />
         <PackageReference Include="Castle.Core" Version="3.3.0" />
     </ItemGroup>
-    <Import Project="..\..\stylecop\StyleCop.props" />
+    <Import Project="..\..\stylecop\StyleCop.targets" />
 </Project>

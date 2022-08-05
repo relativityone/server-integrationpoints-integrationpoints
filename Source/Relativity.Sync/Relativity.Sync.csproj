@@ -5,8 +5,6 @@
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <OutputPath>bin\</OutputPath>
         <WarningLevel>4</WarningLevel>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IsPackable>true</IsPackable>
         <ResolveNugetPackages>true</ResolveNugetPackages>
@@ -24,14 +22,6 @@
         <RepositoryUrl>https://platform.relativity.com</RepositoryUrl>
         <PackageReleaseNotes>https://platform.relativity.com</PackageReleaseNotes>
         <LangVersion>8</LangVersion>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-        <CodeAnalysisRuleSet />
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-        <CodeAnalysisRuleSet />
-        <WarningsAsErrors />
-        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     </PropertyGroup>
     <Import Project="..\..\DevelopmentScripts\Build.Sign.targets" />
     <!-- Relativity Packages with Release Versioning Schema -->
@@ -74,5 +64,5 @@
         <Reference Include="System.Runtime.Caching" />
         <Reference Include="System.Web.Services" />
     </ItemGroup>
-    <Import Project="..\..\stylecop\StyleCop.props" />
+    <Import Project="..\..\stylecop\StyleCop.targets" />
 </Project>
