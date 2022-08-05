@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using kCura.Relativity.DataReaderClient;
 using Relativity.AntiMalware.SDK;
 using Relativity.API;
@@ -21,7 +19,6 @@ namespace Relativity.Sync.Executors
 
         private readonly IAntiMalwareEventHelper _antiMalwareEventHelper;
         private readonly IImportBulkArtifactJob _importBulkArtifactJob;
-        private readonly IFileLocationManager _fileLocationManager;
         private readonly int _workspaceId;
         private readonly IAPILog _logger;
 
@@ -31,20 +28,17 @@ namespace Relativity.Sync.Executors
             ImportBulkArtifactJob importBulkArtifactJob,
             ISourceWorkspaceDataReader sourceWorkspaceDataReader,
             IAntiMalwareEventHelper antiMalwareEventHelper,
-            IFileLocationManager fileLocationManager,
             int workspaceId,
             IAPILog logger)
             : this(
                 sourceWorkspaceDataReader,
                 antiMalwareEventHelper,
-                fileLocationManager,
                 workspaceId,
                 logger)
         {
             importBulkArtifactJob.OnProgress += RaiseOnProgress;
             importBulkArtifactJob.OnError += HandleIapiDocumentItemLevelError;
             importBulkArtifactJob.OnError += HandleMalware;
-            importBulkArtifactJob.OnError += HandleFilePathRemoval;
             importBulkArtifactJob.OnComplete += HandleIapiJobComplete;
             importBulkArtifactJob.OnFatalException += HandleIapiFatalException;
 
@@ -55,13 +49,11 @@ namespace Relativity.Sync.Executors
             ImageImportBulkArtifactJob imageImportBulkArtifactJob,
             ISourceWorkspaceDataReader sourceWorkspaceDataReader,
             IAntiMalwareEventHelper antiMalwareEventHelper,
-            IFileLocationManager fileLocationManager,
             int workspaceId,
             IAPILog logger)
             : this(
                 sourceWorkspaceDataReader,
                 antiMalwareEventHelper,
-                fileLocationManager,
                 workspaceId,
                 logger)
         {
@@ -74,11 +66,10 @@ namespace Relativity.Sync.Executors
             _importBulkArtifactJob = imageImportBulkArtifactJob;
         }
 
-        private SyncImportBulkArtifactJob(ISourceWorkspaceDataReader sourceWorkspaceDataReader, IAntiMalwareEventHelper antiMalwareEventHelper, IFileLocationManager fileLocationManager, int workspaceId, IAPILog logger)
+        private SyncImportBulkArtifactJob(ISourceWorkspaceDataReader sourceWorkspaceDataReader, IAntiMalwareEventHelper antiMalwareEventHelper, int workspaceId, IAPILog logger)
         {
             _antiMalwareEventHelper = antiMalwareEventHelper;
             _workspaceId = workspaceId;
-            _fileLocationManager = fileLocationManager;
             _logger = logger.ForContext<SyncImportBulkArtifactJob>();
             ItemStatusMonitor = sourceWorkspaceDataReader.ItemStatusMonitor;
             sourceWorkspaceDataReader.OnItemReadError += HandleSourceWorkspaceDataItemReadError;
@@ -147,21 +138,6 @@ namespace Relativity.Sync.Executors
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Exception occurred when trying to report anti-malware event.");
-                }
-            }
-        }
-
-        private void HandleFilePathRemoval(IDictionary row)
-        {
-            IList<FmsBatchInfo> storedLocations = _fileLocationManager.GetStoredLocations();
-            foreach (FmsBatchInfo location in storedLocations)
-            {
-                FmsDocument itemToRemove = location.Files.SingleOrDefault(x =>
-                    x.DocumentArtifactId.ToString() == GetValueOrNull(row, _IAPI_IMAGE_IDENTIFIER_COLUMN));
-                if (itemToRemove != null)
-                {
-                    location.Files.Remove(itemToRemove);
-                    break;
                 }
             }
         }

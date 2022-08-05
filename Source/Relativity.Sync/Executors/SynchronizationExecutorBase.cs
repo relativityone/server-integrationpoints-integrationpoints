@@ -41,7 +41,7 @@ namespace Relativity.Sync.Executors
             ISyncMetrics syncMetrics,
             IUserContextConfiguration userContextConfiguration,
             IAdlsUploader adlsUploader,
-            IIsADFTransferEnabled isAdfTransferEnabled,
+            IIsADFTransferEnabled adfTransferEnabler,
             IFileLocationManager fileLocationManager,
             IAPILog logger)
         {
@@ -58,7 +58,7 @@ namespace Relativity.Sync.Executors
             FieldManager = fieldManager;
             SyncMetrics = syncMetrics;
             AdlsUploader = adlsUploader;
-            IsAdfTransferEnabled = isAdfTransferEnabled;
+            AdfTransferEnabler = adfTransferEnabler;
             FileLocationManager = fileLocationManager;
             Logger = logger;
         }
@@ -73,7 +73,7 @@ namespace Relativity.Sync.Executors
 
         protected IAPILog Logger { get; }
 
-        protected IIsADFTransferEnabled IsAdfTransferEnabled { get; }
+        protected IIsADFTransferEnabled AdfTransferEnabler { get; }
 
         protected IAdlsUploader AdlsUploader { get; }
 

@@ -17,6 +17,8 @@ using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
+using Relativity.Sync.Toggles;
+using Relativity.Sync.Toggles.Service;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Transfer.ADF;
 
@@ -38,7 +40,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IFieldMappings> _fieldMappingsMock;
         private Mock<IIsADFTransferEnabled> _adfTransferEnablerMock;
         private Mock<IAntiMalwareEventHelper> _antiMalwareEventHelperMock;
-        private Mock<IFileLocationManager> _fileLocationManagerMock;
         private SyncJobParameters _syncJobParameters;
         private const string _IMAGE_IDENTIFIER_DISPLAY_NAME = "ImageIdentifier";
         private const int _DEST_RDO_ARTIFACT_TYPE = 1234567;
@@ -80,7 +81,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _syncJobParameters = FakeHelper.CreateSyncJobParameters();
             _adfTransferEnablerMock = new Mock<IIsADFTransferEnabled>();
             _antiMalwareEventHelperMock = new Mock<IAntiMalwareEventHelper>();
-            _fileLocationManagerMock = new Mock<IFileLocationManager>();
             _logger = new EmptyLogger();
 
             _batch = new Mock<IBatch>(MockBehavior.Loose);
@@ -552,8 +552,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         {
             var instance = new ImportJobFactory(importApiFactory.Object, _dataReaderFactory.Object,
                 _jobHistoryErrorRepository.Object, _instanceSettings.Object, _syncJobParameters,
-                _fieldMappingsMock.Object, _adfTransferEnablerMock.Object, _antiMalwareEventHelperMock.Object,
-                _fileLocationManagerMock.Object, _logger);
+                _fieldMappingsMock.Object, _adfTransferEnablerMock.Object, _antiMalwareEventHelperMock.Object, _logger);
             return instance;
         }
 

@@ -17,6 +17,7 @@ namespace Relativity.Sync.Executors
     internal class DocumentSynchronizationExecutor : SynchronizationExecutorBase<IDocumentSynchronizationConfiguration>
     {
         private readonly IDocumentTagger _documentTagger;
+        private readonly IDocumentSynchronizationConfiguration _documentConfiguration;
         private readonly int _maxThreadsCount;
 
         public DocumentSynchronizationExecutor(
@@ -32,8 +33,9 @@ namespace Relativity.Sync.Executors
             ISyncMetrics syncMetrics,
             IDocumentTagger documentTagger,
             IUserContextConfiguration userContextConfiguration,
+            IDocumentSynchronizationConfiguration documentConfiguration,
             IAdlsUploader uploader,
-            IIsADFTransferEnabled isAdfTransferEnabled,
+            IIsADFTransferEnabled adfTransferEnabler,
             IInstanceSettings instanceSettings,
             IFileLocationManager fileLocationManager,
             IAPILog logger) : base(
@@ -50,11 +52,12 @@ namespace Relativity.Sync.Executors
             syncMetrics,
             userContextConfiguration,
             uploader,
-            isAdfTransferEnabled,
+            adfTransferEnabler,
             fileLocationManager,
             logger)
         {
             _documentTagger = documentTagger;
+            _documentConfiguration = documentConfiguration;
             _maxThreadsCount = instanceSettings.GetSyncMaxThreadsCountAsync().GetAwaiter().GetResult();
         }
 
@@ -151,9 +154,9 @@ namespace Relativity.Sync.Executors
 
         protected override async Task<string[]> UploadBatchFilesToAdlsAsync(CompositeCancellationToken token, IImportJob importJob)
         {
-            if (IsAdfTransferEnabled.Value)
+            if (AdfTransferEnabler.Value)
             {
-                IList<FmsBatchInfo> storedLocations = FileLocationManager.GetStoredLocations();
+                IList<FmsBatchInfo> storedLocations = await GetSuccessfullyPushedDocumentsAsync(importJob).ConfigureAwait(false);
                 List<Task<string>> batchesUploadTasks = new List<Task<string>>();
                 foreach (FmsBatchInfo storedLocation in storedLocations)
                 {
@@ -178,12 +181,32 @@ namespace Relativity.Sync.Executors
             return Array.Empty<string>();
         }
 
+        private async Task<IList<FmsBatchInfo>> GetSuccessfullyPushedDocumentsAsync(IImportJob importJob)
+        {
+            IList<FmsBatchInfo> storedLocations = FileLocationManager.GetStoredLocations();
+            IEnumerable<int> successfullyPushedItemsDocumentArtifactIds = await importJob.GetPushedDocumentArtifactIdsAsync();
+            foreach (FmsBatchInfo storedLocation in storedLocations)
+            {
+                storedLocation.Files = storedLocation.Files
+                    .Where(x =>
+                        successfullyPushedItemsDocumentArtifactIds
+                            .Contains(x.DocumentArtifactId))
+                    .ToList();
+            }
+
+            return storedLocations;
+        }
+
         private async Task<string[]> UploadBatchFilesAsync(List<Task<string>> tasks)
         {
-            if (IsAdfTransferEnabled.Value)
+            if (AdfTransferEnabler.Value)
             {
+                SemaphoreSlim maxThread = new SemaphoreSlim(_maxThreadsCount);
+                await maxThread.WaitAsync().ConfigureAwait(false);
                 Parallel.ForEach(tasks, t => t.Start());
-                string[] batchFilesPaths = await Task.WhenAll(tasks).ConfigureAwait(false);
+                Task<string[]> allTasks = Task.WhenAll(tasks);
+                await allTasks.ContinueWith(x => maxThread.Release()).ConfigureAwait(false);
+                string[] batchFilesPaths = await allTasks.ConfigureAwait(false);
 
                 return batchFilesPaths;
             }

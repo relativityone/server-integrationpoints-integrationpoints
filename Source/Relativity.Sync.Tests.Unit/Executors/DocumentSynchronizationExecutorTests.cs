@@ -199,6 +199,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _instanceSettingsMock = new Mock<IInstanceSettings>();
             _instanceSettingsMock.Setup(x => x.GetSyncMaxThreadsCountAsync(It.IsAny<int>())).ReturnsAsync(4);
 
+            Mock<IDocumentSynchronizationConfiguration> documentConfiguration = new Mock<IDocumentSynchronizationConfiguration>();
+            documentConfiguration.Setup(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
+
             _fileLocationManagerMock = new Mock<IFileLocationManager>();
 
             _sut = new DocumentSynchronizationExecutor(
@@ -214,6 +217,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 _syncMetricsMock.Object,
                 _documentTaggerFake.Object,
                 _userContextConfigurationStub.Object,
+                documentConfiguration.Object,
                 _adlsUploaderFake.Object,
                 _adfTransferEnablerMock.Object,
                 _instanceSettingsMock.Object,
