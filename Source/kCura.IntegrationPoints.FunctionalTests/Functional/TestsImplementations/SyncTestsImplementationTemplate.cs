@@ -1,4 +1,7 @@
-﻿using kCura.IntegrationPoints.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using kCura.IntegrationPoints.Data;
 using Relativity.IntegrationPoints.Tests.Common.Extensions;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers.LoadFiles;
@@ -8,33 +11,24 @@ using Relativity.Services.Objects.DataContracts;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api;
 using Relativity.Testing.Framework.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 {
     internal abstract class SyncTestsImplementationTemplate
     {
-        protected readonly ITestsImplementationTestFixture TestsImplementationTestFixture;
-        protected readonly Dictionary<string, Workspace> DestinationWorkspaces = new Dictionary<string, Workspace>();
-
-        protected string IntegrationPointName { get; set; }
-        protected Workspace DestinationWorkspace { get; set; }
-
         protected SyncTestsImplementationTemplate(ITestsImplementationTestFixture testsImplementationTestFixture)
         {
             TestsImplementationTestFixture = testsImplementationTestFixture;
             OnSetUpFixture();
         }
 
-        public virtual void OnSetUpFixture()
-        {
-            RelativityFacade.Instance.ImportDocumentsFromCsv(TestsImplementationTestFixture.Workspace, LoadFilesGenerator.GetOrCreateNativesLoadFile());
-            TestsImplementationTestFixture.LoginAsStandardUser();
-            IntegrationPointName = $"Sync - Source {Guid.NewGuid()}";
-            DestinationWorkspace = CreateDestinationWorkspace();
-        }
+        protected ITestsImplementationTestFixture TestsImplementationTestFixture { get; }
+
+        protected Dictionary<string, Workspace> DestinationWorkspaces => new Dictionary<string, Workspace>();
+
+        protected string IntegrationPointName { get; set; }
+
+        protected Workspace DestinationWorkspace { get; set; }
 
         public virtual void OnTearDownFixture()
         {
@@ -99,10 +93,21 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
         protected List<RelativityObject> GetDocumentsTagsDataFromDestinationWorkspace(int workspaceId)
         {
-            FieldRef[] fields = new FieldRef[] { new FieldRef { Name = "Relativity Source Case" },
-                new FieldRef { Name = "Relativity Source Job" } };
+            FieldRef[] fields = new FieldRef[]
+            {
+                new FieldRef { Name = "Relativity Source Case" },
+                new FieldRef { Name = "Relativity Source Job" }
+            };
 
             return GetDocumentsWithSelectedFields(workspaceId, fields);
+        }
+
+        private void OnSetUpFixture()
+        {
+            RelativityFacade.Instance.ImportDocumentsFromCsv(TestsImplementationTestFixture.Workspace, LoadFilesGenerator.GetOrCreateNativesLoadFile());
+            TestsImplementationTestFixture.LoginAsStandardUser();
+            IntegrationPointName = $"Sync - Source {Guid.NewGuid()}";
+            DestinationWorkspace = CreateDestinationWorkspace();
         }
 
         private bool FieldTagMatchesExpectedValue(RelativityObject doc, string fieldName, string expectedTagValue)

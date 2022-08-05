@@ -35,7 +35,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         public void ProductionImagesGoldFlow(YesNo copyFilesToRepository)
         {
             // Arrange
-            _testImplementation = new ProductionImagesSyncTestsImplemention(_testsImplementationTestFixture, copyFilesToRepository);
+            _testImplementation = new ProductionImagesSyncTestsImplementation(_testsImplementationTestFixture, copyFilesToRepository);
             IntegrationPointViewPage integrationPointViewPage = _testImplementation.CreateIntegrationPointViewPage();
 
             // Act
@@ -48,7 +48,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         public void EntitiesPushGoldFlow()
         {
             // Arrange
-            _testImplementation = new EntitiesPushSyncTestsImplemention(_testsImplementationTestFixture);
+            _testImplementation = new EntitiesPushSyncTestsImplementation(_testsImplementationTestFixture);
             IntegrationPointViewPage integrationPointViewPage = _testImplementation.CreateIntegrationPointViewPage();
 
             // Act

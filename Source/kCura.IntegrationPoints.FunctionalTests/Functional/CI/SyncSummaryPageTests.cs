@@ -1,14 +1,15 @@
-﻿using kCura.IntegrationPoints.Common.Toggles;
+﻿using System.Threading.Tasks;
+using kCura.IntegrationPoints.Common.Toggles;
 using NUnit.Framework;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
 using Relativity.Testing.Identification;
 using Relativity.Toggles;
-using System.Threading.Tasks;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
-    [TestType.UI, TestType.MainFlow]
+    [TestType.UI]
+    [TestType.MainFlow]
     public class SyncSummaryPageTests : TestsBase
     {
         private readonly SyncSummaryPageTestsImplementation _testsImplementation;
@@ -16,18 +17,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
         public SyncSummaryPageTests() : base(nameof(SyncSummaryPageTests))
         {
             _testsImplementation = new SyncSummaryPageTestsImplementation(this);
-        }
-
-        protected override void OnSetUpFixture()
-        {
-            base.OnSetUpFixture();
-        }
-
-        protected override void OnTearDownFixture()
-        {
-            base.OnTearDownFixture();
-
-            _testsImplementation.OnTearDownFixture();
         }
 
         [Test]
@@ -61,7 +50,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             {
                 await toggleProvider.SetAsync<EnableSyncNonDocumentFlowToggle>(false).ConfigureAwait(false);
             }
-            
+        }
+
+        protected override void OnTearDownFixture()
+        {
+            base.OnTearDownFixture();
+            _testsImplementation.OnTearDownFixture();
         }
     }
 }
