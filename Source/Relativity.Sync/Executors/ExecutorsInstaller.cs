@@ -9,10 +9,12 @@ using Relativity.Sync.Executors.PreValidation;
 using Relativity.Sync.Executors.SumReporting;
 using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Extensions;
+using Relativity.Sync.HttpClient;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Toggles.Service;
 using Relativity.Sync.Transfer.ADF;
+using Relativity.Sync.Transfer.FileMovementService;
 
 namespace Relativity.Sync.Executors
 {
@@ -103,6 +105,11 @@ namespace Relativity.Sync.Executors
             builder.RegisterType<BatchRepository>().As<IBatchRepository>();
             builder.RegisterType<ProgressRepository>().As<IProgressRepository>();
             builder.RegisterType<SemaphoreSlimWrapper>().As<ISemaphoreSlim>();
+
+            builder.RegisterType<SharedServiceHttpClientFactory>().As<ISharedServiceHttpClientFactory>();
+            builder.RegisterType<HttpClientRetryPolicyProvider>().As<IHttpClientRetryPolicyProvider>();
+            builder.RegisterType<FmsInstanceSettingsService>().As<IFmsInstanceSettingsService>();
+            builder.RegisterType<FmsClient>().As<IFmsClient>();
 
             RegisterNonDocumentFlowComponents(builder);
         }
