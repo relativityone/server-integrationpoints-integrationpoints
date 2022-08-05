@@ -217,10 +217,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 _syncMetricsMock.Object,
                 _documentTaggerFake.Object,
                 _userContextConfigurationStub.Object,
-                documentConfiguration.Object,
                 _adlsUploaderFake.Object,
                 _adfTransferEnablerMock.Object,
-                _instanceSettingsMock.Object,
                 _fileLocationManagerMock.Object,
                 new EmptyLogger());
         }
