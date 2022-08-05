@@ -1125,6 +1125,20 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _adlsUploaderFake.Verify(x => x.UploadFileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
+        [Test]
+        public async Task Execute_ShouldNotAddFailedDocumentsToAdlsBatchFile()
+        {
+            // Arrange
+            PrepareAdlsTests(10);
+
+            // Act
+            await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+
+            // Assert
+            _adlsUploaderFake.Verify(x => x.CreateBatchFile(It.IsAny<FmsBatchInfo>(), It.IsAny<CancellationToken>()), Times.Once);
+            _adlsUploaderFake.Verify(x => x.UploadFileAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
         private void SetupBatch(IBatch batch)
         {
             _batchRepositoryMock.Setup(x => x.GetAllBatchesIdsToExecuteAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>()))
