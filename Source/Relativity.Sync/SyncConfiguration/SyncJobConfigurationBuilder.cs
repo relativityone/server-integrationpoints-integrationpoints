@@ -32,7 +32,7 @@ namespace Relativity.Sync.SyncConfiguration
                 _syncContext.SourceWorkspaceId, _syncContext.DestinationWorkspaceId, (int)ArtifactType.Document, (int)ArtifactType.Document, serviceFactoryForAdmin);
 
             return new DocumentSyncConfigurationBuilder(_syncContext, serviceFactoryForAdmin, fieldsMappingBuilder, _serializer,
-                options, _rdoOptions, new RdoManager(new EmptyLogger(), serviceFactoryForAdmin, new RdoGuidProvider()));
+                options, _rdoOptions, new RdoManager(_logger, serviceFactoryForAdmin, new RdoGuidProvider()));
         }
 
         public IImageSyncConfigurationBuilder ConfigureImageSync(ImageSyncOptions options)
@@ -42,7 +42,7 @@ namespace Relativity.Sync.SyncConfiguration
                 _syncContext.SourceWorkspaceId, _syncContext.DestinationWorkspaceId, (int)ArtifactType.Document, (int)ArtifactType.Document, serviceFactoryForAdmin);
 
             return new ImageSyncConfigurationBuilder(_syncContext, serviceFactoryForAdmin, fieldsMappingBuilder, _serializer,
-                options, _rdoOptions, new RdoManager(new EmptyLogger(), serviceFactoryForAdmin, new RdoGuidProvider()));
+                options, _rdoOptions, new RdoManager(_logger, serviceFactoryForAdmin, new RdoGuidProvider()));
         }
 
         public INonDocumentSyncConfigurationBuilder ConfigureNonDocumentSync(NonDocumentSyncOptions options)
@@ -53,7 +53,7 @@ namespace Relativity.Sync.SyncConfiguration
 
             return new NonDocumentSyncConfigurationBuilder(_syncContext, serviceFactoryForAdmin,
                 fieldsMappingBuilder, _serializer, options, _rdoOptions,
-                new RdoManager(new EmptyLogger(), serviceFactoryForAdmin, new RdoGuidProvider()));
+                new RdoManager(_logger, serviceFactoryForAdmin, new RdoGuidProvider()));
         }
 
         private ISourceServiceFactoryForAdmin CreateServicesManagerForAdmin()
