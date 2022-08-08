@@ -12,7 +12,11 @@ namespace Relativity.Sync.Tests.Common.RdoGuidProviderStubs
             CompletedItemsFieldGuid = new Guid("70680399-c8ea-4b12-b711-e9ecbc53cb1c"),
             DestinationWorkspaceInformationGuid = new Guid("20a24c4e-55e8-4fc2-abbe-f75c07fad91b"),
             FailedItemsFieldGuid = new Guid("c224104f-c1ca-4caa-9189-657e01d5504e"),
-            TotalItemsFieldGuid = new Guid("576189a9-0347-4b20-9369-b16d1ac89b4b")
+            TotalItemsFieldGuid = new Guid("576189a9-0347-4b20-9369-b16d1ac89b4b"),
+            JobIdGuid = new Guid("77d797ef-96c9-4b47-9ef8-33f498b5af0d"),
+            StartTimeGuid = new Guid("25b7c8ef-66d9-41d1-a8de-29a93e47fb11"),
+            EndTimeGuid = new Guid("4736cf49-ad0f-4f02-aaaa-898e07400f22"),
+            StatusGuid = new Guid("5c28ce93-c62f-4d25-98c9-9a330a6feb52")
         };
 
         public static IJobHistoryStatusProvider JobHistoryStatus => new JobHistoryStatusGuidProviderStub

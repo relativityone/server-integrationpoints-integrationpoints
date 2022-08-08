@@ -46,7 +46,7 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
             _guidManagerMock.Setup(x => x.ReadMultipleArtifactIdsAsync(_sourceWorkspaceId, It.IsAny<List<Guid>>()))
                 .ReturnsAsync((int _, List<Guid> guids) =>
                 {
-                    return guids.Select(g => new GuidArtifactIDPair() {Guid = g, ArtifactID = 5})
+                    return guids.Select(g => new GuidArtifactIDPair() { Guid = g, ArtifactID = 5 })
                         .ToList();
                 });
 
@@ -79,7 +79,7 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
             _objectManagerMock.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<CreateRequest>()))
                 .ReturnsAsync(new CreateResult()
                 {
-                    Object = new RelativityObject() {ArtifactID = 1}
+                    Object = new RelativityObject() { ArtifactID = 1 }
                 });
 
             _servicesManager.Setup(x => x.CreateProxy<IArtifactGuidManager>(It.IsAny<ExecutionIdentity>()))
@@ -113,7 +113,6 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
             var rdo = rdoPath.GetValue(rdoOptions);
             propertyPath.SetValue(rdo, Guid.Empty);
 
-
             Action action = () => _sut.ConfigureRdos(rdoOptions);
 
             // Act & Assert
@@ -141,7 +140,7 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
                 var propertyPath = x.Arguments[1] as PropertyInfo;
 
                 var rdo = rdoPath.GetValue(rdoOptions);
-                return (Guid) propertyPath.GetValue(rdo);
+                return (Guid)propertyPath.GetValue(rdo);
             }).ToArray();
 
 
@@ -157,14 +156,14 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
             RdoOptions rdoOptions = DefaultGuids.DefaultRdoOptions;
 
             object rdo = rdoPath.GetValue(rdoOptions);
-            Guid notExistingGuid = (Guid) propertyPath.GetValue(rdo);
+            Guid notExistingGuid = (Guid)propertyPath.GetValue(rdo);
 
 
             _guidManagerMock.Setup(x => x.ReadMultipleArtifactIdsAsync(_sourceWorkspaceId, It.IsAny<List<Guid>>()))
                 .ReturnsAsync((int _, List<Guid> guids) =>
                 {
-                    return guids.Except(new[] {notExistingGuid})
-                        .Select(g => new GuidArtifactIDPair() {Guid = g, ArtifactID = 5})
+                    return guids.Except(new[] { notExistingGuid })
+                        .Select(g => new GuidArtifactIDPair() { Guid = g, ArtifactID = 5 })
                         .ToList();
                 });
 
@@ -188,7 +187,7 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
             RdoOptions rdoOptions = DefaultGuids.DefaultRdoOptions;
 
             // Act
-            SyncConfigurationRootBuilderBase builder = (SyncConfigurationRootBuilderBase) _sut.ConfigureRdos(rdoOptions)
+            SyncConfigurationRootBuilderBase builder = (SyncConfigurationRootBuilderBase)_sut.ConfigureRdos(rdoOptions)
                 .ConfigureDocumentSync(new DocumentSyncOptions(0, 0));
 
             // Assert
@@ -251,14 +250,14 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
             RdoOptions rdoOptions = DefaultGuids.DefaultRdoOptions;
 
             // Act
-            SyncConfigurationRootBuilderBase builder = (SyncConfigurationRootBuilderBase) _sut.ConfigureRdos(rdoOptions)
+            SyncConfigurationRootBuilderBase builder = (SyncConfigurationRootBuilderBase)_sut.ConfigureRdos(rdoOptions)
                 .ConfigureDocumentSync(new DocumentSyncOptions(0, 0));
-            
+
             // Assert
             builder.SyncConfiguration.RdoArtifactTypeId.Should().Be((int)ArtifactType.Document);
             builder.SyncConfiguration.DestinationRdoArtifactTypeId.Should().Be((int)ArtifactType.Document);
         }
-        
+
         [Test]
         public void SyncConfigurationRootBuilderBase_ShouldSetRdoTypeToDocument_ForImageFlow()
         {
@@ -266,9 +265,9 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
             RdoOptions rdoOptions = DefaultGuids.DefaultRdoOptions;
 
             // Act
-            SyncConfigurationRootBuilderBase builder = (SyncConfigurationRootBuilderBase) _sut.ConfigureRdos(rdoOptions)
+            SyncConfigurationRootBuilderBase builder = (SyncConfigurationRootBuilderBase)_sut.ConfigureRdos(rdoOptions)
                 .ConfigureImageSync(new ImageSyncOptions(DataSourceType.Production, 0, DestinationLocationType.Folder, 0));
-            
+
             // Assert
             builder.SyncConfiguration.RdoArtifactTypeId.Should().Be((int)ArtifactType.Document);
             builder.SyncConfiguration.DestinationRdoArtifactTypeId.Should().Be((int)ArtifactType.Document);
@@ -296,29 +295,29 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
         {
             // Arrange
             RdoOptions rdoOptions = DefaultGuids.DefaultRdoOptions;
-            
+
             // Act
             IDocumentSyncConfigurationBuilder sut = new SyncConfigurationBuilder(_syncContext, _servicesManager.Object, new EmptyLogger())
                 .ConfigureRdos(rdoOptions)
                 .ConfigureDocumentSync(new DocumentSyncOptions(1, 1));
-            
+
             // Assert
             (sut as SyncConfigurationRootBuilderBase).SyncConfiguration.LogItemLevelErrors.Should()
                 .BeTrue();
         }
-        
+
         [Test]
         public void SyncConfigurationBuilderBase_DisableItemLevelErrorLogging_ShouldSetLogItemLevelErrorsToFalse()
         {
             // Arrange
             RdoOptions rdoOptions = DefaultGuids.DefaultRdoOptions;
-            
+
             // Act
             IDocumentSyncConfigurationBuilder sut = new SyncConfigurationBuilder(_syncContext, _servicesManager.Object, new EmptyLogger())
                 .ConfigureRdos(rdoOptions)
                 .ConfigureDocumentSync(new DocumentSyncOptions(1, 1))
                 .DisableItemLevelErrorLogging();
-            
+
             // Assert
             (sut as SyncConfigurationRootBuilderBase).SyncConfiguration.LogItemLevelErrors.Should()
                 .BeFalse();
@@ -328,16 +327,18 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
         {
             var properties = typeof(RdoOptions).GetProperties()
                 .SelectMany(x =>
-                    x.PropertyType.GetProperties().Select(p => new {Rdo = x, Property = p})
+                    x.PropertyType.GetProperties().Select(p => new { Rdo = x, Property = p })
                 );
 
-            return properties.Select(x =>
-            {
-                var testCase = new TestCaseData(x.Rdo, x.Property);
-                testCase.TestName = $"{x.Rdo.Name}.{x.Property.Name}";
+            return properties
+                .Select(x =>
+                {
+                    var testCase = new TestCaseData(x.Rdo, x.Property);
+                    testCase.TestName = $"{x.Rdo.Name}.{x.Property.Name}";
 
-                return testCase;
-            }).ToArray();
+                    return testCase;
+                })
+                .ToArray();
         }
     }
 }

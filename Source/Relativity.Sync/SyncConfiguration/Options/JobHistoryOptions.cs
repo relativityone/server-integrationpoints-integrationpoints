@@ -10,47 +10,47 @@ namespace Relativity.Sync.SyncConfiguration.Options
         /// <summary>
         /// GUID for RDO type
         /// </summary>
-        public Guid JobHistoryTypeGuid { get; }
+        public Guid JobHistoryTypeGuid { get; set; }
 
         /// <summary>
         /// Completed items count (whole number)
         /// </summary>
-        public Guid CompletedItemsCountGuid { get; }
+        public Guid CompletedItemsCountGuid { get; set; }
 
         /// <summary>
         /// Failed items count (whole number)
         /// </summary>
-        public Guid FailedItemsCountGuid { get; }
+        public Guid FailedItemsCountGuid { get; set; }
 
         /// <summary>
         /// Total items count (whole number)
         /// </summary>
-        public Guid TotalItemsCountGuid { get; }
+        public Guid TotalItemsCountGuid { get; set; }
 
         /// <summary>
         /// Destination workspace information (text)
         /// </summary>
-        public Guid DestinationWorkspaceInformationGuid { get; }
+        public Guid DestinationWorkspaceInformationGuid { get; set; }
 
         /// <summary>
         /// Job ID
         /// </summary>
-        public Guid JobIdGuid { get; }
+        public Guid JobIdGuid { get; set; }
 
         /// <summary>
         /// Job status
         /// </summary>
-        public Guid StatusGuid { get; }
+        public Guid StatusGuid { get; set; }
 
         /// <summary>
         /// Start Time (Date Time)
         /// </summary>
-        public Guid StartTimeGuid { get; }
+        public Guid StartTimeGuid { get; set; }
 
         /// <summary>
         /// End Time (Date Time)
         /// </summary>
-        public Guid EndTimeGuid { get; }
+        public Guid EndTimeGuid { get; set; }
 
         /// <summary>
         /// Constructor. All parameters are mandatory
