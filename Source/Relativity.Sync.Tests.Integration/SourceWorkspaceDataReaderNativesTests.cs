@@ -16,24 +16,23 @@ namespace Relativity.Sync.Tests.Integration
         [Test]
         public async Task Read_ShouldReadMultipleBlocksAndConstructColumns_WhenCopyFilesMode()
         {
-            // Arrange 
+            // Arrange
             const int batchSize = 500;
             const int blockSize = 300;
             SetUp(batchSize, ImportNativeFileCopyMode.CopyFiles);
 
             DocumentImportJob importData = CreateDefaultDocumentImportJob(batchSize, CreateDocumentForNativesTransfer, DefaultIdentifierWithSpecialFields);
-            
+
             _configuration.SetFieldMappings(importData.FieldMappings);
             await _documentTransferServicesMocker.SetupServicesWithNativesTestDataAsync(importData, blockSize).ConfigureAwait(false);
 
-            // Act/Assert 
+            // Act/Assert
             foreach (Document document in importData.Documents)
             {
                 bool hasMoreData = _instance.Read();
                 hasMoreData.Should().Be(true);
 
-                _instance["NativeFileFilename"].ConvertTo<string>().Should().Be(document.NativeFile.Filename);
-                _instance["NativeFileLocation"].ConvertTo<string>().Should().Be(document.NativeFile.Location);
+                _instance["NativeFileFilename"].ConvertTo<string>().Should().Be(document.NativeFile.Filename);               
                 _instance["NativeFileSize"].ConvertTo<long>().Should().Be(document.NativeFile.Size);
 
                 foreach (FieldValue fieldValue in document.FieldValues)
@@ -57,7 +56,7 @@ namespace Relativity.Sync.Tests.Integration
         [Test]
         public async Task Read_ShouldReadMultipleBlocksAndConstructColumns_WhenDoNotImportNativeFiles()
         {
-            // Arrange 
+            // Arrange
             const int batchSize = 500;
             const int blockSize = 300;
             SetUp(batchSize, ImportNativeFileCopyMode.DoNotImportNativeFiles);
@@ -67,7 +66,7 @@ namespace Relativity.Sync.Tests.Integration
             _configuration.SetFieldMappings(importData.FieldMappings);
             await _documentTransferServicesMocker.SetupServicesWithNativesTestDataAsync(importData, blockSize).ConfigureAwait(false);
 
-            // Act/Assert 
+            // Act/Assert
             foreach (Document document in importData.Documents)
             {
                 bool hasMoreData = _instance.Read();

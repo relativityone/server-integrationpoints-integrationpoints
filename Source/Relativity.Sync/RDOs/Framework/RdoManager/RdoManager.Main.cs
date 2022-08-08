@@ -33,7 +33,7 @@ namespace Relativity.Sync.RDOs.Framework
         {
             RdoTypeInfo typeInfo = _rdoGuidProvider.GetValue<TRdo>();
 
-            _logger.LogDebug("Creating RDO object of type {guid} in workspace {workspaceId}", typeInfo.TypeGuid,
+            _logger.LogInformation("Creating RDO object of type {guid} in workspace {workspaceId}", typeInfo.TypeGuid,
                 workspaceId);
 
             CreateRequest request = new CreateRequest
@@ -79,7 +79,7 @@ namespace Relativity.Sync.RDOs.Framework
             using (var objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
                 await objectManager.UpdateAsync(workspaceId, request).ConfigureAwait(false);
-                _logger.LogDebug("Set {valuesCount} fields on object {artifactId} in workspace {workspaceId}",
+                _logger.LogInformation("Set {valuesCount} fields on object {artifactId} in workspace {workspaceId}",
                     typeInfo.Fields.Count, rdo.ArtifactId, workspaceId);
             }
         }
@@ -105,7 +105,7 @@ namespace Relativity.Sync.RDOs.Framework
                 await objectManager.UpdateAsync(workspaceId, request).ConfigureAwait(false);
                 fieldInfo.PropertyInfo.SetValue(rdo, value);
 
-                _logger.LogDebug("Set field {field} on object {artifactId} in workspace {workspaceId}",
+                _logger.LogInformation("Set field {field} on object {artifactId} in workspace {workspaceId}",
                     fieldGuid, rdo.ArtifactId, workspaceId);
             }
         }
@@ -115,7 +115,7 @@ namespace Relativity.Sync.RDOs.Framework
         {
             RdoTypeInfo typeInfo = _rdoGuidProvider.GetValue<TRdo>();
 
-            _logger.LogDebug(
+            _logger.LogInformation(
                 "Getting values for RDO of type {guid} with ArtifactId {artifactId} in workspace {workspaceId}",
                 typeInfo.TypeGuid, artifactId, workspaceId);
 
@@ -164,7 +164,7 @@ namespace Relativity.Sync.RDOs.Framework
                 }
                 else
                 {
-                    _logger.LogDebug(
+                    _logger.LogInformation(
                         "RDO of type {guid} with ArtifactId {artifactId} in workspace {workspaceId} does not exist",
                         typeInfo.TypeGuid, artifactId, workspaceId);
                 }

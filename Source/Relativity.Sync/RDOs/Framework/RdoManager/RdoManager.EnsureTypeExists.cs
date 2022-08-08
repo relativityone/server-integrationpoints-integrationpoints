@@ -33,7 +33,7 @@ namespace Relativity.Sync.RDOs.Framework
         {
             using (IObjectManager objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
-                _logger.LogDebug("Querying RDO type ({{name}}) existence in workspace {workspaceId}", typeName, workspaceId);
+                _logger.LogInformation("Querying RDO type ({{name}}) existence in workspace {workspaceId}", typeName, workspaceId);
                 QueryResult queryResult = await objectManager
                     .QueryAsync(workspaceId, GetTypeQueryRequest(typeName), 0, 1).ConfigureAwait(false);
 
@@ -150,7 +150,7 @@ namespace Relativity.Sync.RDOs.Framework
 
         private async Task<(int artifactId, HashSet<Guid>)> CreateTypeAsync(RdoTypeInfo typeInfo, int workspaceId)
         {
-            _logger.LogDebug("Creating type ({name}:{guid}) in workspace {workspaceId}", typeInfo.Name, typeInfo.TypeGuid, workspaceId);
+            _logger.LogInformation("Creating type ({name}:{guid}) in workspace {workspaceId}", typeInfo.Name, typeInfo.TypeGuid, workspaceId);
             using (IObjectTypeManager objectTypeManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectTypeManager>().ConfigureAwait(false))
             using (IArtifactGuidManager guidManager = await _serviceFactoryForAdmin.CreateProxyAsync<IArtifactGuidManager>().ConfigureAwait(false))
             {
@@ -231,8 +231,8 @@ namespace Relativity.Sync.RDOs.Framework
                     foreach (RdoFieldInfo fieldInfo in typeInfo.Fields.Values.Where(f =>
                         !existingFields.Contains(f.Guid)))
                     {
-                        _logger.LogDebug("Creating field [{name}:{guid}] for type [{typeName}:{typeGuid}] in workspace {workspaceId}", fieldInfo.Name, fieldInfo.Guid, typeInfo.Name, typeInfo.TypeGuid, workspaceId);
-
+                        _logger.LogInformation("Creating field [{name}:{guid}] for type [{typeName}:{typeGuid}] in workspace {workspaceId}", fieldInfo.Name, fieldInfo.Guid, typeInfo.Name, typeInfo.TypeGuid, workspaceId);
+                        
                         int fieldId = await CreateFieldInTypeAsync(fieldInfo, artifactId, workspaceId, fieldManager)
                             .ConfigureAwait(false);
 

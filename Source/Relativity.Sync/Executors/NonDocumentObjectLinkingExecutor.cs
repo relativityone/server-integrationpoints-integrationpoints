@@ -17,9 +17,9 @@ namespace Relativity.Sync.Executors
             IBatchRepository batchRepository, IJobProgressHandlerFactory jobProgressHandlerFactory, IFieldManager fieldManager,
             IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer, IJobCleanupConfiguration jobCleanupConfiguration,
             IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration, Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics,
-            IUserContextConfiguration userContextConfiguration, IAPILog logger) 
+            IUserContextConfiguration userContextConfiguration, IAPILog logger, IFileLocationManager fileLocationManager) 
             : base(importJobFactory, BatchRecordType.NonDocuments, batchRepository, jobProgressHandlerFactory, fieldManager, fieldMappings, 
-                jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics, userContextConfiguration, logger)
+                jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics, userContextConfiguration, logger, fileLocationManager)
         {
         }
 

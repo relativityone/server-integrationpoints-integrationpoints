@@ -4,8 +4,8 @@ using Relativity.Storage.Extensions.Models;
 
 namespace Relativity.Sync.Transfer.ADF
 {
-	internal interface IHelperWrapper
-	{	
-		Task<StorageEndpoint[]> GetStorageEndpointsAsync(ApplicationDetails applicationDetails);
-	}
+    internal interface IHelperWrapper
+    {    
+        Task<StorageEndpoint[]> GetStorageEndpointsAsync(ApplicationDetails applicationDetails);
+    }
 }

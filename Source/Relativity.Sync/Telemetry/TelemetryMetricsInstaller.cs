@@ -25,8 +25,7 @@ namespace Relativity.Sync.Telemetry
         {
             if (metricProvider == null)
             {
-                var exception = new ArgumentNullException(nameof(metricProvider));
-                _logger.LogDebug(exception, "Metric provider shouldn't be null.");
+                _logger.LogInformation("Metric provider shouldn't be null: {name}", nameof(metricProvider));
             }
             else
             {
