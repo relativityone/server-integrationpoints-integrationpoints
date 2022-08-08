@@ -26,6 +26,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
@@ -253,7 +254,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 agentValidator: _agentValidator,
                 integrationPointRepository: _integrationPointRepository,
                 documentRepository: _documentRepository,
-                exportDataSanitizer: _exportDataSanitizer);
+                exportDataSanitizer: _exportDataSanitizer,
+                diagnosticLog: null);
             _managerFactory.CreateJobHistoryManager().Returns(_historyManager);
         }
 
@@ -523,7 +525,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 _agentValidator,
                 _integrationPointRepository,
                 _documentRepository,
-                _exportDataSanitizer);
+                _exportDataSanitizer,
+                null);
             try
             {
                 instance.Execute(_job);
@@ -667,7 +670,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _instance.Execute(_job);
 
             // ASSERT
-            _synchronizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<List<FieldMap>>(), Arg.Any<string>(), Arg.Any<IJobStopManager>());
+            _synchronizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<List<FieldMap>>(), Arg.Any<string>(), Arg.Any<IJobStopManager>(), Arg.Any<IDiagnosticLog>());
         }
 
         [Test]

@@ -18,6 +18,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -66,7 +67,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IRepositoryFactory repositoryFactory, 
             IRelativityObjectManager relativityObjectManager,
             IProviderTypeService providerTypeService,
-            IIntegrationPointRepository integrationPointRepository)
+            IIntegrationPointRepository integrationPointRepository,
+            IDiagnosticLog diagnosticLog)
             : base(
                 caseServiceContext, 
                 helper, 
@@ -80,7 +82,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 managerFactory,
                 jobService, 
                 providerTypeService,
-                integrationPointRepository)
+                integrationPointRepository,
+                diagnosticLog)
         {
             _queueQueryManager = queueQueryManager;
             _repositoryFactory = repositoryFactory;
@@ -460,7 +463,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             SetupJobHistoryErrorSubscriptions(dataSynchronizer);
 
 #pragma warning disable 612
-            dataSynchronizer.SyncData(sourceData, managerLinkMap, newDestinationConfiguration, jobStopManager);
+            dataSynchronizer.SyncData(sourceData, managerLinkMap, newDestinationConfiguration, jobStopManager, DiagnosticLog);
 #pragma warning restore 612
 
             return dataSynchronizer.TotalRowsProcessed;

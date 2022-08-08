@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -47,10 +48,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             };
 
             // ACT
-            _instance.SyncData(_data, _fieldMap, JsonConvert.SerializeObject(importSettings), null);
+            _instance.SyncData(_data, _fieldMap, JsonConvert.SerializeObject(importSettings), null, new EmptyDiagnosticLog());
 
             // ASSERT
-            _dataSynchronizer.Received(1).SyncData(_data, _fieldMap, Arg.Is<string>(x => AssertOptions(x)), null);
+            _dataSynchronizer.Received(1).SyncData(_data, _fieldMap, Arg.Is<string>(x => AssertOptions(x)), null, new EmptyDiagnosticLog());
         }
 
         [Test]
@@ -66,10 +67,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             };
 
             // ACT
-            _instance.SyncData(_records, _fieldMap, JsonConvert.SerializeObject(importSettings), (IJobStopManager)null);
+            _instance.SyncData(_records, _fieldMap, JsonConvert.SerializeObject(importSettings), (IJobStopManager)null, null);
 
             // ASSERT
-            _dataSynchronizer.Received(1).SyncData(_records, _fieldMap, Arg.Is<string>(x => AssertOptions(x)), null);
+            _dataSynchronizer.Received(1).SyncData(_records, _fieldMap, Arg.Is<string>(x => AssertOptions(x)), null, null);
         }
 
         [Test]

@@ -1,8 +1,11 @@
-﻿using Castle.MicroKernel.Registration;
+﻿using System;
+using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common.Metrics;
+using kCura.IntegrationPoints.Common.Metrics.Sink;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -10,6 +13,8 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
+using kCura.IntegrationPoints.Core.Installers.Registrations;
+using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Monitoring;
@@ -27,34 +32,31 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Services.Tabs;
+using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
+using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
 using Relativity.API;
-using SystemInterface.IO;
 using Relativity.DataTransfer.MessageService;
+using Relativity.IntegrationPoints.Contracts;
+using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 using Relativity.Telemetry.APM;
 using Relativity.Toggles;
-using System;
-using kCura.IntegrationPoints.Core.Installers.Registrations;
-using kCura.IntegrationPoints.Core.Tagging;
-using kCura.IntegrationPoints.Data.Installers;
-using Relativity.IntegrationPoints.Contracts;
+using SystemInterface.IO;
 using IFederatedInstanceManager = kCura.IntegrationPoints.Domain.Managers.IFederatedInstanceManager;
-using kCura.IntegrationPoints.Common.Metrics;
-using kCura.IntegrationPoints.Common.Metrics.Sink;
-using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
-using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
-using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {
@@ -94,6 +96,7 @@ namespace kCura.IntegrationPoints.Core.Installers
                 IRelativityObjectManagerFactory factory = x.Resolve<IRelativityObjectManagerFactory>();
                 return factory.CreateRelativityObjectManager(workspaceId);
             }).LifestyleTransient());
+
             container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>().LifestyleTransient());
             container.Register(Component.For<IDataSynchronizer>().ImplementedBy<RdoSynchronizer>().Named(typeof(RdoSynchronizer).AssemblyQualifiedName).LifestyleTransient());
             container.Register(Component.For<IDataSynchronizer>().ImplementedBy<RdoEntitySynchronizer>().Named(typeof(RdoEntitySynchronizer).AssemblyQualifiedName).LifestyleTransient());
@@ -165,8 +168,22 @@ namespace kCura.IntegrationPoints.Core.Installers
             container.Register(Component.For<IIntegrationPointProviderTypeService>()
                 .ImplementedBy<CachedIntegrationPointProviderTypeService>()
                 .DependsOn(Dependency.OnValue<TimeSpan>(TimeSpan.FromMinutes(2))).LifestyleTransient());
-            
+
             container.Register(Component.For<IToggleProvider>().UsingFactoryMethod(k => ToggleProvider.Current).LifestyleSingleton());
+
+            container.Register(Component.For<IDiagnosticLog>().UsingFactoryMethod<IDiagnosticLog>(c =>
+            {
+                IToggleProvider toggle = c.Resolve<IToggleProvider>();
+
+                if (toggle.IsEnabled<EnableDiagnosticLoggingToggle>())
+                {
+                    IAPILog log = container.Resolve<IHelper>().GetLoggerFactory().GetLogger();
+
+                    return new DiagnosticLog(log);
+                }
+
+                return new EmptyDiagnosticLog();
+            }).LifestyleSingleton());
 
             container.Register(Component.For<IFederatedInstanceManager>().ImplementedBy<FederatedInstanceManager>().LifestyleTransient());
 
@@ -175,7 +192,7 @@ namespace kCura.IntegrationPoints.Core.Installers
             container.Register(Component.For<IAPM>().UsingFactoryMethod(k => Client.APMClient, managedExternally: true).LifestyleSingleton());
 
             container.Register(Component.For<IOAuth2ClientFactory>().ImplementedBy<OAuth2ClientFactory>().LifestyleTransient());
-            
+
             container.Register(Component.For<ITokenProviderFactoryFactory>().ImplementedBy<TokenProviderFactoryFactory>()
                 .LifestyleSingleton());
             container.Register(Component.For<IFieldService>().ImplementedBy<FieldService>().LifestyleTransient());
@@ -191,8 +208,7 @@ namespace kCura.IntegrationPoints.Core.Installers
             container.Register(Component
                 .For<ISecretStore>()
                 .UsingFactoryMethod(k => k.Resolve<IHelper>().GetSecretStore())
-                .LifestyleTransient()
-            );
+                .LifestyleTransient());
 
             container.Register(Component
                 .For<ISourceDocumentsTagger>()
@@ -207,6 +223,5 @@ namespace kCura.IntegrationPoints.Core.Installers
             container.AddExportSanitizer();
             container.AddWebApiLoginService();
         }
-
     }
 }

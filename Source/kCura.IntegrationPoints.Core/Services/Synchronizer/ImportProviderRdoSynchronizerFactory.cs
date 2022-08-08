@@ -1,7 +1,9 @@
 ﻿using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
+using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -19,7 +21,7 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
             _objectTypeRepository = objectTypeRepository;
         }
 
-        public IDataSynchronizer CreateSynchronizer(ImportSettings importSettings, ITaskJobSubmitter taskJobSubmitter)
+        public IDataSynchronizer CreateSynchronizer(ImportSettings importSettings, ITaskJobSubmitter taskJobSubmitter, IDiagnosticLog diagnosticLog)
         {
             return IsEntityObjectImport(importSettings) ?
                 CreateEntityImportSynchronizer(taskJobSubmitter) :

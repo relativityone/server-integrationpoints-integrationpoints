@@ -112,7 +112,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 repositoryFactory,
                 _relativityObjectManager,
                 providerTypeService,
-                _integrationPointRepository);
+                _integrationPointRepository,
+                null);
 
             _job = JobHelper.GetJob(
                 1,
@@ -243,7 +244,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             // assert
             EnsureToSetJobHistoryErrorServiceProperties();
-            _dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<IEnumerable<FieldMap>>(), Arg.Any<string>(), Arg.Any<IJobStopManager>());
+            _dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<IEnumerable<FieldMap>>(), Arg.Any<string>(), Arg.Any<IJobStopManager>(), null);
             _jobHistoryErrorService.Received().CommitErrors();
             Assert.DoesNotThrow(_jobStopManager.Dispose);
             _jobService.Received().UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.None);
@@ -265,7 +266,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             // assert
             EnsureToSetJobHistoryErrorServiceProperties();
-            _dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<IEnumerable<FieldMap>>(), Arg.Any<string>(), _jobStopManager);
+            _dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<IEnumerable<FieldMap>>(), Arg.Any<string>(), _jobStopManager, null);
             Assert.DoesNotThrow(_jobStopManager.Dispose);
             _jobService.Received().UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.None);
         }
@@ -276,7 +277,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             //ARRANGE
             Job job = GetJob(_jsonParam1);
             SyncEntityManagerWorker task =
-                new SyncEntityManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null);
+                new SyncEntityManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
             //ACT
             MethodInfo dynMethod = task.GetType().GetMethod("GetParameters",
@@ -309,7 +310,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         {
             //ARRANGE
             SyncEntityManagerWorker task =
-                new SyncEntityManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null);
+                new SyncEntityManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null, null);
             _integrationPoint.DestinationConfiguration = _jsonParam2;
             task.GetType().GetProperty("IntegrationPoint", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).SetValue(task, _integrationPoint);
 

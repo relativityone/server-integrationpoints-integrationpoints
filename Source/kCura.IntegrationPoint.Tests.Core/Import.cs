@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoint.Tests.Core
             }
             DataTableReader reader = importTable.CreateDataReader();
             var context = new DefaultTransferContext(reader);
-            rdoSynchronizer.SyncData(context, allFieldMaps, settings, null);
+            rdoSynchronizer.SyncData(context, allFieldMaps, settings, null, null);
         }
 
 

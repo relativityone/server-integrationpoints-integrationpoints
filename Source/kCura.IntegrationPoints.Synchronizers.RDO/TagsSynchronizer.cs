@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -15,11 +16,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
     {
         private readonly IDataSynchronizer _rdoSynchronizer;
         private readonly IAPILog _logger;
+
         public TagsSynchronizer(IHelper helper, IDataSynchronizer rdoSynchronizer)
         {
             _rdoSynchronizer = rdoSynchronizer;
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<TagsSynchronizer>();
         }
+
+        public int TotalRowsProcessed => _rdoSynchronizer.TotalRowsProcessed;
 
         public IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
         {
@@ -27,13 +31,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             return _rdoSynchronizer.GetFields(providerConfiguration);
         }
 
-        public void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap,
-            string options, IJobStopManager jobStopManager)
+        public void SyncData(
+            IEnumerable<IDictionary<FieldEntry, object>> data,
+            IEnumerable<FieldMap> fieldMap,
+            string options,
+            IJobStopManager jobStopManager,
+            IDiagnosticLog diagnosticLog)
         {
             try
             {
                 string updatedOptions = UpdateImportSettingsForTagging(options);
-                _rdoSynchronizer.SyncData(data, fieldMap, updatedOptions, jobStopManager);
+                _rdoSynchronizer.SyncData(data, fieldMap, updatedOptions, jobStopManager, diagnosticLog);
             }
             catch (System.Exception ex)
             {
@@ -41,20 +49,23 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             }
         }
 
-        public void SyncData(IDataTransferContext data, IEnumerable<FieldMap> fieldMap, string options,
-            IJobStopManager jobStopManager)
+        public void SyncData(
+            IDataTransferContext data,
+            IEnumerable<FieldMap> fieldMap,
+            string options,
+            IJobStopManager jobStopManager,
+            IDiagnosticLog diagnosticLog)
         {
-            try { 
+            try
+            {
                 string updatedOptions = UpdateImportSettingsForTagging(options);
-                _rdoSynchronizer.SyncData(data, fieldMap, updatedOptions, jobStopManager);
+                _rdoSynchronizer.SyncData(data, fieldMap, updatedOptions, jobStopManager, diagnosticLog);
             }
             catch (System.Exception ex)
             {
                 LogAndThrowSyncDataException(ex);
             }
         }
-
-        public int TotalRowsProcessed => _rdoSynchronizer.TotalRowsProcessed;
 
         private string UpdateImportSettingsForTagging(string currentOptions)
         {

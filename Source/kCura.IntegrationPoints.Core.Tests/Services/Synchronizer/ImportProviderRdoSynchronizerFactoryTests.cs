@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Synchronizer
             SwitchResolvedSynchronizerToEntitySynchronizer();
 
             // act
-            _sut.CreateSynchronizer(ImportSettings, null);
+            _sut.CreateSynchronizer(ImportSettings, null, null);
 
             // assert
             _kernel.Verify(x => x.Resolve<IDataSynchronizer>(_rdoEntitySynchronizerAssemblyName));
@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Synchronizer
             Mock<ITaskJobSubmitter> taskSubmitter = new Mock<ITaskJobSubmitter>();
 
             // act
-            _sut.CreateSynchronizer(ImportSettings, taskSubmitter.Object);
+            _sut.CreateSynchronizer(ImportSettings, taskSubmitter.Object, null);
 
             // assert
             Assert.AreEqual(taskSubmitter.Object, synchronizer.TaskJobSubmitter);
@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Synchronizer
             SwitchObjectTypeToNonEntity(objectTypeName);
 
             // act
-            _sut.CreateSynchronizer(ImportSettings, null);
+            _sut.CreateSynchronizer(ImportSettings, null, null);
 
             // assert
             _kernel.Verify(x => x.Resolve<IDataSynchronizer>(_rdoSynchronizerAssemblyName));

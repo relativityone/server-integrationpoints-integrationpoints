@@ -170,7 +170,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
                 integrationPointRepository,
                 jobStatusUpdater,
                 automatedWorkflowsManager,
-                jobTrackerFake
+                jobTrackerFake,
+                null
             );
         }
 

@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
             _integrationPoint = integrationPoint;
             _jobHistoryService = serviceFactory.CreateJobHistoryService(_logger);
         }
-        
+
         public void SetJobIdOnJobHistory(Job job)
         {
             JobHistory jobHistory = GetJobHistory(job);

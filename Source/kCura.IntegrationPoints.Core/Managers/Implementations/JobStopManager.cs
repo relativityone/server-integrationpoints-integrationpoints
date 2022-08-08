@@ -176,7 +176,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
         public void StopCheckingDrainStop()
         {
             _logger.LogInformation("StopCheckingDrainStop was called for Job {jobId}", _jobId);
-            _supportsDrainStop = false;
             _isDrainStopping = false;
         }
 
