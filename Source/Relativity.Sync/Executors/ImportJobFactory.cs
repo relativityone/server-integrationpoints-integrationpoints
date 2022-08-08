@@ -25,7 +25,7 @@ namespace Relativity.Sync.Executors
         private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
         private readonly SyncJobParameters _syncJobParameters;
         private readonly IFieldMappings _fieldMappings;
-        private readonly IIsADFTransferEnabled _adfTransferEnabler;
+        private readonly IIsADFTransferEnabled _isAdfTransferEnabled;
         private readonly IAntiMalwareEventHelper _antiMalwareEventHelper;
         private readonly IAPILog _logger;
 
@@ -36,7 +36,7 @@ namespace Relativity.Sync.Executors
             IInstanceSettings instanceSettings,
             SyncJobParameters syncJobParameters,
             IFieldMappings fieldMappings,
-            IIsADFTransferEnabled adfTransferEnabler,
+            IIsADFTransferEnabled isAdfTransferEnabled,
             IAntiMalwareEventHelper antiMalwareEventHelper,
             IAPILog logger)
         {
@@ -46,7 +46,7 @@ namespace Relativity.Sync.Executors
             _instanceSettings = instanceSettings;
             _syncJobParameters = syncJobParameters;
             _fieldMappings = fieldMappings;
-            _adfTransferEnabler = adfTransferEnabler;
+            _isAdfTransferEnabled = isAdfTransferEnabled;
             _antiMalwareEventHelper = antiMalwareEventHelper;
             _logger = logger;
         }
@@ -163,7 +163,7 @@ namespace Relativity.Sync.Executors
             importJob.Settings.MultiValueDelimiter = configuration.MultiValueDelimiter;
             importJob.Settings.NestedValueDelimiter = configuration.NestedValueDelimiter;
 
-            bool shouldUseADFToCopyFiles = _adfTransferEnabler.Value;
+            bool shouldUseADFToCopyFiles = _isAdfTransferEnabled.Value;
             if (shouldUseADFToCopyFiles)
             {
                 _logger.LogInformation("Using File Movement Service to copy native files. Setting native file copy mode to links only and disabling native location validation.");

@@ -58,7 +58,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IStopwatch> _stopwatchFake;
         private Mock<ISyncMetrics> _syncMetricsMock;
         private Mock<IAdlsUploader> _adlsUploaderMock;
-        private Mock<IIsADFTransferEnabled> _adfTransferEnablerMock;
+        private Mock<IIsADFTransferEnabled> _isAdfTransferEnabledMock;
 
         private Mock<Sync.Executors.IImportJob> _importJobFake;
         private Mock<ISyncImportBulkArtifactJob> _syncImportBulkArtifactJobFake;
@@ -186,7 +186,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _batchRepositoryMock.Setup(x => x.GetAllSuccessfullyExecutedBatchesAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>()))
                 .ReturnsAsync(Enumerable.Empty<IBatch>());
 
-            _adfTransferEnablerMock = new Mock<IIsADFTransferEnabled>();
+            _isAdfTransferEnabledMock = new Mock<IIsADFTransferEnabled>();
 
             Mock<IFileLocationManager> fileLocationManager = new Mock<IFileLocationManager>();
 
@@ -204,7 +204,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 _documentTaggerFake.Object,
                 _adlsUploaderMock.Object,
                 _userContextConfigurationStub.Object,
-                _adfTransferEnablerMock.Object,
+                _isAdfTransferEnabledMock.Object,
                 fileLocationManager.Object,
                 new EmptyLogger());
         }

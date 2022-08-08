@@ -38,7 +38,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IJobProgressHandlerFactory> _jobProgressHandlerFactory;
         private Mock<ISourceWorkspaceDataReaderFactory> _dataReaderFactory;
         private Mock<IFieldMappings> _fieldMappingsMock;
-        private Mock<IIsADFTransferEnabled> _adfTransferEnablerMock;
+        private Mock<IIsADFTransferEnabled> _isAdfTransferEnabledMock;
         private Mock<IAntiMalwareEventHelper> _antiMalwareEventHelperMock;
         private SyncJobParameters _syncJobParameters;
         private const string _IMAGE_IDENTIFIER_DISPLAY_NAME = "ImageIdentifier";
@@ -79,7 +79,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _instanceSettings.Setup(x => x.GetWebApiPathAsync(default(string))).ReturnsAsync("http://fake.uri");
             _instanceSettings.Setup(x => x.GetShouldForceADFTransferAsync(default(bool))).ReturnsAsync(false);
             _syncJobParameters = FakeHelper.CreateSyncJobParameters();
-            _adfTransferEnablerMock = new Mock<IIsADFTransferEnabled>();
+            _isAdfTransferEnabledMock = new Mock<IIsADFTransferEnabled>();
             _antiMalwareEventHelperMock = new Mock<IAntiMalwareEventHelper>();
             _logger = new EmptyLogger();
 
@@ -448,7 +448,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             _documentConfigurationMock.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
 
-            _adfTransferEnablerMock.Setup(x => x.Value).Returns(true);
+            _isAdfTransferEnabledMock.Setup(x => x.Value).Returns(true);
 
             // Act
             Sync.Executors.IImportJob result = await instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
@@ -468,7 +468,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             _documentConfigurationMock.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
 
-            _adfTransferEnablerMock.Setup(x => x.Value).Returns(false);
+            _isAdfTransferEnabledMock.Setup(x => x.Value).Returns(false);
 
             // Act
             Sync.Executors.IImportJob result = await instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
@@ -552,7 +552,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         {
             var instance = new ImportJobFactory(importApiFactory.Object, _dataReaderFactory.Object,
                 _jobHistoryErrorRepository.Object, _instanceSettings.Object, _syncJobParameters,
-                _fieldMappingsMock.Object, _adfTransferEnablerMock.Object, _antiMalwareEventHelperMock.Object, _logger);
+                _fieldMappingsMock.Object, _isAdfTransferEnabledMock.Object, _antiMalwareEventHelperMock.Object, _logger);
             return instance;
         }
 
