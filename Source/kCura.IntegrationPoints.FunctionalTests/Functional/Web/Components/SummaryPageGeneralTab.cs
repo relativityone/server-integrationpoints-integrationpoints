@@ -50,9 +50,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 
         public RwcIntField<_> TotalOfDocuments { get; private set; }
 
-        public RwcIntField<_> TotalOfNatives { get; private set; }
+        public RwcTextField<_> TotalOfNatives { get; private set; }
 
-        public RwcIntField<_> TotalOfImages { get; private set; }
+        public RwcTextField<_> TotalOfImages { get; private set; }
 
         public RwcTextField<_> CreateSavedSearch { get; private set; }
 

@@ -51,9 +51,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 
         public int GetTotalDocuments() => SummaryPageGeneralTab.TotalOfDocuments.GetValueWithRetries();
 
-        public int GetTotalNatives() => SummaryPageGeneralTab.TotalOfNatives.GetValueWithRetries();
+        public string GetTotalNatives() => SummaryPageGeneralTab.TotalOfNatives.Value;
 
-        public int GetTotalImages() => SummaryPageGeneralTab.TotalOfImages.GetValueWithRetries();
+        public string GetTotalImages() => SummaryPageGeneralTab.TotalOfImages.Value;
 
         public YesNo GetCreateSavedSearch() => ParseEnum<YesNo>(SummaryPageGeneralTab.CreateSavedSearch.Value);
 
