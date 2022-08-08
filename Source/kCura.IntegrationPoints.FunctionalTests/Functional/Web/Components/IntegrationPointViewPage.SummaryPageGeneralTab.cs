@@ -49,11 +49,11 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 
         public string GetEmailNotificationRecipients() => SummaryPageGeneralTab.EmailNotificationRecipients.Value;
 
-        public int GetTotalDocuments() => SummaryPageGeneralTab.TotalOfDocuments.Value;
+        public int GetTotalDocuments() => SummaryPageGeneralTab.TotalOfDocuments.GetValueWithRetries();
 
-        public int GetTotalNatives() => SummaryPageGeneralTab.TotalOfNatives.Value;
+        public int GetTotalNatives() => SummaryPageGeneralTab.TotalOfNatives.GetValueWithRetries();
 
-        public int GetTotalImages() => SummaryPageGeneralTab.TotalOfImages.Value;
+        public int GetTotalImages() => SummaryPageGeneralTab.TotalOfImages.GetValueWithRetries();
 
         public YesNo GetCreateSavedSearch() => ParseEnum<YesNo>(SummaryPageGeneralTab.CreateSavedSearch.Value);
 
