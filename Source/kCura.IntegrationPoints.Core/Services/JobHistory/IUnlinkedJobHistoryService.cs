@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {
-	public interface IUnlinkedJobHistoryService
-	{
-		List<int> FindUnlinkedJobHistories(int workspaceArtifactId);
-	}
+    public interface IUnlinkedJobHistoryService
+    {
+        List<int> FindUnlinkedJobHistories(int workspaceArtifactId);
+    }
 }

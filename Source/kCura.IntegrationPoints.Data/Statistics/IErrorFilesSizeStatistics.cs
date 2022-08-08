@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Data.Statistics
 {
-	public interface IErrorFilesSizeStatistics
-	{
-		long ForJobHistoryOmmitedFiles(int workspaceArtifactId, int artifactId);
-	}
+    public interface IErrorFilesSizeStatistics
+    {
+        long ForJobHistoryOmmitedFiles(int workspaceArtifactId, int artifactId);
+    }
 }

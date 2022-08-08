@@ -18,25 +18,25 @@ using Relativity.IntegrationPoints.FieldsMapping;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
-	[TestFixture, Category("Unit")]
-	internal class WorkspaceFieldControllerTests : WebControllerTestBase
-	{
-		#region Fields
+    [TestFixture, Category("Unit")]
+    internal class WorkspaceFieldControllerTests : WebControllerTestBase
+    {
+        #region Fields
 
-		private WorkspaceFieldController _subjectUnderTest;
+        private WorkspaceFieldController _subjectUnderTest;
 
-		private ISynchronizerFactory _synchronizerFactoryMock;
-	    private IDataSynchronizer _dataSynchronizerMock;
+        private ISynchronizerFactory _synchronizerFactoryMock;
+        private IDataSynchronizer _dataSynchronizerMock;
 
         private ISerializer _serializer;
-	    private SynchronizerSettings _synchronizerSettings;
+        private SynchronizerSettings _synchronizerSettings;
 
 
         private const int _ARTIFACT_TYPE_ID = 10;
-	    private const int _DESTINATION_FOLDER_ARTIFACT_ID = 2;
-	    private const string _CREDENTIALS = "password";
-	    private const string _DISPLAY_NAME = "FieldName";
-	    private const string _IDENTIFIER = "Identifier";
+        private const int _DESTINATION_FOLDER_ARTIFACT_ID = 2;
+        private const string _CREDENTIALS = "password";
+        private const string _DISPLAY_NAME = "FieldName";
+        private const string _IDENTIFIER = "Identifier";
 
         private readonly List<FieldEntry> _fields = new List<FieldEntry>()
         {
@@ -45,43 +45,43 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
                 DisplayName = _DISPLAY_NAME,
                 FieldType = FieldType.File,
                 IsIdentifier = true,
-				FieldIdentifier = _IDENTIFIER
+                FieldIdentifier = _IDENTIFIER
             }
         };
 
         #endregion //Fields
 
         [SetUp]
-		public override void SetUp()
-		{
-			base.SetUp();
+        public override void SetUp()
+        {
+            base.SetUp();
 
-			_synchronizerFactoryMock = Substitute.For<ISynchronizerFactory>();
-		    _dataSynchronizerMock = Substitute.For<IDataSynchronizer>();
+            _synchronizerFactoryMock = Substitute.For<ISynchronizerFactory>();
+            _dataSynchronizerMock = Substitute.For<IDataSynchronizer>();
 
             _serializer = new JSONSerializer();
 
-		     _synchronizerSettings = new SynchronizerSettings()
-		    {
-		        Settings =
-		            $"{{ artifactTypeID: {_ARTIFACT_TYPE_ID}, DestinationFolderArtifactId: {_DESTINATION_FOLDER_ARTIFACT_ID} }}",
-		        Credentials = _CREDENTIALS
-		    };
+             _synchronizerSettings = new SynchronizerSettings()
+            {
+                Settings =
+                    $"{{ artifactTypeID: {_ARTIFACT_TYPE_ID}, DestinationFolderArtifactId: {_DESTINATION_FOLDER_ARTIFACT_ID} }}",
+                Credentials = _CREDENTIALS
+            };
 
             _subjectUnderTest = new WorkspaceFieldController(_synchronizerFactoryMock, _serializer, Helper)
-			{
-				Request = new HttpRequestMessage()
-			};
+            {
+                Request = new HttpRequestMessage()
+            };
 
-			_subjectUnderTest.Request.SetConfiguration(new HttpConfiguration());
-		}
+            _subjectUnderTest.Request.SetConfiguration(new HttpConfiguration());
+        }
 
-		[Test]
-		public void ItShouldGetFields()
-		{
+        [Test]
+        public void ItShouldGetFields()
+        {
             // Arrange
-		    _synchronizerFactoryMock.CreateSynchronizer( Guid.Empty, _synchronizerSettings.Settings).Returns(_dataSynchronizerMock);
-		    _dataSynchronizerMock.GetFields(Arg.Any<DataSourceProviderConfiguration>()).Returns(_fields);
+            _synchronizerFactoryMock.CreateSynchronizer( Guid.Empty, _synchronizerSettings.Settings).Returns(_dataSynchronizerMock);
+            _dataSynchronizerMock.GetFields(Arg.Any<DataSourceProviderConfiguration>()).Returns(_fields);
 
             // Act
             HttpResponseMessage httpResponseMessage = _subjectUnderTest
@@ -97,12 +97,12 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             CollectionAssert.AreEqual(_fields.Select(x => x.DisplayName), retValue.Select(x => x.Name));
             CollectionAssert.AreEqual(_fields.Select(x => x.FieldIdentifier), retValue.Select(x => x.FieldIdentifier));
 
-		    _dataSynchronizerMock.Received(1).GetFields(Arg.Is<DataSourceProviderConfiguration>(x =>
-			    (_serializer.Deserialize<ImportSettings>(x.Configuration).ArtifactTypeId == _ARTIFACT_TYPE_ID) &&
-			    (_serializer.Deserialize<ImportSettings>(x.Configuration).DestinationFolderArtifactId == _DESTINATION_FOLDER_ARTIFACT_ID) &&
-			    (_serializer.Deserialize<ImportSettings>(x.Configuration).FederatedInstanceCredentials == _CREDENTIALS) &&
-			    (x.SecuredConfiguration == _CREDENTIALS)));
-		}
+            _dataSynchronizerMock.Received(1).GetFields(Arg.Is<DataSourceProviderConfiguration>(x =>
+                (_serializer.Deserialize<ImportSettings>(x.Configuration).ArtifactTypeId == _ARTIFACT_TYPE_ID) &&
+                (_serializer.Deserialize<ImportSettings>(x.Configuration).DestinationFolderArtifactId == _DESTINATION_FOLDER_ARTIFACT_ID) &&
+                (_serializer.Deserialize<ImportSettings>(x.Configuration).FederatedInstanceCredentials == _CREDENTIALS) &&
+                (x.SecuredConfiguration == _CREDENTIALS)));
+        }
 
-	}
+    }
 }

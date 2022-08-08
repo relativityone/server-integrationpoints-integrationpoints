@@ -1,6 +1,6 @@
 ﻿namespace kCura.IntegrationPoints.Data.Statistics
 {
-	public interface INativeTotalStatistics : IDocumentStatistics
-	{
-	}
+    public interface INativeTotalStatistics : IDocumentStatistics
+    {
+    }
 }

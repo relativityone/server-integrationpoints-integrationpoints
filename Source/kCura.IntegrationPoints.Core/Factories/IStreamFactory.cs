@@ -2,9 +2,9 @@
 
 namespace kCura.IntegrationPoints.Core.Factories
 {
-	public interface IStreamFactory
-	{
-		IFileStream GetFileStream(string filePath);
-		IMemoryStream GetMemoryStream();
-	}
+    public interface IStreamFactory
+    {
+        IFileStream GetFileStream(string filePath);
+        IMemoryStream GetMemoryStream();
+    }
 }

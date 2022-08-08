@@ -1,7 +1,7 @@
 ﻿namespace kCura.IntegrationPoints.Data.Repositories.DTO
 {
-	public interface IFieldValueDto
-	{
-		object Value { get; }
-	}
+    public interface IFieldValueDto
+    {
+        object Value { get; }
+    }
 }

@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.Email
 {
-	public interface IEmailSender
-	{
-		void Send(EmailMessageDto message);
-	}
+    public interface IEmailSender
+    {
+        void Send(EmailMessageDto message);
+    }
 }

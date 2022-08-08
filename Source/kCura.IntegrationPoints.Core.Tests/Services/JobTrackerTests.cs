@@ -10,7 +10,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {
-	[TestFixture, Category("Unit")]
+    [TestFixture, Category("Unit")]
     public class JobTrackerTests : TestBase
     {
         private Job _goldFlowJob;
@@ -100,11 +100,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         [Test]
         public void CheckEntries_ExistingJob_False_BatchNotFinished()
         {
-	        JobTracker jobTracker = PrepareJobTracker();
+            JobTracker jobTracker = PrepareJobTracker();
 
-	        bool checkResult = jobTracker.CheckEntries(_goldFlowJob, _goldFlowBatchId, false);
+            bool checkResult = jobTracker.CheckEntries(_goldFlowJob, _goldFlowBatchId, false);
 
-	        Assert.IsFalse(checkResult);
+            Assert.IsFalse(checkResult);
         }
 
         [Test]

@@ -13,7 +13,7 @@ using Relativity.IntegrationPoints.Services.Repositories.Implementations;
 
 namespace Relativity.IntegrationPoints.Services.Installers
 {
-	public class IntegrationPointManagerInstaller : Installer
+    public class IntegrationPointManagerInstaller : Installer
     {
         private readonly List<IWindsorInstaller> _dependencies;
 

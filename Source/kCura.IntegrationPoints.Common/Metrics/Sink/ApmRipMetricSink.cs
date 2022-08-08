@@ -2,18 +2,18 @@
 
 namespace kCura.IntegrationPoints.Common.Metrics.Sink
 {
-	public class ApmRipMetricSink : IRipMetricsSink
-	{
-		private readonly IAPM _apm;
+    public class ApmRipMetricSink : IRipMetricsSink
+    {
+        private readonly IAPM _apm;
 
-		public ApmRipMetricSink(IAPM apm)
-		{
-			_apm = apm;
-		}
+        public ApmRipMetricSink(IAPM apm)
+        {
+            _apm = apm;
+        }
 
-		public void Log(RipMetric ripMetric)
-		{
-			_apm.CountOperation(ripMetric.Name, correlationID: ripMetric.WorkflowId, customData: ripMetric.CustomData).Write();
-		}
-	}
+        public void Log(RipMetric ripMetric)
+        {
+            _apm.CountOperation(ripMetric.Name, correlationID: ripMetric.WorkflowId, customData: ripMetric.CustomData).Write();
+        }
+    }
 }

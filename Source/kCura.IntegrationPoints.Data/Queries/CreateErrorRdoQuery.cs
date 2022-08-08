@@ -5,64 +5,64 @@ using Relativity.Services.Error;
 
 namespace kCura.IntegrationPoints.Data.Queries
 {
-	public class CreateErrorRdoQuery
-	{
-		private const int _MAX_ERROR_LENGTH = 2000;
-		private const int _MAX_SOURCE_LENGTH = 255;
-		private const string _TRUNCATED_TEMPLATE = "(Truncated) {0}";
+    public class CreateErrorRdoQuery
+    {
+        private const int _MAX_ERROR_LENGTH = 2000;
+        private const int _MAX_SOURCE_LENGTH = 255;
+        private const string _TRUNCATED_TEMPLATE = "(Truncated) {0}";
 
-		private readonly IAPILog _logger;
+        private readonly IAPILog _logger;
 
-		private readonly IServicesMgr _servicesMgr;
-		private readonly ISystemEventLoggingService _systemEventLoggingService;
+        private readonly IServicesMgr _servicesMgr;
+        private readonly ISystemEventLoggingService _systemEventLoggingService;
 
-		public CreateErrorRdoQuery(IServicesMgr servicesMgr, ISystemEventLoggingService systemEventLoggingService, IAPILog logger)
-		{
-			_servicesMgr = servicesMgr;
-			_systemEventLoggingService = systemEventLoggingService;
-			_logger = logger.ForContext<CreateErrorRdoQuery>();
-		}
+        public CreateErrorRdoQuery(IServicesMgr servicesMgr, ISystemEventLoggingService systemEventLoggingService, IAPILog logger)
+        {
+            _servicesMgr = servicesMgr;
+            _systemEventLoggingService = systemEventLoggingService;
+            _logger = logger.ForContext<CreateErrorRdoQuery>();
+        }
 
-		public void LogError(Error errorDto)
-		{
-			if (errorDto.Message?.Length > _MAX_ERROR_LENGTH)
-			{
-				errorDto.Message = TruncateMessage(errorDto.Message);
-			}
+        public void LogError(Error errorDto)
+        {
+            if (errorDto.Message?.Length > _MAX_ERROR_LENGTH)
+            {
+                errorDto.Message = TruncateMessage(errorDto.Message);
+            }
 
-			if (errorDto.Source?.Length > _MAX_SOURCE_LENGTH)
-			{
-				errorDto.Source = errorDto.Source.Substring(0, _MAX_SOURCE_LENGTH);
-			}
+            if (errorDto.Source?.Length > _MAX_SOURCE_LENGTH)
+            {
+                errorDto.Source = errorDto.Source.Substring(0, _MAX_SOURCE_LENGTH);
+            }
 
-			try
-			{
-				using (IErrorManager errorManager = _servicesMgr.CreateProxy<IErrorManager>(ExecutionIdentity.System))
-				{
-					errorManager.CreateSingleAsync(errorDto).GetAwaiter().GetResult();
-				}
-			}
-			catch (Exception ex)
-			{
-				_systemEventLoggingService.WriteErrorEvent(errorDto.Source, "Application", ex);
-				LogErrorMessage(errorDto, ex);
-			}
-		}
+            try
+            {
+                using (IErrorManager errorManager = _servicesMgr.CreateProxy<IErrorManager>(ExecutionIdentity.System))
+                {
+                    errorManager.CreateSingleAsync(errorDto).GetAwaiter().GetResult();
+                }
+            }
+            catch (Exception ex)
+            {
+                _systemEventLoggingService.WriteErrorEvent(errorDto.Source, "Application", ex);
+                LogErrorMessage(errorDto, ex);
+            }
+        }
 
-		private string TruncateMessage(string message)
-		{
-			int truncatedLength = _MAX_ERROR_LENGTH - _TRUNCATED_TEMPLATE.Length;
-			return string.Format(_TRUNCATED_TEMPLATE, message.Substring(0, truncatedLength));
-		}
+        private string TruncateMessage(string message)
+        {
+            int truncatedLength = _MAX_ERROR_LENGTH - _TRUNCATED_TEMPLATE.Length;
+            return string.Format(_TRUNCATED_TEMPLATE, message.Substring(0, truncatedLength));
+        }
 
-		private void LogErrorMessage(Error errorDto, Exception ex)
-		{
-			string message = $"An Error occured during creation of ErrorRDO for workspace: {errorDto.Workspace?.ArtifactID}.{Environment.NewLine}"
-			+ $"Source: {errorDto.Source}. {Environment.NewLine}"
-			+ $"Error message: {errorDto.Message}. {Environment.NewLine}"
-			+ $"Stacktrace: {ex.StackTrace}";
+        private void LogErrorMessage(Error errorDto, Exception ex)
+        {
+            string message = $"An Error occured during creation of ErrorRDO for workspace: {errorDto.Workspace?.ArtifactID}.{Environment.NewLine}"
+            + $"Source: {errorDto.Source}. {Environment.NewLine}"
+            + $"Error message: {errorDto.Message}. {Environment.NewLine}"
+            + $"Stacktrace: {ex.StackTrace}";
 
-			_logger.LogError(ex, message);
-		}
-	}
+            _logger.LogError(ex, message);
+        }
+    }
 }

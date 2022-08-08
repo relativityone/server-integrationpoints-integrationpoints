@@ -20,4 +20,5 @@
             <Link>AssemblyInfo.vb</Link>
         </Compile>
     </ItemGroup>
+    <Import Project="stylecop\StyleCop.targets" />
 </Project>

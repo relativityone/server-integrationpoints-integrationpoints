@@ -12,16 +12,16 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factories
 {
     public static class RelativityProviderSourceConfigurationFactory
-	{
-		public static IRelativityProviderConfiguration Create(IEHHelper helper, IInstanceSettingsManager federatedInstanceManager)
-		{
-			IAPILog logger = helper.GetLoggerFactory().GetLogger();
+    {
+        public static IRelativityProviderConfiguration Create(IEHHelper helper, IInstanceSettingsManager federatedInstanceManager)
+        {
+            IAPILog logger = helper.GetLoggerFactory().GetLogger();
 
-			IManagerFactory managerFactory = new ManagerFactory(helper, new FakeNonRemovableAgent());
-			IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
-			IProductionManager productionManager = new ProductionManager(repositoryFactory, logger);
+            IManagerFactory managerFactory = new ManagerFactory(helper, new FakeNonRemovableAgent());
+            IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, helper.GetServicesManager());
+            IProductionManager productionManager = new ProductionManager(repositoryFactory, logger);
 
-			return new RelativityProviderSourceConfiguration(helper, productionManager, managerFactory, federatedInstanceManager);
-		}
-	}
+            return new RelativityProviderSourceConfiguration(helper, productionManager, managerFactory, federatedInstanceManager);
+        }
+    }
 }

@@ -7,55 +7,55 @@ using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Web.Attributes
 {
-	public class JsonNetResult : ActionResult
-	{
-		public Encoding ContentEncoding { get; set; }
-		public string ContentType { get; set; }
-		public object Data { get; set; }
-		public int StatusCode { get; set; }
+    public class JsonNetResult : ActionResult
+    {
+        public Encoding ContentEncoding { get; set; }
+        public string ContentType { get; set; }
+        public object Data { get; set; }
+        public int StatusCode { get; set; }
 
-		public JsonSerializerSettings SerializerSettings { get; set; }
+        public JsonSerializerSettings SerializerSettings { get; set; }
 
-		public JsonNetResult()
-		{
-			SerializerSettings = JSONHelper.GetDefaultSettings();
-		}
+        public JsonNetResult()
+        {
+            SerializerSettings = JSONHelper.GetDefaultSettings();
+        }
 
-		public override void ExecuteResult(ControllerContext context)
-		{
-			if (context == null)
-			{
-				throw new ArgumentNullException("context");
-			}
+        public override void ExecuteResult(ControllerContext context)
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException("context");
+            }
 
-			HttpResponseBase response = context.HttpContext.Response;
+            HttpResponseBase response = context.HttpContext.Response;
 
-			response.StatusCode = StatusCode;
-			response.ContentType = string.IsNullOrEmpty(ContentType) ? "application/json" : ContentType;
+            response.StatusCode = StatusCode;
+            response.ContentType = string.IsNullOrEmpty(ContentType) ? "application/json" : ContentType;
 
-			if ((StatusCode >= 400) && (StatusCode <= 599))
-			{
-				response.TrySkipIisCustomErrors = true;
-			}
+            if ((StatusCode >= 400) && (StatusCode <= 599))
+            {
+                response.TrySkipIisCustomErrors = true;
+            }
 
-			if (ContentEncoding != null)
-			{
-				response.ContentEncoding = ContentEncoding;
-			}
+            if (ContentEncoding != null)
+            {
+                response.ContentEncoding = ContentEncoding;
+            }
 
-			if (Data == null)
-			{
-				return;
-			}
+            if (Data == null)
+            {
+                return;
+            }
 
-			var formatting = Formatting.None;
+            var formatting = Formatting.None;
 
-			var writer = new JsonTextWriter(response.Output) {Formatting = formatting};
+            var writer = new JsonTextWriter(response.Output) {Formatting = formatting};
 
-			JsonSerializer serializer = JsonSerializer.Create(SerializerSettings);
-			serializer.Serialize(writer, Data);
+            JsonSerializer serializer = JsonSerializer.Create(SerializerSettings);
+            serializer.Serialize(writer, Data);
 
-			writer.Flush();
-		}
-	}
+            writer.Flush();
+        }
+    }
 }

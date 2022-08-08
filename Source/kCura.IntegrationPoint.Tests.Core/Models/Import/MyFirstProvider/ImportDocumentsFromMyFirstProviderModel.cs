@@ -27,5 +27,5 @@ namespace kCura.IntegrationPoint.Tests.Core.Models.Import.MyFirstProvider
 
             Settings = new SettingsModel();
         }
-	}
+    }
 }

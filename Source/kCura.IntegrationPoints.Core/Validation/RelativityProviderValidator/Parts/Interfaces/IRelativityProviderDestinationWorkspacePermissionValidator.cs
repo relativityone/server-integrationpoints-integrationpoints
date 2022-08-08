@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Parts.Interfaces
 {
-	public interface IRelativityProviderDestinationWorkspacePermissionValidator
-	{
-		ValidationResult Validate(int destinationWorkspaceId, int destinationTypeId, bool createSavedSearch);
-	}
+    public interface IRelativityProviderDestinationWorkspacePermissionValidator
+    {
+        ValidationResult Validate(int destinationWorkspaceId, int destinationTypeId, bool createSavedSearch);
+    }
 }

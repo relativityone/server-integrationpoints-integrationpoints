@@ -13,17 +13,17 @@ using Relativity.API;
 namespace Relativity.IntegrationPoints.Services.Installers
 {
     public class IntegrationPointAgentManagerInstaller : Installer
-	{
-		protected override IList<IWindsorInstaller> Dependencies { get; } = new List<IWindsorInstaller>
-		{
-			new SharedAgentInstaller()
-		};
+    {
+        protected override IList<IWindsorInstaller> Dependencies { get; } = new List<IWindsorInstaller>
+        {
+            new SharedAgentInstaller()
+        };
 
-		protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceID)
-		{
-			container.Register(Component.For<IInstanceSettingsManager>().ImplementedBy<InstanceSettingsManager>().LifestyleTransient());
-			container.Register(Component.For<IRepositoryFactory>().UsingFactoryMethod(c => new RepositoryFactory(c.Resolve<IHelper>(), c.Resolve<IHelper>().GetServicesManager())));
-			container.Register(Component.For<IKubernetesMode>().ImplementedBy<KubernetesMode>().LifestyleSingleton());
-		}
-	}
+        protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceID)
+        {
+            container.Register(Component.For<IInstanceSettingsManager>().ImplementedBy<InstanceSettingsManager>().LifestyleTransient());
+            container.Register(Component.For<IRepositoryFactory>().UsingFactoryMethod(c => new RepositoryFactory(c.Resolve<IHelper>(), c.Resolve<IHelper>().GetServicesManager())));
+            container.Register(Component.For<IKubernetesMode>().ImplementedBy<KubernetesMode>().LifestyleSingleton());
+        }
+    }
 }

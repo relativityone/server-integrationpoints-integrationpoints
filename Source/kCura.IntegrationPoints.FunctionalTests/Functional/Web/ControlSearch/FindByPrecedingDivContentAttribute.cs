@@ -2,12 +2,12 @@
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.ControlSearch
 {
-	public class FindByPrecedingDivContentAttribute : FindByPrecedingSiblingContentAttribute
-	{
-		public FindByPrecedingDivContentAttribute()
-		{
-			SiblingXPath = "div";
-			Format = "{0}:";
-		}
-	}
+    public class FindByPrecedingDivContentAttribute : FindByPrecedingSiblingContentAttribute
+    {
+        public FindByPrecedingDivContentAttribute()
+        {
+            SiblingXPath = "div";
+            Format = "{0}:";
+        }
+    }
 }

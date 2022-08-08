@@ -4,14 +4,14 @@ using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
-	public interface ISyncOperationsWrapper
-	{
-		ISyncJobFactory CreateSyncJobFactory();
+    public interface ISyncOperationsWrapper
+    {
+        ISyncJobFactory CreateSyncJobFactory();
 
-		Task PrepareSyncConfigurationForResumeAsync(int workspaceId, int syncConfigurationId);
+        Task PrepareSyncConfigurationForResumeAsync(int workspaceId, int syncConfigurationId);
 
-		IRelativityServices CreateRelativityServices();
-		
-		ISyncConfigurationBuilder GetSyncConfigurationBuilder(ISyncContext context);
-	}
+        IRelativityServices CreateRelativityServices();
+        
+        ISyncConfigurationBuilder GetSyncConfigurationBuilder(ISyncContext context);
+    }
 }

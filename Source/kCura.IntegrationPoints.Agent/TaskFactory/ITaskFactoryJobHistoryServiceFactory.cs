@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.Agent.TaskFactory
 {
-	public interface ITaskFactoryJobHistoryServiceFactory
-	{
-		ITaskFactoryJobHistoryService CreateJobHistoryService(IntegrationPoint integrationPoint);
-	}
+    public interface ITaskFactoryJobHistoryServiceFactory
+    {
+        ITaskFactoryJobHistoryService CreateJobHistoryService(IntegrationPoint integrationPoint);
+    }
 }

@@ -17,87 +17,87 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 {
     internal class ImportLDAPTestImplementation
     {
-		private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
+        private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
 
-		private readonly HumanResourcesTestData _expectedTestData;
+        private readonly HumanResourcesTestData _expectedTestData;
 
-		public ImportLDAPTestImplementation(ITestsImplementationTestFixture testsImplementationTestFixture)
-		{
-			_testsImplementationTestFixture = testsImplementationTestFixture;
+        public ImportLDAPTestImplementation(ITestsImplementationTestFixture testsImplementationTestFixture)
+        {
+            _testsImplementationTestFixture = testsImplementationTestFixture;
 
-			_expectedTestData = new HumanResourcesTestData();
-		}
+            _expectedTestData = new HumanResourcesTestData();
+        }
 
-		public void OnSetUpFixture()
-		{
-			_testsImplementationTestFixture.Workspace.InstallLegalHold();
-		}
+        public void OnSetUpFixture()
+        {
+            _testsImplementationTestFixture.Workspace.InstallLegalHold();
+        }
 
-		public void ImportFromLDAPGoldFlow()
-		{
-			// Arrange
-			_testsImplementationTestFixture.LoginAsStandardUser();
+        public void ImportFromLDAPGoldFlow()
+        {
+            // Arrange
+            _testsImplementationTestFixture.LoginAsStandardUser();
 
-			string integrationPointName = nameof(ImportFromLDAPGoldFlow);
+            string integrationPointName = nameof(ImportFromLDAPGoldFlow);
 
-			// Act
-			var integrationPointListPage = Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID);
-			var integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
+            // Act
+            var integrationPointListPage = Being.On<IntegrationPointListPage>(_testsImplementationTestFixture.Workspace.ArtifactID);
+            var integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
 
-			var importFromLDAPConnectToSourcePage = FillOutIntegrationPointEditPageForImportFromLDAP(integrationPointEditPage, integrationPointName);
+            var importFromLDAPConnectToSourcePage = FillOutIntegrationPointEditPageForImportFromLDAP(integrationPointEditPage, integrationPointName);
 
             var importFromLDAPMapFieldsPage = FillOutImportFromLDAPConnectToSourcePage(importFromLDAPConnectToSourcePage);
 
-			var integrationPointViewPage = SetFieldsMappingImportFromLDAPMapFieldsPage(importFromLDAPMapFieldsPage);
+            var integrationPointViewPage = SetFieldsMappingImportFromLDAPMapFieldsPage(importFromLDAPMapFieldsPage);
 
-			integrationPointViewPage = integrationPointViewPage.RunIntegrationPoint(integrationPointName);
+            integrationPointViewPage = integrationPointViewPage.RunIntegrationPoint(integrationPointName);
 
-			// Assert
-			int transferredItemsCount = integrationPointViewPage.GetTransferredItemsCount(integrationPointName);
-			int workspaceEntityCount = RelativityFacade.Instance.Resolve<IEntityService>().GetAll(_testsImplementationTestFixture.Workspace.ArtifactID).Length;
-			transferredItemsCount.Should().Be(workspaceEntityCount)
-				.And.Be(_expectedTestData.EntryIds.Count());
-		}
+            // Assert
+            int transferredItemsCount = integrationPointViewPage.GetTransferredItemsCount(integrationPointName);
+            int workspaceEntityCount = RelativityFacade.Instance.Resolve<IEntityService>().GetAll(_testsImplementationTestFixture.Workspace.ArtifactID).Length;
+            transferredItemsCount.Should().Be(workspaceEntityCount)
+                .And.Be(_expectedTestData.EntryIds.Count());
+        }
 
-		private static ImportFromLDAPConnectToSourcePage FillOutIntegrationPointEditPageForImportFromLDAP(IntegrationPointEditPage integrationPointEditPage, string integrationPointName)
-		{
-			integrationPointEditPage.Type.Set(IntegrationPointTypes.Import);
+        private static ImportFromLDAPConnectToSourcePage FillOutIntegrationPointEditPageForImportFromLDAP(IntegrationPointEditPage integrationPointEditPage, string integrationPointName)
+        {
+            integrationPointEditPage.Type.Set(IntegrationPointTypes.Import);
 
-			Thread.Sleep(TimeSpan.FromSeconds(2));
+            Thread.Sleep(TimeSpan.FromSeconds(2));
 
-			integrationPointEditPage.ApplyModel(new IntegrationPointEditImport
-			{
-				Name = integrationPointName,
-				Source = IntegrationPointSources.LDAP,
-				TransferredObject = IntegrationPointTransferredObjects.Entity,
-			});
+            integrationPointEditPage.ApplyModel(new IntegrationPointEditImport
+            {
+                Name = integrationPointName,
+                Source = IntegrationPointSources.LDAP,
+                TransferredObject = IntegrationPointTransferredObjects.Entity,
+            });
 
-			return integrationPointEditPage.ImportFromLDAPNext.ClickAndGo();
-		}
+            return integrationPointEditPage.ImportFromLDAPNext.ClickAndGo();
+        }
 
         private ImportFromLDAPMapFieldsPage FillOutImportFromLDAPConnectToSourcePage(ImportFromLDAPConnectToSourcePage importFromLDAPConnectToSourcePage)
         {
-	        return importFromLDAPConnectToSourcePage
-			   .ApplyModel(new ImportFromLDAPConnectToSource
-			   {
-				   ConnectionPath = GlobalConst.LDAP._OPEN_LDAP_CONNECTION_PATH(_expectedTestData.OU),
-				   Username = GlobalConst.LDAP._OPEN_LDAP_USER,
-				   Password = GlobalConst.LDAP._OPEN_LDAP_PASSWORD,
-			   }).Next.ClickAndGo();
+            return importFromLDAPConnectToSourcePage
+               .ApplyModel(new ImportFromLDAPConnectToSource
+               {
+                   ConnectionPath = GlobalConst.LDAP._OPEN_LDAP_CONNECTION_PATH(_expectedTestData.OU),
+                   Username = GlobalConst.LDAP._OPEN_LDAP_USER,
+                   Password = GlobalConst.LDAP._OPEN_LDAP_PASSWORD,
+               }).Next.ClickAndGo();
         }
 
-		private static IntegrationPointViewPage SetFieldsMappingImportFromLDAPMapFieldsPage(ImportFromLDAPMapFieldsPage importFromLDAPMapFieldsPage)
-		{
-			Thread.Sleep(TimeSpan.FromSeconds(2));
+        private static IntegrationPointViewPage SetFieldsMappingImportFromLDAPMapFieldsPage(ImportFromLDAPMapFieldsPage importFromLDAPMapFieldsPage)
+        {
+            Thread.Sleep(TimeSpan.FromSeconds(2));
 
-			importFromLDAPMapFieldsPage.Cn.DoubleClick();
-			importFromLDAPMapFieldsPage.GivenName.DoubleClick();
-			importFromLDAPMapFieldsPage.Sn.DoubleClick();
-			importFromLDAPMapFieldsPage.UniqueID.DoubleClick();
-			importFromLDAPMapFieldsPage.FirstName.DoubleClick();
-			importFromLDAPMapFieldsPage.LastName.DoubleClick();
+            importFromLDAPMapFieldsPage.Cn.DoubleClick();
+            importFromLDAPMapFieldsPage.GivenName.DoubleClick();
+            importFromLDAPMapFieldsPage.Sn.DoubleClick();
+            importFromLDAPMapFieldsPage.UniqueID.DoubleClick();
+            importFromLDAPMapFieldsPage.FirstName.DoubleClick();
+            importFromLDAPMapFieldsPage.LastName.DoubleClick();
 
-			return importFromLDAPMapFieldsPage.Save.ClickAndGo();
-		}
-	}
+            return importFromLDAPMapFieldsPage.Save.ClickAndGo();
+        }
+    }
 }

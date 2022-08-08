@@ -6,7 +6,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
-	public class JobTracker : IJobTracker
+    public class JobTracker : IJobTracker
     {
         private readonly IJobResourceTracker _tracker;
         private readonly IAPILog _logger;
@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
         public bool CheckEntries(Job job, string batchId, bool batchIsFinished)
         {
-	        string jobTrackerTempTableName = GenerateJobTrackerTempTableName(job, batchId);
+            string jobTrackerTempTableName = GenerateJobTrackerTempTableName(job, batchId);
             _logger.LogInformation("JobTracker RemoveEntryAndCheckStatus for {jobTrackerTempTableName}", jobTrackerTempTableName);
 
             return _tracker.RemoveEntryAndCheckStatus(jobTrackerTempTableName, job.JobId, job.WorkspaceID, batchIsFinished) == 0;
@@ -50,9 +50,9 @@ namespace kCura.IntegrationPoints.Core.Services
 
         public BatchStatusQueryResult GetBatchesStatuses(Job job, string batchId)
         {
-	        string jobTrackerTempTableName = GenerateJobTrackerTempTableName(job, batchId);
+            string jobTrackerTempTableName = GenerateJobTrackerTempTableName(job, batchId);
 
-	        return _tracker.GetBatchesStatuses(jobTrackerTempTableName, job.RootJobId.Value, job.WorkspaceID);
+            return _tracker.GetBatchesStatuses(jobTrackerTempTableName, job.RootJobId.Value, job.WorkspaceID);
         }
     }
 }

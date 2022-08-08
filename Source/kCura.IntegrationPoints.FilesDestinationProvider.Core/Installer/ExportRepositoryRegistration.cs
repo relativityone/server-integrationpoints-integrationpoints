@@ -5,17 +5,17 @@ using kCura.IntegrationPoints.Data.Repositories.Implementations;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 {
-	public static class ExportRepositoryRegistration
-	{
-		public static IWindsorContainer AddExportRepositories(this IWindsorContainer container)
-		{
-			container.Register(
-				Component.For<IFileRepository>()
-					.ImplementedBy<FileRepository>()
-					.LifestyleTransient()
-			);
+    public static class ExportRepositoryRegistration
+    {
+        public static IWindsorContainer AddExportRepositories(this IWindsorContainer container)
+        {
+            container.Register(
+                Component.For<IFileRepository>()
+                    .ImplementedBy<FileRepository>()
+                    .LifestyleTransient()
+            );
 
-			return container;
-		}
-	}
+            return container;
+        }
+    }
 }

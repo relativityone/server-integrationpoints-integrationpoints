@@ -2,10 +2,10 @@
 
 namespace kCura.ScheduleQueue.Core
 {
-	public interface IAgentService
-	{
-		AgentTypeInformation AgentTypeInformation { get; }
-		void InstallQueueTable();
-		void CreateQueueTableOnce();
-	}
+    public interface IAgentService
+    {
+        AgentTypeInformation AgentTypeInformation { get; }
+        void InstallQueueTable();
+        void CreateQueueTableOnce();
+    }
 }

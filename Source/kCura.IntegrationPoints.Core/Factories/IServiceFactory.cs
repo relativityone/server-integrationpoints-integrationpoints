@@ -4,10 +4,10 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Factories
 {
-	public interface IServiceFactory
-	{
-		IIntegrationPointService CreateIntegrationPointService(IHelper helper);
-		
-		IJobHistoryService CreateJobHistoryService(IAPILog logger);
-	}
+    public interface IServiceFactory
+    {
+        IIntegrationPointService CreateIntegrationPointService(IHelper helper);
+        
+        IJobHistoryService CreateJobHistoryService(IAPILog logger);
+    }
 }

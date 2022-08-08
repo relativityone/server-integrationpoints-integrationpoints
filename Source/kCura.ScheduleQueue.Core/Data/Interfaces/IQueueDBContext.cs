@@ -2,9 +2,9 @@
 
 namespace kCura.ScheduleQueue.Core.Data
 {
-	public interface IQueueDBContext
-	{
-		string TableName { get; }
-		IDBContext EddsDBContext { get; }
-	}
+    public interface IQueueDBContext
+    {
+        string TableName { get; }
+        IDBContext EddsDBContext { get; }
+    }
 }

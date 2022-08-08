@@ -7,73 +7,73 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Extensions
 {
-	[TestFixture, Category("Unit")]
-	public class DictionaryExtensionsTests
-	{
-		[Test]
-		public void AddOrThrowIfKeyExists_ShouldAddToDictionaryWhenKeyDoesNotExist()
-		{
-			//arrange
-			var dictionary = new Dictionary<int, int>();
-			const int expectedKey = 1;
-			const int expectedValue = 10;
+    [TestFixture, Category("Unit")]
+    public class DictionaryExtensionsTests
+    {
+        [Test]
+        public void AddOrThrowIfKeyExists_ShouldAddToDictionaryWhenKeyDoesNotExist()
+        {
+            //arrange
+            var dictionary = new Dictionary<int, int>();
+            const int expectedKey = 1;
+            const int expectedValue = 10;
 
-			//act
-			dictionary.AddOrThrowIfKeyExists(
-				expectedKey,
-				expectedValue,
-				errorMessage: "Some error message"
-			);
+            //act
+            dictionary.AddOrThrowIfKeyExists(
+                expectedKey,
+                expectedValue,
+                errorMessage: "Some error message"
+            );
 
-			//assert
-			dictionary[expectedKey].Should().Be(expectedValue);
-		}
+            //assert
+            dictionary[expectedKey].Should().Be(expectedValue);
+        }
 
-		[Test]
-		public void AddOrThrowIfKeyExists_ShouldThrowWhenKeyExists()
-		{
-			//arrange
-			const int expectedKey = 1;
-			const int expectedValue = 10;
-			const string errorMessage = "Some error message";
-			var dictionary = new Dictionary<int, int>
-			{
-				[expectedKey] = expectedValue
-			};
+        [Test]
+        public void AddOrThrowIfKeyExists_ShouldThrowWhenKeyExists()
+        {
+            //arrange
+            const int expectedKey = 1;
+            const int expectedValue = 10;
+            const string errorMessage = "Some error message";
+            var dictionary = new Dictionary<int, int>
+            {
+                [expectedKey] = expectedValue
+            };
 
-			//act
-			Action action = () => dictionary.AddOrThrowIfKeyExists(
-				expectedKey,
-				expectedValue,
-				errorMessage
-			);
+            //act
+            Action action = () => dictionary.AddOrThrowIfKeyExists(
+                expectedKey,
+                expectedValue,
+                errorMessage
+            );
 
-			//assert
-			action
-				.ShouldThrow<IntegrationPointsException>()
-				.WithMessage(
-					$"{errorMessage}, key: {expectedKey}, value: {expectedValue}"
-				);
-		}
+            //assert
+            action
+                .ShouldThrow<IntegrationPointsException>()
+                .WithMessage(
+                    $"{errorMessage}, key: {expectedKey}, value: {expectedValue}"
+                );
+        }
 
-		[TestCase(null)]
-		[TestCase("")]
-		public void AddOrThrowIfKeyExists_ShouldThrowWhenErrorMessageIsNullOrEmpty(string errorMessage)
-		{
-			//arrange
-			var dictionary = new Dictionary<int, int>();
-			const int expectedKey = 1;
-			const int expectedValue = 10;
+        [TestCase(null)]
+        [TestCase("")]
+        public void AddOrThrowIfKeyExists_ShouldThrowWhenErrorMessageIsNullOrEmpty(string errorMessage)
+        {
+            //arrange
+            var dictionary = new Dictionary<int, int>();
+            const int expectedKey = 1;
+            const int expectedValue = 10;
 
-			//act
-			Action action = () => dictionary.AddOrThrowIfKeyExists(
-				expectedKey,
-				expectedValue,
-				errorMessage
-			);
+            //act
+            Action action = () => dictionary.AddOrThrowIfKeyExists(
+                expectedKey,
+                expectedValue,
+                errorMessage
+            );
 
-			//assert
-			action.ShouldThrow<ArgumentException>();
-		}
-	}
+            //assert
+            action.ShouldThrow<ArgumentException>();
+        }
+    }
 }

@@ -2,8 +2,8 @@
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi.WebApi
 {
-	public class FakeWebApiConfig : IWebApiConfig
-	{
-		public string GetWebApiUrl { get; } = "https://fake.uri/fakepath";
-	}
+    public class FakeWebApiConfig : IWebApiConfig
+    {
+        public string GetWebApiUrl { get; } = "https://fake.uri/fakepath";
+    }
 }

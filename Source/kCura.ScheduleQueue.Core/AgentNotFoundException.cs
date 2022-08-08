@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace kCura.ScheduleQueue.Core
 {
-	public class AgentNotFoundException : Exception
-	{
-		public AgentNotFoundException() :base(){}
+    public class AgentNotFoundException : Exception
+    {
+        public AgentNotFoundException() :base(){}
 
-		public AgentNotFoundException(string message) : base(message)
-		{
-		}
-	}
+        public AgentNotFoundException(string message) : base(message)
+        {
+        }
+    }
 }

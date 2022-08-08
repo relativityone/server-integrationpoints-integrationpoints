@@ -4,23 +4,23 @@ using System.Runtime.Serialization;
 
 namespace kCura.IntegrationPoints.Web.Models.Validation
 {
-	[DataContract]
-	public class ValidationResultDTO
-	{
-		[DataMember]
-		public List<ValidationErrorDTO> Errors { get; } = new List<ValidationErrorDTO>();
+    [DataContract]
+    public class ValidationResultDTO
+    {
+        [DataMember]
+        public List<ValidationErrorDTO> Errors { get; } = new List<ValidationErrorDTO>();
 
-		[DataMember]
-		public bool IsValid => !Errors.Any();
+        [DataMember]
+        public bool IsValid => !Errors.Any();
 
-		public ValidationResultDTO()
-		{
+        public ValidationResultDTO()
+        {
 
-		}
+        }
 
-		public ValidationResultDTO(List<ValidationErrorDTO> errors)
-		{
-			Errors = errors ?? new List<ValidationErrorDTO>();
-		}
-	}
+        public ValidationResultDTO(List<ValidationErrorDTO> errors)
+        {
+            Errors = errors ?? new List<ValidationErrorDTO>();
+        }
+    }
 }

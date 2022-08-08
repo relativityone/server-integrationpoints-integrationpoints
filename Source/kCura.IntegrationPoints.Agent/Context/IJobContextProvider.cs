@@ -3,10 +3,10 @@ using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.Agent.Context
 {
-	public interface IJobContextProvider
-	{
-		IDisposable StartJobContext(Job job);
+    public interface IJobContextProvider
+    {
+        IDisposable StartJobContext(Job job);
 
-		Job Job { get; }
-	}
+        Job Job { get; }
+    }
 }

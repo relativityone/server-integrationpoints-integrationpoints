@@ -3,17 +3,17 @@ using Relativity.Testing.Framework.Web.Triggers;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.Controls
 {
-	[ControlDefinition("li[@role='treeitem']")]
-	[WaitUntilOverlayMissing(TriggerEvents.BeforeClick, AppliesTo = TriggerScope.Children)]
-	public class TreeItemControl<TPage> : Control<TPage>
-			where TPage : PageObject<TPage>
-	{
-		[FindByClass("jstree-icon")]
-		private Clickable<TPage> TreeIcon { get; set; }
+    [ControlDefinition("li[@role='treeitem']")]
+    [WaitUntilOverlayMissing(TriggerEvents.BeforeClick, AppliesTo = TriggerScope.Children)]
+    public class TreeItemControl<TPage> : Control<TPage>
+            where TPage : PageObject<TPage>
+    {
+        [FindByClass("jstree-icon")]
+        private Clickable<TPage> TreeIcon { get; set; }
 
-		[FindByXPath("a")]
-		public Text<TPage> Text { get; private set; }
+        [FindByXPath("a")]
+        public Text<TPage> Text { get; private set; }
 
-		public UnorderedList<TreeItemControl<TPage>, TPage> Children { get; private set; }
-	}
+        public UnorderedList<TreeItemControl<TPage>, TPage> Children { get; private set; }
+    }
 }

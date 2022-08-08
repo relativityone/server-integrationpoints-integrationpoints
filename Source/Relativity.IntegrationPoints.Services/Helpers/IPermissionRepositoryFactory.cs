@@ -3,8 +3,8 @@ using Relativity.API;
 
 namespace Relativity.IntegrationPoints.Services.Helpers
 {
-	public interface IPermissionRepositoryFactory
-	{
-		IPermissionRepository Create(IHelper helper, int workspaceArtifactId);
-	}
+    public interface IPermissionRepositoryFactory
+    {
+        IPermissionRepository Create(IHelper helper, int workspaceArtifactId);
+    }
 }

@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
-	public interface ISyncConfigurationService
-	{
-		Task<int?> TryGetResumedSyncConfigurationIdAsync(int workspaceId, int jobHistoryId);
-	}
+    public interface ISyncConfigurationService
+    {
+        Task<int?> TryGetResumedSyncConfigurationIdAsync(int workspaceId, int jobHistoryId);
+    }
 }

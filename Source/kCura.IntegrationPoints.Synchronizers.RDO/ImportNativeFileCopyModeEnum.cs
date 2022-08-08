@@ -2,10 +2,10 @@
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
-	public enum ImportNativeFileCopyModeEnum
-	{
-		DoNotImportNativeFiles = NativeFileCopyModeEnum.DoNotImportNativeFiles,
-		SetFileLinks = NativeFileCopyModeEnum.SetFileLinks,
-		CopyFiles = NativeFileCopyModeEnum.CopyFiles
-	}
+    public enum ImportNativeFileCopyModeEnum
+    {
+        DoNotImportNativeFiles = NativeFileCopyModeEnum.DoNotImportNativeFiles,
+        SetFileLinks = NativeFileCopyModeEnum.SetFileLinks,
+        CopyFiles = NativeFileCopyModeEnum.CopyFiles
+    }
 }

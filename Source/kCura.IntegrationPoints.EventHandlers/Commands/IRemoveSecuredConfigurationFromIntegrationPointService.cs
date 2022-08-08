@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands
 {
-	public interface IRemoveSecuredConfigurationFromIntegrationPointService
-	{
-		bool RemoveSecuredConfiguration(IntegrationPoint integrationPoint);
-	}
+    public interface IRemoveSecuredConfigurationFromIntegrationPointService
+    {
+        bool RemoveSecuredConfiguration(IntegrationPoint integrationPoint);
+    }
 }

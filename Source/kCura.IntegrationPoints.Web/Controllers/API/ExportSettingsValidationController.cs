@@ -9,23 +9,23 @@ using kCura.IntegrationPoints.Web.Models.Validation;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
-	public class ExportSettingsValidationController : ApiController
-	{
-		private readonly IIntegrationPointValidationService _validationService;
+    public class ExportSettingsValidationController : ApiController
+    {
+        private readonly IIntegrationPointValidationService _validationService;
 
-		public ExportSettingsValidationController(IIntegrationPointValidationService validationService)
-		{
-			_validationService = validationService;
-		}
+        public ExportSettingsValidationController(IIntegrationPointValidationService validationService)
+        {
+            _validationService = validationService;
+        }
 
-		[HttpPost]
-		[LogApiExceptionFilter(Message = "Unable to validate export settings.")]
-		public HttpResponseMessage ValidateSettings(int workspaceID, IntegrationPointModel model)
-		{
-			ValidationResult validationResult = _validationService.Prevalidate(new IntegrationPointProviderValidationModel(model));
-			var mapper = new ValidationResultMapper();
-			ValidationResultDTO validationResultDto = mapper.Map(validationResult);
-			return Request.CreateResponse(HttpStatusCode.OK, validationResultDto);
-		}
-	}
+        [HttpPost]
+        [LogApiExceptionFilter(Message = "Unable to validate export settings.")]
+        public HttpResponseMessage ValidateSettings(int workspaceID, IntegrationPointModel model)
+        {
+            ValidationResult validationResult = _validationService.Prevalidate(new IntegrationPointProviderValidationModel(model));
+            var mapper = new ValidationResultMapper();
+            ValidationResultDTO validationResultDto = mapper.Map(validationResult);
+            return Request.CreateResponse(HttpStatusCode.OK, validationResultDto);
+        }
+    }
 }

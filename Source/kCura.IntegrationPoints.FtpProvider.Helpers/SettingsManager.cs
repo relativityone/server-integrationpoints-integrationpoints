@@ -10,14 +10,14 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers
             return Newtonsoft.Json.JsonConvert.DeserializeObject<Settings>(jsonString);
         }
 
-	    public SecuredConfiguration DeserializeCredentials(string jsonString)
-	    {
-		    if (string.IsNullOrEmpty(jsonString))
-		    {
-				return new SecuredConfiguration();
-		    }
+        public SecuredConfiguration DeserializeCredentials(string jsonString)
+        {
+            if (string.IsNullOrEmpty(jsonString))
+            {
+                return new SecuredConfiguration();
+            }
 
-		    return Newtonsoft.Json.JsonConvert.DeserializeObject<SecuredConfiguration>(jsonString);
-	    }
-	}
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<SecuredConfiguration>(jsonString);
+        }
+    }
 }

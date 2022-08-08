@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.Core.Tagging
 {
-	public interface ITagSavedSearchManager
-	{
-		void CreateSavedSearchForTagging(int destinationWorkspaceArtifactId, ImportSettings importSettings, TagsContainer tagsContainer);
-	}
+    public interface ITagSavedSearchManager
+    {
+        void CreateSavedSearchForTagging(int destinationWorkspaceArtifactId, ImportSettings importSettings, TagsContainer tagsContainer);
+    }
 }

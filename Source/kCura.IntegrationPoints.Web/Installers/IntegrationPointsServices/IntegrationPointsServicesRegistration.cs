@@ -13,58 +13,58 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Installers.IntegrationPointsServices
 {
-	public static class IntegrationPointsServicesRegistration
-	{
-		public static IWindsorContainer AddIntegrationPointsServices(this IWindsorContainer container)
-		{
-			return container
-				.RegisterCoreIntegrationPointsServices()
-				.RegisterHelpers()
-				.AddLoggingContext();
-		}
+    public static class IntegrationPointsServicesRegistration
+    {
+        public static IWindsorContainer AddIntegrationPointsServices(this IWindsorContainer container)
+        {
+            return container
+                .RegisterCoreIntegrationPointsServices()
+                .RegisterHelpers()
+                .AddLoggingContext();
+        }
 
-		private static IWindsorContainer RegisterCoreIntegrationPointsServices(this IWindsorContainer container)
-		{
-			return container.Register(
-				Component
-					.For<IServiceContextHelper>()
-					.ImplementedBy<ServiceContextHelperForWeb>()
-					.LifestyleTransient(),
-				Component
-					.For<WebClientFactory>()
-					.UsingFactoryMethod(WebClientFactoryFactory)
-					.LifestylePerWebRequest(),
-				Component
-					.For<IWorkspaceDBContext>()
-					.ImplementedBy<WorkspaceDBContext>()
-					.UsingFactoryMethod(k => new WorkspaceDBContext(k.Resolve<WebClientFactory>().CreateDbContext()))
-					.LifestyleTransient(),
-				Component
-					.For<IAuthTokenGenerator>()
-					.ImplementedBy<ClaimsTokenGenerator>()
-					.LifestyleTransient(),
-				Component
-					.For<ITextSanitizer>()
-					.ImplementedBy<TextSanitizer>()
-					.LifestylePerWebRequest()
-			);
-		}
+        private static IWindsorContainer RegisterCoreIntegrationPointsServices(this IWindsorContainer container)
+        {
+            return container.Register(
+                Component
+                    .For<IServiceContextHelper>()
+                    .ImplementedBy<ServiceContextHelperForWeb>()
+                    .LifestyleTransient(),
+                Component
+                    .For<WebClientFactory>()
+                    .UsingFactoryMethod(WebClientFactoryFactory)
+                    .LifestylePerWebRequest(),
+                Component
+                    .For<IWorkspaceDBContext>()
+                    .ImplementedBy<WorkspaceDBContext>()
+                    .UsingFactoryMethod(k => new WorkspaceDBContext(k.Resolve<WebClientFactory>().CreateDbContext()))
+                    .LifestyleTransient(),
+                Component
+                    .For<IAuthTokenGenerator>()
+                    .ImplementedBy<ClaimsTokenGenerator>()
+                    .LifestyleTransient(),
+                Component
+                    .For<ITextSanitizer>()
+                    .ImplementedBy<TextSanitizer>()
+                    .LifestylePerWebRequest()
+            );
+        }
 
-		private static IWindsorContainer RegisterHelpers(this IWindsorContainer container)
-		{
-			return container.Register(
-				Component
-					.For<IFolderTreeBuilder>()
-					.ImplementedBy<FolderTreeBuilder>()
-					.LifestyleTransient()
-			);
-		}
+        private static IWindsorContainer RegisterHelpers(this IWindsorContainer container)
+        {
+            return container.Register(
+                Component
+                    .For<IFolderTreeBuilder>()
+                    .ImplementedBy<FolderTreeBuilder>()
+                    .LifestyleTransient()
+            );
+        }
 
-		private static WebClientFactory WebClientFactoryFactory(IKernel kernel)
-		{
-			IHelper helper = kernel.Resolve<IHelper>();
-			IWorkspaceContext workspaceIdProvider = kernel.Resolve<IWorkspaceContext>();
-			return new WebClientFactory(helper, workspaceIdProvider);
-		}
-	}
+        private static WebClientFactory WebClientFactoryFactory(IKernel kernel)
+        {
+            IHelper helper = kernel.Resolve<IHelper>();
+            IWorkspaceContext workspaceIdProvider = kernel.Resolve<IWorkspaceContext>();
+            return new WebClientFactory(helper, workspaceIdProvider);
+        }
+    }
 }

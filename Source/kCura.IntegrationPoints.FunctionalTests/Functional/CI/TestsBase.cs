@@ -10,49 +10,49 @@ using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
-	[TestExecutionCategory.CI, TestLevel.L3]
-	[Feature.DataTransfer.IntegrationPoints]
-	public abstract class TestsBase : UITestFixture, ITestsImplementationTestFixture
-	{
-		private readonly string _workspaceName;
+    [TestExecutionCategory.CI, TestLevel.L3]
+    [Feature.DataTransfer.IntegrationPoints]
+    public abstract class TestsBase : UITestFixture, ITestsImplementationTestFixture
+    {
+        private readonly string _workspaceName;
 
-		private readonly int _existingWorkspaceArtifactID = TestConfig.ExistingWorkspaceArtifactId;
+        private readonly int _existingWorkspaceArtifactID = TestConfig.ExistingWorkspaceArtifactId;
 
-		public Workspace Workspace { get; private set; }
+        public Workspace Workspace { get; private set; }
 
-		protected TestsBase(string workspaceName)
-		{
-			_workspaceName = workspaceName;
-		}
+        protected TestsBase(string workspaceName)
+        {
+            _workspaceName = workspaceName;
+        }
 
-		protected override void OnSetUpFixture()
-		{
-			base.OnSetUpFixture();
+        protected override void OnSetUpFixture()
+        {
+            base.OnSetUpFixture();
 
-			Workspace = _existingWorkspaceArtifactID != 0 
-				? RelativityFacade.Instance.GetExistingWorkspace(_existingWorkspaceArtifactID) 
-				: RelativityFacade.Instance.CreateWorkspace(_workspaceName, TestsSetUpFixture.WORKSPACE_TEMPLATE_NAME);
+            Workspace = _existingWorkspaceArtifactID != 0 
+                ? RelativityFacade.Instance.GetExistingWorkspace(_existingWorkspaceArtifactID) 
+                : RelativityFacade.Instance.CreateWorkspace(_workspaceName, TestsSetUpFixture.WORKSPACE_TEMPLATE_NAME);
 
-			RelativityFacade.Instance.RequireAgent(Const.INTEGRATION_POINTS_AGENT_TYPE_NAME, Const.INTEGRATION_POINTS_AGENT_RUN_INTERVAL);
-		}
+            RelativityFacade.Instance.RequireAgent(Const.INTEGRATION_POINTS_AGENT_TYPE_NAME, Const.INTEGRATION_POINTS_AGENT_RUN_INTERVAL);
+        }
 
         protected override void OnTearDownFixture()
-		{
-			base.OnTearDownFixture();
-			if (_existingWorkspaceArtifactID == 0)
-			{
-				RelativityFacade.Instance.DeleteWorkspace(Workspace);
-			}
-			
-		}
+        {
+            base.OnTearDownFixture();
+            if (_existingWorkspaceArtifactID == 0)
+            {
+                RelativityFacade.Instance.DeleteWorkspace(Workspace);
+            }
+            
+        }
 
-		public void LoginAsStandardUser()
-		{
-			RetryPolicy loginAsStandardAccountPolicy = Policy
-				.Handle<HttpRequestException>(ex => ex.Message.Contains("The entered E-Mail Address is already associated with another user in the system."))
-				.Retry(3);
+        public void LoginAsStandardUser()
+        {
+            RetryPolicy loginAsStandardAccountPolicy = Policy
+                .Handle<HttpRequestException>(ex => ex.Message.Contains("The entered E-Mail Address is already associated with another user in the system."))
+                .Retry(3);
 
-			loginAsStandardAccountPolicy.Execute(() => LoginAsStandardAccount());
-		}
-	}
+            loginAsStandardAccountPolicy.Execute(() => LoginAsStandardAccount());
+        }
+    }
 }

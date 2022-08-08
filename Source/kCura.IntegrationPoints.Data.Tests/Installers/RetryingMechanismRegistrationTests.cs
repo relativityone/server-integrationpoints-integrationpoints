@@ -10,54 +10,54 @@ using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestH
 
 namespace kCura.IntegrationPoints.Data.Tests.Installers
 {
-	[TestFixture, Category("Unit")]
-	public class RetryingMechanismRegistrationTests
-	{
-		private IWindsorContainer _sut;
+    [TestFixture, Category("Unit")]
+    public class RetryingMechanismRegistrationTests
+    {
+        private IWindsorContainer _sut;
 
-		[SetUp]
-		public void SetUp()
-		{
-			_sut = new WindsorContainer();
-			_sut.AddRetryingMechanism();
-		}
+        [SetUp]
+        public void SetUp()
+        {
+            _sut = new WindsorContainer();
+            _sut.AddRetryingMechanism();
+        }
 
-		[Test]
-		public void RetryHandlerFactory_ShouldBeRegisteredWithProperLifestyle()
-		{
-			// assert
-			_sut.Should()
-				.HaveRegisteredSingleComponent<IRetryHandlerFactory>()
-				.Which.Should().BeRegisteredWithLifestyle(LifestyleType.Singleton);
-		}
+        [Test]
+        public void RetryHandlerFactory_ShouldBeRegisteredWithProperLifestyle()
+        {
+            // assert
+            _sut.Should()
+                .HaveRegisteredSingleComponent<IRetryHandlerFactory>()
+                .Which.Should().BeRegisteredWithLifestyle(LifestyleType.Singleton);
+        }
 
-		[Test]
-		public void RetryHandlerFactory_ShouldBeRegisteredWithProperImplementation()
-		{
-			// assert
-			_sut.Should()
-				.HaveRegisteredProperImplementation<IRetryHandlerFactory, RetryHandlerFactory>();
-		}
+        [Test]
+        public void RetryHandlerFactory_ShouldBeRegisteredWithProperImplementation()
+        {
+            // assert
+            _sut.Should()
+                .HaveRegisteredProperImplementation<IRetryHandlerFactory, RetryHandlerFactory>();
+        }
 
-		[Test]
-		public void RetryHandlerFactory_ShouldBeResolvedWithoutThrowing()
-		{
-			// arrange
-			RegisterDependencies(_sut);
+        [Test]
+        public void RetryHandlerFactory_ShouldBeResolvedWithoutThrowing()
+        {
+            // arrange
+            RegisterDependencies(_sut);
 
-			// assert
-			_sut.Should()
-				.ResolveWithoutThrowing<IRetryHandlerFactory>();
-		}
+            // assert
+            _sut.Should()
+                .ResolveWithoutThrowing<IRetryHandlerFactory>();
+        }
 
-		private static void RegisterDependencies(IWindsorContainer container)
-		{
-			IRegistration[] dependencies =
-			{
-				CreateDummyObjectRegistration<IAPILog>()
-			};
+        private static void RegisterDependencies(IWindsorContainer container)
+        {
+            IRegistration[] dependencies =
+            {
+                CreateDummyObjectRegistration<IAPILog>()
+            };
 
-			container.Register(dependencies);
-		}
-	}
+            container.Register(dependencies);
+        }
+    }
 }

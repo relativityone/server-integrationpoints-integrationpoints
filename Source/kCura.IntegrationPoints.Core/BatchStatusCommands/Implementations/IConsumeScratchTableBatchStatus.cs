@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
-	public interface IConsumeScratchTableBatchStatus : IBatchStatus
-	{
-		IScratchTableRepository ScratchTableRepository { get; }
-	}
+    public interface IConsumeScratchTableBatchStatus : IBatchStatus
+    {
+        IScratchTableRepository ScratchTableRepository { get; }
+    }
 }

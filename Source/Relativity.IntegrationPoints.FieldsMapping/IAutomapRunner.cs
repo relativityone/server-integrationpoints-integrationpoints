@@ -4,15 +4,15 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace Relativity.IntegrationPoints.FieldsMapping
 {
-	public interface IAutomapRunner
-	{
-		IEnumerable<FieldMap> MapFields(IEnumerable<FieldInfo> sourceFields, IEnumerable<FieldInfo> destinationFields, 
-			string destinationProviderGuid, int sourceWorkspaceArtifactId, bool matchOnlyIdentifiers = false);
+    public interface IAutomapRunner
+    {
+        IEnumerable<FieldMap> MapFields(IEnumerable<FieldInfo> sourceFields, IEnumerable<FieldInfo> destinationFields, 
+            string destinationProviderGuid, int sourceWorkspaceArtifactId, bool matchOnlyIdentifiers = false);
 
-		Task<IEnumerable<FieldMap>> MapFieldsFromSavedSearchAsync(IEnumerable<FieldInfo> sourceFields, IEnumerable<FieldInfo> destinationFields,
-			string destinationProviderGuid, int sourceWorkspaceArtifactId, int savedSearchArtifactId);
+        Task<IEnumerable<FieldMap>> MapFieldsFromSavedSearchAsync(IEnumerable<FieldInfo> sourceFields, IEnumerable<FieldInfo> destinationFields,
+            string destinationProviderGuid, int sourceWorkspaceArtifactId, int savedSearchArtifactId);
 
-		Task<IEnumerable<FieldMap>> MapFieldsFromViewAsync(IEnumerable<FieldInfo> sourceFields, IEnumerable<FieldInfo> destinationFields,
-			string destinationProviderGuid, int sourceWorkspaceArtifactId, int viewArtifactId);
-	}
+        Task<IEnumerable<FieldMap>> MapFieldsFromViewAsync(IEnumerable<FieldInfo> sourceFields, IEnumerable<FieldInfo> destinationFields,
+            string destinationProviderGuid, int sourceWorkspaceArtifactId, int viewArtifactId);
+    }
 }

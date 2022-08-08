@@ -3,10 +3,10 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
-	public class CustomPageErrorService : ErrorServiceBase
-	{
-		public override string TargetName { get; } = "Custom Page";
+    public class CustomPageErrorService : ErrorServiceBase
+    {
+        public override string TargetName { get; } = "Custom Page";
 
-		public CustomPageErrorService(CreateErrorRdoQuery createError, IAPILog log) : base(createError, log) { }
-	}
+        public CustomPageErrorService(CreateErrorRdoQuery createError, IAPILog log) : base(createError, log) { }
+    }
 }

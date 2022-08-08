@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.Core.Factories
 {
-	public interface IConfigFactory
-	{
-		IConfig Create();
-	}
+    public interface IConfigFactory
+    {
+        IConfig Create();
+    }
 }

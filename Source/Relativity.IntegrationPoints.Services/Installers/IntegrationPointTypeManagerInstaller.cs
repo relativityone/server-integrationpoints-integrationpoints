@@ -11,29 +11,29 @@ using Relativity.IntegrationPoints.Services.Repositories.Implementations;
 
 namespace Relativity.IntegrationPoints.Services.Installers
 {
-	public class IntegrationPointTypeManagerInstaller : Installer
-	{
-		private readonly List<IWindsorInstaller> _dependencies;
+    public class IntegrationPointTypeManagerInstaller : Installer
+    {
+        private readonly List<IWindsorInstaller> _dependencies;
 
-		public IntegrationPointTypeManagerInstaller()
-		{
-			_dependencies = new List<IWindsorInstaller>
-			{
-				new QueryInstallers(),
-				new SharedAgentInstaller(),
-				new ServicesInstaller()
-			};
-		}
+        public IntegrationPointTypeManagerInstaller()
+        {
+            _dependencies = new List<IWindsorInstaller>
+            {
+                new QueryInstallers(),
+                new SharedAgentInstaller(),
+                new ServicesInstaller()
+            };
+        }
 
-		protected override IList<IWindsorInstaller> Dependencies => _dependencies;
+        protected override IList<IWindsorInstaller> Dependencies => _dependencies;
 
-		protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceID)
-		{
-			container.Register(Component.For<IIntegrationPointTypeRepository>().ImplementedBy<IntegrationPointTypeRepository>().LifestyleTransient());
+        protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceID)
+        {
+            container.Register(Component.For<IIntegrationPointTypeRepository>().ImplementedBy<IntegrationPointTypeRepository>().LifestyleTransient());
 
-		    container
-		        .AddWorkspaceContext(workspaceID)
-		        .AddAuthTokenGenerator();
-		}
-	}
+            container
+                .AddWorkspaceContext(workspaceID)
+                .AddAuthTokenGenerator();
+        }
+    }
 }

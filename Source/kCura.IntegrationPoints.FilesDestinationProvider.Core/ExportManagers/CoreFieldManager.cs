@@ -7,23 +7,23 @@ using Relativity.API.Foundation;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportManagers
 {
-	public class CoreFieldManager : IFieldManager
-	{
-		private readonly IRepositoryFactory _repositoryFactory;
-		private readonly FieldConverter _converter;
+    public class CoreFieldManager : IFieldManager
+    {
+        private readonly IRepositoryFactory _repositoryFactory;
+        private readonly FieldConverter _converter;
 
-		public CoreFieldManager(IRepositoryFactory repositoryFactory)
-		{
-			_repositoryFactory = repositoryFactory;
-			_converter = new FieldConverter();
-		}
+        public CoreFieldManager(IRepositoryFactory repositoryFactory)
+        {
+            _repositoryFactory = repositoryFactory;
+            _converter = new FieldConverter();
+        }
 
-		public Field Read(int caseContextArtifactID, int fieldArtifactID)
-		{
-			IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(caseContextArtifactID);
-			IField field = fieldRepository.Read(fieldArtifactID);
-			
-			return _converter.ConvertToField(field);
-		}
-	}
+        public Field Read(int caseContextArtifactID, int fieldArtifactID)
+        {
+            IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(caseContextArtifactID);
+            IField field = fieldRepository.Read(fieldArtifactID);
+            
+            return _converter.ConvertToField(field);
+        }
+    }
 }

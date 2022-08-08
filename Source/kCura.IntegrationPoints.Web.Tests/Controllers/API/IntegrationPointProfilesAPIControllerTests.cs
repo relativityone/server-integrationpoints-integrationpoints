@@ -22,164 +22,164 @@ using System.Net.Http;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
-	[TestFixture, Category("Unit")]
-	public class IntegrationPointProfilesAPIControllerTests : TestBase
-	{
-		private Mock<ICPHelper> _cpHelperFake;
-		private Mock<IIntegrationPointService> _integrationPointServiceFake;
-		private Mock<IIntegrationPointProfileService> _profileServiceFake;
-		private Mock<IRelativityUrlHelper> _urlHelperFake;
-		private Mock<IRelativityObjectManager> _objectManagerFake;
-		private Mock<IValidationExecutor> _validationExecutorFake;
-		private Mock<ICryptographyHelper> _cryptographyHelperFake;
-		private Mock<IAPILog> _logFake;
-		private Mock<IAPMManager> _apmManagerFake;
+    [TestFixture, Category("Unit")]
+    public class IntegrationPointProfilesAPIControllerTests : TestBase
+    {
+        private Mock<ICPHelper> _cpHelperFake;
+        private Mock<IIntegrationPointService> _integrationPointServiceFake;
+        private Mock<IIntegrationPointProfileService> _profileServiceFake;
+        private Mock<IRelativityUrlHelper> _urlHelperFake;
+        private Mock<IRelativityObjectManager> _objectManagerFake;
+        private Mock<IValidationExecutor> _validationExecutorFake;
+        private Mock<ICryptographyHelper> _cryptographyHelperFake;
+        private Mock<IAPILog> _logFake;
+        private Mock<IAPMManager> _apmManagerFake;
 
-		private IntegrationPointProfilesAPIController _sut;
+        private IntegrationPointProfilesAPIController _sut;
 
-		private const int _WORKSPACE_ID = 23432;
+        private const int _WORKSPACE_ID = 23432;
 
-		[SetUp]
-		public override void SetUp()
-		{
-			_apmManagerFake = new Mock<IAPMManager>();
+        [SetUp]
+        public override void SetUp()
+        {
+            _apmManagerFake = new Mock<IAPMManager>();
 
-			Mock<IServicesMgr> svcMgrStub = new Mock<IServicesMgr>();
-			svcMgrStub.Setup(m => m.CreateProxy<IAPMManager>(It.IsAny<ExecutionIdentity>()))
-				.Returns(_apmManagerFake.Object);
-			svcMgrStub.Setup(m => m.CreateProxy<IMetricsManager>(It.IsAny<ExecutionIdentity>()))
-				.Returns(new Mock<IMetricsManager>().Object);
+            Mock<IServicesMgr> svcMgrStub = new Mock<IServicesMgr>();
+            svcMgrStub.Setup(m => m.CreateProxy<IAPMManager>(It.IsAny<ExecutionIdentity>()))
+                .Returns(_apmManagerFake.Object);
+            svcMgrStub.Setup(m => m.CreateProxy<IMetricsManager>(It.IsAny<ExecutionIdentity>()))
+                .Returns(new Mock<IMetricsManager>().Object);
 
-			_cpHelperFake = new Mock<ICPHelper>();
-			_cpHelperFake.Setup(m => m.GetServicesManager()).Returns(svcMgrStub.Object);
+            _cpHelperFake = new Mock<ICPHelper>();
+            _cpHelperFake.Setup(m => m.GetServicesManager()).Returns(svcMgrStub.Object);
 
-			_integrationPointServiceFake = new Mock<IIntegrationPointService>();	
-			_profileServiceFake = new Mock<IIntegrationPointProfileService>();
-			_urlHelperFake = new Mock<IRelativityUrlHelper>();
-			_objectManagerFake = new Mock<IRelativityObjectManager>();
-			_validationExecutorFake = new Mock<IValidationExecutor>();
-			_cryptographyHelperFake = new Mock<ICryptographyHelper>();
-			_logFake = new Mock<IAPILog>();
+            _integrationPointServiceFake = new Mock<IIntegrationPointService>();    
+            _profileServiceFake = new Mock<IIntegrationPointProfileService>();
+            _urlHelperFake = new Mock<IRelativityUrlHelper>();
+            _objectManagerFake = new Mock<IRelativityObjectManager>();
+            _validationExecutorFake = new Mock<IValidationExecutor>();
+            _cryptographyHelperFake = new Mock<ICryptographyHelper>();
+            _logFake = new Mock<IAPILog>();
 
-			_sut = new IntegrationPointProfilesAPIController(
-				_cpHelperFake.Object,
-				_profileServiceFake.Object,
-				_integrationPointServiceFake.Object,
-				_urlHelperFake.Object,
-				_objectManagerFake.Object,
-				_validationExecutorFake.Object,
-				_cryptographyHelperFake.Object,
-				_logFake.Object)
-			{
-				Request = new HttpRequestMessage()
-			};
+            _sut = new IntegrationPointProfilesAPIController(
+                _cpHelperFake.Object,
+                _profileServiceFake.Object,
+                _integrationPointServiceFake.Object,
+                _urlHelperFake.Object,
+                _objectManagerFake.Object,
+                _validationExecutorFake.Object,
+                _cryptographyHelperFake.Object,
+                _logFake.Object)
+            {
+                Request = new HttpRequestMessage()
+            };
 
-			_sut.Request.SetConfiguration(new System.Web.Http.HttpConfiguration());
-		}
+            _sut.Request.SetConfiguration(new System.Web.Http.HttpConfiguration());
+        }
 
-		[Test]
-		public void Save_ShouldReturnOk_WhenIntegrationPointProfilValidationSucceeded()
-		{
-			// arrange
-			const int integrationPointProfileID = 100;
-			var model = new IntegrationPointProfileModel()
-			{
-				Name = "Integration Point Test Profile"
-			};
+        [Test]
+        public void Save_ShouldReturnOk_WhenIntegrationPointProfilValidationSucceeded()
+        {
+            // arrange
+            const int integrationPointProfileID = 100;
+            var model = new IntegrationPointProfileModel()
+            {
+                Name = "Integration Point Test Profile"
+            };
 
-			_profileServiceFake.Setup(m => m.SaveIntegration(model)).Returns(integrationPointProfileID);
+            _profileServiceFake.Setup(m => m.SaveIntegration(model)).Returns(integrationPointProfileID);
 
-			// act
-			HttpResponseMessage response = _sut.Save(_WORKSPACE_ID, model);
+            // act
+            HttpResponseMessage response = _sut.Save(_WORKSPACE_ID, model);
 
-			// assert
-			response.StatusCode.Should().Be(HttpStatusCode.OK);
-		}
+            // assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
 
-		[Test]
-		public void Save_ShouldReturnNotAcceptable_WhenIntegrationPointProfileValidationFails()
-		{
-			// arrange
-			var model = new IntegrationPointProfileModel()
-			{
-				Name = "Integration Point Test Profile"
-			};
+        [Test]
+        public void Save_ShouldReturnNotAcceptable_WhenIntegrationPointProfileValidationFails()
+        {
+            // arrange
+            var model = new IntegrationPointProfileModel()
+            {
+                Name = "Integration Point Test Profile"
+            };
 
-			var errors = new List<string> { "Error1", "Error2" };
-			var validationResult = new ValidationResult(errors);
+            var errors = new List<string> { "Error1", "Error2" };
+            var validationResult = new ValidationResult(errors);
 
-			_profileServiceFake.Setup(m => m.SaveIntegration(model)).Throws(new IntegrationPointValidationException(validationResult));
+            _profileServiceFake.Setup(m => m.SaveIntegration(model)).Throws(new IntegrationPointValidationException(validationResult));
 
-			// act
-			HttpResponseMessage response = _sut.Save(_WORKSPACE_ID, model);
-			string responseContent = response.Content.ReadAsStringAsync().Result;
-			ValidationResultDTO contentAsValidationResult = JsonConvert.DeserializeObject<ValidationResultDTO>(responseContent);
+            // act
+            HttpResponseMessage response = _sut.Save(_WORKSPACE_ID, model);
+            string responseContent = response.Content.ReadAsStringAsync().Result;
+            ValidationResultDTO contentAsValidationResult = JsonConvert.DeserializeObject<ValidationResultDTO>(responseContent);
 
-			// assert
-			response.StatusCode.Should().Be(HttpStatusCode.NotAcceptable);
-			contentAsValidationResult.IsValid.Should().BeFalse();
-			contentAsValidationResult.Errors.Should().HaveCount(validationResult.Messages.Count());
-		}
+            // assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotAcceptable);
+            contentAsValidationResult.IsValid.Should().BeFalse();
+            contentAsValidationResult.Errors.Should().HaveCount(validationResult.Messages.Count());
+        }
 
-		[Test]
-		public void SaveUsingIntegrationPoint_ShouldReturnNotAcceptable_WhenIntegrationPointValidationFails()
-		{
-			// arrange
-			const string profileName = "Integration Point Test Profile";
-			const int integrationPointArtifactID = 123123;
-			var integrationPoint = TestRdoGenerator.GetDefault<Data.IntegrationPoint>(integrationPointArtifactID);
+        [Test]
+        public void SaveUsingIntegrationPoint_ShouldReturnNotAcceptable_WhenIntegrationPointValidationFails()
+        {
+            // arrange
+            const string profileName = "Integration Point Test Profile";
+            const int integrationPointArtifactID = 123123;
+            var integrationPoint = TestRdoGenerator.GetDefault<Data.IntegrationPoint>(integrationPointArtifactID);
 
-			_integrationPointServiceFake.Setup(m => m.ReadIntegrationPoint(integrationPointArtifactID))
-				.Returns(integrationPoint);
+            _integrationPointServiceFake.Setup(m => m.ReadIntegrationPoint(integrationPointArtifactID))
+                .Returns(integrationPoint);
 
-			var errors = new List<string> { "Error1", "Error2" };
-			var validationResult = new ValidationResult(errors);
+            var errors = new List<string> { "Error1", "Error2" };
+            var validationResult = new ValidationResult(errors);
 
-			_profileServiceFake.Setup(m => m.SaveIntegration(It.IsAny<IntegrationPointProfileModel>()))
-				.Throws(new IntegrationPointValidationException(validationResult));
+            _profileServiceFake.Setup(m => m.SaveIntegration(It.IsAny<IntegrationPointProfileModel>()))
+                .Throws(new IntegrationPointValidationException(validationResult));
 
-			// act
-			HttpResponseMessage response = _sut.SaveUsingIntegrationPoint(_WORKSPACE_ID, new IntegrationPointProfileFromIntegrationPointModel
-			{
-				IntegrationPointArtifactId = integrationPointArtifactID,
-				ProfileName = profileName
-			});
-			string responseContent = response.Content.ReadAsStringAsync().Result;
-			ValidationResultDTO contentAsValidationResult = JsonConvert.DeserializeObject<ValidationResultDTO>(responseContent);
+            // act
+            HttpResponseMessage response = _sut.SaveUsingIntegrationPoint(_WORKSPACE_ID, new IntegrationPointProfileFromIntegrationPointModel
+            {
+                IntegrationPointArtifactId = integrationPointArtifactID,
+                ProfileName = profileName
+            });
+            string responseContent = response.Content.ReadAsStringAsync().Result;
+            ValidationResultDTO contentAsValidationResult = JsonConvert.DeserializeObject<ValidationResultDTO>(responseContent);
 
-			// assert
-			response.StatusCode.Should().Be(HttpStatusCode.NotAcceptable);
-			contentAsValidationResult.IsValid.Should().BeFalse();
-			contentAsValidationResult.Errors.Should().HaveCount(validationResult.Messages.Count());
-		}
+            // assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotAcceptable);
+            contentAsValidationResult.IsValid.Should().BeFalse();
+            contentAsValidationResult.Errors.Should().HaveCount(validationResult.Messages.Count());
+        }
 
-		[Test]
-		public void SaveUsingIntegrationPoint_ShouldReturnOkResponse_WhenProfileWasSavedAndCodeThrewAnError()
-		{
-			// Arrange
-			const int integrationPointArtifactID = 123123;
-			Data.IntegrationPoint integrationPoint = TestRdoGenerator.GetDefault<Data.IntegrationPoint>(integrationPointArtifactID);
+        [Test]
+        public void SaveUsingIntegrationPoint_ShouldReturnOkResponse_WhenProfileWasSavedAndCodeThrewAnError()
+        {
+            // Arrange
+            const int integrationPointArtifactID = 123123;
+            Data.IntegrationPoint integrationPoint = TestRdoGenerator.GetDefault<Data.IntegrationPoint>(integrationPointArtifactID);
 
-			_integrationPointServiceFake.Setup(m => m.ReadIntegrationPoint(integrationPointArtifactID))
-				.Returns(integrationPoint);
+            _integrationPointServiceFake.Setup(m => m.ReadIntegrationPoint(integrationPointArtifactID))
+                .Returns(integrationPoint);
 
-			const int integrationPointProfileID = 100;
-			const string profileName = "Integration Point Test Profile";
+            const int integrationPointProfileID = 100;
+            const string profileName = "Integration Point Test Profile";
 
-			_profileServiceFake.Setup(m => m.SaveIntegration(It.IsAny<IntegrationPointProfileModel>()))
-				.Returns(integrationPointProfileID);
+            _profileServiceFake.Setup(m => m.SaveIntegration(It.IsAny<IntegrationPointProfileModel>()))
+                .Returns(integrationPointProfileID);
 
-			_apmManagerFake.Setup(x => x.Dispose()).Throws<Exception>();
+            _apmManagerFake.Setup(x => x.Dispose()).Throws<Exception>();
 
-			// Act
-			HttpResponseMessage response = _sut.SaveUsingIntegrationPoint(_WORKSPACE_ID, new IntegrationPointProfileFromIntegrationPointModel
-			{
-				IntegrationPointArtifactId = integrationPointArtifactID,
-				ProfileName = profileName
-			});
+            // Act
+            HttpResponseMessage response = _sut.SaveUsingIntegrationPoint(_WORKSPACE_ID, new IntegrationPointProfileFromIntegrationPointModel
+            {
+                IntegrationPointArtifactId = integrationPointArtifactID,
+                ProfileName = profileName
+            });
 
-			// Assert
-			response.StatusCode.Should().Be(HttpStatusCode.OK);
-		}
-	}
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+    }
 }

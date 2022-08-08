@@ -8,82 +8,82 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests.Context.WorkspaceContext
 {
-	[TestFixture, Category("Unit")]
-	public class SessionWorkspaceContextServiceTests
-	{
-		private Mock<ISessionService> _sessionServiceMock;
-		private Mock<IWorkspaceContext> _nextWorkspaceContextServiceMock;
+    [TestFixture, Category("Unit")]
+    public class SessionWorkspaceContextServiceTests
+    {
+        private Mock<ISessionService> _sessionServiceMock;
+        private Mock<IWorkspaceContext> _nextWorkspaceContextServiceMock;
 
-		private SessionWorkspaceContextService _sut;
+        private SessionWorkspaceContextService _sut;
 
-		[SetUp]
-		public void SetUp()
-		{
-			_sessionServiceMock = new Mock<ISessionService>();
-			_nextWorkspaceContextServiceMock = new Mock<IWorkspaceContext>();
+        [SetUp]
+        public void SetUp()
+        {
+            _sessionServiceMock = new Mock<ISessionService>();
+            _nextWorkspaceContextServiceMock = new Mock<IWorkspaceContext>();
 
-			_sut = new SessionWorkspaceContextService(
-				_sessionServiceMock.Object,
-				_nextWorkspaceContextServiceMock.Object
-			);
-		}
+            _sut = new SessionWorkspaceContextService(
+                _sessionServiceMock.Object,
+                _nextWorkspaceContextServiceMock.Object
+            );
+        }
 
-		[Test]
-		public void ShouldReturnWorkspaceIfInjectedSessionServiceReturnsWorkspaceId()
-		{
-			// arrange
-			const int workspaceId = 1019723;
-			_sessionServiceMock
-				.Setup(x => x.WorkspaceID)
-				.Returns(workspaceId);
+        [Test]
+        public void ShouldReturnWorkspaceIfInjectedSessionServiceReturnsWorkspaceId()
+        {
+            // arrange
+            const int workspaceId = 1019723;
+            _sessionServiceMock
+                .Setup(x => x.WorkspaceID)
+                .Returns(workspaceId);
 
-			// act
-			int result = _sut.GetWorkspaceID();
+            // act
+            int result = _sut.GetWorkspaceID();
 
-			// assert
-			result.Should().Be(workspaceId);
-		}
+            // assert
+            result.Should().Be(workspaceId);
+        }
 
-		[Test]
-		public void ShouldCallNextServiceWhenSessionServiceReturnsNull()
-		{
-			// arrange
-			const int workspaceId = 1019723;
+        [Test]
+        public void ShouldCallNextServiceWhenSessionServiceReturnsNull()
+        {
+            // arrange
+            const int workspaceId = 1019723;
 
-			_sessionServiceMock
-				.Setup(x => x.WorkspaceID)
-				.Returns((int?)null);
-			_nextWorkspaceContextServiceMock
-				.Setup(x => x.GetWorkspaceID())
-				.Returns(workspaceId);
+            _sessionServiceMock
+                .Setup(x => x.WorkspaceID)
+                .Returns((int?)null);
+            _nextWorkspaceContextServiceMock
+                .Setup(x => x.GetWorkspaceID())
+                .Returns(workspaceId);
 
-			// act
-			int result = _sut.GetWorkspaceID();
+            // act
+            int result = _sut.GetWorkspaceID();
 
-			// assert
-			result.Should().Be(workspaceId);
-			_nextWorkspaceContextServiceMock
-				.Verify(x => x.GetWorkspaceID());
-		}
+            // assert
+            result.Should().Be(workspaceId);
+            _nextWorkspaceContextServiceMock
+                .Verify(x => x.GetWorkspaceID());
+        }
 
-		[Test]
-		public void ShouldThrowExceptionWhenSessionServiceReturnsNullAndNextServiceThrowsException()
-		{
-			// arrange
-			var expectedException = new InvalidOperationException();
+        [Test]
+        public void ShouldThrowExceptionWhenSessionServiceReturnsNullAndNextServiceThrowsException()
+        {
+            // arrange
+            var expectedException = new InvalidOperationException();
 
-			_sessionServiceMock
-				.Setup(x => x.WorkspaceID)
-				.Returns((int?)null);
-			_nextWorkspaceContextServiceMock
-				.Setup(x => x.GetWorkspaceID())
-				.Throws(expectedException);
+            _sessionServiceMock
+                .Setup(x => x.WorkspaceID)
+                .Returns((int?)null);
+            _nextWorkspaceContextServiceMock
+                .Setup(x => x.GetWorkspaceID())
+                .Throws(expectedException);
 
-			Action getWorkspaceAction = () => _sut.GetWorkspaceID();
+            Action getWorkspaceAction = () => _sut.GetWorkspaceID();
 
-			// act & assert
-			getWorkspaceAction.ShouldThrow<InvalidOperationException>()
-				.Which.Should().Be(expectedException);
-		}
-	}
+            // act & assert
+            getWorkspaceAction.ShouldThrow<InvalidOperationException>()
+                .Which.Should().Be(expectedException);
+        }
+    }
 }

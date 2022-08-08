@@ -21,189 +21,189 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 {
-	[TestFixture, Category("Unit")]
-	public class TaskFactoryTests : TestBase
-	{
-		private IAPILog _logger;
-		private IJobSynchronizationChecker _jobSynchronizationChecker;
-		private ITaskFactoryJobHistoryService _jobHistoryService;
-		private ITaskFactory _instance;
+    [TestFixture, Category("Unit")]
+    public class TaskFactoryTests : TestBase
+    {
+        private IAPILog _logger;
+        private IJobSynchronizationChecker _jobSynchronizationChecker;
+        private ITaskFactoryJobHistoryService _jobHistoryService;
+        private ITaskFactory _instance;
 
-		[SetUp]
-		public override void SetUp()
-		{
-			_logger = Substitute.For<IAPILog>();
-			_logger.ForContext<IntegrationPoints.Agent.TaskFactory.TaskFactory>().Returns(_logger);
+        [SetUp]
+        public override void SetUp()
+        {
+            _logger = Substitute.For<IAPILog>();
+            _logger.ForContext<IntegrationPoints.Agent.TaskFactory.TaskFactory>().Returns(_logger);
 
-			ILogFactory loggerFactory = Substitute.For<ILogFactory>();
-			loggerFactory.GetLogger().Returns(_logger);
+            ILogFactory loggerFactory = Substitute.For<ILogFactory>();
+            loggerFactory.GetLogger().Returns(_logger);
 
-			IAgentHelper helper = Substitute.For<IAgentHelper>();
-			helper.GetLoggerFactory().Returns(loggerFactory);
-
-
-			IIntegrationPointRepository integrationPointRepository = CreateIntegrationPointRepositoryMock();
-			ITaskExceptionMediator taskExceptionMediator = Substitute.For<ITaskExceptionMediator>();
+            IAgentHelper helper = Substitute.For<IAgentHelper>();
+            helper.GetLoggerFactory().Returns(loggerFactory);
 
 
-			_jobSynchronizationChecker = Substitute.For<IJobSynchronizationChecker>();
-			_jobHistoryService = Substitute.For<ITaskFactoryJobHistoryService>();
-			ITaskFactoryJobHistoryServiceFactory jobHistoryServiceFactory = Substitute.For<ITaskFactoryJobHistoryServiceFactory>();
-			jobHistoryServiceFactory.CreateJobHistoryService(Arg.Any<Data.IntegrationPoint>()).Returns(_jobHistoryService);
+            IIntegrationPointRepository integrationPointRepository = CreateIntegrationPointRepositoryMock();
+            ITaskExceptionMediator taskExceptionMediator = Substitute.For<ITaskExceptionMediator>();
 
-			IWindsorContainer container = Substitute.For<IWindsorContainer>();
 
-			_instance = new IntegrationPoints.Agent.TaskFactory.TaskFactory(helper, taskExceptionMediator,
-				_jobSynchronizationChecker, jobHistoryServiceFactory, container, integrationPointRepository);
-		}
+            _jobSynchronizationChecker = Substitute.For<IJobSynchronizationChecker>();
+            _jobHistoryService = Substitute.For<ITaskFactoryJobHistoryService>();
+            ITaskFactoryJobHistoryServiceFactory jobHistoryServiceFactory = Substitute.For<ITaskFactoryJobHistoryServiceFactory>();
+            jobHistoryServiceFactory.CreateJobHistoryService(Arg.Any<Data.IntegrationPoint>()).Returns(_jobHistoryService);
 
-		[Test]
-		public void ItShouldSetJobIdOnJobHistory()
-		{
-			int jobId = 342343;
-			ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
+            IWindsorContainer container = Substitute.For<IWindsorContainer>();
 
-			Job job = new JobBuilder().WithJobId(jobId).Build();
+            _instance = new IntegrationPoints.Agent.TaskFactory.TaskFactory(helper, taskExceptionMediator,
+                _jobSynchronizationChecker, jobHistoryServiceFactory, container, integrationPointRepository);
+        }
 
-			_instance.CreateTask(job, agentBase);
+        [Test]
+        public void ItShouldSetJobIdOnJobHistory()
+        {
+            int jobId = 342343;
+            ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
 
-			_jobHistoryService.Received().SetJobIdOnJobHistory(job);
-		}
+            Job job = new JobBuilder().WithJobId(jobId).Build();
 
-		[Test]
-		public void ItShouldCheckForSynchronization()
-		{
-			TaskType taskType = TaskType.SendEmailWorker;
-			int relatedId = 453245;
-			int jobId = 342343;
-			ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
+            _instance.CreateTask(job, agentBase);
 
-			Job job = new JobBuilder()
-				.WithJobId(jobId)
-				.WithTaskType(taskType)
-				.WithRelatedObjectArtifactId(relatedId)
-				.Build();
+            _jobHistoryService.Received().SetJobIdOnJobHistory(job);
+        }
 
-			_instance.CreateTask(job, agentBase);
+        [Test]
+        public void ItShouldCheckForSynchronization()
+        {
+            TaskType taskType = TaskType.SendEmailWorker;
+            int relatedId = 453245;
+            int jobId = 342343;
+            ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
 
-			_jobSynchronizationChecker.Received().CheckForSynchronization(typeof(SendEmailWorker), job, Arg.Any<Data.IntegrationPoint>(), agentBase);
-		}
+            Job job = new JobBuilder()
+                .WithJobId(jobId)
+                .WithTaskType(taskType)
+                .WithRelatedObjectArtifactId(relatedId)
+                .Build();
 
-		[Test]
-		public void ItShouldRethrowExceptions()
-		{
-			_jobHistoryService.When(x => x.SetJobIdOnJobHistory(Arg.Any<Job>())).Throw<ArgumentNullException>();
+            _instance.CreateTask(job, agentBase);
 
-			Job job = JobExtensions.CreateJob();
-			ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
+            _jobSynchronizationChecker.Received().CheckForSynchronization(typeof(SendEmailWorker), job, Arg.Any<Data.IntegrationPoint>(), agentBase);
+        }
 
-			Assert.Throws<ArgumentNullException>(() => _instance.CreateTask(job, agentBase));
-		}
+        [Test]
+        public void ItShouldRethrowExceptions()
+        {
+            _jobHistoryService.When(x => x.SetJobIdOnJobHistory(Arg.Any<Job>())).Throw<ArgumentNullException>();
 
-		[Test]
-		public void ItShouldUpdateJobHistoryOnFailure()
-		{
-			_jobHistoryService.When(x => x.SetJobIdOnJobHistory(Arg.Any<Job>())).Throw<ArgumentNullException>();
+            Job job = JobExtensions.CreateJob();
+            ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
 
-			Job job = JobExtensions.CreateJob();
-			ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
+            Assert.Throws<ArgumentNullException>(() => _instance.CreateTask(job, agentBase));
+        }
 
-			try
-			{
-				_instance.CreateTask(job, agentBase);
-			}
-			catch (Exception) { }
+        [Test]
+        public void ItShouldUpdateJobHistoryOnFailure()
+        {
+            _jobHistoryService.When(x => x.SetJobIdOnJobHistory(Arg.Any<Job>())).Throw<ArgumentNullException>();
 
-			_jobHistoryService.Received().UpdateJobHistoryOnFailure(job, Arg.Any<ArgumentNullException>());
-		}
+            Job job = JobExtensions.CreateJob();
+            ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
 
-		[Test]
-		public void ItShouldNotUpdateJobHistoryForAgentDropJobException()
-		{
-			_jobHistoryService.When(x => x.SetJobIdOnJobHistory(Arg.Any<Job>())).Throw<AgentDropJobException>();
+            try
+            {
+                _instance.CreateTask(job, agentBase);
+            }
+            catch (Exception) { }
 
-			Job job = JobExtensions.CreateJob();
-			ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
+            _jobHistoryService.Received().UpdateJobHistoryOnFailure(job, Arg.Any<ArgumentNullException>());
+        }
 
-			try
-			{
-				_instance.CreateTask(job, agentBase);
-			}
-			catch (AgentDropJobException) { }
+        [Test]
+        public void ItShouldNotUpdateJobHistoryForAgentDropJobException()
+        {
+            _jobHistoryService.When(x => x.SetJobIdOnJobHistory(Arg.Any<Job>())).Throw<AgentDropJobException>();
 
-			_jobHistoryService.DidNotReceiveWithAnyArgs().UpdateJobHistoryOnFailure(Arg.Any<Job>(), Arg.Any<ArgumentNullException>());
-		}
+            Job job = JobExtensions.CreateJob();
+            ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
 
-		[Test]
-		[TestCaseSource(nameof(CreateTask_CaseData))]
-		public void CreateTask_AllTaskTypesAreResolvable(TaskType taskType)
-		{
-			int relatedId = 453245;
-			int jobId = 342343;
-			ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
+            try
+            {
+                _instance.CreateTask(job, agentBase);
+            }
+            catch (AgentDropJobException) { }
 
-			Job job = new JobBuilder()
-				.WithJobId(jobId)
-				.WithTaskType(taskType)
-				.WithRelatedObjectArtifactId(relatedId)
-				.Build();
-			try
-			{
-				// Act
-				_instance.CreateTask(job, agentBase);
+            _jobHistoryService.DidNotReceiveWithAnyArgs().UpdateJobHistoryOnFailure(Arg.Any<Job>(), Arg.Any<ArgumentNullException>());
+        }
 
-				// Assert
-				if (taskType == TaskType.None)
-				{
-					_logger.Received().LogError("Unable to create task. Unknown task type ({TaskType})", taskType);
-				}
-				else
-				{
-					_logger.DidNotReceiveWithAnyArgs().LogError(Arg.Any<string>());
-				}
+        [Test]
+        [TestCaseSource(nameof(CreateTask_CaseData))]
+        public void CreateTask_AllTaskTypesAreResolvable(TaskType taskType)
+        {
+            int relatedId = 453245;
+            int jobId = 342343;
+            ScheduleQueueAgentBase agentBase = new TestAgentBase(Guid.NewGuid());
 
-			}
-			catch (Exception ex)
-			{
-				throw new Exception($"Unable to resolve the \"{taskType}\" task type.", ex);
-			}
-		}
+            Job job = new JobBuilder()
+                .WithJobId(jobId)
+                .WithTaskType(taskType)
+                .WithRelatedObjectArtifactId(relatedId)
+                .Build();
+            try
+            {
+                // Act
+                _instance.CreateTask(job, agentBase);
 
-		private IIntegrationPointRepository CreateIntegrationPointRepositoryMock()
-		{
-			var integrationPoint = new Data.IntegrationPoint();
+                // Assert
+                if (taskType == TaskType.None)
+                {
+                    _logger.Received().LogError("Unable to create task. Unknown task type ({TaskType})", taskType);
+                }
+                else
+                {
+                    _logger.DidNotReceiveWithAnyArgs().LogError(Arg.Any<string>());
+                }
 
-			IIntegrationPointRepository integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
-			integrationPointRepository.ReadWithFieldMappingAsync(Arg.Any<int>()).Returns(integrationPoint);
-			return integrationPointRepository;
-		}
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Unable to resolve the \"{taskType}\" task type.", ex);
+            }
+        }
 
-		private static IEnumerable<TestCaseData> CreateTask_CaseData()
-		{
-			foreach (var taskType in Enum.GetValues(typeof(TaskType)))
-			{
-				TestCaseData testCaseData = new TestCaseData(taskType) { TestName = taskType.ToString() };
-				yield return testCaseData;
-			}
-		}
+        private IIntegrationPointRepository CreateIntegrationPointRepositoryMock()
+        {
+            var integrationPoint = new Data.IntegrationPoint();
 
-		public class TestAgentBase : ScheduleQueueAgentBase
-		{
-			public TestAgentBase(Guid agentGuid, IAgentService agentService = null,
-				IJobService jobService = null, IScheduleRuleFactory scheduleRuleFactory = null)
-				: base(agentGuid,Substitute.For<IKubernetesMode>(), agentService, jobService, scheduleRuleFactory)
-			{
-			}
+            IIntegrationPointRepository integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
+            integrationPointRepository.ReadWithFieldMappingAsync(Arg.Any<int>()).Returns(integrationPoint);
+            return integrationPointRepository;
+        }
 
-			public override string Name { get; }
-			protected override TaskResult ProcessJob(Job job)
-			{
-				throw new NotImplementedException();
-			}
+        private static IEnumerable<TestCaseData> CreateTask_CaseData()
+        {
+            foreach (var taskType in Enum.GetValues(typeof(TaskType)))
+            {
+                TestCaseData testCaseData = new TestCaseData(taskType) { TestName = taskType.ToString() };
+                yield return testCaseData;
+            }
+        }
 
-			protected override void LogJobState(Job job, JobLogState state, Exception exception = null, string details = null)
-			{
-			}
-		}
-	}
+        public class TestAgentBase : ScheduleQueueAgentBase
+        {
+            public TestAgentBase(Guid agentGuid, IAgentService agentService = null,
+                IJobService jobService = null, IScheduleRuleFactory scheduleRuleFactory = null)
+                : base(agentGuid,Substitute.For<IKubernetesMode>(), agentService, jobService, scheduleRuleFactory)
+            {
+            }
+
+            public override string Name { get; }
+            protected override TaskResult ProcessJob(Job job)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void LogJobState(Job job, JobLogState state, Exception exception = null, string details = null)
+            {
+            }
+        }
+    }
 }
