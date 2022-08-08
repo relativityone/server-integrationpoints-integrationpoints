@@ -7,25 +7,52 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ADF;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors
 {
     internal class NonDocumentObjectLinkingExecutor : SynchronizationExecutorBase<INonDocumentObjectLinkingConfiguration>
     {
-        public NonDocumentObjectLinkingExecutor(IImportJobFactory importJobFactory,
-            IBatchRepository batchRepository, IJobProgressHandlerFactory jobProgressHandlerFactory, IFieldManager fieldManager,
-            IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer, IJobCleanupConfiguration jobCleanupConfiguration,
-            IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration, Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics,
-            IUserContextConfiguration userContextConfiguration, IAPILog logger, IFileLocationManager fileLocationManager) 
-            : base(importJobFactory, BatchRecordType.NonDocuments, batchRepository, jobProgressHandlerFactory, fieldManager, fieldMappings, 
-                jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics, userContextConfiguration, logger, fileLocationManager)
+        public NonDocumentObjectLinkingExecutor(
+            IImportJobFactory importJobFactory,
+            IBatchRepository batchRepository,
+            IJobProgressHandlerFactory jobProgressHandlerFactory,
+            IFieldManager fieldManager,
+            IFieldMappings fieldMappings,
+            IJobStatisticsContainer jobStatisticsContainer,
+            IJobCleanupConfiguration jobCleanupConfiguration,
+            IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
+            Func<IStopwatch> stopwatchFactory,
+            ISyncMetrics syncMetrics,
+            IUserContextConfiguration userContextConfiguration,
+            IAdlsUploader uploader,
+            IIsADFTransferEnabled isAdfTransferEnabled,
+            IFileLocationManager fileLocationManager,
+            IAPILog logger)
+            : base(
+                importJobFactory,
+                BatchRecordType.NonDocuments,
+                batchRepository,
+                jobProgressHandlerFactory,
+                fieldManager,
+                fieldMappings,
+                jobStatisticsContainer,
+                jobCleanupConfiguration,
+                automatedWorkflowTriggerConfiguration,
+                stopwatchFactory,
+                syncMetrics,
+                userContextConfiguration,
+                uploader,
+                isAdfTransferEnabled,
+                fileLocationManager,
+                logger)
         {
         }
 
         protected override Task<IImportJob> CreateImportJobAsync(INonDocumentObjectLinkingConfiguration configuration, IBatch batch, CancellationToken token)
         {
-            return _importJobFactory.CreateRdoLinkingJobAsync(configuration, batch, token);
+            return ImportJobFactory.CreateRdoLinkingJobAsync(configuration, batch, token);
         }
 
         protected override void UpdateImportSettings(INonDocumentObjectLinkingConfiguration configuration)
@@ -33,10 +60,9 @@ namespace Relativity.Sync.Executors
             configuration.IdentityFieldId = GetDestinationIdentityFieldId();
         }
 
-        protected override void ChildReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime,
-            TimeSpan importApiTimer)
+        protected override void ChildReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime, TimeSpan importApiTimer)
         {
-            _syncMetrics.Send(new NonDocumentObjectLinkingBatchEndMetric
+            SyncMetrics.Send(new NonDocumentObjectLinkingBatchEndMetric
             {
                 TotalRecordsRequested = batchProcessResult.TotalRecordsRequested,
                 TotalRecordsTransferred = batchProcessResult.TotalRecordsTransferred,
@@ -48,15 +74,14 @@ namespace Relativity.Sync.Executors
             });
         }
 
-        protected override Task<TaggingExecutionResult> TagObjectsAsync(IImportJob importJob, ISynchronizationConfiguration configuration,
-            CompositeCancellationToken token)
+        protected override Task<TaggingExecutionResult> TagObjectsAsync(IImportJob importJob, ISynchronizationConfiguration configuration, CompositeCancellationToken token)
         {
             return Task.FromResult(TaggingExecutionResult.Success());
         }
 
         protected override Guid GetExportRunId(INonDocumentObjectLinkingConfiguration configuration)
         {
-            return configuration.ObjectLinkingSnapshotId 
+            return configuration.ObjectLinkingSnapshotId
                    ?? throw new NullReferenceException($"{nameof(INonDocumentObjectLinkingConfiguration.ObjectLinkingSnapshotId)} cannot be null at this stage");
         }
     }

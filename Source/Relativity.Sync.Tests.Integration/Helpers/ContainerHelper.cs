@@ -76,13 +76,9 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 
             SyncJobParameters parameters = FakeHelper.CreateSyncJobParameters();
 
-            containerFactory.RegisterSyncDependencies(
-                containerBuilder,
-                parameters,
-                relativityServices,
-                new SyncJobExecutionConfiguration(),
-                new EmptyLogger());
-
+            containerFactory.RegisterSyncDependencies(containerBuilder, parameters,
+                relativityServices, new SyncJobExecutionConfiguration(), new EmptyLogger());
+            
             return containerBuilder;
         }
 
@@ -119,7 +115,10 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 
             Mock<IServicesMgr> servicesMgr = new Mock<IServicesMgr>();
             Mock<IHelper> helper = new Mock<IHelper>();
+            Mock<ILogFactory> logFactory = new Mock<ILogFactory>();
             helper.Setup(x => x.GetServicesManager()).Returns(servicesMgr.Object);
+            helper.Setup(x => x.GetLoggerFactory()).Returns(logFactory.Object);
+            logFactory.Setup(x => x.GetLogger()).Returns(new EmptyLogger());
 
             return new RelativityServices(apm, authenticationUri, helper.Object);
         }

@@ -229,6 +229,7 @@ namespace Relativity.Sync.Executors
             {
                 jobSize = _importApiJobStatistics.FileBytes + _importApiJobStatistics.MetadataBytes;
             }
+
             return jobSize;
         }
 

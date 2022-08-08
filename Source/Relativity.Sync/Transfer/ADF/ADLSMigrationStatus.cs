@@ -5,18 +5,15 @@ using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.ResourceServer;
-using Relativity.Storage.Extensions.Models;
 using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Transfer.ADF
 {
-    internal class ADLSMigrationStatus : IADLSMigrationStatus
-    {
-        private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
-        private readonly IHelperWrapper _helperWrapper;
-        private readonly IAPILog _logger;
-        private const string ADLER_SIEBEN_TEAM_ID = "PTCI-2456712";
-        private const string RELATIVITY_SYNC_SERVICE_NAME = "relativity-sync";
+	internal class ADLSMigrationStatus : IADLSMigrationStatus
+	{
+		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
+		private readonly IHelperWrapper _helperWrapper;
+		private readonly IAPILog _logger;
 
         public ADLSMigrationStatus(
             ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
@@ -82,11 +79,8 @@ namespace Relativity.Sync.Transfer.ADF
 
         private async Task<List<string>> GetListOfFilesharesFromBedrockAsync()
         {
-            ApplicationDetails applicationDetails =
-                new ApplicationDetails(ADLER_SIEBEN_TEAM_ID, RELATIVITY_SYNC_SERVICE_NAME);
-
             var bedrockEndpoints =
-                await _helperWrapper.GetStorageEndpointsAsync(applicationDetails).ConfigureAwait(false);
+                await _helperWrapper.GetStorageEndpointsAsync().ConfigureAwait(false);
 
             _logger.LogInformation("Retrieved {fileServersBedrockCount} bedrock server(s)", bedrockEndpoints.Length);
 
