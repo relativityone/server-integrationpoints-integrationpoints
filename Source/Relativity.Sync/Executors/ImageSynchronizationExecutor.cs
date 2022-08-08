@@ -9,6 +9,7 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ADF;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors
@@ -17,29 +18,54 @@ namespace Relativity.Sync.Executors
     {
         private readonly IDocumentTagger _documentTagger;
 
-        public ImageSynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
+        public ImageSynchronizationExecutor(
+            IImportJobFactory importJobFactory,
+            IBatchRepository batchRepository,
             IJobProgressHandlerFactory jobProgressHandlerFactory,
-            IFieldManager fieldManager, IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer,
+            IFieldManager fieldManager,
+            IFieldMappings fieldMappings,
+            IJobStatisticsContainer jobStatisticsContainer,
             IJobCleanupConfiguration jobCleanupConfiguration,
             IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
-            Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics, IDocumentTagger documentTagger, IAPILog logger,
-            IUserContextConfiguration userContextConfiguration, IFileLocationManager fileLocationManager)
-            : base(importJobFactory, BatchRecordType.Images, batchRepository, jobProgressHandlerFactory, fieldManager,
-            fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics, userContextConfiguration, logger, fileLocationManager)
+            Func<IStopwatch> stopwatchFactory,
+            ISyncMetrics syncMetrics,
+            IDocumentTagger documentTagger,
+            IAdlsUploader uploader,
+            IUserContextConfiguration userContextConfiguration,
+            IIsADFTransferEnabled isAdfTransferEnabled,
+            IFileLocationManager fileLocationManager,
+            IAPILog logger)
+            : base(
+                importJobFactory,
+                BatchRecordType.Images,
+                batchRepository,
+                jobProgressHandlerFactory,
+                fieldManager,
+                fieldMappings,
+                jobStatisticsContainer,
+                jobCleanupConfiguration,
+                automatedWorkflowTriggerConfiguration,
+                stopwatchFactory,
+                syncMetrics,
+                userContextConfiguration,
+                uploader,
+                isAdfTransferEnabled,
+                fileLocationManager,
+                logger)
         {
             _documentTagger = documentTagger;
         }
 
         protected override Task<IImportJob> CreateImportJobAsync(IImageSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
         {
-            return _importJobFactory.CreateImageImportJobAsync(configuration, batch, token);
+            return ImportJobFactory.CreateImageImportJobAsync(configuration, batch, token);
         }
 
         protected override void UpdateImportSettings(IImageSynchronizationConfiguration configuration)
         {
             configuration.IdentityFieldId = GetDestinationIdentityFieldId();
 
-            IList<FieldInfoDto> specialFields = _fieldManager.GetImageSpecialFields().ToList();
+            IList<FieldInfoDto> specialFields = FieldManager.GetImageSpecialFields().ToList();
             configuration.ImageFilePathSourceFieldName = GetSpecialFieldColumnName(specialFields, SpecialFieldType.ImageFileLocation);
             configuration.FileNameColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.ImageFileName);
             configuration.IdentifierColumn = GetSpecialFieldColumnName(specialFields, SpecialFieldType.ImageIdentifier);
@@ -47,7 +73,7 @@ namespace Relativity.Sync.Executors
 
         protected override void ChildReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime, TimeSpan importApiTimer)
         {
-            _syncMetrics.Send(new ImageBatchEndMetric()
+            SyncMetrics.Send(new ImageBatchEndMetric()
             {
                 TotalRecordsRequested = batchProcessResult.TotalRecordsRequested,
                 TotalRecordsTransferred = batchProcessResult.TotalRecordsTransferred,
@@ -61,8 +87,7 @@ namespace Relativity.Sync.Executors
             });
         }
 
-        protected override Task<TaggingExecutionResult> TagObjectsAsync(IImportJob importJob, ISynchronizationConfiguration configuration,
-            CompositeCancellationToken token)
+        protected override Task<TaggingExecutionResult> TagObjectsAsync(IImportJob importJob, ISynchronizationConfiguration configuration, CompositeCancellationToken token)
         {
             return _documentTagger.TagObjectsAsync(importJob, configuration, token);
         }

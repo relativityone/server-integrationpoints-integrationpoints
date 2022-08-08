@@ -12,9 +12,12 @@ namespace Relativity.Sync.Transfer
         private readonly string _serverName;
         private readonly int _destinationWorkspaceArtifactId;
 
-        public List<FmsDocument> Files { get; private set; }
+        public List<FmsDocument> Files { get; internal set; }
+
         public Guid TraceId { get; }
+
         public string SourceLocationShortPath { get; }
+
         public string DestinationLocationShortPath
         {
             get

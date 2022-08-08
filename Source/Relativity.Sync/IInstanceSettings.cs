@@ -13,5 +13,7 @@ namespace Relativity.Sync
         Task<int> GetImportApiBatchSizeAsync(int defaultValue = 1000);
 
         Task<bool> GetShouldForceADFTransferAsync(bool defaultValue = false);
+
+        Task<int> GetSyncMaxThreadsCountAsync(int defaultValue = 4);
     }
 }

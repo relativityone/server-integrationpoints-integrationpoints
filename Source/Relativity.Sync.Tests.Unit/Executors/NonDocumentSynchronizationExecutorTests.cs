@@ -15,6 +15,7 @@ using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Tests.Common.Stubs;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ADF;
 using IStopwatch = Relativity.Sync.Utils.IStopwatch;
 
 namespace Relativity.Sync.Tests.Unit.Executors
@@ -22,6 +23,23 @@ namespace Relativity.Sync.Tests.Unit.Executors
     [TestFixture]
     internal class NonDocumentSynchronizationExecutorTests
     {
+        private const long _METADATA_SIZE = 2L;
+        private const long _FILES_SIZE = 10L;
+        private const long _JOB_SIZE = 12L;
+        private const int _DATA_SOURCE_ID = 8;
+        private const int _USER_ID = 68;
+        private const int _SOURCE_WORKSPACE_ID = 70;
+        private const string _CORRELATION_ID = "CORRELATION_ID";
+        private const string _FIELD_NAME_DESTINATION = "FIELD_NAME_DESTINATION";
+        private const int _FIELD_IDENTIFIER_DESTINATION = 123;
+
+        private readonly List<FieldInfoDto> _specialFields = new List<FieldInfoDto>
+        {
+            FieldInfoDto.ImageFileLocationField(),
+            FieldInfoDto.ImageFileNameField(),
+            FieldInfoDto.ImageIdentifierField()
+        };
+
         private Mock<IBatchRepository> _batchRepositoryMock;
         private Mock<IFieldManager> _fieldManagerFake;
         private Mock<IFieldMappings> _fakeFieldMappings;
@@ -37,7 +55,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<Func<IStopwatch>> _stopwatchFactoryFake;
         private Mock<IStopwatch> _stopwatchFake;
         private Mock<ISyncMetrics> _syncMetricsMock;
-        private Mock<IFileLocationManager> _fileLocationManager;
+        private Mock<IAdlsUploader> _adlsUploaderMock;
+        private Mock<IIsADFTransferEnabled> _adfTransferEnablerMock;
 
         private Mock<Sync.Executors.IImportJob> _importJobFake;
         private Mock<ISyncImportBulkArtifactJob> _syncImportBulkArtifactJobFake;
@@ -45,41 +64,45 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<INonDocumentSynchronizationConfiguration> _configFake;
 
         private NonDocumentSynchronizationExecutor _sut;
-
-        private const long _METADATA_SIZE = 2L;
-        private const long _FILES_SIZE = 10L;
-        private const long _JOB_SIZE = 12L;
-
-        private readonly List<FieldInfoDto> _specialFields = new List<FieldInfoDto>
-        {
-            FieldInfoDto.ImageFileLocationField(),
-            FieldInfoDto.ImageFileNameField(),
-            FieldInfoDto.ImageIdentifierField()
-        };
-
         private Mock<IUserContextConfiguration> _userContextConfigurationStub;
         private BatchStub[] _batchesStubs;
-        private const int _DATA_SOURCE_ID = 8;
-        private const int _USER_ID = 68;
-        private const int _SOURCE_WORKSPACE_ID = 70;
-        private const string _CORRELATION_ID = "CORRELATION_ID";
-        private const string _FIELD_NAME_DESTINATION = "FIELD_NAME_DESTINATION";
-        private const int _FIELD_IDENTIFIER_DESTINATION = 123;
+
+        public static IEnumerable<ExecutionResult> BrakingExecutionResults => new[] { ExecutionResult.Failure(new SyncException()), ExecutionResult.Canceled() };
 
         public static (object[] BatchResults, object ExpectedResult)[] AggregationTestCaseSource { get; } =
         {
-            (new object[]{ ExecutionStatus.Completed,ExecutionStatus.Completed, ExecutionStatus.Completed},
-                ExecutionStatus.Completed),
+            (new object[] { ExecutionStatus.Completed, ExecutionStatus.Completed, ExecutionStatus.Completed }, ExecutionStatus.Completed),
 
-            (new object[]{ ExecutionStatus.Completed, ExecutionStatus.Failed},
-                ExecutionStatus.Failed),
+            (new object[] { ExecutionStatus.Completed, ExecutionStatus.Failed }, ExecutionStatus.Failed),
 
-            (new object[]{ ExecutionStatus.Completed, ExecutionStatus.CompletedWithErrors},
-                ExecutionStatus.CompletedWithErrors),
+            (new object[] { ExecutionStatus.Completed, ExecutionStatus.CompletedWithErrors }, ExecutionStatus.CompletedWithErrors),
 
-            (new object[]{ ExecutionStatus.Completed, ExecutionStatus.CompletedWithErrors, ExecutionStatus.Canceled},
-                ExecutionStatus.Canceled)
+            (new object[] { ExecutionStatus.Completed, ExecutionStatus.CompletedWithErrors, ExecutionStatus.Canceled }, ExecutionStatus.Canceled)
         };
+
+        private static ImportJobResult CreatePausedResult()
+        {
+            return new ImportJobResult(ExecutionResult.Paused(), 1, 0, 1);
+        }
+
+        private static ImportJobResult CreateJobResult(ExecutionResult result = null)
+        {
+            ExecutionResult jobResult = result ?? ExecutionResult.Success();
+
+            return new ImportJobResult(jobResult, 1, 0, 1);
+        }
+
+        private static ImportJobResult GetJobResult(ExecutionStatus status, string message = null, Exception exception = null)
+        {
+            return new ImportJobResult(new ExecutionResult(status, message ?? exception?.Message, exception), 1, 0, 1);
+        }
+
+        private static Mock<IStopwatch> CreateFakeStopwatch(int elapsedMs)
+        {
+            Mock<IStopwatch> batchTimer = new Mock<IStopwatch>();
+            batchTimer.SetupGet(x => x.Elapsed).Returns(TimeSpan.FromMilliseconds(elapsedMs));
+            return batchTimer;
+        }
 
         [SetUp]
         public void SetUp()
@@ -102,7 +125,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _stopwatchFake = new Mock<IStopwatch>();
             _stopwatchFactoryFake.Setup(x => x()).Returns(_stopwatchFake.Object);
             _syncMetricsMock = new Mock<ISyncMetrics>();
-            _fileLocationManager = new Mock<IFileLocationManager>();
+            _adlsUploaderMock = new Mock<IAdlsUploader>();
 
             _jobProgressHandlerFake = new Mock<IJobProgressHandler>();
             _jobProgressUpdaterFake = new Mock<IJobProgressUpdater>();
@@ -133,18 +156,33 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             _importJobFake = new Mock<Sync.Executors.IImportJob>();
             _importJobFake.SetupGet(x => x.SyncImportBulkArtifactJob).Returns(_syncImportBulkArtifactJobFake.Object);
-            _importJobFactoryFake.Setup(x => x.CreateRdoImportJobAsync(It.IsAny<INonDocumentSynchronizationConfiguration>(), It.IsAny<IBatch>(),It.IsAny<CancellationToken>())).ReturnsAsync(_importJobFake.Object);
+            _importJobFactoryFake.Setup(x => x.CreateRdoImportJobAsync(It.IsAny<INonDocumentSynchronizationConfiguration>(), It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).ReturnsAsync(_importJobFake.Object);
 
             _userContextConfigurationStub = new Mock<IUserContextConfiguration>();
 
             _batchRepositoryMock.Setup(x => x.GetAllSuccessfullyExecutedBatchesAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>()))
                 .ReturnsAsync(Enumerable.Empty<IBatch>());
 
-            _sut = new NonDocumentSynchronizationExecutor(_importJobFactoryFake.Object, _batchRepositoryMock.Object,
+            _adfTransferEnablerMock = new Mock<IIsADFTransferEnabled>();
+
+            Mock<IFileLocationManager> fileLocationManager = new Mock<IFileLocationManager>();
+
+            _sut = new NonDocumentSynchronizationExecutor(
+                _importJobFactoryFake.Object,
+                _batchRepositoryMock.Object,
                 _jobProgressHandlerFactoryStub.Object,
-                _fieldManagerFake.Object, _fakeFieldMappings.Object, _jobStatisticsContainerFake.Object,
-                _jobCleanupConfigurationMock.Object,_automatedWorkflowTriggerConfigurationFake.Object,
-                _stopwatchFactoryFake.Object, _syncMetricsMock.Object, new EmptyLogger(), _userContextConfigurationStub.Object, _fileLocationManager.Object);
+                _fieldManagerFake.Object,
+                _fakeFieldMappings.Object,
+                _jobStatisticsContainerFake.Object,
+                _jobCleanupConfigurationMock.Object,
+                _automatedWorkflowTriggerConfigurationFake.Object,
+                _stopwatchFactoryFake.Object,
+                _syncMetricsMock.Object,
+                _adlsUploaderMock.Object,
+                _userContextConfigurationStub.Object,
+                _adfTransferEnablerMock.Object,
+                fileLocationManager.Object,
+                new EmptyLogger());
         }
 
         [Test]
@@ -183,7 +221,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
             await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            _syncMetricsMock.Verify(x => x.Send(It.Is<NonDocumentBatchEndMetric>(m =>
+            _syncMetricsMock.Verify(
+                x => x.Send(It.Is<NonDocumentBatchEndMetric>(m =>
                 m.TotalRecordsTransferred == totalRecordsTransferred &&
                 m.TotalRecordsRequested == totalRecordsRequested &&
                 m.TotalRecordsFailed == totalRecordsFailed &&
@@ -246,8 +285,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Act
             await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
-            //double bytesInGigabyte = 1024.0 * 1024 * 1024;
-
             // Assert
             _syncMetricsMock.Verify(x => x.Send(It.IsAny<BatchEndPerformanceMetric>()));
         }
@@ -292,6 +329,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             // Act
             Func<Task> action = () => _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None);
+
             // Assert
             string errorMessage = "Cannot find destination identifier field in field mappings.";
             action.Should().Throw<SyncException>().Which.Message.Should().Be(errorMessage);
@@ -349,8 +387,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _importJobFake.Verify(x => x.Dispose(), Times.Exactly(numberOfBatches));
         }
 
-        public static IEnumerable<ExecutionResult> BrakingExecutionResults => new[] { ExecutionResult.Failure(new SyncException()), ExecutionResult.Canceled() };
-
         [TestCaseSource(nameof(BrakingExecutionResults))]
         public async Task Execute_ShouldBreak_WhenPushingBrakes(ExecutionResult expectedExecutionResult)
         {
@@ -379,6 +415,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             // Act
             ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+
             // Assert
             result.Message.Should().Be("Fatal exception occurred while executing import job.");
             result.Exception.Should().BeOfType<ImportFailedException>();
@@ -449,7 +486,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _jobCleanupConfigurationMock.VerifySet(x => x.SynchronizationExecutionResult = result);
         }
 
-        [Test, TestCaseSource(nameof(AggregationTestCaseSource))]
+        [Test]
+        [TestCaseSource(nameof(AggregationTestCaseSource))]
         public async Task Execute_ShouldCorrectlyAggregateBatchJobResults(
             (object[] batchJobResultsObject, object expectedResultStatus) testCase)
         {
@@ -499,7 +537,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         public async Task Execute_ShouldMarkBatchAsPaused_WhenOnDrainStopRequested()
         {
             // arrange
-             const int batchCount = 3;
+            const int batchCount = 3;
             SetupBatchRepository(batchCount);
 
             CancellationTokenSource drainStopCancellationTokenSource = new CancellationTokenSource();
@@ -536,7 +574,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             SetupBatchRepository(1);
 
             _importJobFake.Setup(x => x.RunAsync(It.IsAny<CompositeCancellationToken>()))
-                .ReturnsAsync( new ImportJobResult(new ExecutionResult(executionStatus, "", null), 0 ,0, 0));
+                .ReturnsAsync(new ImportJobResult(new ExecutionResult(executionStatus, string.Empty, null), 0, 0, 0));
 
             // Act
             ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None)
@@ -693,9 +731,21 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [TestCase(1500, 0, 0, 0, 0, 0, 500, 0, 41062078, 18705240, 59767318, 108, ExecutionStatus.Paused, BatchStatus.Paused, 1608)]
         [TestCase(1608, 0, 108, 41062078, 18705240, 59767318, 500, 0, 0, 0, 0, 0, ExecutionStatus.Paused, BatchStatus.Paused, 1608)]
         public async Task Execute_ShouldHandlePausedBatch(
-            int initialStartingIndex, int initialFailedCount, int initialTransferredCount, int initialMetadataBytesTransferred, int initialFilesBytesTransferred, int initialTotalBytesTransferred, int totalCount,
-            int failedCount, int metadataBytesTransferred, int filesBytesTransferred, int totalBytesTransferred, int transferredCount,
-            ExecutionStatus expectedStatus, BatchStatus expectedBatchStatus, int expectedStartingIndex)
+            int initialStartingIndex,
+            int initialFailedCount,
+            int initialTransferredCount,
+            int initialMetadataBytesTransferred,
+            int initialFilesBytesTransferred,
+            int initialTotalBytesTransferred,
+            int totalCount,
+            int failedCount,
+            int metadataBytesTransferred,
+            int filesBytesTransferred,
+            int totalBytesTransferred,
+            int transferredCount,
+            ExecutionStatus expectedStatus,
+            BatchStatus expectedBatchStatus,
+            int expectedStartingIndex)
         {
             // Arrange
             IBatch batch = new BatchStub
@@ -750,7 +800,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 StartingIndex = x * itemsPerBatch
             }).ToArray();
 
-
             _batchRepositoryMock.Setup(x => x.GetAllBatchesIdsToExecuteAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>())).ReturnsAsync(_batchesStubs.Select(x => x.ArtifactId));
             _batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((int workspaceId, int batchId) => _batchesStubs.First(x => x.ArtifactId == batchId));
         }
@@ -761,30 +810,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             ImportJobResult importJob = new ImportJobResult(jobResult, metadataBytesTransferred, filesBytesTransferred, totalBytesTransferred);
             _importJobFake.Setup(x => x.RunAsync(It.IsAny<CompositeCancellationToken>())).ReturnsAsync(importJob);
-        }
-
-        private static ImportJobResult CreatePausedResult()
-        {
-            return new ImportJobResult(ExecutionResult.Paused(), 1, 0, 1);
-        }
-
-        private static ImportJobResult CreateJobResult(ExecutionResult result = null)
-        {
-            ExecutionResult jobResult = result ?? ExecutionResult.Success();
-
-            return new ImportJobResult(jobResult, 1, 0, 1);
-        }
-
-        private static ImportJobResult GetJobResult(ExecutionStatus status, string message = null, Exception exception = null)
-        {
-            return new ImportJobResult(new ExecutionResult(status, message ?? exception?.Message, exception), 1, 0, 1);
-        }
-
-        private static Mock<IStopwatch> CreateFakeStopwatch(int elapsedMs)
-        {
-            Mock<IStopwatch> batchTimer = new Mock<IStopwatch>();
-            batchTimer.SetupGet(x => x.Elapsed).Returns(TimeSpan.FromMilliseconds(elapsedMs));
-            return batchTimer;
         }
     }
 }

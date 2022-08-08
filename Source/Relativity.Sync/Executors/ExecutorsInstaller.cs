@@ -92,13 +92,14 @@ namespace Relativity.Sync.Executors
             builder.RegisterType<AutomatedWorkflowExecutorConstrains>().As<IExecutionConstrains<IAutomatedWorkflowTriggerConfiguration>>();
             builder.RegisterType<AutomatedWorkflowExecutor>().As<IExecutor<IAutomatedWorkflowTriggerConfiguration>>();
 
-            builder.RegisterTypesInExecutingAssembly<IPermissionCheck>();
-            builder.RegisterTypesInExecutingAssembly<IPreValidator>();
-            builder.RegisterType<UserService>().As<IUserService>();
-            builder.RegisterType<SyncToggles>().As<ISyncToggles>().SingleInstance();
-            builder.RegisterType<ADLSMigrationStatus>().As<IADLSMigrationStatus>().SingleInstance();
-            builder.RegisterType<ADFTransferEnabler>().As<IADFTransferEnabler>().SingleInstance();
-            builder.RegisterType<HelperWrapper>().As<IHelperWrapper>().SingleInstance();
+			builder.RegisterTypesInExecutingAssembly<IPermissionCheck>();
+			builder.RegisterTypesInExecutingAssembly<IPreValidator>();
+			builder.RegisterType<UserService>().As<IUserService>();
+			builder.RegisterType<SyncToggles>().As<ISyncToggles>().SingleInstance();
+			builder.RegisterType<ADLSMigrationStatus>().As<IADLSMigrationStatus>().SingleInstance();
+			builder.RegisterType<IsADFTransferEnabled>().As<IIsADFTransferEnabled>().SingleInstance();
+			builder.RegisterType<HelperWrapper>().As<IHelperWrapper>().SingleInstance();
+			builder.RegisterType<AdlsUploader>().As<IAdlsUploader>().SingleInstance();
 
             builder.RegisterType<BatchRepository>().As<IBatchRepository>();
             builder.RegisterType<ProgressRepository>().As<IProgressRepository>();
