@@ -12,7 +12,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Controls
         {
             RetryPolicy retryPolicy = Policy
                 .Handle<Exception>()
-                .WaitAndRetryAsync(
+                .WaitAndRetry(
                     maxRetriesCount,
                     retryAttempt =>
             {
