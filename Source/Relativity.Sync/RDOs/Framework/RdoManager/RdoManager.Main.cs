@@ -146,7 +146,6 @@ namespace Relativity.Sync.RDOs.Framework
 
                 RelativityObjectSlim queryResultObject = queryResult.Objects.FirstOrDefault();
 
-
                 var result = default(TRdo);
 
                 if (queryResultObject != null)
@@ -198,7 +197,7 @@ namespace Relativity.Sync.RDOs.Framework
                     return Task.FromResult(long.TryParse(value.ToString(), out long longValue)
                         ? (object)longValue
                         : null);
-                
+
                 case RdoFieldType.FixedLengthText when fieldInfo.PropertyInfo.PropertyType.IsEnum:
                     return Task.FromResult(EnumExtensions.GetEnumFromDescription(value?.ToString(), fieldInfo.PropertyInfo.PropertyType.ExtractTypeIfNullable()));
 
@@ -301,10 +300,10 @@ namespace Relativity.Sync.RDOs.Framework
                     return value?.ToString();
 
                 case RdoFieldType.FixedLengthText when fieldInfo.PropertyInfo.PropertyType.IsEnum:
-                    return (value is null || value.ToString() == "") 
-                        ? null 
+                    return (value is null || value.ToString() == "")
+                        ? null
                         : EnumExtensions.GetDescription(value, fieldInfo.PropertyInfo.PropertyType.ExtractTypeIfNullable());
-                
+
                 default:
                     return value;
             }

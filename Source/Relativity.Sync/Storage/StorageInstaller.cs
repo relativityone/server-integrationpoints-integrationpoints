@@ -40,9 +40,9 @@ namespace Relativity.Sync.Storage
             builder.RegisterType<NotificationConfiguration>().AsImplementedInterfaces();
             builder.RegisterType<JobStatusConsolidationConfiguration>().AsImplementedInterfaces();
             builder.RegisterType<JobHistoryErrorRepositoryConfiguration>().AsImplementedInterfaces();
-            
+
             builder.RegisterType<RdoGuidConfiguration>().AsImplementedInterfaces();
-            
+
             builder.RegisterType<FieldMappings>().As<IFieldMappings>();
             builder.RegisterType<JobHistoryErrorRepository>().As<IJobHistoryErrorRepository>();
             builder.RegisterType<JobProgressUpdaterFactory>().As<IJobProgressUpdaterFactory>();
@@ -59,13 +59,13 @@ namespace Relativity.Sync.Storage
             builder.RegisterType<ObjectLinkingSnapshotPartitionConfiguration>().As<IObjectLinkingSnapshotPartitionConfiguration>();
             builder.RegisterType<NonDocumentJobStartMetricsConfiguration>().AsImplementedInterfaces();
         }
-        
+
         private IConfiguration CreateConfiguration(IComponentContext componentContext)
         {
             SyncJobParameters syncJobParameters = componentContext.Resolve<SyncJobParameters>();
             IAPILog logger = componentContext.Resolve<IAPILog>();
             IRdoManager rdoManager = componentContext.Resolve<IRdoManager>();
-            
+
             return Configuration.GetAsync(syncJobParameters, logger, new SemaphoreSlimWrapper(new SemaphoreSlim(1)), rdoManager).ConfigureAwait(false).GetAwaiter().GetResult();
         }
     }
