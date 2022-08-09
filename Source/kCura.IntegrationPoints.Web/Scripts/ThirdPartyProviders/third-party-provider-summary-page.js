@@ -1,9 +1,7 @@
 ﻿var IP = IP || {};
 
 var loadData = function(ko, dataContainer) {
-	console.log("in third party provider summary  - load data")
 	var Model = function (dataContainer) {
-		console.log("in third party provider summary 1")
 		this.hasErrors = dataContainer.hasErrors;
 		this.logErrors = dataContainer.logErrors;
 		this.emailNotification = dataContainer.emailNotification;
@@ -43,9 +41,7 @@ var loadData = function(ko, dataContainer) {
 				appID: appID,
 				artifactID: artifactID
 			};
-			console.log("obj: ", obj);
 			var url = IP.utils.format(IP.params['sourceUrl'], obj);
-			console.log("url: ", url);
 			if (url) {
 				IP.data.ajax({
 					url: url,
@@ -78,6 +74,5 @@ var loadData = function(ko, dataContainer) {
 
 	var viewModel = new Model(dataContainer);
 	viewModel.populateSourceConfigurationContainer();
-	console.log("in third party provider summary 2")
 	ko.applyBindings(viewModel, document.getElementById('summaryPage'));
 };

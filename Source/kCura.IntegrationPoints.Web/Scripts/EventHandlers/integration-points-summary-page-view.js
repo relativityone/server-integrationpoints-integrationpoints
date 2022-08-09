@@ -3,7 +3,6 @@
 $(function integrationPointsSummaryPageView() {
 
 	var displaySummaryPage = function (fieldId, html, dataContainer) {
-		console.log("ip summary page view - in integrationPointsSummaryPageView -> displaySummaryPage");
 		IP.utils.getViewField(fieldId).closest('.innerTabTable').replaceWith(html);
 		loadData(ko, dataContainer);
 	}
