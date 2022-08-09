@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
@@ -23,6 +24,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
         private readonly CancellationTokenSource _stopCancellationTokenSource;
         private readonly CancellationTokenSource _drainStopCancellationTokenSource;
+        private readonly IDiagnosticLog _diagnosticLog;
         private readonly Guid _jobBatchIdentifier;
         private readonly IJobService _jobService;
         private readonly IJobHistoryService _jobHistoryService;
@@ -35,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
         public JobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, IHelper helper,
             Guid jobHistoryInstanceId, long jobId, IRemovableAgent agent, bool supportsDrainStop,
-            CancellationTokenSource stopCancellationTokenSource, CancellationTokenSource drainStopCancellationTokenSource)
+            CancellationTokenSource stopCancellationTokenSource, CancellationTokenSource drainStopCancellationTokenSource, IDiagnosticLog diagnosticLog)
         {
             SyncRoot = new object();
 
@@ -49,6 +51,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
             _stopCancellationTokenSource = stopCancellationTokenSource;
             _drainStopCancellationTokenSource = drainStopCancellationTokenSource;
+            _diagnosticLog = diagnosticLog;
             _token = _stopCancellationTokenSource.Token;
             _timerThread = new Timer(state => Execute(), null, Timeout.Infinite, Timeout.Infinite);
         }
@@ -64,6 +67,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             {
                 try
                 {
+                    _diagnosticLog.LogDiagnostic("Monitor JobStopManager.");
                     Job job = _jobService.GetJob(_jobId);
 
                     if (job != null)

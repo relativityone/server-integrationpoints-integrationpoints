@@ -181,7 +181,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             caseContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(sourceProvider);
             serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(mappings);
             synchronizerFactory.CreateSynchronizer(Arg.Any<Guid>(), Arg.Any<string>()).Returns(_synchronizer);
-            managerFactory.CreateJobStopManager(jobService, jobHistoryService, _taskParameters.BatchInstance, job.JobId, Arg.Any<bool>()).Returns(jobStopManager);
+            managerFactory.CreateJobStopManager(jobService, jobHistoryService, _taskParameters.BatchInstance, job.JobId, Arg.Any<bool>(), Arg.Any<IDiagnosticLog>()).Returns(jobStopManager);
 
             ImportSettings imageSettings = new ImportSettings();
             imageSettings.ImageImport = true;

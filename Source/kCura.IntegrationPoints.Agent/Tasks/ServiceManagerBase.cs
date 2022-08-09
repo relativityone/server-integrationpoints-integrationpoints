@@ -365,7 +365,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         private void ConfigureJobStopManager(Job job, bool supportsDrainStop)
         {
-            JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, Identifier, job.JobId, supportsDrainStop);
+            JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, Identifier, job.JobId, supportsDrainStop, DiagnosticLog);
             JobHistoryErrorService.JobStopManager = JobStopManager;
         }
 

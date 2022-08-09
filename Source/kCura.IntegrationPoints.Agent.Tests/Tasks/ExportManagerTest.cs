@@ -16,6 +16,7 @@ using kCura.IntegrationPoints.Core.Tests;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
@@ -69,14 +70,15 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 Substitute.For<IGuidService>(),
                 Substitute.For<IJobHistoryService>(),
                 Substitute.For<JobHistoryErrorService>(
-                    caseServiceContextMock, 
-                    _helperMock,
-                    _integrationPointRepositoryMock),
+                caseServiceContextMock,
+                _helperMock,
+                _integrationPointRepositoryMock),
                 Substitute.For<IScheduleRuleFactory>(),
                 managerFactoryMock,
                 new List<IBatchStatus>(),
                 _exportInitProcessService,
-                agentValidator);
+                agentValidator,
+                Substitute.For<IDiagnosticLog>());
         }
 
         [TestCase(10)]

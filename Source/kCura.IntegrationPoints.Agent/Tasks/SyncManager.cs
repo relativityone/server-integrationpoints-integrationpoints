@@ -20,6 +20,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.BatchProcess;
@@ -67,7 +68,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IScheduleRuleFactory scheduleRuleFactory,
             IManagerFactory managerFactory,
             IEnumerable<IBatchStatus> batchStatuses,
-            IAgentValidator agentValidator) : base(helper)
+            IAgentValidator agentValidator,
+            IDiagnosticLog diagnosticLog) : base(helper, diagnosticLog)
         {
             _caseServiceContext = caseServiceContext;
             _providerFactory = providerFactory;
@@ -130,9 +132,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 JobStopManager?.ThrowIfStopRequested();
 
                 IDataReader idReader = GetBatchableIdsWithDrainStopTimeout(job, provider, GetDrainStopTimeout());
-                
+
                 JobStopManager?.ThrowIfStopRequested();
-                return new ReaderEnumerable(idReader, JobStopManager);
+                return new ReaderEnumerable(idReader, JobStopManager, DiagnosticLog);
             }
             catch (OperationCanceledException e)
             {
@@ -155,9 +157,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 _jobHistoryErrorService.CommitErrors();
                 LogGetUnbatchedIdsFinalize(job);
             }
+
             return new List<string>();
         }
-        
+
         private IDataReader GetBatchableIdsWithDrainStopTimeout(Job job, IDataSourceProvider provider, TimeSpan drainStopTimeout)
         {
             _logger.LogInformation("GetBatchableIds was called with DrainStop timeout {timeout}", drainStopTimeout.TotalSeconds);
@@ -305,8 +308,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             JobHistory = _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(IntegrationPoint, BatchInstance, DateTime.UtcNow);
             _jobHistoryErrorService.JobHistory = JobHistory;
             _jobHistoryErrorService.IntegrationPoint = IntegrationPoint;
-            
-            JobStopManager = ManagerFactory.CreateJobStopManager(_jobService, _jobHistoryService, BatchInstance, job.JobId, supportsDrainStop: true);
+
+            JobStopManager = ManagerFactory.CreateJobStopManager(_jobService, _jobHistoryService, BatchInstance, job.JobId, supportsDrainStop: true, DiagnosticLog);
             JobStopManager.ThrowIfStopRequested();
 
             if (!JobHistory.StartTimeUTC.HasValue)
@@ -496,16 +499,19 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private class ReaderEnumerable : IEnumerable<string>, IDisposable
         {
             private readonly IJobStopManager _jobStopManager;
+            private readonly IDiagnosticLog _diagnosticLog;
             private readonly IDataReader _reader;
 
-            public ReaderEnumerable(IDataReader reader, IJobStopManager jobStopManager)
+            public ReaderEnumerable(IDataReader reader, IJobStopManager jobStopManager, IDiagnosticLog diagnosticLog)
             {
                 _reader = reader;
                 _jobStopManager = jobStopManager;
+                _diagnosticLog = diagnosticLog;
             }
 
             public void Dispose()
             {
+                _diagnosticLog.LogDiagnostic("Dispose ReaderEnumerable");
                 Dispose(true);
                 GC.SuppressFinalize(this);
             }
@@ -517,6 +523,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     _jobStopManager?.ThrowIfStopRequested();
 
                     string result = _reader.GetString(0);
+                    _diagnosticLog.LogDiagnostic("Reading: {result}", result);
                     yield return result;
                 }
                 Dispose();

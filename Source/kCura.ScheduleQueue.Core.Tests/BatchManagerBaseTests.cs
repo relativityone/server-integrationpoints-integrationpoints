@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Tests;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.ScheduleQueue.Core.BatchProcess;
 using NSubstitute;
 using NUnit.Framework;
@@ -23,7 +25,7 @@ namespace kCura.ScheduleQueue.Core.Tests
         {
             _job = JobHelper.GetJob(1, null, null, 1, 1, 111, 222, TaskType.SyncEntityManagerWorker, new DateTime(), null, _JOB_DETAILS, 0, new DateTime(), 1, null, null);
             IHelper helper = Substitute.For<IHelper>();
-            _instance = new BatchManagerTest(helper);
+            _instance = new BatchManagerTest(helper, new EmptyDiagnosticLog());
         }
 
         [TestCase(0)]
@@ -84,7 +86,7 @@ namespace kCura.ScheduleQueue.Core.Tests
                 BatchCount++;
             }
 
-            public BatchManagerTest(IHelper helper) : base(helper)
+            public BatchManagerTest(IHelper helper, IDiagnosticLog diagnosticLog) : base(helper, diagnosticLog)
             {
             }
         }
