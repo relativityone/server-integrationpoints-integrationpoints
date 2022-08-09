@@ -72,16 +72,5 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 
             return parsedEnum;
         }
-
-        private int ParseInt(string value)
-        {
-            bool isParsed = int.TryParse(value, out int parsedValue);
-            if (!isParsed)
-            {
-                parsedValue = -1;
-            }
-
-            return parsedValue;
-        }
     }
 }
