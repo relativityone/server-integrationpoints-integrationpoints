@@ -24,8 +24,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             base.OnSetUpFixture();
             _implementation.OnSetUpFixture(RunCount);
         }
-
-        [OneTimeTearDown] 
+        
+        [OneTimeTearDown]
         public void OneTimeTeardown()
         {
             base.OnTearDownFixture();

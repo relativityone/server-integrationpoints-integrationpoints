@@ -11,7 +11,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
     {
         #region 1st column
         public RwcTextField<_> Name { get; private set; }
-        
+
         public RwcRadioButtonGroupField<_> Overwrite { get; private set; }
 
         public RwcTextAreaField<_> ExportType { get; private set; }
@@ -48,7 +48,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 
         public RwcTextAreaField<_> EmailNotificationRecipients { get; private set; }
 
-        public RwcTextField<_> TotalOfDocuments { get; private set; }
+        public RwcIntField<_> TotalOfDocuments { get; private set; }
 
         public RwcTextField<_> TotalOfNatives { get; private set; }
 

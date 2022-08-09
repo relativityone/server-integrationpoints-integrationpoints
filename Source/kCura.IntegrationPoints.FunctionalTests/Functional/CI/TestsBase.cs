@@ -43,7 +43,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             {
                 RelativityFacade.Instance.DeleteWorkspace(Workspace);
             }
-            
         }
 
         public void LoginAsStandardUser()

@@ -1,5 +1,4 @@
 ﻿using Atata;
-using Relativity.Testing.Framework.Web.Triggers;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.Controls
 {
