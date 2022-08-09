@@ -1,14 +1,14 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using FluentAssertions;
 using kCura.IntegrationPoints.Data;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Sync;
 using Relativity.Testing.Identification;
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
 {
@@ -22,7 +22,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
             // Arrange
             ScheduleSyncJob();
 
-            var sut = FakeAgent.Create(FakeRelativityInstance, Container);
+            FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container);
 
             // Act
             sut.Execute();
@@ -30,7 +30,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
             // Assert
             VerifyJobHasBeenCompleted();
         }
-        
+
         [IdentifiedTest("947DBE0E-032B-4A54-A5C0-1B87361FDF65")]
         public void Agent_ShouldSuccessfullyProcessSyncJob_WhenJobWasDrainStoppedAndResumed()
         {
@@ -38,7 +38,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
             ScheduleSyncJob();
 
             // (1) Act & Assert
-            var agentMarkedToBeRemoved = PrepareSutWithCustomSyncJob(
+            FakeAgent agentMarkedToBeRemoved = PrepareSutWithCustomSyncJob(
                 SyncJobGracefullyDrainStoppedAction);
 
             agentMarkedToBeRemoved.Execute();
@@ -46,7 +46,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
             VerifyJobHasBeenDrainStopped();
 
             // (2) Act & Assert
-            var agentAbleToComplete = PrepareSutWithCustomSyncJob((agent, token) => Task.CompletedTask);
+            FakeAgent agentAbleToComplete = PrepareSutWithCustomSyncJob((agent, token) => Task.CompletedTask);
 
             agentAbleToComplete.Execute();
 
@@ -66,8 +66,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
         private FakeAgent PrepareSutWithCustomSyncJob(Func<FakeAgent, CompositeCancellationToken, Task> action)
         {
             FakeAgent agent = FakeAgent.Create(FakeRelativityInstance, Container);
-            
-            var syncOperations = Container.Resolve<IExtendedFakeSyncOperations>();
+
+            IExtendedFakeSyncOperations syncOperations = Container.Resolve<IExtendedFakeSyncOperations>();
 
             syncOperations.SetupSyncJob(async token => await action(agent, token).ConfigureAwait(false));
 
@@ -101,14 +101,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
             {
                 agent.MarkAgentToBeRemoved();
                 SpinWait.SpinUntil(
-                    () =>token.IsDrainStopRequested && JobInQueueHasFlag(StopState.DrainStopping),
+                    () => token.IsDrainStopRequested && JobInQueueHasFlag(StopState.DrainStopping),
                     TimeSpan.FromSeconds(_STOP_MANAGER_TIMEOUT)
                 );
 
                 await Task.Delay(100);
             };
 
-        private bool JobInQueueHasFlag(StopState stopState) => 
+        private bool JobInQueueHasFlag(StopState stopState) =>
             FakeRelativityInstance.JobsInQueue.All(x => x.StopState.HasFlag(stopState));
 
         private bool JobHistoryHasStatus(Guid statusGuid) =>

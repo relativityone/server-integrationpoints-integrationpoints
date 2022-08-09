@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.UtilityDTO;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests
 {
@@ -20,6 +21,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 
         private Mock<IExtendedJob> _jobFake;
         private Mock<IRelativityObjectManager> _relativityObjectManagerFake;
+        private Mock<IToggleProvider> _toggleProviderFake;
 
         private const int _JOB_ID = 1;
         private const int _JOB_HISTORY_ID = 10;
@@ -50,10 +52,12 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             _relativityObjectManagerFake.Setup(x => x.QueryAsync(It.IsAny<QueryRequest>(),It.IsAny<int>(),It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<ExecutionIdentity>()))
                 .ReturnsAsync(new ResultSet<RelativityObject>());
 
+            _toggleProviderFake = new Mock<IToggleProvider>();
+
             Mock<IAPILog> loggerFake = new Mock<IAPILog>();
             loggerFake.Setup(x => x.ForContext<JobHistorySyncService>()).Returns(loggerFake.Object);
 
-            _sut = new JobHistorySyncService(_relativityObjectManagerFake.Object, loggerFake.Object);
+            _sut = new JobHistorySyncService(_relativityObjectManagerFake.Object, _toggleProviderFake.Object, loggerFake.Object);
         }
 
         [TestCase("validating")]
