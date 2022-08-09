@@ -39,11 +39,18 @@ export function transformLayout(layoutData, convenienceApi: IConvenienceApi, bac
                 addFieldsToLayout(layoutData, existingFields, fieldsForFTP)
                 break;
             default:
-                console.log("other case?");
-                addFieldsToLayout(layoutData, existingFields, fieldsForOtherProviders)
-                break;
+                try {
+                    let additionalFields = Object.getOwnPropertyNames(sourceConfiguration).map(el => el[0].toUpperCase() + el.substring(1))
+                    let extendedFieldsForOtherProvider = [...fieldsForOtherProviders, ...additionalFields];
+                    addFieldsToLayout(layoutData, existingFields, extendedFieldsForOtherProvider)
+                    if (additionalFields.length === 0) {
+                        removeUnnecessaryField(existingFields, "Source Configuration")
+                    }
+                    break;
+                } catch (e) {
+                    console.log(e)
+                }
         }
-        console.log("in switch, source provider -> ", sourceProvider)
         removeUnnecessaryField(existingFields, "Promote Eligible")
 
         return [sourceConfiguration, destinationConfiguration];
@@ -55,8 +62,14 @@ export function transformLayout(layoutData, convenienceApi: IConvenienceApi, bac
 function extractFieldsValuesFromBackingModelData(backingModelData: Object) {
     let keys = Object.keys(backingModelData);
     keys.sort((a, b) => { return Number(a) - Number(b) });
-
-    let sourceConfiguration = JSON.parse(backingModelData[keys[4].toString()]);
+    let sourceConfiguration;
+    try {
+        sourceConfiguration = JSON.parse(backingModelData[keys[4].toString()]);
+    } catch (e) {
+        sourceConfiguration = {
+            "SourceConfiguration": backingModelData[keys[4].toString()]
+        }
+    }
     let destinationConfiguration = JSON.parse(backingModelData[keys[5].toString()]);
     let sourceProvider = backingModelData[keys[6].toString()].Name;
     return [sourceConfiguration, destinationConfiguration, sourceProvider];
