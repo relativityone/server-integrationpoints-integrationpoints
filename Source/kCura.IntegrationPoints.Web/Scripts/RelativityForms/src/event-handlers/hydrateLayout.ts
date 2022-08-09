@@ -33,6 +33,17 @@ export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sou
     convenienceApi.fieldHelper.setValue("Source Location", sourceConfiguration["LoadFile"]);
     convenienceApi.fieldHelper.setValue("Import Type", getImportType(sourceConfiguration["ImportType"]));
 
+    // import from other providers
+    try {
+        let fields = Object.getOwnPropertyNames(sourceConfiguration)
+        fields.forEach(field => {
+            let label = field[0].toUpperCase() + field.substring(1)
+            convenienceApi.fieldHelper.setValue(label, sourceConfiguration[field])
+        })
+    } catch (e) {
+        console.log(e)
+    }
+
     // export to load file 
     getDestinationDetails(sourceConfiguration, convenienceApi).then(label => {
         convenienceApi.fieldHelper.setValue("Destination Details", label);
@@ -77,7 +88,6 @@ export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sou
     convenienceApi.fieldHelper.setValue("Protocol", sourceConfiguration["protocol"]);
     convenienceApi.fieldHelper.setValue("Filename Prefix", sourceConfiguration["filename_prefix"]);
     convenienceApi.fieldHelper.setValue("Timezone Offset", sourceConfiguration["TimezoneOffset"]);
-
 
     convenienceApi.fieldHelper.setValue("Total of Documents", "Calculating...");
     convenienceApi.fieldHelper.setValue("Total of Images", "Calculating...");
