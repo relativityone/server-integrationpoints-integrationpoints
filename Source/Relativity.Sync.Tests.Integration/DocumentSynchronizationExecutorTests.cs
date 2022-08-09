@@ -9,8 +9,10 @@ using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Folder;
+using Relativity.Services.InstanceSetting;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Services.ResourceServer;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Executors.DocumentTaggers;
@@ -30,14 +32,6 @@ namespace Relativity.Sync.Tests.Integration
     [TestFixture]
     internal sealed class DocumentSynchronizationExecutorTests
     {
-        private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 10001;
-        private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 20002;
-
-        private readonly ImportApiJobStatistics _emptyJobStatistsics = new ImportApiJobStatistics(0, 0, 0, 0);
-
-        private readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
-        private readonly Guid JobHistoryErrorObjectTypeGuid = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
-
         private ConfigurationStub _config;
         private IExecutor<IDocumentSynchronizationConfiguration> _executor;
         private ISourceWorkspaceDataReaderFactory _dataReaderFactory;
@@ -45,6 +39,14 @@ namespace Relativity.Sync.Tests.Integration
         private Mock<IFolderManager> _folderManagerMock;
         private Mock<ISyncImportBulkArtifactJob> _importBulkArtifactJob;
         private Mock<IRdoManager> _rdoManagerMock;
+
+        private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 10001;
+        private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 20002; 
+
+        private static readonly ImportApiJobStatistics _emptyJobStatistsics = new ImportApiJobStatistics(0, 0, 0, 0);
+
+        private static readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
+        private static readonly Guid JobHistoryErrorObjectTypeGuid = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
 
         [SetUp]
         public void SetUp()
@@ -98,12 +100,22 @@ namespace Relativity.Sync.Tests.Integration
             var sourceServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
             var sourceServiceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
 
+            var fileShareServerManagerMock = new Mock<IFileShareServerManager>();
+            fileShareServerManagerMock.Setup(x => x.QueryAsync(It.Is<Services.Query>(y => y.GetType() == typeof(Services.Query))))
+                .ReturnsAsync(new FileShareQueryResultSet());
+
+            var instanceSettingManagerMock = new Mock<IInstanceSettingManager>();
+            instanceSettingManagerMock.Setup(x => x.QueryAsync(It.Is<Services.Query>(y => y.GetType() == typeof(Services.Query))))
+                .ReturnsAsync(new InstanceSettingQueryResultSet());
+
             var fieldMappings = new Mock<IFieldMappings>();
             fieldMappings.Setup(x => x.GetFieldMappings()).Returns(fieldMaps);
 
             destinationServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
             sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
             sourceServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
+            sourceServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IFileShareServerManager>()).ReturnsAsync(fileShareServerManagerMock.Object);
+            sourceServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IInstanceSettingManager>()).ReturnsAsync(instanceSettingManagerMock.Object);
             sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IFolderManager>()).ReturnsAsync(_folderManagerMock.Object);
 
             containerBuilder.RegisterInstance(destinationServiceFactoryForUser.Object).As<IDestinationServiceFactoryForUser>();
@@ -117,6 +129,8 @@ namespace Relativity.Sync.Tests.Integration
 
             IContainer container = containerBuilder.Build();
             _dataReaderFactory = container.Resolve<ISourceWorkspaceDataReaderFactory>();
+            IHelper helper = container.Resolve<IHelper>();
+
             _executor = container.Resolve<IExecutor<IDocumentSynchronizationConfiguration>>();
         }
 
@@ -140,7 +154,6 @@ namespace Relativity.Sync.Tests.Integration
                 {
                     dataReader.Read();
                 }
-
                 _importBulkArtifactJob.Raise(x => x.OnComplete += null, _emptyJobStatistsics);
             });
 
@@ -155,11 +168,8 @@ namespace Relativity.Sync.Tests.Integration
             // assert
             result.Status.Should().Be(ExecutionStatus.Completed);
             _objectManagerMock.Verify();
-            _objectManagerMock.Verify(
-                x => x.CreateAsync(
-                    _SOURCE_WORKSPACE_ARTIFACT_ID,
-                    It.Is<CreateRequest>(cr => cr.ObjectType.Guid == JobHistoryErrorObjectTypeGuid)),
-                Times.Never);
+            _objectManagerMock.Verify(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
+                It.Is<CreateRequest>(cr => cr.ObjectType.Guid == JobHistoryErrorObjectTypeGuid)), Times.Never);
             _importBulkArtifactJob.Verify(x => x.Execute(), Times.Once);
         }
 
@@ -190,7 +200,8 @@ namespace Relativity.Sync.Tests.Integration
                     dataReader.Read();
                     _importBulkArtifactJob.Raise(x => x.OnItemLevelError += null, new ItemLevelError(
                         document.Values[0].ToString(),
-                        "Some weird error message."));
+                        "Some weird error message."
+                    ));
                 }
 
                 for (int i = 0; i < completedItems; i++)
@@ -205,7 +216,7 @@ namespace Relativity.Sync.Tests.Integration
             SetupFolderQueryResult(documentIds, folderArtifactId);
             SetupFolderPaths(folderArtifactId);
             SetupTaggingOfDocuments(completedItems);
-
+            
             MassCreateResult massCreateResult = new MassCreateResult()
             {
                 Success = true,

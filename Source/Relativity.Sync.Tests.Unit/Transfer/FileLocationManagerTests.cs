@@ -1,22 +1,22 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Transfer;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
     [TestFixture]
     internal sealed class FileLocationManagerTests
     {
-        private Mock<ISynchronizationConfiguration> _configurationMock;
-        private IFileLocationManager _sut;
-
         private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 123456;
         private const string _EXAMPLE_SERVER_PATH = @"\\files.T00.ctus000001.r1.kcura.com\T00";
+
+        private Mock<ISynchronizationConfiguration> _configurationMock;
+        private IFileLocationManager _sut;
 
         [SetUp]
         public void SetUp()
@@ -49,8 +49,12 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         public void TranslateAndStoreFilePaths_ShouldCreateCorrectPathsForFmsBatch()
         {
             // Arrange
-            IDictionary<int, INativeFile> testInput = new Dictionary<int, INativeFile> { { 1,
-                    new NativeFile(1, $@"{_EXAMPLE_SERVER_PATH}\EDDS1018439\RV_1\5dcd0d81-13f0-4194-9a11-4a56c0fd8159", string.Empty, 1) } };
+            IDictionary<int, INativeFile> testInput = new Dictionary<int, INativeFile>
+            {
+                {
+                    1, new NativeFile(1, $@"{_EXAMPLE_SERVER_PATH}\EDDS1018439\RV_1\5dcd0d81-13f0-4194-9a11-4a56c0fd8159", string.Empty, 1)
+                }
+            };
             string expectedSourceShortPath = @"EDDS1018439/RV_1";
             int expectedNumberOfFilesWithinBatch = 1;
 
@@ -69,7 +73,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
             testInput.First().Value.Location.Should().Be(expectedLinkForIAPI);
         }
-
 
         private IDictionary<int, INativeFile> PrepareTestNativeFilesSet()
         {
@@ -90,6 +93,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             {
                 testNatives.Add(i + 1, new NativeFile(i + 1, testLocations[i], $"testFile{i}.txt", 1));
             }
+
             return testNatives;
         }
     }

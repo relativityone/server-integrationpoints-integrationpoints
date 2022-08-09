@@ -36,7 +36,7 @@ namespace Relativity.Sync.Tests.Unit
             _instance.Create(_syncJobParameters, _relativityServices, _logger).Should().BeOfType<SyncJobInLifetimeScope>();
             _instance.Create(_syncJobParameters, _relativityServices).Should().BeOfType<SyncJobInLifetimeScope>();
         }
-        
+
         [Test]
         public void ItShouldThrowArgumentNullExceptionOnNullParameters()
         {
