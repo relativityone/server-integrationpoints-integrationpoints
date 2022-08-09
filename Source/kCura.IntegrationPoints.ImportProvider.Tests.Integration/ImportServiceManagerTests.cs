@@ -171,8 +171,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
                 jobStatusUpdater,
                 automatedWorkflowsManager,
                 jobTrackerFake,
-                null
-            );
+                null);
         }
 
         public override void TestTeardown()

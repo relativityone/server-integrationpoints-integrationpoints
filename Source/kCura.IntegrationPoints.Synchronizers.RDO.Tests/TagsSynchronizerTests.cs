@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Logging;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -51,7 +52,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             _instance.SyncData(_data, _fieldMap, JsonConvert.SerializeObject(importSettings), null, new EmptyDiagnosticLog());
 
             // ASSERT
-            _dataSynchronizer.Received(1).SyncData(_data, _fieldMap, Arg.Is<string>(x => AssertOptions(x)), null, new EmptyDiagnosticLog());
+            _dataSynchronizer.Received(1).SyncData(_data, _fieldMap, Arg.Is<string>(x => AssertOptions(x)), null, Arg.Any<IDiagnosticLog>());
         }
 
         [Test]

@@ -175,12 +175,16 @@ namespace kCura.IntegrationPoints.Core.Installers
             {
                 IToggleProvider toggle = c.Resolve<IToggleProvider>();
 
+                IAPILog log = container.Resolve<IHelper>().GetLoggerFactory().GetLogger();
+
                 if (toggle.IsEnabled<EnableDiagnosticLoggingToggle>())
                 {
-                    IAPILog log = container.Resolve<IHelper>().GetLoggerFactory().GetLogger();
+                    log.LogInformation("Creating DiagnosticLog...");
 
                     return new DiagnosticLog(log);
                 }
+
+                log.LogInformation("Diagnostic Toggle is disabled. EmptyDiagnosticLog will be used.");
 
                 return new EmptyDiagnosticLog();
             }).LifestyleSingleton());

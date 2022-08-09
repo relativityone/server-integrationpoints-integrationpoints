@@ -87,7 +87,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             VerifyCreatedSyncWorkerJobs(batches, StopState.None);
         }
 
-        
+
         [IdentifiedTest("541F3112-394B-45BF-AD73-77A610A77D8A")]
         public void Execute_ShouldNotCreateBatchesWithStopStateSuspendingWhenDrainStoppedBeforeBatchTask()
         {

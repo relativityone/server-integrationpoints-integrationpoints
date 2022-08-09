@@ -1,7 +1,7 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -13,7 +13,8 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Tests.Tagging
 {
-    [TestFixture, Category("Unit")]
+    [TestFixture]
+    [Category("Unit")]
     public class TaggerTests : TestBase
     {
         private Tagger _instance;
@@ -59,7 +60,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
         [Test]
         public void ItShouldImportTaggingFieldsWhenThereAreDocumentsToTag()
         {
-            //arrange
+            // Arrange
             SourceJobDTO job = new SourceJobDTO
             {
                 Name = "whatever"
@@ -69,22 +70,30 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
                 Name = "whatever"
             };
 
-            var scratchTableRepository = Substitute.For<IScratchTableRepository>();
+            IScratchTableRepository scratchTableRepository = Substitute.For<IScratchTableRepository>();
+
             scratchTableRepository.GetCount().Returns(1);
 
             TagsContainer tagsContainer = new TagsContainer(job, workspace);
 
-            //act
+            // Act
             _instance.TagDocuments(tagsContainer, scratchTableRepository);
 
-            //assert
-            _dataSynchronizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<FieldMap[]>(), _importConfig, null, new EmptyDiagnosticLog());
+            // Assert
+            _dataSynchronizer
+                .Received(1)
+                .SyncData(
+                    Arg.Any<IDataTransferContext>(),
+                    Arg.Any<FieldMap[]>(),
+                    _importConfig,
+                    null,
+                    Arg.Any<IDiagnosticLog>());
         }
 
         [Test]
         public void ItShouldNotImportTaggingFieldsWhenThereIsNoDocumentToTag()
         {
-            //arrange
+            // Arrange
             SourceJobDTO job = new SourceJobDTO
             {
                 Name = "whatever"
@@ -94,16 +103,23 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
                 Name = "whatever"
             };
 
-            var scratchTableRepository = Substitute.For<IScratchTableRepository>();
+            IScratchTableRepository scratchTableRepository = Substitute.For<IScratchTableRepository>();
             scratchTableRepository.GetCount().Returns(0);
 
             TagsContainer tagsContainer = new TagsContainer(job, workspace);
 
-            //act
+            // Act
             _instance.TagDocuments(tagsContainer, scratchTableRepository);
 
-            //assert
-            _dataSynchronizer.DidNotReceiveWithAnyArgs().SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<FieldMap[]>(), _importConfig, null, new EmptyDiagnosticLog());
+            // Assert
+            _dataSynchronizer
+                .DidNotReceiveWithAnyArgs()
+                .SyncData(
+                    Arg.Any<IDataTransferContext>(),
+                    Arg.Any<FieldMap[]>(),
+                    _importConfig,
+                    null,
+                    Arg.Any<IDiagnosticLog>());
         }
     }
 }

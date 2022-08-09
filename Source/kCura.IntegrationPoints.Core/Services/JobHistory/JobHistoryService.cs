@@ -201,7 +201,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             Data.JobHistory jobHistory,
             JobHistoryQueryOptions queryOptions)
         {
-            _logger.LogInformation("Updating JobHistory {jobHistoryGuid}", jobHistory.BatchInstance);
+            _logger.LogInformation("Updating JobHistory {jobHistoryId}", jobHistory.ArtifactId);
 
             if (queryOptions.ContainsAll())
             {
