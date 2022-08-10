@@ -184,7 +184,7 @@ namespace Relativity.Sync.Executors
             return statistics;
         }
 
-        private static string GetValueOrNull(IDictionary row, string key)
+        private string GetValueOrNull(IDictionary row, string key)
         {
             return row.Contains(key) ? row[key].ToString() : null;
         }
