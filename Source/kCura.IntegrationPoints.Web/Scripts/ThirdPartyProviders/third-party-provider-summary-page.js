@@ -1,8 +1,7 @@
 ﻿var IP = IP || {};
 
 var loadData = function(ko, dataContainer) {
-
-	var Model = function(dataContainer) {
+	var Model = function (dataContainer) {
 		this.hasErrors = dataContainer.hasErrors;
 		this.logErrors = dataContainer.logErrors;
 		this.emailNotification = dataContainer.emailNotification;

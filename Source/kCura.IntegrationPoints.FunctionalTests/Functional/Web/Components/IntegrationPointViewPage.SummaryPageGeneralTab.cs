@@ -12,18 +12,31 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
         #region 1st column
 
         public string GetName() => SummaryPageGeneralTab.Name.Value;
+
         public string GetExportType() => SummaryPageGeneralTab.ExportType.Value;
-        public RelativityProviderOverwrite GetOverwriteMode() => ParseEnum<RelativityProviderOverwrite>(SummaryPageGeneralTab.Overwrite.Value.Replace("/", ""));
+
+        public RelativityProviderOverwrite GetOverwriteMode() => ParseEnum<RelativityProviderOverwrite>(SummaryPageGeneralTab.Overwrite.Value.Replace("/", string.Empty));
+
         public string GetSourceDetails() => SummaryPageGeneralTab.SourceDetails.Value;
+
         public string GetSourceWorkspaceName() => SummaryPageGeneralTab.SourceWorkspace.Value;
+
         public string GetSourceRelativityInstance() => SummaryPageGeneralTab.SourceRelativityInstance.Value;
+
         public IntegrationPointTransferredObjects GetTransferredObject() => ParseEnum<IntegrationPointTransferredObjects>(SummaryPageGeneralTab.TransferedObject.Value);
+
         public string GetDestinationWorkspaceName() => SummaryPageGeneralTab.DestinationWorkspace.Value;
+
         public string GetDestinationFolderName() => SummaryPageGeneralTab.DestinationFolder.Value;
+
         public FieldOverlayBehavior GetMultiSelectOverlayMode() => ParseEnum<FieldOverlayBehavior>(SummaryPageGeneralTab.MultiSelectOverlay.Value);
+
         public RelativityProviderFolderPathInformation GetUseFolderPathInfo() => ParseEnum<RelativityProviderFolderPathInformation>(SummaryPageGeneralTab.UseFolderPathInfo.Value);
+
         public YesNo GetMoveExistingDocs() => ParseEnum<YesNo>(SummaryPageGeneralTab.MoveExistingDocs.Value);
+
         public RelativityProviderImagePrecedence GetImagePrecedence() => ParseEnum<RelativityProviderImagePrecedence>(SummaryPageGeneralTab.ImagePrecedence.Value + " Images");
+
         public YesNo GetCopyFilesToRepository() => ParseEnum<YesNo>(SummaryPageGeneralTab.CopyFilesToRepository.Value);
 
         #endregion
@@ -31,18 +44,25 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
         #region 2nd column
 
         public YesNo GetLogErrors() => ParseEnum<YesNo>(SummaryPageGeneralTab.LogErrors.Value);
+
         public YesNo GetHasErrors() => ParseEnum<YesNo>(SummaryPageGeneralTab.HasErrors.Value);
+
         public string GetEmailNotificationRecipients() => SummaryPageGeneralTab.EmailNotificationRecipients.Value;
-        public int GetTotalDocuments() => Convert.ToInt32(SummaryPageGeneralTab.TotalOfDocuments.Value);
+
+        public int GetTotalDocuments() => SummaryPageGeneralTab.TotalOfDocuments.GetValueWithRetries();
+
         public string GetTotalNatives() => SummaryPageGeneralTab.TotalOfNatives.Value;
+
         public string GetTotalImages() => SummaryPageGeneralTab.TotalOfImages.Value;
+
         public YesNo GetCreateSavedSearch() => ParseEnum<YesNo>(SummaryPageGeneralTab.CreateSavedSearch.Value);
 
         #endregion
 
         private T ParseEnum<T>(string enumStringValue) where T : struct
         {
-            bool isParsed = Enum.TryParse(enumStringValue.Replace(" ", ""),
+            bool isParsed = Enum.TryParse(
+                enumStringValue.Replace(" ", string.Empty),
                 out T parsedEnum);
 
             if (!isParsed)
@@ -52,6 +72,5 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 
             return parsedEnum;
         }
-
     }
 }

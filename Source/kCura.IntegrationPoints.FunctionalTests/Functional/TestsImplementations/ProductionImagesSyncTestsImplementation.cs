@@ -17,17 +17,16 @@ using Relativity.Testing.Framework.Web.Models;
 using Relativity.Testing.Framework.Web.Navigation;
 using KeywordSearch = Relativity.Testing.Framework.Models.KeywordSearch;
 
-
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 {
-    internal class ProductionImagesSyncTestsImplemention : SyncTestsImplementationTemplate
+    internal class ProductionImagesSyncTestsImplementation : SyncTestsImplementationTemplate
     {
         private KeywordSearch _keywordSearch;
         private Testing.Framework.Models.Production _production;
-        private readonly YesNo _copyFilesToRepository;
-        
 
-        public ProductionImagesSyncTestsImplemention(ITestsImplementationTestFixture testsImplementationTestFixture, YesNo copyFilesToRepository) : base(testsImplementationTestFixture)
+        private readonly YesNo _copyFilesToRepository;
+
+        public ProductionImagesSyncTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture, YesNo copyFilesToRepository) : base(testsImplementationTestFixture)
         {
             _copyFilesToRepository = copyFilesToRepository;
         }
@@ -36,7 +35,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         {
             _keywordSearch = RelativityFacade.Instance.Resolve<IKeywordSearchService>().Require(TestsImplementationTestFixture.Workspace.ArtifactID, new KeywordSearch
             {
-                Name = nameof(ProductionImagesSyncTestsImplemention),
+                Name = nameof(ProductionImagesSyncTestsImplementation),
                 SearchCriteria = new CriteriaCollection
                 {
                     Conditions = new List<BaseCriteria>
@@ -57,7 +56,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                 }
             });
 
-            string name = nameof(ProductionImagesSyncTestsImplemention);
+            string name = nameof(ProductionImagesSyncTestsImplementation);
             ProductionPlaceholder productionPlaceholder = new ProductionPlaceholder
             {
                 Name = name,
@@ -66,7 +65,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                 FileData = Convert.ToBase64String(File.ReadAllBytes(DataFiles.PLACEHOLDER_IMAGE_PATH))
             };
             RelativityFacade.Instance.Resolve<IProductionPlaceholderService>().Create(TestsImplementationTestFixture.Workspace.ArtifactID, productionPlaceholder);
-
 
             _production = new Testing.Framework.Models.Production
             {

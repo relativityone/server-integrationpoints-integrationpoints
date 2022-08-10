@@ -19,6 +19,7 @@ using kCura.IntegrationPoints.Data.DTO;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -112,7 +113,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 repositoryFactory,
                 _relativityObjectManager,
                 providerTypeService,
-                _integrationPointRepository);
+                _integrationPointRepository,
+                null);
 
             _job = JobHelper.GetJob(
                 1,
@@ -218,7 +220,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             jobHistoryService.CreateRdo(_integrationPoint, taskParams.BatchInstance,
                 JobTypeChoices.JobHistoryRun, Arg.Any<DateTime>()).Returns(_jobHistory);
             queueQueryManager.CheckAllSyncWorkerBatchesAreFinished(_job.JobId).Returns(new ValueReturnQuery<bool>(true));
-            managerFactory.CreateJobStopManager(_jobService, jobHistoryService, taskParams.BatchInstance, _job.JobId, true)
+            managerFactory.CreateJobStopManager(_jobService, jobHistoryService, taskParams.BatchInstance, _job.JobId, true, Arg.Any<IDiagnosticLog>())
                 .Returns(_jobStopManager);
             serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(fieldsMap);
 
@@ -243,7 +245,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             // assert
             EnsureToSetJobHistoryErrorServiceProperties();
-            _dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<IEnumerable<FieldMap>>(), Arg.Any<string>(), Arg.Any<IJobStopManager>());
+            _dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<IEnumerable<FieldMap>>(), Arg.Any<string>(), Arg.Any<IJobStopManager>(), null);
             _jobHistoryErrorService.Received().CommitErrors();
             Assert.DoesNotThrow(_jobStopManager.Dispose);
             _jobService.Received().UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.None);
@@ -265,7 +267,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             // assert
             EnsureToSetJobHistoryErrorServiceProperties();
-            _dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<IEnumerable<FieldMap>>(), Arg.Any<string>(), _jobStopManager);
+            _dataSynchronizer.Received(1).SyncData(Arg.Any<IEnumerable<IDictionary<FieldEntry, object>>>(), Arg.Any<IEnumerable<FieldMap>>(), Arg.Any<string>(), _jobStopManager, null);
             Assert.DoesNotThrow(_jobStopManager.Dispose);
             _jobService.Received().UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.None);
         }
@@ -276,7 +278,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             //ARRANGE
             Job job = GetJob(_jsonParam1);
             SyncEntityManagerWorker task =
-                new SyncEntityManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null);
+                new SyncEntityManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
             //ACT
             MethodInfo dynMethod = task.GetType().GetMethod("GetParameters",
@@ -309,7 +311,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         {
             //ARRANGE
             SyncEntityManagerWorker task =
-                new SyncEntityManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null);
+                new SyncEntityManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null, null);
             _integrationPoint.DestinationConfiguration = _jsonParam2;
             task.GetType().GetProperty("IntegrationPoint", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).SetValue(task, _integrationPoint);
 

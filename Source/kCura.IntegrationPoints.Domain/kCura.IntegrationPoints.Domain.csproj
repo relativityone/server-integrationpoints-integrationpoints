@@ -28,9 +28,7 @@
   <ItemGroup>
     <Compile Include="..\Version\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
     <Compile Include="..\Version\AssemblyInfo.Custom.cs" Link="Properties\AssemblyInfo.Custom.cs" />
-    <Compile Update="Readers\DataColumnWithValue.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Update="Readers\DataColumnWithValue.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="paket.references" />

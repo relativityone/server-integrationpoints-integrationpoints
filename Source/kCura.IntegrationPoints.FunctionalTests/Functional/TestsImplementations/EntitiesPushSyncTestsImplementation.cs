@@ -20,12 +20,12 @@ using Relativity.Testing.Framework.Web.Navigation;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 {
-    internal class EntitiesPushSyncTestsImplemention : SyncTestsImplementationTemplate
+    internal class EntitiesPushSyncTestsImplementation : SyncTestsImplementationTemplate
     {
         private int _entitiesCount = 10;
         private string _viewName;
 
-        public EntitiesPushSyncTestsImplemention(ITestsImplementationTestFixture testsImplementationTestFixture) : base(testsImplementationTestFixture)
+        public EntitiesPushSyncTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture) : base(testsImplementationTestFixture)
         {
         }
 

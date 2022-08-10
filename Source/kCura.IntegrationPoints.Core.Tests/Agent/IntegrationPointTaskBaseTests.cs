@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.ScheduleQueue.Core;
@@ -190,8 +191,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 
             _serializer.Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText))).Returns(taskParameters);
 
-            _managerFactory.CreateJobStopManager(Arg.Is(_jobService), Arg.Is(_jobHistoryService),
-                Arg.Is(taskParameters.BatchInstance), jobIdValue, true)
+            _managerFactory.CreateJobStopManager(
+                    Arg.Is(_jobService),
+                    Arg.Is(_jobHistoryService),
+                    Arg.Is(taskParameters.BatchInstance),
+                    jobIdValue,
+                    true,
+                    Arg.Any<IDiagnosticLog>())
                 .Returns(jobStopManager);
 
             _dataProviderFactory.GetDataProvider(Arg.Is(new Guid(sourceProvider.ApplicationIdentifier)),
@@ -232,7 +238,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
             _serializer.Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText))).Returns(taskParameters);
 
             _managerFactory.CreateJobStopManager(Arg.Is(_jobService), Arg.Is(_jobHistoryService),
-                Arg.Is(taskParameters.BatchInstance), jobIdValue, true)
+                Arg.Is(taskParameters.BatchInstance), jobIdValue, true, Arg.Any<IDiagnosticLog>())
                 .Returns(jobStopManager);
 
             _appDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(Arg.Is(new Guid(destinationProvider.Identifier)), Arg.Is(configuration))

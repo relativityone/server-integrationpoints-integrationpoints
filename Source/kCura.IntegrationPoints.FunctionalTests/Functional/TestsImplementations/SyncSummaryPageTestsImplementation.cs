@@ -5,9 +5,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 {
     internal class SyncSummaryPageTestsImplementation
     {
-        private SyncTestsImplementationTemplate _testImplementation;
-
         private readonly ITestsImplementationTestFixture _testsImplementationTestFixture;
+
+        private SyncTestsImplementationTemplate _testImplementation;
 
         public SyncSummaryPageTestsImplementation(ITestsImplementationTestFixture testsImplementationTestFixture)
         {
@@ -46,7 +46,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         public void ProductionImagesSummaryPage()
         {
             // Arrange
-            _testImplementation = new ProductionImagesSyncTestsImplemention(_testsImplementationTestFixture, YesNo.Yes);
+            _testImplementation = new ProductionImagesSyncTestsImplementation(_testsImplementationTestFixture, YesNo.Yes);
 
             // Act
             IntegrationPointViewPage integrationPointViewPage = _testImplementation.CreateIntegrationPointViewPage();
@@ -58,7 +58,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
         public void EntitiesPushSummaryPage()
         {
             // Arrange
-            _testImplementation = new EntitiesPushSyncTestsImplemention(_testsImplementationTestFixture);
+            _testImplementation = new EntitiesPushSyncTestsImplementation(_testsImplementationTestFixture);
 
             // Act
             IntegrationPointViewPage integrationPointViewPage = _testImplementation.CreateIntegrationPointViewPage();

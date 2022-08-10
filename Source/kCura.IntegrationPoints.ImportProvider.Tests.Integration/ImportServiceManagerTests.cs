@@ -35,6 +35,7 @@ using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Core.Contracts.Import;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using Relativity.AutomatedWorkflows.SDK;
+using kCura.IntegrationPoints.Domain.Logging;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 {
@@ -123,7 +124,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
             object syncRoot = new object();
             stopManager.SyncRoot.Returns(syncRoot);
             managerFactory.CreateJobStopManager(Arg.Any<IJobService>(),
-                Arg.Any<IJobHistoryService>(), Arg.Any<Guid>(), Arg.Any<long>(), Arg.Any<bool>()).Returns(stopManager);
+                Arg.Any<IJobHistoryService>(), Arg.Any<Guid>(), Arg.Any<long>(), Arg.Any<bool>(), Arg.Any<IDiagnosticLog>()).Returns(stopManager);
 
             //Job History Service
             JobHistory jobHistoryDto = new JobHistory()
@@ -170,8 +171,8 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
                 integrationPointRepository,
                 jobStatusUpdater,
                 automatedWorkflowsManager,
-                jobTrackerFake
-            );
+                jobTrackerFake,
+                null);
         }
 
         public override void TestTeardown()
