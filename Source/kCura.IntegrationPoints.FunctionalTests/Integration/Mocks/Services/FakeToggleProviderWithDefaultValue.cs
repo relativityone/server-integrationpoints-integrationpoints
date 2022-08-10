@@ -35,7 +35,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
         {
             switch (toggleName)
             {
-                case "Relativity.Sync.Toggles.EnableJobHistoryStatusUpdate":
+                case "Relativity.Sync.Toggles.EnableJobHistoryStatusUpdateToggle":
                     return false;
                 default:
                     throw new NotSupportedException();
