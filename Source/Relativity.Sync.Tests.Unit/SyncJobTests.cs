@@ -163,7 +163,7 @@ namespace Relativity.Sync.Tests.Unit
         public async Task ExecuteAsync_ShouldUpdateJobHistoryStatus_WhenSuccess()
         {
             // Arrange
-            _syncToggles.Setup(x => x.IsEnabled<EnableJobHistoryStatusUpdate>()).Returns(true);
+            _syncToggles.Setup(x => x.IsEnabled<EnableJobHistoryStatusUpdateToggle>()).Returns(true);
             SyncJob job = PrepareSut(new NodeWithProgressStub());
 
             // Act
@@ -178,7 +178,7 @@ namespace Relativity.Sync.Tests.Unit
         public async Task ExecuteAsync_ShouldUpdateJobHistoryStatus_WhenStopped()
         {
             // Arrange
-            _syncToggles.Setup(x => x.IsEnabled<EnableJobHistoryStatusUpdate>()).Returns(true);
+            _syncToggles.Setup(x => x.IsEnabled<EnableJobHistoryStatusUpdateToggle>()).Returns(true);
             CancellationTokenSource stopToken = new CancellationTokenSource();
             CancellationTokenSource drainStopToken = new CancellationTokenSource();
             CompositeCancellationToken compositeToken = new CompositeCancellationToken(stopToken.Token, drainStopToken.Token, new EmptyLogger());
@@ -198,7 +198,7 @@ namespace Relativity.Sync.Tests.Unit
         public async Task ExecuteAsync_ShouldUpdateJobHistoryStatus_WhenStoppedWithException()
         {
             // Arrange
-            _syncToggles.Setup(x => x.IsEnabled<EnableJobHistoryStatusUpdate>()).Returns(true);
+            _syncToggles.Setup(x => x.IsEnabled<EnableJobHistoryStatusUpdateToggle>()).Returns(true);
 
             Mock<INode<SyncExecutionContext>> pipeline = new Mock<INode<SyncExecutionContext>>();
             pipeline
@@ -219,7 +219,7 @@ namespace Relativity.Sync.Tests.Unit
         public async Task ExecuteAsync_ShouldUpdateJobHistoryStatus_WhenDrainStopped()
         {
             // Arrange
-            _syncToggles.Setup(x => x.IsEnabled<EnableJobHistoryStatusUpdate>()).Returns(true);
+            _syncToggles.Setup(x => x.IsEnabled<EnableJobHistoryStatusUpdateToggle>()).Returns(true);
             CancellationTokenSource stopToken = new CancellationTokenSource();
             CancellationTokenSource drainStopToken = new CancellationTokenSource();
             CompositeCancellationToken compositeToken = new CompositeCancellationToken(stopToken.Token, drainStopToken.Token, new EmptyLogger());
@@ -239,7 +239,7 @@ namespace Relativity.Sync.Tests.Unit
         public async Task ExecuteAsync_ShouldUpdateJobHistoryStatus_WhenValidationFailed()
         {
             // Arrange
-            _syncToggles.Setup(x => x.IsEnabled<EnableJobHistoryStatusUpdate>()).Returns(true);
+            _syncToggles.Setup(x => x.IsEnabled<EnableJobHistoryStatusUpdateToggle>()).Returns(true);
 
             SyncJob job = PrepareSut(new ValidationFailedNode());
 
@@ -256,7 +256,7 @@ namespace Relativity.Sync.Tests.Unit
         public async Task ExecuteAsync_ShouldUpdateJobHistoryStatus_WhenJobFailed()
         {
             // Arrange
-            _syncToggles.Setup(x => x.IsEnabled<EnableJobHistoryStatusUpdate>()).Returns(true);
+            _syncToggles.Setup(x => x.IsEnabled<EnableJobHistoryStatusUpdateToggle>()).Returns(true);
 
             Mock<INode<SyncExecutionContext>> pipeline = new Mock<INode<SyncExecutionContext>>();
             pipeline

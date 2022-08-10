@@ -46,7 +46,7 @@ namespace Relativity.Sync
 
         private async Task ExecuteAsync(CompositeCancellationToken token, params IProgress<SyncJobState>[] progressReporters)
         {
-            if (_syncToggles.IsEnabled<EnableJobHistoryStatusUpdate>())
+            if (_syncToggles.IsEnabled<EnableJobHistoryStatusUpdateToggle>())
             {
                 _logger.LogInformation("Job History status will be updated");
 

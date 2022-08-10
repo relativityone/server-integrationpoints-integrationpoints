@@ -7,8 +7,7 @@ namespace Relativity.Sync.Toggles
     /// </summary>
     [DefaultValue(false)]
     [Description("When enabled, Sync will update Job History status.", "Adler Sieben")]
-    public class EnableJobHistoryStatusUpdate : IToggle
+    public class EnableJobHistoryStatusUpdateToggle : IToggle
     {
-        
     }
 }
