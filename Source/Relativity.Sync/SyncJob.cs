@@ -8,6 +8,7 @@ using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Toggles;
 using Relativity.Sync.Toggles.Service;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync
 {
@@ -106,7 +107,7 @@ namespace Relativity.Sync
             const string validating = "validating";
             const string checkingPermissions = "checking permissions";
 
-            if (syncStatus.Equals(validating, StringComparison.InvariantCultureIgnoreCase) || syncStatus.Equals(checkingPermissions, StringComparison.InvariantCultureIgnoreCase))
+            if (syncStatus.IsIn(StringComparison.InvariantCultureIgnoreCase, validating, checkingPermissions))
             {
                 return JobHistoryStatus.Validating;
             }
