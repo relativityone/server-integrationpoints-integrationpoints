@@ -142,7 +142,9 @@ namespace Relativity.Sync
                 throw new SyncException("Error occured during Sync job execution. See inner exception for more details.", e, _syncJobParameters.WorkflowId);
             }
 
-            if (executionResult.Status != NodeResultStatus.Succeeded && executionResult.Status != NodeResultStatus.SucceededWithErrors)
+            if (executionResult.Status != NodeResultStatus.Succeeded &&
+                executionResult.Status != NodeResultStatus.SucceededWithErrors &&
+                executionResult.Status != NodeResultStatus.NotRun)
             {
                 SyncExecutionContext subject = (SyncExecutionContext)executionResult.Subject;
                 IList<Exception> failingExceptions = subject.Results

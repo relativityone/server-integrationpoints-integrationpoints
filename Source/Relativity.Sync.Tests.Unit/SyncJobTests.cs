@@ -1,12 +1,15 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Banzai;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Relativity.Sync.Executors.Validation;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Tests.Unit.Stubs;
+using Relativity.Sync.Toggles;
 using Relativity.Sync.Toggles.Service;
 
 namespace Relativity.Sync.Tests.Unit
@@ -110,7 +113,7 @@ namespace Relativity.Sync.Tests.Unit
             // ASSERT
             action.Should().Throw<SyncException>().Which.WorkflowId.Should().Be(_WORKFLOW_ID.ToString());
         }
-        
+
         [Test]
         public async Task ItShouldInvokeSyncProgress()
         {
@@ -156,9 +159,133 @@ namespace Relativity.Sync.Tests.Unit
             progressMock.Verify(x => x.Report(It.IsAny<SyncJobState>()));
         }
 
+        [Test]
+        public async Task ExecuteAsync_ShouldUpdateJobHistoryStatus_WhenSuccess()
+        {
+            // Arrange
+            _syncToggles.Setup(x => x.IsEnabled<EnableJobHistoryStatusUpdate>()).Returns(true);
+            SyncJob job = PrepareSut(new NodeWithProgressStub());
+
+            // Act
+            await job.ExecuteAsync(CompositeCancellationToken.None);
+
+            // Assert
+            _jobProgressUpdater.Verify(x => x.SetJobStartedAsync(), Times.Once);
+            _jobProgressUpdater.Verify(x => x.UpdateJobStatusAsync(JobHistoryStatus.Completed), Times.Once);
+        }
+
+        [Test]
+        public async Task ExecuteAsync_ShouldUpdateJobHistoryStatus_WhenStopped()
+        {
+            // Arrange
+            _syncToggles.Setup(x => x.IsEnabled<EnableJobHistoryStatusUpdate>()).Returns(true);
+            CancellationTokenSource stopToken = new CancellationTokenSource();
+            CancellationTokenSource drainStopToken = new CancellationTokenSource();
+            CompositeCancellationToken compositeToken = new CompositeCancellationToken(stopToken.Token, drainStopToken.Token, new EmptyLogger());
+
+            SyncJob job = PrepareSut(new NodeWithProgressStub());
+
+            // Act
+            stopToken.Cancel();
+            await job.ExecuteAsync(compositeToken);
+
+            // Assert
+            _jobProgressUpdater.Verify(x => x.SetJobStartedAsync(), Times.Once);
+            _jobProgressUpdater.Verify(x => x.UpdateJobStatusAsync(JobHistoryStatus.Stopped), Times.Once);
+        }
+
+        [Test]
+        public async Task ExecuteAsync_ShouldUpdateJobHistoryStatus_WhenStoppedWithException()
+        {
+            // Arrange
+            _syncToggles.Setup(x => x.IsEnabled<EnableJobHistoryStatusUpdate>()).Returns(true);
+
+            Mock<INode<SyncExecutionContext>> pipeline = new Mock<INode<SyncExecutionContext>>();
+            pipeline
+                .Setup(x => x.ExecuteAsync(It.IsAny<IExecutionContext<SyncExecutionContext>>()))
+                .Throws<OperationCanceledException>();
+
+            SyncJob job = PrepareSut(pipeline.Object);
+
+            // Act
+            await job.ExecuteAsync(CompositeCancellationToken.None);
+
+            // Assert
+            _jobProgressUpdater.Verify(x => x.SetJobStartedAsync(), Times.Once);
+            _jobProgressUpdater.Verify(x => x.UpdateJobStatusAsync(JobHistoryStatus.Stopped), Times.Once);
+        }
+
+        [Test]
+        public async Task ExecuteAsync_ShouldUpdateJobHistoryStatus_WhenDrainStopped()
+        {
+            // Arrange
+            _syncToggles.Setup(x => x.IsEnabled<EnableJobHistoryStatusUpdate>()).Returns(true);
+            CancellationTokenSource stopToken = new CancellationTokenSource();
+            CancellationTokenSource drainStopToken = new CancellationTokenSource();
+            CompositeCancellationToken compositeToken = new CompositeCancellationToken(stopToken.Token, drainStopToken.Token, new EmptyLogger());
+
+            SyncJob job = PrepareSut(new NodeWithProgressStub());
+
+            // Act
+            drainStopToken.Cancel();
+            await job.ExecuteAsync(compositeToken);
+
+            // Assert
+            _jobProgressUpdater.Verify(x => x.SetJobStartedAsync(), Times.Once);
+            _jobProgressUpdater.Verify(x => x.UpdateJobStatusAsync(JobHistoryStatus.Suspended), Times.Once);
+        }
+
+        [Test]
+        public async Task ExecuteAsync_ShouldUpdateJobHistoryStatus_WhenValidationFailed()
+        {
+            // Arrange
+            _syncToggles.Setup(x => x.IsEnabled<EnableJobHistoryStatusUpdate>()).Returns(true);
+
+            SyncJob job = PrepareSut(new ValidationFailedNode());
+
+            // Act
+            await job.ExecuteAsync(CompositeCancellationToken.None);
+
+            // Assert
+            _jobProgressUpdater.Verify(x => x.SetJobStartedAsync(), Times.Once);
+            _jobProgressUpdater.Verify(x => x.UpdateJobStatusAsync(JobHistoryStatus.ValidationFailed), Times.Once);
+            _jobProgressUpdater.Verify(x => x.AddJobErrorAsync(It.IsAny<ValidationException>()), Times.Once);
+        }
+
+        [Test]
+        public async Task ExecuteAsync_ShouldUpdateJobHistoryStatus_WhenJobFailed()
+        {
+            // Arrange
+            _syncToggles.Setup(x => x.IsEnabled<EnableJobHistoryStatusUpdate>()).Returns(true);
+
+            Mock<INode<SyncExecutionContext>> pipeline = new Mock<INode<SyncExecutionContext>>();
+            pipeline
+                .Setup(x => x.ExecuteAsync(It.IsAny<IExecutionContext<SyncExecutionContext>>()))
+                .Throws<Exception>();
+
+            SyncJob job = PrepareSut(pipeline.Object);
+
+            // Act
+            await job.ExecuteAsync(CompositeCancellationToken.None);
+
+            // Assert
+            _jobProgressUpdater.Verify(x => x.SetJobStartedAsync(), Times.Once);
+            _jobProgressUpdater.Verify(x => x.UpdateJobStatusAsync(JobHistoryStatus.Failed), Times.Once);
+            _jobProgressUpdater.Verify(x => x.AddJobErrorAsync(It.IsAny<Exception>()), Times.Once);
+        }
+
         private SyncJob PrepareSut(INode<SyncExecutionContext> pipeline)
         {
             return new SyncJob(pipeline, _executionContextFactory, _syncJobParameters, new EmptyProgress<SyncJobState>(), _syncToggles.Object, _jobProgressUpdaterFactoryMock.Object, new EmptyLogger());
+        }
+
+        private class ValidationFailedNode : Node<SyncExecutionContext>
+        {
+            protected override Task<NodeResultStatus> PerformExecuteAsync(IExecutionContext<SyncExecutionContext> context)
+            {
+                context.Subject.Results.Add(new ExecutionResult(ExecutionStatus.Failed, "Validation failed", new ValidationException()));
+                return Task.FromResult(NodeResultStatus.Failed);
+            }
         }
     }
 }
