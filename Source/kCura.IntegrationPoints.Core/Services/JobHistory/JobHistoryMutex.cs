@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Logging;
 
 namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {
@@ -17,10 +18,12 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
     {
         private bool _disposed = false;
         private readonly IWorkspaceDBContext _context;
+        private readonly IDiagnosticLog _diagnosticLog;
 
-        public JobHistoryMutex(IWorkspaceDBContext context, Guid lockIdentifier)
+        public JobHistoryMutex(IWorkspaceDBContext context, Guid lockIdentifier, IDiagnosticLog diagnosticLog)
         {
             _context = context;
+            _diagnosticLog = diagnosticLog;
             _context.BeginTransaction();
             EnableMutex(lockIdentifier);
         }
@@ -30,6 +33,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         /// </summary>
         private void EnableMutex(Guid identifier)
         {
+            _diagnosticLog.LogDiagnostic("EnableMutex for Identifier {identifier}", identifier);
+
             string enableJobHistoryMutex = $@"
                 DECLARE @res INT
                 EXEC @res = sp_getapplock
@@ -49,6 +54,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
         public void Dispose()
         {
+            _diagnosticLog.LogDiagnostic("Dispose JobHistoryMutex");
+
             Dispose(true);
             GC.SuppressFinalize(this);
         }

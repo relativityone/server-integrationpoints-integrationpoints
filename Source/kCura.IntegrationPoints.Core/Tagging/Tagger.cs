@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Core.Tagging
                 {
                     FieldMap[] fieldsToPush = { identifierField };
                     var documentTransferContext = new DefaultTransferContext(reader);
-                    _synchronizer.SyncData(documentTransferContext, fieldsToPush, _importConfig, null);
+                    _synchronizer.SyncData(documentTransferContext, fieldsToPush, _importConfig, null, null);
                 }
             }
             catch (Exception e)

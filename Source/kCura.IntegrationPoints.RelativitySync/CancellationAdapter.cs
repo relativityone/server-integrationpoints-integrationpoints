@@ -3,6 +3,7 @@ using System.Threading;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
@@ -20,8 +21,13 @@ namespace kCura.IntegrationPoints.RelativitySync
         private readonly IJobHistoryService _jobHistoryService;
         private readonly IAPILog _log;
 
-        public CancellationAdapter(IWindsorContainer container, IExtendedJob job, IManagerFactory managerFactory,
-            IJobService jobService, IJobHistoryService jobHistoryService, IAPILog log)
+        public CancellationAdapter(
+            IWindsorContainer container,
+            IExtendedJob job,
+            IManagerFactory managerFactory,
+            IJobService jobService,
+            IJobHistoryService jobHistoryService,
+            IAPILog log)
         {
             _container = container;
             _job = job;
@@ -35,8 +41,15 @@ namespace kCura.IntegrationPoints.RelativitySync
         {
             CancellationTokenSource stopTokenSource = new CancellationTokenSource();
             CancellationTokenSource drainStopTokenSource = new CancellationTokenSource();
-            IJobStopManager jobStopManager = _managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _job.JobIdentifier, _job.JobId,
-                supportsDrainStop: true, stopCancellationTokenSource: stopTokenSource, drainStopCancellationTokenSource: drainStopTokenSource);
+            IJobStopManager jobStopManager = _managerFactory.CreateJobStopManager(
+                _jobService,
+                _jobHistoryService,
+                _job.JobIdentifier,
+                _job.JobId,
+                supportsDrainStop: true,
+                new EmptyDiagnosticLog(),
+                stopCancellationTokenSource: stopTokenSource,
+                drainStopCancellationTokenSource: drainStopTokenSource);
             _container.Register(Component.For<IJobStopManager>().Instance(jobStopManager).Named($"{nameof(jobStopManager)}-{Guid.NewGuid()}"));
 
             if (drainStopTokenCallback != null)

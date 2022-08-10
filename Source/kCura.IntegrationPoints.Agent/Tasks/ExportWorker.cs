@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
@@ -49,7 +50,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IDataTransferLocationService dataTransferLocationService,
             IProcessingSourceLocationService processingSourceLocationService,
             IProviderTypeService providerTypeService,
-            IIntegrationPointRepository integrationPointRepository)
+            IIntegrationPointRepository integrationPointRepository,
+            IDiagnosticLog diagnosticLog)
             : base(
                 caseServiceContext,
                 helper,
@@ -64,7 +66,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 managerFactory,
                 jobService,
                 providerTypeService,
-                integrationPointRepository)
+                integrationPointRepository,
+                diagnosticLog)
         {
             _exportProcessRunner = exportProcessRunner;
             _dataTransferLocationService = dataTransferLocationService;

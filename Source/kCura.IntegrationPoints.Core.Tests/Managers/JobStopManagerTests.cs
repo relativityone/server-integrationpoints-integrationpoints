@@ -6,6 +6,7 @@ using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Common.Agent;
+using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
@@ -47,9 +48,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
 
         private JobStopManager PrepareSut(bool supportsDrainStop, CancellationTokenSource stopToken = null, CancellationTokenSource drainStopToken = null)
         {
-            return new JobStopManager(_jobServiceMock.Object, _jobHistoryServiceMock.Object,
-                _helperFake.Object, _jobHistoryInstanceGuid, _jobId, _agentFake.Object, supportsDrainStop,
-                stopToken ?? new CancellationTokenSource(), drainStopToken ?? new CancellationTokenSource());
+            return new JobStopManager(
+                _jobServiceMock.Object,
+                _jobHistoryServiceMock.Object,
+                _helperFake.Object,
+                _jobHistoryInstanceGuid,
+                _jobId,
+                _agentFake.Object,
+                supportsDrainStop,
+                stopToken ?? new CancellationTokenSource(),
+                drainStopToken ?? new CancellationTokenSource(),
+                new EmptyDiagnosticLog());
         }
 
         private Job PrepareJob(StopState stopState = StopState.None)

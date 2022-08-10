@@ -18,6 +18,7 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -87,7 +88,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             VerifyCreatedSyncWorkerJobs(batches, StopState.None);
         }
 
-        
         [IdentifiedTest("541F3112-394B-45BF-AD73-77A610A77D8A")]
         public void Execute_ShouldNotCreateBatchesWithStopStateSuspendingWhenDrainStoppedBeforeBatchTask()
         {
@@ -104,7 +104,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             int[] batches = SplitNumberIntoBatches(numberOfRecords, sut.BatchSize);
 
             sut.BeforeBatchTaskAction = RemoveAgent;
-            
+
             // Act
             sut.Execute(job.AsJob());
 
@@ -112,7 +112,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             VerifyCreatedSyncWorkerJobs(batches, StopState.None);
             VerifySyncManagerStopState(StopState.None);
         }
-
 
         [IdentifiedTest("4DAFFD61-412F-4EF3-B3F4-7B019D3062A3")]
         public void Execute_ShouldNotCreateBatchesWithStopStateSuspendingWhenDrainStoppedWithinBatchTask()
@@ -302,12 +301,43 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
         private class SyncManagerTest : SyncManager
         {
             public Action BeforeBatchTaskAction { get; set; }
+
             public Action<SyncManager> BeforeCreateBatchJobAction { get; set; }
 
-            public SyncManagerTest(ICaseServiceContext caseServiceContext, IDataProviderFactory providerFactory, IJobManager jobManager, IJobService jobService, IHelper helper, IIntegrationPointService integrationPointService, ISerializer serializer, IGuidService guidService, IJobHistoryService jobHistoryService, IJobHistoryErrorService jobHistoryErrorService, IScheduleRuleFactory scheduleRuleFactory, IManagerFactory managerFactory, IEnumerable<IBatchStatus> batchStatuses, IAgentValidator agentValidator) 
-                : base(caseServiceContext, providerFactory, jobManager, jobService, helper, integrationPointService, serializer, guidService, jobHistoryService, jobHistoryErrorService, scheduleRuleFactory, managerFactory, batchStatuses, agentValidator)
+            public SyncManagerTest(
+                ICaseServiceContext caseServiceContext,
+                IDataProviderFactory providerFactory,
+                IJobManager jobManager,
+                IJobService jobService,
+                IHelper helper,
+                IIntegrationPointService
+                integrationPointService,
+                ISerializer serializer,
+                IGuidService guidService,
+                IJobHistoryService jobHistoryService,
+                IJobHistoryErrorService jobHistoryErrorService,
+                IScheduleRuleFactory scheduleRuleFactory,
+                IManagerFactory managerFactory,
+                IEnumerable<IBatchStatus> batchStatuses,
+                IAgentValidator agentValidator,
+                IDiagnosticLog diagnosticLog)
+                    : base(
+                        caseServiceContext,
+                        providerFactory,
+                        jobManager,
+                        jobService,
+                        helper,
+                        integrationPointService,
+                        serializer,
+                        guidService,
+                        jobHistoryService,
+                        jobHistoryErrorService,
+                        scheduleRuleFactory,
+                        managerFactory,
+                        batchStatuses,
+                        agentValidator,
+                        diagnosticLog)
             {
-                
             }
 
             public override long BatchTask(Job job, IEnumerable<string> batchIDs)

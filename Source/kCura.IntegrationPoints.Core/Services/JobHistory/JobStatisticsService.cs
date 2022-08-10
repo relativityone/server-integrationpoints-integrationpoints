@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Utils;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
@@ -22,6 +23,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
         private readonly IMessageService _messageService;
         private readonly IIntegrationPointProviderTypeService _integrationPointProviderTypeService;
+        private readonly IDiagnosticLog _diagnosticLog;
         private readonly IWorkspaceDBContext _context;
         private readonly ITaskParameterHelper _helper;
         private readonly IJobStatisticsQuery _query;
@@ -31,6 +33,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         private readonly IFileSizesStatisticsService _fileSizeStatisticsService;
 
         private SourceConfiguration IntegrationPointSourceConfiguration { get; set; }
+
         private ImportSettings IntegrationPointImportSettings { get; set; }
 
         public JobStatisticsService(IJobStatisticsQuery query,
@@ -40,7 +43,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             IHelper helper,
             IFileSizesStatisticsService fileSizesStatisticsStatisticsService,
             IMessageService messageService,
-            IIntegrationPointProviderTypeService integrationPointProviderTypeService)
+            IIntegrationPointProviderTypeService integrationPointProviderTypeService,
+            IDiagnosticLog diagnosticLog)
         {
             _query = query;
             _helper = taskParameterHelper;
@@ -48,6 +52,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             _context = context;
             _messageService = messageService;
             _integrationPointProviderTypeService = integrationPointProviderTypeService;
+            _diagnosticLog = diagnosticLog;
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<JobStatisticsService>();
 
             _fileSizeStatisticsService = fileSizesStatisticsStatisticsService;
@@ -66,6 +71,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
             if (reporter != null)
             {
+                _diagnosticLog.LogDiagnostic("Subscribe reporting for Job {jobId}", job?.JobId);
+
                 reporter.OnStatusUpdate += StatusUpdate;
                 reporter.OnStatisticsUpdate += OnStatisticsUpdate;
                 reporter.OnBatchComplete += OnJobComplete;
@@ -120,9 +127,9 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
                 totalSize = _fileSizeStatisticsService.CalculatePushedFilesSizeForJobHistory((int)_job.JobId, IntegrationPointImportSettings, IntegrationPointSourceConfiguration);
             }
 
-            lock(_lockToken)
-            { 
-                using (new JobHistoryMutex(_context, batchInstance))
+            lock (_lockToken)
+            {
+                using (new JobHistoryMutex(_context, batchInstance, _diagnosticLog))
                 {
                     // TODO refactoring, command query separation
                     _logger.LogInformation("In JobStatisticsService.cs executing UpdateAndRetrieveStats()[CreateJobTrackingEntry.sql and UpdateJobStatistics.sql] with {tableName}", tableName);
@@ -136,6 +143,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
         private void StatusUpdate(int importedCount, int errorCount)
         {
+            _diagnosticLog.LogDiagnostic("Status Update: ImportedDocsCount {importedDocsCount}, ErroredDocsCount {erroredDocsCount}", importedCount, errorCount);
+
             Update(_helper.GetBatchInstance(_job), importedCount, errorCount);
         }
 
@@ -143,7 +152,12 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         {
             lock(_lockToken)
             {
-                using (new JobHistoryMutex(_context, identifier))
+                _diagnosticLog.LogDiagnostic(
+                    "Updating... Identifier: {identifier}, TransferredItemsCount: {itemsCount}, ErrorItemsCount: {errorsCount}",
+                    transferredItem,
+                    erroredCount);
+
+                using (new JobHistoryMutex(_context, identifier, _diagnosticLog))
                 {
                     UpdateJobHistory(transferredItem, erroredCount);
                 }
@@ -154,11 +168,18 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         {
             try
             {
-                Data.JobHistory historyRdo = _jobHistoryService.GetRdo(batchInstance);
+                Data.JobHistory historyRdo = _jobHistoryService.GetRdoWithoutDocuments(batchInstance);
                 historyRdo.ItemsTransferred = stats.Imported > 0 ? stats.Imported : 0;
                 historyRdo.ItemsWithErrors = stats.ImportApiErrors;
                 historyRdo.FilesSize = FileSizeUtils.FormatFileSize(totalSize);
-                _jobHistoryService.UpdateRdo(historyRdo);
+
+                _diagnosticLog.LogDiagnostic(
+                    "Updating JobHistory RDO - ItemsTransferred: {itemsTransferred}, ItemsWithErrors: {itemsWithErrors}, FilesSize: {filesSize}",
+                    historyRdo.ItemsTransferred,
+                    historyRdo.ItemsWithErrors,
+                    historyRdo.FilesSize);
+
+                _jobHistoryService.UpdateRdoWithoutDocuments(historyRdo);
             }
             catch (Exception e)
             {
@@ -170,11 +191,18 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         {
             try
             {
-                Data.JobHistory historyRdo = _jobHistoryService.GetRdo(_helper.GetBatchInstance(_job));
+                Data.JobHistory historyRdo = _jobHistoryService.GetRdoWithoutDocuments(_helper.GetBatchInstance(_job));
                 int updatedNumberOfTransferredItems = (historyRdo.ItemsTransferred ?? 0) + transferredItem;
                 historyRdo.ItemsTransferred = Math.Max(0, updatedNumberOfTransferredItems);
                 historyRdo.ItemsWithErrors += erroredCount;
-                _jobHistoryService.UpdateRdo(historyRdo);
+
+                _diagnosticLog.LogDiagnostic(
+                    "Updating JobHistory RDO - ItemsTransferred: {itemsTransferred}, ItemsWithErrors: {itemsWithErrors}, FilesSize: {filesSize}",
+                    historyRdo.ItemsTransferred,
+                    historyRdo.ItemsWithErrors,
+                    historyRdo.FilesSize);
+
+                _jobHistoryService.UpdateRdoWithoutDocuments(historyRdo);
             }
             catch (Exception e)
             {

@@ -37,6 +37,8 @@ using Relativity.Services.Objects.DataContracts;
 using kCura.IntegrationPoints.Core.Contracts.Import;
 using Relativity.AutomatedWorkflows.SDK;
 using Relativity.AutomatedWorkflows.SDK.V2.Models.Triggers;
+using kCura.IntegrationPoints.Domain.Logging;
+using kCura.IntegrationPoints.Core.Logging;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
@@ -179,7 +181,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             caseContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(sourceProvider);
             serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(mappings);
             synchronizerFactory.CreateSynchronizer(Arg.Any<Guid>(), Arg.Any<string>()).Returns(_synchronizer);
-            managerFactory.CreateJobStopManager(jobService, jobHistoryService, _taskParameters.BatchInstance, job.JobId, Arg.Any<bool>()).Returns(jobStopManager);
+            managerFactory.CreateJobStopManager(jobService, jobHistoryService, _taskParameters.BatchInstance, job.JobId, Arg.Any<bool>(), Arg.Any<IDiagnosticLog>()).Returns(jobStopManager);
 
             ImportSettings imageSettings = new ImportSettings();
             imageSettings.ImageImport = true;
@@ -221,7 +223,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 integrationPointRepository,
                 _jobStatusUpdater,
                 _automatedWorkflowsManager,
-                _jobTrackerFake);
+                _jobTrackerFake,
+                new EmptyDiagnosticLog());
         }
 
         [Test]
@@ -235,7 +238,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _instance.Execute(_job);
 
             // ASSERT
-            _synchronizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<List<FieldMap>>(), Arg.Any<string>(), Arg.Any<IJobStopManager>());
+            _synchronizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<List<FieldMap>>(), Arg.Any<string>(), Arg.Any<IJobStopManager>(), Arg.Any<IDiagnosticLog>());
         }
 
         [Test]

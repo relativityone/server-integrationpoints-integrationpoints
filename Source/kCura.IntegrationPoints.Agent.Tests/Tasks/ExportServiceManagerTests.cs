@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
@@ -26,6 +27,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
@@ -207,8 +209,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _repositoryFactory.GetJobHistoryErrorRepository(_configuration.SourceWorkspaceArtifactId).Returns(_jobHistoryErrorRepository);
             _jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job, _configuration.SavedSearchArtifactId).Returns(_RETRY_SAVEDSEARCHID);
             synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _integrationPoint.DestinationConfiguration).Returns(_synchronizer);
-            _managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _taskParameters.BatchInstance, job.JobId, Arg.Any<bool>()).Returns(_jobStopManager);
-            
+            _managerFactory.CreateJobStopManager(_jobService, _jobHistoryService, _taskParameters.BatchInstance, job.JobId, Arg.Any<bool>(), Arg.Any<IDiagnosticLog>()).Returns(_jobStopManager);
+
             _importSettings = new ImportSettings();
             _serializer.Deserialize<ImportSettings>(_integrationPoint.DestinationConfiguration).Returns(_importSettings);
             _serializer.Serialize(_importSettings).Returns(_IMPORTSETTINGS_WITH_USERID);
@@ -235,7 +237,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _managerFactory.CreateTaggingSavedSearchManager().Returns(tagSavedSearchManager);
             _managerFactory.CreateSourceWorkspaceTagsCreator(Arg.Any<SourceConfiguration>()).Returns(sourceWorkspaceTagsCreator);
 
-            _instance = new ExportServiceManager(_helper,
+            _instance = new ExportServiceManager(
+                _helper,
                 _caseContext,
                 synchronizerFactory,
                 _exporterFactory,
@@ -253,7 +256,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 agentValidator: _agentValidator,
                 integrationPointRepository: _integrationPointRepository,
                 documentRepository: _documentRepository,
-                exportDataSanitizer: _exportDataSanitizer);
+                exportDataSanitizer: _exportDataSanitizer,
+                diagnosticLog: new EmptyDiagnosticLog());
             _managerFactory.CreateJobHistoryManager().Returns(_historyManager);
         }
 
@@ -307,7 +311,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _instance.Execute(_job);
 
             // ASSERT
-            Assert.AreEqual(expectedOverwriteSetting, _importSettings.OverwriteMode);            
+            Assert.AreEqual(expectedOverwriteSetting, _importSettings.OverwriteMode);
         }
 
         [Test]
@@ -499,9 +503,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         public void Execute_CreateDestinationProvider_MakeSureToSetSourceProvider()
         {
             // ARRANGE
+            IDiagnosticLog diagnosticLog = new EmptyDiagnosticLog();
+
             IWindsorContainer windsorContainer = Substitute.For<IWindsorContainer>();
             IObjectTypeRepository objectTypeRepository = Substitute.For<IObjectTypeRepository>();
-            ISynchronizerFactory synchronizerFactory = Substitute.For<GeneralWithEntityRdoSynchronizerFactory>(windsorContainer, objectTypeRepository);
+            ISynchronizerFactory synchronizerFactory = Substitute.For<GeneralWithEntityRdoSynchronizerFactory>(windsorContainer, objectTypeRepository, diagnosticLog);
 
             // ACT
             ExportServiceManager instance = new ExportServiceManager(
@@ -523,7 +529,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 _agentValidator,
                 _integrationPointRepository,
                 _documentRepository,
-                _exportDataSanitizer);
+                _exportDataSanitizer,
+                diagnosticLog);
             try
             {
                 instance.Execute(_job);
@@ -581,10 +588,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             // ASSERT
             _exporterFactory.DidNotReceive().BuildExporter(
-                Arg.Any<IJobStopManager>(), 
-                Arg.Any<FieldMap[]>(), 
+                Arg.Any<IJobStopManager>(),
+                Arg.Any<FieldMap[]>(),
                 Arg.Any<string>(),
-                Arg.Any<int>(), 
+                Arg.Any<int>(),
                 _IMPORTSETTINGS_WITH_USERID,
                 Arg.Any<IDocumentRepository>(),
                 Arg.Any<IExportDataSanitizer>());
@@ -667,7 +674,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _instance.Execute(_job);
 
             // ASSERT
-            _synchronizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<List<FieldMap>>(), Arg.Any<string>(), Arg.Any<IJobStopManager>());
+            _synchronizer.Received(1).SyncData(Arg.Any<IDataTransferContext>(), Arg.Any<List<FieldMap>>(), Arg.Any<string>(), Arg.Any<IJobStopManager>(), Arg.Any<IDiagnosticLog>());
         }
 
         [Test]
@@ -788,9 +795,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             if (expectToCreate)
             {
                 _exporterFactory.Received(1).BuildExporter(
-                    _jobStopManager, 
-                    Arg.Any<FieldMap[]>(), 
-                    _integrationPoint.SourceConfiguration, 
+                    _jobStopManager,
+                    Arg.Any<FieldMap[]>(),
+                    _integrationPoint.SourceConfiguration,
                     _RETRY_SAVEDSEARCHID,
                     _IMPORTSETTINGS_WITH_USERID,
                     _documentRepository,
@@ -801,9 +808,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             else
             {
                 _exporterFactory.Received(1).BuildExporter(
-                    _jobStopManager, 
-                    Arg.Any<FieldMap[]>(), 
-                    _integrationPoint.SourceConfiguration, 
+                    _jobStopManager,
+                    Arg.Any<FieldMap[]>(),
+                    _integrationPoint.SourceConfiguration,
                     _configuration.SavedSearchArtifactId,
                     _IMPORTSETTINGS_WITH_USERID,
                     _documentRepository,

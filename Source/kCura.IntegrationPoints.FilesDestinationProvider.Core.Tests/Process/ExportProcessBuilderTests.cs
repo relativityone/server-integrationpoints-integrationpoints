@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
         private ICompositeLoggingMediator _loggingMediator;
         private IUserMessageNotification _userMessageNotification;
         private IUserNotification _userNotification;
-        private JobStatisticsService _jobStatisticsService;
+        private IJobStatisticsService _jobStatisticsService;
         private IServiceFactory _serviceFactory;
         private IRepositoryFactory _repositoryFactory;
         private IExportFieldsService _exportFieldsService;
@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
             _userNotification = Substitute.For<IUserNotification>();
             IConfigFactory configFactory = Substitute.For<IConfigFactory>();
 
-            _jobStatisticsService = Substitute.For<JobStatisticsService>();
+            _jobStatisticsService = Substitute.For<IJobStatisticsService>();
 
             IJobInfoFactory jobInfoFactoryMock = Substitute.For<IJobInfoFactory>();
             IJobInfo jobInfoMock = Substitute.For<IJobInfo>();

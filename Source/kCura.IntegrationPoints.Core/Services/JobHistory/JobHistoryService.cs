@@ -198,9 +198,11 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         }
 
         private void UpdateRdo(
-            Data.JobHistory jobHistory, 
+            Data.JobHistory jobHistory,
             JobHistoryQueryOptions queryOptions)
         {
+            _logger.LogInformation("Updating JobHistory {jobHistoryId}", jobHistory.ArtifactId);
+
             if (queryOptions.ContainsAll())
             {
                 _relativityObjectManager.Update(jobHistory);

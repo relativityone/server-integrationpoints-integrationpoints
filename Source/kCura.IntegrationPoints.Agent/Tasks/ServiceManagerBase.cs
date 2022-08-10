@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -16,6 +17,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -35,21 +37,39 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private readonly IAgentValidator _agentValidator;
 
         protected IAPILog Logger { get; set; }
+
         protected IJobService JobService { get; }
+
         protected ISerializer Serializer { get; }
+
         protected IJobHistoryService JobHistoryService { get; }
+
         protected IJobHistoryErrorService JobHistoryErrorService { get; }
+
         protected IScheduleRuleFactory ScheduleRuleFactory { get; }
+
         protected IManagerFactory ManagerFactory { get; }
+
         protected List<IBatchStatus> BatchStatus { get; }
+
         protected ICaseServiceContext CaseServiceContext { get; }
+
         protected IIntegrationPointRepository IntegrationPointRepository { get; }
+
+        protected IDiagnosticLog DiagnosticLog { get; }
+
         protected IJobStatisticsService StatisticsService { get; }
+
         protected ISynchronizerFactory SynchronizerFactory { get; }
+
         protected IJobStopManager JobStopManager { get; set; }
+
         protected SourceConfiguration SourceConfiguration { get; set; }
+
         protected ImportSettings ImportSettings { get; set; }
+
         protected Guid Identifier { get; set; }
+
         protected TaskResult Result { get; set; }
 
         protected ServiceManagerBase(
@@ -65,7 +85,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IJobStatisticsService statisticsService,
             ISynchronizerFactory synchronizerFactory,
             IAgentValidator agentValidator,
-            IIntegrationPointRepository integrationPointRepository)
+            IIntegrationPointRepository integrationPointRepository,
+            IDiagnosticLog diagnosticLog)
         {
             _agentValidator = agentValidator;
             Logger = helper.GetLoggerFactory().GetLogger().ForContext<ServiceManagerBase>();
@@ -78,14 +99,18 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             BatchStatus = statuses.ToList();
             CaseServiceContext = caseServiceContext;
             IntegrationPointRepository = integrationPointRepository;
+            DiagnosticLog = diagnosticLog;
             StatisticsService = statisticsService;
             SynchronizerFactory = synchronizerFactory;
             Result = new TaskResult();
         }
 
         public IntegrationPoint IntegrationPointDto { get; protected set; }
+
         public JobHistory JobHistory { get; protected set; }
+
         public List<FieldMap> MappedFields { get; protected set; }
+
         public SourceProvider SourceProvider { get; protected set; }
 
         public abstract void Execute(Job job);
@@ -153,14 +178,21 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             // if you want to create add another synchronizer aka exporter, you may add it here.
             // RDO synchronizer
+
+            DiagnosticLog.LogDiagnostic("Creating DestinationProvider..");
+
             var factory = SynchronizerFactory as GeneralWithEntityRdoSynchronizerFactory;
             if (factory != null)
             {
+                DiagnosticLog.LogDiagnostic("Factory is {factoryType}", nameof(GeneralWithEntityRdoSynchronizerFactory));
                 factory.SourceProvider = SourceProvider;
             }
+
             try
             {
+                DiagnosticLog.LogDiagnostic("Creating Synchronizer...");
                 IDataSynchronizer synchronizer = SynchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, configuration);
+                DiagnosticLog.LogDiagnostic("Synchronizer was created {type}.", synchronizer?.GetType());
 
                 return synchronizer;
             }
@@ -333,7 +365,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         private void ConfigureJobStopManager(Job job, bool supportsDrainStop)
         {
-            JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, Identifier, job.JobId, supportsDrainStop);
+            JobStopManager = ManagerFactory.CreateJobStopManager(JobService, JobHistoryService, Identifier, job.JobId, supportsDrainStop, DiagnosticLog);
             JobHistoryErrorService.JobStopManager = JobStopManager;
         }
 

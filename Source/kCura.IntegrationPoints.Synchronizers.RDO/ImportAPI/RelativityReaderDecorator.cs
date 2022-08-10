@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.WinEDDS.Api;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
@@ -15,9 +16,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
     /// </summary>
     public class RelativityReaderDecorator : IDataReader, IArtifactReader
     {
-        private readonly Dictionary<string, string> _sourceIdentifierToTargetName; 
+        private readonly Dictionary<string, string> _sourceIdentifierToTargetName;
         private readonly Dictionary<string, string> _targetNameToSourceIdentifier;
-        private readonly HashSet<string> _identifiers; 
+        private readonly HashSet<string> _identifiers;
 
         protected IDataReader _source;
 
@@ -65,7 +66,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
             RegisterSpecialField(columns, Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD_NAME, Constants.SPECIAL_NATIVE_FILE_SIZE_FIELD);
             RegisterSpecialField(columns, Constants.SPECIAL_FOLDERPATH_FIELD_NAME, Constants.SPECIAL_FOLDERPATH_FIELD);
             RegisterSpecialField(columns, Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD_NAME, Constants.SPECIAL_FOLDERPATH_DYNAMIC_FIELD);
-            
+
             RegisterSpecialField(columns, Constants.SPECIAL_IMAGE_FILE_NAME_FIELD_NAME, Constants.SPECIAL_IMAGE_FILE_NAME_FIELD);
 
             // So that the destination workspace file icons correctly display, we give the import API the file name of the document

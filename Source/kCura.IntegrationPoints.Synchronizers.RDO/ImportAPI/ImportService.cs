@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
 using kCura.Relativity.ImportAPI;
 using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
+using kCura.IntegrationPoints.Domain.Logging;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {
@@ -30,17 +31,18 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
         private readonly IAPILog _logger;
         private readonly IHelper _helper;
         private readonly IJobStopManager _jobStopManager;
+        private readonly IDiagnosticLog _diagnosticLog;
         private readonly IImportApiFactory _factory;
         private readonly IImportJobFactory _jobFactory;
         private readonly JobProgressInfo _jobProgressInfo = new JobProgressInfo();
         private readonly NativeFileImportService _nativeFileImportService;
 
-
         public ImportService(ImportSettings settings, Dictionary<string, int> fieldMappings, BatchManager batchManager, NativeFileImportService nativeFileImportService,
-            IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper, IJobStopManager jobStopManager)
+            IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper, IJobStopManager jobStopManager, IDiagnosticLog diagnosticLog)
         {
             _helper = helper;
             _jobStopManager = jobStopManager;
+            _diagnosticLog = diagnosticLog;
             Settings = settings;
             _batchManager = batchManager;
             _inputMappings = fieldMappings;
@@ -48,6 +50,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
             _factory = factory;
             _jobFactory = jobFactory;
             _logger = _helper.GetLoggerFactory().GetLogger().ForContext<ImportService>();
+
             if (_batchManager != null)
             {
                 _batchManager.OnBatchCreate += ImportService_OnBatchCreate;
@@ -126,7 +129,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
         }
 
         public virtual void KickOffImport(IDataTransferContext context)
-        {            
+        {
             IJobImport importJob = _jobFactory.Create(_importApi, Settings, context, _helper);
 
             _totalRowsImported = context.TransferredItemsCount;
@@ -295,6 +298,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
         private void ImportJob_OnProgress(long item)
         {
             _jobProgressInfo.ItemTransferred();
+
+            _diagnosticLog.LogDiagnostic("ImportJob_OnProgress - Item: {item}, JobProgressInfo: {@jobProgressInfo} ", item, _jobProgressInfo);
+
             UpdateStatus();
         }
 
@@ -304,6 +310,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
             {
                 return;
             }
+
             if (OnStatusUpdate == null)
             {
                 return;
@@ -311,10 +318,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
             if (Environment.TickCount - _lastJobStatusUpdate > _JOB_PROGRESS_TIMEOUT_MILLISECONDS)
             {
+                _diagnosticLog.LogDiagnostic(
+                    "OnStatusUpdate - ItemsTransferred: {transferredItemsCount}, ItemsErrored: {itemsErrored}",
+                    _jobProgressInfo.NumberOfItemsTransferred,
+                    _jobProgressInfo.NumberOfItemsErrored);
+
                 OnStatusUpdate(_jobProgressInfo.NumberOfItemsTransferred, _jobProgressInfo.NumberOfItemsErrored);
 
                 _lastJobStatusUpdate = Environment.TickCount;
                 _jobProgressInfo.Reset();
+
+                _diagnosticLog.LogDiagnostic("Status was updated.");
             }
         }
 
@@ -328,7 +342,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
         private void LogInitializingImportApi()
         {
             _logger.LogInformation("Attempting to initialize Import API.");
-        }        
+        }
 
         private void LogPushingBatch(bool forcePush)
         {
@@ -338,7 +352,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
         private void LogImportJobStarted()
         {
             _logger.LogInformation("Import Job started.");
-        }    
+        }
 
         private void LogSettingFieldDictionaryError(Exception e)
         {
@@ -373,7 +387,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
         private void LogOnMessageEvent(Status status)
         {
-            _logger.LogVerbose("ImportJob OnMessage event received. Current status: {Status}.", status.Message);
+            _diagnosticLog.LogDiagnostic("ImportJob OnMessage event received. Current status: {Status}.", status.Message);
         }
 
         #endregion

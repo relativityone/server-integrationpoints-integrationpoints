@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Contracts.Import;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -16,25 +20,23 @@ using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.ImportProvider.Parser;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.WinEDDS.Api;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using kCura.WinEDDS.Api;
+using Newtonsoft.Json.Linq;
 using Relativity.API;
-using kCura.IntegrationPoints.Common;
-using kCura.IntegrationPoints.Common.Handlers;
+using Relativity.AutomatedWorkflows.SDK;
+using Relativity.AutomatedWorkflows.SDK.V2.Models.Triggers;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
-using kCura.IntegrationPoints.Core.Contracts.Import;
-using Newtonsoft.Json.Linq;
-using Relativity.AutomatedWorkflows.SDK;
-using Relativity.AutomatedWorkflows.SDK.V2.Models.Triggers;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -58,7 +60,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         public const string RAW_RIP_TRIGGER_NAME = "relativity@on-new-documents-added";
         public const string RAW_TRIGGER_INPUT_ID = "type";
         public const string RAW_TRIGGER_INPUT_VALUE = "rip";
-        
+
         public ImportServiceManager(
             IHelper helper,
             IRetryHandlerFactory retryHandlerFactory,
@@ -78,7 +80,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IIntegrationPointRepository integrationPointRepository,
             IJobStatusUpdater jobStatusUpdater,
             IAutomatedWorkflowsManager automatedWorkflowsManager,
-            IJobTracker jobTracker)
+            IJobTracker jobTracker,
+            IDiagnosticLog diagnosticLog)
             : base(
                 helper,
                 jobService,
@@ -92,7 +95,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 statisticsService,
                 synchronizerFactory,
                 agentValidator,
-                integrationPointRepository)
+                integrationPointRepository,
+                diagnosticLog)
         {
             _helper = helper;
             _automatedWorkflowsRetryHandler = retryHandlerFactory.Create(_MAX_NUMBER_OF_RAW_RETRIES);
@@ -123,7 +127,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 JobStopManager.ThrowIfStopRequested();
 
                 ImportSettings settings = GetImportApiSettingsObjectForUser(job);
+
+                DiagnosticLog.LogDiagnostic("ImportSettings: {@importSettings}", settings);
+
                 string providerSettings = UpdatedProviderSettingsLoadFile();
+
+                DiagnosticLog.LogDiagnostic("ProviderSettings: {settings}", providerSettings);
+
                 int sourceRecordCount = UpdateSourceRecordCount(settings);
                 if (sourceRecordCount > 0)
                 {
@@ -132,12 +142,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                         context.TransferredItemsCount = JobHistory.ItemsTransferred ?? 0;
                         context.FailedItemsCount = JobHistory.ItemsWithErrors ?? 0;
 
-                        synchronizer.SyncData(context, MappedFields, Serializer.Serialize(settings), JobStopManager);
+                        DiagnosticLog.LogDiagnostic("Context: {@context}", context);
+
+                        DiagnosticLog.LogDiagnostic("Synchronizing...");
+                        synchronizer.SyncData(context, MappedFields, Serializer.Serialize(settings), JobStopManager, DiagnosticLog);
+                        DiagnosticLog.LogDiagnostic("Finished synchronizing.");
                     }
                 }
 
                 MarkJobAsDrainStoppedIfNeeded(job);
-                
+
                 LogExecuteSuccesfulEnd(job);
             }
             catch (OperationCanceledException e)
@@ -184,10 +198,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         private void MarkJobAsDrainStoppedIfNeeded(Job job)
         {
+
             Guid batchInstance = Guid.Parse(JobHistory.BatchInstance);
             JobHistory = JobHistoryService.GetRdo(batchInstance);
             int processedItemsCount = GetProcessedItemsCount(JobHistory);
-            
+
+            DiagnosticLog.LogDiagnostic("Processed ItemsCount: {itemsCount}", processedItemsCount);
+
             if (IsDrainStopped())
             {
                 Logger.LogInformation("ImportServiceManager job {jobId} was DrainStopped.", job.JobId);
@@ -363,6 +380,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     JobHistory = JobHistoryService.GetRdo(Identifier);
                     JobHistory.TotalItems = recordCount;
                     UpdateJobStatus(JobHistory);
+
+                    DiagnosticLog.LogDiagnostic("Update JobHistory with TotalItems {recordsCount}", recordCount);
                 }
 
                 LogUpdateSourceRecordSuccesfulEnd();

@@ -38,6 +38,7 @@ using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Toggles;
 using kCura.IntegrationPoints.Core.Utils;
 using static kCura.IntegrationPoints.Core.Constants;
+using kCura.IntegrationPoints.Domain.Logging;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -74,7 +75,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IAgentValidator agentValidator,
             IIntegrationPointRepository integrationPointRepository,
             IDocumentRepository documentRepository,
-            IExportDataSanitizer exportDataSanitizer)
+            IExportDataSanitizer exportDataSanitizer,
+            IDiagnosticLog diagnosticLog)
             : base(helper,
                 jobService,
                 serializer,
@@ -87,7 +89,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 statisticsService,
                 synchronizerFactory,
                 agentValidator,
-                integrationPointRepository)
+                integrationPointRepository,
+                diagnosticLog)
         {
             _repositoryFactory = repositoryFactory;
             _toggleProvider = toggleProvider;
@@ -208,7 +211,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 {
                     Logger.LogInformation("Start pushing documents. Number of records found: {numberOfRecordsFound}", totalRecords);
 
-                    synchronizer.SyncData(dataTransferContext, MappedFields, userImportApiSettings, JobStopManager);
+                    synchronizer.SyncData(dataTransferContext, MappedFields, userImportApiSettings, JobStopManager, DiagnosticLog);
                 }
                 LogPushingDocumentsSuccessfulEnd(job);
             }

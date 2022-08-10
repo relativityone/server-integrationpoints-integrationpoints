@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -50,10 +51,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IManagerFactory managerFactory,
             IEnumerable<IBatchStatus> batchStatuses,
             IExportInitProcessService exportInitProcessService,
-            IAgentValidator agentValidator)
+            IAgentValidator agentValidator,
+            IDiagnosticLog diagnosticLog)
             : base(
                 caseServiceContext, providerFactory, jobManager, jobService, helper, integrationPointService, serializer, guidService, jobHistoryService, jobHistoryErrorService,
-                scheduleRuleFactory, managerFactory, batchStatuses, agentValidator)
+                scheduleRuleFactory, managerFactory, batchStatuses, agentValidator, diagnosticLog)
         {
             _exportInitProcessService = exportInitProcessService;
             _logger = Helper.GetLoggerFactory().GetLogger().ForContext<ExportManager>();
