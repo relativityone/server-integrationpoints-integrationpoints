@@ -85,12 +85,6 @@ namespace Relativity.Sync.Tests.System.Core
             return workspace;
         }
 
-        public async Task<WorkspaceRef> CreateWorkspaceWithCustomAppAsync(string name = null, string templateWorkspaceName = "Relativity Starter Template")
-        {
-            WorkspaceRef workspace = await CreateWorkspaceAsync(name, templateWorkspaceName).ConfigureAwait(false);
-            await InstallCustomHelperAppAsync(workspace.ArtifactID).ConfigureAwait(false);
-            return workspace;
-        }
         public async Task DeleteAllDocumentsInWorkspaceAsync(WorkspaceRef workspace)
         {
             var request = new MassDeleteByCriteriaRequest()

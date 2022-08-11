@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -77,7 +78,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             _helperFactoryMock = new Mock<IHelperWrapper>();
 
             _helperFactoryMock.Setup(x =>
-                x.GetStorageEndpointsAsync(It.IsAny<ApplicationDetails>())).ReturnsAsync(resultFromBedrock);
+                x.GetStorageEndpointsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(resultFromBedrock);
 
             _sut = new ADLSMigrationStatus(_serviceFactoryForAdminMock.Object, _helperFactoryMock.Object,
                 _loggerMock.Object);
@@ -95,7 +96,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         {
             StorageEndpoint[] resultFromBedrock = Array.Empty<StorageEndpoint>();
             _helperFactoryMock.Setup(x =>
-                x.GetStorageEndpointsAsync(It.IsAny<ApplicationDetails>())).ReturnsAsync(resultFromBedrock);
+                x.GetStorageEndpointsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(resultFromBedrock);
 
             bool isTenantFullyMigrated = await _sut.IsTenantFullyMigratedAsync().ConfigureAwait(false);
             isTenantFullyMigrated.Should().BeFalse();
@@ -149,7 +150,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         {
             // ARRANGE
             _helperFactoryMock.Setup(x =>
-                x.GetStorageEndpointsAsync(It.IsAny<ApplicationDetails>())).Throws(new Exception());
+                x.GetStorageEndpointsAsync(It.IsAny<CancellationToken>())).Throws(new Exception());
 
             // ACT
             bool isTenantFullyMigrated = await _sut.IsTenantFullyMigratedAsync().ConfigureAwait(false);

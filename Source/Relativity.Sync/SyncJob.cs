@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 using Banzai;
 using Relativity.API;
 using Relativity.Sync.Executors.Validation;
+using Relativity.Sync.Storage;
+using Relativity.Sync.Toggles;
+using Relativity.Sync.Toggles.Service;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync
 {
@@ -14,14 +18,19 @@ namespace Relativity.Sync
         private readonly ISyncExecutionContextFactory _executionContextFactory;
         private readonly SyncJobParameters _syncJobParameters;
         private readonly IProgress<SyncJobState> _syncProgress;
+        private readonly ISyncToggles _syncToggles;
+        private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
         private readonly IAPILog _logger;
 
-        public SyncJob(INode<SyncExecutionContext> pipeline, ISyncExecutionContextFactory executionContextFactory, SyncJobParameters syncJobParameters, IProgress<SyncJobState> syncProgress, IAPILog logger)
+        public SyncJob(INode<SyncExecutionContext> pipeline, ISyncExecutionContextFactory executionContextFactory, SyncJobParameters syncJobParameters, IProgress<SyncJobState> syncProgress,
+            ISyncToggles syncToggles, IJobProgressUpdaterFactory jobProgressUpdaterFactory, IAPILog logger)
         {
             _pipeline = pipeline;
             _executionContextFactory = executionContextFactory;
             _syncJobParameters = syncJobParameters;
             _syncProgress = syncProgress;
+            _syncToggles = syncToggles;
+            _jobProgressUpdaterFactory = jobProgressUpdaterFactory;
             _logger = logger;
         }
 
@@ -37,6 +46,78 @@ namespace Relativity.Sync
         }
 
         private async Task ExecuteAsync(CompositeCancellationToken token, params IProgress<SyncJobState>[] progressReporters)
+        {
+            if (_syncToggles.IsEnabled<EnableJobHistoryStatusUpdateToggle>())
+            {
+                _logger.LogInformation("Job History status will be updated");
+
+                IJobProgressUpdater jobProgressUpdater = _jobProgressUpdaterFactory.CreateJobProgressUpdater();
+
+                token.DrainStopCancellationToken.Register(() => jobProgressUpdater.UpdateJobStatusAsync(JobHistoryStatus.Suspending).GetAwaiter().GetResult());
+
+                try
+                {
+                    await jobProgressUpdater.SetJobStartedAsync().ConfigureAwait(false);
+
+                    IProgress<SyncJobState> progress = new Progress<SyncJobState>(async syncJobState => await jobProgressUpdater.UpdateJobStatusAsync(GetJobHistoryStatus(syncJobState.Id)).ConfigureAwait(false));
+                    List<IProgress<SyncJobState>> aggregatedProgress = new List<IProgress<SyncJobState>>
+                    {
+                        progress
+                    };
+                    aggregatedProgress.AddRange(progressReporters);
+
+                    await InternalExecuteAsync(token, aggregatedProgress.ToArray()).ConfigureAwait(false);
+
+                    if (token.StopCancellationToken.IsCancellationRequested)
+                    {
+                        await jobProgressUpdater.UpdateJobStatusAsync(JobHistoryStatus.Stopped).ConfigureAwait(false);
+                    }
+                    else if (token.DrainStopCancellationToken.IsCancellationRequested)
+                    {
+                        await jobProgressUpdater.UpdateJobStatusAsync(JobHistoryStatus.Suspended).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await jobProgressUpdater.UpdateJobStatusAsync(JobHistoryStatus.Completed).ConfigureAwait(false);
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    await jobProgressUpdater.UpdateJobStatusAsync(JobHistoryStatus.Stopped).ConfigureAwait(false);
+                }
+                catch (ValidationException ex)
+                {
+                    await jobProgressUpdater.UpdateJobStatusAsync(JobHistoryStatus.ValidationFailed).ConfigureAwait(false);
+                    await jobProgressUpdater.AddJobErrorAsync(ex).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    await jobProgressUpdater.UpdateJobStatusAsync(JobHistoryStatus.Failed).ConfigureAwait(false);
+                    await jobProgressUpdater.AddJobErrorAsync(ex).ConfigureAwait(false);
+                }
+            }
+            else
+            {
+                await InternalExecuteAsync(token, progressReporters).ConfigureAwait(false);
+            }
+        }
+
+        private JobHistoryStatus GetJobHistoryStatus(string syncStatus)
+        {
+            const string validating = "validating";
+            const string checkingPermissions = "checking permissions";
+
+            if (syncStatus.IsIn(StringComparison.InvariantCultureIgnoreCase, validating, checkingPermissions))
+            {
+                return JobHistoryStatus.Validating;
+            }
+            else
+            {
+                return JobHistoryStatus.Processing;
+            }
+        }
+
+        private async Task InternalExecuteAsync(CompositeCancellationToken token, params IProgress<SyncJobState>[] progressReporters)
         {
             NodeResult executionResult;
             try
@@ -62,7 +143,9 @@ namespace Relativity.Sync
                 throw new SyncException("Error occured during Sync job execution. See inner exception for more details.", e, _syncJobParameters.WorkflowId);
             }
 
-            if (executionResult.Status != NodeResultStatus.Succeeded && executionResult.Status != NodeResultStatus.SucceededWithErrors)
+            if (executionResult.Status != NodeResultStatus.Succeeded &&
+                executionResult.Status != NodeResultStatus.SucceededWithErrors &&
+                executionResult.Status != NodeResultStatus.NotRun)
             {
                 SyncExecutionContext subject = (SyncExecutionContext)executionResult.Subject;
                 IList<Exception> failingExceptions = subject.Results

@@ -48,6 +48,11 @@ namespace Relativity.Sync
             return await GetAsync<bool>("ForceADFTransfer", _SYNC_SECTION, defaultValue).ConfigureAwait(false);
         }
 
+        public async Task<int> GetSyncMaxThreadsCountAsync(int defaultValue = 4)
+        {
+            return await GetAsync<int>("SyncMaxThreadsCount", _SYNC_SECTION, defaultValue).ConfigureAwait(false);
+        }
+
         private async Task<T> GetAsync<T>(string name, string section, T defaultValue)
         {
             InstanceSettingQueryResultSet resultSet = await TryReadInstanceSettingAsync(name, section).ConfigureAwait(false);

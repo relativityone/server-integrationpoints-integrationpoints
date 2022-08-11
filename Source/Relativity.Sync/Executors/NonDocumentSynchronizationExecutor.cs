@@ -7,27 +7,51 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ADF;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors
 {
     internal class NonDocumentSynchronizationExecutor : SynchronizationExecutorBase<INonDocumentSynchronizationConfiguration>
     {
-        public NonDocumentSynchronizationExecutor(IImportJobFactory importJobFactory, IBatchRepository batchRepository,
+        public NonDocumentSynchronizationExecutor(
+            IImportJobFactory importJobFactory,
+            IBatchRepository batchRepository,
             IJobProgressHandlerFactory jobProgressHandlerFactory,
-            IFieldManager fieldManager, IFieldMappings fieldMappings, IJobStatisticsContainer jobStatisticsContainer,
+            IFieldManager fieldManager,
+            IFieldMappings fieldMappings,
+            IJobStatisticsContainer jobStatisticsContainer,
             IJobCleanupConfiguration jobCleanupConfiguration,
             IAutomatedWorkflowTriggerConfiguration automatedWorkflowTriggerConfiguration,
-            Func<IStopwatch> stopwatchFactory, ISyncMetrics syncMetrics,
-            IAPILog logger,
-            IUserContextConfiguration userContextConfiguration, IFileLocationManager fileLocationManager) : base(importJobFactory, BatchRecordType.NonDocuments, batchRepository, jobProgressHandlerFactory, fieldManager,
-            fieldMappings, jobStatisticsContainer, jobCleanupConfiguration, automatedWorkflowTriggerConfiguration, stopwatchFactory, syncMetrics, userContextConfiguration, logger, fileLocationManager)
+            Func<IStopwatch> stopwatchFactory,
+            ISyncMetrics syncMetrics,
+            IAdlsUploader uploader,
+            IUserContextConfiguration userContextConfiguration,
+            IIsADFTransferEnabled isAdfTransferEnabled,
+            IFileLocationManager fileLocationManager,
+            IAPILog logger) : base(
+            importJobFactory,
+            BatchRecordType.NonDocuments,
+            batchRepository,
+            jobProgressHandlerFactory,
+            fieldManager,
+            fieldMappings,
+            jobStatisticsContainer,
+            jobCleanupConfiguration,
+            automatedWorkflowTriggerConfiguration,
+            stopwatchFactory,
+            syncMetrics,
+            userContextConfiguration,
+            uploader,
+            isAdfTransferEnabled,
+            fileLocationManager,
+            logger)
         {
         }
 
         protected override Task<IImportJob> CreateImportJobAsync(INonDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
         {
-            return _importJobFactory.CreateRdoImportJobAsync(configuration, batch, token);
+            return ImportJobFactory.CreateRdoImportJobAsync(configuration, batch, token);
         }
 
         protected override void UpdateImportSettings(INonDocumentSynchronizationConfiguration configuration)
@@ -35,10 +59,9 @@ namespace Relativity.Sync.Executors
             configuration.IdentityFieldId = GetDestinationIdentityFieldId();
         }
 
-        protected override void ChildReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime,
-            TimeSpan importApiTimer)
+        protected override void ChildReportBatchMetrics(int batchId, BatchProcessResult batchProcessResult, TimeSpan batchTime, TimeSpan importApiTimer)
         {
-            _syncMetrics.Send(new NonDocumentBatchEndMetric()
+            SyncMetrics.Send(new NonDocumentBatchEndMetric()
             {
                 TotalRecordsRequested = batchProcessResult.TotalRecordsRequested,
                 TotalRecordsTransferred = batchProcessResult.TotalRecordsTransferred,
@@ -50,8 +73,7 @@ namespace Relativity.Sync.Executors
             });
         }
 
-        protected override Task<TaggingExecutionResult> TagObjectsAsync(IImportJob importJob, ISynchronizationConfiguration configuration,
-            CompositeCancellationToken token)
+        protected override Task<TaggingExecutionResult> TagObjectsAsync(IImportJob importJob, ISynchronizationConfiguration configuration, CompositeCancellationToken token)
         {
             var dummyResult = TaggingExecutionResult.Success();
             dummyResult.TaggedDocumentsCount = 0;

@@ -45,10 +45,25 @@ namespace Relativity.Sync.RDOs
         public const string SourceWorkspaceTagNameGuid = "D828B69E-AAAE-4639-91E2-416E35C163B1";
 
         public const string JobHistoryTypeGuid = "52234DAA-2E06-4449-8456-8B0D2C219DF6";
+        public const string JobHistoryStatusGuid = "33AC7C48-3D46-4D08-9C65-544984B886C9";
         public const string JobHistoryCompletedItemsFieldGuid = "E150C95E-50D1-4719-B163-942E8C0DABF1";
         public const string JobHistoryFailedItemsFieldGuid = "3E6CBCC4-ABD2-4C9F-99F6-AE2CFBF97E5C";
         public const string JobHistoryTotalItemsFieldGuid = "E145B019-4451-4339-8CED-96901F1264F9";
         public const string JobHistoryDestinationWorkspaceInformationGuid = "3407317A-FFB4-49A8-A9F0-86A473AA2054";
+        public const string JobHistoryJobIdGuid = "284C9B20-A634-4CF7-B56A-FE39E0994830";
+        public const string JobHistoryStartTimeGuid = "4AC51EE1-A3D8-4B21-8632-4E1E7CB9C8DB";
+        public const string JobHistoryEndTimeGuid = "A43340C9-E766-414C-8CA0-1F8B3FEA251D";
+        public const string JobHistoryStatusValidatingGuid = "AFA86792-EB30-42E9-91F9-249F616C2DDE";
+        public const string JobHistoryStatusValidationFailedGuid = "58DEE242-6784-468D-81E5-26A24B6BE0CD";
+        public const string JobHistoryStatusProcessingGuid = "EC12377A-8F5A-446B-B475-47351813505E";
+        public const string JobHistoryStatusCompletedGuid = "836C5643-DE4E-4432-B1A6-6AE9C884C449";
+        public const string JobHistoryStatusCompletedWithErrorsGuid = "E079A572-C0DB-4997-878A-DD390F817445";
+        public const string JobHistoryStatusJobFailedGuid = "F2634500-1109-46E4-9195-635F71BA7083";
+        public const string JobHistoryStatusStoppingGuid = "BDC77183-FF5E-44BC-A23A-717C692CAB95";
+        public const string JobHistoryStatusStoppedGuid = "8A5C8EA4-8C18-4841-974C-079768912AEF";
+        public const string JobHistoryStatusSuspendingGuid = "892B7A10-C026-4167-AD8B-7E529A2425FC";
+        public const string JobHistoryStatusSuspendedGuid = "4F8FA555-2540-4308-90CB-2C00A73302D5";
+
         public const string JobHistoryErrorTypeGuid = "1BD0DEDA-C86A-4E0C-BE16-857D5541783D";
         public const string JobHistoryErrorErrorMessagesGuid = "27FECC80-AED2-41EB-8462-97BB6ACBF8B9";
         public const string JobHistoryErrorErrorStatusGuid = "F99ECDA1-03B9-4C62-AEC4-22EB7374D740";

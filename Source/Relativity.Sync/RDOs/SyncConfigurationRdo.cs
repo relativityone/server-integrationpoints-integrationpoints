@@ -87,7 +87,7 @@ namespace Relativity.Sync.RDOs
 
         [RdoField(SyncRdoGuids.JobHistoryIdGuid, RdoFieldType.WholeNumber, required: false)]
         public int JobHistoryId { get; set; }
-        
+
         [RdoField(SyncRdoGuids.JobHistoryToRetryIdGuid, RdoFieldType.WholeNumber, required: false)]
         public int? JobHistoryToRetryId { get; set; }
 
@@ -99,7 +99,7 @@ namespace Relativity.Sync.RDOs
 
         [RdoField(SyncRdoGuids.SnapshotRecordsCountGuid, RdoFieldType.WholeNumber)]
         public int SnapshotRecordsCount { get; set; }
-        
+
         [RdoField(SyncRdoGuids.ObjectLinkingSnapshotRecordsCountGuid, RdoFieldType.WholeNumber)]
         public int ObjectLinkingSnapshotRecordsCount { get; set; }
 
@@ -117,89 +117,131 @@ namespace Relativity.Sync.RDOs
 
         [RdoField(SyncRdoGuids.DestinationWorkspaceTagArtifactIdGuid, RdoFieldType.WholeNumber)]
         public int DestinationWorkspaceTagArtifactId { get; set; }
-        
+
         // JobHistory configuration
         [RdoField(SyncRdoGuids.JobHistoryTypeGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryType { get; set; }
 
+        [RdoField(SyncRdoGuids.JobHistoryStatusGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
+        public Guid JobHistoryStatusField { get; set; }
+
         [RdoField(SyncRdoGuids.JobHistoryCompletedItemsFieldGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryCompletedItemsField { get; set; }
-        
+
         [RdoField(SyncRdoGuids.JobHistoryFailedItemsFieldGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryGuidFailedField { get; set; }
-        
+
         [RdoField(SyncRdoGuids.JobHistoryTotalItemsFieldGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryGuidTotalField { get; set; }
-        
+
         [RdoField(SyncRdoGuids.JobHistoryDestinationWorkspaceInformationGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryDestinationWorkspaceInformationField { get; set; }
 
+        [RdoField(SyncRdoGuids.JobHistoryJobIdGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
+        public Guid JobHistoryJobIdField { get; set; }
+
+        [RdoField(SyncRdoGuids.JobHistoryStartTimeGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
+        public Guid JobHistoryStartTimeField { get; set; }
+
+        [RdoField(SyncRdoGuids.JobHistoryEndTimeGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
+        public Guid JobHistoryEndTimeField { get; set; }
+        
+        [RdoField(SyncRdoGuids.JobHistoryStatusValidatingGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
+        public Guid JobHistoryStatusValidating { get; set; }
+
+        [RdoField(SyncRdoGuids.JobHistoryStatusValidationFailedGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
+        public Guid JobHistoryStatusValidationFailed { get; set; }
+
+        [RdoField(SyncRdoGuids.JobHistoryStatusProcessingGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
+        public Guid JobHistoryStatusProcessing { get; set; }
+
+        [RdoField(SyncRdoGuids.JobHistoryStatusCompletedGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
+        public Guid JobHistoryStatusCompleted { get; set; }
+
+        [RdoField(SyncRdoGuids.JobHistoryStatusCompletedWithErrorsGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
+        public Guid JobHistoryStatusCompletedWithErrors { get; set; }
+
+        [RdoField(SyncRdoGuids.JobHistoryStatusJobFailedGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
+        public Guid JobHistoryStatusJobFailed { get; set; }
+
+        [RdoField(SyncRdoGuids.JobHistoryStatusStoppingGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
+        public Guid JobHistoryStatusStopping { get; set; }
+
+        [RdoField(SyncRdoGuids.JobHistoryStatusStoppedGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
+        public Guid JobHistoryStatusStopped { get; set; }
+
+        [RdoField(SyncRdoGuids.JobHistoryStatusSuspendingGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
+        public Guid JobHistoryStatusSuspending { get; set; }
+
+        [RdoField(SyncRdoGuids.JobHistoryStatusSuspendedGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
+        public Guid JobHistoryStatusSuspended { get; set; }
+        
         // JobHistoryError configuration
 
         [RdoField(SyncRdoGuids.JobHistoryErrorTypeGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryErrorType { get; set; }
-        
+
         [RdoField(SyncRdoGuids.JobHistoryErrorErrorMessagesGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryErrorErrorMessages { get; set; }
-        
+
         [RdoField(SyncRdoGuids.JobHistoryErrorErrorStatusGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryErrorErrorStatus { get; set; }
-        
+
         [RdoField(SyncRdoGuids.JobHistoryErrorErrorTypeGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryErrorErrorType { get; set; }
-        
+
         [RdoField(SyncRdoGuids.JobHistoryErrorNameGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryErrorName { get; set; }
-        
+
         [RdoField(SyncRdoGuids.JobHistoryErrorSourceUniqueIdGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryErrorSourceUniqueId { get; set; }
-        
+
         [RdoField(SyncRdoGuids.JobHistoryErrorStackTraceGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryErrorStackTrace { get; set; }
-        
+
         [RdoField(SyncRdoGuids.JobHistoryErrorTimeStampGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryErrorTimeStamp { get; set; }
-        
+
         [RdoField(SyncRdoGuids.JobHistoryErrorItemLevelErrorGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryErrorItemLevelError { get; set; }
-        
+
         [RdoField(SyncRdoGuids.JobHistoryErrorJobLevelErrorGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryErrorJobLevelError { get; set; }
-        
+
         [RdoField(SyncRdoGuids.JobHistoryErrorJobHistoryRelationGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryErrorJobHistoryRelation { get; set; }
 
         [RdoField(SyncRdoGuids.JobHistoryErrorNewChoiceGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryErrorNewChoice { get; set; }
-        
+
         [RdoField(SyncRdoGuids.JobHistoryErrorExpiredChoiceGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryErrorExpiredChoice { get; set; }
-        
+
         [RdoField(SyncRdoGuids.JobHistoryErrorInProgressChoiceGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryErrorInProgressChoice { get; set; }
-        
+
         [RdoField(SyncRdoGuids.JobHistoryErrorRetriedChoiceGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryErrorRetriedChoice { get; set; }
-        
+
         // DestinationWorkspace RDO configuration
         [RdoField(SyncRdoGuids.DestinationWorkspaceTypeGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid DestinationWorkspaceType { get; set; }
-        
+
         [RdoField(SyncRdoGuids.DestinationWorkspaceNameFieldGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid DestinationWorkspaceNameField { get; set; }
 
         [RdoField(SyncRdoGuids.DestinationWorkspaceDestinationWorkspaceArtifactIdGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid DestinationWorkspaceWorkspaceArtifactIdField { get; set; }
-        
+
         [RdoField(SyncRdoGuids.DestinationWorkspaceDestinationWorkspaceNameGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid DestinationWorkspaceDestinationWorkspaceName { get; set; }
-        
+
         [RdoField(SyncRdoGuids.DestinationWorkspaceDestinationInstanceNameGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid DestinationWorkspaceDestinationInstanceName { get; set; }
-        
+
         [RdoField(SyncRdoGuids.DestinationWorkspaceDestinationInstanceArtifactIdGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid DestinationWorkspaceDestinationInstanceArtifactId { get; set; }
-        
+
         [RdoField(SyncRdoGuids.JobHistoryOnDocumentFieldGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryOnDocumentField { get; set; }
 
@@ -209,7 +251,7 @@ namespace Relativity.Sync.RDOs
 
         [RdoField(SyncRdoGuids.ExecutingApplicationGuid, RdoFieldType.FixedLengthText)]
         public string ExecutingApplication { get; set; }
-        
+
         [RdoField(SyncRdoGuids.ExecutingApplicationVersionGuid, RdoFieldType.FixedLengthText, fixedTextLength: 10)]
         public string ExecutingApplicationVersion { get; set; }
     }

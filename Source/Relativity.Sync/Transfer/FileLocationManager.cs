@@ -1,14 +1,14 @@
-﻿using Relativity.API;
-using Relativity.Sync.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Relativity.API;
+using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Transfer
 {
     internal sealed class FileLocationManager : IFileLocationManager
     {
-        private IList<FmsBatchInfo> _fmsBatchesStorage;
+        private readonly IList<FmsBatchInfo> _fmsBatchesStorage;
         private readonly IAPILog _logger;
         private readonly ISynchronizationConfiguration _configuration;
 
@@ -28,7 +28,6 @@ namespace Relativity.Sync.Transfer
                 var commonSourcePathGroups = pathStructures.GroupBy(x => x.Value.FullDirectoryPath);
                 foreach (var filePathComponents in commonSourcePathGroups)
                 {
-                    var filesWithinGroup = filePathComponents.AsEnumerable();
                     FmsBatchInfo batchInfo = new FmsBatchInfo(_configuration.DestinationWorkspaceArtifactId, filePathComponents.ToDictionary(x => x.Key, x => x.Value), filePathComponents.Key);
                     _fmsBatchesStorage.Add(batchInfo);
 
@@ -38,15 +37,6 @@ namespace Relativity.Sync.Transfer
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Could not translate and store paths for FMS batches");
-            }
-        }
-
-        private void SetNewPathForIapiTransfer(FmsBatchInfo batchInfo, IDictionary<int, INativeFile> nativeFiles)
-        {
-            foreach (FmsDocument document in batchInfo.Files)
-            {
-                INativeFile oldConfiguration = nativeFiles[document.DocumentArtifactId];
-                nativeFiles[document.DocumentArtifactId] = new NativeFile(oldConfiguration.DocumentArtifactId, document.LinkForIAPI, oldConfiguration.Filename, oldConfiguration.Size);
             }
         }
 
@@ -80,7 +70,17 @@ namespace Relativity.Sync.Transfer
                     _logger.LogError(ex, "Could not get correct structure of file path {filepath}", file.Value.Location);
                 }
             }
+
             return structures;
+        }
+
+        private void SetNewPathForIapiTransfer(FmsBatchInfo batchInfo, IDictionary<int, INativeFile> nativeFiles)
+        {
+            foreach (FmsDocument document in batchInfo.Files)
+            {
+                INativeFile oldConfiguration = nativeFiles[document.DocumentArtifactId];
+                nativeFiles[document.DocumentArtifactId] = new NativeFile(oldConfiguration.DocumentArtifactId, document.LinkForIAPI, oldConfiguration.Filename, oldConfiguration.Size);
+            }
         }
     }
 }

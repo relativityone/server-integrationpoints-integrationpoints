@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using Autofac;
 using Banzai;
@@ -12,6 +13,8 @@ using Relativity.Services.InstanceSetting;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Nodes;
+using Relativity.Sync.RDOs;
+using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.Tests.Common;
 using Relativity.Telemetry.APM;
 
@@ -56,7 +59,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
             FlowComponent<SyncExecutionContext>[] GetChildTypes(FlowComponent<SyncExecutionContext> flowComponent)
             {
                 var childTypes = flowComponent.Children.SelectMany(x => GetChildTypes(x)).ToArray();
-                return new[] {flowComponent}.Concat(childTypes).ToArray();
+                return new[] { flowComponent }.Concat(childTypes).ToArray();
             }
 
             FlowComponent<SyncExecutionContext> flows = container.ResolveNamed<FlowComponent<SyncExecutionContext>>(pipelineType.Name);
@@ -76,12 +79,14 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 
             SyncJobParameters parameters = FakeHelper.CreateSyncJobParameters();
 
-            containerFactory.RegisterSyncDependencies(
-                containerBuilder,
-                parameters,
-                relativityServices,
-                new SyncJobExecutionConfiguration(),
-                new EmptyLogger());
+            containerFactory.RegisterSyncDependencies(containerBuilder, parameters,
+                relativityServices, new SyncJobExecutionConfiguration(), new EmptyLogger());
+
+            Mock<IRdoManager> rdoManagerMock = new Mock<IRdoManager>();
+            rdoManagerMock
+                .Setup(x => x.GetAsync<SyncConfigurationRdo>(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Expression<Func<SyncConfigurationRdo, object>>[]>()))
+                .ReturnsAsync(new SyncConfigurationRdo());
+            containerBuilder.Register(context => rdoManagerMock.Object).As<IRdoManager>();
 
             return containerBuilder;
         }
@@ -114,12 +119,15 @@ namespace Relativity.Sync.Tests.Integration.Helpers
                 }
             });
             instanceSettingManager.Setup(x => x.QueryAsync(It.IsAny<Services.Query>())).ReturnsAsync(resultSet);
-            
+
             Uri authenticationUri = new Uri("https://localhost", UriKind.RelativeOrAbsolute);
 
             Mock<IServicesMgr> servicesMgr = new Mock<IServicesMgr>();
             Mock<IHelper> helper = new Mock<IHelper>();
+            Mock<ILogFactory> logFactory = new Mock<ILogFactory>();
             helper.Setup(x => x.GetServicesManager()).Returns(servicesMgr.Object);
+            helper.Setup(x => x.GetLoggerFactory()).Returns(logFactory.Object);
+            logFactory.Setup(x => x.GetLogger()).Returns(new EmptyLogger());
 
             return new RelativityServices(apm, authenticationUri, helper.Object);
         }
