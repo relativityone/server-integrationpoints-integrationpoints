@@ -39,6 +39,7 @@ namespace Relativity.Sync.SyncConfiguration
         private void ValidateInput(RdoOptions rdoOptions)
         {
             ValidateJobHistoryGuids(rdoOptions.JobHistory);
+            ValidateJobHistoryStatusGuids(rdoOptions.JobHistoryStatus);
             ValidateJobHistoryErrorGuids(rdoOptions.JobHistoryError);
             ValidateDestinationWorkspaceGuids(rdoOptions.DestinationWorkspace);
         }
@@ -73,11 +74,29 @@ namespace Relativity.Sync.SyncConfiguration
 
         private void ValidateJobHistoryGuids(JobHistoryOptions options)
         {
+            ValidateProperty(options, x => x.JobHistoryTypeGuid);
+            ValidateProperty(options, x => x.JobIdGuid);
+            ValidateProperty(options, x => x.StatusGuid);
             ValidateProperty(options, x => x.CompletedItemsCountGuid);
             ValidateProperty(options, x => x.TotalItemsCountGuid);
             ValidateProperty(options, x => x.FailedItemsCountGuid);
             ValidateProperty(options, x => x.DestinationWorkspaceInformationGuid);
-            ValidateProperty(options, x => x.JobHistoryTypeGuid);
+            ValidateProperty(options, x => x.StartTimeGuid);
+            ValidateProperty(options, x => x.EndTimeGuid);
+        }
+
+        private void ValidateJobHistoryStatusGuids(JobHistoryStatusOptions options)
+        {
+            ValidateProperty(options, x => x.ValidatingGuid);
+            ValidateProperty(options, x => x.ValidationFailedGuid);
+            ValidateProperty(options, x => x.ProcessingGuid);
+            ValidateProperty(options, x => x.CompletedGuid);
+            ValidateProperty(options, x => x.CompletedWithErrorsGuid);
+            ValidateProperty(options, x => x.JobFailedGuid);
+            ValidateProperty(options, x => x.StoppingGuid);
+            ValidateProperty(options, x => x.StoppedGuid);
+            ValidateProperty(options, x => x.SuspendingGuid);
+            ValidateProperty(options, x => x.SuspendedGuid);
         }
 
         private void ValidateProperty<TRdo>(TRdo rdo, Expression<Func<TRdo, Guid>> expression)

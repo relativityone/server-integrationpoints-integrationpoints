@@ -1,4 +1,7 @@
-﻿namespace Relativity.Sync.Utils
+﻿using System;
+using System.Linq;
+
+namespace Relativity.Sync.Utils
 {
     internal static class StringExtensions
     {
@@ -14,6 +17,11 @@
                 : value;
 
             return truncatedValue;
+        }
+
+        public static bool IsIn(this string value, StringComparison stringComparison, params string[] inclusions)
+        {
+            return inclusions.Any(x => string.Equals(x, value, stringComparison));
         }
     }
 }
