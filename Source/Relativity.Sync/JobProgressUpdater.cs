@@ -77,6 +77,8 @@ namespace Relativity.Sync
             bool? hasErrors = null;
             DateTime endTime = _dateTime.UtcNow;
 
+            _logger.LogInformation("Updating Job History status: {status}", status);
+
             switch (status)
             {
                 case JobHistoryStatus.Validating:

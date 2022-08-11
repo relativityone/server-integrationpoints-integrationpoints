@@ -21,6 +21,8 @@ namespace Relativity.Sync.Tests.Common.RdoGuidProviderStubs
 
         public static IJobHistoryStatusProvider JobHistoryStatus => new JobHistoryStatusGuidProviderStub
         {
+            ValidationFailedGuid = new Guid("d0b43a57-bdc8-4c14-b2f0-2928ae4f750a"),
+            ValidatingGuid = new Guid("6a2dcef5-5826-4f61-9bac-59fef879ebc2"),
             CompletedGuid = new Guid("c7d1eb34-166e-48d0-bce7-0be0df43511c"),
             CompletedWithErrorsGuid = new Guid("c0f4a2b2-499e-45bc-96d7-f8bc25e18b37"),
             JobFailedGuid = new Guid("3152ece9-40e6-44dd-afc8-1004f55dfb63"),
@@ -28,9 +30,7 @@ namespace Relativity.Sync.Tests.Common.RdoGuidProviderStubs
             StoppedGuid = new Guid("a29c5bcb-d3a6-4f81-877a-2a6556c996c3"),
             StoppingGuid = new Guid("97c1410d-864d-4811-857b-952464872baa"),
             SuspendedGuid = new Guid("f219e060-d7e1-4666-964d-f229a1a13baa"),
-            SuspendingGuid = new Guid("c65658c3-79ea-4762-b78e-85d9f38785b6"),
-            ValidationFailedGuid = new Guid("d0b43a57-bdc8-4c14-b2f0-2928ae4f750a"),
-            ValidatingGuid = new Guid("6a2dcef5-5826-4f61-9bac-59fef879ebc2")
+            SuspendingGuid = new Guid("c65658c3-79ea-4762-b78e-85d9f38785b6")
         };
 
         public static IJobHistoryErrorGuidsProvider JobHistoryError => new JobHistoryErrorGuidsProviderStub
