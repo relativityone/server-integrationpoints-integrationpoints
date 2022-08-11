@@ -21,8 +21,8 @@ namespace Relativity.Sync.Transfer.FileMovementService
 
         public async Task<string> GetKubernetesServicesUrl()
         {
-            var instanceSettingBundle = _helper.GetInstanceSettingBundle();
-            var value = await instanceSettingBundle.GetStringAsync(RelativityCoreInstanceSettingsSection, KubernetesServicesUrlInstanceSettingName);
+            IInstanceSettingsBundle instanceSettingBundle = _helper.GetInstanceSettingBundle();
+            string value = await instanceSettingBundle.GetStringAsync(RelativityCoreInstanceSettingsSection, KubernetesServicesUrlInstanceSettingName);
             if (string.IsNullOrEmpty(value))
             {
                 throw new ArgumentNullException(KubernetesServicesUrlInstanceSettingName);
@@ -33,8 +33,8 @@ namespace Relativity.Sync.Transfer.FileMovementService
 
         public async Task<string> GetFileMovementServiceUrl()
         {
-            var instanceSettingBundle = _helper.GetInstanceSettingBundle();
-            var value = await instanceSettingBundle.GetStringAsync(FileMigratorInstanceSettingsSection, FileMovementInstanceSettingName);
+            IInstanceSettingsBundle instanceSettingBundle = _helper.GetInstanceSettingBundle();
+            string value = await instanceSettingBundle.GetStringAsync(FileMigratorInstanceSettingsSection, FileMovementInstanceSettingName);
             if (string.IsNullOrEmpty(value))
             {
                 value = fileMovementUrlPart;

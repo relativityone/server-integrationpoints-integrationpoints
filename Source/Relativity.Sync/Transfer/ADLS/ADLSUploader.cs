@@ -10,7 +10,7 @@ using Relativity.API;
 using Relativity.Services.Exceptions;
 using Relativity.Storage;
 
-namespace Relativity.Sync.Transfer.ADF
+namespace Relativity.Sync.Transfer.ADLS
 {
     internal class AdlsUploader : IAdlsUploader
     {

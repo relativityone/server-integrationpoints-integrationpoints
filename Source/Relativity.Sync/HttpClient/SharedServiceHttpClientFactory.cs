@@ -1,19 +1,19 @@
 using System;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Relativity.API;
 using Relativity.Services.Interfaces.Helpers;
+using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.HttpClient
 {
-    public class SharedServiceHttpClientFactory : ISharedServiceHttpClientFactory
+    internal class SharedServiceHttpClientFactory : ISharedServiceHttpClientFactory
     {
         private const string ServiceName = "SharedServices";
-        private readonly IHelper _helper;
+        private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
 
-        public SharedServiceHttpClientFactory(IHelper helper)
+        public SharedServiceHttpClientFactory(ISourceServiceFactoryForAdmin serviceFactoryForAdmin)
         {
-            _helper = helper;
+            _serviceFactoryForAdmin = serviceFactoryForAdmin;
         }
 
         public async Task<System.Net.Http.HttpClient> GetHttpClientAsync()
@@ -29,7 +29,7 @@ namespace Relativity.Sync.HttpClient
         private async Task<string> GetCidTokenAsync(string serviceName)
         {
             using (IAuthTokenProvider authTokenProvider =
-                   _helper.GetServicesManager().CreateProxy<IAuthTokenProvider>(ExecutionIdentity.System))
+                   await _serviceFactoryForAdmin.CreateProxyAsync<IAuthTokenProvider>().ConfigureAwait(false))
             {
                 return await authTokenProvider.GetAuthToken(serviceName).ConfigureAwait(false);
             }

@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Polly.Retry;
 using Relativity.Logging.Tools;
 using Relativity.Sync.HttpClient;
 
@@ -13,7 +14,7 @@ namespace Relativity.Sync.Transfer.FileMovementService
     public class FmsClient : IFmsClient
     {
         private string apiV1UrlPart = @"api/v1/DataFactory";
-        private readonly IFmsInstanceSettingsService _iFmsInstanceSettingsService;
+        private readonly IFmsInstanceSettingsService _fmsInstanceSettingsService;
         private readonly ISharedServiceHttpClientFactory _httpClientFactory;
         private readonly IHttpClientRetryPolicyProvider _retryPolicyProvider;
 
@@ -22,25 +23,24 @@ namespace Relativity.Sync.Transfer.FileMovementService
             ISharedServiceHttpClientFactory httpClientFactory,
             IHttpClientRetryPolicyProvider retryPolicyProvider)
         {
-            _iFmsInstanceSettingsService = ifmsInstanceSettingsService ?? throw new ArgumentNullException(nameof(ifmsInstanceSettingsService));
+            _fmsInstanceSettingsService = ifmsInstanceSettingsService ?? throw new ArgumentNullException(nameof(ifmsInstanceSettingsService));
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _retryPolicyProvider = retryPolicyProvider ?? throw new ArgumentNullException(nameof(retryPolicyProvider));
         }
 
-        public async Task<RunStatusResponse> GetRunStatusAsync(
-            RunStatusRequest runStatusRequest, CancellationToken cancellationToken)
+        public async Task<RunStatusResponse> GetRunStatusAsync(RunStatusRequest runStatusRequest, CancellationToken cancellationToken)
         {
-            var getStatusUrl = await GetEndpointUrl("GetStatus");
+            string getStatusUrl = await GetEndpointUrlAsync("GetStatus").ConfigureAwait(false);
 
             using (var httpClient = await _httpClientFactory.GetHttpClientAsync().ConfigureAwait(false))
             {
-                var responseMessage = await ExecuteUnderRetryPolicy(async () => await httpClient
+                HttpResponseMessage responseMessage = await ExecuteUnderRetryPolicy(async () => await httpClient
                     .GetAsync($"{getStatusUrl}/{runStatusRequest.RunId}?traceId={runStatusRequest.TraceId}", cancellationToken)
                     .ConfigureAwait(false));
 
                 responseMessage.EnsureSuccessStatusCode();
 
-                var responseJson = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+                string responseJson = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 return JsonConvert.DeserializeObject<RunStatusResponse>(responseJson);
             }
@@ -49,20 +49,20 @@ namespace Relativity.Sync.Transfer.FileMovementService
         public async Task<CopyListOfFilesResponse> CopyListOfFilesAsync(
             CopyListOfFilesRequest copyListOfFilesRequest, CancellationToken cancellationToken)
         {
-            var copyListOfFilesEndpoint = await GetEndpointUrl("CopyListOfFiles");
+            string copyListOfFilesEndpoint = await GetEndpointUrlAsync("CopyListOfFiles").ConfigureAwait(false);
 
             using (var httpClient = await _httpClientFactory.GetHttpClientAsync().ConfigureAwait(false))
             {
-                var requestJson = JsonConvert.SerializeObject(copyListOfFilesRequest);
-                var requestContent = new StringContent(requestJson, Encoding.UTF8, "application/json");
+                string requestJson = JsonConvert.SerializeObject(copyListOfFilesRequest);
+                StringContent requestContent = new StringContent(requestJson, Encoding.UTF8, "application/json");
 
-                var responseMessage = await ExecuteUnderRetryPolicy(async () => await httpClient
+                HttpResponseMessage responseMessage = await ExecuteUnderRetryPolicy(async () => await httpClient
                     .PostAsync($"{copyListOfFilesEndpoint}", requestContent, cancellationToken)
                     .ConfigureAwait(false));
 
                 responseMessage.EnsureSuccessStatusCode();
 
-                var responseJson = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+                string responseJson = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 return JsonConvert.DeserializeObject<CopyListOfFilesResponse>(responseJson);
             }
@@ -70,14 +70,14 @@ namespace Relativity.Sync.Transfer.FileMovementService
 
         public async Task<string> CancelRunAsync(RunCancelRequest runCancelRequest, CancellationToken cancellationToken)
         {
-            var cancelEndpoint = await GetEndpointUrl("Cancel");
+            string cancelEndpoint = await GetEndpointUrlAsync("Cancel").ConfigureAwait(false);
 
             using (var httpClient = await _httpClientFactory.GetHttpClientAsync().ConfigureAwait(false))
             {
-                var requestJson = JsonConvert.SerializeObject(runCancelRequest);
-                var requestContent = new StringContent(requestJson, Encoding.UTF8, "application/json");
+                string requestJson = JsonConvert.SerializeObject(runCancelRequest);
+                StringContent requestContent = new StringContent(requestJson, Encoding.UTF8, "application/json");
 
-                var responseMessage = await ExecuteUnderRetryPolicy(async () => await httpClient
+                HttpResponseMessage responseMessage = await ExecuteUnderRetryPolicy(async () => await httpClient
                     .PostAsync($"{cancelEndpoint}", requestContent, cancellationToken)
                     .ConfigureAwait(false));
 
@@ -87,17 +87,17 @@ namespace Relativity.Sync.Transfer.FileMovementService
             }
         }
 
-        private async Task<string> GetEndpointUrl(string method)
+        private async Task<string> GetEndpointUrlAsync(string method)
         {
-            var kubernetesServicesUrl = await _iFmsInstanceSettingsService.GetKubernetesServicesUrl();
-            var fileMovementServiceUrl = await _iFmsInstanceSettingsService.GetFileMovementServiceUrl();
+            string kubernetesServicesUrl = await _fmsInstanceSettingsService.GetKubernetesServicesUrl();
+            string fileMovementServiceUrl = await _fmsInstanceSettingsService.GetFileMovementServiceUrl();
 
             return $"{kubernetesServicesUrl}/{fileMovementServiceUrl}/{apiV1UrlPart}/{method}";
         }
 
         private Task<HttpResponseMessage> ExecuteUnderRetryPolicy(Func<Task<HttpResponseMessage>> action)
         {
-            var retryPolicy = _retryPolicyProvider.GetPolicy();
+            RetryPolicy<HttpResponseMessage> retryPolicy = _retryPolicyProvider.GetPolicy();
             Guard.AgainstNull(retryPolicy, nameof(retryPolicy));
 
             return retryPolicy.ExecuteAsync(action);

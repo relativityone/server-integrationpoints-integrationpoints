@@ -7,7 +7,7 @@ using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Toggles;
 using Relativity.Sync.Toggles.Service;
-using Relativity.Sync.Transfer.ADF;
+using Relativity.Sync.Transfer.ADLS;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
@@ -52,7 +52,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         public async Task ADFEnabler_ShouldUseADFTransferAsync_ShouldReturnTrue(bool useFMS, bool tenantIsMigrated, ImportNativeFileCopyMode importNativeFileCopyMode, bool forceADF)
         {
             // ARRANGE
-            _syncTogglesMock.Setup(x => x.IsEnabled<UseFMS>()).Returns(useFMS);
+            _syncTogglesMock.Setup(x => x.IsEnabled<UseFmsToggle>()).Returns(useFMS);
             _migrationStatusMock.Setup(x => x.IsTenantFullyMigratedAsync()).ReturnsAsync(tenantIsMigrated);
             _instanceSettingsMock.Setup(x => x.GetShouldForceADFTransferAsync(It.IsAny<bool>())).ReturnsAsync(forceADF);
             _documentConfigurationMock.Setup(x => x.ImportNativeFileCopyMode).Returns(importNativeFileCopyMode);
@@ -71,7 +71,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         public async Task ADFEnabler_ShouldUseADFTransferAsync_ShouldReturnFalse(bool useFMS, bool tenantIsMigrated, ImportNativeFileCopyMode importNativeFileCopyMode, bool forceADF)
         {
             // ARRANGE
-            _syncTogglesMock.Setup(x => x.IsEnabled<UseFMS>()).Returns(useFMS);
+            _syncTogglesMock.Setup(x => x.IsEnabled<UseFmsToggle>()).Returns(useFMS);
             _migrationStatusMock.Setup(x => x.IsTenantFullyMigratedAsync()).ReturnsAsync(tenantIsMigrated);
             _instanceSettingsMock.Setup(x => x.GetShouldForceADFTransferAsync(It.IsAny<bool>())).ReturnsAsync(forceADF);
             _documentConfigurationMock.Setup(x => x.ImportNativeFileCopyMode).Returns(importNativeFileCopyMode);

@@ -6,7 +6,7 @@ using Relativity.Storage;
 using Relativity.Storage.Extensions;
 using Relativity.Storage.Extensions.Models;
 
-namespace Relativity.Sync.Transfer.ADF
+namespace Relativity.Sync.Transfer.ADLS
 {
     internal class HelperWrapper : IHelperWrapper
     {

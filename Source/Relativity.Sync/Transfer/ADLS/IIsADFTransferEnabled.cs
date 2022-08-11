@@ -1,4 +1,4 @@
-namespace Relativity.Sync.Transfer.ADF
+namespace Relativity.Sync.Transfer.ADLS
 {
     internal interface IIsADFTransferEnabled
     {
