@@ -21,17 +21,19 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
             RelativityProviderConnectToSourcePage relativityProviderConnectToSourcePage = FillOutIntegrationPointEditPageForRelativityProvider(integrationPointEditPage, integrationPointName);
 
             RelativityProviderMapFieldsPage relativityProviderMapFieldsPage = FillOutRelativityProviderConnectToSourcePage(
-                relativityProviderConnectToSourcePage, destinationWorkspace,
-                RelativityProviderSources.SavedSearch, savedSearchName);
+                relativityProviderConnectToSourcePage,
+                destinationWorkspace,
+                RelativityProviderSources.SavedSearch,
+                savedSearchName);
 
             IntegrationPointViewPage integrationPointViewPage = relativityProviderMapFieldsPage.MapAllFields
                 .Click().ApplyModel(new RelativityProviderMapFields
-                {
-                    Overwrite = RelativityProviderOverwrite.AppendOnly,
-                    CopyImages = YesNo.No,
-                    CopyNativeFiles = copyNativesMode,
-                    PathInformation = RelativityProviderFolderPathInformation.No
-                }).Save.ClickAndGo();
+            {
+                Overwrite = RelativityProviderOverwrite.AppendOnly,
+                CopyImages = YesNo.No,
+                CopyNativeFiles = copyNativesMode,
+                PathInformation = RelativityProviderFolderPathInformation.No
+            }).Save.ClickAndGo();
 
             return integrationPointViewPage;
         }
@@ -44,20 +46,22 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
         {
             string emailRecipients = "Adler@Sieben.com";
             RelativityProviderConnectToSourcePage relativityProviderConnectToSourcePage = FillOutIntegrationPointEditPageForRelativityProvider(integrationPointEditPage, integrationPointName, emailRecipients);
-            
+
             RelativityProviderMapFieldsPage relativityProviderMapFieldsPage = FillOutRelativityProviderConnectToSourcePage(
-                relativityProviderConnectToSourcePage, destinationWorkspace,
-                RelativityProviderSources.SavedSearch, savedSearchName);
+                relativityProviderConnectToSourcePage,
+                destinationWorkspace,
+                RelativityProviderSources.SavedSearch,
+                savedSearchName);
 
             IntegrationPointViewPage integrationPointViewPage = relativityProviderMapFieldsPage
                 .ApplyModel(new RelativityProviderMapFieldsWithImages
-                {
-                    Overwrite = RelativityProviderOverwrite.AppendOverlay,
-                    MultiSelectField = RelativityProviderMultiSelectField.MergeValues,
-                    CopyImages = YesNo.Yes,
-                    ImagePrecedence = RelativityProviderImagePrecedence.OriginalImages,
-                    CopyFilesToRepository = YesNo.Yes
-                }).Save.ClickAndGo();
+            {
+                Overwrite = RelativityProviderOverwrite.AppendOverlay,
+                MultiSelectField = RelativityProviderMultiSelectField.MergeValues,
+                CopyImages = YesNo.Yes,
+                ImagePrecedence = RelativityProviderImagePrecedence.OriginalImages,
+                CopyFilesToRepository = YesNo.Yes
+            }).Save.ClickAndGo();
 
             return integrationPointViewPage;
         }
@@ -74,21 +78,27 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
 
             RelativityProviderMapFieldsPage relativityProviderMapFieldsPage =
                 FillOutRelativityProviderConnectToSourcePage(
-                    relativityProviderConnectToSourcePage, destinationWorkspace,
-                    RelativityProviderSources.Production, productionSetName: production.Name);
+                    relativityProviderConnectToSourcePage,
+                    destinationWorkspace,
+                    RelativityProviderSources.Production,
+                    productionSetName: production.Name);
 
             IntegrationPointViewPage integrationPointViewPage = relativityProviderMapFieldsPage
                 .ApplyModel(new
-                {
-                    Overwrite = RelativityProviderOverwrite.AppendOnly,
-                    CopyFilesToRepository = copyFilesToRepository,
-                }).Save.ClickAndGo();
+            {
+                Overwrite = RelativityProviderOverwrite.AppendOnly,
+                CopyFilesToRepository = copyFilesToRepository,
+            }).Save.ClickAndGo();
 
             return integrationPointViewPage;
         }
 
-        public static IntegrationPointViewPage CreateSyncRdoIntegrationPoint(this IntegrationPointEditPage page, string integrationPointName, Workspace destinationWorkspace,
-            IntegrationPointTransferredObjects transferredObject, string viewName)
+        public static IntegrationPointViewPage CreateSyncRdoIntegrationPoint(
+            this IntegrationPointEditPage page,
+            string integrationPointName,
+            Workspace destinationWorkspace,
+            IntegrationPointTransferredObjects transferredObject,
+            string viewName)
         {
             RelativityProviderConnectToSourcePage relativityProviderConnectToSourcePage = FillOutIntegrationPointEditPageForRelativityProvider(page, integrationPointName, transferredObject);
             RelativityProviderMapFieldsPage relativityProviderMapFieldsPage = FillOutRelativityProviderConnectToSourcePage(relativityProviderConnectToSourcePage, destinationWorkspace, viewName);
@@ -109,7 +119,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
             }).RelativityProviderNext.ClickAndGo();
         }
 
-        private static RelativityProviderConnectToSourcePage FillOutIntegrationPointEditPageForRelativityProvider(IntegrationPointEditPage integrationPointEditPage, string integrationPointName, string emailRecipients)
+        private static RelativityProviderConnectToSourcePage FillOutIntegrationPointEditPageForRelativityProvider(
+            IntegrationPointEditPage integrationPointEditPage,
+            string integrationPointName,
+            string emailRecipients)
         {
             return integrationPointEditPage.ApplyModel(new IntegrationPointEditExport
             {
@@ -119,21 +132,28 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
             }).RelativityProviderNext.ClickAndGo();
         }
 
-        private static RelativityProviderConnectToSourcePage FillOutIntegrationPointEditPageForRelativityProvider(IntegrationPointEditPage integrationPointEditPage, string integrationPointName, IntegrationPointTransferredObjects transferredObject)
+        private static RelativityProviderConnectToSourcePage FillOutIntegrationPointEditPageForRelativityProvider(
+            IntegrationPointEditPage integrationPointEditPage,
+            string integrationPointName,
+            IntegrationPointTransferredObjects transferredObject)
         {
             return integrationPointEditPage
                 .ApplyModel(new IntegrationPointEditRdoExport
-                {
-                    Name = integrationPointName,
-                    Destination = IntegrationPointDestinations.Relativity,
-                    TransferredObject = transferredObject
-                })
-                .RelativityProviderNext
-                .ClickAndGo();
+            {
+                Name = integrationPointName,
+                Destination = IntegrationPointDestinations.Relativity,
+                TransferredObject = transferredObject
+            })
+            .RelativityProviderNext
+            .ClickAndGo();
         }
 
-        private static RelativityProviderMapFieldsPage FillOutRelativityProviderConnectToSourcePage(RelativityProviderConnectToSourcePage relativityProviderConnectToSourcePage, Workspace destinationWorkspace, RelativityProviderSources source,
-            string savedSearchName = null, string productionSetName = null)
+        private static RelativityProviderMapFieldsPage FillOutRelativityProviderConnectToSourcePage(
+            RelativityProviderConnectToSourcePage relativityProviderConnectToSourcePage,
+            Workspace destinationWorkspace,
+            RelativityProviderSources source,
+            string savedSearchName = null,
+            string productionSetName = null)
         {
             RelativityProviderConnectToSource relativityProviderConnectToSource;
             switch (source)
@@ -147,6 +167,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
                 default:
                     throw new ArgumentException(@"The provided source for Relativity Provider is not supported.", nameof(source));
             }
+
             relativityProviderConnectToSource.DestinationWorkspace = $"{destinationWorkspace.Name} - {destinationWorkspace.ArtifactID}";
             relativityProviderConnectToSource.Location = RelativityProviderDestinationLocations.Folder;
 
@@ -155,9 +176,10 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
             Thread.Sleep(TimeSpan.FromSeconds(2));
 
             return relativityProviderConnectToSourcePage
-                .ApplyModel(relativityProviderConnectToSource)
-                .SelectFolder.Click().SetTreeItem($"{destinationWorkspace.Name}")
-                .Next.ClickAndGo();
+            .ApplyModel(relativityProviderConnectToSource)
+            .SelectFolder.Click().SetTreeItem($"{destinationWorkspace.Name}")
+            .Next
+            .ClickAndGo();
         }
 
         private static RelativityProviderMapFieldsPage FillOutRelativityProviderConnectToSourcePage(RelativityProviderConnectToSourcePage page, Workspace destinationWorkspace, string viewName = null)

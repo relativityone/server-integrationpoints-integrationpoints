@@ -34,16 +34,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                 {
                     Conditions = new List<BaseCriteria>
                     {
-                        new Criteria
-                        {
-                            Condition = new CriteriaCondition(new NamedArtifact { Name = "Control Number" },
-                                ConditionOperator.GreaterThanOrEqualTo, "AZIPPER_0007291")
-                        },
-                        new Criteria
-                        {
-                            Condition = new CriteriaCondition(new NamedArtifact { Name = "Control Number" },
-                                ConditionOperator.LessThanOrEqualTo, "AZIPPER_0007491")
-                        }
+                        new Criteria { Condition = new CriteriaCondition(new NamedArtifact { Name = "Control Number" }, ConditionOperator.GreaterThanOrEqualTo, "AZIPPER_0007291") },
+                        new Criteria { Condition = new CriteriaCondition(new NamedArtifact { Name = "Control Number" }, ConditionOperator.LessThanOrEqualTo, "AZIPPER_0007491") }
                     }
                 }
             };
@@ -52,16 +44,17 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
             IntegrationPointListPage integrationPointListPage = Being.On<IntegrationPointListPage>(TestsImplementationTestFixture.Workspace.ArtifactID);
             IntegrationPointEditPage integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
-            IntegrationPointViewPage integrationPointViewPage = integrationPointEditPage.CreateSavedSearchToFolderIntegrationPointWithNatives(IntegrationPointName,
-                        DestinationWorkspace, _keywordSearch.Name, RelativityProviderCopyNativeFiles.PhysicalFiles);
+            IntegrationPointViewPage integrationPointViewPage = integrationPointEditPage.CreateSavedSearchToFolderIntegrationPointWithNatives(
+                IntegrationPointName,
+                DestinationWorkspace,
+                _keywordSearch.Name,
+                RelativityProviderCopyNativeFiles.PhysicalFiles);
 
             return integrationPointViewPage;
         }
 
         public override void AssertIntegrationPointSummaryPageGeneralTab(IntegrationPointViewPage integrationPointViewPage)
         {
-            #region 1st column
-
             integrationPointViewPage.SummaryPageGeneralTab.Name.ExpectTo.BeVisibleWithRetries(3);
             integrationPointViewPage.SummaryPageGeneralTab.Overwrite.ExpectTo.BeVisibleWithRetries();
             integrationPointViewPage.SummaryPageGeneralTab.ExportType.ExpectTo.BeVisibleWithRetries();
@@ -88,10 +81,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             integrationPointViewPage.GetUseFolderPathInfo().ShouldBeEquivalentTo(RelativityProviderFolderPathInformation.No);
             integrationPointViewPage.GetMoveExistingDocs().ShouldBeEquivalentTo(YesNo.No);
 
-            #endregion
-
-            #region 2nd column
-
             integrationPointViewPage.SummaryPageGeneralTab.LogErrors.ExpectTo.BeVisibleWithRetries();
             integrationPointViewPage.SummaryPageGeneralTab.HasErrors.ExpectTo.BeVisibleWithRetries();
             integrationPointViewPage.SummaryPageGeneralTab.EmailNotificationRecipients.ExpectTo.BeVisibleWithRetries();
@@ -105,8 +94,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             integrationPointViewPage.GetTotalDocuments().ShouldBeEquivalentTo(_keywordSearchDocumentsCount);
             integrationPointViewPage.GetTotalNatives().ShouldBeEquivalentTo($"{_keywordSearchDocumentsCount} (12.52 KB)");
             integrationPointViewPage.GetCreateSavedSearch().ShouldBeEquivalentTo(YesNo.No);
-
-            #endregion
         }
 
         public override void AssertIntegrationPointJobHistory(IntegrationPointViewPage integrationPointViewPage)
@@ -129,7 +116,5 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
             BillingFlagAssertion.AssertFiles(DestinationWorkspace.ArtifactID, expectBillable: true);
         }
-
-        
     }
 }

@@ -9,7 +9,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Extensions
     {
         internal static TOwner BeVisibleWithRetries<TComponent, TOwner>(
             this IUIComponentVerificationProvider<TComponent, TOwner> should,
-            int maxRetriesCount = 3,
+            int maxRetriesCount = 1,
             double betweenRetriesBase = 2,
             int maxJitterMs = 100)
             where TComponent : UIComponent<TOwner>
