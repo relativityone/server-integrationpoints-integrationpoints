@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Synchronizers.RDO;
+﻿using kCura.IntegrationPoints.Domain.Logging;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using Relativity.API;
 
@@ -13,10 +14,11 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
             IImportApiFactory factory,
             IImportJobFactory jobFactory,
             IHelper helper,
+            IDiagnosticLog diagnosticLog,
             string webApiPath,
             bool disableNativeLocationValidation,
             bool disableNativeValidation)
-          : base(fieldQuery, factory, jobFactory, helper)
+          : base(fieldQuery, factory, jobFactory, helper, diagnosticLog)
         {
             WebAPIPath = webApiPath;
             DisableNativeLocationValidation = disableNativeLocationValidation;
