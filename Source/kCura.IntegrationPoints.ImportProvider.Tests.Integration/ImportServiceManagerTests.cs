@@ -34,6 +34,7 @@ using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Core.Contracts.Import;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Core.Logging;
 using Relativity.AutomatedWorkflows.SDK;
 using kCura.IntegrationPoints.Domain.Logging;
 
@@ -172,7 +173,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
                 jobStatusUpdater,
                 automatedWorkflowsManager,
                 jobTrackerFake,
-                null);
+                new EmptyDiagnosticLog());
         }
 
         public override void TestTeardown()
