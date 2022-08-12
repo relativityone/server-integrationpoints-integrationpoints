@@ -615,7 +615,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
     public class TestRdoSynchronizer : RdoSynchronizer
     {
         public TestRdoSynchronizer()
-          : base(null, null, Mock.Of<IImportJobFactory>(), RdoSynchronizerTests.MockHelper().Object, null)
+          : base(null, null, Mock.Of<IImportJobFactory>(), RdoSynchronizerTests.MockHelper().Object, new Mock<IDiagnosticLog>().Object)
         {
             WebAPIPath = kCura.IntegrationPoints.Domain.Constants.WEB_API_PATH;
             DisableNativeLocationValidation = false;
@@ -638,7 +638,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         private readonly WorkspaceRef _workspaceRef;
 
         public MockSynchronizer(WorkspaceRef workspaceRef)
-          : base(null, null, Mock.Of<IImportJobFactory>(), RdoSynchronizerTests.MockHelper().Object, null)
+          : base(null, null, Mock.Of<IImportJobFactory>(), RdoSynchronizerTests.MockHelper().Object, new Mock<IDiagnosticLog>().Object)
         {
             WebAPIPath = "WebAPIPath";
             DisableNativeLocationValidation = false;
