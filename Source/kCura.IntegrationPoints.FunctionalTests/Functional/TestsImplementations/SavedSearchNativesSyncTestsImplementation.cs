@@ -34,16 +34,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                 {
                     Conditions = new List<BaseCriteria>
                     {
-                        new Criteria
-                        {
-                            Condition = new CriteriaCondition(new NamedArtifact { Name = "Control Number" },
-                                ConditionOperator.GreaterThanOrEqualTo, "AZIPPER_0007291")
-                        },
-                        new Criteria
-                        {
-                            Condition = new CriteriaCondition(new NamedArtifact { Name = "Control Number" },
-                                ConditionOperator.LessThanOrEqualTo, "AZIPPER_0007491")
-                        }
+                        new Criteria { Condition = new CriteriaCondition(new NamedArtifact { Name = "Control Number" }, ConditionOperator.GreaterThanOrEqualTo, "AZIPPER_0007291") },
+                        new Criteria { Condition = new CriteriaCondition(new NamedArtifact { Name = "Control Number" }, ConditionOperator.LessThanOrEqualTo, "AZIPPER_0007491") }
                     }
                 }
             };
@@ -52,28 +44,29 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
             IntegrationPointListPage integrationPointListPage = Being.On<IntegrationPointListPage>(TestsImplementationTestFixture.Workspace.ArtifactID);
             IntegrationPointEditPage integrationPointEditPage = integrationPointListPage.NewIntegrationPoint.ClickAndGo();
-            IntegrationPointViewPage integrationPointViewPage = integrationPointEditPage.CreateSavedSearchToFolderIntegrationPointWithNatives(IntegrationPointName,
-                        DestinationWorkspace, _keywordSearch.Name, RelativityProviderCopyNativeFiles.PhysicalFiles);
+            IntegrationPointViewPage integrationPointViewPage = integrationPointEditPage.CreateSavedSearchToFolderIntegrationPointWithNatives(
+                IntegrationPointName,
+                DestinationWorkspace,
+                _keywordSearch.Name,
+                RelativityProviderCopyNativeFiles.PhysicalFiles);
 
             return integrationPointViewPage;
         }
 
         public override void AssertIntegrationPointSummaryPageGeneralTab(IntegrationPointViewPage integrationPointViewPage)
         {
-            #region 1st column
-
-            integrationPointViewPage.SummaryPageGeneralTab.Name.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.Overwrite.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.ExportType.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.SourceDetails.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.SourceWorkspace.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.SourceRelativityInstance.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.TransferedObject.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.DestinationWorkspace.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.DestinationFolder.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.MultiSelectOverlay.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.UseFolderPathInfo.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.MoveExistingDocs.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.Name.ExpectTo.BeVisibleWithRetries(3);
+            integrationPointViewPage.SummaryPageGeneralTab.Overwrite.ExpectTo.BeVisibleWithRetries();
+            integrationPointViewPage.SummaryPageGeneralTab.ExportType.ExpectTo.BeVisibleWithRetries();
+            integrationPointViewPage.SummaryPageGeneralTab.SourceDetails.ExpectTo.BeVisibleWithRetries();
+            integrationPointViewPage.SummaryPageGeneralTab.SourceWorkspace.ExpectTo.BeVisibleWithRetries();
+            integrationPointViewPage.SummaryPageGeneralTab.SourceRelativityInstance.ExpectTo.BeVisibleWithRetries();
+            integrationPointViewPage.SummaryPageGeneralTab.TransferedObject.ExpectTo.BeVisibleWithRetries();
+            integrationPointViewPage.SummaryPageGeneralTab.DestinationWorkspace.ExpectTo.BeVisibleWithRetries();
+            integrationPointViewPage.SummaryPageGeneralTab.DestinationFolder.ExpectTo.BeVisibleWithRetries();
+            integrationPointViewPage.SummaryPageGeneralTab.MultiSelectOverlay.ExpectTo.BeVisibleWithRetries();
+            integrationPointViewPage.SummaryPageGeneralTab.UseFolderPathInfo.ExpectTo.BeVisibleWithRetries();
+            integrationPointViewPage.SummaryPageGeneralTab.MoveExistingDocs.ExpectTo.BeVisibleWithRetries();
 
             integrationPointViewPage.GetName().ShouldBeEquivalentTo(IntegrationPointName);
             integrationPointViewPage.GetOverwriteMode().ShouldBeEquivalentTo(RelativityProviderOverwrite.AppendOnly);
@@ -88,16 +81,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             integrationPointViewPage.GetUseFolderPathInfo().ShouldBeEquivalentTo(RelativityProviderFolderPathInformation.No);
             integrationPointViewPage.GetMoveExistingDocs().ShouldBeEquivalentTo(YesNo.No);
 
-            #endregion
-
-            #region 2nd column
-
-            integrationPointViewPage.SummaryPageGeneralTab.LogErrors.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.HasErrors.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.EmailNotificationRecipients.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.TotalOfDocuments.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.TotalOfNatives.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.CreateSavedSearch.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.LogErrors.ExpectTo.BeVisibleWithRetries();
+            integrationPointViewPage.SummaryPageGeneralTab.HasErrors.ExpectTo.BeVisibleWithRetries();
+            integrationPointViewPage.SummaryPageGeneralTab.EmailNotificationRecipients.ExpectTo.BeVisibleWithRetries();
+            integrationPointViewPage.SummaryPageGeneralTab.TotalOfDocuments.ExpectTo.BeVisibleWithRetries();
+            integrationPointViewPage.SummaryPageGeneralTab.TotalOfNatives.ExpectTo.BeVisibleWithRetries();
+            integrationPointViewPage.SummaryPageGeneralTab.CreateSavedSearch.ExpectTo.BeVisibleWithRetries();
 
             integrationPointViewPage.GetLogErrors().ShouldBeEquivalentTo(YesNo.Yes);
             integrationPointViewPage.GetHasErrors().ShouldBeEquivalentTo(YesNo.No);
@@ -105,8 +94,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             integrationPointViewPage.GetTotalDocuments().ShouldBeEquivalentTo(_keywordSearchDocumentsCount);
             integrationPointViewPage.GetTotalNatives().ShouldBeEquivalentTo($"{_keywordSearchDocumentsCount} (12.52 KB)");
             integrationPointViewPage.GetCreateSavedSearch().ShouldBeEquivalentTo(YesNo.No);
-
-            #endregion
         }
 
         public override void AssertIntegrationPointJobHistory(IntegrationPointViewPage integrationPointViewPage)
@@ -129,7 +116,5 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
             BillingFlagAssertion.AssertFiles(DestinationWorkspace.ArtifactID, expectBillable: true);
         }
-
-        
     }
 }

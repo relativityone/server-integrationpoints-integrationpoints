@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api.Services;
@@ -14,25 +14,25 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
     {
         public static Workspace CreateWorkspace(this IRelativityFacade instance, string name, string templateWorkspace = null)
         {
-            Workspace workspace = String.IsNullOrWhiteSpace(templateWorkspace)
-                ? new Workspace { Name = name }
-                : GetRequestByWorkspaceTemplate(instance, name, templateWorkspace);
+            Workspace workspace = string.IsNullOrWhiteSpace(templateWorkspace)
+            ? new Workspace { Name = name }
+            : GetRequestByWorkspaceTemplate(instance, name, templateWorkspace);
 
             IWorkspaceService workspaceService = instance.Resolve<IWorkspaceService>();
             try
             {
                 return workspaceService.Create(workspace);
             }
-            catch(Exception ex)
+            catch
             {
                 Thread.Sleep(5000);
                 Workspace createdWorkspace = workspaceService.Get(workspace.Name);
-                if(createdWorkspace != null)
+                if (createdWorkspace != null)
                 {
                     return createdWorkspace;
                 }
 
-                throw ex;
+                throw;
             }
         }
 
@@ -59,9 +59,14 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
             });
         }
 
-        public static void ImportDocumentsFromCsv(this IRelativityFacade instance, Workspace workspace, string pathToFile,
-            string nativeFilePathColumnName = "FILE_PATH", string folderColumnName = null,
-            DocumentOverwriteMode overwriteMode = DocumentOverwriteMode.AppendOverlay, DocumentOverlayBehavior overlayBehavior = DocumentOverlayBehavior.UseRelativityDefaults)
+        public static void ImportDocumentsFromCsv(
+            this IRelativityFacade instance,
+            Workspace workspace,
+            string pathToFile,
+            string nativeFilePathColumnName = "FILE_PATH",
+            string folderColumnName = null,
+            DocumentOverwriteMode overwriteMode = DocumentOverwriteMode.AppendOverlay,
+            DocumentOverlayBehavior overlayBehavior = DocumentOverlayBehavior.UseRelativityDefaults)
         {
             IDocumentService documentService = instance.Resolve<IDocumentService>();
 
@@ -85,8 +90,12 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
             }
         }
 
-        public static void ImportImages(this IRelativityFacade instance, Workspace workspace, string pathToFile,
-            ImageImportOptions imageImportOptions, int imagesCount)
+        public static void ImportImages(
+            this IRelativityFacade instance,
+            Workspace workspace,
+            string pathToFile,
+            ImageImportOptions imageImportOptions,
+            int imagesCount)
         {
             IDocumentService documentService = instance.Resolve<IDocumentService>();
 
@@ -103,9 +112,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
             for (int i = 0; i < imagesCount; i++)
             {
                 dataTable.Rows.Add(
-                    $"DOC{i}",
-                    $"DOC{i}",
-                    pathToFile);
+                $"DOC{i}",
+                $"DOC{i}",
+                pathToFile);
             }
 
             Task documentImportTask = Task.Run(() => documentService.ImportImages(workspace.ArtifactID, dataTable, imageImportOptions));
@@ -121,7 +130,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers
             IProductionService productionService = instance.Resolve<IProductionService>();
             IProductionDataSourceService productionDataSourceService = RelativityFacade.Instance.Resolve<IProductionDataSourceService>();
 
-            var productionToProduce = productionService.Create(workspace.ArtifactID, production);
+            Testing.Framework.Models.Production productionToProduce = productionService.Create(workspace.ArtifactID, production);
 
             if (production.DataSources.Count != 0)
             {
