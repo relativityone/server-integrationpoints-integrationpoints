@@ -226,7 +226,6 @@ namespace Relativity.Sync.Executors
             settings.ApplicationName = _syncJobParameters.SyncApplicationName;
             settings.MaximumErrorCount = int.MaxValue - 1; // From IAPI docs: This must be greater than 0 and less than Int32.MaxValue.
             settings.StartRecordNumber = 0;
-            settings.AuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit;
             settings.CaseArtifactId = configuration.DestinationWorkspaceArtifactId;
             settings.DestinationFolderArtifactID = configuration.DestinationFolderArtifactId;
             settings.MoveDocumentsInAppendOverlayMode =
@@ -240,8 +239,13 @@ namespace Relativity.Sync.Executors
 
             if (!_syncToggles.IsEnabled<EnableAuditToggle>())
             {
-                _logger.LogInformation("Toggle EnableNoAuditMode is Enabled. Running IAPI with NoAudit mode.");
+                _logger.LogInformation("Toggle EnableAuditToggle is Disabled. Running IAPI with NoAudit.");
                 settings.AuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.NoAudit;
+            }
+            else
+            {
+                _logger.LogInformation("Toggle EnableAuditToggle is Enabled. Running IAPI with FullAudit mode.");
+                settings.AuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit;
             }
         }
 
