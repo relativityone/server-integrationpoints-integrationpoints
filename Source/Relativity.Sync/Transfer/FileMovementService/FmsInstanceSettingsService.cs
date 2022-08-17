@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Relativity.API;
 
 namespace Relativity.Sync.Transfer.FileMovementService
 {
@@ -11,21 +10,21 @@ namespace Relativity.Sync.Transfer.FileMovementService
         private const string FileMigratorInstanceSettingsSection = "Relativity.FileMigrator";
         private const string FileMovementInstanceSettingName = "FileMovementServicesURL";
 
+        private readonly IInstanceSettings _instanceSettings;
         private readonly string fileMovementUrlPart = @"datatransfer-filemovement-api";
-        private readonly IHelper _helper;
 
-        public FmsInstanceSettingsService(IHelper helper)
+        public FmsInstanceSettingsService(IInstanceSettings instanceSettings)
         {
-            _helper = helper;
+            _instanceSettings = instanceSettings;
         }
 
         public async Task<string> GetKubernetesServicesUrl()
         {
-            IInstanceSettingsBundle instanceSettingBundle = _helper.GetInstanceSettingBundle();
-            string value = await instanceSettingBundle.GetStringAsync(RelativityCoreInstanceSettingsSection, KubernetesServicesUrlInstanceSettingName);
+            string value = await _instanceSettings.GetAsync(KubernetesServicesUrlInstanceSettingName, RelativityCoreInstanceSettingsSection, string.Empty);
+
             if (string.IsNullOrEmpty(value))
             {
-                throw new ArgumentNullException(KubernetesServicesUrlInstanceSettingName);
+                throw new SyncException($"Instance Setting value is not set: {KubernetesServicesUrlInstanceSettingName}");
             }
 
             return value;
@@ -33,8 +32,8 @@ namespace Relativity.Sync.Transfer.FileMovementService
 
         public async Task<string> GetFileMovementServiceUrl()
         {
-            IInstanceSettingsBundle instanceSettingBundle = _helper.GetInstanceSettingBundle();
-            string value = await instanceSettingBundle.GetStringAsync(FileMigratorInstanceSettingsSection, FileMovementInstanceSettingName);
+            string value = await _instanceSettings.GetAsync(FileMovementInstanceSettingName, FileMigratorInstanceSettingsSection, string.Empty);
+
             if (string.IsNullOrEmpty(value))
             {
                 value = fileMovementUrlPart;
