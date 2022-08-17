@@ -237,15 +237,15 @@ namespace Relativity.Sync.Executors
 
             settings.IdentityFieldId = configuration.IdentityFieldId;
 
-            if (!_syncToggles.IsEnabled<EnableAuditToggle>())
+            if (_syncToggles.IsEnabled<EnableAuditToggle>())
             {
-                _logger.LogInformation("Toggle EnableAuditToggle is Disabled. Running IAPI with NoAudit.");
-                settings.AuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.NoAudit;
+                _logger.LogInformation("Running IAPI with FullAudit mode.");
+                settings.AuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit;
             }
             else
             {
-                _logger.LogInformation("Toggle EnableAuditToggle is Enabled. Running IAPI with FullAudit mode.");
-                settings.AuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit;
+                _logger.LogInformation("Running IAPI with NoAudit.");
+                settings.AuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.NoAudit;
             }
         }
 
