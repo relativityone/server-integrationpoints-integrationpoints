@@ -47,9 +47,14 @@ namespace Relativity.Sync.Transfer.FileMovementService
 
                 using (System.Net.Http.HttpClient httpClient = await _httpClientFactory.GetHttpClientAsync().ConfigureAwait(false))
                 {
-                    HttpResponseMessage responseMessage = await ExecuteUnderRetryPolicy(async () => await httpClient
-                        .GetAsync($"{getStatusUrl}/{request.RunId}?traceId={request.TraceId}", cancellationToken)
-                        .ConfigureAwait(false));
+                    HttpResponseMessage responseMessage = await ExecuteUnderRetryPolicy(async () =>
+                    {
+                        string requestUri = $"{getStatusUrl}/{request.RunId}?traceId={request.TraceId}";
+
+                        return await httpClient
+                            .GetAsync(requestUri, cancellationToken)
+                            .ConfigureAwait(false);
+                    });
 
                     responseMessage.EnsureSuccessStatusCode();
 

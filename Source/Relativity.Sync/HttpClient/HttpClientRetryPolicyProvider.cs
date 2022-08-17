@@ -1,19 +1,22 @@
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using Newtonsoft.Json;
 using Polly;
 using Polly.Retry;
 using Relativity.API;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.HttpClient
 {
     internal class HttpClientRetryPolicyProvider : IHttpClientRetryPolicyProvider
     {
+        internal double Pow { get; set; } = 2;
+
+        private readonly ISerializer _serializer;
         private readonly IAPILog _logger;
 
-        public HttpClientRetryPolicyProvider(IAPILog logger)
+        public HttpClientRetryPolicyProvider(ISerializer serializer, IAPILog logger)
         {
+            _serializer = serializer;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -22,50 +25,22 @@ namespace Relativity.Sync.HttpClient
             return SetupPolicyErrorFilters()
                 .WaitAndRetryAsync(
                     maxRetryCount,
-                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                    (result, timeSpan, retryCount, context) => LogRetryMessage(result, retryCount));
+                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(Pow, retryAttempt)),
+                    OnRetry);
         }
 
         private PolicyBuilder<HttpResponseMessage> SetupPolicyErrorFilters()
         {
             return Policy<HttpResponseMessage>
                 .Handle<HttpRequestException>()
-                .OrResult(msg => !msg.IsSuccessStatusCode);
+                .OrResult(responseMessage => !responseMessage.IsSuccessStatusCode);
         }
 
-        private void LogRetryMessage(DelegateResult<HttpResponseMessage> result, int retryCount)
+        private void OnRetry(DelegateResult<HttpResponseMessage> result, TimeSpan timeSpan, int retryCount, Context context)
         {
-            if (result == null)
-            {
-                _logger.LogWarning($"Http request failed, retrying... Attempt #{retryCount}.");
-                return;
-            }
+            string response = result?.Result != null ? _serializer.Serialize(result.Result) : string.Empty;
 
-            if (result.Exception != null)
-            {
-                _logger.LogWarning(result.Exception, BuildErrorDetailsMessage(result.Exception, retryCount));
-            }
-
-            if (result.Result != null)
-            {
-                _logger.LogWarning(BuildErrorDetailsMessage(result.Result, retryCount));
-            }
-        }
-
-        private static string BuildErrorDetailsMessage(Exception exception, int retryCount)
-        {
-            var properties = new List<KeyValuePair<string, object>>();
-            properties.Add(new KeyValuePair<string, object>("Exception.Message", exception.Message));
-            properties.Add(new KeyValuePair<string, object>("Exception.Source", exception.Source));
-
-            string errorDetails = JsonConvert.SerializeObject(properties);
-            return $"Http request failed, retrying... Attempt #{retryCount}. Error details: {errorDetails}";
-        }
-
-        private static string BuildErrorDetailsMessage(HttpResponseMessage response, int retryCount)
-        {
-            string errorDetails = JsonConvert.SerializeObject(response);
-            return $"Http request failed, retrying... Attempt #{retryCount}. Error details: {errorDetails}";
+            _logger.LogWarning(result?.Exception, "Http request failed, retrying... Attempt #{retryCount}. Response message: {@response}", retryCount, response);
         }
     }
 }
