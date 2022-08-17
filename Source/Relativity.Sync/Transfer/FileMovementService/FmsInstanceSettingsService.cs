@@ -4,7 +4,7 @@ using Relativity.API;
 
 namespace Relativity.Sync.Transfer.FileMovementService
 {
-    public class FmsInstanceSettingsService : IFmsInstanceSettingsService
+    internal class FmsInstanceSettingsService : IFmsInstanceSettingsService
     {
         private const string RelativityCoreInstanceSettingsSection = "Relativity.Core";
         private const string KubernetesServicesUrlInstanceSettingName = "KubernetesServicesURL";

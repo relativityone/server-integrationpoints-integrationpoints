@@ -1,11 +1,11 @@
 using System;
 
-namespace Relativity.Sync.Transfer.FileMovementService
+namespace Relativity.Sync.Transfer.FileMovementService.Models
 {
     /// <summary>
     /// The run cancel request for FileMovementService
     /// </summary>
-    public class RunCancelRequest
+    internal class RunCancelRequest
     {
         /// <summary>
         /// TraceId for tracking

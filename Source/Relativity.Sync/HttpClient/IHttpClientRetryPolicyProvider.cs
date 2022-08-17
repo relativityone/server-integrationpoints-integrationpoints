@@ -3,7 +3,7 @@ using Polly.Retry;
 
 namespace Relativity.Sync.HttpClient
 {
-    public interface IHttpClientRetryPolicyProvider
+    internal interface IHttpClientRetryPolicyProvider
     {
         RetryPolicy<HttpResponseMessage> GetPolicy(int maxRetryCount = 5);
     }

@@ -1,11 +1,11 @@
 using System;
 
-namespace Relativity.Sync.Transfer.FileMovementService
+namespace Relativity.Sync.Transfer.FileMovementService.Models
 {
     /// <summary>
     /// The run status response model for FileMovementService
     /// </summary>
-    public class RunStatusResponse
+    internal class RunStatusResponse
     {
         /// <summary>
         /// TraceId for tracking

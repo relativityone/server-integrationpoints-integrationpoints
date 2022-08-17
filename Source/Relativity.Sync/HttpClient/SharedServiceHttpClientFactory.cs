@@ -28,8 +28,7 @@ namespace Relativity.Sync.HttpClient
 
         private async Task<string> GetCidTokenAsync(string serviceName)
         {
-            using (IAuthTokenProvider authTokenProvider =
-                   await _serviceFactoryForAdmin.CreateProxyAsync<IAuthTokenProvider>().ConfigureAwait(false))
+            using (IAuthTokenProvider authTokenProvider = await _serviceFactoryForAdmin.CreateProxyAsync<IAuthTokenProvider>().ConfigureAwait(false))
             {
                 return await authTokenProvider.GetAuthToken(serviceName).ConfigureAwait(false);
             }

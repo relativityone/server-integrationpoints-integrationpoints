@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 
 namespace Relativity.Sync.HttpClient
 {
-    public interface ISharedServiceHttpClientFactory
+    internal interface ISharedServiceHttpClientFactory
     {
         Task<System.Net.Http.HttpClient> GetHttpClientAsync();
     }

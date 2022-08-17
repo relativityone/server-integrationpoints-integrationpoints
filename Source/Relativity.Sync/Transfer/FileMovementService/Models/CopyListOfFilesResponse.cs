@@ -1,11 +1,11 @@
 using System;
 
-namespace Relativity.Sync.Transfer.FileMovementService
+namespace Relativity.Sync.Transfer.FileMovementService.Models
 {
     /// <summary>
     /// The copy files response for FileMovementService
     /// </summary>
-    public class CopyListOfFilesResponse
+    internal class CopyListOfFilesResponse
     {
         /// <summary>
         /// TraceId for tracking
@@ -13,7 +13,7 @@ namespace Relativity.Sync.Transfer.FileMovementService
         public Guid TraceId { get; set; }
 
         /// <summary>
-        /// Relativty Instance GUID
+        /// Relativity Instance GUID
         /// </summary>
         public string RelativtyInstance { get; set; }
 

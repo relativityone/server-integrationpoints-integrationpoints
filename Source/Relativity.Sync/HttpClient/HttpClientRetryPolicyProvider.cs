@@ -8,7 +8,7 @@ using Relativity.API;
 
 namespace Relativity.Sync.HttpClient
 {
-    public class HttpClientRetryPolicyProvider : IHttpClientRetryPolicyProvider
+    internal class HttpClientRetryPolicyProvider : IHttpClientRetryPolicyProvider
     {
         private readonly IAPILog _logger;
 
@@ -23,8 +23,7 @@ namespace Relativity.Sync.HttpClient
                 .WaitAndRetryAsync(
                     maxRetryCount,
                     retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                    (result, timeSpan, retryCount, context) =>
-                        LogRetryMessage(result, timeSpan, retryCount, context));
+                    (result, timeSpan, retryCount, context) => LogRetryMessage(result, retryCount));
         }
 
         private PolicyBuilder<HttpResponseMessage> SetupPolicyErrorFilters()
@@ -34,8 +33,7 @@ namespace Relativity.Sync.HttpClient
                 .OrResult(msg => !msg.IsSuccessStatusCode);
         }
 
-        private void LogRetryMessage(
-            DelegateResult<HttpResponseMessage> result, TimeSpan timeSpan, int retryCount, Context context)
+        private void LogRetryMessage(DelegateResult<HttpResponseMessage> result, int retryCount)
         {
             if (result == null)
             {

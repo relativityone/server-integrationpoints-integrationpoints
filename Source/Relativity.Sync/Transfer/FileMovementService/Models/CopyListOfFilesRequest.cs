@@ -1,11 +1,11 @@
 using System;
 
-namespace Relativity.Sync.Transfer.FileMovementService
+namespace Relativity.Sync.Transfer.FileMovementService.Models
 {
     /// <summary>
     /// The copy files request for FileMovementService
     /// </summary>
-    public class CopyListOfFilesRequest
+    internal class CopyListOfFilesRequest
     {
         /// <summary>
         /// TraceId for tracking
