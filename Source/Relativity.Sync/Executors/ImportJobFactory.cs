@@ -168,11 +168,6 @@ namespace Relativity.Sync.Executors
             importJob.Settings.MultiValueDelimiter = configuration.MultiValueDelimiter;
             importJob.Settings.NestedValueDelimiter = configuration.NestedValueDelimiter;
 
-            if (_syncToggles.IsEnabled<EnableIAPINoAudit>())
-            {
-                _logger.LogInformation("Toggle EnableNoAuditMode is Enabled. Running IAPI with NoAudit mode.");
-                importJob.Settings.AuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.NoAudit;
-            }
 
             bool shouldUseADFToCopyFiles = _isAdfTransferEnabled.Value;
             if (shouldUseADFToCopyFiles)
@@ -242,6 +237,12 @@ namespace Relativity.Sync.Executors
             settings.OverwriteMode = (OverwriteModeEnum)configuration.ImportOverwriteMode;
 
             settings.IdentityFieldId = configuration.IdentityFieldId;
+
+            if (!_syncToggles.IsEnabled<EnableAuditToggle>())
+            {
+                _logger.LogInformation("Toggle EnableNoAuditMode is Enabled. Running IAPI with NoAudit mode.");
+                settings.AuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.NoAudit;
+            }
         }
 
         private async Task<IImportAPI> GetImportApiAsync()

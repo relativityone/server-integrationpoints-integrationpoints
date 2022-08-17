@@ -5,9 +5,9 @@ namespace Relativity.Sync.Toggles
     /// <summary>
     ///     Enable to run IAPI jobs without inserting information to audit.
     /// </summary>
-    [DefaultValue(false)]
+    [DefaultValue(true)]
     [Description("Enable to run IAPI jobs without inserting information to audit.", "Adler Sieben")]
-    public class EnableIAPINoAudit : IToggle
+    public class EnableAuditToggle : IToggle
     {
     }
 }

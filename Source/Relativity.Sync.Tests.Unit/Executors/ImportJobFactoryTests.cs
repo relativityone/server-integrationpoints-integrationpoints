@@ -482,7 +482,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         }
 
         [Test]
-        public async Task CreateNativeImportJobAsync_ShouldSetCorrectValues_WhenNoAuditToggleIsTrue()
+        public async Task CreateNativeImportJobAsync_ShouldSetCorrectValues_WhenAuditToggleIsFalse()
         {
             // Arrange
             ImportBulkArtifactJob importBulkArtifactJob = new ImportBulkArtifactJob();
@@ -490,7 +490,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             _documentConfigurationMock.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
 
-            _syncTogglesMock.Setup(t => t.IsEnabled<EnableIAPINoAudit>()).Returns(true);
+            _syncTogglesMock.Setup(t => t.IsEnabled<EnableAuditToggle>()).Returns(false);
 
             // Act
             Sync.Executors.IImportJob result = await instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
@@ -501,7 +501,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         }
 
         [Test]
-        public async Task CreateNativeImportJobAsync_ShouldSetCorrectValues_WhenNoAuditToggleIsFalse()
+        public async Task CreateNativeImportJobAsync_ShouldSetCorrectValues_WhenAuditToggleIsTrue()
         {
             // Arrange
             ImportBulkArtifactJob importBulkArtifactJob = new ImportBulkArtifactJob();
@@ -509,7 +509,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             _documentConfigurationMock.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
 
-            _syncTogglesMock.Setup(t => t.IsEnabled<EnableIAPINoAudit>()).Returns(false);
+            _syncTogglesMock.Setup(t => t.IsEnabled<EnableAuditToggle>()).Returns(true);
 
             // Act
             Sync.Executors.IImportJob result = await instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
