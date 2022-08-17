@@ -46,7 +46,8 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
             int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, ServicesMgr, new EmptyLogger())
                 .ConfigureRdos(DefaultGuids.DefaultRdoOptions)
                 .ConfigureDocumentSync(options)
-                .SaveAsync().ConfigureAwait(false);
+                .SaveAsync()
+                .ConfigureAwait(false);
 
             // Assert
             await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);

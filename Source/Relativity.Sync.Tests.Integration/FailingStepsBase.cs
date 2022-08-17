@@ -21,6 +21,7 @@ namespace Relativity.Sync.Tests.Integration
         {
             _executorTypes = new List<Type>();
             _containerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
+
             IntegrationTestsContainerBuilder.RegisterStubsForPipelineBuilderTests(_containerBuilder, _executorTypes);
             IntegrationTestsContainerBuilder.MockReportingWithProgress(_containerBuilder);
         }
@@ -42,7 +43,7 @@ namespace Relativity.Sync.Tests.Integration
 
             PrintInfoAboutExecutedStepsIfNeeded();
             _executorTypes.Should().BeEquivalentTo(ExpectedExecutedSteps);
-            
+
             // should contain steps run in parallel
             AssertExecutedSteps(_executorTypes);
         }

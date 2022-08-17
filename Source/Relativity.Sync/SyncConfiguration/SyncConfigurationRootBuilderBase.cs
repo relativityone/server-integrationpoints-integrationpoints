@@ -33,14 +33,14 @@ namespace Relativity.Sync.SyncConfiguration
             _rdoManager = rdoManager;
             Serializer = serializer;
 
-            SyncConfiguration = new SyncConfigurationRdo 
+            SyncConfiguration = new SyncConfigurationRdo
             {
                 CorrelationId = Guid.NewGuid().ToString(),
-                ExecutingApplication = syncContext.ExecutingApplication,   
-                ExecutingApplicationVersion = syncContext.ExecutingApplicationVersion.ToString(),   
-                
+                ExecutingApplication = syncContext.ExecutingApplication,
+                ExecutingApplicationVersion = syncContext.ExecutingApplicationVersion.ToString(),
+
                 DestinationWorkspaceArtifactId = syncContext.DestinationWorkspaceId,
-                JobHistoryId =  syncContext.JobHistoryId,
+                JobHistoryId = syncContext.JobHistoryId,
                 ImportOverwriteMode = ImportOverwriteMode.AppendOnly,
                 FieldOverlayBehavior = FieldOverlayBehavior.UseFieldSettings,
                 RdoArtifactTypeId = (int)ArtifactType.Document,
@@ -52,12 +52,27 @@ namespace Relativity.Sync.SyncConfiguration
         private void SetRdoFields()
         {
             // JobHistory
+            SyncConfiguration.JobHistoryJobIdField = RdoOptions.JobHistory.JobIdGuid;
+            SyncConfiguration.JobHistoryStatusField = RdoOptions.JobHistory.StatusGuid;
             SyncConfiguration.JobHistoryCompletedItemsField = RdoOptions.JobHistory.CompletedItemsCountGuid;
-            SyncConfiguration.JobHistoryDestinationWorkspaceInformationField =
-                RdoOptions.JobHistory.DestinationWorkspaceInformationGuid;
+            SyncConfiguration.JobHistoryDestinationWorkspaceInformationField = RdoOptions.JobHistory.DestinationWorkspaceInformationGuid;
             SyncConfiguration.JobHistoryGuidFailedField = RdoOptions.JobHistory.FailedItemsCountGuid;
             SyncConfiguration.JobHistoryType = RdoOptions.JobHistory.JobHistoryTypeGuid;
             SyncConfiguration.JobHistoryGuidTotalField = RdoOptions.JobHistory.TotalItemsCountGuid;
+            SyncConfiguration.JobHistoryStartTimeField = RdoOptions.JobHistory.StartTimeGuid;
+            SyncConfiguration.JobHistoryEndTimeField = RdoOptions.JobHistory.EndTimeGuid;
+
+            // JobHistory Status
+            SyncConfiguration.JobHistoryStatusValidating = RdoOptions.JobHistoryStatus.ValidatingGuid;
+            SyncConfiguration.JobHistoryStatusValidationFailed = RdoOptions.JobHistoryStatus.ValidationFailedGuid;
+            SyncConfiguration.JobHistoryStatusProcessing = RdoOptions.JobHistoryStatus.ProcessingGuid;
+            SyncConfiguration.JobHistoryStatusCompleted = RdoOptions.JobHistoryStatus.CompletedGuid;
+            SyncConfiguration.JobHistoryStatusCompletedWithErrors = RdoOptions.JobHistoryStatus.CompletedWithErrorsGuid;
+            SyncConfiguration.JobHistoryStatusJobFailed = RdoOptions.JobHistoryStatus.JobFailedGuid;
+            SyncConfiguration.JobHistoryStatusStopping = RdoOptions.JobHistoryStatus.StoppingGuid;
+            SyncConfiguration.JobHistoryStatusStopped = RdoOptions.JobHistoryStatus.StoppedGuid;
+            SyncConfiguration.JobHistoryStatusSuspending = RdoOptions.JobHistoryStatus.SuspendingGuid;
+            SyncConfiguration.JobHistoryStatusSuspended = RdoOptions.JobHistoryStatus.SuspendedGuid;
 
             // JobHistoryError
             SyncConfiguration.JobHistoryErrorErrorMessages = RdoOptions.JobHistoryError.ErrorMessageGuid;
@@ -72,7 +87,7 @@ namespace Relativity.Sync.SyncConfiguration
             SyncConfiguration.JobHistoryErrorType = RdoOptions.JobHistoryError.TypeGuid;
             SyncConfiguration.JobHistoryErrorJobHistoryRelation = RdoOptions.JobHistoryError.JobHistoryRelationGuid;
             SyncConfiguration.JobHistoryErrorNewChoice = RdoOptions.JobHistoryError.NewStatusGuid;
-            
+
             // DestinationWorkspace
             SyncConfiguration.DestinationWorkspaceType = RdoOptions.DestinationWorkspace.TypeGuid;
             SyncConfiguration.DestinationWorkspaceNameField = RdoOptions.DestinationWorkspace.NameGuid;
@@ -133,17 +148,33 @@ namespace Relativity.Sync.SyncConfiguration
 
             return SyncConfiguration.ArtifactId;
         }
-        
+
         private List<(Guid Guid, string PropertyPath)> GetAllValidationInfos()
         {
             return new List<(Guid Guid, string PropertyPath)>
             {
                 // JobHistory
+                GetValidationInfo(RdoOptions.JobHistory, x => x.JobIdGuid),
+                GetValidationInfo(RdoOptions.JobHistory, x => x.StatusGuid),
                 GetValidationInfo(RdoOptions.JobHistory, x => x.CompletedItemsCountGuid),
                 GetValidationInfo(RdoOptions.JobHistory, x => x.FailedItemsCountGuid),
                 GetValidationInfo(RdoOptions.JobHistory, x => x.TotalItemsCountGuid),
                 GetValidationInfo(RdoOptions.JobHistory, x => x.JobHistoryTypeGuid),
                 GetValidationInfo(RdoOptions.JobHistory, x => x.DestinationWorkspaceInformationGuid),
+                GetValidationInfo(RdoOptions.JobHistory, x => x.StartTimeGuid),
+                GetValidationInfo(RdoOptions.JobHistory, x => x.EndTimeGuid),
+
+                // JobHistory Status
+                GetValidationInfo(RdoOptions.JobHistoryStatus, x => x.ValidatingGuid),
+                GetValidationInfo(RdoOptions.JobHistoryStatus, x => x.ValidationFailedGuid),
+                GetValidationInfo(RdoOptions.JobHistoryStatus, x => x.ProcessingGuid),
+                GetValidationInfo(RdoOptions.JobHistoryStatus, x => x.CompletedGuid),
+                GetValidationInfo(RdoOptions.JobHistoryStatus, x => x.CompletedWithErrorsGuid),
+                GetValidationInfo(RdoOptions.JobHistoryStatus, x => x.JobFailedGuid),
+                GetValidationInfo(RdoOptions.JobHistoryStatus, x => x.StoppingGuid),
+                GetValidationInfo(RdoOptions.JobHistoryStatus, x => x.StoppedGuid),
+                GetValidationInfo(RdoOptions.JobHistoryStatus, x => x.SuspendingGuid),
+                GetValidationInfo(RdoOptions.JobHistoryStatus, x => x.SuspendedGuid),
                 
                 // JobHistoryError
                 GetValidationInfo(RdoOptions.JobHistoryError, x => x.TypeGuid),
@@ -170,7 +201,7 @@ namespace Relativity.Sync.SyncConfiguration
                 GetValidationInfo(RdoOptions.DestinationWorkspace, x => x.DestinationWorkspaceOnDocument)
             };
         }
-        
+
         private (Guid Guid, string PropertyPath) GetValidationInfo<TRdo>(TRdo rdo,
             Expression<Func<TRdo, Guid>> expression)
         {

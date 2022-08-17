@@ -12,6 +12,8 @@ using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Toggles;
+using Relativity.Sync.Toggles.Service;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Transfer.ADLS;
 
@@ -27,6 +29,7 @@ namespace Relativity.Sync.Executors
         private readonly IFieldMappings _fieldMappings;
         private readonly IIsADFTransferEnabled _isAdfTransferEnabled;
         private readonly IAntiMalwareEventHelper _antiMalwareEventHelper;
+        private readonly ISyncToggles _syncToggles;
         private readonly IAPILog _logger;
 
         public ImportJobFactory(
@@ -38,6 +41,7 @@ namespace Relativity.Sync.Executors
             IFieldMappings fieldMappings,
             IIsADFTransferEnabled isAdfTransferEnabled,
             IAntiMalwareEventHelper antiMalwareEventHelper,
+            ISyncToggles syncToggles,
             IAPILog logger)
         {
             _importApiFactory = importApiFactory;
@@ -48,6 +52,7 @@ namespace Relativity.Sync.Executors
             _fieldMappings = fieldMappings;
             _isAdfTransferEnabled = isAdfTransferEnabled;
             _antiMalwareEventHelper = antiMalwareEventHelper;
+            _syncToggles = syncToggles;
             _logger = logger;
         }
 
@@ -163,6 +168,7 @@ namespace Relativity.Sync.Executors
             importJob.Settings.MultiValueDelimiter = configuration.MultiValueDelimiter;
             importJob.Settings.NestedValueDelimiter = configuration.NestedValueDelimiter;
 
+
             bool shouldUseADFToCopyFiles = _isAdfTransferEnabled.Value;
             if (shouldUseADFToCopyFiles)
             {
@@ -220,7 +226,6 @@ namespace Relativity.Sync.Executors
             settings.ApplicationName = _syncJobParameters.SyncApplicationName;
             settings.MaximumErrorCount = int.MaxValue - 1; // From IAPI docs: This must be greater than 0 and less than Int32.MaxValue.
             settings.StartRecordNumber = 0;
-            settings.AuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit;
             settings.CaseArtifactId = configuration.DestinationWorkspaceArtifactId;
             settings.DestinationFolderArtifactID = configuration.DestinationFolderArtifactId;
             settings.MoveDocumentsInAppendOverlayMode =
@@ -231,6 +236,17 @@ namespace Relativity.Sync.Executors
             settings.OverwriteMode = (OverwriteModeEnum)configuration.ImportOverwriteMode;
 
             settings.IdentityFieldId = configuration.IdentityFieldId;
+
+            if (_syncToggles.IsEnabled<EnableAuditToggle>())
+            {
+                _logger.LogInformation("Running IAPI with FullAudit mode.");
+                settings.AuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.FullAudit;
+            }
+            else
+            {
+                _logger.LogInformation("Running IAPI with NoAudit.");
+                settings.AuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.NoAudit;
+            }
         }
 
         private async Task<IImportAPI> GetImportApiAsync()
