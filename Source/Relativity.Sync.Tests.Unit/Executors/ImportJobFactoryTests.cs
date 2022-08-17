@@ -40,6 +40,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IFieldMappings> _fieldMappingsMock;
         private Mock<IIsADFTransferEnabled> _isAdfTransferEnabledMock;
         private Mock<IAntiMalwareEventHelper> _antiMalwareEventHelperMock;
+        private Mock<ISyncToggles> _syncTogglesMock;
         private SyncJobParameters _syncJobParameters;
         private const string _IMAGE_IDENTIFIER_DISPLAY_NAME = "ImageIdentifier";
         private const int _DEST_RDO_ARTIFACT_TYPE = 1234567;
@@ -81,6 +82,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _syncJobParameters = FakeHelper.CreateSyncJobParameters();
             _isAdfTransferEnabledMock = new Mock<IIsADFTransferEnabled>();
             _antiMalwareEventHelperMock = new Mock<IAntiMalwareEventHelper>();
+            _syncTogglesMock = new Mock<ISyncToggles>();
             _logger = new EmptyLogger();
 
             _batch = new Mock<IBatch>(MockBehavior.Loose);
@@ -479,6 +481,44 @@ namespace Relativity.Sync.Tests.Unit.Executors
             importBulkArtifactJob.Settings.DisableNativeLocationValidation.Should().BeFalse();
         }
 
+        [Test]
+        public async Task CreateNativeImportJobAsync_ShouldSetCorrectValues_WhenNoAuditToggleIsTrue()
+        {
+            // Arrange
+            ImportBulkArtifactJob importBulkArtifactJob = new ImportBulkArtifactJob();
+            ImportJobFactory instance = GetTestInstance(GetNativesImportAPIFactoryMock(importBulkArtifactJob));
+
+            _documentConfigurationMock.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
+
+            _syncTogglesMock.Setup(t => t.IsEnabled<EnableIAPINoAudit>()).Returns(true);
+
+            // Act
+            Sync.Executors.IImportJob result = await instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+
+            // Assert
+            result.Should().NotBeNull();
+            importBulkArtifactJob.Settings.AuditLevel.Should().Be(ImportAuditLevel.NoAudit);
+        }
+
+        [Test]
+        public async Task CreateNativeImportJobAsync_ShouldSetCorrectValues_WhenNoAuditToggleIsFalse()
+        {
+            // Arrange
+            ImportBulkArtifactJob importBulkArtifactJob = new ImportBulkArtifactJob();
+            ImportJobFactory instance = GetTestInstance(GetNativesImportAPIFactoryMock(importBulkArtifactJob));
+
+            _documentConfigurationMock.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
+
+            _syncTogglesMock.Setup(t => t.IsEnabled<EnableIAPINoAudit>()).Returns(false);
+
+            // Act
+            Sync.Executors.IImportJob result = await instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
+
+            // Assert
+            result.Should().NotBeNull();
+            importBulkArtifactJob.Settings.AuditLevel.Should().Be(ImportAuditLevel.FullAudit);
+        }
+
         private ImportJobFactory PrepareInstanceForShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0<T>(Expression<Func<IImportAPI, T>> setupAction, T mockObject)
         {
             Mock<IImportAPI> importApiStub = new Mock<IImportAPI>(MockBehavior.Loose);
@@ -552,7 +592,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
         {
             var instance = new ImportJobFactory(importApiFactory.Object, _dataReaderFactory.Object,
                 _jobHistoryErrorRepository.Object, _instanceSettings.Object, _syncJobParameters,
-                _fieldMappingsMock.Object, _isAdfTransferEnabledMock.Object, _antiMalwareEventHelperMock.Object, _logger);
+                _fieldMappingsMock.Object, _isAdfTransferEnabledMock.Object, _antiMalwareEventHelperMock.Object, 
+                _syncTogglesMock.Object, _logger);
             return instance;
         }
 
