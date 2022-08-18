@@ -142,12 +142,12 @@ namespace kCura.ScheduleQueue.AgentBase
                     new DefaultGuidService());
             }
 
-            if(_config == null)
+            if (_config == null)
             {
                 _config = IntegrationPoints.Config.Config.Instance;
             }
 
-            if(_apm == null)
+            if (_apm == null)
             {
                 _apm = Client.APMClient;
             }
@@ -259,7 +259,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
         private void InitializeManagerConfigSettingsFactory()
         {
-            NotifyAgentTab(LogCategory.Debug, "Initialize Config Settings factory");            
+            NotifyAgentTab(LogCategory.Debug, "Initialize Config Settings factory");
             Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
         }
 
@@ -295,19 +295,19 @@ namespace kCura.ScheduleQueue.AgentBase
                     {
                         PreValidationResult validationResult = PreExecuteJobValidation(nextJob);
 
-                        if(!validationResult.ShouldExecute)
+                        if (!validationResult.ShouldExecute)
                         {
                             Logger.LogInformation("Job {jobId} is not valid. It will be removed from the queue.", nextJob.JobId);
-                            
+
                             TaskResult failedJobResult = new TaskResult
-                            { 
+                            {
                                 Status = TaskStatusEnum.Fail,
                                 Exceptions = new List<Exception> { validationResult.Exception }
                             };
 
                             nextJob.MarkJobAsFailed(validationResult.Exception, true);
                             FinalizeJobExecution(nextJob, failedJobResult);
-                            
+
                             nextJob = GetNextQueueJob();
                             continue;
                         }
@@ -415,12 +415,12 @@ namespace kCura.ScheduleQueue.AgentBase
         private void FinalizeJobExecution(Job job, TaskResult taskResult)
         {
             Logger.LogInformation("Finalize JobExecution with result: {result}, Job: {job}", taskResult.Status, job.ToString());
-            
+
             FinalizeJobResult result = _jobService.FinalizeJob(job, ScheduleRuleFactory, taskResult);
 
             Exception exception = (taskResult.Exceptions != null && taskResult.Exceptions.Any()) ? new AggregateException(taskResult.Exceptions) : null;
             LogJobState(job, result.JobState, exception, result.Details);
-            
+
             LogFinalizeJob(job, result);
         }
 
@@ -440,12 +440,12 @@ namespace kCura.ScheduleQueue.AgentBase
 
             NotifyAgentTab(LogCategory.Debug, "Checking for active jobs in Schedule Agent Queue table");
 
-            if(IsKubernetesMode)
+            if (IsKubernetesMode)
             {
                 LogAllJobsInTheQueue();
             }
 
-            if(_shouldReadJobOnce)
+            if (_shouldReadJobOnce)
             {
                 Logger.LogWarning("This line should not be reached in production! ShouldReadJobOnce - {shouldReadJobOnce}", _shouldReadJobOnce);
                 return null;
@@ -466,7 +466,7 @@ namespace kCura.ScheduleQueue.AgentBase
             switch (category)
             {
                 case LogCategory.Debug:
-                    RaiseMessageNoLogging(msg, _logCategoryToLogLevelMapping[LogCategory.Debug]);                    
+                    RaiseMessageNoLogging(msg, _logCategoryToLogLevelMapping[LogCategory.Debug]);
                     break;
                 case LogCategory.Info:
                     RaiseMessage(msg, _logCategoryToLogLevelMapping[LogCategory.Info]);
@@ -503,10 +503,10 @@ namespace kCura.ScheduleQueue.AgentBase
             {
                 NotifyAgentTab(LogCategory.Exception, "Logger initialization failed. Helper is null.");
             }
-            
+
             IAPILog logger = Helper.GetLoggerFactory().GetLogger().ForContext<ScheduleQueueAgentBase>();
             _loggerAgentInstanceContext = logger.LogContextPushProperty("AgentInstanceGuid", AgentInstanceGuid);
-            
+
             return logger;
         }
 
@@ -559,7 +559,7 @@ namespace kCura.ScheduleQueue.AgentBase
                 Logger.LogInformation("Jobs in queue JobId-RootJobId-LockedByAgentId-StopState: {jobs}",
                     string.Join(";", jobs?.Select(x => $"{x.JobId}-{x.RootJobId}-{x.LockedByAgentID}-{x.StopState}") ?? new List<string>()));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.LogError(ex, "Unable to log jobs in queue.");
             }

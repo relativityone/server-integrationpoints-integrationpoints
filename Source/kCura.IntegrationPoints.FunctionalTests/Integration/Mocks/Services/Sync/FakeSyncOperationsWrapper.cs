@@ -1,21 +1,20 @@
-﻿using kCura.IntegrationPoints.RelativitySync;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using kCura.IntegrationPoints.RelativitySync;
 using Moq;
+using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Sync;
 using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Relativity.API;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync
 {
     internal class FakeSyncOperationsWrapper : ISyncOperationsWrapper, IExtendedFakeSyncOperations
     {
-        RelativityInstanceTest _relativity;
-
+        private readonly RelativityInstanceTest _relativity;
         private readonly Mock<ISyncJob> _syncJob;
 
         public FakeSyncOperationsWrapper(RelativityInstanceTest relativity)
@@ -46,12 +45,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync
 
             return syncJobFactory.Object;
         }
-        
+
         public ISyncConfigurationBuilder GetSyncConfigurationBuilder(ISyncContext context)
         {
             Mock<ISyncJobConfigurationBuilder> syncConfigurationBuilderMock = new Mock<ISyncJobConfigurationBuilder>();
             Mock<IDocumentSyncConfigurationBuilder> documentSyncConfigurationBuilderMock = new Mock<IDocumentSyncConfigurationBuilder>();
-            Mock<IImageSyncConfigurationBuilder>  imageSyncConfigurationBuilderMock = new Mock<IImageSyncConfigurationBuilder>();
+            Mock<IImageSyncConfigurationBuilder> imageSyncConfigurationBuilderMock = new Mock<IImageSyncConfigurationBuilder>();
 
             documentSyncConfigurationBuilderMock.Setup(x => x.CreateSavedSearch(It.IsAny<CreateSavedSearchOptions>()))
                 .Returns(documentSyncConfigurationBuilderMock.Object);
