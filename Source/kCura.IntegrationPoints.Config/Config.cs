@@ -22,8 +22,6 @@ namespace kCura.IntegrationPoints.Config
         private const string _AGENT_MAXIMUM_LIFETIME = "AgentMaximumLifetime";
         private const int _AGENT_MAXIMUM_LIFETIME_DEFAULT_IN_MINUTES = 3 * 60;
 
-        private const string _RELATIVITY_WEBAPI_TIMEOUT_SETTING_NAME = "RelativityWebApiTimeout";
-
         private static readonly Lazy<Config> _instance = new Lazy<Config>(() => new Config());
 
         protected Config()
@@ -37,21 +35,6 @@ namespace kCura.IntegrationPoints.Config
         public bool DisableNativeLocationValidation => GetValue(_DISABLE_NATIVE_LOCATION_VALIDATION, false);
 
         public bool DisableNativeValidation => GetValue(_DISABLE_NATIVE_VALIDATION, false);
-
-        public TimeSpan? RelativityWebApiTimeout
-        {
-            get
-            {
-                if (_instanceSettings.Value.Contains(_RELATIVITY_WEBAPI_TIMEOUT_SETTING_NAME))
-                {
-                    return TimeSpan.FromSeconds(GetValue<int>(_RELATIVITY_WEBAPI_TIMEOUT_SETTING_NAME));
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
 
         public TimeSpan MetricsThrottling => TimeSpan.FromSeconds(GetValue(_RIP_METRICS_THROTTLING, 30));
 
@@ -78,7 +61,7 @@ namespace kCura.IntegrationPoints.Config
             );
 
         public TimeSpan RunningJobTimeThreshold => TimeSpan.FromSeconds(GetValue(_LONG_RUNNING_JOBS_TIME_THRESHOLD, 28800));
-        
+
         public TimeSpan TransientStateJobTimeout
         {
             get

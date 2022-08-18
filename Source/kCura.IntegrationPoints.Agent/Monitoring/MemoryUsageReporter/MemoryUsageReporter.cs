@@ -1,45 +1,48 @@
-﻿using Relativity.Telemetry.APM;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Threading;
+using kCura.IntegrationPoints.Agent.Toggles;
+using kCura.IntegrationPoints.Common.Agent;
+using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Metrics;
 using Relativity.API;
-using System.Threading;
-using kCura.IntegrationPoints.Common.Agent;
+using Relativity.Telemetry.APM;
 using Relativity.Toggles;
-using kCura.IntegrationPoints.Agent.Toggles;
 
 namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 {
     public class MemoryUsageReporter : IMemoryUsageReporter
     {
-        private Timer _timerThread;
+        private ITimer _timer;
 
         private readonly IRemovableAgent _agent;
         private readonly IToggleProvider _toggleProvider;
+        private readonly ITimerFactory _timerFactory;
         private readonly IAPM _apmClient;
-        private readonly IAPILog _logger;
         private readonly IRipMetrics _ripMetric;
         private readonly IProcessMemoryHelper _processMemoryHelper;
         private readonly IAppDomainMonitoringEnabler _appDomainMonitoringEnabler;
         private readonly IMonitoringConfig _config;
+        private readonly IAPILog _logger;
 
-        private static string _METRIC_LOG_NAME = "Relativity.IntegrationPoints.Performance.System";
-        private static string _METRIC_NAME = "IntegrationPoints.Performance.System";
+        private static readonly string _METRIC_LOG_NAME = "Relativity.IntegrationPoints.Performance.System";
+        private static readonly string _METRIC_NAME = "IntegrationPoints.Performance.System";
 
-        public MemoryUsageReporter(IAPM apmClient, IAPILog logger,
-            IRipMetrics ripMetric,IProcessMemoryHelper processMemoryHelper,
-            IAppDomainMonitoringEnabler appDomainMonitoringEnabler, IMonitoringConfig config, IRemovableAgent agent, IToggleProvider toggleProvider)
+        public MemoryUsageReporter(IAPM apmClient, IRipMetrics ripMetric, IProcessMemoryHelper processMemoryHelper,
+            IAppDomainMonitoringEnabler appDomainMonitoringEnabler, IMonitoringConfig config, IRemovableAgent agent,
+            IToggleProvider toggleProvider, ITimerFactory timerFactory, IAPILog logger)
         {
             _processMemoryHelper = processMemoryHelper;
             _apmClient = apmClient;
-            _logger = logger;
             _ripMetric = ripMetric;
             _appDomainMonitoringEnabler = appDomainMonitoringEnabler;
             _agent = agent;
             _toggleProvider = toggleProvider;
+            _timerFactory = timerFactory;
             _config = config;
+            _logger = logger;
         }
 
         public IDisposable ActivateTimer(long jobId, string jobDetails, string jobType)
@@ -52,10 +55,12 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 
             if (_appDomainMonitoringEnabler.EnableMonitoring())
             {
-                _timerThread = new Timer(state => Execute(jobId, jobDetails, jobType), null, TimeSpan.Zero, _config.MemoryUsageInterval); 
+                TimerCallback timerCallback = state => Execute(jobId, jobDetails, jobType);
+                _timer = _timerFactory.Create(timerCallback, null, _config.TimerStartDelay, _config.MemoryUsageInterval, "Memory Usage Timer");
 
-                return _timerThread;
+                return _timer;
             }
+
             return Disposable.Empty;
         }
 
@@ -63,7 +68,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
         {
             if (_agent.ToBeRemoved)
             {
-                _timerThread.Change(Timeout.Infinite, Timeout.Infinite);
+                _timer.Change(Timeout.Infinite, Timeout.Infinite);
                 _logger.LogInformation("Memory metrics can't be sent. Agent, AgentInstanceGuid = {AgentInstanceGuid}, is marked as ToBeRemoved.", _agent.AgentInstanceGuid);
                 return;
             }
