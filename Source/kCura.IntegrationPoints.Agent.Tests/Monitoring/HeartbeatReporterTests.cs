@@ -1,4 +1,7 @@
-﻿using kCura.IntegrationPoint.Tests.Core.Queries;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using kCura.IntegrationPoint.Tests.Core.Queries;
 using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
 using kCura.IntegrationPoints.Agent.Toggles;
@@ -9,9 +12,6 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.Telemetry.APM;
 using Relativity.Toggles;
-using System;
-using System.Collections.Generic;
-using System.Threading;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 {
@@ -23,6 +23,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private Mock<IToggleProvider> _toggleProviderFake;
         private Mock<IAPM> _apmMock;
         private Mock<ICounterMeasure> _counterMeasure;
+        private ITimerFactory _timerFactory;
 
         private HeartbeatReporter _sut;
 
@@ -35,7 +36,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         public void SetUp()
         {
             Mock<IAPILog> log = new Mock<IAPILog>();
-            
+
             Mock<IQuery<int>> query = new Mock<IQuery<int>>();
             query.Setup(x => x.Execute()).Returns(0);
 
@@ -63,8 +64,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                     It.IsAny<IEnumerable<ISink>>()))
                 .Returns(_counterMeasure.Object);
 
+            _timerFactory = new TimerFactory(log.Object);
+
             _sut = new HeartbeatReporter(_queueManagerMock.Object, _configFake.Object,
-                _dateTimeFake.Object, log.Object, _toggleProviderFake.Object, _apmMock.Object);
+                _dateTimeFake.Object, _toggleProviderFake.Object, _apmMock.Object, _timerFactory, log.Object);
         }
 
         [Test]
@@ -77,7 +80,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _configFake.Setup(x => x.HeartbeatInterval).Returns(TimeSpan.FromDays(1));
 
             // Act
-            using (_sut.ActivateHeartbeat(_JOB_ID)) 
+            using (_sut.ActivateHeartbeat(_JOB_ID))
             {
                 Thread.Sleep(100);
             }

@@ -1,22 +1,29 @@
-﻿using kCura.IntegrationPoints.Agent.Monitoring;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Agent;
+using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Metrics;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Telemetry.APM;
 using Relativity.Toggles;
-using System;
-using System.Collections.Generic;
-using System.Threading;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 {
     [TestFixture, Category("Unit")]
     public class MemoryUsageReporterTest
     {
+        private const string _jobDetails = "jobDetails";
+        private const string _jobType = "jobId";
+        private const long _jobId = 123456789;
+        private const int _dummyMemorySize = 12345;
+
         private Mock<IAPM> _apmMock;
         private Mock<IAPILog> _loggerMock;
         private Mock<IRipMetrics> _ripMetricMock;
@@ -27,12 +34,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private Mock<IAppDomainMonitoringEnabler> _appDomainMonitoringEnablerMock;
         private Mock<IRemovableAgent> _agentMock;
         private Mock<IToggleProvider> _toggleProviderFake;
-        private const string _jobDetails = "jobDetails";
-        private const string _jobType = "jobId";
-        private const long _jobId = 123456789;
-        private const int _dummyMemorySize = 12345;
+        private ITimerFactory _timerFactory;
 
-        private readonly TimeSpan _MEMORY_USAGE_INTERVAL = TimeSpan.FromMilliseconds(1);
+        private readonly TimeSpan _MEMORY_USAGE_INTERVAL = TimeSpan.FromMilliseconds(10);
         private readonly Guid _agentInstanceGuid = Guid.NewGuid();
 
         [SetUp]
@@ -81,8 +85,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _toggleProviderFake = new Mock<IToggleProvider>();
             _toggleProviderFake.Setup(x => x.IsEnabled<EnableMemoryUsageReportingToggle>()).Returns(true);
 
-            _sut = new MemoryUsageReporter(_apmMock.Object, _loggerMock.Object, _ripMetricMock.Object,
-                _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object, _configFake.Object, _agentMock.Object, _toggleProviderFake.Object);
+            _timerFactory = new TimerFactory(_loggerMock.Object);
+
+            _sut = new MemoryUsageReporter(_apmMock.Object, _ripMetricMock.Object,
+                _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object, _configFake.Object, _agentMock.Object, _toggleProviderFake.Object, _timerFactory, _loggerMock.Object);
         }
 
         [Test]
@@ -117,14 +123,15 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         }
 
         [Test]
-        public void Execute_ShouldNotSendMetrics_AfterDisposingTimer()
+        public async Task Execute_ShouldNotSendMetrics_AfterDisposingTimer()
         {
             // Arrange
+            _configFake.SetupGet(x => x.TimerStartDelay).Returns(TimeSpan.FromMilliseconds(10));
 
             // Act
             IDisposable subscription = _sut.ActivateTimer(_jobId, _jobDetails, _jobType);
             subscription.Dispose();
-            Thread.Sleep(100);
+            await Task.Delay(20);
 
             // Assert
             _apmMock.Verify(x => x.CountOperation(
@@ -166,8 +173,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 .Returns(_counterMeasure.Object)
                 .Returns(_counterMeasure.Object);
 
-            MemoryUsageReporter sutWithErrors = new MemoryUsageReporter(apmMockWithErrors.Object, _loggerMock.Object, _ripMetricMock.Object,
-                _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object, _configFake.Object, _agentMock.Object, _toggleProviderFake.Object);
+            MemoryUsageReporter sutWithErrors = new MemoryUsageReporter(apmMockWithErrors.Object, _ripMetricMock.Object,
+                _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object, _configFake.Object, _agentMock.Object,
+                _toggleProviderFake.Object, _timerFactory, _loggerMock.Object);
 
             int metricsProperlySend = 3;
             int metricsWithError = 2;

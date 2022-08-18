@@ -198,7 +198,6 @@ namespace kCura.IntegrationPoints.Agent.Tests
                 });
 
             Mock<IConfig> config = new Mock<IConfig>();
-            config.SetupGet(x => x.RelativityWebApiTimeout).Returns((TimeSpan?)null);
 
             Mock<IRelativitySyncConstrainsChecker> relativitySyncConstrainsChecker = new Mock<IRelativitySyncConstrainsChecker>();
             relativitySyncConstrainsChecker.Setup(x => x.ShouldUseRelativitySync(It.IsAny<Job>())).Returns(false);

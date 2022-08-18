@@ -133,7 +133,7 @@ namespace kCura.IntegrationPoints.Agent
 
         protected override TaskResult ProcessJob(Job job)
         {
-            if(job.JobFailed != null)
+            if (job.JobFailed != null)
             {
                 MarkJobHistoryAsFailedAsync(job).GetAwaiter().GetResult();
                 return new TaskResult
@@ -146,37 +146,33 @@ namespace kCura.IntegrationPoints.Agent
             using (StartMemoryUsageMetricReporting(job))
             using (StartHeartbeatReporting(job))
             {
-                using (IWindsorContainer ripContainerForSync = CreateAgentLevelContainer())
-                using (ripContainerForSync.Resolve<IJobContextProvider>().StartJobContext(job))
+                using (Resolve<IJobContextProvider>().StartJobContext(job))
                 {
-                    SetWebApiTimeout();
-
-                    if (ShouldUseRelativitySync(job, ripContainerForSync))
+                    if (ShouldUseRelativitySync(job, _agentLevelContainer.Value))
                     {
-                        ripContainerForSync.Register(Component.For<Job>().UsingFactoryMethod(k => job)
-                            .Named($"{job.JobId}-{Guid.NewGuid()}"));
+                        _agentLevelContainer.Value.Register(Component.For<Job>().UsingFactoryMethod(k => job).Named($"{job.JobId}-{Guid.NewGuid()}"));
                         try
                         {
-                            RelativitySyncAdapter syncAdapter = ripContainerForSync.Resolve<RelativitySyncAdapter>();
-                            IAPILog logger = ripContainerForSync.Resolve<IAPILog>();
+                            RelativitySyncAdapter syncAdapter = Resolve<RelativitySyncAdapter>();
+                            IAPILog logger = Resolve<IAPILog>();
                             AgentCorrelationContext correlationContext = GetCorrelationContext(job);
                             using (logger.LogContextPushProperties(correlationContext))
                             {
                                 return syncAdapter.RunAsync().ConfigureAwait(false).GetAwaiter().GetResult();
                             }
                         }
-                        catch (Exception e)
+                        catch (Exception ex)
                         {
-                            //Not much we can do here. If container failed we're unable to do anything.
-                            //Exception was thrown from container, because RelativitySyncAdapter catches all exceptions inside
-                            Logger.LogError(e, $"Unable to resolve {nameof(RelativitySyncAdapter)}.");
+                            // Not much we can do here. If container failed we're unable to do anything.
+                            // Exception was thrown from container, because RelativitySyncAdapter catches all exceptions inside
+                            Logger.LogError(ex, $"Unable to resolve {nameof(RelativitySyncAdapter)}.");
 
-                            MarkJobAsFailed(job, ripContainerForSync, e);
+                            MarkJobAsFailed(job, _agentLevelContainer.Value, ex);
 
                             return new TaskResult
                             {
                                 Status = TaskStatusEnum.Fail,
-                                Exceptions = new[] { e }
+                                Exceptions = new[] { ex }
                             };
                         }
                     }
@@ -191,11 +187,10 @@ namespace kCura.IntegrationPoints.Agent
             }
         }
 
-
         private IDisposable StartMemoryUsageMetricReporting(Job job)
         {
-            return Resolve<IMemoryUsageReporter>().ActivateTimer(job.JobId,
-                GetCorrelationId(job, Resolve<ISerializer>()), job.TaskType);
+            return Resolve<IMemoryUsageReporter>()
+                .ActivateTimer(job.JobId, GetCorrelationId(job, Resolve<ISerializer>()), job.TaskType);
         }
 
         private IDisposable StartHeartbeatReporting(Job job)
@@ -219,18 +214,6 @@ namespace kCura.IntegrationPoints.Agent
             return result;
         }
 
-        private void SetWebApiTimeout()
-        {
-            IConfig config = Resolve<IConfig>();
-            TimeSpan? timeout = config.RelativityWebApiTimeout;
-            if (timeout.HasValue)
-            {
-                int timeoutMs = (int)timeout.Value.TotalMilliseconds;
-                kCura.WinEDDS.Service.Settings.DefaultTimeOut = timeoutMs;
-                Logger.LogInformation("Relativity WebAPI timeout set to {timeout}ms.", timeoutMs);
-            }
-        }
-
         private async Task MarkJobHistoryAsFailedAsync(Job job)
         {
             using (JobContextProvider.StartJobContext(job))
@@ -243,7 +226,7 @@ namespace kCura.IntegrationPoints.Agent
                         $"Unable to retrieve the integration point for the following job: {job.JobId}");
                 }
 
-                ITaskFactoryJobHistoryService jobHistoryService = 
+                ITaskFactoryJobHistoryService jobHistoryService =
                     Resolve<ITaskFactoryJobHistoryServiceFactory>()
                         .CreateJobHistoryService(integrationPoint);
                 jobHistoryService.SetJobIdOnJobHistory(job);
