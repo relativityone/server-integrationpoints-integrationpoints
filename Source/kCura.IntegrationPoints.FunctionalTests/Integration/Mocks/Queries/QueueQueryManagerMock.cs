@@ -36,14 +36,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 
         public IQuery<DataRow> GetAgentTypeInformation(Guid agentGuid)
         {
-            var agent = _db.Agents.First(x => x.AgentGuid == agentGuid);
-            
+            AgentTest agent = _db.Agents.First(x => x.AgentGuid == agentGuid);
+
             return new ValueReturnQuery<DataRow>(agent.AsRow());
         }
 
         public IQuery<DataTable> GetNextJob(int agentId, int agentTypeId, int[] resourceGroupArtifactId)
         {
-            var nextJob = _db.JobsInQueue.Where(x =>
+            JobTest nextJob = _db.JobsInQueue.Where(x =>
                     x.AgentTypeID == agentTypeId &&
                     x.NextRunTime <= _context.CurrentDateTime &&
                     (x.StopState.HasFlag(StopState.None) || x.StopState.HasFlag(StopState.DrainStopped)))
@@ -61,14 +61,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
             return new ValueReturnQuery<DataTable>(nextJob.AsTable());
         }
 
-        public IQuery<DataTable> GetNextJob(int agentId, int agentTypeId)
-        {
-            return GetNextJob(agentId, agentTypeId, Array.Empty<int>());
-        }
-
         public IQuery<DataTable> GetNextJob(int agentId, int agentTypeId, long? rootJobId)
         {
-            var nextJob = _db.JobsInQueue.Where(x =>
+            JobTest nextJob = _db.JobsInQueue.Where(x =>
                     x.AgentTypeID == agentTypeId &&
                     x.NextRunTime <= _context.CurrentDateTime &&
                     (rootJobId == null || x.RootJobId == rootJobId) &&
@@ -87,22 +82,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
             return new ValueReturnQuery<DataTable>(nextJob.AsTable());
         }
 
-        public ICommand UpdateScheduledJob(long jobId, DateTime nextUtcRunTime)
-        {
-            return new ActionCommand(() =>
-            {
-                var job = _db.JobsInQueue.Single(x => x.JobId == jobId);
-
-                job.NextRunTime = nextUtcRunTime;
-                job.LockedByAgentID = null;
-            });
-        }
-
         public ICommand UnlockScheduledJob(int agentId)
         {
             return new ActionCommand(() =>
             {
-                var lockedJob = _db.JobsInQueue.FirstOrDefault(x => x.LockedByAgentID == agentId);
+                JobTest lockedJob = _db.JobsInQueue.FirstOrDefault(x => x.LockedByAgentID == agentId);
 
                 if (lockedJob != null)
                 {
@@ -115,7 +99,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
         {
             return new ActionCommand(() =>
             {
-                var lockedJob = _db.JobsInQueue.FirstOrDefault(x => x.JobId == jobId);
+                JobTest lockedJob = _db.JobsInQueue.FirstOrDefault(x => x.JobId == jobId);
 
                 if (lockedJob != null)
                 {
@@ -138,7 +122,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
         {
             long newJobId = JobId.Next;
 
-            var newJob = CreateJob(newJobId, workspaceId, relatedObjectArtifactId, taskType,
+            JobTest newJob = CreateJob(newJobId, workspaceId, relatedObjectArtifactId, taskType,
                 nextRunTime, agentTypeId, scheduleRuleType, serializedScheduleRule,
                 jobDetails, jobFlags, submittedBy, rootJobId, parentJobId);
 
@@ -157,7 +141,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 
                 long newJobId = JobId.Next;
 
-                var newJob = CreateJob(newJobId, workspaceID, relatedObjectArtifactID, taskType,
+                JobTest newJob = CreateJob(newJobId, workspaceID, relatedObjectArtifactID, taskType,
                     nextRunTime, AgentTypeID, scheduleRuleType, serializedScheduleRule,
                     jobDetails, jobFlags, SubmittedBy, rootJobID, parentJobID);
 
@@ -169,14 +153,16 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
         {
             return new ActionCommand(() =>
             {
-                var jobs = _db.JobsInQueue.Where(
-                    x => _db.Agents.Exists(a => a.ArtifactId == x.LockedByAgentID));
-                foreach (var job in jobs)
+                IEnumerable<JobTest> jobs = _db
+                    .JobsInQueue
+                    .Where(x => _db.Agents.Exists(a => a.ArtifactId == x.LockedByAgentID));
+
+                foreach (JobTest job in jobs)
                 {
                     job.LockedByAgentID = null;
                 }
 
-                _db.JobsInQueue.RemoveAll(x => x.LockedByAgentID == null && 
+                _db.JobsInQueue.RemoveAll(x => x.LockedByAgentID == null &&
                                                _db.Workspaces.FirstOrDefault(w => w.ArtifactId == x.WorkspaceID) == null);
             });
         }
@@ -188,18 +174,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 
         public IQuery<DataTable> GetAllJobs()
         {
-            var dataTable = DatabaseSchema.ScheduleQueueSchema();
+            DataTable dataTable = DatabaseSchema.ScheduleQueueSchema();
 
             _db.JobsInQueue.ForEach(x => dataTable.ImportRow(x.AsDataRow()));
 
             return new ValueReturnQuery<DataTable>(dataTable);
         }
-        
+
         public IQuery<int> UpdateStopState(IList<long> jobIds, StopState state)
         {
             int affectedRows = 0;
-            var jobs = _db.JobsInQueue.Where(x => jobIds.Contains(x.JobId));
-            foreach(var job in jobs)
+            IEnumerable<JobTest> jobs = _db.JobsInQueue.Where(x => jobIds.Contains(x.JobId));
+            foreach (JobTest job in jobs)
             {
                 ++affectedRows;
                 job.StopState = state;
@@ -210,14 +196,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 
         public IQuery<DataTable> GetJobByRelatedObjectIdAndTaskType(int workspaceId, int relatedObjectArtifactId, List<string> taskTypes)
         {
-            var jobs = _db.JobsInQueue.Where(x =>
+            IEnumerable<JobTest> jobs = _db.JobsInQueue.Where(x =>
                 x.WorkspaceID == workspaceId &&
                 x.RelatedObjectArtifactID == relatedObjectArtifactId &&
                 taskTypes.Contains(x.TaskType));
 
-            var dataTable = DatabaseSchema.ScheduleQueueSchema();
+            DataTable dataTable = DatabaseSchema.ScheduleQueueSchema();
 
-            foreach(var job in jobs)
+            foreach (JobTest job in jobs)
             {
                 dataTable.ImportRow(job.AsDataRow());
             }
@@ -227,11 +213,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 
         public IQuery<DataTable> GetJobsByIntegrationPointId(long integrationPointId)
         {
-            var jobs = _db.JobsInQueue.Where(x => x.RelatedObjectArtifactID == integrationPointId);
+            IEnumerable<JobTest> jobs = _db.JobsInQueue.Where(x => x.RelatedObjectArtifactID == integrationPointId);
 
-            var dataTable = DatabaseSchema.ScheduleQueueSchema();
+            DataTable dataTable = DatabaseSchema.ScheduleQueueSchema();
 
-            foreach(var job in jobs)
+            foreach (JobTest job in jobs)
             {
                 dataTable.ImportRow(job.AsDataRow());
             }
@@ -241,11 +227,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
 
         public IQuery<DataTable> GetJob(long jobId)
         {
-            var jobs = _db.JobsInQueue.Where(x => x.JobId == jobId);
+            IEnumerable<JobTest> jobs = _db.JobsInQueue.Where(x => x.JobId == jobId);
 
-            var dataTable = DatabaseSchema.ScheduleQueueSchema();
+            DataTable dataTable = DatabaseSchema.ScheduleQueueSchema();
 
-            foreach (var job in jobs)
+            foreach (JobTest job in jobs)
             {
                 dataTable.ImportRow(job.AsDataRow());
             }
@@ -257,7 +243,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
         {
             return new ActionCommand(() =>
             {
-                var job = _db.JobsInQueue.FirstOrDefault(x => x.JobId == jobId);
+                JobTest job = _db.JobsInQueue.FirstOrDefault(x => x.JobId == jobId);
 
                 if (job != null)
                 {
@@ -271,18 +257,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
             bool tasksFinished = !_db.JobsInQueue.Exists(x => x.RootJobId == rootJobId && x.TaskType == "SyncWorker");
 
             return new ValueReturnQuery<bool>(tasksFinished);
-        }
-        
-        public IQuery<DataTable> GetJobsQueueDetails(int agentTypeId)
-        {
-            var dataTable = new DataTable();
-            dataTable.Columns.Add("Total", typeof(int));
-            dataTable.Columns.Add("Blocked", typeof(int));
-
-            int workloadCount = _db.JobsInQueue.Count(j => j.NextRunTime <= _context.CurrentDateTime);
-
-            dataTable.Rows.Add(new Object[] { workloadCount, 0 });
-            return new ValueReturnQuery<DataTable>(dataTable);
         }
 
         public IQuery<int> Heartbeat(long jobId, DateTime heartbeatTime)
@@ -324,7 +298,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries
                 SubmittedBy = submittedBy,
                 StopState = _db.JobsInQueue.FirstOrDefault(x => x.JobId == parentJobId)?.StopState ?? StopState.None
             };
-            
+
             return jobTest;
         }
 

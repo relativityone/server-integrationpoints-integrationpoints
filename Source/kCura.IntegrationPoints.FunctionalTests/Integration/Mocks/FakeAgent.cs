@@ -1,23 +1,23 @@
-﻿using Castle.MicroKernel.Registration;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using FluentAssertions;
+using kCura.Agent;
 using kCura.IntegrationPoints.Agent;
 using kCura.IntegrationPoints.Common.Agent;
+using kCura.IntegrationPoints.Common.Helpers;
+using kCura.IntegrationPoints.Config;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
+using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using kCura.IntegrationPoints.Common.Helpers;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
-using kCura.Agent;
-using kCura.ScheduleQueue.AgentBase;
-using kCura.IntegrationPoints.Config;
 using Relativity.Telemetry.APM;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
@@ -148,7 +148,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
         {
             ToBeRemoved = true;
         }
-
+        
         #region Verification
 
         public void VerifyJobsWereProcessed(IEnumerable<long> jobs)

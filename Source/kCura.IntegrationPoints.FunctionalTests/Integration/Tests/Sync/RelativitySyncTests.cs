@@ -38,8 +38,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
             ScheduleSyncJob();
 
             // (1) Act & Assert
-            FakeAgent agentMarkedToBeRemoved = PrepareSutWithCustomSyncJob(
-                SyncJobGracefullyDrainStoppedAction);
+            FakeAgent agentMarkedToBeRemoved = PrepareSutWithCustomSyncJob(SyncJobGracefullyDrainStoppedAction);
 
             agentMarkedToBeRemoved.Execute();
 
@@ -47,6 +46,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
 
             // (2) Act & Assert
             FakeAgent agentAbleToComplete = PrepareSutWithCustomSyncJob((agent, token) => Task.CompletedTask);
+
+            // Fixing container double initialization in Agent.cs revealed an issue in this test.
+            // Container in this test is created once, but we create two instances of FakeAgent and register them in container.
+            // While running first job, all necessary services are resolved and they get first instance of FakeAgent class (for example ManagerFactory).
+            // We set ToBeRemoved = true for this agent to test drain-stop and that's fine.
+            // The problem occurs when we create second FakeAgent - we override its registration in container, but it doesn't matter - all classes are already resolved using first instance of an agent,
+            // which has ToBeRemoved flag set to True. When we run this job, it immediately drain stops and job is not removed from the queue, ending up in DrainStoppped status again.
+            agentMarkedToBeRemoved.ToBeRemoved = false;
 
             agentAbleToComplete.Execute();
 
