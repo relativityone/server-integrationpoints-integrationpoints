@@ -414,7 +414,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
         private void FinalizeJobExecution(Job job, TaskResult taskResult)
         {
-            Logger.LogInformation("Finalize JobExecution with result: {result}, Job: {job}", taskResult.Status, job.ToString());
+            Logger.LogInformation("Finalize JobExecution with result: {result}, Job: {@job}", taskResult.Status, job.RemoveSensitiveData());
 
             FinalizeJobResult result = _jobService.FinalizeJob(job, ScheduleRuleFactory, taskResult);
 

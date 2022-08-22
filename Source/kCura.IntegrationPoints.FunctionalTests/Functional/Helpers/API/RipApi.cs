@@ -19,7 +19,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
         {
             _serviceFactory = serviceFactory;
         }
-        
+
         public async Task CreateIntegrationPointAsync(IntegrationPointModel integrationPoint, int workspaceId)
         {
             using (var manager = _serviceFactory.GetServiceProxy<IIntegrationPointManager>())
@@ -61,7 +61,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
                 ObjectType = new ObjectTypeRef
                 {
                     Guid = ObjectTypeGuids.JobHistoryGuid
-                },               
+                },
                 Fields = new FieldRef[] { new FieldRef { Name = "Job Status" } },
                 Condition = $"'Name' LIKE '{integrationPointName}'"
             };
@@ -72,7 +72,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
                 QueryResult result = await objectManager.QueryAsync(workspaceId, query, 0, int.MaxValue)
                     .ConfigureAwait(false);
 
-                return result.Objects.OrderByDescending(x => x.ArtifactID).FirstOrDefault().ArtifactID;          
+                return result.Objects.OrderByDescending(x => x.ArtifactID).FirstOrDefault().ArtifactID;
             }
         }
 
@@ -84,7 +84,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
                 {
                     Guid = ObjectTypeGuids.JobHistoryGuid
                 },
-                Fields = new[] {new FieldRef {Name = "Job Status"}},
+                Fields = new[] { new FieldRef { Name = "Job Status" } },
                 Condition = $"'ArtifactId' == '{jobHistoryId}'"
             };
 
@@ -102,7 +102,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
         {
             Task waitForJobStatus = Task.Run(() => WaitForJobStatus(jobHistoryId, workspaceId, status =>
                 status == expectedStatus, checkDelayInMs));
-            
+
             int waitingTimeout = 300;
             if (!waitForJobStatus.Wait(TimeSpan.FromSeconds(waitingTimeout)))
             {
@@ -131,7 +131,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
                 await Task.Delay(checkDelayInMs);
                 status = await GetJobHistoryStatus(jobHistoryId, workspaceId).ConfigureAwait(false);
 
-                if(status == JobStatusChoices.JobHistoryErrorJobFailed.Name 
+                if (status == JobStatusChoices.JobHistoryErrorJobFailed.Name
                     || status == JobStatusChoices.JobHistoryValidationFailed.Name)
                 {
                     throw new InvalidOperationException($"Job failed with status {status}");
