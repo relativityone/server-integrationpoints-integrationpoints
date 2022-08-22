@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services.EntityManager;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
+using NUnit.Framework;
 using Relativity.IntegrationPoints.Tests.Common.LDAP.TestData;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi;
@@ -94,6 +95,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
         }
 
         [IdentifiedTest("431049DF-B069-4570-AA5A-89FE4F329121")]
+        [Ignore("REL-726799")]
         public void SyncWorker_ShouldImportLDAPDataAndLinkManagersJob_WhenAllManagerLinksWereProcessed()
         {
             // Arrange
