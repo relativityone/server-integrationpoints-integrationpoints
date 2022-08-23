@@ -131,7 +131,7 @@ namespace Relativity.Sync.Tests.Unit.FileMovementService
             CopyListOfFilesResponse response = new CopyListOfFilesResponse()
             {
                 PipelineName = "pipeline",
-                RelativtyInstance = "rel instance",
+                RelativityInstance = "rel instance",
                 RunId = "run id",
                 TraceId = request.TraceId
             };
@@ -157,7 +157,7 @@ namespace Relativity.Sync.Tests.Unit.FileMovementService
             // Assert
             actualResponse.TraceId.Should().Be(response.TraceId);
             actualResponse.PipelineName.Should().Be(response.PipelineName);
-            actualResponse.RelativtyInstance.Should().Be(response.RelativtyInstance);
+            actualResponse.RelativityInstance.Should().Be(response.RelativityInstance);
             actualResponse.RunId.Should().Be(response.RunId);
         }
 

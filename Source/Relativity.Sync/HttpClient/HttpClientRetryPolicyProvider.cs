@@ -16,7 +16,7 @@ namespace Relativity.Sync.HttpClient
 
         public HttpClientRetryPolicyProvider(ISerializer serializer, IAPILog logger)
         {
-            _serializer = serializer;
+            _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 

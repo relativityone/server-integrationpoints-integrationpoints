@@ -15,7 +15,7 @@ namespace Relativity.Sync.Transfer.FileMovementService.Models
         /// <summary>
         /// Relativity Instance GUID
         /// </summary>
-        public string RelativtyInstance { get; set; }
+        public string RelativityInstance { get; set; }
 
         /// <summary>
         /// Run Id of Pipeline run

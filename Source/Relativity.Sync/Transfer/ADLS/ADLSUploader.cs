@@ -41,7 +41,7 @@ namespace Relativity.Sync.Transfer.ADLS
 
             foreach (var file in storedLocation.Files)
             {
-                string sourcePath = Path.Combine(storedLocation.DestinationLocationShortPath, file.FileName);
+                string sourcePath = Path.Combine(storedLocation.SourceLocationShortPath, file.FileName);
                 string destinationPath = Path.Combine(storedLocation.DestinationLocationShortPath, file.FileName);
                 stringBuilder.AppendLine($"{sourcePath},{destinationPath}");
 

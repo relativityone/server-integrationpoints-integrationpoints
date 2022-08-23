@@ -8,7 +8,7 @@ namespace Relativity.Sync.Transfer
 {
     internal sealed class FileLocationManager : IFileLocationManager
     {
-        private readonly IList<FmsBatchInfo> _fmsBatchesStorage;
+        private readonly List<FmsBatchInfo> _fmsBatchesStorage;
         private readonly IAPILog _logger;
         private readonly ISynchronizationConfiguration _configuration;
 
@@ -40,7 +40,7 @@ namespace Relativity.Sync.Transfer
             }
         }
 
-        public IList<FmsBatchInfo> GetStoredLocations()
+        public List<FmsBatchInfo> GetStoredLocations()
         {
             return _fmsBatchesStorage;
         }

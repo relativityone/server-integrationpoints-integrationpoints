@@ -15,26 +15,25 @@ namespace Relativity.Sync.Transfer.FileMovementService
     /// <inheritdoc />
     internal class FmsClient : IFmsClient
     {
+        private const string ApiV1UrlPart = @"api/v1/DataFactory";
         private readonly IFmsInstanceSettingsService _fmsInstanceSettingsService;
         private readonly ISharedServiceHttpClientFactory _httpClientFactory;
         private readonly IHttpClientRetryPolicyProvider _retryPolicyProvider;
         private readonly ISerializer _serializer;
         private readonly IAPILog _logger;
 
-        private string apiV1UrlPart = @"api/v1/DataFactory";
-
         public FmsClient(
-            IFmsInstanceSettingsService ifmsInstanceSettingsService,
+            IFmsInstanceSettingsService fmsInstanceSettingsService,
             ISharedServiceHttpClientFactory httpClientFactory,
             IHttpClientRetryPolicyProvider retryPolicyProvider,
             ISerializer serializer,
             IAPILog logger)
         {
-            _fmsInstanceSettingsService = ifmsInstanceSettingsService ?? throw new ArgumentNullException(nameof(ifmsInstanceSettingsService));
+            _fmsInstanceSettingsService = fmsInstanceSettingsService ?? throw new ArgumentNullException(nameof(fmsInstanceSettingsService));
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _retryPolicyProvider = retryPolicyProvider ?? throw new ArgumentNullException(nameof(retryPolicyProvider));
-            _serializer = serializer;
-            _logger = logger;
+            _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<RunStatusResponse> GetRunStatusAsync(RunStatusRequest request, CancellationToken cancellationToken)
@@ -135,7 +134,7 @@ namespace Relativity.Sync.Transfer.FileMovementService
             string kubernetesServicesUrl = await _fmsInstanceSettingsService.GetKubernetesServicesUrl();
             string fileMovementServiceUrl = await _fmsInstanceSettingsService.GetFileMovementServiceUrl();
 
-            return $"{kubernetesServicesUrl}/{fileMovementServiceUrl}/{apiV1UrlPart}/{method}";
+            return $"{kubernetesServicesUrl}/{fileMovementServiceUrl}/{ApiV1UrlPart}/{method}";
         }
 
         private Task<HttpResponseMessage> ExecuteUnderRetryPolicy(Func<Task<HttpResponseMessage>> action)
