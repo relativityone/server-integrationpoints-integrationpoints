@@ -18,13 +18,9 @@ namespace Relativity.Sync.Transfer
 
         public string SourceLocationShortPath { get; }
 
-        public string DestinationLocationShortPath
-        {
-            get
-            {
-                return $@"Files/EDDS{_destinationWorkspaceArtifactId}/RV_{TraceId}";
-            }
-        }
+        public string DestinationLocationShortPath => $@"Files/EDDS{_destinationWorkspaceArtifactId}/RV_{TraceId}";
+
+        public string UploadedBatchFilePath { get; set; }
 
         internal FmsBatchInfo(int destinationWorkspaceArtifactId, IDictionary<int, NativeFilePathStructure> filePaths, string sourceDirectoryPath)
         {

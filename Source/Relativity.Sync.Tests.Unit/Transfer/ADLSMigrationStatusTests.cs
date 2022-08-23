@@ -9,9 +9,8 @@ using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.ResourceServer;
 using Relativity.Storage;
-using Relativity.Storage.Extensions.Models;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Transfer.ADF;
+using Relativity.Sync.Transfer.ADLS;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
 {

@@ -6,7 +6,9 @@
     internal sealed class FmsDocument
     {
         public int DocumentArtifactId { get; }
+
         public string FileName { get; }
+
         public string LinkForIAPI { get; }
 
         public FmsDocument(int documentArtifactId, string fileGuid, string pathForIapi)
@@ -15,6 +17,5 @@
             FileName = fileGuid;
             LinkForIAPI = pathForIapi;
         }
-
     }
 }

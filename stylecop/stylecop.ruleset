@@ -43,7 +43,7 @@
         <Rule Id="SA1102"  Action="Info" />          <!-- Query clause should follow previous clause -->
         <Rule Id="SA1103"  Action="Info" />          <!-- Query clauses should be on separate lines or all on one line -->
         <Rule Id="SA1104"  Action="Info" />          <!-- Query clause should begin on new line when previous clause spans multiple lines -->
-        <Rule Id="SA1105"  Action="Info" />          <!-- Query clauses spanning multiple lines should begin on own line -->   
+        <Rule Id="SA1105"  Action="Info" />          <!-- Query clauses spanning multiple lines should begin on own line -->
 		<Rule Id="SA1106"  Action="Warning" />          <!-- Code should not contain empty statements -->
         <Rule Id="SA1107"  Action="Warning" />          <!-- Code should not contain multiple statements on one line -->
         <Rule Id="SA1108"  Action="Warning" />          <!-- Block statements should not contain embedded comments -->
@@ -136,7 +136,7 @@
         <Rule Id="SA1413"  Action="None" />          <!-- Use trailing comma in multi-line initializers -->
 		<Rule Id="SA1414"  Action="Warning" />          <!-- Tuple types appearing in member declarations should have explicitly named tuple elements. -->
     </Rules>
-	
+
     <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers.LayoutRules">
         <Rule Id="SA1500"  Action="Warning" />          <!-- Braces for multi-line statements should not share line -->
         <Rule Id="SA1501"  Action="Warning" />          <!-- Statement should not be on a single line -->
@@ -160,7 +160,7 @@
         <Rule Id="SA1519"  Action="Warning" />          <!-- Braces should not be omitted from multi-line child statement -->
         <Rule Id="SA1520"  Action="Warning" />          <!-- Use braces consistently -->
     </Rules>
-	
+
     <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers.DocumentationRules">
         <Rule Id="SA1600"  Action="None" />          <!-- Elements should be documented -->
         <Rule Id="SA1601"  Action="None" />          <!-- Partial elements should be documented -->

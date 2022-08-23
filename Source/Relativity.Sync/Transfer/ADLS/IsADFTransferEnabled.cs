@@ -4,7 +4,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Toggles;
 using Relativity.Sync.Toggles.Service;
 
-namespace Relativity.Sync.Transfer.ADF
+namespace Relativity.Sync.Transfer.ADLS
 {
     internal class IsADFTransferEnabled : IIsADFTransferEnabled
     {
@@ -42,8 +42,8 @@ namespace Relativity.Sync.Transfer.ADF
         {
             _logger.LogInformation("Checking if should use ADF to transfer files");
 
-            bool isToggleFMSEnabled = _syncToggles.IsEnabled<UseFMS>();
-            _logger.LogInformation("Toggle {toggleName} status: {toggleValue}", typeof(UseFMS).Name, isToggleFMSEnabled);
+            bool isToggleFMSEnabled = _syncToggles.IsEnabled<UseFmsToggle>();
+            _logger.LogInformation("Toggle {toggleName} status: {toggleValue}", typeof(UseFmsToggle).Name, isToggleFMSEnabled);
 
             bool isTenantFullyMigrated = await _adlsMigrationStatus.IsTenantFullyMigratedAsync().ConfigureAwait(false);
             _logger.LogInformation("Is tenant fully migrated to ADLS: {migrationStatus}", isTenantFullyMigrated);

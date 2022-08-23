@@ -15,7 +15,8 @@ using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Tests.Common.Stubs;
 using Relativity.Sync.Transfer;
-using Relativity.Sync.Transfer.ADF;
+using Relativity.Sync.Transfer.ADLS;
+using Relativity.Sync.Transfer.FileMovementService;
 using IStopwatch = Relativity.Sync.Utils.IStopwatch;
 
 namespace Relativity.Sync.Tests.Unit.Executors
@@ -69,6 +70,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IIsADFTransferEnabled> _isAdfTransferEnabledMock;
         private Mock<IInstanceSettings> _instanceSettingsMock;
         private Mock<IFileLocationManager> _fileLocationManagerMock;
+        private Mock<IFmsClient> _fmsClientMock;
 
         private Mock<Sync.Executors.IImportJob> _importJobFake;
         private Mock<ISyncImportBulkArtifactJob> _syncImportBulkArtifactJobFake;
@@ -203,6 +205,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             documentConfiguration.Setup(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
 
             _fileLocationManagerMock = new Mock<IFileLocationManager>();
+            _fmsClientMock = new Mock<IFmsClient>();
 
             _sut = new DocumentSynchronizationExecutor(
                 _importJobFactoryFake.Object,
@@ -220,6 +223,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 _adlsUploaderFake.Object,
                 _isAdfTransferEnabledMock.Object,
                 _fileLocationManagerMock.Object,
+                _fmsClientMock.Object,
                 new EmptyLogger());
         }
 

@@ -15,7 +15,7 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Toggles;
 using Relativity.Sync.Toggles.Service;
 using Relativity.Sync.Transfer;
-using Relativity.Sync.Transfer.ADF;
+using Relativity.Sync.Transfer.ADLS;
 
 namespace Relativity.Sync.Executors
 {

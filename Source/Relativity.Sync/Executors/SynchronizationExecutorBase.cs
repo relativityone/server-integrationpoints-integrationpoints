@@ -11,7 +11,8 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer;
-using Relativity.Sync.Transfer.ADF;
+using Relativity.Sync.Transfer.ADLS;
+using Relativity.Sync.Transfer.FileMovementService.Models;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors
@@ -149,9 +150,14 @@ namespace Relativity.Sync.Executors
             return configuration.ExportRunId;
         }
 
-        protected virtual Task<string[]> UploadBatchFilesToAdlsAsync(CompositeCancellationToken token, IImportJob importJob)
+        protected virtual Task<List<FmsBatchInfo>> UploadBatchFilesToAdlsAsync(CompositeCancellationToken token, IImportJob importJob)
         {
-            return Task.FromResult(Array.Empty<string>());
+            return Task.FromResult(new List<FmsBatchInfo>());
+        }
+
+        protected virtual Task<List<CopyListOfFilesResponse>> StartFmsTransfer(List<FmsBatchInfo> fmsBatches, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(new List<CopyListOfFilesResponse>());
         }
 
         protected int GetDestinationIdentityFieldId()
@@ -230,7 +236,7 @@ namespace Relativity.Sync.Executors
 
                     for (int i = 0; i < batchesIds.Count; i++)
                     {
-                        string[] batchFilesPaths = Array.Empty<string>();
+                        List<FmsBatchInfo> fmsBatches = null;
                         try
                         {
                             int batchId = batchesIds[i];
@@ -255,7 +261,8 @@ namespace Relativity.Sync.Executors
                                     BatchProcessResult batchProcessingResult = await ProcessBatchAsync(importJob, batch, progressHandler, token).ConfigureAwait(false);
                                     importApiTimer.Stop();
 
-                                    batchFilesPaths = await UploadBatchFilesToAdlsAsync(token, importJob).ConfigureAwait(false);
+                                    fmsBatches = await UploadBatchFilesToAdlsAsync(token, importJob).ConfigureAwait(false);
+                                    await StartFmsTransfer(fmsBatches, token.AnyReasonCancellationToken).ConfigureAwait(false);
 
                                     TaggingExecutionResult taggingResult = await TagObjectsAsync(importJob, configuration, token).ConfigureAwait(false);
                                     int documentsTaggedCount = taggingResult.TaggedDocumentsCount;
@@ -283,7 +290,11 @@ namespace Relativity.Sync.Executors
                         finally
                         {
                             FileLocationManager.ClearStoredLocations();
-                            await CleanUpAdlsBatchFilesAsync(batchFilesPaths, token.AnyReasonCancellationToken).ConfigureAwait(false);
+                            if (fmsBatches != null)
+                            {
+                                IEnumerable<string> batchFilesPaths = fmsBatches.Select(x => x.UploadedBatchFilePath);
+                                await CleanUpAdlsBatchFilesAsync(batchFilesPaths, token.AnyReasonCancellationToken).ConfigureAwait(false);
+                            }
                         }
                     }
 
@@ -429,19 +440,16 @@ namespace Relativity.Sync.Executors
             return timer;
         }
 
-        private async Task CleanUpAdlsBatchFilesAsync(string[] batchFiles, CancellationToken token)
+        private async Task CleanUpAdlsBatchFilesAsync(IEnumerable<string> batchFiles, CancellationToken token)
         {
-            if (batchFiles.Any())
+            if (batchFiles != null)
             {
                 List<Task> batchFilesDeleteTasks = new List<Task>();
                 foreach (string filePath in batchFiles)
                 {
                     batchFilesDeleteTasks.Add(
                         Task.Run(
-                            () =>
-                        {
-                            AdlsUploader.DeleteFileAsync(filePath, token);
-                        },
+                            () => { AdlsUploader.DeleteFileAsync(filePath, token); },
                             token));
                 }
 
