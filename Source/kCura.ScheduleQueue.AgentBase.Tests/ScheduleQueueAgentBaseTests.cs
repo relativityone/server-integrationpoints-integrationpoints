@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Castle.Windsor;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Common.Helpers;
@@ -392,6 +393,11 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 
             protected override void LogJobState(Job job, JobLogState state, Exception exception = null, string details = null)
             {
+            }
+
+            protected override IWindsorContainer CreateAgentLevelContainer()
+            {
+                return new WindsorContainer();
             }
 
             protected override IEnumerable<int> GetListOfResourceGroupIDs()

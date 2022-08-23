@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Castle.Windsor;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Common.Helpers;
@@ -44,6 +45,8 @@ namespace kCura.ScheduleQueue.AgentBase
         private readonly bool _shouldReadJobOnce = false; //Only for testing purposes. DO NOT MODIFY IT!
 
         public Guid AgentInstanceGuid => _agentInstanceGuid;
+        
+        protected IWindsorContainer Container;
 
         protected Func<IEnumerable<int>> GetResourceGroupIDsFunc { get; set; }
 
@@ -54,9 +57,7 @@ namespace kCura.ScheduleQueue.AgentBase
             [LogCategory.Debug] = 20,
             [LogCategory.Info] = 10
         };
-
-        private IDisposable _loggerAgentInstanceContext;
-
+        
         protected virtual IAPILog Logger => _loggerLazy.Value;
 
         protected IJobService JobService => _jobService;
@@ -84,7 +85,6 @@ namespace kCura.ScheduleQueue.AgentBase
                 ? new Lazy<IKubernetesMode>(() => kubernetesMode)
                 : new Lazy<IKubernetesMode>(() => new KubernetesMode(Logger));
 
-
             _agentGuid = agentGuid;
             _agentService = agentService;
             _jobService = jobService;
@@ -101,62 +101,9 @@ namespace kCura.ScheduleQueue.AgentBase
 
         public IScheduleRuleFactory ScheduleRuleFactory { get; }
 
-        protected virtual void Initialize()
-        {
-            NotifyAgentTab(LogCategory.Debug, "Initialize Agent core services");
-
-            if (_queueManager == null)
-            {
-                _queueManager = new QueueQueryManager(Helper, _agentGuid);
-            }
-
-            if (_agentService == null)
-            {
-                _agentService = new AgentService(Helper, _queueManager, _agentGuid);
-            }
-
-            if (_jobService == null)
-            {
-                _jobService = new JobService(_agentService, new JobServiceDataProvider(_queueManager), _kubernetesModeLazy.Value, Helper);
-            }
-
-            if (_queueJobValidator == null)
-            {
-                _queueJobValidator = new QueueJobValidator(Helper, Logger);
-            }
-
-            if (_dateTime == null)
-            {
-                _dateTime = new DateTimeWrapper();
-            }
-
-            if (GetResourceGroupIDsFunc == null)
-            {
-                GetResourceGroupIDsFunc = () => GetResourceGroupIDs();
-            }
-
-            if (_taskParameterHelper == null)
-            {
-                _taskParameterHelper = new TaskParameterHelper(
-                    SerializerWithLogging.Create(Logger),
-                    new DefaultGuidService());
-            }
-
-            if (_config == null)
-            {
-                _config = IntegrationPoints.Config.Config.Instance;
-            }
-
-            if (_apm == null)
-            {
-                _apm = Client.APMClient;
-            }
-
-            _agentStartTime = _dateTime.UtcNow;
-        }
-
         public sealed override void Execute()
         {
+            using (Container = CreateAgentLevelContainer())
             using (Logger.LogContextPushProperty("AgentRunCorrelationId", Guid.NewGuid()))
             {
                 if (ToBeRemoved)
@@ -192,6 +139,62 @@ namespace kCura.ScheduleQueue.AgentBase
                     DidWork = false;
                 }
             }
+        }
+
+        protected abstract IWindsorContainer CreateAgentLevelContainer();
+
+        protected virtual void Initialize()
+        {
+            NotifyAgentTab(LogCategory.Debug, "Initialize Agent core services");
+
+            if (_queueManager == null)
+            {
+                _queueManager = new QueueQueryManager(Helper, _agentGuid);
+            }
+
+            if (_agentService == null)
+            {
+                _agentService = new AgentService(Helper, _queueManager, _agentGuid);
+            }
+
+            if (_jobService == null)
+            {
+                _jobService = new JobService(_agentService, new JobServiceDataProvider(_queueManager), _kubernetesModeLazy.Value, Helper);
+            }
+
+            if (_queueJobValidator == null)
+            {
+                _queueJobValidator = new QueueJobValidator(Helper, Logger);
+            }
+
+            if (_dateTime == null)
+            {
+                _dateTime = new DateTimeWrapper();
+            }
+
+            if (GetResourceGroupIDsFunc == null)
+            {
+                GetResourceGroupIDsFunc = GetResourceGroupIDs;
+            }
+
+            if (_taskParameterHelper == null)
+            {
+                _taskParameterHelper = new TaskParameterHelper(
+                    SerializerWithLogging.Create(Logger),
+                    new DefaultGuidService());
+            }
+
+            if (_config == null)
+            {
+                _config = IntegrationPoints.Config.Config.Instance;
+            }
+
+            if (_apm == null)
+            {
+                _apm = Client.APMClient;
+            }
+
+            _agentStartTime = _dateTime.UtcNow;
         }
 
         private void CleanupInvalidJobs()
@@ -505,8 +508,6 @@ namespace kCura.ScheduleQueue.AgentBase
             }
 
             IAPILog logger = Helper.GetLoggerFactory().GetLogger().ForContext<ScheduleQueueAgentBase>();
-            _loggerAgentInstanceContext = logger.LogContextPushProperty("AgentInstanceGuid", AgentInstanceGuid);
-
             return logger;
         }
 

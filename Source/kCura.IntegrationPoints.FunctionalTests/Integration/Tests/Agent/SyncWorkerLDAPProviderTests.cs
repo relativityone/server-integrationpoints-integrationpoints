@@ -95,7 +95,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
         }
 
         [IdentifiedTest("431049DF-B069-4570-AA5A-89FE4F329121")]
-        [Ignore("REL-726799")]
         public void SyncWorker_ShouldImportLDAPDataAndLinkManagersJob_WhenAllManagerLinksWereProcessed()
         {
             // Arrange
