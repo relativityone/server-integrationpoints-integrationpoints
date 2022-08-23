@@ -196,10 +196,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             }
 
             public override string Name { get; }
-            protected override IWindsorContainer CreateAgentLevelContainer()
-            {
-                throw new NotImplementedException();
-            }
 
             protected override TaskResult ProcessJob(Job job)
             {

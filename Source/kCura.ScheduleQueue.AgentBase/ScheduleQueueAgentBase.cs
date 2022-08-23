@@ -45,8 +45,6 @@ namespace kCura.ScheduleQueue.AgentBase
         private readonly bool _shouldReadJobOnce = false; //Only for testing purposes. DO NOT MODIFY IT!
 
         public Guid AgentInstanceGuid => _agentInstanceGuid;
-        
-        protected IWindsorContainer Container;
 
         protected Func<IEnumerable<int>> GetResourceGroupIDsFunc { get; set; }
 
@@ -57,7 +55,7 @@ namespace kCura.ScheduleQueue.AgentBase
             [LogCategory.Debug] = 20,
             [LogCategory.Info] = 10
         };
-        
+
         protected virtual IAPILog Logger => _loggerLazy.Value;
 
         protected IJobService JobService => _jobService;
@@ -103,7 +101,6 @@ namespace kCura.ScheduleQueue.AgentBase
 
         public sealed override void Execute()
         {
-            using (Container = CreateAgentLevelContainer())
             using (Logger.LogContextPushProperty("AgentRunCorrelationId", Guid.NewGuid()))
             {
                 if (ToBeRemoved)
@@ -140,8 +137,6 @@ namespace kCura.ScheduleQueue.AgentBase
                 }
             }
         }
-
-        protected abstract IWindsorContainer CreateAgentLevelContainer();
 
         protected virtual void Initialize()
         {
