@@ -24,10 +24,10 @@ namespace Relativity.Sync.RDOs.Framework
             (int rdoArtifactId, HashSet<Guid> existingFields) =
                 await GetTypeIdAsync(typeInfo.Name, workspaceId).ConfigureAwait(false)
                 ?? await CreateTypeAsync(typeInfo, workspaceId).ConfigureAwait(false);
-            
+
             await CreateMissingFieldsAsync(typeInfo, workspaceId, existingFields, rdoArtifactId).ConfigureAwait(false);
         }
-        
+
         private async Task<(int artifactId, HashSet<Guid>)?> GetTypeIdAsync(string typeName,
             int workspaceId)
         {
@@ -39,8 +39,8 @@ namespace Relativity.Sync.RDOs.Framework
 
                 if (queryResult.Objects.Any())
                 {
-                    int artifactId = (int) queryResult.Objects.First().FieldValues[0].Value;
-                    int artifactTypeId = (int) queryResult.Objects.First().FieldValues[1].Value;
+                    int artifactId = (int)queryResult.Objects.First().FieldValues[0].Value;
+                    int artifactTypeId = (int)queryResult.Objects.First().FieldValues[1].Value;
 
                     HashSet<Guid> existingFields =
                         await GetExistingFieldsAsync(artifactTypeId, workspaceId).ConfigureAwait(false);
@@ -53,7 +53,7 @@ namespace Relativity.Sync.RDOs.Framework
                 return null;
             }
         }
-        
+
         private static QueryRequest GetTypeQueryRequest(string name)
         {
             return new QueryRequest
@@ -63,10 +63,10 @@ namespace Relativity.Sync.RDOs.Framework
                 {
                     new FieldRef {Name = "Artifact ID"}, new FieldRef {Name = "Artifact Type ID"}
                 },
-                ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) ArtifactType.ObjectType}
+                ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.ObjectType }
             };
         }
-        
+
         private async Task<HashSet<Guid>> GetExistingFieldsAsync(int artifactTypeId, int workspaceId)
         {
             using (IObjectManager objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
@@ -76,7 +76,7 @@ namespace Relativity.Sync.RDOs.Framework
                     Condition = $"'FieldArtifactTypeID' == {artifactTypeId}",
                     ObjectType = new ObjectTypeRef()
                     {
-                        ArtifactTypeID = (int) ArtifactType.Field
+                        ArtifactTypeID = (int)ArtifactType.Field
                     }
                 }, 0, int.MaxValue).ConfigureAwait(false);
 
@@ -84,7 +84,7 @@ namespace Relativity.Sync.RDOs.Framework
             }
         }
 
-        
+
         private Task<int> CreateFieldInTypeAsync(RdoFieldInfo fieldInfo, int objectTypeId, int workspaceId,
             IFieldManager fieldManager)
         {
@@ -96,7 +96,7 @@ namespace Relativity.Sync.RDOs.Framework
                         {
                             FilterType = FilterType.TextBox,
                             Name = fieldInfo.Name,
-                            ObjectType = new ObjectTypeIdentifier() {ArtifactID = objectTypeId},
+                            ObjectType = new ObjectTypeIdentifier() { ArtifactID = objectTypeId },
                             HasUnicode = true,
                             IsRequired = fieldInfo.IsRequired
                         });
@@ -107,7 +107,7 @@ namespace Relativity.Sync.RDOs.Framework
                         {
                             FilterType = FilterType.TextBox,
                             Name = fieldInfo.Name,
-                            ObjectType = new ObjectTypeIdentifier() {ArtifactID = objectTypeId},
+                            ObjectType = new ObjectTypeIdentifier() { ArtifactID = objectTypeId },
                             HasUnicode = true,
                             Length = fieldInfo.TextLength,
                             IsRequired = fieldInfo.IsRequired
@@ -139,7 +139,7 @@ namespace Relativity.Sync.RDOs.Framework
                         {
                             FilterType = FilterType.List,
                             Name = fieldInfo.Name,
-                            ObjectType = new ObjectTypeIdentifier() {ArtifactID = objectTypeId},
+                            ObjectType = new ObjectTypeIdentifier() { ArtifactID = objectTypeId },
                             IsRequired = fieldInfo.IsRequired
                         });
 
@@ -157,7 +157,7 @@ namespace Relativity.Sync.RDOs.Framework
                 ObjectTypeRequest objectTypeRequest = GetObjectTypeDefinition(typeInfo);
 
                 int objectTypeArtifactId = await objectTypeManager.CreateAsync(workspaceId, objectTypeRequest).ConfigureAwait(false);
-                await guidManager.CreateSingleAsync(workspaceId, objectTypeArtifactId, new List<Guid>() {typeInfo.TypeGuid}).ConfigureAwait(false);
+                await guidManager.CreateSingleAsync(workspaceId, objectTypeArtifactId, new List<Guid>() { typeInfo.TypeGuid }).ConfigureAwait(false);
                 await DeleteTabAsync(workspaceId, typeInfo.Name).ConfigureAwait(false);
 
                 _logger.LogInformation("Created type ({name}:{guid}) in workspace {workspaceId}", typeInfo.Name, typeInfo.TypeGuid, workspaceId);
@@ -214,12 +214,12 @@ namespace Relativity.Sync.RDOs.Framework
             }
             else
             {
-                objectTypeRequest.ParentObjectType.Value.ArtifactTypeID = (int) ArtifactType.Case;
+                objectTypeRequest.ParentObjectType.Value.ArtifactTypeID = (int)ArtifactType.Case;
             }
 
             return objectTypeRequest;
         }
-        
+
         private async Task CreateMissingFieldsAsync(RdoTypeInfo typeInfo, int workspaceId, HashSet<Guid> existingFields,
             int artifactId)
         {
@@ -237,7 +237,7 @@ namespace Relativity.Sync.RDOs.Framework
                             .ConfigureAwait(false);
 
                         await guidManager
-                            .CreateSingleAsync(workspaceId, fieldId, new List<Guid>() {fieldInfo.Guid})
+                            .CreateSingleAsync(workspaceId, fieldId, new List<Guid>() { fieldInfo.Guid })
                             .ConfigureAwait(false);
 
                         _logger.LogInformation("Created field [{name}:{guid}] for type [{typeName}:{typeGuid}] in workspace {workspaceId}", fieldInfo.Name, fieldInfo.Guid, typeInfo.Name, typeInfo.TypeGuid, workspaceId);

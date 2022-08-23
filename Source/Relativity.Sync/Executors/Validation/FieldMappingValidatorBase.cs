@@ -133,8 +133,10 @@ namespace Relativity.Sync.Executors.Validation
             return validationMessage;
         }
 
-        private static async Task<IDictionary<int, string>> GetMissingFieldsAsync(IProxyFactory proxyFactory, IDictionary<int, string> mappedFieldIdNames, int workspaceArtifactId, int rdoType, CancellationToken token)
+        private async Task<IDictionary<int, string>> GetMissingFieldsAsync(IProxyFactory proxyFactory, IDictionary<int, string> mappedFieldIdNames, int workspaceArtifactId, int rdoType, CancellationToken token)
         {
+            _logger.LogInformation("Retrieving missing fields from workspace Artifact ID: {workspaceArtifactId}. Number of mapped fields: {fieldsCount}", workspaceArtifactId, mappedFieldIdNames.Count);
+
             string fieldArtifactIds = string.Join(",", mappedFieldIdNames.Keys);
             using (IObjectManager objectManager = await proxyFactory.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {

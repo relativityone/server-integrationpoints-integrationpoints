@@ -243,6 +243,8 @@ namespace Relativity.Sync.Tests.Common
 
         public IJobHistoryRdoGuidsProvider JobHistory { get; set;  } = DefaultGuids.JobHistory;
 
+        public IJobHistoryStatusProvider JobHistoryStatus { get; set; } = DefaultGuids.JobHistoryStatus;
+
         public IJobHistoryErrorGuidsProvider JobHistoryError { get; set; } = DefaultGuids.JobHistoryError;
         
         public IDestinationWorkspaceTagGuidProvider DestinationWorkspace { get; set;  } = DefaultGuids.DestinationWorkspace;
