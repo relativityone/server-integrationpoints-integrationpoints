@@ -50,25 +50,63 @@ namespace Relativity.Sync
 
         public async Task SetJobStartedAsync()
         {
-            await TryUpdateJobHistory(new[]
+            try
             {
-                new FieldRefValuePair()
+                using (IObjectManager objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
                 {
-                    Field = new FieldRef()
+                    QueryRequest request = new QueryRequest()
                     {
-                        Guid = _rdoGuidConfiguration.JobHistory.StartTimeGuid
-                    },
-                    Value = _dateTime.UtcNow
-                },
-                new FieldRefValuePair()
-                {
-                    Field = new FieldRef()
+                        ObjectType = new ObjectTypeRef()
+                        {
+                            Guid = _rdoGuidConfiguration.JobHistory.TypeGuid
+                        },
+                        Condition = $"'Artifact ID' == {_jobHistoryArtifactId}",
+                        Fields = new[]
+                        {
+                            new FieldRef()
+                            {
+                                Guid = _rdoGuidConfiguration.JobHistory.JobIdGuid
+                            }
+                        }
+                    };
+
+                    QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, request, 0, 1).ConfigureAwait(false);
+                    string jobId = result?.Objects?.FirstOrDefault()?.FieldValues.FirstOrDefault()?.Value?.ToString();
+
+                    if (string.IsNullOrWhiteSpace(jobId))
                     {
-                        Guid = _rdoGuidConfiguration.JobHistory.JobIdGuid
-                    },
-                    Value = _jobHistoryArtifactId.ToString()
+                        // RIP didn't set Job ID which means we're executing on Sync Agent
+
+                        await TryUpdateJobHistory(new[]
+                        {
+                            new FieldRefValuePair()
+                            {
+                                Field = new FieldRef()
+                                {
+                                    Guid = _rdoGuidConfiguration.JobHistory.StartTimeGuid
+                                },
+                                Value = _dateTime.UtcNow
+                            },
+                            new FieldRefValuePair()
+                            {
+                                Field = new FieldRef()
+                                {
+                                    Guid = _rdoGuidConfiguration.JobHistory.JobIdGuid
+                                },
+                                Value = _jobHistoryArtifactId.ToString()
+                            }
+                        }).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        _logger.LogInformation("Job History has already Job ID set: {jobId}", jobId);
+                    }
                 }
-            }).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to update Job History: {jobHistoryArtifactId}", _jobHistoryArtifactId);
+            }
         }
 
         public async Task UpdateJobStatusAsync(JobHistoryStatus status)
@@ -149,17 +187,17 @@ namespace Relativity.Sync
                 case JobHistoryStatus.Completed:
                 case JobHistoryStatus.CompletedWithErrors:
                 case JobHistoryStatus.Failed:
-                {
-                    fields.Add(new FieldRefValuePair()
                     {
-                        Field = new FieldRef()
+                        fields.Add(new FieldRefValuePair()
                         {
-                            Guid = _rdoGuidConfiguration.JobHistory.EndTimeGuid
-                        },
-                        Value = endTime
-                    });
-                    break;
-                }
+                            Field = new FieldRef()
+                            {
+                                Guid = _rdoGuidConfiguration.JobHistory.EndTimeGuid
+                            },
+                            Value = endTime
+                        });
+                        break;
+                    }
             }
 
             await TryUpdateJobHistory(fields).ConfigureAwait(false);
@@ -223,7 +261,7 @@ namespace Relativity.Sync
                             Guid = _rdoGuidConfiguration.JobHistory.TypeGuid
                         },
                         Condition = $"'Artifact ID' == '{_jobHistoryArtifactId}'",
-                        Fields = new []
+                        Fields = new[]
                         {
                             new FieldRef()
                             {
@@ -297,7 +335,7 @@ namespace Relativity.Sync
                             Guid = ripJobHistoryTypeGuid
                         },
                         Condition = $"'Artifact ID' == {_jobHistoryArtifactId}",
-                        Fields = new []
+                        Fields = new[]
                         {
                             new FieldRef()
                             {
@@ -316,7 +354,7 @@ namespace Relativity.Sync
                         {
                             ArtifactID = integrationPointArtifactId
                         },
-                        FieldValues = new []
+                        FieldValues = new[]
                         {
                             new FieldRefValuePair()
                             {
