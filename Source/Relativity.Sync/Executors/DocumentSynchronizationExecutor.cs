@@ -9,7 +9,9 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer;
-using Relativity.Sync.Transfer.ADF;
+using Relativity.Sync.Transfer.ADLS;
+using Relativity.Sync.Transfer.FileMovementService;
+using Relativity.Sync.Transfer.FileMovementService.Models;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors
@@ -17,6 +19,7 @@ namespace Relativity.Sync.Executors
     internal class DocumentSynchronizationExecutor : SynchronizationExecutorBase<IDocumentSynchronizationConfiguration>
     {
         private readonly IDocumentTagger _documentTagger;
+        private readonly IFmsRunner _fmsRunner;
 
         public DocumentSynchronizationExecutor(
             IImportJobFactory importJobFactory,
@@ -32,8 +35,9 @@ namespace Relativity.Sync.Executors
             IDocumentTagger documentTagger,
             IUserContextConfiguration userContextConfiguration,
             IAdlsUploader uploader,
-            IIsADFTransferEnabled isAdfTransferEnabled,
+            IIsAdfTransferEnabled isAdfTransferEnabled,
             IFileLocationManager fileLocationManager,
+            IFmsRunner fmsRunner,
             IAPILog logger) : base(
             importJobFactory,
             BatchRecordType.Documents,
@@ -53,6 +57,7 @@ namespace Relativity.Sync.Executors
             logger)
         {
             _documentTagger = documentTagger;
+            _fmsRunner = fmsRunner;
         }
 
         protected override Task<IImportJob> CreateImportJobAsync(IDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
@@ -146,20 +151,21 @@ namespace Relativity.Sync.Executors
             return _documentTagger.TagObjectsAsync(importJob, configuration, token);
         }
 
-        protected override async Task<string[]> UploadBatchFilesToAdlsAsync(CompositeCancellationToken token, IImportJob importJob)
+        protected override async Task<List<FmsBatchInfo>> UploadBatchFilesToAdlsAsync(CompositeCancellationToken token, IImportJob importJob)
         {
             if (IsAdfTransferEnabled.Value)
             {
-                IList<FmsBatchInfo> storedLocations = await GetSuccessfullyPushedDocumentsAsync(importJob).ConfigureAwait(false);
-                List<Task<string>> batchesUploadTasks = new List<Task<string>>();
+                List<FmsBatchInfo> storedLocations = await GetSuccessfullyPushedDocumentsAsync(importJob).ConfigureAwait(false);
+                List<Task> batchesUploadTasks = new List<Task>();
                 foreach (FmsBatchInfo storedLocation in storedLocations)
                 {
                     if (storedLocation.Files.Count > 0)
                     {
-                        batchesUploadTasks.Add(new Task<string>(() =>
+                        batchesUploadTasks.Add(new Task(() =>
                         {
-                            string batchFilePath = AdlsUploader.CreateBatchFile(storedLocation, token.AnyReasonCancellationToken);
-                            return AdlsUploader.UploadFileAsync(batchFilePath, token.AnyReasonCancellationToken).GetAwaiter().GetResult();
+                            string tempBatchFilePath = AdlsUploader.CreateBatchFile(storedLocation, token.AnyReasonCancellationToken);
+                            string uploadedBatchFilePath = AdlsUploader.UploadFileAsync(tempBatchFilePath, token.AnyReasonCancellationToken).GetAwaiter().GetResult();
+                            storedLocation.UploadedBatchFilePath = uploadedBatchFilePath;
                         }));
                     }
                     else
@@ -168,16 +174,25 @@ namespace Relativity.Sync.Executors
                     }
                 }
 
-                string[] batchFilesPaths = await UploadBatchFilesAsync(batchesUploadTasks).ConfigureAwait(false);
-                return batchFilesPaths;
+                await UploadBatchFilesAsync(batchesUploadTasks).ConfigureAwait(false);
+                return storedLocations;
             }
 
-            return Array.Empty<string>();
+            return null;
         }
 
-        private async Task<IList<FmsBatchInfo>> GetSuccessfullyPushedDocumentsAsync(IImportJob importJob)
+        protected override async Task PerformFmsTransfer(List<FmsBatchInfo> fmsBatches, CancellationToken cancellationToken)
         {
-            IList<FmsBatchInfo> storedLocations = FileLocationManager.GetStoredLocations();
+            if (IsAdfTransferEnabled.Value)
+            {
+                List<FmsBatchStatusInfo> statusInfoList = await _fmsRunner.RunAsync(fmsBatches, cancellationToken);
+                await _fmsRunner.MonitorAsync(statusInfoList, cancellationToken);
+            }
+        }
+
+        private async Task<List<FmsBatchInfo>> GetSuccessfullyPushedDocumentsAsync(IImportJob importJob)
+        {
+            List<FmsBatchInfo> storedLocations = FileLocationManager.GetStoredLocations();
             List<int> successfullyPushedItemsDocumentArtifactIds = (await importJob.GetPushedDocumentArtifactIdsAsync().ConfigureAwait(false)).ToList();
             foreach (FmsBatchInfo storedLocation in storedLocations)
             {
@@ -191,16 +206,13 @@ namespace Relativity.Sync.Executors
             return storedLocations;
         }
 
-        private async Task<string[]> UploadBatchFilesAsync(List<Task<string>> tasks)
+        private async Task UploadBatchFilesAsync(List<Task> tasks)
         {
             if (IsAdfTransferEnabled.Value)
             {
                 Parallel.ForEach(tasks, t => t.Start());
-                string[] batchFilesPaths = await Task.WhenAll(tasks).ConfigureAwait(false);
-                return batchFilesPaths;
+                await Task.WhenAll(tasks).ConfigureAwait(false);
             }
-
-            return Array.Empty<string>();
         }
     }
 }

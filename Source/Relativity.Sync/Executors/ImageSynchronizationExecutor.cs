@@ -9,7 +9,7 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer;
-using Relativity.Sync.Transfer.ADF;
+using Relativity.Sync.Transfer.ADLS;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors
@@ -32,7 +32,7 @@ namespace Relativity.Sync.Executors
             IDocumentTagger documentTagger,
             IAdlsUploader uploader,
             IUserContextConfiguration userContextConfiguration,
-            IIsADFTransferEnabled isAdfTransferEnabled,
+            IIsAdfTransferEnabled isAdfTransferEnabled,
             IFileLocationManager fileLocationManager,
             IAPILog logger)
             : base(

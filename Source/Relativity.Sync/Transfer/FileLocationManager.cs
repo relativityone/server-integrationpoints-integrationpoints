@@ -8,7 +8,7 @@ namespace Relativity.Sync.Transfer
 {
     internal sealed class FileLocationManager : IFileLocationManager
     {
-        private readonly IList<FmsBatchInfo> _fmsBatchesStorage;
+        private readonly List<FmsBatchInfo> _fmsBatchesStorage;
         private readonly IAPILog _logger;
         private readonly ISynchronizationConfiguration _configuration;
 
@@ -26,9 +26,14 @@ namespace Relativity.Sync.Transfer
                 IDictionary<int, NativeFilePathStructure> pathStructures = GetNativeFilesPathStructure(nativeFiles);
 
                 var commonSourcePathGroups = pathStructures.GroupBy(x => x.Value.FullDirectoryPath);
+                Guid correlationId = Guid.NewGuid();
                 foreach (var filePathComponents in commonSourcePathGroups)
                 {
-                    FmsBatchInfo batchInfo = new FmsBatchInfo(_configuration.DestinationWorkspaceArtifactId, filePathComponents.ToDictionary(x => x.Key, x => x.Value), filePathComponents.Key);
+                    FmsBatchInfo batchInfo = new FmsBatchInfo(
+                        _configuration.DestinationWorkspaceArtifactId,
+                        filePathComponents.ToDictionary(x => x.Key, x => x.Value),
+                        filePathComponents.Key,
+                        correlationId);
                     _fmsBatchesStorage.Add(batchInfo);
 
                     SetNewPathForIapiTransfer(batchInfo, nativeFiles);
@@ -40,7 +45,7 @@ namespace Relativity.Sync.Transfer
             }
         }
 
-        public IList<FmsBatchInfo> GetStoredLocations()
+        public List<FmsBatchInfo> GetStoredLocations()
         {
             return _fmsBatchesStorage;
         }

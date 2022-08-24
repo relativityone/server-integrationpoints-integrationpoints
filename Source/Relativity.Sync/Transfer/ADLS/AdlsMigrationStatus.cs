@@ -7,15 +7,15 @@ using Relativity.Services;
 using Relativity.Services.ResourceServer;
 using Relativity.Sync.KeplerFactory;
 
-namespace Relativity.Sync.Transfer.ADF
+namespace Relativity.Sync.Transfer.ADLS
 {
-	internal class ADLSMigrationStatus : IADLSMigrationStatus
-	{
-		private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
-		private readonly IHelperWrapper _helperWrapper;
-		private readonly IAPILog _logger;
+    internal class AdlsMigrationStatus : IAdlsMigrationStatus
+    {
+        private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
+        private readonly IHelperWrapper _helperWrapper;
+        private readonly IAPILog _logger;
 
-        public ADLSMigrationStatus(
+        public AdlsMigrationStatus(
             ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
             IHelperWrapper helperWrapper,
             IAPILog logger)

@@ -4,11 +4,11 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Toggles;
 using Relativity.Sync.Toggles.Service;
 
-namespace Relativity.Sync.Transfer.ADF
+namespace Relativity.Sync.Transfer.ADLS
 {
-    internal class IsADFTransferEnabled : IIsADFTransferEnabled
+    internal class IsAdfTransferEnabled : IIsAdfTransferEnabled
     {
-        private readonly IADLSMigrationStatus _adlsMigrationStatus;
+        private readonly IAdlsMigrationStatus _adlsMigrationStatus;
         private readonly ISyncToggles _syncToggles;
         private readonly IInstanceSettings _instanceSettings;
         private readonly IDocumentSynchronizationConfiguration _documentSynchronizationConfiguration;
@@ -16,7 +16,7 @@ namespace Relativity.Sync.Transfer.ADF
 
         private bool? _isAdfTransferEnabled;
 
-        public IsADFTransferEnabled(IADLSMigrationStatus adlsMigrationStatus, ISyncToggles syncToggles, IInstanceSettings instanceSettings, IDocumentSynchronizationConfiguration documentSynchronizationConfiguration, IAPILog logger)
+        public IsAdfTransferEnabled(IAdlsMigrationStatus adlsMigrationStatus, ISyncToggles syncToggles, IInstanceSettings instanceSettings, IDocumentSynchronizationConfiguration documentSynchronizationConfiguration, IAPILog logger)
         {
             _adlsMigrationStatus = adlsMigrationStatus;
             _syncToggles = syncToggles;
@@ -42,8 +42,8 @@ namespace Relativity.Sync.Transfer.ADF
         {
             _logger.LogInformation("Checking if should use ADF to transfer files");
 
-            bool isToggleFMSEnabled = _syncToggles.IsEnabled<UseFMS>();
-            _logger.LogInformation("Toggle {toggleName} status: {toggleValue}", typeof(UseFMS).Name, isToggleFMSEnabled);
+            bool isToggleFMSEnabled = _syncToggles.IsEnabled<UseFmsToggle>();
+            _logger.LogInformation("Toggle {toggleName} status: {toggleValue}", typeof(UseFmsToggle).Name, isToggleFMSEnabled);
 
             bool isTenantFullyMigrated = await _adlsMigrationStatus.IsTenantFullyMigratedAsync().ConfigureAwait(false);
             _logger.LogInformation("Is tenant fully migrated to ADLS: {migrationStatus}", isTenantFullyMigrated);

@@ -20,7 +20,7 @@ using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Toggles;
 using Relativity.Sync.Toggles.Service;
 using Relativity.Sync.Transfer;
-using Relativity.Sync.Transfer.ADF;
+using Relativity.Sync.Transfer.ADLS;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
@@ -38,7 +38,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IJobProgressHandlerFactory> _jobProgressHandlerFactory;
         private Mock<ISourceWorkspaceDataReaderFactory> _dataReaderFactory;
         private Mock<IFieldMappings> _fieldMappingsMock;
-        private Mock<IIsADFTransferEnabled> _isAdfTransferEnabledMock;
+        private Mock<IIsAdfTransferEnabled> _isAdfTransferEnabledMock;
         private Mock<IAntiMalwareEventHelper> _antiMalwareEventHelperMock;
         private Mock<ISyncToggles> _syncTogglesMock;
         private SyncJobParameters _syncJobParameters;
@@ -80,7 +80,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _instanceSettings.Setup(x => x.GetWebApiPathAsync(default(string))).ReturnsAsync("http://fake.uri");
             _instanceSettings.Setup(x => x.GetShouldForceADFTransferAsync(default(bool))).ReturnsAsync(false);
             _syncJobParameters = FakeHelper.CreateSyncJobParameters();
-            _isAdfTransferEnabledMock = new Mock<IIsADFTransferEnabled>();
+            _isAdfTransferEnabledMock = new Mock<IIsAdfTransferEnabled>();
             _antiMalwareEventHelperMock = new Mock<IAntiMalwareEventHelper>();
             _syncTogglesMock = new Mock<ISyncToggles>();
             _logger = new EmptyLogger();
