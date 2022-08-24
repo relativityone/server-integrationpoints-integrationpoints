@@ -27,7 +27,7 @@ namespace Relativity.Sync.Executors
             ISyncMetrics syncMetrics,
             IUserContextConfiguration userContextConfiguration,
             IAdlsUploader uploader,
-            IIsADFTransferEnabled isAdfTransferEnabled,
+            IIsAdfTransferEnabled isAdfTransferEnabled,
             IFileLocationManager fileLocationManager,
             IAPILog logger)
             : base(

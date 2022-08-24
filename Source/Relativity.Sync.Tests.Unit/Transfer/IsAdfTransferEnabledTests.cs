@@ -12,10 +12,10 @@ using Relativity.Sync.Transfer.ADLS;
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
     [TestFixture]
-    internal class IsADFTransferEnabledTests
+    internal class IsAdfTransferEnabledTests
     {
-        private IsADFTransferEnabled _sut;
-        private Mock<IADLSMigrationStatus> _migrationStatusMock;
+        private IsAdfTransferEnabled _sut;
+        private Mock<IAdlsMigrationStatus> _migrationStatusMock;
         private Mock<ISyncToggles> _syncTogglesMock;
         private Mock<IInstanceSettings> _instanceSettingsMock;
         private Mock<IDocumentSynchronizationConfiguration> _documentConfigurationMock;
@@ -24,12 +24,12 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         [SetUp]
         public void SetUp()
         {
-            _migrationStatusMock = new Mock<IADLSMigrationStatus>();
+            _migrationStatusMock = new Mock<IAdlsMigrationStatus>();
             _syncTogglesMock = new Mock<ISyncToggles>();
             _instanceSettingsMock = new Mock<IInstanceSettings>();
             _documentConfigurationMock = new Mock<IDocumentSynchronizationConfiguration>();
             _loggerMock = new Mock<IAPILog>();
-            _sut = new IsADFTransferEnabled(
+            _sut = new IsAdfTransferEnabled(
                 _migrationStatusMock.Object,
                 _syncTogglesMock.Object,
                 _instanceSettingsMock.Object,
@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         [TearDown]
         public void TearDown()
         {
-            typeof(IsADFTransferEnabled)
+            typeof(IsAdfTransferEnabled)
                 .GetField("_isAdfTransferEnabled", BindingFlags.NonPublic | BindingFlags.Instance)
                 .SetValue(_sut, null);
         }

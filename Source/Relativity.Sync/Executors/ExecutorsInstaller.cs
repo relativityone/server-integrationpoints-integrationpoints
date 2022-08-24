@@ -98,8 +98,8 @@ namespace Relativity.Sync.Executors
             builder.RegisterTypesInExecutingAssembly<IPreValidator>();
             builder.RegisterType<UserService>().As<IUserService>();
             builder.RegisterType<SyncToggles>().As<ISyncToggles>().SingleInstance();
-            builder.RegisterType<ADLSMigrationStatus>().As<IADLSMigrationStatus>().SingleInstance();
-            builder.RegisterType<IsADFTransferEnabled>().As<IIsADFTransferEnabled>().SingleInstance();
+            builder.RegisterType<AdlsMigrationStatus>().As<IAdlsMigrationStatus>().SingleInstance();
+            builder.RegisterType<IsAdfTransferEnabled>().As<IIsAdfTransferEnabled>().SingleInstance();
             builder.RegisterType<HelperWrapper>().As<IHelperWrapper>().SingleInstance();
             builder.RegisterType<AdlsUploader>().As<IAdlsUploader>().SingleInstance();
 
@@ -111,6 +111,7 @@ namespace Relativity.Sync.Executors
             builder.RegisterType<HttpClientRetryPolicyProvider>().As<IHttpClientRetryPolicyProvider>();
             builder.RegisterType<FmsInstanceSettingsService>().As<IFmsInstanceSettingsService>();
             builder.RegisterType<FmsClient>().As<IFmsClient>();
+            builder.RegisterType<FmsRunner>().As<IFmsRunner>();
 
             RegisterNonDocumentFlowComponents(builder);
         }

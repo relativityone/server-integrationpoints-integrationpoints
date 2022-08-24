@@ -6,9 +6,9 @@ using Relativity.Sync.Toggles.Service;
 
 namespace Relativity.Sync.Transfer.ADLS
 {
-    internal class IsADFTransferEnabled : IIsADFTransferEnabled
+    internal class IsAdfTransferEnabled : IIsAdfTransferEnabled
     {
-        private readonly IADLSMigrationStatus _adlsMigrationStatus;
+        private readonly IAdlsMigrationStatus _adlsMigrationStatus;
         private readonly ISyncToggles _syncToggles;
         private readonly IInstanceSettings _instanceSettings;
         private readonly IDocumentSynchronizationConfiguration _documentSynchronizationConfiguration;
@@ -16,7 +16,7 @@ namespace Relativity.Sync.Transfer.ADLS
 
         private bool? _isAdfTransferEnabled;
 
-        public IsADFTransferEnabled(IADLSMigrationStatus adlsMigrationStatus, ISyncToggles syncToggles, IInstanceSettings instanceSettings, IDocumentSynchronizationConfiguration documentSynchronizationConfiguration, IAPILog logger)
+        public IsAdfTransferEnabled(IAdlsMigrationStatus adlsMigrationStatus, ISyncToggles syncToggles, IInstanceSettings instanceSettings, IDocumentSynchronizationConfiguration documentSynchronizationConfiguration, IAPILog logger)
         {
             _adlsMigrationStatus = adlsMigrationStatus;
             _syncToggles = syncToggles;

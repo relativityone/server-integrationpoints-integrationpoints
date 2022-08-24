@@ -7,5 +7,7 @@ namespace Relativity.Sync.Transfer.FileMovementService
         Task<string> GetKubernetesServicesUrl();
 
         Task<string> GetFileMovementServiceUrl();
+
+        Task<int> GetMonitoringInterval();
     }
 }

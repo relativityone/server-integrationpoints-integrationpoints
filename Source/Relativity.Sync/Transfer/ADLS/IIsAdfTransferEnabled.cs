@@ -1,6 +1,6 @@
 namespace Relativity.Sync.Transfer.ADLS
 {
-    internal interface IIsADFTransferEnabled
+    internal interface IIsAdfTransferEnabled
     {
         bool Value { get; }
     }
