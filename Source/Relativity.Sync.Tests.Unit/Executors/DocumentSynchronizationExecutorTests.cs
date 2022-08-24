@@ -67,10 +67,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IStopwatch> _stopwatchFake;
         private Mock<ISyncMetrics> _syncMetricsMock;
         private Mock<IAdlsUploader> _adlsUploaderFake;
-        private Mock<IIsADFTransferEnabled> _isAdfTransferEnabledMock;
+        private Mock<IIsAdfTransferEnabled> _isAdfTransferEnabledMock;
         private Mock<IInstanceSettings> _instanceSettingsMock;
         private Mock<IFileLocationManager> _fileLocationManagerMock;
-        private Mock<IFmsClient> _fmsClientMock;
+        private Mock<IFmsRunner> _fmsRunnerMock;
 
         private Mock<Sync.Executors.IImportJob> _importJobFake;
         private Mock<ISyncImportBulkArtifactJob> _syncImportBulkArtifactJobFake;
@@ -196,7 +196,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _batchRepositoryMock.Setup(x => x.GetAllSuccessfullyExecutedBatchesAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>()))
                 .ReturnsAsync(Enumerable.Empty<IBatch>());
 
-            _isAdfTransferEnabledMock = new Mock<IIsADFTransferEnabled>();
+            _isAdfTransferEnabledMock = new Mock<IIsAdfTransferEnabled>();
 
             _instanceSettingsMock = new Mock<IInstanceSettings>();
             _instanceSettingsMock.Setup(x => x.GetSyncMaxThreadsCountAsync(It.IsAny<int>())).ReturnsAsync(4);
@@ -205,7 +205,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             documentConfiguration.Setup(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.CopyFiles);
 
             _fileLocationManagerMock = new Mock<IFileLocationManager>();
-            _fmsClientMock = new Mock<IFmsClient>();
+            _fmsRunnerMock = new Mock<IFmsRunner>();
 
             _sut = new DocumentSynchronizationExecutor(
                 _importJobFactoryFake.Object,
@@ -223,7 +223,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 _adlsUploaderFake.Object,
                 _isAdfTransferEnabledMock.Object,
                 _fileLocationManagerMock.Object,
-                _fmsClientMock.Object,
+                _fmsRunnerMock.Object,
                 new EmptyLogger());
         }
 
@@ -1216,6 +1216,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private List<FmsBatchInfo> CreateStoredLocations()
         {
             List<FmsBatchInfo> storageLocations = new List<FmsBatchInfo>();
+            Guid correlationId = Guid.NewGuid();
 
             for (int i = 0; i < 10; i++)
             {
@@ -1233,7 +1234,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
                         {
                             { i, new NativeFilePathStructure($@"/path/1/2/3/4/{i}/") }
                         },
-                        $@"//path_{i}")
+                        $@"//path_{i}",
+                        correlationId)
                     {
                         Files = files,
                     });

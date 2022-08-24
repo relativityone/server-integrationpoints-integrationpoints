@@ -22,11 +22,11 @@ namespace Relativity.Sync.Transfer
 
         public string UploadedBatchFilePath { get; set; }
 
-        internal FmsBatchInfo(int destinationWorkspaceArtifactId, IDictionary<int, NativeFilePathStructure> filePaths, string sourceDirectoryPath)
+        internal FmsBatchInfo(int destinationWorkspaceArtifactId, IDictionary<int, NativeFilePathStructure> filePaths, string sourceDirectoryPath, Guid correlationId)
         {
             _serverName = filePaths.Select(x => x.Value.ServerPath).First();
             _destinationWorkspaceArtifactId = destinationWorkspaceArtifactId;
-            TraceId = Guid.NewGuid();
+            TraceId = correlationId;
             SourceLocationShortPath = CreateShortLocationSourcePath(sourceDirectoryPath);
             PrepareListOfFiles(filePaths);
         }

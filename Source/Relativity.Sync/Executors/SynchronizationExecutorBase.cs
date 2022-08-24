@@ -42,7 +42,7 @@ namespace Relativity.Sync.Executors
             ISyncMetrics syncMetrics,
             IUserContextConfiguration userContextConfiguration,
             IAdlsUploader adlsUploader,
-            IIsADFTransferEnabled isAdfTransferEnabled,
+            IIsAdfTransferEnabled isAdfTransferEnabled,
             IFileLocationManager fileLocationManager,
             IAPILog logger)
         {
@@ -74,7 +74,7 @@ namespace Relativity.Sync.Executors
 
         protected IAPILog Logger { get; }
 
-        protected IIsADFTransferEnabled IsAdfTransferEnabled { get; }
+        protected IIsAdfTransferEnabled IsAdfTransferEnabled { get; }
 
         protected IAdlsUploader AdlsUploader { get; }
 
@@ -155,9 +155,9 @@ namespace Relativity.Sync.Executors
             return Task.FromResult(new List<FmsBatchInfo>());
         }
 
-        protected virtual Task<List<CopyListOfFilesResponse>> StartFmsTransfer(List<FmsBatchInfo> fmsBatches, CancellationToken cancellationToken)
+        protected virtual Task<List<FmsBatchStatusInfo>> PerformFmsTransfer(List<FmsBatchInfo> fmsBatches, CancellationToken cancellationToken)
         {
-            return Task.FromResult(new List<CopyListOfFilesResponse>());
+            return Task.FromResult(new List<FmsBatchStatusInfo>());
         }
 
         protected int GetDestinationIdentityFieldId()
@@ -262,7 +262,7 @@ namespace Relativity.Sync.Executors
                                     importApiTimer.Stop();
 
                                     fmsBatches = await UploadBatchFilesToAdlsAsync(token, importJob).ConfigureAwait(false);
-                                    await StartFmsTransfer(fmsBatches, token.AnyReasonCancellationToken).ConfigureAwait(false);
+                                    await PerformFmsTransfer(fmsBatches, token.AnyReasonCancellationToken).ConfigureAwait(false);
 
                                     TaggingExecutionResult taggingResult = await TagObjectsAsync(importJob, configuration, token).ConfigureAwait(false);
                                     int documentsTaggedCount = taggingResult.TaggedDocumentsCount;

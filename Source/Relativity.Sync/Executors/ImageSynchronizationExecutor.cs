@@ -32,7 +32,7 @@ namespace Relativity.Sync.Executors
             IDocumentTagger documentTagger,
             IAdlsUploader uploader,
             IUserContextConfiguration userContextConfiguration,
-            IIsADFTransferEnabled isAdfTransferEnabled,
+            IIsAdfTransferEnabled isAdfTransferEnabled,
             IFileLocationManager fileLocationManager,
             IAPILog logger)
             : base(

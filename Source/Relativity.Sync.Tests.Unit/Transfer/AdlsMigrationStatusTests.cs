@@ -15,13 +15,13 @@ using Relativity.Sync.Transfer.ADLS;
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
     [TestFixture]
-    internal class ADLSMigrationStatusTests
+    internal class AdlsMigrationStatusTests
     {
         private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdminMock;
         private Mock<IHelperWrapper> _helperFactoryMock;
         private Mock<IAPILog> _loggerMock;
         private Mock<IFileShareServerManager> _fileShareServerManagerMock;
-        private ADLSMigrationStatus _sut;
+        private AdlsMigrationStatus _sut;
         private string _fileshare1Name = @"\\files.t035.ctus014128.r1.kcura.com\T035\Files\";
         private string _fileshare1UNC = @"\\files.t035.ctus014128.r1.kcura.com\T035\Files\";
         private string _fileshare2Name = @"\\files2.t035.ctus014128.r1.kcura.com\T035\Files\";
@@ -79,7 +79,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             _helperFactoryMock.Setup(x =>
                 x.GetStorageEndpointsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(resultFromBedrock);
 
-            _sut = new ADLSMigrationStatus(_serviceFactoryForAdminMock.Object, _helperFactoryMock.Object,
+            _sut = new AdlsMigrationStatus(_serviceFactoryForAdminMock.Object, _helperFactoryMock.Object,
                 _loggerMock.Object);
         }
 
