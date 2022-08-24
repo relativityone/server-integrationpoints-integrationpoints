@@ -1,4 +1,5 @@
-﻿using Relativity.Toggles;
+﻿using System;
+using Relativity.Toggles;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -32,7 +33,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 
         public bool IsEnabledByName(string toggleName)
         {
-            throw new System.NotImplementedException();
+            switch (toggleName)
+            {
+                case "Relativity.Sync.Toggles.EnableJobHistoryStatusUpdateToggle":
+                    return false;
+                default:
+                    throw new NotSupportedException();
+            }
         }
 
         public Task<bool> IsEnabledByNameAsync(string toggleName)

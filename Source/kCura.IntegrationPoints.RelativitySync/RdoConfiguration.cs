@@ -1,9 +1,5 @@
-using System;
 using kCura.IntegrationPoints.Data;
-using Relativity.Sync.Configuration;
-using Relativity.Sync.Storage.RdoGuidsProviders;
 using Relativity.Sync.SyncConfiguration.Options;
-using Constants = Relativity.Production.Constants;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
@@ -12,10 +8,26 @@ namespace kCura.IntegrationPoints.RelativitySync
         public static RdoOptions GetRdoOptions() => new RdoOptions(
             new JobHistoryOptions(
                 ObjectTypeGuids.JobHistoryGuid,
+                JobHistoryFieldGuids.JobIDGuid,
+                JobHistoryFieldGuids.JobStatusGuid,
                 JobHistoryFieldGuids.ItemsTransferredGuid,
                 JobHistoryFieldGuids.ItemsWithErrorsGuid,
                 JobHistoryFieldGuids.TotalItemsGuid,
-                JobHistoryFieldGuids.DestinationWorkspaceInformationGuid
+                JobHistoryFieldGuids.DestinationWorkspaceInformationGuid,
+                JobHistoryFieldGuids.StartTimeUTCGuid,
+                JobHistoryFieldGuids.EndTimeUTCGuid
+            ),
+            new JobHistoryStatusOptions(
+                JobStatusChoices.JobHistoryValidatingGuid,
+                JobStatusChoices.JobHistoryValidationFailedGuid,
+                JobStatusChoices.JobHistoryProcessingGuid,
+                JobStatusChoices.JobHistoryCompletedGuid,
+                JobStatusChoices.JobHistoryCompletedWithErrorsGuid,
+                JobStatusChoices.JobHistoryErrorJobFailedGuid,
+                JobStatusChoices.JobHistoryStoppingGuid,
+                JobStatusChoices.JobHistoryStoppedGuid,
+                JobStatusChoices.JobHistorySuspendingGuid,
+                JobStatusChoices.JobHistorySuspendedGuid
             ),
             new JobHistoryErrorOptions(
                 ObjectTypeGuids.JobHistoryErrorGuid,
@@ -40,7 +52,7 @@ namespace kCura.IntegrationPoints.RelativitySync
                 DestinationWorkspaceFieldGuids.DestinationInstanceArtifactIDGuid,
                 DocumentFieldGuids.JobHistoryGuid,
                 DocumentFieldGuids.RelativityDestinationCaseGuid
-                )
+            )
         );
     }
 }

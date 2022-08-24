@@ -46,16 +46,15 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
 
         public override void AssertIntegrationPointSummaryPageGeneralTab(IntegrationPointViewPage integrationPointViewPage)
         {
-            #region 1st column
-            integrationPointViewPage.SummaryPageGeneralTab.Name.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.Overwrite.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.ExportType.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.SourceDetails.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.SourceWorkspace.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.SourceRelativityInstance.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.TransferedObject.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.DestinationWorkspace.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.MultiSelectOverlay.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.Name.ExpectTo.BeVisibleWithRetries(3);
+            integrationPointViewPage.SummaryPageGeneralTab.Overwrite.ExpectTo.BeVisibleWithRetries();
+            integrationPointViewPage.SummaryPageGeneralTab.ExportType.ExpectTo.BeVisibleWithRetries();
+            integrationPointViewPage.SummaryPageGeneralTab.SourceDetails.ExpectTo.BeVisibleWithRetries();
+            integrationPointViewPage.SummaryPageGeneralTab.SourceWorkspace.ExpectTo.BeVisibleWithRetries();
+            integrationPointViewPage.SummaryPageGeneralTab.SourceRelativityInstance.ExpectTo.BeVisibleWithRetries();
+            integrationPointViewPage.SummaryPageGeneralTab.TransferedObject.ExpectTo.BeVisibleWithRetries();
+            integrationPointViewPage.SummaryPageGeneralTab.DestinationWorkspace.ExpectTo.BeVisibleWithRetries();
+            integrationPointViewPage.SummaryPageGeneralTab.MultiSelectOverlay.ExpectTo.BeVisibleWithRetries();
 
             integrationPointViewPage.GetName().ShouldBeEquivalentTo(IntegrationPointName);
             integrationPointViewPage.GetOverwriteMode().ShouldBeEquivalentTo(RelativityProviderOverwrite.AppendOnly);
@@ -67,19 +66,13 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
             integrationPointViewPage.GetDestinationWorkspaceName().ShouldBeEquivalentTo(DestinationWorkspace.Name);
             integrationPointViewPage.GetMultiSelectOverlayMode().ShouldBeEquivalentTo(FieldOverlayBehavior.UseFieldSettings);
 
-            #endregion
-
-            #region 2nd column
-
-            integrationPointViewPage.SummaryPageGeneralTab.LogErrors.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.HasErrors.ExpectTo.BeVisible();
-            integrationPointViewPage.SummaryPageGeneralTab.EmailNotificationRecipients.ExpectTo.BeVisible();
+            integrationPointViewPage.SummaryPageGeneralTab.LogErrors.ExpectTo.BeVisibleWithRetries();
+            integrationPointViewPage.SummaryPageGeneralTab.HasErrors.ExpectTo.BeVisibleWithRetries();
+            integrationPointViewPage.SummaryPageGeneralTab.EmailNotificationRecipients.ExpectTo.BeVisibleWithRetries();
 
             integrationPointViewPage.GetLogErrors().ShouldBeEquivalentTo(YesNo.Yes);
             integrationPointViewPage.GetHasErrors().ShouldBeEquivalentTo(YesNo.No);
             integrationPointViewPage.GetEmailNotificationRecipients().Should().BeNullOrEmpty();
-
-            #endregion
         }
 
         public override void AssertIntegrationPointJobHistory(IntegrationPointViewPage integrationPointViewPage)
@@ -119,18 +112,21 @@ namespace Relativity.IntegrationPoints.Tests.Functional.TestsImplementations
                 IReadOnlyList<IReadOnlyList<object>> values = Enumerable
                     .Range(1, count)
                     .Select(i => new List<object>()
-                    {
-                        $"Employee {i}",
-                        $"employee-{i}@company.com"
-                    })
-                    .ToList();
+                {
+                    $"Employee {i}",
+                    $"employee-{i}@company.com"
+                })
+                .ToList();
 
-                MassCreateResult massCreateResult = await objectManager.CreateAsync(TestsImplementationTestFixture.Workspace.ArtifactID, new MassCreateRequest()
+                MassCreateResult massCreateResult = await objectManager.CreateAsync(
+                TestsImplementationTestFixture.Workspace.ArtifactID,
+                new MassCreateRequest
                 {
                     ObjectType = entityObjectType,
                     Fields = fields,
                     ValueLists = values
-                }, CancellationToken.None).ConfigureAwait(false);
+                },
+                CancellationToken.None).ConfigureAwait(false);
 
                 if (!massCreateResult.Success)
                 {

@@ -6,6 +6,7 @@ using System.Linq;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
@@ -29,8 +30,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         private readonly IEntityManagerLinksSanitizer _entityManagerLinksSanitizer;
 
         public RdoEntitySynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory,
-            IImportJobFactory jobFactory, IHelper helper, IEntityManagerLinksSanitizer entityManagerLinksSanitizer)
-            : base(fieldQuery, factory, jobFactory, helper)
+            IImportJobFactory jobFactory, IHelper helper, IEntityManagerLinksSanitizer entityManagerLinksSanitizer, IDiagnosticLog diagnosticLog)
+            : base(fieldQuery, factory, jobFactory, helper, diagnosticLog)
         {
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoEntitySynchronizer>();
             _entityManagerLinksSanitizer = entityManagerLinksSanitizer;

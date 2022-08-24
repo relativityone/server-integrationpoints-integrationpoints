@@ -12,14 +12,12 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
             _helper = helper;
             WorkspaceID = workspaceId;
         }
-        
+
         public int WorkspaceID { get; }
 
         public int GetEddsUserID() => _helper.GetAuthenticationManager().UserInfo.ArtifactID;
 
         public int GetWorkspaceUserID() => _helper.GetAuthenticationManager().UserInfo.WorkspaceUserArtifactID;
-
-        public IDBContext GetDBContext() => _helper.GetDBContext(this.WorkspaceID);
 
         public IRelativityObjectManagerService GetRelativityObjectManagerService()
         {

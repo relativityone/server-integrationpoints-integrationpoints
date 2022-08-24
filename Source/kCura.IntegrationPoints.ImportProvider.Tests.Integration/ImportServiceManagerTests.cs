@@ -34,6 +34,7 @@ using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Core.Contracts.Import;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Core.Logging;
 using Relativity.AutomatedWorkflows.SDK;
 using kCura.IntegrationPoints.Domain.Logging;
 
@@ -66,6 +67,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 
             //Substitutes
             IHelper helper = Substitute.For<IHelper>();
+            IDiagnosticLog diagnosticLog = Substitute.For<IDiagnosticLog>();
             ICaseServiceContext caseServiceContext = Substitute.For<ICaseServiceContext>();
             ISynchronizerFactory synchronizerFactory = Substitute.For<ISynchronizerFactory>();
             IManagerFactory managerFactory = Substitute.For<IManagerFactory>();
@@ -93,7 +95,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
             TestRdoSynchronizer synchronizer = new TestRdoSynchronizer(_windsorContainer.Resolve<IRelativityFieldQuery>(),
                 _windsorContainer.Resolve<IImportApiFactory>(),
                 _windsorContainer.Resolve<IImportJobFactory>(),
-                helper, SharedVariables.RelativityWebApiUrl, true, true);
+                helper,diagnosticLog, SharedVariables.RelativityWebApiUrl, true, true);
             synchronizerFactory.CreateSynchronizer(Arg.Any<Guid>(), Arg.Any<string>()).Returns(synchronizer);
 
             //RSAPI
@@ -172,7 +174,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
                 jobStatusUpdater,
                 automatedWorkflowsManager,
                 jobTrackerFake,
-                null);
+                new EmptyDiagnosticLog());
         }
 
         public override void TestTeardown()

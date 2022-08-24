@@ -25,11 +25,6 @@ namespace kCura.IntegrationPoints.Config
         int BatchSize { get; }
 
         /// <summary>
-        /// Timeout for Relativity Web API.
-        /// </summary>
-        TimeSpan? RelativityWebApiTimeout { get; }
-
-        /// <summary>
         /// Throttling value for metrics
         /// </summary>
         TimeSpan MetricsThrottling { get; }
@@ -72,7 +67,7 @@ namespace kCura.IntegrationPoints.Config
         /// Gets time threshold for long running jobs
         /// </summary>
         TimeSpan RunningJobTimeThreshold { get; }
-        
+
         /// Gets Timeout for Transient State RIP Jobs
         /// </summary>
         TimeSpan TransientStateJobTimeout { get; }

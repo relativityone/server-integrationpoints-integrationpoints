@@ -36,6 +36,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         private string _webApiPath;
         private readonly IAPILog _logger;
         private readonly IHelper _helper;
+        private readonly IDiagnosticLog _diagnosticLog;
         private readonly IImportApiFactory _factory;
         private readonly IImportJobFactory _jobFactory;
 
@@ -115,12 +116,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         public event RowError OnDocumentError;
 
-        public RdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper)
+        public RdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper, IDiagnosticLog diagnosticLog)
         {
             FieldQuery = fieldQuery;
             _factory = factory;
             _jobFactory = jobFactory;
             _helper = helper;
+            _diagnosticLog = diagnosticLog;
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoSynchronizer>();
         }
 
@@ -176,8 +178,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                     _logger.LogInformation("Data processing loop is starting");
                     int addedRows = 0;
                     int skippedRows = 0;
-                    foreach(var row in data)
+                    _diagnosticLog.LogDiagnostic("Collection typeOf: {dataType}", data.GetType());
+                    foreach (var row in data)
                     {
+                        _diagnosticLog.LogDiagnostic("In for each loop: {addedRows}, {skippedRows}, {totalRows}", addedRows, skippedRows, addedRows + skippedRows);
                         try
                         {
                             Dictionary<string, object> importRow = GenerateImportRow(row, fieldMap, ImportSettings);
@@ -187,7 +191,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                                 ++addedRows;
                             }
                             else
+                            {
                                 ++skippedRows;
+                            }
                         }
                         catch (ProviderReadDataException exception)
                         {
@@ -200,6 +206,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                             ItemError(string.Empty, ex.Message);
                         }
                     }
+
                     _logger.LogInformation("Data processing loop ended. Rows added: {0}, rows skipped: {1}", addedRows, skippedRows);
 
                     if (!jobStopManager?.ShouldDrainStop ?? true)

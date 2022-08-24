@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Authentication;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
 using Newtonsoft.Json;
@@ -21,6 +22,7 @@ namespace kCura.IntegrationPoint.Tests.Core
         public static void ImportNewDocuments(int workspaceId, DataTable importTable, FieldMap[] additionalFieldMaps = null)
         {
             IAPILog logger = Substitute.For<IAPILog>();
+            IDiagnosticLog diagnosticLog = Substitute.For<IDiagnosticLog>();
             ISystemEventLoggingService systemEventLoggingService = Substitute.For<ISystemEventLoggingService>();
 
             IAuthTokenGenerator authTokenGenerator = new ClaimsTokenGenerator();
@@ -46,7 +48,7 @@ namespace kCura.IntegrationPoint.Tests.Core
             IHelper helper = Substitute.For<IHelper>();
             IRelativityFieldQuery relativityFieldQuery = Substitute.For<IRelativityFieldQuery>();
 
-            var rdoSynchronizer = new RdoSynchronizer(relativityFieldQuery, factory, jobFactory, helper);
+            var rdoSynchronizer = new RdoSynchronizer(relativityFieldQuery, factory, jobFactory, helper, diagnosticLog);
 
             var mapIdentifier = new FieldMap
             {

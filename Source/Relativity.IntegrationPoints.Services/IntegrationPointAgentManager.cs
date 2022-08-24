@@ -24,6 +24,7 @@ namespace Relativity.IntegrationPoints.Services
 
         private static string _METRIC_NAME = "IntegrationPoints.Performance.System";
 
+        //Agent default container count based on Workload Discovery t-shirt response. Notes: 1. Global default (S:2, M:4, L:8, XL:12, XXL:16)
         private readonly List<WorkloadSizeDefinition> _workloadSizeDefaultSettings = new List<WorkloadSizeDefinition>()
         {
             new WorkloadSizeDefinition(minJobsCount: 0, maxJobsCount: 0, workloadSize: WorkloadSize.None),

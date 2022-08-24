@@ -1,17 +1,18 @@
-﻿using Castle.MicroKernel.Registration;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Castle.MicroKernel.Registration;
 using FluentAssertions;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services.EntityManager;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
+using NUnit.Framework;
+using Relativity.IntegrationPoints.Tests.Common.LDAP.TestData;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Relativity.IntegrationPoints.Tests.Common.LDAP.TestData;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 {
@@ -133,10 +134,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             FakeAgent drainStoppedAgent = FakeAgent.Create(FakeRelativityInstance, Container, false);
 
             Queue<FakeJobImport> importJobsQueue = new Queue<FakeJobImport>();
-            
+
             // SyncWorker for Entities
             importJobsQueue.Enqueue(new FakeJobImport(ImportEntity));
-            
+
             // SyncEntityManagerWorker (linking managers)
             importJobsQueue.Enqueue(new FakeJobImport(importJob =>
             {
@@ -255,7 +256,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
         {
             var managementTestData = new ManagementTestData();
 
-            foreach(var data in managementTestData.Data)
+            foreach (var data in managementTestData.Data)
             {
                 SourceWorkspace.Entities.Add(new EntityTest
                 {

@@ -12,6 +12,8 @@ namespace kCura.IntegrationPoints.Agent.Monitoring
             _instanceSettings = instanceSettings;
         }
 
+        public TimeSpan TimerStartDelay => TimeSpan.Zero;
+
         public TimeSpan MemoryUsageInterval => TimeSpan.FromSeconds(30);
 
         public TimeSpan HeartbeatInterval => TimeSpan.FromMinutes(5);

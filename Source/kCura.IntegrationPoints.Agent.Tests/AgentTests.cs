@@ -1,33 +1,33 @@
-﻿using Castle.MicroKernel.Registration;
+﻿using System;
+using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Context;
 using kCura.IntegrationPoints.Agent.Interfaces;
+using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
+using kCura.IntegrationPoints.Agent.TaskFactory;
+using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
+using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Moq;
+using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Choice;
-using System;
-using FluentAssertions;
-using kCura.IntegrationPoints.Common.Helpers;
-using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
-using kCura.ScheduleQueue.AgentBase;
-using NSubstitute;
-using Relativity.API;
-using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
-using kCura.IntegrationPoints.Agent.TaskFactory;
-using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.Agent.Tests
 {
@@ -106,10 +106,10 @@ namespace kCura.IntegrationPoints.Agent.Tests
             sut.ProcessJob_Test(job);
 
             // Assert
-            _memoryUsageReporter.Verify(x => x.ActivateTimer( 
-                It.IsAny<long>(), 
-                It.IsAny<string>(), 
-                It.Is<string>(jobType => jobType =="ExportService")), Times.Once);
+            _memoryUsageReporter.Verify(x => x.ActivateTimer(
+                It.IsAny<long>(),
+                It.IsAny<string>(),
+                It.Is<string>(jobType => jobType == "ExportService")), Times.Once);
         }
 
         [Test]
@@ -137,10 +137,10 @@ namespace kCura.IntegrationPoints.Agent.Tests
             _kubernetesModeMock.Setup(x => x.IsEnabled()).Returns(true);
             TestAgent sut = PrepareSut();
             sut.DidWork = true;
-            
+
             // Act
             sut.Execute();
-            
+
             // Assert
             _loggerMock.Verify(x => x.LogInformation("Attempting to initialize Config Settings factory in {TypeName}",
                 nameof(ScheduleQueueAgentBase)), Times.Never);
@@ -198,7 +198,6 @@ namespace kCura.IntegrationPoints.Agent.Tests
                 });
 
             Mock<IConfig> config = new Mock<IConfig>();
-            config.SetupGet(x => x.RelativityWebApiTimeout).Returns((TimeSpan?)null);
 
             Mock<IRelativitySyncConstrainsChecker> relativitySyncConstrainsChecker = new Mock<IRelativitySyncConstrainsChecker>();
             relativitySyncConstrainsChecker.Setup(x => x.ShouldUseRelativitySync(It.IsAny<Job>())).Returns(false);
@@ -236,7 +235,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
             return new TestAgent(_container, _loggerMock, _kubernetesModeMock.Object);
         }
 
-        private void RegisterMock<T>(Mock<T> mock) where T: class
+        private void RegisterMock<T>(Mock<T> mock) where T : class
         {
             _container.Register(Component.For<T>().Instance(mock.Object));
         }
@@ -254,13 +253,11 @@ namespace kCura.IntegrationPoints.Agent.Tests
         {
             private readonly Mock<IAPILog> _logMock;
 
-            public IWindsorContainer Container { get; }
-
-            public TestAgent(IWindsorContainer container, Mock<IAPILog> logger, IKubernetesMode kubernetesMode) 
+            public TestAgent(IWindsorContainer container, Mock<IAPILog> logger, IKubernetesMode kubernetesMode)
                 : base(Guid.Empty, kubernetesMode: kubernetesMode, dateTime: new DateTimeWrapper(), jobService: Substitute.For<IJobService>())
             {
                 Container = container;
-                
+
                 JobExecutor = Container.Resolve<IJobExecutor>();
 
                 _logMock = logger;
