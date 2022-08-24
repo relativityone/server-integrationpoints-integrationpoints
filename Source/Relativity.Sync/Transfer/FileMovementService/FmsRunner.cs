@@ -18,7 +18,7 @@ namespace Relativity.Sync.Transfer.FileMovementService
         private readonly IFmsInstanceSettingsService _fmsInstanceSettingsService;
         private readonly IAPILog _logger;
 
-        private static readonly string[] activeBatchStatuses =
+        private static readonly string[] _activeBatchStatuses =
         {
             SubmittedStatusName,
             RunStatuses.Queued,
@@ -79,7 +79,6 @@ namespace Relativity.Sync.Transfer.FileMovementService
                 {
                     _logger.LogInformation("Found {count} active fms batches. Checking their states.", activeBatches.Count);
 
-                    cancellationToken.ThrowIfCancellationRequested();
                     await UpdateBatchStatusesAsync(activeBatches, cancellationToken).ConfigureAwait(false);
                     await Task.Delay(TimeSpan.FromSeconds(intervalSeconds), cancellationToken).ConfigureAwait(false);
                     activeBatches = GetActiveBatches(batches);
@@ -122,7 +121,7 @@ namespace Relativity.Sync.Transfer.FileMovementService
         private static List<FmsBatchStatusInfo> GetActiveBatches(List<FmsBatchStatusInfo> batches)
         {
             return batches
-                .Where(b => b.Status.IsIn(StringComparison.InvariantCultureIgnoreCase, activeBatchStatuses))
+                .Where(b => b.Status.IsIn(StringComparison.InvariantCultureIgnoreCase, _activeBatchStatuses))
                 .ToList();
         }
 

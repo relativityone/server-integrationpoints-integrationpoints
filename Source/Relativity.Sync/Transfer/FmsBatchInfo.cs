@@ -13,6 +13,8 @@ namespace Relativity.Sync.Transfer
 
         public List<FmsDocument> Files { get; internal set; }
 
+        public Guid BatchId { get; }
+
         public Guid TraceId { get; }
 
         public string SourceLocationShortPath { get; }
@@ -23,10 +25,11 @@ namespace Relativity.Sync.Transfer
 
         internal FmsBatchInfo(int destinationWorkspaceArtifactId, IDictionary<int, NativeFilePathStructure> filePaths, string sourceDirectoryPath, Guid correlationId)
         {
+            BatchId = Guid.NewGuid();
             _serverName = filePaths.Select(x => x.Value.ServerPath).First();
             TraceId = correlationId;
             SourceLocationShortPath = CreateShortLocationSourcePath(sourceDirectoryPath);
-            DestinationLocationShortPath = $@"Files/EDDS{destinationWorkspaceArtifactId}/RV_{Guid.NewGuid()}";
+            DestinationLocationShortPath = $@"Files/EDDS{destinationWorkspaceArtifactId}/RV_{BatchId}";
             PrepareListOfFiles(filePaths);
         }
 
