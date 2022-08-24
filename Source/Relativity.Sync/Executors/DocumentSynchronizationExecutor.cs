@@ -19,7 +19,7 @@ namespace Relativity.Sync.Executors
     internal class DocumentSynchronizationExecutor : SynchronizationExecutorBase<IDocumentSynchronizationConfiguration>
     {
         private readonly IDocumentTagger _documentTagger;
-        private readonly IFmsClient _fmsClient;
+        private readonly IFmsRunner _fmsRunner;
 
         public DocumentSynchronizationExecutor(
             IImportJobFactory importJobFactory,
@@ -35,9 +35,9 @@ namespace Relativity.Sync.Executors
             IDocumentTagger documentTagger,
             IUserContextConfiguration userContextConfiguration,
             IAdlsUploader uploader,
-            IIsADFTransferEnabled isAdfTransferEnabled,
+            IIsAdfTransferEnabled isAdfTransferEnabled,
             IFileLocationManager fileLocationManager,
-            IFmsClient fmsClient,
+            IFmsRunner fmsRunner,
             IAPILog logger) : base(
             importJobFactory,
             BatchRecordType.Documents,
@@ -57,7 +57,7 @@ namespace Relativity.Sync.Executors
             logger)
         {
             _documentTagger = documentTagger;
-            _fmsClient = fmsClient;
+            _fmsRunner = fmsRunner;
         }
 
         protected override Task<IImportJob> CreateImportJobAsync(IDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
@@ -181,29 +181,13 @@ namespace Relativity.Sync.Executors
             return null;
         }
 
-        protected override async Task<List<CopyListOfFilesResponse>> StartFmsTransfer(List<FmsBatchInfo> fmsBatches, CancellationToken cancellationToken)
+        protected override async Task PerformFmsTransfer(List<FmsBatchInfo> fmsBatches, CancellationToken cancellationToken)
         {
             if (IsAdfTransferEnabled.Value)
             {
-                IEnumerable<CopyListOfFilesRequest> requests = fmsBatches
-                    .Select(batch => new CopyListOfFilesRequest
-                    {
-                        TraceId = batch.TraceId,
-                        DestinationPath = batch.DestinationLocationShortPath,
-                        SourcePath = batch.SourceLocationShortPath,
-                        PathToListOfFiles = batch.UploadedBatchFilePath,
-                    });
-
-                IEnumerable<Task<CopyListOfFilesResponse>> tasks = requests
-                    .Select(r => _fmsClient.CopyListOfFilesAsync(r, cancellationToken))
-                    .ToList();
-
-                Parallel.ForEach(tasks, t => t.Start());
-                var responses = await Task.WhenAll(tasks).ConfigureAwait(false);
-                return responses.ToList();
+                List<FmsBatchStatusInfo> statusInfoList = await _fmsRunner.RunAsync(fmsBatches, cancellationToken);
+                await _fmsRunner.MonitorAsync(statusInfoList, cancellationToken);
             }
-
-            return null;
         }
 
         private async Task<List<FmsBatchInfo>> GetSuccessfullyPushedDocumentsAsync(IImportJob importJob)

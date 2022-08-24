@@ -27,7 +27,7 @@ namespace Relativity.Sync.Executors
         private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
         private readonly SyncJobParameters _syncJobParameters;
         private readonly IFieldMappings _fieldMappings;
-        private readonly IIsADFTransferEnabled _isAdfTransferEnabled;
+        private readonly IIsAdfTransferEnabled _isAdfTransferEnabled;
         private readonly IAntiMalwareEventHelper _antiMalwareEventHelper;
         private readonly ISyncToggles _syncToggles;
         private readonly IAPILog _logger;
@@ -39,7 +39,7 @@ namespace Relativity.Sync.Executors
             IInstanceSettings instanceSettings,
             SyncJobParameters syncJobParameters,
             IFieldMappings fieldMappings,
-            IIsADFTransferEnabled isAdfTransferEnabled,
+            IIsAdfTransferEnabled isAdfTransferEnabled,
             IAntiMalwareEventHelper antiMalwareEventHelper,
             ISyncToggles syncToggles,
             IAPILog logger)

@@ -42,7 +42,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             result.Count.Should().Be(expectedNumberOfFmsBatches);
             result.Should().OnlyHaveUniqueItems(x => x.SourceLocationShortPath);
             result.Should().OnlyHaveUniqueItems(x => x.DestinationLocationShortPath);
-            result.Should().OnlyHaveUniqueItems(x => x.TraceId);
+            result.Select(x => x.TraceId).Distinct().Count().Should().Be(1);
         }
 
         [Test]
@@ -63,13 +63,16 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             IList<FmsBatchInfo> result = _sut.GetStoredLocations();
 
             // Assert
-            string expectedDestinationShortPath = $@"Files/EDDS{_DESTINATION_WORKSPACE_ARTIFACT_ID}/RV_{result.Select(x => x.TraceId).First()}";
+            result.Count.Should().Be(1);
+            FmsBatchInfo singleBatch = result.Single();
+
+            string expectedDestinationShortPath = $@"Files/EDDS{_DESTINATION_WORKSPACE_ARTIFACT_ID}/RV_{result.Select(x => x.BatchId).First()}";
             string expectedLinkForIAPI = $@"{_EXAMPLE_SERVER_PATH}\{expectedDestinationShortPath}\5dcd0d81-13f0-4194-9a11-4a56c0fd8159".Replace("/", @"\");
 
-            result.Should().ContainSingle(x => x.SourceLocationShortPath == expectedSourceShortPath);
-            result.Should().ContainSingle(x => x.DestinationLocationShortPath == $"{expectedDestinationShortPath}");
-            result.Select(x => x.Files).First().Count.Should().Be(expectedNumberOfFilesWithinBatch);
-            result.Select(x => x.Files).First().First().LinkForIAPI.Should().Be(expectedLinkForIAPI);
+            singleBatch.SourceLocationShortPath.Should().Be(expectedSourceShortPath);
+            singleBatch.DestinationLocationShortPath.Should().StartWith(expectedDestinationShortPath);
+            singleBatch.Files.Count.Should().Be(expectedNumberOfFilesWithinBatch);
+            singleBatch.Files.First().LinkForIAPI.Should().Be(expectedLinkForIAPI);
 
             testInput.First().Value.Location.Should().Be(expectedLinkForIAPI);
         }

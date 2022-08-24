@@ -26,9 +26,14 @@ namespace Relativity.Sync.Transfer
                 IDictionary<int, NativeFilePathStructure> pathStructures = GetNativeFilesPathStructure(nativeFiles);
 
                 var commonSourcePathGroups = pathStructures.GroupBy(x => x.Value.FullDirectoryPath);
+                Guid correlationId = Guid.NewGuid();
                 foreach (var filePathComponents in commonSourcePathGroups)
                 {
-                    FmsBatchInfo batchInfo = new FmsBatchInfo(_configuration.DestinationWorkspaceArtifactId, filePathComponents.ToDictionary(x => x.Key, x => x.Value), filePathComponents.Key);
+                    FmsBatchInfo batchInfo = new FmsBatchInfo(
+                        _configuration.DestinationWorkspaceArtifactId,
+                        filePathComponents.ToDictionary(x => x.Key, x => x.Value),
+                        filePathComponents.Key,
+                        correlationId);
                     _fmsBatchesStorage.Add(batchInfo);
 
                     SetNewPathForIapiTransfer(batchInfo, nativeFiles);
