@@ -155,9 +155,9 @@ namespace Relativity.Sync.Executors
             return Task.FromResult(new List<FmsBatchInfo>());
         }
 
-        protected virtual Task<List<FmsBatchStatusInfo>> PerformFmsTransfer(List<FmsBatchInfo> fmsBatches, CancellationToken cancellationToken)
+        protected virtual Task PerformFmsTransfer(List<FmsBatchInfo> fmsBatches, CancellationToken cancellationToken)
         {
-            return Task.FromResult(new List<FmsBatchStatusInfo>());
+            return Task.CompletedTask;
         }
 
         protected int GetDestinationIdentityFieldId()

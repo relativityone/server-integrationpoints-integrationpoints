@@ -35,9 +35,10 @@ namespace Relativity.Sync.Transfer.FileMovementService
 
         public async Task<List<FmsBatchStatusInfo>> RunAsync(List<FmsBatchInfo> batches, CancellationToken cancellationToken)
         {
+            Guid batchesTraceId = batches.FirstOrDefault()?.TraceId ?? Guid.Empty;
             try
             {
-                _logger.LogInformation("Starting transfer of {count} fms batches.", batches.Count);
+                _logger.LogInformation("Starting transfer of {count} fms batches. TraceId: {traceId}", batches.Count, batchesTraceId);
 
                 IEnumerable<CopyListOfFilesRequest> requests = batches
                     .Select(batch => new CopyListOfFilesRequest
@@ -55,40 +56,41 @@ namespace Relativity.Sync.Transfer.FileMovementService
                 Parallel.ForEach(tasks, t => t.Start());
                 CopyListOfFilesResponse[] responses = await Task.WhenAll(tasks).ConfigureAwait(false);
 
-                _logger.LogInformation("Transfer of {count} fms batches started.", batches.Count);
+                _logger.LogInformation("Transfer of {count} fms batches started. TraceId: {traceId}", batches.Count, batchesTraceId);
 
                 return responses.Select(ConvertToStatusInfo).ToList();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error during running fms batches.");
+                _logger.LogError(ex, "Error during running fms batches. TraceId: {traceId}", batchesTraceId);
                 throw;
             }
         }
 
         public async Task MonitorAsync(List<FmsBatchStatusInfo> batches, CancellationToken cancellationToken)
         {
+            Guid batchesTraceId = batches.FirstOrDefault()?.TraceId ?? Guid.Empty;
             try
             {
-                _logger.LogInformation("Start monitoring of {count} fms batches.", batches.Count);
+                _logger.LogInformation("Start monitoring of {count} fms batches. TraceId: {traceId}", batches, batchesTraceId);
 
                 int intervalSeconds = await _fmsInstanceSettingsService.GetMonitoringInterval().ConfigureAwait(false);
                 List<FmsBatchStatusInfo> activeBatches = GetActiveBatches(batches);
 
                 while (activeBatches.Any())
                 {
-                    _logger.LogInformation("Found {count} active fms batches. Checking their states.", activeBatches.Count);
+                    _logger.LogInformation("Found {count} active fms batches. Checking their states. TraceId: {traceId}", activeBatches.Count, batchesTraceId);
 
                     await UpdateBatchStatusesAsync(activeBatches, cancellationToken).ConfigureAwait(false);
                     await Task.Delay(TimeSpan.FromSeconds(intervalSeconds), cancellationToken).ConfigureAwait(false);
                     activeBatches = GetActiveBatches(batches);
                 }
 
-                _logger.LogInformation("Monitoring of {count} fms batches finished.", batches.Count);
+                _logger.LogInformation("Monitoring of {count} fms batches finished. TraceId: {traceId}", batches.Count, batchesTraceId);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error during batch statuses monitoring.");
+                _logger.LogError(ex, "Error during batch statuses monitoring. TraceId: {traceId}", batchesTraceId);
                 throw;
             }
         }

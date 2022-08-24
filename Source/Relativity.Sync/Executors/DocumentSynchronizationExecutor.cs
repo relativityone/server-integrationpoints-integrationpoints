@@ -181,15 +181,13 @@ namespace Relativity.Sync.Executors
             return null;
         }
 
-        protected override async Task<List<FmsBatchStatusInfo>> PerformFmsTransfer(List<FmsBatchInfo> fmsBatches, CancellationToken cancellationToken)
+        protected override async Task PerformFmsTransfer(List<FmsBatchInfo> fmsBatches, CancellationToken cancellationToken)
         {
             if (IsAdfTransferEnabled.Value)
             {
                 List<FmsBatchStatusInfo> statusInfoList = await _fmsRunner.RunAsync(fmsBatches, cancellationToken);
                 await _fmsRunner.MonitorAsync(statusInfoList, cancellationToken);
             }
-
-            return null;
         }
 
         private async Task<List<FmsBatchInfo>> GetSuccessfullyPushedDocumentsAsync(IImportJob importJob)
