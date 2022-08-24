@@ -42,7 +42,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             result.Count.Should().Be(expectedNumberOfFmsBatches);
             result.Should().OnlyHaveUniqueItems(x => x.SourceLocationShortPath);
             result.Should().OnlyHaveUniqueItems(x => x.DestinationLocationShortPath);
-            result.Should().OnlyHaveUniqueItems(x => x.TraceId);
+            result.Select(x => x.TraceId).Distinct().Count().Should().Be(1);
         }
 
         [Test]
