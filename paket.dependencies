@@ -43,6 +43,9 @@ nuget Relativity.Telemetry.Services.Interface 3003.0.2
 nuget Relativity.Toggles 1.0.1
 nuget Relativity.AutomatedWorkflows.SDK 1.0.8
 
+// Relativity Sync packages
+nuget Relativity.Sync.Services.Interfaces
+
 // Import API packages
 nuget Relativity.DataExchange.Client.SDK 1.18.6
 nuget Relativity.DataTransfer.Legacy.SDK 0.2.21
