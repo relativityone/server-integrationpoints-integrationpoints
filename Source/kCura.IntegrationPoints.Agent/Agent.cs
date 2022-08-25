@@ -39,7 +39,6 @@ using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Choice;
-using Relativity.Services.Exceptions;
 using Relativity.Telemetry.APM;
 using Component = Castle.MicroKernel.Registration.Component;
 
@@ -52,14 +51,11 @@ namespace kCura.IntegrationPoints.Agent
     public class Agent : ScheduleQueueAgentBase, ITaskProvider, IAgentNotifier, IRemovableAgent, IDisposable
     {
         private ErrorService _errorService;
-        private IAgentHelper _helper;
-        private IJobContextProvider _jobContextProvider;
         private const string _AGENT_NAME = "Integration Points Agent";
         private const string _RELATIVITY_SYNC_JOB_TYPE = "Relativity.Sync";
-        private readonly Lazy<IWindsorContainer> _agentLevelContainer;
 
-        private T Resolve<T>() => _agentLevelContainer.Value.Resolve<T>();
-
+        protected IWindsorContainer Container;
+        
         internal IJobExecutor JobExecutor { get; set; }
 
         public virtual event ExceptionEventHandler JobExecutionError;
@@ -68,8 +64,6 @@ namespace kCura.IntegrationPoints.Agent
         {
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
-
-            _agentLevelContainer = new Lazy<IWindsorContainer>(CreateAgentLevelContainer);
 
 #if TIME_MACHINE
             AgentTimeMachineProvider.Current =
@@ -105,24 +99,35 @@ namespace kCura.IntegrationPoints.Agent
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 
-            _agentLevelContainer = new Lazy<IWindsorContainer>(CreateAgentLevelContainer);
-
 #if TIME_MACHINE
             AgentTimeMachineProvider.Current =
                 new DefaultAgentTimeMachineProvider(Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 #endif
         }
 
-        /// <summary>
-        ///     Set should be used only for unit/integration tests purpose
-        /// </summary>
-        public new IAgentHelper Helper
+        public override string Name => _AGENT_NAME;
+
+        public ITask GetTask(Job job)
         {
-            get => _helper ?? (_helper = base.Helper);
-            set => _helper = value;
+            if (Container == null)
+            {
+                throw new InvalidOperationException("Cannot get task to process because container is not initialized. This is error in Agent.");
+            }
+
+            // Because of incredibly bad design of RIP we have to resolve ITaskFactory from container here
+            ITask task = Container.Resolve<ITaskFactory>().CreateTask(job, this);
+            return task;
         }
 
-        public override string Name => _AGENT_NAME;
+        public void NotifyAgent(LogCategory category, string message)
+        {
+            NotifyAgentTab(category, message);
+        }
+
+        public void Dispose()
+        {
+            AppDomain.CurrentDomain.UnhandledException -= OnUnhandledException;
+        }
 
         protected override void Initialize()
         {
@@ -133,69 +138,79 @@ namespace kCura.IntegrationPoints.Agent
 
         protected override TaskResult ProcessJob(Job job)
         {
-            if (job.JobFailed != null)
+            try
             {
-                MarkJobHistoryAsFailedAsync(job).GetAwaiter().GetResult();
-                return new TaskResult
-                {
-                    Status = TaskStatusEnum.Fail,
-                    Exceptions = new List<Exception> { job.JobFailed.Exception }
-                };
-            }
+                Container = CreateAgentLevelContainer();
 
-            using (StartMemoryUsageMetricReporting(job))
-            using (StartHeartbeatReporting(job))
-            {
-                using (Resolve<IJobContextProvider>().StartJobContext(job))
+                using (Container.Resolve<IJobContextProvider>().StartJobContext(job))
                 {
-                    if (ShouldUseRelativitySync(job, _agentLevelContainer.Value))
+                    if (job.JobFailed != null)
                     {
-                        _agentLevelContainer.Value.Register(Component.For<Job>().UsingFactoryMethod(k => job).Named($"{job.JobId}-{Guid.NewGuid()}"));
-                        try
+                        MarkJobHistoryAsFailedAsync(Container, job).GetAwaiter().GetResult();
+                        return new TaskResult
                         {
-                            RelativitySyncAdapter syncAdapter = Resolve<RelativitySyncAdapter>();
-                            IAPILog logger = Resolve<IAPILog>();
-                            AgentCorrelationContext correlationContext = GetCorrelationContext(job);
-                            using (logger.LogContextPushProperties(correlationContext))
+                            Status = TaskStatusEnum.Fail,
+                            Exceptions = new List<Exception> { job.JobFailed.Exception }
+                        };
+                    }
+
+                    using (StartMemoryUsageMetricReporting(Container, job))
+                    using (StartHeartbeatReporting(Container, job))
+                    {
+                        if (ShouldUseRelativitySync(Container, job))
+                        {
+                            try
                             {
-                                return syncAdapter.RunAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+                                Container.Register(Component.For<Job>().UsingFactoryMethod(k => job).Named($"{job.JobId}-{Guid.NewGuid()}")); // ???
+
+                                RelativitySyncAdapter syncAdapter = Container.Resolve<RelativitySyncAdapter>();
+                                IAPILog logger = Container.Resolve<IAPILog>();
+                                AgentCorrelationContext correlationContext = GetCorrelationContext(Container, job);
+                                using (logger.LogContextPushProperties(correlationContext))
+                                {
+                                    return syncAdapter.RunAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                // Not much we can do here. If container failed we're unable to do anything.
+                                // Exception was thrown from container, because RelativitySyncAdapter catches all exceptions inside
+                                Logger.LogError(ex, $"Unable to resolve {nameof(RelativitySyncAdapter)}.");
+
+                                MarkJobAsFailed(Container, job, ex);
+
+                                return new TaskResult
+                                {
+                                    Status = TaskStatusEnum.Fail,
+                                    Exceptions = new[] { ex }
+                                };
                             }
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            // Not much we can do here. If container failed we're unable to do anything.
-                            // Exception was thrown from container, because RelativitySyncAdapter catches all exceptions inside
-                            Logger.LogError(ex, $"Unable to resolve {nameof(RelativitySyncAdapter)}.");
-
-                            MarkJobAsFailed(job, _agentLevelContainer.Value, ex);
-
-                            return new TaskResult
-                            {
-                                Status = TaskStatusEnum.Fail,
-                                Exceptions = new[] { ex }
-                            };
+                            SendJobStartedMessage(Container, job);
+                            TaskResult result = JobExecutor.ProcessJob(job);
+                            return result;
                         }
                     }
                 }
-
-                using (JobContextProvider.StartJobContext(job))
-                {
-                    SendJobStartedMessage(job);
-                    TaskResult result = JobExecutor.ProcessJob(job);
-                    return result;
-                }
+            }
+            finally
+            {
+                Container.Dispose();
+                Container = null;
             }
         }
 
-        private IDisposable StartMemoryUsageMetricReporting(Job job)
+        private IDisposable StartMemoryUsageMetricReporting(IWindsorContainer container, Job job)
         {
-            return Resolve<IMemoryUsageReporter>()
-                .ActivateTimer(job.JobId, GetCorrelationId(job, Resolve<ISerializer>()), job.TaskType);
+            return container.Resolve<IMemoryUsageReporter>()
+                .ActivateTimer(job.JobId, GetCorrelationId(job, container.Resolve<ISerializer>()), job.TaskType);
         }
 
-        private IDisposable StartHeartbeatReporting(Job job)
+        private IDisposable StartHeartbeatReporting(IWindsorContainer container, Job job)
         {
-            return Resolve<IHeartbeatReporter>()
+            return container.Resolve<IHeartbeatReporter>()
                 .ActivateHeartbeat(job.JobId);
         }
 
@@ -214,29 +229,26 @@ namespace kCura.IntegrationPoints.Agent
             return result;
         }
 
-        private async Task MarkJobHistoryAsFailedAsync(Job job)
+        private async Task MarkJobHistoryAsFailedAsync(IWindsorContainer container, Job job)
         {
-            using (JobContextProvider.StartJobContext(job))
+            IntegrationPoint integrationPoint = await container.Resolve<IIntegrationPointRepository>()
+                .ReadAsync(job.RelatedObjectArtifactID).ConfigureAwait(false);
+            if (integrationPoint == null)
             {
-                IntegrationPoint integrationPoint = await Resolve<IIntegrationPointRepository>()
-                    .ReadAsync(job.RelatedObjectArtifactID).ConfigureAwait(false);
-                if (integrationPoint == null)
-                {
-                    throw new NullReferenceException(
-                        $"Unable to retrieve the integration point for the following job: {job.JobId}");
-                }
-
-                ITaskFactoryJobHistoryService jobHistoryService =
-                    Resolve<ITaskFactoryJobHistoryServiceFactory>()
-                        .CreateJobHistoryService(integrationPoint);
-                jobHistoryService.SetJobIdOnJobHistory(job);
-                jobHistoryService.UpdateJobHistoryOnFailure(job, job.JobFailed.Exception);
+                throw new NullReferenceException(
+                    $"Unable to retrieve the integration point for the following job: {job.JobId}");
             }
+
+            ITaskFactoryJobHistoryService jobHistoryService =
+                container.Resolve<ITaskFactoryJobHistoryServiceFactory>()
+                    .CreateJobHistoryService(integrationPoint);
+            jobHistoryService.SetJobIdOnJobHistory(job);
+            jobHistoryService.UpdateJobHistoryOnFailure(job, job.JobFailed.Exception);
         }
 
-        private AgentCorrelationContext GetCorrelationContext(Job job)
+        private AgentCorrelationContext GetCorrelationContext(IWindsorContainer container, Job job)
         {
-            ITaskParameterHelper taskParameterHelper = Resolve<ITaskParameterHelper>();
+            ITaskParameterHelper taskParameterHelper = container.Resolve<ITaskParameterHelper>();
             Guid batchInstanceId = taskParameterHelper.GetBatchInstance(job);
             string correlationId = batchInstanceId.ToString();
 
@@ -253,18 +265,18 @@ namespace kCura.IntegrationPoints.Agent
             return correlationContext;
         }
 
-        private void SendJobStartedMessage(Job job)
+        private void SendJobStartedMessage(IWindsorContainer container, Job job)
         {
             try
             {
-                ITaskParameterHelper taskParameterHelper = Resolve<ITaskParameterHelper>();
-                IIntegrationPointService integrationPointService = Resolve<IIntegrationPointService>();
-                IProviderTypeService providerTypeService = Resolve<IProviderTypeService>();
-                IMessageService messageService = Resolve<IMessageService>();
+                ITaskParameterHelper taskParameterHelper = container.Resolve<ITaskParameterHelper>();
+                IIntegrationPointService integrationPointService = container.Resolve<IIntegrationPointService>();
+                IProviderTypeService providerTypeService = container.Resolve<IProviderTypeService>();
+                IMessageService messageService = container.Resolve<IMessageService>();
 
                 Guid batchInstanceId = taskParameterHelper.GetBatchInstance(job);
                 Logger.LogInformation("Job will be executed in case of BatchInstanceId: {batchInstanceId}", batchInstanceId);
-                if (!IsJobResumed(batchInstanceId))
+                if (!IsJobResumed(container, batchInstanceId))
                 {
                     IntegrationPoint integrationPoint = integrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
                     var message = new JobStartedMessage
@@ -281,9 +293,9 @@ namespace kCura.IntegrationPoints.Agent
             }
         }
 
-        private bool IsJobResumed(Guid batchInstanceId)
+        private bool IsJobResumed(IWindsorContainer container, Guid batchInstanceId)
         {
-            IJobHistoryService jobHistoryService = Resolve<IJobHistoryService>();
+            IJobHistoryService jobHistoryService = container.Resolve<IJobHistoryService>();
             JobHistory jobHistory = jobHistoryService.GetRdoWithoutDocuments(batchInstanceId);
             ChoiceRef jobHistoryStatus = jobHistory?.JobStatus;
             if (jobHistoryStatus == null)
@@ -294,20 +306,20 @@ namespace kCura.IntegrationPoints.Agent
             return jobHistoryStatus.EqualsToChoice(JobStatusChoices.JobHistorySuspended);
         }
 
-        private bool ShouldUseRelativitySync(Job job, IWindsorContainer ripContainerForSync)
+        private bool ShouldUseRelativitySync(IWindsorContainer container, Job job)
         {
-            IRelativitySyncConstrainsChecker constrainsChecker = ripContainerForSync.Resolve<IRelativitySyncConstrainsChecker>();
+            IRelativitySyncConstrainsChecker constrainsChecker = container.Resolve<IRelativitySyncConstrainsChecker>();
             return constrainsChecker.ShouldUseRelativitySync(job);
         }
 
-        private void MarkJobAsFailed(Job job, IWindsorContainer ripContainerForSync, Exception ex)
+        private void MarkJobAsFailed(IWindsorContainer container, Job job, Exception ex)
         {
             try
             {
-                IExtendedJob syncJob = ripContainerForSync.Resolve<IExtendedJob>();
+                IExtendedJob syncJob = container.Resolve<IExtendedJob>();
                 if (syncJob != null)
                 {
-                    IJobHistorySyncService jobHistorySyncService = ripContainerForSync.Resolve<IJobHistorySyncService>();
+                    IJobHistorySyncService jobHistorySyncService = container.Resolve<IJobHistorySyncService>();
                     jobHistorySyncService.MarkJobAsFailedAsync(syncJob, ex).GetAwaiter().GetResult();
                 }
             }
@@ -315,28 +327,6 @@ namespace kCura.IntegrationPoints.Agent
             {
                 Logger.LogError(ie, "Unable to mark Sync job as failed and log a job history error in {WorkspaceArtifactId} for {JobId}.", job.WorkspaceID, job.JobId);
             }
-        }
-
-        public ITask GetTask(Job job)
-        {
-            IWindsorContainer container = _agentLevelContainer.Value;
-            ITaskFactory taskFactory = container.Resolve<ITaskFactory>();
-            ITask task = taskFactory.CreateTask(job, this);
-            container.Release(taskFactory);
-            return task;
-        }
-
-        public void ReleaseTask(ITask task)
-        {
-            if (task != null)
-            {
-                _agentLevelContainer.Value?.Release(task);
-            }
-        }
-
-        public void NotifyAgent(LogCategory category, string message)
-        {
-            NotifyAgentTab(category, message);
         }
 
         protected override void LogJobState(Job job, JobLogState state, Exception exception = null, string details = null)
@@ -373,19 +363,6 @@ namespace kCura.IntegrationPoints.Agent
             JobExecutionError?.Invoke(job, task, exception);
         }
 
-        protected IJobContextProvider JobContextProvider
-        {
-            get
-            {
-                if (_jobContextProvider == null)
-                {
-                    _jobContextProvider = Resolve<IJobContextProvider>();
-                }
-
-                return _jobContextProvider;
-            }
-        }
-
         protected virtual IWindsorContainer CreateAgentLevelContainer()
         {
             var container = new WindsorContainer();
@@ -396,21 +373,6 @@ namespace kCura.IntegrationPoints.Agent
         }
 
         private ErrorService ErrorService => _errorService ?? (_errorService = new ErrorService(Helper, new SystemEventLoggingService()));
-
-        public void Dispose()
-        {
-            AppDomain.CurrentDomain.UnhandledException -= OnUnhandledException;
-            if (_agentLevelContainer.IsValueCreated)
-            {
-                if (_jobContextProvider != null)
-                {
-                    _agentLevelContainer.Value?.Release(_jobContextProvider);
-                }
-
-                _agentLevelContainer.Value?.Dispose();
-            }
-        }
-
 
         private void LogJobExecutionError(Job job, Exception exception)
         {

@@ -1,8 +1,7 @@
-﻿using NUnit.Framework;
+﻿using System.Threading.Tasks;
+using NUnit.Framework;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.ApiTests;
-using Relativity.Toggles;
-using System.Threading.Tasks;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI.ApiTests
 {
@@ -12,7 +11,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI.ApiTests
 
         private readonly AzureADTestImplementation _testImplementation;
 
-        public AzureADApiTests() : base(nameof(AzureADApiTests))      
+        public AzureADApiTests() : base(nameof(AzureADApiTests))
         {
             _testImplementation = new AzureADTestImplementation(this);
         }
@@ -20,7 +19,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI.ApiTests
         protected override void OnSetUpFixture()
         {
             base.OnSetUpFixture();
-            
+
             _testImplementation.OnSetupFixture();
         }
 

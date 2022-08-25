@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Castle.Windsor;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Common.Helpers;
@@ -53,7 +54,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
             Job invalidJob = new JobBuilder().WithJobId(-1).Build();
             Job validJob2 = new JobBuilder().WithJobId(2).Build();
 
-            IList<Job> expectedProcessedJobs = new List<Job> {validJob1, validJob2};
+            IList<Job> expectedProcessedJobs = new List<Job> { validJob1, validJob2 };
 
             TestAgent sut = GetSut();
 
@@ -319,7 +320,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
             _jobServiceMock = new Mock<IJobService>();
             _jobServiceMock.Setup(x => x.FinalizeJob(It.IsAny<Job>(), It.IsAny<IScheduleRuleFactory>(),
                     It.IsAny<TaskResult>()))
-                .Returns(new FinalizeJobResult {JobState = JobLogState.Finished, Details = string.Empty});
+                .Returns(new FinalizeJobResult { JobState = JobLogState.Finished, Details = string.Empty });
 
             _queueJobValidatorFake = new Mock<IQueueJobValidator>();
             _queueJobValidatorFake.Setup(x => x.ValidateAsync(It.IsAny<Job>()))
@@ -333,7 +334,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
             _config.Setup(x => x.TransientStateJobTimeout).Returns(TimeSpan.MaxValue);
 
             return new TestAgent(agentService.Object, _jobServiceMock.Object,
-                scheduleRuleFactory.Object, _queueJobValidatorFake.Object, _queryManager.Object, 
+                scheduleRuleFactory.Object, _queueJobValidatorFake.Object, _queryManager.Object,
                 _kubernetesModeFake.Object, _dateTime.Object, emptyLog.Object, _config.Object)
             {
                 JobResult = jobStatus
@@ -361,9 +362,9 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 
         private class TestAgent : ScheduleQueueAgentBase
         {
-            public TestAgent(IAgentService agentService = null, IJobService jobService = null, 
+            public TestAgent(IAgentService agentService = null, IJobService jobService = null,
                 IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
-                IQueueQueryManager queryManager = null, IKubernetesMode kubernetesMode = null, IDateTime dateTime = null, IAPILog log = null, IConfig config = null) 
+                IQueueQueryManager queryManager = null, IKubernetesMode kubernetesMode = null, IDateTime dateTime = null, IAPILog log = null, IConfig config = null)
                 : base(Guid.NewGuid(), kubernetesMode, agentService, jobService, scheduleRuleFactory, queueJobValidator, queryManager, dateTime, log, config)
             {
                 //'Enabled = true' triggered Execute() immediately. I needed to set the field only to enable getting job from the queue
@@ -379,7 +380,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
             {
                 return GetAgentID();
             }
-            
+
             protected override TaskResult ProcessJob(Job job)
             {
                 ProcessedJobs.Add(job);

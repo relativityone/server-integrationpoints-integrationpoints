@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.Attributes;
 using kCura.IntegrationPoints.Agent.Exceptions;
@@ -208,7 +209,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             { }
 
             public override string Name { get; }
-
+            
             protected override TaskResult ProcessJob(Job job)
             {
                 throw new NotImplementedException();

@@ -2,21 +2,15 @@
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Logging;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.IntegrationPoints.Domain.Extensions;
-using kCura.IntegrationPoints.Domain.Logging;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent
 {
     public delegate void ExceptionEventHandler(Job job, ITask task, Exception exception);
-
-    public delegate TaskResult JobPostExecuteEventHandler(Job job);
 
     internal class JobExecutor : IJobExecutor
     {
@@ -27,36 +21,16 @@ namespace kCura.IntegrationPoints.Agent
         private readonly ITaskProvider _taskProvider;
         private readonly IAgentNotifier _agentNotifier;
         private readonly IJobService _jobService;
-        private IAPILog _logger { get; }
+        private readonly IAPILog _logger;
 
         public event ExceptionEventHandler JobExecutionError;
 
         public JobExecutor(ITaskProvider taskProvider, IAgentNotifier agentNotifier, IJobService jobService, IAPILog logger)
         {
-            if (taskProvider == null)
-            {
-                throw new ArgumentNullException(nameof(taskProvider));
-            }
-
-            if (agentNotifier == null)
-            {
-                throw new ArgumentNullException(nameof(agentNotifier));
-            }
-
-            if (jobService == null)
-            {
-                throw new ArgumentNullException(nameof(jobService));
-            }
-
-            if (logger == null)
-            {
-                throw new ArgumentNullException(nameof(logger));
-            }
-
-            _taskProvider = taskProvider;
-            _agentNotifier = agentNotifier;
-            _jobService = jobService;
-            _logger = logger;
+            _taskProvider = taskProvider ?? throw new ArgumentNullException(nameof(taskProvider));
+            _agentNotifier = agentNotifier ?? throw new ArgumentNullException(nameof(agentNotifier));
+            _jobService = jobService ?? throw new ArgumentNullException(nameof(jobService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public TaskResult ProcessJob(Job job)
@@ -68,6 +42,21 @@ namespace kCura.IntegrationPoints.Agent
 
             InitializeJobExecution(job);
             return ExecuteJob(job);
+        }
+
+        private TaskResult ExecuteJob(Job job)
+        {
+            LogJobState(job, JobLogState.Started);
+            LogStartingExecuteTask(job);
+
+            ITask task = null;
+            TaskResult resultOfGetTask = GetTask(job, ref task);
+            if (resultOfGetTask.Status == TaskStatusEnum.Fail)
+            {
+                return resultOfGetTask;
+            }
+
+            return ExecuteTask(task, job);
         }
 
         private TaskResult GetTask(Job job, ref ITask task)
@@ -93,26 +82,11 @@ namespace kCura.IntegrationPoints.Agent
             }
         }
 
-        private TaskResult ExecuteJob(Job job)
-        {
-            LogJobState(job, JobLogState.Started);
-            LogStartingExecuteTask(job);
-
-            ITask task = null;
-            TaskResult resultOfGetTask = GetTask(job, ref task);
-            if (resultOfGetTask.Status == TaskStatusEnum.Fail)
-            {
-                return resultOfGetTask;
-            }
-
-            return ExecuteTask(task, job);
-        }
-
         private TaskResult ExecuteTask(ITask task, Job job)
         {
             try
-            {                
-                task.Execute(job);                
+            {
+                task.Execute(job);
 
                 LogJobState(job, JobLogState.Finished);
                 string msg = string.Format(FINISHED_PROCESSING_JOB_MESSAGE_TEMPLATE, job.JobId, job.WorkspaceID, job.TaskType);
@@ -125,10 +99,6 @@ namespace kCura.IntegrationPoints.Agent
             {
                 RaiseJobExecutionErrorEvent(job, task, ex);
                 return new TaskResult { Status = TaskStatusEnum.Fail, Exceptions = new List<Exception> { ex } };
-            }
-            finally
-            {
-                _taskProvider.ReleaseTask(task);
             }
         }
 
@@ -175,7 +145,7 @@ namespace kCura.IntegrationPoints.Agent
 
             _logger.LogInformation("Integration Points job status update: {@JobLogInformation}", new JobLogInformation
             {
-                Job = job.RemoveSensitiveData(), 
+                Job = job.RemoveSensitiveData(),
                 State = state,
                 Details = details
             });
