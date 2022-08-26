@@ -59,7 +59,7 @@ namespace Relativity.Sync.Transfer
             }
 
             int instanceUserArtifactId;
-            if (await _toggleProvider.IsEnabledAsync<DisableUserMapWithSQL>().ConfigureAwait(false))
+            if (await _toggleProvider.IsEnabledAsync<DisableUserMapWithSQLToggle>().ConfigureAwait(false))
             {
                 _log.LogInformation("DisableUserMapWithSQL is enabled - rewrite UserArtifactId to InstanceArtifactId: {userArtifactId}", userArtifactId);
                 instanceUserArtifactId = userArtifactId;

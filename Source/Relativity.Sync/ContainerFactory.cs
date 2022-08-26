@@ -13,6 +13,7 @@ using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Telemetry;
 using Relativity.Sync.Utils;
+using Relativity.Sync.Utils.Workarounds;
 using Relativity.Telemetry.APM;
 using Relativity.Toggles;
 
@@ -43,6 +44,7 @@ namespace Relativity.Sync
             containerBuilder.RegisterType<ProgressStateCounter>().As<IProgressStateCounter>();
             containerBuilder.RegisterType<SyncJobProgress>().As<IProgress<SyncJobState>>();
             containerBuilder.RegisterType<JobEndMetricsServiceFactory>().As<IJobEndMetricsServiceFactory>();
+            containerBuilder.RegisterType<RipWorkarounds>().As<IRipWorkarounds>();
 
             containerBuilder.RegisterInstance(ToggleProvider.Current).As<IToggleProvider>().SingleInstance().PreserveExistingDefaults();
 
