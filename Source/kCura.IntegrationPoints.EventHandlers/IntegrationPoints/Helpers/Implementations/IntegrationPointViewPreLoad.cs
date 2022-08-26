@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -89,6 +90,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
                 logger.LogWarning("Saved Search Result - {result}", JsonConvert.SerializeObject(result.Objects));
 
+                string savedSearch = result.Objects[0].FieldValues.First(x => x.Value.ToString() != string.Empty & x.Value != null).Value.ToString();
+                logger.LogWarning("Saved Search - {savedSearch}", savedSearch);
+                sourceConfiguration["SavedSearch"] = savedSearch;
                 logger.LogWarning("SourceConfiguration before - {SourceConfiguration}", artifact.Fields[_fieldsConstants.SourceConfiguration].Value.Value);
                 artifact.Fields[_fieldsConstants.SourceConfiguration].Value.Value = JsonConvert.SerializeObject(sourceConfiguration);
                 logger.LogWarning("SourceConfiguration after - {SourceConfiguration}", artifact.Fields[_fieldsConstants.SourceConfiguration].Value.Value);
