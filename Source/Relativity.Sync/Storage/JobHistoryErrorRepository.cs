@@ -71,9 +71,9 @@ namespace Relativity.Sync.Storage
         {
             IJobHistoryError jobHistoryError = null;
 
-            using (var objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
+            using (IObjectManager objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
-                var readRequest = new ReadRequest
+                ReadRequest readRequest = new ReadRequest
                 {
                     Object = new RelativityObjectRef
                     {
@@ -82,7 +82,7 @@ namespace Relativity.Sync.Storage
                 };
                 ReadResult jobErrorType =
                     await objectManager.ReadAsync(workspaceArtifactId, readRequest).ConfigureAwait(false);
-                var request = new QueryRequest
+                QueryRequest request = new QueryRequest
                 {
                     ObjectType = new ObjectTypeRef { Guid = _rdoConfiguration.JobHistoryError.TypeGuid },
                     Condition =
@@ -181,7 +181,7 @@ namespace Relativity.Sync.Storage
                    await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
 
-                var values = createJobHistoryErrorDtos.Select(x => new List<object>()
+                List<List<object>> values = createJobHistoryErrorDtos.Select(x => new List<object>()
                 {
                     x.ErrorMessage,
                     GetErrorStatusChoice(ErrorStatus.New),
@@ -195,7 +195,7 @@ namespace Relativity.Sync.Storage
                 try
                 {
                     IEnumerable<int> artifactIds = new List<int>();
-                    var request = new MassCreateRequest
+                    MassCreateRequest request = new MassCreateRequest
                     {
                         ObjectType = GetObjectTypeRef(),
                         ParentObject = GetParentObject(jobHistoryArtifactId),
@@ -280,7 +280,7 @@ namespace Relativity.Sync.Storage
                     $"Mass creation of item level errors failed, because single item is still to large");
             }
 
-            foreach (var errorsBatchList in createJobHistoryErrorDtos.SplitList(batchSize))
+            foreach (IList<CreateJobHistoryErrorDto> errorsBatchList in createJobHistoryErrorDtos.SplitList(batchSize))
             {
                 IEnumerable<int> artifactIDs =
                     await MassCreateAsync(workspaceArtifactId, jobHistoryArtifactId, errorsBatchList)
@@ -317,7 +317,7 @@ namespace Relativity.Sync.Storage
 
         private ChoiceRef GetErrorStatusChoice(ErrorStatus errorStatus)
         {
-            var errorStatusChoice = new ChoiceRef();
+            ChoiceRef errorStatusChoice = new ChoiceRef();
             switch (errorStatus)
             {
                 case ErrorStatus.New:
@@ -332,7 +332,7 @@ namespace Relativity.Sync.Storage
 
         private ChoiceRef GetErrorTypeChoice(ErrorType errorType)
         {
-            var errorTypeChoice = new ChoiceRef();
+            ChoiceRef errorTypeChoice = new ChoiceRef();
             switch (errorType)
             {
                 case ErrorType.Job:
