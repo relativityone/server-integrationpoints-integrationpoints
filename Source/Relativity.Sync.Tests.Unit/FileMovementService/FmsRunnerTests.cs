@@ -32,6 +32,7 @@ namespace Relativity.Sync.Tests.Unit.FileMovementService
             _sut = new FmsRunner(_fmsClientMock.Object, fmsInstanceSettingsMock.Object,  new EmptyLogger());
         }
 
+        [TestCase(0)]
         [TestCase(1)]
         [TestCase(2)]
         [TestCase(5)]
@@ -43,17 +44,18 @@ namespace Relativity.Sync.Tests.Unit.FileMovementService
                 { 1, new NativeFilePathStructure($@"/path/1/2/3/4/1/") },
             };
             List<FmsBatchInfo> input = Enumerable.Range(0, batchesCount)
-                .Select(i => new FmsBatchInfo(1, filePaths, String.Empty, Guid.Empty))
+                .Select(i => new FmsBatchInfo(1, filePaths, string.Empty, Guid.Empty))
                 .ToList();
 
             // Act
             List<FmsBatchStatusInfo> result = await _sut.RunAsync(input, CancellationToken.None);
 
             // Assert
-            result.Count.Should().Be(batchesCount);
+            result.Should().HaveCount(batchesCount);
             _fmsClientMock.Verify(m => m.CopyListOfFilesAsync(It.IsAny<CopyListOfFilesRequest>(), It.IsAny<CancellationToken>()), Times.Exactly(batchesCount));
         }
 
+        [TestCase(0)]
         [TestCase(1)]
         [TestCase(2)]
         [TestCase(5)]
@@ -97,8 +99,6 @@ namespace Relativity.Sync.Tests.Unit.FileMovementService
             // Assert
             _fmsClientMock.Verify(m => m.GetRunStatusAsync(It.IsAny<RunStatusRequest>(), It.IsAny<CancellationToken>()), Times.Exactly(expectedCalls));
         }
-
-
 
         [Test]
         public async Task MonitorAsync_ShouldCallGetRunStatusUntilSucceeded()
