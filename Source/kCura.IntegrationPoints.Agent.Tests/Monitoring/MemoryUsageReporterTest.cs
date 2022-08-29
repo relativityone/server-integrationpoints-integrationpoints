@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
+using kCura.IntegrationPoints.Agent.Monitoring.SystemReporter;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Helpers;
@@ -30,6 +31,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private Mock<ICounterMeasure> _counterMeasure;
         private Mock<IProcessMemoryHelper> _processMemoryHelper;
         private Mock<IMonitoringConfig> _configFake;
+        private Mock<ISystemHealthReporter> _systemHealthReporterMock;
         private MemoryUsageReporter _sut;
         private Mock<IAppDomainMonitoringEnabler> _appDomainMonitoringEnablerMock;
         private Mock<IRemovableAgent> _agentMock;
@@ -50,6 +52,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _ripMetricMock = new Mock<IRipMetrics>();
             _apmMock = new Mock<IAPM>();
             _processMemoryHelper = new Mock<IProcessMemoryHelper>();
+            _systemHealthReporterMock = new Mock<ISystemHealthReporter>();
             _appDomainMonitoringEnablerMock = new Mock<IAppDomainMonitoringEnabler>();
             _agentMock = new Mock<IRemovableAgent>();
 
@@ -65,7 +68,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 
             _ripMetricMock.Setup(x => x.GetWorkflowId()).Returns("workflowId");
 
-            _processMemoryHelper.Setup(x => x.GetApplicationSystemStats()).Returns(
+            _processMemoryHelper.Setup(x => x.GetApplicationSystemStatistics()).Returns(
                 new Dictionary<string, object>()
                 {
                     { "SystemProcessMemoryInMB", _dummyMemorySize },
@@ -88,7 +91,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _timerFactory = new TimerFactory(_loggerMock.Object);
 
             _sut = new MemoryUsageReporter(_apmMock.Object, _ripMetricMock.Object,
-                _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object, _configFake.Object, _agentMock.Object, _toggleProviderFake.Object, _timerFactory, _loggerMock.Object);
+                _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object, _configFake.Object, _agentMock.Object,
+                _toggleProviderFake.Object, _timerFactory, _systemHealthReporterMock.Object, _loggerMock.Object);
         }
 
         [Test]
@@ -175,7 +179,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 
             MemoryUsageReporter sutWithErrors = new MemoryUsageReporter(apmMockWithErrors.Object, _ripMetricMock.Object,
                 _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object, _configFake.Object, _agentMock.Object,
-                _toggleProviderFake.Object, _timerFactory, _loggerMock.Object);
+                _toggleProviderFake.Object, _timerFactory, _systemHealthReporterMock.Object, _loggerMock.Object);
 
             int metricsProperlySend = 3;
             int metricsWithError = 2;

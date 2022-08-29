@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Threading;
+using kCura.IntegrationPoints.Agent.Monitoring.SystemReporter;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Helpers;
@@ -20,6 +21,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
         private readonly IRemovableAgent _agent;
         private readonly IToggleProvider _toggleProvider;
         private readonly ITimerFactory _timerFactory;
+        private readonly ISystemHealthReporter _systemHealthReporter;
         private readonly IAPM _apmClient;
         private readonly IRipMetrics _ripMetric;
         private readonly IProcessMemoryHelper _processMemoryHelper;
@@ -32,7 +34,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 
         public MemoryUsageReporter(IAPM apmClient, IRipMetrics ripMetric, IProcessMemoryHelper processMemoryHelper,
             IAppDomainMonitoringEnabler appDomainMonitoringEnabler, IMonitoringConfig config, IRemovableAgent agent,
-            IToggleProvider toggleProvider, ITimerFactory timerFactory, IAPILog logger)
+            IToggleProvider toggleProvider, ITimerFactory timerFactory, ISystemHealthReporter systemHealthReporter, IAPILog logger)
         {
             _processMemoryHelper = processMemoryHelper;
             _apmClient = apmClient;
@@ -41,6 +43,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
             _agent = agent;
             _toggleProvider = toggleProvider;
             _timerFactory = timerFactory;
+            _systemHealthReporter = systemHealthReporter;
             _config = config;
             _logger = logger;
         }
@@ -82,7 +85,8 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
                     { "WorkflowId", workflowId}
                 };
 
-                _processMemoryHelper.GetApplicationSystemStats().ToList().ForEach(x => customData.Add(x.Key, x.Value));
+                _processMemoryHelper.GetApplicationSystemStatistics().ToList().ForEach(x => customData.Add(x.Key, x.Value));
+                _systemHealthReporter.GetSystemHealthStatistics().ToList().ForEach(x => customData.Add(x.Key, x.Value));
 
                 _apmClient.CountOperation(_METRIC_NAME, correlationID: workflowId, customData: customData).Write();
                 _logger.LogInformation("Sending metric {@metricName} with properties: {@MetricProperties} and correlationID: {@CorrelationId}", _METRIC_LOG_NAME, customData, _ripMetric.GetWorkflowId());
