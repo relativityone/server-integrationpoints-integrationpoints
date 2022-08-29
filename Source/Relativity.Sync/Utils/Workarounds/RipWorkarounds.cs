@@ -28,6 +28,7 @@ namespace Relativity.Sync.Utils.Workarounds
             Guid ripJobHistoryTypeGuid = new Guid("08f4b1f7-9692-4a08-94ab-b5f3a88b6cc9");
             Guid hasErrorsFieldGuid = new Guid("a9853e55-0ba0-43d8-a766-747a61471981");
             Guid lastRuntimeFieldGuid = new Guid("90d58af1-f79f-40ae-85fc-7e42f84dbcc1");
+            Guid integrationPointGuid = new Guid("d3e791d3-2e21-45f4-b403-e7196bd25eea");
 
             if (_rdoGuidConfiguration.JobHistory.TypeGuid != ripJobHistoryTypeGuid || !hasErrors.HasValue)
             {
@@ -49,7 +50,7 @@ namespace Relativity.Sync.Utils.Workarounds
                         {
                             new FieldRef()
                             {
-                                Name = "Integration Point"
+                                Guid = integrationPointGuid
                             }
                         }
                     };

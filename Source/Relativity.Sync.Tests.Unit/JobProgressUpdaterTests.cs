@@ -102,8 +102,28 @@ namespace Relativity.Sync.Tests.Unit
         {
             // Arrange
             DateTime startTime = DateTime.Now;
-
             _dateTime.SetupGet(x => x.UtcNow).Returns(startTime);
+
+            _objectManager
+                .Setup(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(req => req.ObjectType.Guid == _jobHistoryTypeGuid &&
+                                                                                             req.Condition == $"'Artifact ID' == {_JOB_HISTORY_ID}" &&
+                                                                                             req.Fields.Single().Guid == _jobIdGuid), 0, 1))
+                .ReturnsAsync(new QueryResult()
+                {
+                    Objects = new List<RelativityObject>()
+                    {
+                        new RelativityObject()
+                        {
+                            FieldValues = new List<FieldValuePair>()
+                            {
+                                new FieldValuePair()
+                                {
+                                    Value = string.Empty
+                                }
+                            }
+                        }
+                    }
+                });
 
             JobProgressUpdater sut = PrepareSut();
 

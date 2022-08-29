@@ -21,6 +21,7 @@ namespace Relativity.Sync.Tests.Unit.Utils.Workarounds
         private readonly Guid _ripJobHistoryTypeGuid = new Guid("08f4b1f7-9692-4a08-94ab-b5f3a88b6cc9");
         private readonly Guid _hasErrorsFieldGuid = new Guid("a9853e55-0ba0-43d8-a766-747a61471981");
         private readonly Guid _lastRuntimeFieldGuid = new Guid("90d58af1-f79f-40ae-85fc-7e42f84dbcc1");
+        private readonly Guid _jobHistoryIntegrationPointFieldGuid = new Guid("d3e791d3-2e21-45f4-b403-e7196bd25eea");
 
         private Mock<ISourceServiceFactoryForAdmin> _serviceFactory;
         private Mock<IObjectManager> _objectManager;
@@ -93,7 +94,7 @@ namespace Relativity.Sync.Tests.Unit.Utils.Workarounds
             _objectManager
                 .Setup(x => x.QueryAsync(workspaceId, It.Is<QueryRequest>(req => req.ObjectType.Guid == _ripJobHistoryTypeGuid &&
                                                                                  req.Condition == $"'Artifact ID' == {jobHistoryId}" &&
-                                                                                 req.Fields.Single().Name == "Integration Point"), 0, 1))
+                                                                                 req.Fields.Single().Guid == _jobHistoryIntegrationPointFieldGuid), 0, 1))
                 .ReturnsAsync(new QueryResult()
                 {
                     Objects = new List<RelativityObject>()
