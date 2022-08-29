@@ -6,7 +6,7 @@ namespace Relativity.Sync.Toggles
     ///     Toggle for disabling User Map with SQL when the workspace was restored.
     /// </summary>
     [Description("When true, disables temporary workaround for mapping the users when the workspace was restored in push between workspaces job", "Adler Sieben")]
-    public class DisableUserMapWithSQLToggle : IToggle
+    public class DisableUserMapWithSQL : IToggle
     {
     }
 }

@@ -292,7 +292,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             const int restoredUserArtifactId = 9;
             object initialValue = GetInitialValue(restoredUserArtifactId);
 
-            _toggleProviderFake.Setup(x => x.IsEnabledAsync<DisableUserMapWithSQLToggle>())
+            _toggleProviderFake.Setup(x => x.IsEnabledAsync<DisableUserMapWithSQL>())
                 .ReturnsAsync(true);
 
             // Act
