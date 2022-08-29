@@ -8,9 +8,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers
     {
         void PreLoad(Artifact artifact);
 
-        void ResetSavedSearchArtifactId(
-            Action<Artifact> initializeAction,
-            Artifact artifact,
-            IEHHelper helper);
+        void ResetSavedSearch(Action<Artifact> initializeAction, Artifact artifact, IEHHelper helper);
     }
 }

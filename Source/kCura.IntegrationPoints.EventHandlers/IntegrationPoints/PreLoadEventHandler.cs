@@ -2,7 +2,6 @@
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
-using kCura.Utility;
 using Field = kCura.EventHandler.Field;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
@@ -37,7 +36,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
                 if (PageMode == EventHandler.Helper.PageMode.View)
                 {
                     IntegrationPointViewPreLoad.PreLoad(ActiveArtifact);
-                    IntegrationPointViewPreLoad.ResetSavedSearchArtifactId(
+                    IntegrationPointViewPreLoad.ResetSavedSearch(
                     activeArtifact =>
                     {
                         Initialize(PageMode, ActiveLayout, activeArtifact, Application, Helper.GetActiveCaseID(), null);
