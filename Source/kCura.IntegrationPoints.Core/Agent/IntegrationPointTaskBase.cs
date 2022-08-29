@@ -14,6 +14,7 @@ using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.ScheduleQueue.Core;
@@ -40,6 +41,7 @@ namespace kCura.IntegrationPoints.Core.Agent
         protected ISynchronizerFactory AppDomainRdoSynchronizerFactoryFactory;
         protected IIntegrationPointRepository IntegrationPointRepository;
         protected SourceProvider _sourceProvider;
+        protected readonly IDiagnosticLog DiagnosticLog;
         protected readonly IHelper Helper;
 
         public IntegrationPointTaskBase(
@@ -53,7 +55,8 @@ namespace kCura.IntegrationPoints.Core.Agent
             IJobManager jobManager,
             IManagerFactory managerFactory,
             IJobService jobService,
-            IIntegrationPointRepository integrationPointRepository)
+            IIntegrationPointRepository integrationPointRepository,
+            IDiagnosticLog diagnosticLog)
         {
             CaseServiceContext = caseServiceContext;
             Helper = helper;
@@ -67,6 +70,8 @@ namespace kCura.IntegrationPoints.Core.Agent
             JobService = jobService;
             IntegrationPointRepository = integrationPointRepository;
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointTaskBase>();
+
+            DiagnosticLog = diagnosticLog;
         }
 
         protected DestinationProvider DestinationProvider
@@ -173,8 +178,9 @@ namespace kCura.IntegrationPoints.Core.Agent
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            var objectBuilder = new SynchronizerObjectBuilder(sourceFields);    
-            var data = new DataReaderToEnumerableService(objectBuilder).GetData<IDictionary<FieldEntry, object>>(sourceDataReader);
+            var objectBuilder = new SynchronizerObjectBuilder(sourceFields, DiagnosticLog);
+            IEnumerable<IDictionary<FieldEntry, object>> data = new DataReaderToEnumerableService(objectBuilder, DiagnosticLog)
+                .GetData<IDictionary<FieldEntry, object>>(sourceDataReader);
             sw.Stop();
 
             _logger.LogInformation("DataReader was instantiated in time {seconds} [ms].", sw.ElapsedMilliseconds);

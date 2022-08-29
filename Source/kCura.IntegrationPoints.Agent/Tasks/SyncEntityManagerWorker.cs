@@ -52,35 +52,36 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private string _oldKeyManagerFieldID;
 
         public SyncEntityManagerWorker(
-            ICaseServiceContext caseServiceContext, 
+            ICaseServiceContext caseServiceContext,
             IDataProviderFactory dataProviderFactory,
-            IHelper helper, 
-            ISerializer serializer, 
+            IHelper helper,
+            ISerializer serializer,
             ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
-            IJobHistoryService jobHistoryService, 
-            IJobHistoryErrorService jobHistoryErrorService, 
+            IJobHistoryService jobHistoryService,
+            IJobHistoryErrorService jobHistoryErrorService,
             IJobManager jobManager,
-            IQueueQueryManager queueQueryManager, 
-            IJobStatisticsService statisticsService, 
+            IQueueQueryManager queueQueryManager,
+            IJobStatisticsService statisticsService,
             IManagerFactory managerFactory,
-            IJobService jobService, 
-            IRepositoryFactory repositoryFactory, 
+            IJobService jobService,
+            IRepositoryFactory repositoryFactory,
             IRelativityObjectManager relativityObjectManager,
             IProviderTypeService providerTypeService,
             IIntegrationPointRepository integrationPointRepository,
             IDiagnosticLog diagnosticLog)
             : base(
-                caseServiceContext, 
-                helper, 
-                dataProviderFactory, 
+                caseServiceContext,
+                helper,
+                dataProviderFactory,
                 serializer,
-                appDomainRdoSynchronizerFactoryFactory, 
-                jobHistoryService, jobHistoryErrorService,
-                jobManager, 
-                null, 
-                statisticsService, 
+                appDomainRdoSynchronizerFactoryFactory,
+                jobHistoryService,
+                jobHistoryErrorService,
+                jobManager,
+                null,
+                statisticsService,
                 managerFactory,
-                jobService, 
+                jobService,
                 providerTypeService,
                 integrationPointRepository,
                 diagnosticLog)
@@ -98,7 +99,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 EntityManagerJobParameters jobParameters = GetParameters(job);
 
                 LogExecuteTaskStart(job);
-                
+
                 SetIntegrationPoint(job);
                 SetJobHistory();
 
@@ -111,7 +112,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 if (!isPrimaryBatchWorkComplete)
                 {
                     LogOtherSyncWorkerBatchesAreInProgress(job, BatchInstance);
-                    
+
                     new TaskJobSubmitter(JobManager, JobService, job, TaskType.SyncEntityManagerWorker, BatchInstance).SubmitJob(jobParameters);
                     return;
                 }
@@ -242,7 +243,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             _entityManagerMap = jobParameters.EntityManagerMap.Select(
                 x => new EntityManagerMap
                 {
-                    EntityID = x.Key, OldManagerID = x.Value
+                    EntityID = x.Key,
+                    OldManagerID = x.Value
                 }).ToList();
 
             _entityManagerFieldMap = jobParameters.EntityManagerFieldMap;
@@ -305,7 +307,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private IEnumerable<IDictionary<string, object>> ReadManagersData(IDataSourceProvider sourceProvider,
             List<FieldEntry> sourceFields, IList<string> managersLdapQueryStrings)
         {
-            using (IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, managersLdapQueryStrings, 
+            using (IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, managersLdapQueryStrings,
                 new DataSourceProviderConfiguration(IntegrationPoint.SourceConfiguration, IntegrationPoint.SecuredConfiguration)))
             {
                 IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader).ToList();
@@ -322,7 +324,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private EntityManagerDataReaderToEnumerableService GetEntityManagerDataReaderToEnumerableService(
             List<FieldEntry> sourceFields)
         {
-            var objectBuilder = new SynchronizerObjectBuilder(sourceFields);
+            var objectBuilder = new SynchronizerObjectBuilder(sourceFields, DiagnosticLog);
             EntityManagerDataReaderToEnumerableService convertDataService =
                 new EntityManagerDataReaderToEnumerableService(objectBuilder, _oldKeyManagerFieldID, _newKeyManagerFieldID);
             return convertDataService;
@@ -394,7 +396,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             IEnumerable<IGrouping<string, RelativityObject>> duplicates = result
                 .GroupBy(x => x.FieldValues.First(f => f.Field.Name == uniqueFieldName).Value?.ToString());
-                
+
             if (duplicates.Any())
             {
                 IEnumerable<RelativityObject> itemLevelErrors = duplicates.SelectMany(x => x.Skip(1));
