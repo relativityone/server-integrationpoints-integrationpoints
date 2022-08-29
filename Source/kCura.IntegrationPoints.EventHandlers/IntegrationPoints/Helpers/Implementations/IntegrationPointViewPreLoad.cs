@@ -33,6 +33,49 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             _fieldsConstants = fieldsConstants;
         }
 
+        public void ResetSavedSearch(
+            Action<Artifact> initializeAction,
+            Artifact artifact,
+            IEHHelper helper)
+        {
+            if (IsRelativityProvider(artifact))
+            {
+                IDictionary<string, object> sourceConfiguration = GetSourceConfiguration(artifact);
+
+                int savedSearchArtifactId = 0;
+                if (sourceConfiguration.ContainsKey("SavedSearchArtifactId"))
+                {
+                    int.TryParse(sourceConfiguration["SavedSearchArtifactId"].ToString(), out savedSearchArtifactId);
+                }
+
+                int productionId = 0;
+                if (sourceConfiguration.ContainsKey("SourceProductionId"))
+                {
+                    int.TryParse(sourceConfiguration["SourceProductionId"].ToString(), out productionId);
+                }
+
+                if (savedSearchArtifactId == 0 & productionId == 0)
+                {
+                    int workspaceId = helper.GetActiveCaseID();
+                    IAPILog logger = helper.GetLoggerFactory().GetLogger();
+                    logger.LogWarning("savedSearchArtifactId is 0, trying to read it from database");
+
+                    int dbSavedSearchArtifactId = GetSavedSearchArtifactId(artifact, helper, workspaceId);
+                    sourceConfiguration["SavedSearchArtifactId"] = dbSavedSearchArtifactId;
+
+                    string savedSearchName = GetSavedSearchName(helper, workspaceId, dbSavedSearchArtifactId);
+                    sourceConfiguration["SavedSearch"] = savedSearchName;
+
+                    logger.LogInformation(
+                        "PreLoadEventHandler savedSearch configuration reset; savedSearchArtifactId - {savedSearchArtifactId}, savedSearchName - {savedSearchName}",
+                        dbSavedSearchArtifactId,
+                        savedSearchName);
+                    artifact.Fields[_fieldsConstants.SourceConfiguration].Value.Value = JsonConvert.SerializeObject(sourceConfiguration);
+                    initializeAction(artifact);
+                }
+            }
+        }
+
         public void PreLoad(Artifact artifact)
         {
             if (IsRelativityProvider(artifact))
@@ -49,42 +92,15 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             artifact.Fields[_fieldsConstants.DestinationConfiguration].Value.Value = JsonConvert.SerializeObject(destinationConfiguration);
         }
 
-        public void ResetSavedSearch(
-            Action<Artifact> initializeAction,
-            Artifact artifact,
-            IEHHelper helper)
-        {
-            IDictionary<string, object> sourceConfiguration = GetSourceConfiguration(artifact);
-            int.TryParse(sourceConfiguration["SavedSearchArtifactId"].ToString(), out int savedSearchArtifactId);
-
-            if (savedSearchArtifactId == 0)
-            {
-                IAPILog logger = helper.GetLoggerFactory().GetLogger();
-                int workspaceId = helper.GetActiveCaseID();
-                logger.LogWarning("savedSearchArtifactId is 0, trying to retrieve from database");
-
-                int dbSavedSearchArtifactId = GetSavedSearchArtifactId(artifact, helper, workspaceId);
-                sourceConfiguration["SavedSearchArtifactId"] = dbSavedSearchArtifactId;
-
-                string savedSearchName = GetSavedSearchName(helper, workspaceId, dbSavedSearchArtifactId);
-                sourceConfiguration["SavedSearch"] = savedSearchName;
-
-                logger.LogInformation(
-                    "PreLoadEventHandler savedSearch configuration reset; savedSearchArtifactId - {savedSearchArtifactId}, savedSearchName - {savedSearchName}",
-                    dbSavedSearchArtifactId,
-                    savedSearchName);
-                artifact.Fields[_fieldsConstants.SourceConfiguration].Value.Value = JsonConvert.SerializeObject(sourceConfiguration);
-                initializeAction(artifact);
-            }
-        }
-
         private int GetSavedSearchArtifactId(Artifact artifact, IEHHelper helper, int workspaceId)
         {
             string integrationPointName = artifact.Fields[_fieldsConstants.Name].Value.Value.ToString();
             string sqlQuery = $"SELECT [SourceConfiguration] FROM [EDDS{workspaceId}].[EDDSDBO].[IntegrationPoint] WHERE [Name] = '{integrationPointName}'";
             string dbSourceConfiguration = helper.GetDBContext(workspaceId).ExecuteSqlStatementAsScalar<string>(sqlQuery);
+
             Dictionary<string, string> ripSourceConfigurationDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(dbSourceConfiguration);
             int.TryParse(ripSourceConfigurationDictionary["SavedSearchArtifactId"], out int ripSavedSearchArtifactId);
+
             return ripSavedSearchArtifactId;
         }
 
@@ -96,15 +112,18 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
                 Condition = $"'Artifact ID' == {savedSearchArtifactId}",
                 Fields = new[] { new FieldRef { Name = "Name" }, new FieldRef { Name = "Owner" } }
             };
-            QueryResult result = helper
-                .GetServicesManager()
-                .CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser)
-                .QueryAsync(workspaceId, queryRequest, 0, 1)
-                .GetAwaiter()
-                .GetResult();
 
-            string savedSearch = result.Objects[0].FieldValues.First(x => x.Value.ToString() != string.Empty & x.Value != null)
-                .Value.ToString();
+            string savedSearch;
+            using (var objectManager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser))
+            {
+                QueryResult result = objectManager
+                    .QueryAsync(workspaceId, queryRequest, 0, 1)
+                    .GetAwaiter()
+                    .GetResult();
+                savedSearch = result.Objects[0].FieldValues.First(x => x.Value.ToString() != string.Empty & x.Value != null)
+                    .Value.ToString();
+            }
+
             return savedSearch;
         }
 
