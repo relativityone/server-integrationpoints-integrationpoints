@@ -114,6 +114,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
         private void OnJobComplete(DateTime start, DateTime end, int total, int errorCount)
         {
+            _logger.LogInformation("OnJobComplete event started for JobID={jobId}", _job.JobId);
+
             Guid batchInstance = _helper.GetBatchInstance(_job);
             string tableName = JobTracker.GenerateJobTrackerTempTableName(_job, batchInstance.ToString());
 
@@ -129,13 +131,10 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
             lock (_lockToken)
             {
-                using (new JobHistoryMutex(_context, batchInstance, _diagnosticLog))
-                {
-                    // TODO refactoring, command query separation
-                    _logger.LogInformation("In JobStatisticsService.cs executing UpdateAndRetrieveStats()[CreateJobTrackingEntry.sql and UpdateJobStatistics.sql] with {tableName}", tableName);
-                    JobStatistics stats = _query.UpdateAndRetrieveStats(tableName, _job.JobId, new JobStatistics { Completed = total, Errored = _rowErrors, ImportApiErrors = errorCount }, _job.WorkspaceID);
-                    UpdateJobHistory(batchInstance, stats, totalSize);
-                }
+                // TODO refactoring, command query separation
+                _logger.LogInformation("In JobStatisticsService.cs executing UpdateAndRetrieveStats()[CreateJobTrackingEntry.sql and UpdateJobStatistics.sql] with {tableName}", tableName);
+                JobStatistics stats = _query.UpdateAndRetrieveStats(tableName, _job.JobId, new JobStatistics { Completed = total, Errored = _rowErrors, ImportApiErrors = errorCount }, _job.WorkspaceID);
+                UpdateJobHistory(batchInstance, stats, totalSize);
             }
 
             _rowErrors = 0;
@@ -150,17 +149,13 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
         public void Update(Guid identifier, int transferredItem, int erroredCount)
         {
-            lock(_lockToken)
+            lock (_lockToken)
             {
                 _diagnosticLog.LogDiagnostic(
                     "Updating... Identifier: {identifier}, TransferredItemsCount: {itemsCount}, ErrorItemsCount: {errorsCount}",
                     transferredItem,
                     erroredCount);
-
-                using (new JobHistoryMutex(_context, identifier, _diagnosticLog))
-                {
-                    UpdateJobHistory(transferredItem, erroredCount);
-                }
+                UpdateJobHistory(transferredItem, erroredCount);
             }
         }
 
