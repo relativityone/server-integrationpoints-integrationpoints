@@ -64,5 +64,8 @@
         <Reference Include="System.Runtime.Caching" />
         <Reference Include="System.Web.Services" />
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Utils\Workarounds\" />
+    </ItemGroup>
     <Import Project="..\..\stylecop\StyleCop.targets" />
 </Project>

@@ -34,6 +34,7 @@
         <Folder Include="HttpClient\" />
         <Folder Include="FileMovementService\" />
         <Folder Include="Toggles\" />
+        <Folder Include="Utils\Workarounds\" />
     </ItemGroup>
     <Import Project="..\..\stylecop\StyleCop.targets" />
 </Project>
