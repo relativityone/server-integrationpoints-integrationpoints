@@ -325,8 +325,8 @@ ul li .day-select
 
 .map-field-title
 {
-	padding-top: 20px;
-	padding-bottom: 10px;
+	padding-top: 10px;
+	padding-bottom: 4px;
 	display: flex;
 	width: 1220px;
 }
@@ -521,9 +521,9 @@ ul.actions-right
 	text-align: center;
 }
 
-select option.hover
-{
+select option.hover {
 	text-decoration: underline;
+	font-weight: bold;
 }
 #host {
 	width: 450px;
