@@ -42,24 +42,15 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             {
                 IDictionary<string, object> sourceConfiguration = GetSourceConfiguration(artifact);
 
-                int savedSearchArtifactId = 0;
-                if (sourceConfiguration.ContainsKey("SavedSearchArtifactId"))
-                {
-                    int.TryParse(sourceConfiguration["SavedSearchArtifactId"].ToString(), out savedSearchArtifactId);
-                }
-
-                int productionId = 0;
-                if (sourceConfiguration.ContainsKey("SourceProductionId"))
-                {
-                    int.TryParse(sourceConfiguration["SourceProductionId"].ToString(), out productionId);
-                }
+                int savedSearchArtifactId = GetDictionaryValue(sourceConfiguration, "SavedSearchArtifactId");
+                int productionId = GetDictionaryValue(sourceConfiguration, "SourceProductionId");
 
                 if (savedSearchArtifactId == 0 & productionId == 0)
                 {
                     int workspaceId = helper.GetActiveCaseID();
-                    IAPILog logger = helper.GetLoggerFactory().GetLogger();
-                    logger.LogWarning("savedSearchArtifactId is 0, trying to read it from database");
 
+                    IAPILog logger = helper.GetLoggerFactory().GetLogger();
+                    logger.LogWarning("savedSearchArtifactId is 0, trying to read it from database Integration Point settings.");
                     int dbSavedSearchArtifactId = GetSavedSearchArtifactId(artifact, helper, workspaceId);
                     sourceConfiguration["SavedSearchArtifactId"] = dbSavedSearchArtifactId;
 
@@ -67,7 +58,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
                     sourceConfiguration["SavedSearch"] = savedSearchName;
 
                     logger.LogInformation(
-                        "PreLoadEventHandler savedSearch configuration reset; savedSearchArtifactId - {savedSearchArtifactId}, savedSearchName - {savedSearchName}",
+                        "PreLoadEventHandler savedSearch configuration reset; savedSearchArtifactId - {savedSearchArtifactId}, savedSearchName - {savedSearchName}.",
                         dbSavedSearchArtifactId,
                         savedSearchName);
                     artifact.Fields[_fieldsConstants.SourceConfiguration].Value.Value = JsonConvert.SerializeObject(sourceConfiguration);
@@ -92,36 +83,74 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             artifact.Fields[_fieldsConstants.DestinationConfiguration].Value.Value = JsonConvert.SerializeObject(destinationConfiguration);
         }
 
+        private int GetDictionaryValue(IDictionary<string, object> sourceConfiguration, string key)
+        {
+            int value = 0;
+            if (sourceConfiguration.ContainsKey(key))
+            {
+                int.TryParse(sourceConfiguration[key].ToString(), out value);
+            }
+
+            return value;
+        }
+
         private int GetSavedSearchArtifactId(Artifact artifact, IEHHelper helper, int workspaceId)
         {
             string integrationPointName = artifact.Fields[_fieldsConstants.Name].Value.Value.ToString();
-            string sqlQuery = $"SELECT [SourceConfiguration] FROM [EDDS{workspaceId}].[EDDSDBO].[IntegrationPoint] WHERE [Name] = '{integrationPointName}'";
-            string dbSourceConfiguration = helper.GetDBContext(workspaceId).ExecuteSqlStatementAsScalar<string>(sqlQuery);
+            try
+            {
+                string sqlQuery = $"SELECT [SourceConfiguration] FROM [EDDS{workspaceId}].[EDDSDBO].[IntegrationPoint] WHERE [Name] = '{integrationPointName}'";
+                string dbSourceConfiguration = helper.GetDBContext(workspaceId).ExecuteSqlStatementAsScalar<string>(sqlQuery);
 
-            Dictionary<string, string> ripSourceConfigurationDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(dbSourceConfiguration);
-            int.TryParse(ripSourceConfigurationDictionary["SavedSearchArtifactId"], out int ripSavedSearchArtifactId);
+                Dictionary<string, string> ripSourceConfigurationDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(dbSourceConfiguration);
+                int.TryParse(ripSourceConfigurationDictionary["SavedSearchArtifactId"], out int ripSavedSearchArtifactId);
 
-            return ripSavedSearchArtifactId;
+                return ripSavedSearchArtifactId;
+            }
+            catch
+            {
+                helper
+                    .GetLoggerFactory()
+                    .GetLogger()
+                    .LogError(
+                        "Unable to get SavedSearchArtifactId for integrationPoint - {integrationPoint}",
+                        integrationPointName);
+                throw;
+            }
         }
 
         private string GetSavedSearchName(IEHHelper helper, int workspaceId, int savedSearchArtifactId)
         {
             QueryRequest queryRequest = new QueryRequest
             {
-                ObjectType = new ObjectTypeRef() { ArtifactTypeID = (int)ArtifactType.Search },
+                ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Search },
                 Condition = $"'Artifact ID' == {savedSearchArtifactId}",
                 Fields = new[] { new FieldRef { Name = "Name" }, new FieldRef { Name = "Owner" } }
             };
 
             string savedSearch;
-            using (var objectManager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser))
+            using (IObjectManager objectManager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser))
             {
-                QueryResult result = objectManager
-                    .QueryAsync(workspaceId, queryRequest, 0, 1)
-                    .GetAwaiter()
-                    .GetResult();
-                savedSearch = result.Objects[0].FieldValues.First(x => x.Value.ToString() != string.Empty & x.Value != null)
-                    .Value.ToString();
+                try
+                {
+                    QueryResult result = objectManager
+                        .QueryAsync(workspaceId, queryRequest, 0, 1)
+                        .GetAwaiter()
+                        .GetResult();
+                    savedSearch = result.Objects[0].FieldValues
+                        .First(x => x.Value.ToString() != string.Empty & x.Value != null)
+                        .Value.ToString();
+                }
+                catch
+                {
+                    helper
+                        .GetLoggerFactory()
+                        .GetLogger()
+                        .LogError(
+                            "ObjectManager unable to read savedSearch with ArtifactId - {savedSearchArtifactId}.",
+                            savedSearchArtifactId);
+                    throw;
+                }
             }
 
             return savedSearch;
