@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Sync
 {
-    internal enum JobHistoryStatus
+    public enum JobHistoryStatus
     {
         Validating,
         ValidationFailed,
