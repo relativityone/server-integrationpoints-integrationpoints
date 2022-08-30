@@ -12,7 +12,7 @@ namespace Relativity.Sync.Transfer.FileMovementService
     /// <inheritdoc />
     internal class FmsRunner : IFmsRunner
     {
-        private const string SubmittedStatusName = "Submitted";
+        internal const string SubmittedStatusName = "Submitted";
 
         private readonly IFmsClient _fmsClient;
         private readonly IFmsInstanceSettingsService _fmsInstanceSettingsService;
@@ -53,7 +53,6 @@ namespace Relativity.Sync.Transfer.FileMovementService
                     .Select(r => _fmsClient.CopyListOfFilesAsync(r, cancellationToken))
                     .ToList();
 
-                Parallel.ForEach(tasks, t => t.Start());
                 CopyListOfFilesResponse[] responses = await Task.WhenAll(tasks).ConfigureAwait(false);
 
                 _logger.LogInformation("Transfer of {count} fms batches started. TraceId: {traceId}", batches.Count, batchesTraceId);
@@ -103,7 +102,6 @@ namespace Relativity.Sync.Transfer.FileMovementService
                 .Select(batch => UpdateSingleBatchAsync(batch, cancellationToken))
                 .ToList();
 
-            Parallel.ForEach(tasks, t => t.Start());
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
