@@ -5,10 +5,10 @@ using System.Linq;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using Newtonsoft.Json;
 using Relativity;
 using Relativity.API;
-using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 
@@ -20,17 +20,20 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
         private readonly IIntegrationPointBaseFieldsConstants _fieldsConstants;
         private readonly IRelativityProviderConfiguration _relativityProviderSourceConfiguration;
         private readonly IRelativityProviderConfiguration _relativityProviderDestinationConfiguration;
+        private readonly IRelativityObjectManager _objectManager;
 
         public IntegrationPointViewPreLoad(
             ICaseServiceContext context,
             IRelativityProviderConfiguration relativityProviderSourceConfiguration,
             IRelativityProviderConfiguration relativityProviderDestinationConfiguration,
-            IIntegrationPointBaseFieldsConstants fieldsConstants)
+            IIntegrationPointBaseFieldsConstants fieldsConstants, 
+            IRelativityObjectManager objectManager)
         {
             _context = context;
             _relativityProviderSourceConfiguration = relativityProviderSourceConfiguration;
             _relativityProviderDestinationConfiguration = relativityProviderDestinationConfiguration;
             _fieldsConstants = fieldsConstants;
+            _objectManager = objectManager;
         }
 
         public void ResetSavedSearch(
@@ -54,7 +57,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
                     int dbSavedSearchArtifactId = GetSavedSearchArtifactId(artifact, helper, workspaceId);
                     sourceConfiguration["SavedSearchArtifactId"] = dbSavedSearchArtifactId;
 
-                    string savedSearchName = GetSavedSearchName(helper, workspaceId, dbSavedSearchArtifactId);
+                    string savedSearchName = GetSavedSearchName(helper, dbSavedSearchArtifactId);
                     sourceConfiguration["SavedSearch"] = savedSearchName;
 
                     logger.LogInformation(
@@ -119,7 +122,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             }
         }
 
-        private string GetSavedSearchName(IEHHelper helper, int workspaceId, int savedSearchArtifactId)
+        private string GetSavedSearchName(IEHHelper helper, int savedSearchArtifactId)
         {
             QueryRequest queryRequest = new QueryRequest
             {
@@ -129,28 +132,25 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             };
 
             string savedSearch;
-            using (IObjectManager objectManager = helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser))
+            try
             {
-                try
-                {
-                    QueryResult result = objectManager
-                        .QueryAsync(workspaceId, queryRequest, 0, 1)
-                        .GetAwaiter()
-                        .GetResult();
-                    savedSearch = result.Objects[0].FieldValues
-                        .First(x => x.Value.ToString() != string.Empty & x.Value != null)
-                        .Value.ToString();
-                }
-                catch
-                {
-                    helper
-                        .GetLoggerFactory()
-                        .GetLogger()
-                        .LogError(
-                            "ObjectManager unable to read savedSearch with ArtifactId - {savedSearchArtifactId}.",
-                            savedSearchArtifactId);
-                    throw;
-                }
+                List<RelativityObject> result = _objectManager
+                    .QueryAsync(queryRequest)
+                    .GetAwaiter()
+                    .GetResult();
+                savedSearch = result.First().FieldValues
+                    .First(x => x.Value.ToString() != string.Empty & x.Value != null)
+                    .Value.ToString();
+            }
+            catch
+            {
+                helper
+                    .GetLoggerFactory()
+                    .GetLogger()
+                    .LogError(
+                        "ObjectManager unable to read savedSearch with ArtifactId - {savedSearchArtifactId}.",
+                        savedSearchArtifactId);
+                throw;
             }
 
             return savedSearch;

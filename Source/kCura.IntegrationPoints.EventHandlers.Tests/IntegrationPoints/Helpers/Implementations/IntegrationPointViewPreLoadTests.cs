@@ -12,7 +12,6 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity;
 using Relativity.API;
-using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Constants = kCura.IntegrationPoints.Core.Constants;
 using Field = kCura.EventHandler.Field;
@@ -29,11 +28,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
         private Mock<IRelativityProviderConfiguration> _relativityProviderDestinationConfigurationMock;
         private Mock<ICaseServiceContext> _caseServiceContextMock;
         private Mock<IRelativityObjectManagerService> _relativityObjectManagerServiceMock;
-        private Mock<IRelativityObjectManager> _relativityObjectManagerMock;
         private Mock<IEHHelper> _helperMock;
         private Mock<IAPILog> _loggerMock;
         private Mock<IDBContext> _dbContextMock;
-        private Mock<IObjectManager> _objectManagerMock;
+        private Mock<IRelativityObjectManager> _objectManagerMock;
 
         private Artifact _artifact;
 
@@ -57,16 +55,16 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
             _relativityProviderDestinationConfigurationMock = new Mock<IRelativityProviderConfiguration>();
             _caseServiceContextMock = new Mock<ICaseServiceContext>();
             _relativityObjectManagerServiceMock = new Mock<IRelativityObjectManagerService>();
-            _relativityObjectManagerMock = new Mock<IRelativityObjectManager>();
+            _objectManagerMock = new Mock<IRelativityObjectManager>();
 
             _caseServiceContextMock.Setup(x => x.RelativityObjectManagerService).Returns(_relativityObjectManagerServiceMock.Object);
-            _relativityObjectManagerServiceMock.Setup(x => x.RelativityObjectManager).Returns(_relativityObjectManagerMock.Object);
+            _relativityObjectManagerServiceMock.Setup(x => x.RelativityObjectManager).Returns(_objectManagerMock.Object);
             SourceProvider sourceProvider = new SourceProvider
             {
                 Name = Constants.IntegrationPoints.RELATIVITY_PROVIDER_NAME
             };
 
-            _relativityObjectManagerMock
+            _objectManagerMock
                 .Setup(x => x.Read<SourceProvider>(_SOURCE_PROVIDER_VALUE, ExecutionIdentity.CurrentUser))
                 .Returns(sourceProvider);
 
@@ -77,7 +75,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
                 _caseServiceContextMock.Object,
                 _relativityProviderSourceConfigurationFake.Object,
                 _relativityProviderDestinationConfigurationMock.Object,
-                _fieldsConstants);
+                _fieldsConstants,
+                _objectManagerMock.Object);
         }
 
         [Test]
@@ -113,7 +112,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
             {
                 Name = "Load File"
             };
-            _relativityObjectManagerMock
+            _objectManagerMock
                 .Setup(x => x.Read<SourceProvider>(_SOURCE_PROVIDER_VALUE, ExecutionIdentity.CurrentUser))
                 .Returns(sourceProvider);
 
@@ -163,7 +162,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
             {
                 Name = "Load File"
             };
-            _relativityObjectManagerMock
+            _objectManagerMock
                 .Setup(x => x.Read<SourceProvider>(_SOURCE_PROVIDER_VALUE, ExecutionIdentity.CurrentUser))
                 .Returns(sourceProvider);
 
@@ -222,7 +221,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
             sourceConfiguration[_SAVEDSEARCH_ARTIFACT_ID_KEY] = 0;
             CreateArtifactFields(sourceConfiguration);
             PrepareResetSavedSearchMocks();
-            _objectManagerMock.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).Throws(new Exception());
+            _objectManagerMock.Setup(x => x.QueryAsync(It.IsAny<QueryRequest>(), ExecutionIdentity.CurrentUser)).Throws(new Exception());
 
             // Act
             Action action = () => _sut.ResetSavedSearch((artifact) => { }, _artifact, _helperMock.Object);
@@ -297,17 +296,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
             Mock<ILogFactory> loggerFactoryMock = new Mock<ILogFactory>();
             _loggerMock = new Mock<IAPILog>();
             _dbContextMock = new Mock<IDBContext>();
-            Mock<IServicesMgr> serviceMgrMock = new Mock<IServicesMgr>();
-            _objectManagerMock = new Mock<IObjectManager>();
 
             _helperMock.Setup(x => x.GetDBContext(It.IsAny<int>())).Returns(_dbContextMock.Object);
 
             _helperMock.Setup(x => x.GetActiveCaseID()).Returns(_WORKSPACE_ID);
-
-            _helperMock.Setup(x => x.GetServicesManager()).Returns(serviceMgrMock.Object);
-            serviceMgrMock.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.CurrentUser))
-                .Returns(_objectManagerMock.Object);
-
             _helperMock.Setup(x => x.GetLoggerFactory()).Returns(loggerFactoryMock.Object);
             loggerFactoryMock.Setup(x => x.GetLogger()).Returns(_loggerMock.Object);
 
@@ -317,18 +309,15 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
             _dbContextMock.Setup(x => x.ExecuteSqlStatementAsScalar<string>(sqlQuery))
                 .Returns(JsonConvert.SerializeObject(dbSourceConfiguration));
 
-            QueryResult result = new QueryResult
+            List<RelativityObject> result = new List<RelativityObject>
             {
-                Objects = new List<RelativityObject>
+                new RelativityObject
                 {
-                    new RelativityObject
+                    FieldValues = new List<FieldValuePair>
                     {
-                        FieldValues = new List<FieldValuePair>
+                        new FieldValuePair
                         {
-                            new FieldValuePair
-                            {
-                                Value = _SAVEDSEARCH_NAME
-                            }
+                            Value = _SAVEDSEARCH_NAME
                         }
                     }
                 }
@@ -336,12 +325,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
 
             _objectManagerMock.Setup(
                     x => x.QueryAsync(
-                        _WORKSPACE_ID,
-                        It.Is<QueryRequest>(
-                            y => y.ObjectType.ArtifactTypeID == (int)ArtifactType.Search &&
-                                 y.Condition == $"'Artifact ID' == {_SAVEDSEARCH_ARTIFACT_ID_VALUE}"),
-                        0,
-                        1))
+                    It.Is<QueryRequest>(
+                        y => 
+                            y.ObjectType.ArtifactTypeID == (int)ArtifactType.Search &&
+                            y.Condition == $"'Artifact ID' == {_SAVEDSEARCH_ARTIFACT_ID_VALUE}"),
+                    It.IsAny<ExecutionIdentity>()))
                 .ReturnsAsync(result);
         }
 
