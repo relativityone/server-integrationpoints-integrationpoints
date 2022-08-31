@@ -1,4 +1,3 @@
-CSharpGuidelineAnalyzer
 kCura
 kCura.Apps.Common.Config
 Relativity.API
@@ -7,9 +6,6 @@ Relativity.DataExchange.Client.SDK
 Relativity.DataTransfer.MessageService
 Relativity.IntegrationPoints.Contracts
 iTextSharp
-
-
-
 FluentAssertions
 Moq
 NUnit

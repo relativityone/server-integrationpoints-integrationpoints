@@ -1,5 +1,4 @@
 Castle.Windsor
-CSharpGuidelineAnalyzer
 kCura
 kCura.Apps.Common.Utils
 LanguageExt.Core
@@ -8,13 +7,10 @@ Relativity.IntegrationPoints.Contracts
 Relativity.Productions.Services.Interfaces
 Relativity.Telemetry.MetricsCollection
 Relativity.DataExchange.Client.SDK
-Relativity.DataTransfer.Legacy.SDK 
+Relativity.DataTransfer.Legacy.SDK
 Relativity.DataTransfer.MessageService
 Relativity.Toggles
 iTextSharp
-
-
-
 FluentAssertions
 Moq
 NUnit
