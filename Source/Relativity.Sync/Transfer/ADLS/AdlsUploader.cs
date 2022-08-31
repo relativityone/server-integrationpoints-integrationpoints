@@ -98,8 +98,7 @@ namespace Relativity.Sync.Transfer.ADLS
             string OnCancellationFunction(Exception exception)
             {
                 _logger.LogWarning("ADLS Batch file upload cancelled.");
-                //throw new Exception();
-                return string.Empty;
+                throw exception;
             }
 
             destinationFilePath = await RetryPolicyRunAsync(
