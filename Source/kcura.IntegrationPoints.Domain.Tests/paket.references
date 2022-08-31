@@ -1,13 +1,9 @@
-CSharpGuidelineAnalyzer
 Relativity.API
 Relativity.IntegrationPoints.Contracts
 Relativity.Services.Interfaces
 Relativity.Logging.Interfaces
 Relativity.Logging
 Relativity.Toggles
-
-
-
 FluentAssertions
 Moq
 NUnit

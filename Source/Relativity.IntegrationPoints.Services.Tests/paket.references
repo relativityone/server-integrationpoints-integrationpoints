@@ -1,5 +1,4 @@
 Castle.Windsor
-CSharpGuidelineAnalyzer
 LanguageExt.Core
 Relativity.IntegrationPoints.Contracts
 Relativity.IntegrationPoints.Services.Interfaces.Private
@@ -11,4 +10,3 @@ FluentAssertions
 Moq
 NUnit
 NSubstitute
-

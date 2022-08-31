@@ -1,5 +1,4 @@
 Castle.Windsor
-CSharpGuidelineAnalyzer
 kCura
 kCura.Apps.Common.Config
 LanguageExt.Core
@@ -14,4 +13,3 @@ Relativity.Telemetry.MetricsCollection
 Relativity.Toggles
 Polly
 Relativity.Logging.Interfaces
-

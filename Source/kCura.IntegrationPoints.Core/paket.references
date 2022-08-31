@@ -1,5 +1,4 @@
 Castle.Windsor
-CSharpGuidelineAnalyzer
 kCura
 kCura.Agent
 kCura.Apps.Common.Config
@@ -18,4 +17,3 @@ Relativity.OAuth2Client
 Relativity.OAuth2Client.Interfaces
 SystemWrapper.Wrappers
 iTextSharp
-

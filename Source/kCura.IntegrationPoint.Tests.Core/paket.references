@@ -1,6 +1,5 @@
 AutoMapper
 Castle.Windsor
-CSharpGuidelineAnalyzer
 kCura
 kCura.Apps.Common.Config
 LanguageExt.Core
@@ -17,9 +16,6 @@ Relativity.Logging
 kCura.FreeImage
 iTextSharp
 Relativity.Transfer.Client
-
-
-
 FluentAssertions
 Moq
 NUnit
