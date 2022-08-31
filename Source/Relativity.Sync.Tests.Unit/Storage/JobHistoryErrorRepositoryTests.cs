@@ -13,6 +13,7 @@ using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
+using Relativity.Sync.Transfer;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit.Storage
@@ -54,6 +55,13 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
         private readonly Guid _expectedErrorTypeItem = new Guid("9DDC4914-FEF3-401F-89B7-2967CD76714B");
         private readonly Guid _expectedErrorTypeJob = new Guid("FA8BB625-05E6-4BF7-8573-012146BAF19B");
+
+        private readonly Guid _jobHistoryErrorTypeGuid = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
+        private readonly Guid _jobHistoryRelationGuid = new Guid("8b747b91-0627-4130-8e53-2931ffc4135f");
+        private readonly Guid _jobHistoryTypeGuid = new Guid("08f4b1f7-9692-4a08-94ab-b5f3a88b6cc9");
+        private readonly Guid _itemLevelErrorGuid = new Guid("9DDC4914-FEF3-401F-89B7-2967CD76714B");
+        private readonly Guid _errorTypeGuid = new Guid("EEFFA5D3-82E3-46F8-9762-B4053D73F973");
+
         private ConfigurationStub _configuration;
 
         [SetUp]
@@ -147,7 +155,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
                 It.Is<int>(y => y == _TEST_WORKSPACE_ARTIFACT_ID),
                 It.IsAny<MassCreateRequest>()), Times.Exactly(expectedCalls));
         }
-        
+
         [Test]
         public void CreateMassAsync_ShouldRetry_WhenPRimaryKeyViolationOccurs()
         {
@@ -164,7 +172,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
             // Assert
             action.Should().Throw<ServiceException>();
-            
+
             _objectManagerMock.Verify(x => x.CreateAsync(
                 It.Is<int>(y => y == _TEST_WORKSPACE_ARTIFACT_ID),
                 It.IsAny<MassCreateRequest>()), Times.Exactly(expectedCalls));
@@ -182,7 +190,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
             // Act & Assert
             Func<Task> action = async () => await _sut.MassCreateAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID, itemLevelErrors).ConfigureAwait(false);
-            
+
             action.Should().ThrowAsync<SyncException>();
         }
 
@@ -278,13 +286,13 @@ namespace Relativity.Sync.Tests.Unit.Storage
         {
             // Arrange
             _configuration.LogItemLevelErrors = false;
-            
+
             CreateJobHistoryErrorDto itemLevelErrorDto = CreateJobHistoryErrorDto(_TEST_ERROR_TYPE_ITEM);
             CreateJobHistoryErrorDto jobLevelErrorDto = CreateJobHistoryErrorDto(ErrorType.Job);
 
             _objectManagerMock.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<MassCreateRequest>()))
                 .Returns((int workspaceId, MassCreateRequest request) => Task.FromResult(GetResultFrom(request, true)));
-            
+
             // Act 
             await _sut.MassCreateAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID, new List<CreateJobHistoryErrorDto>()
                 {
@@ -297,22 +305,139 @@ namespace Relativity.Sync.Tests.Unit.Storage
                 It.Is<MassCreateRequest>(y => y.ValueLists.Count == 1 && VerifyMassCreateRequest(y, jobLevelErrorDto))));
         }
 
+        [Test]
+        public async Task HasErrorsAsync_ShouldReturnTrue_WhenItemLevelErrorsExists_AndFailedItemsCountZero()
+        {
+            // Arrange
+            _objectManagerMock
+                .Setup(x => x.QueryAsync(_TEST_WORKSPACE_ARTIFACT_ID, It.Is<QueryRequest>(req => req.ObjectType.Guid == _jobHistoryErrorTypeGuid &&
+                                                                                                 req.Condition == $"('{_jobHistoryRelationGuid}' IN OBJECT [{_TEST_JOB_HISTORY_ARTIFACT_ID}]) AND ('{_errorTypeGuid}' == CHOICE {_itemLevelErrorGuid})"), 0, 1))
+                .ReturnsAsync(new QueryResult()
+                {
+                    ResultCount = 1
+                });
+
+            _objectManagerMock
+                .Setup(x => x.QueryAsync(_TEST_WORKSPACE_ARTIFACT_ID, It.Is<QueryRequest>(req => req.ObjectType.Guid == _jobHistoryTypeGuid &&
+                                                                                                 req.Condition == $"'Artifact ID' == '{_TEST_JOB_HISTORY_ARTIFACT_ID}'"), 0, 1))
+                .ReturnsAsync(new QueryResult()
+                {
+                    Objects = new List<RelativityObject>()
+                    {
+                        new RelativityObject()
+                        {
+                            FieldValues = new List<FieldValuePair>()
+                            {
+                                new FieldValuePair()
+                                {
+                                    Value = 0
+                                }
+                            }
+                        }
+                    }
+                });
+
+            // Act
+            bool hasErrors = await _sut.HasErrorsAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID);
+
+            // Assert
+            hasErrors.Should().BeTrue();
+        }
+
+        [Test]
+        public async Task HasErrorsAsync_ShouldReturnTrue_WhenNoItemLevelErrors_AndFailedItemsCountIsOne()
+        {
+            // Arrange
+            _objectManagerMock
+                .Setup(x => x.QueryAsync(_TEST_WORKSPACE_ARTIFACT_ID, It.Is<QueryRequest>(req => req.ObjectType.Guid == _jobHistoryErrorTypeGuid &&
+                                                                                                 req.Condition == $"('{_jobHistoryRelationGuid}' IN OBJECT [{_TEST_JOB_HISTORY_ARTIFACT_ID}]) AND ('{_errorTypeGuid}' == CHOICE {_itemLevelErrorGuid})"), 0, 1))
+                .ReturnsAsync(new QueryResult()
+                {
+                    Objects = new List<RelativityObject>()
+                });
+
+            _objectManagerMock
+                .Setup(x => x.QueryAsync(_TEST_WORKSPACE_ARTIFACT_ID, It.Is<QueryRequest>(req => req.ObjectType.Guid == _jobHistoryTypeGuid &&
+                                                                                                 req.Condition == $"'Artifact ID' == '{_TEST_JOB_HISTORY_ARTIFACT_ID}'"), 0, 1))
+                .ReturnsAsync(new QueryResult()
+                {
+                    Objects = new List<RelativityObject>()
+                    {
+                        new RelativityObject()
+                        {
+                            FieldValues = new List<FieldValuePair>()
+                            {
+                                new FieldValuePair()
+                                {
+                                    Value = 1
+                                }
+                            }
+                        }
+                    }
+                });
+
+            // Act
+            bool hasErrors = await _sut.HasErrorsAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID);
+
+            // Assert
+            hasErrors.Should().BeTrue();
+        }
+
+        [Test]
+        public async Task HasErrorsAsync_ShouldReturnFalse_WhenNoItemLevelErrors_AndFailedItemsCountIsZero()
+        {
+            // Arrange
+            _objectManagerMock
+                .Setup(x => x.QueryAsync(_TEST_WORKSPACE_ARTIFACT_ID, It.Is<QueryRequest>(req => req.ObjectType.Guid == _jobHistoryErrorTypeGuid &&
+                                                                                                 req.Condition == $"('{_jobHistoryRelationGuid}' IN OBJECT [{_TEST_JOB_HISTORY_ARTIFACT_ID}]) AND ('{_errorTypeGuid}' == CHOICE {_itemLevelErrorGuid})"), 0, 1))
+                .ReturnsAsync(new QueryResult()
+                {
+                    Objects = new List<RelativityObject>()
+                });
+
+            _objectManagerMock
+                .Setup(x => x.QueryAsync(_TEST_WORKSPACE_ARTIFACT_ID, It.Is<QueryRequest>(req => req.ObjectType.Guid == _jobHistoryTypeGuid &&
+                                                                                                 req.Condition == $"'Artifact ID' == '{_TEST_JOB_HISTORY_ARTIFACT_ID}'"), 0, 1))
+                .ReturnsAsync(new QueryResult()
+                {
+                    Objects = new List<RelativityObject>()
+                    {
+                        new RelativityObject()
+                        {
+                            FieldValues = new List<FieldValuePair>()
+                            {
+                                new FieldValuePair()
+                                {
+                                    Value = 0
+                                }
+                            }
+                        }
+                    }
+                });
+
+            // Act
+            bool hasErrors = await _sut.HasErrorsAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID);
+
+            // Assert
+            hasErrors.Should().BeFalse();
+        }
+
         private bool VerifyMassCreateRequest(MassCreateRequest request, CreateJobHistoryErrorDto dto)
         {
             Guid GetErrorType(CreateJobHistoryErrorDto errorDto)
             {
-                switch(errorDto.ErrorType)
+                switch (errorDto.ErrorType)
                 {
                     case ErrorType.Item:
                         return _expectedErrorTypeItem;
                     case ErrorType.Job:
                         return _expectedErrorTypeJob;
-                    
+
                     default:
                         return _expectedErrorTypeItem;
                 }
             }
-            
+
 #pragma warning disable RG2009 // Hardcoded Numeric Value
             IReadOnlyList<object> valueList = request.ValueLists[0];
 
@@ -432,6 +557,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
                 Success = success,
                 Objects = objects
             };
-        } 
+        }
     }
 }
