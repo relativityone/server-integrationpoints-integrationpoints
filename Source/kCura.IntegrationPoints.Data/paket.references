@@ -14,4 +14,6 @@ Relativity.DataExchange.Client.SDK
 Relativity.DataTransfer.Legacy.SDK
 Relativity.DataTransfer.MessageService
 iTextSharp
+Dapper
+Dapper.Contrib
 
