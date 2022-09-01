@@ -4,3 +4,5 @@ kCura.Agent
 kCura.Apps.Common.Config
 Relativity.Logging
 Relativity.Toggles
+Dapper
+Dapper.Contrib

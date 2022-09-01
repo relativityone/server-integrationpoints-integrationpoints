@@ -42,7 +42,7 @@ namespace kCura.ScheduleQueue.Core.Data
         {
             return new GetNextJobWithoutResourceGroup(_queueDbContext, agentId, agentTypeId, rootJobId);
         }
-        
+
         public ICommand UnlockScheduledJob(int agentId)
         {
             return new UnlockScheduledJob(_queueDbContext, agentId);
@@ -62,8 +62,8 @@ namespace kCura.ScheduleQueue.Core.Data
             DateTime nextRunTime, int AgentTypeID, string scheduleRuleType, string serializedScheduleRule, string jobDetails,
             int jobFlags, int SubmittedBy, long? rootJobID, long? parentJobID = null)
         {
-            return new CreateScheduledJob(_queueDbContext, workspaceID, relatedObjectArtifactID, taskType, nextRunTime, 
-                AgentTypeID, scheduleRuleType, serializedScheduleRule,  jobDetails,jobFlags,  SubmittedBy, rootJobID, parentJobID);
+            return new CreateScheduledJob(_queueDbContext, workspaceID, relatedObjectArtifactID, taskType, nextRunTime,
+                AgentTypeID, scheduleRuleType, serializedScheduleRule, jobDetails, jobFlags, SubmittedBy, rootJobID, parentJobID);
         }
 
         public ICommand CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID, string taskType, DateTime nextRunTime,
@@ -89,7 +89,7 @@ namespace kCura.ScheduleQueue.Core.Data
         {
             return new GetAllJobs(_queueDbContext);
         }
-        
+
         public IQuery<int> UpdateStopState(IList<long> jobIds, StopState state)
         {
             return new UpdateStopState(_queueDbContext, jobIds, state);
@@ -119,7 +119,7 @@ namespace kCura.ScheduleQueue.Core.Data
         {
             return new CheckAllSyncWorkerBatchesAreFinished(_queueDbContext, rootJobId);
         }
-        
+
         public IQuery<int> Heartbeat(long jobId, DateTime heartbeatTime)
         {
             return new UpdateHeartbeat(_queueDbContext, jobId, heartbeatTime);

@@ -5,22 +5,14 @@ namespace kCura.ScheduleQueue.Core.Data.Interfaces
 {
     public interface IQueueRepository
     {
-        Job AddJob(Job job);
+        long AddJob(Job job);
 
-        Job GetJob(int jobId);
-
-        Job GetJob(int relatedObjectId, string taskType);
+        Job GetJob(long jobId);
 
         IList<Job> GetAllJobs();
 
         bool UpdateJob(Job job);
 
-        bool DeleteJob(int jobId);
-
-        void CleanupQueue();
-
-        void CleanupQueue(string agentGuid);
-
-        bool AllSyncWorkerBatchesAreFinished(int rootJobId);
+        bool DeleteJob(long jobId);
     }
 }

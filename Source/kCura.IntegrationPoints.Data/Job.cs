@@ -5,9 +5,10 @@ using System.Text;
 
 namespace kCura.IntegrationPoints.Data
 {
-    [Table("ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D")]
+    [Table("[ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D]")]
     public class Job
     {
+        [Key]
         public long JobId { get; set; }
 
         public long? RootJobId { get; set; }
