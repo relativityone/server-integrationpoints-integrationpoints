@@ -2,6 +2,7 @@
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
+using Field = kCura.EventHandler.Field;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
@@ -27,7 +28,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
             var response = new Response
             {
                 Success = true,
-                Message = ""
+                Message = string.Empty,
             };
 
             try
@@ -35,11 +36,17 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
                 if (PageMode == EventHandler.Helper.PageMode.View)
                 {
                     IntegrationPointViewPreLoad.PreLoad(ActiveArtifact);
+                    IntegrationPointViewPreLoad.ResetSavedSearch(
+                    activeArtifact =>
+                    {
+                        Initialize(PageMode, ActiveLayout, activeArtifact, Application, Helper.GetActiveCaseID(), null);
+                    },
+                    ActiveArtifact);
                 }
             }
             catch (Exception e)
             {
-                var errorMessage = "Failed to execute PreLoadEventHandler";
+                string errorMessage = "Failed to execute PreLoadEventHandler";
                 Helper.GetLoggerFactory().GetLogger().ForContext<PreLoadEventHandler>().LogError(e, errorMessage);
                 response.Exception = e;
                 response.Success = false;
