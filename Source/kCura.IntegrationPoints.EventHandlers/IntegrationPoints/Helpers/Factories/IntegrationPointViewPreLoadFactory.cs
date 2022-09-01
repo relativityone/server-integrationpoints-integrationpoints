@@ -11,7 +11,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using Relativity.API;
-using Relativity.Data;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factories
 {
@@ -51,7 +50,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
                 relativityProviderSourceConfiguration,
                 relativityProviderDestinationConfiguration,
                 integrationPointBaseFieldsConstants,
-                relativityObjectManager);
+                relativityObjectManager,
+                helper);
         }
     }
 }

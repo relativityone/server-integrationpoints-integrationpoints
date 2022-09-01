@@ -41,8 +41,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
                     {
                         Initialize(PageMode, ActiveLayout, activeArtifact, Application, Helper.GetActiveCaseID(), null);
                     },
-                    ActiveArtifact,
-                    Helper);
+                    ActiveArtifact);
                 }
             }
             catch (Exception e)

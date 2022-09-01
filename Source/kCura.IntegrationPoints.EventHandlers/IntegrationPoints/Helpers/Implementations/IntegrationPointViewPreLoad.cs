@@ -21,25 +21,25 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
         private readonly IRelativityProviderConfiguration _relativityProviderSourceConfiguration;
         private readonly IRelativityProviderConfiguration _relativityProviderDestinationConfiguration;
         private readonly IRelativityObjectManager _objectManager;
+        private readonly IEHHelper _helper;
 
         public IntegrationPointViewPreLoad(
             ICaseServiceContext context,
             IRelativityProviderConfiguration relativityProviderSourceConfiguration,
             IRelativityProviderConfiguration relativityProviderDestinationConfiguration,
             IIntegrationPointBaseFieldsConstants fieldsConstants, 
-            IRelativityObjectManager objectManager)
+            IRelativityObjectManager objectManager,
+            IEHHelper helper)
         {
             _context = context;
             _relativityProviderSourceConfiguration = relativityProviderSourceConfiguration;
             _relativityProviderDestinationConfiguration = relativityProviderDestinationConfiguration;
             _fieldsConstants = fieldsConstants;
             _objectManager = objectManager;
+            _helper = helper;
         }
 
-        public void ResetSavedSearch(
-            Action<Artifact> initializeAction,
-            Artifact artifact,
-            IEHHelper helper)
+        public void ResetSavedSearch(Action<Artifact> initializeAction, Artifact artifact)
         {
             if (IsRelativityProvider(artifact))
             {
@@ -50,14 +50,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
                 if (savedSearchArtifactId == 0 & productionId == 0)
                 {
-                    int workspaceId = helper.GetActiveCaseID();
+                    int workspaceId = _helper.GetActiveCaseID();
 
-                    IAPILog logger = helper.GetLoggerFactory().GetLogger();
+                    IAPILog logger = _helper.GetLoggerFactory().GetLogger();
                     logger.LogWarning("savedSearchArtifactId is 0, trying to read it from database Integration Point settings.");
-                    int dbSavedSearchArtifactId = GetSavedSearchArtifactId(artifact, helper, workspaceId);
+                    int dbSavedSearchArtifactId = GetSavedSearchArtifactId(artifact, _helper, workspaceId);
                     sourceConfiguration["SavedSearchArtifactId"] = dbSavedSearchArtifactId;
 
-                    string savedSearchName = GetSavedSearchName(helper, dbSavedSearchArtifactId);
+                    string savedSearchName = GetSavedSearchName(_helper, dbSavedSearchArtifactId);
                     sourceConfiguration["SavedSearch"] = savedSearchName;
 
                     logger.LogInformation(

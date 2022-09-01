@@ -1,6 +1,5 @@
 ﻿using System;
 using kCura.EventHandler;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers
 {
@@ -8,6 +7,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers
     {
         void PreLoad(Artifact artifact);
 
-        void ResetSavedSearch(Action<Artifact> initializeAction, Artifact artifact, IEHHelper helper);
+        void ResetSavedSearch(Action<Artifact> initializeAction, Artifact artifact);
     }
 }

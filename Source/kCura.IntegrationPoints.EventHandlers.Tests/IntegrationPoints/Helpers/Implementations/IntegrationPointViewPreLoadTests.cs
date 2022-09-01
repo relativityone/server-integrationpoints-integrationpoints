@@ -56,6 +56,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
             _caseServiceContextMock = new Mock<ICaseServiceContext>();
             _relativityObjectManagerServiceMock = new Mock<IRelativityObjectManagerService>();
             _objectManagerMock = new Mock<IRelativityObjectManager>();
+            _helperMock = new Mock<IEHHelper>();
 
             _caseServiceContextMock.Setup(x => x.RelativityObjectManagerService).Returns(_relativityObjectManagerServiceMock.Object);
             _relativityObjectManagerServiceMock.Setup(x => x.RelativityObjectManager).Returns(_objectManagerMock.Object);
@@ -76,7 +77,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
                 _relativityProviderSourceConfigurationFake.Object,
                 _relativityProviderDestinationConfigurationMock.Object,
                 _fieldsConstants,
-                _objectManagerMock.Object);
+                _objectManagerMock.Object,
+                _helperMock.Object);
         }
 
         [Test]
@@ -142,7 +144,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
             PrepareResetSavedSearchMocks();
 
             // Act
-            _sut.ResetSavedSearch((artifact) => { }, _artifact, _helperMock.Object);
+            _sut.ResetSavedSearch((artifact) => { }, _artifact);
 
             // Assert
             ResetSavedSearchAssert(Times.Once(), Times.Once(), _SAVEDSEARCH_ARTIFACT_ID_VALUE.ToString());
@@ -167,7 +169,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
                 .Returns(sourceProvider);
 
             // Act
-            _sut.ResetSavedSearch((artifact) => { }, _artifact, _helperMock.Object);
+            _sut.ResetSavedSearch((artifact) => { }, _artifact);
 
             // Assert
             ResetSavedSearchAssert(Times.Never(), Times.Never(), savedSearchArtifactId.ToString());
@@ -183,7 +185,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
             PrepareResetSavedSearchMocks();
 
             // Act
-            _sut.ResetSavedSearch((artifact) => { }, _artifact, _helperMock.Object);
+            _sut.ResetSavedSearch((artifact) => { }, _artifact);
 
             // Assert
             ResetSavedSearchAssert(Times.Never(), Times.Never(), _PRODUCTION_ARTIFACT_ID_VALUE.ToString());
@@ -200,7 +202,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
             _dbContextMock.Setup(x => x.ExecuteSqlStatementAsScalar<string>(It.IsAny<string>())).Throws(new Exception());
 
             // Act
-            Action action = () => _sut.ResetSavedSearch((artifact) => { }, _artifact, _helperMock.Object);
+            Action action = () => _sut.ResetSavedSearch((artifact) => { }, _artifact);
 
             // Assert
             action.ShouldThrow<Exception>();
@@ -224,7 +226,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
             _objectManagerMock.Setup(x => x.QueryAsync(It.IsAny<QueryRequest>(), ExecutionIdentity.CurrentUser)).Throws(new Exception());
 
             // Act
-            Action action = () => _sut.ResetSavedSearch((artifact) => { }, _artifact, _helperMock.Object);
+            Action action = () => _sut.ResetSavedSearch((artifact) => { }, _artifact);
 
             // Assert
             action.ShouldThrow<Exception>();
@@ -292,7 +294,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
 
         private void PrepareResetSavedSearchMocks()
         {
-            _helperMock = new Mock<IEHHelper>();
             Mock<ILogFactory> loggerFactoryMock = new Mock<ILogFactory>();
             _loggerMock = new Mock<IAPILog>();
             _dbContextMock = new Mock<IDBContext>();
