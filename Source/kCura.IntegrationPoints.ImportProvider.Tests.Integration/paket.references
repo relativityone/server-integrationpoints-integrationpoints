@@ -1,5 +1,4 @@
 Castle.Windsor
-CSharpGuidelineAnalyzer
 kCura
 kCura.Apps.Common.Utils
 Relativity.API
@@ -10,11 +9,7 @@ Relativity.IntegrationPoints.Contracts
 Relativity.DataExchange.Client.SDK
 Relativity.Toggles
 iTextSharp
-
 Relativity.AutomatedWorkflows.SDK
-
-
-
 NSubstitute
 relativity.testing.identification
 Serilog

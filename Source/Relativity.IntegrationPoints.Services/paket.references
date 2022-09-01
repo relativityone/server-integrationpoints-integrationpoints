@@ -1,6 +1,5 @@
 AutoMapper
 Castle.Windsor
-CSharpGuidelineAnalyzer
 LanguageExt.Core
 Relativity
 Relativity.IntegrationPoints.Contracts
@@ -9,4 +8,3 @@ Relativity.Platform.Agent.WorkloadDiscovery.SDK
 Relativity.Services.Interfaces
 Relativity.Toggles
 Relativity.Logging.Interfaces
-

@@ -4,6 +4,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
@@ -255,7 +256,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 
     public class TestClass : IntegrationPointTaskBase
     {
-        public TestClass(ICaseServiceContext caseServiceContext,
+        public TestClass(
+            ICaseServiceContext caseServiceContext,
             IHelper helper,
             IDataProviderFactory dataProviderFactory,
             Apps.Common.Utils.Serializers.ISerializer serializer,
@@ -266,9 +268,19 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
             IManagerFactory managerFactory,
             IJobService jobService,
             IIntegrationPointRepository integrationPointRepository)
-            : base(caseServiceContext, helper, dataProviderFactory, serializer, appDomainRdoSynchronizerFactoryFactory,
-                jobHistoryService, jobHistoryErrorService, jobManager, managerFactory, jobService,
-                integrationPointRepository)
+            : base(
+                caseServiceContext,
+                helper,
+                dataProviderFactory,
+                serializer,
+                appDomainRdoSynchronizerFactoryFactory,
+                jobHistoryService,
+                jobHistoryErrorService,
+                jobManager,
+                managerFactory,
+                jobService,
+                integrationPointRepository,
+                new EmptyDiagnosticLog())
         {
         }
 

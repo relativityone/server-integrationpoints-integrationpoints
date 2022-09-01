@@ -1,5 +1,4 @@
 Castle.Windsor
-CSharpGuidelineAnalyzer
 kCura
 kCura.Apps.Common.Utils
 LanguageExt.Core
@@ -15,9 +14,6 @@ Relativity.Toggles
 SystemWrapper.Interfaces
 Relativity.DataTransfer.MessageService
 iTextSharp
-
-
-
 FluentAssertions
 Moq
 NUnit

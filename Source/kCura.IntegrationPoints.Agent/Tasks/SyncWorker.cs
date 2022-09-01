@@ -60,9 +60,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IJobService jobService,
             IProviderTypeService providerTypeService,
             IIntegrationPointRepository integrationPointRepository,
-            IDiagnosticLog diagnosticLog
-            ) :
-            base(caseServiceContext,
+            IDiagnosticLog diagnosticLog)
+            : base(
+                caseServiceContext,
                 helper,
                 dataProviderFactory,
                 serializer,
@@ -72,11 +72,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 jobManager,
                 managerFactory,
                 jobService,
-                integrationPointRepository)
+                integrationPointRepository,
+                diagnosticLog)
         {
             BatchStatus = statuses;
             _providerTypeService = providerTypeService;
-            DiagnosticLog = diagnosticLog;
             _statisticsService = statisticsService;
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<SyncWorker>();
         }
@@ -86,8 +86,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             get { return _batchStatus ?? (_batchStatus = new List<IBatchStatus>()); }
             set { _batchStatus = value; }
         }
-
-        protected IDiagnosticLog DiagnosticLog { get; }
 
         protected IJobStopManager JobStopManager { get; private set; }
 

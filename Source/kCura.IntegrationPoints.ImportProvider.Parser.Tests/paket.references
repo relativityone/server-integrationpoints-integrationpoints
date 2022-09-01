@@ -1,4 +1,3 @@
-CSharpGuidelineAnalyzer
 kCura
 kCura.Apps.Common.Utils
 Relativity.Data
@@ -7,9 +6,6 @@ Relativity.IntegrationPoints.Contracts
 SystemWrapper.Interfaces
 Relativity.DataTransfer.MessageService
 iTextSharp
-
-
-
 NUnit
 NSubstitute
 Moq

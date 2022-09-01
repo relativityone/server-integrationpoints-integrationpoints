@@ -1,4 +1,3 @@
-CSharpGuidelineAnalyzer
 kCura
 kCura.Apps.Common.Utils
 Relativity
@@ -7,4 +6,3 @@ Relativity.DataExchange.Client.SDK
 Relativity.DataTransfer.MessageService
 Relativity.IntegrationPoints.Contracts
 iTextSharp
-

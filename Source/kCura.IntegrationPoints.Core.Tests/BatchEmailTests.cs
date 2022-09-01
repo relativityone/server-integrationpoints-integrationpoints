@@ -7,6 +7,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Keywords;
@@ -71,7 +72,8 @@ namespace kCura.IntegrationPoints.Core.Tests
             _objectManagerServiceMock.Setup(x => x.RelativityObjectManager).Returns(_objectManagerMock.Object);
             _caseServiceContextMock.Setup(x => x.RelativityObjectManagerService).Returns(_objectManagerServiceMock.Object);
 
-            _sut = new BatchEmail(_caseServiceContextMock.Object,
+            _sut = new BatchEmail(
+                _caseServiceContextMock.Object,
                 _helperMock.Object,
                 _dataProviderFactory,
                 _jsonSerializer,
@@ -83,7 +85,8 @@ namespace kCura.IntegrationPoints.Core.Tests
                 _emailFormatterMock.Object,
                 _managerFactoryMock.Object,
                 _jobServiceMock.Object,
-                _integrationPointRepositoryMock.Object);
+                _integrationPointRepositoryMock.Object,
+                new EmptyDiagnosticLog());
         }
 
         [Test]
