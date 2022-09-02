@@ -109,6 +109,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             // Act
             using (_sut.ActivateTimer(_jobId, _jobDetails, _jobType))
             {
+                Thread.Sleep(100);
             }
 
             // Assert
