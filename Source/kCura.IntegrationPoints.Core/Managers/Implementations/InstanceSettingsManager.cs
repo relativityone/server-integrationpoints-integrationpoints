@@ -69,6 +69,20 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             }
         }
 
+        public int GetIApiBatchSize()
+        {
+            IInstanceSettingRepository instanceSettingRepository = _repositoryFactory.GetInstanceSettingRepository();
+            string ripIApiBatchSize = instanceSettingRepository.GetConfigurationValue(
+                Constants.InstanceSettings.INTEGRATION_POINTS_SECTION, Constants.InstanceSettings.IAPI_BATCH_SIZE);
+
+            if (int.TryParse(ripIApiBatchSize, out int ripIApiBatchSizeParsed))
+            {
+                return ripIApiBatchSizeParsed;
+            }
+
+            return 1000;
+        }
+
         public string GetWorkloadSizeSettings()
         {
             IInstanceSettingRepository instanceSettingRepository = _repositoryFactory.GetInstanceSettingRepository();
