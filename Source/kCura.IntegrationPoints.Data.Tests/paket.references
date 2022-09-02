@@ -1,5 +1,4 @@
 Castle.Windsor
-CSharpGuidelineAnalyzer
 LanguageExt.Core
 Relativity
 Relativity.API
@@ -9,9 +8,6 @@ Relativity.Services.Interfaces.Private
 Relativity.DataExchange.Client.SDK
 Relativity.DataTransfer.Legacy.SDK
 iTextSharp
-
-
-
 FluentAssertions
 Moq
 NUnit

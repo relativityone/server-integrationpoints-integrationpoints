@@ -1,5 +1,4 @@
 Castle.Windsor
-CSharpGuidelineAnalyzer
 kCura
 kCura.Apps.Common.Utils
 Relativity.DataExchange.Client.SDK
@@ -8,4 +7,3 @@ Relativity.Logging
 SystemWrapper.Interfaces
 Relativity.DataTransfer.MessageService
 iTextSharp
-

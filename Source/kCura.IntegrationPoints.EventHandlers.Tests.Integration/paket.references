@@ -1,5 +1,4 @@
 Castle.Windsor
-CSharpGuidelineAnalyzer
 kCura
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
@@ -14,9 +13,6 @@ Relativity.Logging.Interfaces
 Relativity.Telemetry.DataContracts.Shared
 Relativity.DataExchange.Client.SDK
 iTextSharp
-
-
-
 FluentAssertions
 NSubstitute
 Selenium.WebDriver

@@ -69,6 +69,19 @@
 			self.model.errors = ko.validation.group(self.model);
 			self.model.errors.showAllMessages(false);
 
+			self.model.fields.filterSourceField = ko.observable("");
+
+			self.model.fields.filterFields = function (fields, filter) {
+				let filterLowerCase = filter().toLowerCase();
+				let filteredFields = []
+				fields().forEach(field => {
+					if (field.displayName.toLowerCase().indexOf(filterLowerCase) > -1) {
+						filteredFields.push(field)
+					}
+				});
+				return filteredFields;
+			}
+
 			self.getAvailableFields = function (fieldName, fieldValue) {
 				self.ipModel.sourceConfiguration[fieldName] = fieldValue || 0;
 				self.ipModel.sourceConfiguration.ExportType = self.model.exportSource.TypeOfExport();
