@@ -11,9 +11,9 @@ namespace kCura.ScheduleQueue.Core.Data
 {
     public class QueueRepository : IQueueRepository
     {
-        private readonly IDBContext _dbContext;
+        private readonly IQueueDBContext _dbContext;
 
-        public QueueRepository(IDBContext dbContext)
+        public QueueRepository(IQueueDBContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -22,7 +22,7 @@ namespace kCura.ScheduleQueue.Core.Data
         {
             long jobId = 0;
 
-            using (SqlConnection connection = _dbContext.GetConnection())
+            using (SqlConnection connection = _dbContext.EddsDBContext.GetConnection())
             {
                 jobId = connection.Insert(job);
             }
@@ -34,7 +34,7 @@ namespace kCura.ScheduleQueue.Core.Data
         {
             List<Job> jobs = null;
 
-            using (SqlConnection connection = _dbContext.GetConnection())
+            using (SqlConnection connection = _dbContext.EddsDBContext.GetConnection())
             {
                 jobs = connection.GetAll<Job>().ToList();
             }
@@ -46,7 +46,7 @@ namespace kCura.ScheduleQueue.Core.Data
         {
             Job job = null;
 
-            using (SqlConnection connection = _dbContext.GetConnection())
+            using (SqlConnection connection = _dbContext.EddsDBContext.GetConnection())
             {
                 job = connection.Get<Job>(jobId);
             }
@@ -58,7 +58,7 @@ namespace kCura.ScheduleQueue.Core.Data
         {
             bool updated = false;
 
-            using (SqlConnection connection = _dbContext.GetConnection())
+            using (SqlConnection connection = _dbContext.EddsDBContext.GetConnection())
             {
                 updated = connection.Update(job);
             }
@@ -70,7 +70,7 @@ namespace kCura.ScheduleQueue.Core.Data
         {
             bool deleted = false;
 
-            using (SqlConnection connection = _dbContext.GetConnection())
+            using (SqlConnection connection = _dbContext.EddsDBContext.GetConnection())
             {
                 deleted = connection.Delete(new Job { JobId = jobId });
             }
