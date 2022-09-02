@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Metrics;
+using kCura.IntegrationPoints.Core.Extensions;
 using Relativity.API;
 using Relativity.Telemetry.APM;
 using Relativity.Toggles;
@@ -82,11 +83,10 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
                 {
                     { "JobId", jobId },
                     { "JobType", jobType },
-                    { "WorkflowId", workflowId}
+                    { "WorkflowId", workflowId }
                 };
-
-                _processMemoryHelper.GetApplicationSystemStatistics().ToList().ForEach(x => customData.Add(x.Key, x.Value));
-                _systemHealthReporter.GetSystemHealthStatistics().ToList().ForEach(x => customData.Add(x.Key, x.Value));
+                customData.AddDictionary(_processMemoryHelper.GetApplicationSystemStatistics());
+                customData.AddDictionary(_systemHealthReporter.GetSystemHealthStatistics());
 
                 _apmClient.CountOperation(_METRIC_NAME, correlationID: workflowId, customData: customData).Write();
                 _logger.LogInformation("Sending metric {@metricName} with properties: {@MetricProperties} and correlationID: {@CorrelationId}", _METRIC_LOG_NAME, customData, _ripMetric.GetWorkflowId());

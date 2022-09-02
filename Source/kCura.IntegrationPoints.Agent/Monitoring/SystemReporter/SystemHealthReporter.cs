@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Management;
 using kCura.IntegrationPoints.Core.Extensions;
-using kCura.Utility;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
