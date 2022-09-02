@@ -43,6 +43,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
         private const int _SAVEDSEARCH_ARTIFACT_ID_VALUE = 1234;
         private const string _PRODUCTION_ARTIFACT_ID_KEY = "SourceProductionId";
         private const int _PRODUCTION_ARTIFACT_ID_VALUE = 4321;
+        private const string _SOURCE_VIEW_ARTIFACT_ID_KEY = "SourceViewId";
+        private const int _SOURCE_VIEW_ARTIFACT_ID_VALUE = 2131;
         private const int _SOURCE_PROVIDER_VALUE = 1038696;
         private const int _WORKSPACE_ID = 432145;
 
@@ -189,6 +191,22 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers.
 
             // Assert
             ResetSavedSearchAssert(Times.Never(), Times.Never(), _PRODUCTION_ARTIFACT_ID_VALUE.ToString());
+        }
+
+        [Test]
+        public void ResetSavedSearch_ShouldNotUpdateSourceSavedSearchArtifactId_WhenSourceViewArtifactIdFound()
+        {
+            // Arrange
+            IDictionary<string, object> sourceConfiguration = new Dictionary<string, object>();
+            sourceConfiguration[_SOURCE_VIEW_ARTIFACT_ID_KEY] = _SOURCE_VIEW_ARTIFACT_ID_VALUE;
+            CreateArtifactFields(sourceConfiguration);
+            PrepareResetSavedSearchMocks();
+
+            // Act
+            _sut.ResetSavedSearch((artifact) => { }, _artifact);
+
+            // Assert
+            ResetSavedSearchAssert(Times.Never(), Times.Never(), _SOURCE_VIEW_ARTIFACT_ID_VALUE.ToString());
         }
 
         [Test]

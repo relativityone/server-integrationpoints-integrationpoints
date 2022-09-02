@@ -47,8 +47,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
                 int savedSearchArtifactId = GetDictionaryValue(sourceConfiguration, "SavedSearchArtifactId");
                 int productionId = GetDictionaryValue(sourceConfiguration, "SourceProductionId");
+                int sourceViewId = GetDictionaryValue(sourceConfiguration, "SourceViewId");
 
-                if (savedSearchArtifactId == 0 & productionId == 0)
+                if (savedSearchArtifactId == 0 & productionId == 0 & sourceViewId == 0)
                 {
                     int workspaceId = _helper.GetActiveCaseID();
 
