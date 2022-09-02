@@ -1,37 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Management;
+using kCura.IntegrationPoints.Core.Extensions;
 using kCura.Utility;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
 {
     public class SystemHealthReporter : ISystemHealthReporter
     {
-        private Dictionary<string, object> _systemHealthStatistics = new Dictionary<string, object>();
         private readonly IDiskUsageReporter _diskUsageReporter;
         private readonly IKeplerPingReporter _keplerPingReporter;
         private readonly IDatabasePingReporter _databasePingReporter;
+        private readonly IAPILog _logger;
 
         private PerformanceCounter _cpuUsageSystemTotal { get; } = new PerformanceCounter("Processor", "% Processor Time", "_Total");
 
-        public SystemHealthReporter(IDiskUsageReporter diskUsageReporter, IKeplerPingReporter keplerPingReporter, IDatabasePingReporter databasePingReporter)
+        public SystemHealthReporter(IDiskUsageReporter diskUsageReporter, IKeplerPingReporter keplerPingReporter, IDatabasePingReporter databasePingReporter, IAPILog logger)
         {
             _diskUsageReporter = diskUsageReporter;
             _keplerPingReporter = keplerPingReporter;
             _databasePingReporter = databasePingReporter;
+            _logger = logger;
         }
+
 
         public Dictionary<string, object> GetSystemHealthStatistics()
         {
-            AddToSystemHealthDictionary(_diskUsageReporter.GetFileShareUsage());
-            AddToSystemHealthDictionary(GetSystemDiscStatistics());
-            AddToSystemHealthDictionary(GetSystemCpuStatistics());
-            AddToSystemHealthDictionary(GetSystemMemoryStatistics());
-            AddToSystemHealthDictionary(GetKeplerServiceStatus());
-            AddToSystemHealthDictionary(GetDatabaseStatus());
-            return _systemHealthStatistics;
+            Dictionary<string, object> systemHealthStatistics = new Dictionary<string, object>();
+
+            systemHealthStatistics
+                .AddDictionary(_diskUsageReporter.GetFileShareUsage())
+                .AddDictionary(GetSystemDiscStatistics())
+                .AddDictionary(GetSystemCpuStatistics())
+                .AddDictionary(GetSystemMemoryStatistics())
+                .AddDictionary(GetKeplerServiceStatus())
+                .AddDictionary(GetDatabaseStatus());
+
+            return systemHealthStatistics;
         }
 
         private Dictionary<string, object> GetKeplerServiceStatus()
@@ -58,11 +67,6 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
             };
         }
 
-        private void AddToSystemHealthDictionary(Dictionary<string, object> additionalDictionary)
-        {
-            additionalDictionary.ToList().ForEach(f => _systemHealthStatistics.Add(f.Key, f.Value));
-        }
-
         private double GetSystemFreeMemoryPercentage()
         {
             var wmiObject = new ManagementObjectSearcher("select * from Win32_OperatingSystem");
@@ -86,14 +90,17 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
 
         private Dictionary<string, object> GetSystemDiscStatistics()
         {
-            DriveSpace systemDiscDrive = new DriveSpace("C");
-            double systemDiscFreePercent = systemDiscDrive.FreePercent;
-            long systemDiscFreeSpaceGB = systemDiscDrive.UsedSpace;
-            return new Dictionary<string, object>()
+            Dictionary<string, object> physicalDrivesStatistics = new Dictionary<string, object>();
+            DriveInfo[] drives = DriveInfo.GetDrives();
+            foreach (DriveInfo drive in drives)
             {
-                { "SystemDiscCUsage", systemDiscFreePercent },
-                { "SystemDiscCFreeSpaceGB", systemDiscFreeSpaceGB }
-            };
+                double freeSpace = drive.TotalFreeSpace;
+                double totalSize = drive.TotalSize;
+                physicalDrivesStatistics.Add($"SystemDisc{drive.Name}Usage", 100 * freeSpace / totalSize);
+                physicalDrivesStatistics.Add($"SystemDisc{drive.Name}FreeSpaceGB", freeSpace / (1024*1024*1024) );
+            }
+
+            return physicalDrivesStatistics;
         }
 
         private Dictionary<string, object> GetSystemCpuStatistics()

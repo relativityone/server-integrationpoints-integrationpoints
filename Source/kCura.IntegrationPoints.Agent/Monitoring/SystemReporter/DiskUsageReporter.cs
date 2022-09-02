@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using kCura.Utility;
+using kCura.Utility.Extensions;
 using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.ResourceServer;
@@ -23,6 +24,15 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
         {
             Dictionary<string, object> fileShareUsage = new Dictionary<string, object>();
             List<string> fileShares = GetFileServerUNCPaths().GetAwaiter().GetResult();
+
+            if (fileShares.IsNullOrEmpty())
+            {
+                return new Dictionary<string, object>
+                {
+                    { "FileServerListNotAvailableOrEmpty", 0 }
+                };
+            }
+
             foreach (var fileShare in fileShares)
             {
                 DriveSpace systemDiscDrive = new DriveSpace(fileShare);
@@ -36,20 +46,27 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
         private async Task<List<string>> GetFileServerUNCPaths()
         {
             List<string> serverList = new List<string>();
-            using (var resourceServer = _helper.GetServicesManager()
-                       .CreateProxy<IFileShareServerManager>(ExecutionIdentity.System))
+            try
             {
-                var resultSet = await resourceServer.QueryAsync(new Query()).ConfigureAwait(false);
-                foreach (Result<FileShareResourceServer> result in resultSet.Results)
+                using (var resourceServer = _helper.GetServicesManager()
+                           .CreateProxy<IFileShareServerManager>(ExecutionIdentity.System))
                 {
-                    Uri resultUri = new Uri(result.Artifact.UNCPath);
-                    if (!serverList.Contains(resultUri.Host))
+                    FileShareQueryResultSet resultSet = await resourceServer.QueryAsync(new Query()).ConfigureAwait(false);
+                    foreach (Result<FileShareResourceServer> result in resultSet.Results)
                     {
-                        _logger.LogInformation("Name: {FileServerName} UNC: {fileServerUNC}", result.Artifact.Name,
-                            result.Artifact.UNCPath);
-                        serverList.Add(resultUri.Host);
+                        Uri resultUri = new Uri(result.Artifact.UNCPath);
+                        if (!serverList.Contains(resultUri.Host))
+                        {
+                            _logger.LogInformation("Name: {FileServerName} UNC: {fileServerUNC}", result.Artifact.Name,
+                                result.Artifact.UNCPath);
+                            serverList.Add(resultUri.Host);
+                        }
                     }
                 }
+            }
+            catch (Exception exception)
+            {
+                _logger.LogWarning($"Cannot check instance file server usage. Exception {exception}");
             }
 
             return serverList;
