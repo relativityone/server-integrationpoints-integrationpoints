@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using Dapper.Contrib.Extensions;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core.Data.Interfaces;
-using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.Data
 {

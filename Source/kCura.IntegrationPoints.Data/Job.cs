@@ -1,7 +1,7 @@
-﻿using Dapper.Contrib.Extensions;
-using System;
+﻿using System;
 using System.Data;
 using System.Text;
+using Dapper.Contrib.Extensions;
 
 namespace kCura.IntegrationPoints.Data
 {
