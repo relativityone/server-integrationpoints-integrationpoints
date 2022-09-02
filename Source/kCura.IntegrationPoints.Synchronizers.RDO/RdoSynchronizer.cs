@@ -39,6 +39,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         private readonly IDiagnosticLog _diagnosticLog;
         private readonly IImportApiFactory _factory;
         private readonly IImportJobFactory _jobFactory;
+        private readonly IInstanceSettingsManager _instanceSettingsManager;
 
         protected readonly IRelativityFieldQuery FieldQuery;
 
@@ -116,13 +117,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         public event RowError OnDocumentError;
 
-        public RdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper, IDiagnosticLog diagnosticLog)
+        public RdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper, IDiagnosticLog diagnosticLog, IInstanceSettingsManager instanceSettingsManager)
         {
             FieldQuery = fieldQuery;
             _factory = factory;
             _jobFactory = jobFactory;
             _helper = helper;
             _diagnosticLog = diagnosticLog;
+            _instanceSettingsManager = instanceSettingsManager;
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoSynchronizer>();
         }
 
@@ -391,7 +393,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             ImportService importService = new ImportService(
                 settings,
                 importFieldMap,
-                new BatchManager(),
+                new BatchManager(_instanceSettingsManager.GetIApiBatchSize()),
                 nativeFileImportService,
                 _factory,
                 _jobFactory,

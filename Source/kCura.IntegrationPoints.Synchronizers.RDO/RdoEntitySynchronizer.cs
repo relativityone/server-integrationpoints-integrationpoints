@@ -29,9 +29,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         private readonly IAPILog _logger;
         private readonly IEntityManagerLinksSanitizer _entityManagerLinksSanitizer;
 
-        public RdoEntitySynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory,
-            IImportJobFactory jobFactory, IHelper helper, IEntityManagerLinksSanitizer entityManagerLinksSanitizer, IDiagnosticLog diagnosticLog)
-            : base(fieldQuery, factory, jobFactory, helper, diagnosticLog)
+        public RdoEntitySynchronizer(
+            IRelativityFieldQuery fieldQuery,
+            IImportApiFactory factory,
+            IImportJobFactory jobFactory,
+            IHelper helper,
+            IEntityManagerLinksSanitizer entityManagerLinksSanitizer,
+            IDiagnosticLog diagnosticLog,
+            IInstanceSettingsManager instanceSettingsManager)
+            : base(fieldQuery, factory, jobFactory, helper, diagnosticLog, instanceSettingsManager)
         {
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoEntitySynchronizer>();
             _entityManagerLinksSanitizer = entityManagerLinksSanitizer;

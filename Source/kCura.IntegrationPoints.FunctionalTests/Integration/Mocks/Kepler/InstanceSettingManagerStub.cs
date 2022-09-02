@@ -50,6 +50,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 RipInstanceSettings.DRAIN_STOP_TIMEOUT,
                 RipInstanceSettings.INTEGRATION_POINTS_SECTION,
                 settings => ((int)settings.DrainStopTimeout.TotalSeconds).ToString());
+
+            SetupInstanceSettingInternal(_context.InstanceSettings,
+                RipInstanceSettings.IAPI_BATCH_SIZE,
+                RipInstanceSettings.INTEGRATION_POINTS_SECTION,
+                settings => settings.IApiBatchSize.ToString());
         }
 
         private void SetupInstanceSettingInternal(InstanceSettings settings,

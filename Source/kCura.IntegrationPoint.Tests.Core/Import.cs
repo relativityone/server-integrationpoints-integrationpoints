@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Logging;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
 using Newtonsoft.Json;
@@ -47,8 +48,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 
             IHelper helper = Substitute.For<IHelper>();
             IRelativityFieldQuery relativityFieldQuery = Substitute.For<IRelativityFieldQuery>();
+            IInstanceSettingsManager instanceSettingsManager = Substitute.For<IInstanceSettingsManager>();
 
-            var rdoSynchronizer = new RdoSynchronizer(relativityFieldQuery, factory, jobFactory, helper, diagnosticLog);
+            var rdoSynchronizer = new RdoSynchronizer(relativityFieldQuery, factory, jobFactory, helper, diagnosticLog, instanceSettingsManager);
 
             var mapIdentifier = new FieldMap
             {

@@ -81,6 +81,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
             IIntegrationPointRepository integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
             IJobStatusUpdater jobStatusUpdater = Substitute.For<IJobStatusUpdater>();
             IJobTracker jobTrackerFake = Substitute.For<IJobTracker>();
+            IInstanceSettingsManager instanceSettingsManager = Substitute.For<IInstanceSettingsManager>();
 
             //Data Transfer Location
             IDataTransferLocationServiceFactory lsFactory = Substitute.For<IDataTransferLocationServiceFactory>();
@@ -92,10 +93,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
             _windsorContainer.Register(Component.For<IRelativityObjectManager>().Instance(ObjectManager));
 
             //TestRdoSynchronizer
-            TestRdoSynchronizer synchronizer = new TestRdoSynchronizer(_windsorContainer.Resolve<IRelativityFieldQuery>(),
+            TestRdoSynchronizer synchronizer = new TestRdoSynchronizer(
+                _windsorContainer.Resolve<IRelativityFieldQuery>(),
                 _windsorContainer.Resolve<IImportApiFactory>(),
                 _windsorContainer.Resolve<IImportJobFactory>(),
-                helper,diagnosticLog, SharedVariables.RelativityWebApiUrl, true, true);
+                helper,diagnosticLog, SharedVariables.RelativityWebApiUrl,
+                true,
+                true,
+                instanceSettingsManager);
             synchronizerFactory.CreateSynchronizer(Arg.Any<Guid>(), Arg.Any<string>()).Returns(synchronizer);
 
             //RSAPI

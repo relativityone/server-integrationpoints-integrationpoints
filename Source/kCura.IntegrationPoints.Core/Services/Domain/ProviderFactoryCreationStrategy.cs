@@ -9,7 +9,6 @@ namespace kCura.IntegrationPoints.Core.Services.Domain
 {
     public class ProviderFactoryLifecycleStrategy : AppDomainIsolatedFactoryLifecycleStrategy
     {
-
         private IWindsorContainer _windsorContainer;
         private readonly Guid _applicationId;
         private readonly IHelper _helper;
