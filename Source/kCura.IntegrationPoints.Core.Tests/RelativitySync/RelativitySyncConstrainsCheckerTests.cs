@@ -4,6 +4,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.RelativitySync;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -15,7 +16,7 @@ using NUnit.Framework;
 using Relativity;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Agent.Tests
+namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
 {
     [TestFixture, Category("Unit")]
     public class RelativitySyncConstrainsCheckerTests
@@ -101,7 +102,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
             _importSettings.ImageImport = false;
             _importSettings.ProductionImport = false;
 
-            bool result = _instance.ShouldUseRelativitySync(_job);
+            bool result = _instance.ShouldUseRelativitySync(_integrationPointId);
 
             Assert.IsTrue(result);
         }
@@ -124,7 +125,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
             _importSettings.ProductionImport = productionImport;
 
             // Act
-            bool result = _instance.ShouldUseRelativitySync(_job);
+            bool result = _instance.ShouldUseRelativitySync(_integrationPointId);
 
             // Assert
             return result;
@@ -140,7 +141,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
             _providerTypeService.Setup(s => s.GetProviderType(_sourceProviderId, _destinationProviderId))
                 .Returns(nonRelativityProviderType);
 
-            bool result = _instance.ShouldUseRelativitySync(_job);
+            bool result = _instance.ShouldUseRelativitySync(_integrationPointId);
 
             Assert.IsFalse(result);
         }
@@ -150,7 +151,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
         {
             _integrationPointService.Setup(s => s.ReadIntegrationPoint(_integrationPointId)).Throws<Exception>();
 
-            bool result = _instance.ShouldUseRelativitySync(_job);
+            bool result = _instance.ShouldUseRelativitySync(_integrationPointId);
 
             Assert.IsFalse(result);
         }
@@ -160,7 +161,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
         {
             _providerTypeService.Setup(s => s.GetProviderType(_sourceProviderId, _destinationProviderId)).Throws<Exception>();
 
-            bool result = _instance.ShouldUseRelativitySync(_job);
+            bool result = _instance.ShouldUseRelativitySync(_integrationPointId);
 
             Assert.IsFalse(result);
         }
@@ -170,7 +171,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
         {
             _configurationDeserializer.Setup(s => s.Deserialize<SourceConfiguration>(_sourceConfigurationString)).Throws<Exception>();
 
-            bool result = _instance.ShouldUseRelativitySync(_job);
+            bool result = _instance.ShouldUseRelativitySync(_integrationPointId);
 
             Assert.IsFalse(result);
         }
@@ -180,7 +181,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
         {
             _configurationDeserializer.Setup(s => s.Deserialize<ImportSettings>(_destinationConfigurationString)).Throws<Exception>();
 
-            bool result = _instance.ShouldUseRelativitySync(_job);
+            bool result = _instance.ShouldUseRelativitySync(_integrationPointId);
 
             Assert.IsFalse(result);
         }
@@ -190,7 +191,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
         {
             _job.ScheduleRuleType = "scheduled rule";
 
-            bool result = _instance.ShouldUseRelativitySync(_job);
+            bool result = _instance.ShouldUseRelativitySync(_integrationPointId);
 
             Assert.IsTrue(result);
         }
@@ -204,7 +205,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
             };
             _jobHistoryService.Setup(x => x.GetRdo(It.IsAny<Guid>())).Returns(jobHistory);
 
-            bool result = _instance.ShouldUseRelativitySync(_job);
+            bool result = _instance.ShouldUseRelativitySync(_integrationPointId);
 
             Assert.IsTrue(result);
         }

@@ -30,17 +30,17 @@ namespace kCura.IntegrationPoints.RelativitySync
         private readonly ISerializer _serializer;
         private readonly IJobHistoryService _jobHistoryService;
         private readonly IJobHistorySyncService _jobHistorySyncService;
-        private readonly IAPILog _logger;
         private readonly ISyncOperationsWrapper _syncOperations;
+        private readonly IAPILog _logger;
 
         public IntegrationPointToSyncConverter(ISerializer serializer, IJobHistoryService jobHistoryService,
-            IJobHistorySyncService jobHistorySyncService, IAPILog logger, ISyncOperationsWrapper syncOperations)
+            IJobHistorySyncService jobHistorySyncService, ISyncOperationsWrapper syncOperations, IAPILog logger)
         {
             _serializer = serializer;
             _jobHistoryService = jobHistoryService;
             _jobHistorySyncService = jobHistorySyncService;
-            _logger = logger;
             _syncOperations = syncOperations;
+            _logger = logger;
         }
 
         public async Task<int> CreateSyncConfigurationAsync(IExtendedJob job)

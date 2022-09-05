@@ -1,15 +1,15 @@
-﻿using kCura.IntegrationPoints.Data;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data;
 using Relativity;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
     public class SyncConfigurationService : ISyncConfigurationService
-    {    
+    {
         private readonly IHelper _helper;
         private readonly IAPILog _log;
 

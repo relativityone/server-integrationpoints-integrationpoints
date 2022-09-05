@@ -23,6 +23,9 @@
     <TextTransformPath>packages\Mono.TextTransform\tools\TextTransform.exe</TextTransformPath>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Relativity.Sync.Services.Interfaces">
+      <HintPath>..\..\..\sync\Source\Relativity.Sync.Services.Interfaces\bin\Relativity.Sync.Services.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.Net.Http" />

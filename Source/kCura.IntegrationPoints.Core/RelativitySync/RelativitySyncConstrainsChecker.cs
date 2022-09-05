@@ -1,42 +1,66 @@
 ﻿using System;
+using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Agent.Interfaces;
+using kCura.IntegrationPoints.Common.Interfaces;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity;
 using Relativity.API;
+using Relativity.Toggles;
 
-namespace kCura.IntegrationPoints.Agent
+namespace kCura.IntegrationPoints.Core.RelativitySync
 {
     internal sealed class RelativitySyncConstrainsChecker : IRelativitySyncConstrainsChecker
     {
         private readonly IAPILog _logger;
         private readonly IProviderTypeService _providerTypeService;
-        private readonly IIntegrationPointService _integrationPointService;
+        private readonly IToggleProvider _toggleProvider;
+        private readonly IRelativityObjectManager _relativityObjectManager;
         private readonly ISerializer _serializer;
 
-        public RelativitySyncConstrainsChecker(IIntegrationPointService integrationPointService,
+        public RelativitySyncConstrainsChecker(
+            IRelativityObjectManager relativityObjectManager,
             IProviderTypeService providerTypeService,
+            IToggleProvider toggleProvider,
             ISerializer serializer,
             IAPILog logger)
         {
-            _integrationPointService = integrationPointService;
+            _relativityObjectManager = relativityObjectManager;
             _providerTypeService = providerTypeService;
+            _toggleProvider = toggleProvider;
             _serializer = serializer;
             _logger = logger;
         }
 
-        public bool ShouldUseRelativitySync(Job job)
+        public async Task<bool> ShouldUseRelativitySyncAppAsync(int integrationPointId)
         {
-            _logger.LogInformation("Checking if Relativity Sync flow should be used for job with ID: {jobId}. IntegrationPointId: {integrationPointId}", job.JobId);
+            _logger.LogInformation("Checking if Relativity Sync application flow should be used for Integration Point ID: {integrationPointId}", integrationPointId);
+
+            bool isToggleEnabled = await _toggleProvider.IsEnabledAsync<EnableRelativitySyncApplicationToggle>().ConfigureAwait(false);
+
+            if (!isToggleEnabled)
+            {
+                _logger.LogInformation("Toggle {toggleName} is disabled - Relativity Sync application will not be used", typeof(EnableRelativitySyncApplicationToggle).FullName);
+                return false;
+            }
+
+            bool configurationAllowsUsingSync = ShouldUseRelativitySync(integrationPointId);
+
+            return configurationAllowsUsingSync;
+        }
+
+        public bool ShouldUseRelativitySync(int integrationPointId)
+        {
+            _logger.LogInformation("Checking if Relativity Sync flow should be used for IntegrationPoint ID: {integrationPointId}", integrationPointId);
 
             try
             {
-                IntegrationPoint integrationPoint = GetIntegrationPoint(job.RelatedObjectArtifactID);
+                IntegrationPoint integrationPoint = GetIntegrationPoint(integrationPointId);
                 ProviderType providerType = GetProviderType(integrationPoint.SourceProvider ?? 0,
                     integrationPoint.DestinationProvider ?? 0);
 
@@ -47,16 +71,14 @@ namespace kCura.IntegrationPoints.Agent
 
                     if (ConfigurationAllowsUsingRelativitySync(sourceConfiguration, importSettings))
                     {
-                        _logger.LogInformation("Relativity Sync flow will be used for job with ID: {jobId}. IntegrationPointId: {integrationPointId}",
-                            job.JobId, job.RelatedObjectArtifactID);
+                        _logger.LogInformation("Relativity Sync flow will be used for IntegrationPoint ID: {integrationPointId}", integrationPointId);
 
                         return true;
                     }
                 }
 
                 _logger.LogInformation(
-                    "Normal flow will be used for job with ID: {jobId} because this integration point does not meet conditions required for running Relativity Sync. IntegrationPointId: {integrationPointId}",
-                    job.JobId, job.RelatedObjectArtifactID);
+                    "Normal flow will be used because this integration point does not meet conditions required for running Relativity Sync. IntegrationPoint ID: {integrationPointId}", integrationPointId);
                 return false;
             }
             catch (Exception ex)
@@ -70,7 +92,14 @@ namespace kCura.IntegrationPoints.Agent
         {
             try
             {
-                IntegrationPoint integrationPoint = _integrationPointService.ReadIntegrationPoint(integrationPointId);
+                IntegrationPoint integrationPoint = _relativityObjectManager.Read<IntegrationPoint>(integrationPointId, new[]
+                {
+                    IntegrationPointFieldGuids.SourceProviderGuid,
+                    IntegrationPointFieldGuids.DestinationProviderGuid,
+                    IntegrationPointFieldGuids.SourceConfigurationGuid,
+                    IntegrationPointFieldGuids.DestinationConfigurationGuid
+                });
+
                 _logger.LogInformation("Integration Point with Id: {integrationPointId} retrieved successfully.", integrationPointId);
                 return integrationPoint;
             }

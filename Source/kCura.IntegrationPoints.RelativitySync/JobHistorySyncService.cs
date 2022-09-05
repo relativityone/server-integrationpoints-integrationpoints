@@ -25,8 +25,7 @@ namespace kCura.IntegrationPoints.RelativitySync
             _logger = logger.ForContext<JobHistorySyncService>();
         }
 
-        public async Task<RelativityObject> GetLastJobHistoryWithErrorsAsync(int workspaceID,
-            int integrationPointArtifactID)
+        public async Task<RelativityObject> GetLastJobHistoryWithErrorsAsync(int workspaceID, int integrationPointArtifactID)
         {
             string integrationPointCondition = $"('{JobHistoryFields.IntegrationPoint}' INTERSECTS MULTIOBJECT [{integrationPointArtifactID}])";
             string notRunningCondition = $"('{JobHistoryFields.EndTimeUTC}' ISSET)";
