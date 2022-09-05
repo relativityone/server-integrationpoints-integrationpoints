@@ -157,16 +157,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         private RdoEntitySynchronizer PrepareSut()
         {
             Mock<IEntityManagerLinksSanitizer> entityManagerLinksSanitizer = new Mock<IEntityManagerLinksSanitizer>();
-            Mock<IInstanceSettingsManager> instanceSettingsManager = new Mock<IInstanceSettingsManager>();
-            instanceSettingsManager.Setup(x => x.GetIApiBatchSize()).Returns(1000);
             return new RdoEntitySynchronizer(
                 _fieldQuery.Object,
                 GetMockAPI(_fieldQuery.Object),
                 _importJobFactory,
                 _helper.Object,
                 entityManagerLinksSanitizer.Object,
-                _diagnosticLogMock.Object,
-                instanceSettingsManager.Object);
+                _diagnosticLogMock.Object);
         }
     }
 }

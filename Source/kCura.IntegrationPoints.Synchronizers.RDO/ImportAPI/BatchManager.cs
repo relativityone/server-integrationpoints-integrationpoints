@@ -20,6 +20,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
         }
 
         public int MinimumBatchSize => _minBatchSize;
+
         public int CurrentSize => _dataSource.Count;
 
         public HashSet<string> ColumnNames { get; set; }

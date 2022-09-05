@@ -35,9 +35,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             IImportJobFactory jobFactory,
             IHelper helper,
             IEntityManagerLinksSanitizer entityManagerLinksSanitizer,
-            IDiagnosticLog diagnosticLog,
-            IInstanceSettingsManager instanceSettingsManager)
-            : base(fieldQuery, factory, jobFactory, helper, diagnosticLog, instanceSettingsManager)
+            IDiagnosticLog diagnosticLog)
+            : base(fieldQuery, factory, jobFactory, helper, diagnosticLog)
         {
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoEntitySynchronizer>();
             _entityManagerLinksSanitizer = entityManagerLinksSanitizer;

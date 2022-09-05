@@ -35,7 +35,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         private readonly IDiagnosticLog _diagnosticLog;
         private readonly IImportApiFactory _factory;
         private readonly IImportJobFactory _jobFactory;
-        private readonly IInstanceSettingsManager _instanceSettingsManager;
         private readonly IRelativityFieldQuery _fieldQuery;
 
         private bool _isJobComplete;
@@ -44,14 +43,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         private HashSet<string> _ignoredList;
         private string _webApiPath;
 
-        public RdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper, IDiagnosticLog diagnosticLog, IInstanceSettingsManager instanceSettingsManager)
+        public RdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper, IDiagnosticLog diagnosticLog)
         {
             _fieldQuery = fieldQuery;
             _factory = factory;
             _jobFactory = jobFactory;
             _helper = helper;
             _diagnosticLog = diagnosticLog;
-            _instanceSettingsManager = instanceSettingsManager;
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoSynchronizer>();
         }
 
@@ -73,6 +71,22 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         public int TotalRowsProcessed => ImportService?.TotalRowsProcessed ?? 0;
 
+        public string WebAPIPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_webApiPath))
+                {
+                    _webApiPath = Config.Config.Instance.WebApiPath;
+                    LogNewWebAPIPathValue();
+                }
+
+                return _webApiPath;
+            }
+
+            set => _webApiPath = value;
+        }
+
         protected bool? DisableNativeLocationValidation
         {
             get
@@ -87,22 +101,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             }
 
             set => _disableNativeLocationValidation = value;
-        }
-
-        protected string WebAPIPath
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(_webApiPath))
-                {
-                    _webApiPath = Config.Config.Instance.WebApiPath;
-                    LogNewWebAPIPathValue();
-                }
-
-                return _webApiPath;
-            }
-
-            set => _webApiPath = value;
         }
 
         protected bool? DisableNativeValidation
@@ -341,7 +339,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             ImportService importService = new ImportService(
                 settings,
                 importFieldMap,
-                new BatchManager(_instanceSettingsManager.GetIApiBatchSize()),
+                new BatchManager(),
                 nativeFileImportService,
                 _factory,
                 _jobFactory,

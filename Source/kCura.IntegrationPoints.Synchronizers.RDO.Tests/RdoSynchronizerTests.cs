@@ -31,7 +31,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         private Mock<IObjectTypeRepository> _objectTypeRepository;
         private Mock<IRelativityFieldQuery> _relativityFieldQuery;
         private Mock<IDiagnosticLog> _diagnosticLogMock;
-        private Mock<IInstanceSettingsManager> _instanceSettingsManager;
 
         public static RdoSynchronizer ChangeWebAPIPath(RdoSynchronizer synchronizer)
         {
@@ -61,20 +60,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             _importJobFactory = new Mock<IImportJobFactory>();
             _helper = MockHelper();
             _diagnosticLogMock = new Mock<IDiagnosticLog>();
-            _instanceSettingsManager = new Mock<IInstanceSettingsManager>();
         }
 
         private RdoSynchronizer PrepareSut()
         {
-            _instanceSettingsManager.Setup(x => x.GetIApiBatchSize()).Returns(1000);
             return ChangeWebAPIPath(
                 new RdoSynchronizer(
                     _relativityFieldQuery.Object,
                     RdoEntitySynchronizerTests.GetMockAPI(_relativityFieldQuery.Object),
                     _importJobFactory.Object,
                     _helper.Object,
-                    _diagnosticLogMock.Object,
-                    _instanceSettingsManager.Object));
+                    _diagnosticLogMock.Object));
         }
 
         [Test]
@@ -602,7 +598,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
             importApiFactory.Setup(x => x.GetImportApiFacade(It.IsAny<ImportSettings>()))
                 .Returns(new ImportApiFacade(importApiFactory.Object, new ImportSettings(), new Mock<IAPILog>().Object));
 
-            var sut = new RdoSynchronizer(relativityFieldQuery.Object, importApiFactory.Object, jobFactory.Object, _helper.Object, _diagnosticLogMock.Object, _instanceSettingsManager.Object);
+            var sut = new RdoSynchronizer(relativityFieldQuery.Object, importApiFactory.Object, jobFactory.Object, _helper.Object, _diagnosticLogMock.Object);
 
             // Act
             IEnumerable<FieldEntry> results = sut.GetFields(new DataSourceProviderConfiguration(options));
@@ -617,7 +613,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
     public class TestRdoSynchronizer : RdoSynchronizer
     {
         public TestRdoSynchronizer()
-          : base(null, null, Mock.Of<IImportJobFactory>(), RdoSynchronizerTests.MockHelper().Object, new Mock<IDiagnosticLog>().Object, new Mock<IInstanceSettingsManager>().Object)
+          : base(null, null, Mock.Of<IImportJobFactory>(), RdoSynchronizerTests.MockHelper().Object, new Mock<IDiagnosticLog>().Object)
         {
             WebAPIPath = kCura.IntegrationPoints.Domain.Constants.WEB_API_PATH;
             DisableNativeLocationValidation = false;
@@ -640,7 +636,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         private readonly WorkspaceRef _workspaceRef;
 
         public MockSynchronizer(WorkspaceRef workspaceRef)
-          : base(null, null, Mock.Of<IImportJobFactory>(), RdoSynchronizerTests.MockHelper().Object, new Mock<IDiagnosticLog>().Object, new Mock<IInstanceSettingsManager>().Object)
+          : base(null, null, Mock.Of<IImportJobFactory>(), RdoSynchronizerTests.MockHelper().Object, new Mock<IDiagnosticLog>().Object)
         {
             WebAPIPath = "WebAPIPath";
             DisableNativeLocationValidation = false;

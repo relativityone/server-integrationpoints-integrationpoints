@@ -6,11 +6,9 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Entity;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
@@ -23,7 +21,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Synchronizer
         private ImportProviderRdoSynchronizerFactory _sut;
         private Mock<IKernel> _kernel;
         private Mock<IObjectTypeRepository> _objectTypeRepository;
-        
 
         private const int _ARTIFACT_TYPE_ID = 3242;
         private readonly string _rdoEntitySynchronizerAssemblyName = typeof(RdoEntitySynchronizer).AssemblyQualifiedName;
@@ -94,9 +91,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Synchronizer
             logFactory.Setup(x => x.GetLogger()).Returns(logger.Object);
             var helper = new Mock<IHelper>();
             helper.Setup(x => x.GetLoggerFactory()).Returns(logFactory.Object);
-            Mock<IInstanceSettingsManager> instanceSettingsManager = new Mock<IInstanceSettingsManager>();
-            instanceSettingsManager.Setup(x => x.GetIApiBatchSize()).Returns(1000);
-            RdoEntitySynchronizer dataSynchronizer = new RdoEntitySynchronizer(null, null, null, helper.Object, null, null, instanceSettingsManager.Object);
+            RdoEntitySynchronizer dataSynchronizer = new RdoEntitySynchronizer(null, null, null, helper.Object, null, null);
             _kernel.Setup(x => x.Resolve<IDataSynchronizer>(_rdoEntitySynchronizerAssemblyName)).Returns(dataSynchronizer);
 
             return dataSynchronizer;

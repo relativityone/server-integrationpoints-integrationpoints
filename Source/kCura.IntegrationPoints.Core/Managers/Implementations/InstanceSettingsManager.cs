@@ -65,10 +65,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             {
                 return TimeSpan.FromSeconds(drainStopTimeoutParsed);
             }
-            else
-            {
-                return TimeSpan.FromMinutes(3);
-            }
+
+            return TimeSpan.FromMinutes(3);
         }
 
         public int GetIApiBatchSize()

@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
             bool disableNativeLocationValidation,
             bool disableNativeValidation,
             IInstanceSettingsManager instanceSettingsManager)
-          : base(fieldQuery, factory, jobFactory, helper, diagnosticLog, instanceSettingsManager)
+          : base(fieldQuery, factory, jobFactory, helper, diagnosticLog)
         {
             WebAPIPath = webApiPath;
             DisableNativeLocationValidation = disableNativeLocationValidation;
