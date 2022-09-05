@@ -376,9 +376,25 @@ Note: We need to disable _Natives File Location Validation_ using `AdvancedNativ
 
 We should cleanup created loadfiles in when batches are removed and job was finished.
 
+## Timeline
+
+1. We are going to implement basic scenario for documents push without _Long Text_ fields and without Native files
+
+2. Implement Retry Errors feature
+
+3. Extend Sync job with Long Text Fields (perhaps saved to files and with links in *.dat LoadFile)
+
+4. ADF/ADLS re-architecture to fully cover Sync Documents Flow (with CopyFiles Mode)
+
+5. Integrate with IAPI 2.0 for Images Flow
+
+6. Integrate with IAPI 2.0 for Non-Documents Flow
+
+_Note: After Documents flow will be fully integrated we are going in meantime to increase performance because there is a lot of low-hanging fruits
+
 ## Issues
 
-1. ADF/ALDS flow would need to be re-architectured to meet new requirements - there is no more streaming so the paths need to be stored directly in LoadFile and should follow Drain-Stop requirements
+1. ADF/ADLS flow would need to be re-architectured to meet new requirements - there is no more streaming so the paths need to be stored directly in LoadFile and should follow Drain-Stop requirements
 
 2. Tagging require some additional effort in comparison to IAPI 1.0 - it was for free there (we lose Create Saved Search feature)
 
