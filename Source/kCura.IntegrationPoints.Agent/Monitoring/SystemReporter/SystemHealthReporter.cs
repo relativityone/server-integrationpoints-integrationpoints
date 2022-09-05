@@ -90,13 +90,21 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
         private Dictionary<string, object> GetSystemDiscStatistics()
         {
             Dictionary<string, object> physicalDrivesStatistics = new Dictionary<string, object>();
-            DriveInfo[] drives = DriveInfo.GetDrives();
-            foreach (DriveInfo drive in drives)
+            try
             {
-                double freeSpace = drive.TotalFreeSpace;
-                double totalSize = drive.TotalSize;
-                physicalDrivesStatistics.Add($"SystemDisc{drive.Name}Usage", 100 * freeSpace / totalSize);
-                physicalDrivesStatistics.Add($"SystemDisc{drive.Name}FreeSpaceGB", freeSpace / (1024*1024*1024) );
+                DriveInfo[] drives = DriveInfo.GetDrives();
+                foreach (DriveInfo drive in drives)
+                {
+                    _logger.LogInformation($"Checking drive: {drive.Name}");
+                    double freeSpace = drive.TotalFreeSpace;
+                    double totalSize = drive.TotalSize;
+                    physicalDrivesStatistics.Add($"SystemDisc{drive.Name}Usage", 100 * freeSpace / totalSize);
+                    physicalDrivesStatistics.Add($"SystemDisc{drive.Name}FreeSpaceGB", freeSpace / (1024*1024*1024) );
+                }
+            }
+            catch (Exception exception)
+            {
+                _logger.LogWarning($"Cannot check physical drives. Exception {exception}");
             }
 
             return physicalDrivesStatistics;
