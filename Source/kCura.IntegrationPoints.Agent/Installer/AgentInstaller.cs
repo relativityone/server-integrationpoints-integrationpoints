@@ -179,9 +179,10 @@ namespace kCura.IntegrationPoints.Agent.Installer
             container.Register(Component.For<IMemoryUsageReporter>().ImplementedBy<SystemAndApplicationUsageReporter>().LifestyleTransient());
             container.Register(Component.For<IProcessMemoryHelper>().ImplementedBy<ProcessMemoryHelper>().LifestyleTransient());
             container.Register(Component.For<ISystemHealthReporter>().ImplementedBy<SystemHealthReporter>().LifestyleTransient());
-            container.Register(Component.For<IDiskUsageReporter>().ImplementedBy<DiskUsageReporter>().LifestyleTransient());
-            container.Register(Component.For<IKeplerPingReporter>().ImplementedBy<KeplerPingReporter>().LifestyleTransient());
-            container.Register(Component.For<IDatabasePingReporter>().ImplementedBy<DatabasePingReporter>().LifestyleTransient());
+            container.Register(Component.For<IHealthStatisticReporter>().ImplementedBy<FileShareDiskUsageReporter>().LifestyleTransient());
+            container.Register(Component.For<IHealthStatisticReporter>().ImplementedBy<KeplerPingReporter>().LifestyleTransient());
+            container.Register(Component.For<IHealthStatisticReporter>().ImplementedBy<DatabasePingReporter>().LifestyleTransient());
+            container.Register(Component.For<IHealthStatisticReporter>().ImplementedBy<SystemStatisticsReporter>().LifestyleTransient());
 
             container.Register(Component.For<IHeartbeatReporter>().ImplementedBy<HeartbeatReporter>().LifestyleTransient());
 

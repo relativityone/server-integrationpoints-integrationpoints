@@ -1,43 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Core.Extensions;
 using kCura.Utility;
-using kCura.Utility.Extensions;
 using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.ResourceServer;
 
 namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
 {
-    public class DiskUsageReporter : IDiskUsageReporter
+    public class FileShareDiskUsageReporter : IHealthStatisticReporter
     {
         private readonly IHelper _helper;
         private readonly IAPILog _logger;
 
-        public DiskUsageReporter(IHelper helper, IAPILog logger)
+        public FileShareDiskUsageReporter(IHelper helper, IAPILog logger)
         {
             _helper = helper;
             _logger = logger;
         }
 
-        public Dictionary<string, object> GetFileShareUsage()
+        public async Task<Dictionary<string, object>> GetStatisticAsync()
         {
             Dictionary<string, object> fileShareUsage = new Dictionary<string, object>();
-            List<string> fileShares = GetFileServerUNCPaths().GetAwaiter().GetResult();
-
-            if (fileShares.IsNullOrEmpty())
-            {
-                return new Dictionary<string, object>
-                {
-                    { "FileServerListNotAvailableOrEmpty", 0 }
-                };
-            }
+            List<string> fileShares = await GetFileServerUNCPaths().ConfigureAwait(false);
 
             foreach (var fileShare in fileShares)
             {
                 DriveSpace systemDiscDrive = new DriveSpace(fileShare);
-                long systemDiscFreeSpaceGb = systemDiscDrive.TotalFreeSpace / (1024 * 1024 * 1024);
-                fileShareUsage.Add(fileShare, systemDiscFreeSpaceGb);
+                double systemDiscFreeSpaceGb = systemDiscDrive.TotalFreeSpace;
+                fileShareUsage.Add(fileShare, systemDiscFreeSpaceGb.ConvertBytesToGigabytes());
             }
 
             return fileShareUsage;
@@ -66,11 +58,10 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
             }
             catch (Exception exception)
             {
-                _logger.LogWarning($"Cannot check instance file server usage. Exception {exception}");
+                _logger.LogWarning(exception, $"Cannot check instance file server usage.");
             }
 
             return serverList;
         }
-
     }
 }

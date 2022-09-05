@@ -86,7 +86,8 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
                     { "WorkflowId", workflowId }
                 };
                 customData.AddDictionary(_processMemoryHelper.GetApplicationSystemStatistics());
-                customData.AddDictionary(_systemHealthReporter.GetSystemHealthStatistics());
+                var dict = _systemHealthReporter.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult(); 
+                customData.AddDictionary(dict);
 
                 _apmClient.CountOperation(_METRIC_NAME, correlationID: workflowId, customData: customData).Write();
                 _logger.LogInformation("Sending metric {@metricName} with properties: {@MetricProperties} and correlationID: {@CorrelationId}", _METRIC_LOG_NAME, customData, _ripMetric.GetWorkflowId());

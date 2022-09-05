@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.Environmental;
 
 namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
 {
-    public class KeplerPingReporter : IKeplerPingReporter
+    public class KeplerPingReporter : IHealthStatisticReporter
     {
         private const string PING_RESPONSE = "OK";
         private readonly IHelper _helper;
@@ -17,9 +18,13 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
             _logger = logger;
         }
 
-        public bool IsKeplerServiceAccessible()
+
+        public async Task<Dictionary<string, object>> GetStatisticAsync()
         {
-            return PingKeplerService().GetAwaiter().GetResult();
+            return new Dictionary<string, object>()
+            {
+                { "IsKeplerServiceAccessible", await PingKeplerService().ConfigureAwait(false) }
+            };
         }
 
         private async Task<bool> PingKeplerService()
@@ -30,7 +35,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
                 using (var pingService = _helper.GetServicesManager().CreateProxy<IPingService>(ExecutionIdentity.System))
                 {
                     string pingResponse = await pingService.Ping().ConfigureAwait(false);
-                    ping = pingResponse.Equals(PING_RESPONSE);
+                    ping = pingResponse.Equals(PING_RESPONSE, StringComparison.InvariantCultureIgnoreCase);
                     return ping;
                 }
             }

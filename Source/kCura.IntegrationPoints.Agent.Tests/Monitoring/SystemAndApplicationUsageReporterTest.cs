@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                     { "CpuUsageProcess",  _dummyMemorySize}
                 });
 
-            _systemHealthReporterMock.Setup(x => x.GetSystemHealthStatistics()).Returns(
+            _systemHealthReporterMock.Setup(x => x.GetSystemHealthStatisticsAsync()).ReturnsAsync(
                 new Dictionary<string, object>()
                 {
                     { "SystemHealth", _dummyMemorySize }

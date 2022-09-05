@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using kCura.IntegrationPoints.Core.Extensions;
 
 namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 {
     public class ProcessMemoryHelper : IProcessMemoryHelper
     {
-        private static Process currentProcess { get; set; } = Process.GetCurrentProcess();
-
-        private PerformanceCounter _cpuUsageProcess { get; set; } = new PerformanceCounter("Process", "% Processor Time", currentProcess.ProcessName);
+        private PerformanceCounter _cpuUsageProcess = new PerformanceCounter("Process", "% Processor Time", _currentProcess.ProcessName);
+        private static Process _currentProcess = Process.GetCurrentProcess();
 
         public Dictionary<string, object> GetApplicationSystemStatistics()
         {
-            int megaDivider = (1024 * 1024);
-            long memoryProcess = AppDomain.MonitoringSurvivedProcessMemorySize / megaDivider;
-            long appDomainCurrentMemory = AppDomain.CurrentDomain.MonitoringSurvivedMemorySize / megaDivider;
-            long appDomainLifetimeTotalAllocatedMemory = AppDomain.CurrentDomain.MonitoringTotalAllocatedMemorySize / megaDivider;
-            long memoryUsage = GetCurrentProcessMemoryUsage() / megaDivider;
-            float cpuUsageProcess = _cpuUsageProcess.NextValue() / Environment.ProcessorCount;
+            double memoryProcess = MakeItHumanReadable(AppDomain.MonitoringSurvivedProcessMemorySize);
+            double appDomainCurrentMemory = MakeItHumanReadable(AppDomain.CurrentDomain.MonitoringSurvivedMemorySize);
+            double appDomainLifetimeTotalAllocatedMemory = MakeItHumanReadable(AppDomain.CurrentDomain.MonitoringTotalAllocatedMemorySize);
+            double memoryUsage = MakeItHumanReadable(GetCurrentProcessMemoryUsage());
+            double cpuUsageProcess = Math.Round((_cpuUsageProcess.NextValue() / Environment.ProcessorCount), 2);
 
             Dictionary<string, object> appSystemStats = new Dictionary<string, object>()
                 {
@@ -32,8 +31,12 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 
         private long GetCurrentProcessMemoryUsage()
         {
-            return currentProcess.PrivateMemorySize64;
+            return _currentProcess.PrivateMemorySize64;
         }
 
+        private double MakeItHumanReadable(double number)
+        {
+            return number.ConvertBytesToGigabytes();
+        }
     }
 }
