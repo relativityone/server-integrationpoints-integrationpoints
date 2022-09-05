@@ -30,6 +30,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             {
                 return false;
             }
+
             return bool.TryParse(allowNoSnapshotImportSetting, out bool allowNoSnapshotImport) && allowNoSnapshotImport;
         }
 
@@ -42,6 +43,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             {
                 return false;
             }
+
             return bool.TryParse(restrictReferentialFileLinksSetting, out bool restrictReferentialFileLinks) && restrictReferentialFileLinks;
         }
 

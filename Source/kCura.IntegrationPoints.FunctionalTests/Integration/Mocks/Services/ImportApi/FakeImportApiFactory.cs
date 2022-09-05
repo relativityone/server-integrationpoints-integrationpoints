@@ -1,5 +1,4 @@
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.Relativity.ImportAPI;
 using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 
@@ -15,7 +14,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
             _importApi = null;
             _facade = facade;
         }
-        
+
         public FakeImportApiFactory(IImportAPI importApi, IImportApiFacade facade)
         {
             _importApi = importApi;

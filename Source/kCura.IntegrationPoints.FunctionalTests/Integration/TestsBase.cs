@@ -19,6 +19,7 @@ using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.LDAPProvider.Installers;
 using kCura.IntegrationPoints.RelativitySync;
@@ -261,6 +262,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
             // IAPI
             Container.Register(Component.For<IImportJobFactory>().ImplementedBy<FakeImportApiJobFactory>().LifestyleTransient().IsDefault());
             Container.Register(Component.For<kCura.IntegrationPoints.Synchronizers.RDO.IImportApiFactory>().ImplementedBy<FakeImportApiFactory>().IsDefault());
+            Container.Register(Component.For<IInstanceSettingsManager>().ImplementedBy<FakeInstanceSettingsManager>().IsDefault());
             Container.Register(Component.For<IImportApiFacade>().ImplementedBy<FakeImportApiFacade>().IsDefault());
             Container.Register(Component.For<IWebApiConfig>().UsingFactoryMethod(c => new FakeWebApiConfig()).LifestyleTransient().IsDefault());
             Container.Register(Component.For<IWinEddsBasicLoadFileFactory>().UsingFactoryMethod(c => new FakeWinEddsBasicLoadFileFactory()).LifestyleTransient().IsDefault());
