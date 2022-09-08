@@ -205,7 +205,7 @@ namespace kCura.IntegrationPoints.Core
             public const string BLOCKED_HOSTS = "BlockedIPs";
             public const string DRAIN_STOP_TIMEOUT = "DrainStopTimeoutSeconds";
             public const string WORKLOAD_SIZE_SETTINGS = "WorkloadSizeSettings";
-            public const string IAPI_BATCH_SIZE = "RipImportApiBatchSize";
+            public const string IAPI_BATCH_SIZE = "ImportApiBatchSize";
 
             public const string LONG_TEXT_LIMIT_SECTION = "kCura.EDDS.Web";
             public const string LONG_TEXT_LIMIT_NAME = "MaximumNumberOfCharactersSupportedByLongText";
