@@ -24,6 +24,8 @@ IAPI 2.0 SDK - <https://git.kcura.com/projects/DTX/repos/relativity-import-sdk/b
 - IAPI 2.0 doesn't send ItemLevelErrors events anymore (we read them in pack)
 - IAPI 2.0 handles Pasue, Cancel, Drain-Stop on it's own
 
+Note: Streaming in IAPI 2.0 is on the roadmap so in the feature we are going to align into it for performance improvements.
+
 ## SYNC Re-Architecture Decision
 
 Present Relativity.Sync architecture process whole sync in batches (25k each) one after another in `*SynchronizationExecutor`:
