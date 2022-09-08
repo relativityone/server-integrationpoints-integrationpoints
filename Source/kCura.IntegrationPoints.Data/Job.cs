@@ -1,31 +1,16 @@
 ﻿using System;
 using System.Data;
 using System.Text;
+using Dapper.Contrib.Extensions;
 
 namespace kCura.IntegrationPoints.Data
 {
+    [Table("[ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D]")]
     public class Job
     {
-        public long JobId { get; private set; }
-        public long? RootJobId { get; private set; }
-        public long? ParentJobId { get; private set; }
-        public int AgentTypeID { get; private set; }
-        public int? LockedByAgentID { get; private set; }
-        public int WorkspaceID { get; private set; }
-        public int RelatedObjectArtifactID { get; private set; }
-        public string TaskType { get; private set; }
-        public DateTime NextRunTime { get; set; }
-        public DateTime? LastRunTime { get; set; }
-        public string ScheduleRuleType { get; set; }
-        public string SerializedScheduleRule { get; set; }
-        public string JobDetails { get; set; }
-        public int JobFlags { get; set; }
-        public DateTime SubmittedDate { get; set; }
-        public int SubmittedBy { get; set; }
-        public StopState StopState { get; set; }
-        public DateTime? Heartbeat { get; set; }
-
-        public IsJobFailed JobFailed { get; private set; }
+        public Job()
+        {
+        }
 
         public Job(DataRow row)
         {
@@ -44,15 +29,50 @@ namespace kCura.IntegrationPoints.Data
             SubmittedDate = row.Field<DateTime>("SubmittedDate");
             SubmittedBy = row.Field<int>("SubmittedBy");
             ScheduleRuleType = row.Field<string>("ScheduleRuleType");
-            SerializedScheduleRule = row.Field<string>("ScheduleRule");
+            ScheduleRule = row.Field<string>("ScheduleRule");
             StopState = (StopState)row.Field<int>("StopState");
             Heartbeat = row.Field<DateTime?>("Heartbeat");
         }
 
-        private Job()
-        {
+        [Key]
+        public long JobId { get; set; }
 
-        }
+        public long? RootJobId { get; set; }
+
+        public long? ParentJobId { get; set; }
+
+        public int AgentTypeID { get; set; }
+
+        public int? LockedByAgentID { get; set; }
+
+        public int WorkspaceID { get; set; }
+
+        public int RelatedObjectArtifactID { get; set; }
+
+        public string TaskType { get; set; }
+
+        public DateTime NextRunTime { get; set; }
+
+        public DateTime? LastRunTime { get; set; }
+
+        public string ScheduleRuleType { get; set; }
+
+        public string ScheduleRule { get; set; }
+
+        public string JobDetails { get; set; }
+
+        public int JobFlags { get; set; }
+
+        public DateTime SubmittedDate { get; set; }
+
+        public int SubmittedBy { get; set; }
+
+        public StopState StopState { get; set; }
+
+        public DateTime? Heartbeat { get; set; }
+
+        [Write(false)]
+        public IsJobFailed JobFailed { get; private set; }
 
         public void MarkJobAsFailed(Exception ex, bool shouldBreakSchedule)
         {
@@ -78,7 +98,7 @@ namespace kCura.IntegrationPoints.Data
                 NextRunTime = NextRunTime,
                 LastRunTime = LastRunTime,
                 ScheduleRuleType = ScheduleRuleType,
-                SerializedScheduleRule = SerializedScheduleRule,
+                ScheduleRule = ScheduleRule,
                 JobDetails = JobDetails != null ? "<sensitive_data>" : null,
                 JobFlags = JobFlags,
                 SubmittedDate = SubmittedDate,
@@ -91,7 +111,10 @@ namespace kCura.IntegrationPoints.Data
         public bool IsBlocked()
         {
             if (StopState != StopState.None && StopState != StopState.DrainStopped && LockedByAgentID == null)
+            {
                 return true;
+            }
+
             return false;
         }
 
@@ -118,7 +141,6 @@ namespace kCura.IntegrationPoints.Data
             {
                 return "<stringify_job_failed>";
             }
-
         }
     }
 }

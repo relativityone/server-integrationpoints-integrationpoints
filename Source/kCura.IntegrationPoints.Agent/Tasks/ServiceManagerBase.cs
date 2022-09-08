@@ -245,7 +245,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             try
             {
                 IntegrationPointDto.LastRuntimeUTC = DateTime.UtcNow;
-                if (job.SerializedScheduleRule != null)
+                if (job.ScheduleRule != null)
                 {
                     if (Result.Status == TaskStatusEnum.None)
                     {

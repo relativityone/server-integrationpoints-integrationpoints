@@ -1856,6 +1856,18 @@
       <Name>Azure.Storage.Common.dll</Name>
       <Notes />
     </Assembly>
+    <Assembly>
+      <ArtifactId>5537801</ArtifactId>
+      <Keywords />
+      <Name>Dapper.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>5537802</ArtifactId>
+      <Keywords />
+      <Name>Dapper.Contrib.dll</Name>
+      <Notes />
+    </Assembly>
   </Assemblies>
   <ResourceFiles>
     <ResourceFile>
@@ -1875,7 +1887,7 @@
     </ResourceFile>
   </ResourceFiles>
   <ExternalTabs />
-  <ExtractionDate>2022-07-22T11:35:58.7551398Z</ExtractionDate>
+  <ExtractionDate>2022-09-01T12:23:42.9477423Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -11936,7 +11948,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>16.0.30.0</RelativityVersion>
-  <Version>12.2.15.45</Version>
+  <Version>12.2.15.46</Version>
   <SchemaVersion>11.3.10.20</SchemaVersion>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>5e8b02a8-6e33-4426-a0f0-3594d83725d0</OriginSignature>

@@ -74,6 +74,8 @@ nuget System.ValueTuple
 nuget iTextSharp 5.5.13.1
 nuget SystemWrapper.Interfaces 0.25.0.186
 nuget System.Runtime.CompilerServices.Unsafe ~> 6.0.0 
+nuget Dapper 2.0.123
+nuget Dapper.Contrib 2.0.78
 
 // Test Packages
 nuget BenchmarkDotNet 0.10.12

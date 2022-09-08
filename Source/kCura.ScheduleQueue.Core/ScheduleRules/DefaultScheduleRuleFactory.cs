@@ -16,7 +16,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
         public IScheduleRule Deserialize(Job job)
         {
             string scheduleRuleType = job.ScheduleRuleType;
-            string serializedString = job.SerializedScheduleRule;
+            string serializedString = job.ScheduleRule;
             IScheduleRule rule;
 
             if (string.IsNullOrEmpty(serializedString))
@@ -52,7 +52,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             IScheduleRule rule;
             try
             {
-                rule = (IScheduleRule) SerializerHelper.DeserializeUsingTypeName(AppDomain.CurrentDomain, job.ScheduleRuleType, job.SerializedScheduleRule);
+                rule = (IScheduleRule) SerializerHelper.DeserializeUsingTypeName(AppDomain.CurrentDomain, job.ScheduleRuleType, job.ScheduleRule);
             }
             catch (Exception)
             {

@@ -359,7 +359,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         {
             // arrange
             int itemCount = 97894;
-            _job.SerializedScheduleRule = null;
+            _job.ScheduleRule = null;
             PreJobExecutionGoldFlowSetup();
             _syncManagerEventHelper.RaisePreEvent(_job, _taskResult);
             _integrationPoint.NextScheduledRuntimeUTC = null;
@@ -380,7 +380,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         {
             // arrange
             int itemCount = 97894;
-            _job.SerializedScheduleRule = "blah blah";
+            _job.ScheduleRule = "blah blah";
             PreJobExecutionGoldFlowSetup();
             _syncManagerEventHelper.RaisePreEvent(_job, _taskResult);
             _syncManagerEventHelper.BatchJobCount = 0;
@@ -404,7 +404,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             Exception exception3 = new Exception();
             Exception exception4 = new Exception();
             Exception exception5 = new Exception();
-            _job.SerializedScheduleRule = "blah blah";
+            _job.ScheduleRule = "blah blah";
             PreJobExecutionGoldFlowSetup();
             _jobStopManager.IsStopRequested().Returns(true);
 
