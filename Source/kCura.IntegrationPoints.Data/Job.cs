@@ -8,6 +8,32 @@ namespace kCura.IntegrationPoints.Data
     [Table("[ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D]")]
     public class Job
     {
+        public Job()
+        {
+        }
+
+        public Job(DataRow row)
+        {
+            JobId = row.Field<long>("JobID");
+            RootJobId = row.Field<long?>("RootJobId");
+            ParentJobId = row.Field<long?>("ParentJobId");
+            AgentTypeID = row.Field<int>("AgentTypeID");
+            LockedByAgentID = row.Field<int?>("LockedByAgentID");
+            WorkspaceID = row.Field<int>("WorkspaceID");
+            RelatedObjectArtifactID = row.Field<int>("RelatedObjectArtifactID");
+            TaskType = row.Field<string>("TaskType");
+            NextRunTime = row.Field<DateTime>("NextRunTime");
+            LastRunTime = row.Field<DateTime?>("LastRunTime");
+            JobDetails = row.Field<string>("JobDetails");
+            JobFlags = row.Field<int>("JobFlags");
+            SubmittedDate = row.Field<DateTime>("SubmittedDate");
+            SubmittedBy = row.Field<int>("SubmittedBy");
+            ScheduleRuleType = row.Field<string>("ScheduleRuleType");
+            ScheduleRule = row.Field<string>("ScheduleRule");
+            StopState = (StopState)row.Field<int>("StopState");
+            Heartbeat = row.Field<DateTime?>("Heartbeat");
+        }
+
         [Key]
         public long JobId { get; set; }
 
@@ -47,33 +73,6 @@ namespace kCura.IntegrationPoints.Data
 
         [Write(false)]
         public IsJobFailed JobFailed { get; private set; }
-
-        public Job(DataRow row)
-        {
-            JobId = row.Field<long>("JobID");
-            RootJobId = row.Field<long?>("RootJobId");
-            ParentJobId = row.Field<long?>("ParentJobId");
-            AgentTypeID = row.Field<int>("AgentTypeID");
-            LockedByAgentID = row.Field<int?>("LockedByAgentID");
-            WorkspaceID = row.Field<int>("WorkspaceID");
-            RelatedObjectArtifactID = row.Field<int>("RelatedObjectArtifactID");
-            TaskType = row.Field<string>("TaskType");
-            NextRunTime = row.Field<DateTime>("NextRunTime");
-            LastRunTime = row.Field<DateTime?>("LastRunTime");
-            JobDetails = row.Field<string>("JobDetails");
-            JobFlags = row.Field<int>("JobFlags");
-            SubmittedDate = row.Field<DateTime>("SubmittedDate");
-            SubmittedBy = row.Field<int>("SubmittedBy");
-            ScheduleRuleType = row.Field<string>("ScheduleRuleType");
-            ScheduleRule = row.Field<string>("ScheduleRule");
-            StopState = (StopState)row.Field<int>("StopState");
-            Heartbeat = row.Field<DateTime?>("Heartbeat");
-        }
-
-        public Job()
-        {
-
-        }
 
         public void MarkJobAsFailed(Exception ex, bool shouldBreakSchedule)
         {
@@ -142,7 +141,6 @@ namespace kCura.IntegrationPoints.Data
             {
                 return "<stringify_job_failed>";
             }
-
         }
     }
 }

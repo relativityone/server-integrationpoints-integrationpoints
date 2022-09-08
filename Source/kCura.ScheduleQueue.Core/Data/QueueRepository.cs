@@ -1,28 +1,38 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using Dapper.Contrib.Extensions;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core.Data.Interfaces;
+using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.Data
 {
     public class QueueRepository : IQueueRepository
     {
         private readonly IQueueDBContext _dbContext;
+        private readonly IAPILog _logger;
 
-        public QueueRepository(IQueueDBContext dbContext)
+        public QueueRepository(IQueueDBContext dbContext, IAPILog logger)
         {
             _dbContext = dbContext;
+            _logger = logger;
         }
 
         public long AddJob(Job job)
         {
             long jobId = 0;
-
-            using (SqlConnection connection = _dbContext.EddsDBContext.GetConnection())
+            try
             {
-                jobId = connection.Insert(job);
+                using (SqlConnection connection = _dbContext.EddsDBContext.GetConnection())
+                {
+                    jobId = connection.Insert(job);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Could not add job to ScheduleAgentQueue");
             }
 
             return jobId;
@@ -31,10 +41,16 @@ namespace kCura.ScheduleQueue.Core.Data
         public IList<Job> GetAllJobs()
         {
             List<Job> jobs = null;
-
-            using (SqlConnection connection = _dbContext.EddsDBContext.GetConnection())
+            try
             {
-                jobs = connection.GetAll<Job>().ToList();
+                using (SqlConnection connection = _dbContext.EddsDBContext.GetConnection())
+                {
+                    jobs = connection.GetAll<Job>().ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Could not get all jobs from ScheduleAgentQueue");
             }
 
             return jobs;
@@ -44,9 +60,16 @@ namespace kCura.ScheduleQueue.Core.Data
         {
             Job job = null;
 
-            using (SqlConnection connection = _dbContext.EddsDBContext.GetConnection())
+            try
             {
-                job = connection.Get<Job>(jobId);
+                using (SqlConnection connection = _dbContext.EddsDBContext.GetConnection())
+                {
+                    job = connection.Get<Job>(jobId);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Could not get job ID={id} from ScheduleAgentQueue", jobId);
             }
 
             return job;
@@ -55,10 +78,16 @@ namespace kCura.ScheduleQueue.Core.Data
         public bool UpdateJob(Job job)
         {
             bool updated = false;
-
-            using (SqlConnection connection = _dbContext.EddsDBContext.GetConnection())
+            try
             {
-                updated = connection.Update(job);
+                using (SqlConnection connection = _dbContext.EddsDBContext.GetConnection())
+                {
+                    updated = connection.Update(job);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Could not update job ID={id} from ScheduleAgentQueue", job.JobId);
             }
 
             return updated;
@@ -68,9 +97,16 @@ namespace kCura.ScheduleQueue.Core.Data
         {
             bool deleted = false;
 
-            using (SqlConnection connection = _dbContext.EddsDBContext.GetConnection())
+            try
             {
-                deleted = connection.Delete(new Job { JobId = jobId });
+                using (SqlConnection connection = _dbContext.EddsDBContext.GetConnection())
+                {
+                    deleted = connection.Delete(new Job { JobId = jobId });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Could not delete job ID={id} from ScheduleAgentQueue", jobId);
             }
 
             return deleted;

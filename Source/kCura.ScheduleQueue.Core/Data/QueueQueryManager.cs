@@ -58,21 +58,66 @@ namespace kCura.ScheduleQueue.Core.Data
             return new DeleteJob(_queueDbContext, jobId);
         }
 
-        public IQuery<DataTable> CreateScheduledJob(int workspaceID, int relatedObjectArtifactID, string taskType,
-            DateTime nextRunTime, int AgentTypeID, string scheduleRuleType, string serializedScheduleRule, string jobDetails,
-            int jobFlags, int SubmittedBy, long? rootJobID, long? parentJobID = null)
+        public IQuery<DataTable> CreateScheduledJob(
+            int workspaceID,
+            int relatedObjectArtifactID,
+            string taskType,
+            DateTime nextRunTime,
+            int AgentTypeID,
+            string scheduleRuleType,
+            string serializedScheduleRule,
+            string jobDetails,
+            int jobFlags,
+            int SubmittedBy,
+            long? rootJobID,
+            long? parentJobID = null)
         {
-            return new CreateScheduledJob(_queueDbContext, workspaceID, relatedObjectArtifactID, taskType, nextRunTime,
-                AgentTypeID, scheduleRuleType, serializedScheduleRule, jobDetails, jobFlags, SubmittedBy, rootJobID, parentJobID);
+            return new CreateScheduledJob(
+                _queueDbContext,
+                workspaceID,
+                relatedObjectArtifactID,
+                taskType,
+                nextRunTime,
+                AgentTypeID,
+                scheduleRuleType,
+                serializedScheduleRule,
+                jobDetails,
+                jobFlags,
+                SubmittedBy,
+                rootJobID,
+                parentJobID);
         }
 
-        public ICommand CreateNewAndDeleteOldScheduledJob(long oldScheduledJobId, int workspaceID, int relatedObjectArtifactID, string taskType, DateTime nextRunTime,
-            int AgentTypeID, string scheduleRuleType, string serializedScheduleRule, string jobDetails, int jobFlags,
-            int SubmittedBy, long? rootJobID, long? parentJobID = null)
+        public ICommand CreateNewAndDeleteOldScheduledJob(
+            long oldScheduledJobId,
+            int workspaceID,
+            int relatedObjectArtifactID,
+            string taskType,
+            DateTime nextRunTime,
+            int AgentTypeID,
+            string scheduleRuleType,
+            string serializedScheduleRule,
+            string jobDetails,
+            int jobFlags,
+            int SubmittedBy,
+            long? rootJobID,
+            long? parentJobID = null)
         {
-            return new CreateNewAndDeleteOldScheduledJob(_queueDbContext, oldScheduledJobId, workspaceID, relatedObjectArtifactID,
-                taskType, nextRunTime, AgentTypeID, scheduleRuleType, serializedScheduleRule,
-                jobDetails, jobFlags, SubmittedBy, rootJobID, parentJobID);
+            return new CreateNewAndDeleteOldScheduledJob(
+                _queueDbContext,
+                oldScheduledJobId,
+                workspaceID,
+                relatedObjectArtifactID,
+                taskType,
+                nextRunTime,
+                AgentTypeID,
+                scheduleRuleType,
+                serializedScheduleRule,
+                jobDetails,
+                jobFlags,
+                SubmittedBy,
+                rootJobID,
+                parentJobID);
         }
 
         public ICommand CleanupJobQueueTable()
