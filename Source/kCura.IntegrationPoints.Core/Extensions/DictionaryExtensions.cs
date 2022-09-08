@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Extensions
 
             foreach (var pair in inputDictionary)
             {
-                dictionary.Add(pair.Key, pair.Value);
+                dictionary.AddOrThrowIfKeyExists(pair.Key, pair.Value,"Value for key already exists");
             }
 
             return dictionary;
