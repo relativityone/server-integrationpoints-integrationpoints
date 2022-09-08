@@ -22,6 +22,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private KeplerPingReporter _keplerPingReporterFake;
         private Mock<IPingService> _pingServiceMock;
         private Mock<IHelper> _helperMock;
+        private DatabasePingReporter _databasePingReporterFake;
         private Mock<IWorkspaceDBContext> _context;
         private Mock<IAPILog> _loggerMock;
         private SystemHealthReporter _sut;
@@ -41,10 +42,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _servicesMgrFake.Setup(s => s.CreateProxy<IFileShareServerManager>(ExecutionIdentity.System)).Returns(_fileShareServerManagerMock.Object);
             _servicesMgrFake.Setup(s => s.CreateProxy<IPingService>(ExecutionIdentity.System)).Returns(_pingServiceMock.Object);
             _helperMock.Setup(h => h.GetServicesManager()).Returns(_servicesMgrFake.Object);
-            new KeplerPingReporter(_helperMock.Object, _loggerMock.Object);
             _context = new Mock<IWorkspaceDBContext>();
-            new DatabasePingReporter(_context.Object, _loggerMock.Object);
-            _sut = new SystemHealthReporter(new List<IHealthStatisticReporter>());
+            _databasePingReporterFake = new DatabasePingReporter(_context.Object, _loggerMock.Object);
         }
 
 
@@ -136,96 +135,95 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             result.Should().Contain(expectedResult);
         }
 
-        //
-        // [Test]
-        // public void SystemHealthReporter_ShouldSendKeplerServiceStatusFalse_WhenStatusIsDown()
-        // {
-        //     // ARRANGE
-        //     _pingServiceMock.Setup(x => x.Ping()).ReturnsAsync("Down");
-        //     _sut = new SystemHealthReporter(_diskUsageReporterMock.Object, _keplerPingReporterFake, _databasePingReporterMock.Object, _loggerMock.Object);
-        //
-        //     // ACT
-        //     Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync();
-        //
-        //     // ASSERT
-        //     Dictionary<string, object> expectedResult = new Dictionary<string, object>
-        //     {
-        //         { "IsKeplerServiceAccessible", false }
-        //     };
-        //     result.Should().Contain(expectedResult);
-        // }
-        //
-        // [Test]
-        // public void SystemHealthReporter_ShouldSendKeplerServiceStatusFalse_WhenServiceThrows()
-        // {
-        //     // ARRANGE
-        //     _helperMock.Setup(h => h.GetServicesManager()).Throws(_exception);
-        //     _sut = new SystemHealthReporter(_diskUsageReporterMock.Object, _keplerPingReporterFake, _databasePingReporterMock.Object, _loggerMock.Object);
-        //
-        //     // ACT
-        //     Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync();
-        //
-        //     // ASSERT
-        //     Dictionary<string, object> expectedResult = new Dictionary<string, object>
-        //     {
-        //         { "IsKeplerServiceAccessible", false }
-        //     };
-        //     result.Should().Contain(expectedResult);
-        // }
-        //
-        // [Test]
-        // public void SystemHealthReporter_ShouldSendDatabaseStatusTrue_WhenDatabaseIsOk()
-        // {
-        //     // ARRANGE
-        //     _context.Setup(x => x.ExecuteNonQuerySQLStatement(It.IsAny<string>())).Returns(1);
-        //     _sut = new SystemHealthReporter(_diskUsageReporterMock.Object, _keplerPingReporterMock.Object, _databasePingReporterFake, _loggerMock.Object);
-        //
-        //     // ACT
-        //     Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync();
-        //
-        //     // ASSERT
-        //     Dictionary<string, object> expectedResult = new Dictionary<string, object>
-        //     {
-        //         { "IsDatabaseAccessible", true }
-        //     };
-        //     result.Should().Contain(expectedResult);
-        // }
-        //
-        // [Test]
-        // public void SystemHealthReporter_ShouldSendDatabaseStatusFalse_WhenDatabaseResponseIsNotAsExpected()
-        // {
-        //     // ARRANGE
-        //     _context.Setup(x => x.ExecuteNonQuerySQLStatement(It.IsAny<string>())).Returns(69);
-        //     _sut = new SystemHealthReporter(_diskUsageReporterMock.Object, _keplerPingReporterMock.Object, _databasePingReporterFake, _loggerMock.Object);
-        //
-        //     // ACT
-        //     Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync();
-        //
-        //     // ASSERT
-        //     Dictionary<string, object> expectedResult = new Dictionary<string, object>
-        //     {
-        //         { "IsDatabaseAccessible", false }
-        //     };
-        //     result.Should().Contain(expectedResult);
-        // }
-        //
-        // [Test]
-        // public void SystemHealthReporter_ShouldSendDatabaseStatusFalse_WhenDatabaseThrows()
-        // {
-        //     // ARRANGE
-        //     _context.Setup(x => x.ExecuteNonQuerySQLStatement(It.IsAny<string>())).Throws(_exception);
-        //     _sut = new SystemHealthReporter(_diskUsageReporterMock.Object, _keplerPingReporterMock.Object, _databasePingReporterFake, _loggerMock.Object);
-        //
-        //     // ACT
-        //     Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync();
-        //
-        //     // ASSERT
-        //     Dictionary<string, object> expectedResult = new Dictionary<string, object>
-        //     {
-        //         { "IsDatabaseAccessible", false }
-        //     };
-        //     result.Should().Contain(expectedResult);
-        // }
+        [Test]
+        public void SystemHealthReporter_ShouldSendKeplerServiceStatusFalse_WhenStatusIsDown()
+        {
+            // ARRANGE
+            _pingServiceMock.Setup(x => x.Ping()).ReturnsAsync("Down");
+            _sut = new SystemHealthReporter(new[] { _keplerPingReporterFake });
 
+            // ACT
+            Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult();
+
+            // ASSERT
+            Dictionary<string, object> expectedResult = new Dictionary<string, object>
+            {
+                { "IsKeplerServiceAccessible", false }
+            };
+            result.Should().Contain(expectedResult);
+        }
+
+        [Test]
+        public void SystemHealthReporter_ShouldSendKeplerServiceStatusFalse_WhenServiceThrows()
+        {
+            // ARRANGE
+            _helperMock.Setup(h => h.GetServicesManager()).Throws(_exception);
+            _sut = new SystemHealthReporter(new[] { _keplerPingReporterFake });
+
+            // ACT
+            Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult();
+
+            // ASSERT
+            Dictionary<string, object> expectedResult = new Dictionary<string, object>
+            {
+                { "IsKeplerServiceAccessible", false }
+            };
+            result.Should().Contain(expectedResult);
+        }
+
+
+        [Test]
+        public void SystemHealthReporter_ShouldSendDatabaseStatusTrue_WhenDatabaseIsOk()
+        {
+            // ARRANGE
+            _context.Setup(x => x.ExecuteNonQuerySQLStatement(It.IsAny<string>())).Returns(1);
+            _sut = new SystemHealthReporter(new[] { _databasePingReporterFake });
+
+            // ACT
+            Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult();
+
+            // ASSERT
+            Dictionary<string, object> expectedResult = new Dictionary<string, object>
+            {
+                { "IsDatabaseAccessible", true }
+            };
+            result.Should().Contain(expectedResult);
+        }
+
+        [Test]
+        public void SystemHealthReporter_ShouldSendDatabaseStatusFalse_WhenDatabaseResponseIsNotAsExpected()
+        {
+            // ARRANGE
+            _context.Setup(x => x.ExecuteNonQuerySQLStatement(It.IsAny<string>())).Returns(69);
+            _sut = new SystemHealthReporter(new[] { _databasePingReporterFake });
+
+            // ACT
+            Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult();
+
+            // ASSERT
+            Dictionary<string, object> expectedResult = new Dictionary<string, object>
+            {
+                { "IsDatabaseAccessible", false }
+            };
+            result.Should().Contain(expectedResult);
+        }
+
+        [Test]
+        public void SystemHealthReporter_ShouldSendDatabaseStatusFalse_WhenDatabaseThrows()
+        {
+            // ARRANGE
+            _context.Setup(x => x.ExecuteNonQuerySQLStatement(It.IsAny<string>())).Throws(_exception);
+            _sut = new SystemHealthReporter(new[] { _databasePingReporterFake });
+
+            // ACT
+            Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult();
+
+            // ASSERT
+            Dictionary<string, object> expectedResult = new Dictionary<string, object>
+            {
+                { "IsDatabaseAccessible", false }
+            };
+            result.Should().Contain(expectedResult);
+        }
     }
 }
