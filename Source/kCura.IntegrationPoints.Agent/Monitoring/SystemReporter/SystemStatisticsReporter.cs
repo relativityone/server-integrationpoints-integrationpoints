@@ -66,6 +66,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
             try
             {
                 DriveInfo[] drives = DriveInfo.GetDrives();
+                _logger.LogInformation($"Found {drives.Length} physical disc(s).");
                 foreach (DriveInfo drive in drives)
                 {
                     try
@@ -81,7 +82,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
                     }
                     catch (Exception exception)
                     {
-                        _logger.LogWarning(exception, "Cannot check physical drives.");
+                        _logger.LogWarning(exception, $"Cannot check physical drive {drive.Name}");
                     }
                 }
             }
