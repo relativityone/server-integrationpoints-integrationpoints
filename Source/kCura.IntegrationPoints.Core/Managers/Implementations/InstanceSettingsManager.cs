@@ -30,6 +30,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             {
                 return false;
             }
+
             return bool.TryParse(allowNoSnapshotImportSetting, out bool allowNoSnapshotImport) && allowNoSnapshotImport;
         }
 
@@ -42,6 +43,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             {
                 return false;
             }
+
             return bool.TryParse(restrictReferentialFileLinksSetting, out bool restrictReferentialFileLinks) && restrictReferentialFileLinks;
         }
 
@@ -63,10 +65,22 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             {
                 return TimeSpan.FromSeconds(drainStopTimeoutParsed);
             }
-            else
+
+            return TimeSpan.FromMinutes(3);
+        }
+
+        public int GetIApiBatchSize()
+        {
+            IInstanceSettingRepository instanceSettingRepository = _repositoryFactory.GetInstanceSettingRepository();
+            string ripIApiBatchSize = instanceSettingRepository.GetConfigurationValue(
+                Constants.InstanceSettings.INTEGRATION_POINTS_SECTION, Constants.InstanceSettings.IAPI_BATCH_SIZE);
+
+            if (int.TryParse(ripIApiBatchSize, out int ripIApiBatchSizeParsed))
             {
-                return TimeSpan.FromMinutes(3);
+                return ripIApiBatchSizeParsed;
             }
+
+            return 1000;
         }
 
         public string GetWorkloadSizeSettings()

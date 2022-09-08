@@ -156,8 +156,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     SetupSubscriptions(dataSynchronizer, job);
 
                     _logger.LogInformation("Reading source data");
-                    IEnumerable<IDictionary<FieldEntry, object>> sourceData =
-                        GetSourceData(sourceFields, sourceDataReader);
+                    IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
                     JobStopManager?.ThrowIfStopRequested();
 
                     _logger.LogInformation("Start SyncData...");
