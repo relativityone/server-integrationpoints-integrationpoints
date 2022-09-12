@@ -233,6 +233,20 @@ ko.validation.insertValidationMessage = function (element) {
 		this.IdentifierField = ko.observable(model.IPDestinationSettings.IdentifierField);
 		this.showMapSavedSearchButton = ko.observable(false);
 
+		this.filterSourceField = ko.observable("")
+		this.filterDestinationField = ko.observable("")
+
+		self.filterFields = function (fields, filter) {
+			let filterLowerCase = filter().toLowerCase();
+			let filteredFields = []
+			fields().forEach(field => {
+				if (field.displayName.toLowerCase().indexOf(filterLowerCase) > -1) {
+					filteredFields.push(field)
+				}
+			});
+			return filteredFields;
+		}
+
 		//use this to bind which elements show up depending on if the user is accessing Relativity Provider or not
 		this.IsRelativityProvider = ko.observable(IP.reverseMapFields);
 

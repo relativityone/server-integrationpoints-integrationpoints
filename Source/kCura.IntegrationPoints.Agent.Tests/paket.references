@@ -1,5 +1,4 @@
 Castle.Windsor
-CSharpGuidelineAnalyzer
 kCura.Agent
 kCura.Apps.Common.Data
 kCura.Apps.Common.Utils
@@ -12,9 +11,6 @@ Relativity.IntegrationPoints.Contracts
 Relativity.Telemetry.MetricsCollection
 Relativity.AutomatedWorkflows.SDK
 iTextSharp
-
-
-
 FluentAssertions
 Moq
 NUnit

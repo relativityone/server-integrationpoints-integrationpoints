@@ -651,7 +651,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         public void Execute_MakeSureToUpdateJobStopStateToNoneOnScheduledJob()
         {
             // ARRANGE
-            _job.SerializedScheduleRule = "rules!";
+            _job.ScheduleRule = "rules!";
 
             // ACT
             _instance.Execute(_job);

@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Internals;
@@ -35,8 +36,10 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
             IJobManager jobManager,
             IManagerFactory managerFactory,
             IJobService jobService,
-            IIntegrationPointRepository integrationPointRepository)
-            : base(caseServiceContext,
+            IIntegrationPointRepository integrationPointRepository,
+            IDiagnosticLog diagnosticLog)
+            : base(
+                caseServiceContext,
                 helper,
                 dataProviderFactory,
                 serializer,
@@ -46,7 +49,8 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
                 jobManager,
                 managerFactory,
                 jobService,
-                integrationPointRepository)
+                integrationPointRepository,
+                diagnosticLog)
         {
             _job = job;
         }

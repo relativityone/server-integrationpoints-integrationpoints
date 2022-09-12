@@ -1,26 +1,26 @@
-﻿using Castle.MicroKernel.Registration;
+﻿using System;
+using System.Linq;
+using Castle.MicroKernel.Registration;
 using FluentAssertions;
 using kCura.IntegrationPoints.Agent.Tasks;
-using kCura.IntegrationPoints.Core.Validation;
-using Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare;
-using Relativity.IntegrationPoints.Tests.Integration.Models;
-using Relativity.Testing.Identification;
-using System;
-using System.Linq;
-using SystemInterface.IO;
 using kCura.IntegrationPoints.Common.Agent;
+using kCura.IntegrationPoints.Core.Contracts.Import;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
 using kCura.ScheduleQueue.Core.Core;
+using Newtonsoft.Json.Linq;
 using Relativity.IntegrationPoints.Contracts.Provider;
+using Relativity.IntegrationPoints.Tests.Integration.Mocks.FileShare;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi.LoadFile;
+using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.IntegrationPoints.Tests.Integration.Utils;
-using kCura.IntegrationPoints.Core.Contracts.Import;
-using Newtonsoft.Json.Linq;
+using Relativity.Testing.Identification;
+using SystemInterface.IO;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 {
@@ -141,7 +141,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
             jobHistory.JobStatus.Guids.Single().Should().Be(JobStatusChoices.JobHistorySuspendedGuid);
             jobHistory.ItemsTransferred.Should().Be(drainStopAfterImporting);
-            
+
             job.StopState.Should().Be(StopState.DrainStopping);
         }
 
@@ -178,7 +178,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             // Assert
             jobHistory.ItemsTransferred.Should().Be(initialItemsTransferred + itemsToTransfer);
             jobHistory.ItemsWithErrors.Should().Be(initialItemLevelErrors + itemLevelErrorsToTransfer);
-            
+
             jobHistory.ShouldHaveCorrectItemsTransferredUpdateHistory(initialItemsTransferred, initialItemsTransferred + itemsToTransfer);
             jobHistory.ShouldHaveCorrectItemsWithErrorsUpdateHistory(initialItemLevelErrors, initialItemLevelErrors + itemLevelErrorsToTransfer);
         }

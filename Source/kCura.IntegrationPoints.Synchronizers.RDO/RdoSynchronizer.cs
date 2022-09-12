@@ -28,78 +28,29 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
     public class RdoSynchronizer : IDataSynchronizer, IBatchReporter, IEmailBodyData
     {
-        private bool _isJobComplete;
-        private bool? _disableNativeLocationValidation;
-        private bool? _disableNativeValidation;
-        private HashSet<string> _ignoredList;
         protected IImportService ImportService;
-        private string _webApiPath;
+
         private readonly IAPILog _logger;
         private readonly IHelper _helper;
         private readonly IDiagnosticLog _diagnosticLog;
         private readonly IImportApiFactory _factory;
         private readonly IImportJobFactory _jobFactory;
+        private readonly IRelativityFieldQuery _fieldQuery;
 
-        protected readonly IRelativityFieldQuery FieldQuery;
+        private bool _isJobComplete;
+        private bool? _disableNativeLocationValidation;
+        private bool? _disableNativeValidation;
+        private HashSet<string> _ignoredList;
+        private string _webApiPath;
 
-        public Data.SourceProvider SourceProvider { get; set; }
-
-        public int TotalRowsProcessed => ImportService?.TotalRowsProcessed ?? 0;
-
-        private ImportSettings ImportSettings { get; set; }
-
-        private NativeFileImportService NativeFileImportService { get; set; }
-
-        private HashSet<string> IgnoredList => _ignoredList ?? (_ignoredList = new HashSet<string>
-            {
-                "Is System Artifact",
-                "System Created By",
-                "System Created On",
-                "System Last Modified By",
-                "System Last Modified On",
-                "Artifact ID"
-            });
-
-        public bool? DisableNativeLocationValidation
+        public RdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper, IDiagnosticLog diagnosticLog)
         {
-            get
-            {
-                if (!_disableNativeLocationValidation.HasValue)
-                {
-                    _disableNativeLocationValidation = Config.Config.Instance.DisableNativeLocationValidation;
-                    LogNewDisableNativeLocationValidationValue();
-                }
-                return _disableNativeLocationValidation;
-            }
-            protected set { _disableNativeLocationValidation = value; }
-        }
-
-        public string WebAPIPath
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(_webApiPath))
-                {
-                    _webApiPath = Config.Config.Instance.WebApiPath;
-                    LogNewWebAPIPathValue();
-                }
-                return _webApiPath;
-            }
-            protected set { _webApiPath = value; }
-        }
-
-        public bool? DisableNativeValidation
-        {
-            get
-            {
-                if (!_disableNativeValidation.HasValue)
-                {
-                    _disableNativeValidation = Config.Config.Instance.DisableNativeValidation;
-                    LogNewDisableNativeValidationValue();
-                }
-                return _disableNativeValidation;
-            }
-            protected set { _disableNativeValidation = value; }
+            _fieldQuery = fieldQuery;
+            _factory = factory;
+            _jobFactory = jobFactory;
+            _helper = helper;
+            _diagnosticLog = diagnosticLog;
+            _logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoSynchronizer>();
         }
 
         public event BatchCompleted OnBatchComplete;
@@ -116,25 +67,71 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         public event RowError OnDocumentError;
 
-        public RdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory, IImportJobFactory jobFactory, IHelper helper, IDiagnosticLog diagnosticLog)
+        public Data.SourceProvider SourceProvider { get; set; }
+
+        public int TotalRowsProcessed => ImportService?.TotalRowsProcessed ?? 0;
+
+        public string WebAPIPath
         {
-            FieldQuery = fieldQuery;
-            _factory = factory;
-            _jobFactory = jobFactory;
-            _helper = helper;
-            _diagnosticLog = diagnosticLog;
-            _logger = helper.GetLoggerFactory().GetLogger().ForContext<RdoSynchronizer>();
+            get
+            {
+                if (string.IsNullOrEmpty(_webApiPath))
+                {
+                    _webApiPath = Config.Config.Instance.WebApiPath;
+                    LogNewWebAPIPathValue();
+                }
+
+                return _webApiPath;
+            }
+
+            set => _webApiPath = value;
         }
 
-        protected void RaiseDocumentErrorEvent(string documentIdentifier, string errorMessage)
+        protected bool? DisableNativeLocationValidation
         {
-            OnDocumentError?.Invoke(documentIdentifier, errorMessage);
+            get
+            {
+                if (!_disableNativeLocationValidation.HasValue)
+                {
+                    _disableNativeLocationValidation = Config.Config.Instance.DisableNativeLocationValidation;
+                    LogNewDisableNativeLocationValidationValue();
+                }
+
+                return _disableNativeLocationValidation;
+            }
+
+            set => _disableNativeLocationValidation = value;
         }
 
-        private void RaiseJobErrorEvent(Exception exception)
+        protected bool? DisableNativeValidation
         {
-            OnJobError?.Invoke(exception);
+            get
+            {
+                if (!_disableNativeValidation.HasValue)
+                {
+                    _disableNativeValidation = Config.Config.Instance.DisableNativeValidation;
+                    LogNewDisableNativeValidationValue();
+                }
+
+                return _disableNativeValidation;
+            }
+
+            set => _disableNativeValidation = value;
         }
+
+        private ImportSettings ImportSettings { get; set; }
+
+        private NativeFileImportService NativeFileImportService { get; set; }
+
+        private HashSet<string> IgnoredList => _ignoredList ?? (_ignoredList = new HashSet<string>
+            {
+                "Is System Artifact",
+                "System Created By",
+                "System Created On",
+                "System Last Modified By",
+                "System Last Modified On",
+                "Artifact ID"
+            });
 
         public virtual IEnumerable<FieldEntry> GetFields(DataSourceProviderConfiguration providerConfiguration)
         {
@@ -155,6 +152,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                 {
                     field.IsRequired = true;
                 }
+
                 return fields;
             }
             catch (Exception ex)
@@ -163,8 +161,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             }
         }
 
-        public void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap,
-            string options, IJobStopManager jobStopManager, IDiagnosticLog diagnosticLog)
+        public void SyncData(
+            IEnumerable<IDictionary<FieldEntry, object>> data,
+            IEnumerable<FieldMap> fieldMap,
+            string options,
+            IJobStopManager jobStopManager,
+            IDiagnosticLog diagnosticLog)
         {
             try
             {
@@ -262,7 +264,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             }
         }
 
-
         public string GetEmailBodyData(IEnumerable<FieldEntry> fields, string options)
         {
             LogRetrievingEmailBody();
@@ -272,11 +273,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             var emailBody = new StringBuilder();
             if (destinationWorkspace != null)
             {
-                emailBody.AppendLine("");
+                emailBody.AppendLine(string.Empty);
                 string destinationWorkspaceAsString = WorkspaceAndJobNameUtils.GetFormatForWorkspaceOrJobDisplay(destinationWorkspace.Name, destinationWorkspace.Id);
                 emailBody.AppendFormat("Destination Workspace: {0}", destinationWorkspaceAsString);
                 LogDestinationWorkspaceAppendedToEmailBody();
             }
+
             return emailBody.ToString();
         }
 
@@ -284,7 +286,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         {
             try
             {
-                List<RelativityObject> fields = FieldQuery.GetFieldsForRdo(settings.ArtifactTypeId);
+                List<RelativityObject> fields = _fieldQuery.GetFieldsForRdo(settings.ArtifactTypeId);
                 HashSet<int> mappableArtifactIds = new HashSet<int>(GetImportApiFacade(settings)
                     .GetWorkspaceFieldsNames(settings.CaseArtifactId, settings.ArtifactTypeId)
                     .Keys);
@@ -297,6 +299,208 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                 LogRetrievingRelativityFieldsError(e);
                 throw;
             }
+        }
+
+        protected void RaiseDocumentErrorEvent(string documentIdentifier, string errorMessage)
+        {
+            OnDocumentError?.Invoke(documentIdentifier, errorMessage);
+        }
+
+        protected virtual void WaitUntilTheJobIsDone(bool rowProcessed)
+        {
+            const int waitDuration = 1000;
+
+            bool isJobDone;
+            if (rowProcessed)
+            {
+                do
+                {
+                    lock (ImportService)
+                    {
+                        isJobDone = _isJobComplete;
+                    }
+
+                    _logger.LogInformation("Waiting until the job id done");
+                    Thread.Sleep(waitDuration);
+                }
+                while (!isJobDone);
+            }
+        }
+
+        protected virtual IImportService InitializeImportService(
+            ImportSettings settings,
+            Dictionary<string, int> importFieldMap,
+            NativeFileImportService nativeFileImportService,
+            IJobStopManager jobStopManager,
+            IDiagnosticLog diagnosticLog)
+        {
+            LogInitializingImportService();
+
+            ImportService importService = new ImportService(
+                settings,
+                importFieldMap,
+                new BatchManager(),
+                nativeFileImportService,
+                _factory,
+                _jobFactory,
+                _helper,
+                jobStopManager,
+                diagnosticLog);
+
+            importService.OnBatchComplete += Finish;
+            importService.OnJobError += JobError;
+
+            if (OnBatchComplete != null)
+            {
+                importService.OnBatchComplete += OnBatchComplete;
+            }
+
+            if (OnBatchSubmit != null)
+            {
+                importService.OnBatchSubmit += OnBatchSubmit;
+            }
+
+            if (OnBatchCreate != null)
+            {
+                importService.OnBatchCreate += OnBatchCreate;
+            }
+
+            if (OnStatusUpdate != null)
+            {
+                importService.OnStatusUpdate += OnStatusUpdate;
+            }
+
+            if (OnStatisticsUpdate != null)
+            {
+                importService.OnStatisticsUpdate += OnStatisticsUpdate;
+            }
+
+            if (OnJobError != null)
+            {
+                importService.OnJobError += OnJobError;
+            }
+
+            if (OnDocumentError != null)
+            {
+                importService.OnDocumentError += OnDocumentError;
+            }
+
+            importService.Initialize();
+
+            _logger.LogInformation("Initialization Import Service...finished");
+
+            return importService;
+        }
+
+        protected virtual ImportSettings GetSyncDataImportSettings(IEnumerable<FieldMap> fieldMap, string options, NativeFileImportService nativeFileImportService)
+        {
+            try
+            {
+                LogRetrievingImportSettings();
+
+                ImportSettings settings = GetSettings(options);
+
+                BootstrapParentObjectSettings(fieldMap, settings);
+                BootstrapIdentityFieldSettings(fieldMap, settings);
+                BootstrapImportNativesSettings(fieldMap, nativeFileImportService, settings);
+                BootstrapFolderSettings(fieldMap, settings);
+                BootstrapDestinationIdentityFieldSettings(fieldMap, settings);
+
+                var importSettingsForLogging = new ImportSettingsForLogging(settings);
+
+                _logger.LogInformation("Rip Import Settings:\n {importSettings}", importSettingsForLogging);
+                return settings;
+            }
+            catch (Exception ex)
+            {
+                throw LogAndCreateGetImportSettignsException(ex, fieldMap);
+            }
+        }
+
+        protected virtual Dictionary<string, int> GetSyncDataImportFieldMap(IEnumerable<FieldMap> fieldMap, ImportSettings settings)
+        {
+            Dictionary<string, int> importFieldMap = null;
+            try
+            {
+                importFieldMap = fieldMap.Where(IncludeFieldInImport).ToDictionary(x => x.SourceField.FieldIdentifier, x => int.Parse(x.DestinationField.FieldIdentifier));
+            }
+            catch (Exception ex)
+            {
+                LogInvalidFieldMap(ex);
+                throw new Exception("Field Map is invalid.", ex);
+            }
+
+            return importFieldMap;
+        }
+
+        protected virtual Dictionary<string, object> GenerateImportRow(IDictionary<FieldEntry, object> row, IEnumerable<FieldMap> fieldMap, ImportSettings settings)
+        {
+            Dictionary<string, object> importRow = row.ToDictionary(x => x.Key.FieldIdentifier, x => x.Value);
+            return importRow;
+        }
+
+        protected virtual void FinalizeSyncData(
+            IEnumerable<IDictionary<FieldEntry, object>> data,
+            IEnumerable<FieldMap> fieldMap,
+            ImportSettings settings,
+            IJobStopManager jobStopManager)
+        {
+        }
+
+        protected ImportSettings GetSettings(string options)
+        {
+            ImportSettings settings = DeserializeImportSettings(options);
+
+            if (string.IsNullOrEmpty(settings.WebServiceURL))
+            {
+                settings.WebServiceURL = WebAPIPath;
+                if (string.IsNullOrEmpty(settings.WebServiceURL))
+                {
+                    LogMissingWebApiPath();
+                    throw new Exception("No WebAPI path set for integration points.");
+                }
+            }
+
+            return settings;
+        }
+
+        protected bool IncludeFieldInImport(FieldMap fieldMap)
+        {
+            bool toInclude = fieldMap.FieldMapType != FieldMapTypeEnum.Parent &&
+                             fieldMap.FieldMapType != FieldMapTypeEnum.NativeFilePath;
+
+            if (toInclude && fieldMap.FieldMapType == FieldMapTypeEnum.FolderPathInformation)
+            {
+                toInclude = fieldMap.DestinationField?.FieldIdentifier != null;
+            }
+
+            return toInclude;
+        }
+
+        protected virtual WorkspaceRef GetWorkspace(ImportSettings settings)
+        {
+            try
+            {
+                WorkspaceRef workspaceRef = null;
+                Dictionary<int, string> workspaces = GetImportApiFacade(settings).GetWorkspaceNames();
+                if (workspaces.ContainsKey(settings.CaseArtifactId))
+                {
+                    LogNullWorkspaceReturnedByIAPI();
+                    workspaceRef = new WorkspaceRef { Id = settings.CaseArtifactId, Name = workspaces[settings.CaseArtifactId] };
+                }
+
+                return workspaceRef;
+            }
+            catch (Exception e)
+            {
+                LogRetrievingWorkspaceError(e);
+                throw;
+            }
+        }
+
+        private void RaiseJobErrorEvent(Exception exception)
+        {
+            OnJobError?.Invoke(exception);
         }
 
         private IImportApiFacade GetImportApiFacade(ImportSettings settings)
@@ -362,107 +566,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             _logger.LogInformation("Initializing Import Job completed.");
         }
 
-        protected virtual void WaitUntilTheJobIsDone(bool rowProcessed)
-        {
-            const int waitDuration = 1000;
-
-            bool isJobDone;
-            if (rowProcessed)
-            {
-                do
-                {
-                    lock (ImportService)
-                    {
-                        isJobDone = _isJobComplete;
-                    }
-
-                    _logger.LogInformation("Waiting until the job id done");
-                    Thread.Sleep(waitDuration);
-                } while (!isJobDone);
-            }
-        }
-
-        protected internal virtual IImportService InitializeImportService(ImportSettings settings,
-            Dictionary<string, int> importFieldMap, NativeFileImportService nativeFileImportService,
-            IJobStopManager jobStopManager, IDiagnosticLog diagnosticLog)
-        {
-            LogInitializingImportService();
-
-            ImportService importService = new ImportService(
-                settings,
-                importFieldMap,
-                new BatchManager(),
-                nativeFileImportService,
-                _factory,
-                _jobFactory,
-                _helper,
-                jobStopManager,
-                diagnosticLog);
-
-            importService.OnBatchComplete += Finish;
-            importService.OnJobError += JobError;
-
-            if (OnBatchComplete != null)
-            {
-                importService.OnBatchComplete += OnBatchComplete;
-            }
-            if (OnBatchSubmit != null)
-            {
-                importService.OnBatchSubmit += OnBatchSubmit;
-            }
-            if (OnBatchCreate != null)
-            {
-                importService.OnBatchCreate += OnBatchCreate;
-            }
-            if (OnStatusUpdate != null)
-            {
-                importService.OnStatusUpdate += OnStatusUpdate;
-            }
-            if (OnStatisticsUpdate != null)
-            {
-                importService.OnStatisticsUpdate += OnStatisticsUpdate;
-            }
-            if (OnJobError != null)
-            {
-                importService.OnJobError += OnJobError;
-            }
-            if (OnDocumentError != null)
-            {
-                importService.OnDocumentError += OnDocumentError;
-            }
-            importService.Initialize();
-
-            _logger.LogInformation("Initialization Import Service...finished");
-
-            return importService;
-        }
-
-        protected virtual ImportSettings GetSyncDataImportSettings(IEnumerable<FieldMap> fieldMap, string options, NativeFileImportService nativeFileImportService)
-        {
-            try
-            {
-                LogRetrievingImportSettings();
-
-                ImportSettings settings = GetSettings(options);
-
-                BootstrapParentObjectSettings(fieldMap, settings);
-                BootstrapIdentityFieldSettings(fieldMap, settings);
-                BootstrapImportNativesSettings(fieldMap, nativeFileImportService, settings);
-                BootstrapFolderSettings(fieldMap, settings);
-                BootstrapDestinationIdentityFieldSettings(fieldMap, settings);
-
-                var importSettingsForLogging = new ImportSettingsForLogging(settings);
-
-                _logger.LogInformation("Rip Import Settings:\n {importSettings}", importSettingsForLogging);
-                return settings;
-
-            }
-            catch (Exception ex)
-            {
-                throw LogAndCreateGetImportSettignsException(ex, fieldMap);
-            }
-        }
-
         private void BootstrapDestinationIdentityFieldSettings(IEnumerable<FieldMap> fieldMap, ImportSettings settings)
         {
             if ((SourceProvider != null) && SourceProvider.Config.OnlyMapIdentifierToIdentifier)
@@ -473,6 +576,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                     LogMissingIdentifierField();
                     throw new Exception("Source Provider requires the identifier field to be mapped with another identifier field.");
                 }
+
                 settings.DestinationIdentifierField = map.DestinationField.ActualName;
             }
         }
@@ -528,7 +632,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             }
         }
 
-        private static void SetupSettingsWhenNotImportingNatives(NativeFileImportService nativeFileImportService, ImportSettings settings)
+        private void SetupSettingsWhenNotImportingNatives(NativeFileImportService nativeFileImportService, ImportSettings settings)
         {
             nativeFileImportService.ImportNativeFiles = false;
             settings.DisableNativeLocationValidation = null;
@@ -558,48 +662,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             settings.FileNameColumn = Constants.SPECIAL_FILE_NAME_FIELD_NAME;
         }
 
-        protected virtual Dictionary<string, int> GetSyncDataImportFieldMap(IEnumerable<FieldMap> fieldMap, ImportSettings settings)
-        {
-            Dictionary<string, int> importFieldMap = null;
-            try
-            {
-                importFieldMap = fieldMap.Where(IncludeFieldInImport).ToDictionary(x => x.SourceField.FieldIdentifier, x => int.Parse(x.DestinationField.FieldIdentifier));
-            }
-            catch (Exception ex)
-            {
-                LogInvalidFieldMap(ex);
-                throw new Exception("Field Map is invalid.", ex);
-            }
-            return importFieldMap;
-        }
-
-        protected virtual Dictionary<string, object> GenerateImportRow(IDictionary<FieldEntry, object> row, IEnumerable<FieldMap> fieldMap, ImportSettings settings)
-        {
-            Dictionary<string, object> importRow = row.ToDictionary(x => x.Key.FieldIdentifier, x => x.Value);
-            return importRow;
-        }
-
-        protected virtual void FinalizeSyncData(IEnumerable<IDictionary<FieldEntry, object>> data,
-            IEnumerable<FieldMap> fieldMap, ImportSettings settings, IJobStopManager jobStopManager)
-        {
-        }
-
-        protected ImportSettings GetSettings(string options)
-        {
-            ImportSettings settings = DeserializeImportSettings(options);
-
-            if (string.IsNullOrEmpty(settings.WebServiceURL))
-            {
-                settings.WebServiceURL = WebAPIPath;
-                if (string.IsNullOrEmpty(settings.WebServiceURL))
-                {
-                    LogMissingWebApiPath();
-                    throw new Exception("No WebAPI path set for integration points.");
-                }
-            }
-            return settings;
-        }
-
         private ImportSettings DeserializeImportSettings(string options)
         {
             try
@@ -611,19 +673,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                 LogImportSettingsDeserializationError(e);
                 throw;
             }
-        }
-
-        protected bool IncludeFieldInImport(FieldMap fieldMap)
-        {
-            bool toInclude = fieldMap.FieldMapType != FieldMapTypeEnum.Parent &&
-                             fieldMap.FieldMapType != FieldMapTypeEnum.NativeFilePath;
-
-            if (toInclude && fieldMap.FieldMapType == FieldMapTypeEnum.FolderPathInformation)
-            {
-                toInclude = fieldMap.DestinationField?.FieldIdentifier != null;
-            }
-
-            return toInclude;
         }
 
         private void Finish(DateTime startTime, DateTime endTime, int totalRows, int errorRowCount)
@@ -644,32 +693,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
                 LogSettingJobCompleteInJobError();
                 _isJobComplete = true;
             }
+
             RaiseJobErrorEvent(ex);
         }
 
         private void ItemError(string documentIdentifier, string errorMessage)
         {
             RaiseDocumentErrorEvent(documentIdentifier, errorMessage);
-        }
-
-        protected virtual WorkspaceRef GetWorkspace(ImportSettings settings)
-        {
-            try
-            {
-                WorkspaceRef workspaceRef = null;
-                Dictionary<int, string> workspaces = GetImportApiFacade(settings).GetWorkspaceNames();
-                if (workspaces.ContainsKey(settings.CaseArtifactId))
-                {
-                    LogNullWorkspaceReturnedByIAPI();
-                    workspaceRef = new WorkspaceRef { Id = settings.CaseArtifactId, Name = workspaces[settings.CaseArtifactId] };
-                }
-                return workspaceRef;
-            }
-            catch (Exception e)
-            {
-                LogRetrievingWorkspaceError(e);
-                throw;
-            }
         }
 
         #region Logging
@@ -711,6 +741,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         {
             _logger.LogError(exception, "Importing document {DocumentIdentifier} failed with message: {Message}.", exception.Identifier, exception.Message);
         }
+
         private void LogSyncDataError(Exception exception)
         {
             _logger.LogError(exception, "Importing object failed with message: {Message}.", exception.Message);
@@ -808,22 +839,22 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
         private void LogSettingJobCompleteInFinish()
         {
-            _logger.LogInformation("_importService locked in Finish method of RdoSynchronizer. Job is complete");
+            _logger.LogInformation("ImportService locked in Finish method of RdoSynchronizer. Job is complete");
         }
 
         private void LogLockingImportServiceInFinish()
         {
-            _logger.LogInformation("Trying to lock _importService in Finish method of RdoSynchronizer");
+            _logger.LogInformation("Trying to lock ImportService in Finish method of RdoSynchronizer");
         }
 
         private void LogSettingJobCompleteInJobError()
         {
-            _logger.LogInformation("_importService locked in JobError method of RdoSynchronizer. Job is complete");
+            _logger.LogInformation("ImportService locked in JobError method of RdoSynchronizer. Job is complete");
         }
 
         private void LogLockingImportServiceInJobError()
         {
-            _logger.LogInformation("Trying to lock _importService in JobError method of RdoSynchronizer");
+            _logger.LogInformation("Trying to lock ImportService in JobError method of RdoSynchronizer");
         }
 
         private void LogIdentifierFields(RelativityObject field)

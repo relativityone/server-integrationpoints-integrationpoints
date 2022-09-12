@@ -74,9 +74,8 @@ nuget System.ValueTuple
 nuget iTextSharp 5.5.13.1
 nuget SystemWrapper.Interfaces 0.25.0.186
 nuget System.Runtime.CompilerServices.Unsafe ~> 6.0.0 
-
-//Analyzers
-nuget CSharpGuidelineAnalyzer 1.0.3.0
+nuget Dapper 2.0.123
+nuget Dapper.Contrib 2.0.78
 
 // Test Packages
 nuget BenchmarkDotNet 0.10.12
@@ -137,7 +136,7 @@ nuget Relativity.AutomatedWorkflows.SDK 1.0.8
 nuget Relativity.OAuth2Client 1.5.3
 nuget Relativity.OAuth2Client.Interfaces 1.5.3
 
-nuget Relativity.Sync 0.9.71
+nuget Relativity.Sync 0.9.79
 
 //RIP packages
 nuget IntegrationPoints.MyFirstProvider 12.3.10
@@ -150,7 +149,7 @@ framework: auto-detect
 strategy: min
 source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 
-nuget Relativity.Sync 0.9.71
+nuget Relativity.Sync 0.9.79
 nuget SSH.NET 2020.0.1
 nuget Newtonsoft.Json 6.0.8
 nuget Autofac 4.9.4

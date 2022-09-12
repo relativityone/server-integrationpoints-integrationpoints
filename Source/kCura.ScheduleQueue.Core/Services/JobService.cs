@@ -113,7 +113,7 @@ namespace kCura.ScheduleQueue.Core.Services
                 _log.LogInformation("Job {jobId} was scheduled with following details: " +
                                     "NextRunTime - {nextRunTime} " +
                                     "ScheduleRule - {scheduleRule}",
-                    job.JobId, nextUtcRunDateTime, job.SerializedScheduleRule);
+                    job.JobId, nextUtcRunDateTime, job.ScheduleRule);
 
                 TaskParameters taskParameters = new TaskParameters()
                 {

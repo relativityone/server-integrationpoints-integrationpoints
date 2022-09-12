@@ -408,7 +408,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         private void UpdateStopState(Job job)
         {
-            if (job.SerializedScheduleRule != null)
+            if (job.ScheduleRule != null)
             {
                 LogUpdateStopState(job);
                 _jobService.UpdateStopState(new List<long> { job.JobId }, StopState.None);
@@ -468,7 +468,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             LogUpdateLastRuntimeAndCalculateNextRuntimeStart(job);
             IntegrationPoint.LastRuntimeUTC = DateTime.UtcNow;
-            if (job.SerializedScheduleRule != null)
+            if (job.ScheduleRule != null)
             {
                 IntegrationPoint.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory, taskResult);
             }

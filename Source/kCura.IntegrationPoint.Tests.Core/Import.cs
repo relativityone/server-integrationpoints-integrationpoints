@@ -5,6 +5,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Logging;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations;
 using Newtonsoft.Json;
@@ -24,10 +25,11 @@ namespace kCura.IntegrationPoint.Tests.Core
             IAPILog logger = Substitute.For<IAPILog>();
             IDiagnosticLog diagnosticLog = Substitute.For<IDiagnosticLog>();
             ISystemEventLoggingService systemEventLoggingService = Substitute.For<ISystemEventLoggingService>();
+            IInstanceSettingsManager instanceSettingsManager = Substitute.For<IInstanceSettingsManager>();
 
             IAuthTokenGenerator authTokenGenerator = new ClaimsTokenGenerator();
 
-            var factory = new ImportApiFactory(authTokenGenerator, systemEventLoggingService, logger);
+            var factory = new ImportApiFactory(authTokenGenerator, systemEventLoggingService, instanceSettingsManager, logger);
             var jobFactory = new ImportJobFactory(Substitute.For<IMessageService>());
             var setting = new ImportSettings
             {
@@ -47,6 +49,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
             IHelper helper = Substitute.For<IHelper>();
             IRelativityFieldQuery relativityFieldQuery = Substitute.For<IRelativityFieldQuery>();
+            
 
             var rdoSynchronizer = new RdoSynchronizer(relativityFieldQuery, factory, jobFactory, helper, diagnosticLog);
 

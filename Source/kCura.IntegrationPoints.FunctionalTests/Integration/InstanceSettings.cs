@@ -15,5 +15,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
         public string BlockedHosts { get; set; }
 
         public TimeSpan DrainStopTimeout { get; set; }
+
+        public int IApiBatchSize { get; set; }
     }
 }

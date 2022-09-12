@@ -1,4 +1,3 @@
-CSharpGuidelineAnalyzer
 kCura
 kCura.Apps.Common.Config
 Relativity
@@ -6,3 +5,5 @@ Relativity.API
 Relativity.IntegrationPoints.Contracts
 Relativity.Toggles
 Relativity.Services.Interfaces.Private
+Dapper
+Dapper.Contrib
