@@ -9,7 +9,6 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Import;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -182,7 +181,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             base.FinalizeService(job);
             RemoveTrackingEntry(job, Identifier,  !IsDrainStopped());
         }
-        
+
         private void RemoveTrackingEntry(Job job, Guid batchId, bool isBatchFinished)
         {
             Logger.LogInformation("Removing tracking entry for job {jobId} BatchID: {batchId} and isBatchFinished: {isBatchFinished}", job.JobId, batchId, isBatchFinished)  ;
@@ -198,7 +197,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         private void MarkJobAsDrainStoppedIfNeeded(Job job)
         {
-
             Guid batchInstance = Guid.Parse(JobHistory.BatchInstance);
             JobHistory = JobHistoryService.GetRdo(batchInstance);
             int processedItemsCount = GetProcessedItemsCount(JobHistory);
@@ -293,10 +291,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                         new TriggerInput
                         {
                             ID = RAW_TRIGGER_INPUT_ID,
-                            Value = RAW_TRIGGER_INPUT_VALUE
-                        }
+                            Value = RAW_TRIGGER_INPUT_VALUE,
+                        },
                     },
-                    State = state
+                    State = state,
                 };
 
                 await _automatedWorkflowsRetryHandler.ExecuteWithRetriesAsync(async () =>
@@ -320,7 +318,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 QueryRequest automatedWorkflowsInstalledRequest = new QueryRequest
                 {
                     ObjectType = new ObjectTypeRef { ArtifactTypeID = _RELATIVITY_APPLICATIONS_ARTIFACT_TYPE_ID },
-                    Condition = $"'Name' == '{_AUTOMATED_WORKFLOWS_APPLICATION_NAME}'"
+                    Condition = $"'Name' == '{_AUTOMATED_WORKFLOWS_APPLICATION_NAME}'",
                 };
                 QueryResultSlim automatedWorkflowsInstalledResult = await objectManager.QuerySlimAsync(workspaceId, automatedWorkflowsInstalledRequest, 0, 0).ConfigureAwait(false);
 
@@ -339,9 +337,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             importSettings.OnBehalfOfUserId = job.SubmittedBy;
             importSettings.ErrorFilePath = _importFileLocationService.ErrorFilePath(IntegrationPointDto);
 
-            //For LoadFile imports, correct an off-by-one error introduced by WinEDDS.LoadFileReader interacting with
-            //ImportAPI process. This is introduced by the fact that the first record is the column header row.
-            //Opticon files have no column header row
+            // For LoadFile imports, correct an off-by-one error introduced by WinEDDS.LoadFileReader interacting with
+            // ImportAPI process. This is introduced by the fact that the first record is the column header row.
+            // Opticon files have no column header row
             if (importSettings.ImageImport)
             {
                 importSettings.StartRecordNumber = int.Parse(providerSettings.LineNumber);
@@ -357,7 +355,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
             importSettings.DestinationFolderArtifactId = providerSettings.DestinationFolderArtifactId;
 
-            //Copy multi-value and nested delimiter settings chosen on configuration page to importAPI settings
+            // Copy multi-value and nested delimiter settings chosen on configuration page to importAPI settings
             importSettings.MultiValueDelimiter = (char)providerSettings.AsciiMultiLine;
             importSettings.NestedValueDelimiter = (char)providerSettings.AsciiNestedValue;
             LogGetImportApiSettingsObjectForUserSuccesfulEnd(job);
@@ -367,7 +365,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private int UpdateSourceRecordCount(ImportSettings settings)
         {
             LogUpdateSourceRecordCountStart();
-            //Cannot re-use the LoadFileDataReader once record count has been obtained (error file is not created properly due to an off-by-one error)
+            // Cannot re-use the LoadFileDataReader once record count has been obtained (error file is not created properly due to an off-by-one error)
             using (IDataReader sourceReader = _dataReaderFactory.GetDataReader(MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration, JobStopManager))
             {
                 int recordCount =
@@ -388,7 +386,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 return recordCount;
             }
         }
-        
+
         private string UpdatedProviderSettingsLoadFile()
         {
             ImportProviderSettings providerSettings = Serializer.Deserialize<ImportProviderSettings>(IntegrationPointDto.SourceConfiguration);
@@ -447,7 +445,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             };
 
             job.JobDetails = Serializer.Serialize(taskParameters);
-            
+
             JobService.UpdateJobDetails(job);
         }
 

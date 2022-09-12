@@ -15,13 +15,9 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
     public class JobStopManager : IJobStopManager
     {
-        private bool _supportsDrainStop;
-        private bool _isDrainStopping;
-        private Timer _timerThread;
-        private bool _disposed;
-
         private const int _TIMER_INTERVAL_MS = 500;
 
+        private readonly bool _supportsDrainStop;
         private readonly CancellationTokenSource _stopCancellationTokenSource;
         private readonly CancellationTokenSource _drainStopCancellationTokenSource;
         private readonly IDiagnosticLog _diagnosticLog;
@@ -32,6 +28,11 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
         private readonly IRemovableAgent _agent;
         private readonly IAPILog _logger;
         private readonly CancellationToken _token;
+        private readonly Timer _timerThread;
+        private readonly object _isDrainStoppingLock = new object();
+
+        private bool _isDrainStopping;
+        private bool _disposed;
 
         public object SyncRoot { get; }
 
@@ -84,17 +85,25 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
         internal void TerminateIfRequested(Job job)
         {
-            if (_supportsDrainStop && _agent.ToBeRemoved && !_isDrainStopping)
+            bool toBeDrainStopped;
+            lock (_isDrainStoppingLock)
+            {
+                toBeDrainStopped = _supportsDrainStop && _agent.ToBeRemoved && !_isDrainStopping;
+                if (toBeDrainStopped)
+                {
+                    _isDrainStopping = true;
+                }
+            }
+
+            if (toBeDrainStopped)
             {
                 _logger.LogInformation("Drain-Stop was requested: SupportsDrainStop - {supportsDrainStop}, AgentToBeRemoved - {agentToBeRemoved}, StopState - {stopState}",
                     _supportsDrainStop, _agent.ToBeRemoved, job.StopState);
 
-                _isDrainStopping = true;
-
                 if (!job.StopState.HasFlag(StopState.DrainStopping) && !job.StopState.HasFlag(StopState.DrainStopped))
                 {
                     _logger.LogInformation("DrainStopping Job {jobId}... JobInfo: {jobInfo}", _jobId, job.ToString());
-                    UpdateStopState(StopState.DrainStopping);
+                    _jobService.UpdateStopState(new List<long>() { _jobId }, StopState.DrainStopping);
                     _drainStopCancellationTokenSource.Cancel();
                     _timerThread.Change(Timeout.Infinite, Timeout.Infinite);
                 }
@@ -104,8 +113,11 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
                 _logger.LogInformation("Stopping Job {jobId}... JobInfo: {jobInfo}", _jobId, job.ToString());
                 JobHistory jobHistory = _jobHistoryService.GetRdoWithoutDocuments(_jobBatchIdentifier);
 
-                if ((jobHistory != null) && (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending)
-                                             || jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryProcessing)))
+                if (jobHistory == null)
+                {
+                    _logger.LogWarning("JobHistory of id: {batchInstance} not found");
+                }
+                else if (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending) || jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryProcessing))
                 {
                     _logger.LogInformation("Set JobHistory to Stopping {jobHistory}", jobHistory.Stringify());
                     SetJobHistoryStatus(jobHistory, JobStatusChoices.JobHistoryStopping);
@@ -119,11 +131,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             {
                 _timerThread.Change(Timeout.Infinite, Timeout.Infinite);
             }
-        }
-        
-        private void UpdateStopState(StopState stopState)
-        {
-            _jobService.UpdateStopState(new List<long>() { _jobId }, stopState);
         }
 
         private void SetJobHistoryStatus(JobHistory jobHistory, ChoiceRef status)
@@ -151,7 +158,17 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             }
         }
 
-        public bool ShouldDrainStop => _isDrainStopping;
+        public bool ShouldDrainStop
+        {
+            get
+            {
+                lock (_isDrainStoppingLock)
+                {
+                    return _isDrainStopping;
+                }
+            }
+        }
+
 
         public event EventHandler<EventArgs> StopRequestedEvent;
 
@@ -180,13 +197,19 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
         public void StopCheckingDrainStop()
         {
             _logger.LogInformation("StopCheckingDrainStop was called for Job {jobId}", _jobId);
-            _isDrainStopping = false;
+            lock (_isDrainStoppingLock)
+            {
+                _isDrainStopping = false;
+            }
         }
 
         public void CleanUpJobDrainStop()
         {
             _logger.LogInformation("CleanUpDrainStop was called for Job {jobId}", _jobId);
-            UpdateStopState(StopState.None);
+            lock (SyncRoot)
+            {
+                _jobService.UpdateStopState(new List<long>() { _jobId }, StopState.None);
+            }
         }
     }
 }
