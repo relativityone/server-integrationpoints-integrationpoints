@@ -21,6 +21,26 @@ namespace Relativity.Sync
 {
     internal sealed class ContainerFactory : IContainerFactory
     {
+        private static Type[] GetValidatorTypesExcept<T>()
+        {
+            return
+                typeof(IValidator).Assembly
+                    .GetTypes()
+                    .Where(t => !t.IsAbstract &&
+                                t.IsAssignableTo<IValidator>() &&
+                                !t.IsAssignableTo<T>())
+                    .ToArray();
+        }
+
+        private static IEnumerable<IInstaller> GetInstallersInCurrentAssembly()
+        {
+            return Assembly
+                .GetCallingAssembly()
+                .GetTypes()
+                .Where(t => !t.IsAbstract && t.IsAssignableTo<IInstaller>())
+                .Select(t => (IInstaller)Activator.CreateInstance(t));
+        }
+
         public void RegisterSyncDependencies(ContainerBuilder containerBuilder, SyncJobParameters syncJobParameters, IRelativityServices relativityServices, SyncJobExecutionConfiguration configuration, IAPILog logger)
         {
             const string syncJob = nameof(SyncJob);
@@ -45,6 +65,7 @@ namespace Relativity.Sync
             containerBuilder.RegisterType<SyncJobProgress>().As<IProgress<SyncJobState>>();
             containerBuilder.RegisterType<JobEndMetricsServiceFactory>().As<IJobEndMetricsServiceFactory>();
             containerBuilder.RegisterType<RipWorkarounds>().As<IRipWorkarounds>();
+            containerBuilder.RegisterType<IAPIv2RunChecker>().As<IIAPIv2RunChecker>();
 
             containerBuilder.RegisterInstance(ToggleProvider.Current).As<IToggleProvider>().SingleInstance().PreserveExistingDefaults();
 
@@ -66,6 +87,7 @@ namespace Relativity.Sync
 
             containerBuilder.RegisterType<PipelineSelectorConfiguration>().As<IPipelineSelectorConfiguration>();
             containerBuilder.RegisterType<PipelineSelector>().AsImplementedInterfaces().SingleInstance();
+            containerBuilder.RegisterType<IAPIv2RunCheckerConfiguration>().As<IIAPIv2RunCheckerConfiguration>();
 
             containerBuilder.RegisterType<RdoGuidProvider>().AsImplementedInterfaces();
             containerBuilder.RegisterType<RdoManager>().AsImplementedInterfaces();
@@ -78,29 +100,10 @@ namespace Relativity.Sync
             {
                 string decoratorName = validatorType.FullName;
                 containerBuilder.RegisterType(validatorType).Named(decoratorName, typeof(IValidator));
-                containerBuilder.RegisterDecorator<IValidator>((context, validator) =>
+                containerBuilder.RegisterDecorator<IValidator>(
+                    (context, validator) =>
                     new ValidatorWithMetrics(validator, context.Resolve<ISyncMetrics>(), context.Resolve<IStopwatch>()), decoratorName);
             }
-        }
-
-        private static Type[] GetValidatorTypesExcept<T>()
-        {
-            return
-                typeof(IValidator).Assembly
-                    .GetTypes()
-                    .Where(t => !t.IsAbstract &&
-                                t.IsAssignableTo<IValidator>() &&
-                                !t.IsAssignableTo<T>())
-                    .ToArray();
-        }
-
-        private static IEnumerable<IInstaller> GetInstallersInCurrentAssembly()
-        {
-            return Assembly
-                .GetCallingAssembly()
-                .GetTypes()
-                .Where(t => !t.IsAbstract && t.IsAssignableTo<IInstaller>())
-                .Select(t => (IInstaller) Activator.CreateInstance(t));
         }
     }
 }
