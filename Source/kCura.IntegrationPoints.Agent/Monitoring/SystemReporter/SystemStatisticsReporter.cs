@@ -65,24 +65,24 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
             Dictionary<string, object> physicalDrivesStatistics = new Dictionary<string, object>();
             try
             {
-                DriveInfo[] drives = DriveInfo.GetDrives();
-                _logger.LogInformation($"Found {drives.Length} physical disc(s).");
-                foreach (DriveInfo drive in drives)
+                List<DriveInfo> physicalDriveInfos = DriveInfo.GetDrives().Where(x => x.DriveType == DriveType.Fixed).ToList();
+                _logger.LogDebug("Found {drivesCount} physical disc(s).", physicalDriveInfos.Count);
+                foreach (DriveInfo drive in physicalDriveInfos)
                 {
                     try
                     {
-                        _logger.LogInformation($"Checking drive: {drive.Name}");
+                        _logger.LogDebug("Checking drive: {driveName}", drive.Name);
                         if (drive.IsReady)
                         {
                             double freeSpace = drive.TotalFreeSpace;
                             double totalSize = drive.TotalSize;
-                            physicalDrivesStatistics.Add($"SystemDisc{drive.Name}Usage", Math.Round(100 * freeSpace / totalSize, 2));
-                            physicalDrivesStatistics.Add($"SystemDisc{drive.Name}FreeSpaceGB", freeSpace.ConvertBytesToGigabytes());
+                            physicalDrivesStatistics.Add($"SystemDisc_{drive.Name}_UsagePercentage", Math.Round(100 * freeSpace / totalSize, 2));
+                            physicalDrivesStatistics.Add($"SystemDisc_{drive.Name}_FreeSpaceGB", freeSpace.ConvertBytesToGigabytes());
                         }
                     }
                     catch (Exception exception)
                     {
-                        _logger.LogWarning(exception, $"Cannot check physical drive {drive.Name}");
+                        _logger.LogWarning(exception, "Cannot check physical drive {driveName}", drive.Name);
                     }
                 }
             }

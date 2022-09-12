@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data;
 using Relativity.API;
@@ -33,8 +34,8 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
             string sql = $"Select {queryValue}";
             try
             {
-                int result = _context.ExecuteNonQuerySQLStatement(sql);
-                sqlStatementResult = result.Equals(queryValue);
+                DataTable result = _context.ExecuteSqlStatementAsDataTable(sql);
+                sqlStatementResult = result.Columns.Count.Equals(queryValue);
             }
             catch (Exception exception)
             {

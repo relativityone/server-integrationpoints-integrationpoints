@@ -143,47 +143,42 @@ namespace kCura.IntegrationPoints.Agent
                 };
             }
 
+            using (Resolve<IJobContextProvider>().StartJobContext(job))
             using (StartMemoryUsageMetricReporting(job))
             using (StartHeartbeatReporting(job))
             {
-                using (Resolve<IJobContextProvider>().StartJobContext(job))
+                if (ShouldUseRelativitySync(job, _agentLevelContainer.Value))
                 {
-                    if (ShouldUseRelativitySync(job, _agentLevelContainer.Value))
+                    _agentLevelContainer.Value.Register(Component.For<Job>().UsingFactoryMethod(k => job).Named($"{job.JobId}-{Guid.NewGuid()}"));
+                    try
                     {
-                        _agentLevelContainer.Value.Register(Component.For<Job>().UsingFactoryMethod(k => job).Named($"{job.JobId}-{Guid.NewGuid()}"));
-                        try
+                        RelativitySyncAdapter syncAdapter = Resolve<RelativitySyncAdapter>();
+                        IAPILog logger = Resolve<IAPILog>();
+                        AgentCorrelationContext correlationContext = GetCorrelationContext(job);
+                        using (logger.LogContextPushProperties(correlationContext))
                         {
-                            RelativitySyncAdapter syncAdapter = Resolve<RelativitySyncAdapter>();
-                            IAPILog logger = Resolve<IAPILog>();
-                            AgentCorrelationContext correlationContext = GetCorrelationContext(job);
-                            using (logger.LogContextPushProperties(correlationContext))
-                            {
-                                return syncAdapter.RunAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-                            }
+                            return syncAdapter.RunAsync().ConfigureAwait(false).GetAwaiter().GetResult();
                         }
-                        catch (Exception ex)
+                    }
+                    catch (Exception ex)
+                    {
+                        // Not much we can do here. If container failed we're unable to do anything.
+                        // Exception was thrown from container, because RelativitySyncAdapter catches all exceptions inside
+                        Logger.LogError(ex, $"Unable to resolve {nameof(RelativitySyncAdapter)}.");
+
+                        MarkJobAsFailed(job, _agentLevelContainer.Value, ex);
+
+                        return new TaskResult
                         {
-                            // Not much we can do here. If container failed we're unable to do anything.
-                            // Exception was thrown from container, because RelativitySyncAdapter catches all exceptions inside
-                            Logger.LogError(ex, $"Unable to resolve {nameof(RelativitySyncAdapter)}.");
-
-                            MarkJobAsFailed(job, _agentLevelContainer.Value, ex);
-
-                            return new TaskResult
-                            {
-                                Status = TaskStatusEnum.Fail,
-                                Exceptions = new[] { ex }
-                            };
-                        }
+                            Status = TaskStatusEnum.Fail,
+                            Exceptions = new[] { ex }
+                        };
                     }
                 }
 
-                using (JobContextProvider.StartJobContext(job))
-                {
-                    SendJobStartedMessage(job);
-                    TaskResult result = JobExecutor.ProcessJob(job);
-                    return result;
-                }
+                SendJobStartedMessage(job);
+                TaskResult result = JobExecutor.ProcessJob(job);
+                return result;
             }
         }
 

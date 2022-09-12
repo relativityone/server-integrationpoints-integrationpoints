@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using FluentAssertions;
 using kCura.IntegrationPoints.Agent.Monitoring.SystemReporter;
 using kCura.IntegrationPoints.Data;
@@ -87,8 +88,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult();
 
             // ASSERT
-            result.Should().ContainKey(@"SystemDiscC:\Usage");
-            result.Should().ContainKey(@"SystemDiscC:\FreeSpaceGB");
+            result.Should().ContainKey(@"SystemDisc_C:\_UsagePercentage");
+            result.Should().ContainKey(@"SystemDisc_C:\_FreeSpaceGB");
         }
 
         [Test]
@@ -176,7 +177,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         public void SystemHealthReporter_ShouldSendDatabaseStatusTrue_WhenDatabaseIsOk()
         {
             // ARRANGE
-            _context.Setup(x => x.ExecuteNonQuerySQLStatement(It.IsAny<string>())).Returns(1);
+            DataTable mockDataTable = new DataTable()
+            {
+                Columns = { new DataColumn() }
+            };
+            _context.Setup(x => x.ExecuteSqlStatementAsDataTable(It.IsAny<string>())).Returns(mockDataTable);
             _sut = new SystemHealthReporter(new[] { _databasePingReporterFake });
 
             // ACT

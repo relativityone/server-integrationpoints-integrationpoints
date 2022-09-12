@@ -27,9 +27,17 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
 
             foreach (var fileShare in fileShares)
             {
-                DriveSpace systemDiscDrive = new DriveSpace(fileShare);
-                double systemDiscFreeSpaceGb = systemDiscDrive.TotalFreeSpace;
-                fileShareUsage.Add(fileShare, systemDiscFreeSpaceGb.ConvertBytesToGigabytes());
+                try
+                {
+                    _logger.LogDebug("Checking {fileShareName}", fileShare);
+                    DriveSpace systemDiscDrive = new DriveSpace(fileShare);
+                    double systemDiscFreeSpaceGb = systemDiscDrive.TotalFreeSpace;
+                    fileShareUsage.Add($"NetworkDrive_{fileShare}_FreeSpaceGB", systemDiscFreeSpaceGb.ConvertBytesToGigabytes());
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogWarning(exception, "Cannot check free space on {fileShareName}", fileShare);
+                }
             }
 
             return fileShareUsage;
@@ -46,19 +54,18 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
                     FileShareQueryResultSet resultSet = await resourceServer.QueryAsync(new Query()).ConfigureAwait(false);
                     foreach (Result<FileShareResourceServer> result in resultSet.Results)
                     {
-                        Uri resultUri = new Uri(result.Artifact.UNCPath);
-                        if (!serverList.Contains(resultUri.Host))
+                        if (!serverList.Contains(result.Artifact.UNCPath))
                         {
-                            _logger.LogInformation("Name: {FileServerName} UNC: {fileServerUNC}", result.Artifact.Name,
+                            _logger.LogDebug("Adding new fileserver to checklist Name: {FileServerName} UNC: {fileServerUNC}", result.Artifact.Name,
                                 result.Artifact.UNCPath);
-                            serverList.Add(resultUri.Host);
+                            serverList.Add(result.Artifact.UNCPath);
                         }
                     }
                 }
             }
             catch (Exception exception)
             {
-                _logger.LogWarning(exception, $"Cannot check instance file server usage.");
+                _logger.LogWarning(exception, "Cannot check instance file server usage.");
             }
 
             return serverList;
