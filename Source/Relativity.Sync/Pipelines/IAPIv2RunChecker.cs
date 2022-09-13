@@ -32,10 +32,10 @@ namespace Relativity.Sync.Pipelines
             _shouldBeUsed = _toggles.IsEnabled<EnableIAPIv2Toggle>()
                 && _configuration.RdoArtifactTypeId == (int)ArtifactType.Document
                 && (_configuration.NativeBehavior == ImportNativeFileCopyMode.SetFileLinks || _configuration.NativeBehavior == ImportNativeFileCopyMode.DoNotImportNativeFiles)
-                && _configuration.IsRetried == false
-                && _configuration.IsDrainStopped == false
-                && _configuration.HasLongTextFields == false
-                && _configuration.ImageImport == false;
+                && !_configuration.IsRetried
+                && !_configuration.IsDrainStopped
+                && !_configuration.HasLongTextFields
+                && !_configuration.ImageImport;
         }
     }
 }
