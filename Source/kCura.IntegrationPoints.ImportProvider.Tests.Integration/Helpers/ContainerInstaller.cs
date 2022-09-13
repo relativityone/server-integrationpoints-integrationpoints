@@ -112,7 +112,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
         private static void RegisterDomainClasses(WindsorContainer windsorContainer)
         {
             windsorContainer.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
-
+            windsorContainer.Register(Component.For<IInstanceSettingsManager>().Instance(Substitute.For<IInstanceSettingsManager>()));
             windsorContainer.Register(Component.For<IFederatedInstanceManager>().Instance(Substitute.For<IFederatedInstanceManager>()));
             windsorContainer.Register(Component.For<IMessageService>().Instance(Substitute.For<IMessageService>()));
         }
