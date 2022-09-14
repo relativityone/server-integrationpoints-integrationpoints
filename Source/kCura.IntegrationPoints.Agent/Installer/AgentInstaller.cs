@@ -28,6 +28,7 @@ using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 using Relativity.AutomatedWorkflows.SDK;
 using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
+using kCura.IntegrationPoints.Agent.Monitoring.SystemReporter;
 using kCura.IntegrationPoints.Common.Helpers;
 
 namespace kCura.IntegrationPoints.Agent.Installer
@@ -175,8 +176,13 @@ namespace kCura.IntegrationPoints.Agent.Installer
             container.Register(Component.For<ITimerFactory>().ImplementedBy<TimerFactory>().LifestyleTransient());
 
             container.Register(Component.For<IAppDomainMonitoringEnabler>().ImplementedBy<AppDomainMonitoringEnabler>().LifestyleTransient());
-            container.Register(Component.For<IMemoryUsageReporter>().ImplementedBy<MemoryUsageReporter>().LifestyleTransient());
+            container.Register(Component.For<IMemoryUsageReporter>().ImplementedBy<SystemAndApplicationUsageReporter>().LifestyleTransient());
             container.Register(Component.For<IProcessMemoryHelper>().ImplementedBy<ProcessMemoryHelper>().LifestyleTransient());
+            container.Register(Component.For<ISystemHealthReporter>().ImplementedBy<SystemHealthReporter>().LifestyleTransient());
+            container.Register(Component.For<IHealthStatisticReporter>().ImplementedBy<FileShareDiskUsageReporter>().LifestyleTransient());
+            container.Register(Component.For<IHealthStatisticReporter>().ImplementedBy<KeplerPingReporter>().LifestyleTransient());
+            container.Register(Component.For<IHealthStatisticReporter>().ImplementedBy<DatabasePingReporter>().LifestyleTransient());
+            container.Register(Component.For<IHealthStatisticReporter>().ImplementedBy<SystemStatisticsReporter>().LifestyleTransient());
 
             container.Register(Component.For<IHeartbeatReporter>().ImplementedBy<HeartbeatReporter>().LifestyleTransient());
 
