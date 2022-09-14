@@ -32,10 +32,7 @@ namespace Relativity.Sync.Storage
 
         private async Task<bool> LongTextFieldsMapped()
         {
-            CancellationTokenSource source = new CancellationTokenSource();
-            CancellationToken token = source.Token;
-
-            IList<FieldInfoDto> fieldInfo = await _fieldManager.GetMappedFieldsAsync(token).ConfigureAwait(false);
+            IList<FieldInfoDto> fieldInfo = await _fieldManager.GetMappedFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 
             return fieldInfo.Any(x => x.RelativityDataType == RelativityDataType.LongText);
         }

@@ -21,26 +21,6 @@ namespace Relativity.Sync
 {
     internal sealed class ContainerFactory : IContainerFactory
     {
-        private static Type[] GetValidatorTypesExcept<T>()
-        {
-            return
-                typeof(IValidator).Assembly
-                    .GetTypes()
-                    .Where(t => !t.IsAbstract &&
-                                t.IsAssignableTo<IValidator>() &&
-                                !t.IsAssignableTo<T>())
-                    .ToArray();
-        }
-
-        private static IEnumerable<IInstaller> GetInstallersInCurrentAssembly()
-        {
-            return Assembly
-                .GetCallingAssembly()
-                .GetTypes()
-                .Where(t => !t.IsAbstract && t.IsAssignableTo<IInstaller>())
-                .Select(t => (IInstaller)Activator.CreateInstance(t));
-        }
-
         public void RegisterSyncDependencies(ContainerBuilder containerBuilder, SyncJobParameters syncJobParameters, IRelativityServices relativityServices, SyncJobExecutionConfiguration configuration, IAPILog logger)
         {
             const string syncJob = nameof(SyncJob);
@@ -104,6 +84,26 @@ namespace Relativity.Sync
                     (context, validator) =>
                     new ValidatorWithMetrics(validator, context.Resolve<ISyncMetrics>(), context.Resolve<IStopwatch>()), decoratorName);
             }
+        }
+
+        private static Type[] GetValidatorTypesExcept<T>()
+        {
+            return
+                typeof(IValidator).Assembly
+                    .GetTypes()
+                    .Where(t => !t.IsAbstract &&
+                                t.IsAssignableTo<IValidator>() &&
+                                !t.IsAssignableTo<T>())
+                    .ToArray();
+        }
+
+        private static IEnumerable<IInstaller> GetInstallersInCurrentAssembly()
+        {
+            return Assembly
+                .GetCallingAssembly()
+                .GetTypes()
+                .Where(t => !t.IsAbstract && t.IsAssignableTo<IInstaller>())
+                .Select(t => (IInstaller)Activator.CreateInstance(t));
         }
     }
 }
