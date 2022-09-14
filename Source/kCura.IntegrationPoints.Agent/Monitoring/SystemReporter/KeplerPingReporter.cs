@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
             }
             catch (Exception exception)
             {
-                _logger.LogWarning($"Cannot check Kepler Service Status. Exception {exception}");
+                _logger.LogWarning(exception, $"Cannot check Kepler Service Status.");
             }
 
             return ping;
