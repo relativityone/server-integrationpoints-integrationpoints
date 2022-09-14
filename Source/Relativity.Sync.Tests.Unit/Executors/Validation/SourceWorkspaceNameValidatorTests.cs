@@ -22,7 +22,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
         private Mock<ISourceServiceFactoryForUser> _serviceFactoryForUserMock;
         private Mock<IWorkspaceNameValidator> _workspaceNameValidatorMock;
         private Mock<IValidationConfiguration> _configurationMock;
-        
+
         private const string _WORKSPACE_NAME = "The workspace";
         private const int _WORKSPACE_ARTIFACT_ID = 123;
 
@@ -75,6 +75,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             func.Should().Throw<InvalidOperationException>();
         }
 
+        [TestCase(typeof(IAPI2_SyncDocumentRunPipeline), true)]
         [TestCase(typeof(SyncDocumentRunPipeline), true)]
         [TestCase(typeof(SyncDocumentRetryPipeline), true)]
         [TestCase(typeof(SyncImageRunPipeline), true)]
