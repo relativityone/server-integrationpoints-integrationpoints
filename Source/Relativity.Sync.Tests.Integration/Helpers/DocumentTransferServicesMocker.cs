@@ -14,6 +14,8 @@ using Moq.Language.Flow;
 using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1;
 using Relativity.DataTransfer.Legacy.SDK.ImportExport.V1.Models;
 using Relativity.Kepler.Transport;
+using Relativity.Services;
+using Relativity.Services.InstanceSetting;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
@@ -35,9 +37,14 @@ namespace Relativity.Sync.Tests.Integration.Helpers
         private const string _SIZE_COLUMN_NAME = "Size";
 
         public Mock<ISourceServiceFactoryForUser> ServiceFactoryForUser { get; }
+
         public Mock<ISourceServiceFactoryForAdmin> ServiceFactoryForAdmin { get; }
+
         public Mock<IObjectManager> ObjectManager { get; }
-        public Mock<ISearchService> SearchService { get; }
+
+        private Mock<ISearchService> SearchService { get; }
+
+        private Mock<IInstanceSettingManager> InstanceSettingManager { get;  }
 
         public DocumentTransferServicesMocker()
         {
@@ -45,6 +52,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
             ServiceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
             ObjectManager = new Mock<IObjectManager>();
             SearchService = new Mock<ISearchService>();
+            InstanceSettingManager = new Mock<IInstanceSettingManager>();
         }
 
         private void SetupServicesWithTestData(DocumentImportJob job)
@@ -80,7 +88,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
         {
             SetupFailingServiceCreation<ISearchService>();
         }
-        
+
         public void SetupFailingObjectManagerCall<TResult>(Expression<Func<IObjectManager, TResult>> expression)
         {
             ObjectManager.Setup(expression).Throws<AggregateException>();
@@ -170,7 +178,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
             QueryResultSlim retVal = new QueryResultSlim { Objects = objects };
             return retVal;
         }
-        
+
         private void SetupExportResultBlocks(Document[] documents, int batchSize, IList<FieldInfoDto> sourceDocumentFields)
         {
             for (int takenDocumentsCount = 0; takenDocumentsCount < documents.Length; takenDocumentsCount += batchSize)
@@ -222,6 +230,25 @@ namespace Relativity.Sync.Tests.Integration.Helpers
                 ArtifactID = document.ArtifactId,
                 Values = orderedValues
             };
+        }
+
+        public void ServiceFactoryForAdminSetupInstanceManager()
+        {
+            ServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IInstanceSettingManager>()).ReturnsAsync(InstanceSettingManager.Object);
+            InstanceSettingQueryResultSet resultSet = new InstanceSettingQueryResultSet
+            {
+                Success = true,
+                TotalCount = 1
+            };
+            resultSet.Results.Add(new Result<Services.InstanceSetting.InstanceSetting>()
+            {
+                Artifact = new Services.InstanceSetting.InstanceSetting()
+                {
+                    Value = "TRUE",
+                    Name = "ForceADFTransfer"
+                }
+            });
+            InstanceSettingManager.Setup(x => x.QueryAsync(It.IsAny<Services.Query>())).ReturnsAsync(resultSet);
         }
 
         private void SetupNatives(Document[] documents)

@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Relativity.API;
-using Relativity.Sync.Toggles;
-using Relativity.Sync.Toggles.Service;
+using Relativity.Sync.Transfer.ADLS;
 
 namespace Relativity.Sync.Transfer
 {
@@ -11,7 +10,7 @@ namespace Relativity.Sync.Transfer
         private readonly INativeFileRepository _nativeFileRepository;
         private readonly IAntiMalwareHandler _antiMalwareHandler;
         private readonly IFileLocationManager _fileLocationManager;
-        private readonly ISyncToggles _syncToggles;
+        private readonly IIsAdfTransferEnabled _isAdfTransferEnabled;
         private readonly IAPILog _logger;
 
         public NativeInfoFieldsBuilder(
@@ -19,12 +18,12 @@ namespace Relativity.Sync.Transfer
             IAntiMalwareHandler antiMalwareHandler,
             IAPILog logger,
             IFileLocationManager fileLocationManager,
-            ISyncToggles syncToggles)
+            IIsAdfTransferEnabled isAdfTransferEnabled)
         {
             _nativeFileRepository = nativeFileRepository;
             _antiMalwareHandler = antiMalwareHandler;
             _fileLocationManager = fileLocationManager;
-            _syncToggles = syncToggles;
+            _isAdfTransferEnabled = isAdfTransferEnabled;
             _logger = logger;
         }
 
@@ -58,7 +57,7 @@ namespace Relativity.Sync.Transfer
                 }
             }
 
-            if (_syncToggles.IsEnabled<UseFmsToggle>())
+            if (_isAdfTransferEnabled.Value)
             {
                 _fileLocationManager.TranslateAndStoreFilePaths(artifactIdToNativeFile);
             }

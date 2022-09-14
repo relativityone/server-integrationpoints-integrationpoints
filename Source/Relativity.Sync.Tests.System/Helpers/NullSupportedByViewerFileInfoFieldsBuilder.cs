@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Relativity.Sync.Logging;
-using Relativity.Sync.Toggles.Service;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ADLS;
 
 namespace Relativity.Sync.Tests.System.Helpers
 {
@@ -10,9 +10,9 @@ namespace Relativity.Sync.Tests.System.Helpers
     {
         private readonly NativeInfoFieldsBuilder _fileInfoFieldsBuilder;
 
-        public NullSupportedByViewerFileInfoFieldsBuilder(INativeFileRepository nativeFileRepository, IFileLocationManager fileLocationManager, ISyncToggles syncToggles)
+        public NullSupportedByViewerFileInfoFieldsBuilder(INativeFileRepository nativeFileRepository, IFileLocationManager fileLocationManager, IIsAdfTransferEnabled isAdfTransferEnabled)
         {
-            _fileInfoFieldsBuilder = new NativeInfoFieldsBuilder(nativeFileRepository, null, new EmptyLogger(), fileLocationManager, syncToggles);
+            _fileInfoFieldsBuilder = new NativeInfoFieldsBuilder(nativeFileRepository, null, new EmptyLogger(), fileLocationManager, isAdfTransferEnabled);
         }
 
         public IEnumerable<FieldInfoDto> BuildColumns()
