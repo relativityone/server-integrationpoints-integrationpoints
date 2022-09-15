@@ -138,5 +138,29 @@
   {
     "Jira": "REL-626961",
     "Exception": "*Fatal exception occurred in Import API.*The operation has timed out*"
+  },
+  {
+    "Jira": "REL-740637",
+    "Exception": "*SQL Statement Failed*Error: Violation of PRIMARY KEY constraint*Cannot insert duplicate key in object*The duplicate key value is*The data for table-valued parameter*doesn't conform to the table type of the parameter*"
+  },
+  {
+    "Jira": "REL-741447",
+    "Exception": "*Relativity.Services.Exceptions.ValidationException: The specified field name*is invalid for a field of ArtifactTypeID*"
+  },
+  {
+    "Jira": "REL-741450",
+    "Exception": "*Fatal exception occurred in Import API*System.ArgumentException: Remote File Guid is not valid guid*"
+  },
+  {
+    "Jira": "REL-741488",
+    "Exception": "*Fatal exception occurred in Import API*Relativity.Transfer.TransferException: A fatal file transfer error occurred*Relativity.Transfer.TransferException: The service endpoint denied the request*"
+  },
+  {
+    "Jira": "REL-741492",
+    "Exception": "*Relativity.Services.Exceptions.ConflictException: Create Ancestry Failed*Relativity.Sync.KeplerFactory.KeplerServiceInterceptor*"
+  },
+  {
+    "Jira": "REL-741496",
+    "Exception": "Fatal exception occurred in Import API*System.Web.Services.Protocols.SoapException: An unexpected server error occurred: Service Unavailable*"
   }
 ]
