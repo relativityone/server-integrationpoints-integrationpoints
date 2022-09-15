@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.Environmental;
 
-namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
+namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
 {
     public class KeplerPingReporter : IHealthStatisticReporter
     {

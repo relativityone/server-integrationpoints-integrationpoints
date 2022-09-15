@@ -7,7 +7,7 @@ using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.ResourceServer;
 
-namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
+namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
 {
     public class FileShareDiskUsageReporter : IHealthStatisticReporter
     {

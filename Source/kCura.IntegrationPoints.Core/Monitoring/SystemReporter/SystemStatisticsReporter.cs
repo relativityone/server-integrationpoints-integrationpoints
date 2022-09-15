@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Extensions;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
+namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
 {
     public class SystemStatisticsReporter : IHealthStatisticReporter
     {

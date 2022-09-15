@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using FluentAssertions;
-using kCura.IntegrationPoints.Agent.Monitoring.SystemReporter;
+using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
 using kCura.IntegrationPoints.Data;
 using Moq;
 using NUnit.Framework;

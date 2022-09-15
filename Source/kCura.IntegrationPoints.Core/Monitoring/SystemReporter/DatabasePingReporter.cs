@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
+namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
 {
     public class DatabasePingReporter : IHealthStatisticReporter
     {
