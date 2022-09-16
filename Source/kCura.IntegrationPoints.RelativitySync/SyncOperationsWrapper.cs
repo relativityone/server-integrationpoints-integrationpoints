@@ -1,9 +1,10 @@
-﻿using Relativity.API;
+﻿using System;
+using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Sync;
 using Relativity.Sync.Extensions;
 using Relativity.Sync.SyncConfiguration;
 using Relativity.Telemetry.APM;
-using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
@@ -13,7 +14,7 @@ namespace kCura.IntegrationPoints.RelativitySync
         private readonly IServicesMgr _servicesMgr;
         private readonly IAPM _apmMetrics;
         private readonly IAPILog _log;
-        
+
         public SyncOperationsWrapper(IHelper helper, IAPM apmMetrics, IAPILog log)
         {
             _helper = helper;
@@ -31,7 +32,7 @@ namespace kCura.IntegrationPoints.RelativitySync
         {
             return new RelativityServices(_apmMetrics, ExtensionPointServiceFinder.ServiceUriProvider.AuthenticationUri(), _helper);
         }
-        
+
         public async Task PrepareSyncConfigurationForResumeAsync(int workspaceId, int syncConfigurationId)
         {
             await _servicesMgr.PrepareSyncConfigurationForResumeAsync(workspaceId, syncConfigurationId, _log).ConfigureAwait(false);
@@ -40,6 +41,11 @@ namespace kCura.IntegrationPoints.RelativitySync
         public ISyncConfigurationBuilder GetSyncConfigurationBuilder(ISyncContext context)
         {
             return new SyncConfigurationBuilder(context, _servicesMgr, _log);
+        }
+
+        public async Task<int?> TryGetResumedSyncConfigurationIdAsync(int workspaceId, int jobHistoryId)
+        {
+            return await _servicesMgr.TryGetResumedSyncConfigurationIdAsync(workspaceId, jobHistoryId, _log);
         }
     }
 }

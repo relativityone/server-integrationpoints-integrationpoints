@@ -1,6 +1,6 @@
-﻿using Relativity.Sync;
+﻿using System.Threading.Tasks;
+using Relativity.Sync;
 using Relativity.Sync.SyncConfiguration;
-using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
@@ -11,7 +11,9 @@ namespace kCura.IntegrationPoints.RelativitySync
         Task PrepareSyncConfigurationForResumeAsync(int workspaceId, int syncConfigurationId);
 
         IRelativityServices CreateRelativityServices();
-        
+
         ISyncConfigurationBuilder GetSyncConfigurationBuilder(ISyncContext context);
+
+        Task<int?> TryGetResumedSyncConfigurationIdAsync(int workspaceId, int jobHistoryId);
     }
 }
