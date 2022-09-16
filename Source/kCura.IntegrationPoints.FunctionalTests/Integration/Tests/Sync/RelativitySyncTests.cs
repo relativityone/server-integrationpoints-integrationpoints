@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Data;
+using Moq;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
@@ -15,6 +17,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
     public class RelativitySyncTests : TestsBase
     {
         private const int _STOP_MANAGER_TIMEOUT = 10;
+
+        public override void SetUp()
+        {
+            base.SetUp();
+
+            DataTable result = new DataTable
+            {
+                Columns = { new DataColumn() }
+            };
+
+            Helper.DbContextMock.Setup(x => x.ExecuteSqlStatementAsDataTable(It.IsAny<string>())).Returns(result);
+        }
 
         [IdentifiedTest("1228BB49-8C07-4DAA-818F-1D736BDD8243")]
         public void Agent_ShouldSuccessfullyProcessSyncJob()

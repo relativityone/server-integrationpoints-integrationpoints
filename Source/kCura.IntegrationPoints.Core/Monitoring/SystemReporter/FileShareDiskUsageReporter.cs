@@ -56,7 +56,9 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
                     {
                         if (!serverList.Contains(result.Artifact.UNCPath))
                         {
-                            _logger.LogDebug("Adding new fileserver to checklist Name: {FileServerName} UNC: {fileServerUNC}", result.Artifact.Name,
+                            _logger.LogDebug(
+                                "Adding new fileserver to checklist Name: {FileServerName} UNC: {fileServerUNC}",
+                                result.Artifact.Name,
                                 result.Artifact.UNCPath);
                             serverList.Add(result.Artifact.UNCPath);
                         }

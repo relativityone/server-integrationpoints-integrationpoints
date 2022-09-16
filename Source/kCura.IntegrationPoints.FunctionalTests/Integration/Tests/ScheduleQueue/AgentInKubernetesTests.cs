@@ -2,8 +2,10 @@
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using System;
+using System.Data;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.Core;
+using Moq;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 {
@@ -14,6 +16,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
         {
             FakeKubernetesMode kubernetesMode = (FakeKubernetesMode)Container.Resolve<IKubernetesMode>();
             kubernetesMode.SetIsEnabled(true);
+
+            DataTable result = new DataTable
+            {
+                Columns = { new DataColumn() }
+            };
+
+            Helper.DbContextMock.Setup(x => x.ExecuteSqlStatementAsDataTable(It.IsAny<string>())).Returns(result);
         }
 
         [Test]

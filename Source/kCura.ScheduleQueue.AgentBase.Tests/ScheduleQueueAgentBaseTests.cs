@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Reflection;
-using Castle.Windsor;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Common.Helpers;
@@ -14,8 +15,12 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Validation;
 using Moq;
 using Moq.Language;
+using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Services;
+using Relativity.Services.Environmental;
+using Relativity.Services.ResourceServer;
 
 namespace kCura.ScheduleQueue.AgentBase.Tests
 {
@@ -362,6 +367,8 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 
         private class TestAgent : ScheduleQueueAgentBase
         {
+            private Mock<IAgentHelper> _helperMock;
+
             public TestAgent(IAgentService agentService = null, IJobService jobService = null,
                 IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
                 IQueueQueryManager queryManager = null, IKubernetesMode kubernetesMode = null, IDateTime dateTime = null, IAPILog log = null, IConfig config = null)
@@ -370,11 +377,15 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
                 //'Enabled = true' triggered Execute() immediately. I needed to set the field only to enable getting job from the queue
                 typeof(Agent.AgentBase).GetField("_enabled", BindingFlags.NonPublic | BindingFlags.Instance)
                     .SetValue(this, true);
+
+                MockHelper();
             }
 
             public TaskStatusEnum? JobResult { get; set; }
 
             public override string Name { get; } = "Test";
+
+            public Mock<IAgentHelper> Helper => _helperMock;
 
             public int GetAgentIDTest()
             {
@@ -402,6 +413,52 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 
             //Testing Evidence
             public IList<Job> ProcessedJobs { get; } = new List<Job>();
+
+            private void MockHelper()
+            {
+                _helperMock = new Mock<IAgentHelper>();
+                Mock<IDBContext> dbContextMock = new Mock<IDBContext>();
+                DataTable result = new DataTable
+                {
+                    Columns = { new DataColumn() }
+                };
+
+                dbContextMock.Setup(x => x.ExecuteSqlStatementAsDataTable(It.IsAny<string>())).Returns(result);
+                _helperMock.Setup(x => x.GetDBContext(-1)).Returns(dbContextMock.Object);
+
+                FileShareQueryResultSet fileShareQueryResultSet = new FileShareQueryResultSet
+                {
+                    Results = new List<Result<FileShareResourceServer>>
+                    {
+                        new Result<FileShareResourceServer>
+                        {
+                            Artifact = new FileShareResourceServer
+                            {
+                                UNCPath = Directory.GetCurrentDirectory()
+                            }
+                        }
+                    }
+                };
+
+                Mock<IServicesMgr> servicesManagerMock = new Mock<IServicesMgr>();
+
+                Mock<IFileShareServerManager> fileShareServerManagerMock = new Mock<IFileShareServerManager>();
+                fileShareServerManagerMock.Setup(x => x.QueryAsync(It.IsAny<Query>())).ReturnsAsync(fileShareQueryResultSet);
+
+                Mock<IPingService> pingServiceMock = new Mock<IPingService>();
+                pingServiceMock.Setup(x => x.Ping()).ReturnsAsync("OK");
+
+                servicesManagerMock.Setup(x => x.CreateProxy<IFileShareServerManager>(ExecutionIdentity.System))
+                    .Returns(fileShareServerManagerMock.Object);
+
+                servicesManagerMock.Setup(x => x.CreateProxy<IPingService>(ExecutionIdentity.System))
+                    .Returns(pingServiceMock.Object);
+
+                _helperMock.Setup(x => x.GetServicesManager()).Returns(servicesManagerMock.Object);
+
+                typeof(Agent.AgentBase).GetField("_helper", BindingFlags.NonPublic | BindingFlags.Instance)
+                    .SetValue(this, _helperMock.Object);
+            }
         }
 
     }
