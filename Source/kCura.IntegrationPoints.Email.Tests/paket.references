@@ -1,8 +1,6 @@
-CSharpGuidelineAnalyzer
 LanguageExt.Core
 Relativity.API
 Relativity.Transfer.Client
-
 FluentAssertions
 Moq
 NUnit

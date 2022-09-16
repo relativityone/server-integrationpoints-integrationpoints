@@ -9,7 +9,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.IntegrationPoints.Synchronizers.RDO.Entity;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
@@ -92,7 +91,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.Synchronizer
             logFactory.Setup(x => x.GetLogger()).Returns(logger.Object);
             var helper = new Mock<IHelper>();
             helper.Setup(x => x.GetLoggerFactory()).Returns(logFactory.Object);
-            var dataSynchronizer = new RdoEntitySynchronizer(null, null, null, helper.Object, null, null);
+            RdoEntitySynchronizer dataSynchronizer = new RdoEntitySynchronizer(null, null, null, helper.Object, null, null);
             _kernel.Setup(x => x.Resolve<IDataSynchronizer>(_rdoEntitySynchronizerAssemblyName)).Returns(dataSynchronizer);
 
             return dataSynchronizer;

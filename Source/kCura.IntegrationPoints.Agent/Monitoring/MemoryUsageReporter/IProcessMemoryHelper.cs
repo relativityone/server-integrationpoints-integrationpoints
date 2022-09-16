@@ -4,6 +4,6 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
 {
     public interface IProcessMemoryHelper
     {
-        Dictionary<string, object> GetApplicationSystemStats();
+        Dictionary<string, object> GetApplicationSystemStatistics();
     }
 }

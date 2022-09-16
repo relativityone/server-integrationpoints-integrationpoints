@@ -181,7 +181,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
             _jobData[_SUBMITTED_DATE] = job.SubmittedDate;
             _jobData[_SUBMITTED_BY] = job.SubmittedBy;
             _jobData[_SCHEDULE_RULE_TYPE] = job.ScheduleRuleType;
-            _jobData[_SCHEDULE_RULE] = job.SerializedScheduleRule;
+            _jobData[_SCHEDULE_RULE] = job.ScheduleRule;
             _jobData[_STOP_STATE] = (int)job.StopState;
             _jobData[_HEARTBEAT] = (object)job.Heartbeat ?? DBNull.Value;
         }

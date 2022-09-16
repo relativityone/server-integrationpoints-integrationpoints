@@ -121,7 +121,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
                 if (SourceProvider.Identifier.Equals(Constants.IntegrationPoints.SourceProviders.LDAP, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    //if no links to process - exit
+                    // if no links to process - exit
                     if (!_entityManagerMap.Any())
                     {
                         return;
@@ -142,7 +142,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 }
                 else
                 {
-                    //if no links to process - exit
+                    // if no links to process - exit
                     if (!_entityManagerMap.Any())
                     {
                         return;
@@ -161,11 +161,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 _entityManagerMap.ForEach(x => x.ManagerArtifactID =
                             x.NewManagerID != null && managerArtifactIDs.ContainsKey(x.NewManagerID) ? managerArtifactIDs[x.NewManagerID] : 0);
 
-                //change import api settings to be able to overlay and set Entity/Manager links
+                // change import api settings to be able to overlay and set Entity/Manager links
                 int entityManagerFieldArtifactID = GetEntityManagerFieldArtifactID(job.WorkspaceID);
                 string newDestinationConfiguration = ReconfigureImportAPISettings(entityManagerFieldArtifactID);
 
-                //run import api to link corresponding Managers to Entity
+                // run import api to link corresponding Managers to Entity
                 FieldEntry fieldEntryEntityIdentifier = _managerFieldMap.First(x => x.FieldMapType.Equals(FieldMapTypeEnum.Identifier)).SourceField;
                 FieldEntry fieldEntryManagerIdentifier = _managerFieldMap.First(
                     x => x.DestinationField.FieldIdentifier.Equals(entityManagerFieldArtifactID.ToString())).SourceField;
@@ -173,8 +173,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 IEnumerable<IDictionary<FieldEntry, object>> sourceData = _entityManagerMap.Where(x => x.ManagerArtifactID != 0)
                     .Select(x => new Dictionary<FieldEntry, object>
                     {
-                        {fieldEntryEntityIdentifier, x.EntityID},
-                        {fieldEntryManagerIdentifier, x.ManagerArtifactID}
+                        { fieldEntryEntityIdentifier, x.EntityID },
+                        { fieldEntryManagerIdentifier, x.ManagerArtifactID },
                     });
 
                 IEnumerable<FieldMap> managerLinkMap = _managerFieldMap.Where(x =>
@@ -191,6 +191,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             {
                 LogExecutingTaskError(job, ex);
                 JobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
+
                 if (ex is IntegrationPointsException) // we want to rethrow, so it can be added to error tab if necessary
                 {
                     throw;
@@ -198,7 +199,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             }
             finally
             {
-                //rdo last run and next scheduled time will be updated in Manager job
+                // rdo last run and next scheduled time will be updated in Manager job
                 JobHistoryErrorService.CommitErrors();
                 PostExecute(job);
                 LogExecuteTaskFinalize(job);
@@ -214,7 +215,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 TaskParameters taskParameters = new TaskParameters()
                 {
                     BatchInstance = BatchInstance,
-                    BatchParameters = jobParameters
+                    BatchParameters = jobParameters,
                 };
 
                 job.JobDetails = Serializer.Serialize(taskParameters);
@@ -240,11 +241,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             {
                 jobParameters = (EntityManagerJobParameters)taskParameters.BatchParameters;
             }
+
             _entityManagerMap = jobParameters.EntityManagerMap.Select(
                 x => new EntityManagerMap
                 {
                     EntityID = x.Key,
-                    OldManagerID = x.Value
+                    OldManagerID = x.Value,
                 }).ToList();
 
             _entityManagerFieldMap = jobParameters.EntityManagerFieldMap;
@@ -280,6 +282,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             {
                 sourceFields.Add(new FieldEntry { FieldIdentifier = _oldKeyManagerFieldID });
             }
+
             sourceFields.ForEach(f => f.IsIdentifier = f.FieldIdentifier.Equals(_oldKeyManagerFieldID, StringComparison.InvariantCultureIgnoreCase));
             return sourceFields;
         }
@@ -367,9 +370,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     new FieldRef
                     {
                         Name = uniqueFieldName
-                    }
+                    },
                 },
-                Condition = $"'{uniqueFieldName}' IN [{ids}]"
+                Condition = $"'{uniqueFieldName}' IN [{ids}]",
             };
 
             List<RelativityObject> result;

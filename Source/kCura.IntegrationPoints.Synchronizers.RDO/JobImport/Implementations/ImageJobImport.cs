@@ -3,7 +3,6 @@ using System.Data;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
-using Newtonsoft.Json;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.JobImport.Implementations

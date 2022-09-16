@@ -15,5 +15,7 @@ namespace kCura.IntegrationPoints.Domain.Managers
         TimeSpan GetDrainStopTimeout();
 
         string GetWorkloadSizeSettings();
+
+        int GetIApiBatchSize();
     }
 }

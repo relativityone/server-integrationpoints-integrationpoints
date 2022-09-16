@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Security.Authentication;
-using Relativity.API;
-using Relativity.DataExchange;
+using kCura.IntegrationPoints.Data.Logging;
+using kCura.IntegrationPoints.Domain.Authentication;
+using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Managers;
+using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
+using kCura.IntegrationPoints.Synchronizers.RDO.Properties;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Enumeration;
 using kCura.WinEDDS.Exceptions;
-using kCura.IntegrationPoints.Data.Logging;
-using kCura.IntegrationPoints.Domain.Exceptions;
-using kCura.IntegrationPoints.Domain.Authentication;
-using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
-using kCura.IntegrationPoints.Synchronizers.RDO.Properties;
+using Relativity.API;
+using Relativity.DataExchange;
 using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
@@ -17,28 +18,19 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
     public class ImportApiFactory : IImportApiFactory
     {
         private readonly ISystemEventLoggingService _systemEventLoggingService;
+        private readonly IInstanceSettingsManager _instanceSettingsManager;
         private readonly IAPILog _logger;
         private readonly IAuthTokenGenerator _authTokenGenerator;
 
-        private class RelativityTokenProvider : IRelativityTokenProvider
-        {
-            private readonly IAuthTokenGenerator _authTokenGenerator;
-
-            public RelativityTokenProvider(IAuthTokenGenerator authTokenGenerator)
-            {
-                _authTokenGenerator = authTokenGenerator;
-            }
-
-            public string GetToken()
-            {
-                return _authTokenGenerator.GetAuthToken();
-            }
-        }
-
-        public ImportApiFactory(IAuthTokenGenerator authTokenGenerator, ISystemEventLoggingService systemEventLoggingService, IAPILog logger)
+        public ImportApiFactory(
+            IAuthTokenGenerator authTokenGenerator,
+            ISystemEventLoggingService systemEventLoggingService,
+            IInstanceSettingsManager instanceSettingsManager,
+            IAPILog logger)
         {
             _authTokenGenerator = authTokenGenerator;
             _systemEventLoggingService = systemEventLoggingService;
+            _instanceSettingsManager = instanceSettingsManager;
             _logger = logger.ForContext<ImportApiFactory>();
         }
 
@@ -48,7 +40,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             try
             {
                 IImportAPI importApi = CreateImportAPIForSettings(settings);
-                var concreteImplementation = (Relativity.ImportAPI.ImportAPI) importApi;
+                var concreteImplementation = (Relativity.ImportAPI.ImportAPI)importApi;
                 concreteImplementation.ExecutionSource = ExecutionSourceEnum.RIP;
                 LogImportApiCreated();
                 return importApi;
@@ -89,7 +81,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         protected virtual IImportAPI CreateImportAPI(string webServiceUrl)
         {
             IRelativityTokenProvider relativityTokenProvider = new RelativityTokenProvider(_authTokenGenerator);
-
+            AppSettings.Instance.ImportBatchSize = _instanceSettingsManager.GetIApiBatchSize();
             return ExtendedImportAPI.CreateByTokenProvider(webServiceUrl, relativityTokenProvider);
         }
 
@@ -118,5 +110,20 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         }
 
         #endregion
+
+        private class RelativityTokenProvider : IRelativityTokenProvider
+        {
+            private readonly IAuthTokenGenerator _authTokenGenerator;
+
+            public RelativityTokenProvider(IAuthTokenGenerator authTokenGenerator)
+            {
+                _authTokenGenerator = authTokenGenerator;
+            }
+
+            public string GetToken()
+            {
+                return _authTokenGenerator.GetAuthToken();
+            }
+        }
     }
 }

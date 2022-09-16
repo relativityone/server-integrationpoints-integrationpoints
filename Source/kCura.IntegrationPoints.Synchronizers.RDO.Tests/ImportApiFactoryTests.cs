@@ -1,6 +1,7 @@
 ﻿using System;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.Relativity.ImportAPI;
 using kCura.WinEDDS.Exceptions;
 using Moq;
@@ -9,7 +10,8 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
 {
-    [TestFixture, Category("Unit")]
+    [TestFixture]
+    [Category("Unit")]
     public class ImportApiFactoryTests : ImportApiFactory
     {
         private bool _shouldThrowInvalidLoginException;
@@ -19,7 +21,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests
         private const int _FEDERATED_INSTANCE_ARTIFACTID = 666;
 
         public ImportApiFactoryTests()
-            : base(null, new Mock<ISystemEventLoggingService>().Object, PrepareLoggerStub())
+            : base(null, new Mock<ISystemEventLoggingService>().Object, new Mock<IInstanceSettingsManager>().Object, PrepareLoggerStub())
         { }
 
         [Test]
