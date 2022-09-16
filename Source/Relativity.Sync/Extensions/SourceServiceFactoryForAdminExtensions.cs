@@ -61,15 +61,13 @@ namespace Relativity.Sync.Extensions
                     return result.Objects.Single().ArtifactID;
                 }
 
-                if (result.Objects.Count == 0)
+                if (result.Objects.Count > 1)
                 {
-                    return null;
-                }
-
-                logger.LogWarning(
+                    logger.LogWarning(
                         "For JobHistory {jobHistory} has been found {count} Sync Configurations. System create new Sync Configuration instance",
                         jobHistoryId,
                         result.Objects.Count);
+                }
             }
 
             return null;
