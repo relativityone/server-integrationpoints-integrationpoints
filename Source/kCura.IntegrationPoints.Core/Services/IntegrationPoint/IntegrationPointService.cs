@@ -228,7 +228,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             if (shouldUseRelativitySyncAppIntegration)
             {
                 _logger.LogInformation("Using Sync application to execute the job");
-                _relativitySyncAppIntegration.SubmitSyncJobAsync(workspaceArtifactId, integrationPointArtifactId, userId).GetAwaiter().GetResult();
+                _relativitySyncAppIntegration.SubmitSyncJobAsync(workspaceArtifactId, integrationPointArtifactId, jobHistory.ArtifactId, userId).GetAwaiter().GetResult();
                 _logger.LogInformation("Sync job has been submitted");
             }
             else

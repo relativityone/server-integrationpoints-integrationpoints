@@ -4,6 +4,6 @@ namespace kCura.IntegrationPoints.Common.Interfaces
 {
     public interface IRelativitySyncAppIntegration
     {
-        Task SubmitSyncJobAsync(int workspaceArtifactId, int integrationPointArtifactId, int userId);
+        Task SubmitSyncJobAsync(int workspaceArtifactId, int integrationPointArtifactId, int jobHistoryId, int userId);
     }
 }

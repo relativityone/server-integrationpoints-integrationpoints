@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Utils;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.RelativitySync.Models;
 using kCura.IntegrationPoints.RelativitySync.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -25,22 +28,68 @@ using SyncFieldMap = Relativity.Sync.Storage.FieldMap;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
-    public sealed class IntegrationPointToSyncConverter : IIntegrationPointToSyncConverter
+    public class ExtendedJobForSyncApplication : IExtendedJob
+    {
+        public Job Job { get; set; }
+
+        public long JobId { get; set; }
+
+        public int WorkspaceId { get; set; }
+
+        public int SubmittedById { get; set; }
+
+        public int IntegrationPointId { get; set; }
+
+        public IntegrationPoint IntegrationPointModel { get; set; }
+
+        public Guid JobIdentifier { get; set; }
+
+        public int JobHistoryId { get; set; }
+    }
+
+    public sealed class IntegrationPointToSyncConverter : IIntegrationPointToSyncConverter, IIntegrationPointToSyncAppConverter
     {
         private readonly ISerializer _serializer;
         private readonly IJobHistoryService _jobHistoryService;
         private readonly IJobHistorySyncService _jobHistorySyncService;
         private readonly ISyncOperationsWrapper _syncOperations;
+        private readonly IRelativityObjectManager _relativityObjectManager;
         private readonly IAPILog _logger;
 
         public IntegrationPointToSyncConverter(ISerializer serializer, IJobHistoryService jobHistoryService,
-            IJobHistorySyncService jobHistorySyncService, ISyncOperationsWrapper syncOperations, IAPILog logger)
+            IJobHistorySyncService jobHistorySyncService, ISyncOperationsWrapper syncOperations, IRelativityObjectManager relativityObjectManager, IAPILog logger)
         {
             _serializer = serializer;
             _jobHistoryService = jobHistoryService;
             _jobHistorySyncService = jobHistorySyncService;
             _syncOperations = syncOperations;
+            _relativityObjectManager = relativityObjectManager;
             _logger = logger;
+        }
+
+        public async Task<int> CreateSyncConfigurationAsync(int workspaceId, int integrationPointId, int jobHistoryId, int userId)
+        {
+            try
+            {
+                IntegrationPoint integrationPoint = _relativityObjectManager.Read<IntegrationPoint>(integrationPointId);
+
+                IExtendedJob extendedJob = new ExtendedJobForSyncApplication()
+                {
+                    IntegrationPointId = integrationPointId,
+                    IntegrationPointModel = integrationPoint,
+                    JobHistoryId = jobHistoryId,
+                    WorkspaceId = workspaceId,
+                    SubmittedById = userId
+                };
+
+                int syncConfigurationId = await CreateSyncConfigurationAsync(extendedJob).ConfigureAwait(false);
+                return syncConfigurationId;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to create Sync configuration for Sync application");
+                throw;
+            }
         }
 
         public async Task<int> CreateSyncConfigurationAsync(IExtendedJob job)
@@ -50,7 +99,7 @@ namespace kCura.IntegrationPoints.RelativitySync
             FolderConf folderConf = _serializer.Deserialize<FolderConf>(job.IntegrationPointModel.DestinationConfiguration);
 
             ISyncContext syncContext = new SyncContext(job.WorkspaceId, sourceConfiguration.TargetWorkspaceArtifactId, job.JobHistoryId,
-                Core.Constants.IntegrationPoints.APPLICATION_NAME, GetVersion(typeof(IntegrationPointToSyncConverter).Assembly));
+                Core.Constants.IntegrationPoints.APPLICATION_NAME, GetVersion());
 
             ISyncConfigurationBuilder builder = _syncOperations.GetSyncConfigurationBuilder(syncContext);
 
@@ -69,16 +118,6 @@ namespace kCura.IntegrationPoints.RelativitySync
                     await CreateImageSyncConfigurationAsync(builder, job, sourceConfiguration, importSettings).ConfigureAwait(false)
                     : await CreateDocumentSyncConfigurationAsync(builder, job, sourceConfiguration, importSettings, folderConf).ConfigureAwait(false);
             }
-        }
-
-        private Version GetVersion(Assembly assembly)
-        {
-            Version assemblyVersion;
-            if (!Version.TryParse(assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version, out assemblyVersion))
-            {
-                _logger.LogWarning("Couldn't parse Version from AssemblyFileVersionAttribute");
-            }
-            return assemblyVersion;
         }
 
         private async Task<int> CreateImageSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job,
@@ -255,7 +294,14 @@ namespace kCura.IntegrationPoints.RelativitySync
 
         private bool IsRetryingErrors(Job job)
         {
-            TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+            string jobDetails = job?.JobDetails;
+
+            if (string.IsNullOrWhiteSpace(jobDetails))
+            {
+                return false;
+            }
+
+            TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(jobDetails);
             JobHistory jobHistory = _jobHistoryService.GetRdo(taskParameters.BatchInstance);
 
             if (jobHistory == null)
@@ -266,5 +312,18 @@ namespace kCura.IntegrationPoints.RelativitySync
 
             return jobHistory.JobType.EqualsToChoice(JobTypeChoices.JobHistoryRetryErrors);
         }
+
+        private Version GetVersion()
+        {
+            Version assemblyVersion;
+
+            if (!Version.TryParse(typeof(IntegrationPointToSyncConverter).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version, out assemblyVersion))
+            {
+                _logger.LogWarning("Couldn't parse Version from AssemblyFileVersionAttribute");
+            }
+
+            return assemblyVersion;
+        }
+
     }
 }

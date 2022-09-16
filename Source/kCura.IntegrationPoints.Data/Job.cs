@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Data
             StopState = (StopState)row.Field<int>("StopState");
             Heartbeat = row.Field<DateTime?>("Heartbeat");
         }
-
+        
         private Job()
         {
 

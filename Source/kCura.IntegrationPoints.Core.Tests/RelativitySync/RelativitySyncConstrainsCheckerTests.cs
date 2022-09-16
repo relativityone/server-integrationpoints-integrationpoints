@@ -9,12 +9,14 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.Core;
 using Moq;
 using NUnit.Framework;
 using Relativity;
 using Relativity.API;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
 {
@@ -24,6 +26,8 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
         private Mock<IIntegrationPointService> _integrationPointService;
         private Mock<IProviderTypeService> _providerTypeService;
         private Mock<IJobHistoryService> _jobHistoryService;
+        private Mock<IRelativityObjectManager> _relativityObjectManager;
+        private Mock<IToggleProvider> _toggleProvider;
         private Job _job;
 
         private Mock<ISerializer> _configurationDeserializer;
@@ -84,8 +88,7 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
 
             _jobHistoryService = new Mock<IJobHistoryService>();
 
-            _instance = new RelativitySyncConstrainsChecker(_integrationPointService.Object,
-                _providerTypeService.Object, _configurationDeserializer.Object, log.Object);
+            _instance = new RelativitySyncConstrainsChecker(_relativityObjectManager.Object, _providerTypeService.Object, _toggleProvider.Object, _configurationDeserializer.Object, log.Object);
         }
 
         [Test]

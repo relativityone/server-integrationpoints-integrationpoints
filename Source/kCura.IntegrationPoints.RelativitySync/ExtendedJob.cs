@@ -45,6 +45,7 @@ namespace kCura.IntegrationPoints.RelativitySync
         public long JobId => Job.JobId;
 
         public int WorkspaceId => Job.WorkspaceID;
+
         public int SubmittedById => Job.SubmittedBy;
 
         public int IntegrationPointId => Job.RelatedObjectArtifactID;
