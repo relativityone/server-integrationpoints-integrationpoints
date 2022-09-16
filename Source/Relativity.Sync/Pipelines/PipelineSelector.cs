@@ -7,18 +7,20 @@ namespace Relativity.Sync.Pipelines
     {
         private readonly IPipelineSelectorConfiguration _pipelineSelectorConfiguration;
         private readonly IAPILog _logger;
+        private readonly IIAPIv2RunChecker _iApiv2RunChecker;
 
         private ISyncPipeline _selectedPipeline;
 
-        public PipelineSelector(IPipelineSelectorConfiguration pipelineSelectorConfiguration, IAPILog logger)
+        public PipelineSelector(IPipelineSelectorConfiguration pipelineSelectorConfiguration, IIAPIv2RunChecker iApiv2RunChecker, IAPILog logger)
         {
             _pipelineSelectorConfiguration = pipelineSelectorConfiguration;
             _logger = logger;
+            _iApiv2RunChecker = iApiv2RunChecker;
         }
 
         public ISyncPipeline GetPipeline()
         {
-            return _selectedPipeline ?? (_selectedPipeline = GetPipelineInternal(IsDocumentTransfer(), IsRetryJob(), IsImageJob()));
+            return _selectedPipeline ??= GetPipelineInternal(IsDocumentTransfer(), IsRetryJob(), IsImageJob());
         }
 
         private ISyncPipeline GetPipelineInternal(bool isDocumentTransfer, bool isRetryJob, bool isImageJob)
@@ -47,21 +49,27 @@ namespace Relativity.Sync.Pipelines
             return _pipelineSelectorConfiguration.RdoArtifactTypeId == (int)ArtifactType.Document;
         }
 
-        private static ISyncPipeline GetDocumentPipeline(bool isRetryJob, bool isImageJob)
+        private ISyncPipeline GetDocumentPipeline(bool isRetryJob, bool isImageJob)
         {
+            bool? isIApi2ShouldBeUsed = _iApiv2RunChecker.ShouldBeUsed();
+            if (isIApi2ShouldBeUsed.HasValue && isIApi2ShouldBeUsed.Value)
+            {
+                return new IAPI2_SyncDocumentRunPipeline();
+            }
+
             ISyncPipeline selectedPipeline;
             switch (isImageJob)
             {
-                case (false) when isRetryJob:
+                case false when isRetryJob:
                     selectedPipeline = new SyncDocumentRetryPipeline();
                     break;
-                case (false):
+                case false:
                     selectedPipeline = new SyncDocumentRunPipeline();
                     break;
-                case (true) when isRetryJob:
+                case true when isRetryJob:
                     selectedPipeline = new SyncImageRetryPipeline();
                     break;
-                case (true):
+                case true:
                     selectedPipeline = new SyncImageRunPipeline();
                     break;
             }
