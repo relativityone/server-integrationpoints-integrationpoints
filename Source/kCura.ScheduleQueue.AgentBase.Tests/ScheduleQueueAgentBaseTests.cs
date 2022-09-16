@@ -183,6 +183,21 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
         }
 
         [Test]
+        public void Execute_ShouldSetDidWorkToFalse_WhenServicesUnavailable()
+        {
+            // Arrange
+            TestAgent sut = GetSut();
+
+            sut.Helper.Setup(x => x.GetServicesManager()).Throws(new Exception());
+
+            // Act
+            sut.Execute();
+
+            // Assert
+            sut.DidWork.Should().BeFalse();
+        }
+
+        [Test]
         public void Execute_ShouldSetDidWorkToTrue_WhenFinishedExecution()
         {
             // Arrange
