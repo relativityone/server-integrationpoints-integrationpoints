@@ -28,8 +28,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
         private Mock<IValidationConfiguration> _configurationFake;
         private Mock<IGroupManager> _groupManagerFake;
-        private Mock<ISyncToggles> _nonAdminCanSyncUsingLinksFake; 
-        private Mock<IUserService> _userServiceFake; 
+        private Mock<ISyncToggles> _nonAdminCanSyncUsingLinksFake;
+        private Mock<IUserService> _userServiceFake;
 
 
         private const int _USER_IS_ADMIN_ID = 1;
@@ -48,7 +48,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             _configurationFake = new Mock<IValidationConfiguration>();
             _nonAdminCanSyncUsingLinksFake = new Mock<ISyncToggles>();
             _userServiceFake = new Mock<IUserService>();
-            
+
 
             _sut = new NativeCopyLinksValidator(
                 _instanceSettingsFake.Object,
@@ -117,6 +117,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             result.Messages.Should().BeEmpty();
         }
 
+        [TestCase(typeof(IAPI2_SyncDocumentRunPipeline), false)]
         [TestCase(typeof(SyncDocumentRunPipeline), true)]
         [TestCase(typeof(SyncDocumentRetryPipeline), true)]
         [TestCase(typeof(SyncImageRunPipeline), false)]
@@ -135,7 +136,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             actualResult.Should().Be(expectedResult,
                 $"ShouldValidate should return {expectedResult} for pipeline {pipelineType.Name}");
         }
-        
+
         [Test]
         public async Task ValidateAsync_ShouldSkipValidationOfUser_WhenNonAdminCanSyncUsingLinkToggleIsTrue()
         {

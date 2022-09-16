@@ -62,7 +62,7 @@ namespace Relativity.Sync.Tests.Integration
             // ASSERT
             AssertExecutionOrder(expectedOrder, _executorTypesInActualExecutionOrder);
             expectedOrder.SelectMany(x => x).Count().Should()
-                .Be(_executorTypesInActualExecutionOrder.Count, 
+                .Be(_executorTypesInActualExecutionOrder.Count,
                     "Expected nodes should have the same count as actual list");
         }
 
@@ -244,7 +244,7 @@ namespace Relativity.Sync.Tests.Integration
                 return typeof(DataSourceSnapshotNode);
             }
 
-            if (pipelineType == typeof(SyncDocumentRunPipeline) || pipelineType == typeof(SyncImageRunPipeline))
+            if (pipelineType == typeof(SyncDocumentRunPipeline) || pipelineType == typeof(SyncImageRunPipeline) || pipelineType == typeof(IAPI2_SyncDocumentRunPipeline))
             {
                 return typeof(DataSourceSnapshotNode);
             }
