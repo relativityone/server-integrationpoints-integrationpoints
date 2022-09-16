@@ -74,7 +74,7 @@ namespace Relativity.Sync
                     };
 
                     QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, request, 0, 1).ConfigureAwait(false);
-                    string jobId = result.Objects.FirstOrDefault().FieldValues.FirstOrDefault().Value.ToString();
+                    string jobId = result.Objects.FirstOrDefault()?.FieldValues.FirstOrDefault()?.Value?.ToString();
 
                     if (string.IsNullOrWhiteSpace(jobId))
                     {
