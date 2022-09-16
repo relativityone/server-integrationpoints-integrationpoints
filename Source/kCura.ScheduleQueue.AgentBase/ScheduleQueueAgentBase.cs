@@ -5,7 +5,7 @@ using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Config;
-using kCura.IntegrationPoints.Core.Checkers;
+using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
@@ -31,7 +31,6 @@ namespace kCura.ScheduleQueue.AgentBase
         private IDateTime _dateTime;
         private ITaskParameterHelper _taskParameterHelper;
         private IConfig _config;
-        private IServicesAccessChecker _servicesAccessChecker;
         private IAPM _apm;
 
         private DateTime _agentStartTime;
@@ -245,19 +244,29 @@ namespace kCura.ScheduleQueue.AgentBase
 
         private void PreExecute()
         {
-            Initialize();
             CheckServicesAccess();
+            Initialize();
             InitializeManagerConfigSettingsFactory();
             CheckQueueTable();
         }
 
         private void CheckServicesAccess()
         {
-            ServicesAccessChecker servicesAccessChecker = new ServicesAccessChecker(Helper, Logger);
+            WorkspaceDBContext workspaceDbContext = new WorkspaceDBContext(Helper.GetDBContext(-1));
+            DatabasePingReporter dbPingReporter = new DatabasePingReporter(workspaceDbContext, Logger);
+            KeplerPingReporter keplerPingReporter = new KeplerPingReporter(Helper, Logger);
+            FileShareDiskUsageReporter fileShareDiskUsageReporter = new FileShareDiskUsageReporter(Helper, Logger);
+            List<IHealthStatisticReporter> healthStatisticsReporters = new List<IHealthStatisticReporter>
+            {
+                dbPingReporter,
+                keplerPingReporter,
+                fileShareDiskUsageReporter
+            };
 
-            bool areServicesAccessible = servicesAccessChecker.CheckDatabaseAccessAsync().GetAwaiter().GetResult();
-            areServicesAccessible &= servicesAccessChecker.CheckKeplerAccessAsync().GetAwaiter().GetResult();
-            areServicesAccessible &= servicesAccessChecker.GetFileShareDiskUsageReporterAsync().GetAwaiter().GetResult();
+            SystemHealthReporter systemHealthReporter = new SystemHealthReporter(healthStatisticsReporters);
+            Dictionary<string, object> results = systemHealthReporter.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult();
+
+            bool areServicesAccessible = results.Count == healthStatisticsReporters.Count;
 
             if (!areServicesAccessible)
             {

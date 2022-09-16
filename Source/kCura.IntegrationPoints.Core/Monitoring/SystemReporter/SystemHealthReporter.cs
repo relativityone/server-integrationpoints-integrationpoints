@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
             _reporters = reporters;
         }
 
-
         public async Task<Dictionary<string, object>> GetSystemHealthStatisticsAsync()
         {
             Dictionary<string, object> systemHealthStatistics = new Dictionary<string, object>();
