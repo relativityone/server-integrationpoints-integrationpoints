@@ -20,7 +20,7 @@
     "Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*Error: Violation of PRIMARY KEY constraint*Cannot insert duplicate key in object 'EDDSDBO.JobHistoryError'.*"
   },
   {
-    "Jira": "REL-435646",
+    "Jira": "REL-743079",
     "Exception": "*Relativity.Sync.Executors.ImportFailedException: Fatal exception occurred in Import API.*The column*cannot be modified because it is either a computed column or is the result of a UNION operator*"
   },
   {
