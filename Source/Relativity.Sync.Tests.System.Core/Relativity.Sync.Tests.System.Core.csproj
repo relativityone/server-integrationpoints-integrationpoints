@@ -3,9 +3,7 @@
      <PropertyGroup>
         <TargetFramework>net472</TargetFramework>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <WarningLevel>4</WarningLevel>
-        <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
         <ResolveNugetPackages>true</ResolveNugetPackages>
         <IsTestProject>false</IsTestProject>
@@ -50,5 +48,5 @@
     <ItemGroup>
         <Reference Include="System.Web.Services" />
     </ItemGroup>
-    <Import Project="..\..\stylecop\StyleCop.props" />
+    <Import Project="..\..\stylecop\StyleCop.targets" />
 </Project>

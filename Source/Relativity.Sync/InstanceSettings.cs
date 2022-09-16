@@ -53,19 +53,19 @@ namespace Relativity.Sync
             return await GetAsync<int>("SyncMaxThreadsCount", _SYNC_SECTION, defaultValue).ConfigureAwait(false);
         }
 
-        private async Task<T> GetAsync<T>(string name, string section, T defaultValue)
+        public async Task<T> GetAsync<T>(string name, string section, T defaultValue)
         {
             InstanceSettingQueryResultSet resultSet = await TryReadInstanceSettingAsync(name, section).ConfigureAwait(false);
 
             if (!resultSet.Success)
             {
-                LogWarningRetrieveSettingValueFailed(section, name, defaultValue, $"Failed to query for '{name}' instance setting. Response message: {resultSet.Message}");
+                LogRetrieveSettingValueFailed(section, name, defaultValue, $"Failed to query for '{name}' instance setting. Response message: {resultSet.Message}");
                 return defaultValue;
             }
 
             if (resultSet.TotalCount == 0)
             {
-                LogWarningRetrieveSettingValueFailed(section, name, defaultValue, $"Query for '{name}' instance setting from section '{section}' returned empty results. Make sure instance setting exists.");
+                LogRetrieveSettingValueFailed(section, name, defaultValue, $"Query for '{name}' instance setting from section '{section}' returned empty results. Make sure instance setting exists.");
                 return defaultValue;
             }
 
@@ -128,9 +128,9 @@ namespace Relativity.Sync
             return true;
         }
 
-        private void LogWarningRetrieveSettingValueFailed<T>(string section, string name, T defaultValue, string errorMessage)
+        private void LogRetrieveSettingValueFailed<T>(string section, string name, T defaultValue, string errorMessage)
         {
-            _logger.LogWarning($"Warning: Retrieve '{name}' setting from section '{section}' failed, default value was returned: '{defaultValue}' (Error Message: {errorMessage})");
+            _logger.LogInformation($"Warning: Retrieve '{name}' setting from section '{section}' failed, default value was returned: '{defaultValue}' (Error Message: {errorMessage})");
         }
     }
 }

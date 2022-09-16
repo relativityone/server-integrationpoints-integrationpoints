@@ -13,7 +13,7 @@ namespace Relativity.Sync
         private readonly IRelativityServices _relativityServices;
         private readonly SyncJobExecutionConfiguration _configuration;
         private readonly IAPILog _logger;
-        
+
         public SyncJobInLifetimeScope(IContainerFactory containerFactory, SyncJobParameters syncJobParameters, IRelativityServices relativityServices,
             SyncJobExecutionConfiguration configuration, IAPILog logger)
         {
@@ -43,7 +43,7 @@ namespace Relativity.Sync
                 await syncJob.ExecuteAsync(progress, token).ConfigureAwait(false);
             }
         }
-        
+
         private IContainer GetContainer()
         {
             ContainerBuilder builder = new ContainerBuilder();

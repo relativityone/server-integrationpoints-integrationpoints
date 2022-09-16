@@ -6,7 +6,7 @@ namespace Relativity.Sync.Transfer
     {
         void TranslateAndStoreFilePaths(IDictionary<int, INativeFile> artifactIdToNativeFile);
 
-        IList<FmsBatchInfo> GetStoredLocations();
+        List<FmsBatchInfo> GetStoredLocations();
 
         void ClearStoredLocations();
     }

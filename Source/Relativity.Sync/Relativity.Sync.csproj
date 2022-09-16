@@ -5,8 +5,6 @@
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <OutputPath>bin\</OutputPath>
         <WarningLevel>4</WarningLevel>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IsPackable>true</IsPackable>
         <ResolveNugetPackages>true</ResolveNugetPackages>
@@ -24,14 +22,6 @@
         <RepositoryUrl>https://platform.relativity.com</RepositoryUrl>
         <PackageReleaseNotes>https://platform.relativity.com</PackageReleaseNotes>
         <LangVersion>8</LangVersion>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-        <CodeAnalysisRuleSet />
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-        <CodeAnalysisRuleSet />
-        <WarningsAsErrors />
-        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     </PropertyGroup>
     <Import Project="..\..\DevelopmentScripts\Build.Sign.targets" />
     <!-- Relativity Packages with Release Versioning Schema -->
@@ -53,7 +43,7 @@
         <PackageReference Include="Relativity.Telemetry.Services.Interface" Version="[3003.0.2]" />
         <PackageReference Include="Relativity.AutomatedWorkflows.SDK" Version="1.0.8" />
         <PackageReference Include="Relativity.DataTransfer.Legacy.SDK" Version="0.2.21" />
-        <PackageReference Include="Relativity.AntiMalware.SDK" Version="1.1.46" />
+        <PackageReference Include="Relativity.AntiMalware.SDK" Version="1.1.48" />
         <PackageReference Include="Relativity.Environment.SDK" Version="2.0.4" />
     </ItemGroup>
     <!-- Import API Package (https://einstein.kcura.com/display/DTV/Data+Transfer+SDK+-+Releases) -->
@@ -74,5 +64,8 @@
         <Reference Include="System.Runtime.Caching" />
         <Reference Include="System.Web.Services" />
     </ItemGroup>
-    <Import Project="..\..\stylecop\StyleCop.props" />
+    <ItemGroup>
+      <Folder Include="Utils\Workarounds\" />
+    </ItemGroup>
+    <Import Project="..\..\stylecop\StyleCop.targets" />
 </Project>

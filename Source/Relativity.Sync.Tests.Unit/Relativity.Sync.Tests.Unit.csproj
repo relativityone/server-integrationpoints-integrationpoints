@@ -3,9 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net472</TargetFramework>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <WarningLevel>4</WarningLevel>
-        <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
         <IsTestProject>true</IsTestProject>
         <ResolveNugetPackages>true</ResolveNugetPackages>
@@ -33,7 +31,10 @@
         <Reference Include="System.Web.Services" />
     </ItemGroup>
     <ItemGroup>
+        <Folder Include="HttpClient\" />
+        <Folder Include="FileMovementService\" />
         <Folder Include="Toggles\" />
+        <Folder Include="Utils\Workarounds\" />
     </ItemGroup>
-    <Import Project="..\..\stylecop\StyleCop.props" />
+    <Import Project="..\..\stylecop\StyleCop.targets" />
 </Project>

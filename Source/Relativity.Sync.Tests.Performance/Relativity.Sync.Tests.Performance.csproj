@@ -3,9 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net472</TargetFramework>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <WarningLevel>4</WarningLevel>
-        <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
         <ResolveNugetPackages>true</ResolveNugetPackages>
         <IsTestProject>true</IsTestProject>
@@ -43,5 +41,5 @@
         <PackageReference Include="Relativity.ARM.SDK" Version="11.3.0" />
         <PackageReference Include="Relativity.Testing.Identification" Version="3.12.0" />
     </ItemGroup>
-    <Import Project="..\..\stylecop\StyleCop.props" />
+    <Import Project="..\..\stylecop\StyleCop.targets" />
 </Project>

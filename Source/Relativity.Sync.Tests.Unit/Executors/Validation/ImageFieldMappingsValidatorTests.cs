@@ -246,7 +246,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             // Assert
             func.Should().Throw<InvalidOperationException>();
         }
-        
+
         [TestCaseSource(nameof(_invalidUniqueIdentifiersFieldMap))]
         public async Task ValidateAsync_ShouldHandleUniqueIdentifierInvalid(string testInvalidFieldMap, string expectedErrorMessage)
         {
@@ -285,6 +285,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             Mock.Verify(_validationConfiguration);
         }
 
+        [TestCase(typeof(IAPI2_SyncDocumentRunPipeline), false)]
         [TestCase(typeof(SyncDocumentRunPipeline), false)]
         [TestCase(typeof(SyncDocumentRetryPipeline), false)]
         [TestCase(typeof(SyncImageRunPipeline), true)]

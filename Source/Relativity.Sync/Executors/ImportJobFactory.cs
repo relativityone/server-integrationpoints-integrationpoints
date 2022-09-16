@@ -15,7 +15,7 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Toggles;
 using Relativity.Sync.Toggles.Service;
 using Relativity.Sync.Transfer;
-using Relativity.Sync.Transfer.ADF;
+using Relativity.Sync.Transfer.ADLS;
 
 namespace Relativity.Sync.Executors
 {
@@ -27,7 +27,7 @@ namespace Relativity.Sync.Executors
         private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
         private readonly SyncJobParameters _syncJobParameters;
         private readonly IFieldMappings _fieldMappings;
-        private readonly IIsADFTransferEnabled _isAdfTransferEnabled;
+        private readonly IIsAdfTransferEnabled _isAdfTransferEnabled;
         private readonly IAntiMalwareEventHelper _antiMalwareEventHelper;
         private readonly ISyncToggles _syncToggles;
         private readonly IAPILog _logger;
@@ -39,7 +39,7 @@ namespace Relativity.Sync.Executors
             IInstanceSettings instanceSettings,
             SyncJobParameters syncJobParameters,
             IFieldMappings fieldMappings,
-            IIsADFTransferEnabled isAdfTransferEnabled,
+            IIsAdfTransferEnabled isAdfTransferEnabled,
             IAntiMalwareEventHelper antiMalwareEventHelper,
             ISyncToggles syncToggles,
             IAPILog logger)

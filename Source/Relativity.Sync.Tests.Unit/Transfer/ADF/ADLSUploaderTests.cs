@@ -8,7 +8,7 @@ using Moq;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Storage;
-using Relativity.Sync.Transfer.ADF;
+using Relativity.Sync.Transfer.ADLS;
 
 namespace Relativity.Sync.Tests.Unit.Transfer.ADF
 {

@@ -38,7 +38,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
         private const int _TEST_SOURCE_WORKSPACE_ARTIFACT_ID = 101234;
         private const string _IDENTIFIER_DEST_FIELD_NAME = "Control Number";
         private const string _IDENTIFIER_SOURCE_FIELD_NAME = "Control Number";
-        
+
         private const string _TEST_FIELDS_MAP = @"[{
             ""sourceField"": {
                 ""displayName"": ""Control Number"",
@@ -175,7 +175,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             newFieldMappings[0].SourceField.DisplayName = "Control Number - RENAMED";
 
             SetUpObjectManagerQuery(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID, newFieldMappings.Select(x => x.SourceField));
-            
+
             // Act
             ValidationResult actualResult = await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
@@ -229,7 +229,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             // Assert
             actualResult.Should().Throw<InvalidOperationException>();
         }
-        
+
         [TestCaseSource(nameof(_invalidUniqueIdentifiersFieldMap))]
         public async Task ValidateAsync_ShouldHandleUniqueIdentifierInvalid(string testInvalidFieldMap, string expectedErrorMessage)
         {
@@ -268,6 +268,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             Mock.Verify(_validationConfiguration);
         }
 
+        [TestCase(typeof(IAPI2_SyncDocumentRunPipeline), false)]
         [TestCase(typeof(SyncDocumentRunPipeline), true)]
         [TestCase(typeof(SyncDocumentRetryPipeline), true)]
         [TestCase(typeof(SyncImageRunPipeline), false)]

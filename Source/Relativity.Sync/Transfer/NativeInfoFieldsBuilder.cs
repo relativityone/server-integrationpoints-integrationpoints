@@ -58,7 +58,7 @@ namespace Relativity.Sync.Transfer
                 }
             }
 
-            if (_syncToggles.IsEnabled<UseFMS>())
+            if (_syncToggles.IsEnabled<UseFmsToggle>())
             {
                 _fileLocationManager.TranslateAndStoreFilePaths(artifactIdToNativeFile);
             }

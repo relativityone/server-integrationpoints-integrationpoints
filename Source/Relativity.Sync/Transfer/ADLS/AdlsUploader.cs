@@ -10,7 +10,7 @@ using Relativity.API;
 using Relativity.Services.Exceptions;
 using Relativity.Storage;
 
-namespace Relativity.Sync.Transfer.ADF
+namespace Relativity.Sync.Transfer.ADLS
 {
     internal class AdlsUploader : IAdlsUploader
     {
@@ -41,7 +41,7 @@ namespace Relativity.Sync.Transfer.ADF
 
             foreach (var file in storedLocation.Files)
             {
-                string sourcePath = Path.Combine(storedLocation.DestinationLocationShortPath, file.FileName);
+                string sourcePath = Path.Combine(storedLocation.SourceLocationShortPath, file.FileName);
                 string destinationPath = Path.Combine(storedLocation.DestinationLocationShortPath, file.FileName);
                 stringBuilder.AppendLine($"{sourcePath},{destinationPath}");
 

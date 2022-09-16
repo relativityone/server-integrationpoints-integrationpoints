@@ -94,7 +94,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         public async Task GetRowValuesBuilderAsync_ShouldNotLaunchADLSPathTranslation_WhenUseFMSToggleIsDisabled()
         {
             // Arrrange
-            _syncToggles.Setup(x => x.IsEnabled<UseFMS>()).Returns(false);
+            _syncToggles.Setup(x => x.IsEnabled<UseFmsToggle>()).Returns(false);
 
             // Act
             INativeSpecialFieldRowValuesBuilder result = await _sut
@@ -108,7 +108,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         public async Task GetRowValuesBuilderAsync_ShouldAlwaysLaunchADLSPathTranslationOnce_WhenUseFMSToggleIsEnabled()
         {
             // Arrrange
-            _syncToggles.Setup(x => x.IsEnabled<UseFMS>()).Returns(true);
+            _syncToggles.Setup(x => x.IsEnabled<UseFmsToggle>()).Returns(true);
 
             // Act
             INativeSpecialFieldRowValuesBuilder result = await _sut
