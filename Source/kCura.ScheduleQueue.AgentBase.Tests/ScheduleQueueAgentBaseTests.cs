@@ -15,7 +15,6 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Validation;
 using Moq;
 using Moq.Language;
-using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services;
@@ -24,7 +23,8 @@ using Relativity.Services.ResourceServer;
 
 namespace kCura.ScheduleQueue.AgentBase.Tests
 {
-    [TestFixture, Category("Unit")]
+    [TestFixture]
+    [Category("Unit")]
     public class ScheduleQueueAgentBaseTests
     {
         private Mock<IJobService> _jobServiceMock;
@@ -149,7 +149,8 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
             sut.Execute();
 
             // Assert
-            _jobServiceMock.Verify(x => x.FinalizeJob(It.IsAny<Job>(), It.IsAny<IScheduleRuleFactory>(), It.IsAny<TaskResult>()),
+            _jobServiceMock.Verify(
+                x => x.FinalizeJob(It.IsAny<Job>(), It.IsAny<IScheduleRuleFactory>(), It.IsAny<TaskResult>()),
                 Times.Never);
         }
 
@@ -165,7 +166,8 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
             sut.Execute();
 
             // Assert
-            _jobServiceMock.Verify(x => x.GetNextQueueJob(It.IsAny<IEnumerable<int>>(), It.IsAny<int>(), It.IsAny<long?>()),
+            _jobServiceMock.Verify(
+                x => x.GetNextQueueJob(It.IsAny<IEnumerable<int>>(), It.IsAny<int>(), It.IsAny<long?>()),
                 Times.Once);
         }
 
@@ -188,7 +190,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
             // Arrange
             TestAgent sut = GetSut();
 
-            sut.Helper.Setup(x => x.GetServicesManager()).Throws(new Exception());
+            sut.HelperMock.Setup(x => x.GetServicesManager()).Throws(new Exception());
 
             // Act
             sut.Execute();
@@ -273,7 +275,6 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
                     It.Is<Job>(y => y.JobFailed != null),
                     It.IsAny<IScheduleRuleFactory>(),
                     It.IsAny<TaskResult>()));
-
         }
 
         [Test]
@@ -300,7 +301,6 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
                     It.Is<Job>(y => y.JobFailed != null),
                     It.IsAny<IScheduleRuleFactory>(),
                     It.IsAny<TaskResult>()));
-
         }
 
         [Test]
@@ -338,8 +338,11 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
             var emptyLog = new Mock<IAPILog>();
 
             _jobServiceMock = new Mock<IJobService>();
-            _jobServiceMock.Setup(x => x.FinalizeJob(It.IsAny<Job>(), It.IsAny<IScheduleRuleFactory>(),
-                    It.IsAny<TaskResult>()))
+            _jobServiceMock.Setup(
+                    x => x.FinalizeJob(
+                        It.IsAny<Job>(),
+                        It.IsAny<IScheduleRuleFactory>(),
+                        It.IsAny<TaskResult>()))
                 .Returns(new FinalizeJobResult { JobState = JobLogState.Finished, Details = string.Empty });
 
             _queueJobValidatorFake = new Mock<IQueueJobValidator>();
@@ -353,9 +356,16 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
             _config = new Mock<IConfig>();
             _config.Setup(x => x.TransientStateJobTimeout).Returns(TimeSpan.MaxValue);
 
-            return new TestAgent(agentService.Object, _jobServiceMock.Object,
-                scheduleRuleFactory.Object, _queueJobValidatorFake.Object, _queryManager.Object,
-                _kubernetesModeFake.Object, _dateTime.Object, emptyLog.Object, _config.Object)
+            return new TestAgent(
+                agentService.Object,
+                _jobServiceMock.Object,
+                scheduleRuleFactory.Object,
+                _queueJobValidatorFake.Object,
+                _queryManager.Object,
+                _kubernetesModeFake.Object,
+                _dateTime.Object,
+                emptyLog.Object,
+                _config.Object)
             {
                 JobResult = jobStatus
             };
@@ -382,14 +392,21 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 
         private class TestAgent : ScheduleQueueAgentBase
         {
-            private Mock<IAgentHelper> _helperMock;
+            private Mock<IAgentHelper> _helperMockMock;
 
-            public TestAgent(IAgentService agentService = null, IJobService jobService = null,
-                IScheduleRuleFactory scheduleRuleFactory = null, IQueueJobValidator queueJobValidator = null,
-                IQueueQueryManager queryManager = null, IKubernetesMode kubernetesMode = null, IDateTime dateTime = null, IAPILog log = null, IConfig config = null)
+            public TestAgent(
+                IAgentService agentService = null,
+                IJobService jobService = null,
+                IScheduleRuleFactory scheduleRuleFactory = null,
+                IQueueJobValidator queueJobValidator = null,
+                IQueueQueryManager queryManager = null,
+                IKubernetesMode kubernetesMode = null,
+                IDateTime dateTime = null,
+                IAPILog log = null,
+                IConfig config = null)
                 : base(Guid.NewGuid(), kubernetesMode, agentService, jobService, scheduleRuleFactory, queueJobValidator, queryManager, dateTime, log, config)
             {
-                //'Enabled = true' triggered Execute() immediately. I needed to set the field only to enable getting job from the queue
+                // 'Enabled = true' triggered Execute() immediately. I needed to set the field only to enable getting job from the queue
                 typeof(Agent.AgentBase).GetField("_enabled", BindingFlags.NonPublic | BindingFlags.Instance)
                     .SetValue(this, true);
 
@@ -400,7 +417,10 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 
             public override string Name { get; } = "Test";
 
-            public Mock<IAgentHelper> Helper => _helperMock;
+            public Mock<IAgentHelper> HelperMock => _helperMockMock;
+
+            // Testing Evidence
+            public IList<Job> ProcessedJobs { get; } = new List<Job>();
 
             public int GetAgentIDTest()
             {
@@ -426,12 +446,9 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
                 return Enumerable.Empty<int>();
             }
 
-            //Testing Evidence
-            public IList<Job> ProcessedJobs { get; } = new List<Job>();
-
             private void MockHelper()
             {
-                _helperMock = new Mock<IAgentHelper>();
+                _helperMockMock = new Mock<IAgentHelper>();
                 Mock<IDBContext> dbContextMock = new Mock<IDBContext>();
                 DataTable result = new DataTable
                 {
@@ -439,7 +456,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
                 };
 
                 dbContextMock.Setup(x => x.ExecuteSqlStatementAsDataTable(It.IsAny<string>())).Returns(result);
-                _helperMock.Setup(x => x.GetDBContext(-1)).Returns(dbContextMock.Object);
+                _helperMockMock.Setup(x => x.GetDBContext(-1)).Returns(dbContextMock.Object);
 
                 FileShareQueryResultSet fileShareQueryResultSet = new FileShareQueryResultSet
                 {
@@ -469,12 +486,11 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
                 servicesManagerMock.Setup(x => x.CreateProxy<IPingService>(ExecutionIdentity.System))
                     .Returns(pingServiceMock.Object);
 
-                _helperMock.Setup(x => x.GetServicesManager()).Returns(servicesManagerMock.Object);
+                _helperMockMock.Setup(x => x.GetServicesManager()).Returns(servicesManagerMock.Object);
 
                 typeof(Agent.AgentBase).GetField("_helper", BindingFlags.NonPublic | BindingFlags.Instance)
-                    .SetValue(this, _helperMock.Object);
+                    .SetValue(this, _helperMockMock.Object);
             }
         }
-
     }
 }
