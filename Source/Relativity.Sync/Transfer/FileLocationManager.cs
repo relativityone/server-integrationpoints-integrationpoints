@@ -37,7 +37,10 @@ namespace Relativity.Sync.Transfer
                     _fmsBatchesStorage.Add(batchInfo);
 
                     SetNewPathForIapiTransfer(batchInfo, nativeFiles);
+                    _logger.LogInformation("Created FMS batch for folder {fmsBatchFolderName}", batchInfo.SourceLocationShortPath);
                 }
+
+                _logger.LogInformation("Natives Files grouped by folder paths. Separated {pathStructuresCount}", commonSourcePathGroups.Count());
             }
             catch (Exception ex)
             {

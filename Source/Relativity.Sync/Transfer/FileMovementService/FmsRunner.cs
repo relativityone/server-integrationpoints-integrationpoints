@@ -86,6 +86,7 @@ namespace Relativity.Sync.Transfer.FileMovementService
                 }
 
                 _logger.LogInformation("Monitoring of {count} fms batches finished. TraceId: {traceId}", batches.Count, batchesTraceId);
+                PrintBatchesStatus(batches);
             }
             catch (Exception ex)
             {
@@ -133,6 +134,14 @@ namespace Relativity.Sync.Transfer.FileMovementService
                 RunId = startResponse.RunId,
                 Status = SubmittedStatusName,
             };
+        }
+
+        private void PrintBatchesStatus(List<FmsBatchStatusInfo> batches)
+        {
+            foreach (FmsBatchStatusInfo batch in batches)
+            {
+                _logger.LogInformation("FMS Batch RunId: {FmsRunId} Status: {FmsStatus} StatusMessage: {FmsStatusMessage}", batch.RunId, batch.Status, batch.StatusMessage);
+            }
         }
     }
 }
