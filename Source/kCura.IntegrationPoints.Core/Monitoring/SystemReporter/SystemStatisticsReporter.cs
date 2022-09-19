@@ -14,12 +14,12 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
     {
         private readonly IAPILog _logger;
 
-        private PerformanceCounter _cpuUsageSystemTotal { get; } = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-
         public SystemStatisticsReporter(IAPILog logger)
         {
             _logger = logger;
         }
+
+        private PerformanceCounter _cpuUsageSystemTotal { get; } = new PerformanceCounter("Processor", "% Processor Time", "_Total");
 
         public Task<Dictionary<string, object>> GetStatisticAsync()
         {
@@ -36,8 +36,8 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
 
             var memoryValues = wmiObject.Get().Cast<ManagementObject>().Select(mo => new
             {
-                FreePhysicalMemory = Double.Parse(mo["FreePhysicalMemory"].ToString()),
-                TotalVisibleMemorySize = Double.Parse(mo["TotalVisibleMemorySize"].ToString())
+                FreePhysicalMemory = double.Parse(mo["FreePhysicalMemory"].ToString()),
+                TotalVisibleMemorySize = double.Parse(mo["TotalVisibleMemorySize"].ToString())
             }).FirstOrDefault();
 
             if (memoryValues != null)

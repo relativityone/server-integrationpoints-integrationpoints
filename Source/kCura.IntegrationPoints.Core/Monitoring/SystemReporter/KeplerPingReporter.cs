@@ -18,7 +18,6 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
             _logger = logger;
         }
 
-
         public async Task<Dictionary<string, object>> GetStatisticAsync()
         {
             return new Dictionary<string, object>()

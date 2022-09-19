@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
             {
                 try
                 {
-                    _logger.LogDebug("Checking {fileShareName}", fileShare);
+                    _logger.LogInformation("Checking {fileShareName}", fileShare);
                     DriveSpace systemDiscDrive = new DriveSpace(fileShare);
                     double systemDiscFreeSpaceGb = systemDiscDrive.TotalFreeSpace;
                     fileShareUsage.Add($"NetworkDrive_{fileShare}_FreeSpaceGB", systemDiscFreeSpaceGb.ConvertBytesToGigabytes());

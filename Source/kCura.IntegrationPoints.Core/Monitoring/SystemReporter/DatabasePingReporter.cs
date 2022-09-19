@@ -26,7 +26,6 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
             });
         }
 
-
         private bool IsDatabaseAccessible()
         {
             bool sqlStatementResult = false;

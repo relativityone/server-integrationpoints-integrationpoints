@@ -5,6 +5,7 @@ using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Config;
+using kCura.IntegrationPoints.Core.Checkers;
 using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
@@ -303,25 +304,20 @@ namespace kCura.ScheduleQueue.AgentBase
 
         private void CheckServicesAccess()
         {
-            WorkspaceDBContext workspaceDbContext = new WorkspaceDBContext(Helper.GetDBContext(-1));
-            DatabasePingReporter dbPingReporter = new DatabasePingReporter(workspaceDbContext, Logger);
-            KeplerPingReporter keplerPingReporter = new KeplerPingReporter(Helper, Logger);
-            FileShareDiskUsageReporter fileShareDiskUsageReporter = new FileShareDiskUsageReporter(Helper, Logger);
-            List<IHealthStatisticReporter> healthStatisticsReporters = new List<IHealthStatisticReporter>
-            {
-                dbPingReporter,
-                keplerPingReporter,
-                fileShareDiskUsageReporter
-            };
+            ServicesAccessChecker servicesAccessChecker = new ServicesAccessChecker(Helper, Logger);
 
-            SystemHealthReporter systemHealthReporter = new SystemHealthReporter(healthStatisticsReporters);
-            Dictionary<string, object> results = systemHealthReporter.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult();
-
-            bool areServicesAccessible = results.Count == healthStatisticsReporters.Count;
+            bool areServicesAccessible = servicesAccessChecker.CheckDatabaseAccessAsync().GetAwaiter().GetResult();
+            areServicesAccessible &= servicesAccessChecker.CheckKeplerAccessAsync().GetAwaiter().GetResult();
+            areServicesAccessible &= servicesAccessChecker.GetFileShareDiskUsageReporterAsync().GetAwaiter().GetResult();
 
             if (!areServicesAccessible)
             {
                 Logger.LogError("Services not accessible by the Agent; _agentInstanceGuid - {_agentInstanceGuid}", _agentInstanceGuid);
+                if (_kubernetesModeLazy.Value.IsEnabled())
+                {
+                    Environment.Exit(1);
+                }
+
                 throw new Exception();
             }
         }
