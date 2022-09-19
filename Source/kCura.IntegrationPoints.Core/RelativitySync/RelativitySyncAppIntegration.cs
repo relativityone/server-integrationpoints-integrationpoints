@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoints.Common.Interfaces;
 using kCura.IntegrationPoints.Common.RelativitySync;
 using Relativity.API;
+using Relativity.Sync.Services.Interfaces.V1;
+using Relativity.Sync.Services.Interfaces.V1.DTO;
 
 namespace kCura.IntegrationPoints.Core.RelativitySync
 {
@@ -23,7 +25,18 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
         {
             try
             {
-                await _integrationPointToSyncAppConverter.CreateSyncConfigurationAsync(workspaceArtifactId, integrationPointArtifactId, jobHistoryId, userId).ConfigureAwait(false);
+                int syncConfigurationId = await _integrationPointToSyncAppConverter.CreateSyncConfigurationAsync(workspaceArtifactId, integrationPointArtifactId, jobHistoryId, userId).ConfigureAwait(false);
+                using (ISyncService syncService = _servicesMgr.CreateProxy<ISyncService>(ExecutionIdentity.System))
+                {
+                    SubmitJobRequestDTO request = new SubmitJobRequestDTO()
+                    {
+                        WorkspaceID = workspaceArtifactId,
+                        UserID = userId,
+                        SyncConfigurationArtifactID = syncConfigurationId
+                    };
+                    Guid jobId = await syncService.SubmitJobAsync(request).ConfigureAwait(false);
+                    _logger.LogInformation("Sync job has been submitted. Job ID: {jobId}", jobId);
+                }
             }
             catch (Exception ex)
             {

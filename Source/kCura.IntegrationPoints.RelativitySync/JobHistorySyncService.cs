@@ -160,7 +160,8 @@ namespace kCura.IntegrationPoints.RelativitySync
 
         public async Task MarkJobAsStartedAsync(IExtendedJob job)
         {
-            // We must set Job ID and Start Time here regardless of EnableJobHistoryStatusUpdateToggle
+            // We must set Job ID and Start Time here regardless of EnableJobHistoryStatusUpdateToggle, because only RIP knows Job ID when running in Sync DLL.
+            // Sync will set Job ID to its own value only if it's not set (i.e. running in Sync App Agent)
 
             IList<FieldRefValuePair> fieldValues = new[]
             {

@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Agent.Installer.Components;
 using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
+using kCura.IntegrationPoints.Agent.Monitoring.SystemReporter;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Agent.Validation;
@@ -30,12 +31,6 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using Relativity.AutomatedWorkflows.SDK;
 using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
-using kCura.IntegrationPoints.Agent.Interfaces;
-using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
-using Relativity.AutomatedWorkflows.SDK;
-using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
-using kCura.IntegrationPoints.Agent.Monitoring.SystemReporter;
-using kCura.IntegrationPoints.Common.Helpers;
 
 namespace kCura.IntegrationPoints.Agent.Installer
 {
