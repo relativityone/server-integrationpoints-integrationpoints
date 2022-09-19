@@ -312,7 +312,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
             if (!areServicesAccessible)
             {
-                Logger.LogError("Services not accessible by the Agent; _agentInstanceGuid - {_agentInstanceGuid}", _agentInstanceGuid);
+                Logger.LogError("Not all Services not accessible by the Agent; _agentInstanceGuid - {_agentInstanceGuid}", _agentInstanceGuid);
                 if (_kubernetesModeLazy.Value.IsEnabled())
                 {
                     Environment.Exit(1);

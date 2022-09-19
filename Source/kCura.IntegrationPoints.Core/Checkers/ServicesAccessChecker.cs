@@ -27,6 +27,7 @@ namespace kCura.IntegrationPoints.Core.Checkers
                 return (bool)statistics["IsDatabaseAccessible"];
             }
 
+            _logger.LogError("Database is not accessible.");
             return false;
         }
 
@@ -39,17 +40,21 @@ namespace kCura.IntegrationPoints.Core.Checkers
                 return (bool)statistics["IsKeplerServiceAccessible"];
             }
 
+            _logger.LogError("Kepler service is not accessible.");
             return false;
         }
 
         public async Task<bool> GetFileShareDiskUsageReporterAsync()
         {
             FileShareDiskUsageReporter fileShareDiskUsageReporter = new FileShareDiskUsageReporter(_helper, _logger);
-            Dictionary<string, object> statistic = await fileShareDiskUsageReporter.GetStatisticAsync().ConfigureAwait(false);
+            bool areFileSharesHealthy = await fileShareDiskUsageReporter.CheckFileSharesHealthAsync().ConfigureAwait(false);
 
-            // If fileshare is healthy then it is readable and it will we be added to statistics. One is enough.
-            bool isAnyFileShareHealthy = statistic.Count > 0;
-            return isAnyFileShareHealthy;
+            if (!areFileSharesHealthy)
+            {
+                _logger.LogError("Not all fileShares are healthy.");
+            }
+
+            return areFileSharesHealthy;
         }
     }
 }

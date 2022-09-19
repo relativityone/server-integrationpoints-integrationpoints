@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
             Dictionary<string, object> fileShareUsage = new Dictionary<string, object>();
             List<string> fileShares = await GetFileServerUNCPaths().ConfigureAwait(false);
 
-            foreach (var fileShare in fileShares)
+            foreach (string fileShare in fileShares)
             {
                 try
                 {
@@ -43,6 +43,27 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
             return fileShareUsage;
         }
 
+        public async Task<bool> CheckFileSharesHealthAsync()
+        {
+            List<string> fileShares = await GetFileServerUNCPaths().ConfigureAwait(false);
+
+            foreach (string fileShare in fileShares)
+            {
+                try
+                {
+                    _logger.LogInformation("Checking {fileShareName}", fileShare);
+                    System.IO.Directory.GetFiles(fileShare);
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogWarning(exception, "Cannot get files list on {fileShareName}", fileShare);
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         private async Task<List<string>> GetFileServerUNCPaths()
         {
             List<string> serverList = new List<string>();
@@ -56,10 +77,6 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
                     {
                         if (!serverList.Contains(result.Artifact.UNCPath))
                         {
-                            _logger.LogDebug(
-                                "Adding new fileserver to checklist Name: {FileServerName} UNC: {fileServerUNC}",
-                                result.Artifact.Name,
-                                result.Artifact.UNCPath);
                             serverList.Add(result.Artifact.UNCPath);
                         }
                     }
