@@ -17,14 +17,14 @@ namespace Relativity.Sync.Pipelines
             _configuration = configuration;
         }
 
-        public bool? ShouldBeUsed()
+        public bool ShouldBeUsed()
         {
             if (_shouldBeUsed == null)
             {
                 CheckConditions();
             }
 
-            return _shouldBeUsed;
+            return _shouldBeUsed.Value;
         }
 
         private void CheckConditions()

@@ -51,8 +51,8 @@ namespace Relativity.Sync.Pipelines
 
         private ISyncPipeline GetDocumentPipeline(bool isRetryJob, bool isImageJob)
         {
-            bool? isIApi2ShouldBeUsed = _iApiv2RunChecker.ShouldBeUsed();
-            if (isIApi2ShouldBeUsed.HasValue && isIApi2ShouldBeUsed.Value)
+            bool isIApi2ShouldBeUsed = _iApiv2RunChecker.ShouldBeUsed();
+            if (isIApi2ShouldBeUsed)
             {
                 return new IAPI2_SyncDocumentRunPipeline();
             }

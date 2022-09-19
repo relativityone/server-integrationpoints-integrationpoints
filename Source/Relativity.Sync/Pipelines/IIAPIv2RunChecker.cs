@@ -2,6 +2,6 @@
 {
     internal interface IIAPIv2RunChecker
     {
-        bool? ShouldBeUsed();
+        bool ShouldBeUsed();
     }
 }
