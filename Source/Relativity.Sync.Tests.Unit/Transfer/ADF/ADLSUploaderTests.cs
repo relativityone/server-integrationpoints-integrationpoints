@@ -38,9 +38,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
             };
 
             _destinationDir = Path.Combine(
-                @"\\",
-                _storageEndpoints[0].EndpointFqdn,
-                _storageEndpoints[0].PrimaryStorageContainer,
                 "Temp",
                 "RIP_BatchFiles");
 
