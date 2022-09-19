@@ -115,10 +115,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync
 
         public Task<int?> TryGetResumedSyncConfigurationIdAsync(int workspaceId, int jobHistoryId)
         {
-            _relativity.Workspaces.Single(x => x.ArtifactId == workspaceId)
-               .SyncConfigurations.Single(x => x.ArtifactId == jobHistoryId).JobHistoryId = jobHistoryId;
+            SyncConfigurationTest result = _relativity.Workspaces.Single(x => x.ArtifactId == workspaceId)
+               .SyncConfigurations.SingleOrDefault(x => x.JobHistoryId == jobHistoryId);
 
-            return (Task<int?>)Task.CompletedTask;
+            return Task.FromResult(result?.ArtifactId);
         }
     }
 }
