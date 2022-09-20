@@ -293,7 +293,7 @@ namespace Relativity.Sync.Executors
                             if (fmsBatches != null)
                             {
                                 IEnumerable<string> batchFilesPaths = fmsBatches.Select(x => x.UploadedBatchFilePath);
-                                await CleanUpAdlsBatchFilesAsync(batchFilesPaths, token.AnyReasonCancellationToken).ConfigureAwait(false);
+                                await CleanUpAdlsBatchFilesAsync(batchFilesPaths).ConfigureAwait(false);
                             }
                         }
                     }
@@ -440,7 +440,7 @@ namespace Relativity.Sync.Executors
             return timer;
         }
 
-        private async Task CleanUpAdlsBatchFilesAsync(IEnumerable<string> batchFiles, CancellationToken token)
+        private async Task CleanUpAdlsBatchFilesAsync(IEnumerable<string> batchFiles)
         {
             if (batchFiles != null)
             {
@@ -449,8 +449,7 @@ namespace Relativity.Sync.Executors
                 {
                     batchFilesDeleteTasks.Add(
                         Task.Run(
-                            () => { AdlsUploader.DeleteFileAsync(filePath, token); },
-                            token));
+                            () => { AdlsUploader.DeleteFileAsync(filePath, CancellationToken.None); }));
                 }
 
                 await Task.WhenAll(batchFilesDeleteTasks).ConfigureAwait(false);
