@@ -305,20 +305,17 @@ namespace kCura.ScheduleQueue.AgentBase
         private void CheckServicesAccess()
         {
             ServicesAccessChecker servicesAccessChecker = new ServicesAccessChecker(Helper, Logger);
+            bool areServicesHealthy = servicesAccessChecker.AreServicesHealthy().GetAwaiter().GetResult();
 
-            bool areServicesAccessible = servicesAccessChecker.CheckDatabaseAccessAsync().GetAwaiter().GetResult();
-            areServicesAccessible &= servicesAccessChecker.CheckKeplerAccessAsync().GetAwaiter().GetResult();
-            areServicesAccessible &= servicesAccessChecker.GetFileShareDiskUsageReporterAsync().GetAwaiter().GetResult();
-
-            if (!areServicesAccessible)
+            if (!areServicesHealthy)
             {
-                Logger.LogError("Not all Services not accessible by the Agent; _agentInstanceGuid - {_agentInstanceGuid}", _agentInstanceGuid);
+                Logger.LogError("Not all Services are accessible by the Agent; _agentInstanceGuid - {_agentInstanceGuid}", _agentInstanceGuid);
                 if (_kubernetesModeLazy.Value.IsEnabled())
                 {
                     Environment.Exit(1);
                 }
 
-                throw new Exception();
+                throw new Exception($"Not all Services are accessible by the Agent; _agentInstanceGuid - {_agentInstanceGuid}");
             }
         }
 
