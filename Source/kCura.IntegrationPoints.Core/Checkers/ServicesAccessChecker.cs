@@ -7,14 +7,14 @@ namespace kCura.IntegrationPoints.Core.Checkers
     public class ServicesAccessChecker
     {
         private readonly IAPILog _logger;
-        private readonly IIsServiceHealthy _databasePingReporter;
-        private readonly IIsServiceHealthy _keplerPingReporter;
-        private readonly IIsServiceHealthy _fileShareDiskUsageReporter;
+        private readonly IServiceHealthChecker _databasePingReporter;
+        private readonly IServiceHealthChecker _keplerPingReporter;
+        private readonly IServiceHealthChecker _fileShareDiskUsageReporter;
 
         public ServicesAccessChecker(
-            IIsServiceHealthy databasePingReporter,
-            IIsServiceHealthy keplerPingReporter,
-            IIsServiceHealthy fileShareDiskUsageReporter,
+            IServiceHealthChecker databasePingReporter,
+            IServiceHealthChecker keplerPingReporter,
+            IServiceHealthChecker fileShareDiskUsageReporter,
             IAPILog logger)
         {
             _databasePingReporter = databasePingReporter;

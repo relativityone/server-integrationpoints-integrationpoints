@@ -6,7 +6,7 @@ using Relativity.Services.Environmental;
 
 namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
 {
-    public class KeplerPingReporter : IHealthStatisticReporter, IIsServiceHealthy
+    public class KeplerPingReporter : IHealthStatisticReporter, IServiceHealthChecker
     {
         private const string PING_RESPONSE = "OK";
         private readonly IHelper _helper;

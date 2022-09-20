@@ -9,7 +9,7 @@ using Relativity.Services.ResourceServer;
 
 namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
 {
-    public class FileShareDiskUsageReporter : IHealthStatisticReporter, IIsServiceHealthy
+    public class FileShareDiskUsageReporter : IHealthStatisticReporter, IServiceHealthChecker
     {
         private readonly IHelper _helper;
         private readonly IAPILog _logger;

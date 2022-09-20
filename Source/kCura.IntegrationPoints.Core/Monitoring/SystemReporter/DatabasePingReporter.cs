@@ -7,7 +7,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
 {
-    public class DatabasePingReporter : IHealthStatisticReporter, IIsServiceHealthy
+    public class DatabasePingReporter : IHealthStatisticReporter, IServiceHealthChecker
     {
         private readonly IWorkspaceDBContext _context;
         private readonly IAPILog _logger;

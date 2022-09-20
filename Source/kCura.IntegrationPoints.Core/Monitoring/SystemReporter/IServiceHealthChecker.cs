@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
 {
-    public interface IIsServiceHealthy
+    public interface IServiceHealthChecker
     {
         Task<bool> IsServiceHealthyAsync();
     }

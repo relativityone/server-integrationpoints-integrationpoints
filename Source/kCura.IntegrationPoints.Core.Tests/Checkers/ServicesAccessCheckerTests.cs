@@ -11,9 +11,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Checkers
     public class ServicesAccessCheckerTests
     {
         private Mock<IAPILog> _loggerMock;
-        private Mock<IIsServiceHealthy> _databasePingReporterMock;
-        private Mock<IIsServiceHealthy> _keplerPingReporterMock;
-        private Mock<IIsServiceHealthy> _fileShareDiskUsageReporterMock;
+        private Mock<IServiceHealthChecker> _databasePingReporterMock;
+        private Mock<IServiceHealthChecker> _keplerPingReporterMock;
+        private Mock<IServiceHealthChecker> _fileShareDiskUsageReporterMock;
 
         private ServicesAccessChecker _sut;
 
@@ -21,9 +21,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Checkers
         public void SetUp()
         {
             _loggerMock = new Mock<IAPILog>();
-            _databasePingReporterMock = new Mock<IIsServiceHealthy>();
-            _keplerPingReporterMock = new Mock<IIsServiceHealthy>();
-            _fileShareDiskUsageReporterMock = new Mock<IIsServiceHealthy>();
+            _databasePingReporterMock = new Mock<IServiceHealthChecker>();
+            _keplerPingReporterMock = new Mock<IServiceHealthChecker>();
+            _fileShareDiskUsageReporterMock = new Mock<IServiceHealthChecker>();
 
             _databasePingReporterMock.Setup(x => x.IsServiceHealthyAsync()).ReturnsAsync(true);
             _keplerPingReporterMock.Setup(x => x.IsServiceHealthyAsync()).ReturnsAsync(true);
