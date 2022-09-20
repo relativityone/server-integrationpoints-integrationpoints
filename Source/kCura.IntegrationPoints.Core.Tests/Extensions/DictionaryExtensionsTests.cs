@@ -75,5 +75,48 @@ namespace kCura.IntegrationPoints.Core.Tests.Extensions
             //assert
             action.ShouldThrow<ArgumentException>();
         }
+
+        [Test]
+        public void AddDictionary_ShouldAddWhenKeyDoesNotExists()
+        {
+            // ARRANGE
+            var startingDictionary = new Dictionary<int, int>()
+            {
+                { 1, 1 }
+            };
+
+            var inputDictionary = new Dictionary<int, int>()
+            {
+                { 20, 20 }
+            };
+
+            // ACT
+            startingDictionary.AddDictionary(inputDictionary);
+
+            // ASSERT
+            startingDictionary.Should().Contain(inputDictionary);
+            startingDictionary.Should().HaveCount(2);
+        }
+
+        [Test]
+        public void AddDictionary_ShouldNotAddWhenKeyDoesExists()
+        {
+            // ARRANGE
+            var startingDictionary = new Dictionary<int, int>()
+            {
+                { 1, 1 }
+            };
+
+            var inputDictionary = new Dictionary<int, int>()
+            {
+                { 1, 1 }
+            };
+
+            // ACT
+            Action action = () => startingDictionary.AddDictionary(inputDictionary);
+
+            // ASSERT
+            action.ShouldThrow<IntegrationPointsException>();
+        }
     }
 }

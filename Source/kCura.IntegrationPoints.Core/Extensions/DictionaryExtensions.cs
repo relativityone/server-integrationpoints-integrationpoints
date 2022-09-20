@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Common.Extensions.DotNet;
 using kCura.IntegrationPoints.Domain.Exceptions;
 
 namespace kCura.IntegrationPoints.Core.Extensions
@@ -25,6 +26,23 @@ namespace kCura.IntegrationPoints.Core.Extensions
             }
 
             dictionary.Add(key, value);
+        }
+
+        public static Dictionary<TKey, TValue> AddDictionary<TKey, TValue>(
+            this Dictionary<TKey, TValue> dictionary,
+            Dictionary<TKey, TValue> inputDictionary)
+        {
+            if (inputDictionary.IsNullOrEmpty())
+            {
+                return dictionary;
+            }
+
+            foreach (var pair in inputDictionary)
+            {
+                dictionary.AddOrThrowIfKeyExists(pair.Key, pair.Value,"Value for key already exists");
+            }
+
+            return dictionary;
         }
     }
 }

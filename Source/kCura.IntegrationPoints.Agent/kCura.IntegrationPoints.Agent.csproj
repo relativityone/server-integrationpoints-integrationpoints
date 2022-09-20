@@ -56,5 +56,8 @@
   <ItemGroup>
     <None Include="paket.references" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Relativity.Services.Interfaces.Private" Version="14.1.2" />
+  </ItemGroup>
 	<Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
