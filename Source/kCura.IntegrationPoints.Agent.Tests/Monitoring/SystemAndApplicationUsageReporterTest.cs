@@ -322,7 +322,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         {
             Dictionary<string, object> valuesToBeSend = new Dictionary<string, object>
             {
-                { "JobId", _jobId},
+                { "r1.team.id", "PTCI-2456712" },
+                { "r1.job.id", _jobId.ToString()},
                 { "JobType", _jobType},
                 { "WorkflowId", _jobDetails},
                 { "SystemProcessMemoryInMB", _dummyMemorySize },
