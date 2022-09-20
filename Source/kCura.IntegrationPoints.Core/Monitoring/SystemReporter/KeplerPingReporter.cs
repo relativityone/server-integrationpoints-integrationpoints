@@ -6,7 +6,7 @@ using Relativity.Services.Environmental;
 
 namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
 {
-    public class KeplerPingReporter : IHealthStatisticReporter
+    public class KeplerPingReporter : IHealthStatisticReporter, IIsServiceHealthy
     {
         private const string PING_RESPONSE = "OK";
         private readonly IHelper _helper;
@@ -20,13 +20,13 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
 
         public async Task<Dictionary<string, object>> GetStatisticAsync()
         {
-            return new Dictionary<string, object>()
+            return new Dictionary<string, object>
             {
-                { "IsKeplerServiceAccessible", await PingKeplerService().ConfigureAwait(false) }
+                { "IsKeplerServiceAccessible", await IsServiceHealthyAsync().ConfigureAwait(false) }
             };
         }
 
-        private async Task<bool> PingKeplerService()
+        public async Task<bool> IsServiceHealthyAsync()
         {
             bool ping = false;
             try

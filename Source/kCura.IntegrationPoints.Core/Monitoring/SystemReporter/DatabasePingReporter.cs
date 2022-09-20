@@ -7,7 +7,7 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
 {
-    public class DatabasePingReporter : IHealthStatisticReporter
+    public class DatabasePingReporter : IHealthStatisticReporter, IIsServiceHealthy
     {
         private readonly IWorkspaceDBContext _context;
         private readonly IAPILog _logger;
@@ -22,11 +22,11 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
         {
             return Task.FromResult(new Dictionary<string, object>()
             {
-                { "IsDatabaseAccessible", IsDatabaseAccessible() }
+                { "IsDatabaseAccessible", IsServiceHealthyAsync().GetAwaiter().GetResult() }
             });
         }
 
-        private bool IsDatabaseAccessible()
+        public Task<bool> IsServiceHealthyAsync()
         {
             bool sqlStatementResult = false;
             const int queryValue = 1;
@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
                 _logger.LogWarning(exception, "Cannot check Database Service Status.");
             }
 
-            return sqlStatementResult;
+            return Task.FromResult(sqlStatementResult);
         }
     }
 }

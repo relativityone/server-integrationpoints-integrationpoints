@@ -9,7 +9,7 @@ using Relativity.Services.ResourceServer;
 
 namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
 {
-    public class FileShareDiskUsageReporter : IHealthStatisticReporter
+    public class FileShareDiskUsageReporter : IHealthStatisticReporter, IIsServiceHealthy
     {
         private readonly IHelper _helper;
         private readonly IAPILog _logger;
@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
             return fileShareUsage;
         }
 
-        public async Task<bool> CheckFileSharesHealthAsync()
+        public async Task<bool> IsServiceHealthyAsync()
         {
             List<string> fileShares = await GetFileServerUNCPaths().ConfigureAwait(false);
 
