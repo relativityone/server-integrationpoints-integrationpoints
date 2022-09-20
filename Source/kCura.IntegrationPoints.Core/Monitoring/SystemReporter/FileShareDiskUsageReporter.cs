@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Core.Extensions;
-using kCura.Utility;
 using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.ResourceServer;
@@ -23,22 +21,8 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
         public async Task<Dictionary<string, object>> GetStatisticAsync()
         {
             Dictionary<string, object> fileShareUsage = new Dictionary<string, object>();
-            List<string> fileShares = await GetFileServerUNCPaths().ConfigureAwait(false);
-
-            foreach (string fileShare in fileShares)
-            {
-                try
-                {
-                    _logger.LogInformation("Checking {fileShareName}", fileShare);
-                    DriveSpace systemDiscDrive = new DriveSpace(fileShare);
-                    double systemDiscFreeSpaceGb = systemDiscDrive.TotalFreeSpace;
-                    fileShareUsage.Add($"NetworkDrive_{fileShare}_FreeSpaceGB", systemDiscFreeSpaceGb.ConvertBytesToGigabytes());
-                }
-                catch (Exception exception)
-                {
-                    _logger.LogWarning(exception, "Cannot check free space on {fileShareName}", fileShare);
-                }
-            }
+            bool isFileShareServiceAccessible = await IsServiceHealthyAsync().ConfigureAwait(false);
+            fileShareUsage.Add("IsFileShareServiceAccessible", isFileShareServiceAccessible);
 
             return fileShareUsage;
         }
@@ -46,6 +30,11 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
         public async Task<bool> IsServiceHealthyAsync()
         {
             List<string> fileShares = await GetFileServerUNCPaths().ConfigureAwait(false);
+
+            if (fileShares.Count < 1)
+            {
+                return false;
+            }
 
             foreach (string fileShare in fileShares)
             {

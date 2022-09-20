@@ -18,12 +18,12 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
             _logger = logger;
         }
 
-        public Task<Dictionary<string, object>> GetStatisticAsync()
+        public async Task<Dictionary<string, object>> GetStatisticAsync()
         {
-            return Task.FromResult(new Dictionary<string, object>()
+            return new Dictionary<string, object>
             {
-                { "IsDatabaseAccessible", IsServiceHealthyAsync().GetAwaiter().GetResult() }
-            });
+                { "IsDatabaseAccessible", await IsServiceHealthyAsync().ConfigureAwait(false) }
+            };
         }
 
         public Task<bool> IsServiceHealthyAsync()
