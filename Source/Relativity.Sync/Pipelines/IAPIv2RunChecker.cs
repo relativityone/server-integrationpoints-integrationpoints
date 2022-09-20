@@ -17,25 +17,27 @@ namespace Relativity.Sync.Pipelines
             _configuration = configuration;
         }
 
-        public bool? ShouldBeUsed()
+        public bool ShouldBeUsed()
         {
-            if (_shouldBeUsed == null)
+            if (!_shouldBeUsed.HasValue)
             {
-                CheckConditions();
+                _shouldBeUsed = CheckConditions();
             }
 
-            return _shouldBeUsed;
+            return _shouldBeUsed.Value;
         }
 
-        private void CheckConditions()
+        private bool CheckConditions()
         {
-            _shouldBeUsed = _toggles.IsEnabled<EnableIAPIv2Toggle>()
+            bool shouldBeUsed = _toggles.IsEnabled<EnableIAPIv2Toggle>()
                 && _configuration.RdoArtifactTypeId == (int)ArtifactType.Document
                 && (_configuration.NativeBehavior == ImportNativeFileCopyMode.SetFileLinks || _configuration.NativeBehavior == ImportNativeFileCopyMode.DoNotImportNativeFiles)
                 && !_configuration.IsRetried
                 && !_configuration.IsDrainStopped
                 && !_configuration.HasLongTextFields
                 && !_configuration.ImageImport;
+
+            return shouldBeUsed;
         }
     }
 }
