@@ -304,8 +304,12 @@ namespace kCura.ScheduleQueue.AgentBase
 
         private void CheckServicesAccess()
         {
-            ServicesAccessChecker servicesAccessChecker = new ServicesAccessChecker(Helper, Logger);
-            bool areServicesHealthy = servicesAccessChecker.AreServicesHealthy().GetAwaiter().GetResult();
+            WorkspaceDBContext workspaceDbContext = new WorkspaceDBContext(Helper.GetDBContext(-1));
+            DatabasePingReporter dbPingReporter = new DatabasePingReporter(workspaceDbContext, Logger);
+            KeplerPingReporter keplerPingReporter = new KeplerPingReporter(Helper, Logger);
+            FileShareDiskUsageReporter fileShareDiskUsageReporter = new FileShareDiskUsageReporter(Helper, Logger);
+            ServicesAccessChecker servicesAccessChecker = new ServicesAccessChecker(dbPingReporter, keplerPingReporter, fileShareDiskUsageReporter, Logger);
+            bool areServicesHealthy = servicesAccessChecker.AreServicesHealthyAsync().GetAwaiter().GetResult();
 
             if (!areServicesHealthy)
             {

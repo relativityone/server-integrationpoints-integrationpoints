@@ -1,40 +1,42 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
-using kCura.IntegrationPoints.Data;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Checkers
 {
     public class ServicesAccessChecker
     {
-        private readonly IHelper _helper;
         private readonly IAPILog _logger;
+        private readonly IIsServiceHealthy _databasePingReporter;
+        private readonly IIsServiceHealthy _keplerPingReporter;
+        private readonly IIsServiceHealthy _fileShareDiskUsageReporter;
 
-        public ServicesAccessChecker(IHelper helper, IAPILog logger)
+        public ServicesAccessChecker(
+            IIsServiceHealthy databasePingReporter,
+            IIsServiceHealthy keplerPingReporter,
+            IIsServiceHealthy fileShareDiskUsageReporter,
+            IAPILog logger)
         {
-            _helper = helper;
+            _databasePingReporter = databasePingReporter;
+            _keplerPingReporter = keplerPingReporter;
+            _fileShareDiskUsageReporter = fileShareDiskUsageReporter;
             _logger = logger;
         }
 
-        public async Task<bool> AreServicesHealthy()
+        public async Task<bool> AreServicesHealthyAsync()
         {
-            ServicesAccessChecker servicesAccessChecker = new ServicesAccessChecker(_helper, _logger);
-
-            bool areServicesAccessible = await servicesAccessChecker.CheckDatabaseAccessAsync().ConfigureAwait(false);
-            areServicesAccessible &= await servicesAccessChecker.CheckKeplerAccessAsync().ConfigureAwait(false);
-            areServicesAccessible &= await servicesAccessChecker.GetFileShareDiskUsageReporterAsync().ConfigureAwait(false);
+            bool areServicesAccessible = await CheckDatabaseAccessAsync().ConfigureAwait(false);
+            areServicesAccessible &= await CheckKeplerAccessAsync().ConfigureAwait(false);
+            areServicesAccessible &= await GetFileShareDiskUsageReporterAsync().ConfigureAwait(false);
             return areServicesAccessible;
         }
 
         private async Task<bool> CheckDatabaseAccessAsync()
         {
-            WorkspaceDBContext workspaceDbContext = new WorkspaceDBContext(_helper.GetDBContext(-1));
-            DatabasePingReporter dbPingReporter = new DatabasePingReporter(workspaceDbContext, _logger);
-            Dictionary<string, object> statistics = await dbPingReporter.GetStatisticAsync().ConfigureAwait(false);
-            if (statistics.Count > 0)
+            bool isDatabaseHealthy = await _databasePingReporter.IsServiceHealthyAsync().ConfigureAwait(false);
+            if (isDatabaseHealthy)
             {
-                return (bool)statistics["IsDatabaseAccessible"];
+                return true;
             }
 
             _logger.LogError("Database is not accessible.");
@@ -43,11 +45,10 @@ namespace kCura.IntegrationPoints.Core.Checkers
 
         private async Task<bool> CheckKeplerAccessAsync()
         {
-            KeplerPingReporter keplerPingReporter = new KeplerPingReporter(_helper, _logger);
-            Dictionary<string, object> statistics = await keplerPingReporter.GetStatisticAsync().ConfigureAwait(false);
-            if (statistics.Count > 0)
+            bool isKeplerServiceHealthy = await _keplerPingReporter.IsServiceHealthyAsync().ConfigureAwait(false);
+            if (isKeplerServiceHealthy)
             {
-                return (bool)statistics["IsKeplerServiceAccessible"];
+                return true;
             }
 
             _logger.LogError("Kepler service is not accessible.");
@@ -56,8 +57,7 @@ namespace kCura.IntegrationPoints.Core.Checkers
 
         private async Task<bool> GetFileShareDiskUsageReporterAsync()
         {
-            FileShareDiskUsageReporter fileShareDiskUsageReporter = new FileShareDiskUsageReporter(_helper, _logger);
-            bool areFileSharesHealthy = await fileShareDiskUsageReporter.CheckFileSharesHealthAsync().ConfigureAwait(false);
+            bool areFileSharesHealthy = await _fileShareDiskUsageReporter.IsServiceHealthyAsync().ConfigureAwait(false);
 
             if (!areFileSharesHealthy)
             {
