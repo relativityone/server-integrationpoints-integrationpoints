@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -262,7 +263,10 @@ namespace Relativity.Sync.Executors
                                     importApiTimer.Stop();
 
                                     fmsBatches = await UploadBatchFilesToAdlsAsync(token, importJob).ConfigureAwait(false);
+                                    Stopwatch timer = Stopwatch.StartNew();
                                     await PerformFmsTransfer(fmsBatches, token.AnyReasonCancellationToken).ConfigureAwait(false);
+                                    timer.Stop();
+                                    Logger.LogInformation("FMS transfer time: {fmsBatchesTransferTime} sec Count: {fmsBatchesCount}", timer.ElapsedMilliseconds / 1000, fmsBatches.Count);
 
                                     TaggingExecutionResult taggingResult = await TagObjectsAsync(importJob, configuration, token).ConfigureAwait(false);
                                     int documentsTaggedCount = taggingResult.TaggedDocumentsCount;

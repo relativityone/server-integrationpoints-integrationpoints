@@ -35,15 +35,11 @@ namespace Relativity.Sync.Transfer.ADLS
                 return string.Empty;
             }
 
-            string loadFileHeader = "Source,Destination";
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine(loadFileHeader);
 
             foreach (var file in storedLocation.Files)
             {
-                string sourcePath = file.FileName;
-                string destinationPath = Path.Combine(storedLocation.DestinationLocationShortPath, file.FileName);
-                stringBuilder.AppendLine($"{sourcePath},{destinationPath}");
+                stringBuilder.AppendLine($"{file.FileName}");
 
                 if (cancellationToken.IsCancellationRequested)
                 {
