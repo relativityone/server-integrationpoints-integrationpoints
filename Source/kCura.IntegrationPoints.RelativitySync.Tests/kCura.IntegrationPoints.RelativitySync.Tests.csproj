@@ -20,10 +20,6 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="kCura.Relativity.Client, Version=13.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\kCura.IntegrationPoint.Tests.Core\bin\kCura.Relativity.Client.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Net.Http" />
