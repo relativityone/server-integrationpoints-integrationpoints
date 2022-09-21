@@ -16,7 +16,7 @@ namespace Relativity.Sync.Tests.Common
         IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration, IRetryDataSourceSnapshotConfiguration, IPipelineSelectorConfiguration,
         IDocumentSynchronizationConfiguration, INonDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, IPreValidationConfiguration, IRdoGuidConfiguration,
         IImageJobStartMetricsConfiguration, IDocumentJobStartMetricsConfiguration, ISnapshotQueryConfiguration, IMetricsConfiguration, IStatisticsConfiguration, INonDocumentJobStartMetricsConfiguration, IJobHistoryErrorRepositoryConfigration, INonDocumentObjectLinkingConfiguration,
-        IAntiMalwareConfiguration, IBatchDataSourcePreparationConfiguration, IDocumentSynchronizationMonitorConfiguration, IConfigureDocumentSynchronizationConfiguration
+        IAntiMalwareConfiguration, IBatchDataSourcePreparationConfiguration, IDocumentSynchronizationMonitorConfiguration, IConfigureDocumentSynchronizationConfiguration, IIAPIv2RunCheckerConfiguration
     {
         private IList<FieldMap> _fieldMappings = new List<FieldMap>();
         private string _jobName = String.Empty;
@@ -104,6 +104,12 @@ namespace Relativity.Sync.Tests.Common
 
         public int RdoArtifactTypeId { get; set; } = (int)ArtifactType.Document;
 
+        public bool IsRetried { get; }
+
+        public bool IsDrainStopped { get; }
+
+        public bool HasLongTextFields { get; }
+
         public int DestinationRdoArtifactTypeId { get; set; } = (int)ArtifactType.Document;
 
         public string GetSourceWorkspaceTag() => string.Empty;
@@ -153,6 +159,8 @@ namespace Relativity.Sync.Tests.Common
         public int IdentityFieldId { get; set; }
 
         public DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; set; }
+
+        public ImportNativeFileCopyMode NativeBehavior { get; }
 
         public bool ImageImport { get; set; }
 
