@@ -1,6 +1,5 @@
 framework: net472
 strategy: min
-source C:\SourceCode\relativitysync\Artifacts\NuGet
 source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 
 //RIP packages
@@ -30,8 +29,8 @@ nuget kCura.LongPath 1.0.20
 
 nuget Relativity.DataGrid 14.0.0
 nuget Relativity.DataTransfer.MessageService ~> 10.2.0
-nuget Relativity.Kepler 2.17.2
-nuget Relativity.Kepler.Client 2.17.2
+nuget Relativity.Kepler 2.18
+nuget Relativity.Kepler.Client 2.18
 nuget Relativity.Logging 3000.4
 nuget Relativity.Logging.Interfaces 3000.4
 nuget Relativity.OAuth2Client 1.5.3
@@ -45,7 +44,7 @@ nuget Relativity.Toggles 1.0.1
 nuget Relativity.AutomatedWorkflows.SDK 1.0.8
 
 // Relativity Sync packages
-nuget Relativity.Sync.Services.Interfaces 0.0.5-pre.9
+nuget Relativity.Sync.Services.Interfaces 0.0.5-pre.10
 
 // Import API packages
 nuget Relativity.DataExchange.Client.SDK 1.18.13
@@ -101,7 +100,6 @@ nuget ARMTestServices 1.1.1
 group Tests
 framework: auto-detect
 strategy: min
-source C:\SourceCode\relativitysync\Artifacts\NuGet
 source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 
 nuget kCura 14.2.7
@@ -125,8 +123,8 @@ nuget Microsoft.AspNet.WebApi 5.2.3
 nuget Newtonsoft.Json 12.0.3 redirects: force
 nuget NUnit 3.13.2 redirects: force
 nuget NUnit3TestAdapter 3.13
-nuget Relativity.Kepler 2.17.2
-nuget Relativity.Kepler.Client 2.17.2
+nuget Relativity.Kepler 2.18
+nuget Relativity.Kepler.Client 2.18
 nuget Relativity.Logging.Interfaces 3000.4
 nuget Relativity.Telemetry.Services.Interface 3003.0.2
 nuget Relativity.Services.Interfaces 13.5.0
@@ -141,7 +139,7 @@ nuget Relativity.AutomatedWorkflows.SDK 1.0.8
 nuget Relativity.OAuth2Client 1.5.3
 nuget Relativity.OAuth2Client.Interfaces 1.5.3
 
-nuget Relativity.Sync 0.1.5-local
+nuget Relativity.Sync 0.9.0-pre.92
 
 //RIP packages
 nuget IntegrationPoints.MyFirstProvider 12.3.10
@@ -152,10 +150,9 @@ nuget Relativity.IntegrationPoints.Services.Interfaces.Private 1.4.1
 group Sync
 framework: auto-detect
 strategy: min
-source C:\SourceCode\relativitysync\Artifacts\NuGet
 source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 
-nuget Relativity.Sync 0.1.5-local
+nuget Relativity.Sync 0.9.0-pre.92
 nuget SSH.NET 2020.0.1
 nuget Newtonsoft.Json 6.0.8
 nuget Autofac 4.9.4
@@ -163,7 +160,7 @@ nuget Castle.Core 3.3.0
 nuget Polly 5.9
 nuget Banzai ~> 3.0
 nuget kCura.Apps.Common.Utils 2.1.9
-nuget Relativity.Kepler 2.17.2
+nuget Relativity.Kepler 2.18
 nuget Relativity.Services.Interfaces 13.5.0
 nuget Relativity.Telemetry.APM 2019.1.1
 nuget SystemWrapper.Interfaces 0.25.0.186
