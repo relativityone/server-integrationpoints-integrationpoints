@@ -20,6 +20,7 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using System;
 using Castle.MicroKernel.Resolvers;
+using kCura.IntegrationPoints.Agent.Checkers;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Agent.Installer.Components;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
@@ -28,8 +29,8 @@ using kCura.IntegrationPoints.Agent.Interfaces;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 using Relativity.AutomatedWorkflows.SDK;
 using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
-using kCura.IntegrationPoints.Agent.Monitoring.SystemReporter;
 using kCura.IntegrationPoints.Common.Helpers;
+using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
 
 namespace kCura.IntegrationPoints.Agent.Installer
 {

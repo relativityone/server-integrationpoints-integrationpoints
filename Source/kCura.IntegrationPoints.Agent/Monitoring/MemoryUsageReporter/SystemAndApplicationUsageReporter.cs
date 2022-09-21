@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Threading;
-using kCura.IntegrationPoints.Agent.Monitoring.SystemReporter;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Core.Extensions;
+using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
 using Relativity.API;
 using Relativity.Telemetry.APM;
 using Relativity.Toggles;
@@ -81,7 +81,8 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
             {
                 Dictionary<string, object> customData = new Dictionary<string, object>()
                 {
-                    { "JobId", jobId },
+                    { "r1.team.id", "PTCI-2456712" },
+                    { "r1.job.id", jobId.ToString() },
                     { "JobType", jobType },
                     { "WorkflowId", workflowId }
                 };

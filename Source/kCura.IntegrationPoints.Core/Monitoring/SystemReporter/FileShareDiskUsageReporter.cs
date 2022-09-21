@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Core.Extensions;
-using kCura.Utility;
 using Relativity.API;
 using Relativity.Services;
 using Relativity.Services.ResourceServer;
 
-namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
+namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
 {
-    public class FileShareDiskUsageReporter : IHealthStatisticReporter
+    public class FileShareDiskUsageReporter : IHealthStatisticReporter, IServiceHealthChecker
     {
         private readonly IHelper _helper;
         private readonly IAPILog _logger;
@@ -23,24 +21,36 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
         public async Task<Dictionary<string, object>> GetStatisticAsync()
         {
             Dictionary<string, object> fileShareUsage = new Dictionary<string, object>();
+            bool isFileShareServiceAccessible = await IsServiceHealthyAsync().ConfigureAwait(false);
+            fileShareUsage.Add("IsFileShareServiceAccessible", isFileShareServiceAccessible);
+
+            return fileShareUsage;
+        }
+
+        public async Task<bool> IsServiceHealthyAsync()
+        {
             List<string> fileShares = await GetFileServerUNCPaths().ConfigureAwait(false);
 
-            foreach (var fileShare in fileShares)
+            if (fileShares.Count < 1)
+            {
+                return false;
+            }
+
+            foreach (string fileShare in fileShares)
             {
                 try
                 {
-                    _logger.LogDebug("Checking {fileShareName}", fileShare);
-                    DriveSpace systemDiscDrive = new DriveSpace(fileShare);
-                    double systemDiscFreeSpaceGb = systemDiscDrive.TotalFreeSpace;
-                    fileShareUsage.Add($"NetworkDrive_{fileShare}_FreeSpaceGB", systemDiscFreeSpaceGb.ConvertBytesToGigabytes());
+                    _logger.LogInformation("Checking {fileShareName}", fileShare);
+                    System.IO.Directory.GetFiles(fileShare);
                 }
                 catch (Exception exception)
                 {
-                    _logger.LogWarning(exception, "Cannot check free space on {fileShareName}", fileShare);
+                    _logger.LogWarning(exception, "Cannot get files list on {fileShareName}", fileShare);
+                    return false;
                 }
             }
 
-            return fileShareUsage;
+            return true;
         }
 
         private async Task<List<string>> GetFileServerUNCPaths()
@@ -56,8 +66,6 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
                     {
                         if (!serverList.Contains(result.Artifact.UNCPath))
                         {
-                            _logger.LogDebug("Adding new fileserver to checklist Name: {FileServerName} UNC: {fileServerUNC}", result.Artifact.Name,
-                                result.Artifact.UNCPath);
                             serverList.Add(result.Artifact.UNCPath);
                         }
                     }

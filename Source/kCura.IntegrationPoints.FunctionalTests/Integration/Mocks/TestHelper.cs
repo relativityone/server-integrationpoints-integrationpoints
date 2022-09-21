@@ -3,12 +3,14 @@ using Moq;
 using Relativity.API;
 using Relativity.Services.ArtifactGuid;
 using Relativity.Services.ChoiceQuery;
+using Relativity.Services.Environmental;
 using Relativity.Services.Error;
 using Relativity.Services.InstanceSetting;
 using Relativity.Services.Interfaces.Group;
 using Relativity.Services.Interfaces.ObjectType;
 using Relativity.Services.Objects;
 using Relativity.Services.Permission;
+using Relativity.Services.ResourceServer;
 using Relativity.Services.Search;
 using Relativity.Services.View;
 using Relativity.Services.Workspace;
@@ -21,10 +23,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
         private readonly Mock<IServicesMgr> _serviceManager;
         private readonly Mock<IDBContext> _dbContext;
         private readonly FakeUser _user;
-
-        public Mock<IDBContext> DbContextMock => _dbContext;
-
-        public FakeSecretStore SecretStore { get; }
 
         public TestHelper(ProxyMock proxy, FakeUser user)
         {
@@ -47,14 +45,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             RegisterProxyInServiceManagerMock<IMetricsManager>(proxy.MetricsManager.Object);
             RegisterProxyInServiceManagerMock<IKeywordSearchManager>(proxy.KeywordSearchManager.Object);
             RegisterProxyInServiceManagerMock<IViewManager>(proxy.ViewManager.Object);
+            RegisterProxyInServiceManagerMock<IFileShareServerManager>(proxy.FileShareServerManager.Object);
+            RegisterProxyInServiceManagerMock<IPingService>(proxy.PingService.Object);
         }
 
-        private void RegisterProxyInServiceManagerMock<T>(T proxy) 
-            where T : IDisposable
-        {
-            _serviceManager.Setup(x => x.CreateProxy<T>(It.IsAny<ExecutionIdentity>()))
-                .Returns(proxy);
-        }
+        public Mock<IDBContext> DbContextMock => _dbContext;
+
+        public FakeSecretStore SecretStore { get; }
 
         public ILogFactory GetLoggerFactory()
         {
@@ -136,5 +133,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
         }
 
         #endregion
+
+        private void RegisterProxyInServiceManagerMock<T>(T proxy)
+            where T : IDisposable
+        {
+            _serviceManager.Setup(x => x.CreateProxy<T>(It.IsAny<ExecutionIdentity>()))
+                .Returns(proxy);
+        }
     }
 }

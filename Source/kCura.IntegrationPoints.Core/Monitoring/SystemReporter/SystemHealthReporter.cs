@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Extensions;
 
-namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
+namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
 {
     public class SystemHealthReporter : ISystemHealthReporter
     {
@@ -12,7 +12,6 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
         {
             _reporters = reporters;
         }
-
 
         public async Task<Dictionary<string, object>> GetSystemHealthStatisticsAsync()
         {

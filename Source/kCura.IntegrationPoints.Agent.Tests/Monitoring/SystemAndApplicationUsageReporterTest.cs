@@ -4,11 +4,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Agent.Monitoring;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
-using kCura.IntegrationPoints.Agent.Monitoring.SystemReporter;
 using kCura.IntegrationPoints.Agent.Toggles;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Metrics;
+using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
@@ -322,7 +322,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         {
             Dictionary<string, object> valuesToBeSend = new Dictionary<string, object>
             {
-                { "JobId", _jobId},
+                { "r1.team.id", "PTCI-2456712" },
+                { "r1.job.id", _jobId.ToString()},
                 { "JobType", _jobType},
                 { "WorkflowId", _jobDetails},
                 { "SystemProcessMemoryInMB", _dummyMemorySize },

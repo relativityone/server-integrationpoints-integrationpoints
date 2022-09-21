@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Data;
 using FluentAssertions;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using Moq;
 using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
@@ -14,6 +16,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
     public class ScheduleQueueTestsForScheduledJobs : TestsBase
     {
         private readonly DateTime _FIXED_DATE_TIME = new DateTime(2021, 10, 20);
+
+        public override void SetUp()
+        {
+            base.SetUp();
+
+            DataTable result = new DataTable
+            {
+                Columns = { new DataColumn() }
+            };
+
+            Helper.DbContextMock.Setup(x => x.ExecuteSqlStatementAsDataTable(It.IsAny<string>())).Returns(result);
+        }
 
         [IdentifiedTest("C6E9E6A2-BDD6-4767-97EE-55BE95323AE3")]
         public void Job_ShouldNotBePushedToTheQueueAfterRun_WhenScheduledNextRunExceedsEndDate()
