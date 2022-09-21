@@ -321,6 +321,8 @@ namespace kCura.ScheduleQueue.AgentBase
 
                 throw new Exception($"Not all Services are accessible by the Agent; _agentInstanceGuid - {_agentInstanceGuid}");
             }
+
+            Logger.LogInformation("All services are Healthy. Agent can proceed with running job.");
         }
 
         private void CompleteExecution()
