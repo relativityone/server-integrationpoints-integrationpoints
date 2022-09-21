@@ -17,11 +17,11 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 {
     internal class ObjectManagerFacadeInstrumentationDecorator : IObjectManagerFacade
     {
-        private bool _isDisposed;
-
         private readonly IExternalServiceInstrumentationProvider _instrumentationProvider;
         private readonly IAPILog _logger;
         private readonly IObjectManagerFacade _objectManager;
+
+        private bool _isDisposed;
 
         public ObjectManagerFacadeInstrumentationDecorator(
             IObjectManagerFacade objectManager,
@@ -41,6 +41,26 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
                     instrumentation)
                 .ConfigureAwait(false);
             CompleteResultWithEventHandlers(result.EventHandlerStatuses, instrumentation);
+            return result;
+        }
+
+        public async Task<MassCreateResult> CreateAsync(int workspaceArtifactID, MassCreateRequest createRequest)
+        {
+            IExternalServiceInstrumentationStarted instrumentation = StartInstrumentation();
+            MassCreateResult result = await ExecuteAsync(
+                    x => x.CreateAsync(workspaceArtifactID, createRequest),
+                    instrumentation)
+                .ConfigureAwait(false);
+
+            if (result.Success)
+            {
+                instrumentation.Completed();
+            }
+            else
+            {
+                instrumentation.Failed(result.Message);
+            }
+
             return result;
         }
 
@@ -88,7 +108,7 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
         {
             IExternalServiceInstrumentationStarted instrumentation = StartInstrumentation();
             MassUpdateResult result = await ExecuteAsync(
-                    x => x.UpdateAsync(workspaceArtifactID, request, updateOptions), 
+                    x => x.UpdateAsync(workspaceArtifactID, request, updateOptions),
                     instrumentation)
                 .ConfigureAwait(false);
 
@@ -126,8 +146,31 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
                 x => x.RetrieveResultsBlockFromExportAsync(workspaceArtifactID, runID, resultsBlockSize, exportIndexID));
         }
 
-        private void CompleteResultWithEventHandlers(List<EventHandlerStatus> eventHandlerStatuses,
-            IExternalServiceInstrumentationStarted startedInstrumentation)
+        #region IDisposable Support
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                _objectManager?.Dispose();
+            }
+
+            _isDisposed = true;
+        }
+
+        #endregion
+
+        private void CompleteResultWithEventHandlers(List<EventHandlerStatus> eventHandlerStatuses, IExternalServiceInstrumentationStarted startedInstrumentation)
         {
             string[] failedEventHandlersMessages =
                 eventHandlerStatuses.Where(x => !x.Success).Select(x => x.Message).ToArray();
@@ -171,6 +214,7 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
                 {
                     instrumentation.Completed();
                 }
+
                 return result;
             }
             catch (ServiceNotFoundException ex)
@@ -192,10 +236,10 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
             return instrumentation.Started();
         }
 
-        private IntegrationPointsException LogServiceNotFoundException(string operationName,
-            ServiceNotFoundException ex)
+        private IntegrationPointsException LogServiceNotFoundException(string operationName, ServiceNotFoundException ex)
         {
-            string message = $"Error while connecting to object manager service. Cannot perform {operationName} operation.";
+            string message =
+                $"Error while connecting to object manager service. Cannot perform {operationName} operation.";
             _logger.LogError(
                 "Error while connecting to object manager service. Cannot perform {operationName} operation.",
                 operationName);
@@ -207,26 +251,5 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
                 Source = IntegrationPointsExceptionSource.KEPLER
             };
         }
-
-        #region IDisposable Support
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_isDisposed)
-            {
-                return;
-            }
-            if (disposing)
-            {
-                _objectManager?.Dispose();
-            }
-
-            _isDisposed = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-        #endregion
     }
 }

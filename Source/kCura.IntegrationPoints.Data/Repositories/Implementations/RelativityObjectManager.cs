@@ -1,9 +1,4 @@
-﻿using kCura.IntegrationPoints.Data.Transformers;
-using kCura.IntegrationPoints.Data.UtilityDTO;
-using kCura.IntegrationPoints.Domain.Exceptions;
-using Relativity.API;
-using Relativity.Services.Objects.DataContracts;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -12,8 +7,13 @@ using System.Text;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Facades.ObjectManager;
 using kCura.IntegrationPoints.Data.StreamWrappers;
+using kCura.IntegrationPoints.Data.Transformers;
+using kCura.IntegrationPoints.Data.UtilityDTO;
+using kCura.IntegrationPoints.Domain.Exceptions;
+using Relativity.API;
 using Relativity.Kepler.Transport;
 using Relativity.Services.DataContracts.DTOs.Results;
+using Relativity.Services.Objects.DataContracts;
 using FieldRef = Relativity.Services.Objects.DataContracts.FieldRef;
 using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 using RelativityObjectRef = Relativity.Services.Objects.DataContracts.RelativityObjectRef;
@@ -52,9 +52,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return SendCreateRequestAsync(createRequest, executionIdentity).GetAwaiter().GetResult();
         }
 
-        public int Create(ObjectTypeRef objectType,
-            List<FieldRefValuePair> fieldValues,
-            ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+        public int Create(ObjectTypeRef objectType, List<FieldRefValuePair> fieldValues, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
         {
             var createRequest = new CreateRequest
             {
@@ -64,7 +62,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return SendCreateRequestAsync(createRequest, executionIdentity).GetAwaiter().GetResult();
         }
 
-        public int Create(ObjectTypeRef objectType,
+        public int Create(
+            ObjectTypeRef objectType,
             RelativityObjectRef parentObject,
             List<FieldRefValuePair> fieldValues,
             ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
@@ -91,7 +90,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return await SendCreateRequestAsync(createRequest, executionIdentity).ConfigureAwait(false);
         }
 
-        public async Task<int> CreateAsync(ObjectTypeRef objectType,
+        public async Task<int> CreateAsync(
+            ObjectTypeRef objectType,
             List<FieldRefValuePair> fieldValues,
             ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
         {
@@ -103,7 +103,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return await SendCreateRequestAsync(createRequest, executionIdentity).ConfigureAwait(false);
         }
 
-        public async Task<int> CreateAsync(ObjectTypeRef objectType,
+        public async Task<int> CreateAsync(
+            ObjectTypeRef objectType,
             RelativityObjectRef parentObject,
             List<FieldRefValuePair> fieldValues,
             ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
@@ -128,7 +129,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return SendReadRequestAsync<T>(request, executionIdentity: executionIdentity).GetAwaiter().GetResult();
         }
 
-        public T Read<T>(int artifactId,
+        public T Read<T>(
+            int artifactId,
             IEnumerable<Guid> fieldsGuids,
             ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
             where T : BaseRdo, new()
@@ -141,7 +143,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return SendReadRequestAsync<T>(request, executionIdentity: executionIdentity).GetAwaiter().GetResult();
         }
 
-        public bool Update(int artifactId,
+        public bool Update(
+            int artifactId,
             IList<FieldRefValuePair> fieldsValues,
             ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
         {
@@ -166,7 +169,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return SendUpdateRequestAsync(request, executionIdentity, GetRdoType(rdo)).GetAwaiter().GetResult();
         }
 
-        public async Task<bool> UpdateAsync(int artifactId,
+        public async Task<bool> UpdateAsync(
+            int artifactId,
             IList<FieldRefValuePair> fieldsValues,
             ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
         {
@@ -189,6 +193,30 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 FieldValues = rdo.ToFieldValues().ToList()
             };
             return await SendUpdateRequestAsync(request, executionIdentity, GetRdoType(rdo)).ConfigureAwait(false);
+        }
+
+        public async Task<MassCreateResult> MassCreateAsync(
+            ObjectTypeRef objectType,
+            RelativityObjectRef parentObject,
+            IReadOnlyList<FieldRef> fields,
+            IReadOnlyList<IReadOnlyList<object>> valueLists,
+            ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+        {
+            var createRequest = new MassCreateRequest
+            {
+                ObjectType = objectType,
+                ParentObject = parentObject,
+                Fields = fields,
+                ValueLists = valueLists,
+            };
+            return await SendMassCreateRequestAsync(createRequest, executionIdentity).ConfigureAwait(false);
+        }
+
+        public async Task<MassCreateResult> MassCreateAsync(
+            MassCreateRequest massCreateRequest,
+            ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+        {
+            return await SendMassCreateRequestAsync(massCreateRequest, executionIdentity).ConfigureAwait(false);
         }
 
         public Task<bool> MassUpdateAsync(
@@ -251,7 +279,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return SendDeleteRequestAsync(request, executionIdentity, rdoType: null).GetAwaiter().GetResult();
         }
 
-        public ResultSet<T> Query<T>(QueryRequest q,
+        public ResultSet<T> Query<T>(
+            QueryRequest q,
             int start,
             int length,
             bool noFields = false,
@@ -270,7 +299,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 .GetResult();
         }
 
-        public Task<List<T>> QueryAsync<T>(QueryRequest q,
+        public Task<List<T>> QueryAsync<T>(
+            QueryRequest q,
             bool noFields = false,
             ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
             where T : BaseRdo, new()
@@ -280,13 +310,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 List<T> output = null;
                 int retrievedResults = 0;
                 int totalResults;
-                
                 Guid logGuid = Guid.NewGuid();
-                
                 do
                 {
                     Stopwatch sw = Stopwatch.StartNew();
-                    
                     QueryResult partialResult = await client
                         .QueryAsync(_workspaceArtifactId, q, retrievedResults + 1, _BATCH_SIZE)
                         .ConfigureAwait(false);
@@ -304,7 +331,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                             LogGuid = logGuid
                         });
                     }
-                    
+
                     totalResults = partialResult.TotalCount;
                     if (output == null)
                     {
@@ -315,7 +342,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                     output.AddRange(partialResultsAsRdo);
 
                     retrievedResults += partialResult.Objects.Count;
-                } while (retrievedResults < totalResults);
+                }
+                while (retrievedResults < totalResults);
 
                 return output;
             };
@@ -366,7 +394,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                     output.AddRange(partialResult.Objects);
 
                     retrievedResults += partialResult.Objects.Count;
-                } while (retrievedResults < totalResults);
+                }
+                while (retrievedResults < totalResults);
 
                 return output;
             };
@@ -378,7 +407,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 executionIdentity: executionIdentity);
         }
 
-        public ResultSet<RelativityObject> Query(QueryRequest q, int start, int length, bool noFields = false,
+        public ResultSet<RelativityObject> Query(
+            QueryRequest q,
+            int start,
+            int length,
+            bool noFields = false,
             ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
         {
             return QueryAsync(q, start, length, noFields, executionIdentity)
@@ -386,7 +419,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 .GetResult();
         }
 
-        public Task<ResultSet<RelativityObject>> QueryAsync(QueryRequest q,
+        public Task<ResultSet<RelativityObject>> QueryAsync(
+            QueryRequest q,
             int start,
             int length,
             bool noFields = false,
@@ -547,7 +581,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                         results.AddRange(partialResults);
                         remainingObjectsCount -= partialResults.Length;
                         startIndex += partialResults.Length;
-                    } while (remainingObjectsCount > 0 && partialResults.Any());
+                    }
+                    while (remainingObjectsCount > 0 && partialResults.Any());
 
                     return results.ToArray();
                 }
@@ -566,7 +601,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             }
         }
 
-        public async Task<IExportQueryResult> QueryWithExportAsync(QueryRequest queryRequest, int start,
+        public async Task<IExportQueryResult> QueryWithExportAsync(
+            QueryRequest queryRequest,
+            int start,
             ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
         {
             try
@@ -575,11 +612,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
                 void ExceptionHandler(Exception exception, int blockSize, int exportStartIndex)
                 {
-                    HandleObjectManagerException(exception,
-                            GetRetrieveNextResultsBlockFromExportErrorMessage(_workspaceArtifactId, exportResult.RunID.ToString(), blockSize, exportStartIndex, executionIdentity));
+                    HandleObjectManagerException(
+                        exception,
+                        GetRetrieveNextResultsBlockFromExportErrorMessage(_workspaceArtifactId, exportResult.RunID.ToString(), blockSize, exportStartIndex, executionIdentity));
                 }
 
-                return  new ExportQueryResult(_objectManagerFacadeFactory, exportResult, _workspaceArtifactId, executionIdentity, ExceptionHandler);
+                return new ExportQueryResult(_objectManagerFacadeFactory, exportResult, _workspaceArtifactId, executionIdentity, ExceptionHandler);
             }
             catch (Exception ex)
             {
@@ -594,16 +632,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             }
         }
 
-        //This method was introduced during migration to SecretStore,
-        //because it was really hard to decide which helper do
-        //we need to use to get proper workspaceID for given case.
-        //Do not use this method. It should be removed asap.
+        // This method was introduced during migration to SecretStore,
+        // because it was really hard to decide which helper do
+        // we need to use to get proper workspaceID for given case.
+        // Do not use this method. It should be removed asap.
         public int GetWorkspaceID_Deprecated()
         {
             return _workspaceArtifactId;
         }
 
-        private Task<ResultSet<T>> QueryAsync<T>(QueryRequest q,
+        private Task<ResultSet<T>> QueryAsync<T>(
+            QueryRequest q,
             int start,
             int length,
             bool noFields = false,
@@ -716,7 +755,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             }
         }
 
-        private async Task<T> SendReadRequestAsync<T>(ReadRequest request,
+        private async Task<T> SendReadRequestAsync<T>(
+            ReadRequest request,
             ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
             where T : BaseRdo, new()
         {
@@ -787,6 +827,23 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             }
         }
 
+        private async Task<MassCreateResult> SendMassCreateRequestAsync(MassCreateRequest request, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+        {
+            try
+            {
+                using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
+                {
+                    MassCreateResult result = await client.CreateAsync(_workspaceArtifactId, request).ConfigureAwait(false);
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                HandleObjectManagerException(ex, message: GetErrorMessage<CreateRequest>("[RelativityObject]"));
+                throw;
+            }
+        }
+
         private async Task<bool> SendMassUpdateRequestAsync(
             MassUpdateByObjectIdentifiersRequest request,
             MassUpdateOptions updateOptions,
@@ -842,6 +899,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 {
                     throw new IntegrationPointsException("Fields list not empty while trying to execute query with noFields.");
                 }
+
                 q.Fields = new FieldRef[0];
             }
             else if (!q.Fields.Any())

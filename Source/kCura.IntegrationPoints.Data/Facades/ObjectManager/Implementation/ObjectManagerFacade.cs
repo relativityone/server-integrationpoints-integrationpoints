@@ -18,17 +18,26 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
             _objectManager = new Lazy<IObjectManager>(objectManager);
         }
 
-        public Task<CreateResult> CreateAsync(
-            int workspaceArtifactID, 
-            CreateRequest createRequest)
+        public Task<MassCreateResult> CreateAsync(
+            int workspaceArtifactID,
+            MassCreateRequest createRequest)
         {
             return _objectManager.Value.CreateAsync(
                     workspaceArtifactID,
                     createRequest);
         }
 
+        public Task<CreateResult> CreateAsync(
+            int workspaceArtifactID,
+            CreateRequest createRequest)
+        {
+            return _objectManager.Value.CreateAsync(
+                workspaceArtifactID,
+                createRequest);
+        }
+
         public Task<ReadResult> ReadAsync(
-            int workspaceArtifactID, 
+            int workspaceArtifactID,
             ReadRequest request)
         {
             return _objectManager.Value.ReadAsync(
@@ -37,7 +46,7 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
         }
 
         public Task<UpdateResult> UpdateAsync(
-            int workspaceArtifactID, 
+            int workspaceArtifactID,
             UpdateRequest request)
         {
             return _objectManager.Value.UpdateAsync(
@@ -46,7 +55,7 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
         }
 
         public Task<MassUpdateResult> UpdateAsync(
-            int workspaceArtifactID, 
+            int workspaceArtifactID,
             MassUpdateByObjectIdentifiersRequest request,
             MassUpdateOptions updateOptions)
         {
@@ -57,7 +66,7 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
         }
 
         public Task<DeleteResult> DeleteAsync(
-            int workspaceArtifactID, 
+            int workspaceArtifactID,
             DeleteRequest request)
         {
             return _objectManager.Value.DeleteAsync(
@@ -66,7 +75,7 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
         }
 
         public Task<MassDeleteResult> DeleteAsync(
-            int workspaceArtifactID, 
+            int workspaceArtifactID,
             MassDeleteByObjectIdentifiersRequest request)
         {
             return _objectManager.Value.DeleteAsync(
@@ -75,8 +84,8 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
         }
 
         public Task<QueryResult> QueryAsync(
-            int workspaceArtifactID, 
-            QueryRequest request, 
+            int workspaceArtifactID,
+            QueryRequest request,
             int start, 
             int length)
         {
@@ -88,8 +97,8 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
         }
 
         public Task<IKeplerStream> StreamLongTextAsync(
-            int workspaceArtifactID, 
-            RelativityObjectRef exportObject, 
+            int workspaceArtifactID,
+            RelativityObjectRef exportObject,
             FieldRef longTextField)
         {
             return _objectManager.Value.StreamLongTextAsync(
@@ -99,8 +108,8 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
         }
 
         public Task<ExportInitializationResults> InitializeExportAsync(
-            int workspaceArtifactID, 
-            QueryRequest queryRequest, 
+            int workspaceArtifactID,
+            QueryRequest queryRequest,
             int start)
         {
             return _objectManager.Value.InitializeExportAsync(
@@ -110,7 +119,7 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
         }
 
         public Task<RelativityObjectSlim[]> RetrieveResultsBlockFromExportAsync(
-            int workspaceArtifactID, 
+            int workspaceArtifactID,
             Guid runID,
             int resultsBlockSize,
             int exportIndexID)
