@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
@@ -30,8 +31,9 @@ namespace kCura.IntegrationPoints.Core.Services
 
         private readonly IIntegrationPointRepository _integrationPointRepository;
         private readonly IRelativityObjectManager _relativityObjectManager;
-        private readonly List<JobHistoryError> _jobHistoryErrorList;
         private readonly IAPILog _logger;
+
+        private ConcurrentQueue<JobHistoryError> _jobHistoryErrorQueue;
         private bool _errorOccurredDuringJob;
 
         public JobHistoryErrorService(IRelativityObjectManager relativityObjectManager, IHelper helper, IIntegrationPointRepository integrationPointRepository)
@@ -39,7 +41,7 @@ namespace kCura.IntegrationPoints.Core.Services
             _integrationPointRepository = integrationPointRepository;
             _relativityObjectManager = relativityObjectManager;
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<IJobHistoryErrorService>();
-            _jobHistoryErrorList = new List<JobHistoryError>();
+            _jobHistoryErrorQueue = new ConcurrentQueue<JobHistoryError>();
             _errorOccurredDuringJob = false;
         }
 
@@ -49,7 +51,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
         public IJobStopManager JobStopManager { get; set; }
 
-        internal int PendingErrorCount => _jobHistoryErrorList.Count;
+        internal int PendingErrorCount => _jobHistoryErrorQueue.Count;
 
         public void SubscribeToBatchReporterEvents(object batchReporter)
         {
@@ -64,9 +66,9 @@ namespace kCura.IntegrationPoints.Core.Services
         {
             try
             {
-                _logger.LogInformation("Mass-creating item level errors count: {count}", _jobHistoryErrorList.Count);
+                _logger.LogInformation("Mass-creating item level errors count: {count}", _jobHistoryErrorQueue.Count);
 
-                IReadOnlyList<IReadOnlyList<object>> values = _jobHistoryErrorList.Select(x => new List<object>()
+                IReadOnlyList<IReadOnlyList<object>> values = _jobHistoryErrorQueue.Select(x => new List<object>()
                 {
                     x.Error,
                     GetErrorStatusChoice(),
@@ -77,7 +79,7 @@ namespace kCura.IntegrationPoints.Core.Services
                     DateTime.UtcNow
                 }).ToList();
 
-                if (_jobHistoryErrorList.Any())
+                if (_jobHistoryErrorQueue.Any())
                 {
                     _errorOccurredDuringJob = true;
 
@@ -89,7 +91,7 @@ namespace kCura.IntegrationPoints.Core.Services
                     MassCreateRequest request = new MassCreateRequest
                     {
                         ObjectType = GetObjectTypeRef(),
-                        ParentObject = GetParentObject(_jobHistoryErrorList.FirstOrDefault()?.JobHistory ?? 0),
+                        ParentObject = GetParentObject(_jobHistoryErrorQueue.FirstOrDefault()?.JobHistory ?? 0),
                         Fields = GetFields(),
                         ValueLists = values
                     };
@@ -100,7 +102,7 @@ namespace kCura.IntegrationPoints.Core.Services
                         throw new IntegrationPointsException($"Mass creation of item level errors was not successful. Message: {result.Message}");
                     }
 
-                    _logger.LogInformation("Successfully mass-created item level errors count: {count}", _jobHistoryErrorList.Count);
+                    _logger.LogInformation("Successfully mass-created item level errors count: {count}", _jobHistoryErrorQueue.Count);
                 }
 
                 if ((IntegrationPoint != null && !_errorOccurredDuringJob) || (JobStopManager?.IsStopRequested() == true))
@@ -108,12 +110,12 @@ namespace kCura.IntegrationPoints.Core.Services
                     IntegrationPoint.HasErrors = false;
                 }
 
-                _logger.LogInformation("Successfully mass-created item level errors count: {count}", _jobHistoryErrorList.Count);
+                _logger.LogInformation("Successfully mass-created item level errors count: {count}", _jobHistoryErrorQueue.Count);
             }
             catch (Exception ex)
             {
                 // if failed to commit, throw all buffered errors as part of an exception
-                List<string> errorList = _jobHistoryErrorList.Select(x =>
+                List<string> errorList = _jobHistoryErrorQueue.Select(x =>
                     x.ErrorType.Name.Equals(ErrorTypeChoices.JobHistoryErrorJob.Name)
                         ? $"{x.TimestampUTC} Type: {x.ErrorType.Name}    Error: {x.Error}"
                         : $"{x.TimestampUTC} Type: {x.ErrorType.Name}    Identifier: {x.SourceUniqueID}    Error: {x.Error}").ToList();
@@ -128,7 +130,7 @@ namespace kCura.IntegrationPoints.Core.Services
             }
             finally
             {
-                _jobHistoryErrorList.Clear();
+                _jobHistoryErrorQueue = new ConcurrentQueue<JobHistoryError>();
                 UpdateIntegrationPoint();
             }
         }
@@ -152,13 +154,13 @@ namespace kCura.IntegrationPoints.Core.Services
                     TimestampUTC = now
                 };
 
-                _jobHistoryErrorList.Add(jobHistoryError);
+                _jobHistoryErrorQueue.Enqueue(jobHistoryError);
 
                 if (errorType == ErrorTypeChoices.JobHistoryErrorJob)
                 {
                     CommitErrors();
                 }
-                else if (_jobHistoryErrorList.Count == ERROR_BATCH_SIZE)
+                else if (_jobHistoryErrorQueue.Count == ERROR_BATCH_SIZE)
                 {
                     CommitErrors();
                 }
