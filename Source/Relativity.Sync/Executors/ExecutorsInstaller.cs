@@ -94,6 +94,13 @@ namespace Relativity.Sync.Executors
             builder.RegisterType<AutomatedWorkflowExecutorConstrains>().As<IExecutionConstrains<IAutomatedWorkflowTriggerConfiguration>>();
             builder.RegisterType<AutomatedWorkflowExecutor>().As<IExecutor<IAutomatedWorkflowTriggerConfiguration>>();
 
+            builder.RegisterType<ConfigureDocumentSynchronizationExecutor>().As<IExecutor<IConfigureDocumentSynchronizationConfiguration>>();
+            builder.RegisterType<ConfigureDocumentSynchronizationExecutionConstrains>().As<IExecutionConstrains<IConfigureDocumentSynchronizationConfiguration>>();
+            builder.RegisterType<BatchDataSourcePreparationExecutor>().As<IExecutor<IBatchDataSourcePreparationConfiguration>>();
+            builder.RegisterType<BatchDataSourcePreparationExecutionConstrains>().As<IExecutionConstrains<IBatchDataSourcePreparationConfiguration>>();
+            builder.RegisterType<DocumentSynchronizationMonitorExecutor>().As<IExecutor<IDocumentSynchronizationMonitorConfiguration>>();
+            builder.RegisterType<DocumentSynchronizationMonitorExecutionConstrains>().As<IExecutionConstrains<IDocumentSynchronizationMonitorConfiguration>>();
+
             builder.RegisterTypesInExecutingAssembly<IPermissionCheck>();
             builder.RegisterTypesInExecutingAssembly<IPreValidator>();
             builder.RegisterType<UserService>().As<IUserService>();

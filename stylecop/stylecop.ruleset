@@ -39,7 +39,7 @@
 
     <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers.ReadabilityRules">
         <Rule Id="SA1100"  Action="Info" />          <!-- Do not prefix calls with base unless local implementation exists -->
-        <Rule Id="SA1101"  Action="Info" />          <!-- Prefix local calls with this -->
+        <Rule Id="SA1101"  Action="None" />          <!-- Prefix local calls with this -->
         <Rule Id="SA1102"  Action="Info" />          <!-- Query clause should follow previous clause -->
         <Rule Id="SA1103"  Action="Info" />          <!-- Query clauses should be on separate lines or all on one line -->
         <Rule Id="SA1104"  Action="Info" />          <!-- Query clause should begin on new line when previous clause spans multiple lines -->

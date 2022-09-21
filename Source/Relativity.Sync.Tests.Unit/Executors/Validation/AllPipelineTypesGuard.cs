@@ -23,7 +23,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
                 .Where(m => m.CustomAttributes.Any(a => a.AttributeType == attributeType));
 
             Dictionary<MethodInfo, TypeInfo[]> missingPipelinesForMethods = new Dictionary<MethodInfo, TypeInfo[]>();
-            
+
             testsWithAttribute.ForEach(t =>
             {
                 int pipelineArgumentIndex =

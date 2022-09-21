@@ -141,6 +141,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             func.Should().Throw<InvalidOperationException>();
         }
 
+        [TestCase(typeof(IAPI2_SyncDocumentRunPipeline), false)]
         [TestCase(typeof(SyncDocumentRunPipeline), false)]
         [TestCase(typeof(SyncDocumentRetryPipeline), true)]
         [TestCase(typeof(SyncImageRunPipeline), false)]

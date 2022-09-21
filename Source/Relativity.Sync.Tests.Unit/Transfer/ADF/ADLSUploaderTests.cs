@@ -140,10 +140,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ADF
 
             // Act
             token.Cancel();
-            string destinationFilePath = await _sut.UploadFileAsync(_SOURCE_FILE_PATH, token.Token).ConfigureAwait(false);
+            Func<Task> act = async () => { await _sut.UploadFileAsync(_SOURCE_FILE_PATH, token.Token).ConfigureAwait(false); };
 
             // Assert
-            destinationFilePath.Should().BeEmpty();
+            await act.Should().ThrowAsync<Exception>().WithMessage("The operation was canceled.");
             _loggerFake.Verify(x => x.LogWarning("ADLS Batch file upload cancelled."), Times.Once);
             _loggerFake.Verify(x => x.LogWarning(It.IsAny<Exception>(), It.Is<string>(y => y.Contains("Encountered issue while loading file to ADLS, attempting to retry.")), It.IsAny<int>(), It.IsAny<double>()), Times.Never);
         }

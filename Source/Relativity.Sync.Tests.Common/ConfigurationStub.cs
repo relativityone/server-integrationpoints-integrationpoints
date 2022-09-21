@@ -16,7 +16,7 @@ namespace Relativity.Sync.Tests.Common
         IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration, IRetryDataSourceSnapshotConfiguration, IPipelineSelectorConfiguration,
         IDocumentSynchronizationConfiguration, INonDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, IPreValidationConfiguration, IRdoGuidConfiguration,
         IImageJobStartMetricsConfiguration, IDocumentJobStartMetricsConfiguration, ISnapshotQueryConfiguration, IMetricsConfiguration, IStatisticsConfiguration, INonDocumentJobStartMetricsConfiguration, IJobHistoryErrorRepositoryConfigration, INonDocumentObjectLinkingConfiguration,
-        IAntiMalwareConfiguration
+        IAntiMalwareConfiguration, IBatchDataSourcePreparationConfiguration, IDocumentSynchronizationMonitorConfiguration, IConfigureDocumentSynchronizationConfiguration
     {
         private IList<FieldMap> _fieldMappings = new List<FieldMap>();
         private string _jobName = String.Empty;
@@ -85,7 +85,7 @@ namespace Relativity.Sync.Tests.Common
         {
             _emailNotificationRecipients = emailNotificationRecipients;
         }
-        
+
         public DestinationLocationType DataDestinationType { get; }
 
         public int SourceWorkspaceArtifactId { get; set; }
@@ -123,7 +123,7 @@ namespace Relativity.Sync.Tests.Common
         public string FolderPathSourceFieldName { get; set; }
 
         public string GetFolderPathSourceFieldName() => FolderPathSourceFieldName;
-        
+
         public bool Resuming { get; set; }
 
         public int SyncStatisticsId { get; set; }
@@ -147,7 +147,7 @@ namespace Relativity.Sync.Tests.Common
         public ImportOverwriteMode ImportOverwriteMode { get; set; }
 
         public FieldOverlayBehavior FieldOverlayBehavior { get; set; }
-        
+
         public ImportNativeFileCopyMode ImportNativeFileCopyMode { get; set; }
 
         public int IdentityFieldId { get; set; }
@@ -215,7 +215,7 @@ namespace Relativity.Sync.Tests.Common
         {
             ObjectLinkingSnapshotRecordsCount = objectLinkingRecordsCount;
             ObjectLinkingSnapshotId = objectLinkingSnapshotId;
-            
+
             return Task.CompletedTask;
         }
 
@@ -246,11 +246,11 @@ namespace Relativity.Sync.Tests.Common
         public IJobHistoryStatusProvider JobHistoryStatus { get; set; } = DefaultGuids.JobHistoryStatus;
 
         public IJobHistoryErrorGuidsProvider JobHistoryError { get; set; } = DefaultGuids.JobHistoryError;
-        
+
         public IDestinationWorkspaceTagGuidProvider DestinationWorkspace { get; set;  } = DefaultGuids.DestinationWorkspace;
 
         public DataSourceType DataSourceType { get; set; }
-        
+
         public DestinationLocationType DestinationType { get; set; }
 
         public string CorrelationId { get; set; }

@@ -4,8 +4,7 @@ using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Storage
 {
-    internal sealed class SynchronizationConfiguration : ISynchronizationConfiguration, IDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration,
-        INonDocumentSynchronizationConfiguration, INonDocumentObjectLinkingConfiguration
+    internal sealed class SynchronizationConfiguration : IDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, INonDocumentObjectLinkingConfiguration
     {
         private const int _ASCII_GROUP_SEPARATOR = 29;
         private const int _ASCII_RECORD_SEPARATOR = 30;

@@ -162,7 +162,7 @@ namespace Relativity.Sync.Storage
                     string jobHistoryItemsWithErrorsStr = jobHistoryObject.FieldValues.Single().Value.ToString();
                     int jobHistoryItemsWithErrors = int.Parse(jobHistoryItemsWithErrorsStr);
 
-                    _logger.LogInformation("Job history Artifact ID {jobHistoryArtifactId} failed items field value: {jobHistoryItemsWithErrors}", jobHistoryItemsWithErrors);
+                    _logger.LogInformation("Job history Artifact ID {jobHistoryArtifactId} failed items field value: {jobHistoryItemsWithErrors}", jobHistoryArtifactId, jobHistoryItemsWithErrors);
 
                     return itemLevelErrors.ResultCount > 0 || jobHistoryItemsWithErrors > 0;
                 }
