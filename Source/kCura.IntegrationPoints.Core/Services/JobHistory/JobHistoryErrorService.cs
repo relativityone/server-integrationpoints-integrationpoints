@@ -135,13 +135,26 @@ namespace kCura.IntegrationPoints.Core.Services
             }
         }
 
+        public void AddError(global::Relativity.Services.Choice.ChoiceRef errorType, Exception ex)
+        {
+            string message = ex.FlattenErrorMessagesWithStackTrace();
+
+            if (ex is IntegrationPointValidationException)
+            {
+                var ipException = ex as IntegrationPointValidationException;
+                message = string.Join(Environment.NewLine, ipException.ValidationResult.MessageTexts);
+            }
+
+            AddError(errorType, string.Empty, ex.Message, message);
+        }
+
         public void AddError(global::Relativity.Services.Choice.ChoiceRef errorType, string documentIdentifier, string errorMessage, string stackTrace)
         {
-            if ((JobHistory != null) && (JobHistory.ArtifactId > 0))
+            if (JobHistory != null && JobHistory.ArtifactId > 0)
             {
                 DateTime now = DateTime.UtcNow;
 
-                var jobHistoryError = new JobHistoryError
+                JobHistoryError jobHistoryError = new JobHistoryError
                 {
                     ParentArtifactId = JobHistory.ArtifactId,
                     JobHistory = JobHistory.ArtifactId,
@@ -173,19 +186,6 @@ namespace kCura.IntegrationPoints.Core.Services
                 // in such case log error into Error Tab by throwing Exception.
                 throw new Exception($"Type:{errorType.Name} Id:{documentIdentifier}  Error:{errorMessage}");
             }
-        }
-
-        public void AddError(global::Relativity.Services.Choice.ChoiceRef errorType, Exception ex)
-        {
-            string message = ex.FlattenErrorMessagesWithStackTrace();
-
-            if (ex is IntegrationPointValidationException)
-            {
-                var ipException = ex as IntegrationPointValidationException;
-                message = string.Join(Environment.NewLine, ipException.ValidationResult.MessageTexts);
-            }
-
-            AddError(errorType, string.Empty, ex.Message, message);
         }
 
         private ObjectTypeRef GetObjectTypeRef()
