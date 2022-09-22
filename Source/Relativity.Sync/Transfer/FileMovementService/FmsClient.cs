@@ -80,6 +80,7 @@ namespace Relativity.Sync.Transfer.FileMovementService
                 using (System.Net.Http.HttpClient httpClient = await _httpClientFactory.GetHttpClientAsync().ConfigureAwait(false))
                 {
                     string requestJson = _serializer.Serialize(request);
+                    _logger.LogInformation("FMS Request {request}", requestJson);
                     StringContent requestContent = new StringContent(requestJson, Encoding.UTF8, "application/json");
 
                     HttpResponseMessage responseMessage = await ExecuteUnderRetryPolicy(async () => await httpClient
