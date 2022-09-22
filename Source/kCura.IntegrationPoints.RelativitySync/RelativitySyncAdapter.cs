@@ -20,12 +20,11 @@ namespace kCura.IntegrationPoints.RelativitySync
         private readonly Guid _correlationId;
         private readonly IIntegrationPointToSyncConverter _converter;
         private readonly ISyncOperationsWrapper _syncOperations;
-        private readonly ISyncConfigurationService _syncConfigurationService;
         private readonly ICancellationAdapter _cancellationAdapter;
 
         public RelativitySyncAdapter(IExtendedJob job, IAPILog logger, IAPM apmMetrics,
             ISyncJobMetric jobMetric, IJobHistorySyncService jobHistorySyncService, IIntegrationPointToSyncConverter converter,
-            ISyncOperationsWrapper syncOperations, ISyncConfigurationService syncConfigurationService, ICancellationAdapter cancellationAdapter)
+            ISyncOperationsWrapper syncOperations, ICancellationAdapter cancellationAdapter)
         {
             _job = job;
             _logger = logger;
@@ -34,7 +33,6 @@ namespace kCura.IntegrationPoints.RelativitySync
             _jobHistorySyncService = jobHistorySyncService;
             _converter = converter;
             _syncOperations = syncOperations;
-            _syncConfigurationService = syncConfigurationService;
             _cancellationAdapter = cancellationAdapter;
 
             _correlationId = Guid.NewGuid();
@@ -228,13 +226,15 @@ namespace kCura.IntegrationPoints.RelativitySync
         {
             try
             {
-                int? syncConfigurationId = await _syncConfigurationService.TryGetResumedSyncConfigurationIdAsync(
-                    _job.WorkspaceId, _job.JobHistoryId).ConfigureAwait(false);
+                int? syncConfigurationId = await _syncOperations.TryGetResumedSyncConfigurationIdAsync(_job.WorkspaceId, _job.JobHistoryId);
 
                 if (syncConfigurationId.HasValue)
                 {
-                    _logger.LogInformation("SyncConfiguration with ID {configurationId} exists for JobHistory {jobHistory}. Job is resumed.",
-                        syncConfigurationId.Value, _job.JobHistoryId);
+                    _logger.LogInformation(
+                        "SyncConfiguration with ID {configurationId} exists for JobHistory {jobHistory}. Job is resumed.",
+                        syncConfigurationId.Value,
+                        _job.JobHistoryId);
+
                     await _syncOperations.PrepareSyncConfigurationForResumeAsync(
                         _job.WorkspaceId, syncConfigurationId.Value).ConfigureAwait(false);
 
