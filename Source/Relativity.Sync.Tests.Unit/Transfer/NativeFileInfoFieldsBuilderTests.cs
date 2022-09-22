@@ -7,8 +7,8 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Toggles;
-using Relativity.Sync.Toggles.Service;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ADLS;
 
 namespace Relativity.Sync.Tests.Unit.Transfer
 {
@@ -19,7 +19,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
         private Mock<INativeFileRepository> _nativeFileRepositoryMock;
         private Mock<IFileLocationManager> _fileLocationManager;
-        private Mock<ISyncToggles> _syncToggles;
+        private Mock<IIsAdfTransferEnabled> _isAdfTransferEnabledMock;
         private NativeInfoFieldsBuilder _sut;
 
         [SetUp]
@@ -27,8 +27,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         {
             _nativeFileRepositoryMock = new Mock<INativeFileRepository>();
             _fileLocationManager = new Mock<IFileLocationManager>();
-            _syncToggles = new Mock<ISyncToggles>();
-            _sut = new NativeInfoFieldsBuilder(_nativeFileRepositoryMock.Object, null, new EmptyLogger(), _fileLocationManager.Object, _syncToggles.Object);
+            _isAdfTransferEnabledMock = new Mock<IIsAdfTransferEnabled>();
+            _sut = new NativeInfoFieldsBuilder(_nativeFileRepositoryMock.Object, null, new EmptyLogger(), _fileLocationManager.Object, _isAdfTransferEnabledMock.Object);
         }
 
         [Test]
@@ -93,8 +93,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         [Test]
         public async Task GetRowValuesBuilderAsync_ShouldNotLaunchADLSPathTranslation_WhenUseFMSToggleIsDisabled()
         {
-            // Arrrange
-            _syncToggles.Setup(x => x.IsEnabled<UseFmsToggle>()).Returns(false);
+            // Arrange
+            _isAdfTransferEnabledMock.Setup(x => x.Value).Returns(false);
 
             // Act
             INativeSpecialFieldRowValuesBuilder result = await _sut
@@ -107,8 +107,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         [Test]
         public async Task GetRowValuesBuilderAsync_ShouldAlwaysLaunchADLSPathTranslationOnce_WhenUseFMSToggleIsEnabled()
         {
-            // Arrrange
-            _syncToggles.Setup(x => x.IsEnabled<UseFmsToggle>()).Returns(true);
+            // Arrange
+            _isAdfTransferEnabledMock.Setup(x => x.Value).Returns(true);
 
             // Act
             INativeSpecialFieldRowValuesBuilder result = await _sut

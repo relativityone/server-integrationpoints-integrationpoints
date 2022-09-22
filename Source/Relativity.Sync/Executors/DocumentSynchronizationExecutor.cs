@@ -183,7 +183,7 @@ namespace Relativity.Sync.Executors
 
         protected override async Task PerformFmsTransfer(List<FmsBatchInfo> fmsBatches, CancellationToken cancellationToken)
         {
-            if (IsAdfTransferEnabled.Value)
+            if (IsAdfTransferEnabled.Value && fmsBatches.Count > 0)
             {
                 List<FmsBatchStatusInfo> statusInfoList = await _fmsRunner.RunAsync(fmsBatches, cancellationToken);
                 await _fmsRunner.MonitorAsync(statusInfoList, cancellationToken);

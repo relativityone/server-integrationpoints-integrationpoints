@@ -67,6 +67,7 @@ namespace Relativity.Sync.Tests.Integration
 
             IFieldManager fieldManager = _container.Resolve<IFieldManager>();
             _documentTransferServicesMocker.SetFieldManager(fieldManager);
+            _documentTransferServicesMocker.ServiceFactoryForAdminSetupInstanceManager();
 
             _instance = CreateSourceWorkspaceDataReaderWithBatchSize(batchSize);
         }

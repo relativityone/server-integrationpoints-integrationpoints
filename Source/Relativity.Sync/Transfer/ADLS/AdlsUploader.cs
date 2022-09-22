@@ -35,15 +35,11 @@ namespace Relativity.Sync.Transfer.ADLS
                 return string.Empty;
             }
 
-            string loadFileHeader = "Source,Destination";
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine(loadFileHeader);
 
             foreach (var file in storedLocation.Files)
             {
-                string sourcePath = Path.Combine(storedLocation.SourceLocationShortPath, file.FileName);
-                string destinationPath = Path.Combine(storedLocation.DestinationLocationShortPath, file.FileName);
-                stringBuilder.AppendLine($"{sourcePath},{destinationPath}");
+                stringBuilder.AppendLine($"{file.FileName}");
 
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -74,9 +70,10 @@ namespace Relativity.Sync.Transfer.ADLS
             async Task<string> ExecutionFunction()
             {
                 IStorageAccess<string> storageAccess = await _helper.GetStorageAccessorAsync(cancellationToken).ConfigureAwait(false);
+                string batchFileName = $"BatchFile_{Guid.NewGuid()}.csv";
 
                 string destinationDir = await GetAdlsDestinationDirectory(cancellationToken);
-                destinationFilePath = Path.Combine(destinationDir, $"BatchFile_{Guid.NewGuid()}.csv");
+                destinationFilePath = Path.Combine(destinationDir, batchFileName);
                 _logger.LogInformation("ADLS Batch file Path - {destinationFilePath}", destinationFilePath);
 
                 CopyFileOptions copyFileOptions = new CopyFileOptions
@@ -86,7 +83,9 @@ namespace Relativity.Sync.Transfer.ADLS
                 };
                 await storageAccess.CreateDirectoryAsync(destinationDir, cancellationToken: cancellationToken).ConfigureAwait(false);
                 await storageAccess.CopyFileAsync(sourceFilePath, destinationFilePath, copyFileOptions, cancellationToken).ConfigureAwait(false);
-                return destinationFilePath;
+                string batchLocationBasedOnAdls = GetAdlsRelativeLocation(batchFileName);
+
+                return batchLocationBasedOnAdls;
             }
 
             string OnExceptionFunction(Exception exception)
@@ -131,6 +130,12 @@ namespace Relativity.Sync.Transfer.ADLS
             {
                 _logger.LogWarning("ADLS file deletion cancelled, file path - {filePath}", filePath);
             }
+        }
+
+        private string GetAdlsRelativeLocation(string fileName)
+        {
+            string relativeLocation = Path.Combine("Temp", "RIP_BatchFiles", fileName);
+            return relativeLocation.Replace('\\', '/');
         }
 
         private async Task<string> GetAdlsDestinationDirectory(CancellationToken cancellationToken)
