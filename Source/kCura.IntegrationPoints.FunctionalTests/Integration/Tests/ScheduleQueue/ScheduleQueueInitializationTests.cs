@@ -1,5 +1,7 @@
-﻿using kCura.IntegrationPoints.Data;
+﻿using System.Data;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
+using Moq;
 using Relativity.API;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Queries;
@@ -10,14 +12,24 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 {
     public class ScheduleQueueInitializationTests : TestsBase
     {
+        public override void SetUp()
+        {
+            base.SetUp();
+
+            DataTable result = new DataTable
+            {
+                Columns = { new DataColumn() }
+            };
+
+            Helper.DbContextMock.Setup(x => x.ExecuteSqlStatementAsDataTable(It.IsAny<string>())).Returns(result);
+        }
+
         [IdentifiedTest("544F7D10-F5FA-4848-AA50-2543FCB22A03")]
         public void ScheduleQueueTable_ShouldBeCreatedOnce_WhenAgentIsRunning()
         {
             // Arrange
-            var agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
-            
+            AgentTest agent = FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
             QueueQueryManagerMock queryManagerMock = (QueueQueryManagerMock)Container.Resolve<IQueueQueryManager>();
-            
             FakeAgent sut = new FakeAgent(Container, agent,
                 Container.Resolve<IAgentHelper>(),
                 queryManager: queryManagerMock,

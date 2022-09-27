@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using FluentAssertions;
-using kCura.IntegrationPoints.Agent.Monitoring.SystemReporter;
+using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
 using kCura.IntegrationPoints.Data;
 using Moq;
 using NUnit.Framework;
@@ -49,22 +49,21 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 
 
         [Test]
-        public void SystemHealthReporter_ShouldNotSendFileShareUsage_WhenDiskUsageReporterThrows()
+        public void SystemHealthReporter_FileShareServiceShouldNotBeAvailable_WhenDiskUsageReporterThrows()
         {
             // ARRANGE
             _helperMock.Setup(h => h.GetServicesManager()).Throws(_exception);
             _sut = new SystemHealthReporter(new[] { _fileShareDiskUsageReporterFake });
 
-
             // ACT
             Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult();
 
             // ASSERT
-            result.Should().BeEmpty();
+            result["IsFileShareServiceAccessible"].ShouldBeEquivalentTo(false);
         }
 
         [Test]
-        public void SystemHealthReporter_ShouldNotSendFileShareUsage_WhenDiskUsageReporterReturnsEmptyList()
+        public void SystemHealthReporter_FileShareServiceShouldNotBeAvailable_WhenDiskUsageReporterReturnsEmptyList()
         {
             // ARRANGE
             var emptyResultSet = new FileShareQueryResultSet();
@@ -76,7 +75,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult();
 
             // ASSERT
-            result.Should().BeEmpty();
+            result["IsFileShareServiceAccessible"].ShouldBeEquivalentTo(false);
         }
 
         [Test]

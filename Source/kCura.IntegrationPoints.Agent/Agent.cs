@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Agent
         private const string _RELATIVITY_SYNC_JOB_TYPE = "Relativity.Sync";
 
         protected IWindsorContainer Container;
-        
+
         internal IJobExecutor JobExecutor { get; set; }
 
         public virtual event ExceptionEventHandler JobExecutionError;

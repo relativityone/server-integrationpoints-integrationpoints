@@ -13,5 +13,7 @@ namespace kCura.IntegrationPoints.RelativitySync
         IRelativityServices CreateRelativityServices();
 
         ISyncConfigurationBuilder GetSyncConfigurationBuilder(ISyncContext context);
+
+        Task<int?> TryGetResumedSyncConfigurationIdAsync(int workspaceId, int jobHistoryId);
     }
 }

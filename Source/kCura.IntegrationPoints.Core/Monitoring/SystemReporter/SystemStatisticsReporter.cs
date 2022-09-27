@@ -8,18 +8,18 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Extensions;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
+namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
 {
     public class SystemStatisticsReporter : IHealthStatisticReporter
     {
         private readonly IAPILog _logger;
 
-        private PerformanceCounter _cpuUsageSystemTotal { get; } = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-
         public SystemStatisticsReporter(IAPILog logger)
         {
             _logger = logger;
         }
+
+        private PerformanceCounter _cpuUsageSystemTotal { get; } = new PerformanceCounter("Processor", "% Processor Time", "_Total");
 
         public Task<Dictionary<string, object>> GetStatisticAsync()
         {
@@ -36,8 +36,8 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.SystemReporter
 
             var memoryValues = wmiObject.Get().Cast<ManagementObject>().Select(mo => new
             {
-                FreePhysicalMemory = Double.Parse(mo["FreePhysicalMemory"].ToString()),
-                TotalVisibleMemorySize = Double.Parse(mo["TotalVisibleMemorySize"].ToString())
+                FreePhysicalMemory = double.Parse(mo["FreePhysicalMemory"].ToString()),
+                TotalVisibleMemorySize = double.Parse(mo["TotalVisibleMemorySize"].ToString())
             }).FirstOrDefault();
 
             if (memoryValues != null)
