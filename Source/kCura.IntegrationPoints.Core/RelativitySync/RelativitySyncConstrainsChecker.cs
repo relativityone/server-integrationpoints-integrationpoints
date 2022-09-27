@@ -61,7 +61,8 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
             try
             {
                 IntegrationPoint integrationPoint = GetIntegrationPoint(integrationPointId);
-                ProviderType providerType = GetProviderType(integrationPoint.SourceProvider ?? 0,
+                ProviderType providerType = GetProviderType(
+                    integrationPoint.SourceProvider ?? 0,
                     integrationPoint.DestinationProvider ?? 0);
 
                 if (providerType == ProviderType.Relativity)

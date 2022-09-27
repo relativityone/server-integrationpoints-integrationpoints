@@ -67,9 +67,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
 
             ConfigureMonitoring(container);
 
-            container.Register(Component.For<IRelativitySyncConstrainsChecker>().ImplementedBy<RelativitySyncConstrainsChecker>());
-            container.Register(Component.For<IRelativitySyncAppIntegration>().ImplementedBy<RelativitySyncAppIntegration>());
-
             container.Register(Component.For<IServiceContextHelper>().ImplementedBy<ServiceContextHelperForAgent>().DynamicParameters((k, d) =>
             {
                 IJobContextProvider jobContextProvider = k.Resolve<IJobContextProvider>();

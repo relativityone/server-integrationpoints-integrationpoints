@@ -49,11 +49,14 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
             return new StoppableJobHistoryCollection
             {
-                PendingJobHistory = jobHistoriesByStatus.ContainsKey(JobStatusChoices.JobHistoryPending.Name) 
+                PendingJobHistory = jobHistoriesByStatus.ContainsKey(JobStatusChoices.JobHistoryPending.Name)
                     ? jobHistoriesByStatus[JobStatusChoices.JobHistoryPending.Name]
                     : Array.Empty<JobHistory>(),
                 ProcessingJobHistory = jobHistoriesByStatus.ContainsKey(JobStatusChoices.JobHistoryProcessing.Name)
                     ? jobHistoriesByStatus[JobStatusChoices.JobHistoryProcessing.Name]
+                    : Array.Empty<JobHistory>(),
+                ValidatingJobHistory = jobHistoriesByStatus.ContainsKey(JobStatusChoices.JobHistoryValidating.Name)
+                    ? jobHistoriesByStatus[JobStatusChoices.JobHistoryValidating.Name]
                     : Array.Empty<JobHistory>()
             };
         }
