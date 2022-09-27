@@ -183,8 +183,8 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
                 IIntegrationPointRepository integrationPointRepository =
                     CreateIntegrationPointRepository(objectManager, integrationPointSerializer, secretsRepository, logger);
                 var providerTypeService = new ProviderTypeService(objectManager);
-                //var buttonStateBuilder = new ButtonStateBuilder(providerTypeService, _queueManager, _jobHistoryManager,
-                //    _stateManager, permissionRepository, _permissionValidator, integrationPointRepository);
+                var buttonStateBuilder = new ButtonStateBuilder(providerTypeService, _queueManager, _jobHistoryManager,
+                    _stateManager, permissionRepository, _permissionValidator, integrationPointRepository, false);
 
                 IntegrationPoint integrationPoint = await integrationPointRepository
                     .ReadEncryptedAsync(key.IntegrationPointId)
