@@ -32,8 +32,8 @@ namespace kCura.IntegrationPoints.Core.Services
         private readonly IIntegrationPointRepository _integrationPointRepository;
         private readonly IRelativityObjectManager _relativityObjectManager;
         private readonly IAPILog _logger;
+        private readonly ConcurrentQueue<JobHistoryError> _jobHistoryErrorQueue;
 
-        private ConcurrentQueue<JobHistoryError> _jobHistoryErrorQueue;
         private bool _errorOccurredDuringJob;
 
         public JobHistoryErrorService(IRelativityObjectManager relativityObjectManager, IHelper helper, IIntegrationPointRepository integrationPointRepository)
@@ -59,79 +59,6 @@ namespace kCura.IntegrationPoints.Core.Services
             {
                 ((IBatchReporter)batchReporter).OnJobError += OnJobError;
                 ((IBatchReporter)batchReporter).OnDocumentError += OnRowError;
-            }
-        }
-
-        public void CommitErrors()
-        {
-            try
-            {
-                _logger.LogInformation("Mass-creating item level errors count: {count}", _jobHistoryErrorQueue.Count);
-
-                IReadOnlyList<IReadOnlyList<object>> values = _jobHistoryErrorQueue.Select(x => new List<object>()
-                {
-                    x.Error,
-                    GetErrorStatusChoice(),
-                    GetErrorTypeChoice(x.ErrorType),
-                    Guid.NewGuid().ToString(),
-                    x.SourceUniqueID,
-                    x.StackTrace,
-                    DateTime.UtcNow
-                }).ToList();
-
-                if (_jobHistoryErrorQueue.Any())
-                {
-                    _errorOccurredDuringJob = true;
-
-                    if (IntegrationPoint != null)
-                    {
-                        IntegrationPoint.HasErrors = true;
-                    }
-
-                    MassCreateRequest request = new MassCreateRequest
-                    {
-                        ObjectType = GetObjectTypeRef(),
-                        ParentObject = GetParentObject(_jobHistoryErrorQueue.FirstOrDefault()?.JobHistory ?? 0),
-                        Fields = GetFields(),
-                        ValueLists = values
-                    };
-
-                    MassCreateResult result = _relativityObjectManager.MassCreateAsync(request).GetAwaiter().GetResult();
-                    if (!result.Success)
-                    {
-                        throw new IntegrationPointsException($"Mass creation of item level errors was not successful. Message: {result.Message}");
-                    }
-
-                    _logger.LogInformation("Successfully mass-created item level errors count: {count}", _jobHistoryErrorQueue.Count);
-                }
-
-                if ((IntegrationPoint != null && !_errorOccurredDuringJob) || (JobStopManager?.IsStopRequested() == true))
-                {
-                    IntegrationPoint.HasErrors = false;
-                }
-
-                _logger.LogInformation("Successfully mass-created item level errors count: {count}", _jobHistoryErrorQueue.Count);
-            }
-            catch (Exception ex)
-            {
-                // if failed to commit, throw all buffered errors as part of an exception
-                List<string> errorList = _jobHistoryErrorQueue.Select(x =>
-                    x.ErrorType.Name.Equals(ErrorTypeChoices.JobHistoryErrorJob.Name)
-                        ? $"{x.TimestampUTC} Type: {x.ErrorType.Name}    Error: {x.Error}"
-                        : $"{x.TimestampUTC} Type: {x.ErrorType.Name}    Identifier: {x.SourceUniqueID}    Error: {x.Error}").ToList();
-
-                string allErrors = string.Join(Environment.NewLine, errorList.ToArray());
-                allErrors += string.Format("{0}{0}Reason for exception: {1}", Environment.NewLine, ex.FlattenErrorMessagesWithStackTrace());
-
-                LogCommittingErrorsFailed(ex, allErrors);
-
-                _logger.LogError("Could not commit Job History Errors. These are uncommitted errors: {allErrors}", allErrors);
-                throw new Exception("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine + allErrors);
-            }
-            finally
-            {
-                _jobHistoryErrorQueue = new ConcurrentQueue<JobHistoryError>();
-                UpdateIntegrationPoint();
             }
         }
 
@@ -188,6 +115,87 @@ namespace kCura.IntegrationPoints.Core.Services
             }
         }
 
+        public void CommitErrors()
+        {
+            List<JobHistoryError> createdJobHistoryErrors = new List<JobHistoryError>();
+            try
+            {
+                _logger.LogInformation("Mass-creating item level errors count: {count}", _jobHistoryErrorQueue.Count);
+
+                if (_jobHistoryErrorQueue.Any())
+                {
+                    _errorOccurredDuringJob = true;
+
+                    if (IntegrationPoint != null)
+                    {
+                        IntegrationPoint.HasErrors = true;
+                    }
+
+                    List<List<object>> values = new List<List<object>>();
+                    for (int i = 0; i < _jobHistoryErrorQueue.Count; i++)
+                    {
+                        if (_jobHistoryErrorQueue.TryDequeue(out JobHistoryError jobHistoryError))
+                        {
+                            values.Add(new List<object>
+                            {
+                                jobHistoryError.Error,
+                                GetErrorStatusChoice(),
+                                GetErrorTypeChoice(jobHistoryError.ErrorType),
+                                Guid.NewGuid().ToString(),
+                                jobHistoryError.SourceUniqueID,
+                                jobHistoryError.StackTrace,
+                                DateTime.UtcNow
+                            });
+                            createdJobHistoryErrors.Add(jobHistoryError);
+                        }
+                    }
+
+                    MassCreateRequest request = new MassCreateRequest
+                    {
+                        ObjectType = GetObjectTypeRef(),
+                        ParentObject = GetParentObject(createdJobHistoryErrors.FirstOrDefault()?.JobHistory ?? 0),
+                        Fields = GetFields(),
+                        ValueLists = values
+                    };
+
+                    MassCreateResult result = _relativityObjectManager.MassCreateAsync(request).GetAwaiter().GetResult();
+                    if (!result.Success)
+                    {
+                        throw new IntegrationPointsException($"Mass creation of item level errors was not successful. Message: {result.Message}");
+                    }
+
+                    _logger.LogInformation("Successfully mass-created item level errors count: {count}", createdJobHistoryErrors.Count);
+                }
+
+                if ((IntegrationPoint != null && !_errorOccurredDuringJob) || (JobStopManager?.IsStopRequested() == true))
+                {
+                    IntegrationPoint.HasErrors = false;
+                }
+
+                _logger.LogInformation("Successfully mass-created item level errors count: {count}", createdJobHistoryErrors.Count);
+            }
+            catch (Exception ex)
+            {
+                // if failed to commit, throw all buffered errors as part of an exception
+                List<string> errorList = createdJobHistoryErrors.Select(x =>
+                    x.ErrorType.Name.Equals(ErrorTypeChoices.JobHistoryErrorJob.Name)
+                        ? $"{x.TimestampUTC} Type: {x.ErrorType.Name}    Error: {x.Error}"
+                        : $"{x.TimestampUTC} Type: {x.ErrorType.Name}    Identifier: {x.SourceUniqueID}    Error: {x.Error}").ToList();
+
+                string allErrors = string.Join(Environment.NewLine, errorList.ToArray());
+                allErrors += string.Format("{0}{0}Reason for exception: {1}", Environment.NewLine, ex.FlattenErrorMessagesWithStackTrace());
+
+                LogCommittingErrorsFailed(ex, allErrors);
+
+                _logger.LogError("Could not commit Job History Errors. These are uncommitted errors: {allErrors}", allErrors);
+                throw new Exception("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine + allErrors);
+            }
+            finally
+            {
+                UpdateIntegrationPoint();
+            }
+        }
+
         private ObjectTypeRef GetObjectTypeRef()
         {
             return new ObjectTypeRef { Guid = _jobHistoryErrorObject };
@@ -214,7 +222,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
         private ChoiceRef GetErrorStatusChoice()
         {
-            var errorStatusChoice = new ChoiceRef
+            ChoiceRef errorStatusChoice = new ChoiceRef
             {
                 Guid = ErrorStatusChoices.JobHistoryErrorNewGuid
             };
@@ -223,7 +231,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
         private ChoiceRef GetErrorTypeChoice(global::Relativity.Services.Choice.ChoiceRef errorType)
         {
-            var errorTypeChoice = new ChoiceRef
+            ChoiceRef errorTypeChoice = new ChoiceRef
             {
                 Guid = errorType.Guids.Single()
             };
