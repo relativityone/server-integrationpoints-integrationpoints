@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common.Interfaces;
@@ -61,7 +62,8 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
             try
             {
                 IntegrationPoint integrationPoint = GetIntegrationPoint(integrationPointId);
-                ProviderType providerType = GetProviderType(integrationPoint.SourceProvider ?? 0,
+                ProviderType providerType = GetProviderType(
+                    integrationPoint.SourceProvider ?? 0,
                     integrationPoint.DestinationProvider ?? 0);
 
                 if (providerType == ProviderType.Relativity)
@@ -92,13 +94,15 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
         {
             try
             {
-                IntegrationPoint integrationPoint = _relativityObjectManager.Read<IntegrationPoint>(integrationPointId, new[]
+                IEnumerable<Guid> integrationPointFields = new[]
                 {
                     IntegrationPointFieldGuids.SourceProviderGuid,
                     IntegrationPointFieldGuids.DestinationProviderGuid,
                     IntegrationPointFieldGuids.SourceConfigurationGuid,
                     IntegrationPointFieldGuids.DestinationConfigurationGuid
-                });
+                };
+
+                IntegrationPoint integrationPoint = _relativityObjectManager.Read<IntegrationPoint>(integrationPointId, integrationPointFields);
 
                 _logger.LogInformation("Integration Point with Id: {integrationPointId} retrieved successfully.", integrationPointId);
                 return integrationPoint;
@@ -117,7 +121,9 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
                 ProviderType providerType = _providerTypeService.GetProviderType(sourceProviderId, destinationProviderId);
                 _logger.LogInformation(
                     "ProviderType for given providers has been determined as: {providerType}. SourceProviderId: {sourceProviderId}; DestinationProviderId: {destinationProviderId}",
-                    providerType, sourceProviderId, destinationProviderId);
+                    providerType,
+                    sourceProviderId,
+                    destinationProviderId);
                 return providerType;
             }
             catch (Exception ex)
@@ -148,11 +154,14 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
 
         private bool ConfigurationAllowsUsingRelativitySync(SourceConfiguration sourceConfiguration, ImportSettings importSettings)
         {
-            _logger.LogInformation("Checking if configurations allow using RelativitySync. " +
+            _logger.LogInformation(
+                "Checking if configurations allow using RelativitySync. " +
                     "SourceConfiguration.TypeOfExport: {typeOfExport}; " +
                     "DestinationConfiguration.ImageImport: {imageImport}; " +
                     "DestinationConfiguration.ProductionImport: {productionImport}",
-                sourceConfiguration.TypeOfExport, importSettings.ImageImport, importSettings.ProductionImport);
+                sourceConfiguration.TypeOfExport,
+                importSettings.ImageImport,
+                importSettings.ProductionImport);
 
             bool isSyncDocumentFlow = sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch && !importSettings.ProductionImport;
             bool isSyncNonDocumentFlow = IsNonDocumentFlow(importSettings);

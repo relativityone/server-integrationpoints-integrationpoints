@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
@@ -20,12 +24,17 @@ using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
 {
-    [TestFixture, Category("Unit")]
+    [TestFixture]
+    [Category("Unit")]
     public class RelativitySyncConstrainsCheckerTests
     {
-        private Mock<IIntegrationPointService> _integrationPointService;
+        private const int _INTEGRATION_POINT_ID = 123;
+        private const int _SOURCE_PROVIDER_ID = 987;
+        private const int _DESTINATION_PROVIDER_ID = 789;
+        private const string _SOURCE_CONFIGURATION = "Source Configuration";
+        private const string _DESTINATION_CONFIGURATION = "Destination Configuration";
+
         private Mock<IProviderTypeService> _providerTypeService;
-        private Mock<IJobHistoryService> _jobHistoryService;
         private Mock<IRelativityObjectManager> _relativityObjectManager;
         private Mock<IToggleProvider> _toggleProvider;
         private Job _job;
@@ -35,19 +44,28 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
         private ImportSettings _importSettings;
         private TaskParameters _taskParameters;
 
-        private readonly int _integrationPointId = 123;
-        private readonly int _sourceProviderId = 987;
-        private readonly int _destinationProviderId = 789;
-        private readonly string _sourceConfigurationString = "Source Configuration";
-        private readonly string _destinationConfigurationString = "Destination Configuration";
-
-        private RelativitySyncConstrainsChecker _instance;
+        private RelativitySyncConstrainsChecker _sut;
 
         [SetUp]
         public void SetUp()
         {
-            _job = JobHelper.GetJob(1, 2, 3, 4, 5, 6, _integrationPointId, TaskType.ExportWorker,
-                DateTime.MinValue, DateTime.MinValue, string.Empty, 1, DateTime.MinValue, 2, "", null);
+            _job = JobHelper.GetJob(
+                jobId: 1,
+                rootJobId: 2,
+                parentJobId: 3,
+                agentTypeId: 4,
+                lockedByAgentId: 5,
+                workspaceId: 6,
+                relatedObjectArtifactId: _INTEGRATION_POINT_ID,
+                taskType: TaskType.ExportWorker,
+                nextRunTime: DateTime.MinValue,
+                lastRunTime: DateTime.MinValue,
+                jobDetails: string.Empty,
+                jobFlags: 1,
+                submittedDate: DateTime.MinValue,
+                submittedBy: 2,
+                scheduleRuleType: string.Empty,
+                serializedScheduleRule: null);
 
             _sourceConfiguration = new SourceConfiguration { TypeOfExport = SourceConfiguration.ExportType.SavedSearch };
 
@@ -62,52 +80,60 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
 
             var integrationPoint = new Data.IntegrationPoint
             {
-                SourceConfiguration = _sourceConfigurationString,
-                DestinationConfiguration = _destinationConfigurationString,
-                SourceProvider = _sourceProviderId,
-                DestinationProvider = _destinationProviderId,
+                SourceConfiguration = _SOURCE_CONFIGURATION,
+                DestinationConfiguration = _DESTINATION_CONFIGURATION,
+                SourceProvider = _SOURCE_PROVIDER_ID,
+                DestinationProvider = _DESTINATION_PROVIDER_ID,
             };
 
             var log = new Mock<IAPILog>();
 
-            _integrationPointService = new Mock<IIntegrationPointService>();
-            _integrationPointService.Setup(s => s.ReadIntegrationPoint(_integrationPointId)).Returns(integrationPoint);
-
-
             _configurationDeserializer = new Mock<ISerializer>();
-            _configurationDeserializer.Setup(d => d.Deserialize<SourceConfiguration>(_sourceConfigurationString))
+            _configurationDeserializer.Setup(d => d.Deserialize<SourceConfiguration>(_SOURCE_CONFIGURATION))
                 .Returns(_sourceConfiguration);
-            _configurationDeserializer.Setup(d => d.Deserialize<ImportSettings>(_destinationConfigurationString))
+            _configurationDeserializer.Setup(d => d.Deserialize<ImportSettings>(_DESTINATION_CONFIGURATION))
                 .Returns(_importSettings);
             _configurationDeserializer.Setup(x => x.Deserialize<TaskParameters>(It.IsAny<string>()))
                 .Returns(_taskParameters);
 
+            _relativityObjectManager = new Mock<IRelativityObjectManager>();
+            _relativityObjectManager.Setup(x => x.Read<Data.IntegrationPoint>(
+                    _INTEGRATION_POINT_ID,
+                    It.IsAny<IEnumerable<Guid>>(),
+                    It.IsAny<ExecutionIdentity>()))
+                .Returns(new Data.IntegrationPoint
+                {
+                    ArtifactId = _INTEGRATION_POINT_ID,
+                    SourceConfiguration = _SOURCE_CONFIGURATION,
+                    DestinationConfiguration = _DESTINATION_CONFIGURATION,
+                    SourceProvider = _SOURCE_PROVIDER_ID,
+                    DestinationProvider = _DESTINATION_PROVIDER_ID,
+                });
+
+            _toggleProvider = new Mock<IToggleProvider>();
+            _toggleProvider.Setup(x => x.IsEnabledAsync<EnableRelativitySyncApplicationToggle>())
+                .ReturnsAsync(false);
+
             _providerTypeService = new Mock<IProviderTypeService>();
-            _providerTypeService.Setup(s => s.GetProviderType(_sourceProviderId, _destinationProviderId))
+            _providerTypeService.Setup(s => s.GetProviderType(_SOURCE_PROVIDER_ID, _DESTINATION_PROVIDER_ID))
                 .Returns(ProviderType.Relativity);
 
-            _jobHistoryService = new Mock<IJobHistoryService>();
-
-            _instance = new RelativitySyncConstrainsChecker(_relativityObjectManager.Object, _providerTypeService.Object, _toggleProvider.Object, _configurationDeserializer.Object, log.Object);
+            _sut = new RelativitySyncConstrainsChecker(
+                _relativityObjectManager.Object,
+                _providerTypeService.Object,
+                _toggleProvider.Object,
+                _configurationDeserializer.Object,
+                log.Object);
         }
 
         [Test]
-        public void ItShouldAllowUsingSyncWorkflow()
+        public void ShouldUseRelativitySync_ShouldAllowUsingSyncWorkflow()
         {
-            JobHistory jobHistory = new JobHistory()
-            {
-                JobType = JobTypeChoices.JobHistoryRun
-            };
-            _jobHistoryService.Setup(x => x.GetRdo(It.IsAny<Guid>())).Returns(jobHistory);
-            _providerTypeService.Setup(s => s.GetProviderType(_sourceProviderId, _destinationProviderId))
-                .Returns(ProviderType.Relativity);
-            _sourceConfiguration.TypeOfExport = SourceConfiguration.ExportType.SavedSearch;
-            _importSettings.ImageImport = false;
-            _importSettings.ProductionImport = false;
+            // Act
+            bool result = _sut.ShouldUseRelativitySync(_INTEGRATION_POINT_ID);
 
-            bool result = _instance.ShouldUseRelativitySync(_integrationPointId);
-
-            Assert.IsTrue(result);
+            // Assert
+            result.Should().BeTrue();
         }
 
         [TestCase(SourceConfiguration.ExportType.ProductionSet, false, false, ExpectedResult = false)]
@@ -128,7 +154,7 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
             _importSettings.ProductionImport = productionImport;
 
             // Act
-            bool result = _instance.ShouldUseRelativitySync(_integrationPointId);
+            bool result = _sut.ShouldUseRelativitySync(_INTEGRATION_POINT_ID);
 
             // Assert
             return result;
@@ -139,78 +165,102 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
         [TestCase(ProviderType.LDAP)]
         [TestCase(ProviderType.LoadFile)]
         [TestCase(ProviderType.Other)]
-        public void ItShouldNotAllowUsingSyncWorkflowWithNonRelativityProviderType(ProviderType nonRelativityProviderType)
+        public void ShouldUseRelativitySync_ShouldNotAllowUsingSyncWorkflow_WithNonRelativityProviderType(ProviderType providerType)
         {
-            _providerTypeService.Setup(s => s.GetProviderType(_sourceProviderId, _destinationProviderId))
-                .Returns(nonRelativityProviderType);
+            // Arrange
+            _providerTypeService.Setup(s => s.GetProviderType(_SOURCE_PROVIDER_ID, _DESTINATION_PROVIDER_ID))
+                .Returns(providerType);
 
-            bool result = _instance.ShouldUseRelativitySync(_integrationPointId);
+            // Act
+            bool result = _sut.ShouldUseRelativitySync(_INTEGRATION_POINT_ID);
 
-            Assert.IsFalse(result);
+            // Assert
+            result.Should().BeFalse();
         }
 
         [Test]
-        public void ItShouldNotAllowUsingSyncWorkflowWhenIntegrationPointServiceThrows()
+        public void ShouldUseRelativitySync_ShouldNotAllowUsingSyncWorkflow_WhenIntegrationPointReadThrows()
         {
-            _integrationPointService.Setup(s => s.ReadIntegrationPoint(_integrationPointId)).Throws<Exception>();
+            // Arrange
+            _relativityObjectManager.Setup(x => x.Read<Data.IntegrationPoint>(
+                    _INTEGRATION_POINT_ID,
+                    It.IsAny<IEnumerable<Guid>>(),
+                    It.IsAny<ExecutionIdentity>()))
+                .Throws<Exception>();
 
-            bool result = _instance.ShouldUseRelativitySync(_integrationPointId);
+            // Act
+            bool result = _sut.ShouldUseRelativitySync(_INTEGRATION_POINT_ID);
 
-            Assert.IsFalse(result);
+            // Assert
+            result.Should().BeFalse();
         }
 
         [Test]
-        public void ItShouldNotAllowUsingSyncWorkflowWhenProviderTypeServiceThrows()
+        public void ShouldUseRelativitySync_ShouldNotAllowUsingSyncWorkflow_WhenProviderTypeServiceThrows()
         {
-            _providerTypeService.Setup(s => s.GetProviderType(_sourceProviderId, _destinationProviderId)).Throws<Exception>();
+            // Arrange
+            _providerTypeService.Setup(s => s.GetProviderType(_SOURCE_PROVIDER_ID, _DESTINATION_PROVIDER_ID))
+                .Throws<Exception>();
 
-            bool result = _instance.ShouldUseRelativitySync(_integrationPointId);
+            // Act
+            bool result = _sut.ShouldUseRelativitySync(_INTEGRATION_POINT_ID);
 
-            Assert.IsFalse(result);
+            // Assert
+            result.Should().BeFalse();
         }
 
         [Test]
-        public void ItShouldNotAllowUsingSyncWorkflowWhenConfigurationDeserializerForSourceConfigThrows()
+        public void ShouldUseRelativitySync_ShouldNotAllowUsingSyncWorkflow_WhenConfigurationDeserializerForSourceConfigThrows()
         {
-            _configurationDeserializer.Setup(s => s.Deserialize<SourceConfiguration>(_sourceConfigurationString)).Throws<Exception>();
+            // Arrange
+            _configurationDeserializer.Setup(s => s.Deserialize<SourceConfiguration>(_SOURCE_CONFIGURATION)).Throws<Exception>();
 
-            bool result = _instance.ShouldUseRelativitySync(_integrationPointId);
+            // Act
+            bool result = _sut.ShouldUseRelativitySync(_INTEGRATION_POINT_ID);
 
-            Assert.IsFalse(result);
+            // Assert
+            result.Should().BeFalse();
         }
 
         [Test]
-        public void ItShouldNotAllowUsingSyncWorkflowWhenConfigurationDeserializerForImportSettingsThrows()
+        public void ShouldUseRelativitySync_ShouldNotAllowUsingSyncWorkflow_WhenConfigurationDeserializerForImportSettingsThrows()
         {
-            _configurationDeserializer.Setup(s => s.Deserialize<ImportSettings>(_destinationConfigurationString)).Throws<Exception>();
+            // Arrange
+            _configurationDeserializer.Setup(s => s.Deserialize<ImportSettings>(_DESTINATION_CONFIGURATION)).Throws<Exception>();
 
-            bool result = _instance.ShouldUseRelativitySync(_integrationPointId);
+            // Act
+            bool result = _sut.ShouldUseRelativitySync(_INTEGRATION_POINT_ID);
 
-            Assert.IsFalse(result);
+            // Assert
+            result.Should().BeFalse();
         }
 
         [Test]
-        public void ItShouldAllowUsingSyncWorkflowWhenRunningScheduledJob()
+        public void ShouldUseRelativitySync_ShouldAllowUsingSyncWorkflow_WhenRunningScheduledJob()
         {
+            // Arrange
             _job.ScheduleRuleType = "scheduled rule";
 
-            bool result = _instance.ShouldUseRelativitySync(_integrationPointId);
+            // Act
+            bool result = _sut.ShouldUseRelativitySync(_INTEGRATION_POINT_ID);
 
-            Assert.IsTrue(result);
+            // Assert
+            result.Should().BeTrue();
         }
 
-        [Test]
-        public void ItShouldAllowUsingSyncWorkflowWhenRetryingJob()
+        [TestCase(false, ExpectedResult = false)]
+        [TestCase(true, ExpectedResult = true)]
+        public async Task<bool> ShouldUseRelativitySyncAppAsync_ShouldDetermineSyncWorkflowThroughSyncRAPUsage(bool toggleValue)
         {
-            JobHistory jobHistory = new JobHistory()
-            {
-                JobType = JobTypeChoices.JobHistoryRetryErrors
-            };
-            _jobHistoryService.Setup(x => x.GetRdo(It.IsAny<Guid>())).Returns(jobHistory);
+            // Arrange
+            _toggleProvider.Setup(x => x.IsEnabledAsync<EnableRelativitySyncApplicationToggle>())
+                .ReturnsAsync(toggleValue);
 
-            bool result = _instance.ShouldUseRelativitySync(_integrationPointId);
+            // Act
+            bool result = await _sut.ShouldUseRelativitySyncAppAsync(_INTEGRATION_POINT_ID).ConfigureAwait(false);
 
-            Assert.IsTrue(result);
+            // Assert
+            return result;
         }
     }
 }
