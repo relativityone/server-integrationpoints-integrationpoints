@@ -5,6 +5,25 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 {
     public class ProxyMock
     {
+        public ProxyMock(TestContext context)
+        {
+            ObjectManager = new ObjectManagerStub();
+            ObjectTypeManager = new ObjectTypeManagerStub();
+            WorkspaceManager = new WorkspaceManagerStub();
+            PermissionManager = new PermissionManagerStub();
+            InstanceSettingManager = new InstanceSettingManagerStub(context);
+            GroupManager = new GroupManagerStub(context.User);
+            ArtifactGuidManager = new ArtifactGuidManagerStub();
+            ErrorManager = new ErrorManagerStub();
+            ChoiceQueryManager = new ChoiceQueryManagerStub();
+            APMManager = new APMManagerStub();
+            MetricsManager = new MetricsManagerStub();
+            KeywordSearchManager = new KeywordSearchManagerStub();
+            ViewManager = new ViewManagerStub();
+            FileShareServerManager = new FileShareServerManagerStub();
+            PingService = new PingServiceStub();
+        }
+
         public ObjectManagerStub ObjectManager { get; }
 
         public ObjectTypeManagerStub ObjectTypeManager { get; }
@@ -31,22 +50,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
 
         public ViewManagerStub ViewManager { get; set; }
 
-        public ProxyMock(TestContext context)
-        {
-            ObjectManager = new ObjectManagerStub();
-            ObjectTypeManager = new ObjectTypeManagerStub();
-            WorkspaceManager = new WorkspaceManagerStub();
-            PermissionManager = new PermissionManagerStub();
-            InstanceSettingManager = new InstanceSettingManagerStub(context);
-            GroupManager = new GroupManagerStub(context.User);
-            ArtifactGuidManager = new ArtifactGuidManagerStub();
-            ErrorManager = new ErrorManagerStub();
-            ChoiceQueryManager = new ChoiceQueryManagerStub();
-            APMManager = new APMManagerStub();
-            MetricsManager = new MetricsManagerStub();
-            KeywordSearchManager = new KeywordSearchManagerStub();
-            ViewManager = new ViewManagerStub();
-        }
+        public FileShareServerManagerStub FileShareServerManager { get; set; }
+
+        public PingServiceStub PingService { get; set; }
 
         public void Setup(RelativityInstanceTest relativity)
         {
@@ -60,6 +66,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             MetricsManager.Setup(relativity);
             KeywordSearchManager.Setup(relativity);
             ViewManager.Setup(relativity);
+            FileShareServerManager.Setup(relativity);
+            PingService.Setup(relativity);
 
             SetupFixedMocks();
         }
@@ -78,6 +86,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             MetricsManager.SetupMetricsManagerStub();
             KeywordSearchManager.SetupKeywordSearchManagerStub();
             ViewManager.SetupViewManagerStub();
+            FileShareServerManager.SetupFileShareServerManagerStub();
+            PingService.SetupPingService();
         }
     }
 }

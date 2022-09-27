@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Castle.Windsor;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Config;
+using kCura.IntegrationPoints.Core.Checkers;
+using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
@@ -23,6 +24,21 @@ namespace kCura.ScheduleQueue.AgentBase
 {
     public abstract class ScheduleQueueAgentBase : Agent.AgentBase
     {
+        private const int _MAX_MESSAGE_LENGTH = 10000;
+
+        private static readonly Dictionary<LogCategory, int> _logCategoryToLogLevelMapping = new Dictionary<LogCategory, int>
+        {
+            [LogCategory.Debug] = 20,
+            [LogCategory.Info] = 10
+        };
+
+        private readonly Guid _agentGuid;
+        private readonly Lazy<int> _agentId;
+        private readonly Lazy<IAPILog> _loggerLazy;
+        private readonly Guid _agentInstanceGuid;
+
+        private readonly bool _shouldReadJobOnce = false; // Only for testing purposes. DO NOT MODIFY IT!
+
         private IAgentService _agentService;
         private IQueueQueryManager _queueManager;
         private Lazy<IKubernetesMode> _kubernetesModeLazy;
@@ -34,31 +50,6 @@ namespace kCura.ScheduleQueue.AgentBase
         private IAPM _apm;
 
         private DateTime _agentStartTime;
-
-        private const int _MAX_MESSAGE_LENGTH = 10000;
-
-        private readonly Guid _agentGuid;
-        private readonly Lazy<int> _agentId;
-        private readonly Lazy<IAPILog> _loggerLazy;
-        private readonly Guid _agentInstanceGuid;
-
-        private readonly bool _shouldReadJobOnce = false; //Only for testing purposes. DO NOT MODIFY IT!
-
-        public Guid AgentInstanceGuid => _agentInstanceGuid;
-
-        protected Func<IEnumerable<int>> GetResourceGroupIDsFunc { get; set; }
-
-        private bool IsKubernetesMode => _kubernetesModeLazy.Value.IsEnabled();
-
-        private static readonly Dictionary<LogCategory, int> _logCategoryToLogLevelMapping = new Dictionary<LogCategory, int>
-        {
-            [LogCategory.Debug] = 20,
-            [LogCategory.Info] = 10
-        };
-
-        protected virtual IAPILog Logger => _loggerLazy.Value;
-
-        protected IJobService JobService => _jobService;
 
         protected ScheduleQueueAgentBase(
             Guid agentGuid,
@@ -97,7 +88,17 @@ namespace kCura.ScheduleQueue.AgentBase
             _agentInstanceGuid = Guid.NewGuid();
         }
 
+        public Guid AgentInstanceGuid => _agentInstanceGuid;
+
         public IScheduleRuleFactory ScheduleRuleFactory { get; }
+
+        protected Func<IEnumerable<int>> GetResourceGroupIDsFunc { get; set; }
+
+        protected virtual IAPILog Logger => _loggerLazy.Value;
+
+        protected IJobService JobService => _jobService;
+
+        private bool IsKubernetesMode => _kubernetesModeLazy.Value.IsEnabled();
 
         public sealed override void Execute()
         {
@@ -192,6 +193,50 @@ namespace kCura.ScheduleQueue.AgentBase
             _agentStartTime = _dateTime.UtcNow;
         }
 
+        protected virtual IEnumerable<int> GetListOfResourceGroupIDs() // this method was added for unit testing purpose
+        {
+            return IsKubernetesMode ? Array.Empty<int>() : GetResourceGroupIDsFunc();
+        }
+
+        protected abstract TaskResult ProcessJob(Job job);
+
+        protected void NotifyAgentTab(LogCategory category, string message, string detailmessage = null)
+        {
+            string msg = message.Substring(0, Math.Min(message.Length, _MAX_MESSAGE_LENGTH));
+            switch (category)
+            {
+                case LogCategory.Debug:
+                    RaiseMessageNoLogging(msg, _logCategoryToLogLevelMapping[LogCategory.Debug]);
+                    break;
+                case LogCategory.Info:
+                    RaiseMessage(msg, _logCategoryToLogLevelMapping[LogCategory.Info]);
+                    break;
+                case LogCategory.Warn:
+                    RaiseWarning(msg);
+                    break;
+                case LogCategory.Exception:
+                    RaiseError(msg, detailmessage);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(category));
+            }
+        }
+
+        protected abstract void LogJobState(Job job, JobLogState state, Exception exception = null, string details = null);
+
+        protected int GetAgentID()
+        {
+            if (IsKubernetesMode)
+            {
+                // we can omit some less relevant bits representing years (https://stackoverflow.com/a/2695525/1579824)
+                return Math.Abs((int)(_dateTime.UtcNow.Ticks >> 23));
+            }
+            else
+            {
+                return AgentID;
+            }
+        }
+
         private void CleanupInvalidJobs()
         {
             try
@@ -199,19 +244,26 @@ namespace kCura.ScheduleQueue.AgentBase
                 DateTime utcNow = _dateTime.UtcNow;
                 TimeSpan transientStateJobTimeout = _config.TransientStateJobTimeout;
 
-                Logger.LogInformation("Checking if jobs are in transient state: DateTimeUtc - {dateTimeNow}, TransientStateJobTimeout {transientStateJobTimeout}",
-                    utcNow, transientStateJobTimeout);
+                Logger.LogInformation(
+                    "Checking if jobs are in transient state: DateTimeUtc - {dateTimeNow}, TransientStateJobTimeout {transientStateJobTimeout}",
+                    utcNow,
+                    transientStateJobTimeout);
 
                 IEnumerable<Job> transientStateJobs = _jobService.GetAllScheduledJobs()
                     .Where(x => (x.Heartbeat != null && utcNow.Subtract(x.Heartbeat.Value) > transientStateJobTimeout) || x.IsBlocked());
                 foreach (var job in transientStateJobs)
                 {
-                    Logger.LogError("Job {jobId}, will be failed due timeout. " +
+                    Logger.LogError(
+                        "Job {jobId}, will be failed due timeout. " +
                             "LockedByAgent: {lockedByAgent}, " +
                             "StopState: {stopState}, " +
                             "Last Hearbeat: {heartbeat}, " +
                             "DateTimeUtc {utcNow}",
-                        job.JobId, job.LockedByAgentID, job.StopState, job.Heartbeat, utcNow);
+                        job.JobId,
+                        job.LockedByAgentID,
+                        job.StopState,
+                        job.Heartbeat,
+                        utcNow);
 
                     SendJobInTransientSateMetric(job);
 
@@ -244,9 +296,33 @@ namespace kCura.ScheduleQueue.AgentBase
 
         private void PreExecute()
         {
+            CheckServicesAccess();
             Initialize();
             InitializeManagerConfigSettingsFactory();
             CheckQueueTable();
+        }
+
+        private void CheckServicesAccess()
+        {
+            WorkspaceDBContext workspaceDbContext = new WorkspaceDBContext(Helper.GetDBContext(-1));
+            DatabasePingReporter dbPingReporter = new DatabasePingReporter(workspaceDbContext, Logger);
+            KeplerPingReporter keplerPingReporter = new KeplerPingReporter(Helper, Logger);
+            FileShareDiskUsageReporter fileShareDiskUsageReporter = new FileShareDiskUsageReporter(Helper, Logger);
+            ServicesAccessChecker servicesAccessChecker = new ServicesAccessChecker(dbPingReporter, keplerPingReporter, fileShareDiskUsageReporter, Logger);
+            bool areServicesHealthy = servicesAccessChecker.AreServicesHealthyAsync().GetAwaiter().GetResult();
+
+            if (!areServicesHealthy)
+            {
+                Logger.LogError("Not all Services are accessible by the Agent; _agentInstanceGuid - {_agentInstanceGuid}", _agentInstanceGuid);
+                if (_kubernetesModeLazy.Value.IsEnabled())
+                {
+                    Environment.Exit(1);
+                }
+
+                throw new Exception($"Not all Services are accessible by the Agent; _agentInstanceGuid - {_agentInstanceGuid}");
+            }
+
+            Logger.LogInformation("All services are Healthy. Agent can proceed with running job.");
         }
 
         private void CompleteExecution()
@@ -266,11 +342,6 @@ namespace kCura.ScheduleQueue.AgentBase
             NotifyAgentTab(LogCategory.Debug, "Check Schedule Agent Queue table exists");
 
             _agentService.InstallQueueTable();
-        }
-
-        protected virtual IEnumerable<int> GetListOfResourceGroupIDs() // this method was added for unit testing purpose
-        {
-            return IsKubernetesMode ? Array.Empty<int>() : GetResourceGroupIDsFunc();
         }
 
         private void ProcessQueueJobs()
@@ -317,12 +388,15 @@ namespace kCura.ScheduleQueue.AgentBase
                         if (jobResult.Status == TaskStatusEnum.DrainStopped)
                         {
                             Logger.LogInformation(
-                                "Job {jobId} has been drain-stopped. No other jobs will be picked up.", nextJob.JobId);
+                                "Job {jobId} has been drain-stopped. No other jobs will be picked up.",
+                                nextJob.JobId);
                             _jobService.FinalizeDrainStoppedJob(nextJob);
                             break;
                         }
 
-                        Logger.LogInformation("Job {jobId} has been processed with status {status}", nextJob.JobId,
+                        Logger.LogInformation(
+                            "Job {jobId} has been processed with status {status}",
+                            nextJob.JobId,
                             jobResult.Status.ToString());
                         FinalizeJobExecution(nextJob, jobResult);
                     }
@@ -340,7 +414,9 @@ namespace kCura.ScheduleQueue.AgentBase
                             Logger.LogInformation(
                                "Integration Points Agent reached maximum lifetime value. Agent execution will be finished: " +
                                "UTCNow - {utcNow}, AgentStartTime - {agentStartTime}, AgentMaximumLifetime - {agentMaximumLifetime}",
-                               utcNow, _agentStartTime, agentMaximumLifetime);
+                               utcNow,
+                               _agentStartTime,
+                               agentMaximumLifetime);
 
                             break;
                         }
@@ -405,10 +481,7 @@ namespace kCura.ScheduleQueue.AgentBase
                 Logger.LogError(e, "Error occurred during Queue Job Validation. Return job as valid and try to run.");
                 return PreValidationResult.Success;
             }
-
         }
-
-        protected abstract TaskResult ProcessJob(Job job);
 
         private void FinalizeJobExecution(Job job, TaskResult taskResult)
         {
@@ -458,43 +531,6 @@ namespace kCura.ScheduleQueue.AgentBase
             _jobService.CleanupJobQueueTable();
         }
 
-        protected void NotifyAgentTab(LogCategory category, string message, string detailmessage = null)
-        {
-            string msg = message.Substring(0, Math.Min(message.Length, _MAX_MESSAGE_LENGTH));
-            switch (category)
-            {
-                case LogCategory.Debug:
-                    RaiseMessageNoLogging(msg, _logCategoryToLogLevelMapping[LogCategory.Debug]);
-                    break;
-                case LogCategory.Info:
-                    RaiseMessage(msg, _logCategoryToLogLevelMapping[LogCategory.Info]);
-                    break;
-                case LogCategory.Warn:
-                    RaiseWarning(msg);
-                    break;
-                case LogCategory.Exception:
-                    RaiseError(msg, detailmessage);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(category));
-            }
-        }
-
-        protected abstract void LogJobState(Job job, JobLogState state, Exception exception = null, string details = null);
-
-        protected int GetAgentID()
-        {
-            if (IsKubernetesMode)
-            {
-                // we can omit some less relevant bits representing years (https://stackoverflow.com/a/2695525/1579824)
-                return Math.Abs((int)(_dateTime.UtcNow.Ticks >> 23));
-            }
-            else
-            {
-                return AgentID;
-            }
-        }
-
         private IAPILog InitializeLogger()
         {
             if (Helper == null)
@@ -506,7 +542,7 @@ namespace kCura.ScheduleQueue.AgentBase
             return logger;
         }
 
-        #region Logging        
+        #region Logging
 
         private void LogExecuteComplete()
         {
@@ -537,7 +573,10 @@ namespace kCura.ScheduleQueue.AgentBase
 
         private void LogFinalizeJobError(Job job, Exception exception)
         {
-            Logger.LogError(exception, "An error occured during finalization of Job with ID: {JobID} in {TypeName}", job.JobId,
+            Logger.LogError(
+                exception,
+                "An error occured during finalization of Job with ID: {JobID} in {TypeName}",
+                job.JobId,
                 nameof(ScheduleQueueAgentBase));
         }
 
@@ -552,7 +591,8 @@ namespace kCura.ScheduleQueue.AgentBase
             {
                 IEnumerable<Job> jobs = _jobService.GetAllScheduledJobs();
 
-                Logger.LogInformation("Jobs in queue JobId-RootJobId-LockedByAgentId-StopState: {jobs}",
+                Logger.LogInformation(
+                    "Jobs in queue JobId-RootJobId-LockedByAgentId-StopState: {jobs}",
                     string.Join(";", jobs?.Select(x => $"{x.JobId}-{x.RootJobId}-{x.LockedByAgentID}-{x.StopState}") ?? new List<string>()));
             }
             catch (Exception ex)

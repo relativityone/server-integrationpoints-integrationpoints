@@ -1,5 +1,7 @@
-﻿using kCura.IntegrationPoints.Data;
+﻿using System.Data;
+using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
+using Moq;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
@@ -83,6 +85,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 
         private JobTest PrepareJob()
         {
+            DataTable result = new DataTable
+            {
+                Columns = { new DataColumn() }
+            };
+
+            Helper.DbContextMock.Setup(x => x.ExecuteSqlStatementAsDataTable(It.IsAny<string>())).Returns(result);
+
             return FakeRelativityInstance.Helpers.JobHelper.ScheduleBasicJob(SourceWorkspace);
         }
     }

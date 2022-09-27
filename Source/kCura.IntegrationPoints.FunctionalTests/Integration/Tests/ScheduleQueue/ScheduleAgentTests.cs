@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Data;
 using FluentAssertions;
+using Moq;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.IntegrationPoints.Tests.Integration.Utils;
@@ -9,6 +11,18 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.ScheduleQueue
 {
     public class ScheduleAgentTests : TestsBase
     {
+        public override void SetUp()
+        {
+            base.SetUp();
+
+            DataTable result = new DataTable
+            {
+                Columns = { new DataColumn() }
+            };
+
+            Helper.DbContextMock.Setup(x => x.ExecuteSqlStatementAsDataTable(It.IsAny<string>())).Returns(result);
+        }
+
         [IdentifiedTest("70482A9F-21E2-42D7-A9F2-2E83013FFF99")]
         public void Agent_ShouldCompleteExecution_WhenScheduleQueueIsEmpty()
         {

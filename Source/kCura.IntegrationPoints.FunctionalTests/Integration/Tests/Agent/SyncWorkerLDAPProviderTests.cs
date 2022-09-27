@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using Castle.MicroKernel.Registration;
 using FluentAssertions;
@@ -7,7 +8,7 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services.EntityManager;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO.JobImport;
-using NUnit.Framework;
+using Moq;
 using Relativity.IntegrationPoints.Tests.Common.LDAP.TestData;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportApi;
@@ -16,10 +17,23 @@ using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 {
-    [TestExecutionCategory.CI, TestLevel.L1]
+    [TestExecutionCategory.CI]
+    [TestLevel.L1]
     public class SyncWorkerLDAPProviderTests : TestsBase
     {
         private readonly ManagementTestData _managementTestData = new ManagementTestData();
+
+        public override void SetUp()
+        {
+            base.SetUp();
+
+            DataTable result = new DataTable
+            {
+                Columns = { new DataColumn() }
+            };
+
+            Helper.DbContextMock.Setup(x => x.ExecuteSqlStatementAsDataTable(It.IsAny<string>())).Returns(result);
+        }
 
         [IdentifiedTest("46988B61-878E-4F9F-95BA-3775E13F492E")]
         public void SyncWorker_ShouldImportLDAPData()
@@ -223,7 +237,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
         private void InsertBatchToJobTrackerTable(JobTest job, JobHistoryTest jobHistory)
         {
             string tableName = string.Format("RIP_JobTracker_{0}_{1}_{2}", job.WorkspaceID, job.RootJobId, jobHistory.BatchInstance);
-
 
             if (!FakeRelativityInstance.JobTrackerResourceTables.ContainsKey(tableName))
             {

@@ -1,15 +1,15 @@
-﻿using kCura.IntegrationPoints.RelativitySync.Metrics;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using FluentAssertions;
+using kCura.IntegrationPoints.RelativitySync.Metrics;
+using kCura.ScheduleQueue.Core;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Telemetry.APM;
-using System.Threading.Tasks;
-using kCura.ScheduleQueue.Core;
-using FluentAssertions;
 using Relativity.Sync;
-using System.Threading;
 using Relativity.Sync.Executors.Validation;
-using System;
+using Relativity.Telemetry.APM;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests
 {
@@ -23,7 +23,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 
         private Mock<ICancellationAdapter> _cancellationAdapterFake;
         private Mock<ISyncJob> _syncJobFake;
-        private Mock<ISyncConfigurationService> _syncConfigurationServiceFake;
         private Mock<IAPILog> _logFake;
 
         [SetUp]
@@ -38,8 +37,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
                 .Returns(new CompositeCancellationToken(It.IsAny<CancellationToken>(), It.IsAny<CancellationToken>(), _logFake.Object));
 
             _syncJobFake = new Mock<ISyncJob>();
-
-            _syncConfigurationServiceFake = new Mock<ISyncConfigurationService>();
 
             _syncOperationsMock = PrepareSyncOperations();
 
@@ -56,7 +53,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
                 _jobHistorySyncServiceMock.Object,
                 integrationPointsToSyncConverter.Object,
                 _syncOperationsMock.Object,
-                _syncConfigurationServiceFake.Object,
                 _cancellationAdapterFake.Object);
         }
 
@@ -126,7 +122,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             // Arrange
             const int expectedSyncConfigurationId = 10;
 
-            _syncConfigurationServiceFake.Setup(x => x.TryGetResumedSyncConfigurationIdAsync(It.IsAny<int>(), It.IsAny<int>()))
+            _syncOperationsMock.Setup(x => x.TryGetResumedSyncConfigurationIdAsync(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(expectedSyncConfigurationId);
 
             // Act
