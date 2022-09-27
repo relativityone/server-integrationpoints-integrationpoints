@@ -14,7 +14,6 @@ using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
@@ -32,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         private readonly IAPILog _logger;
         private readonly IJobHistoryErrorService _jobHistoryErrorService;
         private readonly IJobHistoryService _jobHistoryService;
-        private readonly IJobManager _jobService;
+        private readonly IJobManager _jobManager;
         private readonly IMessageService _messageService;
         private readonly IProviderTypeService _providerTypeService;
         private readonly IIntegrationPointRepository _integrationPointRepository;
@@ -45,7 +44,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             ICaseServiceContext context,
             IIntegrationPointSerializer serializer,
             IChoiceQuery choiceQuery,
-            IJobManager jobService,
+            IJobManager jobManager,
             IJobHistoryService jobHistoryService,
             IJobHistoryErrorService jobHistoryErrorService,
             IManagerFactory managerFactory,
@@ -60,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             : base(helper, context, choiceQuery, serializer, managerFactory, validationExecutor, objectManager)
         {
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointService>();
-            _jobService = jobService;
+            _jobManager = jobManager;
             _jobHistoryService = jobHistoryService;
             _jobHistoryErrorService = jobHistoryErrorService;
             _providerTypeService = providerTypeService;
@@ -150,14 +149,14 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                     {
                         BatchInstance = Guid.NewGuid()
                     };
-                    _jobService.CreateJob(taskParameters, task, Context.WorkspaceID, integrationPoint.ArtifactId, rule);
+                    _jobManager.CreateJob(taskParameters, task, Context.WorkspaceID, integrationPoint.ArtifactId, rule);
                 }
                 else
                 {
-                    Job job = _jobService.GetJob(Context.WorkspaceID, integrationPoint.ArtifactId, task.ToString());
+                    Job job = _jobManager.GetJob(Context.WorkspaceID, integrationPoint.ArtifactId, task.ToString());
                     if (job != null)
                     {
-                        _jobService.DeleteJob(job.JobId);
+                        _jobManager.DeleteJob(job.JobId);
                     }
                 }
 
@@ -288,7 +287,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             StoppableJobHistoryCollection stoppableJobHistories = jobHistoryManager.GetStoppableJobHistory(workspaceArtifactId, integrationPointArtifactId);
             _logger.LogInformation("JobHistory requested for stopping {@jobHistoryToStop}", stoppableJobHistories);
 
-            IDictionary<Guid, List<Job>> jobs = _jobService.GetJobsByBatchInstanceId(integrationPointArtifactId);
+            IDictionary<Guid, List<Job>> jobs = _jobManager.GetJobsByBatchInstanceId(integrationPointArtifactId);
             _logger.LogInformation("Jobs marked to stopping with correspondent BatchInstanceId {@jobs}", jobs);
 
             List<Exception> exceptions = new List<Exception>();
@@ -298,7 +297,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 {
                     IList<long> jobIdsForGivenJobHistory = jobs[Guid.Parse(jobHistory.BatchInstance)]
                         .Select(x => x.JobId).ToList();
-                    _jobService.StopJobs(jobIdsForGivenJobHistory);
+                    _jobManager.StopJobs(jobIdsForGivenJobHistory);
                     _logger.LogInformation("Jobs {@jobs} has been marked to stop for {jobHistoryId}", jobIdsForGivenJobHistory, jobHistory.ArtifactId);
                 }
                 catch (Exception ex)
@@ -315,7 +314,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                     jobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
                     _jobHistoryService.UpdateRdo(jobHistory);
 
-                    jobs[Guid.Parse(jobHistory.BatchInstance)].ForEach(x => _jobService.DeleteJob(x.JobId));
+                    jobs[Guid.Parse(jobHistory.BatchInstance)].ForEach(x => _jobManager.DeleteJob(x.JobId));
 
                     _logger.LogInformation("Jobs {@jobs} has been deleted from queue and JobHistory {jobHistoryId} was set to Stopped",
                         jobs[Guid.Parse(jobHistory.BatchInstance)], jobHistory.ArtifactId);
@@ -424,7 +423,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
                 TaskParameters jobDetails = _taskParametersBuilder.Build(jobTaskType, jobRunId, integrationPoint);
 
-                _jobService.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
+                _jobManager.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
             }
 
             _logger.LogInformation("Job was successfully created.");

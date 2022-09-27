@@ -86,6 +86,8 @@ nuget DotNetSeleniumExtras.PageObjects 3.11.0
 nuget DotNetSeleniumExtras.WaitHelpers 3.11.0
 nuget FluentAssertions 4.19.4
 nuget Moq 4.5.3
+nuget AutoFixture 4.17.0
+nuget AutoFixture.AutoMoq 4.17.0
 nuget netDumbster 2.0.0.4
 nuget NUnit 3.13.2 redirects: force
 nuget NSubstitute 1.10.0.0
