@@ -15,7 +15,7 @@ nuget Relativity.CustomPages ~> 17.6.2
 nuget Relativity.Data ~> 48.2.10
 nuget Relativity.Telemetry.DataContracts.Shared 3003.1.0
 nuget Relativity.API 17.9.0
-nuget Relativity 48.2.10
+nuget Relativity 52.3.29
 
 //Relativity Services packages
 nuget Relativity.Services.DataContracts 13.5.0
@@ -104,7 +104,7 @@ nuget kCura.Agent ~> 17.4.2
 nuget kCura.Apps.Common.Config 2.1.9
 nuget kCura.EventHandler ~> 17.4.4
 nuget Relativity.API 17.9.0
-nuget Relativity 48.2.10
+nuget Relativity 52.3.29
 nuget Relativity.Toggles 1.0.1
 nuget Relativity.Services.Interfaces.Private ~> 14.1.0
 nuget Relativity.DataTransfer.MessageService ~> 10.2.0
@@ -136,7 +136,7 @@ nuget Relativity.AutomatedWorkflows.SDK 1.0.8
 nuget Relativity.OAuth2Client 1.5.3
 nuget Relativity.OAuth2Client.Interfaces 1.5.3
 
-nuget Relativity.Sync 0.9.0-pre.91
+nuget Relativity.Sync 0.9.98
 
 //RIP packages
 nuget IntegrationPoints.MyFirstProvider 12.3.10
@@ -149,7 +149,7 @@ framework: auto-detect
 strategy: min
 source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 
-nuget Relativity.Sync 0.9.0-pre.91
+nuget Relativity.Sync 0.9.98
 nuget SSH.NET 2020.0.1
 nuget Newtonsoft.Json 6.0.8
 nuget Autofac 4.9.4
