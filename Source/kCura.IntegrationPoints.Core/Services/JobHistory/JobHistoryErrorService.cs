@@ -132,7 +132,8 @@ namespace kCura.IntegrationPoints.Core.Services
                     }
 
                     List<List<object>> values = new List<List<object>>();
-                    for (int i = 0; i < _jobHistoryErrorQueue.Count; i++)
+                    int jobHistoryQueueSize = _jobHistoryErrorQueue.Count;
+                    for (int i = 0; i < jobHistoryQueueSize; i++)
                     {
                         if (_jobHistoryErrorQueue.TryDequeue(out JobHistoryError jobHistoryError))
                         {
@@ -147,6 +148,10 @@ namespace kCura.IntegrationPoints.Core.Services
                                 DateTime.UtcNow
                             });
                             createdJobHistoryErrors.Add(jobHistoryError);
+                        }
+                        else
+                        {
+                            _logger.LogInformation("Unable to dequeue {i}th element", i);
                         }
                     }
 
