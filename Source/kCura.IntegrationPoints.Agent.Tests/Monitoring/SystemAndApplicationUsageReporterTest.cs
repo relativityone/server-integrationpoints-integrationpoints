@@ -148,7 +148,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 
             // Act - activate timer
             IDisposable subscription = _sut.ActivateTimer(_jobId, _jobDetails, _jobType);
-            await Task.Delay(100);
+            await Task.Delay(30);
 
             // Assert that timer was activated
             _apmMock.Verify(
@@ -169,7 +169,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _counterMeasure.ResetCalls();
             _loggerMock.ResetCalls();
 
-            await Task.Delay(1000);
+            await Task.Delay(50);
 
             // Assert that no calls have been made after timer disposal
             _apmMock.Verify(
