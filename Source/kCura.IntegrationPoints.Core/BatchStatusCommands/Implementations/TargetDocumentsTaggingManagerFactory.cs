@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -26,6 +27,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
         private readonly ISynchronizerFactory _synchronizerFactory;
         private readonly ITagSavedSearchManager _tagSavedSearchManager;
         private readonly string _uniqueJobId;
+        private readonly IDiagnosticLog _diagnosticLog;
 
         public TargetDocumentsTaggingManagerFactory(
             IRepositoryFactory repositoryFactory,
@@ -39,7 +41,8 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
             SourceConfiguration sourceConfig,
             string destinationConfig,
             int jobHistoryArtifactId,
-            string uniqueJobId)
+            string uniqueJobId,
+            IDiagnosticLog diagnosticLog)
         {
             _repositoryFactory = repositoryFactory;
             _tagSavedSearchManager = tagSavedSearchManager;
@@ -52,6 +55,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
             _sourceConfig = sourceConfig;
             _jobHistoryArtifactId = jobHistoryArtifactId;
             _uniqueJobId = uniqueJobId;
+            _diagnosticLog = diagnosticLog;
 
             _destinationConfig = CreateDestinationConfig(serializer, destinationConfig);
         }
@@ -90,7 +94,8 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
                 tagsSynchronizer,
                 _helper,
                 _fields,
-                serializedDestinationConfig);
+                serializedDestinationConfig,
+                _diagnosticLog);
             return tagger;
         }
 

@@ -21,12 +21,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 
         private IDocumentRepository _documentRepository;
         private IDataSynchronizer _dataSynchronizer;
+        private IDiagnosticLog _diagnosticLog;
         private string _importConfig;
 
         public override void SetUp()
         {
             _documentRepository = Substitute.For<IDocumentRepository>();
             _dataSynchronizer = Substitute.For<IDataSynchronizer>();
+            _diagnosticLog = Substitute.For<IDiagnosticLog>();
             IHelper helper = Substitute.For<IHelper>();
 
             FieldMap[] fields =
@@ -54,7 +56,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Tagging
 
             _importConfig = string.Empty;
 
-            _instance = new Tagger(_documentRepository, _dataSynchronizer, helper, fields, _importConfig);
+            _instance = new Tagger(_documentRepository, _dataSynchronizer, helper, fields, _importConfig, _diagnosticLog);
         }
 
         [Test]
