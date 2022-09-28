@@ -3,15 +3,12 @@ using System.Data;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
     public class JobBuilder
     {
-        private DataRow _jobData;
-
         private const string _JOB_ID = "JobID";
         private const string _ROOT_JOB_ID = "RootJobId";
         private const string _PARENT_JOB_ID = "ParentJobId";
@@ -31,6 +28,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
         private const string _STOP_STATE = "StopState";
         private const string _HEARTBEAT = "Heartbeat";
 
+        private DataRow _jobData;
 
         public JobBuilder()
         {

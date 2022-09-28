@@ -1,9 +1,9 @@
-﻿using kCura.IntegrationPoints.Data;
+﻿using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data;
 using Relativity;
 using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
-using System.Threading.Tasks;
 
 namespace kCura.ScheduleQueue.Core.Validation
 {
@@ -20,9 +20,9 @@ namespace kCura.ScheduleQueue.Core.Validation
         {
             using (IObjectManager proxy = _helper.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
             {
-                var request = new QueryRequest()
+                var request = new QueryRequest
                 {
-                    ObjectType = new ObjectTypeRef() { ArtifactTypeID = (int)ArtifactType.Case },
+                    ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Case },
                     Condition = $"'ArtifactID' == {job.WorkspaceID}",
                 };
 
