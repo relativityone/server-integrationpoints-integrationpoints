@@ -17,13 +17,13 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 
     internal class ObjectManagerFacadeDiscoverHeavyRequestDecorator : IObjectManagerFacade
     {
-        private bool _disposedValue;
-
         private const int _MAX_COUNT_OF_COLLECTION_IN_REQUEST = 100000;
         private const string _UNKNOWN = "[UNKNOWN]";
 
         private readonly IObjectManagerFacade _objectManager;
         private readonly IAPILog _logger;
+
+        private bool _disposedValue;
 
         /// <summary>
         /// Discovers heavy requests sent to Object Manager and logs them
@@ -52,6 +52,32 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
             AnalyzeFields(fieldValues, getWarningMessageHeader);
 
             return _objectManager.CreateAsync(workspaceArtifactID, request);
+        }
+
+        public Task<MassCreateResult> CreateAsync(int workspaceArtifactID, MassCreateRequest createRequest)
+        {
+            Func<LogParameters> getWarningMessageHeader =
+                () => GetWarningMessageHeader<MassCreateRequest>(
+                    workspaceArtifactID,
+                    rdoArtifactId: _UNKNOWN,
+                    rdoType: createRequest.ObjectType.Name);
+
+            IEnumerable<FieldValueMap> fieldValues = createRequest.Fields
+                .Select(x => new FieldValueMap(
+                    new FieldRefValuePair
+                {
+                    Field = new FieldRef
+                    {
+                        ArtifactID = x.ArtifactID,
+                        Guid = x.Guid,
+                        Name = x.Name,
+                        ViewFieldID = x.ViewFieldID
+                    }
+                }));
+
+            AnalyzeFields(fieldValues, getWarningMessageHeader);
+
+            return _objectManager.CreateAsync(workspaceArtifactID, createRequest);
         }
 
         public async Task<ReadResult> ReadAsync(int workspaceArtifactID, ReadRequest request)
@@ -146,8 +172,7 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
             return result;
         }
 
-        public Task<IKeplerStream> StreamLongTextAsync(int workspaceArtifactID, RelativityObjectRef exportObject,
-            FieldRef longTextField)
+        public Task<IKeplerStream> StreamLongTextAsync(int workspaceArtifactID, RelativityObjectRef exportObject, FieldRef longTextField)
         {
             return _objectManager.StreamLongTextAsync(workspaceArtifactID, exportObject, longTextField);
         }
@@ -173,6 +198,26 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
                 exportIndexID);
         }
 
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposedValue)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                _objectManager?.Dispose();
+            }
+
+            _disposedValue = true;
+        }
+
         private void AnalyzeMassUpdateObjectsCollection(
             Func<LogParameters> getWarningMessageHeader,
             MassUpdateByObjectIdentifiersRequest request)
@@ -181,7 +226,6 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
             {
                 LogParameters massUpdateWarningMessage = ("Requested mass update operation exceeded max collection count - {objectsCount}, when allowed is {maxCollectionCount}",
                     new object[] { request.Objects.Count, _MAX_COUNT_OF_COLLECTION_IN_REQUEST });
-
 
                 LogParameters[] warningsToLog = { getWarningMessageHeader(), massUpdateWarningMessage };
                 LogWarnings(warningsToLog, new StackTrace());
@@ -260,31 +304,12 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
         {
             string operationName = GetOperationNameForRequestType<T>();
             return ("Heavy request discovered when executing {operationName} on object of type [{rdoType}], id {rdoArtifactId} with ObjectManager (Workspace: {workspaceArtifactId}).",
-                new object[] { operationName, rdoType, rdoArtifactId, workspaceArtifactId});
+                new object[] { operationName, rdoType, rdoArtifactId, workspaceArtifactId });
         }
 
         private string GetOperationNameForRequestType<T>()
         {
             return typeof(T).Name.Replace("Request", string.Empty).ToUpperInvariant();
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposedValue)
-            {
-                return;
-            }
-            if (disposing)
-            {
-                _objectManager?.Dispose();
-            }
-
-            _disposedValue = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
         }
     }
 }

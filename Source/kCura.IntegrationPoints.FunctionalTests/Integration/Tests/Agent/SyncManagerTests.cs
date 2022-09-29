@@ -20,7 +20,6 @@ using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json.Linq;
 using Relativity.API;
@@ -33,7 +32,8 @@ using static Relativity.IntegrationPoints.Tests.Integration.Const;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 {
-    [TestExecutionCategory.CI, TestLevel.L1]
+    [TestExecutionCategory.CI]
+    [TestLevel.L1]
     public class SyncManagerTests : TestsBase
     {
         [IdentifiedTest("F0F133E0-0101-4E21-93C5-A6365FD720B3")]
@@ -134,7 +134,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
                 {
                     RemoveAgent();
                 }
-            }; ;
+            };
 
             // Act
             sut.Execute(job.AsJob());
@@ -300,10 +300,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
         private class SyncManagerTest : SyncManager
         {
-            public Action BeforeBatchTaskAction { get; set; }
-
-            public Action<SyncManager> BeforeCreateBatchJobAction { get; set; }
-
             public SyncManagerTest(
                 ICaseServiceContext caseServiceContext,
                 IDataProviderFactory providerFactory,
@@ -339,6 +335,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
                         diagnosticLog)
             {
             }
+
+            public Action BeforeBatchTaskAction { get; set; }
+
+            public Action<SyncManager> BeforeCreateBatchJobAction { get; set; }
 
             public override long BatchTask(Job job, IEnumerable<string> batchIDs)
             {

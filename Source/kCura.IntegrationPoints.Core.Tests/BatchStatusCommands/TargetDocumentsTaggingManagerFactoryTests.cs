@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Core.Tagging;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -30,6 +31,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
         private TargetDocumentsTaggingManagerFactory _instance;
         private ImportSettings _settings;
         private IDataSynchronizer _dataSynchronizer;
+        private IDiagnosticLog _diagnosticLog;
 
         private const string _DEST_CONFIG = "destination config";
         private const string _NEW_DEST_CONFIG = "new destination config";
@@ -49,6 +51,7 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
             _serializer = Substitute.For<ISerializer>();
             _dataSynchronizer = Substitute.For<IDataSynchronizer>();
             _helper = Substitute.For<IHelper>();
+            _diagnosticLog = Substitute.For<IDiagnosticLog>();
             _fields = new FieldMap[0];
             _settings = new ImportSettings();
             _serializer.Deserialize<ImportSettings>(_DEST_CONFIG).Returns(_settings);
@@ -72,7 +75,8 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
                 _sourceConfiguration,
                 _DEST_CONFIG,
                 _JOBHISTORY_ARTIFACT_ID,
-                _UNIQUE_JOBID
+                _UNIQUE_JOBID,
+                _diagnosticLog
             );
 
             // ASSERT
@@ -109,7 +113,8 @@ namespace kCura.IntegrationPoints.Core.Tests.BatchStatusCommands
                 _sourceConfiguration,
                 _DEST_CONFIG,
                 _JOBHISTORY_ARTIFACT_ID,
-                _UNIQUE_JOBID
+                _UNIQUE_JOBID,
+                _diagnosticLog
             );
 
             // ACT

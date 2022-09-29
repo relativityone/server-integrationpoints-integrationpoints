@@ -16,19 +16,25 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
         public JobHistoryTest CreateJobHistory(JobTest job, IntegrationPointTest integrationPoint)
         {
-            var jobHistory = new JobHistoryTest()
+            JobHistoryTest jobHistory = new JobHistoryTest()
             {
                 BatchInstance = job.JobDetailsHelper.BatchInstance.ToString(),
-                IntegrationPoint = new[] {integrationPoint.ArtifactId},
-                JobStatus = new ChoiceRef(new List<Guid> {JobStatusChoices.JobHistoryPendingGuid})
+                IntegrationPoint = new[] { integrationPoint.ArtifactId },
+                JobStatus = new ChoiceRef(new List<Guid> { JobStatusChoices.JobHistoryPendingGuid })
             };
-            integrationPoint.JobHistory = integrationPoint.JobHistory.Concat(new[] {jobHistory.ArtifactId}).ToArray();
+            integrationPoint.JobHistory = integrationPoint.JobHistory.Concat(new[] { jobHistory.ArtifactId }).ToArray();
             Workspace.JobHistory.Add(jobHistory);
             return jobHistory;
         }
 
-        public void CreateCustomJobHistory(IntegrationPointTest integrationPoint, string destinationName, 
-            DateTime endDate, ChoiceRef status, int itemsTransferred = 0, int totalItems = 0, string overwrite = OverwriteModeNames.AppendOnlyModeName)
+        public void CreateCustomJobHistory(
+            IntegrationPointTest integrationPoint,
+            string destinationName,
+            DateTime endDate,
+            ChoiceRef status,
+            int itemsTransferred = 0,
+            int totalItems = 0,
+            string overwrite = OverwriteModeNames.AppendOnlyModeName)
         {
             JobHistoryTest jobHistory = new JobHistoryTest
             {
@@ -43,7 +49,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
                 DestinationInstance = destinationName
             };
             integrationPoint.JobHistory = integrationPoint.JobHistory.Concat(new[] { jobHistory.ArtifactId }).ToArray();
-            Workspace.JobHistory.Add(jobHistory);           
+            Workspace.JobHistory.Add(jobHistory);
         }
     }
 }

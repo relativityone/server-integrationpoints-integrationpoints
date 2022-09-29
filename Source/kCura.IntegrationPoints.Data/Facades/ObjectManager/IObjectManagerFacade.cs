@@ -10,6 +10,8 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager
     {
         Task<CreateResult> CreateAsync(int workspaceArtifactID, CreateRequest createRequest);
 
+        Task<MassCreateResult> CreateAsync(int workspaceArtifactID, MassCreateRequest createRequest);
+
         Task<ReadResult> ReadAsync(int workspaceArtifactID, ReadRequest request);
 
         Task<UpdateResult> UpdateAsync(int workspaceArtifactID, UpdateRequest request);
