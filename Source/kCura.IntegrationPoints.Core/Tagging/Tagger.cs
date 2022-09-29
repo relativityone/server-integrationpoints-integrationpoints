@@ -4,6 +4,7 @@ using System.Linq;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
@@ -16,6 +17,7 @@ namespace kCura.IntegrationPoints.Core.Tagging
     {
         private readonly IDocumentRepository _documentRepository;
         private readonly IDataSynchronizer _synchronizer;
+        private readonly IDiagnosticLog _diagnosticLog;
         private readonly IAPILog _logger;
         private readonly FieldMap[] _fields;
         private readonly string _importConfig;
@@ -25,12 +27,14 @@ namespace kCura.IntegrationPoints.Core.Tagging
             IDataSynchronizer synchronizer,
             IHelper helper,
             FieldMap[] fields,
-            string importConfig)
+            string importConfig,
+            IDiagnosticLog diagnosticLog)
         {
             _documentRepository = documentRepository;
             _synchronizer = synchronizer;
             _fields = fields;
             _importConfig = importConfig;
+            _diagnosticLog = diagnosticLog;
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<Tagger>();
         }
 
@@ -57,7 +61,7 @@ namespace kCura.IntegrationPoints.Core.Tagging
                 {
                     FieldMap[] fieldsToPush = { identifierField };
                     var documentTransferContext = new DefaultTransferContext(reader);
-                    _synchronizer.SyncData(documentTransferContext, fieldsToPush, _importConfig, null, null);
+                    _synchronizer.SyncData(documentTransferContext, fieldsToPush, _importConfig, null, _diagnosticLog);
                 }
             }
             catch (Exception e)

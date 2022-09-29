@@ -1,22 +1,22 @@
 ﻿using System;
-using Relativity.Services.Objects.DataContracts;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
 using Relativity.Kepler.Transport;
 using Relativity.Services.DataContracts.DTOs.Results;
+using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
 {
     internal class ObjectManagerFacadeRetryDecorator : IObjectManagerFacade
     {
-        private bool _disposedValue;
-
         private const ushort _MAX_NUMBER_OF_RETRIES = 3;
         private const ushort _EXPONENTIAL_WAIT_TIME_BASE_IN_SEC = 3;
 
         private readonly IRetryHandler _retryHandler;
         private readonly IObjectManagerFacade _objectManager;
+
+        private bool _disposedValue;
 
         /// <summary>
         /// Creates new instance of object manager facade with implemented retries
@@ -33,6 +33,12 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
         {
             return _retryHandler.ExecuteWithRetriesAsync(
                     () => _objectManager.CreateAsync(workspaceArtifactID, createRequest));
+        }
+
+        public Task<MassCreateResult> CreateAsync(int workspaceArtifactID, MassCreateRequest createRequest)
+        {
+            return _retryHandler.ExecuteWithRetriesAsync(
+                () => _objectManager.CreateAsync(workspaceArtifactID, createRequest));
         }
 
         public Task<DeleteResult> DeleteAsync(int workspaceArtifactID, DeleteRequest request)
@@ -104,6 +110,10 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
                     exportIndexID));
         }
 
+        public void Dispose()
+        {
+            Dispose(true);
+        }
 
         protected virtual void Dispose(bool disposing)
         {
@@ -111,17 +121,13 @@ namespace kCura.IntegrationPoints.Data.Facades.ObjectManager.Implementation
             {
                 return;
             }
+
             if (disposing)
             {
                 _objectManager?.Dispose();
             }
 
             _disposedValue = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Extensions;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Helpers.FileNaming;
@@ -28,9 +27,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.SharedLibr
         {
             IHelper helper = Substitute.For<IHelper>();
             IExportConfig exportConfig = Substitute.For<IExportConfig>();
-            ICaseServiceContext context = Substitute.For<ICaseServiceContext>();
+            IRelativityObjectManager relativityObjectManager = Substitute.For<IRelativityObjectManager>();
             _integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
-            var jobHistoryErrorService = new JobHistoryErrorService(context, helper, _integrationPointRepository);
+            var jobHistoryErrorService = new JobHistoryErrorService(relativityObjectManager, helper, _integrationPointRepository);
             _jobHistoryErrorServiceProvider = new JobHistoryErrorServiceProvider(jobHistoryErrorService);
 
             IFileNameProvidersDictionaryBuilder fileNameProvidersDictionaryBuilder = new FileNameProvidersDictionaryBuilder();

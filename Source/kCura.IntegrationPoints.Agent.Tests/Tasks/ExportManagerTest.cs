@@ -12,7 +12,6 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Tests;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -27,7 +26,8 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {
-    [TestFixture, Category("Unit")]
+    [TestFixture]
+    [Category("Unit")]
     public class ExportManagerTest : TestBase
     {
         #region Private Fields
@@ -51,6 +51,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         {
             _jobManagerMock = Substitute.For<IJobManager>();
             ICaseServiceContext caseServiceContextMock = Substitute.For<ICaseServiceContext>();
+            IRelativityObjectManager relativityObjectManager = Substitute.For<IRelativityObjectManager>();
             _helperMock = Substitute.For<IHelper>();
             IManagerFactory managerFactoryMock = Substitute.For<IManagerFactory>();
             _serializerMock = Substitute.For<ISerializer>();
@@ -70,9 +71,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 Substitute.For<IGuidService>(),
                 Substitute.For<IJobHistoryService>(),
                 Substitute.For<JobHistoryErrorService>(
-                caseServiceContextMock,
-                _helperMock,
-                _integrationPointRepositoryMock),
+                    relativityObjectManager,
+                    _helperMock,
+                    _integrationPointRepositoryMock),
                 Substitute.For<IScheduleRuleFactory>(),
                 managerFactoryMock,
                 new List<IBatchStatus>(),

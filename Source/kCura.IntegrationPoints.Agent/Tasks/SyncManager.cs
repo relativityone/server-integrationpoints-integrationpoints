@@ -35,8 +35,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
     [SynchronizedTask]
     public class SyncManager : BatchManagerBase<string>, ITaskWithJobHistory
     {
-        private IEnumerable<IBatchStatus> _batchStatus;
-
         private readonly IAgentValidator _agentValidator;
         private readonly IAPILog _logger;
         private readonly ICaseServiceContext _caseServiceContext;
@@ -48,11 +46,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private readonly IJobService _jobService;
         private readonly IScheduleRuleFactory _scheduleRuleFactory;
 
-        protected readonly IHelper Helper;
-        protected readonly IManagerFactory ManagerFactory;
-        protected readonly ISerializer Serializer;
-
-        protected IIntegrationPointService IntegrationPointService { get; }
+        private IEnumerable<IBatchStatus> _batchStatus;
 
         public SyncManager(
             ICaseServiceContext caseServiceContext,
@@ -98,12 +92,24 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         }
 
         public IntegrationPoint IntegrationPoint { get; set; }
+
         public JobHistory JobHistory { get; set; }
+
         public IJobStopManager JobStopManager { get; set; }
+
         public Guid BatchInstance { get; set; }
+
         public int BatchJobCount { get; set; }
 
         public override int BatchSize => Config.Config.Instance.BatchSize;
+
+        protected IHelper Helper { get; }
+
+        protected IManagerFactory ManagerFactory { get; }
+
+        protected ISerializer Serializer { get; }
+
+        protected IIntegrationPointService IntegrationPointService { get; }
 
         public override IEnumerable<string> GetUnbatchedIDs(Job job)
         {
@@ -112,7 +118,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             {
                 if (string.IsNullOrEmpty(job.JobDetails))
                 {
-                    //job is scheduled so give it the same look as import now
+                    // job is scheduled so give it the same look as import now
                     var details = new TaskParameters
                     {
                         BatchInstance = BatchInstance
@@ -141,13 +147,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 LogJobStoppedException(job, e);
                 JobStopManager?.Dispose();
                 throw;
+
                 // DO NOTHING. Someone attempted to stop the job.
             }
             catch (Exception ex)
             {
                 LogRetrieveingUnbatchedIDsError(job, ex);
                 _jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
-                if (ex is IntegrationPointsException) // we want to rethrow, so it can be added to error tab if necessary
+
+                // we want to rethrow, so it can be added to error tab if necessary
+                if (ex is IntegrationPointsException)
                 {
                     throw;
                 }
@@ -159,6 +168,49 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             }
 
             return new List<string>();
+        }
+
+        public override void CreateBatchJob(Job job, List<string> batchIDs)
+        {
+            LogCreateBatchJobStart(job, batchIDs);
+
+            JobStopManager?.ThrowIfStopRequested();
+
+            TaskParameters taskParameters = new TaskParameters
+            {
+                BatchInstance = BatchInstance,
+                BatchParameters = batchIDs
+            };
+            _jobManager.CreateJobWithTracker(job, taskParameters, GetTaskType(), BatchInstance.ToString());
+            BatchJobCount++;
+            LogCreateBatchJobEnd(job, batchIDs);
+        }
+
+        public Guid GetBatchInstance(Job job)
+        {
+            return new TaskParameterHelper(Serializer, _guidService).GetBatchInstance(job);
+        }
+
+        public override void Execute(Job job)
+        {
+            LogExecuteStart(job);
+
+            base.Execute(job);
+
+            LogExecuteEnd(job);
+        }
+
+        protected void OnJobStart(Job job)
+        {
+            foreach (var batchStatus in BatchStatus)
+            {
+                batchStatus.OnJobStart(job);
+            }
+        }
+
+        protected virtual TaskType GetTaskType()
+        {
+            return TaskType.SyncWorker;
         }
 
         private IDataReader GetBatchableIdsWithDrainStopTimeout(Job job, IDataSourceProvider provider, TimeSpan drainStopTimeout)
@@ -186,7 +238,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 }
             });
             workerThread.Start();
-            
+
             TimeSpan sleep = TimeSpan.FromSeconds(0.5);
 
             while (!workerThreadCompleted)
@@ -223,31 +275,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             {
                 throw workedThreadException;
             }
-            
+
             JobStopManager?.StopCheckingDrainStopAndUpdateStopState(job, (bool)JobStopManager?.ShouldDrainStop);
-            
+
             return reader;
-        }
-
-        public override void CreateBatchJob(Job job, List<string> batchIDs)
-        {
-            LogCreateBatchJobStart(job, batchIDs);
-
-            JobStopManager?.ThrowIfStopRequested();
-
-            TaskParameters taskParameters = new TaskParameters
-            {
-                BatchInstance = BatchInstance,
-                BatchParameters = batchIDs
-            };
-            _jobManager.CreateJobWithTracker(job, taskParameters, GetTaskType(), BatchInstance.ToString());
-            BatchJobCount++;
-            LogCreateBatchJobEnd(job, batchIDs);
-        }
-
-        protected virtual TaskType GetTaskType()
-        {
-            return TaskType.SyncWorker;
         }
 
         private void JobPreExecute(Job job, TaskResult taskResult)
@@ -264,12 +295,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 LogJobStoppedException(job, e);
                 JobStopManager.Dispose();
                 throw;
+
                 // DO NOTHING. Someone attempted to stop the job.
             }
             catch (Exception ex)
             {
                 AgentExceptionHelper.HandleException(_jobHistoryErrorService, _jobHistoryService, _logger, ex, job, taskResult, JobHistory);
-                if (ex is IntegrationPointsException || ex is IntegrationPointValidationException || ex is PermissionException) // we want to rethrow, so it can be added to error tab if necessary
+
+                // we want to rethrow, so it can be added to error tab if necessary
+                if (ex is IntegrationPointsException || ex is IntegrationPointValidationException || ex is PermissionException)
                 {
                     throw;
                 }
@@ -278,14 +312,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             {
                 _jobHistoryErrorService.CommitErrors();
                 LogJobPreExecuteFinalize(job);
-            }
-        }
-
-        protected void OnJobStart(Job job)
-        {
-            foreach (var batchStatus in BatchStatus)
-            {
-                batchStatus.OnJobStart(job);
             }
         }
 
@@ -371,13 +397,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 {
                     throw new AggregateException(exceptions);
                 }
+
                 LogJobPostExecuteSuccesfulEnd(job);
             }
             catch (Exception ex)
             {
                 LogPostExecuteAggregatedError(job, ex);
                 _jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, new Exception("Failed to update job statistics.", ex));
-                if (ex is IntegrationPointsException) // we want to rethrow, so it can be added to error tab if necessary
+
+                // we want to rethrow, so it can be added to error tab if necessary
+                if (ex is IntegrationPointsException)
                 {
                     throw;
                 }
@@ -461,6 +490,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             {
                 throw new AggregateException("Failed to finalize the job.", exceptions);
             }
+
             LogFinalizeJobSuccesfulEnd(job);
         }
 
@@ -472,6 +502,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             {
                 IntegrationPoint.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory, taskResult);
             }
+
             IntegrationPointService.UpdateIntegrationPoint(IntegrationPoint);
             LogUpdateLastRuntimeAndCalculateNextRuntimeSuccesfulEnd(job);
         }
@@ -480,68 +511,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             IInstanceSettingsManager instanceSettingsManager = ManagerFactory.CreateInstanceSettingsManager();
             return instanceSettingsManager.GetDrainStopTimeout();
-        }
-
-        public Guid GetBatchInstance(Job job)
-        {
-            return new TaskParameterHelper(Serializer, _guidService).GetBatchInstance(job);
-        }
-
-        public override void Execute(Job job)
-        {
-            LogExecuteStart(job);
-
-            base.Execute(job);
-
-            LogExecuteEnd(job);
-        }
-
-        private class ReaderEnumerable : IEnumerable<string>, IDisposable
-        {
-            private readonly IJobStopManager _jobStopManager;
-            private readonly IDiagnosticLog _diagnosticLog;
-            private readonly IDataReader _reader;
-
-            public ReaderEnumerable(IDataReader reader, IJobStopManager jobStopManager, IDiagnosticLog diagnosticLog)
-            {
-                _reader = reader;
-                _jobStopManager = jobStopManager;
-                _diagnosticLog = diagnosticLog;
-            }
-
-            public void Dispose()
-            {
-                _diagnosticLog.LogDiagnostic("Dispose ReaderEnumerable");
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            public IEnumerator<string> GetEnumerator()
-            {
-                while (_reader.Read())
-                {
-                    _jobStopManager?.ThrowIfStopRequested();
-
-                    string result = _reader.GetString(0);
-                    _diagnosticLog.LogDiagnostic("Reading: {result}", result);
-                    yield return result;
-                }
-                Dispose();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
-
-            private void Dispose(bool disposing)
-            {
-                if (disposing)
-                {
-                    _jobStopManager?.Dispose();
-                    _reader?.Dispose();
-                }
-            }
         }
 
         #region Logging
@@ -610,26 +579,32 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             _logger.LogInformation("Finalized getting unbatched IDs for job: {JobId}.", job.JobId);
         }
+
         private void LogCreateBatchJobEnd(Job job, List<string> batchIDs)
         {
             _logger.LogInformation("Finished creating batch job: {Job}, batchIDs count {count}.", job, batchIDs.Count);
         }
+
         private void LogCreateBatchJobStart(Job job, List<string> batchIDs)
         {
             _logger.LogInformation("Started creating batch job: {Job}, batchIDs count {count}.", job, batchIDs.Count);
         }
+
         private void LogJobPreExecuteStart(Job job)
         {
             _logger.LogInformation("Starting pre execute in SyncManager for job: {JobId}.", job.JobId);
         }
+
         private void LogJobPreExecuteSuccesfulEnd(Job job)
         {
             _logger.LogInformation("Succesfully finished pre execute in SyncManager for: {JobId}.", job.JobId);
         }
+
         private void LogJobPreExecuteFinalize(Job job)
         {
             _logger.LogInformation("Finished pre execute in SyncManager for: {JobId}.", job.JobId);
         }
+
         private void LogJobPostExecuteStart(Job job)
         {
             _logger.LogInformation("Starting post execute in SyncManager for job: {JobId}.", job.JobId);
@@ -639,10 +614,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             _logger.LogInformation("Finalized post execute in SyncManager for job: {JobId}.", job.JobId);
         }
+
         private void LogJobPostExecuteSuccesfulEnd(Job job)
         {
             _logger.LogInformation("Succesfully finished post execute in SyncManager for job: {JobId}.", job.JobId);
         }
+
         private void LogUpdateStopState(Job job)
         {
             _logger.LogInformation("Updating stop state in SyncManager to None for job: {JobId}.", job.JobId);
@@ -652,27 +629,81 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             _logger.LogInformation("Succesfully finished finalization method in SyncManager for job: {JobId}.", job.JobId);
         }
+
         private void LogFinalizeJobStart(Job job)
         {
             _logger.LogInformation("Starting Finalize Job method in SyncManager for job: {JobId}.", job.JobId);
         }
+
         private void LogUpdateLastRuntimeAndCalculateNextRuntimeSuccesfulEnd(Job job)
         {
             _logger.LogInformation("Succesfully finished updating last runtime and calculated next runtime for job: {JobId}.", job.JobId);
         }
+
         private void LogUpdateLastRuntimeAndCalculateNextRuntimeStart(Job job)
         {
             _logger.LogInformation("Started updating last runtime and calculating next runtime for job: {JobId}.", job.JobId);
         }
+
         private void LogExecuteEnd(Job job)
         {
             _logger.LogInformation("Finished execution of job in SyncManager: {JobId}.", job.JobId);
         }
+
         private void LogExecuteStart(Job job)
         {
             _logger.LogInformation("Starting execution of job in SyncManager: {JobId}.", job.JobId);
         }
 
         #endregion
+
+        private class ReaderEnumerable : IEnumerable<string>, IDisposable
+        {
+            private readonly IJobStopManager _jobStopManager;
+            private readonly IDiagnosticLog _diagnosticLog;
+            private readonly IDataReader _reader;
+
+            public ReaderEnumerable(IDataReader reader, IJobStopManager jobStopManager, IDiagnosticLog diagnosticLog)
+            {
+                _reader = reader;
+                _jobStopManager = jobStopManager;
+                _diagnosticLog = diagnosticLog;
+            }
+
+            public void Dispose()
+            {
+                _diagnosticLog.LogDiagnostic("Dispose ReaderEnumerable");
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            public IEnumerator<string> GetEnumerator()
+            {
+                while (_reader.Read())
+                {
+                    _jobStopManager?.ThrowIfStopRequested();
+
+                    string result = _reader.GetString(0);
+                    _diagnosticLog.LogDiagnostic("Reading: {result}", result);
+                    yield return result;
+                }
+
+                Dispose();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            private void Dispose(bool disposing)
+            {
+                if (disposing)
+                {
+                    _jobStopManager?.Dispose();
+                    _reader?.Dispose();
+                }
+            }
+        }
     }
 }

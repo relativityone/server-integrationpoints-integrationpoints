@@ -135,7 +135,7 @@ function generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPoi
     }
 
     if (buttonState.retryErrorsButtonVisible && integrationPoint["ExportType"].artifactTypeID === 10) {
-        var retryErrorsButton = createRetryErrorsButton(consoleApi, convenienceApi, ctx, buttonState.retryErrorsButtonEnabled, workspaceId, integrationPointId, integrationPoint["OverwriteFields"].Name);
+        var retryErrorsButton = createRetryErrorsButton(consoleApi, convenienceApi, ctx, buttonState.retryErrorsButtonEnabled, workspaceId, integrationPointId, integrationPoint["OverwriteFields"].Name, document.getElementsByTagName("lq-message-container")[0]);
         transferSection.push(retryErrorsButton);
     }
 

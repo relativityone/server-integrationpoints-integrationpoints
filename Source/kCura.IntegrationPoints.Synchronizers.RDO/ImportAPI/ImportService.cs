@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
         }
 
         public void AddRow(Dictionary<string, object> sourceFields)
-        {            
+        {
             Dictionary<string, object> importFields = GenerateImportFields(sourceFields, FieldMappings);
             if (importFields.Count > 0)
             {
@@ -134,7 +134,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
             _totalRowsImported = context.TransferredItemsCount;
             _totalRowsWithErrors = context.FailedItemsCount;
-            
+
             //Assign events
             importJob.OnComplete += ImportJob_OnComplete;
             importJob.OnFatalException += ImportJob_OnComplete;
@@ -277,10 +277,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
         private void CompleteBatch(DateTime start, DateTime end, int processedRows, int errorRows)
         {
             LogBatchCompleted(start, end, processedRows, errorRows);
-            
-            Interlocked.Add(ref  _totalRowsImported, processedRows);
-            Interlocked.Add(ref  _totalRowsWithErrors, errorRows);
-            
+
+            Interlocked.Add(ref _totalRowsImported, processedRows);
+            Interlocked.Add(ref _totalRowsWithErrors, errorRows);
+
             OnBatchComplete?.Invoke(start, end, processedRows, errorRows);
         }
 
@@ -387,7 +387,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
         private void LogOnMessageEvent(Status status)
         {
-            _diagnosticLog.LogDiagnostic("ImportJob OnMessage event received. Current status: {Status}.", status.Message);
+            _diagnosticLog.LogDiagnostic("ImportJob OnMessage event received. Current status: {Status}.", status?.Message);
         }
 
         #endregion
