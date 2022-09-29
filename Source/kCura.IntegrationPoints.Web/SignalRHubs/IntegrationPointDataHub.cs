@@ -205,9 +205,15 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
                 IOnClickEventConstructor onClickEventHelper =
                     _helperClassFactory.CreateOnClickEventHelper(_managerFactory);
 
-                ButtonStateDTO buttonStates = new ButtonStateDTO(); //buttonStateBuilder.CreateButtonState(key.WorkspaceId, key.IntegrationPointId);
-                OnClickEventDTO onClickEvents = onClickEventHelper.GetOnClickEvents(key.WorkspaceId, key.IntegrationPointId,
-                    integrationPoint.Name, buttonStates);
+                ButtonStateDTO buttonStates = await buttonStateBuilder
+                    .CreateButtonStateAsync(key.WorkspaceId, key.IntegrationPointId)
+                    .ConfigureAwait(false);
+
+                OnClickEventDTO onClickEvents = onClickEventHelper.GetOnClickEvents(
+                    key.WorkspaceId,
+                    key.IntegrationPointId,
+                    integrationPoint.Name,
+                    buttonStates);
 
                 await Clients.Group(key.ToString()).updateIntegrationPointData(model, buttonStates, onClickEvents, sourceProviderIsRelativity);
             }
