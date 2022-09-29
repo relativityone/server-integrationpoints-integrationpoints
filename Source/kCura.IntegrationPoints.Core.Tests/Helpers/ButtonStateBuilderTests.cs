@@ -60,8 +60,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
         [TestCase(ExportType.ProductionSet, ProviderType.Relativity, true, true, true, false, false)]
         [TestCase(ExportType.View, ProviderType.Relativity, true, true, true, false, true)]
         public async Task BuildButtonState_GoldWorkflow(
-            ExportType exportType, ProviderType providerType, bool hasErrorViewPermission, bool hasJobsExecutingOrInQueue,
-            bool hasErrors, bool hasAddProfilePermission, bool imageImport)
+            ExportType exportType,
+            ProviderType providerType,
+            bool hasErrorViewPermission,
+            bool hasJobsExecutingOrInQueue,
+            bool hasErrors,
+            bool hasAddProfilePermission,
+            bool imageImport)
         {
             // Arrange
             SetupIntegrationPoint(providerType, imageImport, hasErrors, exportType);
@@ -138,17 +143,19 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 
             var settings = new ImportSettings { ImageImport = isImageImport };
 
-            _integrationPointRepository.ReadWithFieldMappingAsync(_INTEGRATION_POINT_ID)
-                .Returns(new Data.IntegrationPoint
-                {
-                    HasErrors = hasErrors,
-                    SourceProvider = sourceProviderArtifactId,
-                    DestinationProvider = destinationProviderArtifactId,
-                    DestinationConfiguration = JsonConvert.SerializeObject(settings),
-                    SourceConfiguration = JsonConvert.SerializeObject(new { TypeOfExport = exportType })
-                });
+            Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint
+            {
+                HasErrors = hasErrors,
+                SourceProvider = sourceProviderArtifactId,
+                DestinationProvider = destinationProviderArtifactId,
+                DestinationConfiguration = JsonConvert.SerializeObject(settings),
+                SourceConfiguration = JsonConvert.SerializeObject(new { TypeOfExport = exportType })
+            };
 
-            _providerTypeService.GetProviderType(sourceProviderArtifactId, destinationProviderArtifactId).Returns(providerType);
+            _integrationPointRepository.ReadAsync(_INTEGRATION_POINT_ID)
+                .Returns(integrationPoint);
+
+            _providerTypeService.GetProviderType(integrationPoint).Returns(providerType);
         }
 
         private StoppableJobHistoryCollection GetJobHistoryCollection(bool hasPendingJobHistory, bool hasProcessingJobHistory)

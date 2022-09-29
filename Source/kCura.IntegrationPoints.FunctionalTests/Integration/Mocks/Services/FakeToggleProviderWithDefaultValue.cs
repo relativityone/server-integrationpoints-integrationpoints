@@ -28,7 +28,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 
         public Task<bool> IsEnabledAsync<T>() where T : IToggle
         {
-            throw new System.NotImplementedException();
+            return Task.FromResult(IsEnabled<T>());
         }
 
         public bool IsEnabledByName(string toggleName)

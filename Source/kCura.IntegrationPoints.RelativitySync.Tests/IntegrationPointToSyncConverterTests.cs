@@ -66,6 +66,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 
             _jobHistoryServiceFake = new Mock<IJobHistoryService>();
 
+            _relativityObjectManager = new Mock<IRelativityObjectManager>();
+
             Mock<IJobHistorySyncService> jobHistorySyncService = new Mock<IJobHistorySyncService>();
             jobHistorySyncService.Setup(x => x.GetLastJobHistoryWithErrorsAsync(_SOURCE_WORKSPACE_ID, _INTEGRATION_POINT_ID))
                 .ReturnsAsync(new RelativityObject { ArtifactID = _JOB_HISTORY_TO_RETRY });

@@ -129,11 +129,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 
             _helperClassFactory.CreateOnClickEventHelper(_managerFactory).Returns(_onClickEventHelper);
 
-            _integrationPointRepository.ReadWithFieldMappingAsync(_ARTIFACT_ID).Returns(integrationPoint);
-            _providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value, integrationPoint.DestinationProvider.Value).Returns(providerType);
+            _integrationPointRepository.ReadAsync(_ARTIFACT_ID).Returns(integrationPoint);
+            _providerTypeService.GetProviderType(integrationPoint).Returns(providerType);
 
             StoppableJobHistoryCollection stoppableJobCollection = null;
-
             if (hasStoppableJobs)
             {
                 stoppableJobCollection = new StoppableJobHistoryCollection
@@ -312,8 +311,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 
             _permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create).Returns(true);
 
-            _integrationPointRepository.ReadWithFieldMappingAsync(_ARTIFACT_ID).Returns(integrationPoint);
-            _providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value, integrationPoint.DestinationProvider.Value).Returns(providerType);
+            _integrationPointRepository.ReadAsync(_ARTIFACT_ID).Returns(integrationPoint);
+            _providerTypeService.GetProviderType(integrationPoint).Returns(providerType);
 
             _permissionValidator.ValidateViewErrors(_APPLICATION_ID).Returns(new ValidationResult());
 
