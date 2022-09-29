@@ -10,10 +10,8 @@ namespace kCura.IntegrationPoints.Core.Models
 
         public JobHistory[] ProcessingJobHistory { get; set; }
 
-        public JobHistory[] ValidatingJobHistory { get; set; }
-
         public bool HasStoppableJobHistory
-            => HasAny(PendingJobHistory) || HasAny(ProcessingJobHistory) || HasAny(ValidatingJobHistory);
+            => HasAny(PendingJobHistory) || HasAny(ProcessingJobHistory);
 
         public bool HasOnlyPendingJobHistory
             => HasAny(PendingJobHistory) && !HasAny(ProcessingJobHistory);

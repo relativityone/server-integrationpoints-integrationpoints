@@ -54,9 +54,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
                     : Array.Empty<JobHistory>(),
                 ProcessingJobHistory = jobHistoriesByStatus.ContainsKey(JobStatusChoices.JobHistoryProcessing.Name)
                     ? jobHistoriesByStatus[JobStatusChoices.JobHistoryProcessing.Name]
-                    : Array.Empty<JobHistory>(),
-                ValidatingJobHistory = jobHistoriesByStatus.ContainsKey(JobStatusChoices.JobHistoryValidating.Name)
-                    ? jobHistoriesByStatus[JobStatusChoices.JobHistoryValidating.Name]
                     : Array.Empty<JobHistory>()
             };
         }

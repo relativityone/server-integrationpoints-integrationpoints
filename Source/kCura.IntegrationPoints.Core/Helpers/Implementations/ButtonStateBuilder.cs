@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
         private readonly IStateManager _stateManager;
         private readonly IIntegrationPointPermissionValidator _permissionValidator;
 
-        private readonly bool _isSyncAppInUse;
+        public bool IsSyncAppInUse { get; }
 
         public ButtonStateBuilder(
             IProviderTypeService providerTypeService,
@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             _permissionValidator = permissionValidator;
             _integrationPointRepository = integrationPointRepository;
 
-            _isSyncAppInUse = isSyncAppInUse;
+            IsSyncAppInUse = isSyncAppInUse;
         }
 
         public static ButtonStateBuilder CreateButtonStateBuilder(
@@ -76,7 +76,9 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
             IPermissionRepository permissionRepository = repositoryFactory.GetPermissionRepository(workspaceId);
 
-            bool isSyncAppInUse = relativitySyncConstrainsChecker.ShouldUseRelativitySync(integrationPointId);
+            bool isSyncAppInUse = relativitySyncConstrainsChecker
+                .ShouldUseRelativitySyncAppAsync(integrationPointId)
+                .GetAwaiter().GetResult();
 
             var buttonStateBuilder = new ButtonStateBuilder(
                 providerTypeService,
@@ -144,7 +146,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
         private bool HasJobsExecutingOrInQueue(int workspaceArtifactId, int integrationPointArtifactId)
         {
-            if (_isSyncAppInUse)
+            if (IsSyncAppInUse)
             {
                 StoppableJobHistoryCollection stoppableJobs = _jobHistoryManager.GetStoppableJobHistory(workspaceArtifactId, integrationPointArtifactId);
                 return stoppableJobs.HasStoppableJobHistory;
@@ -157,7 +159,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
         {
             StoppableJobHistoryCollection stoppableJobCollection = _jobHistoryManager.GetStoppableJobHistory(workspaceArtifactId, integrationPointArtifactId);
 
-            bool hasExecutingJobs = _isSyncAppInUse
+            bool hasExecutingJobs = IsSyncAppInUse
                 ? false
                 : _queueManager.HasJobsExecuting(workspaceArtifactId, integrationPointArtifactId);
 
