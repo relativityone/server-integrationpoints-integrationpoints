@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
                 logger
             );
             IJobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(
-                _caseServiceContext,
+                _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager,
                 helper,
                 integrationPointRepository
             );

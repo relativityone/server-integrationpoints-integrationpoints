@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
     {
         private readonly IExportInitProcessService _exportInitProcessService;
         private readonly IAPILog _logger;
-        
+
         public override int BatchSize
         {
             get
@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 return int.MaxValue;
             }
         }
-        
+
         public ExportManager(
             ICaseServiceContext caseServiceContext,
             IDataProviderFactory providerFactory,

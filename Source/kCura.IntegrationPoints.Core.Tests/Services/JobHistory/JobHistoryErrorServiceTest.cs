@@ -7,7 +7,6 @@ using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -16,7 +15,6 @@ using kCura.IntegrationPoints.Domain.Models;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
@@ -26,12 +24,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
     {
         private Data.IntegrationPoint _integrationPoint;
         private Data.JobHistory _jobHistory;
-        private Mock<ICaseServiceContext> _caseServiceContextFake;
+        private Mock<IRelativityObjectManager> _relativityObjectManagerFake;
         private Mock<IHelper> _helperFake;
         private JobHistoryErrorService _instance;
         private Mock<IJobStopManager> _stopJobManagerFake;
         private Mock<IIntegrationPointRepository> _integrationPointRepositoryFake;
-        private Mock<IObjectManager> _objectManagerFake;
         private List<JobHistoryError> _errors;
 
         private readonly Guid _jobHistoryErrorObject = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
@@ -49,27 +46,23 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             _integrationPoint = new Data.IntegrationPoint() { LogErrors = true };
             _jobHistory = new Data.JobHistory { ArtifactId = 111 };
 
-            _caseServiceContextFake = new Mock<ICaseServiceContext>();
+            _relativityObjectManagerFake = new Mock<IRelativityObjectManager>();
             _helperFake = new Mock<IHelper>();
 
             _helperFake.Setup(x => x.GetLoggerFactory().GetLogger().ForContext<IJobHistoryErrorService>()).Returns(new Mock<IAPILog>().Object);
 
             _stopJobManagerFake = new Mock<IJobStopManager>();
             _integrationPointRepositoryFake = new Mock<IIntegrationPointRepository>();
-            _objectManagerFake = new Mock<IObjectManager>();
-
-            _helperFake.Setup(x => x.GetServicesManager().CreateProxy<IObjectManager>(ExecutionIdentity.System))
-                .Returns(_objectManagerFake.Object);
             _errors = new List<JobHistoryError>();
 
-            _objectManagerFake.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<MassCreateRequest>()))
+            _relativityObjectManagerFake.Setup(x => x.MassCreateAsync(It.IsAny<MassCreateRequest>(), ExecutionIdentity.CurrentUser))
                 .ReturnsAsync(new MassCreateResult
                 {
                     Success = true
                 })
-                .Callback<int, MassCreateRequest>((_, req) => _errors.AddRange(ExtractErrors(req.ValueLists)));
+                .Callback<MassCreateRequest, ExecutionIdentity>((req, executionIdentity) => _errors.AddRange(ExtractErrors(req.ValueLists)));
 
-            _instance = new JobHistoryErrorService(_caseServiceContextFake.Object, _helperFake.Object, _integrationPointRepositoryFake.Object)
+            _instance = new JobHistoryErrorService(_relativityObjectManagerFake.Object, _helperFake.Object, _integrationPointRepositoryFake.Object)
             {
                 IntegrationPoint = _integrationPoint,
                 JobHistory = _jobHistory,
@@ -84,13 +77,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             _instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier", "Fake item error.", "stack trace");
             MassCreateRequest request = null;
 
-            _objectManagerFake.Setup(x =>
-                    x.CreateAsync(_caseServiceContextFake.Object.WorkspaceID, It.IsAny<MassCreateRequest>()))
+            _relativityObjectManagerFake.Setup(x =>
+                    x.MassCreateAsync(It.IsAny<MassCreateRequest>(), ExecutionIdentity.CurrentUser))
                 .ReturnsAsync(new MassCreateResult
                 {
                     Success = true
                 })
-                .Callback<int, MassCreateRequest>((_, req) => request = req);
+                .Callback<MassCreateRequest, ExecutionIdentity>((req, executionIdentity) => request = req);
 
             // act
             _instance.CommitErrors();
@@ -114,8 +107,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
         {
             // arrange
             var errorMessageFromObjectmanager = "Error message from ObjectManager";
-            _objectManagerFake.Setup(x =>
-                    x.CreateAsync(_caseServiceContextFake.Object.WorkspaceID, It.IsAny<MassCreateRequest>()))
+            _relativityObjectManagerFake.Setup(x =>
+                    x.MassCreateAsync(It.IsAny<MassCreateRequest>(), ExecutionIdentity.CurrentUser))
                 .ReturnsAsync(new MassCreateResult
                 {
                     Success = false,
@@ -155,7 +148,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             _instance.CommitErrors();
 
             // assert
-            _objectManagerFake.Verify(x => x.CreateAsync(_caseServiceContextFake.Object.WorkspaceID, It.IsAny<MassCreateRequest>()), Times.Once);
+            _relativityObjectManagerFake.Verify(x => x.MassCreateAsync(It.IsAny<MassCreateRequest>(), ExecutionIdentity.CurrentUser), Times.Once);
 
             Assert.AreEqual(2, _errors.Count);
             Assert.AreEqual(ErrorTypeChoices.JobHistoryErrorItem.Name, _errors[0].ErrorType.Name);
@@ -178,7 +171,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             _instance.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error.", "stack trace");
             _instance.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error2.", "stack trace2");
 
-            _objectManagerFake.Verify(x => x.CreateAsync(_caseServiceContextFake.Object.WorkspaceID, It.IsAny<MassCreateRequest>()), Times.Exactly(2));
+            _relativityObjectManagerFake.Verify(x => x.MassCreateAsync(It.IsAny<MassCreateRequest>(), ExecutionIdentity.CurrentUser), Times.Exactly(2));
             Assert.AreEqual(2, _errors.Count);
         }
 
@@ -192,7 +185,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             _instance.CommitErrors();
 
             // assert
-            _objectManagerFake.Verify(x => x.CreateAsync(_caseServiceContextFake.Object.WorkspaceID, It.IsAny<MassCreateRequest>()), Times.Never);
+            _relativityObjectManagerFake.Verify(x => x.MassCreateAsync(It.IsAny<MassCreateRequest>(), ExecutionIdentity.CurrentUser), Times.Never);
             Assert.IsNotNull(_instance.IntegrationPoint.HasErrors);
             Assert.IsFalse(_instance.IntegrationPoint.HasErrors.Value);
         }
@@ -203,7 +196,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             // arrange
             _instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier", "Fake item error.", null);
 
-            _objectManagerFake.Setup(x => x.CreateAsync(_caseServiceContextFake.Object.WorkspaceID, It.IsAny<MassCreateRequest>()))
+            _relativityObjectManagerFake.Setup(x => x.MassCreateAsync(It.IsAny<MassCreateRequest>(), ExecutionIdentity.CurrentUser))
                 .ThrowsAsync(new Exception());
 
             _instance.IntegrationPoint.HasErrors = false;
@@ -222,7 +215,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
         public void CommitErrors_FailsCommit_ThrowsException_JobLevelError()
         {
             // arrange
-            _objectManagerFake.Setup(x => x.CreateAsync(_caseServiceContextFake.Object.WorkspaceID, It.IsAny<MassCreateRequest>()))
+            _relativityObjectManagerFake.Setup(x => x.MassCreateAsync(It.IsAny<MassCreateRequest>(), ExecutionIdentity.CurrentUser))
                 .ThrowsAsync(new Exception());
             _instance.IntegrationPoint.HasErrors = false;
 
@@ -293,13 +286,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             _stopJobManagerFake.Setup(x => x.IsStopRequested()).Returns(true);
             MassCreateRequest request = null;
 
-            _objectManagerFake.Setup(x =>
-                    x.CreateAsync(_caseServiceContextFake.Object.WorkspaceID, It.IsAny<MassCreateRequest>()))
+            _relativityObjectManagerFake.Setup(x =>
+                    x.MassCreateAsync(It.IsAny<MassCreateRequest>(), ExecutionIdentity.CurrentUser))
                 .ReturnsAsync(new MassCreateResult
                 {
                     Success = true
                 })
-                .Callback<int, MassCreateRequest>((_, req) => request = req);
+                .Callback<MassCreateRequest, ExecutionIdentity>((req, executionIdentity) => request = req);
 
             // act
             _instance.SubscribeToBatchReporterEvents(reporter);
