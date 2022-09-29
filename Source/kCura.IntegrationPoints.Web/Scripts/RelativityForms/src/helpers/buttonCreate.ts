@@ -120,7 +120,7 @@ export function createStopButton(consoleApi, convenienceApi: IConvenienceApi, ct
     });
 }
 
-export function createRetryErrorsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number, overwriteOption: string) {
+export function createRetryErrorsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number, overwriteOption: string, lqMessageContainer: Element) {
 
     return consoleApi.generate.button({
         innerText: "Retry Errors",
@@ -142,12 +142,49 @@ export function createRetryErrorsButton(consoleApi, convenienceApi: IConvenience
 
             let switchToAppendOverlayMode = false;
 
+            function generateModal(switchToAppendOverlayMode: boolean) {
+                contentContainer.innerHTML = '<rwc-leaderboard loading loading-header="Submitting your job..." loading-information="Please wait a few seconds..."></rwc-leaderboard>'
+                model.actions = [];
+
+                let action = 'Retry?switchToAppendOverlayMode=' + switchToAppendOverlayMode;
+                let promise = postJobAPIRequest(convenienceApi, workspaceId, integrationPointId, action);
+                promise.then(function (result) {
+                    console.log(result.ok);
+                    if (!result.ok) {
+                        let res = result.json();
+
+                        res.then(res => {
+                            let header = "Failed to submit retry job: ";
+                            let messages = '["';
+                            res.errors.forEach(x => {
+                                messages += x.message + '",';
+                            })
+
+                            messages = messages.slice(0, -1) + ']';
+
+                            createMessageContainer(messages, "error", lqMessageContainer, header);
+
+                            // @ts-ignore
+                            model.close("Close model");
+                        })
+                    } else {
+                        createMessageContainer('["Retry job started!"]', "success", lqMessageContainer, "");
+
+                        // @ts-ignore
+                        model.accept("Accept run");
+                    }
+                })
+                    .catch(err => {
+                        console.log(err);
+                        // @ts-ignore
+                        model.cancel("Unable to run");
+                    });
+            }
+
+            var contentContainer = document.createElement("div");
+            contentContainer.innerHTML = `<span slot="content" id="modal-description">${generateRunMessage()}</span>`;
+
             if (overwriteOption === "Append Only") {
-
-                var contentContainer = document.createElement("div");
-                contentContainer.innerHTML = `<span slot="content" id="modal-description">${generateRunMessage()}</span>`;
-
-
                 var model = {
                     title: "Retry Errors",
                     theme: "confirmation",
@@ -157,15 +194,14 @@ export function createRetryErrorsButton(consoleApi, convenienceApi: IConvenience
                             text: "Switch to Append/Overlay",
                             click: function click() {
                                 switchToAppendOverlayMode = true;
-                                // @ts-ignore
-                                model.accept("Accept payload");
+                                generateModal(switchToAppendOverlayMode)
                             }
                         },
                         {
                             text: "Use " + overwriteOption + " mode again",
                             click: function click() {
-                                // @ts-ignore
-                                model.accept("Accept payload");
+
+                                generateModal(switchToAppendOverlayMode)
                             }
                         },
                         {
@@ -175,37 +211,33 @@ export function createRetryErrorsButton(consoleApi, convenienceApi: IConvenience
                                 model.cancel("Cancel payload");
                             }
                         }
-                    ],
-                    acceptAction: function () {
-                        let action = 'Retry?switchToAppendOverlayMode=' + switchToAppendOverlayMode;
-                        return postJobAPIRequest(convenienceApi, workspaceId, integrationPointId, action)
-                            .then(function (result) {
-                                if (!result.ok) {
-                                    console.log(result);
-                                    return ctx.setErrorSummary(["Failed to submit retry job. Check Errors tab for details."]);
-                                }
-                            });
-                    }
+                    ]
                 };
 
                 return convenienceApi.modalService.openCustomModal(model);
-
             } else {
-                return convenienceApi.modalService.confirm({
+                var model = {
                     title: "Retry Errors",
-                    message: generateRunMessage(),
-                    acceptText: "Ok",
-                    cancelText: "Cancel",
-                    acceptAction: function () {
-                        return postJobAPIRequest(convenienceApi, workspaceId, integrationPointId, "Retry?switchToAppendOverlayMode=false")
-                            .then(function (result) {
-                                if (!result.ok) {
-                                    console.log(result);
-                                    return ctx.setErrorSummary(["Failed to submit retry job. Check Errors tab for details."]);
-                                }
-                            });
-                    }
-                });
+                    theme: "confirmation",
+                    contentElement: contentContainer,
+                    actions: [
+                        {
+                            text: "Ok",
+                            click: function click() {
+                                generateModal(switchToAppendOverlayMode)
+                            }
+                        },
+                        {
+                            text: "Cancel",
+                            click: function click() {
+                                // @ts-ignore
+                                model.cancel("Cancel payload");
+                            }
+                        }
+                    ] 
+                };
+
+                return convenienceApi.modalService.openCustomModal(model);
             }
         }
     });
