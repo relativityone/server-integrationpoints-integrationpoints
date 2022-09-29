@@ -5,6 +5,7 @@ using System.Net.Mail;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using FluentAssertions;
+using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Exceptions;
@@ -51,6 +52,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         private Mock<IErrorManager> _errorManagerMock;
         private Mock<IJobHistoryErrorService> _jobHistoryErrorServiceMock;
         private Mock<IChoiceQuery> _choiceQueryFake;
+        private Mock<IRelativitySyncConstrainsChecker> _relativitySyncConstrainsCheckerFake;
+        private Mock<IRelativitySyncAppIntegration> _relativitySyncAppIntegrationMock;
 
         private SourceProvider _sourceProvider;
         private DestinationProvider _destinationProvider;
@@ -151,6 +154,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                     new ChoiceRef { ArtifactID = _fxt.Create<int>(), Name = OverwriteFieldsChoices.IntegrationPointOverlayOnly.Name }
                 });
 
+            _relativitySyncConstrainsCheckerFake = _fxt.Freeze<Mock<IRelativitySyncConstrainsChecker>>();
+
+            _relativitySyncAppIntegrationMock = _fxt.Freeze<Mock<IRelativitySyncAppIntegration>>();
+
             _sut = _fxt.Create<IntegrationPointService>();
         }
 
@@ -186,6 +193,27 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                 It.IsAny<Guid>(),
                 It.IsAny<ChoiceRef>(),
                 It.IsAny<DateTime?>()));
+        }
+
+        [Test]
+        public void RunIntegrationPoint_ShouldSubmitJobInSyncApp_WhenIntegrationPointIsSyncType()
+        {
+            // Arrange
+            _relativitySyncConstrainsCheckerFake.Setup(x => x.ShouldUseRelativitySyncAppAsync(_integrationPoint.ArtifactId))
+                .ReturnsAsync(true);
+
+            // Act
+            _sut.RunIntegrationPoint(_WORKSPACE_ID, _integrationPoint.ArtifactId, _USER_ID);
+
+            // Assert
+            _relativitySyncAppIntegrationMock.Verify(
+                x => x.SubmitSyncJobAsync(
+                    _WORKSPACE_ID,
+                    _integrationPoint.ArtifactId,
+                    It.IsAny<int>(),
+                    _USER_ID));
+
+            VerifyJobShouldNotBeCreated();
         }
 
         [Test]

@@ -10,8 +10,6 @@ using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.RelativitySync;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;

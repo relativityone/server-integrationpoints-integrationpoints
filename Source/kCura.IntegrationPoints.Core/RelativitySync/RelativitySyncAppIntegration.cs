@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Common.RelativitySync;
-using kCura.IntegrationPoints.Common.RelativitySync;
 using Relativity.API;
 using Relativity.Sync.Services.Interfaces.V1;
 using Relativity.Sync.Services.Interfaces.V1.DTO;
