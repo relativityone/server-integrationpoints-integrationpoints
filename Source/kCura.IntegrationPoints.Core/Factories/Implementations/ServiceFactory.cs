@@ -1,4 +1,4 @@
-﻿using kCura.IntegrationPoints.Common.Interfaces;
+﻿using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;

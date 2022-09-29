@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Common.Interfaces;
+using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;

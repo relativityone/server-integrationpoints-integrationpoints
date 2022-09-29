@@ -4,7 +4,7 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Common.Interfaces;
+using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Common.Metrics;
 using kCura.IntegrationPoints.Common.Metrics.Sink;
 using kCura.IntegrationPoints.Config;
