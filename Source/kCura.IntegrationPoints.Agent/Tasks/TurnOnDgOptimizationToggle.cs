@@ -2,6 +2,7 @@
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
-    [DefaultValue(false)]
-    public class TurnOnDgOptimizationToggle : IToggle { }
+    public class TurnOnDgOptimizationToggle : IToggle
+    {
+    }
 }

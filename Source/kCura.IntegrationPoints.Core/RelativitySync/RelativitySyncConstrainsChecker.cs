@@ -69,9 +69,9 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
                 if (providerType == ProviderType.Relativity)
                 {
                     SourceConfiguration sourceConfiguration = VerboseDeserialize<SourceConfiguration>(integrationPoint.SourceConfiguration);
-                    ImportSettings importSettings = VerboseDeserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
+                    ImportSettings destinationConfiguration = VerboseDeserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
 
-                    if (ConfigurationAllowsUsingRelativitySync(sourceConfiguration, importSettings))
+                    if (ConfigurationAllowsUsingRelativitySync(sourceConfiguration, destinationConfiguration))
                     {
                         _logger.LogInformation("Relativity Sync flow will be used for IntegrationPoint ID: {integrationPointId}", integrationPointId);
 
@@ -152,19 +152,21 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
             }
         }
 
-        private bool ConfigurationAllowsUsingRelativitySync(SourceConfiguration sourceConfiguration, ImportSettings importSettings)
+        private bool ConfigurationAllowsUsingRelativitySync(SourceConfiguration sourceConfiguration, ImportSettings destinationConfiguration)
         {
             _logger.LogInformation(
                 "Checking if configurations allow using RelativitySync. " +
+                    "DestinationConfiguration.ArtifactTypeId: {artifactTypeId}; " +
                     "SourceConfiguration.TypeOfExport: {typeOfExport}; " +
                     "DestinationConfiguration.ImageImport: {imageImport}; " +
                     "DestinationConfiguration.ProductionImport: {productionImport}",
+                destinationConfiguration.ArtifactTypeId,
                 sourceConfiguration.TypeOfExport,
-                importSettings.ImageImport,
-                importSettings.ProductionImport);
+                destinationConfiguration.ImageImport,
+                destinationConfiguration.ProductionImport);
 
-            bool isSyncDocumentFlow = sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch && !importSettings.ProductionImport;
-            bool isSyncNonDocumentFlow = IsNonDocumentFlow(importSettings);
+            bool isSyncDocumentFlow = sourceConfiguration.TypeOfExport == SourceConfiguration.ExportType.SavedSearch && !destinationConfiguration.ProductionImport;
+            bool isSyncNonDocumentFlow = IsNonDocumentFlow(destinationConfiguration);
 
             return isSyncDocumentFlow || isSyncNonDocumentFlow;
         }
