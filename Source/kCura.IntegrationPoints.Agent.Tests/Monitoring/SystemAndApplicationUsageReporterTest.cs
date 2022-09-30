@@ -96,9 +96,17 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 
             _timerFactory = new TimerFactory(_loggerMock.Object);
 
-            _sut = new SystemAndApplicationUsageReporter(_apmMock.Object, _ripMetricMock.Object,
-                _processMemoryHelper.Object, _appDomainMonitoringEnablerMock.Object, _configFake.Object, _agentMock.Object,
-                _toggleProviderFake.Object, _timerFactory, _systemHealthReporterMock.Object, _loggerMock.Object);
+            _sut = new SystemAndApplicationUsageReporter(
+                _apmMock.Object,
+                _ripMetricMock.Object,
+                _processMemoryHelper.Object,
+                _appDomainMonitoringEnablerMock.Object,
+                _configFake.Object,
+                _agentMock.Object,
+                _toggleProviderFake.Object,
+                _timerFactory,
+                _systemHealthReporterMock.Object,
+                _loggerMock.Object);
         }
 
         [Test]
@@ -138,13 +146,34 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             // Arrange
             _configFake.SetupGet(x => x.TimerStartDelay).Returns(TimeSpan.FromMilliseconds(10));
 
-            // Act
+            // Act - activate timer
             IDisposable subscription = _sut.ActivateTimer(_jobId, _jobDetails, _jobType);
-            subscription.Dispose();
-            await Task.Delay(20);
+            await Task.Delay(30);
 
-            // Assert
-            _apmMock.Verify(x => x.CountOperation(
+            // Assert that timer was activated
+            _apmMock.Verify(
+                x => x.CountOperation(
+                It.IsAny<string>(),
+                It.IsAny<Guid>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<bool>(),
+                It.IsAny<int?>(),
+                It.IsAny<Dictionary<string, object>>(),
+                It.IsAny<IEnumerable<ISink>>()), Times.AtLeastOnce);
+
+            // Act - dispose timer
+            subscription.Dispose();
+
+            _apmMock.ResetCalls();
+            _counterMeasure.ResetCalls();
+            _loggerMock.ResetCalls();
+
+            await Task.Delay(50);
+
+            // Assert that no calls have been made after timer disposal
+            _apmMock.Verify(
+                x => x.CountOperation(
                 It.IsAny<string>(),
                 It.IsAny<Guid>(),
                 It.IsAny<string>(),
@@ -154,7 +183,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
                 It.IsAny<Dictionary<string, object>>(),
                 It.IsAny<IEnumerable<ISink>>()), Times.Never);
 
-            _loggerMock.Verify(x => x.LogInformation(
+            _loggerMock.Verify(
+                x => x.LogInformation(
                 It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<Dictionary<string, object>>(),
