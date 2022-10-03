@@ -1,7 +1,6 @@
 ﻿using System;
-using Relativity.Toggles;
-using System.Reflection;
 using System.Threading.Tasks;
+using Relativity.Toggles;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 {
@@ -14,21 +13,26 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
             _testCtx = testCtx;
         }
 
+        public MissingFeatureBehavior DefaultMissingFeatureBehavior { get; }
+
+        public bool CacheEnabled { get; set; }
+
+        public int CacheTimeoutInSeconds { get; set; }
+
         public bool IsEnabled<T>() where T : IToggle
         {
             bool? value = _testCtx.ToggleValues.GetValue<T>();
-            if(value.HasValue)
+            if (value.HasValue)
             {
                 return value.Value;
             }
 
-            DefaultValueAttribute attribute = typeof(T).GetCustomAttribute(typeof(DefaultValueAttribute)) as DefaultValueAttribute;
-            return attribute.Value;
+            return false;
         }
 
         public Task<bool> IsEnabledAsync<T>() where T : IToggle
         {
-            throw new System.NotImplementedException();
+            return Task.FromResult(IsEnabled<T>());
         }
 
         public bool IsEnabledByName(string toggleName)
@@ -44,16 +48,12 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 
         public Task<bool> IsEnabledByNameAsync(string toggleName)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public Task SetAsync<T>(bool enabled) where T : IToggle
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
-
-        public MissingFeatureBehavior DefaultMissingFeatureBehavior { get; }
-        public bool CacheEnabled { get; set; }
-        public int CacheTimeoutInSeconds { get; set; }
     }
 }

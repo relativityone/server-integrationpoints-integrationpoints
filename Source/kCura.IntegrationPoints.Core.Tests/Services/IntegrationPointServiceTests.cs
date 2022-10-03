@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Net.Mail;
+using AutoFixture;
+using AutoFixture.AutoMoq;
 using FluentAssertions;
-using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Extensions;
-using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Common.RelativitySync;
+using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -20,1305 +19,868 @@ using kCura.IntegrationPoints.Core.Tests.Helpers;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using Moq;
 using Newtonsoft.Json;
-using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.DataTransfer.MessageService;
+using Relativity.Services.Exceptions;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace kCura.IntegrationPoints.Core.Tests.Services
 {
-    [TestFixture, Category("Unit")]
-    public class IntegrationPointServiceTests : TestBase
+    [TestFixture]
+    [Category("Unit")]
+    public class IntegrationPointServiceTests
     {
-        private Data.IntegrationPoint _integrationPoint;
-        private Data.JobHistory _previousJobHistory;
-        private DestinationProvider _destinationProvider;
-        private ICaseServiceContext _caseServiceContext;
-        private IRelativityObjectManager _objectManager;
-        private IChoiceQuery _choiceQuery;
-        private IErrorManager _errorManager;
-        private IHelper _helper;
-        private IIntegrationPointRepository _integrationPointRepository;
-        private IIntegrationPointSerializer _serializer;
-        private IJobHistoryErrorService _jobHistoryErrorService;
-        private IJobHistoryManager _jobHistoryManager;
-        private IJobHistoryService _jobHistoryService;
-        private IJobManager _jobManager;
-        private IManagerFactory _managerFactory;
-        private IMessageService _messageService;
-        private IntegrationPointModelBase _integrationPointModel;
-        private IntegrationPointService _instance;
-        private IntegrationPointType _integrationPointType;
-        private IPermissionRepository _sourcePermissionRepository;
-        private IPermissionRepository _targetPermissionRepository;
-        private IProviderTypeService _providerTypeService;
-        private IQueueManager _queueManager;
-        private IRepositoryFactory _repositoryFactory;
-        private IValidationExecutor _validationExecutor;
-        private SourceProvider _sourceProvider;
-        private ValidationResult _stopPermissionChecksResults;
-        private ITaskParametersBuilder _taskParametersBuilder;
+        private IFixture _fxt;
 
-        private readonly int _destinationProviderId = 424;
-        private readonly int _integrationPointArtifactId = 741;
-        private readonly int _integrationPointTypeArtifactId = 12345;
-        private readonly int _previousJobHistoryArtifactId = Int32.MaxValue;
-        private readonly int _savedSearchArtifactId = 93032;
-        private readonly int _sourceProviderId = 321;
-        private readonly int _sourceWorkspaceArtifactId = 789;
-        private readonly int _targetWorkspaceArtifactId = 9954;
-        private readonly int _userId = 951;
-        private readonly Guid _objectTypeGuid = ObjectTypeGuids.IntegrationPointGuid;
+        private IntegrationPointService _sut;
+
+        private Mock<ICaseServiceContext> _contextFake;
+        private Mock<IRelativityObjectManager> _objectManagerFake;
+        private Mock<IIntegrationPointRepository> _integrationPointRepositoryMock;
+        private Mock<IJobHistoryService> _jobHistoryServiceMock;
+        private Mock<IQueueManager> _queueManagerFake;
+        private Mock<IValidationExecutor> _validationExecutorMock;
+        private Mock<IJobManager> _jobManagerMock;
+        private Mock<IJobHistoryManager> _jobHistoryManagerFake;
+        private Mock<IErrorManager> _errorManagerMock;
+        private Mock<IJobHistoryErrorService> _jobHistoryErrorServiceMock;
+        private Mock<IChoiceQuery> _choiceQueryFake;
+        private Mock<IRelativitySyncConstrainsChecker> _relativitySyncConstrainsCheckerFake;
+        private Mock<IRelativitySyncAppIntegration> _relativitySyncAppIntegrationMock;
+
+        private SourceProvider _sourceProvider;
+        private DestinationProvider _destinationProvider;
+        private Data.IntegrationPoint _integrationPoint;
+        private IntegrationPointModel _integrationPointModel;
+        private DestinationConfiguration _destinationConfiguration;
+        private IntegrationPointType _integrationPointType;
+
+        private int _WORKSPACE_ID;
+        private int _USER_ID;
 
         [SetUp]
-        public override void SetUp()
+        public void SetUp()
         {
-            _helper = Substitute.For<IHelper>();
-            _caseServiceContext = Substitute.For<ICaseServiceContext>();
-            _objectManager = Substitute.For<IRelativityObjectManager>();
-            _repositoryFactory = Substitute.For<IRepositoryFactory>();
-            _sourcePermissionRepository = Substitute.For<IPermissionRepository>();
-            _targetPermissionRepository = Substitute.For<IPermissionRepository>();
-            _serializer = Substitute.For<IIntegrationPointSerializer>();
-            _jobManager = Substitute.For<IJobManager>();
-            _jobHistoryService = Substitute.For<IJobHistoryService>();
-            _jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
-            _managerFactory = Substitute.For<IManagerFactory>();
-            _queueManager = Substitute.For<IQueueManager>();
-            _choiceQuery = Substitute.For<IChoiceQuery>();
-            _errorManager = Substitute.For<IErrorManager>();
-            _jobHistoryManager = Substitute.For<IJobHistoryManager>();
-            _providerTypeService = Substitute.For<IProviderTypeService>();
-            _messageService = Substitute.For<IMessageService>();
-            _integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
-            _taskParametersBuilder = Substitute.For<ITaskParametersBuilder>();
+            _fxt = new Fixture().Customize(new AutoMoqCustomization() { ConfigureMembers = true });
 
-            _validationExecutor = Substitute.For<IValidationExecutor>();
+            _destinationConfiguration = _fxt.Build<DestinationConfiguration>()
+                .With(x => x.ArtifactTypeId, _fxt.Create<int>())
+                .Create();
+            _sourceProvider = _fxt.Build<SourceProvider>()
+                .With(x => x.Identifier, Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID.ToString())
+                .Create();
+            _destinationProvider = _fxt.Build<DestinationProvider>()
+                .With(x => x.Identifier, Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID.ToString())
+                .Create();
+            _integrationPointType = _fxt.Create<IntegrationPointType>();
+            _integrationPoint = _fxt.Build<Data.IntegrationPoint>()
+                .With(x => x.SourceProvider, _sourceProvider.ArtifactId)
+                .With(x => x.DestinationProvider, _destinationProvider.ArtifactId)
+                .With(x => x.DestinationConfiguration, JsonConvert.SerializeObject(_destinationConfiguration))
+                .With(x => x.Type, _integrationPointType.ArtifactId)
+                .With(x => x.ScheduleRule, (string)null)
+                .With(x => x.OverwriteFields, OverwriteFieldsChoices.IntegrationPointAppendOnly)
+                .Create();
 
-            _instance = Substitute.ForPartsOf<IntegrationPointService>(
-                _helper,
-                _caseServiceContext,
-                _serializer,
-                _choiceQuery,
-                _jobManager,
-                _jobHistoryService,
-                _jobHistoryErrorService,
-                _managerFactory,
-                _validationExecutor,
-                _providerTypeService,
-                _messageService,
-                _integrationPointRepository,
-                _objectManager,
-                _taskParametersBuilder
-            );
+            _integrationPointModel = CreateFromIntegrationPoint(_integrationPoint);
 
-            _caseServiceContext.RelativityObjectManagerService = Substitute.For<IRelativityObjectManagerService>();
-            _caseServiceContext.WorkspaceID = _sourceWorkspaceArtifactId;
+            _contextFake = _fxt.Freeze<Mock<ICaseServiceContext>>();
 
-            _repositoryFactory.GetPermissionRepository(_sourceWorkspaceArtifactId).Returns(_sourcePermissionRepository);
-            _repositoryFactory.GetPermissionRepository(_targetWorkspaceArtifactId).Returns(_targetPermissionRepository);
-            _managerFactory.CreateErrorManager().Returns(_errorManager);
-            _managerFactory.CreateJobHistoryManager().Returns(_jobHistoryManager);
+            _WORKSPACE_ID = _contextFake.Object.WorkspaceID;
+            _USER_ID = _contextFake.Object.EddsUserID;
 
-            _integrationPoint = new Data.IntegrationPoint
-            {
-                ArtifactId = _integrationPointArtifactId,
-                Name = "IP Name",
-                DestinationConfiguration = $"{{ DestinationProviderType : \"{Core.Services.Synchronizer.RdoSynchronizerProvider.RDO_SYNC_TYPE_GUID}\" }}",
-                DestinationProvider = _destinationProviderId,
-                EmailNotificationRecipients = "emails",
-                EnableScheduler = false,
-                FieldMappings = "",
-                HasErrors = false,
-                JobHistory = null,
-                LastRuntimeUTC = null,
-                LogErrors = false,
-                SourceProvider = _sourceProviderId,
-                SourceConfiguration = $"{{ TargetWorkspaceArtifactId : {_targetWorkspaceArtifactId}, SourceWorkspaceArtifactId : {_sourceWorkspaceArtifactId}, SavedSearchArtifactId: {_savedSearchArtifactId} }}",
-                NextScheduledRuntimeUTC = null,
-                OverwriteFields = new ChoiceRef(1000) { Name = "AppendOnly" },
-                ScheduleRule = String.Empty,
-                Type = _integrationPointTypeArtifactId,
-                PromoteEligible = false,
-                SecuredConfiguration = string.Empty
-            };
-            _sourceProvider = new SourceProvider();
-            _destinationProvider = new DestinationProvider();
-            _integrationPointType = new IntegrationPointType();
+            _integrationPointRepositoryMock = _fxt.Freeze<Mock<IIntegrationPointRepository>>();
+            _integrationPointRepositoryMock.Setup(x => x.ReadWithFieldMappingAsync(_integrationPoint.ArtifactId))
+                .ReturnsAsync(_integrationPoint);
 
-            _previousJobHistory = new Data.JobHistory() { JobStatus = JobStatusChoices.JobHistoryCompleted };
-            _stopPermissionChecksResults = new ValidationResult();
+            _objectManagerFake = _fxt.Freeze<Mock<IRelativityObjectManager>>();
+            _objectManagerFake.Setup(x => x.Read<SourceProvider>(_sourceProvider.ArtifactId, It.IsAny<ExecutionIdentity>()))
+                .Returns(_sourceProvider);
+            _objectManagerFake.Setup(x => x.Read<DestinationProvider>(_destinationProvider.ArtifactId, It.IsAny<ExecutionIdentity>()))
+                .Returns(_destinationProvider);
+            _objectManagerFake.Setup(x => x.Read<IntegrationPointType>(_integrationPointType.ArtifactId, It.IsAny<ExecutionIdentity>()))
+                .Returns(_integrationPointType);
 
-            _integrationPointModel = IntegrationPointModel.FromIntegrationPoint(_integrationPoint);
-
-            var context = new ValidationContext
-            {
-                DestinationProvider = _destinationProvider,
-                IntegrationPointType = _integrationPointType,
-                Model = Arg.Is<IntegrationPointModelBase>(x => MatchHelper.Matches(_integrationPointModel, x)),
-                ObjectTypeGuid = ObjectTypeGuids.IntegrationPointGuid,
-                SourceProvider = _sourceProvider,
-                UserId = -1
-            };
-
-            _validationExecutor.ValidateOnStop(context);
-
-            _jobHistoryManager.GetLastJobHistoryArtifactId(_sourceWorkspaceArtifactId, _integrationPointArtifactId)
-                .Returns(_previousJobHistoryArtifactId);
-            _objectManager.Query<Data.JobHistory>(Arg.Is<QueryRequest>(q => q.Condition.Contains(_previousJobHistoryArtifactId.ToString())))
-                .Returns(new List<Data.JobHistory>
+            _jobHistoryServiceMock = _fxt.Freeze<Mock<IJobHistoryService>>();
+            _jobHistoryServiceMock.Setup(x => x.CreateRdo(
+                    _integrationPoint,
+                    It.IsAny<Guid>(),
+                    It.IsAny<ChoiceRef>(),
+                    It.IsAny<DateTime?>()))
+                .Returns((Data.IntegrationPoint integrationPoint, Guid batchInstanceId, ChoiceRef jobType, DateTime? startTimeUtc) =>
                 {
-                    _previousJobHistory
+                    return _fxt.Build<Data.JobHistory>()
+                        .With(x => x.BatchInstance, batchInstanceId.ToString())
+                        .Create();
                 });
 
-            _integrationPointRepository.ReadWithFieldMappingAsync(_integrationPointArtifactId).Returns(_integrationPoint);
-            _objectManager.Read<SourceProvider>(_sourceProviderId).Returns(_sourceProvider);
-            _objectManager.Read<DestinationProvider>(_destinationProviderId).Returns(_destinationProvider);
-            _integrationPointRepository.ReadWithFieldMappingAsync(_integrationPointArtifactId).Returns(_integrationPoint);
-            _objectManager.Read<IntegrationPointType>(_integrationPointTypeArtifactId).Returns(_integrationPointType);
+            _queueManagerFake = _fxt.Create<Mock<IQueueManager>>();
+            _queueManagerFake.Setup(x => x.HasJobsExecutingOrInQueue(_WORKSPACE_ID, _integrationPoint.ArtifactId))
+                .Returns(false);
+
+            _jobHistoryManagerFake = _fxt.Create<Mock<IJobHistoryManager>>();
+
+            _errorManagerMock = _fxt.Create<Mock<IErrorManager>>();
+
+            Mock<IManagerFactory> managerFactory = _fxt.Freeze<Mock<IManagerFactory>>();
+            managerFactory.Setup(x => x.CreateQueueManager())
+                .Returns(_queueManagerFake.Object);
+            managerFactory.Setup(x => x.CreateJobHistoryManager())
+                .Returns(_jobHistoryManagerFake.Object);
+            managerFactory.Setup(x => x.CreateErrorManager())
+                .Returns(_errorManagerMock.Object);
+
+            _validationExecutorMock = _fxt.Freeze<Mock<IValidationExecutor>>();
+            _validationExecutorMock.Setup(x => x.ValidateOnRun(It.IsAny<ValidationContext>()));
+
+            _jobManagerMock = _fxt.Freeze<Mock<IJobManager>>();
+            _jobManagerMock.Setup(x => x.StopJobs(It.IsAny<IList<long>>()));
+
+            _jobHistoryErrorServiceMock = _fxt.Freeze<Mock<IJobHistoryErrorService>>();
+
+            _choiceQueryFake = _fxt.Freeze<Mock<IChoiceQuery>>();
+            _choiceQueryFake.Setup(x => x.GetChoicesOnField(_WORKSPACE_ID, IntegrationPointFieldGuids.OverwriteFieldsGuid))
+                .Returns(new List<ChoiceRef>
+                {
+                    new ChoiceRef { ArtifactID = _fxt.Create<int>(), Name = OverwriteFieldsChoices.IntegrationPointAppendOnly.Name },
+                    new ChoiceRef { ArtifactID = _fxt.Create<int>(), Name = OverwriteFieldsChoices.IntegrationPointAppendOverlay.Name },
+                    new ChoiceRef { ArtifactID = _fxt.Create<int>(), Name = OverwriteFieldsChoices.IntegrationPointOverlayOnly.Name }
+                });
+
+            _relativitySyncConstrainsCheckerFake = _fxt.Freeze<Mock<IRelativitySyncConstrainsChecker>>();
+
+            _relativitySyncAppIntegrationMock = _fxt.Freeze<Mock<IRelativitySyncAppIntegration>>();
+
+            _sut = _fxt.Create<IntegrationPointService>();
         }
 
         [Test]
         public void RunIntegrationPoint_GoldFlow_RelativityProvider()
         {
-            // arrange
-            _sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
-            _destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
+            // Act
+            _sut.RunIntegrationPoint(_WORKSPACE_ID, _integrationPoint.ArtifactId, _USER_ID);
 
-            _queueManager.HasJobsExecutingOrInQueue(_sourceWorkspaceArtifactId, _integrationPointArtifactId).Returns(false);
+            // Assert
+            _validationExecutorMock.Verify(x => x.ValidateOnRun(
+                It.Is<ValidationContext>(y =>
+                    y.IntegrationPointType == _integrationPointType &&
+                    y.SourceProvider == _sourceProvider &&
+                    y.UserId == _USER_ID &&
+                    y.DestinationProvider == _destinationProvider &&
+                    MatchHelper.Matches(
+                        IntegrationPointModel.FromIntegrationPoint(_integrationPoint),
+                        y.Model) &&
+                    y.ObjectTypeGuid == ObjectTypeGuids.IntegrationPointGuid)));
 
-            _jobHistoryService.CreateRdo(
-                    Arg.Any<Data.IntegrationPoint>(),
-                    Arg.Any<Guid>(), Arg.Any<ChoiceRef>(),
-                    Arg.Any<DateTime?>())
-                .Returns(new Data.JobHistory() { BatchInstance = string.Empty });
+            _jobManagerMock.Verify(x => x.CreateJobOnBehalfOfAUser(
+                It.IsAny<TaskParameters>(),
+                It.IsAny<TaskType>(),
+                _WORKSPACE_ID,
+                _integrationPoint.ArtifactId,
+                _USER_ID,
+                It.IsAny<long?>(),
+                It.IsAny<long?>()));
 
-            // act
-            _instance.RunIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId);
+            _jobHistoryServiceMock.Verify(x => x.CreateRdo(
+                _integrationPoint,
+                It.IsAny<Guid>(),
+                It.IsAny<ChoiceRef>(),
+                It.IsAny<DateTime?>()));
+        }
 
-            // assert
-            _validationExecutor.Received(1).ValidateOnRun(Arg.Is<ValidationContext>(x =>
-                x.IntegrationPointType == _integrationPointType &&
-                x.SourceProvider == _sourceProvider &&
-                x.UserId == _userId &&
-                x.DestinationProvider == _destinationProvider &&
-                MatchHelper.Matches(_integrationPointModel, x.Model) &&
-                x.ObjectTypeGuid == _objectTypeGuid)
-            );
+        [Test]
+        public void RunIntegrationPoint_ShouldSubmitJobInSyncApp_WhenIntegrationPointIsSyncType()
+        {
+            // Arrange
+            _relativitySyncConstrainsCheckerFake.Setup(x => x.ShouldUseRelativitySyncAppAsync(_integrationPoint.ArtifactId))
+                .ReturnsAsync(true);
 
-            _jobHistoryService.Received(1).CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRun, null);
-            _jobManager.Received(1).CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), TaskType.ExportService, _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
-            _managerFactory.Received().CreateQueueManager();
+            // Act
+            _sut.RunIntegrationPoint(_WORKSPACE_ID, _integrationPoint.ArtifactId, _USER_ID);
+
+            // Assert
+            _relativitySyncAppIntegrationMock.Verify(
+                x => x.SubmitSyncJobAsync(
+                    _WORKSPACE_ID,
+                    _integrationPoint.ArtifactId,
+                    It.IsAny<int>(),
+                    _USER_ID));
+
+            VerifyJobShouldNotBeCreated();
         }
 
         [Test]
         public void MarkIntegrationPointToStopJobs_GoldFlow()
         {
             // Arrange
-            var pendingJobHistory1 = PrepareJobHistory(1, JobStatusChoices.JobHistoryPending);
-            var pendingJobHistory2 = PrepareJobHistory(2, JobStatusChoices.JobHistoryPending);
+            const int numberOfPendingJobs = 2;
+            const int numberOfProcessingJobs = 3;
 
-            Data.JobHistory[] pendingJobHistories = new [] { pendingJobHistory1, pendingJobHistory2 };
+            Data.JobHistory[] pendingJobHistory = _fxt.Build<Data.JobHistory>()
+                .With(x => x.BatchInstance, () => Guid.NewGuid().ToString())
+                .With(x => x.JobStatus, JobStatusChoices.JobHistoryPending)
+                .CreateMany(numberOfPendingJobs)
+                .ToArray();
 
-            var processingJobHistory3 = PrepareJobHistory(3, JobStatusChoices.JobHistoryProcessing);
-            var processingJobHistory4 = PrepareJobHistory(4, JobStatusChoices.JobHistoryProcessing);
+            Data.JobHistory[] processingJobHistory = _fxt.Build<Data.JobHistory>()
+                .With(x => x.BatchInstance, () => Guid.NewGuid().ToString())
+                .With(x => x.JobStatus, JobStatusChoices.JobHistoryProcessing)
+                .CreateMany(numberOfProcessingJobs)
+                .ToArray();
 
-            Data.JobHistory[] processingJobHistories = new[] { processingJobHistory3, processingJobHistory4 };
-
-            _jobHistoryManager
-                .GetStoppableJobHistory(
-                    Arg.Is(_sourceWorkspaceArtifactId),
-                    Arg.Is(_integrationPointArtifactId))
+            _jobHistoryManagerFake.Setup(x => x.GetStoppableJobHistory(_WORKSPACE_ID, _integrationPoint.ArtifactId))
                 .Returns(new StoppableJobHistoryCollection
                 {
-                    PendingJobHistory = pendingJobHistories,
-                    ProcessingJobHistory = processingJobHistories
+                    PendingJobHistory = pendingJobHistory,
+                    ProcessingJobHistory = processingJobHistory
                 });
 
-            Job baseJob = JobExtensions.CreateJob();
+            Dictionary<Guid, List<Job>> processingJobs = processingJobHistory
+                .ToDictionary(
+                    x => Guid.Parse(x.BatchInstance),
+                    x => new List<Job> { _fxt.Create<Job>() });
 
-            Job pendingJob1 = baseJob.CopyJobWithJobId(11);
-            Job pendingJob2 = baseJob.CopyJobWithJobId(22);
-            Job processingJob3 = baseJob.CopyJobWithJobId(33);
-            Job processingJob4 = baseJob.CopyJobWithJobId(44);
+            Dictionary<Guid, List<Job>> pendingJobs = pendingJobHistory
+                .ToDictionary(
+                    x => Guid.Parse(x.BatchInstance),
+                    x => new List<Job> { _fxt.Create<Job>() });
 
-            _jobManager.GetJobsByBatchInstanceId(_integrationPointArtifactId).Returns(new Dictionary<Guid, List<Job>>
-            {
-                {
-                    Guid.Parse(pendingJobHistory1.BatchInstance),
-                    new List<Job> { pendingJob1 }
-                },
-                {
-                    Guid.Parse(pendingJobHistory2.BatchInstance),
-                    new List<Job> { pendingJob2 }
-                },
-                {
-                    Guid.Parse(processingJobHistory3.BatchInstance),
-                    new List<Job> { processingJob3 }
-                },
-                {
-                    Guid.Parse(processingJobHistory4.BatchInstance),
-                    new List<Job> { processingJob4 }
-                }
-            });
+            _jobManagerMock.Setup(x => x.GetJobsByBatchInstanceId(_integrationPoint.ArtifactId))
+                .Returns(pendingJobs.Concat(processingJobs).ToDictionary(x => x.Key, x => x.Value));
 
             // Act
-            _instance.MarkIntegrationPointToStopJobs(_sourceWorkspaceArtifactId, _integrationPointArtifactId);
+            _sut.MarkIntegrationPointToStopJobs(_WORKSPACE_ID, _integrationPoint.ArtifactId);
 
             // Assert
-            _jobManager.Received().StopJobs(Arg.Is<IList<long>>(x => x.Contains(processingJob3.JobId)));
-            _jobManager.Received().StopJobs(Arg.Is<IList<long>>(x => x.Contains(processingJob4.JobId)));
+            _jobManagerMock.Verify(x => x.StopJobs(It.IsAny<IList<long>>()), Times.Exactly(numberOfProcessingJobs));
 
-            _jobHistoryService.Received()
-                .UpdateRdo(
-                    Arg.Is<Data.JobHistory>(
-                        x =>
-                            x == pendingJobHistory1 &&
-                            x.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopped)));
+            _jobHistoryServiceMock.Verify(
+                x => x.UpdateRdo(
+                    It.Is<Data.JobHistory>(
+                        y => y.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopped))),
+                Times.Exactly(numberOfPendingJobs));
 
-            _jobManager.Received().DeleteJob(pendingJob1.JobId);
-
-            _jobHistoryService.Received()
-                .UpdateRdo(
-                    Arg.Is<Data.JobHistory>(
-                        x =>
-                            x == pendingJobHistory2 &&
-                            x.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopped)));
-
-            _jobManager.Received().DeleteJob(pendingJob2.JobId);
-
-            _jobHistoryService.DidNotReceive()
-                .UpdateRdo(
-                    Arg.Is<Data.JobHistory>(
-                        x =>
-                            processingJobHistories.Contains(x)));
+            _jobManagerMock.Verify(x => x.DeleteJob(It.IsAny<long>()), Times.Exactly(numberOfPendingJobs));
         }
 
         [Test]
-        public void MarkIntegrationPointToStopJobs_ShouldThrowANdAggregateProcessingAndPendingExceptions()
+        public void MarkIntegrationPointToStopJobs_ShouldThrowAndAggregateProcessingAndPendingExceptions()
         {
-            // arrange
-            var pendingJobHistory1 = PrepareJobHistory(1, JobStatusChoices.JobHistoryPending);
-            var pendingJobHistory2 = PrepareJobHistory(2, JobStatusChoices.JobHistoryPending);
+            // Arrange
+            const int numberOfPendingJobs = 2;
+            const int numberOfProcessingJobs = 3;
 
-            Data.JobHistory[] pendingJobHistories = new[] { pendingJobHistory1, pendingJobHistory2 };
+            Data.JobHistory[] pendingJobHistory = _fxt.Build<Data.JobHistory>()
+                .With(x => x.BatchInstance, () => Guid.NewGuid().ToString())
+                .With(x => x.JobStatus, JobStatusChoices.JobHistoryPending)
+                .CreateMany(numberOfPendingJobs)
+                .ToArray();
 
-            var processingJobHistory3 = PrepareJobHistory(3, JobStatusChoices.JobHistoryProcessing);
-            var processingJobHistory4 = PrepareJobHistory(4, JobStatusChoices.JobHistoryProcessing);
+            Data.JobHistory[] processingJobHistory = _fxt.Build<Data.JobHistory>()
+                .With(x => x.BatchInstance, () => Guid.NewGuid().ToString())
+                .With(x => x.JobStatus, JobStatusChoices.JobHistoryProcessing)
+                .CreateMany(numberOfProcessingJobs)
+                .ToArray();
 
-            Data.JobHistory[] processingJobHistories = new[] { processingJobHistory3, processingJobHistory4 };
-
-            _jobHistoryManager
-                .GetStoppableJobHistory(
-                    Arg.Is(_sourceWorkspaceArtifactId),
-                    Arg.Is(_integrationPointArtifactId))
+            _jobHistoryManagerFake.Setup(x => x.GetStoppableJobHistory(_WORKSPACE_ID, _integrationPoint.ArtifactId))
                 .Returns(new StoppableJobHistoryCollection
                 {
-                    PendingJobHistory = pendingJobHistories,
-                    ProcessingJobHistory = processingJobHistories
+                    PendingJobHistory = pendingJobHistory,
+                    ProcessingJobHistory = processingJobHistory
                 });
 
-            Job baseJob = JobExtensions.CreateJob();
+            Dictionary<Guid, List<Job>> processingJobs = processingJobHistory
+                .ToDictionary(
+                    x => Guid.Parse(x.BatchInstance),
+                    x => new List<Job> { _fxt.Create<Job>() });
 
-            Job pendingJob1 = baseJob.CopyJobWithJobId(11);
-            Job pendingJob2 = baseJob.CopyJobWithJobId(22);
-            Job processingJob3 = baseJob.CopyJobWithJobId(33);
-            Job processingJob4 = baseJob.CopyJobWithJobId(44);
+            Dictionary<Guid, List<Job>> pendingJobs = pendingJobHistory
+                .ToDictionary(
+                    x => Guid.Parse(x.BatchInstance),
+                    x => new List<Job> { _fxt.Create<Job>() });
 
-            _jobManager.GetJobsByBatchInstanceId(_integrationPointArtifactId).Returns(new Dictionary<Guid, List<Job>>
-            {
-                {
-                    Guid.Parse(pendingJobHistory1.BatchInstance),
-                    new List<Job> { pendingJob1 }
-                },
-                {
-                    Guid.Parse(pendingJobHistory2.BatchInstance),
-                    new List<Job> { pendingJob2 }
-                },
-                {
-                    Guid.Parse(processingJobHistory3.BatchInstance),
-                    new List<Job> { processingJob3 }
-                },
-                {
-                    Guid.Parse(processingJobHistory4.BatchInstance),
-                    new List<Job> { processingJob4 }
-                }
-            });
+            _jobManagerMock.Setup(x => x.GetJobsByBatchInstanceId(_integrationPoint.ArtifactId))
+                .Returns(pendingJobs.Concat(processingJobs).ToDictionary(x => x.Key, x => x.Value));
 
-            Exception processingException = new Exception(processingJob3.JobId.ToString());
+            _jobManagerMock.Setup(x => x.StopJobs(It.IsAny<IList<long>>()))
+                .Throws<EntryPointNotFoundException>();
 
-            _jobManager
-                .When(x =>
-                    x.StopJobs(Arg.Is<IList<long>>(y => y.Contains(processingJob3.JobId))))
-                .Do(x => throw processingException);
-
-            Exception pendingException = new Exception(pendingJobHistory1.ArtifactId.ToString());
-
-            _jobHistoryService
-                .When(x =>
-                    x.UpdateRdo(Arg.Is<Data.JobHistory>(
-                        y => y.ArtifactId == pendingJobHistory1.ArtifactId)))
-                .Do(x => throw pendingException);
+            _jobHistoryServiceMock.Setup(x => x.UpdateRdo(It.IsAny<Data.JobHistory>()))
+                .Throws<ArgumentException>();
 
             // Act
-            Action action = () => _instance.MarkIntegrationPointToStopJobs(_sourceWorkspaceArtifactId, _integrationPointArtifactId);
+            Action action = () => _sut.MarkIntegrationPointToStopJobs(_WORKSPACE_ID, _integrationPoint.ArtifactId);
 
-            // assert
+            // Assert
             action.ShouldThrow<AggregateException>()
-                .Where(x => 
-                    x.InnerExceptions.Contains(processingException) &&
-                    x.InnerExceptions.Contains(pendingException));
+                .Where(x =>
+                    x.InnerExceptions.Any(y => y is EntryPointNotFoundException) &&
+                    x.InnerExceptions.Any(y => y is ArgumentException));
 
-            _jobManager.Received().StopJobs(Arg.Is<IList<long>>(x => x.Contains(processingJob4.JobId)));
+            _jobManagerMock.Verify(x => x.StopJobs(It.IsAny<IList<long>>()), Times.Exactly(numberOfProcessingJobs));
 
-            _jobHistoryService.Received()
-                .UpdateRdo(
-                    Arg.Is<Data.JobHistory>(
-                        x =>
-                            x == pendingJobHistory2 &&
-                            x.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryStopped)));
-
-            _jobManager.Received().DeleteJob(pendingJob2.JobId);
+            _jobHistoryServiceMock.Verify(x => x.UpdateRdo(It.IsAny<Data.JobHistory>()), Times.Exactly(numberOfPendingJobs));
         }
 
         [Test]
         public void MarkIntegrationPointToStopJobs_InsufficientPermission()
         {
-            // arrange
-            const string errorMessage = " whatever !";
-            _stopPermissionChecksResults.Add(errorMessage);
+            // Arrange
+            _validationExecutorMock.Setup(x => x.ValidateOnStop(It.IsAny<ValidationContext>()))
+                .Throws<PermissionException>();
 
-            var expectedErrorMessage = new ErrorDTO()
-            {
-                Message = Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
-                FullText = $"User is missing the following permissions:{System.Environment.NewLine}{String.Join(System.Environment.NewLine, errorMessage)}",
-                Source = Core.Constants.IntegrationPoints.APPLICATION_NAME,
-                WorkspaceId = _sourceWorkspaceArtifactId
-            };
+            // Act
+            Action action = () => _sut.MarkIntegrationPointToStopJobs(_WORKSPACE_ID, _integrationPoint.ArtifactId);
 
-            _validationExecutor
-                .When(mock => mock.ValidateOnStop(Arg.Any<ValidationContext>()))
-                .Do(x => { throw new PermissionException(Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS); });
+            // Assert
+            action.ShouldThrow<PermissionException>();
 
-            // act
-            Exception exception = Assert.Throws<PermissionException>(() => _instance.MarkIntegrationPointToStopJobs(_sourceWorkspaceArtifactId, _integrationPointArtifactId));
-
-            // assert
-            Assert.IsNotNull(exception);
-            Assert.AreEqual(Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS, exception.Message);
-            _errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => MatchHelper.Matches(new[] { expectedErrorMessage }, x)));
+            _errorManagerMock.Verify(x => x.Create(It.Is<IEnumerable<ErrorDTO>>(y =>
+                y.Any(e =>
+                    e.Message == Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE &&
+                    e.WorkspaceId == _WORKSPACE_ID))));
         }
 
         [Test]
-        public void RunIntegrationPoint_RelativityProvider_InvalidPermissions_ThrowsException()
-        {
-            // arrange
-            _jobHistoryService.CreateRdo(
-                    Arg.Any<Data.IntegrationPoint>(),
-                    Arg.Any<Guid>(), Arg.Any<ChoiceRef>(),
-                    Arg.Any<DateTime?>())
-                .Returns(new Data.JobHistory() { BatchInstance = string.Empty });
-
-            _sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
-            _destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
-
-            _validationExecutor
-                .When(mock => mock.ValidateOnRun(Arg.Is<ValidationContext>(x =>
-                    x.IntegrationPointType == _integrationPointType &&
-                    x.SourceProvider == _sourceProvider &&
-                    x.UserId == _userId &&
-                    x.DestinationProvider == _destinationProvider &&
-                    MatchHelper.Matches(_integrationPointModel, x.Model) &&
-                    x.ObjectTypeGuid == _objectTypeGuid)))
-                .Do(x => { throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE); });
-
-            // act
-            Assert.Throws<Exception>(() => _instance.RunIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId));
-
-            // assert
-
-            _validationExecutor.Received(1).ValidateOnRun(Arg.Is<ValidationContext>(x =>
-                x.IntegrationPointType == _integrationPointType &&
-                x.SourceProvider == _sourceProvider &&
-                x.UserId == _userId &&
-                x.DestinationProvider == _destinationProvider &&
-                MatchHelper.Matches(_integrationPointModel, x.Model) &&
-                x.ObjectTypeGuid == _objectTypeGuid)
-            );
-
-            _jobHistoryService.DidNotReceive().GetOrCreateScheduledRunHistoryRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), null);
-
-
-            _jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>());
-
-            // Check if Job History Error has benn created
-            _jobHistoryErrorService.Received().AddError(Arg.Is<ChoiceRef>(x => x.Name == ErrorTypeChoices.JobHistoryErrorJob.Name), string.Empty, Arg.Any<string>(), string.Empty);
-            // Check if Job status changed to Validation Failed
-            _jobHistoryService.Received().UpdateRdo(Arg.Is<Data.JobHistory>(x => x.JobStatus.Name == JobStatusChoices.JobHistoryValidationFailed.Name));
-            // Check If Integration Points objest has been set HasErrors flag to YES
-            _integrationPointRepository.Received()
-                .Update(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == _integrationPointArtifactId && x.HasErrors == true));
-        }
-
-        [Test]
-        public void RunIntegrationPoint_RelativityProvider_JobsCurrentlyRunning()
-        {
-            // arrange
-            _sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
-            _destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
-
-            _managerFactory.CreateQueueManager().Returns(_queueManager);
-
-            _jobHistoryService.CreateRdo(
-                    Arg.Any<Data.IntegrationPoint>(),
-                    Arg.Any<Guid>(), Arg.Any<ChoiceRef>(),
-                    Arg.Any<DateTime?>())
-                .Returns(new Data.JobHistory() { BatchInstance = string.Empty });
-
-            _queueManager.HasJobsExecutingOrInQueue(_sourceWorkspaceArtifactId, _integrationPointArtifactId).Returns(true);
-
-            // act
-            Assert.Throws<Exception>(() => _instance.RunIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId), Constants.IntegrationPoints.JOBS_ALREADY_RUNNING);
-
-            // assert
-
-            _validationExecutor.Received(1).ValidateOnRun(Arg.Is<ValidationContext>(x =>
-                x.IntegrationPointType == _integrationPointType &&
-                x.SourceProvider == _sourceProvider &&
-                x.UserId == _userId &&
-                x.DestinationProvider == _destinationProvider &&
-                MatchHelper.Matches(_integrationPointModel, x.Model) &&
-                x.ObjectTypeGuid == _objectTypeGuid)
-            );
-
-            _queueManager.Received(1).HasJobsExecutingOrInQueue(_sourceWorkspaceArtifactId, _integrationPointArtifactId);
-            _jobHistoryService.DidNotReceive().GetOrCreateScheduledRunHistoryRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), null);
-            _jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>());
-            _managerFactory.Received().CreateQueueManager();
-        }
-
-        [Test]
-        public void RetryIntegrationPoint_IntegrationPointHasNoErrors_ThrowsException_Test()
+        public void RunIntegrationPoint_ShouldThrowException_WhenInvalidPermissionsForRelativityProvider()
         {
             // Arrange
-            _sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
-            _destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
+            _validationExecutorMock.Setup(x => x.ValidateOnRun(It.IsAny<ValidationContext>()))
+                .Throws<InvalidOperationException>();
 
+            // Act
+            Action action = () => _sut.RunIntegrationPoint(_WORKSPACE_ID, _integrationPoint.ArtifactId, _USER_ID);
+
+            // Assert
+            action.ShouldThrow<InvalidOperationException>();
+
+            VerifyJobShouldNotBeCreated();
+
+            _jobHistoryErrorServiceMock.Verify(x =>
+                x.AddError(
+                    It.Is<ChoiceRef>(y => y.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()));
+
+            _jobHistoryServiceMock.Verify(x =>
+                x.UpdateRdo(
+                    It.Is<Data.JobHistory>(
+                        y => y.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryValidationFailed))));
+
+            _integrationPointRepositoryMock.Verify(x =>
+                x.Update(
+                    It.Is<Data.IntegrationPoint>(
+                        y => y.HasErrors == true)));
+        }
+
+        [Test]
+        public void RunIntegrationPoint_ShouldNotRunRelativityIntegrationPoint_WhenJobIsCurrentlyRunning()
+        {
+            // Arrange
+            _queueManagerFake.Setup(x => x.HasJobsExecutingOrInQueue(_WORKSPACE_ID, _integrationPoint.ArtifactId))
+                .Returns(true);
+
+            // Act
+            Action action = () => _sut.RunIntegrationPoint(_WORKSPACE_ID, _integrationPoint.ArtifactId, _USER_ID);
+
+            // Assert
+            action.ShouldThrow<Exception>().WithMessage(Constants.IntegrationPoints.JOBS_ALREADY_RUNNING);
+
+            VerifyJobShouldNotBeCreated();
+        }
+
+        [Test]
+        public void RetryIntegrationPoint_ShouldThrowException_WhenIntegrationPointHasNoErrors()
+        {
+            // Arrange
             _integrationPoint.HasErrors = null;
 
-            _jobHistoryService.CreateRdo(
-                    Arg.Any<Data.IntegrationPoint>(),
-                    Arg.Any<Guid>(), Arg.Any<ChoiceRef>(),
-                    Arg.Any<DateTime?>())
-                .Returns(new Data.JobHistory() { BatchInstance = string.Empty });
+            SetupLastRunJobHistory(
+                _fxt.Build<Data.JobHistory>()
+                    .With(x => x.JobStatus, JobStatusChoices.JobHistoryCompletedWithErrors)
+                    .Create());
 
             // Act
-            Assert.Throws<Exception>(() =>
-                _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId, switchToAppendOverlayMode: false),
-                Constants.IntegrationPoints.RETRY_NO_EXISTING_ERRORS);
+            Action action = () => _sut.RetryIntegrationPoint(_WORKSPACE_ID, _integrationPoint.ArtifactId, _USER_ID, false);
 
             // Assert
-            _objectManager.Received(1).Read<SourceProvider>(_integrationPoint.SourceProvider.Value);
-            _objectManager.Received(1).Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value);
+            action.ShouldThrow<Exception>().WithMessage(Constants.IntegrationPoints.RETRY_NO_EXISTING_ERRORS);
 
-            _validationExecutor.DidNotReceive().ValidateOnRun(Arg.Is<ValidationContext>(x =>
-                x.IntegrationPointType == _integrationPointType &&
-                x.SourceProvider == _sourceProvider &&
-                x.UserId == _userId &&
-                x.DestinationProvider == _destinationProvider &&
-                MatchHelper.Matches(_integrationPointModel, x.Model) &&
-                x.ObjectTypeGuid == _objectTypeGuid)
-            );
+            _jobHistoryServiceMock.Verify(
+                x => x.CreateRdo(
+                    It.IsAny<Data.IntegrationPoint>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<ChoiceRef>(),
+                    It.IsAny<DateTime?>()),
+                Times.Never);
 
-            _jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
+            VerifyJobShouldNotBeCreated();
         }
 
         [Test]
-        public void RetryIntegrationPoint_InvalidPermissions_ThrowsException_Test()
+        public void RetryIntegrationPoint_ShouldThrowPermissionException_WhenInsufficientPermissions()
         {
             // Arrange
-            _sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
-            _destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
-
             _integrationPoint.HasErrors = true;
-            _jobHistoryService.CreateRdo(
-                            Arg.Any<Data.IntegrationPoint>(),
-                            Arg.Any<Guid>(), Arg.Any<ChoiceRef>(),
-                            Arg.Any<DateTime?>())
-                        .Returns(new Data.JobHistory() { BatchInstance = string.Empty });
 
-            _validationExecutor
-                .When(mock => mock.ValidateOnRun(Arg.Is<ValidationContext>(x =>
-                    x.IntegrationPointType == _integrationPointType &&
-                    x.SourceProvider == _sourceProvider &&
-                    x.UserId == _userId &&
-                    x.DestinationProvider == _destinationProvider &&
-                    MatchHelper.Matches(_integrationPointModel, x.Model) &&
-                    x.ObjectTypeGuid == _objectTypeGuid)))
-                .Do(x => { throw new Exception(Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE); });
+            SetupLastRunJobHistory(
+                _fxt.Build<Data.JobHistory>()
+                    .With(x => x.JobStatus, JobStatusChoices.JobHistoryCompletedWithErrors)
+                    .Create());
+
+            _validationExecutorMock.Setup(x => x.ValidateOnRun(It.IsAny<ValidationContext>()))
+                .Throws(new Exception(Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE));
 
             // Act
-            Assert.Throws<Exception>(() =>
-                _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId, switchToAppendOverlayMode: false),
-                String.Join("<br/>", Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE));
+            Action action = () => _sut.RetryIntegrationPoint(_WORKSPACE_ID, _integrationPoint.ArtifactId, _USER_ID, false);
 
             // Assert
-            _objectManager.Received(1).Read<SourceProvider>(_integrationPoint.SourceProvider.Value);
-            _objectManager.Received(1).Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value);
+            action.ShouldThrow<Exception>().WithMessage(Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE);
 
-            _validationExecutor.Received(1).ValidateOnRun(Arg.Is<ValidationContext>(x =>
-                x.IntegrationPointType == _integrationPointType &&
-                x.SourceProvider == _sourceProvider &&
-                x.UserId == _userId &&
-                x.DestinationProvider == _destinationProvider &&
-                MatchHelper.Matches(_integrationPointModel, x.Model) &&
-                x.ObjectTypeGuid == _objectTypeGuid)
-            );
+            VerifyJobShouldNotBeCreated();
 
-            _jobHistoryErrorService.Received().AddError(Arg.Is<ChoiceRef>(x => x.Name == ErrorTypeChoices.JobHistoryErrorJob.Name), string.Empty, Arg.Any<string>(), string.Empty);
-            _jobHistoryService.Received().UpdateRdo(Arg.Is<Data.JobHistory>(x => x.JobStatus.Name == JobStatusChoices.JobHistoryValidationFailed.Name));
+            _jobHistoryErrorServiceMock.Verify(x =>
+                x.AddError(
+                    It.Is<ChoiceRef>(y => y.EqualsToChoice(ErrorTypeChoices.JobHistoryErrorJob)),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()));
 
-            _jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
+            _jobHistoryServiceMock.Verify(x =>
+                x.UpdateRdo(
+                    It.Is<Data.JobHistory>(
+                        y => y.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryValidationFailed))));
 
-            _integrationPointRepository.Received()
-                    .Update(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == _integrationPointArtifactId && x.HasErrors == true));
+            _integrationPointRepositoryMock.Verify(x =>
+                x.Update(
+                    It.Is<Data.IntegrationPoint>(
+                        y => y.HasErrors == true)));
         }
 
         [Test]
-        public void RetryIntegrationPoint_SourceProviderIsNotRelativity_ThrowsException_Test()
+        public void RetryIntegrationPoint_ShouldThrowException_WhenSourceProviderIsNotRelativity()
         {
             // Arrange
             _sourceProvider.Identifier = "Not a Relativity Provider";
 
             // Act
-            Assert.Throws<Exception>(() =>
-                _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId, switchToAppendOverlayMode: false),
-                Constants.IntegrationPoints.RETRY_IS_NOT_RELATIVITY_PROVIDER);
+            Action action = () => _sut.RetryIntegrationPoint(_WORKSPACE_ID, _integrationPoint.ArtifactId, _USER_ID, false);
 
             // Assert
-            _objectManager.Received(1).Read<SourceProvider>(_integrationPoint.SourceProvider.Value);
+            action.ShouldThrow<Exception>().WithMessage(Constants.IntegrationPoints.RETRY_IS_NOT_RELATIVITY_PROVIDER);
 
-            _validationExecutor.DidNotReceiveWithAnyArgs().ValidateOnRun(Arg.Any<ValidationContext>());
-
-            _jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
+            VerifyJobShouldNotBeCreated();
         }
 
         [Test]
-        public void RetryIntegrationPoint_FailToRetrieveJobHistory_NullValue()
+        public void RetryIntegrationPoint_ShouldThrow_WhenRetrievedJobHistoryToRetryIsNull()
         {
             // Arrange
-            _sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
-            _destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
-
             _integrationPoint.HasErrors = true;
-            _objectManager.Query<Data.JobHistory>(Arg.Is<QueryRequest>(q => q.Condition.Contains(_previousJobHistoryArtifactId.ToString())))
+
+            int lastJobHistoryId = _fxt.Create<int>();
+
+            _jobHistoryManagerFake.Setup(x => x.GetLastJobHistoryArtifactId(_WORKSPACE_ID, _integrationPoint.ArtifactId))
+                .Returns(lastJobHistoryId);
+
+            _objectManagerFake.Setup(x => x.Query<Data.JobHistory>(It.IsAny<QueryRequest>(), It.IsAny<ExecutionIdentity>()))
                 .Returns((List<Data.JobHistory>)null);
 
             // Act
-            Exception exception = Assert.Throws<Exception>(() => _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId, switchToAppendOverlayMode: false));
+            Action action = () => _sut.RetryIntegrationPoint(_WORKSPACE_ID, _integrationPoint.ArtifactId, _USER_ID, false);
 
             // Assert
-            Assert.AreEqual("Unable to retrieve the previous job history.", exception.Message);
+            action.ShouldThrow<Exception>().WithMessage(Constants.IntegrationPoints.FAILED_TO_RETRIEVE_JOB_HISTORY);
         }
 
         [Test]
         public void RetryIntegrationPoint_FailToRetrieveJobHistory_ReceiveException()
         {
             // Arrange
-            _sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
-            _destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
-
             _integrationPoint.HasErrors = true;
-            _objectManager.Query<Data.JobHistory>(Arg.Is<QueryRequest>(q => q.Condition.Contains(_previousJobHistoryArtifactId.ToString())))
+
+            int lastJobHistoryId = _fxt.Create<int>();
+
+            _jobHistoryManagerFake.Setup(x => x.GetLastJobHistoryArtifactId(_WORKSPACE_ID, _integrationPoint.ArtifactId))
+                .Returns(lastJobHistoryId);
+
+            _objectManagerFake.Setup(x => x.Query<Data.JobHistory>(It.IsAny<QueryRequest>(), It.IsAny<ExecutionIdentity>()))
                 .Throws<Exception>();
 
             // Act
-            Exception exception = Assert.Throws<Exception>(() => _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId, switchToAppendOverlayMode: false));
+            Action action = () => _sut.RetryIntegrationPoint(_WORKSPACE_ID, _integrationPoint.ArtifactId, _USER_ID, false);
 
             // Assert
-            Assert.AreEqual("Unable to retrieve the previous job history.", exception.Message);
+            action.ShouldThrow<Exception>().WithMessage(Constants.IntegrationPoints.FAILED_TO_RETRIEVE_JOB_HISTORY);
         }
 
         [Test]
-        public void RetryIntegrationPoint_RetryOnStoppedJob()
+        public void RetryIntegrationPoint_ShouldNotRetry_WhenLastJobWasStopped()
         {
             // Arrange
-            _sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
-            _destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
-
-            _jobHistoryService.CreateRdo(
-                    Arg.Any<Data.IntegrationPoint>(),
-                    Arg.Any<Guid>(), Arg.Any<ChoiceRef>(),
-                    Arg.Any<DateTime?>())
-                .Returns(new Data.JobHistory() { BatchInstance = string.Empty });
-
             _integrationPoint.HasErrors = true;
-            _previousJobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
+
+            SetupLastRunJobHistory(
+                _fxt.Build<Data.JobHistory>()
+                    .With(x => x.JobStatus, JobStatusChoices.JobHistoryStopped)
+                    .Create());
 
             // Act
-            Exception exception = Assert.Throws<Exception>(() => _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId, switchToAppendOverlayMode: false));
+            Action action = () => _sut.RetryIntegrationPoint(_WORKSPACE_ID, _integrationPoint.ArtifactId, _USER_ID, false);
 
             // Assert
-            Assert.AreEqual(Constants.IntegrationPoints.RETRY_ON_STOPPED_JOB, exception.Message);
+            action.ShouldThrow<Exception>().WithMessage(Constants.IntegrationPoints.RETRY_ON_STOPPED_JOB);
         }
 
         [Test]
-        public void RetryIntegrationPoint_GoldFlow_Test()
+        public void RetryIntegrationPoint_ShouldScheduleRetryJob()
         {
             // Arrange
-            _sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
-            _destinationProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID;
-
             _integrationPoint.HasErrors = true;
 
-            _jobHistoryService.CreateRdo(
-                    Arg.Any<Data.IntegrationPoint>(),
-                    Arg.Any<Guid>(), Arg.Any<ChoiceRef>(),
-                    Arg.Any<DateTime?>())
-                .Returns(new Data.JobHistory() { BatchInstance = string.Empty });
+            SetupLastRunJobHistory(
+                _fxt.Build<Data.JobHistory>()
+                    .With(x => x.JobStatus, JobStatusChoices.JobHistoryCompletedWithErrors)
+                    .Create());
 
             // Act
-            _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId, switchToAppendOverlayMode: false);
+            _sut.RetryIntegrationPoint(_WORKSPACE_ID, _integrationPoint.ArtifactId, _USER_ID, false);
 
             // Assert
-            _objectManager.Received(1).Read<SourceProvider>(_integrationPoint.SourceProvider.Value);
+            _jobHistoryServiceMock.Verify(
+                x => x.CreateRdo(
+                    _integrationPoint,
+                    It.IsAny<Guid>(),
+                    It.Is<ChoiceRef>(y => y.EqualsToChoice(JobTypeChoices.JobHistoryRetryErrors)),
+                    It.IsAny<DateTime?>()));
 
-            _validationExecutor.Received(1).ValidateOnRun(Arg.Is<ValidationContext>(x =>
-                x.IntegrationPointType == _integrationPointType &&
-                x.SourceProvider == _sourceProvider &&
-                x.UserId == _userId &&
-                x.DestinationProvider == _destinationProvider &&
-                MatchHelper.Matches(_integrationPointModel, x.Model) &&
-                x.ObjectTypeGuid == _objectTypeGuid)
-            );
-
-            _jobHistoryService.Received(1).CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRetryErrors, null);
-            _jobManager.Received(1).CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
+            _jobManagerMock.Verify(x => x.CreateJobOnBehalfOfAUser(
+                It.IsAny<TaskParameters>(),
+                It.IsAny<TaskType>(),
+                _WORKSPACE_ID,
+                _integrationPoint.ArtifactId,
+                _USER_ID,
+                It.IsAny<long?>(),
+                It.IsAny<long?>()));
         }
 
         [Test]
-        public void RunIntegrationPoint_GetSourceProvider_ProviderIsNull_ThrowsException_Test()
+        public void RunIntegrationPoint_ShouldNotScheduleJob_WhenSourceProviderIsNull()
         {
             // Arrange
             _integrationPoint.SourceProvider = null;
 
             // Act
-            Assert.Throws<Exception>(() =>
-            _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId, switchToAppendOverlayMode: false),
-                Constants.IntegrationPoints.NO_SOURCE_PROVIDER_SPECIFIED);
+            Action action = () => _sut.RunIntegrationPoint(_WORKSPACE_ID, _integrationPoint.ArtifactId, _USER_ID);
 
             // Assert
-            _objectManager.DidNotReceiveWithAnyArgs().Read<SourceProvider>(Arg.Any<int>());
-            _targetPermissionRepository.DidNotReceive().UserCanImport();
-            _sourcePermissionRepository.DidNotReceive().UserCanEditDocuments();
-            _jobHistoryService.DidNotReceive().CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRun, null);
-            _jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
+            action.ShouldThrow<Exception>().WithMessage(Constants.IntegrationPoints.UNABLE_TO_RUN_INTEGRATION_POINT_USER_MESSAGE);
+
+            _errorManagerMock.Verify(x => x.Create(It.IsAny<IEnumerable<ErrorDTO>>()));
         }
 
         [Test]
-        public void Update_SourceProviderReadFails_Excepts()
+        public void SaveIntegration_ShouldThrow_WhenSourceProviderReadFailedOnExistingIntegrationPoint()
         {
             // Arrange
-            int targetWorkspaceArtifactId = 9302;
-            var model = new IntegrationPointModel()
-            {
-                ArtifactID = 123,
-                SourceProvider = 9830,
-                SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactId }),
-                LastRun = DateTime.Now
-            };
+            IntegrationPointModel saveModel = _fxt.Build<IntegrationPointModel>()
+                .With(x => x.ArtifactID, _integrationPoint.ArtifactId)
+                .With(x => x.Name, _integrationPoint.Name)
+                .With(x => x.DestinationProvider, _integrationPoint.DestinationProvider)
+                .With(x => x.SourceProvider, _sourceProvider.ArtifactId)
+                .With(x => x.Destination, _integrationPoint.DestinationConfiguration)
+                .Create();
 
-            var existingModel = new IntegrationPointModel()
-            {
-                ArtifactID = model.ArtifactID,
-                SourceProvider = model.SourceProvider,
-                SourceConfiguration = model.SourceConfiguration,
-                LastRun = model.LastRun
-            };
-
-            _instance.When(instance => instance.ReadIntegrationPointModel(Arg.Any<int>())).DoNotCallBase();
-            _instance.ReadIntegrationPointModel(Arg.Is(model.ArtifactID)).Returns(existingModel);
-
-            const string exceptionMessage = "UH OH!";
-            _objectManager
-                    .Read<SourceProvider>(Arg.Is(model.SourceProvider))
-                    .Throws(new Exception(exceptionMessage));
+            _objectManagerFake.Setup(x => x.Read<SourceProvider>(_sourceProvider.ArtifactId, It.IsAny<ExecutionIdentity>()))
+                .Throws<NotFoundException>();
 
             // Act
-            Assert.Throws<Exception>(() => _instance.SaveIntegration(model), "Unable to save Integration Point: Unable to retrieve source provider");
+            Action action = () => _sut.SaveIntegration(saveModel);
 
             // Assert
-            _instance.Received(1).ReadIntegrationPointModel(Arg.Is(model.ArtifactID));
-            _objectManager
-                .Received(1)
-                .Read<SourceProvider>(Arg.Is(model.SourceProvider));
+            action.ShouldThrow<Exception>()
+                .WithMessage(Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_USER_MESSAGE);
+
+            _errorManagerMock.Verify(x => x.Create(It.IsAny<IEnumerable<ErrorDTO>>()));
         }
 
         [Test]
-        public void Save_NonPermissionExceptionIsThrown_ExceptionIsWrapped()
+        public void SaveIntegration_ShouldThrow_WhenExceptionIsThrownOnExistingIntegrationPointRead()
         {
             // Arrange
-            var model = new IntegrationPointModel()
-            {
-                ArtifactID = 123,
-                SourceProvider = 9830,
-                SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = 2322 }),
-                SelectedOverwrite = "SelectedOverwrite",
-                Scheduler = new Scheduler() { EnableScheduler = false },
-                LastRun = DateTime.Today
-            };
-            IEnumerable<ErrorDTO> errors = new[]
-            {
-                new ErrorDTO()
-                {
-                    Message = Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_ADMIN_MESSAGE,
-                    Source = Core.Constants.IntegrationPoints.APPLICATION_NAME,
-                    WorkspaceId = _sourceWorkspaceArtifactId
-                }
-            };
+            IntegrationPointModel saveModel = _fxt.Build<IntegrationPointModel>()
+                .With(x => x.ArtifactID, _integrationPoint.ArtifactId)
+                .With(x => x.Name, _integrationPoint.Name)
+                .With(x => x.DestinationProvider, _integrationPoint.DestinationProvider)
+                .With(x => x.SourceProvider, _sourceProvider.ArtifactId)
+                .With(x => x.Destination, _integrationPoint.DestinationConfiguration)
+                .Create();
+
+            _integrationPointRepositoryMock.Setup(x => x.ReadWithFieldMappingAsync(_integrationPoint.ArtifactId))
+                .Throws<ServiceException>();
 
             // Act
-            const string errorMessage = "KHAAAAAANN!!!";
-            var exception = new Exception(errorMessage);
-            _integrationPointRepository.ReadWithFieldMappingAsync(0).ThrowsForAnyArgs(exception);
-            _managerFactory.CreateErrorManager().Returns(_errorManager);
+            Action action = () => _sut.SaveIntegration(saveModel);
 
             // Assert
-            Assert.Throws<Exception>(() => _instance.SaveIntegration(model), Core.Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_USER_MESSAGE);
+            action.ShouldThrow<Exception>()
+                .WithMessage(Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_USER_MESSAGE);
 
-            _errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(
-                x => Validate(x.First(), errors.First())));
-            //x => x.Equals(errors) && x.First().FullText.Contains("Unable to save Integration Point: Unable to retrieve Integration Point")));
+            _errorManagerMock.Verify(x => x.Create(It.IsAny<IEnumerable<ErrorDTO>>()));
         }
 
-        private bool Validate(ErrorDTO errors1, ErrorDTO errors2)
-        {
-            bool a = errors1.Equals(errors2);
-            bool b = errors1.FullText.Contains("Unable to save Integration Point: Unable to retrieve Integration Point");
-            return a && b;
-        }
-
-        [TestCase(true)]
-        [TestCase(false)]
-        public void Save_InvalidPermissions_Excepts(bool isRelativityProvider)
+        [Test]
+        public void SaveIntegration_ShouldThrowPermissionException_WhenInsufficientPermissions()
         {
             // Arrange
-            int targetWorkspaceArtifactId = 9302;
-            var model = new IntegrationPointModel()
-            {
-                ArtifactID = 123,
-                SourceProvider = 9830,
-                SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactId }),
-                DestinationProvider = 4242,
-                SelectedOverwrite = "SelectedOverwrite",
-                Scheduler = new Scheduler() { EnableScheduler = false },
-                LastRun = null,
-                Destination = JsonConvert.SerializeObject(new { DestinationProviderType = "" })
-            };
+            IntegrationPointModel saveModel = CreateFromIntegrationPoint(_integrationPoint);
 
-            var existingModel = new IntegrationPointModel()
-            {
-                ArtifactID = model.ArtifactID,
-                SourceProvider = model.SourceProvider,
-                SourceConfiguration = model.SourceConfiguration,
-                SelectedOverwrite = model.SelectedOverwrite,
-                Scheduler = model.Scheduler,
-                LastRun = null
-            };
+            _validationExecutorMock.Setup(x => x.ValidateOnSave(It.IsAny<ValidationContext>()))
+                .Throws<PermissionException>();
 
-            _instance.ReadIntegrationPointModel(Arg.Is(model.ArtifactID)).Returns(existingModel);
-            _choiceQuery.GetChoicesOnField(_sourceWorkspaceArtifactId, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<ChoiceRef>()
+            // Act
+            Action action = () => _sut.SaveIntegration(saveModel);
+
+            // Assert
+            action.ShouldThrow<PermissionException>();
+
+            _errorManagerMock.Verify(x => x.Create(It.IsAny<IEnumerable<ErrorDTO>>()));
+        }
+
+        [Test]
+        public void SaveIntegration_ShouldUpdateIntegrationPoint()
+        {
+            // Arrange
+            string expectedNotificationReceipient = _fxt.Create<MailAddress>().Address;
+
+            IntegrationPointModel modelToSave = CreateFromIntegrationPoint(_integrationPoint);
+
+            modelToSave.NotificationEmails = expectedNotificationReceipient;
+
+            _integrationPointRepositoryMock.Setup(x => x.CreateOrUpdate(It.IsAny<Data.IntegrationPoint>()))
+                .Returns((Data.IntegrationPoint integrationPoint) => integrationPoint.ArtifactId);
+
+            // Act
+            int integrationPointId = _sut.SaveIntegration(modelToSave);
+
+            // Assert
+            integrationPointId.Should().Be(_integrationPoint.ArtifactId);
+
+            _integrationPointRepositoryMock.Verify(x => x.CreateOrUpdate(It.Is<Data.IntegrationPoint>(
+                y => y.EmailNotificationRecipients == expectedNotificationReceipient)));
+        }
+
+        [Test]
+        public void SaveIntegration_ShouldSaveIntegrationPoint()
+        {
+            // Arrange
+            int savedIntegrationPointId = _fxt.Create<int>();
+
+            IntegrationPointModel modelToSave = CreateFromIntegrationPoint(_integrationPoint);
+
+            modelToSave.ArtifactID = 0;
+
+            _integrationPointRepositoryMock.Setup(x => x.CreateOrUpdate(It.IsAny<Data.IntegrationPoint>()))
+                .Returns(savedIntegrationPointId);
+
+            // Act
+            int integrationPointId = _sut.SaveIntegration(modelToSave);
+
+            // Assert
+            integrationPointId.Should().Be(savedIntegrationPointId);
+        }
+
+        [Test]
+        public void SaveIntegration_ShouldThrow_WhenUnableToReadIntegrationPointModel()
+        {
+            // Arrange
+            IntegrationPointModel modelToSave = CreateFromIntegrationPoint(_integrationPoint);
+
+            _integrationPointRepositoryMock.Setup(x => x.ReadWithFieldMappingAsync(_integrationPoint.ArtifactId))
+                .Throws<NotFoundException>();
+
+            // Act
+            Action action = () => _sut.SaveIntegration(modelToSave);
+
+            // Assert
+            action.ShouldThrow<Exception>();
+        }
+
+        [Test]
+        public void SaveIntegration_ShouldCreateTheJob_WhenIntegrationPointWereScheduled()
+        {
+            // Arrange
+            IntegrationPointModel modelToSave = CreateFromIntegrationPoint(_integrationPoint);
+
+            modelToSave.Scheduler = new Scheduler(true, string.Empty);
+
+            // Act
+            int artifactId = _sut.SaveIntegration(modelToSave);
+
+            // Assert
+            _jobManagerMock.Verify(x =>
+                x.CreateJob(
+                    It.IsAny<TaskParameters>(),
+                    It.IsAny<TaskType>(),
+                    It.IsAny<int>(),
+                    artifactId,
+                    It.IsAny<IScheduleRule>(),
+                    It.IsAny<long?>(),
+                    It.IsAny<long?>()));
+        }
+
+        [Test]
+        public void SaveIntegration_ShouldThrowOnUpdate_WhenNameIsDifferent()
+        {
+            // Arrange
+            IntegrationPointModel modelToUpdate = CreateFromIntegrationPoint(_integrationPoint);
+
+            modelToUpdate.Name = _fxt.Create<string>();
+
+            // Act
+            Action action = () => _sut.SaveIntegration(modelToUpdate);
+
+            // Assert
+            action.ShouldThrow<Exception>().And
+                .InnerException.Message.Should().Contain("Name");
+        }
+
+        [Test]
+        public void SaveIntegration_ShouldThrowOnUpdate_WhenDestinationProviderIsDifferent()
+        {
+            // Arrange
+            IntegrationPointModel modelToUpdate = CreateFromIntegrationPoint(_integrationPoint);
+
+            modelToUpdate.DestinationProvider = _fxt.Create<int>();
+
+            // Act
+            Action action = () => _sut.SaveIntegration(modelToUpdate);
+
+            // Assert
+            action.ShouldThrow<Exception>().And
+                .InnerException.Message.Should().Contain("Destination Provider");
+        }
+
+        [Test]
+        public void SaveIntegration_ShouldThrowOnUpdate_WhenArtifactTypeIsDifferent()
+        {
+            // Arrange
+            IntegrationPointModel modelToUpdate = CreateFromIntegrationPoint(_integrationPoint);
+
+            modelToUpdate.Destination = JsonConvert.SerializeObject(new
             {
-                new ChoiceRef(2343)
-                {
-                    Name = model.SelectedOverwrite
-                }
+                artifactTypeID = _fxt.Create<int>()
             });
 
-            var sourceProvider = new SourceProvider()
-            {
-                Identifier =
-                    isRelativityProvider ? Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID : System.Guid.NewGuid().ToString()
-            };
-
-            var destinationProvider = new DestinationProvider
-            {
-                Identifier =
-                    isRelativityProvider
-                        ? Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID
-                        : System.Guid.NewGuid().ToString()
-            };
-
-            var integrationPointType = new IntegrationPointType()
-            {
-                Identifier =
-                    isRelativityProvider
-                        ? Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString()
-                        : System.Guid.NewGuid().ToString()
-            };
-
-            _objectManager.Read<SourceProvider>(Arg.Is(model.SourceProvider)).Returns(sourceProvider);
-            _objectManager.Read<DestinationProvider>(Arg.Is(model.DestinationProvider)).Returns(destinationProvider);
-            _objectManager.Read<IntegrationPointType>(Arg.Is(model.Type)).Returns(integrationPointType);
-
-            string[] errorMessages = { "Oh", "no" };
-
-            _caseServiceContext.EddsUserID = _userId;
-
-            _validationExecutor
-                .When(mock => mock.ValidateOnSave(Arg.Is<ValidationContext>(x =>
-                    x.IntegrationPointType == integrationPointType &&
-                    x.SourceProvider == sourceProvider &&
-                    x.UserId == _userId &&
-                    x.DestinationProvider == destinationProvider &&
-                    x.Model.ArtifactID == model.ArtifactID &&
-                    x.ObjectTypeGuid == _objectTypeGuid
-
-                        )))
-                .Do(x => { throw new PermissionException(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_MESSAGE); });
-
-            _managerFactory.CreateErrorManager().Returns(_errorManager);
-
-            var expectedError = new ErrorDTO()
-            {
-                Message = Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_MESSAGE,
-                FullText = $"{Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_FULLTEXT_PREFIX}{Environment.NewLine}{String.Join(Environment.NewLine, errorMessages.Concat(new[] { Constants.IntegrationPoints.NO_USERID }))}",
-                Source = Core.Constants.IntegrationPoints.APPLICATION_NAME,
-                WorkspaceId = _sourceWorkspaceArtifactId
-            };
-
             // Act
-            Assert.Throws<PermissionException>(() => _instance.SaveIntegration(model), Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_USER_MESSAGE);
+            Action action = () => _sut.SaveIntegration(modelToUpdate);
 
             // Assert
-            _instance.Received(1).ReadIntegrationPointModel(Arg.Is(model.ArtifactID));
-            _objectManager
-                .Received(1)
-                .Read<SourceProvider>(Arg.Is(model.SourceProvider));
-            _objectManager
-                .Received(1)
-                .Read<DestinationProvider>(Arg.Is(model.DestinationProvider));
-
-            _validationExecutor.Received(1).ValidateOnSave(Arg.Is<ValidationContext>(x =>
-                    x.IntegrationPointType == integrationPointType &&
-                    x.SourceProvider == sourceProvider &&
-                    x.UserId == _userId &&
-                    x.DestinationProvider == destinationProvider &&
-                    x.Model.ArtifactID == model.ArtifactID &&
-                    x.ObjectTypeGuid == _objectTypeGuid
-            ));
-
-            _errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => MatchHelper.Matches(new ErrorDTO[] { expectedError }, x)));
-        }
-
-        [TestCase(true)]
-        [TestCase(false)]
-        public void Save_UpdateScenario_NoSchedule_GoldFlow(bool isRelativityProvider)
-        {
-            // Arrange
-            int targetWorkspaceArtifactId = 9302;
-            var model = new IntegrationPointModel()
-            {
-                ArtifactID = 123,
-                SourceProvider = 9830,
-                DestinationProvider = 4242,
-                SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactId }),
-                SelectedOverwrite = "SelectedOverwrite",
-                Scheduler = new Scheduler() { EnableScheduler = false },
-                LastRun = null,
-                Destination = JsonConvert.SerializeObject(new { DestinationProviderType = "" })
-            };
-
-            var existingModel = new IntegrationPointModel()
-            {
-                ArtifactID = model.ArtifactID,
-                SourceProvider = model.SourceProvider,
-                SourceConfiguration = model.SourceConfiguration,
-                DestinationProvider = model.DestinationProvider,
-                SelectedOverwrite = model.SelectedOverwrite,
-                Scheduler = model.Scheduler,
-                LastRun = null
-            };
-
-            _instance.ReadIntegrationPointModel(Arg.Is(model.ArtifactID)).Returns(existingModel);
-            _choiceQuery.GetChoicesOnField(_sourceWorkspaceArtifactId, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<ChoiceRef>()
-            {
-                new ChoiceRef(2343)
-                {
-                    Name = model.SelectedOverwrite
-                }
-            });
-
-            var sourceProvider = new SourceProvider()
-            {
-                Identifier =
-                    isRelativityProvider ? Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID : System.Guid.NewGuid().ToString()
-            };
-
-            var destinationProvider = new DestinationProvider
-            {
-                Identifier =
-                    isRelativityProvider
-                        ? Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID
-                        : System.Guid.NewGuid().ToString()
-            };
-
-            var integrationPointType = new IntegrationPointType()
-            {
-                Identifier =
-                    isRelativityProvider
-                        ? Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString()
-                        : System.Guid.NewGuid().ToString()
-            };
-
-            _objectManager.Read<SourceProvider>(Arg.Is(model.SourceProvider)).Returns(sourceProvider);
-            _objectManager.Read<DestinationProvider>(Arg.Is(model.DestinationProvider)).Returns(destinationProvider);
-            _objectManager.Read<IntegrationPointType>(Arg.Is(model.Type)).Returns(integrationPointType);
-
-            _caseServiceContext.EddsUserID = _userId;
-
-            _integrationPointRepository
-                .CreateOrUpdate(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == model.ArtifactID))
-                .Returns(model.ArtifactID);
-
-            // Act
-            int result = _instance.SaveIntegration(model);
-
-            // Assert
-            Assert.AreEqual(model.ArtifactID, result, "The resulting artifact id should match.");
-            _instance.Received(1).ReadIntegrationPointModel(Arg.Is(model.ArtifactID));
-            _objectManager
-                .Received(1)
-                .Read<SourceProvider>(Arg.Is(model.SourceProvider));
-            _objectManager
-                .Received(1)
-                .Read<DestinationProvider>(Arg.Is(model.DestinationProvider));
-
-            _validationExecutor.Received(1).ValidateOnSave(Arg.Is<ValidationContext>(x =>
-                x.IntegrationPointType == integrationPointType &&
-                x.SourceProvider == sourceProvider &&
-                x.UserId == _userId &&
-                x.DestinationProvider == destinationProvider &&
-                x.Model.ArtifactID == model.ArtifactID &&
-                x.ObjectTypeGuid == _objectTypeGuid
-            ));
-
-            _integrationPointRepository
-                .Received(1)
-                .CreateOrUpdate(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == model.ArtifactID));
-            _jobManager.Received(1).GetJob(
-                _sourceWorkspaceArtifactId,
-                model.ArtifactID,
-                isRelativityProvider ? TaskType.ExportService.ToString() : TaskType.SyncManager.ToString());
-        }
-
-        [TestCase(true)]
-        [TestCase(false)]
-        public void Save_CreateScenario_NoSchedule_GoldFlow(bool isRelativityProvider)
-        {
-            // Arrange
-            int targetWorkspaceArtifactId = 9302;
-            var model = new IntegrationPointModel()
-            {
-                ArtifactID = 0,
-                SourceProvider = 9830,
-                SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactId }),
-                DestinationProvider = 4242,
-                SelectedOverwrite = "SelectedOverwrite",
-                Scheduler = new Scheduler() { EnableScheduler = false },
-                LastRun = null,
-                Destination = JsonConvert.SerializeObject(new { DestinationProviderType = "" })
-            };
-
-            _choiceQuery.GetChoicesOnField(_sourceWorkspaceArtifactId, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<ChoiceRef>()
-            {
-                new ChoiceRef(2343)
-                {
-                    Name = model.SelectedOverwrite
-                }
-            });
-
-            var sourceProvider = new SourceProvider()
-            {
-                Identifier =
-                    isRelativityProvider ? Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID : System.Guid.NewGuid().ToString()
-            };
-
-            var destinationProvider = new DestinationProvider
-            {
-                Identifier =
-                    isRelativityProvider
-                        ? Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID
-                        : System.Guid.NewGuid().ToString()
-            };
-
-            var integrationPointType = new IntegrationPointType()
-            {
-                Identifier =
-                    isRelativityProvider
-                        ? Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString()
-                        : System.Guid.NewGuid().ToString()
-            };
-
-            _objectManager.Read<SourceProvider>(Arg.Is(model.SourceProvider)).Returns(sourceProvider);
-            _objectManager.Read<DestinationProvider>(Arg.Is(model.DestinationProvider)).Returns(destinationProvider);
-            _objectManager.Read<IntegrationPointType>(Arg.Is(model.Type)).Returns(integrationPointType);
-
-            const int newIntegrationPoinId = 389234;
-            _integrationPointRepository
-                .CreateOrUpdate(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == 0))
-                .Returns(newIntegrationPoinId);
-
-            _caseServiceContext.EddsUserID = _userId;
-
-            // Act
-            int result = _instance.SaveIntegration(model);
-
-            // Assert
-            Assert.AreEqual(newIntegrationPoinId, result, "The resulting artifact id should match.");
-            _objectManager
-                .Received(1)
-                .Read<SourceProvider>(Arg.Is(model.SourceProvider));
-            _objectManager
-                .Received(1)
-                .Read<DestinationProvider>(Arg.Is(model.DestinationProvider));
-
-            _validationExecutor.Received(1).ValidateOnSave(Arg.Is<ValidationContext>(x =>
-                x.IntegrationPointType == integrationPointType &&
-                x.SourceProvider == sourceProvider &&
-                x.UserId == _userId &&
-                x.DestinationProvider == destinationProvider &&
-                x.Model.ArtifactID == model.ArtifactID &&
-                x.ObjectTypeGuid == _objectTypeGuid
-            ));
-
-            _integrationPointRepository.Received(1).CreateOrUpdate(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == newIntegrationPoinId));
-            _jobManager.Received(1).GetJob(
-                _sourceWorkspaceArtifactId,
-                newIntegrationPoinId,
-                isRelativityProvider ? TaskType.ExportService.ToString() : TaskType.SyncManager.ToString());
+            action.ShouldThrow<Exception>().And
+                .InnerException.Message.Should().Contain("Destination RDO");
         }
 
         [Test]
-        public void Update_IPReadFails_Excepts()
-        {
-            int targetWorkspaceArtifactId = 9302;
-            var model = new IntegrationPointModel()
-            {
-                ArtifactID = 123,
-                SourceProvider = 9830,
-                SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactId })
-            };
-
-            const string exceptionMessage = "UH OH!";
-            _instance.ReadIntegrationPointModel(Arg.Is(model.ArtifactID))
-                .Throws(new Exception(exceptionMessage));
-
-            // Act
-            Assert.Throws<Exception>(() => _instance.SaveIntegration(model), "Unable to save Integration Point: Unable to retrieve Integration Point");
-
-            _instance.Received(1).ReadIntegrationPointModel(Arg.Is(model.ArtifactID));
-        }
-
-        [Test]
-        public void SaveIntegration_MakeSureToCreateAJobWithBatchInstanceId()
-        {
-            // arrange
-            const int targetWorkspaceArtifactId = 9302;
-            const int integrationPointArtifactId = 9847654;
-            _caseServiceContext.EddsUserID = 78946;
-            _caseServiceContext.WorkspaceID = _sourceWorkspaceArtifactId;
-            var model = new IntegrationPointModel()
-            {
-                SourceProvider = 9830,
-                SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactId }),
-                DestinationProvider = 4242,
-                SelectedOverwrite = "SelectedOverwrite",
-                Scheduler = new Scheduler()
-                {
-                    EnableScheduler = true,
-                    StartDate = DateTime.Now.ToString(CultureInfo.InvariantCulture),
-                    EndDate = DateTime.Now.AddDays(1).ToString(CultureInfo.InvariantCulture),
-                    SelectedFrequency = ScheduleInterval.Daily.ToString(),
-                    Reoccur = 2,
-                },
-                LastRun = null,
-                Destination = JsonConvert.SerializeObject(new { DestinationProviderType = "" })
-            };
-            _integrationPointRepository.CreateOrUpdate(Arg.Any<Data.IntegrationPoint>())
-                .Returns(integrationPointArtifactId);
-
-            _choiceQuery.GetChoicesOnField(_sourceWorkspaceArtifactId, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<ChoiceRef>()
-            {
-                new ChoiceRef(2343)
-                {
-                    Name = model.SelectedOverwrite
-                }
-            });
-
-            var sourceProvider = new SourceProvider()
-            {
-                Identifier = Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID
-            };
-
-            var destinationProvider = new DestinationProvider
-            {
-                Identifier = Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID
-            };
-
-            _objectManager.Read<SourceProvider>(Arg.Is(model.SourceProvider)).Returns(sourceProvider);
-            _objectManager.Read<DestinationProvider>(Arg.Is(model.DestinationProvider)).Returns(destinationProvider);
-
-            // Act
-            int ipArtifactId = _instance.SaveIntegration(model);
-
-            // Assert
-            _jobManager.Received(1).CreateJob<TaskParameters>(Arg.Any<TaskParameters>(), TaskType.ExportService, _caseServiceContext.WorkspaceID, ipArtifactId, Arg.Any<IScheduleRule>());
-        }
-
-        [Test]
-        [TestCase(false, new string[] { "Name" })]
-        [TestCase(false, new string[] { "Destination Provider" })]
-        [TestCase(false, new string[] { "Destination RDO" })]
-        [TestCase(false, new string[] { "Case" })]
-        [TestCase(false, new string[] { "Source Provider" })]
-        [TestCase(false, new string[] { "Name", "Destination Provider", "Destination RDO", "Case" })]
-        [TestCase(false, new string[] { "Name", "Destination Provider", "Destination RDO", "Case", "Source Provider" })]
-        [TestCase(false, new string[] { "Name", "Source Configuration" })] // normal providers will only throw with "Name" in list
-        [TestCase(true, new string[] { "Name", "Destination Provider", "Destination RDO", "Case", "Source Configuration" })]
-        [TestCase(true, new string[] { "Source Configuration" })]
-        [TestCase(true, new string[] { "Name", "Destination Provider", "Destination RDO", "Case", "Source Configuration" })] // If relativity provider and no permissions, throw permissions error first
-        public void Update_InvalidProperties_Excepts(bool isRelativityProvider, string[] propertyNames)
+        public void SaveIntegration_ShouldContinueAndThrowOnUpdate_WhenMultiplePropertiesAreDifferent()
         {
             // Arrange
-            var propertyNameHashSet = new HashSet<string>(propertyNames);
-            const int targetWorkspaceArtifactId = 12329;
-            const int sourceWorkspaceArtifactId = 92321;
-            int existingTargetWorkspaceArtifactId = propertyNameHashSet.Contains("Source Configuration")
-                ? 12324
-                : targetWorkspaceArtifactId;
-            var model = new IntegrationPointModel()
-            {
-                ArtifactID = 123,
-                Name = "My Name",
-                DestinationProvider = 4909,
-                SourceProvider = 9830,
-                Destination = JsonConvert.SerializeObject(new { artifactTypeID = 10, CaseArtifactId = 7891232 }),
-                SourceConfiguration = JsonConvert.SerializeObject(new
-                {
-                    TargetWorkspaceArtifactId = targetWorkspaceArtifactId,
-                    SourceWorkspaceArtifactId = sourceWorkspaceArtifactId
-                })
-            };
+            IntegrationPointModel modelToUpdate = CreateFromIntegrationPoint(_integrationPoint);
 
-            var existingModel = new IntegrationPointModel()
-            {
-                ArtifactID = model.ArtifactID,
-                LastRun = DateTime.Now,
-                Name = propertyNameHashSet.Contains("Name") ? "Diff Name" : model.Name,
-                DestinationProvider = propertyNameHashSet.Contains("Destination Provider") ? 12343 : model.DestinationProvider,
-                SourceProvider = propertyNameHashSet.Contains("Source Provider") ? 391232 : model.SourceProvider,
-                Destination = JsonConvert.SerializeObject(new
-                {
-                    artifactTypeID = propertyNameHashSet.Contains("Destination RDO") ? 13 : 10,
-                    CaseArtifactId = propertyNameHashSet.Contains("Case") ? 18392 : 7891232
-                }),
-                SourceConfiguration = JsonConvert.SerializeObject(new
-                {
-                    TargetWorkspaceArtifactId = existingTargetWorkspaceArtifactId
-                })
-            };
-
-            _instance.ReadIntegrationPointModel(Arg.Is(model.ArtifactID))
-                .Returns(existingModel);
-
-            // Source Provider is special, if this changes we except earlier
-            if (!propertyNameHashSet.Contains("Source Provider"))
-            {
-                var sourceProvider = new SourceProvider()
-                {
-                    Identifier = isRelativityProvider
-                        ? Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID
-                        : "YODUDE"
-                };
-                _objectManager
-                    .Read<SourceProvider>(Arg.Is(model.SourceProvider))
-                    .Returns(sourceProvider);
-            }
-
-            string filteredNames = String.Join(",", propertyNames.Where(x => isRelativityProvider || x != "Source Configuration").Select(x => $" {x}"));
-            string expectedErrorString = $"Unable to save Integration Point:{filteredNames} cannot be changed once the Integration Point has been run";
+            modelToUpdate.DestinationProvider = _fxt.Create<int>();
+            modelToUpdate.Name = _fxt.Create<string>();
 
             // Act
-            Assert.Throws<Exception>(() => _instance.SaveIntegration(model), expectedErrorString);
+            Action action = () => _sut.SaveIntegration(modelToUpdate);
 
             // Assert
-            _instance.Received(1).ReadIntegrationPointModel(Arg.Is(model.ArtifactID));
-            _objectManager
-                .Received(!propertyNameHashSet.Contains("Source Provider") ? 1 : 0)
-                .Read<SourceProvider>(Arg.Is(model.SourceProvider));
+            action.ShouldThrow<Exception>().And
+                .InnerException.Message
+                .Should().Contain("Destination Provider")
+                .And.Contain("Name");
         }
 
         [Test]
         public void ReadIntegrationPointModel_ShouldReturnIntegrationPointModel()
         {
-            // arrange
-            _integrationPointRepository.ReadWithFieldMappingAsync(_integrationPointArtifactId).Returns(Task.FromResult(_integrationPoint));
-            IntegrationPointModel expectedResult = (IntegrationPointModel) _integrationPointModel;
+            // Act
+            IntegrationPointModel result = _sut.ReadIntegrationPointModel(_integrationPoint.ArtifactId);
 
-            // act
-            IntegrationPointModel result = _instance.ReadIntegrationPointModel(_integrationPointArtifactId);
-
-            // assert
-            _integrationPointRepository.Received(1).ReadWithFieldMappingAsync(_integrationPointArtifactId);
-            MatchHelper.Matches(expectedResult, result);
+            // Assert
+            MatchHelper.Matches(_integrationPointModel, result);
         }
 
         [Test]
         public void ReadIntegrationPoint_ShouldReturnIntegrationPoint_WhenRepositoryReturnsIntegrationPoint()
         {
-            // arrange
-            _integrationPointRepository.ReadWithFieldMappingAsync(_integrationPointArtifactId).Returns(Task.FromResult(_integrationPoint));
-
-            // act
-            Data.IntegrationPoint result = _instance.ReadIntegrationPoint(_integrationPointArtifactId);
+            // Act
+            Data.IntegrationPoint result = _sut.ReadIntegrationPoint(_integrationPoint.ArtifactId);
 
             // assert
-            _integrationPointRepository.Received(1).ReadWithFieldMappingAsync(_integrationPointArtifactId);
             MatchHelper.Matches(_integrationPoint, result);
         }
 
         [Test]
         public void ReadIntegrationPoint_ShouldThrowException_WhenRepositoryThrowsException()
         {
-            // arrange
-            _integrationPointRepository.ReadWithFieldMappingAsync(_integrationPointArtifactId).Throws<Exception>();
+            // Arrange
+            _integrationPointRepositoryMock.Setup(x => x.ReadWithFieldMappingAsync(_integrationPoint.ArtifactId))
+                .Throws<NotFoundException>();
 
-            // act
-            Assert.Throws<Exception>(() =>_instance.ReadIntegrationPoint(_integrationPointArtifactId));
+            // Act
+            Action action = () => _sut.ReadIntegrationPoint(_integrationPoint.ArtifactId);
 
-            // assert
-            _integrationPointRepository.Received(1).ReadWithFieldMappingAsync(_integrationPointArtifactId);
+            // Assert
+            action.ShouldThrow<NotFoundException>();
         }
 
-        private Data.JobHistory PrepareJobHistory(int artifactId, ChoiceRef status)
+        private void SetupLastRunJobHistory(Data.JobHistory jobHistory)
         {
-            return new Data.JobHistory
-            {
-                ArtifactId = artifactId,
-                BatchInstance = Guid.NewGuid().ToString(),
-                JobStatus = status
-            };
+            _jobHistoryManagerFake.Setup(x => x.GetLastJobHistoryArtifactId(_WORKSPACE_ID, _integrationPoint.ArtifactId))
+                .Returns(jobHistory.ArtifactId);
+
+            _objectManagerFake.Setup(x => x.Query<Data.JobHistory>(It.IsAny<QueryRequest>(), It.IsAny<ExecutionIdentity>()))
+                .Returns(new List<Data.JobHistory> { jobHistory });
+        }
+
+        private IntegrationPointModel CreateFromIntegrationPoint(Data.IntegrationPoint integrationPoint)
+        {
+            return _fxt.Build<IntegrationPointModel>()
+                .With(x => x.ArtifactID, integrationPoint.ArtifactId)
+                .With(x => x.Name, integrationPoint.Name)
+                .With(x => x.SourceProvider, integrationPoint.SourceProvider)
+                .With(x => x.DestinationProvider, integrationPoint.DestinationProvider)
+                .With(x => x.Destination, integrationPoint.DestinationConfiguration)
+                .With(x => x.SourceConfiguration, integrationPoint.SourceConfiguration)
+                .With(x => x.Type, integrationPoint.Type)
+                .With(x => x.LogErrors, integrationPoint.LogErrors)
+                .With(x => x.HasErrors, integrationPoint.HasErrors)
+                .With(x => x.LastRun, integrationPoint.LastRuntimeUTC)
+                .With(x => x.Map, integrationPoint.FieldMappings)
+                .With(x => x.SecuredConfiguration, integrationPoint.SecuredConfiguration)
+                .With(x => x.SelectedOverwrite, _integrationPoint.OverwriteFields.Name)
+                .Create();
+        }
+
+        private void VerifyJobShouldNotBeCreated()
+        {
+            _jobManagerMock.Verify(
+                x => x.CreateJobOnBehalfOfAUser(
+                    It.IsAny<TaskParameters>(),
+                    It.IsAny<TaskType>(),
+                    It.IsAny<int>(),
+                    It.IsAny<int>(),
+                    It.IsAny<int>(),
+                    It.IsAny<long?>(),
+                    It.IsAny<long>()),
+                Times.Never());
         }
     }
 }

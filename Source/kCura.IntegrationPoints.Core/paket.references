@@ -11,6 +11,7 @@ Relativity.DataTransfer.MessageService
 Relativity.IntegrationPoints.SDK
 Relativity.Productions.Services.Interfaces
 Relativity.Services.Interfaces.Private
+Relativity.Sync.Services.Interfaces
 Relativity.Telemetry.MetricsCollection
 Relativity.Toggles
 Relativity.OAuth2Client

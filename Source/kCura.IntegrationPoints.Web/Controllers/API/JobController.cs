@@ -9,9 +9,9 @@ using System.Web.Http;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Data.Models;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Models;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Extensions;
@@ -36,8 +36,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         private readonly IAPILog _log;
 
         public JobController(
-            IServiceFactory serviceFactory, 
-            ICPHelper helper, 
+            IServiceFactory serviceFactory,
+            ICPHelper helper,
             IManagerFactory managerFactory,
             IIntegrationPointRepository integrationPointRepository,
             IAPILog log)
@@ -54,32 +54,40 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         [LogApiExceptionFilter(Message = "Unable to run the transfer job.")]
         public async Task<HttpResponseMessage> Run(Payload payload)
         {
-            AuditAction(payload, _RUN_AUDIT_MESSAGE);
-
-            IntegrationPoint integrationPoint = await _integrationPointRepository
-                .ReadWithFieldMappingAsync(Convert.ToInt32(payload.ArtifactId))
-                .ConfigureAwait(false);
-
-            // this validation was introduced due to an issue with ARMed workspaces (REL-171985)
-            // so far, ARM is not capable of copying SQL Secret Catalog records for integration points in workspace database
-            // if secret store entry is missing, SecuredConfiguration property contains bare guid instead of JSON - that's why we check if it can be parsed as guid
-            Guid parseResult;
-            if (Guid.TryParse(integrationPoint.SecuredConfiguration, out parseResult))
+            try
             {
-                throw new IntegrationPointsException("Integration point secret store configuration is missing. " +
-                                                        "This may be caused by RIP being restored from ARM backup. " +
-                                                        "Please try to edit integration point configuration and reenter credentials.");
+                AuditAction(payload, _RUN_AUDIT_MESSAGE);
+
+                IntegrationPoint integrationPoint = await _integrationPointRepository
+                    .ReadWithFieldMappingAsync(Convert.ToInt32(payload.ArtifactId))
+                    .ConfigureAwait(false);
+
+                // this validation was introduced due to an issue with ARMed workspaces (REL-171985)
+                // so far, ARM is not capable of copying SQL Secret Catalog records for integration points in workspace database
+                // if secret store entry is missing, SecuredConfiguration property contains bare guid instead of JSON - that's why we check if it can be parsed as guid
+                Guid parseResult;
+                if (Guid.TryParse(integrationPoint.SecuredConfiguration, out parseResult))
+                {
+                    throw new IntegrationPointsException("Integration point secret store configuration is missing. " +
+                                                         "This may be caused by RIP being restored from ARM backup. " +
+                                                         "Please try to edit integration point configuration and reenter credentials.");
+                }
+
+                IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper);
+
+                HttpResponseMessage httpResponseMessage = RunInternal(
+                    payload.AppId,
+                    payload.ArtifactId,
+                    integrationPointService,
+                    ActionType.Run
+                );
+                return httpResponseMessage;
             }
-
-            IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper);
-
-            HttpResponseMessage httpResponseMessage = RunInternal(
-                payload.AppId,
-                payload.ArtifactId,
-                integrationPointService,
-                ActionType.Run
-            );
-            return httpResponseMessage;
+            catch (Exception ex)
+            {
+                _log.LogError(ex, "Failed to Run job.");
+                throw;
+            }
         }
 
         // POST API/Job/Retry
@@ -88,12 +96,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         public HttpResponseMessage Retry(Payload payload, bool switchToAppendOverlayMode = false)
         {
             AuditAction(payload, _RETRY_AUDIT_MESSAGE);
-            
+
             IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper);
 
             HttpResponseMessage httpResponseMessage = RunInternal(
-                payload.AppId, 
-                payload.ArtifactId, 
+                payload.AppId,
+                payload.ArtifactId,
                 integrationPointService,
                 ActionType.Retry,
                 switchToAppendOverlayMode
@@ -120,7 +128,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             {
                 // TODO: Add an extension to aggregate messages without stack traces. Place it in ExceptionExtensions.cs
                 IEnumerable<string> innerExceptions = exception.InnerExceptions.Where(ex => ex != null).Select(ex => ex.Message);
-                errorMessage = $"{exception.Message} : {String.Join(",", innerExceptions)}";
+                errorMessage = $"{exception.Message} : {string.Join(",", innerExceptions)}";
                 httpStatusCode = HttpStatusCode.BadRequest;
                 CreateRelativityError(errorMessage, exception.FlattenErrorMessagesWithStackTrace(), payload.AppId);
             }
@@ -136,7 +144,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             }
 
             HttpResponseMessage response = Request.CreateResponse(httpStatusCode);
-            if (!String.IsNullOrEmpty(errorMessage))
+            if (!string.IsNullOrEmpty(errorMessage))
             {
                 response.Content = new StringContent(errorMessage, System.Text.Encoding.UTF8, "text/plain");
             }
@@ -164,7 +172,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             catch (AggregateException exception)
             {
                 IEnumerable<string> innerExceptions = exception.InnerExceptions.Where(ex => ex != null).Select(ex => ex.Message);
-                errorMessage = $"{exception.Message} : {String.Join(",", innerExceptions)}";
+                errorMessage = $"{exception.Message} : {string.Join(",", innerExceptions)}";
                 httpStatusCode = HttpStatusCode.BadRequest;
             }
             catch (IntegrationPointValidationException exception)
@@ -181,7 +189,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             }
 
             HttpResponseMessage response = Request.CreateResponse(httpStatusCode);
-            if (!String.IsNullOrEmpty(errorMessage))
+            if (!string.IsNullOrEmpty(errorMessage))
             {
                 response.Content = new StringContent(errorMessage, System.Text.Encoding.UTF8, "text/plain");
             }
@@ -199,7 +207,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         private void AuditAction(Payload payload, string auditMessage)
         {
             IAuditManager auditManager = _managerFactory.CreateAuditManager(payload.AppId);
-            AuditElement audit = new AuditElement {AuditMessage = auditMessage};
+            AuditElement audit = new AuditElement { AuditMessage = auditMessage };
             auditManager.RelativityAuditRepository.CreateAuditRecord(payload.ArtifactId, audit);
         }
 
@@ -227,7 +235,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             {
                 Message = message,
                 FullText = fullText,
-                Source =  Core.Constants.IntegrationPoints.APPLICATION_NAME,
+                Source = Core.Constants.IntegrationPoints.APPLICATION_NAME,
                 WorkspaceId = workspaceArtifactId
             };
 

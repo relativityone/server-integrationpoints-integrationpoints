@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Common.Helpers;
+using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
@@ -200,7 +201,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
             Mock<IConfig> config = new Mock<IConfig>();
 
             Mock<IRelativitySyncConstrainsChecker> relativitySyncConstrainsChecker = new Mock<IRelativitySyncConstrainsChecker>();
-            relativitySyncConstrainsChecker.Setup(x => x.ShouldUseRelativitySync(It.IsAny<Job>())).Returns(false);
+            relativitySyncConstrainsChecker.Setup(x => x.ShouldUseRelativitySync(It.IsAny<int>())).Returns(false);
 
             Mock<ITaskParameterHelper> taskParameterHelper = new Mock<ITaskParameterHelper>();
             taskParameterHelper.Setup(x => x.GetBatchInstance(It.IsAny<Job>())).Returns(_BATCH_INSTANCE_GUID);

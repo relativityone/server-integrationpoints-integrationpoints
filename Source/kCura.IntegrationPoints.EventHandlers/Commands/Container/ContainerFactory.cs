@@ -5,6 +5,7 @@ using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.EventHandlers.Commands.Context;
+using kCura.IntegrationPoints.RelativitySync;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
 {
@@ -20,6 +21,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
             container.Install(new QueryInstallers());
             container.Install(new SharedAgentInstaller());
             container.Install(new ServicesInstaller());
+            container.Install(new RelativitySyncInstaller());
             container.Install(new ImportProvider.Parser.Installers.ServicesInstaller());
 
             return container;

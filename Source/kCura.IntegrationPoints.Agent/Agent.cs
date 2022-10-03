@@ -16,6 +16,7 @@ using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Helpers;
+using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Services;
@@ -309,7 +310,7 @@ namespace kCura.IntegrationPoints.Agent
         private bool ShouldUseRelativitySync(IWindsorContainer container, Job job)
         {
             IRelativitySyncConstrainsChecker constrainsChecker = container.Resolve<IRelativitySyncConstrainsChecker>();
-            return constrainsChecker.ShouldUseRelativitySync(job);
+            return constrainsChecker.ShouldUseRelativitySync(job.RelatedObjectArtifactID);
         }
 
         private void MarkJobAsFailed(IWindsorContainer container, Job job, Exception ex)

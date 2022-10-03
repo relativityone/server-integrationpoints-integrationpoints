@@ -20,7 +20,6 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using System;
 using Castle.MicroKernel.Resolvers;
-using kCura.IntegrationPoints.Agent.Checkers;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Agent.Installer.Components;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
@@ -66,8 +65,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
             container.Register(Component.For<IJobContextProvider>().Instance(new JobContextProvider()).LifestyleSingleton());
 
             ConfigureMonitoring(container);
-
-            container.Register(Component.For<IRelativitySyncConstrainsChecker>().ImplementedBy<RelativitySyncConstrainsChecker>());
 
             container.Register(Component.For<IServiceContextHelper>().ImplementedBy<ServiceContextHelperForAgent>().DynamicParameters((k, d) =>
             {

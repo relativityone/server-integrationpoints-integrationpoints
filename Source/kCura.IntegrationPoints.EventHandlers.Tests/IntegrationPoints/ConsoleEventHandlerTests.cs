@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 
             _instance =
                 new EventHandlers.IntegrationPoints.ConsoleEventHandler(
-                    new ButtonStateBuilder(_providerTypeService, _queueManager, _jobHistoryManager, _stateManager, _permissionRepository, _permissionValidator, _integrationPointRepository),
+                    new ButtonStateBuilder(_providerTypeService, _queueManager, _jobHistoryManager, _stateManager, _permissionRepository, _permissionValidator, _integrationPointRepository, false),
                     _onClickEventHelper, new ConsoleBuilder())
                 {
                     ActiveArtifact = activeArtifact,
@@ -119,7 +119,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
                 DestinationConfiguration = _serializer.Serialize(importSettings)
             };
 
-            string[] viewErrorMessages = {Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_NO_VIEW};
+            string[] viewErrorMessages = { Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_NO_VIEW };
             ProviderType providerType = ProviderType.Relativity;
             _managerFactory.CreateStateManager().Returns(_stateManager);
             _managerFactory.CreateQueueManager().Returns(_queueManager);
@@ -129,11 +129,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 
             _helperClassFactory.CreateOnClickEventHelper(_managerFactory).Returns(_onClickEventHelper);
 
-            _integrationPointRepository.ReadWithFieldMappingAsync(_ARTIFACT_ID).Returns(integrationPoint);
-            _providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value, integrationPoint.DestinationProvider.Value).Returns(providerType);
+            _integrationPointRepository.ReadAsync(_ARTIFACT_ID).Returns(integrationPoint);
+            _providerTypeService.GetProviderType(integrationPoint).Returns(providerType);
 
             StoppableJobHistoryCollection stoppableJobCollection = null;
-
             if (hasStoppableJobs)
             {
                 stoppableJobCollection = new StoppableJobHistoryCollection
@@ -177,7 +176,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 
             _stateManager.GetButtonState(
                     sourceConfiguration.TypeOfExport,
-                    ProviderType.Relativity, 
+                    ProviderType.Relativity,
                     hasJobsExecutingOrInQueue,
                     integrationPoint.HasErrors.Value,
                     hasViewErrorsPermissions,
@@ -229,7 +228,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
             }
 
             int buttonIndex = 0;
-            ConsoleButton runButton = (ConsoleButton) console.Items[buttonIndex++];
+            ConsoleButton runButton = (ConsoleButton)console.Items[buttonIndex++];
 
 
             _jobHistoryManager.Received(1).GetStoppableJobHistory(_APPLICATION_ID, _ARTIFACT_ID);
@@ -257,7 +256,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
             }
 
 
-            ConsoleButton retryErrorsButton = (ConsoleButton) console.Items[buttonIndex++];
+            ConsoleButton retryErrorsButton = (ConsoleButton)console.Items[buttonIndex++];
             Assert.AreEqual(_RETRY_ERRORS, retryErrorsButton.DisplayText);
             Assert.AreEqual(buttonStates.RetryErrorsButtonEnabled, retryErrorsButton.Enabled);
             Assert.AreEqual(false, retryErrorsButton.RaisesPostBack);
@@ -266,7 +265,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 
             if (hasViewErrorsPermissions)
             {
-                ConsoleButton viewErrorsButtonLink = (ConsoleButton) console.Items[buttonIndex++];
+                ConsoleButton viewErrorsButtonLink = (ConsoleButton)console.Items[buttonIndex++];
                 Assert.AreEqual(_VIEW_ERRORS, viewErrorsButtonLink.DisplayText);
                 Assert.AreEqual(buttonStates.ViewErrorsLinkEnabled, viewErrorsButtonLink.Enabled);
                 Assert.AreEqual(false, viewErrorsButtonLink.RaisesPostBack);
@@ -303,7 +302,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
                 SourceConfiguration = _serializer.Serialize(sourceConfiguration),
                 DestinationConfiguration = _serializer.Serialize(importSettings)
             };
-            
+
             _managerFactory.CreateStateManager().Returns(_stateManager);
             _managerFactory.CreateQueueManager().Returns(_queueManager);
             _managerFactory.CreateJobHistoryManager().Returns(_jobHistoryManager);
@@ -312,8 +311,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
 
             _permissionRepository.UserHasArtifactTypePermission(Arg.Any<Guid>(), ArtifactPermission.Create).Returns(true);
 
-            _integrationPointRepository.ReadWithFieldMappingAsync(_ARTIFACT_ID).Returns(integrationPoint);
-            _providerTypeService.GetProviderType(integrationPoint.SourceProvider.Value, integrationPoint.DestinationProvider.Value).Returns(providerType);
+            _integrationPointRepository.ReadAsync(_ARTIFACT_ID).Returns(integrationPoint);
+            _providerTypeService.GetProviderType(integrationPoint).Returns(providerType);
 
             _permissionValidator.ValidateViewErrors(_APPLICATION_ID).Returns(new ValidationResult());
 
@@ -383,7 +382,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
             int buttonCount = 1;
             Assert.AreEqual(buttonCount, console.Items.Count, $"There should be {buttonCount} buttons on the console");
 
-            ConsoleButton actionButton = (ConsoleButton) console.Items[0];
+            ConsoleButton actionButton = (ConsoleButton)console.Items[0];
 
             if (!hasJobsExecutingOrInQueue)
             {

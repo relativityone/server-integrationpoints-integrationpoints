@@ -18,6 +18,8 @@ iTextSharp
 Relativity.Transfer.Client
 FluentAssertions
 Moq
+AutoFixture
+AutoFixture.AutoMoq
 NUnit
 NSubstitute
 Serilog

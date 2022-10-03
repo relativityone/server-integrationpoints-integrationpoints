@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
         private const string _RETRY_ERRORS = "Retry Errors";
         private const string _VIEW_ERRORS = "View Errors";
         private const string _STOP = "Stop";
-        private const string _SAVE_AS_PROFILE = "Save as a Profile";
+        private const string _SAVE_AS_PROFILE = "Save as Profile";
         private const string _DOWNLOAD_ERROR_FILE = "Download Error File";
 
         public Console CreateConsole(ButtonStateDTO buttonState, OnClickEventDTO onClickEvents)

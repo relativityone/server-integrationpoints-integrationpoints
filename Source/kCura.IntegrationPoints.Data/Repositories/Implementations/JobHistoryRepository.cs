@@ -139,9 +139,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
         private string CreateStoppableCondition()
         {
-            Guid pendingGuid = JobStatusChoices.JobHistoryPending.Guids.First();
-            Guid processingGuid = JobStatusChoices.JobHistoryProcessing.Guids.First();
-            return $"('{JobHistoryFields.JobStatus}' IN CHOICE [{pendingGuid}, {processingGuid}])";
+            return $"('{JobHistoryFields.JobStatus}' IN CHOICE [" +
+                $"{JobStatusChoices.JobHistoryPendingGuid}, " +
+                $"{JobStatusChoices.JobHistoryProcessingGuid}, " +
+                $"{JobStatusChoices.JobHistoryValidatingGuid}])";
         }
     }
 }
