@@ -142,8 +142,7 @@ namespace Relativity.Sync.Tests.Integration
         public async Task ExecuteAsyncFailsToRetrieveDestinationWorkspaceTagSendsCompletedEmailTest()
         {
             // Arrange
-            _objectManager.Setup(x => x.QueryAsync(_SOURCE_CASE_ARTIFACT_ID, It.Is<QueryRequest>(y => y.ObjectType.Guid == _destinationWorkspaceTagObjectTypeGuid), 0, 1, It.IsAny<CancellationToken>(),
-                It.IsAny<IProgress<ProgressReport>>())).Throws<ServiceNotFoundException>();
+            _objectManager.Setup(x => x.QueryAsync(_SOURCE_CASE_ARTIFACT_ID, It.Is<QueryRequest>(y => y.ObjectType.Guid == _destinationWorkspaceTagObjectTypeGuid), 0, 1)).Throws<ServiceNotFoundException>();
 
             SetUpProgressExpectations("Completed");
             SetUpJobHistoryErrorExpectations();

@@ -151,7 +151,7 @@ namespace Relativity.Sync.Executors.Validation
                 };
 
                 const int start = 0;
-                QueryResult queryResult = await objectManager.QueryAsync(workspaceArtifactId, request, start, mappedFieldIdNames.Count, token, new EmptyProgress<ProgressReport>()).ConfigureAwait(false);
+                QueryResult queryResult = await objectManager.QueryAsync(workspaceArtifactId, request, start, mappedFieldIdNames.Count).ConfigureAwait(false);
                 IDictionary<int, string> refFieldIdNames = queryResult.Objects.ToDictionary(x => x.ArtifactID, x => x.Name);
 
                 var missingFields = mappedFieldIdNames.Except(refFieldIdNames).ToDictionary(x => x.Key, x => x.Value);

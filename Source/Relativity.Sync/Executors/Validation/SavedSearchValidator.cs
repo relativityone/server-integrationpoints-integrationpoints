@@ -60,7 +60,7 @@ namespace Relativity.Sync.Executors.Validation
                     QueryResult queryResult;
                     try
                     {
-                        queryResult = await objectManager.QueryAsync(configuration.SourceWorkspaceArtifactId, queryRequest, start, length, token, new EmptyProgress<ProgressReport>()).ConfigureAwait(false);
+                        queryResult = await objectManager.QueryAsync(configuration.SourceWorkspaceArtifactId, queryRequest, start, length).ConfigureAwait(false);
                     }
                     catch (Exception ex)
                     {

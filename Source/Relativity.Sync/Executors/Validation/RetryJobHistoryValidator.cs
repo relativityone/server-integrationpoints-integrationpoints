@@ -45,7 +45,7 @@ namespace Relativity.Sync.Executors.Validation
                             Condition = $"'ArtifactId' == {configuration.JobHistoryToRetryId.Value}"
                         };
 
-                        QueryResult result = await objectManager.QueryAsync(configuration.SourceWorkspaceArtifactId, request, 1, 1, token, new EmptyProgress<ProgressReport>())
+                        QueryResult result = await objectManager.QueryAsync(configuration.SourceWorkspaceArtifactId, request, 1, 1)
                             .ConfigureAwait(false);
 
                         if (result.ResultCount == 0)
