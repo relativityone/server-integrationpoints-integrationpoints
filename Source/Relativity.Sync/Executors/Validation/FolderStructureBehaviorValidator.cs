@@ -73,8 +73,7 @@ namespace Relativity.Sync.Executors.Validation
                 };
                 const int start = 0;
                 const int length = 1;
-                QueryResult queryResult = await objectManager.QueryAsync(configuration.SourceWorkspaceArtifactId, queryRequest, start, length, token,
-                    new EmptyProgress<ProgressReport>()).ConfigureAwait(false);
+                QueryResult queryResult = await objectManager.QueryAsync(configuration.SourceWorkspaceArtifactId, queryRequest, start, length).ConfigureAwait(false);
                 if (queryResult.Objects.Count > 0)
                 {
                     string fieldTypeName = queryResult.Objects.Single()[fieldType].Value.ToString();
