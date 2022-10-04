@@ -25,6 +25,7 @@ using Relativity.Services.Folder;
 using Component = Castle.MicroKernel.Registration.Component;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common.Agent;
+using kCura.IntegrationPoints.RelativitySync;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
@@ -152,6 +153,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
                 new SharedAgentInstaller(),
                 new IntegrationPoints.Core.Installers.ServicesInstaller(),
                 new ValidationInstaller(),
+                new RelativitySyncInstaller(),
                 new IntegrationPoints.ImportProvider.Parser.Installers.ServicesInstaller()
             };
 #pragma warning restore 618
