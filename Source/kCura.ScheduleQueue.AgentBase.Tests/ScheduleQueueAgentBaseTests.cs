@@ -331,6 +331,46 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
             _jobServiceMock.Verify(x => x.GetNextQueueJob(It.IsAny<IEnumerable<int>>(), It.IsAny<int>(), It.IsAny<long?>()));
         }
 
+        [Test]
+        public void Execute_ShouldFailJobInTransientState_WhenValidationFails()
+        {
+            // Arrange
+            const int jobId = 100;
+
+            DateTime utcNow = new DateTime(2022, 8, 1);
+            DateTime lastHeartbeat = utcNow.Subtract(TimeSpan.FromHours(10));
+
+            TestAgent sut = GetSut();
+
+            _config.Setup(x => x.TransientStateJobTimeout).Returns(TimeSpan.FromHours(5));
+
+            _dateTime.Setup(x => x.UtcNow).Returns(utcNow);
+
+            Job job = new JobBuilder()
+                .WithJobId(jobId)
+                .WithHeartbeat(lastHeartbeat)
+                .Build();
+            SetupJobQueue(job);
+
+            const string exceptionMessage = "Invalid job";
+            _queueJobValidatorFake.Setup(x => x.ValidateAsync(It.Is<Job>(y => y.JobId == jobId)))
+                .ReturnsAsync(PreValidationResult.InvalidJob(exceptionMessage, false));
+
+            // Act
+            sut.Execute();
+
+            // Assert
+            _jobServiceMock.Verify(
+                x => x.FinalizeJob(
+                    It.Is<Job>(
+                        y => y.JobFailed.ShouldBreakSchedule == true),
+                    It.IsAny<IScheduleRuleFactory>(),
+                    It.Is<TaskResult>(
+                        z => z.Status == TaskStatusEnum.Fail &&
+                             z.Exceptions.First().GetType() == typeof(InvalidOperationException) &&
+                        z.Exceptions.First().Message == exceptionMessage)));
+        }
+
         private TestAgent GetSut(TaskStatusEnum jobStatus = TaskStatusEnum.Success)
         {
             var agentService = new Mock<IAgentService>();

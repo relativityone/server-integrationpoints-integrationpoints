@@ -231,10 +231,8 @@ namespace kCura.ScheduleQueue.AgentBase
                 // we can omit some less relevant bits representing years (https://stackoverflow.com/a/2695525/1579824)
                 return Math.Abs((int)(_dateTime.UtcNow.Ticks >> 23));
             }
-            else
-            {
-                return AgentID;
-            }
+
+            return AgentID;
         }
 
         private void CleanupInvalidJobs()
@@ -251,13 +249,13 @@ namespace kCura.ScheduleQueue.AgentBase
 
                 IEnumerable<Job> transientStateJobs = _jobService.GetAllScheduledJobs()
                     .Where(x => (x.Heartbeat != null && utcNow.Subtract(x.Heartbeat.Value) > transientStateJobTimeout) || x.IsBlocked());
-                foreach (var job in transientStateJobs)
+                foreach (Job job in transientStateJobs)
                 {
                     Logger.LogError(
                         "Job {jobId}, will be failed due timeout. " +
                             "LockedByAgent: {lockedByAgent}, " +
                             "StopState: {stopState}, " +
-                            "Last Hearbeat: {heartbeat}, " +
+                            "Last Heartbeat: {heartbeat}, " +
                             "DateTimeUtc {utcNow}",
                         job.JobId,
                         job.LockedByAgentID,
@@ -265,9 +263,18 @@ namespace kCura.ScheduleQueue.AgentBase
                         job.Heartbeat,
                         utcNow);
 
-                    SendJobInTransientSateMetric(job);
+                    SendJobInTransientStateMetric(job);
+
+                    PreValidationResult validationResult = PreExecuteJobValidation(job);
+                    if (!validationResult.ShouldExecute)
+                    {
+                        RemoveInvalidJobFromQueue(validationResult, job);
+                        continue;
+                    }
 
                     job.MarkJobAsFailed(new TimeoutException($"Job {job.JobId} has failed due to timeout. Contact your system administrator."), false);
+                    Logger.LogInformation("Starting Job in Transient State {jobId} processing...", job.JobId);
+
                     TaskResult result = ProcessJob(job);
                     FinalizeJobExecution(job, result);
                 }
@@ -278,7 +285,7 @@ namespace kCura.ScheduleQueue.AgentBase
             }
         }
 
-        private void SendJobInTransientSateMetric(Job job)
+        private void SendJobInTransientStateMetric(Job job)
         {
             Dictionary<string, object> jobInTransientStateCustomData = new Dictionary<string, object>()
             {
@@ -292,6 +299,20 @@ namespace kCura.ScheduleQueue.AgentBase
 
             _apm.CountOperation("Relativity.IntegrationPoints.Performance.JobInTransientState", customData: jobInTransientStateCustomData)
                 .Write();
+        }
+
+        private void RemoveInvalidJobFromQueue(PreValidationResult validationResult, Job job)
+        {
+            Logger.LogInformation("Job {jobId} is not valid. It will be removed from the queue.", job.JobId);
+
+            TaskResult failedJobResult = new TaskResult
+            {
+                Status = TaskStatusEnum.Fail,
+                Exceptions = new List<Exception> { validationResult.Exception }
+            };
+
+            job.MarkJobAsFailed(validationResult.Exception, true);
+            FinalizeJobExecution(job, failedJobResult);
         }
 
         private void PreExecute()
@@ -363,20 +384,9 @@ namespace kCura.ScheduleQueue.AgentBase
                     using (Logger.LogContextPushProperties(context))
                     {
                         PreValidationResult validationResult = PreExecuteJobValidation(nextJob);
-
                         if (!validationResult.ShouldExecute)
                         {
-                            Logger.LogInformation("Job {jobId} is not valid. It will be removed from the queue.", nextJob.JobId);
-
-                            TaskResult failedJobResult = new TaskResult
-                            {
-                                Status = TaskStatusEnum.Fail,
-                                Exceptions = new List<Exception> { validationResult.Exception }
-                            };
-
-                            nextJob.MarkJobAsFailed(validationResult.Exception, true);
-                            FinalizeJobExecution(nextJob, failedJobResult);
-
+                            RemoveInvalidJobFromQueue(validationResult, nextJob);
                             nextJob = GetNextQueueJob();
                             continue;
                         }
@@ -489,7 +499,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
             FinalizeJobResult result = _jobService.FinalizeJob(job, ScheduleRuleFactory, taskResult);
 
-            Exception exception = (taskResult.Exceptions != null && taskResult.Exceptions.Any()) ? new AggregateException(taskResult.Exceptions) : null;
+            Exception exception = taskResult.Exceptions != null && taskResult.Exceptions.Any() ? new AggregateException(taskResult.Exceptions) : null;
             LogJobState(job, result.JobState, exception, result.Details);
 
             LogFinalizeJob(job, result);
