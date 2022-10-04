@@ -109,7 +109,7 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
                 });
 
             _toggleProvider = new Mock<IToggleProvider>();
-            _toggleProvider.Setup(x => x.IsEnabledByNameAsync(Constants.Toggle._ENABLE_RELATIVITY_SYNC_APP_TOGGLE_NAME))
+            _toggleProvider.Setup(x => x.IsEnabledAsync<EnableRelativitySyncApplicationToggle>())
                 .ReturnsAsync(false);
 
             _providerTypeService = new Mock<IProviderTypeService>();
@@ -251,7 +251,7 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
         public async Task<bool> ShouldUseRelativitySyncAppAsync_ShouldDetermineSyncWorkflowThroughSyncRAPUsage(bool toggleValue)
         {
             // Arrange
-            _toggleProvider.Setup(x => x.IsEnabledByNameAsync(Constants.Toggle._ENABLE_RELATIVITY_SYNC_APP_TOGGLE_NAME))
+            _toggleProvider.Setup(x => x.IsEnabledAsync<EnableRelativitySyncApplicationToggle>())
                 .ReturnsAsync(toggleValue);
 
             // Act

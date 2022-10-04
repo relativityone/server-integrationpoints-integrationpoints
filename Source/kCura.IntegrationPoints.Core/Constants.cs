@@ -218,10 +218,5 @@ namespace kCura.IntegrationPoints.Core
             public const string AppendOverlayModeName = "Append/Overlay";
             public const string OverlayOnlyModeName = "Overlay Only";
         }
-
-        public static class Toggle
-        {
-            public const string _ENABLE_RELATIVITY_SYNC_APP_TOGGLE_NAME = "Relativity.Sync.App.Toggles.EnableRelativitySyncApplicationToggle";
-        }
     }
 }
