@@ -232,7 +232,7 @@ namespace Relativity.Sync.Executors
                 {
                     const int start = 0;
                     const int length = 1;
-                    queryResult = await objectManager.QueryAsync(sourceWorkspaceArtifactId, request, start, length, token, new EmptyProgress<ProgressReport>()).ConfigureAwait(false);
+                    queryResult = await objectManager.QueryAsync(sourceWorkspaceArtifactId, request, start, length).ConfigureAwait(false);
                 }
                 catch (ServiceException ex)
                 {

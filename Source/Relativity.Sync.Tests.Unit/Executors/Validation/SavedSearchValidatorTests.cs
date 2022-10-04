@@ -57,7 +57,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             _sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object).Verifiable();
 
             QueryResult queryResult = BuildQueryResult("");
-            _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(), It.IsAny<IProgress<ProgressReport>>()))
+            _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(queryResult);
 
             // Act
@@ -79,7 +79,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             _sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object).Verifiable();
 
             QueryResult queryResult = BuildQueryResult("World, Hello");
-            _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(), It.IsAny<IProgress<ProgressReport>>()))
+            _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(queryResult);
 
             // Act
@@ -103,7 +103,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             _sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object).Verifiable();
 
             QueryResult queryResult = new QueryResult { Objects = new List<RelativityObject>() };
-            _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(), It.IsAny<IProgress<ProgressReport>>()))
+            _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(queryResult);
 
             // Act
@@ -127,7 +127,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             _sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).Throws<InvalidOperationException>().Verifiable();
 
             // Act
-            Func<Task<ValidationResult>> func = async ()=> await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
+            Func<Task<ValidationResult>> func = async () => await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
 
             // Assert
             func.Should().Throw<InvalidOperationException>();
@@ -139,7 +139,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             // Arrange
             _sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object).Verifiable();
 
-            _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(), It.IsAny<IProgress<ProgressReport>>()))
+            _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
                 .Throws<InvalidOperationException>();
 
             // Act
@@ -165,8 +165,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             bool actualResult = _sut.ShouldValidate(pipelineObject);
 
             // Assert
-            actualResult.Should().Be(expectedResult,
-                $"ShouldValidate should return {expectedResult} for pipeline {pipelineType.Name}");
+            actualResult.Should().Be(expectedResult, $"ShouldValidate should return {expectedResult} for pipeline {pipelineType.Name}");
         }
 
         private QueryResult BuildQueryResult(string testFieldValue)
@@ -198,9 +197,11 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
         {
             const int searchArtifactTypeId = 15;
 
-            _objectManager.Verify(x => x.QueryAsync(It.Is<int>(y => y == _TEST_WORKSPACE_ARTIFACT_ID),
+            _objectManager.Verify(x => x.QueryAsync(
+                It.Is<int>(y => y == _TEST_WORKSPACE_ARTIFACT_ID),
                 It.Is<QueryRequest>(y => y.ObjectType.ArtifactTypeID == searchArtifactTypeId && y.Fields.First().Name == _EXPECTED_QUERY_FIELD_TYPE),
-                It.Is<int>(y => y == 0), It.Is<int>(y => y == 1), It.Is<CancellationToken>(y => y == _cancellationToken), It.IsAny<IProgress<ProgressReport>>()));
+                It.Is<int>(y => y == 0),
+                It.Is<int>(y => y == 1)));
         }
     }
 }

@@ -98,8 +98,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             };
 
             queryResult.Objects.Add(relativityObject);
-            _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(),
-                _token, It.IsAny<IProgress<ProgressReport>>())).ReturnsAsync(queryResult);
+            _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
 
             // act
             DestinationWorkspaceTag tag = await _sut.ReadAsync(0, 0, _token).ConfigureAwait(false);
@@ -115,8 +114,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         public async Task ItShouldReturnNullWhenReadingNotExistingTag()
         {
             var queryResult = new QueryResult();
-            _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(),
-                _token, It.IsAny<IProgress<ProgressReport>>())).ReturnsAsync(queryResult);
+            _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
 
             // act
             DestinationWorkspaceTag tag = await _sut.ReadAsync(0, 0, _token).ConfigureAwait(false);
@@ -128,8 +126,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [Test]
         public void ItShouldThrowRepositoryExceptionWhenReadServiceCallFails()
         {
-            _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(),
-                _token, It.IsAny<IProgress<ProgressReport>>())).Throws<ServiceException>();
+            _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).Throws<ServiceException>();
 
             // act
             Func<Task> action = async () => await _sut.ReadAsync(0, 0, _token).ConfigureAwait(false);
@@ -141,8 +138,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [Test]
         public void ItShouldThrowRepositoryExceptionWhenReadFails()
         {
-            _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(),
-                _token, It.IsAny<IProgress<ProgressReport>>())).Throws<InvalidOperationException>();
+            _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).Throws<InvalidOperationException>();
 
             // act
             Func<Task> action = async () => await _sut.ReadAsync(0, 0, _token).ConfigureAwait(false);
@@ -234,7 +230,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // assert
 
             _objectManager.Verify(x => x.UpdateAsync(sourceWorkspaceArtifactId, It.Is<UpdateRequest>(request =>
-                VerifyUpdateRequest(request, tagArtifactId,
+                VerifyUpdateRequest(
+                    request,
+                    tagArtifactId,
                     f => _nameGuid.Equals(f.Field.Guid) && string.Equals(f.Value, destinationTagName),
                     f => _destinationWorkspaceNameGuid.Equals(f.Field.Guid) && string.Equals(f.Value, destinationWorkspaceName),
                     f => _destinationWorkspaceArtifactIdGuid.Equals(f.Field.Guid) && Equals(f.Value, destinationWorkspaceArtifactId),
@@ -288,15 +286,14 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             _federatedInstance.Setup(fi => fi.GetInstanceIdAsync()).ReturnsAsync(testInstanceId);
             var queryResult = new QueryResult();
-            _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(),
-                _token, It.IsAny<IProgress<ProgressReport>>())).ReturnsAsync(queryResult);
+            _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
 
             // ACT
             await _sut.ReadAsync(sourceWorkspaceId, destinationWorkspaceId, _token).ConfigureAwait(false);
 
             // ASSERT
             _objectManager.Verify(
-                om => om.QueryAsync(sourceWorkspaceId, It.Is<QueryRequest>(q => q.Condition.Contains(expectedQueryFragment)), 0, 1, _token, It.IsAny<IProgress<ProgressReport>>()),
+                om => om.QueryAsync(sourceWorkspaceId, It.Is<QueryRequest>(q => q.Condition.Contains(expectedQueryFragment)), 0, 1),
                 Times.Once);
         }
 
@@ -329,7 +326,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             Assert.AreEqual(expectedTotalObjectsUpdated, actualResult[0].TotalObjectsUpdated);
             CollectionAssert.AreEqual(testArtifactIds, actualResult[0].FailedDocuments);
 
-            VerifySentMetric(m => 
+            VerifySentMetric(m =>
                 m.SourceUpdateCount == expectedTotalObjectsUpdated &&
                 m.SourceUpdateTime == expectedElapsedTime);
         }
@@ -363,8 +360,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
             Assert.AreEqual(expectedTotalObjectsUpdated, actualResult[0].TotalObjectsUpdated);
             CollectionAssert.AreEqual(new[] { 0 }, actualResult[0].FailedDocuments);
 
-            VerifySentMetric(m => 
-                m.SourceUpdateCount == expectedTotalObjectsUpdated && 
+            VerifySentMetric(m =>
+                m.SourceUpdateCount == expectedTotalObjectsUpdated &&
                 m.SourceUpdateTime == expectedElapsedTime);
         }
 
@@ -387,7 +384,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             _syncMetrics.Verify(x => x.Send(It.IsAny<IMetric>()), Times.Never);
 
-            _objectManager.Verify(x => x.UpdateAsync(
+            _objectManager.Verify(
+                x => x.UpdateAsync(
                 It.IsAny<int>(),
                 It.IsAny<MassUpdateByObjectIdentifiersRequest>(),
                 It.IsAny<MassUpdateOptions>(),
@@ -408,7 +406,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             const int maxBatchSize = 10000;
             const int expectedNumberOfBatches = 2;
             int firstBatchSize = maxBatchSize;
-            int secondBatchSize = maxBatchSize / expectedNumberOfBatches - 1;
+            int secondBatchSize = (maxBatchSize / expectedNumberOfBatches) - 1;
             int testBatchSize = firstBatchSize + secondBatchSize;
             int[] testArtifactIds = Enumerable.Repeat(0, testBatchSize).ToArray();
 
@@ -440,15 +438,16 @@ namespace Relativity.Sync.Tests.Unit.Executors
             Assert.AreEqual(secondBatchSize, actualResult[1].TotalObjectsUpdated);
             CollectionAssert.IsEmpty(actualResult[1].FailedDocuments);
 
-            _objectManager.Verify(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<MassUpdateByObjectIdentifiersRequest>(), It.IsAny<MassUpdateOptions>(), It.IsAny<CancellationToken>()),
+            _objectManager.Verify(
+                x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<MassUpdateByObjectIdentifiersRequest>(), It.IsAny<MassUpdateOptions>(), It.IsAny<CancellationToken>()),
                 Times.Exactly(expectedNumberOfBatches));
 
-            VerifySentMetric(m => 
-                m.SourceUpdateCount == firstBatchSize && 
+            VerifySentMetric(m =>
+                m.SourceUpdateCount == firstBatchSize &&
                 m.SourceUpdateTime == expectedElapsedTime1);
 
-            VerifySentMetric(m => 
-                m.SourceUpdateCount == secondBatchSize && 
+            VerifySentMetric(m =>
+                m.SourceUpdateCount == secondBatchSize &&
                 m.SourceUpdateTime == expectedElapsedTime2);
         }
 
@@ -493,15 +492,19 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 m.SourceUpdateCount == testArtifactIds.Length &&
                 m.SourceUpdateTime == expectedElapsedTime);
 
-            _objectManager.Verify(x => x.UpdateAsync(
+            _objectManager.Verify(
+                x => x.UpdateAsync(
                 It.Is<int>(w => w == testSourceWorkspaceArtifactId),
                 It.Is<MassUpdateByObjectIdentifiersRequest>(m => VerifyTagUpdateRequest(m, testArtifactIds, testDestinationWorkspaceTagArtifactId, testJobHistoryArtifactId)),
                 It.Is<MassUpdateOptions>(u => u.UpdateBehavior == FieldUpdateBehavior.Merge),
                 It.IsAny<CancellationToken>()), Times.Once);
         }
 
-        private bool VerifyTagUpdateRequest(MassUpdateByObjectIdentifiersRequest actualUpdateRequest,
-            int[] expectedArtifactIds, int expectedDestinationWorkspaceTagArtifactId, int expectedJobHistoryArtifactId)
+        private bool VerifyTagUpdateRequest(
+            MassUpdateByObjectIdentifiersRequest actualUpdateRequest,
+            int[] expectedArtifactIds,
+            int expectedDestinationWorkspaceTagArtifactId,
+            int expectedJobHistoryArtifactId)
         {
             const int expectedNumberOfFields = 2;
             var expectedDestinationWorkspaceFieldMultiObject = new Guid("8980C2FA-0D33-4686-9A97-EA9D6F0B4196");

@@ -237,8 +237,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
         public void ValidateAsync_ShouldThrowException_WhenObjectManagerFails()
         {
             // Arrange
-            _objectManager.Setup(x => x.QueryAsync(It.Is<int>(y => y == _TEST_SOURCE_WORKSPACE_ARTIFACT_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(),
-                It.IsAny<IProgress<ProgressReport>>())).Throws<InvalidOperationException>();
+            _objectManager.Setup(x => x.QueryAsync(It.Is<int>(y => y == _TEST_SOURCE_WORKSPACE_ARTIFACT_ID), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).Throws<InvalidOperationException>();
 
             // Act
             Func<Task<ValidationResult>> func = async () => await _sut.ValidateAsync(_validationConfiguration.Object, _cancellationToken).ConfigureAwait(false);
@@ -301,8 +300,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             bool actualResult = _sut.ShouldValidate(pipelineObject);
 
             // Assert
-            actualResult.Should().Be(expectedResult,
-                $"ShouldValidate should return {expectedResult} for pipeline {pipelineType.Name}");
+            actualResult.Should().Be(expectedResult, $"ShouldValidate should return {expectedResult} for pipeline {pipelineType.Name}");
         }
 
         private void SetUpObjectManagerQuery(int testWorkspaceArtifactId, int testFieldArtifactId, string testFieldName)
@@ -318,8 +316,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
                     }
                 }
             };
-            _objectManager.Setup(x => x.QueryAsync(It.Is<int>(y => y == testWorkspaceArtifactId), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>(),
-                It.IsAny<IProgress<ProgressReport>>())).ReturnsAsync(queryResult);
+            _objectManager.Setup(x => x.QueryAsync(It.Is<int>(y => y == testWorkspaceArtifactId), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
         }
 
         private void VerifyObjectManagerQueryRequest()
@@ -330,18 +327,23 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             string expectedDestQueryCondition = $"(('FieldArtifactTypeID' == {expectedFieldArtifactTypeId} AND 'ArtifactID' IN [{_TEST_DEST_FIELD_ARTIFACT_ID}]))";
             string expectedSourceQueryCondition = $"(('FieldArtifactTypeID' == {expectedFieldArtifactTypeId} AND 'ArtifactID' IN [{_TEST_SOURCE_FIELD_ARTIFACT_ID}]))";
 
-            _objectManager.Verify(x => x.QueryAsync(It.Is<int>(y => y == _TEST_DEST_WORKSPACE_ARTIFACT_ID),
+            _objectManager.Verify(x => x.QueryAsync(
+                It.Is<int>(y => y == _TEST_DEST_WORKSPACE_ARTIFACT_ID),
                 It.Is<QueryRequest>(y => y.ObjectType.Name == expectedObjectTypeName && y.Condition == expectedDestQueryCondition && y.IncludeNameInQueryResult == true),
-                It.Is<int>(y => y == 0), It.Is<int>(y => y == 1), It.Is<CancellationToken>(y => y == _cancellationToken), It.IsAny<IProgress<ProgressReport>>()));
+                It.Is<int>(y => y == 0),
+                It.Is<int>(y => y == 1)));
 
-            _objectManager.Verify(x => x.QueryAsync(It.Is<int>(y => y == _TEST_SOURCE_WORKSPACE_ARTIFACT_ID),
+            _objectManager.Verify(x => x.QueryAsync(
+                It.Is<int>(y => y == _TEST_SOURCE_WORKSPACE_ARTIFACT_ID),
                 It.Is<QueryRequest>(y => y.ObjectType.Name == expectedObjectTypeName && y.Condition == expectedSourceQueryCondition && y.IncludeNameInQueryResult == true),
-                It.Is<int>(y => y == 0), It.Is<int>(y => y == 1), It.Is<CancellationToken>(y => y == _cancellationToken), It.IsAny<IProgress<ProgressReport>>()));
+                It.Is<int>(y => y == 0),
+                It.Is<int>(y => y == 1)));
         }
 
         private static IEnumerable<TestCaseData> _invalidUniqueIdentifiersFieldMap => new[]
         {
-            new TestCaseData(@"[{
+            new TestCaseData(
+                @"[{
                 ""sourceField"": {
                     ""displayName"": ""Control Number"",
                     ""isIdentifier"": false,
@@ -356,7 +358,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
                 },
                 ""fieldMapType"": ""Identifier""
             }]", "The unique identifier must be mapped.").SetName($"{nameof(ValidateAsync_ShouldHandleUniqueIdentifierInvalid)}_SourceInvalid"),
-            new TestCaseData(@"[{
+            new TestCaseData(
+                @"[{
                 ""sourceField"": {
                     ""displayName"": ""Control Number"",
                     ""isIdentifier"": true,
