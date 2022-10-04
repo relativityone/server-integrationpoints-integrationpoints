@@ -75,7 +75,7 @@ Task FunctionalTest -Description "Run tests that require a deployed environment.
     if($Env:BRANCH_NAME -eq 'master') {
         Invoke-Tests -WhereClause "namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI" -OutputFile $LogPath
     }
-	else if($Env:BRANCH_NAME -eq 'develop'){
+	elseif($Env:BRANCH_NAME -eq 'develop'){
 		Invoke-Tests -WhereClause "(namespace =~ FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests || namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI) && cat != NotWorkingOnTrident" -OutputFile $LogPath
 	}
 	else {
