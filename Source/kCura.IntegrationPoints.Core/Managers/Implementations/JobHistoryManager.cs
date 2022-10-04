@@ -47,14 +47,23 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
                 .Select(x => new { Key = x.Key, Values = x.ToArray() })
                 .ToDictionary(x => x.Key, x => x.Values);
 
+            List<JobHistory> processingJobHistory = new List<JobHistory>();
+            if (jobHistoriesByStatus.ContainsKey(JobStatusChoices.JobHistoryProcessing.Name))
+            {
+                processingJobHistory.AddRange(jobHistoriesByStatus[JobStatusChoices.JobHistoryProcessing.Name]);
+            }
+
+            if (jobHistoriesByStatus.ContainsKey(JobStatusChoices.JobHistoryValidating.Name))
+            {
+                processingJobHistory.AddRange(jobHistoriesByStatus[JobStatusChoices.JobHistoryValidating.Name]);
+            }
+
             return new StoppableJobHistoryCollection
             {
                 PendingJobHistory = jobHistoriesByStatus.ContainsKey(JobStatusChoices.JobHistoryPending.Name)
                     ? jobHistoriesByStatus[JobStatusChoices.JobHistoryPending.Name]
                     : Array.Empty<JobHistory>(),
-                ProcessingJobHistory = jobHistoriesByStatus.ContainsKey(JobStatusChoices.JobHistoryProcessing.Name)
-                    ? jobHistoriesByStatus[JobStatusChoices.JobHistoryProcessing.Name]
-                    : Array.Empty<JobHistory>()
+                ProcessingJobHistory = processingJobHistory.ToArray()
             };
         }
 

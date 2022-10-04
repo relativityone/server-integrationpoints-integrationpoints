@@ -20,6 +20,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Domain.Authentication;
+using kCura.IntegrationPoints.RelativitySync;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Workspace;
@@ -98,6 +99,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
                 new SharedAgentInstaller(),
                 new ServicesInstaller(),
                 new ValidationInstaller(),
+                new RelativitySyncInstaller(),
                 new kCura.IntegrationPoints.ImportProvider.Parser.Installers.ServicesInstaller()
             };
 
