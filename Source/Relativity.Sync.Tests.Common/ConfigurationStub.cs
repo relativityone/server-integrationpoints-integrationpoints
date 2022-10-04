@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Common
 {
@@ -38,6 +39,14 @@ namespace Relativity.Sync.Tests.Common
         public int DataDestinationArtifactId { get; set; }
 
         public int DataSourceArtifactId { get; set; }
+
+        public List<FieldInfoDto> FieldMappings { get; set; }
+
+        public string NativeFilePathField { get; set; }
+
+        public string NativeFileNameField { get; set; }
+
+        public string FolderPathField { get; set; }
 
 
         public IList<FieldMap> GetFieldMappings() => _fieldMappings;
