@@ -29,10 +29,11 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
         private readonly IAPILog _logger;
         private readonly CancellationToken _token;
         private readonly Timer _timerThread;
-        private readonly object _isDrainStoppingLock = new object();
 
         private bool _isDrainStopping;
         private bool _disposed;
+
+        public event EventHandler<EventArgs> StopRequestedEvent;
 
         public object SyncRoot { get; }
 
@@ -55,6 +56,48 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             _diagnosticLog = diagnosticLog;
             _token = _stopCancellationTokenSource.Token;
             _timerThread = new Timer(state => Execute(), null, Timeout.Infinite, Timeout.Infinite);
+        }
+
+        public bool ShouldDrainStop => _isDrainStopping;
+
+        public bool IsStopRequested()
+        {
+            return _token.IsCancellationRequested;
+        }
+
+        public void ThrowIfStopRequested()
+        {
+            try
+            {
+                // Will throw OperationCanceledException if task is canceled.
+                _token.ThrowIfCancellationRequested();
+            }
+            catch (Exception)
+            {
+                _logger.LogWarning("Stop was requested for JobId {jobId}", _jobId);
+                throw;
+            }
+        }
+
+        public void StopCheckingDrainStop()
+        {
+            _logger.LogInformation("StopCheckingDrainStop was called for Job {jobId}", _jobId);
+            _isDrainStopping = false;
+        }
+
+        public void CleanUpJobDrainStop()
+        {
+            _logger.LogInformation("CleanUpDrainStop was called for Job {jobId}", _jobId);
+            lock (SyncRoot)
+            {
+                _jobService.UpdateStopState(new List<long>() { _jobId }, StopState.None);
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         internal void ActivateTimer()
@@ -85,14 +128,10 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
         internal void TerminateIfRequested(Job job)
         {
-            bool toBeDrainStopped;
-            lock (_isDrainStoppingLock)
+            bool toBeDrainStopped = _supportsDrainStop && _agent.ToBeRemoved && !_isDrainStopping;
+            if (toBeDrainStopped)
             {
-                toBeDrainStopped = _supportsDrainStop && _agent.ToBeRemoved && !_isDrainStopping;
-                if (toBeDrainStopped)
-                {
-                    _isDrainStopping = true;
-                }
+                _isDrainStopping = true;
             }
 
             if (toBeDrainStopped)
@@ -133,51 +172,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             }
         }
 
-        private void SetJobHistoryStatus(JobHistory jobHistory, ChoiceRef status)
-        {
-            jobHistory.JobStatus = status;
-            _jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
-        }
-
-        public bool IsStopRequested()
-        {
-            return _token.IsCancellationRequested;
-        }
-
-        public void ThrowIfStopRequested()
-        {
-            try
-            {
-                // Will throw OperationCanceledException if task is canceled.
-                _token.ThrowIfCancellationRequested();
-            }
-            catch (Exception)
-            {
-                _logger.LogWarning("Stop was requested for JobId {jobId}", _jobId);
-                throw;
-            }
-        }
-
-        public bool ShouldDrainStop
-        {
-            get
-            {
-                lock (_isDrainStoppingLock)
-                {
-                    return _isDrainStopping;
-                }
-            }
-        }
-
-
-        public event EventHandler<EventArgs> StopRequestedEvent;
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         protected virtual void Dispose(bool disposing)
         {
             if (disposing && !_disposed)
@@ -194,22 +188,10 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             StopRequestedEvent?.Invoke(this, EventArgs.Empty);
         }
 
-        public void StopCheckingDrainStop()
+        private void SetJobHistoryStatus(JobHistory jobHistory, ChoiceRef status)
         {
-            _logger.LogInformation("StopCheckingDrainStop was called for Job {jobId}", _jobId);
-            lock (_isDrainStoppingLock)
-            {
-                _isDrainStopping = false;
-            }
-        }
-
-        public void CleanUpJobDrainStop()
-        {
-            _logger.LogInformation("CleanUpDrainStop was called for Job {jobId}", _jobId);
-            lock (SyncRoot)
-            {
-                _jobService.UpdateStopState(new List<long>() { _jobId }, StopState.None);
-            }
+            jobHistory.JobStatus = status;
+            _jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
         }
     }
 }

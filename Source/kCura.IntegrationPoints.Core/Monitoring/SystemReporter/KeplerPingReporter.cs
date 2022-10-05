@@ -31,6 +31,8 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
             bool ping = false;
             try
             {
+                _logger.LogInformation("Checking access to Kepler services");
+
                 using (var pingService = _helper.GetServicesManager().CreateProxy<IPingService>(ExecutionIdentity.System))
                 {
                     string pingResponse = await pingService.Ping().ConfigureAwait(false);
