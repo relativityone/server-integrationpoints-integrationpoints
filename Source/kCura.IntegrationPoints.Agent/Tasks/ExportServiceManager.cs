@@ -50,6 +50,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private readonly IToggleProvider _toggleProvider;
         private readonly IDocumentRepository _documentRepository;
         private readonly IExportDataSanitizer _exportDataSanitizer;
+        private readonly object _syncRoot = new object();
         private IJobHistoryErrorManager JobHistoryErrorManager { get; set; }
         private JobHistoryErrorDTO.UpdateStatusType UpdateStatusType { get; set; }
 
@@ -197,7 +198,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
                 IDataTransferContext dataTransferContext = exporter.GetDataTransferContext(exporterTransferConfiguration);
 
-                lock (JobStopManager.SyncRoot)
+                lock (_syncRoot)
                 {
                     JobHistory = JobHistoryService.GetRdo(Identifier);
                     dataTransferContext.UpdateTransferStatus();

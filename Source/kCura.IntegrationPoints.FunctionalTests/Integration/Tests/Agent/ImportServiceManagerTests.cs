@@ -5,6 +5,7 @@ using FluentAssertions;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Import;
+using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
@@ -128,7 +129,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
             ImportServiceManager sut = PrepareSut((importJob) =>
             {
-                importJob.Complete(drainStopAfterImporting, 0, useDataReader:false);
+                importJob.Complete(drainStopAfterImporting, 0, useDataReader: false);
 
                 agent.ToBeRemoved = true;
             });
@@ -169,7 +170,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
             ImportServiceManager sut = PrepareSut(importJob =>
             {
-                importJob.Complete(itemsToTransfer, itemLevelErrorsToTransfer, useDataReader:false);
+                importJob.Complete(itemsToTransfer, itemLevelErrorsToTransfer, useDataReader: false);
             });
 
             // Act

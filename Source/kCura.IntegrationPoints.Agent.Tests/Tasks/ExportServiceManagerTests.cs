@@ -173,8 +173,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                     Arg.Any<string>(),
                     Arg.Any<string>())
                 .Returns(exportJobObservers);
-
-            object syncRootLock = new object();
+            
             _integrationPoint = new Data.IntegrationPoint()
             {
                 SourceConfiguration = "source config",
@@ -228,7 +227,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 .Returns(_exporterService);
 
             _exporterService.TotalRecordsFound.Returns(_EXPORT_DOC_COUNT);
-            _jobStopManager.SyncRoot.Returns(syncRootLock);
             _serializer.Deserialize<TaskParameters>(job.JobDetails)
                 .Returns(_taskParameters);
             _jobHistoryService.GetRdo(Arg.Is<Guid>(guid => guid == _taskParameters.BatchInstance)).Returns(_jobHistory);

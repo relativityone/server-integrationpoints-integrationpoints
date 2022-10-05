@@ -15,7 +15,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
     public class JobStopManager : IJobStopManager
     {
-        private const int _TIMER_INTERVAL_MS = 500;
+        private readonly TimeSpan _timerInterval = TimeSpan.FromSeconds(0.5);
+        private readonly object _syncRoot = new object();
 
         private readonly bool _supportsDrainStop;
         private readonly CancellationTokenSource _stopCancellationTokenSource;
@@ -34,15 +35,11 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
         private bool _disposed;
 
         public event EventHandler<EventArgs> StopRequestedEvent;
-
-        public object SyncRoot { get; }
-
+        
         public JobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, IHelper helper,
             Guid jobHistoryInstanceId, long jobId, IRemovableAgent agent, bool supportsDrainStop,
             CancellationTokenSource stopCancellationTokenSource, CancellationTokenSource drainStopCancellationTokenSource, IDiagnosticLog diagnosticLog)
         {
-            SyncRoot = new object();
-
             _jobService = jobService;
             _jobHistoryService = jobHistoryService;
             _jobBatchIdentifier = jobHistoryInstanceId;
@@ -88,7 +85,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
         public void CleanUpJobDrainStop()
         {
             _logger.LogInformation("CleanUpDrainStop was called for Job {jobId}", _jobId);
-            lock (SyncRoot)
+            lock (_syncRoot)
             {
                 _jobService.UpdateStopState(new List<long>() { _jobId }, StopState.None);
             }
@@ -102,12 +99,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
         internal void ActivateTimer()
         {
-            _timerThread.Change(0, _TIMER_INTERVAL_MS);
+            _timerThread.Change(TimeSpan.Zero, _timerInterval);
         }
 
         internal void Execute()
         {
-            lock (SyncRoot)
+            lock (_syncRoot)
             {
                 try
                 {
