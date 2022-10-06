@@ -14,6 +14,7 @@ namespace Relativity.Sync.Storage
 {
     internal sealed class Batch : IBatch
     {
+        private readonly Guid _batchGuid;
         private readonly int _workspaceArtifactId;
         private readonly IRdoManager _rdoManager;
         private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
@@ -32,6 +33,7 @@ namespace Relativity.Sync.Storage
             _rdoManager = rdoManager;
             _workspaceArtifactId = workspaceArtifactId;
             _serviceFactoryForAdmin = serviceFactoryForAdmin;
+            _batchGuid = Guid.NewGuid();
         }
 
         public int ArtifactId => _batchRdo.ArtifactId;
@@ -43,6 +45,8 @@ namespace Relativity.Sync.Storage
         public int FailedDocumentsCount => _batchRdo.FailedDocumentsCount;
 
         public Guid ExportRunId => _batchRdo.ExportRunId;
+
+        public Guid BatchGuid => _batchGuid;
 
         public int TransferredItemsCount => _batchRdo.TransferredItemsCount;
 
