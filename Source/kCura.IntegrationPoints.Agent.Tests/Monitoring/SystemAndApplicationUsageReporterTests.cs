@@ -152,7 +152,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         }
 
         [Test]
-        public async Task Execute_ShouldNotSendMetrics_AfterDisposingTimer()
+        public void Execute_ShouldNotSendMetrics_AfterDisposingTimer()
         {
             // Act - activate timer
             IDisposable subscription = _sut.ActivateTimer(_jobId, _jobDetails, _jobType);
