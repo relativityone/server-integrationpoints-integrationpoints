@@ -21,7 +21,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             _testImplementation.OnSetUpFixture();
         }
 
-        [Ignore("REL-695806")]
         [IdentifiedTest("644f89a0-0642-11ec-9a03-0242ac130003")]
         public void ExportToLoadFile_Natives_GoldFlow()
         {

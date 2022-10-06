@@ -4,10 +4,12 @@ using Relativity.IntegrationPoints.Tests.Functional.Web.Components;
 using Atata;
 using Relativity.Testing.Framework.Web.Extensions;
 using FluentAssertions;
+using NUnit.Framework;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CD
 {
-    [TestType.UI, TestType.MainFlow]
+    [TestType.UI]
+    [TestType.MainFlow]
     public class SyncTests : TestsBase
     {
         public SyncTests()
@@ -15,6 +17,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CD
         {
         }
 
+        [Category("Regression")]
         [IdentifiedTest("1C37F97A-9DB3-4FED-BDAC-685864C03152")]
         [TestExecutionCategory.RAPCD.Verification.Functional]
         public void SyncLoadFirstPage()
@@ -26,7 +29,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CD
             RelativityProviderConnectToSourcePage relativityProviderPage =
                 Being.On<IntegrationPointListPage>(Workspace.ArtifactID)
                     .NewIntegrationPoint.ClickAndGo()
-                    .ApplyModel(new {
+                    .ApplyModel(new
+                    {
                         Name = nameof(SyncLoadFirstPage)
                     })
                     .RelativityProviderNext.ClickAndGo();
