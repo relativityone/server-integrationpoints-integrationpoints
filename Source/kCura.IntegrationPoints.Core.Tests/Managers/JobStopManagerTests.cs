@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             sut.StopRequestedEvent += (sender, args) => stopRequested = true;
 
             // Act
-            sut.TerminateIfRequested(job);
+            sut.TerminateIfRequested();
 
             // Assert
             stopToken.IsCancellationRequested.Should().BeFalse();
@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             JobStopManager sut = PrepareSut(true, new CancellationTokenSource(), drainStopToken);
 
             // Act
-            sut.TerminateIfRequested(job);
+            sut.TerminateIfRequested();
 
             // Assert
             drainStopToken.IsCancellationRequested.Should().BeTrue();
@@ -119,9 +119,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             JobStopManager sut = PrepareSut(true);
 
             // Act
-            sut.TerminateIfRequested(job);
-            sut.TerminateIfRequested(job);
-            sut.TerminateIfRequested(job);
+            sut.TerminateIfRequested();
+            sut.TerminateIfRequested();
+            sut.TerminateIfRequested();
 
             // Assert
             _jobServiceMock.Verify(x => x.UpdateStopState(It.IsAny<IList<long>>(), It.IsAny<StopState>()), Times.Never);

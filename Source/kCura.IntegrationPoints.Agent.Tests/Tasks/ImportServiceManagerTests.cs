@@ -145,8 +145,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             dataReaderFactory.GetDataReader(Arg.Any<FieldMap[]>(), _IMPORT_PROVIDER_SETTINGS_FOR_DOC, Arg.Any<IJobStopManager>()).Returns(loadFileReader);
             dataReaderFactory.GetDataReader(Arg.Any<FieldMap[]>(), _IMPORT_PROVIDER_SETTINGS_FOR_IMAGE, Arg.Any<IJobStopManager>()).Returns(opticonFileReader);
-
-            object syncRootLock = new object();
+            
             _integrationPoint = new Data.IntegrationPoint()
             {
                 SourceConfiguration = "source config",
@@ -199,8 +198,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             serializer.Serialize(providerSettingsForDoc).Returns(_IMPORT_PROVIDER_SETTINGS_FOR_DOC);
             serializer.Deserialize<ImportProviderSettings>(_IMPORT_PROVIDER_SETTINGS_FOR_IMAGE).Returns(providerSettingsForImage);
             serializer.Serialize(providerSettingsForImage).Returns(_IMPORT_PROVIDER_SETTINGS_FOR_IMAGE);
-
-            jobStopManager.SyncRoot.Returns(syncRootLock);
+            
             serializer.Deserialize<TaskParameters>(job.JobDetails)
                 .Returns(_taskParameters);
             jobHistoryService.GetRdo(Arg.Is<Guid>(guid => guid == _taskParameters.BatchInstance)).Returns(jobHistory);

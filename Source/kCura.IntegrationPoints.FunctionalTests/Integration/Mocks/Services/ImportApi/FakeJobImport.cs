@@ -19,11 +19,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
         {
             _executeAction = executeAction;
         }
-        
+
         public ImportSettings Settings { get; set; }
         public IDataTransferContext Context { get; set; }
-        
-// disable not used anywhere warning
+
+        // disable not used anywhere warning
 #pragma warning disable CS0067
         public event IImportNotifier.OnCompleteEventHandler OnComplete;
         public event IImportNotifier.OnFatalExceptionEventHandler OnFatalException;
@@ -33,20 +33,19 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
         public event OnMessageEventHandler OnMessage;
 #pragma warning restore CS0067
 
-        internal void Complete(long maxTransferredItems = Int64.MaxValue, long numberOfItemLevelErrors = 0, bool useDataReader = true)
+        internal void Complete(long maxTransferredItems = long.MaxValue, long numberOfItemLevelErrors = 0, bool useDataReader = true)
         {
             ConstructorInfo[] constructorInfos = typeof(JobReport).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance);
             JobReport jobReport = (JobReport)constructorInfos.First().Invoke(new object[0]);
 
-            
             long i = 0;
 
             for (; i < numberOfItemLevelErrors && i < maxTransferredItems; i++)
             {
                 OnProgress?.Invoke(i);
                 OnError?.Invoke(Mock.Of<IDictionary>());
-                jobReport.ErrorRows.Add(new JobReport.RowError(i, "", i.ToString()));
-                
+                jobReport.ErrorRows.Add(new JobReport.RowError(i, string.Empty, i.ToString()));
+
                 if (useDataReader && !Context.DataReader.Read())
                 {
                     break;
@@ -62,8 +61,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.ImportAp
                 .First(x => x.Name == nameof(JobReport.TotalRows))
                 .SetMethod;
 
-            totalRecordsSetter.Invoke(jobReport, new object[] {(int)i});
-            
+            totalRecordsSetter.Invoke(jobReport, new object[] { (int)i });
+
             OnComplete?.Invoke(jobReport);
         }
 

@@ -128,8 +128,6 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 
             //JobStopManager
             IJobStopManager stopManager = Substitute.For<IJobStopManager>();
-            object syncRoot = new object();
-            stopManager.SyncRoot.Returns(syncRoot);
             managerFactory.CreateJobStopManager(Arg.Any<IJobService>(),
                 Arg.Any<IJobHistoryService>(), Arg.Any<Guid>(), Arg.Any<long>(), Arg.Any<bool>(), Arg.Any<IDiagnosticLog>()).Returns(stopManager);
 
