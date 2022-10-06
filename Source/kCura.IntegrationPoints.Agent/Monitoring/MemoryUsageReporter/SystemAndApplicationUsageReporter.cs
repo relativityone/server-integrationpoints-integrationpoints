@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter
         {
             if (_agent.ToBeRemoved)
             {
-                _timer.Change(Timeout.Infinite, Timeout.Infinite);
+                _timer?.Change(Timeout.Infinite, Timeout.Infinite);
                 _logger.LogInformation("Memory metrics can't be sent. Agent, AgentInstanceGuid = {AgentInstanceGuid}, is marked as ToBeRemoved.", _agent.AgentInstanceGuid);
                 return;
             }

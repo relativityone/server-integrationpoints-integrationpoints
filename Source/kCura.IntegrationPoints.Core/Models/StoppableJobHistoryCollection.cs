@@ -1,12 +1,13 @@
-﻿using kCura.IntegrationPoints.Data;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.Core.Models
 {
     public class StoppableJobHistoryCollection
     {
-        public JobHistory[] PendingJobHistory { get; set; } 
+        public JobHistory[] PendingJobHistory { get; set; }
+
         public JobHistory[] ProcessingJobHistory { get; set; }
 
         public bool HasStoppableJobHistory

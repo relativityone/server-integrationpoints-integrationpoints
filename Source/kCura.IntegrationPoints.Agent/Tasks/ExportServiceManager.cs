@@ -16,33 +16,30 @@ using kCura.IntegrationPoints.Core.Services.Exporter.Sanitization;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Tagging;
+using kCura.IntegrationPoints.Core.Utils;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
+using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Readers;
 using kCura.IntegrationPoints.Domain.Synchronizer;
+using kCura.IntegrationPoints.RelativitySync;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.DataReaderClient;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using Relativity.API;
-using Constants = kCura.IntegrationPoints.Core.Constants;
-using kCura.IntegrationPoints.RelativitySync;
-using kCura.IntegrationPoints.RelativitySync.RipOverride;
 using Relativity;
+using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Toggles;
-using kCura.IntegrationPoints.Core.Utils;
-using static kCura.IntegrationPoints.Core.Constants;
-using kCura.IntegrationPoints.Domain.Logging;
+using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
-    public class ExportServiceManager : ServiceManagerBase, IExportServiceManager
+    public class ExportServiceManager : ServiceManagerBase
     {
         private int _sourceSavedSearchArtifactID;
         private int? _itemLevelErrorSavedSearchArtifactID;
@@ -53,6 +50,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private readonly IToggleProvider _toggleProvider;
         private readonly IDocumentRepository _documentRepository;
         private readonly IExportDataSanitizer _exportDataSanitizer;
+        private readonly object _syncRoot = new object();
         private IJobHistoryErrorManager JobHistoryErrorManager { get; set; }
         private JobHistoryErrorDTO.UpdateStatusType UpdateStatusType { get; set; }
 
@@ -200,7 +198,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
                 IDataTransferContext dataTransferContext = exporter.GetDataTransferContext(exporterTransferConfiguration);
 
-                lock (JobStopManager.SyncRoot)
+                lock (_syncRoot)
                 {
                     JobHistory = JobHistoryService.GetRdo(Identifier);
                     dataTransferContext.UpdateTransferStatus();
@@ -269,8 +267,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             if (JobHistory != null)
             {
                 Logger.LogInformation($@"Overwrite mode set to: {JobHistory.Overwrite}");
-                importSettings.ImportOverwriteMode = NameToEnumConvert.GetEnumByModeName(JobHistory.Overwrite);                
-            }         
+                importSettings.ImportOverwriteMode = NameToEnumConvert.GetEnumByModeName(JobHistory.Overwrite);
+            }
         }
 
         private bool ShouldUseDgPaths(ImportSettings settings, List<FieldMap> fieldMap, SourceConfiguration configuration)

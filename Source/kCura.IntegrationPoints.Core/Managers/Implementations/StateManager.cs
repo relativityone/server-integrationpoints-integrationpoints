@@ -6,8 +6,14 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
     public class StateManager : IStateManager
     {
-        public ButtonStateDTO GetButtonState(ExportType exportType, ProviderType providerType, bool hasJobsExecutingOrInQueue, bool hasErrors, bool hasErrorViewPermissions,
-            bool hasStoppableJobs, bool hasProfileAddPermission)
+        public ButtonStateDTO GetButtonState(
+            ExportType exportType,
+            ProviderType providerType,
+            bool hasJobsExecutingOrInQueue,
+            bool hasErrors,
+            bool hasErrorViewPermissions,
+            bool hasStoppableJobs,
+            bool hasProfileAddPermission)
         {
             bool runButtonEnabled = IsRunButtonEnable(hasJobsExecutingOrInQueue);
             bool viewErrorsLinkEnabled = IsViewErrorsLinkEnabled(providerType, hasJobsExecutingOrInQueue, hasErrors, hasErrorViewPermissions);
@@ -72,7 +78,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
         {
             return hasErrors;
         }
-        
+
         private bool IsDownloadErrorFileLinkVisible(ProviderType providerType)
         {
             return providerType == ProviderType.ImportLoadFile;

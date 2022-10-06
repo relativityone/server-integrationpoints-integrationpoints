@@ -10,6 +10,7 @@ using Relativity.IntegrationPoints.Services.Installers.Authentication;
 using Relativity.IntegrationPoints.Services.Helpers;
 using Relativity.IntegrationPoints.Services.Repositories;
 using Relativity.IntegrationPoints.Services.Repositories.Implementations;
+using kCura.IntegrationPoints.RelativitySync;
 
 namespace Relativity.IntegrationPoints.Services.Installers
 {
@@ -26,6 +27,7 @@ namespace Relativity.IntegrationPoints.Services.Installers
                 new SharedAgentInstaller(),
                 new ServicesInstaller(),
                 new ValidationInstaller(),
+                new RelativitySyncInstaller(),
                 new kCura.IntegrationPoints.ImportProvider.Parser.Installers.ServicesInstaller()
             };
         }

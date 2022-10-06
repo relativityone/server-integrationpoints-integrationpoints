@@ -184,7 +184,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
                     CreateIntegrationPointRepository(objectManager, integrationPointSerializer, secretsRepository, logger);
                 var providerTypeService = new ProviderTypeService(objectManager);
                 var buttonStateBuilder = new ButtonStateBuilder(providerTypeService, _queueManager, _jobHistoryManager,
-                    _stateManager, permissionRepository, _permissionValidator, integrationPointRepository);
+                    _stateManager, permissionRepository, _permissionValidator, integrationPointRepository, false);
 
                 IntegrationPoint integrationPoint = await integrationPointRepository
                     .ReadEncryptedAsync(key.IntegrationPointId)
@@ -205,9 +205,15 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
                 IOnClickEventConstructor onClickEventHelper =
                     _helperClassFactory.CreateOnClickEventHelper(_managerFactory);
 
-                ButtonStateDTO buttonStates = buttonStateBuilder.CreateButtonState(key.WorkspaceId, key.IntegrationPointId);
-                OnClickEventDTO onClickEvents = onClickEventHelper.GetOnClickEvents(key.WorkspaceId, key.IntegrationPointId,
-                    integrationPoint.Name, buttonStates);
+                ButtonStateDTO buttonStates = await buttonStateBuilder
+                    .CreateButtonStateAsync(key.WorkspaceId, key.IntegrationPointId)
+                    .ConfigureAwait(false);
+
+                OnClickEventDTO onClickEvents = onClickEventHelper.GetOnClickEvents(
+                    key.WorkspaceId,
+                    key.IntegrationPointId,
+                    integrationPoint.Name,
+                    buttonStates);
 
                 await Clients.Group(key.ToString()).updateIntegrationPointData(model, buttonStates, onClickEvents, sourceProviderIsRelativity);
             }

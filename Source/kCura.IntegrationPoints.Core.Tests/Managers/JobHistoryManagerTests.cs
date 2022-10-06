@@ -188,11 +188,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
                 PrepareJobHistory(2, JobStatusChoices.JobHistoryProcessing),
                 PrepareJobHistory(5, JobStatusChoices.JobHistoryProcessing),
                 PrepareJobHistory(6, JobStatusChoices.JobHistoryProcessing),
+                PrepareJobHistory(4, JobStatusChoices.JobHistoryValidating),
             };
 
             var jobHistoryCollection = new List<JobHistory>
             {
-                PrepareJobHistory(4, JobStatusChoices.JobHistoryValidating),
                 PrepareJobHistory(7, null),
             };
 
@@ -218,8 +218,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             {
                 PrepareJobHistory(1, JobStatusChoices.JobHistoryCompleted),
                 PrepareJobHistory(2, JobStatusChoices.JobHistoryErrorJobFailed),
-                PrepareJobHistory(3, JobStatusChoices.JobHistoryValidating),
-                PrepareJobHistory(4, JobStatusChoices.JobHistorySuspended),
+                PrepareJobHistory(3, JobStatusChoices.JobHistorySuspended),
                 PrepareJobHistory(4, JobStatusChoices.JobHistoryStopped),
                 PrepareJobHistory(5, null),
             };

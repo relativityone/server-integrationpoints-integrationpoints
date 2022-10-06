@@ -1,7 +1,7 @@
 ﻿using Atata;
-using Relativity.Testing.Framework.Web.Triggers;
-using Relativity.Testing.Framework.Web.Components;
 using OpenQA.Selenium;
+using Relativity.Testing.Framework.Web.Components;
+using Relativity.Testing.Framework.Web.Triggers;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
 {
@@ -14,17 +14,17 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Web.Components
         [WaitUntilOverlayMissing(TriggerEvents.BeforeAccess, PresenceTimeout = 10, AbsenceTimeout = 30, ThrowOnPresenceFailure = false, ThrowOnAbsenceFailure = false)]
         public Button<IntegrationPointRunPopup, _> Run { get; private set; }
 
-        [FindByContent("Save as a Profile")]
+        [FindByContent("Save as Profile")]
         public Button<IntegrationPointSaveAsProfilePopup, _> SaveAsProfile { get; private set; }
 
         public JobHistoryStatusTab Status { get; private set; }
 
         public _ RunIntegrationPoint(string integrationPointName)
         {
-            var integrationPointRunPopup = Run.WaitTo.Within(120).BeVisible()
+            IntegrationPointRunPopup integrationPointRunPopup = Run.WaitTo.Within(120).BeVisible()
                 .Run.ClickAndGo();
 
-            var integrationPointViewPage = integrationPointRunPopup.Ok.WaitTo.Within(120).BeVisible()
+            IntegrationPointViewPage integrationPointViewPage = integrationPointRunPopup.Ok.WaitTo.Within(120).BeVisible()
                 .Ok.ClickAndGo();
 
             return integrationPointViewPage.WaitUntilJobCompleted(integrationPointName);

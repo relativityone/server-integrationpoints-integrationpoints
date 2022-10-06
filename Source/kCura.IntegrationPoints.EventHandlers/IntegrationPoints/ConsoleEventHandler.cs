@@ -59,10 +59,20 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
         public override Console GetConsole(PageEvent pageEvent)
         {
-            ButtonStateDTO buttonState = ButtonStateBuilder.CreateButtonState(Application.ArtifactID, ActiveArtifact.ArtifactID);
+            ButtonStateDTO buttonState = ButtonStateBuilder
+                .CreateButtonStateAsync(
+                    Application.ArtifactID,
+                    ActiveArtifact.ArtifactID)
+                .GetAwaiter().GetResult();
+
             var integrationPointName = ActiveArtifact.Fields[IntegrationPointFields.Name].Value.Value.ToString();
-            OnClickEventDTO onClickEvents = OnClickEventConstructor.GetOnClickEvents(Application.ArtifactID, ActiveArtifact.ArtifactID,
-                integrationPointName, buttonState);
+
+            OnClickEventDTO onClickEvents = OnClickEventConstructor
+                .GetOnClickEvents(
+                    Application.ArtifactID,
+                    ActiveArtifact.ArtifactID,
+                    integrationPointName,
+                    buttonState);
 
             return _consoleBuilder.CreateConsole(buttonState, onClickEvents);
         }
@@ -75,6 +85,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
                 {
                     _managerFactory = new ManagerFactory(Helper, new FakeNonRemovableAgent());
                 }
+
                 return _managerFactory;
             }
         }
@@ -107,7 +118,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
                     IPermissionRepository permissionRepository = new PermissionRepository(Helper, Helper.GetActiveCaseID());
                     IProviderTypeService providerTypeService = new ProviderTypeService(objectManager);
                     _buttonStateBuilder = new ButtonStateBuilder(providerTypeService, queueManager, jobHistoryManager, stateManager,
-                        permissionRepository, permissionValidator, integrationPointRepository);
+                        permissionRepository, permissionValidator, integrationPointRepository, false);
                 }
                 return _buttonStateBuilder;
             }

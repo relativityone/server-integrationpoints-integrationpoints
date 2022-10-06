@@ -8,8 +8,8 @@ using kCura.IntegrationPoints.FtpProvider.Helpers;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Models;
 using kCura.IntegrationPoints.Web.Models;
-using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.API;
+using Relativity.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
@@ -17,15 +17,13 @@ namespace kCura.IntegrationPoints.Web.Controllers
     {
         private readonly IConnectorFactory _connectorFactory;
         private readonly ISettingsManager _settingsManager;
-        private readonly ICPHelper _helper;
         private readonly IAPILog _logger;
 
         public FtpProviderController(IConnectorFactory connectorFactory, ISettingsManager settingsManager, ICPHelper helper)
         {
             _connectorFactory = connectorFactory;
             _settingsManager = settingsManager;
-            _helper = helper;
-            _logger = _helper.GetLoggerFactory().GetLogger()
+            _logger = helper.GetLoggerFactory().GetLogger()
                 .ForContext<FtpProviderController>()
                 .ForContext("CorrelationId", Guid.NewGuid(), false);
         }

@@ -1,21 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Web;
 using System.Web.Http.Controllers;
 using System.Web.Http.Dispatcher;
 using Castle.Windsor;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web
 {
     public class WindsorCompositionRoot : IHttpControllerActivator
     {
-        private readonly IWindsorContainer container;
+        private readonly IWindsorContainer _container;
+        private readonly IAPILog _logger;
 
-        public WindsorCompositionRoot(IWindsorContainer container)
+        public WindsorCompositionRoot(IWindsorContainer container, IAPILog logger)
         {
-            this.container = container;
+            _container = container;
+            _logger = logger.ForContext<WindsorCompositionRoot>();
         }
 
         public IHttpController Create(
@@ -23,14 +23,19 @@ namespace kCura.IntegrationPoints.Web
                 HttpControllerDescriptor controllerDescriptor,
                 Type controllerType)
         {
-            var controller =
-                    (IHttpController)this.container.Resolve(controllerType);
+            try
+            {
+                IHttpController controller = (IHttpController)_container.Resolve(controllerType);
 
-            request.RegisterForDispose(
-                    new Release(
-                            () => this.container.Release(controller)));
+                request.RegisterForDispose(new Release(() => _container.Release(controller)));
 
-            return controller;
+                return controller;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to resolve {component}", nameof(IHttpController));
+                throw;
+            }
         }
 
         private class Release : IDisposable
@@ -44,7 +49,7 @@ namespace kCura.IntegrationPoints.Web
 
             public void Dispose()
             {
-                this.release();
+                release();
             }
         }
     }

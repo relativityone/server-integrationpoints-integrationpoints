@@ -54,6 +54,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private readonly IAutomatedWorkflowsManager _automatedWorkflowsManager;
         private readonly IJobTracker _jobTracker;
 
+        private readonly object _syncRoot = new object();
+
         public const string RAW_STATE_COMPLETE_WITH_ERRORS = "complete-with-errors";
         public const string RAW_STATE_COMPLETE = "complete";
         public const string RAW_RIP_TRIGGER_NAME = "relativity@on-new-documents-added";
@@ -373,7 +375,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     (int)((IOpticonDataReader)sourceReader).CountRecords() :
                     (int)((IArtifactReader)sourceReader).CountRecords();
 
-                lock (JobStopManager.SyncRoot)
+                lock (_syncRoot)
                 {
                     JobHistory = JobHistoryService.GetRdo(Identifier);
                     JobHistory.TotalItems = recordCount;

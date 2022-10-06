@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Core.Contracts.Agent;
+﻿using kCura.IntegrationPoints.Common.RelativitySync;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -24,6 +25,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
         private readonly IProviderTypeService _providerTypeService;
         private readonly IMessageService _messageService;
         private readonly ITaskParametersBuilder _taskParametersBuilder;
+        private readonly IRelativitySyncConstrainsChecker _relativitySyncConstrainsChecker;
+        private readonly IRelativitySyncAppIntegration _relativitySyncAppIntegration;
 
         public ServiceFactory(ICaseServiceContext caseServiceContext,
             IIntegrationPointSerializer serializer,
@@ -33,7 +36,10 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
             IValidationExecutor validationExecutor,
             IProviderTypeService providerTypeService,
             IMessageService messageService,
-            ITaskParametersBuilder taskParametersBuilder)
+            ITaskParametersBuilder taskParametersBuilder,
+            IRelativitySyncConstrainsChecker relativitySyncConstrainsChecker,
+            IRelativitySyncAppIntegration relativitySyncAppIntegration
+            )
         {
             _managerFactory = managerFactory;
             _validationExecutor = validationExecutor;
@@ -44,6 +50,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
             _serializer = serializer;
             _caseServiceContext = caseServiceContext;
             _taskParametersBuilder = taskParametersBuilder;
+            _relativitySyncConstrainsChecker = relativitySyncConstrainsChecker;
+            _relativitySyncAppIntegration = relativitySyncAppIntegration;
         }
 
         public IIntegrationPointService CreateIntegrationPointService(IHelper helper)
@@ -79,9 +87,11 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
                 _messageService,
                 integrationPointRepository,
                 _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager,
-                _taskParametersBuilder);
+                _taskParametersBuilder,
+                _relativitySyncConstrainsChecker,
+                _relativitySyncAppIntegration);
         }
-        
+
         public IJobHistoryService CreateJobHistoryService(IAPILog logger)
         {
             IJobHistoryService jobHistoryService = new JobHistoryService(

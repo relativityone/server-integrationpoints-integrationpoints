@@ -33,9 +33,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             FakeRelativityInstance.Helpers.AgentHelper.CreateIntegrationPointAgent();
         }
 
-        protected ClaimsPrincipal GetUserClaimsPrincipal() => new ClaimsPrincipal(new[]
-            {new ClaimsIdentity(new[] {new Claim("rel_uai", User.ArtifactId.ToString())})});
-
         [IdentifiedTest("A1CDEE5D-5292-4B0C-9982-EE3679F757F8")]
         public async Task Run_ShouldScheduleJob()
         {
@@ -398,6 +395,15 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             FakeRelativityInstance.Errors.Should().OnlyContain(error => error.Message == "Failed to submit integration job. Integration Point validation failed.");
             FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
         }
+
+        protected ClaimsPrincipal GetUserClaimsPrincipal() =>
+            new ClaimsPrincipal(new[]
+            {
+                        new ClaimsIdentity(new[]
+                        {
+                            new Claim("rel_uai", User.ArtifactId.ToString())
+                        })
+            });
 
         private JobController PrepareSut(HttpMethod method, string requestUri)
         {

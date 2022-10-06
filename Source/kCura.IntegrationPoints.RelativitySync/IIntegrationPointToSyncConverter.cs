@@ -1,5 +1,4 @@
-﻿using Relativity.Sync;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
