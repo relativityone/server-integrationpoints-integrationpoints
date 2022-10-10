@@ -62,7 +62,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 new FieldInfoDto(SpecialFieldType.NativeFileFilename, "NativeFileFilename", "NativeFileFilename", false, true),
             };
             _fieldManagerMock.Setup(x => x.GetNativeSpecialFields()).Returns(specialFields);
-            _fieldManagerMock.Setup(x => x.GetMappedFieldsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(specialFields);
+            _fieldManagerMock.Setup(x => x.GetNativeAllFieldsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(specialFields);
 
             _executorConfigurationMock = new Mock<IConfigureDocumentSynchronizationConfiguration>();
 
