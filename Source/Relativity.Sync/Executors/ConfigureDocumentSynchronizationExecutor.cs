@@ -9,22 +9,58 @@ using Relativity.Import.V1.Models.Settings;
 using Relativity.Import.V1.Services;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
 {
     internal class ConfigureDocumentSynchronizationExecutor : IExecutor<IConfigureDocumentSynchronizationConfiguration>
     {
-        private const string _controlNumberFieldName = "Control Number";
         private readonly SyncJobParameters _parameters;
         private readonly IDestinationServiceFactoryForUser _serviceFactory;
+        private readonly IFieldMappings _fieldMappings;
+        private readonly IFieldManager _fieldManager;
         private readonly IAPILog _logger;
 
-        public ConfigureDocumentSynchronizationExecutor(SyncJobParameters parameters, IDestinationServiceFactoryForUser serviceFactory, IAPILog logger)
+        public ConfigureDocumentSynchronizationExecutor(
+            SyncJobParameters parameters,
+            IDestinationServiceFactoryForUser serviceFactory,
+            IFieldMappings fieldMappings,
+            IFieldManager fieldManager,
+            IAPILog logger)
         {
             _parameters = parameters;
             _serviceFactory = serviceFactory;
+            _fieldMappings = fieldMappings;
+            _fieldManager = fieldManager;
             _logger = logger;
+        }
+
+        private string GetDestinationIdentityFieldName()
+        {
+            FieldMap destinationIdentityField = _fieldMappings.GetFieldMappings().FirstOrDefault(x => x.DestinationField.IsIdentifier);
+            if (destinationIdentityField == null)
+            {
+                const string message = "Cannot find destination identifier field in field mappings.";
+                _logger.LogError(message);
+                throw new SyncException(message);
+            }
+
+            return destinationIdentityField.DestinationField.DisplayName;
+        }
+
+        private string GetSpecialFieldName(IList<FieldInfoDto> specialFields, SpecialFieldType specialFieldType)
+        {
+            FieldInfoDto specialField = specialFields.FirstOrDefault(x => x.SpecialFieldType == specialFieldType);
+
+            if (specialField == null)
+            {
+                string message = $"Cannot find special field name: {specialFieldType}";
+                _logger.LogError(message);
+                throw new SyncException(message);
+            }
+
+            return specialField.DestinationFieldName;
         }
 
         private IWithNatives ConfigureOverwriteMode(IWithOverlayMode input, ImportOverwriteMode overwriteMode, MultiFieldOverlayBehaviour overlayBehavior)
@@ -35,10 +71,10 @@ namespace Relativity.Sync.Executors
                     return input.WithAppendMode();
 
                 case ImportOverwriteMode.AppendOverlay:
-                    return input.WithAppendOverlayMode(x => x.WithKeyField(_controlNumberFieldName).WithMultiFieldOverlayBehaviour(overlayBehavior));
+                    return input.WithAppendOverlayMode(x => x.WithKeyField(GetDestinationIdentityFieldName()).WithMultiFieldOverlayBehaviour(overlayBehavior));
 
                 case ImportOverwriteMode.OverlayOnly:
-                    return input.WithOverlayMode(x => x.WithKeyField(_controlNumberFieldName).WithMultiFieldOverlayBehaviour(overlayBehavior));
+                    return input.WithOverlayMode(x => x.WithKeyField(GetDestinationIdentityFieldName()).WithMultiFieldOverlayBehaviour(overlayBehavior));
 
                 default:
                     throw new NotSupportedException();
@@ -60,7 +96,7 @@ namespace Relativity.Sync.Executors
             }
         }
 
-        private IWithFolders ConfigureFieldMappings(IWithFieldsMapping input, List<FieldInfoDto> fieldMappings)
+        private IWithFolders ConfigureFieldMappings(IWithFieldsMapping input, IList<FieldInfoDto> fieldMappings)
         {
             return input.WithFieldsMapped(x =>
             {
@@ -105,23 +141,23 @@ namespace Relativity.Sync.Executors
         {
             try
             {
-                var result = ImportDocumentSettingsBuilder.Create();
-                IWithNatives withNatives = ConfigureOverwriteMode(result, configuration.ImportOverwriteMode,
-                    MapOverlayBehavior(configuration.FieldOverlayBehavior));
+                IWithOverlayMode result = ImportDocumentSettingsBuilder.Create();
+                IWithNatives withNatives = ConfigureOverwriteMode(result, configuration.ImportOverwriteMode,  MapOverlayBehavior(configuration.FieldOverlayBehavior));
 
+                List<FieldInfoDto> allMappings = (await _fieldManager.GetNativeAllFieldsAsync(token.AnyReasonCancellationToken)).ToList();
                 IWithFieldsMapping withFieldsMapping = ConfigureImageImport(
                     withNatives,
                     configuration.ImageImport,
-                    GetFieldIndex(configuration.FieldMappings, configuration.NativeFilePathField),
-                    GetFieldIndex(configuration.FieldMappings, configuration.NativeFileNameField));
+                    GetFieldIndex(allMappings, GetSpecialFieldName(allMappings, SpecialFieldType.NativeFileLocation)),
+                    GetFieldIndex(allMappings, GetSpecialFieldName(allMappings, SpecialFieldType.NativeFileFilename)));
 
-                IWithFolders withFolders = ConfigureFieldMappings(withFieldsMapping, configuration.FieldMappings);
+                IWithFolders withFolders = ConfigureFieldMappings(withFieldsMapping, allMappings);
 
                 ImportDocumentSettings importSettings = ConfigureDestinationFolderStructure(
                     withFolders,
                     configuration.DestinationFolderStructureBehavior,
                     configuration.DataDestinationArtifactId,
-                    GetFieldIndex(configuration.FieldMappings, configuration.FolderPathField));
+                    GetFieldIndex(allMappings, configuration.FolderPathField));
 
                 using (IImportJobController importJobController = await _serviceFactory
                            .CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
@@ -137,7 +173,7 @@ namespace Relativity.Sync.Executors
 
                     if (importJobResponse.IsSuccess == false)
                     {
-                        _logger.LogError("Cannot create import job: {messageCode} {message}", importJobResponse.ErrorCode, importJobResponse.ErrorMessage);
+                        _logger.LogError("Cannot create import job of id {importJobId}: {messageCode} {message}", importJobResponse.ImportJobID, importJobResponse.ErrorCode, importJobResponse.ErrorMessage);
                         return ExecutionResult.Failure(importJobResponse.ErrorMessage, null);
                     }
 
@@ -172,7 +208,7 @@ namespace Relativity.Sync.Executors
             return ExecutionResult.Success();
         }
 
-        private static int GetFieldIndex(List<FieldInfoDto> fieldMappings, string fieldName)
+        private static int GetFieldIndex(IList<FieldInfoDto> fieldMappings, string fieldName)
         {
             FieldInfoDto field = fieldMappings.FirstOrDefault(x => string.Equals(x.SourceFieldName, fieldName, StringComparison.InvariantCultureIgnoreCase));
             return field?.DocumentFieldIndex ?? -1;

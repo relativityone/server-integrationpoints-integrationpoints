@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Storage
 {
@@ -32,12 +30,6 @@ namespace Relativity.Sync.Storage
         public FieldOverlayBehavior FieldOverlayBehavior => _cache.GetFieldValue(x => x.FieldOverlayBehavior);
 
         public bool ImageImport => _cache.GetFieldValue(x => x.ImageImport);
-
-        public List<FieldInfoDto> FieldMappings { get; }
-
-        public string NativeFilePathField { get; }
-
-        public string NativeFileNameField { get; }
 
         public string FolderPathField => _cache.GetFieldValue(x => x.FolderPathSourceFieldName);
 

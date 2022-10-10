@@ -40,12 +40,6 @@ namespace Relativity.Sync.Tests.Common
 
         public int DataSourceArtifactId { get; set; }
 
-        public List<FieldInfoDto> FieldMappings { get; set; }
-
-        public string NativeFilePathField { get; set; }
-
-        public string NativeFileNameField { get; set; }
-
         public string FolderPathField { get; set; }
 
 

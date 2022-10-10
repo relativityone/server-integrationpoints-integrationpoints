@@ -16,12 +16,6 @@ namespace Relativity.Sync.Configuration
 
         bool ImageImport { get; }
 
-        List<FieldInfoDto> FieldMappings { get; }
-
-        string NativeFilePathField { get; }
-
-        string NativeFileNameField { get; }
-
         string FolderPathField { get; }
 
         DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; }
