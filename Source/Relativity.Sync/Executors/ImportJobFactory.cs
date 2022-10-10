@@ -23,7 +23,6 @@ namespace Relativity.Sync.Executors
     {
         private readonly IImportApiFactory _importApiFactory;
         private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
-        private readonly IInstanceSettings _instanceSettings;
         private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
         private readonly SyncJobParameters _syncJobParameters;
         private readonly IFieldMappings _fieldMappings;
@@ -36,7 +35,6 @@ namespace Relativity.Sync.Executors
             IImportApiFactory importApiFactory,
             ISourceWorkspaceDataReaderFactory dataReaderFactory,
             IJobHistoryErrorRepository jobHistoryErrorRepository,
-            IInstanceSettings instanceSettings,
             SyncJobParameters syncJobParameters,
             IFieldMappings fieldMappings,
             IIsAdfTransferEnabled isAdfTransferEnabled,
@@ -47,7 +45,6 @@ namespace Relativity.Sync.Executors
             _importApiFactory = importApiFactory;
             _dataReaderFactory = dataReaderFactory;
             _jobHistoryErrorRepository = jobHistoryErrorRepository;
-            _instanceSettings = instanceSettings;
             _syncJobParameters = syncJobParameters;
             _fieldMappings = fieldMappings;
             _isAdfTransferEnabled = isAdfTransferEnabled;
@@ -59,7 +56,7 @@ namespace Relativity.Sync.Executors
         public async Task<IImportJob> CreateRdoImportJobAsync(INonDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
         {
             ISourceWorkspaceDataReader sourceWorkspaceDataReader = _dataReaderFactory.CreateNonDocumentSourceWorkspaceDataReader(batch, token);
-            IImportAPI importApi = await GetImportApiAsync().ConfigureAwait(false);
+            IImportAPI importApi = await _importApiFactory.CreateImportApiAsync().ConfigureAwait(false);
             ImportBulkArtifactJob importJob = importApi.NewObjectImportJob(configuration.DestinationRdoArtifactTypeId);
 
             SetCommonIapiSettings(configuration, importJob.Settings);
@@ -85,7 +82,7 @@ namespace Relativity.Sync.Executors
         public async Task<IImportJob> CreateRdoLinkingJobAsync(INonDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
         {
             ISourceWorkspaceDataReader sourceWorkspaceDataReader = _dataReaderFactory.CreateNonDocumentObjectLinkingSourceWorkspaceDataReader(batch, token);
-            IImportAPI importApi = await GetImportApiAsync().ConfigureAwait(false);
+            IImportAPI importApi = await _importApiFactory.CreateImportApiAsync().ConfigureAwait(false);
             ImportBulkArtifactJob importJob = importApi.NewObjectImportJob(configuration.DestinationRdoArtifactTypeId);
 
             SetCommonIapiSettings(configuration, importJob.Settings);
@@ -113,7 +110,7 @@ namespace Relativity.Sync.Executors
         public async Task<IImportJob> CreateImageImportJobAsync(IImageSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
         {
             ISourceWorkspaceDataReader sourceWorkspaceDataReader = _dataReaderFactory.CreateImageSourceWorkspaceDataReader(batch, token);
-            IImportAPI importApi = await GetImportApiAsync().ConfigureAwait(false);
+            IImportAPI importApi = await _importApiFactory.CreateImportApiAsync().ConfigureAwait(false);
             ImageImportBulkArtifactJob importJob = importApi.NewImageImportJob();
 
             SetCommonIapiSettings(configuration, importJob.Settings);
@@ -155,7 +152,7 @@ namespace Relativity.Sync.Executors
         public async Task<IImportJob> CreateNativeImportJobAsync(IDocumentSynchronizationConfiguration configuration, IBatch batch, CancellationToken token)
         {
             ISourceWorkspaceDataReader sourceWorkspaceDataReader = _dataReaderFactory.CreateNativeSourceWorkspaceDataReader(batch, token);
-            IImportAPI importApi = await GetImportApiAsync().ConfigureAwait(false);
+            IImportAPI importApi = await _importApiFactory.CreateImportApiAsync().ConfigureAwait(false);
             ImportBulkArtifactJob importJob = importApi.NewNativeDocumentImportJob();
 
             SetCommonIapiSettings(configuration, importJob.Settings);
@@ -246,24 +243,6 @@ namespace Relativity.Sync.Executors
             {
                 _logger.LogInformation("Running IAPI with NoAudit.");
                 settings.AuditLevel = kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel.NoAudit;
-            }
-        }
-
-        private async Task<IImportAPI> GetImportApiAsync()
-        {
-            string webApiPath = await _instanceSettings.GetWebApiPathAsync().ConfigureAwait(false);
-            if (Uri.IsWellFormedUriString(webApiPath, UriKind.Absolute))
-            {
-                var webApiUri = new Uri(webApiPath);
-                return await _importApiFactory.CreateImportApiAsync(webApiUri).ConfigureAwait(false);
-            }
-            else
-            {
-                string invalidWebAPIPathMessage = string.IsNullOrEmpty(webApiPath)
-                    ? "WebAPIPath doesn't exist"
-                    : $"WebAPIPath {webApiPath} is invalid";
-                _logger.LogError(invalidWebAPIPathMessage);
-                throw new ImportFailedException(invalidWebAPIPathMessage);
             }
         }
 
