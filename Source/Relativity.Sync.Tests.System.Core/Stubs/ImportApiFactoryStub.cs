@@ -18,9 +18,9 @@ namespace Relativity.Sync.Tests.System.Core.Stubs
             _password = password;
         }
 
-        public async Task<IImportAPI> CreateImportApiAsync(Uri webServiceUrl)
+        public async Task<IImportAPI> CreateImportApiAsync()
         {
-            return await Task.Run(() => new ImportAPI(_userName, _password, webServiceUrl.AbsoluteUri)).ConfigureAwait(false);
+            return await Task.Run(() => new ImportAPI(_userName, _password, AppSettings.RelativityRestUrl.AbsoluteUri)).ConfigureAwait(false);
         }
     }
 }
