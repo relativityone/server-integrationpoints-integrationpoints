@@ -42,7 +42,6 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
         {
             _logger.LogInformation("Checking if Relativity Sync application flow should be used for Integration Point ID: {integrationPointId}", integrationPointId);
 
-            //bool isToggleEnabled = await _toggleProvider.IsEnabledAsync<EnableRelativitySyncApplicationToggle>().ConfigureAwait(false);
             bool isToggleEnabled = _toggleProvider.IsEnabled<EnableRelativitySyncApplicationToggle>();
 
             if (!isToggleEnabled)
