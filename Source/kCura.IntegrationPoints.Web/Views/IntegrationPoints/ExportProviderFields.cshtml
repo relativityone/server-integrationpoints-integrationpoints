@@ -51,7 +51,7 @@
 		<div data-bind="validationMessage: mappedFields" class="icon-error legal-hold field-validation-error"></div>
 		<div class="table" id="selectFields">
             <div class="cell fixedColumn">
-                <div class="field-label" style="padding: 5px; text-align: left;">Source Fields:</div>
+                <div class="field-label" style="padding: 5px; text-align: left;"> Source Fields (<span data-bind="text: filterFields(availableFields, filterSourceField).length"></span>):</div>
                 <form action="" data-bind="submit: function() { return false; }">
                     <div class="form-group">
                         <input type="text" class="form-control" placeholder="Type to Filter Fields" style="min-width: 250px; width: 25%;" data-bind="value: filterSourceField, valueUpdate: 'afterkeydown'">
@@ -71,7 +71,7 @@
 				</div>
 			</div>
 			<div class="cell fixedColumn">
-				<div class="field-label" style="padding: 5px; text-align: left; border-left: 3px solid #f59d1f;">Selected Fields:</div>
+                <div class="field-label" style="padding: 5px; text-align: left; border-left: 3px solid #f59d1f;">Selected Fields (<span data-bind="text: getFieldsCount(mappedFields)"></span>):</div>
 				<select class="list-box" id="selected-fields" data-bind="options: mappedFields, selectedOptions: selectedMappedFields, optionsText: 'displayName', doubleClick: removeField, optionsAfterRender: setTitle" multiple="multiple"></select>
 			</div>
 			<div class="cell selection-rename">
@@ -86,7 +86,7 @@
 				</div>
 			</div>
 			<div class="cell fixedColumn">
-				<div class="field-label" style="padding: 5px; text-align: left; ">Renamed Fields:</div>
+                <div class="field-label" style="padding: 5px; text-align: left; ">Renamed Fields (<span data-bind="text: getFieldsCount(selectedMappedFields)"></span>):</div>
 				<select class="list-box" id="renamed-fields" data-bind="options: mappedFields, selectedOptions: selectedMappedFields, optionsText: 'renamedText', doubleClick: openRenamedFieldsModal, optionsAfterRender: setTitle" multiple="multiple"></select>
 			</div>
 		</div>

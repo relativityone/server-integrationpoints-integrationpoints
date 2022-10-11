@@ -3,13 +3,14 @@
     <div>
         <span class="label title">Field Mappings</span>
         <span style="visibility: hidden;" id="forceRedraw"></span>
-        <div class="map-field-title">
+        @*<div class="map-field-title">
             <label class="list-title leftSide-field">Source</label>
             <label class="list-title rightSide-field">Destination</label>
-        </div>
+        </div>*@
         <div data-bind="validationMessage: sourceMapped" class="icon-error legal-hold field-validation-error pull-left-col-2"></div>
         <div class="flex" id="mapFields">
             <div class="cell fixedColumn">
+                <div class="field-label" style="padding: 5px; text-align: left;"> Source Fields (<span data-bind="text: filterFields(sourceField, filterSourceField).length"></span>):</div>
                 <form action="" data-bind="submit: function() { return false; }">
                     <div class="form-group">
                         <input type="text" class="form-control" placeholder="Type to Filter Fields" style="min-width: 250px; width: 25%;" data-bind="value: filterSourceField, valueUpdate: 'afterkeydown'">
@@ -24,6 +25,7 @@
                 <a href="#" id="remove-all-source-fields" class="icon-move-first" data-bind="click: addAlltoSourceField"></a>
             </div>
             <div class="cell fixedColumn">
+                <div class="field-label" style="padding: 5px; text-align: left;"> Selected Source Fields (<span data-bind="text: getFieldsCount(sourceMapped)"></span>):</div>
                 <select class="list-box" id="selected-source-fields" multiple="multiple" data-bind="options: sourceMapped, selectedOptions: selectedMappedSource, optionsText: 'displayName', doubleClick: addToSourceField, optionsAfterRender: setTitle "></select>
             </div>
             <div class="cell mappingColumn">
@@ -48,6 +50,7 @@
                 </div>                
             </div>
             <div class="cell fixedColumn">
+                <div class="field-label" style="padding: 5px; text-align: left;"> Selected Destination Fields(<span data-bind="text: getFieldsCount(mappedWorkspace)"></span>):</div>
                 <select class="list-box" id="selected-workspace-fields" data-bind="options: mappedWorkspace, selectedOptions: selectedMappedWorkspace, optionsText: 'displayName', doubleClick: addToWorkspaceField, optionsAfterRender: setTitle" multiple="multiple"></select>
             </div>
             <div class="cell selection map-move">
@@ -57,6 +60,7 @@
                 <a href="#" id="remove-all-workspace-fields" class="icon-move-last" data-bind="click: addAlltoWorkspaceField"></a>
             </div>
             <div class="cell fixedColumn">
+                <div class="field-label" style="padding: 5px; text-align: left;"> Destination Fields(<span data-bind="text: filterFields(workspaceFields, filterDestinationField).length"></span>):</div>
                 <form action="" data-bind="submit: function() { return false; }">
                     <div class="form-group">
                         <input type="text" class="form-control" placeholder="Type to Filter Fields" style="min-width: 250px; width: 25%;" data-bind="value: filterDestinationField, valueUpdate: 'afterkeydown'">
