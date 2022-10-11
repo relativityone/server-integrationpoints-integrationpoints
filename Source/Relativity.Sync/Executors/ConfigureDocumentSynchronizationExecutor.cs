@@ -81,7 +81,7 @@ namespace Relativity.Sync.Executors
             }
         }
 
-        private IWithFieldsMapping ConfigureImageImport(IWithNatives input, bool imageImport, int nativeFilePathIndex, int nativeFileNameIndex)
+        private IWithFieldsMapping ConfigureFileImport(IWithNatives input, bool imageImport, int nativeFilePathIndex, int nativeFileNameIndex)
         {
             if (imageImport)
             {
@@ -145,7 +145,7 @@ namespace Relativity.Sync.Executors
                 IWithNatives withNatives = ConfigureOverwriteMode(result, configuration.ImportOverwriteMode,  MapOverlayBehavior(configuration.FieldOverlayBehavior));
 
                 List<FieldInfoDto> allMappings = (await _fieldManager.GetNativeAllFieldsAsync(token.AnyReasonCancellationToken)).ToList();
-                IWithFieldsMapping withFieldsMapping = ConfigureImageImport(
+                IWithFieldsMapping withFieldsMapping = ConfigureFileImport(
                     withNatives,
                     configuration.ImageImport,
                     GetFieldIndex(allMappings, GetSpecialFieldName(allMappings, SpecialFieldType.NativeFileLocation)),
