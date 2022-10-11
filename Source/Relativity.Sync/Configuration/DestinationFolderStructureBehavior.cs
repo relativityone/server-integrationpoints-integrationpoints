@@ -18,6 +18,6 @@
         /// <summary>
         /// Reads structure from specific field
         /// </summary>
-        ReadFromField
+        ReadFromField,
     }
 }
