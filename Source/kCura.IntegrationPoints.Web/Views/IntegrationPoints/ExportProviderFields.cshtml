@@ -71,7 +71,7 @@
 				</div>
 			</div>
 			<div class="cell fixedColumn">
-                <div class="field-label" style="padding: 5px; text-align: left; border-left: 3px solid #f59d1f;">Selected Fields (<span data-bind="text: getFieldsCount(mappedFields)"></span>):</div>
+                <div class="field-label" style="padding: 5px; text-align: left; border-left: 3px solid #f59d1f;">Selected Fields (<span data-bind="text: mappedFields().length"></span>):</div>
 				<select class="list-box" id="selected-fields" data-bind="options: mappedFields, selectedOptions: selectedMappedFields, optionsText: 'displayName', doubleClick: removeField, optionsAfterRender: setTitle" multiple="multiple"></select>
 			</div>
 			<div class="cell selection-rename">
@@ -86,7 +86,7 @@
 				</div>
 			</div>
 			<div class="cell fixedColumn">
-                <div class="field-label" style="padding: 5px; text-align: left; ">Renamed Fields (<span data-bind="text: getFieldsCount(selectedMappedFields)"></span>):</div>
+                <div class="field-label" style="padding: 5px; text-align: left; ">Renamed Fields (<span data-bind="text: selectedMappedFields().lenght"></span>):</div>
 				<select class="list-box" id="renamed-fields" data-bind="options: mappedFields, selectedOptions: selectedMappedFields, optionsText: 'renamedText', doubleClick: openRenamedFieldsModal, optionsAfterRender: setTitle" multiple="multiple"></select>
 			</div>
 		</div>

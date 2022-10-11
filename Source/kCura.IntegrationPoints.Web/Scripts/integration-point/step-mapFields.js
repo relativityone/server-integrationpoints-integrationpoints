@@ -247,10 +247,6 @@ ko.validation.insertValidationMessage = function (element) {
 			return filteredFields;
 		}
 
-		self.getFieldsCount = function (fields) {
-			return fields.length;
-        }
-
 		//use this to bind which elements show up depending on if the user is accessing Relativity Provider or not
 		this.IsRelativityProvider = ko.observable(IP.reverseMapFields);
 

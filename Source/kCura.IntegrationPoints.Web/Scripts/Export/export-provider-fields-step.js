@@ -82,10 +82,6 @@
 				return filteredFields;
 			}
 
-			self.model.fields.getFieldsCount = function (fields) {
-				return fields.length;
-			}
-
 			self.getAvailableFields = function (fieldName, fieldValue) {
 				self.ipModel.sourceConfiguration[fieldName] = fieldValue || 0;
 				self.ipModel.sourceConfiguration.ExportType = self.model.exportSource.TypeOfExport();
