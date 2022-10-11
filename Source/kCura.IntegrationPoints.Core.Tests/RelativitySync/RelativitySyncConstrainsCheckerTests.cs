@@ -255,7 +255,7 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
                 .Returns(toggleValue);
 
             // Act
-            bool result = _sut.ShouldUseRelativitySyncAppAsync(_INTEGRATION_POINT_ID);
+            bool result = _sut.ShouldUseRelativitySyncApp(_INTEGRATION_POINT_ID);
 
             // Assert
             return result;

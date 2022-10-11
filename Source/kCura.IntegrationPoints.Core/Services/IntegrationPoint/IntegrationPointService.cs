@@ -222,7 +222,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
             ValidateIntegrationPointBeforeRun(integrationPointArtifactId, userId, integrationPoint, sourceProvider, destinationProvider, jobHistory);
 
-            bool shouldUseRelativitySyncAppIntegration = _relativitySyncConstrainsChecker.ShouldUseRelativitySyncAppAsync(integrationPointArtifactId);
+            bool shouldUseRelativitySyncAppIntegration = _relativitySyncConstrainsChecker.ShouldUseRelativitySyncApp(integrationPointArtifactId);
 
             if (shouldUseRelativitySyncAppIntegration)
             {

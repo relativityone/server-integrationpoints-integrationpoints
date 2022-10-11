@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
             _logger = logger;
         }
 
-        public bool ShouldUseRelativitySyncAppAsync(int integrationPointId)
+        public bool ShouldUseRelativitySyncApp(int integrationPointId)
         {
             _logger.LogInformation("Checking if Relativity Sync application flow should be used for Integration Point ID: {integrationPointId}", integrationPointId);
 

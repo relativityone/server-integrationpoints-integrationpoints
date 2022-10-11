@@ -160,7 +160,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
         public void CreateButtonStateBuilder_ShouldCreateWithSyncAppValue(bool isSyncAppInUse)
         {
             // Arrange
-            _syncConstrainsChecker.ShouldUseRelativitySyncAppAsync(_INTEGRATION_POINT_ID).Returns(isSyncAppInUse);
+            _syncConstrainsChecker.ShouldUseRelativitySyncApp(_INTEGRATION_POINT_ID).Returns(isSyncAppInUse);
 
             // Act
             ButtonStateBuilder builder = ButtonStateBuilder

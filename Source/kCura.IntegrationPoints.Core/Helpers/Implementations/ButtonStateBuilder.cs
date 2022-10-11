@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             IPermissionRepository permissionRepository = repositoryFactory.GetPermissionRepository(workspaceId);
 
             bool isSyncAppInUse = relativitySyncConstrainsChecker
-                .ShouldUseRelativitySyncAppAsync(integrationPointId);
+                .ShouldUseRelativitySyncApp(integrationPointId);
 
             var buttonStateBuilder = new ButtonStateBuilder(
                 providerTypeService,
