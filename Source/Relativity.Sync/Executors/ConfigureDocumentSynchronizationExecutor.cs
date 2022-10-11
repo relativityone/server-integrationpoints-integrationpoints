@@ -36,6 +36,77 @@ namespace Relativity.Sync.Executors
             _logger = logger;
         }
 
+                public async Task<ExecutionResult> ExecuteAsync(IConfigureDocumentSynchronizationConfiguration configuration, CompositeCancellationToken token)
+        {
+            try
+            {
+                IWithOverlayMode result = ImportDocumentSettingsBuilder.Create();
+                IWithNatives withNatives = ConfigureOverwriteMode(result, configuration.ImportOverwriteMode,  MapOverlayBehavior(configuration.FieldOverlayBehavior));
+
+                List<FieldInfoDto> allMappings = (await _fieldManager.GetNativeAllFieldsAsync(token.AnyReasonCancellationToken)).ToList();
+                IWithFieldsMapping withFieldsMapping = ConfigureFileImport(
+                    withNatives,
+                    configuration.ImageImport,
+                    GetFieldIndex(allMappings, GetSpecialFieldName(allMappings, SpecialFieldType.NativeFileLocation)),
+                    GetFieldIndex(allMappings, GetSpecialFieldName(allMappings, SpecialFieldType.NativeFileFilename)));
+
+                IWithFolders withFolders = ConfigureFieldMappings(withFieldsMapping, allMappings);
+
+                ImportDocumentSettings importSettings = ConfigureDestinationFolderStructure(
+                    withFolders,
+                    configuration.DestinationFolderStructureBehavior,
+                    configuration.DataDestinationArtifactId,
+                    GetFieldIndex(allMappings, configuration.FolderPathField));
+
+                using (IImportJobController importJobController = await _serviceFactory
+                           .CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
+                using (IDocumentConfigurationController documentConfigurationController = await _serviceFactory
+                           .CreateProxyAsync<IDocumentConfigurationController>().ConfigureAwait(false))
+                {
+                    Response importJobResponse = await importJobController.CreateAsync(
+                            workspaceID: configuration.DestinationWorkspaceArtifactId,
+                            importJobID: Guid.Parse(_parameters.WorkflowId),
+                            applicationName: _parameters.SyncApplicationName,
+                            correlationID: _parameters.WorkflowId)
+                        .ConfigureAwait(false);
+
+                    if (importJobResponse.IsSuccess == false)
+                    {
+                        _logger.LogError("Cannot create import job of id {importJobId}: {messageCode} {message}", importJobResponse.ImportJobID, importJobResponse.ErrorCode, importJobResponse.ErrorMessage);
+                        return ExecutionResult.Failure(importJobResponse.ErrorMessage, null);
+                    }
+
+                    Response documentConfigurationResponse = await documentConfigurationController.CreateAsync(
+                        configuration.DestinationWorkspaceArtifactId,
+                        Guid.Parse(_parameters.WorkflowId),
+                        importSettings).ConfigureAwait(false);
+
+                    if (documentConfigurationResponse.IsSuccess == false)
+                    {
+                        _logger.LogError("Cannot create document configuration: {messageCode} {message}", documentConfigurationResponse.ErrorCode, documentConfigurationResponse.ErrorMessage);
+                        return ExecutionResult.Failure(documentConfigurationResponse.ErrorMessage, null);
+                    }
+
+                    Response jobBeginResponse = await importJobController
+                        .BeginAsync(configuration.DestinationWorkspaceArtifactId, Guid.Parse(_parameters.WorkflowId))
+                        .ConfigureAwait(false);
+
+                    if (jobBeginResponse.IsSuccess == false)
+                    {
+                        _logger.LogError("Cannot begin import job: {messageCode} {message}", jobBeginResponse.ErrorCode, jobBeginResponse.ErrorMessage);
+                        return ExecutionResult.Failure(jobBeginResponse.ErrorMessage, null);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An exception occured when configuring IAPI2.0 document synchronization");
+                return ExecutionResult.Failure(ex);
+            }
+
+            return ExecutionResult.Success();
+        }
+
         private string GetDestinationIdentityFieldName()
         {
             FieldMap destinationIdentityField = _fieldMappings.GetFieldMappings().FirstOrDefault(x => x.DestinationField.IsIdentifier);
@@ -135,77 +206,6 @@ namespace Relativity.Sync.Executors
                 default:
                     throw new NotSupportedException($"Unknown {nameof(DestinationFolderStructureBehavior)} enum value: {folderStructureBehavior}");
             }
-        }
-
-        public async Task<ExecutionResult> ExecuteAsync(IConfigureDocumentSynchronizationConfiguration configuration, CompositeCancellationToken token)
-        {
-            try
-            {
-                IWithOverlayMode result = ImportDocumentSettingsBuilder.Create();
-                IWithNatives withNatives = ConfigureOverwriteMode(result, configuration.ImportOverwriteMode,  MapOverlayBehavior(configuration.FieldOverlayBehavior));
-
-                List<FieldInfoDto> allMappings = (await _fieldManager.GetNativeAllFieldsAsync(token.AnyReasonCancellationToken)).ToList();
-                IWithFieldsMapping withFieldsMapping = ConfigureFileImport(
-                    withNatives,
-                    configuration.ImageImport,
-                    GetFieldIndex(allMappings, GetSpecialFieldName(allMappings, SpecialFieldType.NativeFileLocation)),
-                    GetFieldIndex(allMappings, GetSpecialFieldName(allMappings, SpecialFieldType.NativeFileFilename)));
-
-                IWithFolders withFolders = ConfigureFieldMappings(withFieldsMapping, allMappings);
-
-                ImportDocumentSettings importSettings = ConfigureDestinationFolderStructure(
-                    withFolders,
-                    configuration.DestinationFolderStructureBehavior,
-                    configuration.DataDestinationArtifactId,
-                    GetFieldIndex(allMappings, configuration.FolderPathField));
-
-                using (IImportJobController importJobController = await _serviceFactory
-                           .CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
-                using (IDocumentConfigurationController documentConfigurationController = await _serviceFactory
-                           .CreateProxyAsync<IDocumentConfigurationController>().ConfigureAwait(false))
-                {
-                    Response importJobResponse = await importJobController.CreateAsync(
-                            workspaceID: configuration.DestinationWorkspaceArtifactId,
-                            importJobID: Guid.Parse(_parameters.WorkflowId),
-                            applicationName: _parameters.SyncApplicationName,
-                            correlationID: _parameters.WorkflowId)
-                        .ConfigureAwait(false);
-
-                    if (importJobResponse.IsSuccess == false)
-                    {
-                        _logger.LogError("Cannot create import job of id {importJobId}: {messageCode} {message}", importJobResponse.ImportJobID, importJobResponse.ErrorCode, importJobResponse.ErrorMessage);
-                        return ExecutionResult.Failure(importJobResponse.ErrorMessage, null);
-                    }
-
-                    Response documentConfigurationResponse = await documentConfigurationController.CreateAsync(
-                        configuration.DestinationWorkspaceArtifactId,
-                        Guid.Parse(_parameters.WorkflowId),
-                        importSettings).ConfigureAwait(false);
-
-                    if (documentConfigurationResponse.IsSuccess == false)
-                    {
-                        _logger.LogError("Cannot create document configuration: {messageCode} {message}", documentConfigurationResponse.ErrorCode, documentConfigurationResponse.ErrorMessage);
-                        return ExecutionResult.Failure(documentConfigurationResponse.ErrorMessage, null);
-                    }
-
-                    Response jobBeginResponse = await importJobController
-                        .BeginAsync(configuration.DestinationWorkspaceArtifactId, Guid.Parse(_parameters.WorkflowId))
-                        .ConfigureAwait(false);
-
-                    if (jobBeginResponse.IsSuccess == false)
-                    {
-                        _logger.LogError("Cannot begin import job: {messageCode} {message}", jobBeginResponse.ErrorCode, jobBeginResponse.ErrorMessage);
-                        return ExecutionResult.Failure(jobBeginResponse.ErrorMessage, null);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An exception occured when configuring IAPI2.0 document synchronization");
-                return ExecutionResult.Failure(ex);
-            }
-
-            return ExecutionResult.Success();
         }
 
         private static int GetFieldIndex(IList<FieldInfoDto> fieldMappings, string fieldName)
