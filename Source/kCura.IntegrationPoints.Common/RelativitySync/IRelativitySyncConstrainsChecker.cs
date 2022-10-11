@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.Common.RelativitySync
         /// </summary>
         /// <param name="integrationPointId"></param>
         /// <returns></returns>
-        Task<bool> ShouldUseRelativitySyncAppAsync(int integrationPointId);
+        bool ShouldUseRelativitySyncAppAsync(int integrationPointId);
 
         /// <summary>
         /// Checks if Integration Point configuration allows running using Sync DLL flow

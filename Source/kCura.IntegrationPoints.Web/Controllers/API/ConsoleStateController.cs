@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Core.Factories;
@@ -39,20 +40,20 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
         [HttpGet]
         [LogApiExceptionFilter(Message = "Unable to get ConsoleState")]
-        public async Task<IHttpActionResult> GetConsoleState(int workspaceId, int integrationPointArtifactId)
+        public IHttpActionResult GetConsoleState(int workspaceId, int integrationPointArtifactId)
         {
             ButtonStateBuilder buttonStateBuilder = ButtonStateBuilder.CreateButtonStateBuilder(
-                _helper,
-                _respositoryFactory,
-                _managerFactory,
-                _integrationPointRepository,
-                _providerTypeService,
-                _relativitySyncConstrainsChecker,
-                workspaceId,
-                integrationPointArtifactId);
+          _helper,
+          _respositoryFactory,
+          _managerFactory,
+          _integrationPointRepository,
+          _providerTypeService,
+          _relativitySyncConstrainsChecker,
+          workspaceId,
+          integrationPointArtifactId);
 
-            ButtonStateDTO buttonState = await buttonStateBuilder
-                .CreateButtonStateAsync(workspaceId, integrationPointArtifactId);
+            ButtonStateDTO buttonState = buttonStateBuilder
+                .CreateButtonStateAsync(workspaceId, integrationPointArtifactId).GetAwaiter().GetResult();
 
             return Ok(buttonState);
         }
