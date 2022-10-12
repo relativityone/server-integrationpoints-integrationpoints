@@ -41,7 +41,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 
             Workspace = _existingWorkspaceArtifactID != 0
                 ? RelativityFacade.Instance.GetExistingWorkspace(_existingWorkspaceArtifactID)
-                : RelativityFacade.Instance.CreateWorkspace(_workspaceName, TestsSetUpFixture.WORKSPACE_TEMPLATE_NAME);
+                : RelativityFacade.Instance.CreateWorkspace(_workspaceName, TestsSetUpFixture._WORKSPACE_TEMPLATE_NAME);
 
             RelativityFacade.Instance.RequireAgent(Const.INTEGRATION_POINTS_AGENT_TYPE_NAME, Const.INTEGRATION_POINTS_AGENT_RUN_INTERVAL);
         }

@@ -14,6 +14,6 @@ Set-RegressionSettings $RegEnv
 
 $TaskRunner = Resolve-Path -Path build.ps1
 
-&($TaskRunner) Compile, Package, RegressionTest -Configuration Release
+&($TaskRunner) Compile, RegressionTest -Configuration Release
 
 Remove-Module Build-Util
