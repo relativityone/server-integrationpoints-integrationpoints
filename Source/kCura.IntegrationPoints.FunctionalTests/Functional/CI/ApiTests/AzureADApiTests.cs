@@ -23,7 +23,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI.ApiTests
             _testImplementation.OnSetupFixture();
         }
 
-        [Category("Regression")]
         [Test]
         public async Task ImportEntityWithAzureADProvider()
         {
