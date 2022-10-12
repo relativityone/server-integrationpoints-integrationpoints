@@ -33,6 +33,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI.ApiTests
             await _implementation.RunAndRetryIntegrationPoint().ConfigureAwait(false);
         }
 
+        [Category("Regression")]
         [Test]
         public async Task JobRunTest()
         {
