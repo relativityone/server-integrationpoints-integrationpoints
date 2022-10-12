@@ -199,8 +199,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         public void RunIntegrationPoint_ShouldSubmitJobInSyncApp_WhenIntegrationPointIsSyncType()
         {
             // Arrange
-            _relativitySyncConstrainsCheckerFake.Setup(x => x.ShouldUseRelativitySyncAppAsync(_integrationPoint.ArtifactId))
-                .ReturnsAsync(true);
+            _relativitySyncConstrainsCheckerFake.Setup(x => x.ShouldUseRelativitySyncApp(_integrationPoint.ArtifactId))
+                .Returns(true);
 
             // Act
             _sut.RunIntegrationPoint(_WORKSPACE_ID, _integrationPoint.ArtifactId, _USER_ID);
