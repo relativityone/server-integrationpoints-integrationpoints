@@ -163,6 +163,13 @@ Task MyTest -Depends OneTimeTestsSetup -Description "Run custom tests based on s
     Invoke-MyTest
 }
 
+Task RegressionTest -Description "Regression Tests against one of Ring-0 Environments" {
+    Move-TestSettings $LogsDir
+
+    $LogPath = Join-Path $LogsDir "RegressionTestsResults.xml"
+    Invoke-Tests -WhereClause "cat == Regression" -OutputFile $LogPath
+}
+
 function Move-TestSettings
 {
     param (
