@@ -1,5 +1,6 @@
 ﻿using Atata;
 using FluentAssertions;
+using NUnit.Framework;
 using Relativity.IntegrationPoints.Tests.Functional.CI;
 using Relativity.IntegrationPoints.Tests.Functional.Web.Components;
 using Relativity.Testing.Framework.Web.Extensions;
@@ -14,6 +15,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI_REG
         {
         }
 
+        [Test]
         public void SyncLoadFirstPage()
         {
             // Arrange

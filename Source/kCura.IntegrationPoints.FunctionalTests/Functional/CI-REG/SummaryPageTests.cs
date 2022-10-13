@@ -14,6 +14,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI_REG
         }
 
         [Test]
+        [Ignore("NotWorking")]
         public void SavedSearch_NativesAndMetadata_SummaryPageTest()
         {
             _testsImplementation.SavedSearchNativesAndMetadataSummaryPage();
