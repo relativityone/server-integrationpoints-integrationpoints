@@ -15,7 +15,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
     public class JobStopManager : IJobStopManager
     {
-        private const int _TIMER_INTERVAL_MS = 500;
+        private readonly TimeSpan _timerInterval = TimeSpan.FromSeconds(0.5);
+        private readonly object _syncRoot = new object();
 
         private readonly bool _supportsDrainStop;
         private readonly CancellationTokenSource _stopCancellationTokenSource;
@@ -28,20 +29,17 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
         private readonly IRemovableAgent _agent;
         private readonly IAPILog _logger;
         private readonly CancellationToken _token;
-        private readonly Timer _timerThread;
-        private readonly object _isDrainStoppingLock = new object();
+        private readonly Timer _timer;
 
         private bool _isDrainStopping;
         private bool _disposed;
 
-        public object SyncRoot { get; }
+        public event EventHandler<EventArgs> StopRequestedEvent;
 
         public JobStopManager(IJobService jobService, IJobHistoryService jobHistoryService, IHelper helper,
             Guid jobHistoryInstanceId, long jobId, IRemovableAgent agent, bool supportsDrainStop,
             CancellationTokenSource stopCancellationTokenSource, CancellationTokenSource drainStopCancellationTokenSource, IDiagnosticLog diagnosticLog)
         {
-            SyncRoot = new object();
-
             _jobService = jobService;
             _jobHistoryService = jobHistoryService;
             _jobBatchIdentifier = jobHistoryInstanceId;
@@ -54,90 +52,10 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             _drainStopCancellationTokenSource = drainStopCancellationTokenSource;
             _diagnosticLog = diagnosticLog;
             _token = _stopCancellationTokenSource.Token;
-            _timerThread = new Timer(state => Execute(), null, Timeout.Infinite, Timeout.Infinite);
+            _timer = new Timer(state => Execute(), null, Timeout.Infinite, Timeout.Infinite);
         }
 
-        internal void ActivateTimer()
-        {
-            _timerThread.Change(0, _TIMER_INTERVAL_MS);
-        }
-
-        internal void Execute()
-        {
-            lock (SyncRoot)
-            {
-                try
-                {
-                    _diagnosticLog.LogDiagnostic("Monitor JobStopManager.");
-                    Job job = _jobService.GetJob(_jobId);
-
-                    if (job != null)
-                    {
-                        TerminateIfRequested(job);
-                    }
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, "Error occurred during checking if job had been stopped.");
-                }
-            }
-        }
-
-        internal void TerminateIfRequested(Job job)
-        {
-            bool toBeDrainStopped;
-            lock (_isDrainStoppingLock)
-            {
-                toBeDrainStopped = _supportsDrainStop && _agent.ToBeRemoved && !_isDrainStopping;
-                if (toBeDrainStopped)
-                {
-                    _isDrainStopping = true;
-                }
-            }
-
-            if (toBeDrainStopped)
-            {
-                _logger.LogInformation("Drain-Stop was requested: SupportsDrainStop - {supportsDrainStop}, AgentToBeRemoved - {agentToBeRemoved}, StopState - {stopState}",
-                    _supportsDrainStop, _agent.ToBeRemoved, job.StopState);
-
-                if (!job.StopState.HasFlag(StopState.DrainStopping) && !job.StopState.HasFlag(StopState.DrainStopped))
-                {
-                    _logger.LogInformation("DrainStopping Job {jobId}... JobInfo: {jobInfo}", _jobId, job.ToString());
-                    _jobService.UpdateStopState(new List<long>() { _jobId }, StopState.DrainStopping);
-                    _drainStopCancellationTokenSource.Cancel();
-                    _timerThread.Change(Timeout.Infinite, Timeout.Infinite);
-                }
-            }
-            else if (job.StopState.HasFlag(StopState.Stopping))
-            {
-                _logger.LogInformation("Stopping Job {jobId}... JobInfo: {jobInfo}", _jobId, job.ToString());
-                JobHistory jobHistory = _jobHistoryService.GetRdoWithoutDocuments(_jobBatchIdentifier);
-
-                if (jobHistory == null)
-                {
-                    _logger.LogWarning("JobHistory of id: {batchInstance} not found");
-                }
-                else if (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending) || jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryProcessing))
-                {
-                    _logger.LogInformation("Set JobHistory to Stopping {jobHistory}", jobHistory.Stringify());
-                    SetJobHistoryStatus(jobHistory, JobStatusChoices.JobHistoryStopping);
-                }
-
-                _stopCancellationTokenSource.Cancel();
-                _timerThread.Change(Timeout.Infinite, Timeout.Infinite);
-                RaiseStopRequestedEvent();
-            }
-            else if (job.StopState.HasFlag(StopState.Unstoppable))
-            {
-                _timerThread.Change(Timeout.Infinite, Timeout.Infinite);
-            }
-        }
-
-        private void SetJobHistoryStatus(JobHistory jobHistory, ChoiceRef status)
-        {
-            jobHistory.JobStatus = status;
-            _jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
-        }
+        public bool ShouldDrainStop => _isDrainStopping;
 
         public bool IsStopRequested()
         {
@@ -158,24 +76,101 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             }
         }
 
-        public bool ShouldDrainStop
+        public void StopCheckingDrainStop()
         {
-            get
-            {
-                lock (_isDrainStoppingLock)
-                {
-                    return _isDrainStopping;
-                }
-            }
+            _logger.LogInformation("StopCheckingDrainStop was called for Job {jobId}", _jobId);
+            _isDrainStopping = false;
         }
 
-
-        public event EventHandler<EventArgs> StopRequestedEvent;
+        public void CleanUpJobDrainStop()
+        {
+            _logger.LogInformation("CleanUpDrainStop was called for Job {jobId}", _jobId);
+            lock (_syncRoot)
+            {
+                _jobService.UpdateStopState(new List<long>() { _jobId }, StopState.None);
+            }
+        }
 
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        internal void ActivateTimer()
+        {
+            _timer.Change(TimeSpan.Zero, _timerInterval);
+        }
+
+        internal void Execute()
+        {
+            lock (_syncRoot)
+            {
+                try
+                {
+                    _diagnosticLog.LogDiagnostic("Monitor JobStopManager.");
+                    TerminateIfRequested();
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Error occurred during checking if job had been stopped.");
+                }
+            }
+        }
+
+        internal void TerminateIfRequested()
+        {
+            bool toBeDrainStopped = _supportsDrainStop && _agent.ToBeRemoved && !_isDrainStopping;
+            if (toBeDrainStopped)
+            {
+                _isDrainStopping = true;
+            }
+
+            if (toBeDrainStopped)
+            {
+                _logger.LogInformation("Drain-Stop was requested, retrieving the job");
+
+                Job job = _jobService.GetJob(_jobId);
+
+                _logger.LogInformation("Job stop state: {stopState}", job.StopState);
+
+                if (!job.StopState.HasFlag(StopState.DrainStopping) && !job.StopState.HasFlag(StopState.DrainStopped))
+                {
+                    _logger.LogInformation("DrainStopping Job {jobId}... JobInfo: {jobInfo}", _jobId, job.ToString());
+                    _jobService.UpdateStopState(new List<long>() { _jobId }, StopState.DrainStopping);
+                    _drainStopCancellationTokenSource.Cancel();
+                    _timer.Change(Timeout.Infinite, Timeout.Infinite);
+                }
+            }
+            else
+            {
+                Job job = _jobService.GetJob(_jobId);
+
+                if (job.StopState.HasFlag(StopState.Stopping))
+                {
+                    _logger.LogInformation("Stopping Job {jobId}... JobInfo: {jobInfo}", _jobId, job.ToString());
+                    JobHistory jobHistory = _jobHistoryService.GetRdoWithoutDocuments(_jobBatchIdentifier);
+
+                    if (jobHistory == null)
+                    {
+                        _logger.LogWarning("JobHistory of id: {batchInstance} not found");
+                    }
+                    else if (jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryPending) || jobHistory.JobStatus.EqualsToChoice(JobStatusChoices.JobHistoryProcessing))
+                    {
+                        _logger.LogInformation("Set JobHistory to Stopping {jobHistory}", jobHistory.Stringify());
+                        SetJobHistoryStatus(jobHistory, JobStatusChoices.JobHistoryStopping);
+                    }
+
+                    _stopCancellationTokenSource.Cancel();
+                    _timer.Change(Timeout.Infinite, Timeout.Infinite);
+                    RaiseStopRequestedEvent();
+                }
+                else if (job.StopState.HasFlag(StopState.Unstoppable))
+                {
+                    _logger.LogInformation("Job is unstoppable, disabling JobStopManager timer");
+                    _timer.Change(Timeout.Infinite, Timeout.Infinite);
+                }
+            }
         }
 
         protected virtual void Dispose(bool disposing)
@@ -184,7 +179,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             {
                 _stopCancellationTokenSource.Dispose();
                 _drainStopCancellationTokenSource.Dispose();
-                _timerThread.Dispose();
+                _timer.Dispose();
                 _disposed = true;
             }
         }
@@ -194,22 +189,10 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             StopRequestedEvent?.Invoke(this, EventArgs.Empty);
         }
 
-        public void StopCheckingDrainStop()
+        private void SetJobHistoryStatus(JobHistory jobHistory, ChoiceRef status)
         {
-            _logger.LogInformation("StopCheckingDrainStop was called for Job {jobId}", _jobId);
-            lock (_isDrainStoppingLock)
-            {
-                _isDrainStopping = false;
-            }
-        }
-
-        public void CleanUpJobDrainStop()
-        {
-            _logger.LogInformation("CleanUpDrainStop was called for Job {jobId}", _jobId);
-            lock (SyncRoot)
-            {
-                _jobService.UpdateStopState(new List<long>() { _jobId }, StopState.None);
-            }
+            jobHistory.JobStatus = status;
+            _jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
         }
     }
 }

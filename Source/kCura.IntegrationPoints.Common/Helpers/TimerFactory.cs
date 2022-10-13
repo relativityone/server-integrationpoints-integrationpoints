@@ -1,6 +1,6 @@
-﻿using Relativity.API;
+﻿using System;
 using System.Threading;
-using System;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Common.Helpers
 {
