@@ -17,8 +17,6 @@ namespace Relativity.Sync.Executors
 {
     internal class LoadFileGenerator : ILoadFileGenerator
     {
-        private const int _DEFAULT_COLUMN_DELIMITER_ASCII = 020;
-
         private readonly IBatchDataSourcePreparationConfiguration _configuration;
         private readonly IDestinationServiceFactoryForUser _serviceFactory;
         private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
@@ -40,11 +38,11 @@ namespace Relativity.Sync.Executors
         {
             string batchPath = await CreateBatchFullPath(batch).ConfigureAwait(false);
             DataSourceSettings settings = CreateSettings(batchPath);
-            GenerateLoadFile(batch, batchPath);
+            GenerateLoadFile(batch, batchPath, settings);
             return new LoadFile(batch.BatchGuid, batchPath, settings);
         }
 
-        private void GenerateLoadFile(IBatch batch, string batchPath)
+        private void GenerateLoadFile(IBatch batch, string batchPath, DataSourceSettings settings)
         {
             int counter = 0;
             try
@@ -56,7 +54,7 @@ namespace Relativity.Sync.Executors
                         while (reader.Read())
                         {
                             counter++;
-                            string line = GetLineContent(reader);
+                            string line = GetLineContent(reader, settings);
                             writer.WriteLine(line);
                         }
                     }
@@ -69,10 +67,9 @@ namespace Relativity.Sync.Executors
             }
         }
 
-        private string GetLineContent(ISourceWorkspaceDataReader reader)
+        private string GetLineContent(ISourceWorkspaceDataReader reader, DataSourceSettings settings)
         {
             List<string> rowValues = new List<string>();
-            char delimiter = (char)_DEFAULT_COLUMN_DELIMITER_ASCII;
 
             for (int i = 0; i < reader.FieldCount; i++)
             {
@@ -80,7 +77,7 @@ namespace Relativity.Sync.Executors
                 rowValues.Add(value);
             }
 
-            return string.Join($"{delimiter}", rowValues);
+            return string.Join($"{settings.ColumnDelimiter}", rowValues);
         }
 
         private DataSourceSettings CreateSettings(string batchPath)
