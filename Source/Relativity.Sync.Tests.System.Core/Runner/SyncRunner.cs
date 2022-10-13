@@ -33,7 +33,7 @@ namespace Relativity.Sync.Tests.System.Core.Runner
             _logger = logger;
             _toggleProvider = toggleProvider;
             _apmClient = apmClient;
-            _helper = new TestHelper();
+            _helper = new TestHelper(relativityUri);
         }
 
         /// <summary>
@@ -84,11 +84,11 @@ namespace Relativity.Sync.Tests.System.Core.Runner
         /// <param name="userId">Id of user that submitted the job</param>
         /// <returns></returns>
         public Task<SyncJobState> RunAsync(SyncJobParameters parameters, int userId) => RunAsync(parameters, userId, CompositeCancellationToken.None);
-        
+
         private ISyncJob CreateSyncJobAsync(SyncJobParameters parameters, int userId, Uri relativityUri)
         {
             ContainerBuilder containerBuilder = new ContainerBuilder();
-            
+
             containerBuilder.RegisterInstance(new SyncDataAndUserConfiguration(userId, 0)).AsImplementedInterfaces().SingleInstance();
 
             containerBuilder.RegisterType<EmptyExecutorConfiguration<IDataDestinationInitializationConfiguration>>()
@@ -103,10 +103,10 @@ namespace Relativity.Sync.Tests.System.Core.Runner
             {
                 containerBuilder.RegisterInstance(_toggleProvider).As<IToggleProvider>().SingleInstance();
             }
-            
+
             var jobFactory = new SyncJobFactory();
             var relativityServices = new RelativityServices(_apmClient, relativityUri, _helper);
-            
+
             return jobFactory.Create(parameters, relativityServices, _logger);
         }
     }
