@@ -104,8 +104,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
                 Section = "kCura.ARM",
                 Value = "True",
                 ValueType = InstanceSettingValueType.TrueFalse
-            }
-            );
+            });
         }
 
         private static void InstallDataTransferLegacy()
@@ -129,10 +128,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 
             try
             {
-                string[] screenshotsPaths = Directory.GetFiles(basePath, screenshotExtension,
-                    SearchOption.AllDirectories);
+                string[] screenshotsPaths = Directory.GetFiles(basePath, screenshotExtension, SearchOption.AllDirectories);
                 TestContext.Progress.Log($"Found {screenshotsPaths.Length} screenshot(s)");
-                
+
                 foreach (var filePath in screenshotsPaths)
                 {
                     string fileName = Path.GetFileName(filePath);

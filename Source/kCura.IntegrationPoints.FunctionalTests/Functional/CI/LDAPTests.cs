@@ -1,10 +1,11 @@
 ﻿using NUnit.Framework;
-using Relativity.Testing.Identification;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
+using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
-    [TestType.UI, TestType.MainFlow]
+    [TestType.UI]
+    [TestType.MainFlow]
     public class LDAPTests : TestsBase
     {
         private readonly ImportLDAPTestImplementation _testsImplementation;
@@ -22,7 +23,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             _testsImplementation.OnSetUpFixture();
         }
 
-        [IdentifiedTest("09c54ba0-04d9-4f6e-9c46-0075612582fa")]
+        [Test]
+        [Ignore("REL-753202")]
         public void LoadFromLDAP_GoldFlow()
         {
             _testsImplementation.ImportFromLDAPGoldFlow();
