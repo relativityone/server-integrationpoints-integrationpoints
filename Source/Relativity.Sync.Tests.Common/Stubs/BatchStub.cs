@@ -33,6 +33,8 @@ namespace Relativity.Sync.Tests.Common.Stubs
 
         public int TaggedDocumentsCount { get; set; }
 
+        public Guid BatchGuid { get; set; } = Guid.Empty;
+
         public Task SetFailedItemsCountAsync(int failedItemsCount)
         {
             FailedItemsCount = failedItemsCount;

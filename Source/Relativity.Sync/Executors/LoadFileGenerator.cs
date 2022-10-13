@@ -38,35 +38,34 @@ namespace Relativity.Sync.Executors
 
         public async Task<ILoadFile> Generate(IBatch batch)
         {
-            ILoadFile loadFile = null;
-            try
-            {
-                string batchPath = await CreateBatchFullPath(batch.BatchGuid).ConfigureAwait(false);
-                DataSourceSettings settings = CreateSettings(batchPath);
-                GenerateLoadFile(batch, batchPath);
-                loadFile = new LoadFile(batch.BatchGuid, batchPath, settings);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Load file creation failed for batch GUID: {guid} ArtifactId: {artifactId}", batch.BatchGuid, batch.ArtifactId);
-                throw ex;
-            }
-
-            return loadFile;
+            string batchPath = await CreateBatchFullPath(batch).ConfigureAwait(false);
+            DataSourceSettings settings = CreateSettings(batchPath);
+            GenerateLoadFile(batch, batchPath);
+            return new LoadFile(batch.BatchGuid, batchPath, settings);
         }
 
         private void GenerateLoadFile(IBatch batch, string batchPath)
         {
-            using (ISourceWorkspaceDataReader reader = _dataReaderFactory.CreateNativeSourceWorkspaceDataReader(batch, CancellationToken.None))
+            int counter = 0;
+            try
             {
-                using (StreamWriter writer = new StreamWriter(batchPath))
+                using (ISourceWorkspaceDataReader reader = _dataReaderFactory.CreateNativeSourceWorkspaceDataReader(batch, CancellationToken.None))
                 {
-                    while (reader.Read())
+                    using (StreamWriter writer = new StreamWriter(batchPath))
                     {
-                        string line = GetLineContent(reader);
-                        writer.WriteLine(line);
+                        while (reader.Read())
+                        {
+                            counter++;
+                            string line = GetLineContent(reader);
+                            writer.WriteLine(line);
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Load file generator error occurred in line: {readerLineNumber}", counter);
+                throw ex;
             }
         }
 
@@ -82,8 +81,6 @@ namespace Relativity.Sync.Executors
             }
 
             return string.Join($"{delimiter}", rowValues);
-
-            // OPENED QUESTION: should we add "endLine" char after every line if we are using writer.WriteLine(line) instruction?
         }
 
         private DataSourceSettings CreateSettings(string batchPath)
@@ -98,18 +95,37 @@ namespace Relativity.Sync.Executors
                     .WithDefaultCultureInfo();
         }
 
-        private async Task<string> CreateBatchFullPath(Guid batchGuid)
+        private async Task<string> CreateBatchFullPath(IBatch batch)
         {
             string batchFullPath = string.Empty;
-
-            using (IWorkspaceManager workspaceManager = await _serviceFactory.CreateProxyAsync<IWorkspaceManager>().ConfigureAwait(false))
+            try
             {
-                WorkspaceRef workspace = new WorkspaceRef() { ArtifactID = _configuration.DestinationWorkspaceArtifactId };
-                FileShareResourceServer server = await workspaceManager.GetDefaultWorkspaceFileShareResourceServerAsync(workspace).ConfigureAwait(false);
-                string directoryPath = Path.Combine(server.UNCPath, $@"EDDS{_configuration.DestinationWorkspaceArtifactId}\Sync");
-                string fileName = $"{batchGuid}.dat";
+                using (IWorkspaceManager workspaceManager = await _serviceFactory.CreateProxyAsync<IWorkspaceManager>().ConfigureAwait(false))
+                {
+                    WorkspaceRef workspace = new WorkspaceRef() { ArtifactID = _configuration.DestinationWorkspaceArtifactId };
+                    FileShareResourceServer server = await workspaceManager.GetDefaultWorkspaceFileShareResourceServerAsync(workspace).ConfigureAwait(false);
 
-                batchFullPath = Path.Combine(directoryPath, fileName);
+                    string rootDirectory = Path.Combine(server.UNCPath, $"EDDS{_configuration.DestinationWorkspaceArtifactId}");
+                    if (!Directory.Exists(rootDirectory))
+                    {
+                        throw new Exception($"Unable to create load file path. Directory: {rootDirectory} does not exist!");
+                    }
+
+                    string batchPartialDirectory = $@"Sync\{batch.ExportRunId}\{batch.BatchGuid}";
+                    string fullDirectory = Path.Combine(rootDirectory, batchPartialDirectory);
+                    if (!Directory.Exists(fullDirectory))
+                    {
+                        Directory.CreateDirectory(fullDirectory);
+                    }
+
+                    string fileName = $"{batch.BatchGuid}.dat";
+                    batchFullPath = Path.Combine(fullDirectory, fileName);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Could not build load file path for batch {batchGuid}", batch.BatchGuid);
+                throw ex;
             }
 
             return batchFullPath;
