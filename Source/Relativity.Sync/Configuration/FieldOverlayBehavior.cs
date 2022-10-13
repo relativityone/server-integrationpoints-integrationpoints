@@ -24,6 +24,6 @@ namespace Relativity.Sync.Configuration
         /// Replace values.
         /// </summary>
         [Description("Replace Values")]
-        ReplaceValues = OverlayBehavior.ReplaceAll
+        ReplaceValues = OverlayBehavior.ReplaceAll,
     }
 }

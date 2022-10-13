@@ -11,6 +11,6 @@
         SupportedByViewer,
         ImageFileName,
         ImageFileLocation,
-        ImageIdentifier
+        ImageIdentifier,
     }
 }

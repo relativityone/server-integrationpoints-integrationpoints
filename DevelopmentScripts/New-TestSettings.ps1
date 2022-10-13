@@ -66,7 +66,7 @@ if($TestVMName)
 
     if(-not $SqlServer)
     {
-        $PSBoundParameters['SqlServer'] = "$TestVMName\EDDSINSTANCE001"
+        $PSBoundParameters['SqlServer'] = "$TestVMName"
     }
 
     if(-not $SqlUsername)

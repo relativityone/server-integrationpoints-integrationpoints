@@ -7,6 +7,13 @@ namespace Relativity.Sync.Tests.System.Core.Helpers.APIHelper
 {
     public class TestHelper : IHelper
     {
+        private readonly Uri _applicationUri;
+
+        public TestHelper(Uri applicationUri)
+        {
+            _applicationUri = applicationUri;
+        }
+
         public void Dispose()
         {
         }
@@ -39,7 +46,11 @@ namespace Relativity.Sync.Tests.System.Core.Helpers.APIHelper
 
         public IUrlHelper GetUrlHelper()
         {
-            throw new NotImplementedException();
+            var uriHelperMock = new Mock<IUrlHelper>();
+            uriHelperMock.Setup(x => x.GetApplicationURL(It.IsAny<Guid>()))
+                .Returns(_applicationUri);
+
+            return uriHelperMock.Object;
         }
 
         public string ResourceDBPrepend()
