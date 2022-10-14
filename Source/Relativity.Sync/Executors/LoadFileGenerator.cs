@@ -78,6 +78,8 @@ namespace Relativity.Sync.Executors
             }
 
             return string.Join($"{settings.ColumnDelimiter}", rowValues);
+
+            // TBD: Should we add settings.NewLineDelimiter here if we are processing returned walue as writer.WriteLine() parameter?
         }
 
         private DataSourceSettings CreateSettings(string batchPath)
