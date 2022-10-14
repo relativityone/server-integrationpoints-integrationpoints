@@ -10,7 +10,6 @@ namespace Relativity.Sync
 {
     internal sealed class InstanceSettings : IInstanceSettings
     {
-        private const string _INTEGRATION_POINTS_SETTING_SECTION = "kCura.IntegrationPoints";
         private const string _RELATIVITY_CORE_SETTING_SECTION = "Relativity.Core";
         private const string _SYNC_SECTION = "Relativity.Sync";
 
@@ -21,11 +20,6 @@ namespace Relativity.Sync
         {
             _serviceFactoryForAdmin = serviceFactoryForAdmin;
             _logger = logger;
-        }
-
-        public async Task<string> GetWebApiPathAsync(string defaultValue = default(string))
-        {
-            return await GetAsync<string>("WebAPIPath", _INTEGRATION_POINTS_SETTING_SECTION, defaultValue).ConfigureAwait(false);
         }
 
         public async Task<bool> GetRestrictReferentialFileLinksOnImportAsync(bool defaultValue = default(bool))
@@ -93,7 +87,7 @@ namespace Relativity.Sync
                     return resultSet;
                 }
             }
-            catch(InvalidOperationException ex)
+            catch (InvalidOperationException ex)
             {
                 return new InstanceSettingQueryResultSet()
                 {

@@ -72,12 +72,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _dataReaderFactory.Setup(x => x.CreateNonDocumentSourceWorkspaceDataReader(It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).Returns(dataReader.Object);
             _dataReaderFactory.Setup(x => x.CreateNonDocumentObjectLinkingSourceWorkspaceDataReader(It.IsAny<IBatch>(), It.IsAny<CancellationToken>())).Returns(dataReader.Object);
 
-
             _jobHistoryErrorRepository = new Mock<IJobHistoryErrorRepository>();
             _fieldMappingsMock = new Mock<IFieldMappings>();
             _fieldMappingsMock.Setup(x => x.GetFieldMappings()).Returns(_MAPPED_FIELDS);
             _instanceSettings = new Mock<IInstanceSettings>();
-            _instanceSettings.Setup(x => x.GetWebApiPathAsync(default(string))).ReturnsAsync("http://fake.uri");
             _instanceSettings.Setup(x => x.GetShouldForceADFTransferAsync(default(bool))).ReturnsAsync(false);
             _syncJobParameters = FakeHelper.CreateSyncJobParameters();
             _isAdfTransferEnabledMock = new Mock<IIsAdfTransferEnabled>();
@@ -186,52 +184,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             // Assert
             result.Should().NotBeNull();
-        }
-
-        [TestCase("relativeUri.com", "WebAPIPath relativeUri.com is invalid")]
-        [TestCase("", "WebAPIPath doesn't exist")]
-        [TestCase(null, "WebAPIPath doesn't exist")]
-        public Task CreateNativeImportJobAsync_ShouldThrowException_WhenWebAPIPathIsInvalid(string invalidWebAPIPath, string expectedMessage)
-        {
-            // Arrange
-            ImportJobFactory instance = PrepareInstanceForWebApiPathTests(GetNativesImportAPIFactoryMock(), invalidWebAPIPath);
-
-            // Act
-            Task Action() => instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None);
-
-            // Assert
-            return AssertWebApiPathTestsAsync(Action, expectedMessage);
-        }
-
-        [TestCase("relativeUri.com", "WebAPIPath relativeUri.com is invalid")]
-        [TestCase("", "WebAPIPath doesn't exist")]
-        [TestCase(null, "WebAPIPath doesn't exist")]
-        public Task CreateNativeImportJobAsync_ShouldThrowException_WhenWebAPIPathIsInvalidAndDoNotImporNatives(string invalidWebAPIPath, string expectedMessage)
-        {
-            // Arrange
-            ImportJobFactory instance = PrepareInstanceForWebApiPathTests(GetNativesImportAPIFactoryMock(), invalidWebAPIPath);
-            _documentConfigurationMock.SetupGet(x => x.ImportNativeFileCopyMode).Returns(ImportNativeFileCopyMode.DoNotImportNativeFiles);
-
-            // Act
-            Task Action() => instance.CreateNativeImportJobAsync(_documentConfigurationMock.Object, _batch.Object, CancellationToken.None);
-
-            // Assert
-            return AssertWebApiPathTestsAsync(Action, expectedMessage);
-        }
-
-        [TestCase("relativeUri.com", "WebAPIPath relativeUri.com is invalid")]
-        [TestCase("", "WebAPIPath doesn't exist")]
-        [TestCase(null, "WebAPIPath doesn't exist")]
-        public Task CreateImageImportJobAsync_ShouldThrowException_WhenWebAPIPathIsInvalid(string invalidWebAPIPath, string expectedMessage)
-        {
-            // Arrange
-            ImportJobFactory instance = PrepareInstanceForWebApiPathTests(GetImagesImportAPIFactoryMock(), invalidWebAPIPath);
-
-            // Act
-            Task Action() => instance.CreateImageImportJobAsync(_imageConfigurationMock.Object, _batch.Object, CancellationToken.None);
-
-            // Assert
-            return AssertWebApiPathTestsAsync(Action, expectedMessage);
         }
 
         [Test]
@@ -527,7 +479,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             importApiStub.Setup(setupAction).Returns(mockObject);
             importApiStub.Setup(x => x.GetWorkspaceFields(It.IsAny<int>(), It.IsAny<int>())).Returns(() => new[] { fieldStub.Object });
-            importApiFactoryStub.Setup(x => x.CreateImportApiAsync(It.IsAny<Uri>())).ReturnsAsync(importApiStub.Object);
+            importApiFactoryStub.Setup(x => x.CreateImportApiAsync()).ReturnsAsync(importApiStub.Object);
 
             const int batchStartingIndex = 250;
             _batch.SetupGet(x => x.StartingIndex).Returns(batchStartingIndex);
@@ -539,19 +491,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private void AssertStartRecordNumberForShouldCreateBulkJobWithStartingIndexAlwaysEqualTo0(ImportSettingsBase settings)
         {
             settings.StartRecordNumber.Should().Be(0);
-        }
-
-        private ImportJobFactory PrepareInstanceForWebApiPathTests(Mock<IImportApiFactory> importApiFactory, string invalidWebAPIPath)
-        {
-            _instanceSettings.Setup(x => x.GetWebApiPathAsync(default(string))).ReturnsAsync(invalidWebAPIPath);
-            ImportJobFactory instance = GetTestInstance(importApiFactory);
-            return instance;
-        }
-
-        private async Task AssertWebApiPathTestsAsync(Func<Task> action, string expectedMessage)
-        {
-            (await action.Should().ThrowAsync<ImportFailedException>().ConfigureAwait(false))
-                .Which.Message.Should().Be(expectedMessage);
         }
 
         private void AssertApplicationName(ImportSettingsBase settings)
@@ -583,7 +522,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             importApi.Setup(x => x.GetWorkspaceFields(It.IsAny<int>(), It.IsAny<int>())).Returns(() => new[] { field.Object });
 
             var importApiFactory = new Mock<IImportApiFactory>();
-            importApiFactory.Setup(x => x.CreateImportApiAsync(It.IsAny<Uri>())).ReturnsAsync(importApi.Object);
+            importApiFactory.Setup(x => x.CreateImportApiAsync()).ReturnsAsync(importApi.Object);
 
             return importApiFactory;
         }
@@ -591,8 +530,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private ImportJobFactory GetTestInstance(Mock<IImportApiFactory> importApiFactory)
         {
             var instance = new ImportJobFactory(importApiFactory.Object, _dataReaderFactory.Object,
-                _jobHistoryErrorRepository.Object, _instanceSettings.Object, _syncJobParameters,
-                _fieldMappingsMock.Object, _isAdfTransferEnabledMock.Object, _antiMalwareEventHelperMock.Object, 
+                _jobHistoryErrorRepository.Object, _syncJobParameters,
+                _fieldMappingsMock.Object, _isAdfTransferEnabledMock.Object, _antiMalwareEventHelperMock.Object,
                 _syncTogglesMock.Object, _logger);
             return instance;
         }

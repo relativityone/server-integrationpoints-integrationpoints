@@ -34,6 +34,7 @@ namespace Relativity.Sync.Transfer
         public SpecialFieldType SpecialFieldType { get; }
 
         public string SourceFieldName { get; }
+
         public string DestinationFieldName { get; }
 
         public bool IsDocumentField { get; }
@@ -145,7 +146,7 @@ namespace Relativity.Sync.Transfer
         {
             return new FieldInfoDto(SpecialFieldType.ImageFileLocation, string.Empty, _IMAGE_FILE_LOCATION_DISPLAY_NAME, false, false);
         }
-        
+
         public static FieldInfoDto ImageIdentifierField()
         {
             return new FieldInfoDto(SpecialFieldType.ImageIdentifier, string.Empty, _IMAGE_IDENTIFIER_DISPLAY_NAME, false, false);

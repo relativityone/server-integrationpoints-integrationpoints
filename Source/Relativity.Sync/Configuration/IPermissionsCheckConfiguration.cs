@@ -15,11 +15,11 @@ namespace Relativity.Sync.Configuration
         bool CreateSavedSearchForTags { get; }
 
         Guid JobHistoryObjectTypeGuid { get; }
-        
+
         int RdoArtifactTypeId { get; }
 
         int DestinationRdoArtifactTypeId { get; }
-        
+
         ImportOverwriteMode ImportOverwriteMode { get; }
     }
 }

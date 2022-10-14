@@ -8,6 +8,7 @@ namespace Relativity.Sync.Nodes
         public ConfigureDocumentSynchronizationNode(ICommand<IConfigureDocumentSynchronizationConfiguration> command, IAPILog logger)
             : base(command, logger)
         {
+            Id = "Configuring Document Synchronization for IAPI2 pipeline";
         }
     }
 }
