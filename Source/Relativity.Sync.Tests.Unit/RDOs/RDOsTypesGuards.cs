@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using Relativity.Sync.RDOs;
 using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.RDOs.Framework.Attributes;
 
@@ -48,7 +49,7 @@ namespace Relativity.Sync.Tests.Unit.RDOs
                 .ForEach(t =>
                 {
                     t.GetProperties()
-                        .Where(p => p.Name != nameof(IRdoType.ArtifactId))
+                        .Where(p => p.Name != nameof(IRdoType.ArtifactId) && p.Name != nameof(SyncBatchRdo.BatchGuid))
                         .ForEach(x =>
                         {
                             try
@@ -76,7 +77,7 @@ namespace Relativity.Sync.Tests.Unit.RDOs
                 .ForEach(t =>
                 {
                     t.GetProperties()
-                        .Where(p => p.Name != nameof(IRdoType.ArtifactId) &&
+                        .Where(p => p.Name != nameof(IRdoType.ArtifactId) && p.Name != nameof(SyncBatchRdo.BatchGuid) &&
                                     (p.PropertyType == typeof(Guid) || p.PropertyType == typeof(Guid?)))
                         .ForEach(x =>
                         {

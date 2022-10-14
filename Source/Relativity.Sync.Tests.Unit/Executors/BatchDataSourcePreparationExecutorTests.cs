@@ -88,6 +88,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             Exception exception = new Exception("generate load file exception");
             Mock<IBatch> batchMock = new Mock<IBatch>();
             Mock<ILoadFile> loadFileMock = new Mock<ILoadFile>();
+            _importJobControllerMock.Setup(x => x.CancelAsync(It.IsAny<int>(), It.IsAny<Guid>())).ReturnsAsync(new Response(It.IsAny<Guid>(), false, string.Empty, string.Empty));
             _batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batchMock.Object);
             _loadFileGeneratorMock.Setup(x => x.GenerateAsync(batchMock.Object)).Throws(exception);
 
@@ -110,6 +111,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             string expectedFailureMessage = "AddSourceAsync returned error";
             Mock<IBatch> batchMock = new Mock<IBatch>();
             Mock<ILoadFile> loadFileMock = new Mock<ILoadFile>();
+            _importJobControllerMock.Setup(x => x.CancelAsync(It.IsAny<int>(), It.IsAny<Guid>())).ReturnsAsync(new Response(It.IsAny<Guid>(), false, string.Empty, string.Empty));
             _batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batchMock.Object);
             _loadFileGeneratorMock.Setup(x => x.GenerateAsync(batchMock.Object)).ReturnsAsync(loadFileMock.Object);
 
