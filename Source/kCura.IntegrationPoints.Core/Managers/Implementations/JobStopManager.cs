@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -93,6 +94,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
         public void Dispose()
         {
+            _logger?.LogInformation("Disposing JobStopManager for Job {jobId}", _jobId);
             Dispose(true);
             GC.SuppressFinalize(this);
         }
@@ -104,6 +106,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
         internal void Execute()
         {
+            Stopwatch sw = Stopwatch.StartNew();
             lock (_syncRoot)
             {
                 try
@@ -116,6 +119,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
                     _logger.LogError(e, "Error occurred during checking if job had been stopped.");
                 }
             }
+
+            sw.Stop();
+            long diff = sw.ElapsedMilliseconds - (long)_timerInterval.TotalMilliseconds;
+            if (diff > 0)
+            {
+                _logger.LogWarning("JobStopManager.Execute exceeded Timer interval by {diff}", diff);
+            }
         }
 
         internal void TerminateIfRequested()
@@ -126,13 +136,17 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
                 _isDrainStopping = true;
             }
 
+            Job job = _jobService.GetJob(_jobId);
+            if (job == null)
+            {
+                _timer.Change(Timeout.Infinite, Timeout.Infinite);
+                _logger.LogInformation("Job with {id} does not exist. Timer was paused", _jobId);
+                return;
+            }
+
             if (toBeDrainStopped)
             {
-                _logger.LogInformation("Drain-Stop was requested, retrieving the job");
-
-                Job job = _jobService.GetJob(_jobId);
-
-                _logger.LogInformation("Job stop state: {stopState}", job.StopState);
+                _logger.LogInformation("Drain-Stop was requested, retrieving the job - {stopState}", job.StopState);
 
                 if (!job.StopState.HasFlag(StopState.DrainStopping) && !job.StopState.HasFlag(StopState.DrainStopped))
                 {
@@ -144,8 +158,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             }
             else
             {
-                Job job = _jobService.GetJob(_jobId);
-
                 if (job.StopState.HasFlag(StopState.Stopping))
                 {
                     _logger.LogInformation("Stopping Job {jobId}... JobInfo: {jobInfo}", _jobId, job.ToString());
