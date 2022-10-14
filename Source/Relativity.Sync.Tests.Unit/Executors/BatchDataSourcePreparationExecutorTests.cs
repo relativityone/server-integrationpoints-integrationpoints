@@ -63,7 +63,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             Mock<IBatch> batchMock = new Mock<IBatch>();
             Mock<ILoadFile> loadFileMock = new Mock<ILoadFile>();
             _batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batchMock.Object);
-            _loadFileGeneratorMock.Setup(x => x.Generate(batchMock.Object)).ReturnsAsync(loadFileMock.Object);
+            _loadFileGeneratorMock.Setup(x => x.GenerateAsync(batchMock.Object)).ReturnsAsync(loadFileMock.Object);
             _importSourceControllerMock.Setup(x => x.AddSourceAsync(
                 It.IsAny<int>(),
                 It.IsAny<Guid>(),
@@ -89,7 +89,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             Mock<IBatch> batchMock = new Mock<IBatch>();
             Mock<ILoadFile> loadFileMock = new Mock<ILoadFile>();
             _batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batchMock.Object);
-            _loadFileGeneratorMock.Setup(x => x.Generate(batchMock.Object)).Throws(exception);
+            _loadFileGeneratorMock.Setup(x => x.GenerateAsync(batchMock.Object)).Throws(exception);
 
             // Act
             ExecutionResult result = await _sut.ExecuteAsync(_configurationMock.Object, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -111,7 +111,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             Mock<IBatch> batchMock = new Mock<IBatch>();
             Mock<ILoadFile> loadFileMock = new Mock<ILoadFile>();
             _batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batchMock.Object);
-            _loadFileGeneratorMock.Setup(x => x.Generate(batchMock.Object)).ReturnsAsync(loadFileMock.Object);
+            _loadFileGeneratorMock.Setup(x => x.GenerateAsync(batchMock.Object)).ReturnsAsync(loadFileMock.Object);
 
             _importSourceControllerMock.Setup(x => x.AddSourceAsync(
                 _DESTINATION_WORKSPACE_ID,

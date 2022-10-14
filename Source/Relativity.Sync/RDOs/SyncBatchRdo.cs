@@ -9,6 +9,8 @@ namespace Relativity.Sync.RDOs
     {
         public int ArtifactId { get; set; }
 
+        public Guid BatchGuid { get; set; }
+
         [RdoField(SyncBatchGuids.ExportRunIdGuid, RdoFieldType.FixedLengthText, 36)]
         public Guid ExportRunId { get; set; }
 

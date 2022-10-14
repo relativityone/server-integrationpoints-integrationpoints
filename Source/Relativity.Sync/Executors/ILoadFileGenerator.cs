@@ -5,6 +5,6 @@ namespace Relativity.Sync.Executors
 {
     internal interface ILoadFileGenerator
     {
-        Task<ILoadFile> Generate(IBatch batch);
+        Task<ILoadFile> GenerateAsync(IBatch batch);
     }
 }

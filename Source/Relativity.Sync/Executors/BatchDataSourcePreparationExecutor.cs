@@ -32,22 +32,22 @@ namespace Relativity.Sync.Executors
 
         public async Task<ExecutionResult> ExecuteAsync(IBatchDataSourcePreparationConfiguration configuration, CompositeCancellationToken token)
         {
-            try
+            using (IImportSourceController importSource = await _serviceFactory.CreateProxyAsync<IImportSourceController>().ConfigureAwait(false))
+            using (IImportJobController job = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
             {
-                List<int> batchIdList = (await _batchRepository.GetAllBatchesIdsToExecuteAsync(
-                configuration.SourceWorkspaceArtifactId,
-                configuration.SyncConfigurationArtifactId,
-                configuration.ExportRunId)
-                .ConfigureAwait(false))
-                .ToList();
-
-                using (IImportSourceController importSource = await _serviceFactory.CreateProxyAsync<IImportSourceController>().ConfigureAwait(false))
-                using (IImportJobController job = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
+                try
                 {
+                    List<int> batchIdList = (await _batchRepository.GetAllBatchesIdsToExecuteAsync(
+                                             configuration.SourceWorkspaceArtifactId,
+                                             configuration.SyncConfigurationArtifactId,
+                                             configuration.ExportRunId)
+                             .ConfigureAwait(false))
+                             .ToList();
+
                     foreach (int batchId in batchIdList)
                     {
                         IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
-                        ILoadFile loadFile = await _fileGenerator.Generate(batch).ConfigureAwait(false);
+                        ILoadFile loadFile = await _fileGenerator.GenerateAsync(batch).ConfigureAwait(false);
 
                         Response result = await importSource.AddSourceAsync(
                              configuration.DestinationWorkspaceArtifactId,
@@ -58,6 +58,7 @@ namespace Relativity.Sync.Executors
 
                         if (!result.IsSuccess)
                         {
+                            await CancelJobOnFailure(job, configuration).ConfigureAwait(false);
                             return ExecutionResult.Failure($"Could not send load file for batch ID: {batch.ArtifactId} to IAPI 2.0. {result.ErrorMessage}");
                         }
 
@@ -66,15 +67,25 @@ namespace Relativity.Sync.Executors
 
                     Response response = await job.EndAsync(configuration.DestinationWorkspaceArtifactId, configuration.ExportRunId).ConfigureAwait(false);
                 }
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Batch Data Source preparation failed");
-                return ExecutionResult.Failure(ex);
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Batch Data Source preparation failed");
+                    await CancelJobOnFailure(job, configuration).ConfigureAwait(false);
+                    return ExecutionResult.Failure(ex);
+                }
             }
 
             return ExecutionResult.Success();
+        }
+
+        private async Task CancelJobOnFailure(IImportJobController job, IBatchDataSourcePreparationConfiguration configuration)
+        {
+            Response result = await job.CancelAsync(configuration.DestinationWorkspaceArtifactId, configuration.ExportRunId).ConfigureAwait(false);
+
+            if (!result.IsSuccess)
+            {
+                _logger.LogError("Could not cancel Job. {errorMessage}", result.ErrorMessage);
+            }
         }
     }
 }

@@ -34,6 +34,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IAPILog> _loggerMock;
 
         private string _serverPath;
+        private string _workspacePath;
 
         private LoadFileGenerator _sut;
 
@@ -61,6 +62,19 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _sut = new LoadFileGenerator(_configurationMock.Object, _serviceFactoryMock.Object, _dataReaderFactoryMock.Object, _loggerMock.Object);
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            if (!string.IsNullOrEmpty(_workspacePath) && Directory.Exists(_workspacePath))
+            {
+                var dir = new DirectoryInfo(_workspacePath);
+                dir.Delete(recursive: true);
+            }
+
+            _serverPath = null;
+            _workspacePath = null;
+        }
+
         [Test]
         public async Task Generate_ShouldReturnILoadFileWithCorrectId()
         {
@@ -73,13 +87,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 .ReturnsAsync(server);
 
             // Act
-            ILoadFile result = await _sut.Generate(_batchMock.Object).ConfigureAwait(false);
+            ILoadFile result = await _sut.GenerateAsync(_batchMock.Object).ConfigureAwait(false);
 
             // Assert
             result.Should().NotBeNull();
             result.Id.ToString().Should().Be(_BATCH_GUID);
         }
-
 
         [Test]
         public async Task Generate_ShouldReturnCorrectFilePath_WhenRootDirectoryExists()
@@ -93,7 +106,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 .ReturnsAsync(server);
 
             // Act
-            ILoadFile result = await _sut.Generate(_batchMock.Object).ConfigureAwait(false);
+            ILoadFile result = await _sut.GenerateAsync(_batchMock.Object).ConfigureAwait(false);
 
             // Assert
             result.Should().NotBeNull();
@@ -106,7 +119,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         {
             // Arrange
             _serverPath = "randomTestPath";
-            string rootDirectory = Path.Combine(_serverPath, $"EDDS{_DESTINATION_WORKSPACE_ID}");
+            string rootDirectory = $@"{_serverPath}\EDDS{_DESTINATION_WORKSPACE_ID}";
             string expectedErrorMessage = $"Unable to create load file path. Directory: {rootDirectory} does not exist!";
             FileShareResourceServer server = new FileShareResourceServer { UNCPath = _serverPath };
 
@@ -115,7 +128,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 .ReturnsAsync(server);
 
             // Act
-            Func<Task<ILoadFile>> function = async () => await _sut.Generate(_batchMock.Object).ConfigureAwait(false);
+            Func<Task<ILoadFile>> function = async () => await _sut.GenerateAsync(_batchMock.Object).ConfigureAwait(false);
 
             // Assert
             function.Should().Throw<Exception>().WithMessage(expectedErrorMessage);
@@ -124,14 +137,14 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private string PrepareFakeLoadFilePath()
         {
             _serverPath = Path.GetTempPath();
-            string rootDirectory = Path.Combine(_serverPath, $@"EDDS{_DESTINATION_WORKSPACE_ID}");
+            _workspacePath = Path.Combine(_serverPath, $@"EDDS{_DESTINATION_WORKSPACE_ID}");
 
-            if (!Directory.Exists(rootDirectory))
+            if (!Directory.Exists(_workspacePath))
             {
-                Directory.CreateDirectory(rootDirectory);
+                Directory.CreateDirectory(_workspacePath);
             }
 
-            return $@"{rootDirectory}\Sync\{_EXPORT_RUN_ID}\{_BATCH_GUID}\{_BATCH_GUID}.dat";
+            return $@"{_workspacePath}\Sync\{_EXPORT_RUN_ID}\{_BATCH_GUID}\{_BATCH_GUID}.dat";
         }
     }
 }

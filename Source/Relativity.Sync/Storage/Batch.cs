@@ -14,7 +14,6 @@ namespace Relativity.Sync.Storage
 {
     internal sealed class Batch : IBatch
     {
-        private readonly Guid _batchGuid;
         private readonly int _workspaceArtifactId;
         private readonly IRdoManager _rdoManager;
         private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
@@ -33,11 +32,10 @@ namespace Relativity.Sync.Storage
             _rdoManager = rdoManager;
             _workspaceArtifactId = workspaceArtifactId;
             _serviceFactoryForAdmin = serviceFactoryForAdmin;
-            _batchGuid = Guid.NewGuid();
         }
 
         public int ArtifactId => _batchRdo.ArtifactId;
-        
+
         public int TotalDocumentsCount => _batchRdo.TotalDocumentsCount;
 
         public int TransferredDocumentsCount => _batchRdo.TransferredDocumentsCount;
@@ -46,7 +44,7 @@ namespace Relativity.Sync.Storage
 
         public Guid ExportRunId => _batchRdo.ExportRunId;
 
-        public Guid BatchGuid => _batchGuid;
+        public Guid BatchGuid => _batchRdo.BatchGuid;
 
         public int TransferredItemsCount => _batchRdo.TransferredItemsCount;
 
@@ -122,6 +120,7 @@ namespace Relativity.Sync.Storage
             _batchRdo.StartingIndex = startingIndex;
             _batchRdo.ExportRunId = exportRunId;
             _batchRdo.Status = BatchStatus.New;
+            _batchRdo.BatchGuid = Guid.NewGuid();
 
             await _rdoManager.CreateAsync(_workspaceArtifactId, _batchRdo, syncConfigurationArtifactId)
                 .ConfigureAwait(false);
@@ -205,7 +204,7 @@ namespace Relativity.Sync.Storage
 
                 _batchRdo = await _rdoManager.GetAsync<SyncBatchRdo>(_workspaceArtifactId, result.Objects[0].ArtifactID)
                     .ConfigureAwait(false);
-                
+
                 return true;
             }
         }
@@ -220,7 +219,7 @@ namespace Relativity.Sync.Storage
                 throw new SyncException($"Batch ArtifactID: {artifactId} not found.");
             }
         }
-            
+
         private async Task<IEnumerable<int>> GetAllBatchesIdsToExecuteAsync(int syncConfigurationArtifactId, Guid exportRunId)
         {
             Task<IEnumerable<int>> getPausedBatches =

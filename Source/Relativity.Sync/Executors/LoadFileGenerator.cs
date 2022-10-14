@@ -34,7 +34,7 @@ namespace Relativity.Sync.Executors
             _logger = logger;
         }
 
-        public async Task<ILoadFile> Generate(IBatch batch)
+        public async Task<ILoadFile> GenerateAsync(IBatch batch)
         {
             string batchPath = await CreateBatchFullPath(batch).ConfigureAwait(false);
             DataSourceSettings settings = CreateSettings(batchPath);
@@ -44,26 +44,24 @@ namespace Relativity.Sync.Executors
 
         private void GenerateLoadFile(IBatch batch, string batchPath, DataSourceSettings settings)
         {
-            int counter = 0;
+            int readerLineNumber = 0;
             try
             {
                 using (ISourceWorkspaceDataReader reader = _dataReaderFactory.CreateNativeSourceWorkspaceDataReader(batch, CancellationToken.None))
+                using (StreamWriter writer = new StreamWriter(batchPath))
                 {
-                    using (StreamWriter writer = new StreamWriter(batchPath))
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            counter++;
-                            string line = GetLineContent(reader, settings);
-                            writer.WriteLine(line);
-                        }
+                        readerLineNumber++;
+                        string line = GetLineContent(reader, settings);
+                        writer.WriteLine(line);
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Load file generator error occurred in line: {readerLineNumber}", counter);
-                throw ex;
+                _logger.LogError(ex, "Load file generator error occurred in line: {readerLineNumber}", readerLineNumber);
+                throw;
             }
         }
 
@@ -79,7 +77,7 @@ namespace Relativity.Sync.Executors
 
             return string.Join($"{settings.ColumnDelimiter}", rowValues);
 
-            // TBD: Should we add settings.NewLineDelimiter here if we are processing returned walue as writer.WriteLine() parameter?
+            // TBD: Should we add settings.NewLineDelimiter here if we are processing returned value as writer.WriteLine() parameter?
         }
 
         private DataSourceSettings CreateSettings(string batchPath)
@@ -107,7 +105,7 @@ namespace Relativity.Sync.Executors
                     string rootDirectory = Path.Combine(server.UNCPath, $"EDDS{_configuration.DestinationWorkspaceArtifactId}");
                     if (!Directory.Exists(rootDirectory))
                     {
-                        throw new Exception($"Unable to create load file path. Directory: {rootDirectory} does not exist!");
+                        throw new DirectoryNotFoundException($"Unable to create load file path. Directory: {rootDirectory} does not exist!");
                     }
 
                     string batchPartialDirectory = $@"Sync\{batch.ExportRunId}\{batch.BatchGuid}";
@@ -124,7 +122,7 @@ namespace Relativity.Sync.Executors
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Could not build load file path for batch {batchGuid}", batch.BatchGuid);
-                throw ex;
+                throw;
             }
 
             return batchFullPath;

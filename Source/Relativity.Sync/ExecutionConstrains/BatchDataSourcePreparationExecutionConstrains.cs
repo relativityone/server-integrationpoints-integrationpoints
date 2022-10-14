@@ -36,6 +36,7 @@ namespace Relativity.Sync.ExecutionConstrains
                 _logger.LogError(exception, "Exception occurred when reviewing batches and batch status.");
                 throw;
             }
+
             return canExecute;
         }
     }
