@@ -103,7 +103,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
             Task waitForJobStatus = Task.Run(() => WaitForJobStatus(jobHistoryId, workspaceId, status =>
                 status == expectedStatus, checkDelayInMs));
 
-            int waitingTimeout = 300;
+            int waitingTimeout = 600;
             if (!waitForJobStatus.Wait(TimeSpan.FromSeconds(waitingTimeout)))
             {
                 string status = await GetJobHistoryStatus(jobHistoryId, workspaceId).ConfigureAwait(false);
