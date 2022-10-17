@@ -20,5 +20,6 @@
         public const string TaggedDocumentsCountGuid = "AF3C2398-AF49-4537-9BC3-D79AE1734A8C";
 
         public const string ExportRunIdGuid = "F4BA9D90-F45F-4522-8480-CDDF2DF89074";
+        public const string BatchGuidGuid = "D9DC3D38-35D6-461E-B781-D4CFA7451BE0";
     }
 }

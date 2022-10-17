@@ -49,7 +49,7 @@ namespace Relativity.Sync.Tests.Unit.RDOs
                 .ForEach(t =>
                 {
                     t.GetProperties()
-                        .Where(p => p.Name != nameof(IRdoType.ArtifactId) && p.Name != nameof(SyncBatchRdo.BatchGuid))
+                        .Where(p => p.Name != nameof(IRdoType.ArtifactId))
                         .ForEach(x =>
                         {
                             try
@@ -72,12 +72,12 @@ namespace Relativity.Sync.Tests.Unit.RDOs
             Type[] allRdoTypes = GetRdoTypesFromAssembly(typeof(IRdoType).Assembly);
 
             const int guidTextLength = 36;
-            
+
             allRdoTypes
                 .ForEach(t =>
                 {
                     t.GetProperties()
-                        .Where(p => p.Name != nameof(IRdoType.ArtifactId) && p.Name != nameof(SyncBatchRdo.BatchGuid) &&
+                        .Where(p => p.Name != nameof(IRdoType.ArtifactId) &&
                                     (p.PropertyType == typeof(Guid) || p.PropertyType == typeof(Guid?)))
                         .ForEach(x =>
                         {
@@ -88,7 +88,7 @@ namespace Relativity.Sync.Tests.Unit.RDOs
                         });
                 });
         }
-        
+
         [Test]
         public void AllRdosLongProperties_ShouldHaveLongFieldAttribute()
         {
