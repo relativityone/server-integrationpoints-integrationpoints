@@ -1,55 +1,55 @@
 ﻿<script id="exportProviderFieldsStep" type="text/html">
-	<div class="card">
-		<div class="label">Source Detail</div>
-		<div class="field-row" data-bind="visible: !exportSource.ExportRdoMode()">
-			<div class="field-label required">Source:</div>
-			<div class="field-value">
-				<select id="sourceSelector" data-bind="options: ExportEnums.SourceOptions , optionsText: 'key', optionsValue: 'value',  optionsCaption: 'Select...', value: exportSource.TypeOfExport,  select2: {}"></select>
-			</div>
-		</div>
-		<div class="field-row" data-bind="visible: exportSource.IsFolderOrSubfolderSelected() && !exportSource.ExportRdoMode()">
-			<div class="field-label required" data-bind="text: exportSource.FolderLabelDescription">
-			</div>
-			<div class="field-value select2-double-width">
-				<div id="location-select" class="select2-container fluid-mock-select filter-container">
-					<input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: exportSource.FolderArtifactName" />
-					<span id="location-span" class="icon legal-hold icon-chevron-down" role="presentation"></span>
-				</div>
-				<div id="jstree-holder-div" class="jstree-holder browse">
-					<div id="browser-tree" tabindex="0"></div>
-				</div>
-			</div>
-		</div>
-		<div class="field-row" data-bind="visible: exportSource.IsFolderOrSubfolderSelected()">
-			<div class="field-label required">Views:</div>
-			<div class="field-value">
-				<select id="viewSelector" data-bind="options: exportSource.AvailableViews, optionsText: 'name', optionsValue: 'artifactId', optionsCaption: 'Select...', value: exportSource.ViewId,  select2: {}"></select>
-			</div>
-		</div>
-		<div class="field-row" data-bind="visible: exportSource.IsSavedSearchSelected()">
-			<div class="field-label required">Saved Search:</div>
-			<div class="field-value">
-				<input type="hidden" id="savedSearchSelector" data-bind="value: exportSource.SavedSearchArtifactId, select2lazySearchable: {}, optionsUrl: exportSource.SavedSearchUrl, textPropertyName: 'displayName', valuePropertyName: 'value', itemDetailsIdParameterName: 'savedSearchId', optionsCaption: 'Select...'" />
-				<button id="saved-search-selection-button" data-bind="click: exportSource.OpenSavedSearchPicker" class="actionButtonSmall">...</button>
-			</div>
-		</div>
-		<div class="field-row" data-bind="visible: exportSource.IsProductionSelected()">
-			<div class="field-label required">Production Set:</div>
-			<div class="field-value">
-				<select id="productionSetsSelector" data-bind="options: exportSource.ProductionSets, optionsText: 'displayName', optionsValue: 'artifactID', optionsCaption: 'Select...', value: exportSource.ProductionId,  select2: {}"></select>
-			</div>
-		</div>
-		<div class="field-row">
-			<div class="field-label required">Start Export at Record:</div>
-			<div class="field-value">
-				<input id="start-export-at-record" type="number" min="1" data-bind="value: startExportAtRecord" />
-			</div>
-		</div>
-	</div>
-	<div class="card" data-bind="with: fields">
-		<div class="label">Columns To Export</div>
-		<div data-bind="validationMessage: mappedFields" class="icon-error legal-hold field-validation-error"></div>
-		<div class="table" id="selectFields">
+    <div class="card">
+        <div class="label">Source Detail</div>
+        <div class="field-row" data-bind="visible: !exportSource.ExportRdoMode()">
+            <div class="field-label required">Source:</div>
+            <div class="field-value">
+                <select id="sourceSelector" data-bind="options: ExportEnums.SourceOptions , optionsText: 'key', optionsValue: 'value',  optionsCaption: 'Select...', value: exportSource.TypeOfExport,  select2: {}"></select>
+            </div>
+        </div>
+        <div class="field-row" data-bind="visible: exportSource.IsFolderOrSubfolderSelected() && !exportSource.ExportRdoMode()">
+            <div class="field-label required" data-bind="text: exportSource.FolderLabelDescription">
+            </div>
+            <div class="field-value select2-double-width">
+                <div id="location-select" class="select2-container fluid-mock-select filter-container">
+                    <input id="location-input" type="text" readonly='readonly' placeholder="Select..." data-bind="value: exportSource.FolderArtifactName" />
+                    <span id="location-span" class="icon legal-hold icon-chevron-down" role="presentation"></span>
+                </div>
+                <div id="jstree-holder-div" class="jstree-holder browse">
+                    <div id="browser-tree" tabindex="0"></div>
+                </div>
+            </div>
+        </div>
+        <div class="field-row" data-bind="visible: exportSource.IsFolderOrSubfolderSelected()">
+            <div class="field-label required">Views:</div>
+            <div class="field-value">
+                <select id="viewSelector" data-bind="options: exportSource.AvailableViews, optionsText: 'name', optionsValue: 'artifactId', optionsCaption: 'Select...', value: exportSource.ViewId,  select2: {}"></select>
+            </div>
+        </div>
+        <div class="field-row" data-bind="visible: exportSource.IsSavedSearchSelected()">
+            <div class="field-label required">Saved Search:</div>
+            <div class="field-value">
+                <input type="hidden" id="savedSearchSelector" data-bind="value: exportSource.SavedSearchArtifactId, select2lazySearchable: {}, optionsUrl: exportSource.SavedSearchUrl, textPropertyName: 'displayName', valuePropertyName: 'value', itemDetailsIdParameterName: 'savedSearchId', optionsCaption: 'Select...'" />
+                <button id="saved-search-selection-button" data-bind="click: exportSource.OpenSavedSearchPicker" class="actionButtonSmall">...</button>
+            </div>
+        </div>
+        <div class="field-row" data-bind="visible: exportSource.IsProductionSelected()">
+            <div class="field-label required">Production Set:</div>
+            <div class="field-value">
+                <select id="productionSetsSelector" data-bind="options: exportSource.ProductionSets, optionsText: 'displayName', optionsValue: 'artifactID', optionsCaption: 'Select...', value: exportSource.ProductionId,  select2: {}"></select>
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field-label required">Start Export at Record:</div>
+            <div class="field-value">
+                <input id="start-export-at-record" type="number" min="1" data-bind="value: startExportAtRecord" />
+            </div>
+        </div>
+    </div>
+    <div class="card" data-bind="with: fields">
+        <div class="label">Columns To Export</div>
+        <div data-bind="validationMessage: mappedFields" class="icon-error legal-hold field-validation-error"></div>
+        <div class="table" id="selectFields">
             <div class="cell fixedColumn">
                 <div class="field-label" style="padding: 5px; text-align: left;">Source Fields:</div>
                 <form action="" data-bind="submit: function() { return false; }">
@@ -59,36 +59,37 @@
                 </form>
                 <select id="available-fields" class="list-box" name="available-field" style="height: 376px; margin-top: 4px;" data-bind="options: filterFields(availableFields, filterSourceField), selectedOptions: selectedAvailableFields, optionsText: 'displayName', doubleClick: addField, optionsAfterRender: setTitle" multiple="multiple"></select>
             </div>
-			<div class="cell selection-rename">
-				<div class="field-row">
-					<button class="actionButtonSmall" style="visibility:hidden" id="fake-btn">Rename</button>
-				</div>
-				<div class="field-row map-move" style="margin-top: 150%;">
-					<a href="#" id="add-all-fields" class="icon-move-last" data-bind="click: addAllFields"></a>
-					<a href="#" id="add-field" class="icon-move-next" data-bind="click: addField"></a>
-					<a href="#" id="remove-field" class="icon-move-previous" data-bind="click: removeField"></a>
-					<a href="#" id="remove-all-fields" class="icon-move-first" data-bind="click: removeAllFields"></a>
-				</div>
-			</div>
-			<div class="cell fixedColumn">
-				<div class="field-label" style="padding: 5px; text-align: left; border-left: 3px solid #f59d1f;">Selected Fields:</div>
-				<select class="list-box" id="selected-fields" data-bind="options: mappedFields, selectedOptions: selectedMappedFields, optionsText: 'displayName', doubleClick: removeField, optionsAfterRender: setTitle" multiple="multiple"></select>
-			</div>
-			<div class="cell selection-rename">
-				<div class="field-row">
-					<button class="actionButtonSmall" id="renamed-fields-button" data-bind="click: openRenamedFieldsModal, hidden: isRenameButtonHidden">Rename</button>
-				</div>
-				<div class="field-row map-move" style="margin-top: 150%">
-					<a href="#" id="move-field-top" class="icon-move-to-top" data-bind="click: moveFieldTop"></a>
-					<a href="#" id="move-field-up" class="icon-move-up" data-bind="click: moveFieldUp"></a>
-					<a href="#" id="move-field-down" class="icon-move-down" data-bind="click: moveFieldDown"></a>
-					<a href="#" id="move-field-bottom" class="icon-move-to-bottom" data-bind="click: moveFieldBottom"></a>
-				</div>
-			</div>
-			<div class="cell fixedColumn">
-				<div class="field-label" style="padding: 5px; text-align: left; ">Renamed Fields:</div>
-				<select class="list-box" id="renamed-fields" data-bind="options: mappedFields, selectedOptions: selectedMappedFields, optionsText: 'renamedText', doubleClick: openRenamedFieldsModal, optionsAfterRender: setTitle" multiple="multiple"></select>
-			</div>
-		</div>
-	</div>
+            <div class="cell selection-rename">
+                <div class="field-row">
+                    <button class="actionButtonSmall" style="visibility:hidden" id="fake-btn">Rename</button>
+                </div>
+                <div class="field-row map-move" style="margin-top: 150%;">
+                    <a href="#" id="add-all-fields" class="icon-move-last" data-bind="click: addAllFields"></a>
+                    <a href="#" id="add-field" class="icon-move-next" data-bind="click: addField"></a>
+                    <a href="#" id="remove-field" class="icon-move-previous" data-bind="click: removeField"></a>
+                    <a href="#" id="remove-all-fields" class="icon-move-first" data-bind="click: removeAllFields"></a>
+                </div>
+            </div>
+            <div class="cell fixedColumn">
+                <div class="field-label" style="padding: 5px; text-align: left; border-left: 3px solid #f59d1f;">Selected Fields:</div>
+                <select class="list-box" id="selected-fields" data-bind="options: mappedFields, selectedOptions: selectedMappedFields, optionsText: 'displayName', doubleClick: removeField, optionsAfterRender: setTitle" multiple="multiple"></select>
+            </div>
+            <div class="cell selection-rename">
+                <div class="field-row">
+                    <button class="actionButtonSmall" id="renamed-fields-button" data-bind="click: openRenamedFieldsModal, hidden: isRenameButtonHidden">Rename</button>
+                </div>
+                <div class="field-row map-move" style="margin-top: 150%">
+                    <a href="#" id="move-field-top" class="icon-move-to-top" data-bind="click: moveFieldTop"></a>
+                    <a href="#" id="move-field-up" class="icon-move-up" data-bind="click: moveFieldUp"></a>
+                    <a href="#" id="move-field-down" class="icon-move-down" data-bind="click: moveFieldDown"></a>
+                    <a href="#" id="move-field-bottom" class="icon-move-to-bottom" data-bind="click: moveFieldBottom"></a>
+                </div>
+            </div>
+            <div class="cell fixedColumn">
+                <div class="field-label" style="padding: 5px; text-align: left; ">Renamed Fields:</div>
+                <select class="list-box" id="renamed-fields" data-bind="options: mappedFields, selectedOptions: selectedMappedFields, optionsText: 'renamedText', doubleClick: openRenamedFieldsModal, optionsAfterRender: setTitle" multiple="multiple"></select>
+            </div>
+        </div>
+    </div>
 </script>
+<script src="~/Scripts/purify.min.js"></script>
