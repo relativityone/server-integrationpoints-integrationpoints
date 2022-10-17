@@ -51,21 +51,21 @@ namespace Relativity.Sync.Tests.Unit.FileMovementService
         public async Task GetRunStatusAsync_ShouldReturnResponse()
         {
             // Arrange
-            Guid traceId = Guid.NewGuid();
-            string expectedUri = $"{KubernetesUrl}/{FmsUrl}/api/v1/DataFactory/GetStatus/RunID?traceId={traceId}";
+            string endpointUrl = $"{KubernetesUrl}/{FmsUrl}/api/v1/DataFactory/GetStatus";
             RunStatusRequest request = new RunStatusRequest()
             {
                 RunId = "RunID",
-                TraceId = traceId,
-                EndpointURL = expectedUri
+                TraceId = Guid.NewGuid(),
+                EndpointURL = endpointUrl
             };
 
             RunStatusResponse response = new RunStatusResponse()
             {
-                TraceId = traceId,
+                TraceId = Guid.NewGuid(),
                 Message = "Some message",
                 Status = "Success"
             };
+            string expectedUri = $"{KubernetesUrl}/{FmsUrl}/api/v1/DataFactory/GetStatus/RunID?traceId={request.TraceId}";
 
             _httpMessageHandler
                 .Protected()
@@ -89,14 +89,14 @@ namespace Relativity.Sync.Tests.Unit.FileMovementService
         public void GetRunStatusAsync_ShouldThrow_WhenReponseNotSuccessfull()
         {
             // Arrange
-            Guid traceId = Guid.NewGuid();
-            string expectedUri = $"{KubernetesUrl}/{FmsUrl}/api/v1/DataFactory/GetStatus/RunID?traceId={traceId}";
+            string endpointUrl = $"{KubernetesUrl}/{FmsUrl}/api/v1/DataFactory/GetStatus";
             RunStatusRequest request = new RunStatusRequest()
             {
                 RunId = "RunID",
                 TraceId = Guid.NewGuid(),
-                EndpointURL = expectedUri
+                EndpointURL = endpointUrl
             };
+            string expectedUri = $"{KubernetesUrl}/{FmsUrl}/api/v1/DataFactory/GetStatus/RunID?traceId={request.TraceId}";
 
             _httpMessageHandler
                 .Protected()
