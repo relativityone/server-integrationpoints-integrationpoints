@@ -13,11 +13,6 @@ namespace Relativity.Sync.Transfer.FileMovementService
     internal class FmsRunner : IFmsRunner
     {
         internal const string SubmittedStatusName = "Submitted";
-
-        private readonly IFmsClient _fmsClient;
-        private readonly IFmsInstanceSettingsService _fmsInstanceSettingsService;
-        private readonly IAPILog _logger;
-
         private static readonly string[] _activeBatchStatuses =
         {
             SubmittedStatusName,
@@ -25,6 +20,12 @@ namespace Relativity.Sync.Transfer.FileMovementService
             RunStatuses.InProgress,
             RunStatuses.Canceling,
         };
+
+        private readonly IFmsClient _fmsClient;
+        private readonly IFmsInstanceSettingsService _fmsInstanceSettingsService;
+        private readonly IAPILog _logger;
+
+        private string _endpointUrlBase;
 
         public FmsRunner(IFmsClient fmsClient, IFmsInstanceSettingsService fmsInstanceSettingsService, IAPILog logger)
         {
@@ -40,6 +41,7 @@ namespace Relativity.Sync.Transfer.FileMovementService
             {
                 _logger.LogInformation("Starting transfer of {count} fms batches. TraceId: {traceId}", batches.Count, batchesTraceId);
 
+                string endpointUrl = await GetEndpointUrlAsync(FmsConstants.CopyListOfFilesMethodName).ConfigureAwait(false);
                 IEnumerable<CopyListOfFilesRequest> requests = batches
                     .Select(batch => new CopyListOfFilesRequest
                     {
@@ -47,6 +49,7 @@ namespace Relativity.Sync.Transfer.FileMovementService
                         DestinationPath = batch.DestinationLocationShortPath,
                         SourcePath = batch.SourceLocationShortPath,
                         PathToListOfFiles = batch.UploadedBatchFilePath,
+                        EndpointURL = endpointUrl
                     });
 
                 List<Task<CopyListOfFilesResponse>> tasks = requests
@@ -75,12 +78,13 @@ namespace Relativity.Sync.Transfer.FileMovementService
 
                 int intervalSeconds = await _fmsInstanceSettingsService.GetMonitoringInterval().ConfigureAwait(false);
                 List<FmsBatchStatusInfo> activeBatches = GetActiveBatches(batches);
+                string endpointUrl = await GetEndpointUrlAsync(FmsConstants.GetStatusMethodName);
 
                 while (activeBatches.Any())
                 {
                     _logger.LogInformation("Found {count} active fms batches. Checking their states. TraceId: {traceId}", activeBatches.Count, batchesTraceId);
 
-                    await UpdateBatchStatusesAsync(activeBatches, cancellationToken).ConfigureAwait(false);
+                    await UpdateBatchStatusesAsync(activeBatches, endpointUrl, cancellationToken).ConfigureAwait(false);
                     await Task.Delay(TimeSpan.FromSeconds(intervalSeconds), cancellationToken).ConfigureAwait(false);
                     activeBatches = GetActiveBatches(batches);
                 }
@@ -95,23 +99,24 @@ namespace Relativity.Sync.Transfer.FileMovementService
             }
         }
 
-        private async Task UpdateBatchStatusesAsync(List<FmsBatchStatusInfo> activeBatches, CancellationToken cancellationToken)
+        private async Task UpdateBatchStatusesAsync(List<FmsBatchStatusInfo> activeBatches, string endpointUrl, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             List<Task> tasks = activeBatches
-                .Select(batch => UpdateSingleBatchAsync(batch, cancellationToken))
+                .Select(batch => UpdateSingleBatchAsync(batch, endpointUrl, cancellationToken))
                 .ToList();
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
-        private async Task UpdateSingleBatchAsync(FmsBatchStatusInfo batch, CancellationToken cancellationToken)
+        private async Task UpdateSingleBatchAsync(FmsBatchStatusInfo batch, string endpointUrl, CancellationToken cancellationToken)
         {
             RunStatusRequest request = new RunStatusRequest
             {
                 TraceId = batch.TraceId,
                 RunId = batch.RunId,
+                EndpointURL = endpointUrl
             };
 
             RunStatusResponse response = await _fmsClient.GetRunStatusAsync(request, cancellationToken).ConfigureAwait(false);
@@ -142,6 +147,32 @@ namespace Relativity.Sync.Transfer.FileMovementService
             {
                 _logger.LogInformation("FMS Batch RunId: {FmsRunId} Status: {FmsStatus} StatusMessage: {FmsStatusMessage}", batch.RunId, batch.Status, batch.StatusMessage);
             }
+        }
+
+        private async Task GetEndpointUrlBaseAsync()
+        {
+            try
+            {
+                string kubernetesServicesUrl = await _fmsInstanceSettingsService.GetKubernetesServicesUrl().ConfigureAwait(false);
+                string fileMovementServiceUrl = await _fmsInstanceSettingsService.GetFileMovementServiceUrl().ConfigureAwait(false);
+
+                _endpointUrlBase = $"{kubernetesServicesUrl}/{fileMovementServiceUrl}/{FmsConstants.ApiV1UrlPart}";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unable to create endpoint URL base part");
+                throw;
+            }
+        }
+
+        private async Task<string> GetEndpointUrlAsync(string method)
+        {
+            if (string.IsNullOrEmpty(_endpointUrlBase))
+            {
+                await GetEndpointUrlBaseAsync().ConfigureAwait(false);
+            }
+
+            return $"{_endpointUrlBase}/{method}";
         }
     }
 }

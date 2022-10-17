@@ -15,21 +15,17 @@ namespace Relativity.Sync.Transfer.FileMovementService
     /// <inheritdoc />
     internal class FmsClient : IFmsClient
     {
-        private const string ApiV1UrlPart = @"api/v1/DataFactory";
-        private readonly IFmsInstanceSettingsService _fmsInstanceSettingsService;
         private readonly ISharedServiceHttpClientFactory _httpClientFactory;
         private readonly IHttpClientRetryPolicyProvider _retryPolicyProvider;
         private readonly ISerializer _serializer;
         private readonly IAPILog _logger;
 
         public FmsClient(
-            IFmsInstanceSettingsService fmsInstanceSettingsService,
             ISharedServiceHttpClientFactory httpClientFactory,
             IHttpClientRetryPolicyProvider retryPolicyProvider,
             ISerializer serializer,
             IAPILog logger)
         {
-            _fmsInstanceSettingsService = fmsInstanceSettingsService ?? throw new ArgumentNullException(nameof(fmsInstanceSettingsService));
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _retryPolicyProvider = retryPolicyProvider ?? throw new ArgumentNullException(nameof(retryPolicyProvider));
             _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
@@ -42,13 +38,11 @@ namespace Relativity.Sync.Transfer.FileMovementService
             {
                 _logger.LogInformation("Checking run status of Run ID: {runId} Trace ID: {traceId}", request.RunId, request.TraceId);
 
-                string getStatusUrl = await GetEndpointUrlAsync("GetStatus").ConfigureAwait(false);
-
                 using (System.Net.Http.HttpClient httpClient = await _httpClientFactory.GetHttpClientAsync().ConfigureAwait(false))
                 {
                     HttpResponseMessage responseMessage = await ExecuteUnderRetryPolicy(async () =>
                     {
-                        string requestUri = $"{getStatusUrl}/{request.RunId}?traceId={request.TraceId}";
+                        string requestUri = $"{request.EndpointURL}/{request.RunId}?traceId={request.TraceId}";
 
                         return await httpClient
                             .GetAsync(requestUri, cancellationToken)
@@ -75,8 +69,6 @@ namespace Relativity.Sync.Transfer.FileMovementService
             {
                 _logger.LogInformation("Copying list of files. Trace ID: {traceId}", request.TraceId);
 
-                string copyListOfFilesEndpoint = await GetEndpointUrlAsync("CopyListOfFiles").ConfigureAwait(false);
-
                 using (System.Net.Http.HttpClient httpClient = await _httpClientFactory.GetHttpClientAsync().ConfigureAwait(false))
                 {
                     string requestJson = _serializer.Serialize(request);
@@ -84,7 +76,7 @@ namespace Relativity.Sync.Transfer.FileMovementService
                     StringContent requestContent = new StringContent(requestJson, Encoding.UTF8, "application/json");
 
                     HttpResponseMessage responseMessage = await ExecuteUnderRetryPolicy(async () => await httpClient
-                        .PostAsync($"{copyListOfFilesEndpoint}", requestContent, cancellationToken)
+                        .PostAsync($"{request.EndpointURL}", requestContent, cancellationToken)
                         .ConfigureAwait(false));
 
                     responseMessage.EnsureSuccessStatusCode();
@@ -107,15 +99,13 @@ namespace Relativity.Sync.Transfer.FileMovementService
             {
                 _logger.LogInformation("Cancelling Run ID: {runId} Trace ID: {traceId}", request.RunId, request.TraceId);
 
-                string cancelEndpoint = await GetEndpointUrlAsync("Cancel").ConfigureAwait(false);
-
                 using (System.Net.Http.HttpClient httpClient = await _httpClientFactory.GetHttpClientAsync().ConfigureAwait(false))
                 {
                     string requestJson = _serializer.Serialize(request);
                     StringContent requestContent = new StringContent(requestJson, Encoding.UTF8, "application/json");
 
                     HttpResponseMessage responseMessage = await ExecuteUnderRetryPolicy(async () => await httpClient
-                        .PostAsync($"{cancelEndpoint}", requestContent, cancellationToken)
+                        .PostAsync($"{request.EndpointURL}", requestContent, cancellationToken)
                         .ConfigureAwait(false));
 
                     responseMessage.EnsureSuccessStatusCode();
@@ -128,14 +118,6 @@ namespace Relativity.Sync.Transfer.FileMovementService
                 _logger.LogError(ex, "Failed to cancel run");
                 throw;
             }
-        }
-
-        private async Task<string> GetEndpointUrlAsync(string method)
-        {
-            string kubernetesServicesUrl = await _fmsInstanceSettingsService.GetKubernetesServicesUrl();
-            string fileMovementServiceUrl = await _fmsInstanceSettingsService.GetFileMovementServiceUrl();
-
-            return $"{kubernetesServicesUrl}/{fileMovementServiceUrl}/{ApiV1UrlPart}/{method}";
         }
 
         private Task<HttpResponseMessage> ExecuteUnderRetryPolicy(Func<Task<HttpResponseMessage>> action)
