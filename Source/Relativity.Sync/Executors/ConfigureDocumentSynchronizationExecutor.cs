@@ -36,12 +36,12 @@ namespace Relativity.Sync.Executors
             _logger = logger;
         }
 
-                public async Task<ExecutionResult> ExecuteAsync(IConfigureDocumentSynchronizationConfiguration configuration, CompositeCancellationToken token)
+        public async Task<ExecutionResult> ExecuteAsync(IConfigureDocumentSynchronizationConfiguration configuration, CompositeCancellationToken token)
         {
             try
             {
                 IWithOverlayMode result = ImportDocumentSettingsBuilder.Create();
-                IWithNatives withNatives = ConfigureOverwriteMode(result, configuration.ImportOverwriteMode,  MapOverlayBehavior(configuration.FieldOverlayBehavior));
+                IWithNatives withNatives = ConfigureOverwriteMode(result, configuration.ImportOverwriteMode, MapOverlayBehavior(configuration.FieldOverlayBehavior));
 
                 List<FieldInfoDto> allMappings = (await _fieldManager.GetNativeAllFieldsAsync(token.AnyReasonCancellationToken)).ToList();
                 IWithFieldsMapping withFieldsMapping = ConfigureFileImport(
@@ -73,7 +73,7 @@ namespace Relativity.Sync.Executors
                     if (importJobResponse.IsSuccess == false)
                     {
                         _logger.LogError("Cannot create import job of id {importJobId}: {messageCode} {message}", importJobResponse.ImportJobID, importJobResponse.ErrorCode, importJobResponse.ErrorMessage);
-                        return ExecutionResult.Failure(importJobResponse.ErrorMessage, null);
+                        return ExecutionResult.Failure(importJobResponse.ErrorMessage);
                     }
 
                     Response documentConfigurationResponse = await documentConfigurationController.CreateAsync(
@@ -84,7 +84,7 @@ namespace Relativity.Sync.Executors
                     if (documentConfigurationResponse.IsSuccess == false)
                     {
                         _logger.LogError("Cannot create document configuration: {messageCode} {message}", documentConfigurationResponse.ErrorCode, documentConfigurationResponse.ErrorMessage);
-                        return ExecutionResult.Failure(documentConfigurationResponse.ErrorMessage, null);
+                        return ExecutionResult.Failure(documentConfigurationResponse.ErrorMessage);
                     }
 
                     Response jobBeginResponse = await importJobController
@@ -94,7 +94,7 @@ namespace Relativity.Sync.Executors
                     if (jobBeginResponse.IsSuccess == false)
                     {
                         _logger.LogError("Cannot begin import job: {messageCode} {message}", jobBeginResponse.ErrorCode, jobBeginResponse.ErrorMessage);
-                        return ExecutionResult.Failure(jobBeginResponse.ErrorMessage, null);
+                        return ExecutionResult.Failure(jobBeginResponse.ErrorMessage);
                     }
                 }
             }

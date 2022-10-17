@@ -48,11 +48,17 @@ namespace Relativity.Sync
         /// </summary>
         [Description("Cancelled")]
         Cancelled,
-        
+
         /// <summary>
         /// Batch was paused due to job drain-stop
         /// </summary>
         [Description("Paused")]
-        Paused
+        Paused,
+
+        /// <summary>
+        /// Load file for batch was successfully created
+        /// </summary>
+        [Description("Generated")]
+        Generated
     }
 }
