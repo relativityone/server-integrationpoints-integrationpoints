@@ -237,8 +237,14 @@ ko.validation.insertValidationMessage = function (element) {
 		this.filterDestinationField = ko.observable("")
 
 		self.filterFields = function (fields, filter) {
-			let filterLowerCase = filter().toLowerCase();
-			let filteredFields = []
+            let fieldValue = filter();
+			let sanitizedFieldValue = DOMPurify.sanitize(fieldValue);
+			if (sanitizedFieldValue !== fieldValue) {
+				console.error(`Field Input sanitization failed! Field value '${fieldValue}' sanitized to ${sanitizedFieldValue}`);
+            }
+
+			let filterLowerCase = sanitizedFieldValue.toLowerCase();
+            let filteredFields = []
 			fields().forEach(field => {
 				if (field.displayName.toLowerCase().indexOf(filterLowerCase) > -1) {
 					filteredFields.push(field)

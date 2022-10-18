@@ -248,14 +248,14 @@ namespace kCura.IntegrationPoints.Core.Tests.RelativitySync
 
         [TestCase(false, ExpectedResult = false)]
         [TestCase(true, ExpectedResult = true)]
-        public async Task<bool> ShouldUseRelativitySyncAppAsync_ShouldDetermineSyncWorkflowThroughSyncRAPUsage(bool toggleValue)
+        public bool ShouldUseRelativitySyncAppAsync_ShouldDetermineSyncWorkflowThroughSyncRAPUsage(bool toggleValue)
         {
             // Arrange
-            _toggleProvider.Setup(x => x.IsEnabledAsync<EnableRelativitySyncApplicationToggle>())
-                .ReturnsAsync(toggleValue);
+            _toggleProvider.Setup(x => x.IsEnabled<EnableRelativitySyncApplicationToggle>())
+                .Returns(toggleValue);
 
             // Act
-            bool result = await _sut.ShouldUseRelativitySyncAppAsync(_INTEGRATION_POINT_ID).ConfigureAwait(false);
+            bool result = _sut.ShouldUseRelativitySyncApp(_INTEGRATION_POINT_ID);
 
             // Assert
             return result;

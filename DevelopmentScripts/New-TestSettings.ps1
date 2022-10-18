@@ -164,7 +164,10 @@ foreach($parameterKey in $PSBoundParameters.Keys)
 
 foreach($parameter in $testRunParameters.ChildNodes)
 {
-    Add-Content (Join-Path $PSScriptRoot ..\FunctionalTestSettings) "--params `"$($parameter.Name)=$($parameter.Value)`""
+    if($parameter.Value)
+    {
+        Add-Content (Join-Path $PSScriptRoot ..\FunctionalTestSettings) "--params `"$($parameter.Name)=$($parameter.Value)`""
+    }
 }
 
 $runSettingsDocument.Save((Join-Path $PSScriptRoot ..\FunctionalTest.runsettings))
