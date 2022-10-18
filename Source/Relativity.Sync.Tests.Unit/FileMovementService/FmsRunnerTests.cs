@@ -17,19 +17,48 @@ namespace Relativity.Sync.Tests.Unit.FileMovementService
     public class FmsRunnerTests
     {
         private Mock<IFmsClient> _fmsClientMock;
+        private Mock<IFmsInstanceSettingsService> _fmsInstanceSettingsMock;
         private FmsRunner _sut;
 
         [SetUp]
         public void SetUp()
         {
-            Mock<IFmsInstanceSettingsService> fmsInstanceSettingsMock = new Mock<IFmsInstanceSettingsService>();
-            fmsInstanceSettingsMock.Setup(x => x.GetMonitoringInterval()).ReturnsAsync(0); // no delay between calls
+            _fmsInstanceSettingsMock = new Mock<IFmsInstanceSettingsService>();
+            _fmsInstanceSettingsMock.Setup(x => x.GetMonitoringInterval()).ReturnsAsync(0); // no delay between calls
 
             _fmsClientMock = new Mock<IFmsClient>();
             _fmsClientMock.Setup(x => x.CopyListOfFilesAsync(It.IsAny<CopyListOfFilesRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new CopyListOfFilesResponse());
 
-            _sut = new FmsRunner(_fmsClientMock.Object, fmsInstanceSettingsMock.Object,  new EmptyLogger());
+            _sut = new FmsRunner(_fmsClientMock.Object, _fmsInstanceSettingsMock.Object,  new EmptyLogger());
+        }
+
+        [Test]
+        public async Task FmsRunner_ShouldCallBaseUrlInstanceSetting_OnlyOncePerInstance()
+        {
+            // Arrange
+            Dictionary<int, NativeFilePathStructure> filePaths = new Dictionary<int, NativeFilePathStructure>
+            {
+                { 1, new NativeFilePathStructure($@"/path/1/2/3/4/1/") },
+            };
+            List<FmsBatchInfo> fmsBatches = Enumerable.Range(0, 3)
+                .Select(i => new FmsBatchInfo(1, filePaths, string.Empty, Guid.Empty))
+                .ToList();
+
+            _fmsClientMock.Setup(x => x.GetRunStatusAsync(It.IsAny<RunStatusRequest>(), It.IsAny<CancellationToken>()))
+              .ReturnsAsync(new RunStatusResponse { Status = RunStatuses.Succeeded });
+
+            List<FmsBatchStatusInfo> batchStatusList = Enumerable.Range(0, 3)
+               .Select(i => new FmsBatchStatusInfo { Status = RunStatuses.InProgress })
+               .ToList();
+
+            // Act
+            await _sut.RunAsync(fmsBatches, CancellationToken.None).ConfigureAwait(false);
+            await _sut.MonitorAsync(batchStatusList, CancellationToken.None).ConfigureAwait(false);
+
+            // Assert
+            _fmsInstanceSettingsMock.Verify(x => x.GetKubernetesServicesUrl(), Times.Once);
+            _fmsInstanceSettingsMock.Verify(x => x.GetFileMovementServiceUrl(), Times.Once);
         }
 
         [TestCase(0)]

@@ -26,5 +26,10 @@ namespace Relativity.Sync.Transfer.FileMovementService.Models
         /// Path without container name to a CSV file with a list files, this file should be located in Source Directory on Azure Data Lake Storage Gen2
         /// </summary>
         public string PathToListOfFiles { get; set; }
+
+        /// <summary>
+        /// Endpoint URL to send request for copy list of files logic.
+        /// </summary>
+        public string EndpointURL { get; set; }
     }
 }
