@@ -23,7 +23,6 @@ namespace Relativity.Sync.Tests.Unit.FileMovementService
         private const string KubernetesUrl = "http://k8s";
         private const string FmsUrl = "fms";
 
-        private Mock<IFmsInstanceSettingsService> _fmsInstanceSettings;
         private Mock<ISharedServiceHttpClientFactory> _httpClientFactory;
         private Mock<IHttpClientRetryPolicyProvider> _retryProvider;
 
@@ -34,7 +33,6 @@ namespace Relativity.Sync.Tests.Unit.FileMovementService
         [SetUp]
         public void SetUp()
         {
-            _fmsInstanceSettings = new Mock<IFmsInstanceSettingsService>();
             _httpClientFactory = new Mock<ISharedServiceHttpClientFactory>();
             _retryProvider = new Mock<IHttpClientRetryPolicyProvider>();
 
@@ -43,23 +41,22 @@ namespace Relativity.Sync.Tests.Unit.FileMovementService
                 .Setup(x => x.GetHttpClientAsync())
                 .ReturnsAsync(new System.Net.Http.HttpClient(_httpMessageHandler.Object));
 
-            _fmsInstanceSettings.Setup(x => x.GetKubernetesServicesUrl()).ReturnsAsync(KubernetesUrl);
-            _fmsInstanceSettings.Setup(x => x.GetFileMovementServiceUrl()).ReturnsAsync(FmsUrl);
-
             _retryProvider.Setup(x => x.GetPolicy(It.IsAny<int>()))
                 .Returns(Policy<HttpResponseMessage>.Handle<Exception>().WaitAndRetryAsync(0, attempt => TimeSpan.Zero));
 
-            _sut = new FmsClient(_fmsInstanceSettings.Object, _httpClientFactory.Object, _retryProvider.Object, new JSONSerializer(), new EmptyLogger());
+            _sut = new FmsClient(_httpClientFactory.Object, _retryProvider.Object, new JSONSerializer(), new EmptyLogger());
         }
 
         [Test]
         public async Task GetRunStatusAsync_ShouldReturnResponse()
         {
             // Arrange
+            string endpointUrl = $"{KubernetesUrl}/{FmsUrl}/api/v1/DataFactory/GetStatus";
             RunStatusRequest request = new RunStatusRequest()
             {
                 RunId = "RunID",
-                TraceId = Guid.NewGuid()
+                TraceId = Guid.NewGuid(),
+                EndpointURL = endpointUrl
             };
 
             RunStatusResponse response = new RunStatusResponse()
@@ -68,7 +65,6 @@ namespace Relativity.Sync.Tests.Unit.FileMovementService
                 Message = "Some message",
                 Status = "Success"
             };
-
             string expectedUri = $"{KubernetesUrl}/{FmsUrl}/api/v1/DataFactory/GetStatus/RunID?traceId={request.TraceId}";
 
             _httpMessageHandler
@@ -93,12 +89,13 @@ namespace Relativity.Sync.Tests.Unit.FileMovementService
         public void GetRunStatusAsync_ShouldThrow_WhenReponseNotSuccessfull()
         {
             // Arrange
+            string endpointUrl = $"{KubernetesUrl}/{FmsUrl}/api/v1/DataFactory/GetStatus";
             RunStatusRequest request = new RunStatusRequest()
             {
                 RunId = "RunID",
-                TraceId = Guid.NewGuid()
+                TraceId = Guid.NewGuid(),
+                EndpointURL = endpointUrl
             };
-
             string expectedUri = $"{KubernetesUrl}/{FmsUrl}/api/v1/DataFactory/GetStatus/RunID?traceId={request.TraceId}";
 
             _httpMessageHandler
@@ -120,12 +117,14 @@ namespace Relativity.Sync.Tests.Unit.FileMovementService
         public async Task CopyListOfFilesAsync_ShouldReturnResponse()
         {
             // Arrange
+            string expectedUri = $"{KubernetesUrl}/{FmsUrl}/api/v1/DataFactory/CopyListOfFiles";
             CopyListOfFilesRequest request = new CopyListOfFilesRequest()
             {
                 DestinationPath = "dest path",
                 PathToListOfFiles = "files path",
                 SourcePath = "source path",
-                TraceId = Guid.NewGuid()
+                TraceId = Guid.NewGuid(),
+                EndpointURL = expectedUri
             };
 
             CopyListOfFilesResponse response = new CopyListOfFilesResponse()
@@ -135,8 +134,6 @@ namespace Relativity.Sync.Tests.Unit.FileMovementService
                 RunId = "run id",
                 TraceId = request.TraceId
             };
-
-            string expectedUri = $"{KubernetesUrl}/{FmsUrl}/api/v1/DataFactory/CopyListOfFiles";
 
             _httpMessageHandler
                 .Protected()
@@ -165,15 +162,15 @@ namespace Relativity.Sync.Tests.Unit.FileMovementService
         public void CopyListOfFilesAsync_ShouldThrow_WhenResponseNotSuccessfull()
         {
             // Arrange
+            string expectedUri = $"{KubernetesUrl}/{FmsUrl}/api/v1/DataFactory/CopyListOfFiles";
             CopyListOfFilesRequest request = new CopyListOfFilesRequest()
             {
                 DestinationPath = "dest path",
                 PathToListOfFiles = "files path",
                 SourcePath = "source path",
-                TraceId = Guid.NewGuid()
+                TraceId = Guid.NewGuid(),
+                EndpointURL = expectedUri
             };
-
-            string expectedUri = $"{KubernetesUrl}/{FmsUrl}/api/v1/DataFactory/CopyListOfFiles";
 
             _httpMessageHandler
                 .Protected()
@@ -198,15 +195,15 @@ namespace Relativity.Sync.Tests.Unit.FileMovementService
         public async Task CancelRunAsync_ShouldReturnResponse()
         {
             // Arrange
+            string expectedUri = $"{KubernetesUrl}/{FmsUrl}/api/v1/DataFactory/Cancel";
             RunCancelRequest request = new RunCancelRequest()
             {
                 TraceId = Guid.NewGuid(),
-                RunId = "RunID"
+                RunId = "RunID",
+                EndpointURL = expectedUri
             };
 
             string response = "response";
-
-            string expectedUri = $"{KubernetesUrl}/{FmsUrl}/api/v1/DataFactory/Cancel";
 
             _httpMessageHandler
                 .Protected()
@@ -232,13 +229,13 @@ namespace Relativity.Sync.Tests.Unit.FileMovementService
         public void CancelRunAsync_ShouldThrow_WhenResponseNotSuccessfull()
         {
             // Arrange
+            string expectedUri = $"{KubernetesUrl}/{FmsUrl}/api/v1/DataFactory/Cancel";
             RunCancelRequest request = new RunCancelRequest()
             {
                 TraceId = Guid.NewGuid(),
-                RunId = "RunID"
+                RunId = "RunID",
+                EndpointURL = expectedUri
             };
-
-            string expectedUri = $"{KubernetesUrl}/{FmsUrl}/api/v1/DataFactory/Cancel";
 
             _httpMessageHandler
                 .Protected()

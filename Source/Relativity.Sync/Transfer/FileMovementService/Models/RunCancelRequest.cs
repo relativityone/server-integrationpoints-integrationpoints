@@ -16,5 +16,10 @@ namespace Relativity.Sync.Transfer.FileMovementService.Models
         /// The Run Id
         /// </summary>
         public string RunId { get; set; }
+
+        /// <summary>
+        /// Endpoint URL to send request for cancel logic.
+        /// </summary>
+        public string EndpointURL { get; set; }
     }
 }
