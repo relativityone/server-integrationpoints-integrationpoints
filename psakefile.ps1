@@ -79,7 +79,7 @@ Task FunctionalTest -Description "Run tests that require a deployed environment.
         $OneTimeSetupLogPath = Join-Path $LogsDir "OneTimeSetupTestResults.xml"
         Invoke-Tests -WhereClause "cat == OneTimeTestsSetup" -OutputFile $OneTimeSetupLogPath
 
-        Invoke-Tests -WhereClause "(namespace =~ FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests || namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI) && cat != NotWorkingOnTrident" -OutputFile $LogPath
+        Invoke-Tests -WhereClause "(namespace =~ Relativity.IntegrationPoints.FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests || namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI) && cat != NotWorkingOnTrident" -OutputFile $LogPath
     }
     else {
         Invoke-Tests -WhereClause "TestType == Critical" -OutputFile $LogPath
@@ -88,7 +88,7 @@ Task FunctionalTest -Description "Run tests that require a deployed environment.
 
 Task NightlyTest -Depends OneTimeTestsSetup -Description "Run Nightly tests that require a deployed environment." {
     $LogPath = Join-Path $LogsDir "NightlyTestResults.xml"
-    Invoke-Tests -WhereClause "(namespace =~ FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests || namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI) && cat != NotWorkingOnTrident" -OutputFile $LogPath
+    Invoke-Tests -WhereClause "(namespace =~ Relativity.IntegrationPoints.FunctionalTests || namespace =~ Tests\.Integration$ || namespace =~ Tests\.Integration[\.] || namespace =~ E2ETests || namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI) && cat != NotWorkingOnTrident" -OutputFile $LogPath
 }
 
 Task Sign -Description "Sign all files" {
@@ -161,6 +161,13 @@ Task OneTimeTestsSetup -Description "Should be run always before running tests t
 
 Task MyTest -Depends OneTimeTestsSetup -Description "Run custom tests based on specified filter" {
     Invoke-MyTest
+}
+
+Task RegressionTest -Description "Regression Tests against one of Ring-0 Environments" {
+    Move-TestSettings $LogsDir
+
+    $LogPath = Join-Path $LogsDir "RegressionTestsResults.xml"
+    Invoke-Tests -WhereClause "namespace =~ Relativity.IntegrationPoints.Tests.Functional.CI_REG" -OutputFile $LogPath
 }
 
 function Move-TestSettings
@@ -238,6 +245,6 @@ function Set-NodePath {
     }
     else
     {
-        Write-Output "Path to node already set"    
+        Write-Output "Path to node already set"
     }
 }

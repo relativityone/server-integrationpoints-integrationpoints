@@ -10,6 +10,7 @@
             public const string INTEGRATION_POINTS_APPLICATION_NAME = "Integration Points";
             public const string LEGAL_HOLD_APPLICATION_NAME = "Relativity Legal Hold";
             public const string ARM_TEST_SERVICES_APPLICATION_NAME = "ARM Test Services";
+            public const string DATA_TRANSFER_LEGACY = "DataTransfer.Legacy";
         }
 
         public static class XSS

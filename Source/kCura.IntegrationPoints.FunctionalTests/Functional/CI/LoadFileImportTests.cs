@@ -1,11 +1,12 @@
 ﻿using NUnit.Framework;
-using Relativity.Testing.Identification;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations;
+using Relativity.Testing.Identification;
 
 namespace Relativity.IntegrationPoints.Tests.Functional.CI
 {
-    [TestType.UI, TestType.MainFlow]
-    class LoadFileImportTests: TestsBase
+    [TestType.UI]
+    [TestType.MainFlow]
+    public class LoadFileImportTests : TestsBase
     {
         private readonly ImportLoadFileTestImplementation _testImplementation;
 
@@ -21,9 +22,9 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             _testImplementation.OnSetUpFixture();
         }
 
-        [Ignore("REL-695806")]
         [TestType.Critical]
-        [IdentifiedTest("88bf9b08-99c4-4c30-8854-fff22c4dc213")]
+        [Test]
+        [Ignore("REL-753202")]
         public void LoadNativesFromLoadFileGoldFlow()
         {
             _testImplementation.ImportNativesFromLoadFileGoldFlow();
