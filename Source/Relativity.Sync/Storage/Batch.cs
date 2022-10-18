@@ -35,7 +35,7 @@ namespace Relativity.Sync.Storage
         }
 
         public int ArtifactId => _batchRdo.ArtifactId;
-        
+
         public int TotalDocumentsCount => _batchRdo.TotalDocumentsCount;
 
         public int TransferredDocumentsCount => _batchRdo.TransferredDocumentsCount;
@@ -43,6 +43,8 @@ namespace Relativity.Sync.Storage
         public int FailedDocumentsCount => _batchRdo.FailedDocumentsCount;
 
         public Guid ExportRunId => _batchRdo.ExportRunId;
+
+        public Guid BatchGuid => _batchRdo.BatchGuid;
 
         public int TransferredItemsCount => _batchRdo.TransferredItemsCount;
 
@@ -118,6 +120,7 @@ namespace Relativity.Sync.Storage
             _batchRdo.StartingIndex = startingIndex;
             _batchRdo.ExportRunId = exportRunId;
             _batchRdo.Status = BatchStatus.New;
+            _batchRdo.BatchGuid = Guid.NewGuid();
 
             await _rdoManager.CreateAsync(_workspaceArtifactId, _batchRdo, syncConfigurationArtifactId)
                 .ConfigureAwait(false);
@@ -201,7 +204,7 @@ namespace Relativity.Sync.Storage
 
                 _batchRdo = await _rdoManager.GetAsync<SyncBatchRdo>(_workspaceArtifactId, result.Objects[0].ArtifactID)
                     .ConfigureAwait(false);
-                
+
                 return true;
             }
         }
@@ -216,7 +219,7 @@ namespace Relativity.Sync.Storage
                 throw new SyncException($"Batch ArtifactID: {artifactId} not found.");
             }
         }
-            
+
         private async Task<IEnumerable<int>> GetAllBatchesIdsToExecuteAsync(int syncConfigurationArtifactId, Guid exportRunId)
         {
             Task<IEnumerable<int>> getPausedBatches =

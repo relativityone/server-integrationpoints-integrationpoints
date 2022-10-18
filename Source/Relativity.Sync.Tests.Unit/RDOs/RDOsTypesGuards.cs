@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using Relativity.Sync.RDOs;
 using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.RDOs.Framework.Attributes;
 
@@ -71,7 +72,7 @@ namespace Relativity.Sync.Tests.Unit.RDOs
             Type[] allRdoTypes = GetRdoTypesFromAssembly(typeof(IRdoType).Assembly);
 
             const int guidTextLength = 36;
-            
+
             allRdoTypes
                 .ForEach(t =>
                 {
@@ -87,7 +88,7 @@ namespace Relativity.Sync.Tests.Unit.RDOs
                         });
                 });
         }
-        
+
         [Test]
         public void AllRdosLongProperties_ShouldHaveLongFieldAttribute()
         {
