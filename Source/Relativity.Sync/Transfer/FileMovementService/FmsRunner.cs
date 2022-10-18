@@ -41,7 +41,7 @@ namespace Relativity.Sync.Transfer.FileMovementService
             {
                 _logger.LogInformation("Starting transfer of {count} fms batches. TraceId: {traceId}", batches.Count, batchesTraceId);
 
-                string endpointUrl = await GetEndpointUrlAsync(FmsConstants.CopyListOfFilesMethodName).ConfigureAwait(false);
+                string endpointUrl = await GetFullEndpointUrlAsync(FmsConstants.CopyListOfFilesMethodName).ConfigureAwait(false);
                 IEnumerable<CopyListOfFilesRequest> requests = batches
                     .Select(batch => new CopyListOfFilesRequest
                     {
@@ -78,7 +78,7 @@ namespace Relativity.Sync.Transfer.FileMovementService
 
                 int intervalSeconds = await _fmsInstanceSettingsService.GetMonitoringInterval().ConfigureAwait(false);
                 List<FmsBatchStatusInfo> activeBatches = GetActiveBatches(batches);
-                string endpointUrl = await GetEndpointUrlAsync(FmsConstants.GetStatusMethodName);
+                string endpointUrl = await GetFullEndpointUrlAsync(FmsConstants.GetStatusMethodName);
 
                 while (activeBatches.Any())
                 {
@@ -157,6 +157,7 @@ namespace Relativity.Sync.Transfer.FileMovementService
                 string fileMovementServiceUrl = await _fmsInstanceSettingsService.GetFileMovementServiceUrl().ConfigureAwait(false);
 
                 _endpointUrlBase = $"{kubernetesServicesUrl}/{fileMovementServiceUrl}/{FmsConstants.ApiV1UrlPart}";
+                _logger.LogInformation("Base endpoint for FMS Batch processing: {endpointUrlBase}", _endpointUrlBase);
             }
             catch (Exception ex)
             {
@@ -165,7 +166,7 @@ namespace Relativity.Sync.Transfer.FileMovementService
             }
         }
 
-        private async Task<string> GetEndpointUrlAsync(string method)
+        private async Task<string> GetFullEndpointUrlAsync(string method)
         {
             if (string.IsNullOrEmpty(_endpointUrlBase))
             {
