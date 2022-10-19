@@ -1,13 +1,116 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Relativity.API;
+using Relativity.Import.V1;
+using Relativity.Import.V1.Models;
+using Relativity.Import.V1.Models.Sources;
+using Relativity.Import.V1.Services;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Executors
 {
     internal class DocumentSynchronizationMonitorExecutor : IExecutor<IDocumentSynchronizationMonitorConfiguration>
     {
-        public Task<ExecutionResult> ExecuteAsync(IDocumentSynchronizationMonitorConfiguration configuration, CompositeCancellationToken token)
+        private readonly IDestinationServiceFactoryForUser _serviceFactory;
+        private readonly IAPILog _logger;
+
+        public DocumentSynchronizationMonitorExecutor(
+            IDestinationServiceFactoryForUser serviceFactory,
+            IJobProgressUpdaterFactory progressUpdaterFactory,
+            IAPILog logger)
         {
-            return Task.FromResult(default(ExecutionResult));
+            _serviceFactory = serviceFactory;
+            _logger = logger;
+        }
+
+        public async Task<ExecutionResult> ExecuteAsync(IDocumentSynchronizationMonitorConfiguration configuration, CompositeCancellationToken token)
+        {
+            ExecutionResult jobStatus;
+            try
+            {
+                using (IImportSourceController sourceController = await _serviceFactory.CreateProxyAsync<IImportSourceController>().ConfigureAwait(false))
+                using (IImportJobController jobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
+                {
+                    DataSources dataSources = (await jobController.GetSourcesAsync(
+                        configuration.DestinationWorkspaceArtifactId,
+                        configuration.ExportRunId)
+                    .ConfigureAwait(false)).Value;
+
+                    IDictionary<Guid, DataSourceState> processedSources = new Dictionary<Guid, DataSourceState>();
+
+                    ValueResponse<ImportDetails> result = null;
+                    while (result == null || !result.Value.IsFinished)
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(10));
+
+                        result = await jobController.GetDetailsAsync(
+                                configuration.DestinationWorkspaceArtifactId,
+                                configuration.ExportRunId)
+                            .ConfigureAwait(false);
+
+                        await HandleProgressAsync(jobController, configuration).ConfigureAwait(false);
+                        await HandleDataSourceStatusAsync(dataSources, processedSources, sourceController, configuration).ConfigureAwait(false);
+                    }
+
+                    jobStatus = GetFinalJobStatusAsync(result.Value.State, processedSources);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Document synchronization monitoring error");
+                jobStatus = ExecutionResult.Failure($"Job progress monitoring failed. {ex.Message}");
+            }
+
+            return jobStatus;
+        }
+
+        private ExecutionResult GetFinalJobStatusAsync(ImportState jobState, IDictionary<Guid, DataSourceState> processedSources)
+        {
+            switch (jobState)
+            {
+                case ImportState.Failed:
+                    return ExecutionResult.Failure("Error - job failed");
+                case ImportState.Canceled:
+                    return ExecutionResult.Canceled();
+                case ImportState.Paused:
+                    return ExecutionResult.Paused();
+                case ImportState.Completed:
+                    return processedSources.Any(x => x.Value == DataSourceState.CompletedWithItemErrors) ?
+                        ExecutionResult.SuccessWithErrors() : ExecutionResult.Success();
+                default:
+                    return ExecutionResult.Success();
+            }
+        }
+
+        private async Task HandleDataSourceStatusAsync(
+            DataSources dataSources,
+            IDictionary<Guid, DataSourceState> processedSources,
+            IImportSourceController sourceController,
+            IDocumentSynchronizationMonitorConfiguration configuration)
+        {
+            foreach (Guid sourceId in dataSources.Sources.Except(processedSources.Keys))
+            {
+                DataSourceDetails dataSource = (await sourceController.GetDetailsAsync(
+                        configuration.DestinationWorkspaceArtifactId,
+                        configuration.ExportRunId,
+                        sourceId)
+                    .ConfigureAwait(false))
+                    .Value;
+
+                if (dataSource.State >= DataSourceState.Canceled)
+                {
+                    processedSources.Add(sourceId, dataSource.State);
+                }
+            }
+        }
+
+        private Task HandleProgressAsync(IImportJobController jobController, IDocumentSynchronizationMonitorConfiguration configuration)
+        {
+            // method intentionally left blank; handling progress should be implemented within REL-744994
+            return default;
         }
     }
 }
