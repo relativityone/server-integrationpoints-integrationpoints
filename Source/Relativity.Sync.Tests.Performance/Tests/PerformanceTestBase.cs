@@ -185,7 +185,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
                 Logger.LogInformation("Configuration RDO created");
 
-                SyncJobParameters syncJobParameters = new SyncJobParameters(ConfigurationRdoId, SourceWorkspace.ArtifactID, Configuration.ExecutingUserId, Guid.NewGuid());
+                SyncJobParameters syncJobParameters = new SyncJobParameters(ConfigurationRdoId, SourceWorkspace.ArtifactID, Configuration.ExecutingUserId, Guid.NewGuid(), Guid.Empty);
                 SyncRunner syncRunner = new SyncRunner(AppSettings.RelativityUrl, new NullAPM(), Logger, new TestSyncToggleProvider());
 
                 Logger.LogInformation("Staring the job");

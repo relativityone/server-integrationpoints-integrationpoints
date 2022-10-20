@@ -61,13 +61,14 @@ namespace Relativity.Sync
         /// <summary>
         /// Default constructor
         /// </summary>
-        public SyncJobParameters(int syncConfigurationArtifactId, int workspaceId, int userId, Guid workflowId)
+        public SyncJobParameters(int syncConfigurationArtifactId, int workspaceId, int userId, Guid workflowId, Guid jobId)
         {
             SyncConfigurationArtifactId = syncConfigurationArtifactId;
             WorkspaceId = workspaceId;
             UserId = userId;
             SyncBuildVersion = GetVersion();
             WorkflowId = workflowId.ToString();
+            JobID = jobId;
         }
 
         private static string GetVersion()

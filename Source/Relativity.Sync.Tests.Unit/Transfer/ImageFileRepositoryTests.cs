@@ -35,7 +35,7 @@ namespace Relativity.Sync.Tests.Unit
             _serviceFactoryForUserMock.Setup(x => x.CreateProxyAsync<ISearchService>())
                 .ReturnsAsync(_searchServiceMock.Object);
 
-            SyncJobParameters parameters = new SyncJobParameters(0, 0, 0, Guid.NewGuid());
+            SyncJobParameters parameters = new SyncJobParameters(0, 0, 0, Guid.NewGuid(), Guid.Empty);
 
             _sut = new ImageFileRepository(_serviceFactoryForUserMock.Object, _loggerMock.Object, parameters);
         }

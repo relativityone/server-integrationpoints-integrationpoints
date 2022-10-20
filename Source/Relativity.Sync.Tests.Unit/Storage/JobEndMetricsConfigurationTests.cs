@@ -21,7 +21,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
         {
             _configurationRdo.JobHistoryToRetryId = _JOB_HISTORY_TO_RETRY_ARTIFACT_ID;
 
-            SyncJobParameters syncJobParameters = new SyncJobParameters(_SYNC_CONFIGURATION_ARTIFACT_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, _USER_ID, It.IsAny<Guid>());
+            SyncJobParameters syncJobParameters = new SyncJobParameters(_SYNC_CONFIGURATION_ARTIFACT_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, _USER_ID, It.IsAny<Guid>(), Guid.Empty);
             _sut = new JobEndMetricsConfiguration(_configuration, syncJobParameters);
         }
 

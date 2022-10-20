@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
         private const int _USER_ID = 323454;
 
         protected readonly Guid _EXPECTED_WORKSPACE_GUID = Guid.NewGuid();
-        protected readonly SyncJobParameters _jobParameters = new SyncJobParameters(It.IsAny<int>(), _WORKSPACE_ID, _USER_ID, It.IsAny<Guid>());
+        protected readonly SyncJobParameters _jobParameters = new SyncJobParameters(It.IsAny<int>(), _WORKSPACE_ID, _USER_ID, It.IsAny<Guid>(), Guid.Empty);
         private Mock<IMetricsConfiguration> _metricsConfigurationFake;
 
         protected const string _APPLICATION_NAME = "Relativity.Sync";

@@ -73,7 +73,7 @@ namespace Relativity.Sync.Tests.Unit
                 .Setup(x => x.CreateProxyAsync<IObjectManager>())
                 .ReturnsAsync(_objectManager.Object);
 
-            _syncJobParameters = new SyncJobParameters(_SYNC_CONFIGURATION_ID, _WORKSPACE_ID, _USER_ID, _workflowId);
+            _syncJobParameters = new SyncJobParameters(_SYNC_CONFIGURATION_ID, _WORKSPACE_ID, _USER_ID, _workflowId, Guid.Empty);
 
             SetupGuids();
         }
@@ -133,7 +133,7 @@ namespace Relativity.Sync.Tests.Unit
                 });
 
             Guid jobId = Guid.NewGuid();
-            _syncJobParameters.JobID = jobId;
+            _syncJobParameters = new SyncJobParameters(_SYNC_CONFIGURATION_ID, _WORKSPACE_ID, _USER_ID, _workflowId, jobId);
 
             JobProgressUpdater sut = PrepareSut();
 

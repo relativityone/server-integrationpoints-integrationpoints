@@ -22,7 +22,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
         public void SetUp()
         {
             _instanceSettings = new Mock<IInstanceSettings>();
-            SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, _USER_ID, Guid.NewGuid());
+            SyncJobParameters syncJobParameters = new SyncJobParameters(_JOB_ID, _SOURCE_WORKSPACE_ARTIFACT_ID, _USER_ID, Guid.NewGuid(), Guid.Empty);
             _syncConfig = new SynchronizationConfiguration(_configuration, syncJobParameters, _instanceSettings.Object);
         }
 

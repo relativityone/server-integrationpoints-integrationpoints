@@ -18,7 +18,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
         public void SetUp()
         {
             _serializer = new JSONSerializer();
-            _syncJobParameters = new SyncJobParameters(1, 1, 1, Guid.NewGuid());
+            _syncJobParameters = new SyncJobParameters(1, 1, 1, Guid.NewGuid(), Guid.Empty);
 
             _sut = new SnapshotQueryConfiguration(_configuration, _serializer, _syncJobParameters);
         }
