@@ -3,7 +3,7 @@ using NUnit.Framework;
 using Relativity.IntegrationPoints.Tests.Functional.CI;
 using Relativity.IntegrationPoints.Tests.Functional.TestsImplementations.ApiTests;
 
-namespace Relativity.IntegrationPoints.Tests.Functional.REG
+namespace Relativity.IntegrationPoints.Tests.Functional.REG_CI
 {
     public class AzureADApiTests : TestsBase
     {
