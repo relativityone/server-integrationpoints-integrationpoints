@@ -19,7 +19,6 @@ namespace Relativity.Sync.Executors
 
         public DocumentSynchronizationMonitorExecutor(
             IDestinationServiceFactoryForUser serviceFactory,
-            IJobProgressUpdaterFactory progressUpdaterFactory,
             IAPILog logger)
         {
             _serviceFactory = serviceFactory;
@@ -34,26 +33,20 @@ namespace Relativity.Sync.Executors
                 using (IImportSourceController sourceController = await _serviceFactory.CreateProxyAsync<IImportSourceController>().ConfigureAwait(false))
                 using (IImportJobController jobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
                 {
-                    DataSources dataSources = (await jobController.GetSourcesAsync(
-                        configuration.DestinationWorkspaceArtifactId,
-                        configuration.ExportRunId)
-                    .ConfigureAwait(false)).Value;
-
+                    DataSources dataSources = await GetDataSources(jobController, configuration).ConfigureAwait(false);
                     IDictionary<Guid, DataSourceState> processedSources = new Dictionary<Guid, DataSourceState>();
 
                     ValueResponse<ImportDetails> result = null;
-                    while (result == null || !result.Value.IsFinished)
+                    do
                     {
-                        await Task.Delay(TimeSpan.FromSeconds(10));
+                        await Task.Delay(TimeSpan.FromSeconds(1));
 
-                        result = await jobController.GetDetailsAsync(
-                                configuration.DestinationWorkspaceArtifactId,
-                                configuration.ExportRunId)
-                            .ConfigureAwait(false);
+                        result = await GetImportStatus(jobController, configuration).ConfigureAwait(false);
 
-                        await HandleProgressAsync(jobController, configuration).ConfigureAwait(false);
+                        HandleProgressAsync(jobController, configuration);
                         await HandleDataSourceStatusAsync(dataSources, processedSources, sourceController, configuration).ConfigureAwait(false);
                     }
+                    while (!result.Value.IsFinished);
 
                     jobStatus = GetFinalJobStatusAsync(result.Value.State, processedSources);
                 }
@@ -107,10 +100,40 @@ namespace Relativity.Sync.Executors
             }
         }
 
-        private Task HandleProgressAsync(IImportJobController jobController, IDocumentSynchronizationMonitorConfiguration configuration)
+        private async Task<DataSources> GetDataSources(IImportJobController jobController, IDocumentSynchronizationMonitorConfiguration configuration)
         {
-            // method intentionally left blank; handling progress should be implemented within REL-744994
-            return default;
+            ValueResponse<DataSources> response = await jobController.GetSourcesAsync(
+                        configuration.DestinationWorkspaceArtifactId,
+                        configuration.ExportRunId)
+                    .ConfigureAwait(false);
+
+            return TryGetValueResponse(response).Value;
+        }
+
+        private async Task<ValueResponse<ImportDetails>> GetImportStatus(IImportJobController jobController, IDocumentSynchronizationMonitorConfiguration configuration)
+        {
+            ValueResponse<ImportDetails> response = await jobController.GetDetailsAsync(
+                                configuration.DestinationWorkspaceArtifactId,
+                                configuration.ExportRunId)
+                            .ConfigureAwait(false);
+
+            return TryGetValueResponse(response);
+        }
+
+        private ValueResponse<T> TryGetValueResponse<T>(ValueResponse<T> response)
+        {
+            if (!response.IsSuccess)
+            {
+                string message = $"Error code: {response.ErrorCode}, message: {response.ErrorMessage}";
+                throw new SyncException(message);
+            }
+
+            return response;
+        }
+
+        private void HandleProgressAsync(IImportJobController jobController, IDocumentSynchronizationMonitorConfiguration configuration)
+        {
+            // method intentionally left blank; handling progress should be implemented within REL-744994            
         }
     }
 }
