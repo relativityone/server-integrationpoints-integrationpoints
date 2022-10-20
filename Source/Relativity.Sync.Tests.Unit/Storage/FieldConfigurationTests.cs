@@ -25,7 +25,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
         {
             _cacheFake = new Mock<IConfiguration>();
             _fieldMappingsMock = new Mock<IFieldMappings>();
-            _syncJobParameters = new SyncJobParameters(_SYNC_CONFIG_ID, _WORKSPACE_ID, _USER_ID, _workflowId);
+            _syncJobParameters = new SyncJobParameters(_SYNC_CONFIG_ID, _WORKSPACE_ID, _USER_ID, _workflowId, Guid.Empty);
 
             _sut = PrepareSut();
         }

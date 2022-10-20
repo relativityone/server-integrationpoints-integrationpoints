@@ -39,7 +39,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             _serviceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
             _serviceFactoryForUser.Setup(x => x.CreateProxyAsync<ISearchService>()).ReturnsAsync(_searchService.Object);
 
-            SyncJobParameters parameters = new SyncJobParameters(0, 0, 0, Guid.NewGuid());
+            SyncJobParameters parameters = new SyncJobParameters(0, 0, 0, Guid.NewGuid(), Guid.Empty);
 
             _instance = new NativeFileRepository(_serviceFactoryForUser.Object, new EmptyLogger(), parameters);
         }

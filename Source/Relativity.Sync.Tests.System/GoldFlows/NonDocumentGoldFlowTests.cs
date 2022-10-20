@@ -84,7 +84,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
             SyncDataAndUserConfiguration syncDataAndUserConfiguration = new SyncDataAndUserConfiguration(User.ArtifactID);
             containerBuilder.RegisterInstance(syncDataAndUserConfiguration).As<IUserContextConfiguration>();
 
-            SyncJobParameters syncJobParameters = new SyncJobParameters(syncConfigurationId, _sourceWorkspace.ArtifactID, syncDataAndUserConfiguration.ExecutingUserId, Guid.NewGuid());
+            SyncJobParameters syncJobParameters = new SyncJobParameters(syncConfigurationId, _sourceWorkspace.ArtifactID, syncDataAndUserConfiguration.ExecutingUserId, Guid.NewGuid(), Guid.Empty);
 
             SyncRunner syncRunner = new SyncRunner(AppSettings.RelativityUrl, new NullAPM(), Logger);
 

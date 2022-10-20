@@ -23,7 +23,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
         {
             _fieldMappings = new Mock<IFieldMappings>();
 
-            SyncJobParameters parameters = new SyncJobParameters(It.IsAny<int>(), _WORKSPACE_ID, _USER_ID, It.IsAny<Guid>());
+            SyncJobParameters parameters = new SyncJobParameters(It.IsAny<int>(), _WORKSPACE_ID, _USER_ID, It.IsAny<Guid>(), Guid.Empty);
 
             _instance = new RetryDataSourceSnapshotConfiguration(_configuration, _fieldMappings.Object, parameters);
         }
