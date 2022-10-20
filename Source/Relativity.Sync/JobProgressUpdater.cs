@@ -22,9 +22,12 @@ namespace Relativity.Sync
         private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
         private readonly IRdoGuidConfiguration _rdoGuidConfiguration;
         private readonly IRipWorkarounds _ripWorkarounds;
+        private readonly SyncJobParameters _syncJobParameters;
         private readonly IAPILog _logger;
 
-        public JobProgressUpdater(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IRdoGuidConfiguration rdoGuidConfiguration, int workspaceArtifactId, int jobHistoryArtifactId, IDateTime dateTime, IJobHistoryErrorRepository jobHistoryErrorRepository, IRipWorkarounds ripWorkarounds, IAPILog logger)
+        public JobProgressUpdater(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IRdoGuidConfiguration rdoGuidConfiguration,
+            int workspaceArtifactId, int jobHistoryArtifactId, IDateTime dateTime, IJobHistoryErrorRepository jobHistoryErrorRepository,
+            IRipWorkarounds ripWorkarounds, SyncJobParameters syncJobParameters, IAPILog logger)
         {
             _serviceFactoryForAdmin = serviceFactoryForAdmin;
             _rdoGuidConfiguration = rdoGuidConfiguration;
@@ -33,6 +36,7 @@ namespace Relativity.Sync
             _dateTime = dateTime;
             _jobHistoryErrorRepository = jobHistoryErrorRepository;
             _ripWorkarounds = ripWorkarounds;
+            _syncJobParameters = syncJobParameters;
             _logger = logger;
         }
 
@@ -74,10 +78,12 @@ namespace Relativity.Sync
                     };
 
                     QueryResult result = await objectManager.QueryAsync(_workspaceArtifactId, request, 0, 1).ConfigureAwait(false);
-                    string jobId = result.Objects.FirstOrDefault()?.FieldValues.FirstOrDefault()?.Value?.ToString();
+                    string existingJobId = result.Objects.FirstOrDefault()?.FieldValues.FirstOrDefault()?.Value?.ToString();
 
-                    if (string.IsNullOrWhiteSpace(jobId))
+                    if (string.IsNullOrWhiteSpace(existingJobId))
                     {
+                        ValidateJobID();
+
                         // RIP didn't set Job ID which means we're executing on Sync Agent
                         await TryUpdateJobHistory(new[]
                         {
@@ -95,13 +101,13 @@ namespace Relativity.Sync
                                 {
                                     Guid = _rdoGuidConfiguration.JobHistory.JobIdGuid
                                 },
-                                Value = _jobHistoryArtifactId.ToString()
+                                Value = _syncJobParameters.JobID.ToString()
                             }
                         }).ConfigureAwait(false);
                     }
                     else
                     {
-                        _logger.LogInformation("Job History has already Job ID set: {jobId}", jobId);
+                        _logger.LogInformation("Job History has already Job ID set: {jobId}", existingJobId);
                     }
                 }
             }
@@ -193,21 +199,21 @@ namespace Relativity.Sync
                     case JobHistoryStatus.Failed:
                     case JobHistoryStatus.ValidationFailed:
                     case JobHistoryStatus.Suspended:
-                    {
-                        DateTime endTime = _dateTime.UtcNow;
-
-                        await _ripWorkarounds.TryUpdateIntegrationPointAsync(_workspaceArtifactId, _jobHistoryArtifactId, hasErrors, endTime);
-
-                        fields.Add(new FieldRefValuePair()
                         {
-                            Field = new FieldRef()
+                            DateTime endTime = _dateTime.UtcNow;
+
+                            await _ripWorkarounds.TryUpdateIntegrationPointAsync(_workspaceArtifactId, _jobHistoryArtifactId, hasErrors, endTime);
+
+                            fields.Add(new FieldRefValuePair()
                             {
-                                Guid = _rdoGuidConfiguration.JobHistory.EndTimeGuid
-                            },
-                            Value = endTime
-                        });
-                        break;
-                    }
+                                Field = new FieldRef()
+                                {
+                                    Guid = _rdoGuidConfiguration.JobHistory.EndTimeGuid
+                                },
+                                Value = endTime
+                            });
+                            break;
+                        }
                 }
 
                 await TryUpdateJobHistory(fields).ConfigureAwait(false);
@@ -271,6 +277,14 @@ namespace Relativity.Sync
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to update job history: {artifactId}", _jobHistoryArtifactId);
+            }
+        }
+
+        private void ValidateJobID()
+        {
+            if (_syncJobParameters.JobID.Equals(Guid.Empty))
+            {
+                throw new InvalidOperationException($"JobID in SyncJobParameters cannot be an empty GUID.");
             }
         }
     }
