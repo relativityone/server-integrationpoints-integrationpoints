@@ -36,6 +36,7 @@
           <Assembly>Source\kCura.IntegrationPoints.Core\bin\Relativity.IntegrationPoints.SourceProviderInstaller.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.Synchronizers.RDO\bin\kCura.IntegrationPoints.Synchronizers.RDO.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\kCura.IntegrationPoints.RelativitySync.dll</Assembly>
+          <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Relativity.Import.SDK.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Relativity.Storage.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\Relativity.Storage.Extensions.dll</Assembly>
           <Assembly>Source\kCura.IntegrationPoints.RelativitySync\bin\DnsClient.dll</Assembly>
