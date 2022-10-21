@@ -68,7 +68,7 @@ namespace Relativity.Sync.Executors
 
             for (int i = 0; i < reader.FieldCount; i++)
             {
-                string value = reader[i]?.ToString() ?? "";
+                string value = reader[i]?.ToString() ?? string.Empty;
                 rowValues.Add(value);
             }
 
