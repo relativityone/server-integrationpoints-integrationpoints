@@ -16,14 +16,17 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
 {
     internal class BatchDataSourcePreparationExecutorTests : SystemTest
     {
-        private string _sourceWorkspaceName = "Source-e22514a8-9b8a-4a9a-926d-3feda0ada3a7"; //$"Source-{Guid.NewGuid()}";
-        private string _destinationWorkspaceName = "Destination-b7cd0085-9cb2-4c33-8fae-3d51378eff77"; //$"Destination-{Guid.NewGuid()}";
+        private string _sourceWorkspaceName;
+        private string _destinationWorkspaceName;
 
         private string _workspaceFileSharePath;
 
         [SetUp]
         public void SetUp()
         {
+            _sourceWorkspaceName = $"Source-{Guid.NewGuid()}";
+            _destinationWorkspaceName = $"Destination-{Guid.NewGuid()}";
+
             _workspaceFileSharePath = Path.Combine(Path.GetTempPath(), _sourceWorkspaceName);
 
             Directory.CreateDirectory(_workspaceFileSharePath);
