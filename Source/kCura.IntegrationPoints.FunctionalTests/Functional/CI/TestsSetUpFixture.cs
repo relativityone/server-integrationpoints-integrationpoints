@@ -30,6 +30,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             Workspace workspace = RequireTemplateWorkspace();
             int workspaceId = workspace.ArtifactID;
 
+            ConfigureRelativityInstanceUrl();
+
             InstallIntegrationPointsToWorkspace(workspaceId);
 
             InstallARMTestServices();
@@ -55,6 +57,15 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
             }
 
             return RelativityFacade.Instance.CreateWorkspace(_WORKSPACE_TEMPLATE_NAME);
+        }
+
+        private void ConfigureRelativityInstanceUrl()
+        {
+            RelativityFacade.Instance.Resolve<IInstanceSettingsService>()
+                .UpdateValue(
+                    "RelativityInstanceURL",
+                    "Relativity.Core",
+                    "https://localhost/Relativity");
         }
 
         private static void InstallIntegrationPointsToWorkspace(int workspaceId)

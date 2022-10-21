@@ -51,7 +51,7 @@
         <div data-bind="validationMessage: mappedFields" class="icon-error legal-hold field-validation-error"></div>
         <div class="table" id="selectFields">
             <div class="cell fixedColumn">
-                <div class="field-label" style="padding: 5px; text-align: left;">Source Fields:</div>
+                <div class="field-label" style="padding: 5px; text-align: left;"> Source Fields (<span data-bind="text: availableFields().length"></span>):</div>
                 <form action="" data-bind="submit: function() { return false; }">
                     <div class="form-group">
                         <input type="text" class="form-control" placeholder="Type to Filter Fields" style="min-width: 250px; width: 25%;" data-bind="value: filterSourceField, valueUpdate: 'afterkeydown'">
@@ -59,37 +59,37 @@
                 </form>
                 <select id="available-fields" class="list-box" name="available-field" style="height: 376px; margin-top: 4px;" data-bind="options: filterFields(availableFields, filterSourceField), selectedOptions: selectedAvailableFields, optionsText: 'displayName', doubleClick: addField, optionsAfterRender: setTitle" multiple="multiple"></select>
             </div>
-            <div class="cell selection-rename">
-                <div class="field-row">
-                    <button class="actionButtonSmall" style="visibility:hidden" id="fake-btn">Rename</button>
-                </div>
-                <div class="field-row map-move" style="margin-top: 150%;">
-                    <a href="#" id="add-all-fields" class="icon-move-last" data-bind="click: addAllFields"></a>
-                    <a href="#" id="add-field" class="icon-move-next" data-bind="click: addField"></a>
-                    <a href="#" id="remove-field" class="icon-move-previous" data-bind="click: removeField"></a>
-                    <a href="#" id="remove-all-fields" class="icon-move-first" data-bind="click: removeAllFields"></a>
-                </div>
-            </div>
-            <div class="cell fixedColumn">
-                <div class="field-label" style="padding: 5px; text-align: left; border-left: 3px solid #f59d1f;">Selected Fields:</div>
-                <select class="list-box" id="selected-fields" data-bind="options: mappedFields, selectedOptions: selectedMappedFields, optionsText: 'displayName', doubleClick: removeField, optionsAfterRender: setTitle" multiple="multiple"></select>
-            </div>
-            <div class="cell selection-rename">
-                <div class="field-row">
-                    <button class="actionButtonSmall" id="renamed-fields-button" data-bind="click: openRenamedFieldsModal, hidden: isRenameButtonHidden">Rename</button>
-                </div>
-                <div class="field-row map-move" style="margin-top: 150%">
-                    <a href="#" id="move-field-top" class="icon-move-to-top" data-bind="click: moveFieldTop"></a>
-                    <a href="#" id="move-field-up" class="icon-move-up" data-bind="click: moveFieldUp"></a>
-                    <a href="#" id="move-field-down" class="icon-move-down" data-bind="click: moveFieldDown"></a>
-                    <a href="#" id="move-field-bottom" class="icon-move-to-bottom" data-bind="click: moveFieldBottom"></a>
-                </div>
-            </div>
-            <div class="cell fixedColumn">
-                <div class="field-label" style="padding: 5px; text-align: left; ">Renamed Fields:</div>
-                <select class="list-box" id="renamed-fields" data-bind="options: mappedFields, selectedOptions: selectedMappedFields, optionsText: 'renamedText', doubleClick: openRenamedFieldsModal, optionsAfterRender: setTitle" multiple="multiple"></select>
-            </div>
-        </div>
-    </div>
+			<div class="cell selection-rename">
+				<div class="field-row">
+					<button class="actionButtonSmall" style="visibility:hidden" id="fake-btn">Rename</button>
+				</div>
+				<div class="field-row map-move" style="margin-top: 150%;">
+					<a href="#" id="add-all-fields" class="icon-move-last" data-bind="click: addAllFields"></a>
+					<a href="#" id="add-field" class="icon-move-next" data-bind="click: addField"></a>
+					<a href="#" id="remove-field" class="icon-move-previous" data-bind="click: removeField"></a>
+					<a href="#" id="remove-all-fields" class="icon-move-first" data-bind="click: removeAllFields"></a>
+				</div>
+			</div>
+			<div class="cell fixedColumn">
+                <div class="field-label" style="padding: 5px; text-align: left; border-left: 3px solid #f59d1f;">Selected Fields (<span data-bind="text: mappedFields().length"></span>):</div>
+				<select class="list-box" id="selected-fields" data-bind="options: mappedFields, selectedOptions: selectedMappedFields, optionsText: 'displayName', doubleClick: removeField, optionsAfterRender: setTitle" multiple="multiple"></select>
+			</div>
+			<div class="cell selection-rename">
+				<div class="field-row">
+					<button class="actionButtonSmall" id="renamed-fields-button" data-bind="click: openRenamedFieldsModal, hidden: isRenameButtonHidden">Rename</button>
+				</div>
+				<div class="field-row map-move" style="margin-top: 150%">
+					<a href="#" id="move-field-top" class="icon-move-to-top" data-bind="click: moveFieldTop"></a>
+					<a href="#" id="move-field-up" class="icon-move-up" data-bind="click: moveFieldUp"></a>
+					<a href="#" id="move-field-down" class="icon-move-down" data-bind="click: moveFieldDown"></a>
+					<a href="#" id="move-field-bottom" class="icon-move-to-bottom" data-bind="click: moveFieldBottom"></a>
+				</div>
+			</div>
+			<div class="cell fixedColumn">
+                <div class="field-label" style="padding: 5px; text-align: left; ">Renamed Fields (<span data-bind="text: selectedMappedFields().lenght"></span>):</div>
+				<select class="list-box" id="renamed-fields" data-bind="options: mappedFields, selectedOptions: selectedMappedFields, optionsText: 'renamedText', doubleClick: openRenamedFieldsModal, optionsAfterRender: setTitle" multiple="multiple"></select>
+			</div>
+		</div>
+	</div>
 </script>
 <script src="~/Scripts/purify.min.js"></script>
