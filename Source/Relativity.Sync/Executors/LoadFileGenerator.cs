@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Import.V1.Builders.DataSource;
 using Relativity.Import.V1.Models.Sources;
-using Relativity.Services.ResourceServer;
-using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
 
@@ -18,19 +15,19 @@ namespace Relativity.Sync.Executors
     internal class LoadFileGenerator : ILoadFileGenerator
     {
         private readonly IBatchDataSourcePreparationConfiguration _configuration;
-        private readonly IDestinationServiceFactoryForUser _serviceFactory;
         private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
+        private readonly IFileShareService _fileShareService;
         private readonly IAPILog _logger;
 
         public LoadFileGenerator(
             IBatchDataSourcePreparationConfiguration configuration,
-            IDestinationServiceFactoryForUser serviceFactory,
             ISourceWorkspaceDataReaderFactory dataReaderFactory,
+            IFileShareService fileShareService,
             IAPILog logger)
         {
             _configuration = configuration;
-            _serviceFactory = serviceFactory;
             _dataReaderFactory = dataReaderFactory;
+            _fileShareService = fileShareService;
             _logger = logger;
         }
 
@@ -71,7 +68,7 @@ namespace Relativity.Sync.Executors
 
             for (int i = 0; i < reader.FieldCount; i++)
             {
-                string value = reader[i].ToString();
+                string value = reader[i]?.ToString() ?? "";
                 rowValues.Add(value);
             }
 
@@ -97,27 +94,25 @@ namespace Relativity.Sync.Executors
             string batchFullPath = string.Empty;
             try
             {
-                using (IWorkspaceManager workspaceManager = await _serviceFactory.CreateProxyAsync<IWorkspaceManager>().ConfigureAwait(false))
+                int workspaceId = _configuration.DestinationWorkspaceArtifactId;
+
+                string fileSharePath = await _fileShareService.GetWorkspaceFileShareLocationAsync(workspaceId)
+                    .ConfigureAwait(false);
+
+                if (!Directory.Exists(fileSharePath))
                 {
-                    WorkspaceRef workspace = new WorkspaceRef() { ArtifactID = _configuration.DestinationWorkspaceArtifactId };
-                    FileShareResourceServer server = await workspaceManager.GetDefaultWorkspaceFileShareResourceServerAsync(workspace).ConfigureAwait(false);
-
-                    string rootDirectory = Path.Combine(server.UNCPath, $"EDDS{_configuration.DestinationWorkspaceArtifactId}");
-                    if (!Directory.Exists(rootDirectory))
-                    {
-                        throw new DirectoryNotFoundException($"Unable to create load file path. Directory: {rootDirectory} does not exist!");
-                    }
-
-                    string batchPartialDirectory = $@"Sync\{batch.ExportRunId}\{batch.BatchGuid}";
-                    string fullDirectory = Path.Combine(rootDirectory, batchPartialDirectory);
-                    if (!Directory.Exists(fullDirectory))
-                    {
-                        Directory.CreateDirectory(fullDirectory);
-                    }
-
-                    string fileName = $"{batch.BatchGuid}.dat";
-                    batchFullPath = Path.Combine(fullDirectory, fileName);
+                    throw new DirectoryNotFoundException($"Unable to create load file path. Directory: {fileSharePath} does not exist!");
                 }
+
+                string batchPartialDirectory = $@"Sync\{batch.ExportRunId}\{batch.BatchGuid}";
+                string fullDirectory = Path.Combine(fileSharePath, batchPartialDirectory);
+                if (!Directory.Exists(fullDirectory))
+                {
+                    Directory.CreateDirectory(fullDirectory);
+                }
+
+                string fileName = $"{batch.BatchGuid}.dat";
+                batchFullPath = Path.Combine(fullDirectory, fileName);
             }
             catch (Exception ex)
             {

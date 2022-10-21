@@ -55,7 +55,6 @@ namespace Relativity.Sync.Tests.System.Core
         private async Task ConfigureRequiredInstanceSettingsAsync()
         {
             Logger.LogInformation("Configuring instance settings");
-            await CreateInstanceSettingIfNotExistAsync("WebAPIPath", "kCura.IntegrationPoints", ValueType.Text, AppSettings.RelativityWebApiUrl.AbsoluteUri).ConfigureAwait(false);
             await CreateInstanceSettingIfNotExistAsync("AdminsCanSetPasswords", "Relativity.Authentication", ValueType.TrueFalse, "True").ConfigureAwait(false);
         }
 
