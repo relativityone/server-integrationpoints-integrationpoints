@@ -33,6 +33,7 @@ namespace Relativity.Sync.Transfer
             builder.RegisterType<InstanceSettings>().As<IInstanceSettings>();
             builder.RegisterType<SnapshotQueryRequestProvider>().As<ISnapshotQueryRequestProvider>();
             builder.RegisterType<FileLocationManager>().As<IFileLocationManager>().SingleInstance();
+            builder.RegisterType<FileShareService>().As<IFileShareService>();
             builder.Register(c => c.Resolve<IHelper>().GetAntiMalwareEventHelper()).As<IAntiMalwareEventHelper>();
             builder.RegisterType<AntiMalwareHandler>().As<IAntiMalwareHandler>();
             builder.RegisterType<AntiMalwareConfiguration>().As<IAntiMalwareConfiguration>();

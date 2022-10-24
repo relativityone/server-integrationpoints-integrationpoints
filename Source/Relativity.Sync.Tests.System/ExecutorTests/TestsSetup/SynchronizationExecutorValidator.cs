@@ -10,7 +10,7 @@ using Relativity.Services.ServiceProxy;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core.Extensions;
 
-namespace Relativity.Sync.Tests.System.SynchronizationExecutors
+namespace Relativity.Sync.Tests.System.ExecutorTests.TestsSetup
 {
     internal class SynchronizationExecutorValidator
     {

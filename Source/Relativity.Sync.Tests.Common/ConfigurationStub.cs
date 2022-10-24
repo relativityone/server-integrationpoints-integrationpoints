@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
-using Relativity.Sync.Transfer;
+using IConfiguration = Relativity.Sync.Configuration.IConfiguration;
 
 namespace Relativity.Sync.Tests.Common
 {
     [ExcludeFromCodeCoverage]
-    internal sealed class ConfigurationStub : IDataDestinationFinalizationConfiguration, IDataDestinationInitializationConfiguration, IDataSourceSnapshotConfiguration, INonDocumentDataSourceSnapshotConfiguration,
+    internal sealed class ConfigurationStub : IConfiguration, IDataDestinationFinalizationConfiguration, IDataDestinationInitializationConfiguration, IDataSourceSnapshotConfiguration, INonDocumentDataSourceSnapshotConfiguration,
         IDestinationWorkspaceObjectTypesCreationConfiguration, IDestinationWorkspaceSavedSearchCreationConfiguration, IDestinationWorkspaceTagsCreationConfiguration, IJobCleanupConfiguration,
         IJobStatusConsolidationConfiguration, INotificationConfiguration, IPermissionsCheckConfiguration, ISnapshotPartitionConfiguration, IObjectLinkingSnapshotPartitionConfiguration,
         ISourceWorkspaceTagsCreationConfiguration, ISynchronizationConfiguration, IValidationConfiguration, IUserContextConfiguration, IFieldConfiguration, IImageRetrieveConfiguration,
