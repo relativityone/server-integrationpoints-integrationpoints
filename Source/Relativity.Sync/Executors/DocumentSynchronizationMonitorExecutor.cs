@@ -39,11 +39,11 @@ namespace Relativity.Sync.Executors
                     ValueResponse<ImportDetails> result = null;
                     do
                     {
-                        await Task.Delay(TimeSpan.FromSeconds(1));
+                        await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
 
                         result = await GetImportStatus(jobController, configuration).ConfigureAwait(false);
 
-                        HandleProgressAsync(jobController, configuration);
+                        HandleProgress(jobController, configuration);
                         await HandleDataSourceStatusAsync(dataSources, processedSources, sourceController, configuration).ConfigureAwait(false);
                     }
                     while (!result.Value.IsFinished);
@@ -74,7 +74,7 @@ namespace Relativity.Sync.Executors
                     return processedSources.Any(x => x.Value == DataSourceState.CompletedWithItemErrors) ?
                         ExecutionResult.SuccessWithErrors() : ExecutionResult.Success();
                 default:
-                    return ExecutionResult.Success();
+                    return ExecutionResult.Failure("Unknown job import state");
             }
         }
 
@@ -131,9 +131,9 @@ namespace Relativity.Sync.Executors
             return response;
         }
 
-        private void HandleProgressAsync(IImportJobController jobController, IDocumentSynchronizationMonitorConfiguration configuration)
+        private void HandleProgress(IImportJobController jobController, IDocumentSynchronizationMonitorConfiguration configuration)
         {
-            // method intentionally left blank; handling progress should be implemented within REL-744994            
+            // method intentionally left blank; handling progress should be implemented within REL-744994
         }
     }
 }
