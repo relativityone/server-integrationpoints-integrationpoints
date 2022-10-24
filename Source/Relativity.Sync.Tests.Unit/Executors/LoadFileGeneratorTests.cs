@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,11 +7,9 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.ResourceServer;
-using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
-using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
 
@@ -29,7 +28,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IFileShareService> _fileshareServiceMock;
         private Mock<ISourceWorkspaceDataReaderFactory> _dataReaderFactoryMock;
         private Mock<ISourceWorkspaceDataReader> _dataReaderMock;
-        private Mock<IWorkspaceManager> _workspaceManagerMock;
+        private Mock<IItemLevelErrorLogAggregator> _itemLevelErrorAggregatorMock;
+        private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepositoryMock;
+        private Mock<IItemStatusMonitor> _itemStatusMonitorMock;
         private Mock<IBatch> _batchMock;
         private Mock<IAPILog> _loggerMock;
 
@@ -45,7 +46,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _fileshareServiceMock = new Mock<IFileShareService>();
             _dataReaderFactoryMock = new Mock<ISourceWorkspaceDataReaderFactory>();
             _dataReaderMock = new Mock<ISourceWorkspaceDataReader>();
-            _workspaceManagerMock = new Mock<IWorkspaceManager>();
+            _jobHistoryErrorRepositoryMock = new Mock<IJobHistoryErrorRepository>();
+            _itemLevelErrorAggregatorMock = new Mock<IItemLevelErrorLogAggregator>();
+            _itemStatusMonitorMock = new Mock<IItemStatusMonitor>();
             _batchMock = new Mock<IBatch>();
             _loggerMock = new Mock<IAPILog>();
 
@@ -53,13 +56,21 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _configurationMock.Setup(x => x.ExportRunId).Returns(It.IsAny<Guid>());
             _configurationMock.Setup(x => x.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ID);
             _configurationMock.Setup(x => x.SyncConfigurationArtifactId).Returns(_CONFIGURATION_ID);
+            _configurationMock.Setup(x => x.JobHistoryId).Returns(123);
 
             _batchMock.Setup(x => x.BatchGuid).Returns(new Guid(_BATCH_GUID));
             _batchMock.Setup(x => x.ExportRunId).Returns(new Guid(_EXPORT_RUN_ID));
 
             _dataReaderFactoryMock.Setup(x => x.CreateNativeSourceWorkspaceDataReader(_batchMock.Object, CancellationToken.None)).Returns(_dataReaderMock.Object);
+            _dataReaderMock.Setup(x => x.ItemStatusMonitor).Returns(_itemStatusMonitorMock.Object);
 
-            _sut = new LoadFileGenerator(_configurationMock.Object, _dataReaderFactoryMock.Object, _fileshareServiceMock.Object, _loggerMock.Object);
+            _sut = new LoadFileGenerator(
+                _configurationMock.Object,
+                _dataReaderFactoryMock.Object,
+                _fileshareServiceMock.Object,
+                _itemLevelErrorAggregatorMock.Object,
+                _jobHistoryErrorRepositoryMock.Object,
+                _loggerMock.Object);
         }
 
         [TearDown]
@@ -126,6 +137,37 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             // Assert
             function.Should().Throw<Exception>().WithMessage(expectedErrorMessage);
+        }
+
+        [Test]
+        public async Task Generate_ShouldHandleItemLevelErrors()
+        {
+            // Arrange
+            int expectedNumberOfItemLevelErrors = 3;
+            string testItemIdentifier = "testId";
+            ItemLevelError testItemLevelError = new ItemLevelError(testItemIdentifier, "testMessage");
+            long completedItemTestValue = 12345L;
+
+            PrepareFakeLoadFilePath();
+
+            _fileshareServiceMock.Setup(x => x.GetWorkspaceFileShareLocationAsync(_DESTINATION_WORKSPACE_ID))
+                .ReturnsAsync(_workspacePath);
+
+            _dataReaderMock.Setup(x => x.Read()).Callback(() =>
+            {
+                _dataReaderMock.Raise(x => x.OnItemReadError += null, completedItemTestValue, testItemLevelError);
+                _dataReaderMock.Raise(x => x.OnItemReadError += null, completedItemTestValue, testItemLevelError);
+                _dataReaderMock.Raise(x => x.OnItemReadError += null, completedItemTestValue, testItemLevelError);
+            });
+
+            // Act
+            ILoadFile result = await _sut.GenerateAsync(_batchMock.Object).ConfigureAwait(false);
+
+            // Assert
+            _itemLevelErrorAggregatorMock.Verify(x => x.AddItemLevelError(testItemLevelError, It.IsAny<int>()), Times.Exactly(expectedNumberOfItemLevelErrors));
+            _itemStatusMonitorMock.Verify(x => x.MarkItemAsFailed(testItemIdentifier), Times.Exactly(expectedNumberOfItemLevelErrors));
+            _jobHistoryErrorRepositoryMock.Verify(x => x.MassCreateAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<List<CreateJobHistoryErrorDto>>()), Times.Once);
+            _itemLevelErrorAggregatorMock.Verify(x => x.LogAllItemLevelErrorsAsync(), Times.Once);
         }
 
         private string PrepareFakeLoadFilePath()

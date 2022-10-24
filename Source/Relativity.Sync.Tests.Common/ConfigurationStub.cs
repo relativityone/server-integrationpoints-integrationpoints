@@ -280,6 +280,8 @@ namespace Relativity.Sync.Tests.Common
 
         public bool IsPhysicalFileCopyMode { get; set; } = false;
 
+        public int JobHistoryId { get; set; }
+
         public Task<int> GetImportApiBatchSizeAsync()
         {
             return Task.FromResult(ImportApiBatchSize);

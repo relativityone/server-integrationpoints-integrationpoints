@@ -71,9 +71,9 @@ namespace Relativity.Sync.Executors
                         string line = GetLineContent(reader, settings);
                         writer.WriteLine(line);
                     }
-
-                    await HandleDataSourceProcessingFinished(batch).ConfigureAwait(false);
                 }
+
+                await HandleDataSourceProcessingFinished(batch).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -88,7 +88,7 @@ namespace Relativity.Sync.Executors
             _itemLevelErrorLogAggregator.AddItemLevelError(itemLevelError, _statusMonitor.GetArtifactId(itemLevelError.Identifier));
             _statusMonitor.MarkItemAsFailed(itemLevelError.Identifier);
 
-            var itemError = new CreateJobHistoryErrorDto(ErrorType.Item)
+            CreateJobHistoryErrorDto itemError = new CreateJobHistoryErrorDto(ErrorType.Item)
             {
                 ErrorMessage = itemLevelError.Message,
                 SourceUniqueId = itemLevelError.Identifier
@@ -118,6 +118,11 @@ namespace Relativity.Sync.Executors
 
         private async Task HandleDataSourceProcessingFinished(IBatch batch)
         {
+            if (_batchItemErrors.Any())
+            {
+                await CreateJobHistoryErrors().ConfigureAwait(false);
+            }
+
             await batch.SetFailedDocumentsCountAsync(_statusMonitor.FailedItemsCount).ConfigureAwait(false);
             await _itemLevelErrorLogAggregator.LogAllItemLevelErrorsAsync().ConfigureAwait(false);
         }
