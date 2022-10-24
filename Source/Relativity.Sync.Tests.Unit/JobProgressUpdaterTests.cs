@@ -25,9 +25,14 @@ namespace Relativity.Sync.Tests.Unit
         private Mock<IRipWorkarounds> _ripWorkarounds;
         private Mock<ISourceServiceFactoryForAdmin> _serviceFactory;
         private Mock<IObjectManager> _objectManager;
+        private SyncJobParameters _syncJobParameters;
 
         private const int _WORKSPACE_ID = 111;
         private const int _JOB_HISTORY_ID = 222;
+        private const int _USER_ID = 333;
+        private const int _SYNC_CONFIGURATION_ID = 444;
+
+        private Guid _workflowId = Guid.NewGuid();
 
         private Guid _jobHistoryErrorTypeGuid = new Guid("0C88EB14-14D5-4FED-85C1-56F5885D76B9");
         private Guid _jobHistoryRelationGuid = new Guid("61314C61-3504-4054-BF97-09F8A0D08B77");
@@ -67,6 +72,8 @@ namespace Relativity.Sync.Tests.Unit
             _serviceFactory
                 .Setup(x => x.CreateProxyAsync<IObjectManager>())
                 .ReturnsAsync(_objectManager.Object);
+
+            _syncJobParameters = new SyncJobParameters(_SYNC_CONFIGURATION_ID, _WORKSPACE_ID, _USER_ID, _workflowId, Guid.Empty);
 
             SetupGuids();
         }
@@ -125,6 +132,9 @@ namespace Relativity.Sync.Tests.Unit
                     }
                 });
 
+            Guid jobId = Guid.NewGuid();
+            _syncJobParameters = new SyncJobParameters(_SYNC_CONFIGURATION_ID, _WORKSPACE_ID, _USER_ID, _workflowId, jobId);
+
             JobProgressUpdater sut = PrepareSut();
 
             // Act
@@ -147,7 +157,7 @@ namespace Relativity.Sync.Tests.Unit
                     {
                         Guid = _jobIdGuid
                     },
-                    Value = _JOB_HISTORY_ID.ToString()
+                    Value = jobId.ToString()
                 }
             };
             _objectManager.Verify(x => x.UpdateAsync(_WORKSPACE_ID, It.Is<UpdateRequest>(req => VerifyJobHistoryUpdateRequest(req, expectedFields))));
@@ -406,7 +416,7 @@ namespace Relativity.Sync.Tests.Unit
 
         private JobProgressUpdater PrepareSut()
         {
-            return new JobProgressUpdater(_serviceFactory.Object, _rdoGuidConfiguration.Object, _WORKSPACE_ID, _JOB_HISTORY_ID, _dateTime.Object, _jobHistoryErrorRepository.Object, _ripWorkarounds.Object, new EmptyLogger());
+            return new JobProgressUpdater(_serviceFactory.Object, _rdoGuidConfiguration.Object, _WORKSPACE_ID, _JOB_HISTORY_ID, _dateTime.Object, _jobHistoryErrorRepository.Object, _ripWorkarounds.Object, _syncJobParameters, new EmptyLogger());
         }
 
         private Guid SetupJobHistoryStatusGuid(JobHistoryStatus status)

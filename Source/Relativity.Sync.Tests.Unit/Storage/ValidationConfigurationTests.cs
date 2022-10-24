@@ -24,7 +24,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
         public void SetUp()
         {
             _fieldMappings = new Mock<IFieldMappings>();
-            SyncJobParameters jobParameters = new SyncJobParameters(It.IsAny<int>(), _WORKSPACE_ID, _USER_ID, It.IsAny<Guid>());
+            SyncJobParameters jobParameters = new SyncJobParameters(It.IsAny<int>(), _WORKSPACE_ID, _USER_ID, It.IsAny<Guid>(), Guid.Empty);
             _serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
             _sut = new ValidationConfiguration(_configuration, _fieldMappings.Object, jobParameters, _serviceFactoryForUser.Object);
         }

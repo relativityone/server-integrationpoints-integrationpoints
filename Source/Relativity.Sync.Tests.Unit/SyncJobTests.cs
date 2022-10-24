@@ -46,7 +46,7 @@ namespace Relativity.Sync.Tests.Unit
             _jobProgressUpdater = new Mock<IJobProgressUpdater>();
             _jobProgressUpdaterFactoryMock.Setup(x => x.CreateJobProgressUpdater()).Returns(_jobProgressUpdater.Object);
 
-            _syncJobParameters = new SyncJobParameters(0, 0, 0, _WORKFLOW_ID);
+            _syncJobParameters = new SyncJobParameters(0, 0, 0, _WORKFLOW_ID, Guid.Empty);
             _instance = PrepareSut(_pipeline);
         }
 

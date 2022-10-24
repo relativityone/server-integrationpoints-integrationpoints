@@ -8,10 +8,11 @@ using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
+using Relativity.Sync.Tests.System.ExecutorTests.TestsSetup;
 using Relativity.Sync.Tests.System.Helpers;
 using Relativity.Testing.Identification;
 
-namespace Relativity.Sync.Tests.System.SynchronizationExecutors
+namespace Relativity.Sync.Tests.System.ExecutorTests
 {
     [TestFixture]
     [Feature.DataTransfer.IntegrationPoints.Sync]
@@ -20,23 +21,24 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
         private string SourceWorkspaceName => $"Source.{Guid.NewGuid()}";
         private string DestinationWorkspaceName => $"Destination.{Guid.NewGuid()}";
 
-        [IdentifiedTestCase("edd705b0-5d9b-42df-a0a0-a801ba0a1b0d", 1000,1)]
-        [IdentifiedTestCase("3ad4d2b1-0edb-43d9-9ce2-78ab4e942c4a", 1000,2000)]
-        [IdentifiedTestCase("e1fa19e6-4a27-4ba2-bb5c-c924874ccb09", 1000,3500)]
+        [IdentifiedTestCase("edd705b0-5d9b-42df-a0a0-a801ba0a1b0d", 1000, 1)]
+        [IdentifiedTestCase("3ad4d2b1-0edb-43d9-9ce2-78ab4e942c4a", 1000, 2000)]
+        [IdentifiedTestCase("e1fa19e6-4a27-4ba2-bb5c-c924874ccb09", 1000, 3500)]
         public async Task ItShouldPassGoldFlow(int batchSize, int totalRecordsCount)
         {
-            // Arrange        
-            List<FieldMap> identifierFieldMap(int sourceWorkspaceId, int destinationWorkspaceId)
+            // Arrange
+            List<FieldMap> IdentifierFieldMap(int sourceWorkspaceId, int destinationWorkspaceId)
                 => GetDocumentIdentifierMappingAsync(sourceWorkspaceId, destinationWorkspaceId).GetAwaiter().GetResult();
 
             Dataset dataSet = Dataset.NativesAndExtractedText;
 
-            SynchronizationExecutorSetup setup = new SynchronizationExecutorSetup(Environment, ServiceFactory)
+            ExecutorTestSetup setup = new ExecutorTestSetup(Environment, ServiceFactory)
                 .ForWorkspaces(SourceWorkspaceName, DestinationWorkspaceName)
                 .ImportData(dataSet, true, true)
-                .SetupDocumentConfiguration(identifierFieldMap, batchSize: batchSize, totalRecordsCount: totalRecordsCount)
+                .SetupDocumentConfiguration(IdentifierFieldMap, batchSize: batchSize, totalRecordsCount: totalRecordsCount)
                 .SetupContainer()
-                .ExecutePreSynchronizationExecutors();
+                .SetupDestinationWorkspaceTag()
+                .PrepareBatches();
 
             // Act
             ExecutionResult syncResult = await ExecuteSynchronizationExecutorAsync(setup.Container, setup.Configuration).ConfigureAwait(false);
@@ -53,12 +55,13 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
         public async Task ItShouldSyncUserField()
         {
             // Arrange
-            SynchronizationExecutorSetup setup = new SynchronizationExecutorSetup(Environment, ServiceFactory)
+            ExecutorTestSetup setup = new ExecutorTestSetup(Environment, ServiceFactory)
                 .ForWorkspaces(SourceWorkspaceName, DestinationWorkspaceName)
                 .ImportMetadata(DataTableFactory.GenerateDocumentWithUserField())
                 .SetupDocumentConfiguration(UserFieldMap)
                 .SetupContainer()
-                .ExecutePreSynchronizationExecutors();
+                .SetupDestinationWorkspaceTag()
+                .PrepareBatches();
 
             // Act
             ExecutionResult syncResult = await ExecuteSynchronizationExecutorAsync(setup.Container, setup.Configuration).ConfigureAwait(false);
@@ -73,20 +76,21 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
         public async Task ItShouldTagInBatches()
         {
             // Arrange
-            List<FieldMap> identifierFieldMap(int sourceWorkspaceId, int destinationWorkspaceId)
+            List<FieldMap> IdentifierFieldMap(int sourceWorkspaceId, int destinationWorkspaceId)
                 => GetDocumentIdentifierMappingAsync(sourceWorkspaceId, destinationWorkspaceId).GetAwaiter().GetResult();
 
             Dataset dataSet = Dataset.NativesAndExtractedText;
 
             const int _BATCH_SIZE = 2;
 
-            SynchronizationExecutorSetup setup = new SynchronizationExecutorSetup(Environment, ServiceFactory)
+            ExecutorTestSetup setup = new ExecutorTestSetup(Environment, ServiceFactory)
                 .ForWorkspaces(SourceWorkspaceName, DestinationWorkspaceName)
                 .ImportData(dataSet, true, true)
-                .SetupDocumentConfiguration(identifierFieldMap, batchSize: _BATCH_SIZE)
+                .SetupDocumentConfiguration(IdentifierFieldMap, batchSize: _BATCH_SIZE)
                 .SetupContainer()
                 .SetDocumentTracking()
-                .ExecutePreSynchronizationExecutors();
+                .SetupDestinationWorkspaceTag()
+                .PrepareBatches();
 
             // Act
             ExecutionResult syncResult = await ExecuteSynchronizationExecutorAsync(setup.Container, setup.Configuration).ConfigureAwait(false);
@@ -105,18 +109,19 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
         public async Task ItShouldCompleteWithErrors_WhenSupportedByViewerIsNull()
         {
             // Arrange
-            List<FieldMap> identifierFieldMap(int sourceWorkspaceId, int destinationWorkspaceId)
+            List<FieldMap> IdentifierFieldMap(int sourceWorkspaceId, int destinationWorkspaceId)
                 => GetDocumentIdentifierMappingAsync(sourceWorkspaceId, destinationWorkspaceId).GetAwaiter().GetResult();
 
             Dataset dataSet = Dataset.NativesAndExtractedText;
 
-            SynchronizationExecutorSetup setup = new SynchronizationExecutorSetup(Environment, ServiceFactory)
+            ExecutorTestSetup setup = new ExecutorTestSetup(Environment, ServiceFactory)
                 .ForWorkspaces(SourceWorkspaceName, DestinationWorkspaceName)
                 .ImportData(dataSet, true, true)
-                .SetupDocumentConfiguration(identifierFieldMap)
+                .SetupDocumentConfiguration(IdentifierFieldMap)
                 .SetupContainer()
                 .SetSupportedByViewer()
-                .ExecutePreSynchronizationExecutors();
+                .SetupDestinationWorkspaceTag()
+                .PrepareBatches();
 
             // Act
             ExecutionResult syncResult = await ExecuteSynchronizationExecutorAsync(setup.Container, setup.Configuration).ConfigureAwait(false);
@@ -126,7 +131,7 @@ namespace Relativity.Sync.Tests.System.SynchronizationExecutors
 
             synchronizationValidator.AssertResult(syncResult, ExecutionStatus.CompletedWithErrors);
         }
-        
+
         private static Task<ExecutionResult> ExecuteSynchronizationExecutorAsync(IContainer container, ConfigurationStub configuration)
         {
             IExecutor<IDocumentSynchronizationConfiguration> syncExecutor = container.Resolve<IExecutor<IDocumentSynchronizationConfiguration>>();

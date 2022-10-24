@@ -29,7 +29,7 @@ namespace Relativity.Sync.Tests.Unit
         public void OneTimeSetUp()
         {
             _syncLog = new EmptyLogger();
-            _syncJobParameters = new SyncJobParameters(It.IsAny<int>(), _TEST_WORKSPACE_ID, _TEST_USER_ID, It.IsAny<Guid>());
+            _syncJobParameters = new SyncJobParameters(It.IsAny<int>(), _TEST_WORKSPACE_ID, _TEST_USER_ID, It.IsAny<Guid>(), Guid.Empty);
         }
 
         [SetUp]

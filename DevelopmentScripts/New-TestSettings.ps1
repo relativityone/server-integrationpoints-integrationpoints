@@ -102,6 +102,11 @@ if($TestVMName)
     }
 }
 
+if(-not $BuildToolsDirectory)
+{
+    $PSBoundParameters['BuildToolsDirectory'] = Join-Path $PSScriptRoot ..\buildtools
+}
+
 if(-not $RAPDirectory)
 {
     $PSBoundParameters['RAPDirectory'] = Join-Path $PSScriptRoot ..\Artifacts

@@ -29,7 +29,7 @@ namespace Relativity.Sync.Tests.System.Core
         protected ImportHelper ImportHelper { get; private set; }
 
         protected User User { get; private set; }
-        
+
         protected IAPILog Logger { get; private set; }
 
         [OneTimeSetUp]
@@ -52,7 +52,10 @@ namespace Relativity.Sync.Tests.System.Core
         {
             await ChildSuiteTeardown().ConfigureAwait(false);
 
-            await Environment.DoCleanupAsync().ConfigureAwait(false);
+            if (TestContext.CurrentContext.Result.FailCount == 0)
+            {
+                await Environment.DoCleanupAsync().ConfigureAwait(false);
+            }
         }
 
         protected virtual Task ChildSuiteSetup()
@@ -125,7 +128,7 @@ namespace Relativity.Sync.Tests.System.Core
                 QueryResult sourceQueryResult = await objectManager.QueryAsync(sourceWorkspaceId, query, 0, 1).ConfigureAwait(false);
                 QueryResult destinationQueryResult = await objectManager.QueryAsync(destinationWorkspaceId, query, 0, 1).ConfigureAwait(false);
 
-                return new []
+                return new[]
                 {
                     new FieldMap
                     {
@@ -176,7 +179,7 @@ namespace Relativity.Sync.Tests.System.Core
             ImportDataTableWrapper dataTableWrapper = DataTableFactory.CreateImageImportDataTable(dataset);
             await ImportHelper.ImportDataAsync(workspaceId, dataTableWrapper, productionId).ConfigureAwait(false);
 
-            return new ProductionDto {ArtifactId = productionId, Name = productionName};
+            return new ProductionDto { ArtifactId = productionId, Name = productionName };
         }
 
         protected virtual void Dispose(bool disposing)

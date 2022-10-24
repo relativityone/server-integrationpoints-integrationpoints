@@ -6,9 +6,9 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 {
     internal static class TridentHelper
     {
-        public static void UpdateFilePathToLocalIfNeeded(int workspaceArtifactId, Dataset dataSet)
+        public static void UpdateFilePathToLocalIfNeeded(int workspaceArtifactId, Dataset dataSet, bool wereNativesImported = true)
         {
-            if (AppSettings.IsSettingsFileSet)
+            if (AppSettings.IsSettingsFileSet && wereNativesImported)
             {
                 #region Hopper Instance workaround explanation
 

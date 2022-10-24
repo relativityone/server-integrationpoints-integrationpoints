@@ -16,7 +16,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
             ContainerFactory factory = new ContainerFactory();
 
-            SyncJobParameters syncParameters = new SyncJobParameters(configuration.SyncConfigurationArtifactId, configuration.SourceWorkspaceArtifactId, configuration.ExecutingUserId, Guid.NewGuid());
+            SyncJobParameters syncParameters = new SyncJobParameters(configuration.SyncConfigurationArtifactId, configuration.SourceWorkspaceArtifactId, configuration.ExecutingUserId, Guid.NewGuid(), Guid.Empty);
 
             IAPM apm = new NullAPM();
 

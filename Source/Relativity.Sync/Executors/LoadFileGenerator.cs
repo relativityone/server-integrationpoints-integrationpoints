@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -7,11 +6,7 @@ using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Import.V1.Builders.DataSource;
 using Relativity.Import.V1.Models.Sources;
-using Relativity.Services.ResourceServer;
-using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
 
@@ -19,41 +14,32 @@ namespace Relativity.Sync.Executors
 {
     internal class LoadFileGenerator : ILoadFileGenerator
     {
-        private const int _BATCH_ITEM_ERRORS_MAX_COUNT_FOR_SINGLE_ENTRY = 1000;
-
         private readonly IBatchDataSourcePreparationConfiguration _configuration;
-        private readonly IDestinationServiceFactoryForUser _serviceFactory;
         private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
-        private readonly IItemLevelErrorLogAggregator _itemLevelErrorAggregator;
+        private readonly IFileShareService _fileShareService;
         private readonly IAPILog _logger;
-        private readonly ConcurrentQueue<CreateJobHistoryErrorDto> _batchItemErrors;
-
-        private IItemStatusMonitor _statusMonitor;
 
         public LoadFileGenerator(
             IBatchDataSourcePreparationConfiguration configuration,
-            IDestinationServiceFactoryForUser serviceFactory,
             ISourceWorkspaceDataReaderFactory dataReaderFactory,
-            IItemLevelErrorLogAggregator itemLevelErrorAggregator,
+            IFileShareService fileShareService,
             IAPILog logger)
         {
             _configuration = configuration;
-            _serviceFactory = serviceFactory;
             _dataReaderFactory = dataReaderFactory;
-            _itemLevelErrorAggregator = itemLevelErrorAggregator;
+            _fileShareService = fileShareService;
             _logger = logger;
-            _batchItemErrors = new ConcurrentQueue<CreateJobHistoryErrorDto>();
         }
 
         public async Task<ILoadFile> GenerateAsync(IBatch batch)
         {
             string batchPath = await CreateBatchFullPath(batch).ConfigureAwait(false);
             DataSourceSettings settings = CreateSettings(batchPath);
-            await GenerateLoadFileAsync(batch, batchPath, settings).ConfigureAwait(false);
+            GenerateLoadFile(batch, batchPath, settings);
             return new LoadFile(batch.BatchGuid, batchPath, settings);
         }
 
-        private async Task GenerateLoadFileAsync(IBatch batch, string batchPath, DataSourceSettings settings)
+        private void GenerateLoadFile(IBatch batch, string batchPath, DataSourceSettings settings)
         {
             int readerLineNumber = 0;
             try
@@ -61,17 +47,12 @@ namespace Relativity.Sync.Executors
                 using (ISourceWorkspaceDataReader reader = _dataReaderFactory.CreateNativeSourceWorkspaceDataReader(batch, CancellationToken.None))
                 using (StreamWriter writer = new StreamWriter(batchPath))
                 {
-                    _statusMonitor = reader.ItemStatusMonitor;
-                    reader.OnItemReadError += HandleSyncItemLevelError;
-
                     while (reader.Read())
                     {
                         readerLineNumber++;
                         string line = GetLineContent(reader, settings);
                         writer.WriteLine(line);
                     }
-
-                    await batch.SetFailedItemsCountAsync(_statusMonitor.FailedItemsCount).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -81,21 +62,13 @@ namespace Relativity.Sync.Executors
             }
         }
 
-        private void HandleSyncItemLevelError(long completedItem, ItemLevelError itemLevelError)
-        {
-            _itemLevelErrorAggregator.AddItemLevelError(itemLevelError, _statusMonitor.GetArtifactId(itemLevelError.Identifier));
-            _statusMonitor.MarkItemAsFailed(itemLevelError.Identifier);
-
-            // prepare JobHistoryError entry
-        }
-
         private string GetLineContent(ISourceWorkspaceDataReader reader, DataSourceSettings settings)
         {
             List<string> rowValues = new List<string>();
 
             for (int i = 0; i < reader.FieldCount; i++)
             {
-                string value = reader[i].ToString();
+                string value = reader[i]?.ToString() ?? string.Empty;
                 rowValues.Add(value);
             }
 
@@ -121,27 +94,25 @@ namespace Relativity.Sync.Executors
             string batchFullPath = string.Empty;
             try
             {
-                using (IWorkspaceManager workspaceManager = await _serviceFactory.CreateProxyAsync<IWorkspaceManager>().ConfigureAwait(false))
+                int workspaceId = _configuration.DestinationWorkspaceArtifactId;
+
+                string fileSharePath = await _fileShareService.GetWorkspaceFileShareLocationAsync(workspaceId)
+                    .ConfigureAwait(false);
+
+                if (!Directory.Exists(fileSharePath))
                 {
-                    WorkspaceRef workspace = new WorkspaceRef() { ArtifactID = _configuration.DestinationWorkspaceArtifactId };
-                    FileShareResourceServer server = await workspaceManager.GetDefaultWorkspaceFileShareResourceServerAsync(workspace).ConfigureAwait(false);
-
-                    string rootDirectory = Path.Combine(server.UNCPath, $"EDDS{_configuration.DestinationWorkspaceArtifactId}");
-                    if (!Directory.Exists(rootDirectory))
-                    {
-                        throw new DirectoryNotFoundException($"Unable to create load file path. Directory: {rootDirectory} does not exist!");
-                    }
-
-                    string batchPartialDirectory = $@"Sync\{batch.ExportRunId}\{batch.BatchGuid}";
-                    string fullDirectory = Path.Combine(rootDirectory, batchPartialDirectory);
-                    if (!Directory.Exists(fullDirectory))
-                    {
-                        Directory.CreateDirectory(fullDirectory);
-                    }
-
-                    string fileName = $"{batch.BatchGuid}.dat";
-                    batchFullPath = Path.Combine(fullDirectory, fileName);
+                    throw new DirectoryNotFoundException($"Unable to create load file path. Directory: {fileSharePath} does not exist!");
                 }
+
+                string batchPartialDirectory = $@"Sync\{batch.ExportRunId}\{batch.BatchGuid}";
+                string fullDirectory = Path.Combine(fileSharePath, batchPartialDirectory);
+                if (!Directory.Exists(fullDirectory))
+                {
+                    Directory.CreateDirectory(fullDirectory);
+                }
+
+                string fileName = $"{batch.BatchGuid}.dat";
+                batchFullPath = Path.Combine(fullDirectory, fileName);
             }
             catch (Exception ex)
             {

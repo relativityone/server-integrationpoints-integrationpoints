@@ -63,7 +63,7 @@ namespace Relativity.Sync.Tests.System.Core
         public static string RemoteServerRoot => GetConfigValue("RemoteServerRoot");
 
         public static string RemoteArchivesLocation => Path.Combine(RemoteServerRoot, RelativeArchivesLocation);
-        
+
         public static string RemoteBCPPathLocation => Path.Combine(RemoteServerRoot, RelativeBCPPathLocation);
 
         public static string ResourcePoolName => GetConfigValue("ResourcePoolName");
@@ -71,13 +71,15 @@ namespace Relativity.Sync.Tests.System.Core
         public static string PerformanceResultsFilePath => GetConfigValue("PerformanceResultsFilePath");
 
         public static bool UseLogger => !bool.TryParse(GetConfigValue("SuppressCertificateCheck"), out bool useLogger) || useLogger;
-        
+
         public static int ArmRelativityTemplateMatterId => int.Parse(GetConfigValue("ArmRelativityTemplateMatterId"));
-        
+
         public static int ArmCacheLocationId => int.Parse(GetConfigValue("ArmCacheLocationId"));
-        
+
         public static int ArmFileRepositoryId => int.Parse(GetConfigValue("ArmFileRepositoryId"));
-        
+
+        public static string RelativityImportRAPPath => Path.Combine(GetConfigValue("BuildToolsDirectory"), GetConfigValue("RelativityImportRAPPath"));
+
         private static Uri BuildHostNamedBasedUri(string path)
         {
             if (string.IsNullOrEmpty(RelativityHostName))

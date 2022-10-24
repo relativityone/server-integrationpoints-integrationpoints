@@ -63,9 +63,11 @@ namespace Relativity.Sync.Executors
                 using (IDocumentConfigurationController documentConfigurationController = await _serviceFactory
                            .CreateProxyAsync<IDocumentConfigurationController>().ConfigureAwait(false))
                 {
+                    Guid importJobId = configuration.ExportRunId;
+
                     Response importJobResponse = await importJobController.CreateAsync(
                             workspaceID: configuration.DestinationWorkspaceArtifactId,
-                            importJobID: Guid.Parse(_parameters.WorkflowId),
+                            importJobID: importJobId,
                             applicationName: _parameters.SyncApplicationName,
                             correlationID: _parameters.WorkflowId)
                         .ConfigureAwait(false);
@@ -78,7 +80,7 @@ namespace Relativity.Sync.Executors
 
                     Response documentConfigurationResponse = await documentConfigurationController.CreateAsync(
                         configuration.DestinationWorkspaceArtifactId,
-                        Guid.Parse(_parameters.WorkflowId),
+                        importJobId,
                         importSettings).ConfigureAwait(false);
 
                     if (documentConfigurationResponse.IsSuccess == false)
@@ -88,7 +90,7 @@ namespace Relativity.Sync.Executors
                     }
 
                     Response jobBeginResponse = await importJobController
-                        .BeginAsync(configuration.DestinationWorkspaceArtifactId, Guid.Parse(_parameters.WorkflowId))
+                        .BeginAsync(configuration.DestinationWorkspaceArtifactId, importJobId)
                         .ConfigureAwait(false);
 
                     if (jobBeginResponse.IsSuccess == false)
@@ -154,6 +156,13 @@ namespace Relativity.Sync.Executors
 
         private IWithFieldsMapping ConfigureFileImport(IWithNatives input, bool imageImport, int nativeFilePathIndex, int nativeFileNameIndex)
         {
+            if (nativeFilePathIndex == -1 || nativeFileNameIndex == -1)
+            {
+                return input
+                    .WithoutNatives()
+                    .WithoutImages();
+            }
+
             if (imageImport)
             {
                 throw new NotSupportedException("Images import is not supported in IAPI2 pipeline");
@@ -173,6 +182,11 @@ namespace Relativity.Sync.Executors
             {
                 foreach (FieldInfoDto mapping in fieldMappings)
                 {
+                    if(mapping.DocumentFieldIndex == -1)
+                    {
+                        continue;
+                    }
+
                     switch (mapping.RelativityDataType)
                     {
                         case RelativityDataType.SingleObject:
