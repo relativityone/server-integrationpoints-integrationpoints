@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -10,6 +11,7 @@ using Relativity.Services.ResourceServer;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
 
@@ -17,32 +19,41 @@ namespace Relativity.Sync.Executors
 {
     internal class LoadFileGenerator : ILoadFileGenerator
     {
+        private const int _BATCH_ITEM_ERRORS_MAX_COUNT_FOR_SINGLE_ENTRY = 1000;
+
         private readonly IBatchDataSourcePreparationConfiguration _configuration;
         private readonly IDestinationServiceFactoryForUser _serviceFactory;
         private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
+        private readonly IItemLevelErrorLogAggregator _itemLevelErrorAggregator;
         private readonly IAPILog _logger;
+        private readonly ConcurrentQueue<CreateJobHistoryErrorDto> _batchItemErrors;
+
+        private IItemStatusMonitor _statusMonitor;
 
         public LoadFileGenerator(
             IBatchDataSourcePreparationConfiguration configuration,
             IDestinationServiceFactoryForUser serviceFactory,
             ISourceWorkspaceDataReaderFactory dataReaderFactory,
+            IItemLevelErrorLogAggregator itemLevelErrorAggregator,
             IAPILog logger)
         {
             _configuration = configuration;
             _serviceFactory = serviceFactory;
             _dataReaderFactory = dataReaderFactory;
+            _itemLevelErrorAggregator = itemLevelErrorAggregator;
             _logger = logger;
+            _batchItemErrors = new ConcurrentQueue<CreateJobHistoryErrorDto>();
         }
 
         public async Task<ILoadFile> GenerateAsync(IBatch batch)
         {
             string batchPath = await CreateBatchFullPath(batch).ConfigureAwait(false);
             DataSourceSettings settings = CreateSettings(batchPath);
-            GenerateLoadFile(batch, batchPath, settings);
+            await GenerateLoadFileAsync(batch, batchPath, settings).ConfigureAwait(false);
             return new LoadFile(batch.BatchGuid, batchPath, settings);
         }
 
-        private void GenerateLoadFile(IBatch batch, string batchPath, DataSourceSettings settings)
+        private async Task GenerateLoadFileAsync(IBatch batch, string batchPath, DataSourceSettings settings)
         {
             int readerLineNumber = 0;
             try
@@ -50,12 +61,17 @@ namespace Relativity.Sync.Executors
                 using (ISourceWorkspaceDataReader reader = _dataReaderFactory.CreateNativeSourceWorkspaceDataReader(batch, CancellationToken.None))
                 using (StreamWriter writer = new StreamWriter(batchPath))
                 {
+                    _statusMonitor = reader.ItemStatusMonitor;
+                    reader.OnItemReadError += HandleSyncItemLevelError;
+
                     while (reader.Read())
                     {
                         readerLineNumber++;
                         string line = GetLineContent(reader, settings);
                         writer.WriteLine(line);
                     }
+
+                    await batch.SetFailedItemsCountAsync(_statusMonitor.FailedItemsCount).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -63,6 +79,14 @@ namespace Relativity.Sync.Executors
                 _logger.LogError(ex, "Load file generator error occurred in line: {readerLineNumber}", readerLineNumber);
                 throw;
             }
+        }
+
+        private void HandleSyncItemLevelError(long completedItem, ItemLevelError itemLevelError)
+        {
+            _itemLevelErrorAggregator.AddItemLevelError(itemLevelError, _statusMonitor.GetArtifactId(itemLevelError.Identifier));
+            _statusMonitor.MarkItemAsFailed(itemLevelError.Identifier);
+
+            // prepare JobHistoryError entry
         }
 
         private string GetLineContent(ISourceWorkspaceDataReader reader, DataSourceSettings settings)
