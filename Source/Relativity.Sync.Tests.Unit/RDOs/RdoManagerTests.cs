@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -74,13 +76,13 @@ namespace Relativity.Sync.Tests.Unit.RDOs
                 {
                     Objects = new List<RelativityObject>
                     {
-                        new RelativityObject()
+                        new RelativityObject
                         {
-                            ArtifactID = 1, Guids = new List<Guid> {Guid.NewGuid()},
+                            ArtifactID = 1, Guids = new List<Guid> { Guid.NewGuid() },
                             FieldValues = new List<FieldValuePair>
                             {
-                                new FieldValuePair {Value = 1},
-                                new FieldValuePair {Value = 2}
+                                new FieldValuePair { Value = 1 },
+                                new FieldValuePair { Value = 2 }
                             }
                         }
                     },
@@ -102,49 +104,39 @@ namespace Relativity.Sync.Tests.Unit.RDOs
             _sut = new RdoManager(_syncLogMock.Object, _serviceFactoryForAdminMock.Object, _rdoGuidProviderMock.Object);
         }
 
-        private void SetupFieldManager(Mock<IFieldManager> fieldManagerMock)
-        {
-            fieldManagerMock.Setup(x => x.CreateYesNoFieldAsync(WorkspaceId, It.IsAny<YesNoFieldRequest>()))
-                .ReturnsAsync(CreatedFieldId);
-            fieldManagerMock
-                .Setup(x => x.CreateWholeNumberFieldAsync(WorkspaceId, It.IsAny<WholeNumberFieldRequest>()))
-                .ReturnsAsync(CreatedFieldId);
-            fieldManagerMock
-                .Setup(x => x.CreateFixedLengthFieldAsync(WorkspaceId, It.IsAny<FixedLengthFieldRequest>()))
-                .ReturnsAsync(CreatedFieldId);
-            fieldManagerMock.Setup(x => x.CreateLongTextFieldAsync(WorkspaceId, It.IsAny<LongTextFieldRequest>()))
-                .ReturnsAsync(CreatedFieldId);
-            fieldManagerMock
-                .Setup(x => x.CreateSingleObjectFieldAsync(WorkspaceId, It.IsAny<SingleObjectFieldRequest>()))
-                .ReturnsAsync(CreatedFieldId);
-        }
-
         [Test]
         public async Task EnsureTypeExist_ShouldCreateType_WhenDoesNotExist()
         {
             // Arrange
             const int createdTypeArtifactId = 3;
 
-            _objectManagerMock.Setup(x => x.QueryAsync(WorkspaceId,
-                    It.Is<QueryRequest>(q => q.Condition == $"'Name' == '{SampleRdo.ExpectedRdoInfo.Name}'"), 0, 1))
-                .ReturnsAsync(new QueryResult() { Objects = new List<RelativityObject>() });
+            _objectManagerMock.Setup(x => x.QueryAsync(
+                    WorkspaceId,
+                    It.Is<QueryRequest>(q => q.Condition == $"'Name' == '{SampleRdo.ExpectedRdoInfo.Name}'"),
+                    0,
+                    1))
+                .ReturnsAsync(new QueryResult { Objects = new List<RelativityObject>() });
 
             _objectTypeManagerMock
-                .Setup(x => x.CreateAsync(WorkspaceId,
+                .Setup(x => x.CreateAsync(
+                    WorkspaceId,
                     It.Is<ObjectTypeRequest>(q => q.Name == SampleRdo.ExpectedRdoInfo.Name)))
                 .ReturnsAsync(createdTypeArtifactId);
-
 
             // Act
             await _sut.EnsureTypeExistsAsync<SampleRdo>(WorkspaceId);
 
             // Assert
-            _artifactGuidManagerMock.Verify(x => x.CreateSingleAsync(WorkspaceId, createdTypeArtifactId,
+            _artifactGuidManagerMock.Verify(x => x.CreateSingleAsync(
+                WorkspaceId,
+                createdTypeArtifactId,
                 It.Is<List<Guid>>(l => l.Contains(SampleRdo.ExpectedRdoInfo.TypeGuid))));
 
             foreach (RdoFieldInfo fieldInfo in SampleRdo.ExpectedRdoInfo.Fields.Values)
             {
-                _artifactGuidManagerMock.Verify(x => x.CreateSingleAsync(WorkspaceId, CreatedFieldId,
+                _artifactGuidManagerMock.Verify(x => x.CreateSingleAsync(
+                    WorkspaceId,
+                    CreatedFieldId,
                     It.Is<List<Guid>>(l => l.Contains(fieldInfo.Guid))));
             }
         }
@@ -156,19 +148,22 @@ namespace Relativity.Sync.Tests.Unit.RDOs
             const int tabArtifactId = 4;
             _objectManagerMock.Setup(x =>
                     x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
-                .ReturnsAsync(new QueryResult()
+                .ReturnsAsync(new QueryResult
                 {
                     Objects = new List<RelativityObject>(),
                     TotalCount = 0
                 });
 
-            _objectManagerMock.Setup(x => x.QueryAsync(WorkspaceId,
-                    It.Is<QueryRequest>(q => q.ObjectType.ArtifactTypeID == (int) ArtifactType.Tab && q.Condition == $"'Object Type' == '{SampleRdo.ExpectedRdoInfo.Name}'"), 0, 1))
-                .ReturnsAsync(new QueryResult()
+            _objectManagerMock.Setup(x => x.QueryAsync(
+                    WorkspaceId,
+                    It.Is<QueryRequest>(q => q.ObjectType.ArtifactTypeID == (int)ArtifactType.Tab && q.Condition == $"'Object Type' == '{SampleRdo.ExpectedRdoInfo.Name}'"),
+                    0,
+                    1))
+                .ReturnsAsync(new QueryResult
                 {
-                    Objects = new List<RelativityObject>()
+                    Objects = new List<RelativityObject>
                     {
-                        new RelativityObject()
+                        new RelativityObject
                         {
                             ArtifactID = tabArtifactId
                         }
@@ -182,7 +177,6 @@ namespace Relativity.Sync.Tests.Unit.RDOs
             _tabManagerMock.Verify(x => x.DeleteAsync(WorkspaceId, tabArtifactId), Times.Once);
         }
 
-
         [Test]
         public async Task EnsureTypeExist_ShouldNotDeleteTab_WhenTabDoesntExist()
         {
@@ -195,7 +189,7 @@ namespace Relativity.Sync.Tests.Unit.RDOs
                     Objects = new List<RelativityObject>(),
                     TotalCount = 0
                 });
-            
+
             // Act
             await _sut.EnsureTypeExistsAsync<SampleRdo>(WorkspaceId);
 
@@ -203,15 +197,17 @@ namespace Relativity.Sync.Tests.Unit.RDOs
             _tabManagerMock.Verify(x => x.DeleteAsync(WorkspaceId, tabArtifactId), Times.Never);
         }
 
-
         [Test]
         public async Task EnsureTypeExists_ShouldRespectObjectGuid()
         {
             // Arrange
-            _objectManagerMock.Setup(x => x.QueryAsync(WorkspaceId,
-                    It.Is<QueryRequest>(q => q.Condition == $"'Name' == '{nameof(RdoWithParent)}'"), 0, 1))
-                .ReturnsAsync(new QueryResult() {Objects = new List<RelativityObject>()});
-            
+            _objectManagerMock.Setup(x => x.QueryAsync(
+                    WorkspaceId,
+                    It.Is<QueryRequest>(q => q.Condition == $"'Name' == '{nameof(RdoWithParent)}'"),
+                    0,
+                    1))
+                .ReturnsAsync(new QueryResult { Objects = new List<RelativityObject>() });
+
             // Act
             await _sut.EnsureTypeExistsAsync<RdoWithParent>(WorkspaceId).ConfigureAwait(false);
 
@@ -224,8 +220,11 @@ namespace Relativity.Sync.Tests.Unit.RDOs
         public async Task EnsureTypeExists_ShouldCreateMissingFields()
         {
             // Arrange
-            _objectManagerMock.Setup(x => x.QueryAsync(WorkspaceId,
-                    It.Is<QueryRequest>(q => q.ObjectType.ArtifactTypeID == (int) ArtifactType.Field), 0, int.MaxValue))
+            _objectManagerMock.Setup(x => x.QueryAsync(
+                    WorkspaceId,
+                    It.Is<QueryRequest>(q => q.ObjectType.ArtifactTypeID == (int)ArtifactType.Field),
+                    0,
+                    int.MaxValue))
                 .ReturnsAsync(new QueryResult
                 {
                     Objects = new List<RelativityObject>
@@ -243,11 +242,15 @@ namespace Relativity.Sync.Tests.Unit.RDOs
             // Assert
             var missingFieldInfo = SampleRdo.ExpectedRdoInfo.Fields.Values.Skip(1).First();
 
-            _fieldManagerMock.Verify(x => x.CreateFixedLengthFieldAsync(WorkspaceId, It.Is<FixedLengthFieldRequest>(
+            _fieldManagerMock.Verify(x => x.CreateFixedLengthFieldAsync(
+                WorkspaceId,
+                It.Is<FixedLengthFieldRequest>(
                 r => r.Name == missingFieldInfo.Name && r.IsRequired == missingFieldInfo.IsRequired &&
                      r.Length == missingFieldInfo.TextLength)));
 
-            _artifactGuidManagerMock.Verify(x => x.CreateSingleAsync(WorkspaceId, CreatedFieldId,
+            _artifactGuidManagerMock.Verify(x => x.CreateSingleAsync(
+                WorkspaceId,
+                CreatedFieldId,
                 It.Is<List<Guid>>(l => l.Contains(missingFieldInfo.Guid))));
         }
 
@@ -255,8 +258,11 @@ namespace Relativity.Sync.Tests.Unit.RDOs
         public async Task EnsureTypeExists_ShouldNotCreateAnything_WhenTypeAlreadyExists()
         {
             // Arrange
-            _objectManagerMock.Setup(x => x.QueryAsync(WorkspaceId,
-                    It.Is<QueryRequest>(q => q.ObjectType.ArtifactTypeID == (int) ArtifactType.Field), 0, int.MaxValue))
+            _objectManagerMock.Setup(x => x.QueryAsync(
+                    WorkspaceId,
+                    It.Is<QueryRequest>(q => q.ObjectType.ArtifactTypeID == (int)ArtifactType.Field),
+                    0,
+                    int.MaxValue))
                 .ReturnsAsync(new QueryResult
                 {
                     Objects = new List<RelativityObject>
@@ -272,8 +278,69 @@ namespace Relativity.Sync.Tests.Unit.RDOs
             await _sut.EnsureTypeExistsAsync<SampleRdo>(WorkspaceId);
 
             // Assert
-            _artifactGuidManagerMock.Verify(x => x.CreateSingleAsync(WorkspaceId, It.IsAny<int>(),
-                It.IsAny<List<Guid>>()), Times.Never);
+            _artifactGuidManagerMock.Verify(
+                x => x.CreateSingleAsync(
+                WorkspaceId,
+                It.IsAny<int>(),
+                It.IsAny<List<Guid>>()),
+                Times.Never);
+
+            _objectTypeManagerMock.Verify(x => x.CreateAsync(WorkspaceId, It.IsAny<ObjectTypeRequest>()), Times.Never);
+        }
+
+        [Test]
+        public async Task EnsureTypeExists_ShouldThrowDuplicateNameException_WhenTypeHaveTwoFieldsWithTheSameNames()
+        {
+            // Arrange
+            const string duplicatedFieldName = "duplicated Field Name";
+
+            _objectManagerMock.Setup(x => x.QueryAsync(
+                    WorkspaceId,
+                    It.Is<QueryRequest>(q => q.ObjectType.ArtifactTypeID == (int)ArtifactType.Field),
+                    0,
+                    int.MaxValue))
+                .ReturnsAsync(new QueryResult
+                {
+                    Objects = new List<RelativityObject>
+                    {
+                        new RelativityObject
+                        {
+                            Guids = SampleRdo.ExpectedRdoInfo.Fields.Keys.ToList(),
+                            FieldValues = new List<FieldValuePair>
+                            {
+                                new FieldValuePair
+                                {
+                                    Field = new Field(),
+                                    Value = duplicatedFieldName
+                                }
+                            }
+                        },
+                        new RelativityObject
+                        {
+                            Guids = SampleRdo.ExpectedRdoInfo.Fields.Keys.ToList(),
+                            FieldValues = new List<FieldValuePair>
+                            {
+                                new FieldValuePair
+                                {
+                                    Field = new Field(),
+                                    Value = duplicatedFieldName
+                                }
+                            }
+                        }
+                    }
+                });
+
+            // Act
+            Func<Task> function = async () => await _sut.EnsureTypeExistsAsync<SampleRdo>(WorkspaceId).ConfigureAwait(false);
+
+            // Assert
+            function.Should().Throw<DuplicateNameException>();
+            _artifactGuidManagerMock.Verify(
+                x => x.CreateSingleAsync(
+                    WorkspaceId,
+                    It.IsAny<int>(),
+                    It.IsAny<List<Guid>>()),
+                Times.Never);
 
             _objectTypeManagerMock.Verify(x => x.CreateAsync(WorkspaceId, It.IsAny<ObjectTypeRequest>()), Times.Never);
         }
@@ -284,7 +351,7 @@ namespace Relativity.Sync.Tests.Unit.RDOs
             // Arrange
             const int createdArtifactId = 5;
             _objectManagerMock.Setup(x => x.CreateAsync(WorkspaceId, It.IsAny<CreateRequest>()))
-                .ReturnsAsync(new CreateResult {Object = new RelativityObject {ArtifactID = createdArtifactId}});
+                .ReturnsAsync(new CreateResult { Object = new RelativityObject { ArtifactID = createdArtifactId } });
 
             SampleRdo o = new SampleRdo();
 
@@ -415,7 +482,7 @@ namespace Relativity.Sync.Tests.Unit.RDOs
             ExtendedSampleRdo sourceRdo = new ExtendedSampleRdo()
             {
                 ArtifactId = objectArtifactId,
-                NullableGuidField = guid == null ? (Guid?) null : Guid.Parse(guid)
+                NullableGuidField = guid == null ? (Guid?)null : Guid.Parse(guid)
             };
 
             SetupObjectManagerToReturnRdo(sourceRdo);
@@ -434,7 +501,7 @@ namespace Relativity.Sync.Tests.Unit.RDOs
         {
             // Arrange
             const int objectArtifactId = 68;
-            
+
             // ReSharper disable StringLiteralTypo
             const string textToStream = "Czwartek to mały piątek, na logikę dzisiaj środa, powoli można startować, weekend zaczynać od nowa";
 
@@ -456,12 +523,21 @@ namespace Relativity.Sync.Tests.Unit.RDOs
             result.LongTextField.Should().Be(textToStream);
         }
 
-       
-
-        [Rdo("37C93366-5D07-42D0-8EA8-2400B4323F36", nameof(RdoWithParent), "22C0EE5E-4CA6-49D3-86F8-63DF2382083D")]
-        class RdoWithParent : IRdoType
+        private void SetupFieldManager(Mock<IFieldManager> fieldManagerMock)
         {
-            public int ArtifactId { get; set; }
+            fieldManagerMock.Setup(x => x.CreateYesNoFieldAsync(WorkspaceId, It.IsAny<YesNoFieldRequest>()))
+                .ReturnsAsync(CreatedFieldId);
+            fieldManagerMock
+                .Setup(x => x.CreateWholeNumberFieldAsync(WorkspaceId, It.IsAny<WholeNumberFieldRequest>()))
+                .ReturnsAsync(CreatedFieldId);
+            fieldManagerMock
+                .Setup(x => x.CreateFixedLengthFieldAsync(WorkspaceId, It.IsAny<FixedLengthFieldRequest>()))
+                .ReturnsAsync(CreatedFieldId);
+            fieldManagerMock.Setup(x => x.CreateLongTextFieldAsync(WorkspaceId, It.IsAny<LongTextFieldRequest>()))
+                .ReturnsAsync(CreatedFieldId);
+            fieldManagerMock
+                .Setup(x => x.CreateSingleObjectFieldAsync(WorkspaceId, It.IsAny<SingleObjectFieldRequest>()))
+                .ReturnsAsync(CreatedFieldId);
         }
 
         private void SetupKeplerStreaming(string textToStream)
@@ -486,12 +562,14 @@ namespace Relativity.Sync.Tests.Unit.RDOs
             return stream;
         }
 
-
         private void SetupObjectManagerToReturnRdo<TRdo>(TRdo sourceRdo) where TRdo : IRdoType
         {
             var rdoTypeInfo = _rdoGuidProviderMock.Object.GetValue<TRdo>();
-            _objectManagerMock.Setup(x => x.QuerySlimAsync(WorkspaceId,
-                    It.Is<QueryRequest>(q => q.ObjectType.Guid.Value == rdoTypeInfo.TypeGuid), 0, 1))
+            _objectManagerMock.Setup(x => x.QuerySlimAsync(
+                    WorkspaceId,
+                    It.Is<QueryRequest>(q => q.ObjectType.Guid.Value == rdoTypeInfo.TypeGuid),
+                    0,
+                    1))
                 .ReturnsAsync((int _, QueryRequest request, int __, int ___) => new QueryResultSlim()
                 {
                     Objects = new List<RelativityObjectSlim>
@@ -500,9 +578,10 @@ namespace Relativity.Sync.Tests.Unit.RDOs
                         {
                             ArtifactID = sourceRdo.ArtifactId,
                             Values = request.Fields
+
                                 // ReSharper disable once PossibleInvalidOperationException
                                 .Select(x => rdoTypeInfo.Fields[x.Guid.Value].PropertyInfo)
-                                .Select(propertyInfo => (object) propertyInfo.GetValue(sourceRdo)).ToList()
+                                .Select(propertyInfo => (object)propertyInfo.GetValue(sourceRdo)).ToList()
                         }
                     }
                 });
@@ -512,15 +591,21 @@ namespace Relativity.Sync.Tests.Unit.RDOs
         {
             var fieldInfo = SampleRdo.ExpectedRdoInfo.Fields.Values.First(x => x.Name == fieldName);
 
-            _objectManagerMock.Verify(x => x.QuerySlimAsync(WorkspaceId,
-                It.Is<QueryRequest>(q => q.Fields.Any(f => f.Guid == fieldInfo.Guid)), 0, 1), times);
+            _objectManagerMock.Verify(
+                x => x.QuerySlimAsync(
+                WorkspaceId,
+                It.Is<QueryRequest>(q => q.Fields.Any(f => f.Guid == fieldInfo.Guid)),
+                0,
+                1), times);
         }
 
         private void VerifyFieldWasUpdated(SampleRdo rdo, string fieldName, object value)
         {
             var fieldInfo = SampleRdo.ExpectedRdoInfo.Fields.Values.First(x => x.Name == fieldName);
 
-            _objectManagerMock.Verify(x => x.UpdateAsync(WorkspaceId,
+            _objectManagerMock.Verify(
+                x => x.UpdateAsync(
+                    WorkspaceId,
                     It.Is<UpdateRequest>(
                         q => q.FieldValues.Any(f => f.Field.Guid == fieldInfo.Guid && f.Value.Equals(value)))),
                 Times.Once);
@@ -532,8 +617,17 @@ namespace Relativity.Sync.Tests.Unit.RDOs
         {
             var fieldInfo = SampleRdo.ExpectedRdoInfo.Fields.Values.First(x => x.Name == fieldName);
 
-            _objectManagerMock.Verify(x => x.UpdateAsync(WorkspaceId,
-                It.Is<UpdateRequest>(q => q.FieldValues.Any(f => f.Field.Guid == fieldInfo.Guid))), Times.Never);
+            _objectManagerMock.Verify(
+                x => x.UpdateAsync(
+                    WorkspaceId,
+                    It.Is<UpdateRequest>(q => q.FieldValues.Any(f => f.Field.Guid == fieldInfo.Guid))),
+                Times.Never);
+        }
+
+        [Rdo("37C93366-5D07-42D0-8EA8-2400B4323F36", nameof(RdoWithParent), "22C0EE5E-4CA6-49D3-86F8-63DF2382083D")]
+        private class RdoWithParent : IRdoType
+        {
+            public int ArtifactId { get; set; }
         }
     }
 }
