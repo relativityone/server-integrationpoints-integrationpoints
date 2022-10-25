@@ -33,7 +33,7 @@ namespace Relativity.Sync.Executors
                 using (IImportSourceController sourceController = await _serviceFactory.CreateProxyAsync<IImportSourceController>().ConfigureAwait(false))
                 using (IImportJobController jobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
                 {
-                    DataSources dataSources = await GetDataSources(jobController, configuration).ConfigureAwait(false);
+                    DataSources dataSources = await GetDataSourcesAsync(jobController, configuration).ConfigureAwait(false);
                     IDictionary<Guid, DataSourceState> processedSources = new Dictionary<Guid, DataSourceState>();
 
                     ValueResponse<ImportDetails> result = null;
@@ -41,14 +41,14 @@ namespace Relativity.Sync.Executors
                     {
                         await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
 
-                        result = await GetImportStatus(jobController, configuration).ConfigureAwait(false);
+                        result = await GetImportStatusAsync(jobController, configuration).ConfigureAwait(false);
 
                         HandleProgress(jobController, configuration);
                         await HandleDataSourceStatusAsync(dataSources, processedSources, sourceController, configuration).ConfigureAwait(false);
                     }
                     while (!result.Value.IsFinished);
 
-                    jobStatus = GetFinalJobStatusAsync(result.Value.State, processedSources);
+                    jobStatus = GetFinalJobStatus(result.Value.State, processedSources);
                 }
             }
             catch (Exception ex)
@@ -60,7 +60,7 @@ namespace Relativity.Sync.Executors
             return jobStatus;
         }
 
-        private ExecutionResult GetFinalJobStatusAsync(ImportState jobState, IDictionary<Guid, DataSourceState> processedSources)
+        private ExecutionResult GetFinalJobStatus(ImportState jobState, IDictionary<Guid, DataSourceState> processedSources)
         {
             switch (jobState)
             {
@@ -100,7 +100,7 @@ namespace Relativity.Sync.Executors
             }
         }
 
-        private async Task<DataSources> GetDataSources(IImportJobController jobController, IDocumentSynchronizationMonitorConfiguration configuration)
+        private async Task<DataSources> GetDataSourcesAsync(IImportJobController jobController, IDocumentSynchronizationMonitorConfiguration configuration)
         {
             ValueResponse<DataSources> response = await jobController.GetSourcesAsync(
                         configuration.DestinationWorkspaceArtifactId,
@@ -110,7 +110,7 @@ namespace Relativity.Sync.Executors
             return TryGetValueResponse(response).Value;
         }
 
-        private async Task<ValueResponse<ImportDetails>> GetImportStatus(IImportJobController jobController, IDocumentSynchronizationMonitorConfiguration configuration)
+        private async Task<ValueResponse<ImportDetails>> GetImportStatusAsync(IImportJobController jobController, IDocumentSynchronizationMonitorConfiguration configuration)
         {
             ValueResponse<ImportDetails> response = await jobController.GetDetailsAsync(
                                 configuration.DestinationWorkspaceArtifactId,
