@@ -28,7 +28,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IFileShareService> _fileshareServiceMock;
         private Mock<ISourceWorkspaceDataReaderFactory> _dataReaderFactoryMock;
         private Mock<ISourceWorkspaceDataReader> _dataReaderMock;
-        private Mock<IItemLevelErrorLogAggregator> _itemLevelErrorAggregatorMock;
         private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepositoryMock;
         private Mock<IItemStatusMonitor> _itemStatusMonitorMock;
         private Mock<IBatch> _batchMock;
@@ -47,7 +46,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _dataReaderFactoryMock = new Mock<ISourceWorkspaceDataReaderFactory>();
             _dataReaderMock = new Mock<ISourceWorkspaceDataReader>();
             _jobHistoryErrorRepositoryMock = new Mock<IJobHistoryErrorRepository>();
-            _itemLevelErrorAggregatorMock = new Mock<IItemLevelErrorLogAggregator>();
             _itemStatusMonitorMock = new Mock<IItemStatusMonitor>();
             _batchMock = new Mock<IBatch>();
             _loggerMock = new Mock<IAPILog>();
@@ -68,7 +66,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 _configurationMock.Object,
                 _dataReaderFactoryMock.Object,
                 _fileshareServiceMock.Object,
-                _itemLevelErrorAggregatorMock.Object,
                 _jobHistoryErrorRepositoryMock.Object,
                 _loggerMock.Object);
         }
@@ -164,10 +161,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
             ILoadFile result = await _sut.GenerateAsync(_batchMock.Object).ConfigureAwait(false);
 
             // Assert
-            _itemLevelErrorAggregatorMock.Verify(x => x.AddItemLevelError(testItemLevelError, It.IsAny<int>()), Times.Exactly(expectedNumberOfItemLevelErrors));
             _itemStatusMonitorMock.Verify(x => x.MarkItemAsFailed(testItemIdentifier), Times.Exactly(expectedNumberOfItemLevelErrors));
             _jobHistoryErrorRepositoryMock.Verify(x => x.MassCreateAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<List<CreateJobHistoryErrorDto>>()), Times.Once);
-            _itemLevelErrorAggregatorMock.Verify(x => x.LogAllItemLevelErrorsAsync(), Times.Once);
         }
 
         private string PrepareFakeLoadFilePath()

@@ -33,14 +33,13 @@ namespace Relativity.Sync.Executors
             IBatchDataSourcePreparationConfiguration configuration,
             ISourceWorkspaceDataReaderFactory dataReaderFactory,
             IFileShareService fileShareService,
-            IItemLevelErrorLogAggregator itemLevelErrorLogAggregator,
             IJobHistoryErrorRepository jobHistoryErrorRepository,
             IAPILog logger)
         {
             _configuration = configuration;
             _dataReaderFactory = dataReaderFactory;
             _fileShareService = fileShareService;
-            _itemLevelErrorLogAggregator = itemLevelErrorLogAggregator;
+            _itemLevelErrorLogAggregator = new ItemLevelErrorLogAggregator(logger);
             _jobHistoryErrorRepository = jobHistoryErrorRepository;
             _logger = logger;
             _batchItemErrors = new ConcurrentQueue<CreateJobHistoryErrorDto>();
