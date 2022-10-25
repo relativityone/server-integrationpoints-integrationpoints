@@ -34,8 +34,8 @@ namespace Relativity.Sync
 
         public IJobProgressUpdater CreateJobProgressUpdater()
         {
-            return new JobProgressUpdater(_serviceFactoryForAdmin, _rdoGuidConfiguration, _synchronizationConfiguration.SourceWorkspaceArtifactId, 
-                _synchronizationConfiguration.JobHistoryArtifactId, _dateTime, _jobHistoryErrorRepository, _ripWorkarounds, _syncJobParameters, _logger);
+            return new JobProgressUpdater(_serviceFactoryForAdmin, _rdoGuidConfiguration, _dateTime, _jobHistoryErrorRepository, _ripWorkarounds, _syncJobParameters, _logger, _synchronizationConfiguration.SourceWorkspaceArtifactId,
+                _synchronizationConfiguration.JobHistoryArtifactId);
         }
     }
 }

@@ -24,6 +24,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IDestinationServiceFactoryForUser> _serviceFactoryMock;
         private Mock<IAPILog> _loggerMock;
         private Mock<IImportSourceController> _sourceControllerMock;
+        private Mock<IProgressHandler> _progressHandlerFake;
         private Mock<IImportJobController> _jobControllerMock;
         private Mock<IDocumentSynchronizationMonitorConfiguration> _configurationMock;
 
@@ -34,6 +35,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         {
             _serviceFactoryMock = new Mock<IDestinationServiceFactoryForUser>();
             _loggerMock = new Mock<IAPILog>();
+            _progressHandlerFake = new Mock<IProgressHandler>();
             _sourceControllerMock = new Mock<IImportSourceController>();
             _jobControllerMock = new Mock<IImportJobController>();
             _configurationMock = new Mock<IDocumentSynchronizationMonitorConfiguration>();
@@ -44,7 +46,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _configurationMock.Setup(x => x.DestinationWorkspaceArtifactId).Returns(_DESTINATION_WORKSPACE_ID);
             _configurationMock.Setup(x => x.ExportRunId).Returns(new Guid(_EXPORT_RUN_ID));
 
-            _sut = new DocumentSynchronizationMonitorExecutor(_serviceFactoryMock.Object, _loggerMock.Object);
+            _sut = new DocumentSynchronizationMonitorExecutor(_serviceFactoryMock.Object, _progressHandlerFake.Object, _loggerMock.Object);
         }
 
         [Test]

@@ -15,13 +15,16 @@ namespace Relativity.Sync.Executors
     internal class DocumentSynchronizationMonitorExecutor : IExecutor<IDocumentSynchronizationMonitorConfiguration>
     {
         private readonly IDestinationServiceFactoryForUser _serviceFactory;
+        private readonly IProgressHandler _progressHandler;
         private readonly IAPILog _logger;
 
         public DocumentSynchronizationMonitorExecutor(
             IDestinationServiceFactoryForUser serviceFactory,
+            IProgressHandler progressHandler,
             IAPILog logger)
         {
             _serviceFactory = serviceFactory;
+            _progressHandler = progressHandler;
             _logger = logger;
         }
 
@@ -32,6 +35,7 @@ namespace Relativity.Sync.Executors
             {
                 using (IImportSourceController sourceController = await _serviceFactory.CreateProxyAsync<IImportSourceController>().ConfigureAwait(false))
                 using (IImportJobController jobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
+                using (await _progressHandler.AttachAsync(configuration.DestinationWorkspaceArtifactId, configuration.ExportRunId))
                 {
                     DataSources dataSources = await GetDataSourcesAsync(jobController, configuration).ConfigureAwait(false);
                     IDictionary<Guid, DataSourceState> processedSources = new Dictionary<Guid, DataSourceState>();
