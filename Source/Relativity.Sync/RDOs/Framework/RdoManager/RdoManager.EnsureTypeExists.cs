@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Relativity.Services.ArtifactGuid;
-using Relativity.Services.Exceptions;
 using Relativity.Services.Interfaces.Field;
 using Relativity.Services.Interfaces.Field.Models;
 using Relativity.Services.Interfaces.ObjectType;
@@ -176,16 +174,19 @@ namespace Relativity.Sync.RDOs.Framework
 
         private void ValidateDuplicatedFields(List<RelativityObject> existingFields)
         {
-            List<RelativityObject> duplicatedFields = existingFields
-                .GroupBy(x => x.FieldValues.First().Value.ToString())
-                .Where(y => y.Count() > 1)
-                .SelectMany(x => x)
-                .ToList();
+            IEnumerable<IGrouping<string, RelativityObject>> fieldsGroup = existingFields
+                .GroupBy(
+                    x => x.FieldValues != null ? x.FieldValues.First().Value.ToString() : string.Empty);
+            List<IGrouping<string, RelativityObject>> duplicatedFieldsGroup = fieldsGroup.Where(y => y.Count() > 1).ToList();
 
-            if (duplicatedFields.Any())
+            if (duplicatedFieldsGroup.Any())
             {
+                List<RelativityObject> duplicatedFields = fieldsGroup
+                    .SelectMany(x => x)
+                    .ToList();
                 string duplicatedFieldsArtifactIds = string.Join(", ", duplicatedFields.Select(x => x.ArtifactID));
-                _logger.LogError("Duplicated Field(s) found. ArtifactIds: {duplicatedFieldsArtifactIds}.",
+                _logger.LogError(
+                    "Duplicated Field(s) found. ArtifactIds: {duplicatedFieldsArtifactIds}.",
                     duplicatedFieldsArtifactIds);
                 throw new DuplicateNameException($"Duplicated Field(s) found. ArtifactIds: {duplicatedFieldsArtifactIds}.");
             }
@@ -202,69 +203,15 @@ namespace Relativity.Sync.RDOs.Framework
             {
                 foreach (RdoFieldInfo fieldInfo in typeInfo.Fields.Values.Where(f => !existingFields.SelectMany(x => x.Guids).Contains(f.Guid)))
                 {
-                    List<string> existingFieldsNames = existingFields.Select(x => x.FieldValues.First().Value.ToString()).ToList();
-                    if (existingFieldsNames.Contains(fieldInfo.Name))
-                    {
-                        Guid fieldGuid = Guid.NewGuid();
-                        _logger.LogInformation(
-                            "Updating Guid ({{guid}}) for field with name: {name} for type [{typeName}:{typeGuid}] in workspace {workspaceId}",
-                            fieldGuid,
-                            fieldInfo.Name,
-                            typeInfo.Name,
-                            typeInfo.TypeGuid,
-                            workspaceId);
+                    _logger.LogInformation("Creating field [{name}:{guid}] for type [{typeName}:{typeGuid}] in workspace {workspaceId}", fieldInfo.Name, fieldInfo.Guid, typeInfo.Name, typeInfo.TypeGuid, workspaceId);
 
-                        using (IObjectManager objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-                        {
-                            QueryRequest request = new QueryRequest
-                            {
-                                ObjectType = new ObjectTypeRef()
-                                {
-                                    ArtifactTypeID = (int)ArtifactType.Field
-                                },
-                                Fields = new List<FieldRef>
-                                {
-                                    new FieldRef
-                                    {
-                                        Name = fieldInfo.Name
-                                    }
-                                }
-                            };
+                    int fieldId = await CreateFieldInTypeAsync(fieldInfo, artifactId, workspaceId, fieldManager).ConfigureAwait(false);
 
-                            QueryResult result = await objectManager.QueryAsync(workspaceId, request, 0, 1).ConfigureAwait(false);
+                    await guidManager
+                        .CreateSingleAsync(workspaceId, fieldId, new List<Guid> { fieldInfo.Guid })
+                        .ConfigureAwait(false);
 
-                            if (result.Objects.Count <= 0)
-                            {
-                                _logger.LogError("Unable to retrieve field with name {fieldName} with Object Manager.", fieldInfo.Name);
-                                throw new NotFoundException($"Object Manager is unable to retrieve field with name {fieldInfo.Name}.");
-                            }
-
-                            // await UpdateFieldInTypeAsync(fieldInfo, result.Objects.First().ArtifactID, artifactId, workspaceId, fieldManager).ConfigureAwait(false);
-                            await guidManager
-                                .CreateSingleAsync(workspaceId, result.Objects.First().ArtifactID, new List<Guid> { fieldGuid })
-                                .ConfigureAwait(false);
-
-                            _logger.LogInformation(
-                                "Updated Guid ({guid}) for field with name: {name} for type [{typeName}:{typeGuid}] in workspace {workspaceId}",
-                                fieldGuid,
-                                fieldInfo.Name,
-                                typeInfo.Name,
-                                typeInfo.TypeGuid,
-                                workspaceId);
-                        }
-                    }
-                    else
-                    {
-                        _logger.LogInformation("Creating field [{name}:{guid}] for type [{typeName}:{typeGuid}] in workspace {workspaceId}", fieldInfo.Name, fieldInfo.Guid, typeInfo.Name, typeInfo.TypeGuid, workspaceId);
-
-                        int fieldId = await CreateFieldInTypeAsync(fieldInfo, artifactId, workspaceId, fieldManager).ConfigureAwait(false);
-
-                        await guidManager
-                            .CreateSingleAsync(workspaceId, fieldId, new List<Guid>() { fieldInfo.Guid })
-                            .ConfigureAwait(false);
-
-                        _logger.LogInformation("Created field [{name}:{guid}] for type [{typeName}:{typeGuid}] in workspace {workspaceId}", fieldInfo.Name, fieldInfo.Guid, typeInfo.Name, typeInfo.TypeGuid, workspaceId);
-                    }
+                    _logger.LogInformation("Created field [{name}:{guid}] for type [{typeName}:{typeGuid}] in workspace {workspaceId}", fieldInfo.Name, fieldInfo.Guid, typeInfo.Name, typeInfo.TypeGuid, workspaceId);
                 }
             }
         }
