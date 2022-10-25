@@ -74,6 +74,7 @@ namespace Relativity.Sync.Executors
                     return processedSources.Any(x => x.Value == DataSourceState.CompletedWithItemErrors) ?
                         ExecutionResult.SuccessWithErrors() : ExecutionResult.Success();
                 default:
+                    _logger.LogError("Unknown import job state. Received value: {importState}", jobState);
                     return ExecutionResult.Failure("Unknown job import state");
             }
         }
