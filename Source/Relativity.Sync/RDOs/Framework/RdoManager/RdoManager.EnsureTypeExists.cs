@@ -181,7 +181,7 @@ namespace Relativity.Sync.RDOs.Framework
 
             if (duplicatedFieldsGroup.Any())
             {
-                List<RelativityObject> duplicatedFields = fieldsGroup
+                List<RelativityObject> duplicatedFields = duplicatedFieldsGroup
                     .SelectMany(x => x)
                     .ToList();
                 string duplicatedFieldsArtifactIds = string.Join(", ", duplicatedFields.Select(x => x.ArtifactID));
@@ -203,15 +203,24 @@ namespace Relativity.Sync.RDOs.Framework
             {
                 foreach (RdoFieldInfo fieldInfo in typeInfo.Fields.Values.Where(f => !existingFields.SelectMany(x => x.Guids).Contains(f.Guid)))
                 {
-                    _logger.LogInformation("Creating field [{name}:{guid}] for type [{typeName}:{typeGuid}] in workspace {workspaceId}", fieldInfo.Name, fieldInfo.Guid, typeInfo.Name, typeInfo.TypeGuid, workspaceId);
-
-                    int fieldId = await CreateFieldInTypeAsync(fieldInfo, artifactId, workspaceId, fieldManager).ConfigureAwait(false);
-
-                    await guidManager
-                        .CreateSingleAsync(workspaceId, fieldId, new List<Guid> { fieldInfo.Guid })
-                        .ConfigureAwait(false);
-
-                    _logger.LogInformation("Created field [{name}:{guid}] for type [{typeName}:{typeGuid}] in workspace {workspaceId}", fieldInfo.Name, fieldInfo.Guid, typeInfo.Name, typeInfo.TypeGuid, workspaceId);
+                    List<RelativityObject> fields = existingFields.Where(x => (x.FieldValues != null ? x.FieldValues.First().Value.ToString() : string.Empty) == fieldInfo.Name).ToList();
+                    if (fields.Count > 0)
+                    {
+                        _logger.LogInformation("Updating field [{name}:{guid}] for type [{typeName}:{typeGuid}] in workspace {workspaceId}", fieldInfo.Name, fieldInfo.Guid, typeInfo.Name, typeInfo.TypeGuid, workspaceId);
+                        await guidManager
+                            .CreateSingleAsync(workspaceId, fields.First().ArtifactID, new List<Guid> { fieldInfo.Guid })
+                            .ConfigureAwait(false);
+                        _logger.LogInformation("Updated field [{name}:{guid}] for type [{typeName}:{typeGuid}] in workspace {workspaceId}", fieldInfo.Name, fieldInfo.Guid, typeInfo.Name, typeInfo.TypeGuid, workspaceId);
+                    }
+                    else
+                    {
+                        _logger.LogInformation("Creating field [{name}:{guid}] for type [{typeName}:{typeGuid}] in workspace {workspaceId}", fieldInfo.Name, fieldInfo.Guid, typeInfo.Name, typeInfo.TypeGuid, workspaceId);
+                        int fieldId = await CreateFieldInTypeAsync(fieldInfo, artifactId, workspaceId, fieldManager).ConfigureAwait(false);
+                        await guidManager
+                            .CreateSingleAsync(workspaceId, fieldId, new List<Guid> { fieldInfo.Guid })
+                            .ConfigureAwait(false);
+                        _logger.LogInformation("Created field [{name}:{guid}] for type [{typeName}:{typeGuid}] in workspace {workspaceId}", fieldInfo.Name, fieldInfo.Guid, typeInfo.Name, typeInfo.TypeGuid, workspaceId);
+                    }
                 }
             }
         }
