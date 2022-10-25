@@ -254,6 +254,54 @@ namespace Relativity.Sync.Tests.Unit.RDOs
         }
 
         [Test]
+        public async Task EnsureTypeExists_ShouldUpdateFieldWithoutGuidButAddedToFieldsTable()
+        {
+            // Arrange
+            _objectManagerMock.Setup(x => x.QueryAsync(
+                    WorkspaceId,
+                    It.Is<QueryRequest>(q => q.ObjectType.ArtifactTypeID == (int)ArtifactType.Field),
+                    0,
+                    int.MaxValue))
+                .ReturnsAsync(new QueryResult
+                {
+                    Objects = new List<RelativityObject>
+                    {
+                        new RelativityObject
+                        {
+                            FieldValues = new List<FieldValuePair>
+                            {
+                                new FieldValuePair
+                                {
+                                    Value = nameof(SampleRdo.SomeField)
+                                }
+                            },
+                            Guids = SampleRdo.ExpectedRdoInfo.Fields.Where(x => x.Value.Name != nameof(SampleRdo.SomeField)).Select(x => x.Key).ToList()
+                        }
+                    }
+                });
+
+            // Act
+            await _sut.EnsureTypeExistsAsync<SampleRdo>(WorkspaceId).ConfigureAwait(false);
+
+            // Assert
+            Guid missingFieldGuid = SampleRdo
+                .ExpectedRdoInfo
+                .Fields
+                .Single(x => x.Value.Name == nameof(SampleRdo.SomeField))
+                .Key;
+            _fieldManagerMock.Verify(
+                x => x.CreateFixedLengthFieldAsync(
+                WorkspaceId,
+                It.IsAny<FixedLengthFieldRequest>()),
+                Times.Never);
+
+            _artifactGuidManagerMock.Verify(x => x.CreateSingleAsync(
+                WorkspaceId,
+                0,
+                It.Is<List<Guid>>(l => l.Contains(missingFieldGuid))));
+        }
+
+        [Test]
         public async Task EnsureTypeExists_ShouldNotCreateAnything_WhenTypeAlreadyExists()
         {
             // Arrange
@@ -288,7 +336,7 @@ namespace Relativity.Sync.Tests.Unit.RDOs
         }
 
         [Test]
-        public async Task EnsureTypeExists_ShouldThrowDuplicateNameException_WhenTypeHaveTwoFieldsWithTheSameNames()
+        public void EnsureTypeExists_ShouldThrowDuplicateNameException_WhenTypeHaveTwoFieldsWithTheSameNames()
         {
             // Arrange
             const string duplicatedFieldName = "duplicated Field Name";
