@@ -7,7 +7,7 @@ properties([
 	parameters([
 		choice(
 			name: 'RegTestsConfig', 
-            choices: ['Reg-B', 'Reg-Zero', 'Regression-A', 'Reg-Prod', 'Reg-Prod-Update'],
+            choices: ['Regression-A', 'Reg-B', 'Reg-Zero', 'Reg-Prod', 'Reg-Prod-Update'],
 			description: 'Set regression environment config'
 		)
 	])

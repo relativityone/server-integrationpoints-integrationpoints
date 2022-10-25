@@ -108,6 +108,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
             _jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
             _jobHistoryErrorService.CommitErrors();
             jobHistory.JobStatus = jobHistoryStatus;
+            jobHistory.EndTimeUTC = DateTime.UtcNow;
             _jobHistoryService.UpdateRdoWithoutDocuments(jobHistory);
 
             // No updates to IP since the job history error service handles IP updates

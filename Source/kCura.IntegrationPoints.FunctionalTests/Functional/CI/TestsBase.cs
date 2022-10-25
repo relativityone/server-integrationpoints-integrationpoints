@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using NUnit.Framework;
 using Polly;
 using Polly.Retry;
 using Relativity.IntegrationPoints.Tests.Functional.Helpers;
@@ -41,7 +42,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
 
             Workspace = _existingWorkspaceArtifactID != 0
                 ? RelativityFacade.Instance.GetExistingWorkspace(_existingWorkspaceArtifactID)
-                : RelativityFacade.Instance.CreateWorkspace(_workspaceName, TestsSetUpFixture.WORKSPACE_TEMPLATE_NAME);
+                : RelativityFacade.Instance.CreateWorkspace(_workspaceName, TestsSetUpFixture._WORKSPACE_TEMPLATE_NAME);
 
             RelativityFacade.Instance.RequireAgent(Const.INTEGRATION_POINTS_AGENT_TYPE_NAME, Const.INTEGRATION_POINTS_AGENT_RUN_INTERVAL);
         }
@@ -49,7 +50,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.CI
         protected override void OnTearDownFixture()
         {
             base.OnTearDownFixture();
-            if (_existingWorkspaceArtifactID == 0)
+            if (_existingWorkspaceArtifactID == 0 && TestContext.CurrentContext.Result.FailCount == 0)
             {
                 RelativityFacade.Instance.DeleteWorkspace(Workspace);
             }

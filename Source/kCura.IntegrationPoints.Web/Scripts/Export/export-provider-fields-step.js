@@ -72,7 +72,13 @@
 			self.model.fields.filterSourceField = ko.observable("");
 
 			self.model.fields.filterFields = function (fields, filter) {
-				let filterLowerCase = filter().toLowerCase();
+                let fieldValue = filter();
+                let sanitizedFieldValue = DOMPurify.sanitize(fieldValue);
+                if (sanitizedFieldValue !== fieldValue) {
+                    console.error(`Field Input sanitization failed! Field value '${fieldValue}' sanitized to ${sanitizedFieldValue}`);
+                }
+
+                let filterLowerCase = sanitizedFieldValue.toLowerCase();
 				let filteredFields = []
 				fields().forEach(field => {
 					if (field.displayName.toLowerCase().indexOf(filterLowerCase) > -1) {
