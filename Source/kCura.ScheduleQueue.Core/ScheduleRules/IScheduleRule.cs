@@ -6,6 +6,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
     {
         ITimeService TimeService { get; set; }
         string Description { get; }
+        // int FailedScheduledJobsCount { get; set; }
         DateTime? GetNextUTCRunDateTime();
         string ToSerializedString();
     }
