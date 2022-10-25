@@ -26,7 +26,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private const int _CONFIGURATION_ID = -12678;
 
         private Mock<IBatchDataSourcePreparationConfiguration> _configurationMock;
-        private Mock<IDestinationServiceFactoryForUser> _serviceFactoryMock;
+        private Mock<IFileShareService> _fileshareServiceMock;
         private Mock<ISourceWorkspaceDataReaderFactory> _dataReaderFactoryMock;
         private Mock<ISourceWorkspaceDataReader> _dataReaderMock;
         private Mock<IWorkspaceManager> _workspaceManagerMock;
@@ -42,7 +42,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         public void SetUp()
         {
             _configurationMock = new Mock<IBatchDataSourcePreparationConfiguration>();
-            _serviceFactoryMock = new Mock<IDestinationServiceFactoryForUser>();
+            _fileshareServiceMock = new Mock<IFileShareService>();
             _dataReaderFactoryMock = new Mock<ISourceWorkspaceDataReaderFactory>();
             _dataReaderMock = new Mock<ISourceWorkspaceDataReader>();
             _workspaceManagerMock = new Mock<IWorkspaceManager>();
@@ -59,7 +59,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             _dataReaderFactoryMock.Setup(x => x.CreateNativeSourceWorkspaceDataReader(_batchMock.Object, CancellationToken.None)).Returns(_dataReaderMock.Object);
 
-            _sut = new LoadFileGenerator(_configurationMock.Object, _serviceFactoryMock.Object, _dataReaderFactoryMock.Object, _loggerMock.Object);
+            _sut = new LoadFileGenerator(_configurationMock.Object, _dataReaderFactoryMock.Object, _fileshareServiceMock.Object, _loggerMock.Object);
         }
 
         [TearDown]
@@ -80,11 +80,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
         {
             // Arrange
             PrepareFakeLoadFilePath();
-            FileShareResourceServer server = new FileShareResourceServer { UNCPath = _serverPath };
 
-            _serviceFactoryMock.Setup(x => x.CreateProxyAsync<IWorkspaceManager>()).ReturnsAsync(_workspaceManagerMock.Object);
-            _workspaceManagerMock.Setup(x => x.GetDefaultWorkspaceFileShareResourceServerAsync(It.Is<WorkspaceRef>(y => y.ArtifactID == _DESTINATION_WORKSPACE_ID)))
-                .ReturnsAsync(server);
+            _fileshareServiceMock.Setup(x => x.GetWorkspaceFileShareLocationAsync(_DESTINATION_WORKSPACE_ID))
+                .ReturnsAsync(_workspacePath);
 
             // Act
             ILoadFile result = await _sut.GenerateAsync(_batchMock.Object).ConfigureAwait(false);
@@ -99,11 +97,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
         {
             // Arrange
             string expectedBatchPath = PrepareFakeLoadFilePath();
-            FileShareResourceServer server = new FileShareResourceServer { UNCPath = _serverPath };
 
-            _serviceFactoryMock.Setup(x => x.CreateProxyAsync<IWorkspaceManager>()).ReturnsAsync(_workspaceManagerMock.Object);
-            _workspaceManagerMock.Setup(x => x.GetDefaultWorkspaceFileShareResourceServerAsync(It.Is<WorkspaceRef>(y => y.ArtifactID == _DESTINATION_WORKSPACE_ID)))
-                .ReturnsAsync(server);
+            _fileshareServiceMock.Setup(x => x.GetWorkspaceFileShareLocationAsync(_DESTINATION_WORKSPACE_ID))
+                .ReturnsAsync(_workspacePath);
 
             // Act
             ILoadFile result = await _sut.GenerateAsync(_batchMock.Object).ConfigureAwait(false);
@@ -121,11 +117,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _serverPath = "randomTestPath";
             string rootDirectory = $@"{_serverPath}\EDDS{_DESTINATION_WORKSPACE_ID}";
             string expectedErrorMessage = $"Unable to create load file path. Directory: {rootDirectory} does not exist!";
-            FileShareResourceServer server = new FileShareResourceServer { UNCPath = _serverPath };
 
-            _serviceFactoryMock.Setup(x => x.CreateProxyAsync<IWorkspaceManager>()).ReturnsAsync(_workspaceManagerMock.Object);
-            _workspaceManagerMock.Setup(x => x.GetDefaultWorkspaceFileShareResourceServerAsync(It.Is<WorkspaceRef>(y => y.ArtifactID == _DESTINATION_WORKSPACE_ID)))
-                .ReturnsAsync(server);
+            _fileshareServiceMock.Setup(x => x.GetWorkspaceFileShareLocationAsync(_DESTINATION_WORKSPACE_ID))
+                .ReturnsAsync(rootDirectory);
 
             // Act
             Func<Task<ILoadFile>> function = async () => await _sut.GenerateAsync(_batchMock.Object).ConfigureAwait(false);

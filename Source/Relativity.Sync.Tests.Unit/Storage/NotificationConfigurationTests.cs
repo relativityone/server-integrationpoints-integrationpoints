@@ -134,7 +134,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
             const int workspaceId = 2;
             const int userId = 3;
 
-            var syncJobParameters = new SyncJobParameters(syncConfigurationId, workspaceId, userId, It.IsAny<Guid>());
+            var syncJobParameters = new SyncJobParameters(syncConfigurationId, workspaceId, userId, It.IsAny<Guid>(), Guid.Empty);
             _serviceFactoryForUserMock = new Mock<ISourceServiceFactoryForUser>();
             var instance = new NotificationConfiguration(_configuration, syncJobParameters, _serviceFactoryForUserMock.Object);
 

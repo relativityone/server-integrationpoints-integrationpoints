@@ -18,7 +18,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
         [SetUp]
         public void SetUp()
         {
-            SyncJobParameters syncJobParameters = new SyncJobParameters(It.IsAny<int>(), _SOURCE_WORKSPACE_ARTIFACT_ID, _USER_ID, It.IsAny<Guid>());
+            SyncJobParameters syncJobParameters = new SyncJobParameters(It.IsAny<int>(), _SOURCE_WORKSPACE_ARTIFACT_ID, _USER_ID, It.IsAny<Guid>(), Guid.Empty);
             _config = new SourceWorkspaceTagsCreationConfiguration(_configuration, syncJobParameters);
         }
 

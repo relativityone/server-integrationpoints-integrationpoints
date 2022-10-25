@@ -80,7 +80,13 @@ namespace Relativity.Sync.Tests.System.Core
 
         public async Task<WorkspaceRef> CreateWorkspaceWithFieldsAsync(string name = null, string templateWorkspaceName = "Relativity Starter Template")
         {
-            WorkspaceRef workspace = await CreateWorkspaceAsync(name, templateWorkspaceName).ConfigureAwait(false);
+            WorkspaceRef workspace = await GetWorkspaceAsync(name).ConfigureAwait(false);
+            if (workspace != null)
+            {
+                return workspace;
+            }
+
+            workspace = await CreateWorkspaceAsync(name, templateWorkspaceName).ConfigureAwait(false);
             await CreateFieldsInWorkspaceAsync(workspace.ArtifactID).ConfigureAwait(false);
             return workspace;
         }
@@ -114,6 +120,7 @@ namespace Relativity.Sync.Tests.System.Core
                 {
                     _templateWorkspaceArtifactId = await GetWorkspaceArtifactIdByNameAsync(templateWorkspaceName).ConfigureAwait(false);
                 }
+
                 return _templateWorkspaceArtifactId;
             }
             finally

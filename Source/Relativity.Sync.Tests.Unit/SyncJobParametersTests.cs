@@ -11,7 +11,7 @@ namespace Relativity.Sync.Tests.Unit
         public void WorkflowId_ShouldNotBeEmpty()
         {
             // Arrange
-            SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, 1, Guid.NewGuid());
+            SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, 1, Guid.NewGuid(), Guid.Empty);
 
             // Assert
             syncJobParameters.WorkflowId.Should().NotBeNullOrWhiteSpace();
@@ -23,7 +23,7 @@ namespace Relativity.Sync.Tests.Unit
             // Arrange
             Guid workflowId = Guid.NewGuid();
 
-            SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, 1, workflowId);
+            SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, 1, workflowId, Guid.Empty);
 
             // Assert
             syncJobParameters.WorkflowId.Should().Be(workflowId.ToString());
@@ -35,7 +35,7 @@ namespace Relativity.Sync.Tests.Unit
             // Arrange
             const int jobId = 801314;
 
-            SyncJobParameters syncJobParameters = new SyncJobParameters(jobId, 1, 1, Guid.NewGuid());
+            SyncJobParameters syncJobParameters = new SyncJobParameters(jobId, 1, 1, Guid.NewGuid(), Guid.Empty);
 
             // Assert
             syncJobParameters.SyncConfigurationArtifactId.Should().Be(jobId);
@@ -47,7 +47,7 @@ namespace Relativity.Sync.Tests.Unit
             // Arrange
             const int workspaceId = 172320;
 
-            SyncJobParameters syncJobParameters = new SyncJobParameters(1, workspaceId, 1, Guid.NewGuid());
+            SyncJobParameters syncJobParameters = new SyncJobParameters(1, workspaceId, 1, Guid.NewGuid(), Guid.Empty);
 
             // Assert
             syncJobParameters.WorkspaceId.Should().Be(workspaceId);
@@ -59,7 +59,7 @@ namespace Relativity.Sync.Tests.Unit
             // Arrange
             const int userId = 4563456;
 
-            SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, userId, Guid.NewGuid());
+            SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, userId, Guid.NewGuid(), Guid.Empty);
 
             // Assert
             syncJobParameters.UserId.Should().Be(userId);
@@ -69,7 +69,7 @@ namespace Relativity.Sync.Tests.Unit
         public void WorkflowId_ShouldBeNonEmptyWorkflowId()
         {
             // Arrange
-            SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, 1, Guid.NewGuid());
+            SyncJobParameters syncJobParameters = new SyncJobParameters(1, 1, 1, Guid.NewGuid(), Guid.Empty);
 
             // Assert
             syncJobParameters.WorkflowId.Should().NotBeNullOrWhiteSpace();
@@ -80,8 +80,8 @@ namespace Relativity.Sync.Tests.Unit
         {
             // Arrange
 #pragma warning disable RG2009 // Hardcoded Numeric Value
-            SyncJobParameters firstSyncJobParameters = new SyncJobParameters(1, 1, 1, Guid.NewGuid());
-            SyncJobParameters secondSyncJobParameters = new SyncJobParameters(1, 1, 1, Guid.NewGuid());
+            SyncJobParameters firstSyncJobParameters = new SyncJobParameters(1, 1, 1, Guid.NewGuid(), Guid.Empty);
+            SyncJobParameters secondSyncJobParameters = new SyncJobParameters(1, 1, 1, Guid.NewGuid(), Guid.Empty);
 
             // Assert
             firstSyncJobParameters.WorkflowId.Should().NotBe(secondSyncJobParameters.WorkflowId);
@@ -92,7 +92,7 @@ namespace Relativity.Sync.Tests.Unit
         public void SyncApplicationName_ShouldHaveDefaultValue()
         {
             // Arrange
-            SyncJobParameters syncJobParameters = new SyncJobParameters(0, 0, 0, Guid.Empty);
+            SyncJobParameters syncJobParameters = new SyncJobParameters(0, 0, 0, Guid.Empty, Guid.Empty);
 
             // Assert
             syncJobParameters.SyncApplicationName.Should().Be("Relativity.Sync");

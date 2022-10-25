@@ -236,7 +236,7 @@ Note: Statistics should be calculated based on LoadFile size and will be only fo
 
 Note: We should handle Item Level Errors when `SyncItemLevelErrorException` will be thrown
 
-#### **IAPIv2_DocumentSynchronizationNode**
+#### **DocumentSynchronizationMonitorExecutor**
 
 This node will be executed when the Import Job will be in progress, so the responsibility of this node is to monitor the status:
 
@@ -305,11 +305,11 @@ This node will be executed when the Import Job will be in progress, so the respo
 Full PoC Draft Implementation:
 
 ```cs
-internal class IAPIv2_DocumentSynchronizationExecutor : IExecutor<IIAPIv2_DocumentSynchronizationConfiguration>
+internal class DocumentSynchronizationMonitorExecutor : IExecutor<IDocumentSynchronizationMonitorConfiguration>
 {
     ...
 
-    public async Task<ExecutionResult> ExecuteAsync(IIAPIv2_DocumentSynchronizationConfiguration configuration, CompositeCancellationToken token)
+    public async Task<ExecutionResult> ExecuteAsync(IDocumentSynchronizationMonitorConfiguration configuration, CompositeCancellationToken token)
     {
         using (IImportJobController importJob = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
         using (IImportSourceController importSource = await _serviceFactory.CreateProxyAsync<IImportSourceController>().ConfigureAwait(false))

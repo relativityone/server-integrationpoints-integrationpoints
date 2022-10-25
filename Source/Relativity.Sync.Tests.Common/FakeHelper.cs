@@ -14,7 +14,7 @@ namespace Relativity.Sync.Tests.Common
                 syncConfigurationArtifactId,
                 workspaceId,
                 userId,
-                workflowId);
+                workflowId, Guid.Empty);
         }
     }
 }
