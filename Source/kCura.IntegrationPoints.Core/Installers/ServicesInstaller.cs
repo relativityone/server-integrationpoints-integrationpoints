@@ -59,7 +59,6 @@ using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 using Relativity.Telemetry.APM;
 using Relativity.Toggles;
 using SystemInterface.IO;
-using IFederatedInstanceManager = kCura.IntegrationPoints.Domain.Managers.IFederatedInstanceManager;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {
@@ -163,8 +162,6 @@ namespace kCura.IntegrationPoints.Core.Installers
             container.Register(Component.For<IArtifactService>().ImplementedBy<ArtifactService>().LifestyleTransient());
             container.Register(Component.For<IProviderTypeService>().ImplementedBy<ProviderTypeService>().LifestyleTransient());
             container.Register(Component.For<IResourcePoolManager>().ImplementedBy<ResourcePoolManager>().LifestyleTransient());
-            container.Register(Component.For<IResourcePoolContext>().ImplementedBy<ResourcePoolContext>().LifestyleTransient());
-            container.Register(Component.For<IProcessingSourceLocationService>().ImplementedBy<ProcessingSourceLocationService>().LifestyleTransient());
             container.Register(Component.For<IDataTransferLocationService>().ImplementedBy<DataTransferLocationService>().LifestyleTransient());
             container.Register(Component.For<IDataTransferLocationServiceFactory>().ImplementedBy<DataTransferLocationServiceFactory>().DependsOn(new { container = container }).LifestyleTransient());
             container.Register(Component.For<IFolderPathReaderFactory>().ImplementedBy<FolderPathReaderFactory>().LifestyleTransient());

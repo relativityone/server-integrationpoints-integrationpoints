@@ -20,7 +20,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private Mock<IQueueQueryManager> _queueManagerMock;
         private Mock<IMonitoringConfig> _configFake;
         private Mock<IDateTime> _dateTimeFake;
-        private Mock<IToggleProvider> _toggleProviderFake;
         private Mock<IAPM> _apmMock;
         private Mock<ICounterMeasure> _counterMeasure;
         private ITimerFactory _timerFactory;
@@ -48,9 +47,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _dateTimeFake = new Mock<IDateTime>();
             _dateTimeFake.Setup(x => x.UtcNow).Returns(_EXPECTED_HEARTBEAT_TIME);
 
-            _toggleProviderFake = new Mock<IToggleProvider>();
-            _toggleProviderFake.Setup(x => x.IsEnabled<EnableHeartbeatToggle>()).Returns(true);
-
             _counterMeasure = new Mock<ICounterMeasure>();
 
             _apmMock = new Mock<IAPM>();
@@ -66,8 +62,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 
             _timerFactory = new TimerFactory(log.Object);
 
-            _sut = new HeartbeatReporter(_queueManagerMock.Object, _configFake.Object,
-                _dateTimeFake.Object, _toggleProviderFake.Object, _apmMock.Object, _timerFactory, log.Object);
+            _sut = new HeartbeatReporter(_queueManagerMock.Object, _configFake.Object, _dateTimeFake.Object, _apmMock.Object, _timerFactory, log.Object);
         }
 
         [Test]
@@ -127,24 +122,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 
             // Assert
             _queueManagerMock.Verify(x => x.Heartbeat(_JOB_ID, _EXPECTED_HEARTBEAT_TIME), Times.AtLeast(2));
-        }
-
-        [Test]
-        public void ActivateHeartbeat_ShouldNotUpdateHearbeat_WhenToggleIsDisabled()
-        {
-            // Arrange
-            _toggleProviderFake.Setup(x => x.IsEnabled<EnableHeartbeatToggle>()).Returns(false);
-
-            _configFake.Setup(x => x.HeartbeatInterval).Returns(TimeSpan.FromDays(1));
-
-            // Act
-            using (_sut.ActivateHeartbeat(_JOB_ID))
-            {
-                Thread.Sleep(100);
-            }
-
-            // Assert
-            _queueManagerMock.Verify(x => x.Heartbeat(_JOB_ID, _EXPECTED_HEARTBEAT_TIME), Times.Never);
         }
 
         [Test]

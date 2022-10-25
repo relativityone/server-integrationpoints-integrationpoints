@@ -30,7 +30,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
     {
         private readonly ExportProcessRunner _exportProcessRunner;
         private readonly IDataTransferLocationService _dataTransferLocationService;
-        private readonly IProcessingSourceLocationService _processingSourceLocationService;
         private readonly IAPILog _logger;
 
         public ExportWorker(
@@ -48,7 +47,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IManagerFactory managerFactory,
             IJobService jobService,
             IDataTransferLocationService dataTransferLocationService,
-            IProcessingSourceLocationService processingSourceLocationService,
             IProviderTypeService providerTypeService,
             IIntegrationPointRepository integrationPointRepository,
             IDiagnosticLog diagnosticLog)
@@ -71,10 +69,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             _exportProcessRunner = exportProcessRunner;
             _dataTransferLocationService = dataTransferLocationService;
-            _processingSourceLocationService = processingSourceLocationService;
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<ExportWorker>();
         }
-        
+
         protected override IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo,
             string configuration, Job job)
         {
@@ -83,7 +80,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             return sourceProvider;
         }
 
-        protected override void ExecuteImport(IEnumerable<FieldMap> fieldMap, DataSourceProviderConfiguration configuration, 
+        protected override void ExecuteImport(IEnumerable<FieldMap> fieldMap, DataSourceProviderConfiguration configuration,
             string destinationConfiguration, List<string> entryIDs, SourceProvider sourceProviderRdo, DestinationProvider destinationProvider, Job job)
         {
             LogExecuteImportStart(job);
@@ -127,11 +124,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             try
             {
-                if (PathIsProcessingSourceLocation(settings))
-                {
-                    return;
-                }
-
                 settings.Fileshare = _dataTransferLocationService.VerifyAndPrepare(CaseServiceContext.WorkspaceID,
                     settings.Fileshare,
                     Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid);
@@ -143,13 +135,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             }
         }
 
-        private bool PathIsProcessingSourceLocation(ExportUsingSavedSearchSettings settings)
-        {
-            return _processingSourceLocationService.IsEnabled() &&
-                   _processingSourceLocationService.IsProcessingSourceLocation(settings.Fileshare,
-                       CaseServiceContext.WorkspaceID);
-        }
-        
         #region Logging
 
         private void LogDeserializationOfSourceSettingsError(Job job, Exception e)
