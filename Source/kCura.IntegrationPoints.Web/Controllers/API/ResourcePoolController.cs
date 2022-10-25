@@ -18,15 +18,15 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         private readonly IResourcePoolManager _resourcePoolManager;
         private readonly IRepositoryFactory _respositoryFactory;
         private readonly IDirectoryTreeCreator<JsTreeItemDTO> _directoryTreeCreator;
-        private readonly IResourcePoolContext _resourcePoolContext;
 
-        public ResourcePoolController(IResourcePoolManager resourcePoolManager, IRepositoryFactory respositoryFactory, 
-            IDirectoryTreeCreator<JsTreeItemDTO> directoryTreeCreator, IResourcePoolContext resourcePoolContext)
+        public ResourcePoolController(
+            IResourcePoolManager resourcePoolManager,
+            IRepositoryFactory respositoryFactory,
+            IDirectoryTreeCreator<JsTreeItemDTO> directoryTreeCreator)
         {
             _resourcePoolManager = resourcePoolManager;
             _respositoryFactory = respositoryFactory;
             _directoryTreeCreator = directoryTreeCreator;
-            _resourcePoolContext = resourcePoolContext;
         }
 
         [HttpGet]
@@ -59,8 +59,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         {
             if (HasPermissions(workspaceId))
             {
-                return Request.CreateResponse(HttpStatusCode.OK, _resourcePoolContext.IsProcessingSourceLocationEnabled());
+                return Request.CreateResponse(HttpStatusCode.OK, false);
             }
+
             return new HttpResponseMessage(HttpStatusCode.Unauthorized);
         }
 
