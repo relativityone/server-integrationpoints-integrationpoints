@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Managers;
 using Moq;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync;
@@ -35,7 +36,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
         {
             // Arrange
             ScheduleSyncJob();
-
             FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container);
 
             // Act

@@ -30,6 +30,7 @@ using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Logging;
+using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.RelativitySync;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
@@ -162,7 +163,8 @@ namespace kCura.IntegrationPoints.Agent
                         {
                             try
                             {
-                                Container.Register(Component.For<Job>().UsingFactoryMethod(k => job).Named($"{job.JobId}-{Guid.NewGuid()}")); // ???
+                                Container.Register(Component.For<Job>().UsingFactoryMethod(k => job)
+                                    .Named($"{job.JobId}-{Guid.NewGuid()}")); // ???
 
                                 RelativitySyncAdapter syncAdapter = Container.Resolve<RelativitySyncAdapter>();
                                 IAPILog logger = Container.Resolve<IAPILog>();
@@ -185,6 +187,11 @@ namespace kCura.IntegrationPoints.Agent
                                     Status = TaskStatusEnum.Fail,
                                     Exceptions = new[] { ex }
                                 };
+                            }
+                            finally
+                            {
+                                IJobStopManager jobStopManager = Container.Resolve<IJobStopManager>();
+                                jobStopManager.Dispose();
                             }
                         }
                         else
