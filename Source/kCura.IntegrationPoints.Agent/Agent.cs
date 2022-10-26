@@ -163,8 +163,7 @@ namespace kCura.IntegrationPoints.Agent
                         {
                             try
                             {
-                                Container.Register(Component.For<Job>().UsingFactoryMethod(k => job)
-                                    .Named($"{job.JobId}-{Guid.NewGuid()}")); // ???
+                                Container.Register(Component.For<Job>().UsingFactoryMethod(k => job).Named($"{job.JobId}-{Guid.NewGuid()}")); // ???
 
                                 RelativitySyncAdapter syncAdapter = Container.Resolve<RelativitySyncAdapter>();
                                 IAPILog logger = Container.Resolve<IAPILog>();
