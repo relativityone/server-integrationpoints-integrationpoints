@@ -110,7 +110,6 @@
     <Compile Include="Installers\RetryingMechanismRegistration.cs" />
     <Compile Include="IntegrationPointSerializer.cs" />
     <Compile Include="IResourceDbProvider.cs" />
-    <Compile Include="IResourcePoolContext.cs" />
     <Compile Include="IRipDBContext.cs" />
     <Compile Include="Logging\ISystemEventLoggingService.cs" />
     <Compile Include="Queries\CreateJobTrackingEntry.cs" />
@@ -182,7 +181,6 @@
     <Compile Include="Repositories\IQueryFieldLookupRepository.cs" />
     <Compile Include="Repositories\IRelativityObjectManager.cs" />
     <Compile Include="Repositories\IJobRepository.cs" />
-    <Compile Include="ResourcePoolContext.cs" />
     <Compile Include="Resources\Resource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -300,7 +298,6 @@
     <Compile Include="Statistics\IDocumentStatistics.cs" />
     <Compile Include="Statistics\IRdoStatistics.cs" />
     <Compile Include="Statistics\Implementations\RdoStatistics.cs" />
-    <Compile Include="Toggles\ProcessingSourceLocationToggle.cs" />
     <Compile Include="Transformers\RDOConverter.cs" />
     <Compile Include="UtilityDTO\ResultSet.cs" />
   </ItemGroup>

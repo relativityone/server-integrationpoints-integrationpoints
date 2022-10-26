@@ -165,7 +165,7 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
                 QueryResult result = await objectManager.QueryAsync(workspaceId, query, 0, int.MaxValue)
                     .ConfigureAwait(false);
 
-                return result.Objects.Select(x => new Exception($"Error: {x[JobHistoryErrorFields.Error]}\nStackTrace: {x[JobHistoryErrorFields.StackTrace]}"));
+                return result.Objects.Select(x => new Exception($"Error: {x[JobHistoryErrorFields.Error].Value}\nStackTrace: {x[JobHistoryErrorFields.StackTrace].Value}"));
             }
         }
     }

@@ -19,7 +19,6 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter
         private readonly IQueueQueryManager _queueManager;
         private readonly IMonitoringConfig _config;
         private readonly IDateTime _dateTime;
-        private readonly IToggleProvider _toggleProvider;
         private readonly IAPM _apmClient;
         private readonly ITimerFactory _timerFactory;
         private readonly IAPILog _log;
@@ -27,13 +26,12 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter
         private static readonly string _METRIC_RUNNING_JOB_TIME_EXCEEDED_NAME = "Relativity.IntegrationPoints.Performance.RunningJobTimeExceeded";
 
         public HeartbeatReporter(IQueueQueryManager queueManager, IMonitoringConfig config,
-            IDateTime dateTime, IToggleProvider toggleProvider, IAPM apmClient, ITimerFactory timerFactory, IAPILog log)
+            IDateTime dateTime, IAPM apmClient, ITimerFactory timerFactory, IAPILog log)
         {
             _queueManager = queueManager;
             _config = config;
             _dateTime = dateTime;
             _log = log;
-            _toggleProvider = toggleProvider;
             _apmClient = apmClient;
             _timerFactory = timerFactory;
             _runningJobTimeExceededCheck = true;
@@ -43,12 +41,6 @@ namespace kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter
         {
             _startDateTime = _dateTime.UtcNow;
             _correlationId = Guid.NewGuid().ToString();
-
-            if (!_toggleProvider.IsEnabled<EnableHeartbeatToggle>())
-            {
-                _log.LogInformation("EnableHeartbeatToggle is disabled. JobID {jobId} heartbeat won't be updated", jobId);
-                return Disposable.Empty;
-            }
 
             return _timerFactory.Create(state => Execute(jobId), null, _config.TimerStartDelay, _config.HeartbeatInterval, "Heartbeat Timer");
         }
