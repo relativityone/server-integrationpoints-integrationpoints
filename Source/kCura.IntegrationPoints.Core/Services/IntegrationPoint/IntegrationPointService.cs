@@ -124,6 +124,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                     ChoiceQuery.GetChoicesOnField(Context.WorkspaceID, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields));
 
                 PeriodicScheduleRule rule = ConvertModelToScheduleRule(model);
+                rule.FailedScheduledJobsCount = 0;
                 Data.IntegrationPoint integrationPoint = model.ToRdo(choices, rule);
 
                 IntegrationPointModel integrationPointModel = IntegrationPointModel.FromIntegrationPoint(integrationPoint);

@@ -18,6 +18,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 
         [NonSerialized()]
         private static ISerializer _serializer;
+
         //Required by Serializable
         protected ScheduleRuleBase()
         {
@@ -57,6 +58,9 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
         }
 
         public abstract DateTime? GetNextUTCRunDateTime();
+
+        public abstract int GetNumberOfContinuouslyFailedScheduledJobs();
+        public abstract void ShouldUpgradeNumberOfContinuouslyFailedScheduledJobs(bool shouldUpgrade);
 
         public abstract string Description { get; }
 

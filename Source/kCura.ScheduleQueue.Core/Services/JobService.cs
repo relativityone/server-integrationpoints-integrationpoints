@@ -114,19 +114,22 @@ namespace kCura.ScheduleQueue.Core.Services
 
             IScheduleRule scheduleRule = scheduleRuleFactory.Deserialize(job);
 
-            if (nextUtcRunDateTime.HasValue && taskResult.Status == TaskStatusEnum.Fail)
+            if (nextUtcRunDateTime.HasValue)
             {
-                // CheckNumberOfFailedScheduledJobs
-                // deserialize the number from schedule rule
-                int numberOfFailedScheduledJobs = 0;
-
-                if (numberOfFailedScheduledJobs >= _config.MaxFailedScheduledJobsCount)
+                if (taskResult.Status == TaskStatusEnum.Fail)
                 {
-                    shouldBreakSchedule = true;
+                    if (scheduleRule.GetNumberOfContinuouslyFailedScheduledJobs() >= _config.MaxFailedScheduledJobsCount)
+                    {
+                        shouldBreakSchedule = true;
+                    }
+                    else
+                    {
+                        scheduleRule.ShouldUpgradeNumberOfContinuouslyFailedScheduledJobs(true);
+                    }
                 }
-                else
+                else if (taskResult.Status == TaskStatusEnum.Success)
                 {
-                    // update number to be saved in schedule rule
+                    scheduleRule.ShouldUpgradeNumberOfContinuouslyFailedScheduledJobs(false);
                 }
             }
 
@@ -142,7 +145,7 @@ namespace kCura.ScheduleQueue.Core.Services
                     BatchInstance = Guid.NewGuid()
                 };
                 string jobDeatils = new JSONSerializer().Serialize(taskParameters);
-                CreateNewAndDeleteOldScheduledJob(job.JobId, job.WorkspaceID, job.RelatedObjectArtifactID, job.TaskType, scheduleRuleFactory.Deserialize(job),
+                CreateNewAndDeleteOldScheduledJob(job.JobId, job.WorkspaceID, job.RelatedObjectArtifactID, job.TaskType, scheduleRule,
                     jobDeatils, job.SubmittedBy, job.RootJobId,
                     job.ParentJobId);
             }

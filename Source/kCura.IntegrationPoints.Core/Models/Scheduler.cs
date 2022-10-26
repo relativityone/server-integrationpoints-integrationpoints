@@ -66,6 +66,7 @@ namespace kCura.IntegrationPoints.Core.Models
                 }
 
                 Reoccur = rule.Reoccur.GetValueOrDefault(0);
+                FailedScheduledJobsCount = rule.FailedScheduledJobsCount;
                 SelectedFrequency = rule.Interval.ToString();
                 if (rule.LocalTimeOfDay.HasValue)
                 {
@@ -88,5 +89,6 @@ namespace kCura.IntegrationPoints.Core.Models
         public string ScheduledTime { get; set; }
         public string SendOn { get; set; }
         public string TimeZoneId { get; set; }
+        public int FailedScheduledJobsCount { get; set; } 
     }
 }

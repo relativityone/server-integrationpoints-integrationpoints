@@ -43,7 +43,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
         public int? Reoccur { get; set; }
 
         [DataMember]
-        public int? FailedScheduledJobsCount { get; set; }
+        public int FailedScheduledJobsCount { get; set; }
 
         [DataMember]
         public OccuranceInMonth? OccuranceInMonth { get; set; }
@@ -66,7 +66,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             ScheduleInterval interval, DateTime startDate, TimeSpan localTimeOfDay,
             DateTime? endDate = null, int? timeZoneOffset = null, DaysOfWeek? daysToRun = null,
             int? dayOfMonth = null, bool? setLastDayOfMonth = null,
-            int? reoccur = null, int? failedScheduledJobsCount = 0, OccuranceInMonth? occuranceInMonth = null, string timeZoneId = null)
+            int? reoccur = null, int failedScheduledJobsCount = 0, OccuranceInMonth? occuranceInMonth = null, string timeZoneId = null)
             : this()
         {
             Interval = interval;
@@ -124,6 +124,23 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
            
             return AdjustToDaylightSavingOrStandardTime(nextRunTimeUtc, clientTimeZoneInfo,
             clientUtcOffset);
+        }
+
+        public override int GetNumberOfContinuouslyFailedScheduledJobs()
+        {
+            return FailedScheduledJobsCount;
+        }
+
+        public override void ShouldUpgradeNumberOfContinuouslyFailedScheduledJobs(bool shouldUpgrade)
+        {
+            if (shouldUpgrade)
+            {
+                FailedScheduledJobsCount += 1;
+            }
+            else
+            {
+                FailedScheduledJobsCount = 0;
+            }
         }
 
         /// <summary>
