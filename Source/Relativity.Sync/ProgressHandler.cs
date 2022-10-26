@@ -46,7 +46,10 @@ namespace Relativity.Sync
 
                 TimeSpan progressUpdatePeriod = await _instanceSettings.GetSyncProgressUpdatePeriodAsync(_DEFAULT_PROGRESS_UPDATE_PERIOD).ConfigureAwait(false);
 
-                return _timerFactory.Create(async state => await HandleProgressAsync(), null, TimeSpan.MaxValue, progressUpdatePeriod);
+                ITimer timer = _timerFactory.Create();
+                timer.Activate((state) => HandleProgressAsync().GetAwaiter().GetResult(), null, TimeSpan.Zero, progressUpdatePeriod);
+
+                return timer;
             }
             catch (Exception ex)
             {
@@ -61,7 +64,10 @@ namespace Relativity.Sync
             {
                 ImportProgress importProgress = await GetImportJobProgressAsync().ConfigureAwait(false);
 
-                await _progressUpdater.UpdateJobProgressAsync(importProgress.ImportedRecords, importProgress.ErroredRecords).ConfigureAwait(false);
+                await _progressUpdater.UpdateJobProgressAsync(
+                        importProgress.ImportedRecords,
+                        importProgress.ErroredRecords)
+                    .ConfigureAwait(false);
             }
             catch (Exception ex)
             {

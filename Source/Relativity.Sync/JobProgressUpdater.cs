@@ -49,17 +49,11 @@ namespace Relativity.Sync
 
         public async Task SetTotalItemsCountAsync(int totalItemsCount)
         {
-            await TryUpdateJobHistory(new[]
-            {
-                new FieldRefValuePair()
-                {
-                    Field = new FieldRef()
-                    {
-                        Guid = _rdoGuidConfiguration.JobHistory.TotalItemsFieldGuid
-                    },
-                    Value = totalItemsCount
-                }
-            }).ConfigureAwait(false);
+            await TryUpdateJobHistory(
+                _workspaceArtifactId,
+                _jobHistoryArtifactId,
+                GetTotalDocumentsFieldsValues(totalItemsCount))
+            .ConfigureAwait(false);
         }
 
         public async Task SetJobStartedAsync()
@@ -92,25 +86,11 @@ namespace Relativity.Sync
                         ValidateJobID();
 
                         // RIP didn't set Job ID which means we're executing on Sync Agent
-                        await TryUpdateJobHistory(new[]
-                        {
-                            new FieldRefValuePair()
-                            {
-                                Field = new FieldRef()
-                                {
-                                    Guid = _rdoGuidConfiguration.JobHistory.StartTimeGuid
-                                },
-                                Value = _dateTime.UtcNow
-                            },
-                            new FieldRefValuePair()
-                            {
-                                Field = new FieldRef()
-                                {
-                                    Guid = _rdoGuidConfiguration.JobHistory.JobIdGuid
-                                },
-                                Value = _syncJobParameters.JobID.ToString()
-                            }
-                        }).ConfigureAwait(false);
+                        await TryUpdateJobHistory(
+                                _workspaceArtifactId,
+                                _jobHistoryArtifactId,
+                                GetJobStartedFieldsValues())
+                            .ConfigureAwait(false);
                     }
                     else
                     {
@@ -223,7 +203,7 @@ namespace Relativity.Sync
                         }
                 }
 
-                await TryUpdateJobHistory(fields).ConfigureAwait(false);
+                await TryUpdateJobHistory(_workspaceArtifactId, _jobHistoryArtifactId, fields).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -241,30 +221,23 @@ namespace Relativity.Sync
             }).ConfigureAwait(false);
         }
 
-        public async Task UpdateJobProgressAsync(int completedRecordsCount, int failedRecordsCount)
+        public Task UpdateJobProgressAsync(int completedRecordsCount, int failedRecordsCount)
         {
-            await TryUpdateJobHistory(new[]
-            {
-                new FieldRefValuePair()
-                {
-                    Field = new FieldRef()
-                    {
-                        Guid = _rdoGuidConfiguration.JobHistory.CompletedItemsFieldGuid
-                    },
-                    Value = completedRecordsCount
-                },
-                new FieldRefValuePair()
-                {
-                    Field = new FieldRef()
-                    {
-                        Guid = _rdoGuidConfiguration.JobHistory.FailedItemsFieldGuid
-                    },
-                    Value = failedRecordsCount
-                },
-            }).ConfigureAwait(false);
+            return UpdateJobProgressAsync(_workspaceArtifactId, _jobHistoryArtifactId, completedRecordsCount, failedRecordsCount);
         }
 
-        private async Task TryUpdateJobHistory(IEnumerable<FieldRefValuePair> fieldValues)
+        public async Task UpdateJobProgressAsync(int workspaceId, int jobHistoryId, int completedRecordsCount, int failedRecordsCount)
+        {
+            await TryUpdateJobHistory(
+                    _workspaceArtifactId,
+                    _jobHistoryArtifactId,
+                    GetProgressFieldsValues(
+                        completedRecordsCount,
+                        failedRecordsCount))
+                .ConfigureAwait(false);
+        }
+
+        private async Task TryUpdateJobHistory(int workspaceId, int jobHistoryId, IEnumerable<FieldRefValuePair> fieldValues)
         {
             try
             {
@@ -293,6 +266,67 @@ namespace Relativity.Sync
             {
                 throw new InvalidOperationException($"JobID in SyncJobParameters cannot be an empty GUID.");
             }
+        }
+
+        private IEnumerable<FieldRefValuePair> GetProgressFieldsValues(int completedRecordsCount, int failedRecordsCount)
+        {
+            return new[]
+            {
+                new FieldRefValuePair()
+                {
+                    Field = new FieldRef()
+                    {
+                        Guid = _rdoGuidConfiguration.JobHistory.CompletedItemsFieldGuid
+                    },
+                    Value = completedRecordsCount
+                },
+                new FieldRefValuePair()
+                {
+                    Field = new FieldRef()
+                    {
+                        Guid = _rdoGuidConfiguration.JobHistory.FailedItemsFieldGuid
+                    },
+                    Value = failedRecordsCount
+                }
+            };
+        }
+
+        private IEnumerable<FieldRefValuePair> GetJobStartedFieldsValues()
+        {
+            return new[]
+            {
+                new FieldRefValuePair()
+                {
+                    Field = new FieldRef()
+                    {
+                        Guid = _rdoGuidConfiguration.JobHistory.StartTimeGuid
+                    },
+                    Value = _dateTime.UtcNow
+                },
+                new FieldRefValuePair()
+                {
+                    Field = new FieldRef()
+                    {
+                        Guid = _rdoGuidConfiguration.JobHistory.JobIdGuid
+                    },
+                    Value = _syncJobParameters.JobID.ToString()
+                }
+            };
+        }
+
+        private IEnumerable<FieldRefValuePair> GetTotalDocumentsFieldsValues(int totalItemsCount)
+        {
+            return new[]
+            {
+                new FieldRefValuePair()
+                {
+                    Field = new FieldRef()
+                    {
+                        Guid = _rdoGuidConfiguration.JobHistory.TotalItemsFieldGuid
+                    },
+                    Value = totalItemsCount
+                }
+            };
         }
     }
 }

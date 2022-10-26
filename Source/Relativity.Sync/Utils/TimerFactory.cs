@@ -1,14 +1,10 @@
-﻿using System;
-using System.Threading;
-
-namespace Relativity.Sync.Utils
+﻿namespace Relativity.Sync.Utils
 {
     internal class TimerFactory : ITimerFactory
     {
-        public ITimer Create(TimerCallback callback, object state, TimeSpan dueTime, TimeSpan period)
+        public ITimer Create()
         {
-            Timer timer = new Timer(callback, state, dueTime, period);
-            return new TimerWrapper(timer);
+            return new TimerWrapper();
         }
     }
 }
