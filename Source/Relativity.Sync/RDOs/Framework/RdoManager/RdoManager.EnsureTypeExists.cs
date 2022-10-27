@@ -177,15 +177,14 @@ namespace Relativity.Sync.RDOs.Framework
         {
             IEnumerable<IGrouping<string, RelativityObject>> fieldsGroup = existingFields
                 .GroupBy(
-                    x => x.FieldValues != null ? x.FieldValues.First().Value.ToString() : string.Empty);
+                    x => x.FieldValues?.FirstOrDefault()?.Value?.ToString() ?? string.Empty);
             List<IGrouping<string, RelativityObject>> duplicatedFieldsGroup = fieldsGroup.Where(y => y.Count() > 1).ToList();
 
             if (duplicatedFieldsGroup.Any())
             {
-                List<RelativityObject> duplicatedFields = duplicatedFieldsGroup
-                    .SelectMany(x => x)
-                    .ToList();
-                string duplicatedFieldsArtifactIds = string.Join(", ", duplicatedFields.Select(x => x.ArtifactID));
+                IEnumerable<int> duplicatedFields = duplicatedFieldsGroup
+                    .SelectMany(x => x).Select(x => x.ArtifactID);
+                string duplicatedFieldsArtifactIds = string.Join(", ", duplicatedFields);
                 _logger.LogError(
                     "Duplicated Field(s) found. ArtifactIds: {duplicatedFieldsArtifactIds}.",
                     duplicatedFieldsArtifactIds);
@@ -199,12 +198,13 @@ namespace Relativity.Sync.RDOs.Framework
             List<RelativityObject> existingFields,
             int artifactId)
         {
+            IEnumerable<RdoFieldInfo> fieldsWithoutGuids = typeInfo.Fields.Values.Where(f => !existingFields.SelectMany(x => x.Guids).Contains(f.Guid));
             using (IArtifactGuidManager guidManager = await _serviceFactoryForAdmin.CreateProxyAsync<IArtifactGuidManager>().ConfigureAwait(false))
             using (IFieldManager fieldManager = await _serviceFactoryForAdmin.CreateProxyAsync<IFieldManager>().ConfigureAwait(false))
             {
-                foreach (RdoFieldInfo fieldInfo in typeInfo.Fields.Values.Where(f => !existingFields.SelectMany(x => x.Guids).Contains(f.Guid)))
+                foreach (RdoFieldInfo fieldInfo in fieldsWithoutGuids)
                 {
-                    List<RelativityObject> fields = existingFields.Where(x => (x.FieldValues != null ? x.FieldValues.First().Value.ToString() : string.Empty) == fieldInfo.Name).ToList();
+                    List<RelativityObject> fields = existingFields.Where(x => (x.FieldValues?.FirstOrDefault()?.Value?.ToString() ?? string.Empty) == fieldInfo.Name).ToList();
                     if (fields.Count > 0)
                     {
                         _logger.LogInformation("Updating field [{name}:{guid}] for type [{typeName}:{typeGuid}] in workspace {workspaceId}", fieldInfo.Name, fieldInfo.Guid, typeInfo.Name, typeInfo.TypeGuid, workspaceId);
