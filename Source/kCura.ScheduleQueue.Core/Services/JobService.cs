@@ -145,9 +145,7 @@ namespace kCura.ScheduleQueue.Core.Services
                     BatchInstance = Guid.NewGuid()
                 };
                 string jobDeatils = new JSONSerializer().Serialize(taskParameters);
-                CreateNewAndDeleteOldScheduledJob(job.JobId, job.WorkspaceID, job.RelatedObjectArtifactID, job.TaskType, scheduleRule,
-                    jobDeatils, job.SubmittedBy, job.RootJobId,
-                    job.ParentJobId);
+                CreateNewAndDeleteOldScheduledJob(job.JobId, job.WorkspaceID, job.RelatedObjectArtifactID, job.TaskType, scheduleRule, jobDeatils, job.SubmittedBy, job.RootJobId, job.ParentJobId);
             }
             else
             {

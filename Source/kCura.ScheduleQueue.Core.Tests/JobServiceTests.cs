@@ -227,8 +227,20 @@ namespace kCura.ScheduleQueue.Core.Tests
 
             scheduleRule.Received().GetNumberOfContinuouslyFailedScheduledJobs();
             scheduleRule.Received().ShouldUpgradeNumberOfContinuouslyFailedScheduledJobs(true);
-            _dataProviderMock.Received().CreateNewAndDeleteOldScheduledJob(_MOCK_JOB_ID, _WORKSPACE_ID, _RELATED_OBJECT_ARTIFACT_ID, _TASK_TYPE.ToString(),
-                _nextRunTime, _agentService.AgentTypeInformation.AgentTypeID, Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), 0, _SUBMITTED_BY, _ROOT_JOB_ID, _PARENT_JOB_ID);
+            _dataProviderMock.Received().CreateNewAndDeleteOldScheduledJob(
+                _MOCK_JOB_ID, 
+                _WORKSPACE_ID, 
+                _RELATED_OBJECT_ARTIFACT_ID, 
+                _TASK_TYPE.ToString(),
+                _nextRunTime, 
+                _agentService.AgentTypeInformation.AgentTypeID, 
+                Arg.Any<string>(), 
+                Arg.Any<string>(), 
+                Arg.Any<string>(), 
+                0, 
+                _SUBMITTED_BY, 
+                _ROOT_JOB_ID, 
+                _PARENT_JOB_ID);
 
             Assert.AreEqual(result.JobState, JobLogState.Deleted);
         }

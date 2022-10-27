@@ -434,7 +434,7 @@ namespace kCura.ScheduleQueue.Core.Tests
         [Test]
         public void GetNextUTCRunDateTime_MonthlyFirstMondaysReoccurEveryMonthStartDateBeforeNow_CorrectValue()
         {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("9/15/2014"), TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Monday, null, null, null, 1, OccuranceInMonth.First);
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("9/15/2014"), TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Monday, null, null, 1, 0, OccuranceInMonth.First);
             rule.ArrangeTimeServiceBaseOnUtcNow("10/01/2014 21:00:00");
             DateTime expectedTime = DateTime.Parse("10/06/2014 12:31");
 
@@ -446,7 +446,7 @@ namespace kCura.ScheduleQueue.Core.Tests
         [Test]
         public void GetNextUTCRunDateTime_MonthlyFirstMondaysReoccurEveryMonthStartDateAfterNow_CorrectValue()
         {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"), TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Monday, null, null, null, 1, OccuranceInMonth.First);
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"), TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Monday, null, null, 1, 0, OccuranceInMonth.First);
             rule.ArrangeTimeServiceBaseOnUtcNow("10/01/2014 21:00:00");
             DateTime expectedTime = DateTime.Parse("11/03/2014 12:31");
 
@@ -458,7 +458,7 @@ namespace kCura.ScheduleQueue.Core.Tests
         [Test]
         public void GetNextUTCRunDateTime_MonthlySecondTuesdayReoccurEveryMonthStartDateAfterNow_CorrectValue()
         {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"), TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Tuesday, null, null, null, 1, OccuranceInMonth.Second);
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"), TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Tuesday, null, null, 1, 0, OccuranceInMonth.Second);
             rule.ArrangeTimeServiceBaseOnUtcNow("10/01/2014 21:00:00");
             DateTime expectedTime = DateTime.Parse("11/11/2014 12:31");
 
@@ -470,7 +470,7 @@ namespace kCura.ScheduleQueue.Core.Tests
         [Test]
         public void GetNextUTCRunDateTime_MonthlyFourthWendesdayReoccurEvery3MonthStartDateAfterNow_CorrectValue()
         {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/25/2014"), TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Wednesday, null, null, null, 3, OccuranceInMonth.Fourth);
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/25/2014"), TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Wednesday, null, null, 3, 0, OccuranceInMonth.Fourth);
             rule.ArrangeTimeServiceBaseOnUtcNow("10/24/2014 21:00:00");
             DateTime expectedTime = DateTime.Parse("1/28/2015 12:31");
 
@@ -482,7 +482,7 @@ namespace kCura.ScheduleQueue.Core.Tests
         [Test]
         public void GetNextUTCRunDateTime_MonthlyThirdSaturdayReoccurEvery3MonthStartDateAfterNow_CorrectValue()
         {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"), TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Saturday, null, null, null, 3, OccuranceInMonth.Third);
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"), TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Saturday, null, null, 3, 0, OccuranceInMonth.Third);
             rule.ArrangeTimeServiceBaseOnUtcNow("10/01/2014 21:00:00");
             DateTime expectedTime = DateTime.Parse("10/18/2014 12:31");
 
@@ -494,7 +494,7 @@ namespace kCura.ScheduleQueue.Core.Tests
         [Test]
         public void GetNextUTCRunDateTime_MonthlyLastFridayReoccurEvery3MonthStartDateAfterNow_CorrectValue()
         {
-            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"), TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Friday, null, null, null, 3, OccuranceInMonth.Last);
+            PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"), TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Friday, null, null, 3, 0, OccuranceInMonth.Last);
             rule.ArrangeTimeServiceBaseOnUtcNow("10/01/2014 21:00:00");
             DateTime expectedTime = DateTime.Parse("10/31/2014 12:31");
 
