@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data;
@@ -131,11 +132,40 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
                 await Task.Delay(checkDelayInMs);
                 status = await GetJobHistoryStatus(jobHistoryId, workspaceId).ConfigureAwait(false);
 
-                if (status == JobStatusChoices.JobHistoryErrorJobFailed.Name
-                    || status == JobStatusChoices.JobHistoryValidationFailed.Name)
+                if (status == JobStatusChoices.JobHistoryErrorJobFailed.Name || status == JobStatusChoices.JobHistoryValidationFailed.Name)
                 {
-                    throw new InvalidOperationException($"Job failed with status {status}");
+                    var jobErrors = await GetJobHistoryErrorsAsync(jobHistoryId, workspaceId).ConfigureAwait(false);
+
+                    throw new InvalidOperationException(
+                        $"Job failed with status {status}",
+                        new AggregateException(jobErrors));
                 }
+            }
+        }
+
+        private async Task<IEnumerable<Exception>> GetJobHistoryErrorsAsync(int jobHistoryId, int workspaceId)
+        {
+            QueryRequest query = new QueryRequest
+            {
+                ObjectType = new ObjectTypeRef
+                {
+                    Guid = ObjectTypeGuids.JobHistoryErrorGuid
+                },
+                Fields = new[]
+                {
+                    new FieldRef { Name = JobHistoryErrorFields.Error },
+                    new FieldRef { Name = JobHistoryErrorFields.StackTrace },
+                },
+                Condition = $"'{JobHistoryErrorFields.JobHistory}' == {jobHistoryId}"
+            };
+
+            using (var objectManager = _serviceFactory
+                .GetServiceProxy<IObjectManager>())
+            {
+                QueryResult result = await objectManager.QueryAsync(workspaceId, query, 0, int.MaxValue)
+                    .ConfigureAwait(false);
+
+                return result.Objects.Select(x => new Exception($"Error: {x[JobHistoryErrorFields.Error].Value}\nStackTrace: {x[JobHistoryErrorFields.StackTrace].Value}"));
             }
         }
     }

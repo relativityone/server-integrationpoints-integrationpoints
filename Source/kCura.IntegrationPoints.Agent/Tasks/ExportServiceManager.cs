@@ -273,11 +273,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         private bool ShouldUseDgPaths(ImportSettings settings, List<FieldMap> fieldMap, SourceConfiguration configuration)
         {
-            if (settings.IsFederatedInstance() || _toggleProvider?.IsEnabled<TurnOnDgOptimizationToggle>() == false)
-            {
-                return false;
-            }
-
             IQueryFieldLookupRepository sourceQueryFieldLookupRepository =
                 _repositoryFactory.GetQueryFieldLookupRepository(configuration.SourceWorkspaceArtifactId);
             IQueryFieldLookupRepository destinationQueryFieldLookupRepository =
