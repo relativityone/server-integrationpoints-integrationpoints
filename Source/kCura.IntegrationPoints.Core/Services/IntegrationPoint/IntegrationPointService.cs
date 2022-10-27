@@ -297,10 +297,14 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             {
                 try
                 {
-                    IList<long> jobIdsForGivenJobHistory = jobs[Guid.Parse(jobHistory.BatchInstance)]
-                        .Select(x => x.JobId).ToList();
-                    _jobManager.StopJobs(jobIdsForGivenJobHistory);
-                    _logger.LogInformation("Jobs {@jobs} has been marked to stop for {jobHistoryId}", jobIdsForGivenJobHistory, jobHistory.ArtifactId);
+                    Guid batchInstance = Guid.Parse(jobHistory.BatchInstance);
+
+                    if (jobs.ContainsKey(batchInstance))
+                    {
+                        IList<long> jobIdsForGivenJobHistory = jobs[batchInstance].Select(x => x.JobId).ToList();
+                        _jobManager.StopJobs(jobIdsForGivenJobHistory);
+                        _logger.LogInformation("Jobs {@jobs} has been marked to stop for {jobHistoryId}", jobIdsForGivenJobHistory, jobHistory.ArtifactId);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -316,10 +320,15 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                     jobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
                     _jobHistoryService.UpdateRdo(jobHistory);
 
-                    jobs[Guid.Parse(jobHistory.BatchInstance)].ForEach(x => _jobManager.DeleteJob(x.JobId));
+                    Guid batchInstance = Guid.Parse(jobHistory.BatchInstance);
 
-                    _logger.LogInformation("Jobs {@jobs} has been deleted from queue and JobHistory {jobHistoryId} was set to Stopped",
-                        jobs[Guid.Parse(jobHistory.BatchInstance)], jobHistory.ArtifactId);
+                    if (jobs.ContainsKey(batchInstance))
+                    {
+                        jobs[batchInstance].ForEach(x => _jobManager.DeleteJob(x.JobId));
+
+                        _logger.LogInformation("Jobs {@jobs} has been deleted from queue and JobHistory {jobHistoryId} was set to Stopped",
+                            jobs[batchInstance], jobHistory.ArtifactId);
+                    }
                 }
                 catch (Exception ex)
                 {
