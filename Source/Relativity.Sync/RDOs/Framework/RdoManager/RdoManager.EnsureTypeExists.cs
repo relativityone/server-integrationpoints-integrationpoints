@@ -71,9 +71,7 @@ namespace Relativity.Sync.RDOs.Framework
         {
             using (IObjectManager objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
-                var queryResult = await objectManager.QueryAsync(
-                        workspaceId,
-                        new QueryRequest
+                QueryRequest queryRequest = new QueryRequest
                 {
                     Condition = $"'FieldArtifactTypeID' == {artifactTypeId}",
                     ObjectType = new ObjectTypeRef()
@@ -87,10 +85,13 @@ namespace Relativity.Sync.RDOs.Framework
                             Name = "Name"
                         }
                     }
-                },
-                        0,
-                        int.MaxValue)
-                    .ConfigureAwait(false);
+                };
+                QueryResult queryResult = await objectManager.QueryAsync(
+                    workspaceId,
+                    queryRequest,
+                    0,
+                    int.MaxValue)
+                .ConfigureAwait(false);
 
                 return queryResult.Objects;
             }
