@@ -72,12 +72,12 @@ namespace Relativity.Sync.Executors
                     }
                 }
 
-                await HandleDataSourceProcessingFinished(batch).ConfigureAwait(false);
+                await HandleDataSourceProcessingFinishedAsync(batch).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Load file generator error occurred in line: {readerLineNumber}", readerLineNumber);
-                await HandleDataSourceProcessingFinished(batch).ConfigureAwait(false);
+                await HandleDataSourceProcessingFinishedAsync(batch).ConfigureAwait(false);
                 throw;
             }
         }
@@ -98,11 +98,11 @@ namespace Relativity.Sync.Executors
 
             if (_batchItemErrors.Count >= _BATCH_ITEM_ERRORS_MAX_COUNT_FOR_RDO_CREATE)
             {
-                CreateJobHistoryErrors().GetAwaiter().GetResult();
+                CreateJobHistoryErrorsAsync().GetAwaiter().GetResult();
             }
         }
 
-        private async Task CreateJobHistoryErrors()
+        private async Task CreateJobHistoryErrorsAsync()
         {
             List<CreateJobHistoryErrorDto> itemLevelErrors = new List<CreateJobHistoryErrorDto>(_batchItemErrors.Count);
             while (_batchItemErrors.TryDequeue(out CreateJobHistoryErrorDto dto))
@@ -116,11 +116,11 @@ namespace Relativity.Sync.Executors
             }
         }
 
-        private async Task HandleDataSourceProcessingFinished(IBatch batch)
+        private async Task HandleDataSourceProcessingFinishedAsync(IBatch batch)
         {
             if (_batchItemErrors.Any())
             {
-                await CreateJobHistoryErrors().ConfigureAwait(false);
+                await CreateJobHistoryErrorsAsync().ConfigureAwait(false);
             }
 
             await batch.SetFailedDocumentsCountAsync(_statusMonitor.FailedItemsCount).ConfigureAwait(false);
