@@ -84,7 +84,8 @@ namespace Relativity.Sync.Executors
 
         private void HandleDataSourceItemLevelError(long completedItem, ItemLevelError itemLevelError)
         {
-            _itemLevelErrorLogAggregator.AddItemLevelError(itemLevelError, _statusMonitor.GetArtifactId(itemLevelError.Identifier));
+            int itemArtifactId = _statusMonitor.GetArtifactId(itemLevelError.Identifier);
+            _itemLevelErrorLogAggregator.AddItemLevelError(itemLevelError, itemArtifactId);
             _statusMonitor.MarkItemAsFailed(itemLevelError.Identifier);
 
             CreateJobHistoryErrorDto itemError = new CreateJobHistoryErrorDto(ErrorType.Item)
