@@ -293,7 +293,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             StopSyncAppJobs(stoppableJobHistories);
 
             List<Exception> exceptions = new List<Exception>();
-            foreach (Data.JobHistory jobHistory in stoppableJobHistories.ProcessingJobHistory.Where(x => !FilterSyncAppJobHistory(x)))
+            
+            List<Data.JobHistory> processingJobHistories = stoppableJobHistories.ProcessingJobHistory.Where(x => !FilterSyncAppJobHistory(x)).ToList();
+            foreach (Data.JobHistory jobHistory in processingJobHistories)
             {
                 try
                 {
@@ -313,7 +315,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 }
             }
 
-            foreach (Data.JobHistory jobHistory in stoppableJobHistories.PendingJobHistory.Where(x => !FilterSyncAppJobHistory(x)))
+            List<Data.JobHistory> pendingJobHistories = stoppableJobHistories.PendingJobHistory.Where(x => !FilterSyncAppJobHistory(x)).ToList();
+            foreach (Data.JobHistory jobHistory in pendingJobHistories)
             {
                 try
                 {
