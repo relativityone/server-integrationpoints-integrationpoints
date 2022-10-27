@@ -198,7 +198,8 @@ namespace Relativity.Sync.RDOs.Framework
             List<RelativityObject> existingFields,
             int artifactId)
         {
-            IEnumerable<RdoFieldInfo> fieldsWithoutGuids = typeInfo.Fields.Values.Where(f => !existingFields.SelectMany(x => x.Guids).Contains(f.Guid));
+            Guid[] existingFieldsGuids = existingFields.SelectMany(x => x.Guids).ToArray();
+            IEnumerable<RdoFieldInfo> fieldsWithoutGuids = typeInfo.Fields.Values.Where(f => !existingFieldsGuids.Contains(f.Guid));
             using (IArtifactGuidManager guidManager = await _serviceFactoryForAdmin.CreateProxyAsync<IArtifactGuidManager>().ConfigureAwait(false))
             using (IFieldManager fieldManager = await _serviceFactoryForAdmin.CreateProxyAsync<IFieldManager>().ConfigureAwait(false))
             {
