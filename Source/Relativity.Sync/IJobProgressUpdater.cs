@@ -13,7 +13,7 @@ namespace Relativity.Sync
 
         Task UpdateJobProgressAsync(
             int workspaceId,
-            int parentObjectId,
+            int jobHistoryId,
             int completedRecordsCount,
             int failedRecordsCount);
 

@@ -229,8 +229,8 @@ namespace Relativity.Sync
         public async Task UpdateJobProgressAsync(int workspaceId, int jobHistoryId, int completedRecordsCount, int failedRecordsCount)
         {
             await TryUpdateJobHistory(
-                    _workspaceArtifactId,
-                    _jobHistoryArtifactId,
+                    workspaceId,
+                    jobHistoryId,
                     GetProgressFieldsValues(
                         completedRecordsCount,
                         failedRecordsCount))
@@ -247,16 +247,22 @@ namespace Relativity.Sync
                     {
                         Object = new RelativityObjectRef()
                         {
-                            ArtifactID = _jobHistoryArtifactId
+                            ArtifactID = jobHistoryId
                         },
                         FieldValues = fieldValues
                     };
-                    await objectManager.UpdateAsync(_workspaceArtifactId, updateRequest).ConfigureAwait(false);
+
+                    _logger.LogInformation("Updating JobHistory {jobHistoryId} in Workspace {workspaceId} - Request: {@updateRequest}",
+                        jobHistoryId, workspaceId, updateRequest);
+
+                    UpdateResult updateResult = await objectManager.UpdateAsync(workspaceId, updateRequest).ConfigureAwait(false);
+
+                    _logger.LogInformation("JobHistory {jobHistoryId} was updated with result - {@updateResult}", jobHistoryId, updateResult);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to update job history: {artifactId}", _jobHistoryArtifactId);
+                _logger.LogError(ex, "Failed to update job history: {artifactId}", jobHistoryId);
             }
         }
 

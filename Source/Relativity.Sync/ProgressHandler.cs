@@ -20,8 +20,10 @@ namespace Relativity.Sync
 
         private readonly TimeSpan _DEFAULT_PROGRESS_UPDATE_PERIOD = TimeSpan.FromSeconds(10);
 
-        private int _workspaceId;
+        private int _sourceWorkspaceId;
+        private int _destinationWorkspaceId;
         private Guid _importJobId;
+        private int _jobHistoryId;
 
         public ProgressHandler(
             ITimerFactory timerFactory,
@@ -37,14 +39,27 @@ namespace Relativity.Sync
             _progressUpdater = progressUpdater;
         }
 
-        public async Task<IDisposable> AttachAsync(int workspaceId, Guid importJobId)
+        public async Task<IDisposable> AttachAsync(int sourceWorkspaceId, int destinationWorkspaceId, int jobHistoryId, Guid importJobId)
         {
             try
             {
-                _workspaceId = workspaceId;
+                _log.LogInformation(
+                    "Creating Progress Timer - " +
+                    "SourceWorkspaceId: {sourceWorkspaceId}, DestinationWorkspaceId: {destinationWorkspaceId}, " +
+                    "JobHistoryId: {jobHistoryId}, ImportJobId: {importJobId}",
+                    sourceWorkspaceId,
+                    destinationWorkspaceId,
+                    jobHistoryId,
+                    importJobId);
+
+                _sourceWorkspaceId = sourceWorkspaceId;
+                _destinationWorkspaceId = destinationWorkspaceId;
                 _importJobId = importJobId;
+                _jobHistoryId = jobHistoryId;
 
                 TimeSpan progressUpdatePeriod = await _instanceSettings.GetSyncProgressUpdatePeriodAsync(_DEFAULT_PROGRESS_UPDATE_PERIOD).ConfigureAwait(false);
+
+                _log.LogInformation("Progress will be updated every {period}", progressUpdatePeriod);
 
                 ITimer timer = _timerFactory.Create();
                 timer.Activate((state) => HandleProgressAsync().GetAwaiter().GetResult(), null, TimeSpan.Zero, progressUpdatePeriod);
@@ -58,13 +73,22 @@ namespace Relativity.Sync
             }
         }
 
-        private async Task HandleProgressAsync()
+        public async Task HandleProgressAsync()
         {
             try
             {
+                _log.LogInformation("Updating Prgroess...");
+
                 ImportProgress importProgress = await GetImportJobProgressAsync().ConfigureAwait(false);
 
+                _log.LogInformation(
+                    "Import Job Progress - ImportedRecords: {importedRecords}, ErroredRecords: {erroredRecords}",
+                    importProgress.ImportedRecords,
+                    importProgress.ErroredRecords);
+
                 await _progressUpdater.UpdateJobProgressAsync(
+                        _sourceWorkspaceId,
+                        _jobHistoryId,
                         importProgress.ImportedRecords,
                         importProgress.ErroredRecords)
                     .ConfigureAwait(false);
@@ -81,7 +105,7 @@ namespace Relativity.Sync
             using (IImportJobController job = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
             {
                 ValueResponse<ImportProgress> importProgress = await job.GetProgressAsync(
-                        _workspaceId,
+                        _destinationWorkspaceId,
                         _importJobId)
                     .ConfigureAwait(false);
 

@@ -27,7 +27,6 @@
     <!-- Relativity Packages with Release Versioning Schema -->
     <ItemGroup>
         <PackageReference Include="Relativity" />
-        <PackageReference Include="Relativity.Import.Private.SDK" Version="0.3.5" />
         <PackageReference Include="Relativity.Import.SDK" Version="0.3.2" />
         <PackageReference Include="Relativity.Services.Interfaces" />
         <PackageReference Include="Relativity.Services.Interfaces.Private" />

@@ -35,9 +35,16 @@ namespace Relativity.Sync.Executors
             {
                 using (IImportSourceController sourceController = await _serviceFactory.CreateProxyAsync<IImportSourceController>().ConfigureAwait(false))
                 using (IImportJobController jobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
-                using (await _progressHandler.AttachAsync(configuration.DestinationWorkspaceArtifactId, configuration.ExportRunId))
+                using (await _progressHandler.AttachAsync(
+                    configuration.SourceWorkspaceArtifactId,
+                    configuration.DestinationWorkspaceArtifactId,
+                    configuration.JobHistoryArtifactId,
+                    configuration.ExportRunId))
                 {
                     DataSources dataSources = await GetDataSourcesAsync(jobController, configuration).ConfigureAwait(false);
+
+                    _logger.LogInformation("Retrieved DataSources to monitor: {@dataSources}", dataSources.Sources);
+
                     IDictionary<Guid, DataSourceState> processedSources = new Dictionary<Guid, DataSourceState>();
 
                     ValueResponse<ImportDetails> result = null;
@@ -47,10 +54,13 @@ namespace Relativity.Sync.Executors
 
                         result = await GetImportStatusAsync(jobController, configuration).ConfigureAwait(false);
 
-                        HandleProgress(jobController, configuration);
+                        _logger.LogInformation("ImportJob State - {@importJobStatus}", result.Value);
+
                         await HandleDataSourceStatusAsync(dataSources, processedSources, sourceController, configuration).ConfigureAwait(false);
                     }
                     while (!result.Value.IsFinished);
+
+                    await _progressHandler.HandleProgressAsync().ConfigureAwait(false);
 
                     jobStatus = GetFinalJobStatus(result.Value.State, processedSources);
                 }
@@ -100,6 +110,8 @@ namespace Relativity.Sync.Executors
 
                 if (dataSource.State >= DataSourceState.Canceled)
                 {
+                    _logger.LogInformation("DataSource {dataSource} has finished with status {state}.", sourceId, dataSource.State);
+
                     processedSources.Add(sourceId, dataSource.State);
                 }
             }
@@ -134,11 +146,6 @@ namespace Relativity.Sync.Executors
             }
 
             return response;
-        }
-
-        private void HandleProgress(IImportJobController jobController, IDocumentSynchronizationMonitorConfiguration configuration)
-        {
-            // method intentionally left blank; handling progress should be implemented within REL-744994
         }
     }
 }

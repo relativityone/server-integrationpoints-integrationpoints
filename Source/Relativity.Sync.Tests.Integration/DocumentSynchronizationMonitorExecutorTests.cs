@@ -25,6 +25,5 @@ namespace Relativity.Sync.Tests.Integration
             // Assert
             resolve.Should().NotThrow();
         }
-
     }
 }

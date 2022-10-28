@@ -40,15 +40,18 @@ namespace Relativity.Sync.Executors
         {
             try
             {
+                _logger.LogInformation("Creating ImportDocumentSettingsBuilder...");
                 IWithOverlayMode result = ImportDocumentSettingsBuilder.Create();
                 IWithNatives withNatives = ConfigureOverwriteMode(result, configuration.ImportOverwriteMode, MapOverlayBehavior(configuration.FieldOverlayBehavior));
 
                 List<FieldInfoDto> allMappings = (await _fieldManager.GetNativeAllFieldsAsync(token.AnyReasonCancellationToken)).ToList();
+                _logger.LogInformation("FieldsMapping retrieved - Fields Count: {mappingsCount}", allMappings.Count);
+
                 IWithFieldsMapping withFieldsMapping = ConfigureFileImport(
                     withNatives,
                     configuration.ImageImport,
-                    GetFieldIndex(allMappings, GetSpecialFieldName(allMappings, SpecialFieldType.NativeFileLocation)),
-                    GetFieldIndex(allMappings, GetSpecialFieldName(allMappings, SpecialFieldType.NativeFileFilename)));
+                    configuration.ImportNativeFileCopyMode,
+                    allMappings);
 
                 IWithFolders withFolders = ConfigureFieldMappings(withFieldsMapping, allMappings);
 
@@ -65,6 +68,8 @@ namespace Relativity.Sync.Executors
                 {
                     Guid importJobId = configuration.ExportRunId;
 
+                    _logger.LogInformation("Creating Import Job with {importJobId} ID...", importJobId);
+
                     Response importJobResponse = await importJobController.CreateAsync(
                             workspaceID: configuration.DestinationWorkspaceArtifactId,
                             importJobID: importJobId,
@@ -78,6 +83,8 @@ namespace Relativity.Sync.Executors
                         return ExecutionResult.Failure(importJobResponse.ErrorMessage);
                     }
 
+                    _logger.LogInformation("Load ImportDocumentsSettings to Job {jobId}", importJobId);
+
                     Response documentConfigurationResponse = await documentConfigurationController.CreateAsync(
                         configuration.DestinationWorkspaceArtifactId,
                         importJobId,
@@ -88,6 +95,8 @@ namespace Relativity.Sync.Executors
                         _logger.LogError("Cannot create document configuration: {messageCode} {message}", documentConfigurationResponse.ErrorCode, documentConfigurationResponse.ErrorMessage);
                         return ExecutionResult.Failure(documentConfigurationResponse.ErrorMessage);
                     }
+
+                    _logger.LogInformation("Start ImportJob {jobId} and wait for DataSources...", importJobId);
 
                     Response jobBeginResponse = await importJobController
                         .BeginAsync(configuration.DestinationWorkspaceArtifactId, importJobId)
@@ -122,22 +131,9 @@ namespace Relativity.Sync.Executors
             return destinationIdentityField.DestinationField.DisplayName;
         }
 
-        private string GetSpecialFieldName(IList<FieldInfoDto> specialFields, SpecialFieldType specialFieldType)
-        {
-            FieldInfoDto specialField = specialFields.FirstOrDefault(x => x.SpecialFieldType == specialFieldType);
-
-            if (specialField == null)
-            {
-                string message = $"Cannot find special field name: {specialFieldType}";
-                _logger.LogError(message);
-                throw new SyncException(message);
-            }
-
-            return specialField.DestinationFieldName;
-        }
-
         private IWithNatives ConfigureOverwriteMode(IWithOverlayMode input, ImportOverwriteMode overwriteMode, MultiFieldOverlayBehaviour overlayBehavior)
         {
+            _logger.LogInformation("Configuring OverwriteMode - OverwriteMode: {overwriteMode}, OverlayBehavior: {overlayBehavior}", overwriteMode, overlayBehavior);
             switch (overwriteMode)
             {
                 case ImportOverwriteMode.AppendOnly:
@@ -150,18 +146,22 @@ namespace Relativity.Sync.Executors
                     return input.WithOverlayMode(x => x.WithKeyField(GetDestinationIdentityFieldName()).WithMultiFieldOverlayBehaviour(overlayBehavior));
 
                 default:
-                    throw new NotSupportedException();
+                    throw new NotSupportedException($"ImportOverwriteMode {overwriteMode} is not supported.");
             }
         }
 
-        private IWithFieldsMapping ConfigureFileImport(IWithNatives input, bool imageImport, int nativeFilePathIndex, int nativeFileNameIndex)
+        private IWithFieldsMapping ConfigureFileImport(
+            IWithNatives input,
+            bool imageImport,
+            ImportNativeFileCopyMode nativeFileCopyMode,
+            List<FieldInfoDto> fieldsMapping)
         {
-            if (nativeFilePathIndex == -1 || nativeFileNameIndex == -1)
-            {
-                return input
-                    .WithoutNatives()
-                    .WithoutImages();
-            }
+            _logger.LogInformation(
+                "Configuring FileImport - " +
+                "ImageImport: {imageImport}, " +
+                "NativeFileCopyMode: {nativeFileCopyMode}",
+                imageImport,
+                nativeFileCopyMode);
 
             if (imageImport)
             {
@@ -169,21 +169,35 @@ namespace Relativity.Sync.Executors
             }
             else
             {
-                return input.WithNatives(x => x
-                        .WithFilePathDefinedInColumn(nativeFilePathIndex)
-                        .WithFileNameDefinedInColumn(nativeFileNameIndex))
-                    .WithoutImages();
+                if (nativeFileCopyMode == ImportNativeFileCopyMode.DoNotImportNativeFiles)
+                {
+                    return input
+                        .WithoutNatives()
+                        .WithoutImages();
+                }
+                else
+                {
+                    int nativeFilePathIndex = GetFieldIndex(fieldsMapping, SpecialFieldType.NativeFileLocation);
+                    int nativeFileNameIndex = GetFieldIndex(fieldsMapping, SpecialFieldType.NativeFileFilename);
+
+                    return input.WithNatives(x => x
+                            .WithFilePathDefinedInColumn(nativeFilePathIndex)
+                            .WithFileNameDefinedInColumn(nativeFileNameIndex))
+                        .WithoutImages();
+                }
             }
         }
 
         private IWithFolders ConfigureFieldMappings(IWithFieldsMapping input, IList<FieldInfoDto> fieldMappings)
         {
+            _logger.LogInformation("Configuring FieldsMapping...");
             return input.WithFieldsMapped(x =>
             {
                 foreach (FieldInfoDto mapping in fieldMappings)
                 {
-                    if(mapping.DocumentFieldIndex == -1)
+                    if(mapping.SpecialFieldType != SpecialFieldType.None)
                     {
+                        _logger.LogInformation("Skip SpecialField - Name: {fieldName}", mapping.SourceFieldName);
                         continue;
                     }
 
@@ -198,6 +212,8 @@ namespace Relativity.Sync.Executors
                             throw new NotSupportedException($"Mapping type {nameof(mapping.RelativityDataType)} is not supported in IAPI 2.0");
 
                         default:
+                            _logger.LogInformation("Configure Field - Index: {fieldIndex}, SourceName: {fieldName}, DestinationName",
+                                mapping.DocumentFieldIndex, mapping.SourceFieldName, mapping.DestinationFieldName);
                             x = x.WithField(mapping.DocumentFieldIndex, mapping.DestinationFieldName);
                             break;
                     }
@@ -222,9 +238,15 @@ namespace Relativity.Sync.Executors
             }
         }
 
-        private static int GetFieldIndex(IList<FieldInfoDto> fieldMappings, string fieldName)
+        private static int GetFieldIndex(IList<FieldInfoDto> fieldMappings, SpecialFieldType specialFieldType)
         {
-            FieldInfoDto field = fieldMappings.FirstOrDefault(x => string.Equals(x.SourceFieldName, fieldName, StringComparison.InvariantCultureIgnoreCase));
+            FieldInfoDto field = fieldMappings.FirstOrDefault(x => x.SpecialFieldType == specialFieldType);
+            return field?.DocumentFieldIndex ?? -1;
+        }
+
+        private static int GetFieldIndex(IList<FieldInfoDto> fieldMappings, string filedName)
+        {
+            FieldInfoDto field = fieldMappings.FirstOrDefault(x => x.SourceFieldName == filedName);
             return field?.DocumentFieldIndex ?? -1;
         }
 

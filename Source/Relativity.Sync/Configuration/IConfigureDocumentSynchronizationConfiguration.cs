@@ -14,6 +14,8 @@ namespace Relativity.Sync.Configuration
 
         FieldOverlayBehavior FieldOverlayBehavior { get; }
 
+        ImportNativeFileCopyMode ImportNativeFileCopyMode { get; }
+
         bool ImageImport { get; }
 
         string FolderPathField { get; }
