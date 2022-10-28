@@ -98,21 +98,27 @@ namespace Relativity.Sync.Executors
 
             if (_batchItemErrors.Count >= _BATCH_ITEM_ERRORS_MAX_COUNT_FOR_RDO_CREATE)
             {
-                CreateJobHistoryErrorsAsync().GetAwaiter().GetResult();
+                CreateJobHistoryErrors();
             }
         }
 
-        private async Task CreateJobHistoryErrorsAsync()
+        private void CreateJobHistoryErrors()
         {
-            List<CreateJobHistoryErrorDto> itemLevelErrors = new List<CreateJobHistoryErrorDto>(_batchItemErrors.Count);
-            while (_batchItemErrors.TryDequeue(out CreateJobHistoryErrorDto dto))
+            int currentNumberOfItemLevelErrorsInQueue = _batchItemErrors.Count;
+            List<CreateJobHistoryErrorDto> itemLevelErrors = new List<CreateJobHistoryErrorDto>(currentNumberOfItemLevelErrorsInQueue);
+            for (int i = 0; i < currentNumberOfItemLevelErrorsInQueue; i++)
             {
-                itemLevelErrors.Add(dto);
+                if (_batchItemErrors.TryDequeue(out CreateJobHistoryErrorDto dto))
+                {
+                    itemLevelErrors.Add(dto);
+                }
             }
 
             if (itemLevelErrors.Any())
             {
-                await _jobHistoryErrorRepository.MassCreateAsync(_configuration.SourceWorkspaceArtifactId, _configuration.JobHistoryId, itemLevelErrors).ConfigureAwait(false);
+                _jobHistoryErrorRepository.MassCreateAsync(_configuration.SourceWorkspaceArtifactId, _configuration.JobHistoryId, itemLevelErrors)
+                    .GetAwaiter()
+                    .GetResult();
             }
         }
 
@@ -120,7 +126,7 @@ namespace Relativity.Sync.Executors
         {
             if (_batchItemErrors.Any())
             {
-                await CreateJobHistoryErrorsAsync().ConfigureAwait(false);
+                CreateJobHistoryErrors();
             }
 
             await batch.SetFailedDocumentsCountAsync(_statusMonitor.FailedItemsCount).ConfigureAwait(false);
