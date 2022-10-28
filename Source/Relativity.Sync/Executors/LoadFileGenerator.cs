@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Import.V1.Builders.DataSource;
 using Relativity.Import.V1.Models.Sources;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
 
@@ -17,32 +14,24 @@ namespace Relativity.Sync.Executors
 {
     internal class LoadFileGenerator : ILoadFileGenerator
     {
-        private const int _BATCH_ITEM_ERRORS_MAX_COUNT_FOR_RDO_CREATE = 1000;
-
         private readonly IBatchDataSourcePreparationConfiguration _configuration;
         private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
         private readonly IFileShareService _fileShareService;
-        private readonly IItemLevelErrorLogAggregator _itemLevelErrorLogAggregator;
-        private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
+        private readonly IItemLevelErrorHandler _itemLevelErrorHandler;
         private readonly IAPILog _logger;
-        private readonly ConcurrentQueue<CreateJobHistoryErrorDto> _batchItemErrors;
-
-        private IItemStatusMonitor _statusMonitor;
 
         public LoadFileGenerator(
             IBatchDataSourcePreparationConfiguration configuration,
             ISourceWorkspaceDataReaderFactory dataReaderFactory,
             IFileShareService fileShareService,
-            IJobHistoryErrorRepository jobHistoryErrorRepository,
+            IItemLevelErrorHandler itemLevelErrorHandler,
             IAPILog logger)
         {
             _configuration = configuration;
             _dataReaderFactory = dataReaderFactory;
             _fileShareService = fileShareService;
-            _itemLevelErrorLogAggregator = new ItemLevelErrorLogAggregator(logger);
-            _jobHistoryErrorRepository = jobHistoryErrorRepository;
+            _itemLevelErrorHandler = itemLevelErrorHandler;
             _logger = logger;
-            _batchItemErrors = new ConcurrentQueue<CreateJobHistoryErrorDto>();
         }
 
         public async Task<ILoadFile> GenerateAsync(IBatch batch)
@@ -61,8 +50,8 @@ namespace Relativity.Sync.Executors
                 using (ISourceWorkspaceDataReader reader = _dataReaderFactory.CreateNativeSourceWorkspaceDataReader(batch, CancellationToken.None))
                 using (StreamWriter writer = new StreamWriter(batchPath))
                 {
-                    _statusMonitor = reader.ItemStatusMonitor;
-                    reader.OnItemReadError += HandleDataSourceItemLevelError;
+                    _itemLevelErrorHandler.Initialize(reader.ItemStatusMonitor, batch);
+                    reader.OnItemReadError += _itemLevelErrorHandler.HandleItemLevelError;
 
                     while (reader.Read())
                     {
@@ -72,65 +61,14 @@ namespace Relativity.Sync.Executors
                     }
                 }
 
-                await HandleDataSourceProcessingFinishedAsync(batch).ConfigureAwait(false);
+                await _itemLevelErrorHandler.HandleDataSourceProcessingFinishedAsync(batch).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Load file generator error occurred in line: {readerLineNumber}", readerLineNumber);
-                await HandleDataSourceProcessingFinishedAsync(batch).ConfigureAwait(false);
+                await _itemLevelErrorHandler.HandleDataSourceProcessingFinishedAsync(batch).ConfigureAwait(false);
                 throw;
             }
-        }
-
-        private void HandleDataSourceItemLevelError(long completedItem, ItemLevelError itemLevelError)
-        {
-            int itemArtifactId = _statusMonitor.GetArtifactId(itemLevelError.Identifier);
-            _itemLevelErrorLogAggregator.AddItemLevelError(itemLevelError, itemArtifactId);
-            _statusMonitor.MarkItemAsFailed(itemLevelError.Identifier);
-
-            CreateJobHistoryErrorDto itemError = new CreateJobHistoryErrorDto(ErrorType.Item)
-            {
-                ErrorMessage = itemLevelError.Message,
-                SourceUniqueId = itemLevelError.Identifier
-            };
-
-            _batchItemErrors.Enqueue(itemError);
-
-            if (_batchItemErrors.Count >= _BATCH_ITEM_ERRORS_MAX_COUNT_FOR_RDO_CREATE)
-            {
-                CreateJobHistoryErrors();
-            }
-        }
-
-        private void CreateJobHistoryErrors()
-        {
-            int currentNumberOfItemLevelErrorsInQueue = _batchItemErrors.Count;
-            List<CreateJobHistoryErrorDto> itemLevelErrors = new List<CreateJobHistoryErrorDto>(currentNumberOfItemLevelErrorsInQueue);
-            for (int i = 0; i < currentNumberOfItemLevelErrorsInQueue; i++)
-            {
-                if (_batchItemErrors.TryDequeue(out CreateJobHistoryErrorDto dto))
-                {
-                    itemLevelErrors.Add(dto);
-                }
-            }
-
-            if (itemLevelErrors.Any())
-            {
-                _jobHistoryErrorRepository.MassCreateAsync(_configuration.SourceWorkspaceArtifactId, _configuration.JobHistoryId, itemLevelErrors)
-                    .GetAwaiter()
-                    .GetResult();
-            }
-        }
-
-        private async Task HandleDataSourceProcessingFinishedAsync(IBatch batch)
-        {
-            if (_batchItemErrors.Any())
-            {
-                CreateJobHistoryErrors();
-            }
-
-            await batch.SetFailedDocumentsCountAsync(_statusMonitor.FailedItemsCount).ConfigureAwait(false);
-            await _itemLevelErrorLogAggregator.LogAllItemLevelErrorsAsync().ConfigureAwait(false);
         }
 
         private string GetLineContent(ISourceWorkspaceDataReader reader, DataSourceSettings settings)

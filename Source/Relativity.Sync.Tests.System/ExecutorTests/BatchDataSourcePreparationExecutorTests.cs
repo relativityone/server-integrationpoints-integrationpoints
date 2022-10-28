@@ -96,7 +96,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
 
             string jobHistoryName = Guid.NewGuid().ToString();
             int jobHistoryId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, setup.Configuration.SourceWorkspaceArtifactId, jobHistoryName).ConfigureAwait(false);
-            setup.Configuration.JobHistoryId = jobHistoryId;
+            setup.Configuration.JobHistoryArtifactId = jobHistoryId;
 
             IExecutor<IBatchDataSourcePreparationConfiguration> sut = setup.Container.Resolve<IExecutor<IBatchDataSourcePreparationConfiguration>>();
 
@@ -106,6 +106,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
             // Act
             ExecutionResult result = await sut.ExecuteAsync(setup.Configuration, CompositeCancellationToken.None);
 
+            // Assert
             using (IObjectManager objectManager = new ServiceFactoryFromAppConfig().CreateServiceFactory().CreateProxy<IObjectManager>())
             {
                 QueryRequest query = new QueryRequest
@@ -117,7 +118,6 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
                 createdItemLevelErrorsCount = queryResult.Objects.Count;
             }
 
-            // Assert
             createdItemLevelErrorsCount.Should().Be(expectedItemLevelErrorsCount);
         }
     }

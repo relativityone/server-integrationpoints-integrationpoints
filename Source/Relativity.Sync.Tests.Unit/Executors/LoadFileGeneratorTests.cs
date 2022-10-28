@@ -30,6 +30,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<ISourceWorkspaceDataReader> _dataReaderMock;
         private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepositoryMock;
         private Mock<IItemStatusMonitor> _itemStatusMonitorMock;
+        private Mock<IItemLevelErrorHandler> _itemLevelErrorHandlerMock;
         private Mock<IBatch> _batchMock;
         private Mock<IAPILog> _loggerMock;
 
@@ -47,6 +48,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _dataReaderMock = new Mock<ISourceWorkspaceDataReader>();
             _jobHistoryErrorRepositoryMock = new Mock<IJobHistoryErrorRepository>();
             _itemStatusMonitorMock = new Mock<IItemStatusMonitor>();
+            _itemLevelErrorHandlerMock = new Mock<IItemLevelErrorHandler>();
             _batchMock = new Mock<IBatch>();
             _loggerMock = new Mock<IAPILog>();
 
@@ -54,7 +56,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _configurationMock.Setup(x => x.ExportRunId).Returns(It.IsAny<Guid>());
             _configurationMock.Setup(x => x.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ID);
             _configurationMock.Setup(x => x.SyncConfigurationArtifactId).Returns(_CONFIGURATION_ID);
-            _configurationMock.Setup(x => x.JobHistoryId).Returns(123);
+            _configurationMock.Setup(x => x.JobHistoryArtifactId).Returns(123);
 
             _batchMock.Setup(x => x.BatchGuid).Returns(new Guid(_BATCH_GUID));
             _batchMock.Setup(x => x.ExportRunId).Returns(new Guid(_EXPORT_RUN_ID));
@@ -66,7 +68,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 _configurationMock.Object,
                 _dataReaderFactoryMock.Object,
                 _fileshareServiceMock.Object,
-                _jobHistoryErrorRepositoryMock.Object,
+                _itemLevelErrorHandlerMock.Object,
                 _loggerMock.Object);
         }
 
@@ -161,8 +163,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
             ILoadFile result = await _sut.GenerateAsync(_batchMock.Object).ConfigureAwait(false);
 
             // Assert
-            _itemStatusMonitorMock.Verify(x => x.MarkItemAsFailed(testItemIdentifier), Times.Exactly(expectedNumberOfItemLevelErrors));
-            _jobHistoryErrorRepositoryMock.Verify(x => x.MassCreateAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<List<CreateJobHistoryErrorDto>>()), Times.Once);
+            _itemLevelErrorHandlerMock.Verify(x => x.Initialize(_dataReaderMock.Object.ItemStatusMonitor, _batchMock.Object), Times.Once);
+            _itemLevelErrorHandlerMock.Verify(x => x.HandleItemLevelError(completedItemTestValue, testItemLevelError), Times.Exactly(expectedNumberOfItemLevelErrors));
+            _itemLevelErrorHandlerMock.Verify(x => x.HandleDataSourceProcessingFinishedAsync(_batchMock.Object), Times.Once);
         }
 
         private string PrepareFakeLoadFilePath()
