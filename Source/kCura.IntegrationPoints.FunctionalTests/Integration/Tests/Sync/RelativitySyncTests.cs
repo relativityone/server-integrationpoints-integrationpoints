@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain.Managers;
 using Moq;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks;
 using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services.Sync;
@@ -35,7 +37,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
         {
             // Arrange
             ScheduleSyncJob();
-
             FakeAgent sut = FakeAgent.Create(FakeRelativityInstance, Container);
 
             // Act
@@ -98,6 +99,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
         private void VerifyJobHasBeenCompleted()
         {
             FakeRelativityInstance.JobsInQueue.Should().BeEmpty();
+            VerifyIfJobStopManagerIsDisposed();
 
             JobHistoryHasStatus(JobStatusChoices.JobHistoryCompletedGuid).Should().BeTrue();
         }
@@ -105,6 +107,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
         private void VerifyJobHasBeenDrainStopped()
         {
             JobInQueueHasFlag(StopState.DrainStopped).Should().BeTrue();
+            VerifyIfJobStopManagerIsDisposed();
 
             JobHistoryHasStatus(JobStatusChoices.JobHistorySuspendedGuid).Should().BeTrue();
         }
@@ -117,14 +120,24 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Sync
             VerifyJobHasBeenCompleted();
         }
 
+        private void VerifyIfJobStopManagerIsDisposed()
+        {
+            IJobStopManager jobStopManager = Container.Resolve<IJobStopManager>();
+            bool disposedField = (bool)jobStopManager
+                .GetType()
+                .GetField("_disposed", BindingFlags.Instance | BindingFlags.NonPublic)
+                .GetValue(jobStopManager);
+
+            disposedField.Should().BeTrue();
+        }
+
         private Func<FakeAgent, CompositeCancellationToken, Task> SyncJobGracefullyDrainStoppedAction =>
             async (agent, token) =>
             {
                 agent.MarkAgentToBeRemoved();
                 SpinWait.SpinUntil(
                     () => token.IsDrainStopRequested && JobInQueueHasFlag(StopState.DrainStopping),
-                    TimeSpan.FromSeconds(_STOP_MANAGER_TIMEOUT)
-                );
+                    TimeSpan.FromSeconds(_STOP_MANAGER_TIMEOUT));
 
                 await Task.Delay(100);
             };
