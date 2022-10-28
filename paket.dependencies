@@ -44,7 +44,7 @@ nuget Relativity.Toggles 1.0.1
 nuget Relativity.AutomatedWorkflows.SDK 1.0.8
 
 // Relativity Sync packages
-nuget Relativity.Sync.Services.Interfaces 0.0.5-pre.10
+nuget Relativity.Sync.Services.Interfaces 0.0.6-pre.10
 
 // Import API packages
 nuget Relativity.DataExchange.Client.SDK 1.18.6

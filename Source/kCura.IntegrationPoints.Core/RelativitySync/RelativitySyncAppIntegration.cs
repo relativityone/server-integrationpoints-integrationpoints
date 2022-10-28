@@ -43,5 +43,22 @@ namespace kCura.IntegrationPoints.Core.RelativitySync
                 throw;
             }
         }
+
+        public async Task CancelJobAsync(Guid jobId)
+        {
+            try
+            {
+                using (ISyncService syncService = _servicesMgr.CreateProxy<ISyncService>(ExecutionIdentity.System))
+                {
+                    await syncService.CancelJobAsync(jobId).ConfigureAwait(false);
+                    _logger.LogInformation("Sync job cancel request has been sent. Job ID: {jobId}", jobId);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to cancel Sync Job ID: {jobId}", jobId);
+                throw;
+            }
+        }
     }
 }

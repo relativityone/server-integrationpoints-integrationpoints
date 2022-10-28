@@ -212,7 +212,7 @@ NUGET
       Relativity.Kepler (>= 2.7)
       Relativity.Services.DataContracts (>= 13.5)
     Relativity.Services.Interfaces.Private (14.1.2)
-    Relativity.Sync.Services.Interfaces (0.0.5-pre.10)
+    Relativity.Sync.Services.Interfaces (0.0.6-pre.10)
       Relativity.Kepler (>= 2.18)
     Relativity.Telemetry.APM (2019.1.1)
     Relativity.Telemetry.DataContracts.Shared (3003.1.0)
