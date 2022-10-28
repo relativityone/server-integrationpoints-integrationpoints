@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
         public async Task CanExecuteAsync_ShouldReturnValue_BasedOnIAPIVersion(bool isIAPIv2, bool shouldExecute)
         {
             // Arrange
-            Mock<IAPIv2RunChecker> runChecker = new Mock<IAPIv2RunChecker>();
+            Mock<IIAPIv2RunChecker> runChecker = new Mock<IIAPIv2RunChecker>();
             runChecker.Setup(x => x.ShouldBeUsed()).Returns(isIAPIv2);
 
             IExecutionConstrains<IJobStatusConsolidationConfiguration> sut = new JobStatusConsolidationExecutionConstrains(runChecker.Object);

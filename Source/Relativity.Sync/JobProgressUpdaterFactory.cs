@@ -18,9 +18,15 @@ namespace Relativity.Sync
         private readonly SyncJobParameters _syncJobParameters;
         private readonly IAPILog _logger;
 
-        public JobProgressUpdaterFactory(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IRdoGuidConfiguration rdoGuidConfiguration,
-            ISynchronizationConfiguration synchronizationConfiguration, IDateTime dateTime, IJobHistoryErrorRepository jobHistoryErrorRepository, 
-            IRipWorkarounds ripWorkarounds, SyncJobParameters syncJobParameters, IAPILog logger)
+        public JobProgressUpdaterFactory(
+            ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
+            IRdoGuidConfiguration rdoGuidConfiguration,
+            ISynchronizationConfiguration synchronizationConfiguration,
+            IDateTime dateTime,
+            IJobHistoryErrorRepository jobHistoryErrorRepository,
+            IRipWorkarounds ripWorkarounds,
+            SyncJobParameters syncJobParameters,
+            IAPILog logger)
         {
             _serviceFactoryForAdmin = serviceFactoryForAdmin;
             _rdoGuidConfiguration = rdoGuidConfiguration;
@@ -34,7 +40,15 @@ namespace Relativity.Sync
 
         public IJobProgressUpdater CreateJobProgressUpdater()
         {
-            return new JobProgressUpdater(_serviceFactoryForAdmin, _rdoGuidConfiguration, _dateTime, _jobHistoryErrorRepository, _ripWorkarounds, _syncJobParameters, _logger, _synchronizationConfiguration.SourceWorkspaceArtifactId,
+            return new JobProgressUpdater(
+                _serviceFactoryForAdmin,
+                _rdoGuidConfiguration,
+                _dateTime,
+                _jobHistoryErrorRepository,
+                _ripWorkarounds,
+                _syncJobParameters,
+                _logger,
+                _synchronizationConfiguration.SourceWorkspaceArtifactId,
                 _synchronizationConfiguration.JobHistoryArtifactId);
         }
     }

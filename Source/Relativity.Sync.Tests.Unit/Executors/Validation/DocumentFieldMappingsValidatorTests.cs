@@ -267,7 +267,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             Mock.Verify(_validationConfiguration);
         }
 
-        [TestCase(typeof(IAPI2_SyncDocumentRunPipeline), false)]
+        [TestCase(typeof(IAPI2_SyncDocumentRunPipeline), true)]
         [TestCase(typeof(SyncDocumentRunPipeline), true)]
         [TestCase(typeof(SyncDocumentRetryPipeline), true)]
         [TestCase(typeof(SyncImageRunPipeline), false)]
