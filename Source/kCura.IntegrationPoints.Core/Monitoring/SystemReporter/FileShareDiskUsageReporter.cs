@@ -40,6 +40,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
             {
                 try
                 {
+                    _logger.LogInformation("Checking {fileShareName}", fileShare);
                     System.IO.Directory.GetFiles(fileShare);
                 }
                 catch (Exception exception)
