@@ -25,7 +25,7 @@ namespace Relativity.Sync.Tests.Unit.Utils
             TimerCallback callback = (state) => ++executionCount;
 
             // Act
-            sut.Activate(callback, null, TimeSpan.Zero, TimeSpan.FromMinutes(500));
+            sut.Activate(callback, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(500));
 
             await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
 

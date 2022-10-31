@@ -5,7 +5,6 @@ using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.ExecutionConstrains;
-using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 {
