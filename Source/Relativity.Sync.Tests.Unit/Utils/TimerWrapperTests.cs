@@ -15,7 +15,7 @@ namespace Relativity.Sync.Tests.Unit.Utils
     internal class TimerWrapperTests
     {
         [Test]
-        public async Task Activate_ShouldActivateTimer()
+        public void Activate_ShouldActivateTimer()
         {
             // Arrange
             int executionCount = 0;
@@ -27,7 +27,7 @@ namespace Relativity.Sync.Tests.Unit.Utils
             // Act
             sut.Activate(callback, null, TimeSpan.Zero, TimeSpan.FromMilliseconds(500));
 
-            await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
+            Task.Delay(TimeSpan.FromSeconds(2)).GetAwaiter().GetResult();
 
             // Assert
             executionCount.Should().BePositive();
