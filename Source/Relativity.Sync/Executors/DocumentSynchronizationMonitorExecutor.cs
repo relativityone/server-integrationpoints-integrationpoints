@@ -50,11 +50,9 @@ namespace Relativity.Sync.Executors
                     ValueResponse<ImportDetails> result = null;
                     do
                     {
-                        await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+                        await Task.Delay(TimeSpan.FromSeconds(10)).ConfigureAwait(false);
 
                         result = await GetImportStatusAsync(jobController, configuration).ConfigureAwait(false);
-
-                        _logger.LogInformation("ImportJob State - {@importJobStatus}", result.Value);
 
                         await HandleDataSourceStatusAsync(dataSources, processedSources, sourceController, configuration).ConfigureAwait(false);
                     }

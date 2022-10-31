@@ -252,12 +252,7 @@ namespace Relativity.Sync
                         FieldValues = fieldValues
                     };
 
-                    _logger.LogInformation("Updating JobHistory {jobHistoryId} in Workspace {workspaceId} - Request: {@updateRequest}",
-                        jobHistoryId, workspaceId, updateRequest);
-
                     UpdateResult updateResult = await objectManager.UpdateAsync(workspaceId, updateRequest).ConfigureAwait(false);
-
-                    _logger.LogInformation("JobHistory {jobHistoryId} was updated with result - {@updateResult}", jobHistoryId, updateResult);
                 }
             }
             catch (Exception ex)

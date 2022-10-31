@@ -77,14 +77,7 @@ namespace Relativity.Sync
         {
             try
             {
-                _log.LogInformation("Updating Prgroess...");
-
                 ImportProgress importProgress = await GetImportJobProgressAsync().ConfigureAwait(false);
-
-                _log.LogInformation(
-                    "Import Job Progress - ImportedRecords: {importedRecords}, ErroredRecords: {erroredRecords}",
-                    importProgress.ImportedRecords,
-                    importProgress.ErroredRecords);
 
                 await _progressUpdater.UpdateJobProgressAsync(
                         _sourceWorkspaceId,
@@ -96,7 +89,6 @@ namespace Relativity.Sync
             catch (Exception ex)
             {
                 _log.LogError(ex, "Sync Job progress update failed. Progress won't be updated in this cycle.");
-                return;
             }
         }
 

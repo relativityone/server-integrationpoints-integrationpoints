@@ -77,11 +77,7 @@ namespace Relativity.Sync.Executors
                             correlationID: _parameters.WorkflowId)
                         .ConfigureAwait(false);
 
-                    if (importJobResponse.IsSuccess == false)
-                    {
-                        _logger.LogError("Cannot create import job of id {importJobId}: {messageCode} {message}", importJobResponse.ImportJobID, importJobResponse.ErrorCode, importJobResponse.ErrorMessage);
-                        return ExecutionResult.Failure(importJobResponse.ErrorMessage);
-                    }
+                    ValidateResponse(importJobResponse);
 
                     _logger.LogInformation("Load ImportDocumentsSettings to Job {jobId}", importJobId);
 
@@ -90,11 +86,7 @@ namespace Relativity.Sync.Executors
                         importJobId,
                         importSettings).ConfigureAwait(false);
 
-                    if (documentConfigurationResponse.IsSuccess == false)
-                    {
-                        _logger.LogError("Cannot create document configuration: {messageCode} {message}", documentConfigurationResponse.ErrorCode, documentConfigurationResponse.ErrorMessage);
-                        return ExecutionResult.Failure(documentConfigurationResponse.ErrorMessage);
-                    }
+                    ValidateResponse(documentConfigurationResponse);
 
                     _logger.LogInformation("Start ImportJob {jobId} and wait for DataSources...", importJobId);
 
@@ -102,11 +94,7 @@ namespace Relativity.Sync.Executors
                         .BeginAsync(configuration.DestinationWorkspaceArtifactId, importJobId)
                         .ConfigureAwait(false);
 
-                    if (jobBeginResponse.IsSuccess == false)
-                    {
-                        _logger.LogError("Cannot begin import job: {messageCode} {message}", jobBeginResponse.ErrorCode, jobBeginResponse.ErrorMessage);
-                        return ExecutionResult.Failure(jobBeginResponse.ErrorMessage);
-                    }
+                    ValidateResponse(jobBeginResponse);
                 }
             }
             catch (Exception ex)
@@ -116,6 +104,15 @@ namespace Relativity.Sync.Executors
             }
 
             return ExecutionResult.Success();
+        }
+
+        private void ValidateResponse(Response response)
+        {
+            if (response is null || response.IsSuccess == false)
+            {
+                string message = $"ImportJobId: {response.ImportJobID}, Error code: {response.ErrorCode}, message: {response.ErrorMessage}";
+                throw new SyncException(message);
+            }
         }
 
         private string GetDestinationIdentityFieldName()
