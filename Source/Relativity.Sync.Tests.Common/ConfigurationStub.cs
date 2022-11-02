@@ -17,11 +17,11 @@ namespace Relativity.Sync.Tests.Common
         IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration, IRetryDataSourceSnapshotConfiguration, IPipelineSelectorConfiguration,
         IDocumentSynchronizationConfiguration, INonDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, IPreValidationConfiguration, IRdoGuidConfiguration,
         IImageJobStartMetricsConfiguration, IDocumentJobStartMetricsConfiguration, ISnapshotQueryConfiguration, IMetricsConfiguration, IStatisticsConfiguration, INonDocumentJobStartMetricsConfiguration, IJobHistoryErrorRepositoryConfigration, INonDocumentObjectLinkingConfiguration,
-        IAntiMalwareConfiguration, IBatchDataSourcePreparationConfiguration, IDocumentSynchronizationMonitorConfiguration, IConfigureDocumentSynchronizationConfiguration, IIAPIv2RunCheckerConfiguration
+        IAntiMalwareConfiguration, IBatchDataSourcePreparationConfiguration, IDocumentSynchronizationMonitorConfiguration, IConfigureDocumentSynchronizationConfiguration, IIAPIv2RunCheckerConfiguration, IItemLevelErrorHandlerConfiguration
     {
         private IList<FieldMap> _fieldMappings = new List<FieldMap>();
-        private string _jobName = String.Empty;
-        private string _sourceJobTagName = String.Empty;
+        private string _jobName = string.Empty;
+        private string _sourceJobTagName = string.Empty;
         private string _emailNotificationRecipients;
         private Guid? _jobStatusConsolidationConfigurationExportRunId;
 
@@ -244,7 +244,7 @@ namespace Relativity.Sync.Tests.Common
 
         public int? JobHistoryToRetryId { get; set; }
 
-        public string SyncVersion { get; set;  }
+        public string SyncVersion { get; set; }
 
         public bool IncludeOriginalImageIfNotFoundInProductions { get; set; }
 
@@ -252,13 +252,13 @@ namespace Relativity.Sync.Tests.Common
 
         public string IdentifierColumn { get; set; }
 
-        public IJobHistoryRdoGuidsProvider JobHistory { get; set;  } = DefaultGuids.JobHistory;
+        public IJobHistoryRdoGuidsProvider JobHistory { get; set; } = DefaultGuids.JobHistory;
 
         public IJobHistoryStatusProvider JobHistoryStatus { get; set; } = DefaultGuids.JobHistoryStatus;
 
         public IJobHistoryErrorGuidsProvider JobHistoryError { get; set; } = DefaultGuids.JobHistoryError;
 
-        public IDestinationWorkspaceTagGuidProvider DestinationWorkspace { get; set;  } = DefaultGuids.DestinationWorkspace;
+        public IDestinationWorkspaceTagGuidProvider DestinationWorkspace { get; set; } = DefaultGuids.DestinationWorkspace;
 
         public DataSourceType DataSourceType { get; set; }
 

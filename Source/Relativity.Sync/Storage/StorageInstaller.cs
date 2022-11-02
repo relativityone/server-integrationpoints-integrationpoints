@@ -44,6 +44,7 @@ namespace Relativity.Sync.Storage
             builder.RegisterType<ConfigureDocumentSynchronizationConfiguration>().AsImplementedInterfaces();
             builder.RegisterType<BatchDataSourcePreparationConfiguration>().AsImplementedInterfaces();
             builder.RegisterType<DocumentSynchronizationMonitorConfiguration>().AsImplementedInterfaces();
+            builder.RegisterType<ItemLevelErrorsHandlerConfiguration>().AsImplementedInterfaces();
 
             builder.RegisterType<FieldMappings>().As<IFieldMappings>();
             builder.RegisterType<JobHistoryErrorRepository>().As<IJobHistoryErrorRepository>();
