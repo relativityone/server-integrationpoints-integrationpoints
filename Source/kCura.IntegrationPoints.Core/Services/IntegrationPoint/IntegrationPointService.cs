@@ -290,15 +290,23 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             IDictionary<Guid, List<Job>> jobs = _jobManager.GetJobsByBatchInstanceId(integrationPointArtifactId);
             _logger.LogInformation("Jobs marked to stopping with correspondent BatchInstanceId {@jobs}", jobs);
 
+            StopSyncAppJobs(stoppableJobHistories);
+
             List<Exception> exceptions = new List<Exception>();
-            foreach (var jobHistory in stoppableJobHistories.ProcessingJobHistory)
+            
+            List<Data.JobHistory> processingJobHistories = stoppableJobHistories.ProcessingJobHistory.Where(x => !FilterSyncAppJobHistory(x)).ToList();
+            foreach (Data.JobHistory jobHistory in processingJobHistories)
             {
                 try
                 {
-                    IList<long> jobIdsForGivenJobHistory = jobs[Guid.Parse(jobHistory.BatchInstance)]
-                        .Select(x => x.JobId).ToList();
-                    _jobManager.StopJobs(jobIdsForGivenJobHistory);
-                    _logger.LogInformation("Jobs {@jobs} has been marked to stop for {jobHistoryId}", jobIdsForGivenJobHistory, jobHistory.ArtifactId);
+                    Guid batchInstance = Guid.Parse(jobHistory.BatchInstance);
+
+                    if (jobs.ContainsKey(batchInstance))
+                    {
+                        IList<long> jobIdsForGivenJobHistory = jobs[batchInstance].Select(x => x.JobId).ToList();
+                        _jobManager.StopJobs(jobIdsForGivenJobHistory);
+                        _logger.LogInformation("Jobs {@jobs} has been marked to stop for {jobHistoryId}", jobIdsForGivenJobHistory, jobHistory.ArtifactId);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -307,17 +315,23 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 }
             }
 
-            foreach (var jobHistory in stoppableJobHistories.PendingJobHistory)
+            List<Data.JobHistory> pendingJobHistories = stoppableJobHistories.PendingJobHistory.Where(x => !FilterSyncAppJobHistory(x)).ToList();
+            foreach (Data.JobHistory jobHistory in pendingJobHistories)
             {
                 try
                 {
                     jobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
                     _jobHistoryService.UpdateRdo(jobHistory);
 
-                    jobs[Guid.Parse(jobHistory.BatchInstance)].ForEach(x => _jobManager.DeleteJob(x.JobId));
+                    Guid batchInstance = Guid.Parse(jobHistory.BatchInstance);
 
-                    _logger.LogInformation("Jobs {@jobs} has been deleted from queue and JobHistory {jobHistoryId} was set to Stopped",
-                        jobs[Guid.Parse(jobHistory.BatchInstance)], jobHistory.ArtifactId);
+                    if (jobs.ContainsKey(batchInstance))
+                    {
+                        jobs[batchInstance].ForEach(x => _jobManager.DeleteJob(x.JobId));
+
+                        _logger.LogInformation("Jobs {@jobs} has been deleted from queue and JobHistory {jobHistoryId} was set to Stopped",
+                            jobs[batchInstance], jobHistory.ArtifactId);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -331,6 +345,27 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 AggregateException stopActionException = new AggregateException(exceptions);
                 _logger.LogError(stopActionException, "Errors occurred when stopping Integration Point {integrationPointId}", integrationPointArtifactId);
                 throw stopActionException;
+            }
+        }
+
+        private void StopSyncAppJobs(StoppableJobHistoryCollection stoppableJobHistories)
+        {
+            List<Data.JobHistory> syncAppJobHistories = stoppableJobHistories
+                .PendingJobHistory
+                .Concat(stoppableJobHistories.ProcessingJobHistory)
+                .Where(FilterSyncAppJobHistory)
+                .ToList();
+
+            foreach (Data.JobHistory syncAppJobHistory in syncAppJobHistories)
+            {
+                try
+                {
+                    _relativitySyncAppIntegration.CancelJobAsync(Guid.Parse(syncAppJobHistory.JobID)).GetAwaiter().GetResult();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to cancel Sync Job ID: {jobId}", syncAppJobHistory.JobID);
+                }
             }
         }
 
@@ -612,6 +647,12 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             {
                 throw new Exception(Constants.IntegrationPoints.RETRY_NO_EXISTING_ERRORS);
             }
+        }
+
+        private bool FilterSyncAppJobHistory(Data.JobHistory jobHistory)
+        {
+            // When Job ID is a valid GUID then we know it's a Sync App Job
+            return Guid.TryParse(jobHistory.JobID, out Guid jobId);
         }
     }
 }

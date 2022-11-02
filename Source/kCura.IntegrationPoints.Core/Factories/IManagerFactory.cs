@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading;
-using kCura.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
