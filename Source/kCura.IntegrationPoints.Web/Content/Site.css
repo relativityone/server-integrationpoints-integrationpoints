@@ -36,19 +36,17 @@ h1
 
 .mapButtonsContainer
 {
-	display: grid;
-	height: 68px;
+	margin-bottom: 5px;
+	margin-top: 10px;
 }
 
 .mappingColumn
 {
-	height: 400px;
 	width: 110px;
 }
 
 .moveMappedFieldsButtons
 {
-	padding-top: 77px;
 }
 
 .full-width
@@ -295,9 +293,10 @@ ul li .day-select
 	font-size: 13px;
 	text-decoration: none;
 	color: #000000;
-	min-width: 250px;
+	min-width: 261px;
 	width: 25%;
 	height: 400px;
+	overflow-x: auto;
 }
 
 .map-move a
@@ -333,7 +332,6 @@ ul li .day-select
 
 .map-field-btn
 {
-	margin: 2px 4px;
 }
 
 .leftSide-field
@@ -507,7 +505,6 @@ ul.actions-right
 	-moz-transform: translateY(0);
 	-ms-transform: translateY(0);
 	-o-transform: translateY(0);
-	/*top: -10px;*/
 	right: 29px;
 	left: auto;
 	bottom: -5px;
@@ -575,8 +572,12 @@ select option {
 	overflow-x: hidden;
 }
 
+select.list-box	option {
+	overflow-x: unset;
+}
+
 .fixedColumn {
-	width: 250px;
+	width: 261px;
 }
 
 /*step3 map fields btns*/
