@@ -147,8 +147,9 @@ namespace kCura.ScheduleQueue.Core.Services
                     job.JobFailed?.ShouldBreakSchedule, nextUtcRunDateTime.HasValue);
 
                 DeleteJob(job.JobId);
-                result.JobState = JobLogState.Deleted;
             }
+
+            result.JobState = JobLogState.Deleted;
 
             return result;
         }

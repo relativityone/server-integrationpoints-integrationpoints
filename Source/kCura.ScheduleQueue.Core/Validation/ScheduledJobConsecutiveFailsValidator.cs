@@ -5,7 +5,7 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 
 namespace kCura.ScheduleQueue.Core.Validation
 {
-    internal class ScheduledJobConsecutiveFailsValidator : IJobPreValidator
+    public class ScheduledJobConsecutiveFailsValidator : IJobPreValidator
     {
         private readonly IConfig _config;
         private readonly IScheduleRuleFactory _scheduleRuleFactory;
