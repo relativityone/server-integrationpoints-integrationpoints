@@ -10,12 +10,12 @@ namespace Relativity.Sync.Storage
     internal class IAPIv2RunCheckerConfiguration : IIAPIv2RunCheckerConfiguration
     {
         private readonly IConfiguration _cache;
-        private readonly IFieldManager _fieldManager;
+        private readonly SyncJobParameters _jobParameters;
 
-        public IAPIv2RunCheckerConfiguration(IConfiguration cache, IFieldManager fieldManager)
+        public IAPIv2RunCheckerConfiguration(IConfiguration cache, SyncJobParameters jobParameters)
         {
             _cache = cache;
-            _fieldManager = fieldManager;
+            _jobParameters = jobParameters;
         }
 
         public ImportNativeFileCopyMode NativeBehavior => _cache.GetFieldValue(x => x.NativesBehavior);
@@ -28,13 +28,6 @@ namespace Relativity.Sync.Storage
 
         public bool IsDrainStopped => _cache.GetFieldValue(x => x.Resuming);
 
-        public bool HasLongTextFields => LongTextFieldsMapped().GetAwaiter().GetResult();
-
-        private async Task<bool> LongTextFieldsMapped()
-        {
-            IList<FieldInfoDto> fieldInfo = await _fieldManager.GetMappedFieldsAsync(CancellationToken.None).ConfigureAwait(false);
-
-            return fieldInfo.Any(x => x.RelativityDataType == RelativityDataType.LongText);
-        }
+        public int SourceWorkspaceArtifactId => _jobParameters.WorkspaceId;
     }
 }

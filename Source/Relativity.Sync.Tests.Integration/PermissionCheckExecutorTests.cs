@@ -98,23 +98,25 @@ namespace Relativity.Sync.Tests.Integration
             const int tagArtifactId = 111;
             _objectManagerFake.Setup(x =>
                     x.QueryAsync(It.IsAny<int>(),
-                        It.Is<QueryRequest>(qr => qr.ObjectType.ArtifactTypeID == (int) ArtifactType.ObjectType),
+                        It.Is<QueryRequest>(qr => qr.ObjectType.ArtifactTypeID == (int)ArtifactType.ObjectType),
                         It.IsAny<int>(), It.IsAny<int>()))
                         .ReturnsAsync(new QueryResult()
-                    {
-                        Objects = new List<RelativityObject>()
+                        {
+                            Objects = new List<RelativityObject>()
                         {
                             new RelativityObject()
                             {
                                 ArtifactID = tagArtifactId
                             }
                         }
-                    });
+                        });
 
             _objectTypeManagerFake.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(new ObjectTypeResponse());
 
             _container = containerBuilder.Build();
+
+            //_iapiv2RunCheckerFake.Setup(x => x.ShouldBeUsed()).Returns(false);
 
             _permissionManagerFake = SetUpPermissionManager();
         }
@@ -124,7 +126,7 @@ namespace Relativity.Sync.Tests.Integration
         {
             // Arrange
             IExecutor<IPermissionsCheckConfiguration> instance = _container.Resolve<IExecutor<IPermissionsCheckConfiguration>>();
-            
+
             // Act
             ExecutionResult validationResult = await instance.ExecuteAsync(_configurationStubFake, CompositeCancellationToken.None).ConfigureAwait(false);
 

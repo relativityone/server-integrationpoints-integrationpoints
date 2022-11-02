@@ -1,4 +1,6 @@
-﻿namespace Relativity.Sync.Pipelines
+﻿using System;
+
+namespace Relativity.Sync.Pipelines
 {
     internal interface IIAPIv2RunChecker
     {

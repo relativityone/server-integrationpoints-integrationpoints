@@ -12,7 +12,6 @@
 
         bool IsDrainStopped { get; }
 
-        bool HasLongTextFields { get; }
-
+        int SourceWorkspaceArtifactId { get; }
     }
 }
