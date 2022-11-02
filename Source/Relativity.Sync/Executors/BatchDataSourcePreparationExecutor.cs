@@ -84,9 +84,9 @@ namespace Relativity.Sync.Executors
         {
             Response result = await job.CancelAsync(configuration.DestinationWorkspaceArtifactId, configuration.ExportRunId).ConfigureAwait(false);
 
-            if (!result.IsSuccess)
+            if (result == null || !result.IsSuccess)
             {
-                _logger.LogError("Could not cancel Job. {errorMessage}", result.ErrorMessage);
+                _logger.LogError("Could not cancel Job. {errorMessage}", result?.ErrorMessage);
             }
         }
     }

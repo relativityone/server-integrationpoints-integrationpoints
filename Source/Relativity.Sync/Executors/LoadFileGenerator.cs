@@ -17,17 +17,20 @@ namespace Relativity.Sync.Executors
         private readonly IBatchDataSourcePreparationConfiguration _configuration;
         private readonly ISourceWorkspaceDataReaderFactory _dataReaderFactory;
         private readonly IFileShareService _fileShareService;
+        private readonly IItemLevelErrorHandler _itemLevelErrorHandler;
         private readonly IAPILog _logger;
 
         public LoadFileGenerator(
             IBatchDataSourcePreparationConfiguration configuration,
             ISourceWorkspaceDataReaderFactory dataReaderFactory,
             IFileShareService fileShareService,
+            IItemLevelErrorHandler itemLevelErrorHandler,
             IAPILog logger)
         {
             _configuration = configuration;
             _dataReaderFactory = dataReaderFactory;
             _fileShareService = fileShareService;
+            _itemLevelErrorHandler = itemLevelErrorHandler;
             _logger = logger;
         }
 
@@ -35,11 +38,11 @@ namespace Relativity.Sync.Executors
         {
             string batchPath = await CreateBatchFullPath(batch).ConfigureAwait(false);
             DataSourceSettings settings = CreateSettings(batchPath);
-            GenerateLoadFile(batch, batchPath, settings);
+            await GenerateLoadFileAsync(batch, batchPath, settings).ConfigureAwait(false);
             return new LoadFile(batch.BatchGuid, batchPath, settings);
         }
 
-        private void GenerateLoadFile(IBatch batch, string batchPath, DataSourceSettings settings)
+        private async Task GenerateLoadFileAsync(IBatch batch, string batchPath, DataSourceSettings settings)
         {
             int readerLineNumber = 0;
             try
@@ -49,6 +52,9 @@ namespace Relativity.Sync.Executors
                 using (ISourceWorkspaceDataReader reader = _dataReaderFactory.CreateNativeSourceWorkspaceDataReader(batch, CancellationToken.None))
                 using (StreamWriter writer = new StreamWriter(batchPath))
                 {
+                    _itemLevelErrorHandler.Initialize(reader.ItemStatusMonitor);
+                    reader.OnItemReadError += _itemLevelErrorHandler.HandleItemLevelError;
+
                     while (reader.Read())
                     {
                         readerLineNumber++;
@@ -57,11 +63,14 @@ namespace Relativity.Sync.Executors
                     }
                 }
 
+                await _itemLevelErrorHandler.HandleDataSourceProcessingFinishedAsync(batch).ConfigureAwait(false);
+
                 _logger.LogInformation("LoadFile for batch {batchId} was written with {recordsCount} records - {path}", batch.ArtifactId, readerLineNumber, batchPath);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Load file generator error occurred in line: {readerLineNumber}", readerLineNumber);
+                await _itemLevelErrorHandler.HandleDataSourceProcessingFinishedAsync(batch).ConfigureAwait(false);
                 throw;
             }
         }

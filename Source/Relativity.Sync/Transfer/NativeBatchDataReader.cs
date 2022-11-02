@@ -51,7 +51,8 @@ namespace Relativity.Sync.Transfer
                     }
                     catch (SyncItemLevelErrorException ex)
                     {
-                        _itemLevelErrorHandler(batchItem.ArtifactID.ToString(CultureInfo.InvariantCulture), ex.GetExceptionMessages());
+                        string itemIdentifier = batchItem.Values[IdentifierField.DocumentFieldIndex].ToString();
+                        _itemLevelErrorHandler(itemIdentifier, ex.GetExceptionMessages());
                         continue;
                     }
 

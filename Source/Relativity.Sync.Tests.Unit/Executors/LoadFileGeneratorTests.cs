@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,11 +7,9 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.ResourceServer;
-using Relativity.Services.Workspace;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
-using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
 
@@ -29,7 +28,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IFileShareService> _fileshareServiceMock;
         private Mock<ISourceWorkspaceDataReaderFactory> _dataReaderFactoryMock;
         private Mock<ISourceWorkspaceDataReader> _dataReaderMock;
-        private Mock<IWorkspaceManager> _workspaceManagerMock;
+        private Mock<IItemStatusMonitor> _itemStatusMonitorMock;
+        private Mock<IItemLevelErrorHandler> _itemLevelErrorHandlerMock;
         private Mock<IBatch> _batchMock;
         private Mock<IAPILog> _loggerMock;
 
@@ -45,7 +45,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _fileshareServiceMock = new Mock<IFileShareService>();
             _dataReaderFactoryMock = new Mock<ISourceWorkspaceDataReaderFactory>();
             _dataReaderMock = new Mock<ISourceWorkspaceDataReader>();
-            _workspaceManagerMock = new Mock<IWorkspaceManager>();
+            _itemStatusMonitorMock = new Mock<IItemStatusMonitor>();
+            _itemLevelErrorHandlerMock = new Mock<IItemLevelErrorHandler>();
             _batchMock = new Mock<IBatch>();
             _loggerMock = new Mock<IAPILog>();
 
@@ -58,8 +59,14 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _batchMock.Setup(x => x.ExportRunId).Returns(new Guid(_EXPORT_RUN_ID));
 
             _dataReaderFactoryMock.Setup(x => x.CreateNativeSourceWorkspaceDataReader(_batchMock.Object, CancellationToken.None)).Returns(_dataReaderMock.Object);
+            _dataReaderMock.Setup(x => x.ItemStatusMonitor).Returns(_itemStatusMonitorMock.Object);
 
-            _sut = new LoadFileGenerator(_configurationMock.Object, _dataReaderFactoryMock.Object, _fileshareServiceMock.Object, _loggerMock.Object);
+            _sut = new LoadFileGenerator(
+                _configurationMock.Object,
+                _dataReaderFactoryMock.Object,
+                _fileshareServiceMock.Object,
+                _itemLevelErrorHandlerMock.Object,
+                _loggerMock.Object);
         }
 
         [TearDown]
@@ -126,6 +133,36 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             // Assert
             function.Should().Throw<Exception>().WithMessage(expectedErrorMessage);
+        }
+
+        [Test]
+        public async Task Generate_ShouldHandleItemLevelErrors()
+        {
+            // Arrange
+            int expectedNumberOfItemLevelErrors = 3;
+            string testItemIdentifier = "testId";
+            ItemLevelError testItemLevelError = new ItemLevelError(testItemIdentifier, "testMessage");
+            long completedItemTestValue = 12345L;
+
+            PrepareFakeLoadFilePath();
+
+            _fileshareServiceMock.Setup(x => x.GetWorkspaceFileShareLocationAsync(_DESTINATION_WORKSPACE_ID))
+                .ReturnsAsync(_workspacePath);
+
+            _dataReaderMock.Setup(x => x.Read()).Callback(() =>
+            {
+                _dataReaderMock.Raise(x => x.OnItemReadError += null, completedItemTestValue, testItemLevelError);
+                _dataReaderMock.Raise(x => x.OnItemReadError += null, completedItemTestValue, testItemLevelError);
+                _dataReaderMock.Raise(x => x.OnItemReadError += null, completedItemTestValue, testItemLevelError);
+            });
+
+            // Act
+            ILoadFile result = await _sut.GenerateAsync(_batchMock.Object).ConfigureAwait(false);
+
+            // Assert
+            _itemLevelErrorHandlerMock.Verify(x => x.Initialize(_dataReaderMock.Object.ItemStatusMonitor), Times.Once);
+            _itemLevelErrorHandlerMock.Verify(x => x.HandleItemLevelError(completedItemTestValue, testItemLevelError), Times.Exactly(expectedNumberOfItemLevelErrors));
+            _itemLevelErrorHandlerMock.Verify(x => x.HandleDataSourceProcessingFinishedAsync(_batchMock.Object), Times.Once);
         }
 
         private string PrepareFakeLoadFilePath()
