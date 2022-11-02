@@ -60,7 +60,10 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
         public abstract DateTime? GetNextUTCRunDateTime();
 
         public abstract int GetNumberOfContinuouslyFailedScheduledJobs();
-        public abstract void ShouldUpgradeNumberOfContinuouslyFailedScheduledJobs(bool shouldUpgrade);
+
+        public abstract void IncrementConsecutiveFailedScheduledJobsCount();
+
+        public abstract void ResetConsecutiveFailedScheduledJobsCount();
 
         public abstract string Description { get; }
 

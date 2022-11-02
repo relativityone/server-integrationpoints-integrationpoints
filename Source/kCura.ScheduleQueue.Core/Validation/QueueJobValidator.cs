@@ -1,24 +1,25 @@
 ﻿using System.Threading.Tasks;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Data;
+using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.Validation
 {
     public class QueueJobValidator : IQueueJobValidator
     {
-        private readonly IHelper _helper;
         private readonly IAPILog _log;
         private readonly IJobPreValidator[] _validators;
 
-        public QueueJobValidator(IHelper helper, IAPILog log)
+        public QueueJobValidator(IHelper helper, IConfig config, IScheduleRuleFactory scheduleRuleFactory, IAPILog log)
         {
-            _helper = helper;
             _log = log.ForContext<QueueJobValidator>();
             _validators = new IJobPreValidator[]
             {
-                new WorkspaceExistsValidator(_helper),
-                new IntegrationPointExistsValidator(_helper),
-                new UserExistsValidator(_helper),
+                new WorkspaceExistsValidator(helper),
+                new IntegrationPointExistsValidator(helper),
+                new UserExistsValidator(helper),
+                new ScheduledJobConsecutiveFailsValidator(config, scheduleRuleFactory)
             };
         }
 
@@ -33,7 +34,7 @@ namespace kCura.ScheduleQueue.Core.Validation
 
                 if (!result.IsValid)
                 {
-                    _log.LogError(result.Exception, "Job {jobId} PreValidation failed.", job.JobId);
+                    _log.LogError(result.Exception, "Job {jobId} PreValidation failed - {@validationResult}.", job.JobId, result);
                     return result;
                 }
             }

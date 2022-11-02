@@ -110,35 +110,29 @@ namespace kCura.ScheduleQueue.Core.Services
             var result = new FinalizeJobResult();
 
             DateTime? nextUtcRunDateTime = GetJobNextUtcRunDateTime(job, scheduleRuleFactory, taskResult);
-            bool shouldBreakSchedule = job.JobFailed?.ShouldBreakSchedule ?? false;
 
             IScheduleRule scheduleRule = scheduleRuleFactory.Deserialize(job);
 
-            if (nextUtcRunDateTime.HasValue)
-            {
-                if (taskResult.Status == TaskStatusEnum.Fail)
-                {
-                    if (scheduleRule.GetNumberOfContinuouslyFailedScheduledJobs() >= _config.MaxFailedScheduledJobsCount)
-                    {
-                        shouldBreakSchedule = true;
-                    }
-                    else
-                    {
-                        scheduleRule.ShouldUpgradeNumberOfContinuouslyFailedScheduledJobs(true);
-                    }
-                }
-                else if (taskResult.Status == TaskStatusEnum.Success)
-                {
-                    scheduleRule.ShouldUpgradeNumberOfContinuouslyFailedScheduledJobs(false);
-                }
-            }
+            bool shouldBreakSchedule = job.JobFailed?.ShouldBreakSchedule ?? false;
 
             if (!shouldBreakSchedule && nextUtcRunDateTime.HasValue)
             {
-                _log.LogInformation("Job {jobId} was scheduled with following details: " +
-                                    "NextRunTime - {nextRunTime} " +
-                                    "ScheduleRule - {scheduleRule}",
-                    job.JobId, nextUtcRunDateTime, job.ScheduleRule);
+                if (taskResult.Status == TaskStatusEnum.Fail)
+                {
+                    scheduleRule.IncrementConsecutiveFailedScheduledJobsCount();
+                }
+                else if (taskResult.Status == TaskStatusEnum.Success)
+                {
+                    scheduleRule.ResetConsecutiveFailedScheduledJobsCount();
+                }
+
+                _log.LogInformation(
+                    "Job {jobId} was scheduled with following details: " +
+                    "NextRunTime - {nextRunTime} " +
+                    "ScheduleRule - {scheduleRule}",
+                    job.JobId,
+                    nextUtcRunDateTime,
+                    job.ScheduleRule);
 
                 TaskParameters taskParameters = new TaskParameters()
                 {
@@ -153,9 +147,9 @@ namespace kCura.ScheduleQueue.Core.Services
                     job.JobFailed?.ShouldBreakSchedule, nextUtcRunDateTime.HasValue);
 
                 DeleteJob(job.JobId);
+                result.JobState = JobLogState.Deleted;
             }
 
-            result.JobState = JobLogState.Deleted;
             return result;
         }
 
@@ -343,7 +337,7 @@ namespace kCura.ScheduleQueue.Core.Services
             LogUpdateJobDetails(job);
             DataProvider.UpdateJobDetails(job.JobId, job.JobDetails);
         }
-        
+
         public void CleanupJobQueueTable()
         {
             _log.LogInformation("Attempting to Cleanup Job queue table in {TypeName}", nameof(JobService));

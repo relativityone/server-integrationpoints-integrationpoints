@@ -521,23 +521,23 @@ namespace kCura.ScheduleQueue.Core.Tests
         }
 
         [Test]
-        public void ShouldUpgradeNumberOfContinuouslyFailedScheduledJobs_True_UpdatesCounter()
+        public void IncrementConsecutiveFailedScheduledJobsCount_True_UpdatesCounter()
         {
             int numberOfContinuouslyFailedScheduledJobs = 11;
             PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"), TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Friday, null, null, null, numberOfContinuouslyFailedScheduledJobs, OccuranceInMonth.Last);
 
-            rule.ShouldUpgradeNumberOfContinuouslyFailedScheduledJobs(true);
+            rule.IncrementConsecutiveFailedScheduledJobsCount();
 
             Assert.AreEqual(numberOfContinuouslyFailedScheduledJobs + 1, rule.FailedScheduledJobsCount);
         }
 
         [Test]
-        public void ShouldUpgradeNumberOfContinuouslyFailedScheduledJobs_False_ResetsCounter()
+        public void ResetConsecutiveFailedScheduledJobsCount_False_ResetsCounter()
         {
             int numberOfContinuouslyFailedScheduledJobs = 11;
             PeriodicScheduleRule rule = new PeriodicScheduleRule(ScheduleInterval.Monthly, DateTime.Parse("10/15/2014"), TimeSpan.Parse("12:31"), null, null, DaysOfWeek.Friday, null, null, null, numberOfContinuouslyFailedScheduledJobs, OccuranceInMonth.Last);
 
-            rule.ShouldUpgradeNumberOfContinuouslyFailedScheduledJobs(false);
+            rule.ResetConsecutiveFailedScheduledJobsCount();
 
             Assert.AreEqual(0, rule.FailedScheduledJobsCount);
         }

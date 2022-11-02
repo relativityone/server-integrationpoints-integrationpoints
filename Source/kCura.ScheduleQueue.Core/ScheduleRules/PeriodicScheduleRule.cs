@@ -131,16 +131,14 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             return FailedScheduledJobsCount;
         }
 
-        public override void ShouldUpgradeNumberOfContinuouslyFailedScheduledJobs(bool shouldUpgrade)
+        public override void IncrementConsecutiveFailedScheduledJobsCount()
         {
-            if (shouldUpgrade)
-            {
-                FailedScheduledJobsCount += 1;
-            }
-            else
-            {
-                FailedScheduledJobsCount = 0;
-            }
+            ++FailedScheduledJobsCount;
+        }
+
+        public override void ResetConsecutiveFailedScheduledJobsCount()
+        {
+            FailedScheduledJobsCount = 0;
         }
 
         /// <summary>

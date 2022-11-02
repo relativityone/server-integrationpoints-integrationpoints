@@ -200,20 +200,41 @@ namespace kCura.ScheduleQueue.Core.Tests
         [Test]
         public void FinalizeJob_JobIsScheduledAndFailedTooManyTimes_ReturnsStateDeleted()
         {
+            // Arrange
             Job job = GetMockJob();
-            int numberOfContinuouslyFailedScheduledJobs = 120;
-            IScheduleRuleFactory scheduleRuleFactory = CreateScheduleRuleFactoryWithRuleReturning(_mockScheduleRuleReturnDate, numberOfContinuouslyFailedScheduledJobs);
-            JobService service = PrepareSut();
+            IScheduleRule rule = Substitute.For<IScheduleRule>();
+            rule.GetNextUTCRunDateTime().Returns(_nextRunTime);
+
+            IScheduleRuleFactory scheduleRuleFactory = CreateScheduleRuleFactoryWithRule(rule);
+
+            JobService sut = PrepareSut();
 
             TaskResult taskResult = new TaskResult() { Status = TaskStatusEnum.Fail };
-            FinalizeJobResult result = service.FinalizeJob(job, scheduleRuleFactory, taskResult);
 
-            _dataProviderMock.Received().DeleteJob(_MOCK_JOB_ID);
-            Assert.AreEqual(result.JobState, JobLogState.Deleted);
+            // Act
+            FinalizeJobResult result = sut.FinalizeJob(job, scheduleRuleFactory, taskResult);
+
+            // Assert
+            rule.Received().IncrementConsecutiveFailedScheduledJobsCount();
+
+            _dataProviderMock.Received().CreateNewAndDeleteOldScheduledJob(
+                _MOCK_JOB_ID,
+                _WORKSPACE_ID,
+                _RELATED_OBJECT_ARTIFACT_ID,
+                _TASK_TYPE.ToString(),
+                _nextRunTime,
+                _agentService.AgentTypeInformation.AgentTypeID,
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                0,
+                _SUBMITTED_BY,
+                _ROOT_JOB_ID,
+                _PARENT_JOB_ID);
         }
 
         [Test]
-        public void FinalizeJob_JobIsScheduledAndFailedLimitedTimes_ReturnsStateModified()
+        public void FinalizeJob_ShouldResetConsecutiveFailsCount_WhenJobFinishedSuccessfully()
         {
             Job job = GetMockJob();
             int failedScheduledJobsCount = 10;
@@ -222,27 +243,25 @@ namespace kCura.ScheduleQueue.Core.Tests
             scheduleRuleFactory.Deserialize(Arg.Any<Job>()).Returns(scheduleRule);
             JobService service = PrepareSut();
 
-            TaskResult taskResult = new TaskResult() { Status = TaskStatusEnum.Fail };
+            TaskResult taskResult = new TaskResult() { Status = TaskStatusEnum.Success };
             FinalizeJobResult result = service.FinalizeJob(job, scheduleRuleFactory, taskResult);
 
-            scheduleRule.Received().GetNumberOfContinuouslyFailedScheduledJobs();
-            scheduleRule.Received().ShouldUpgradeNumberOfContinuouslyFailedScheduledJobs(true);
-            _dataProviderMock.Received().CreateNewAndDeleteOldScheduledJob(
-                _MOCK_JOB_ID, 
-                _WORKSPACE_ID, 
-                _RELATED_OBJECT_ARTIFACT_ID, 
-                _TASK_TYPE.ToString(),
-                _nextRunTime, 
-                _agentService.AgentTypeInformation.AgentTypeID, 
-                Arg.Any<string>(), 
-                Arg.Any<string>(), 
-                Arg.Any<string>(), 
-                0, 
-                _SUBMITTED_BY, 
-                _ROOT_JOB_ID, 
-                _PARENT_JOB_ID);
+            scheduleRule.Received().ResetConsecutiveFailedScheduledJobsCount();
 
-            Assert.AreEqual(result.JobState, JobLogState.Deleted);
+            _dataProviderMock.Received().CreateNewAndDeleteOldScheduledJob(
+                _MOCK_JOB_ID,
+                _WORKSPACE_ID,
+                _RELATED_OBJECT_ARTIFACT_ID,
+                _TASK_TYPE.ToString(),
+                _nextRunTime,
+                _agentService.AgentTypeInformation.AgentTypeID,
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                0,
+                _SUBMITTED_BY,
+                _ROOT_JOB_ID,
+                _PARENT_JOB_ID);
         }
 
         [Test]
@@ -562,8 +581,13 @@ namespace kCura.ScheduleQueue.Core.Tests
         private static IScheduleRuleFactory CreateScheduleRuleFactoryWithRuleReturning(DateTime? dateTime, int numberOfContinuouslyFailedScheduledJobs = 0)
         {
             IScheduleRule scheduleRule = CreateScheduleRuleReturning(dateTime, numberOfContinuouslyFailedScheduledJobs);
+            return CreateScheduleRuleFactoryWithRule(scheduleRule);
+        }
+
+        private static IScheduleRuleFactory CreateScheduleRuleFactoryWithRule(IScheduleRule rule)
+        {
             IScheduleRuleFactory scheduleRuleFactory = Substitute.For<IScheduleRuleFactory>();
-            scheduleRuleFactory.Deserialize(Arg.Any<Job>()).Returns(scheduleRule);
+            scheduleRuleFactory.Deserialize(Arg.Any<Job>()).Returns(rule);
             return scheduleRuleFactory;
         }
 
