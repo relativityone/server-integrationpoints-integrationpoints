@@ -25,8 +25,7 @@ namespace kCura.ScheduleQueue.Core.Validation
             if (scheduleRule != null && scheduleRule.GetNumberOfContinuouslyFailedScheduledJobs() > _config.MaxFailedScheduledJobsCount)
             {
                 result = PreValidationResult.InvalidJob(
-                    $"Scheduled Job has failed {scheduleRule.GetNumberOfContinuouslyFailedScheduledJobs()} times and therefore was stopped by the system. " +
-                    $"The schedule won't be restored until Integration Point update.",
+                    $"Scheduled Job reached maximum number of consecutive fails and therefore was stopped by the system. The schedule won't be restored until Integration Point update.",
                     true);
             }
 
