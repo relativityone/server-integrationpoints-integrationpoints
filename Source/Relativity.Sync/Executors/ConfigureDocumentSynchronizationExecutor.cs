@@ -108,7 +108,7 @@ namespace Relativity.Sync.Executors
 
         private void ValidateResponse(Response response)
         {
-            if (response is null || response.IsSuccess == false)
+            if (response.IsSuccess == false)
             {
                 string message = $"ImportJobId: {response.ImportJobID}, Error code: {response.ErrorCode}, message: {response.ErrorMessage}";
                 throw new SyncException(message);
