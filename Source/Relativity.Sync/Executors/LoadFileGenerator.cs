@@ -50,7 +50,7 @@ namespace Relativity.Sync.Executors
                 using (ISourceWorkspaceDataReader reader = _dataReaderFactory.CreateNativeSourceWorkspaceDataReader(batch, CancellationToken.None))
                 using (StreamWriter writer = new StreamWriter(batchPath))
                 {
-                    _itemLevelErrorHandler.Initialize(reader.ItemStatusMonitor, batch);
+                    _itemLevelErrorHandler.Initialize(reader.ItemStatusMonitor);
                     reader.OnItemReadError += _itemLevelErrorHandler.HandleItemLevelError;
 
                     while (reader.Read())

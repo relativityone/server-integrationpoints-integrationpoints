@@ -6,7 +6,7 @@ namespace Relativity.Sync.Executors
 {
     internal interface IItemLevelErrorHandler
     {
-        void Initialize(IItemStatusMonitor statusMonitor, IBatch batch);
+        void Initialize(IItemStatusMonitor statusMonitor);
 
         void HandleItemLevelError(long completedItem, ItemLevelError itemLevelError);
 

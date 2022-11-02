@@ -11,7 +11,5 @@ namespace Relativity.Sync.Configuration
         public Guid ExportRunId { get; }
 
         public int DestinationWorkspaceArtifactId { get; }
-
-        public int JobHistoryArtifactId { get; }
     }
 }

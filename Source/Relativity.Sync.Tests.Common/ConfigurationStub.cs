@@ -17,11 +17,11 @@ namespace Relativity.Sync.Tests.Common
         IJobEndMetricsConfiguration, IAutomatedWorkflowTriggerConfiguration, IRetryDataSourceSnapshotConfiguration, IPipelineSelectorConfiguration,
         IDocumentSynchronizationConfiguration, INonDocumentSynchronizationConfiguration, IImageSynchronizationConfiguration, IPreValidationConfiguration, IRdoGuidConfiguration,
         IImageJobStartMetricsConfiguration, IDocumentJobStartMetricsConfiguration, ISnapshotQueryConfiguration, IMetricsConfiguration, IStatisticsConfiguration, INonDocumentJobStartMetricsConfiguration, IJobHistoryErrorRepositoryConfigration, INonDocumentObjectLinkingConfiguration,
-        IAntiMalwareConfiguration, IBatchDataSourcePreparationConfiguration, IDocumentSynchronizationMonitorConfiguration, IConfigureDocumentSynchronizationConfiguration, IIAPIv2RunCheckerConfiguration
+        IAntiMalwareConfiguration, IBatchDataSourcePreparationConfiguration, IDocumentSynchronizationMonitorConfiguration, IConfigureDocumentSynchronizationConfiguration, IIAPIv2RunCheckerConfiguration, IItemLevelErrorHandlerConfiguration
     {
         private IList<FieldMap> _fieldMappings = new List<FieldMap>();
-        private string _jobName = String.Empty;
-        private string _sourceJobTagName = String.Empty;
+        private string _jobName = string.Empty;
+        private string _sourceJobTagName = string.Empty;
         private string _emailNotificationRecipients;
         private Guid? _jobStatusConsolidationConfigurationExportRunId;
 

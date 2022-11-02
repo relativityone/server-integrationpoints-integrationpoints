@@ -15,7 +15,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
     [TestFixture]
     public class ItemLevelErrorHandlerTests
     {
-        private Mock<IBatchDataSourcePreparationConfiguration> _configurationMock;
+        private Mock<IItemLevelErrorHandlerConfiguration> _configurationMock;
         private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepositoryMock;
         private Mock<IItemStatusMonitor> _statusMonitorMock;
         private Mock<IAPILog> _loggerMock;
@@ -41,7 +41,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             ItemLevelError itemLevelError = new ItemLevelError("testId", "testMessage");
 
             // Act
-            _sut.Initialize(_statusMonitorMock.Object, _batchMock.Object);
+            _sut.Initialize(_statusMonitorMock.Object);
             _sut.HandleItemLevelError(It.IsAny<long>(), itemLevelError);
 
             // Assert
@@ -74,7 +74,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Arrange
             int expectedItemLEvelErrorsCount = 10;
             _statusMonitorMock.Setup(x => x.FailedItemsCount).Returns(expectedItemLEvelErrorsCount);
-            _sut.Initialize(_statusMonitorMock.Object, _batchMock.Object);
+            _sut.Initialize(_statusMonitorMock.Object);
 
             // Act
             await _sut.HandleDataSourceProcessingFinishedAsync(_batchMock.Object).ConfigureAwait(false);
@@ -91,7 +91,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             PrepareTestItemLevelErrors(expectedItemLEvelErrorsCount: 2);
 
             // Act
-            Action action = () => _sut.Initialize(_statusMonitorMock.Object, _batchMock.Object);
+            Action action = () => _sut.Initialize(_statusMonitorMock.Object);
 
             // Assert
             action.Should().Throw<SyncException>().WithMessage(expectedErrormessage);
@@ -100,7 +100,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private void PrepareTestItemLevelErrors(int expectedItemLEvelErrorsCount)
         {
             ItemLevelError itemLevelError = new ItemLevelError("testId", "testMessage");
-            _sut.Initialize(_statusMonitorMock.Object, _batchMock.Object);
+            _sut.Initialize(_statusMonitorMock.Object);
             for (int i = 0; i < expectedItemLEvelErrorsCount; i++)
             {
                 _sut.HandleItemLevelError(It.IsAny<long>(), itemLevelError);
@@ -109,11 +109,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
         private void PrepareFakeConfiguration()
         {
-            _configurationMock = new Mock<IBatchDataSourcePreparationConfiguration>();
-            _configurationMock.Setup(x => x.DestinationWorkspaceArtifactId).Returns(It.IsAny<int>());
-            _configurationMock.Setup(x => x.ExportRunId).Returns(It.IsAny<Guid>());
+            _configurationMock = new Mock<IItemLevelErrorHandlerConfiguration>();
             _configurationMock.Setup(x => x.SourceWorkspaceArtifactId).Returns(It.IsAny<int>());
-            _configurationMock.Setup(x => x.SyncConfigurationArtifactId).Returns(It.IsAny<int>());
             _configurationMock.Setup(x => x.JobHistoryArtifactId).Returns(It.IsAny<int>());
         }
     }

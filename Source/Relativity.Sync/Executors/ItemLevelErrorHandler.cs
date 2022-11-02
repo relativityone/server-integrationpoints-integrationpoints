@@ -15,21 +15,21 @@ namespace Relativity.Sync.Executors
     {
         private const int _BATCH_ITEM_ERRORS_MAX_COUNT_FOR_RDO_CREATE = 1000;
 
-        private readonly IBatchDataSourcePreparationConfiguration _configuration;
+        private readonly IItemLevelErrorHandlerConfiguration _configuration;
         private readonly IItemLevelErrorLogAggregator _itemLevelErrorLogAggregator;
         private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
 
         private ConcurrentQueue<CreateJobHistoryErrorDto> _batchItemErrors;
         private IItemStatusMonitor _statusMonitor;
 
-        public ItemLevelErrorHandler(IBatchDataSourcePreparationConfiguration configuration, IJobHistoryErrorRepository jobHistoryErrorRepository, IAPILog logger)
+        public ItemLevelErrorHandler(IItemLevelErrorHandlerConfiguration configuration, IJobHistoryErrorRepository jobHistoryErrorRepository, IAPILog logger)
         {
             _configuration = configuration;
             _jobHistoryErrorRepository = jobHistoryErrorRepository;
             _itemLevelErrorLogAggregator = new ItemLevelErrorLogAggregator(logger);
         }
 
-        public void Initialize(IItemStatusMonitor statusMonitor, IBatch batch)
+        public void Initialize(IItemStatusMonitor statusMonitor)
         {
             if (_batchItemErrors != null && _batchItemErrors.Any())
             {
@@ -89,17 +89,6 @@ namespace Relativity.Sync.Executors
                     .GetAwaiter()
                     .GetResult();
             }
-        }
-
-        private async Task<bool> BatchItemLevelErrorsCollectionIsEmpty(IBatch batch)
-        {
-            if (_batchItemErrors != null && _batchItemErrors.Any())
-            {
-                await HandleDataSourceProcessingFinishedAsync(batch).ConfigureAwait(false);
-                return !_batchItemErrors.Any();
-            }
-
-            return true;
         }
     }
 }
