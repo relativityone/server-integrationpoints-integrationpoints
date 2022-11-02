@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Sync.Configuration
 {
-    internal interface IIAPIv2RunCheckerConfiguration
+    internal interface IIAPIv2RunCheckerConfiguration : IConfiguration
     {
         ImportNativeFileCopyMode NativeBehavior { get; }
 

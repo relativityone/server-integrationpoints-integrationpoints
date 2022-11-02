@@ -1,9 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Relativity.Sync.Configuration;
-using Relativity.Sync.Transfer;
+﻿using Relativity.Sync.Configuration;
+using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Storage
 {

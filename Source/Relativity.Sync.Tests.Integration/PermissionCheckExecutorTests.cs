@@ -116,8 +116,6 @@ namespace Relativity.Sync.Tests.Integration
 
             _container = containerBuilder.Build();
 
-            //_iapiv2RunCheckerFake.Setup(x => x.ShouldBeUsed()).Returns(false);
-
             _permissionManagerFake = SetUpPermissionManager();
         }
 

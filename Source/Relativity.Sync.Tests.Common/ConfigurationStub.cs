@@ -42,7 +42,6 @@ namespace Relativity.Sync.Tests.Common
 
         public string FolderPathField { get; set; }
 
-
         public IList<FieldMap> GetFieldMappings() => _fieldMappings;
 
         public void SetFieldMappings(IList<FieldMap> fieldMappings)
@@ -244,7 +243,7 @@ namespace Relativity.Sync.Tests.Common
 
         public int? JobHistoryToRetryId { get; set; }
 
-        public string SyncVersion { get; set;  }
+        public string SyncVersion { get; set; }
 
         public bool IncludeOriginalImageIfNotFoundInProductions { get; set; }
 
@@ -252,13 +251,13 @@ namespace Relativity.Sync.Tests.Common
 
         public string IdentifierColumn { get; set; }
 
-        public IJobHistoryRdoGuidsProvider JobHistory { get; set;  } = DefaultGuids.JobHistory;
+        public IJobHistoryRdoGuidsProvider JobHistory { get; set; } = DefaultGuids.JobHistory;
 
         public IJobHistoryStatusProvider JobHistoryStatus { get; set; } = DefaultGuids.JobHistoryStatus;
 
         public IJobHistoryErrorGuidsProvider JobHistoryError { get; set; } = DefaultGuids.JobHistoryError;
 
-        public IDestinationWorkspaceTagGuidProvider DestinationWorkspace { get; set;  } = DefaultGuids.DestinationWorkspace;
+        public IDestinationWorkspaceTagGuidProvider DestinationWorkspace { get; set; } = DefaultGuids.DestinationWorkspace;
 
         public DataSourceType DataSourceType { get; set; }
 
