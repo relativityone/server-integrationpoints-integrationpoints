@@ -141,7 +141,7 @@ nuget Relativity.AutomatedWorkflows.SDK 1.0.8
 nuget Relativity.OAuth2Client 1.5.3
 nuget Relativity.OAuth2Client.Interfaces 1.5.3
 
-nuget Relativity.Sync 0.9.115
+nuget Relativity.Sync 0.9.118
 
 //RIP packages
 nuget IntegrationPoints.MyFirstProvider 12.3.10
@@ -154,7 +154,7 @@ framework: auto-detect
 strategy: min
 source https://relativity.jfrog.io/artifactory/api/nuget/nuget-anthology
 
-nuget Relativity.Sync 0.9.115
+nuget Relativity.Sync 0.9.118
 nuget SSH.NET 2020.0.1
 nuget Newtonsoft.Json 6.0.8
 nuget Autofac 4.9.4
