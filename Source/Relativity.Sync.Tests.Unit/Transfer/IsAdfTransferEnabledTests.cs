@@ -45,22 +45,22 @@ namespace Relativity.Sync.Tests.Unit.Transfer
                 .SetValue(_sut, null);
         }
 
-        [TestCase(false, false, ImportNativeFileCopyMode.DoNotImportNativeFiles, true)]
-        [TestCase(true, false, ImportNativeFileCopyMode.DoNotImportNativeFiles, true)]
-        [TestCase(false, true, ImportNativeFileCopyMode.DoNotImportNativeFiles, true)]
+        [TestCase(false, false, ImportNativeFileCopyMode.CopyFiles, true)]
+        [TestCase(true, false, ImportNativeFileCopyMode.CopyFiles, true)]
+        [TestCase(false, true, ImportNativeFileCopyMode.CopyFiles, true)]
         [TestCase(true, true, ImportNativeFileCopyMode.CopyFiles, false)]
-        public async Task ADFEnabler_ShouldUseADFTransferAsync_ShouldReturnTrue(bool useFMS, bool tenantIsMigrated, ImportNativeFileCopyMode importNativeFileCopyMode, bool forceADF)
+        public void ADFEnabler_ShouldUseADFTransfer_WhenConditionsAreMet(bool useFMS, bool tenantIsMigrated, ImportNativeFileCopyMode importNativeFileCopyMode, bool forceADF)
         {
-            // ARRANGE
+            // Arrange
             _syncTogglesMock.Setup(x => x.IsEnabled<UseFmsToggle>()).Returns(useFMS);
             _migrationStatusMock.Setup(x => x.IsTenantFullyMigratedAsync()).ReturnsAsync(tenantIsMigrated);
             _instanceSettingsMock.Setup(x => x.GetShouldForceADFTransferAsync(It.IsAny<bool>())).ReturnsAsync(forceADF);
             _documentConfigurationMock.Setup(x => x.ImportNativeFileCopyMode).Returns(importNativeFileCopyMode);
 
-            // ACT
+            // Act
             bool shouldUseADFToCopyFiles = _sut.Value;
 
-            // ASSERT
+            // Assert
             shouldUseADFToCopyFiles.Should().BeTrue();
         }
 
@@ -68,19 +68,37 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         [TestCase(true, false, ImportNativeFileCopyMode.CopyFiles, false)]
         [TestCase(false, true, ImportNativeFileCopyMode.CopyFiles, false)]
         [TestCase(true, true, ImportNativeFileCopyMode.DoNotImportNativeFiles, false)]
-        public async Task ADFEnabler_ShouldUseADFTransferAsync_ShouldReturnFalse(bool useFMS, bool tenantIsMigrated, ImportNativeFileCopyMode importNativeFileCopyMode, bool forceADF)
+        public void ADFEnabler_ShouldNotUseADFTransfer_WhenConditionsAreNotMet(bool useFMS, bool tenantIsMigrated, ImportNativeFileCopyMode importNativeFileCopyMode, bool forceADF)
         {
-            // ARRANGE
+            // Arrange
             _syncTogglesMock.Setup(x => x.IsEnabled<UseFmsToggle>()).Returns(useFMS);
             _migrationStatusMock.Setup(x => x.IsTenantFullyMigratedAsync()).ReturnsAsync(tenantIsMigrated);
             _instanceSettingsMock.Setup(x => x.GetShouldForceADFTransferAsync(It.IsAny<bool>())).ReturnsAsync(forceADF);
             _documentConfigurationMock.Setup(x => x.ImportNativeFileCopyMode).Returns(importNativeFileCopyMode);
 
-            // ACT
+            // Act
             bool shouldUseADFToCopyFiles = _sut.Value;
 
-            // ASSERT
+            // Assert
             shouldUseADFToCopyFiles.Should().BeFalse();
+        }
+
+        [TestCase(ImportNativeFileCopyMode.DoNotImportNativeFiles)]
+        [TestCase(ImportNativeFileCopyMode.SetFileLinks)]
+        public void ADFEnable_ShouldNotUseADFTransfer_WhenNativeFileCopyModeIsNotCopyFiles(ImportNativeFileCopyMode importNativeFileCopyMode)
+        {
+            // Arrange
+            _documentConfigurationMock.Setup(x => x.ImportNativeFileCopyMode).Returns(importNativeFileCopyMode);
+
+            // Act
+            bool shouldUseADFToCopyFiles = _sut.Value;
+
+            // Assert
+            shouldUseADFToCopyFiles.Should().BeFalse();
+
+            _syncTogglesMock.Verify(x => x.IsEnabled<UseFmsToggle>(), Times.Never);
+            _migrationStatusMock.Verify(x => x.IsTenantFullyMigratedAsync(), Times.Never);
+            _instanceSettingsMock.Verify(x => x.GetShouldForceADFTransferAsync(It.IsAny<bool>()), Times.Never);
         }
     }
 }

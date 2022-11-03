@@ -40,25 +40,37 @@ namespace Relativity.Sync.Transfer.ADLS
 
         private async Task<bool> ShouldUseADFTransferAsync()
         {
-            _logger.LogInformation("Checking if should use ADF to transfer files");
+            _logger.LogInformation("Checking if should use ADF to transfer files...");
+            if (_documentSynchronizationConfiguration.ImportNativeFileCopyMode != ImportNativeFileCopyMode.CopyFiles)
+            {
+                _logger.LogInformation(
+                    "ADF transfer won't be used - NativeFileCopyMode: {nativeFileCopyMode}",
+                    _documentSynchronizationConfiguration.ImportNativeFileCopyMode);
+                return _isAdfTransferEnabled ??= false;
+            }
+
+            bool shouldForceADFTransfer = await _instanceSettings.GetShouldForceADFTransferAsync().ConfigureAwait(false);
+            _logger.LogInformation("Instance Setting shouldForceADFTransferAsync: {settingValue}", shouldForceADFTransfer);
+            if (shouldForceADFTransfer)
+            {
+                return _isAdfTransferEnabled ??= true;
+            }
 
             bool isToggleFMSEnabled = _syncToggles.IsEnabled<UseFmsToggle>();
             _logger.LogInformation("Toggle {toggleName} status: {toggleValue}", typeof(UseFmsToggle).Name, isToggleFMSEnabled);
+            if (!isToggleFMSEnabled)
+            {
+                return _isAdfTransferEnabled ??= false;
+            }
 
             bool isTenantFullyMigrated = await _adlsMigrationStatus.IsTenantFullyMigratedAsync().ConfigureAwait(false);
             _logger.LogInformation("Is tenant fully migrated to ADLS: {migrationStatus}", isTenantFullyMigrated);
+            if (isTenantFullyMigrated)
+            {
+                return _isAdfTransferEnabled ??= true;
+            }
 
-            bool shouldForceADFTransferAsync = await _instanceSettings.GetShouldForceADFTransferAsync().ConfigureAwait(false);
-            _logger.LogInformation("Instance Setting shouldForceADFTransferAsync: {settingValue}", shouldForceADFTransferAsync);
-
-            bool nativesTransferEnabled = _documentSynchronizationConfiguration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.CopyFiles;
-
-            bool shouldUseADFTransfer = (isToggleFMSEnabled && isTenantFullyMigrated && nativesTransferEnabled) || shouldForceADFTransferAsync;
-            _logger.LogInformation("Should use ADF to transfer files: {shouldForceADFTransferAsync}", shouldForceADFTransferAsync);
-
-            _isAdfTransferEnabled = shouldUseADFTransfer;
-
-            return shouldUseADFTransfer;
+            return _isAdfTransferEnabled ??= false;
         }
     }
 }
