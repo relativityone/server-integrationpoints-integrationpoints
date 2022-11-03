@@ -25,7 +25,9 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
 
             ExecutorTestSetup setup = new ExecutorTestSetup(Environment, ServiceFactory)
                 .ForWorkspaces(sourceWorkspaceName, destinationWorkspaceName)
-                .SetupDocumentConfiguration(IdentifierFieldMap)
+                .SetupDocumentConfiguration(
+                    IdentifierFieldMap,
+                    nativeFileCopyMode: ImportNativeFileCopyMode.DoNotImportNativeFiles)
                 .SetupContainer()
                 .ExecutePreRequisteExecutor<IDataSourceSnapshotConfiguration>();
 

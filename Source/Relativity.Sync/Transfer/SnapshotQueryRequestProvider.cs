@@ -73,11 +73,13 @@ namespace Relativity.Sync.Transfer
             var viewCondition = $"('ArtifactId' IN VIEW {_configuration.DataSourceArtifactId})";
             return $"( {fieldNameCondition} ) AND {viewCondition}";
         }
-        
-        private async Task<QueryRequest> GetRequestForCurrentPipelineInternalAsync(bool withIdentifierOnly,
-            CancellationToken token)
+
+        private async Task<QueryRequest> GetRequestForCurrentPipelineInternalAsync(bool withIdentifierOnly, CancellationToken token)
         {
             var pipeline = _pipelineSelector.GetPipeline();
+
+            _logger.LogInformation("Getting Snapshot Request for {pipeline}", pipeline.GetType());
+
             if (pipeline.IsDocumentPipeline())
             {
                 IEnumerable<FieldInfoDto> fields =
@@ -98,10 +100,10 @@ namespace Relativity.Sync.Transfer
             if (pipeline.IsNonDocumentPipeline())
             {
                 IList<FieldInfoDto> fields = await _fieldManager.GetMappedFieldsAsync(token).ConfigureAwait(false);
-                
+
                 return CreateNonDocumentQueryRequest(fields);
             }
-            
+
             throw new SyncException("Unable to determine Sync flow type. Snapshot query request creation failed");
         }
 

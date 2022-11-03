@@ -8,7 +8,7 @@ namespace Relativity.Sync.ExecutionConstrains
     {
         public Task<bool> CanExecuteAsync(IDocumentSynchronizationMonitorConfiguration configuration, CancellationToken token)
         {
-            return Task.FromResult(false);
+            return Task.FromResult(true);
         }
     }
 }

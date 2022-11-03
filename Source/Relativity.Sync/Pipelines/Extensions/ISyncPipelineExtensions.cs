@@ -3,13 +3,14 @@
 namespace Relativity.Sync.Pipelines.Extensions
 {
     internal static class ISyncPipelineExtensions
-    {    
+    {
         public static bool IsDocumentPipeline(this ISyncPipeline syncPipeline)
         {
             Type pipelineType = syncPipeline.GetType();
 
             return pipelineType == typeof(SyncDocumentRunPipeline)
-                || pipelineType == typeof(SyncDocumentRetryPipeline);
+                || pipelineType == typeof(SyncDocumentRetryPipeline)
+                || pipelineType == typeof(IAPI2_SyncDocumentRunPipeline);
         }
 
         public static bool IsImagePipeline(this ISyncPipeline syncPipeline)

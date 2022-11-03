@@ -6,10 +6,12 @@ namespace Relativity.Sync.Storage
     internal class DocumentSynchronizationMonitorConfiguration : IDocumentSynchronizationMonitorConfiguration
     {
         private readonly IConfiguration _cache;
+        private readonly SyncJobParameters _syncJobParameters;
 
-        public DocumentSynchronizationMonitorConfiguration(IConfiguration cache)
+        public DocumentSynchronizationMonitorConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters)
         {
             _cache = cache;
+            _syncJobParameters = syncJobParameters;
         }
 
         public Guid ExportRunId
@@ -27,5 +29,9 @@ namespace Relativity.Sync.Storage
         }
 
         public int DestinationWorkspaceArtifactId => _cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);
+
+        public int JobHistoryArtifactId => _cache.GetFieldValue(x => x.JobHistoryId);
+
+        public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
     }
 }

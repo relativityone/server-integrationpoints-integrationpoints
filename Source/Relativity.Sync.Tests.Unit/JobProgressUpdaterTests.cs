@@ -416,7 +416,7 @@ namespace Relativity.Sync.Tests.Unit
 
         private JobProgressUpdater PrepareSut()
         {
-            return new JobProgressUpdater(_serviceFactory.Object, _rdoGuidConfiguration.Object, _WORKSPACE_ID, _JOB_HISTORY_ID, _dateTime.Object, _jobHistoryErrorRepository.Object, _ripWorkarounds.Object, _syncJobParameters, new EmptyLogger());
+            return new JobProgressUpdater(_serviceFactory.Object, _rdoGuidConfiguration.Object, _dateTime.Object, _jobHistoryErrorRepository.Object, _ripWorkarounds.Object, _syncJobParameters, new EmptyLogger(), _WORKSPACE_ID, _JOB_HISTORY_ID);
         }
 
         private Guid SetupJobHistoryStatusGuid(JobHistoryStatus status)

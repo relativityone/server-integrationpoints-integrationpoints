@@ -19,6 +19,8 @@
     </ItemGroup>
   <!-- Third Party Packages -->
     <ItemGroup>
+        <PackageReference Include="AutoFixture" Version="4.17.0" />
+        <PackageReference Include="AutoFixture.AutoMoq" Version="4.17.0" />
         <PackageReference Include="coverlet.msbuild" Version="2.8.*" />
         <PackageReference Include="Moq" Version="4.5.30" />
         <PackageReference Include="NUnit" Version="3.13.2" />
