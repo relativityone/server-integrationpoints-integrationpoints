@@ -33,7 +33,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
                 .Returns((IScheduleRule)null);
 
             // Act
-            var result = await _sut.ValidateAsync(It.IsAny<Job>()).ConfigureAwait(false);
+            PreValidationResult result = await _sut.ValidateAsync(It.IsAny<Job>()).ConfigureAwait(false);
 
             // Assert
             result.IsValid.Should().BeTrue();
@@ -56,7 +56,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
             _configFake.Setup(x => x.MaxFailedScheduledJobsCount).Returns(consecutiveFailsLimit);
 
             // Act
-            var result = await _sut.ValidateAsync(It.IsAny<Job>()).ConfigureAwait(false);
+            PreValidationResult result = await _sut.ValidateAsync(It.IsAny<Job>()).ConfigureAwait(false);
 
             // Assert
             result.IsValid.Should().BeTrue();
@@ -79,7 +79,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
             _configFake.Setup(x => x.MaxFailedScheduledJobsCount).Returns(consecutiveFailsLimit);
 
             // Act
-            var result = await _sut.ValidateAsync(It.IsAny<Job>()).ConfigureAwait(false);
+            PreValidationResult result = await _sut.ValidateAsync(It.IsAny<Job>()).ConfigureAwait(false);
 
             // Assert
             result.IsValid.Should().BeFalse();
