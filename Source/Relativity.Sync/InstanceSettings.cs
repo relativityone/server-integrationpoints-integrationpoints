@@ -47,6 +47,11 @@ namespace Relativity.Sync
             return await GetAsync<int>("SyncMaxThreadsCount", _SYNC_SECTION, defaultValue).ConfigureAwait(false);
         }
 
+        public async Task<TimeSpan> GetSyncProgressUpdatePeriodAsync(TimeSpan defaultValue)
+        {
+            return await GetAsync("SyncProgressUpdatePeriod", _SYNC_SECTION, defaultValue).ConfigureAwait(false);
+        }
+
         public async Task<T> GetAsync<T>(string name, string section, T defaultValue)
         {
             InstanceSettingQueryResultSet resultSet = await TryReadInstanceSettingAsync(name, section).ConfigureAwait(false);

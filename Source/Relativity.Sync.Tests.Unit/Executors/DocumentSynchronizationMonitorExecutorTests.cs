@@ -24,6 +24,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IDestinationServiceFactoryForUser> _serviceFactoryMock;
         private Mock<IAPILog> _loggerMock;
         private Mock<IImportSourceController> _sourceControllerMock;
+        private Mock<IProgressHandler> _progressHandlerMock;
         private Mock<IImportJobController> _jobControllerMock;
         private Mock<IDocumentSynchronizationMonitorConfiguration> _configurationMock;
 
@@ -34,6 +35,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         {
             _serviceFactoryMock = new Mock<IDestinationServiceFactoryForUser>();
             _loggerMock = new Mock<IAPILog>();
+            _progressHandlerMock = new Mock<IProgressHandler>();
             _sourceControllerMock = new Mock<IImportSourceController>();
             _jobControllerMock = new Mock<IImportJobController>();
             _configurationMock = new Mock<IDocumentSynchronizationMonitorConfiguration>();
@@ -44,7 +46,25 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _configurationMock.Setup(x => x.DestinationWorkspaceArtifactId).Returns(_DESTINATION_WORKSPACE_ID);
             _configurationMock.Setup(x => x.ExportRunId).Returns(new Guid(_EXPORT_RUN_ID));
 
-            _sut = new DocumentSynchronizationMonitorExecutor(_serviceFactoryMock.Object, _loggerMock.Object);
+            _sut = new DocumentSynchronizationMonitorExecutor(_serviceFactoryMock.Object, _progressHandlerMock.Object, _loggerMock.Object);
+        }
+
+        [Test]
+        public async Task ExecuteAsync_ShouldAlwaysExplicitlyCallHandleProgressAsync()
+        {
+            // Arrange
+            PrepareTestDataSources();
+
+            ValueResponse<ImportDetails> importDetailsResponse = PrepareImportDetailsResponse(ImportState.Completed);
+
+            _jobControllerMock.Setup(x => x.GetDetailsAsync(_configurationMock.Object.DestinationWorkspaceArtifactId, _configurationMock.Object.ExportRunId))
+                .ReturnsAsync(importDetailsResponse);
+
+            // Act
+            ExecutionResult result = await _sut.ExecuteAsync(_configurationMock.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+
+            // Assert
+            _progressHandlerMock.Verify(x => x.HandleProgressAsync(), Times.Once);
         }
 
         [Test]
@@ -54,29 +74,14 @@ namespace Relativity.Sync.Tests.Unit.Executors
             int expectedNumberOfJobStatusCalls = 3;
             PrepareTestDataSources();
 
-            ImportDetails firstIterationDetailsResponse = PrepareTestImportDetailsContent(ImportState.Scheduled);
-            ImportDetails secondIterationDetailsResponse = PrepareTestImportDetailsContent(ImportState.Inserting);
-            ImportDetails thirdIterationDetailsResponse = PrepareTestImportDetailsContent(ImportState.Completed);
+            ValueResponse<ImportDetails> firstIterationDetailsResponse = PrepareImportDetailsResponse(ImportState.Scheduled);
+            ValueResponse<ImportDetails> secondIterationDetailsResponse = PrepareImportDetailsResponse(ImportState.Inserting);
+            ValueResponse<ImportDetails> thirdIterationDetailsResponse = PrepareImportDetailsResponse(ImportState.Completed);
 
             _jobControllerMock.SetupSequence(x => x.GetDetailsAsync(_configurationMock.Object.DestinationWorkspaceArtifactId, _configurationMock.Object.ExportRunId))
-                .ReturnsAsync(new ValueResponse<ImportDetails>(
-                    It.IsAny<Guid>(),
-                    true,
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    firstIterationDetailsResponse))
-                .ReturnsAsync(new ValueResponse<ImportDetails>(
-                    It.IsAny<Guid>(),
-                    true,
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    secondIterationDetailsResponse))
-                .ReturnsAsync(new ValueResponse<ImportDetails>(
-                    It.IsAny<Guid>(),
-                    true,
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    thirdIterationDetailsResponse));
+                .ReturnsAsync(firstIterationDetailsResponse)
+                .ReturnsAsync(secondIterationDetailsResponse)
+                .ReturnsAsync(thirdIterationDetailsResponse);
 
             // Act
             ExecutionResult result = await _sut.ExecuteAsync(_configurationMock.Object, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -96,15 +101,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Arrange
             PrepareTestDataSources();
 
-            ImportDetails jobDetailsResponse = PrepareTestImportDetailsContent(jobFinalState);
+            ValueResponse<ImportDetails> jobDetailsResponse = PrepareImportDetailsResponse(jobFinalState);
 
             _jobControllerMock.Setup(x => x.GetDetailsAsync(_configurationMock.Object.DestinationWorkspaceArtifactId, _configurationMock.Object.ExportRunId))
-                .ReturnsAsync(new ValueResponse<ImportDetails>(
-                    It.IsAny<Guid>(),
-                    true,
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    jobDetailsResponse));
+                .ReturnsAsync(jobDetailsResponse);
 
             // Act
             ExecutionResult result = await _sut.ExecuteAsync(_configurationMock.Object, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -122,15 +122,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Arrange
             PrepareTestDataSources(DataSourceState.CompletedWithItemErrors);
 
-            ImportDetails jobDetailsResponse = PrepareTestImportDetailsContent(ImportState.Completed);
+            ValueResponse<ImportDetails> jobDetailsResponse = PrepareImportDetailsResponse(ImportState.Completed);
 
             _jobControllerMock.Setup(x => x.GetDetailsAsync(_configurationMock.Object.DestinationWorkspaceArtifactId, _configurationMock.Object.ExportRunId))
-                .ReturnsAsync(new ValueResponse<ImportDetails>(
-                    It.IsAny<Guid>(),
-                    true,
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    jobDetailsResponse));
+                .ReturnsAsync(jobDetailsResponse);
 
             // Act
             ExecutionResult result = await _sut.ExecuteAsync(_configurationMock.Object, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -149,8 +144,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
             string testErrorMessage = "test error message";
             string testErrorCode = "ABC";
             PrepareTestDataSources(DataSourceState.Inserting);
-
-            ImportDetails jobDetailsResponse = PrepareTestImportDetailsContent(ImportState.Completed);
 
             _jobControllerMock.Setup(x => x.GetDetailsAsync(_configurationMock.Object.DestinationWorkspaceArtifactId, _configurationMock.Object.ExportRunId))
                 .ReturnsAsync(new ValueResponse<ImportDetails>(
@@ -198,9 +191,20 @@ namespace Relativity.Sync.Tests.Unit.Executors
                     new DataSourceDetails() { State = DataSourceState.Completed }));
         }
 
-        private ImportDetails PrepareTestImportDetailsContent(ImportState state)
+        private ValueResponse<ImportDetails> PrepareImportDetailsResponse(ImportState state)
         {
-            return new ImportDetails(state, "testApp", 0, DateTime.Now, 0, DateTime.Now);
+            return new ValueResponse<ImportDetails>(
+                        It.IsAny<Guid>(),
+                        true,
+                        It.IsAny<string>(),
+                        It.IsAny<string>(),
+                        new ImportDetails(
+                                state,
+                                It.IsAny<string>(),
+                                It.IsAny<int>(),
+                                It.IsAny<DateTime>(),
+                                It.IsAny<int>(),
+                                It.IsAny<DateTime>()));
         }
     }
 }

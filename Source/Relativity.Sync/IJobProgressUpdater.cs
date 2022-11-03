@@ -11,6 +11,12 @@ namespace Relativity.Sync
 
         Task UpdateJobProgressAsync(int completedRecordsCount, int failedRecordsCount);
 
+        Task UpdateJobProgressAsync(
+            int workspaceId,
+            int jobHistoryId,
+            int completedRecordsCount,
+            int failedRecordsCount);
+
         Task UpdateJobStatusAsync(JobHistoryStatus status);
 
         Task AddJobErrorAsync(Exception ex);
