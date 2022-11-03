@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text.RegularExpressions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
@@ -12,6 +13,7 @@ using kCura.ScheduleQueue.Core.Services;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.IntegrationPoints.Tests.Integration.Mocks.Services;
 
 namespace kCura.ScheduleQueue.Core.Tests
 {
@@ -50,6 +52,7 @@ namespace kCura.ScheduleQueue.Core.Tests
             _agentService.AgentTypeInformation.Returns(AgentTypeInformationHelper.
                 CreateAgentTypeInformation(
                 _goldFlowAgentTypeId, _goldFlowAgentName, _goldFlowAgentNamespace, _goldFlowAgentGuid));
+            kCura.IntegrationPoints.Config.Config.Instance.InstanceSettingsProvider = new FakeInstanceSettingsProvider();
         }
 
         public override void SetUp()
@@ -192,6 +195,73 @@ namespace kCura.ScheduleQueue.Core.Tests
 
             _dataProviderMock.Received().DeleteJob(_MOCK_JOB_ID);
             Assert.AreEqual(result.JobState, JobLogState.Deleted);
+        }
+
+        [Test]
+        public void FinalizeJob_JobIsScheduledAndFailedTooManyTimes_ReturnsStateDeleted()
+        {
+            // Arrange
+            Job job = GetMockJob();
+            IScheduleRule rule = Substitute.For<IScheduleRule>();
+            rule.GetNextUTCRunDateTime().Returns(_nextRunTime);
+
+            IScheduleRuleFactory scheduleRuleFactory = CreateScheduleRuleFactoryWithRule(rule);
+
+            JobService sut = PrepareSut();
+
+            TaskResult taskResult = new TaskResult() { Status = TaskStatusEnum.Fail };
+
+            // Act
+            FinalizeJobResult result = sut.FinalizeJob(job, scheduleRuleFactory, taskResult);
+
+            // Assert
+            rule.Received().IncrementConsecutiveFailedScheduledJobsCount();
+
+            _dataProviderMock.Received().CreateNewAndDeleteOldScheduledJob(
+                _MOCK_JOB_ID,
+                _WORKSPACE_ID,
+                _RELATED_OBJECT_ARTIFACT_ID,
+                _TASK_TYPE.ToString(),
+                _nextRunTime,
+                _agentService.AgentTypeInformation.AgentTypeID,
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                0,
+                _SUBMITTED_BY,
+                _ROOT_JOB_ID,
+                _PARENT_JOB_ID);
+        }
+
+        [Test]
+        public void FinalizeJob_ShouldResetConsecutiveFailsCount_WhenJobFinishedSuccessfully()
+        {
+            Job job = GetMockJob();
+            int failedScheduledJobsCount = 10;
+            IScheduleRule scheduleRule = CreateScheduleRuleReturning(_mockScheduleRuleReturnDate, failedScheduledJobsCount);
+            IScheduleRuleFactory scheduleRuleFactory = Substitute.For<IScheduleRuleFactory>();
+            scheduleRuleFactory.Deserialize(Arg.Any<Job>()).Returns(scheduleRule);
+            JobService service = PrepareSut();
+
+            TaskResult taskResult = new TaskResult() { Status = TaskStatusEnum.Success };
+            FinalizeJobResult result = service.FinalizeJob(job, scheduleRuleFactory, taskResult);
+
+            scheduleRule.Received().ResetConsecutiveFailedScheduledJobsCount();
+
+            _dataProviderMock.Received().CreateNewAndDeleteOldScheduledJob(
+                _MOCK_JOB_ID,
+                _WORKSPACE_ID,
+                _RELATED_OBJECT_ARTIFACT_ID,
+                _TASK_TYPE.ToString(),
+                _nextRunTime,
+                _agentService.AgentTypeInformation.AgentTypeID,
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                0,
+                _SUBMITTED_BY,
+                _ROOT_JOB_ID,
+                _PARENT_JOB_ID);
         }
 
         [Test]
@@ -508,18 +578,24 @@ namespace kCura.ScheduleQueue.Core.Tests
             return new Job(GetMockJobDataRow());
         }
 
-        private static IScheduleRuleFactory CreateScheduleRuleFactoryWithRuleReturning(DateTime? dateTime)
+        private static IScheduleRuleFactory CreateScheduleRuleFactoryWithRuleReturning(DateTime? dateTime, int numberOfContinuouslyFailedScheduledJobs = 0)
         {
-            IScheduleRule scheduleRule = CreateScheduleRuleReturning(dateTime);
+            IScheduleRule scheduleRule = CreateScheduleRuleReturning(dateTime, numberOfContinuouslyFailedScheduledJobs);
+            return CreateScheduleRuleFactoryWithRule(scheduleRule);
+        }
+
+        private static IScheduleRuleFactory CreateScheduleRuleFactoryWithRule(IScheduleRule rule)
+        {
             IScheduleRuleFactory scheduleRuleFactory = Substitute.For<IScheduleRuleFactory>();
-            scheduleRuleFactory.Deserialize(Arg.Any<Job>()).Returns(scheduleRule);
+            scheduleRuleFactory.Deserialize(Arg.Any<Job>()).Returns(rule);
             return scheduleRuleFactory;
         }
 
-        private static IScheduleRule CreateScheduleRuleReturning(DateTime? dateTime)
+        private static IScheduleRule CreateScheduleRuleReturning(DateTime? dateTime, int numberOfContinuouslyFailedScheduledJobs = 0)
         {
             IScheduleRule scheduleRule = Substitute.For<IScheduleRule>();
             scheduleRule.GetNextUTCRunDateTime().Returns(dateTime);
+            scheduleRule.GetNumberOfContinuouslyFailedScheduledJobs().Returns(numberOfContinuouslyFailedScheduledJobs);
             return scheduleRule;
         }
 

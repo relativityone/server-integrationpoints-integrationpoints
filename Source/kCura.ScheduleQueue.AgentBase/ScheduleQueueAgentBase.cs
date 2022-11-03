@@ -158,11 +158,6 @@ namespace kCura.ScheduleQueue.AgentBase
                 _jobService = new JobService(_agentService, new JobServiceDataProvider(_queueManager), _kubernetesModeLazy.Value, Helper);
             }
 
-            if (_queueJobValidator == null)
-            {
-                _queueJobValidator = new QueueJobValidator(Helper, Logger);
-            }
-
             if (_dateTime == null)
             {
                 _dateTime = new DateTimeWrapper();
@@ -183,6 +178,11 @@ namespace kCura.ScheduleQueue.AgentBase
             if (_config == null)
             {
                 _config = IntegrationPoints.Config.Config.Instance;
+            }
+
+            if (_queueJobValidator == null)
+            {
+                _queueJobValidator = new QueueJobValidator(Helper, _config, ScheduleRuleFactory, Logger);
             }
 
             if (_apm == null)

@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Data;
+using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Validation;
 using Moq;
 using NUnit.Framework;
@@ -122,6 +124,10 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
             Mock<IServicesMgr> servicesMgr = new Mock<IServicesMgr>();
             _objectManagerMock = new Mock<IObjectManager>();
 
+            Mock<IConfig> config = new Mock<IConfig>();
+
+            Mock<IScheduleRuleFactory> scheduleRuleFactory = new Mock<IScheduleRuleFactory>();
+
             Mock<IAPILog> log = new Mock<IAPILog>();
             log.Setup(x => x.ForContext<QueueJobValidator>())
                 .Returns(log.Object);
@@ -130,7 +136,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Validation
             servicesMgr.Setup(x => x.CreateProxy<IObjectManager>(It.IsAny<ExecutionIdentity>()))
                 .Returns(_objectManagerMock.Object);
 
-            return new QueueJobValidator(helper.Object, log.Object);
+            return new QueueJobValidator(helper.Object, config.Object, scheduleRuleFactory.Object, log.Object);
         }
 
         private void SetUpWorkspaceExists(bool exists)

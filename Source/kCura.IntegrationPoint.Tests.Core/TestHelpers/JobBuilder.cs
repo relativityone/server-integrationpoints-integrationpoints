@@ -4,6 +4,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core.Core;
+using kCura.ScheduleQueue.Core.ScheduleRules;
 
 namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 {
@@ -103,6 +104,12 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
         public JobBuilder WithScheduleRuleType(string scheduleRuleType)
         {
             _jobData[_SCHEDULE_RULE_TYPE] = scheduleRuleType;
+            return this;
+        }
+
+        public JobBuilder WithScheduleRule(IScheduleRule rule)
+        {
+            _jobData[_SCHEDULE_RULE] = rule.ToSerializedString();
             return this;
         }
 
