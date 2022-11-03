@@ -166,7 +166,11 @@ namespace Relativity.Sync.Executors
             }
             else
             {
-                if (nativeFileCopyMode == ImportNativeFileCopyMode.DoNotImportNativeFiles)
+                int nativeFilePathIndex = GetFieldIndex(fieldsMapping, SpecialFieldType.NativeFileLocation);
+                int nativeFileNameIndex = GetFieldIndex(fieldsMapping, SpecialFieldType.NativeFileFilename);
+                if (nativeFileCopyMode == ImportNativeFileCopyMode.DoNotImportNativeFiles
+                    || nativeFilePathIndex == -1
+                    || nativeFileNameIndex == -1)
                 {
                     return input
                         .WithoutNatives()
@@ -174,9 +178,6 @@ namespace Relativity.Sync.Executors
                 }
                 else
                 {
-                    int nativeFilePathIndex = GetFieldIndex(fieldsMapping, SpecialFieldType.NativeFileLocation);
-                    int nativeFileNameIndex = GetFieldIndex(fieldsMapping, SpecialFieldType.NativeFileFilename);
-
                     return input.WithNatives(x => x
                             .WithFilePathDefinedInColumn(nativeFilePathIndex)
                             .WithFileNameDefinedInColumn(nativeFileNameIndex))

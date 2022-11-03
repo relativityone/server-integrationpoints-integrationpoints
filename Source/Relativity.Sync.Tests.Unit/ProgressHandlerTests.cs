@@ -55,7 +55,7 @@ namespace Relativity.Sync.Tests.Unit
                 .Throws<Exception>();
 
             // Act
-            var result = await _sut.AttachAsync(
+            IDisposable result = await _sut.AttachAsync(
                     It.IsAny<int>(),
                     It.IsAny<int>(),
                     It.IsAny<int>(),
