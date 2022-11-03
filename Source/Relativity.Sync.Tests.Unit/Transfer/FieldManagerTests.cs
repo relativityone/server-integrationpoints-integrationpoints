@@ -11,6 +11,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Pipelines;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
 
@@ -33,13 +34,14 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         private Mock<IObjectFieldTypeRepository> _documentFieldRepository;
         private Mock<ISourceServiceFactoryForAdmin> _serviceFactoryForAdminFake;
         private Mock<IAPILog> _syncLogFake;
+        private Mock<IIAPIv2RunChecker> _iapiRunCheckerMock;
 
         private FieldManager _sut;
 
         #region Test Data
-        
+
         private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 123;
-        
+
         private const int _RDO_ARTIFACT_TYPE_ID = 420;
 
         private const string _FOLDER_PATH_FIELD_NAME = "Folder Path Field";
@@ -52,7 +54,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
         private static readonly FieldInfoDto _DOCUMENT_MAPPED_FIELD =
             FieldInfoDto.DocumentField("Mapped Source Field", "Mapped Destination Field", false);
-        
+
         private static readonly FieldInfoDto _MANAGER_MAPPED_FIELD =
             FieldInfoDto.DocumentField("Manager", "Manager", false, RelativityDataType.SingleObject);
 
@@ -99,7 +101,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             CreateFieldMap(_DOCUMENT_MAPPED_FIELD),
             CreateFieldMap(_MANAGER_MAPPED_FIELD)
         };
-        
+
         private QueryResult queryResultForGetSameTypeFieldNames = new QueryResult
         {
             Objects = new List<RelativityObject>
@@ -126,7 +128,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             }
         };
 
-        private QueryResult queryResultsForGetTypeNameEmpty = new QueryResult{ Objects =  new List<RelativityObject>()};
+        private QueryResult queryResultsForGetTypeNameEmpty = new QueryResult { Objects = new List<RelativityObject>() };
 
         #endregion
 
@@ -144,29 +146,36 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
             var nativeSpecialFieldBuilders = SetupNativeSpecialFieldBuilders();
             var imageSpecialFieldBuilders = SetupImageSpecialFieldBuilders();
-            
+
             _serviceFactoryForAdminFake = new Mock<ISourceServiceFactoryForAdmin>();
             _objectManagerFake = new Mock<IObjectManager>();
             _serviceFactoryForAdminFake.Setup(x => x.CreateProxyAsync<IObjectManager>())
                 .ReturnsAsync(_objectManagerFake.Object);
-            
+
             _objectManagerFake.Setup(x => x.QueryAsync(
                 It.IsAny<int>(),
-                It.Is<QueryRequest>( r => r.ObjectType.ArtifactTypeID == (int)ArtifactType.Field ),
+                It.Is<QueryRequest>(r => r.ObjectType.ArtifactTypeID == (int)ArtifactType.Field),
                 It.IsAny<int>(),
                 It.IsAny<int>()
                 )).ReturnsAsync(queryResultForGetSameTypeFieldNames);
-            
+
             _objectManagerFake.Setup(x => x.QueryAsync(
                 It.IsAny<int>(),
-                It.Is<QueryRequest>( r => r.ObjectType.ArtifactTypeID == (int)ArtifactType.ObjectType),
+                It.Is<QueryRequest>(r => r.ObjectType.ArtifactTypeID == (int)ArtifactType.ObjectType),
                 It.IsAny<int>(),
                 It.IsAny<int>())).ReturnsAsync(queryResultForGetRdoTypeName);
-            
-            _syncLogFake = new Mock<IAPILog>();
 
-            _sut = new FieldManager(_configuration.Object, _documentFieldRepository.Object, nativeSpecialFieldBuilders,
-                imageSpecialFieldBuilders, _serviceFactoryForAdminFake.Object, _syncLogFake.Object);
+            _syncLogFake = new Mock<IAPILog>();
+            _iapiRunCheckerMock = new Mock<IIAPIv2RunChecker>();
+
+            _sut = new FieldManager(
+                _configuration.Object,
+                _documentFieldRepository.Object,
+                nativeSpecialFieldBuilders,
+                imageSpecialFieldBuilders,
+                _serviceFactoryForAdminFake.Object,
+                _iapiRunCheckerMock.Object,
+                _syncLogFake.Object);
         }
 
         [Test]
@@ -176,7 +185,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             FieldInfoDto result = await _sut.GetObjectIdentifierFieldAsync(CancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            result.Should().BeEquivalentTo(_DOCUMENT_IDENTIFIER_FIELD, 
+            result.Should().BeEquivalentTo(
+                _DOCUMENT_IDENTIFIER_FIELD,
                 options => options.ComparingByMembers<FieldInfoDto>().Excluding(x => x.DocumentFieldIndex));
         }
 
@@ -219,7 +229,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             IList<FieldInfoDto> result = await _sut.GetDocumentTypeFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            result.Should().BeEquivalentTo(expectedFields,
+            result.Should().BeEquivalentTo(
+                expectedFields,
                 options => options.ComparingByMembers<FieldInfoDto>().Excluding(x => x.DocumentFieldIndex));
         }
 
@@ -247,7 +258,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             IList<FieldInfoDto> result = await _sut.GetDocumentTypeFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            result.Should().BeEquivalentTo(expectedFields,
+            result.Should().BeEquivalentTo(
+                expectedFields,
                 options => options.ComparingByMembers<FieldInfoDto>().Excluding(x => x.DocumentFieldIndex));
         }
 
@@ -271,7 +283,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             IReadOnlyList<FieldInfoDto> result = await _sut.GetNativeAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            result.Should().BeEquivalentTo(expectedFields,
+            result.Should().BeEquivalentTo(
+                expectedFields,
                 options => options.ComparingByMembers<FieldInfoDto>().Excluding(x => x.DocumentFieldIndex));
         }
 
@@ -291,7 +304,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             IReadOnlyList<FieldInfoDto> result = await _sut.GetImageAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            result.Should().BeEquivalentTo(expectedFields,
+            result.Should().BeEquivalentTo(
+                expectedFields,
                 options => options.ComparingByMembers<FieldInfoDto>().Excluding(x => x.DocumentFieldIndex));
         }
 
@@ -402,7 +416,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             IReadOnlyList<FieldInfoDto> result = await _sut.GetNativeAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            result.Should().BeEquivalentTo(expectedFields,
+            result.Should().BeEquivalentTo(
+                expectedFields,
                 options => options.ComparingByMembers<FieldInfoDto>().Excluding(x => x.DocumentFieldIndex));
         }
 
@@ -464,9 +479,14 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             _configuration.Setup(c => c.GetFieldMappings()).Returns(new List<FieldMap>(0));
             _configuration.Setup(c => c.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ARTIFACT_ID);
 
-            _sut = new FieldManager(_configuration.Object, _documentFieldRepository.Object,
-                Enumerable.Empty<INativeSpecialFieldBuilder>(), Enumerable.Empty<IImageSpecialFieldBuilder>(),
-                _serviceFactoryForAdminFake.Object, _syncLogFake.Object);
+            _sut = new FieldManager(
+                _configuration.Object,
+                _documentFieldRepository.Object,
+                Enumerable.Empty<INativeSpecialFieldBuilder>(),
+                Enumerable.Empty<IImageSpecialFieldBuilder>(),
+                _serviceFactoryForAdminFake.Object,
+                _iapiRunCheckerMock.Object,
+                _syncLogFake.Object);
 
             // Act
             IReadOnlyList<FieldInfoDto> result = await _sut.GetNativeAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
@@ -510,42 +530,55 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         {
             // Arrange
             _configuration.Setup(c => c.GetFieldMappings()).Returns(_MAPPED_FIELDS_WITH_MANAGER);
-            
-            //Act
+
+            // Act
             var sameTypeFields = await _sut.GetMappedFieldsNonDocumentWithoutLinksAsync(It.IsAny<CancellationToken>()).ConfigureAwait(false);
-            
-            //Assert
+
+            // Assert
             sameTypeFields.Should().BeEquivalentTo(GetFieldsWithIndexes(_DOCUMENT_IDENTIFIER_FIELD, _DOCUMENT_MAPPED_FIELD));
         }
-        
+
         [Test]
         public async Task GetMappedFieldsNonDocumentForLinksAsync_ShouldRetrieveApplicableFields()
         {
             // Arrange
             _configuration.Setup(c => c.GetFieldMappings()).Returns(_MAPPED_FIELDS_WITH_MANAGER);
-            
-            //Act
+
+            // Act
             var sameTypeFields = await _sut.GetMappedFieldsNonDocumentForLinksAsync(It.IsAny<CancellationToken>()).ConfigureAwait(false);
-            
-            //Assert
+
+            // Assert
             sameTypeFields.Should().BeEquivalentTo(GetFieldsWithIndexes(_DOCUMENT_IDENTIFIER_FIELD, _MANAGER_MAPPED_FIELD));
         }
-        
+
         [Test]
         public async Task GetSameTypeFieldNamesAsync_ShouldThrowWhenNoObjectsFound()
         {
-            //Arrange
+            // Arrange
             _objectManagerFake.Setup(x => x.QueryAsync(
                 It.IsAny<int>(),
-                It.Is<QueryRequest>( r => r.ObjectType.ArtifactTypeID == (int)ArtifactType.ObjectType),
+                It.Is<QueryRequest>(r => r.ObjectType.ArtifactTypeID == (int)ArtifactType.ObjectType),
                 It.IsAny<int>(),
                 It.IsAny<int>())).ReturnsAsync(queryResultsForGetTypeNameEmpty);
-            
-            //Act
+
+            // Act
             Func<Task> action = () => _sut.GetSameTypeFieldNamesAsync(It.IsAny<int>());
-            
-            //Assert
+
+            // Assert
             await action.Should().ThrowAsync<SyncException>().ConfigureAwait(false);
+        }
+
+        [Test]
+        public async Task GetNativeAllFieldsAsync_ShouldReturnSepcialFieldsWithIndexes_WhenIAPI2FlowEnabled()
+        {
+            // Arrange
+            _iapiRunCheckerMock.Setup(x => x.ShouldBeUsed()).Returns(true);
+
+            // Act
+            IReadOnlyList<FieldInfoDto> result = await _sut.GetNativeAllFieldsAsync(CancellationToken.None).ConfigureAwait(false);
+
+            // Assert
+            result.All(x => x.DocumentFieldIndex >= 0).Should().BeTrue();
         }
 
         private static IEnumerable<FieldInfoDto> GetFieldsWithIndexes(params FieldInfoDto[] fields)

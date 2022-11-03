@@ -8,6 +8,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Pipelines;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Transfer
@@ -19,27 +20,33 @@ namespace Relativity.Sync.Transfer
     /// </summary>
     internal sealed class FieldManager : IFieldManager
     {
+        private readonly IFieldConfiguration _configuration;
+        private readonly IObjectFieldTypeRepository _objectFieldTypeRepository;
+        private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
+        private readonly IList<INativeSpecialFieldBuilder> _nativeSpecialFieldBuilders;
+        private readonly IList<IImageSpecialFieldBuilder> _imageSpecialFieldBuilders;
+        private readonly IIAPIv2RunChecker _iapiRunChecker;
+        private readonly IAPILog _logger;
+
         private List<FieldInfoDto> _mappedFieldsCache;
         private IReadOnlyList<FieldInfoDto> _imageAllFields;
         private IReadOnlyList<FieldInfoDto> _nativeAllFields;
 
-        private readonly IFieldConfiguration _configuration;
-        private readonly IObjectFieldTypeRepository _objectFieldTypeRepository;
-        private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
-
-        private readonly IList<INativeSpecialFieldBuilder> _nativeSpecialFieldBuilders;
-        private readonly IList<IImageSpecialFieldBuilder> _imageSpecialFieldBuilders;
-        private readonly IAPILog _logger;
-
-        public FieldManager(IFieldConfiguration configuration, IObjectFieldTypeRepository objectFieldTypeRepository,
-            IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders, IEnumerable<IImageSpecialFieldBuilder> imageSpecialFieldBuilders,
-            ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IAPILog logger)
+        public FieldManager(
+            IFieldConfiguration configuration,
+            IObjectFieldTypeRepository objectFieldTypeRepository,
+            IEnumerable<INativeSpecialFieldBuilder> nativeSpecialFieldBuilders,
+            IEnumerable<IImageSpecialFieldBuilder> imageSpecialFieldBuilders,
+            ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
+            IIAPIv2RunChecker iAPIv2RunChecker,
+            IAPILog logger)
         {
             _configuration = configuration;
             _objectFieldTypeRepository = objectFieldTypeRepository;
             _nativeSpecialFieldBuilders = OmitNativeInfoFieldsBuildersIfNotNeeded(configuration, nativeSpecialFieldBuilders).OrderBy(b => b.GetType().FullName).ToList();
             _imageSpecialFieldBuilders = imageSpecialFieldBuilders.ToList();
             _serviceFactoryForAdmin = serviceFactoryForAdmin;
+            _iapiRunChecker = iAPIv2RunChecker;
             _logger = logger;
         }
 
@@ -146,8 +153,8 @@ namespace Relativity.Sync.Transfer
 
             string[] namesOfFieldsOfTheSameType = await GetSameTypeFieldNamesAsync(_configuration.SourceWorkspaceArtifactId).ConfigureAwait(false);
 
-            List<FieldInfoDto> result = fieldInfos.Where(f => !namesOfFieldsOfTheSameType.Any( n => n == f.SourceFieldName)).ToList();
-            return  EnrichFieldsWithIndex(result);
+            List<FieldInfoDto> result = fieldInfos.Where(f => !namesOfFieldsOfTheSameType.Any(n => n == f.SourceFieldName)).ToList();
+            return EnrichFieldsWithIndex(result);
         }
 
         public async Task<IReadOnlyList<FieldInfoDto>> GetMappedFieldsNonDocumentForLinksAsync(CancellationToken token)
@@ -156,7 +163,7 @@ namespace Relativity.Sync.Transfer
 
             string[] namesOfFieldsOfTheSameType = await GetSameTypeFieldNamesAsync(_configuration.SourceWorkspaceArtifactId).ConfigureAwait(false);
 
-            List<FieldInfoDto> result = fieldInfos.Where(f => f.IsIdentifier || namesOfFieldsOfTheSameType.Any( n => n == f.SourceFieldName)).ToList();
+            List<FieldInfoDto> result = fieldInfos.Where(f => f.IsIdentifier || namesOfFieldsOfTheSameType.Any(n => n == f.SourceFieldName)).ToList();
             return EnrichFieldsWithIndex(result);
         }
 
@@ -217,6 +224,7 @@ namespace Relativity.Sync.Transfer
             {
                 nativeSpecialFieldBuilders = nativeSpecialFieldBuilders.Where(x => !(x is INativeInfoFieldsBuilder));
             }
+
             return nativeSpecialFieldBuilders;
         }
 
@@ -241,9 +249,12 @@ namespace Relativity.Sync.Transfer
 
                 if (matchingSpecialField != null)
                 {
-                    var fieldInfoDto = new FieldInfoDto(matchingSpecialField.SpecialFieldType,
-                        mappedDocumentField.SourceFieldName, mappedDocumentField.DestinationFieldName,
-                        mappedDocumentField.IsIdentifier, mappedDocumentField.IsDocumentField);
+                    var fieldInfoDto = new FieldInfoDto(
+                        matchingSpecialField.SpecialFieldType,
+                        mappedDocumentField.SourceFieldName,
+                        mappedDocumentField.DestinationFieldName,
+                        mappedDocumentField.IsIdentifier,
+                        mappedDocumentField.IsDocumentField);
                     result.Add(fieldInfoDto);
                     remainingSpecialFields.Remove(matchingSpecialField);
                 }
@@ -287,10 +298,11 @@ namespace Relativity.Sync.Transfer
 
         private List<FieldInfoDto> EnrichFieldsWithIndex(List<FieldInfoDto> fields)
         {
+            bool isIAPIv2flow = _iapiRunChecker.ShouldBeUsed();
             int currentIndex = 0;
             foreach (var field in fields)
             {
-                if (field.IsDocumentField)
+                if (field.IsDocumentField || isIAPIv2flow)
                 {
                     field.DocumentFieldIndex = currentIndex;
                     currentIndex++;

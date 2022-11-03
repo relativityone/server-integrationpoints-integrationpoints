@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Sync.Configuration
 {
-    internal interface IIAPIv2RunCheckerConfiguration
+    internal interface IIAPIv2RunCheckerConfiguration : IConfiguration
     {
         ImportNativeFileCopyMode NativeBehavior { get; }
 
@@ -12,7 +12,6 @@
 
         bool IsDrainStopped { get; }
 
-        bool HasLongTextFields { get; }
-
+        int SourceWorkspaceArtifactId { get; }
     }
 }
