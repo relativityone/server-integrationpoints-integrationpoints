@@ -29,7 +29,7 @@ namespace Relativity.Sync.Tests.System.DataSourceSnapshotExecutors
 
             _workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 
-            const int documentArtifactTypeId = (int) ArtifactType.Document;
+            const int documentArtifactTypeId = (int)ArtifactType.Document;
             using (IKeywordSearchManager keywordSearchManager = ServiceFactory.CreateProxy<IKeywordSearchManager>())
             {
                 KeywordSearch search = new KeywordSearch
@@ -61,6 +61,8 @@ namespace Relativity.Sync.Tests.System.DataSourceSnapshotExecutors
                 JobHistoryArtifactId = jobHistoryArtifactId
             };
 
+            PrepareSyncConfigurationAndAssignId(configuration);
+
             ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IDataSourceSnapshotConfiguration>(configuration);
 
             // ACT
@@ -87,7 +89,7 @@ namespace Relativity.Sync.Tests.System.DataSourceSnapshotExecutors
                 JobHistoryArtifactId = jobHistoryArtifactId,
                 IsImageJob = true,
             };
-
+            PrepareSyncConfigurationAndAssignId(configuration);
             configuration.SetFieldMappings(identifierMapping);
 
             ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IDataSourceSnapshotConfiguration>(configuration);

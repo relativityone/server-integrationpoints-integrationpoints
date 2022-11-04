@@ -60,6 +60,7 @@ namespace Relativity.Sync.Tests.System
                 SourceWorkspaceArtifactId = expectedSourceWorkspaceArtifactId,
                 JobHistoryArtifactId = expectedJobHistoryArtifactId
             };
+            PrepareSyncConfigurationAndAssignId(configuration);
 
             // ACT
             ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IDestinationWorkspaceTagsCreationConfiguration>(configuration);
@@ -110,12 +111,13 @@ namespace Relativity.Sync.Tests.System
                 SourceWorkspaceArtifactId = expectedSourceWorkspaceArtifactId,
                 JobHistoryArtifactId = expectedJobHistoryArtifactId
             };
+            PrepareSyncConfigurationAndAssignId(configuration);
 
             ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IDestinationWorkspaceTagsCreationConfiguration>(configuration);
 
             // ACT
             await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
-            
+
             // ASSERT
             RelativityObject sourceCaseTag = await QueryForCreatedSourceCaseTagAsync(configuration.SourceWorkspaceTagArtifactId).ConfigureAwait(false);
             RelativityObject sourceJobTag = (await QueryForCreatedSourceJobTagAsync(configuration.SourceJobTagArtifactId).ConfigureAwait(false)).First();
@@ -164,7 +166,7 @@ namespace Relativity.Sync.Tests.System
                 SourceWorkspaceArtifactId = _sourceWorkspace.ArtifactID,
                 JobHistoryArtifactId = expectedJobHistoryArtifactId
             };
-
+            PrepareSyncConfigurationAndAssignId(configuration);
             ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IDestinationWorkspaceTagsCreationConfiguration>(configuration);
 
             // Act
@@ -174,7 +176,7 @@ namespace Relativity.Sync.Tests.System
             configuration.SourceJobTagArtifactId.Should().Be(expectedSourceJobTagArtifactId);
 
             List<RelativityObject> sourceJobTags = await QueryForCreatedSourceJobTagAsync(configuration.SourceJobTagArtifactId).ConfigureAwait(false);
-            
+
             sourceJobTags.Should().ContainSingle(x => x.ArtifactID == expectedSourceJobTagArtifactId);
         }
 
