@@ -11,6 +11,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Executors
@@ -83,7 +84,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         }
 
         [Test]
-        public async Task Generate_ShouldReturnILoadFileWithCorrectId()
+        public async Task GenerateAsync_ShouldReturnILoadFileWithCorrectId()
         {
             // Arrange
             PrepareFakeLoadFilePath();
@@ -92,7 +93,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 .ReturnsAsync(_workspacePath);
 
             // Act
-            ILoadFile result = await _sut.GenerateAsync(_batchMock.Object).ConfigureAwait(false);
+            ILoadFile result = await _sut.GenerateAsync(_batchMock.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
             // Assert
             result.Should().NotBeNull();
@@ -100,7 +101,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         }
 
         [Test]
-        public async Task Generate_ShouldReturnCorrectFilePath_WhenRootDirectoryExists()
+        public async Task GenerateAsync_ShouldReturnCorrectFilePath_WhenRootDirectoryExists()
         {
             // Arrange
             string expectedBatchPath = PrepareFakeLoadFilePath();
@@ -109,7 +110,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 .ReturnsAsync(_workspacePath);
 
             // Act
-            ILoadFile result = await _sut.GenerateAsync(_batchMock.Object).ConfigureAwait(false);
+            ILoadFile result = await _sut.GenerateAsync(_batchMock.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
             // Assert
             result.Should().NotBeNull();
@@ -118,7 +119,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         }
 
         [Test]
-        public void Generate_ShouldReturnError_WhenRootDirectoryDoesNotExist()
+        public void GenerateAsync_ShouldReturnError_WhenRootDirectoryDoesNotExist()
         {
             // Arrange
             _serverPath = "randomTestPath";
@@ -129,14 +130,14 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 .ReturnsAsync(rootDirectory);
 
             // Act
-            Func<Task<ILoadFile>> function = async () => await _sut.GenerateAsync(_batchMock.Object).ConfigureAwait(false);
+            Func<Task<ILoadFile>> function = async () => await _sut.GenerateAsync(_batchMock.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
             // Assert
             function.Should().Throw<Exception>().WithMessage(expectedErrorMessage);
         }
 
         [Test]
-        public async Task Generate_ShouldHandleItemLevelErrors()
+        public async Task GenerateAsync_ShouldHandleItemLevelErrors()
         {
             // Arrange
             int expectedNumberOfItemLevelErrors = 3;
@@ -157,11 +158,61 @@ namespace Relativity.Sync.Tests.Unit.Executors
             });
 
             // Act
-            ILoadFile result = await _sut.GenerateAsync(_batchMock.Object).ConfigureAwait(false);
+            ILoadFile result = await _sut.GenerateAsync(_batchMock.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
             // Assert
             _itemLevelErrorHandlerMock.Verify(x => x.Initialize(_dataReaderMock.Object.ItemStatusMonitor), Times.Once);
             _itemLevelErrorHandlerMock.Verify(x => x.HandleItemLevelError(completedItemTestValue, testItemLevelError), Times.Exactly(expectedNumberOfItemLevelErrors));
+            _itemLevelErrorHandlerMock.Verify(x => x.HandleDataSourceProcessingFinishedAsync(_batchMock.Object), Times.Once);
+        }
+
+        [Test]
+        public async Task GenerateAsync_ShouldStopProcessing_WhenCancellationTokenIsProvided()
+        {
+            // Arrange
+            PrepareFakeLoadFilePath();
+
+            _fileshareServiceMock.Setup(x => x.GetWorkspaceFileShareLocationAsync(_DESTINATION_WORKSPACE_ID))
+                .ReturnsAsync(_workspacePath);
+            bool readResult = true;
+            _dataReaderMock.Setup(x => x.Read())
+                .Returns(() => readResult).Callback(() => readResult = false);
+
+            CompositeCancellationTokenStub token = new CompositeCancellationTokenStub
+            {
+                IsStopRequestedFunc = () => true
+            };
+
+            // Act
+            ILoadFile result = await _sut.GenerateAsync(_batchMock.Object, token).ConfigureAwait(false);
+
+            // Assert
+            _batchMock.Verify(x => x.SetStatusAsync(BatchStatus.Cancelled), Times.Once);
+        }
+
+        [Test]
+        public async Task GenerateAsync_ShouldPreserveBatchStateAndStopProcessing_WhenDrainStopTokenIsProvided()
+        {
+            // Arrange
+            PrepareFakeLoadFilePath();
+
+            _fileshareServiceMock.Setup(x => x.GetWorkspaceFileShareLocationAsync(_DESTINATION_WORKSPACE_ID))
+                .ReturnsAsync(_workspacePath);
+            bool readResult = true;
+            _dataReaderMock.Setup(x => x.Read())
+                .Returns(() => readResult).Callback(() => readResult = false);
+
+            CompositeCancellationTokenStub token = new CompositeCancellationTokenStub
+            {
+                IsDrainStopRequestedFunc = () => true
+            };
+
+            // Act
+            ILoadFile result = await _sut.GenerateAsync(_batchMock.Object, token).ConfigureAwait(false);
+
+            // Assert
+            _batchMock.Verify(x => x.SetStatusAsync(BatchStatus.Paused), Times.Once);
+            _batchMock.Verify(x => x.SetStartingIndexAsync(It.IsAny<int>()), Times.Once);
             _itemLevelErrorHandlerMock.Verify(x => x.HandleDataSourceProcessingFinishedAsync(_batchMock.Object), Times.Once);
         }
 

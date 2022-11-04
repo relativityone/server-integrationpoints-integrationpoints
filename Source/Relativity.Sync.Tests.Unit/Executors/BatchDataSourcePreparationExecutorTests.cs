@@ -12,6 +12,7 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
@@ -63,12 +64,17 @@ namespace Relativity.Sync.Tests.Unit.Executors
             Mock<IBatch> batchMock = new Mock<IBatch>();
             Mock<ILoadFile> loadFileMock = new Mock<ILoadFile>();
             _batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batchMock.Object);
-            _loadFileGeneratorMock.Setup(x => x.GenerateAsync(batchMock.Object)).ReturnsAsync(loadFileMock.Object);
+            _loadFileGeneratorMock.Setup(x => x.GenerateAsync(batchMock.Object, CompositeCancellationToken.None)).ReturnsAsync(loadFileMock.Object);
             _importSourceControllerMock.Setup(x => x.AddSourceAsync(
                 It.IsAny<int>(),
                 It.IsAny<Guid>(),
                 It.IsAny<Guid>(),
                 It.IsAny<DataSourceSettings>()))
+                .ReturnsAsync(new Response(It.IsAny<Guid>(), true, string.Empty, string.Empty));
+
+            _importJobControllerMock.Setup(x => x.EndAsync(
+                It.IsAny<int>(),
+                It.IsAny<Guid>()))
                 .ReturnsAsync(new Response(It.IsAny<Guid>(), true, string.Empty, string.Empty));
 
             // Act
@@ -90,7 +96,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             Mock<ILoadFile> loadFileMock = new Mock<ILoadFile>();
             _importJobControllerMock.Setup(x => x.CancelAsync(It.IsAny<int>(), It.IsAny<Guid>())).ReturnsAsync(new Response(It.IsAny<Guid>(), false, string.Empty, string.Empty));
             _batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batchMock.Object);
-            _loadFileGeneratorMock.Setup(x => x.GenerateAsync(batchMock.Object)).Throws(exception);
+            _loadFileGeneratorMock.Setup(x => x.GenerateAsync(batchMock.Object, CompositeCancellationToken.None)).Throws(exception);
 
             // Act
             ExecutionResult result = await _sut.ExecuteAsync(_configurationMock.Object, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -113,7 +119,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             Mock<ILoadFile> loadFileMock = new Mock<ILoadFile>();
             _importJobControllerMock.Setup(x => x.CancelAsync(It.IsAny<int>(), It.IsAny<Guid>())).ReturnsAsync(new Response(It.IsAny<Guid>(), false, string.Empty, string.Empty));
             _batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batchMock.Object);
-            _loadFileGeneratorMock.Setup(x => x.GenerateAsync(batchMock.Object)).ReturnsAsync(loadFileMock.Object);
+            _loadFileGeneratorMock.Setup(x => x.GenerateAsync(batchMock.Object, CompositeCancellationToken.None)).ReturnsAsync(loadFileMock.Object);
 
             _importSourceControllerMock.Setup(x => x.AddSourceAsync(
                 _DESTINATION_WORKSPACE_ID,
@@ -130,6 +136,58 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _importJobControllerMock.Verify(x => x.EndAsync(It.IsAny<int>(), It.IsAny<Guid>()), Times.Never);
             result.Status.Should().Be(ExecutionStatus.Failed);
             result.Message.Should().Contain(expectedFailureMessage);
+        }
+
+        [Test]
+        public async Task ExecuteAsync_ShouldCancelJob_WhenCancellationTokenIsProvided()
+        {
+            // Arrange
+            CompositeCancellationTokenStub token = new CompositeCancellationTokenStub
+            {
+                IsStopRequestedFunc = () => true
+            };
+
+            Mock<IBatch> batchMock = new Mock<IBatch>();
+            Mock<ILoadFile> loadFileMock = new Mock<ILoadFile>();
+            _importJobControllerMock.Setup(x => x.CancelAsync(It.IsAny<int>(), It.IsAny<Guid>())).ReturnsAsync(new Response(It.IsAny<Guid>(), false, string.Empty, string.Empty));
+            _batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batchMock.Object);
+            _loadFileGeneratorMock.Setup(x => x.GenerateAsync(batchMock.Object, token)).ReturnsAsync(loadFileMock.Object);
+
+            // Act
+            ExecutionResult result = await _sut.ExecuteAsync(_configurationMock.Object, token).ConfigureAwait(false);
+
+            // Assert
+            result.Status.Should().Be(ExecutionStatus.Canceled);
+            _importJobControllerMock.Verify(x => x.CancelAsync(_configurationMock.Object.DestinationWorkspaceArtifactId, _configurationMock.Object.ExportRunId), Times.Once);
+
+            _importSourceControllerMock.Verify(x => x.AddSourceAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<DataSourceSettings>()), Times.Never);
+            batchMock.Verify(x => x.SetStatusAsync(BatchStatus.Generated), Times.Never);
+            _importJobControllerMock.Verify(x => x.EndAsync(It.IsAny<int>(), It.IsAny<Guid>()), Times.Never);
+        }
+
+        [Test]
+        public async Task ExecuteAsync_ShouldPauseJob_WhenDrainStopTokenIsProvided()
+        {
+            // Arrange
+            CompositeCancellationTokenStub token = new CompositeCancellationTokenStub
+            {
+                IsDrainStopRequestedFunc = () => true
+            };
+
+            Mock<IBatch> batchMock = new Mock<IBatch>();
+            Mock<ILoadFile> loadFileMock = new Mock<ILoadFile>();
+            _importJobControllerMock.Setup(x => x.CancelAsync(It.IsAny<int>(), It.IsAny<Guid>())).ReturnsAsync(new Response(It.IsAny<Guid>(), false, string.Empty, string.Empty));
+            _batchRepositoryMock.Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batchMock.Object);
+            _loadFileGeneratorMock.Setup(x => x.GenerateAsync(batchMock.Object, token)).ReturnsAsync(loadFileMock.Object);
+
+            // Act
+            ExecutionResult result = await _sut.ExecuteAsync(_configurationMock.Object, token).ConfigureAwait(false);
+
+            // Assert
+            result.Status.Should().Be(ExecutionStatus.Paused);
+            _importSourceControllerMock.Verify(x => x.AddSourceAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<DataSourceSettings>()), Times.Never);
+            batchMock.Verify(x => x.SetStatusAsync(BatchStatus.Generated), Times.Never);
+            _importJobControllerMock.Verify(x => x.EndAsync(It.IsAny<int>(), It.IsAny<Guid>()), Times.Never);
         }
 
         private void PrepareBatchList()

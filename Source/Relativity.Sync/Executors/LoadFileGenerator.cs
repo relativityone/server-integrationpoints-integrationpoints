@@ -55,21 +55,21 @@ namespace Relativity.Sync.Executors
 
                     while (reader.Read())
                     {
-                        readerLineNumber++;
                         if (token.IsStopRequested)
                         {
                             await HandleCancellationAsync(batch).ConfigureAwait(false);
-                            break;
+                            return;
                         }
 
                         if (token.IsDrainStopRequested)
                         {
                             await HandleDrainStopAsync(batch, readerLineNumber).ConfigureAwait(false);
-                            break;
+                            return;
                         }
 
                         string line = GetLineContent(reader, settings);
                         writer.WriteLine(line);
+                        readerLineNumber++;
                     }
                 }
 
