@@ -34,21 +34,21 @@ namespace Relativity.Sync.Executors
             _logger = logger;
         }
 
-        public async Task<ILoadFile> GenerateAsync(IBatch batch)
+        public async Task<ILoadFile> GenerateAsync(IBatch batch, CompositeCancellationToken token)
         {
             string batchPath = await CreateBatchFullPath(batch).ConfigureAwait(false);
             DataSourceSettings settings = CreateSettings(batchPath);
-            await GenerateLoadFileAsync(batch, batchPath, settings).ConfigureAwait(false);
+            await GenerateLoadFileAsync(batch, batchPath, settings, token).ConfigureAwait(false);
             return new LoadFile(batch.BatchGuid, batchPath, settings);
         }
 
-        private async Task GenerateLoadFileAsync(IBatch batch, string batchPath, DataSourceSettings settings)
+        private async Task GenerateLoadFileAsync(IBatch batch, string batchPath, DataSourceSettings settings, CompositeCancellationToken token)
         {
             int readerLineNumber = 0;
             try
             {
                 using (ISourceWorkspaceDataReader reader = _dataReaderFactory.CreateNativeSourceWorkspaceDataReader(batch, CancellationToken.None))
-                using (StreamWriter writer = new StreamWriter(batchPath))
+                using (StreamWriter writer = new StreamWriter(batchPath, append: true))
                 {
                     _itemLevelErrorHandler.Initialize(reader.ItemStatusMonitor);
                     reader.OnItemReadError += _itemLevelErrorHandler.HandleItemLevelError;
@@ -56,6 +56,18 @@ namespace Relativity.Sync.Executors
                     while (reader.Read())
                     {
                         readerLineNumber++;
+                        if (token.IsStopRequested)
+                        {
+                            await HandleCancellationAsync(batch).ConfigureAwait(false);
+                            break;
+                        }
+
+                        if (token.IsDrainStopRequested)
+                        {
+                            await HandleDrainStopAsync(batch, readerLineNumber).ConfigureAwait(false);
+                            break;
+                        }
+
                         string line = GetLineContent(reader, settings);
                         writer.WriteLine(line);
                     }
@@ -130,6 +142,20 @@ namespace Relativity.Sync.Executors
             }
 
             return batchFullPath;
+        }
+
+        private async Task HandleCancellationAsync(IBatch batch)
+        {
+            _logger.LogInformation("Cancellation requested for job ID: {jobId}, batch GUID: {batchId}", _configuration.ExportRunId, batch.BatchGuid);
+            await batch.SetStatusAsync(BatchStatus.Cancelled).ConfigureAwait(false);
+        }
+
+        private async Task HandleDrainStopAsync(IBatch batch, int startIndexForProcessingAfterResume)
+        {
+            _logger.LogInformation("Drain stop requested for job ID: {jobId}, batch GUID: {batchId}", _configuration.ExportRunId, batch.BatchGuid);
+            await batch.SetStatusAsync(BatchStatus.Paused).ConfigureAwait(false);
+            await batch.SetStartingIndexAsync(startIndexForProcessingAfterResume).ConfigureAwait(false);
+            await _itemLevelErrorHandler.HandleDataSourceProcessingFinishedAsync(batch).ConfigureAwait(false);
         }
     }
 }
