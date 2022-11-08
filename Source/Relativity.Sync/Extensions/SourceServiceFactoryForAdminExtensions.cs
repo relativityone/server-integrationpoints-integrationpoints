@@ -17,7 +17,7 @@ namespace Relativity.Sync.Extensions
     public static class SourceServiceFactoryForAdminExtensions
     {
         /// <summary>
-        /// Prepares SyncConfiguration for resuming paused job 
+        /// Prepares SyncConfiguration for resuming paused job
         /// </summary>
         public static Task PrepareSyncConfigurationForResumeAsync(this IServicesMgr serviceManager, int workspaceId,
             int syncConfigurationId, IAPILog logger)
@@ -30,7 +30,7 @@ namespace Relativity.Sync.Extensions
             ServiceFactoryForAdminFactory servicesManagerForAdminFactory = new ServiceFactoryForAdminFactory(serviceManager, logger);
             ISourceServiceFactoryForAdmin serviceFactoryForAdmin = servicesManagerForAdminFactory.Create();
 
-            return new RdoManager(new EmptyLogger(), serviceFactoryForAdmin, new RdoGuidProvider())
+            return new RdoManager(logger, serviceFactoryForAdmin, new RdoGuidProvider())
                 .SetValueAsync(workspaceId, rdo, x => x.Resuming, true);
         }
 
