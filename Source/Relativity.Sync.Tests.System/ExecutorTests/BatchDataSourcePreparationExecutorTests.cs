@@ -9,6 +9,7 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
@@ -119,6 +120,54 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
             }
 
             createdItemLevelErrorsCount.Should().Be(expectedItemLevelErrorsCount);
+        }
+
+        [Test]
+        public async Task ExecuteAsync_ShouldPauseExecution_WhenDrainStopIsRequested()
+        {
+            // Arrange
+            FileShareServiceMock fileShareMock = new FileShareServiceMock(_workspaceFileSharePath);
+            List<FieldMap> IdentifierFieldMap(int sourceWorkspaceId, int destinationWorkspaceId)
+                => GetDocumentIdentifierMappingAsync(sourceWorkspaceId, destinationWorkspaceId).GetAwaiter().GetResult();
+
+            ExecutorTestSetup setup = new ExecutorTestSetup(Environment, ServiceFactory)
+                .ForWorkspaces(_sourceWorkspaceName, _destinationWorkspaceName)
+                .ImportData(dataSet: Dataset.NativesAndExtractedText, extractedText: true, natives: true)
+                .SetupDocumentConfiguration(IdentifierFieldMap)
+                .SetupContainer(b =>
+                {
+                    b.RegisterInstance<IFileShareService>(fileShareMock);
+                })
+                .PrepareBatches()
+                .ExecutePreRequisteExecutor<IConfigureDocumentSynchronizationConfiguration>();
+
+            IExecutor<IBatchDataSourcePreparationConfiguration> sut = setup.Container.Resolve<IExecutor<IBatchDataSourcePreparationConfiguration>>();
+            TokenDrainStoppingAfterProcessingFirstBatch cancellationToken =
+                new TokenDrainStoppingAfterProcessingFirstBatch();
+
+            // Act
+            ExecutionResult result = await sut.ExecuteAsync(setup.Configuration, cancellationToken);
+
+            // Assert
+            result.Status.Should().Be(ExecutionStatus.Paused);
+        }
+
+        private class TokenDrainStoppingAfterProcessingFirstBatch : CompositeCancellationTokenStub
+        {
+            public int ChecksCount { get; private set; }
+
+            public TokenDrainStoppingAfterProcessingFirstBatch()
+            {
+                IsDrainStopRequestedFunc = ShouldDrainStopOnceOnFirstCall;
+            }
+
+            private bool ShouldDrainStopOnceOnFirstCall()
+            {
+                bool shouldDrainStop = ChecksCount == 0;
+                ++ChecksCount;
+
+                return shouldDrainStop;
+            }
         }
     }
 }
