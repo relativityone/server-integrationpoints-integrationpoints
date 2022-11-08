@@ -33,8 +33,6 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
             string sql = $"Select {queryValue}";
             try
             {
-                _logger.LogInformation("Checking access to SQL");
-
                 DataTable result = _context.ExecuteSqlStatementAsDataTable(sql);
                 sqlStatementResult = result.Columns.Count.Equals(queryValue);
             }

@@ -12,6 +12,8 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
         private readonly IHelper _helper;
         private readonly IAPILog _logger;
 
+        private bool _isFileshareLogged = false;
+
         public FileShareDiskUsageReporter(IHelper helper, IAPILog logger)
         {
             _helper = helper;
@@ -40,7 +42,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
             {
                 try
                 {
-                    _logger.LogInformation("Checking {fileShareName}", fileShare);
+                    LogFileShareNameIfNeeded(fileShare);
                     System.IO.Directory.GetFiles(fileShare);
                 }
                 catch (Exception exception)
@@ -58,8 +60,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
             List<string> serverList = new List<string>();
             try
             {
-                using (var resourceServer = _helper.GetServicesManager()
-                           .CreateProxy<IFileShareServerManager>(ExecutionIdentity.System))
+                using (IFileShareServerManager resourceServer = _helper.GetServicesManager().CreateProxy<IFileShareServerManager>(ExecutionIdentity.System))
                 {
                     FileShareQueryResultSet resultSet = await resourceServer.QueryAsync(new Query()).ConfigureAwait(false);
                     foreach (Result<FileShareResourceServer> result in resultSet.Results)
@@ -77,6 +78,18 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
             }
 
             return serverList;
+        }
+
+        private void LogFileShareNameIfNeeded(string fileShare)
+        {
+            // Make sure we're logging file share name only once per job
+            if (_isFileshareLogged)
+            {
+                return;
+            }
+
+            _logger.LogInformation("Checking {fileShareName}", fileShare);
+            _isFileshareLogged = true;
         }
     }
 }
