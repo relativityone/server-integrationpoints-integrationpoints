@@ -71,7 +71,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
         private readonly FieldInfoDto[] _NATIVE_SPECIAL_FIELDS = new FieldInfoDto[]
         {
-            FieldInfoDto.NativeFileNameField(),
+            FieldInfoDto.NativeFileFilenameField(),
             FieldInfoDto.NativeFileLocationField(),
             FieldInfoDto.NativeFileSizeField(),
             FieldInfoDto.RelativityNativeTypeField(),
@@ -271,7 +271,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             {
                 _DOCUMENT_IDENTIFIER_FIELD,
                 _DOCUMENT_MAPPED_FIELD,
-                FieldInfoDto.NativeFileNameField(),
+                FieldInfoDto.NativeFileFilenameField(),
                 FieldInfoDto.NativeFileLocationField(),
                 FieldInfoDto.NativeFileSizeField(),
                 FieldInfoDto.RelativityNativeTypeField(),
@@ -389,7 +389,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
                 _DOCUMENT_IDENTIFIER_FIELD,
                 _DOCUMENT_MAPPED_FIELD,
                 sampleDocumentField,
-                FieldInfoDto.NativeFileNameField(),
+                FieldInfoDto.NativeFileFilenameField(),
                 FieldInfoDto.NativeFileLocationField(),
                 FieldInfoDto.NativeFileSizeField(),
                 FieldInfoDto.RelativityNativeTypeField(),

@@ -46,7 +46,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             FieldInfoDto.FolderPathFieldFromDocumentField(_FOLDER_PATH_FROM_WORKSPACE_DISPLAY_NAME),
             FieldInfoDto.NativeFileSizeField(),
             FieldInfoDto.NativeFileLocationField(),
-            FieldInfoDto.NativeFileNameField(),
+            FieldInfoDto.NativeFileFilenameField(),
             FieldInfoDto.RelativityNativeTypeField(),
             FieldInfoDto.SupportedByViewerField()
         };

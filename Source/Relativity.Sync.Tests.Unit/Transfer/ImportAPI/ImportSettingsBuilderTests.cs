@@ -280,7 +280,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ImportAPI
             {
                 identifierField,
                 FieldInfoDto.NativeFileLocationField(),
-                FieldInfoDto.NativeFileNameField(),
+                FieldInfoDto.NativeFileFilenameField(),
                 FieldInfoDto.NativeFileSizeField(),
                 FieldInfoDto.SupportedByViewerField(),
                 FieldInfoDto.RelativityNativeTypeField(),

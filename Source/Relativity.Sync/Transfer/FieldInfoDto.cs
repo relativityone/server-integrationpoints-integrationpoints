@@ -112,7 +112,7 @@ namespace Relativity.Sync.Transfer
             return new FieldInfoDto(SpecialFieldType.FolderPath, string.Empty, _FOLDER_PATH_DESTINATION_DISPLAY_NAME, false, false);
         }
 
-        public static FieldInfoDto NativeFileNameField()
+        public static FieldInfoDto NativeFileFilenameField()
         {
             return new FieldInfoDto(SpecialFieldType.NativeFileFilename, string.Empty, _NATIVE_FILE_FILENAME_DISPLAY_NAME, false, false);
         }
