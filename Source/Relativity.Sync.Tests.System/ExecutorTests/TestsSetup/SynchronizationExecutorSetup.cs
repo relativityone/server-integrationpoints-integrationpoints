@@ -102,7 +102,9 @@ namespace Relativity.Sync.Tests.System.ExecutorTests.TestsSetup
             ImportNativeFileCopyMode nativeFileCopyMode = ImportNativeFileCopyMode.CopyFiles,
             DestinationFolderStructureBehavior folderStructure = DestinationFolderStructureBehavior.None,
             int batchSize = 0,
-            int totalRecordsCount = 0)
+            int totalRecordsCount = 0,
+            string folderPathField = "",
+            Guid exportRunId = default)
         {
             int jobHistoryArtifactId = Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, SourceWorkspace.ArtifactID, $"JobHistory.{Guid.NewGuid()}").GetAwaiter().GetResult();
 
@@ -110,6 +112,9 @@ namespace Relativity.Sync.Tests.System.ExecutorTests.TestsSetup
             Configuration.DestinationWorkspaceArtifactId = DestinationWorkspace.ArtifactID;
             Configuration.DataSourceArtifactId = Rdos.GetSavedSearchInstanceAsync(ServiceFactory, SourceWorkspace.ArtifactID, savedSearchName).GetAwaiter().GetResult();
             Configuration.DestinationFolderStructureBehavior = folderStructure;
+            Configuration.FolderPathField = folderPathField;
+
+            Configuration.ExportRunId = exportRunId;
 
             Configuration.JobHistoryArtifactId = jobHistoryArtifactId;
             Configuration.DestinationFolderArtifactId = Rdos.GetRootFolderInstanceAsync(ServiceFactory, DestinationWorkspace.ArtifactID).GetAwaiter().GetResult();

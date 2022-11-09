@@ -66,7 +66,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ImportAPI
             var result = await _sut.BuildAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            result.importSettings.Overlay.Mode.Should().Be(ImportOverwriteMode.AppendOnly);
+            result.importSettings.Overlay.Should().BeNull();
         }
 
         [TestCase(ImportOverwriteMode.OverlayOnly, FieldOverlayBehavior.UseFieldSettings, OverlayMode.Overlay, MultiFieldOverlayBehaviour.UseRelativityDefaults)]

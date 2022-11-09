@@ -122,36 +122,51 @@ namespace Relativity.Sync.Tests.System.Core
 
         protected async Task<IEnumerable<FieldMap>> GetExtractedTextMappingAsync(int sourceWorkspaceId, int destinationWorkspaceId)
         {
+            return await GetFieldsMappingAsync(sourceWorkspaceId, destinationWorkspaceId, new[] { "Extracted Text" }).ConfigureAwait(false);
+        }
+
+        protected async Task<List<FieldMap>> GetFieldsMappingAsync(int sourceWorkspaceId, int destinationWorkspaceId, string[] fieldNames)
+        {
             using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
             {
-                QueryRequest query = PrepareExtractedTextFieldsQueryRequest();
-                QueryResult sourceQueryResult = await objectManager.QueryAsync(sourceWorkspaceId, query, 0, 1).ConfigureAwait(false);
-                QueryResult destinationQueryResult = await objectManager.QueryAsync(destinationWorkspaceId, query, 0, 1).ConfigureAwait(false);
+                QueryRequest query = PrepareFieldsQueryRequest(fieldNames);
+                QueryResult sourceQueryResult = await objectManager.QueryAsync(sourceWorkspaceId, query, 0, int.MaxValue).ConfigureAwait(false);
+                QueryResult destinationQueryResult = await objectManager.QueryAsync(destinationWorkspaceId, query, 0, int.MaxValue).ConfigureAwait(false);
 
-                return new[]
+                if (sourceQueryResult.ResultCount != destinationQueryResult.ResultCount)
                 {
-                    new FieldMap
+                    throw new InvalidOperationException("Error occurred in FieldsMapping preparation. Source Workspace fields count don't match with Destination Workspace fields");
+                }
+
+                List<FieldMap> fieldMap = new List<FieldMap>(sourceQueryResult.ResultCount);
+                for (int i = 0; i < sourceQueryResult.ResultCount; ++i)
+                {
+                    fieldMap.Add(new FieldMap
                     {
                         SourceField = new FieldEntry
                         {
-                            DisplayName = sourceQueryResult.Objects.First()["Name"].Value.ToString(),
-                            FieldIdentifier =  sourceQueryResult.Objects.First().ArtifactID,
+                            DisplayName = sourceQueryResult.Objects[i]["Name"].Value.ToString(),
+                            FieldIdentifier = sourceQueryResult.Objects[i].ArtifactID,
                             IsIdentifier = false
                         },
                         DestinationField = new FieldEntry
                         {
-                            DisplayName = destinationQueryResult.Objects.First()["Name"].Value.ToString(),
-                            FieldIdentifier =  destinationQueryResult.Objects.First().ArtifactID,
+                            DisplayName = destinationQueryResult.Objects[i]["Name"].Value.ToString(),
+                            FieldIdentifier = destinationQueryResult.Objects[i].ArtifactID,
                             IsIdentifier = false
                         },
                         FieldMapType = FieldMapType.None
-                    }
-                };
+                    });
+                }
+
+                return fieldMap;
             }
         }
 
-        private QueryRequest PrepareExtractedTextFieldsQueryRequest()
+        private QueryRequest PrepareFieldsQueryRequest(params string[] fieldNames)
         {
+            string fields = string.Join(",", fieldNames.Select(x => $"'{x}'"));
+
             int fieldArtifactTypeID = (int)ArtifactType.Field;
             QueryRequest queryRequest = new QueryRequest()
             {
@@ -159,7 +174,7 @@ namespace Relativity.Sync.Tests.System.Core
                 {
                     ArtifactTypeID = fieldArtifactTypeID
                 },
-                Condition = $"'FieldArtifactTypeID' == {_DOCUMENT_ARTIFACT_TYPE_ID} and 'Name' == 'Extracted Text'",
+                Condition = $"'FieldArtifactTypeID' == {_DOCUMENT_ARTIFACT_TYPE_ID} and 'Name' IN [{fields}]",
                 Fields = new[] { new FieldRef { Name = "Name" } },
                 IncludeNameInQueryResult = true
             };
