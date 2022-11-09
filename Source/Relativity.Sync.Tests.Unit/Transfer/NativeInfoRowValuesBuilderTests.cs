@@ -26,7 +26,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             yield return new TestCaseData(FieldInfoDto.DocumentField("abc", "def", false), _INITIAL_VALUE_TYPE, _INITIAL_VALUE);
             yield return new TestCaseData(FieldInfoDto.NativeFileSizeField(), typeof(long), _SIZE);
             yield return new TestCaseData(FieldInfoDto.NativeFileLocationField(), typeof(string), _LOCATION);
-            yield return new TestCaseData(FieldInfoDto.NativeFileFilenameField(), typeof(string), _FILENAME);
+            yield return new TestCaseData(FieldInfoDto.NativeFileNameField(), typeof(string), _FILENAME);
         }
 
         private static IEnumerable<TestCaseData> UnsupportedNonDocumentFieldInfoDtos()

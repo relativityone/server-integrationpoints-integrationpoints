@@ -63,7 +63,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             BatchRepositoryFake.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>())).ReturnsAsync(testBatches);
 
             const int testNumberOfFields = 10;
-            IEnumerable<FieldInfoDto> fields = Enumerable.Repeat(FieldInfoDto.NativeFileFilenameField(), testNumberOfFields);
+            IEnumerable<FieldInfoDto> fields = Enumerable.Repeat(FieldInfoDto.NativeFileNameField(), testNumberOfFields);
             FieldManagerFake.Setup(x => x.GetNativeAllFieldsAsync(It.Is<CancellationToken>(c => c == CancellationToken.None))).ReturnsAsync(fields.ToList);
 
             const ImportOverwriteMode overwriteMode = ImportOverwriteMode.AppendOnly;

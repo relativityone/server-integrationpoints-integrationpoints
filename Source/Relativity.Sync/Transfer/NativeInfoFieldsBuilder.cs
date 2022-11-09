@@ -29,7 +29,7 @@ namespace Relativity.Sync.Transfer
 
         public IEnumerable<FieldInfoDto> BuildColumns()
         {
-            yield return FieldInfoDto.NativeFileFilenameField();
+            yield return FieldInfoDto.NativeFileNameField();
             yield return FieldInfoDto.NativeFileSizeField();
             yield return FieldInfoDto.NativeFileLocationField();
             yield return FieldInfoDto.SupportedByViewerField();

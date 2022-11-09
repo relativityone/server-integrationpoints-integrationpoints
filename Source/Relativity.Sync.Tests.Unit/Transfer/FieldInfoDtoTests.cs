@@ -81,7 +81,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         public void ItShouldBuildNativeFileFilenameField()
         {
             // Act
-            FieldInfoDto result = FieldInfoDto.NativeFileFilenameField();
+            FieldInfoDto result = FieldInfoDto.NativeFileNameField();
 
             //Assert
             result.SpecialFieldType.Should().Be(SpecialFieldType.NativeFileFilename);
@@ -261,7 +261,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         public void ItShouldReturnNotEqualForObjectOfDifferentType()
         {
             // Arrange
-            FieldInfoDto me = FieldInfoDto.NativeFileFilenameField();
+            FieldInfoDto me = FieldInfoDto.NativeFileNameField();
             object you = "test";
 
             // Act
@@ -275,7 +275,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         public void ItShouldReturnNotEqualWhenComparingToNull()
         {
             // Arrange
-            FieldInfoDto me = FieldInfoDto.NativeFileFilenameField();
+            FieldInfoDto me = FieldInfoDto.NativeFileNameField();
             FieldInfoDto you = null;
 
             // Act

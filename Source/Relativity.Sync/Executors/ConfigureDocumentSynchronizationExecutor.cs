@@ -1,16 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Import.V1;
-using Relativity.Import.V1.Builders.Documents;
 using Relativity.Import.V1.Models.Settings;
 using Relativity.Import.V1.Services;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Storage;
-using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ImportAPI;
 
 namespace Relativity.Sync.Executors
 {
@@ -18,21 +14,18 @@ namespace Relativity.Sync.Executors
     {
         private readonly SyncJobParameters _parameters;
         private readonly IDestinationServiceFactoryForUser _serviceFactory;
-        private readonly IFieldMappings _fieldMappings;
-        private readonly IFieldManager _fieldManager;
+        private readonly IImportSettingsBuilder _settingsBuilder;
         private readonly IAPILog _logger;
 
         public ConfigureDocumentSynchronizationExecutor(
             SyncJobParameters parameters,
             IDestinationServiceFactoryForUser serviceFactory,
-            IFieldMappings fieldMappings,
-            IFieldManager fieldManager,
+            IImportSettingsBuilder settingsBuilder,
             IAPILog logger)
         {
             _parameters = parameters;
             _serviceFactory = serviceFactory;
-            _fieldMappings = fieldMappings;
-            _fieldManager = fieldManager;
+            _settingsBuilder = settingsBuilder;
             _logger = logger;
         }
 
@@ -40,62 +33,18 @@ namespace Relativity.Sync.Executors
         {
             try
             {
-                _logger.LogInformation("Creating ImportDocumentSettingsBuilder...");
-                IWithOverlayMode result = ImportDocumentSettingsBuilder.Create();
-                IWithNatives withNatives = ConfigureOverwriteMode(result, configuration.ImportOverwriteMode, MapOverlayBehavior(configuration.FieldOverlayBehavior));
+                (ImportDocumentSettings importSettings, AdvancedImportSettings advancedSettings) =
+                    await _settingsBuilder.BuildAsync(configuration, token.AnyReasonCancellationToken).ConfigureAwait(false);
 
-                List<FieldInfoDto> allMappings = (await _fieldManager.GetNativeAllFieldsAsync(token.AnyReasonCancellationToken)).ToList();
-                _logger.LogInformation("FieldsMapping retrieved - Fields Count: {mappingsCount}", allMappings.Count);
+                ImportContext context = new ImportContext(configuration.ExportRunId, configuration.DestinationWorkspaceArtifactId);
 
-                IWithFieldsMapping withFieldsMapping = ConfigureFileImport(
-                    withNatives,
-                    configuration.ImageImport,
-                    configuration.ImportNativeFileCopyMode,
-                    allMappings);
+                await CreateImportJobAsync(context).ConfigureAwait(false);
 
-                IWithFolders withFolders = ConfigureFieldMappings(withFieldsMapping, allMappings);
+                await AttachImportSettingsToImportJobAsync(context, importSettings).ConfigureAwait(false);
 
-                ImportDocumentSettings importSettings = ConfigureDestinationFolderStructure(
-                    withFolders,
-                    configuration.DestinationFolderStructureBehavior,
-                    configuration.DataDestinationArtifactId,
-                    GetFieldIndex(allMappings, configuration.FolderPathField));
+                await AttachAdvancedImportSettingsToImportJobAsync(context, advancedSettings).ConfigureAwait(false);
 
-                using (IImportJobController importJobController = await _serviceFactory
-                           .CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
-                using (IDocumentConfigurationController documentConfigurationController = await _serviceFactory
-                           .CreateProxyAsync<IDocumentConfigurationController>().ConfigureAwait(false))
-                {
-                    Guid importJobId = configuration.ExportRunId;
-
-                    _logger.LogInformation("Creating Import Job with {importJobId} ID...", importJobId);
-
-                    Response importJobResponse = await importJobController.CreateAsync(
-                            workspaceID: configuration.DestinationWorkspaceArtifactId,
-                            importJobID: importJobId,
-                            applicationName: _parameters.SyncApplicationName,
-                            correlationID: _parameters.WorkflowId)
-                        .ConfigureAwait(false);
-
-                    ValidateResponse(importJobResponse);
-
-                    _logger.LogInformation("Load ImportDocumentsSettings to Job {jobId}", importJobId);
-
-                    Response documentConfigurationResponse = await documentConfigurationController.CreateAsync(
-                        configuration.DestinationWorkspaceArtifactId,
-                        importJobId,
-                        importSettings).ConfigureAwait(false);
-
-                    ValidateResponse(documentConfigurationResponse);
-
-                    _logger.LogInformation("Start ImportJob {jobId} and wait for DataSources...", importJobId);
-
-                    Response jobBeginResponse = await importJobController
-                        .BeginAsync(configuration.DestinationWorkspaceArtifactId, importJobId)
-                        .ConfigureAwait(false);
-
-                    ValidateResponse(jobBeginResponse);
-                }
+                await BeginImportJobAsync(context).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -104,6 +53,72 @@ namespace Relativity.Sync.Executors
             }
 
             return ExecutionResult.Success();
+        }
+
+        private async Task CreateImportJobAsync(ImportContext context)
+        {
+            using (IImportJobController importJobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
+            {
+                _logger.LogInformation("Creating ImportJob with {importJobId} ID...", context.ImportJobId);
+
+                Response response = await importJobController.CreateAsync(
+                        workspaceID: context.DestinationWorkspaceId,
+                        importJobID: context.ImportJobId,
+                        applicationName: _parameters.SyncApplicationName,
+                        correlationID: _parameters.WorkflowId)
+                    .ConfigureAwait(false);
+
+                ValidateResponse(response);
+            }
+        }
+
+        private async Task AttachImportSettingsToImportJobAsync(ImportContext context, ImportDocumentSettings importSettings)
+        {
+            using (IDocumentConfigurationController documentConfigurationController = await _serviceFactory.CreateProxyAsync<IDocumentConfigurationController>().ConfigureAwait(false))
+            {
+                _logger.LogInformation("Attaching ImportDocumentsSettings to ImportJob {jobId}...", context.ImportJobId);
+
+                Response response = await documentConfigurationController.CreateAsync(
+                    context.DestinationWorkspaceId,
+                    context.ImportJobId,
+                    importSettings).ConfigureAwait(false);
+
+                ValidateResponse(response);
+            }
+        }
+
+        private async Task AttachAdvancedImportSettingsToImportJobAsync(ImportContext context, AdvancedImportSettings importSettings)
+        {
+            using (IAdvancedConfigurationController configurationController = await _serviceFactory.CreateProxyAsync<IAdvancedConfigurationController>().ConfigureAwait(false))
+            {
+                _logger.LogInformation(
+                    "Attaching AdvancedImportSettings to ImportJob {jobId}... - AdvancedImportSettings: {@importSettings}",
+                    context.ImportJobId,
+                    importSettings);
+
+                Response response = await configurationController.CreateAsync(
+                        context.DestinationWorkspaceId,
+                        context.ImportJobId,
+                        importSettings)
+                    .ConfigureAwait(false);
+
+                ValidateResponse(response);
+            }
+        }
+
+        private async Task BeginImportJobAsync(ImportContext context)
+        {
+            using (IImportJobController importJobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
+            {
+                _logger.LogInformation("Starting ImportJob {jobId} and wait for DataSources...", context.ImportJobId);
+
+                Response response = await importJobController.BeginAsync(
+                        context.DestinationWorkspaceId,
+                        context.ImportJobId)
+                    .ConfigureAwait(false);
+
+                ValidateResponse(response);
+            }
         }
 
         private void ValidateResponse(Response response)
@@ -115,149 +130,17 @@ namespace Relativity.Sync.Executors
             }
         }
 
-        private string GetDestinationIdentityFieldName()
+        private class ImportContext
         {
-            FieldMap destinationIdentityField = _fieldMappings.GetFieldMappings().FirstOrDefault(x => x.DestinationField.IsIdentifier);
-            if (destinationIdentityField == null)
+            public ImportContext(Guid importJobId, int destinationWorkspaceId)
             {
-                const string message = "Cannot find destination identifier field in field mappings.";
-                _logger.LogError(message);
-                throw new SyncException(message);
+                ImportJobId = importJobId;
+                DestinationWorkspaceId = destinationWorkspaceId;
             }
 
-            return destinationIdentityField.DestinationField.DisplayName;
-        }
+            public Guid ImportJobId { get; }
 
-        private IWithNatives ConfigureOverwriteMode(IWithOverlayMode input, ImportOverwriteMode overwriteMode, MultiFieldOverlayBehaviour overlayBehavior)
-        {
-            _logger.LogInformation("Configuring OverwriteMode - OverwriteMode: {overwriteMode}, OverlayBehavior: {overlayBehavior}", overwriteMode, overlayBehavior);
-            switch (overwriteMode)
-            {
-                case ImportOverwriteMode.AppendOnly:
-                    return input.WithAppendMode();
-
-                case ImportOverwriteMode.AppendOverlay:
-                    return input.WithAppendOverlayMode(x => x.WithKeyField(GetDestinationIdentityFieldName()).WithMultiFieldOverlayBehaviour(overlayBehavior));
-
-                case ImportOverwriteMode.OverlayOnly:
-                    return input.WithOverlayMode(x => x.WithKeyField(GetDestinationIdentityFieldName()).WithMultiFieldOverlayBehaviour(overlayBehavior));
-
-                default:
-                    throw new NotSupportedException($"ImportOverwriteMode {overwriteMode} is not supported.");
-            }
-        }
-
-        private IWithFieldsMapping ConfigureFileImport(
-            IWithNatives input,
-            bool imageImport,
-            ImportNativeFileCopyMode nativeFileCopyMode,
-            List<FieldInfoDto> fieldsMapping)
-        {
-            _logger.LogInformation(
-                "Configuring FileImport - " +
-                "ImageImport: {imageImport}, " +
-                "NativeFileCopyMode: {nativeFileCopyMode}",
-                imageImport,
-                nativeFileCopyMode);
-
-            if (imageImport)
-            {
-                throw new NotSupportedException("Images import is not supported in IAPI2 pipeline");
-            }
-            else
-            {
-                int nativeFilePathIndex = GetFieldIndex(fieldsMapping, SpecialFieldType.NativeFileLocation);
-                int nativeFileNameIndex = GetFieldIndex(fieldsMapping, SpecialFieldType.NativeFileFilename);
-                if (nativeFileCopyMode == ImportNativeFileCopyMode.DoNotImportNativeFiles
-                    || nativeFilePathIndex == -1
-                    || nativeFileNameIndex == -1)
-                {
-                    return input
-                        .WithoutNatives()
-                        .WithoutImages();
-                }
-                else
-                {
-                    return input.WithNatives(x => x
-                            .WithFilePathDefinedInColumn(nativeFilePathIndex)
-                            .WithFileNameDefinedInColumn(nativeFileNameIndex))
-                        .WithoutImages();
-                }
-            }
-        }
-
-        private IWithFolders ConfigureFieldMappings(IWithFieldsMapping input, IList<FieldInfoDto> fieldMappings)
-        {
-            _logger.LogInformation("Configuring FieldsMapping...");
-            return input.WithFieldsMapped(x =>
-            {
-                foreach (FieldInfoDto mapping in fieldMappings)
-                {
-                    if(mapping.SpecialFieldType != SpecialFieldType.None)
-                    {
-                        _logger.LogInformation("Skip SpecialField - Name: {fieldName}", mapping.SourceFieldName);
-                        continue;
-                    }
-
-                    switch (mapping.RelativityDataType)
-                    {
-                        case RelativityDataType.SingleObject:
-                            x = x.WithObjectFieldContainingArtifactID(mapping.DocumentFieldIndex, mapping.DestinationFieldName);
-                            break;
-
-                        case RelativityDataType.MultipleChoice:
-                        case RelativityDataType.MultipleObject:
-                            throw new NotSupportedException($"Mapping type {nameof(mapping.RelativityDataType)} is not supported in IAPI 2.0");
-
-                        default:
-                            _logger.LogInformation("Configure Field - Index: {fieldIndex}, SourceName: {fieldName}, DestinationName",
-                                mapping.DocumentFieldIndex, mapping.SourceFieldName, mapping.DestinationFieldName);
-                            x = x.WithField(mapping.DocumentFieldIndex, mapping.DestinationFieldName);
-                            break;
-                    }
-                }
-            });
-        }
-
-        private ImportDocumentSettings ConfigureDestinationFolderStructure(IWithFolders input, DestinationFolderStructureBehavior folderStructureBehavior, int destinationFolderArtifactId, int folderPathIndex)
-        {
-            switch (folderStructureBehavior)
-            {
-                case DestinationFolderStructureBehavior.None:
-                    return input.WithoutFolders();
-
-                case DestinationFolderStructureBehavior.ReadFromField:
-                    return input.WithFolders(f => f
-                        .WithRootFolderID(destinationFolderArtifactId, r => r
-                            .WithFolderPathDefinedInColumn(folderPathIndex)));
-
-                default:
-                    throw new NotSupportedException($"Unknown {nameof(DestinationFolderStructureBehavior)} enum value: {folderStructureBehavior}");
-            }
-        }
-
-        private static int GetFieldIndex(IList<FieldInfoDto> fieldMappings, SpecialFieldType specialFieldType)
-        {
-            FieldInfoDto field = fieldMappings.FirstOrDefault(x => x.SpecialFieldType == specialFieldType);
-            return field?.DocumentFieldIndex ?? -1;
-        }
-
-        private static int GetFieldIndex(IList<FieldInfoDto> fieldMappings, string filedName)
-        {
-            FieldInfoDto field = fieldMappings.FirstOrDefault(x => x.SourceFieldName == filedName);
-            return field?.DocumentFieldIndex ?? -1;
-        }
-
-        private static MultiFieldOverlayBehaviour MapOverlayBehavior(FieldOverlayBehavior behavior)
-        {
-            switch (behavior)
-            {
-                case FieldOverlayBehavior.MergeValues: return MultiFieldOverlayBehaviour.MergeAll;
-                case FieldOverlayBehavior.ReplaceValues: return MultiFieldOverlayBehaviour.ReplaceAll;
-                case FieldOverlayBehavior.UseFieldSettings: return MultiFieldOverlayBehaviour.UseRelativityDefaults;
-
-                default: throw new NotSupportedException($"Unknown {nameof(FieldOverlayBehavior)} enum value: {behavior}");
-            }
+            public int DestinationWorkspaceId { get; }
         }
     }
 }
