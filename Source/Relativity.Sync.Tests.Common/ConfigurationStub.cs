@@ -42,7 +42,6 @@ namespace Relativity.Sync.Tests.Common
 
         public string FolderPathField { get; set; }
 
-
         public IList<FieldMap> GetFieldMappings() => _fieldMappings;
 
         public void SetFieldMappings(IList<FieldMap> fieldMappings)
