@@ -14,6 +14,7 @@ using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
+using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Services;
 using kCura.ScheduleQueue.Core.Validation;

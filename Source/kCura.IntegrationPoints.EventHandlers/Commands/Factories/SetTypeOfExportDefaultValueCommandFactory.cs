@@ -27,6 +27,7 @@ using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
+using kCura.ScheduleQueue.Core.Interfaces;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 {

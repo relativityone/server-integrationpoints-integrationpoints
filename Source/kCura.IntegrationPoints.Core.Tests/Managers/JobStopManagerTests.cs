@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Interfaces;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;

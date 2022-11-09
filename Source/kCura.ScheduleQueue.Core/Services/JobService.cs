@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using Relativity.API;
 using IKubernetesMode = kCura.IntegrationPoints.Domain.EnvironmentalVariables.IKubernetesMode;
 using kCura.IntegrationPoints.Config;
+using kCura.ScheduleQueue.Core.Interfaces;
 
 namespace kCura.ScheduleQueue.Core.Services
 {

@@ -37,6 +37,7 @@ using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Logging;
 using Relativity.AutomatedWorkflows.SDK;
 using kCura.IntegrationPoints.Domain.Logging;
+using kCura.ScheduleQueue.Core.Interfaces;
 
 namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
 {

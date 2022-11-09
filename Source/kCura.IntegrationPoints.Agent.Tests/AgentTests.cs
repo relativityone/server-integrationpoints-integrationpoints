@@ -23,6 +23,7 @@ using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
+using kCura.ScheduleQueue.Core.Interfaces;
 using Moq;
 using NSubstitute;
 using NUnit.Framework;

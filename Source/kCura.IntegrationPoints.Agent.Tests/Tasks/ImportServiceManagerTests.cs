@@ -39,6 +39,7 @@ using Relativity.AutomatedWorkflows.SDK;
 using Relativity.AutomatedWorkflows.SDK.V2.Models.Triggers;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Core.Logging;
+using kCura.ScheduleQueue.Core.Interfaces;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {

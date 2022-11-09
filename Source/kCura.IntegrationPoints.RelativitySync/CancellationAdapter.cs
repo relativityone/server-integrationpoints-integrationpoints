@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Interfaces;
 using Relativity.API;
 using Relativity.Sync;
 

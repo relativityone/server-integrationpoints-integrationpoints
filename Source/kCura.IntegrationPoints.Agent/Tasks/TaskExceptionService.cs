@@ -3,6 +3,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
+using kCura.ScheduleQueue.Core.Interfaces;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tasks

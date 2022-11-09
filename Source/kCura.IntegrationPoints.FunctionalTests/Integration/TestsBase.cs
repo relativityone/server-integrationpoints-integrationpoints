@@ -30,6 +30,7 @@ using kCura.IntegrationPoints.Web.Controllers.API.FieldMappings;
 using kCura.IntegrationPoints.Web.Helpers;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
+using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Services;
 using NUnit.Framework;
