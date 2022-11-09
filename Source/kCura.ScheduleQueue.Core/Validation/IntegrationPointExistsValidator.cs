@@ -26,9 +26,12 @@ namespace kCura.ScheduleQueue.Core.Validation
 
                 ReadResult result = await proxy.ReadAsync(job.WorkspaceID, request).ConfigureAwait(false);
 
-                return result.Object != null 
+                return result.Object != null
                     ? PreValidationResult.Success
-                    : PreValidationResult.InvalidJob($"Integration Point {job.RelatedObjectArtifactID} does not exist anymore", false);
+                    : PreValidationResult.InvalidJob(
+                        $"Integration Point {job.RelatedObjectArtifactID} does not exist anymore",
+                        false,
+                        false);
             }
         }
     }

@@ -8,10 +8,13 @@ namespace kCura.IntegrationPoints.Data
 
         public bool ShouldBreakSchedule { get; private set; }
 
-        public IsJobFailed(Exception exception, bool shouldBreakSchedule)
+        public bool MaximumConsecutiveFailuresReached { get; private set; }
+
+        public IsJobFailed(Exception exception, bool shouldBreakSchedule, bool maximumConsecutiveFailuresReached)
         {
             Exception = exception ?? throw new ArgumentNullException(nameof(Exception));
             ShouldBreakSchedule = shouldBreakSchedule;
+            MaximumConsecutiveFailuresReached = maximumConsecutiveFailuresReached;
         }
     }
 }

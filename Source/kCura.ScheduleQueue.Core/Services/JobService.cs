@@ -67,33 +67,6 @@ namespace kCura.ScheduleQueue.Core.Services
             return job;
         }
 
-        public DateTime? GetJobNextUtcRunDateTime(Job job, IScheduleRuleFactory scheduleRuleFactory, TaskResult taskResult)
-        {
-            if (scheduleRuleFactory == null)
-            {
-                throw new ArgumentNullException(nameof(scheduleRuleFactory));
-            }
-            if (job == null)
-            {
-                _log.LogWarning("Job is null. Return NextUtcRunDateTime as null");
-                return null;
-            }
-
-            IScheduleRule scheduleRule = scheduleRuleFactory.Deserialize(job);
-            DateTime? nextUtcRunDateTime = null;
-            if (scheduleRule != null)
-            {
-#if TIME_MACHINE
-                scheduleRule.TimeService = new TimeMachineService(job.WorkspaceID);
-#endif
-                nextUtcRunDateTime = scheduleRule.GetNextUTCRunDateTime();
-            }
-
-            _log.LogInformation("NextUtcRunDateTime has been calculated for {nextUtcRunDateTime}.", nextUtcRunDateTime);
-
-            return nextUtcRunDateTime;
-        }
-
         public FinalizeJobResult FinalizeJob(Job job, IScheduleRuleFactory scheduleRuleFactory, TaskResult taskResult)
         {
             if (scheduleRuleFactory == null)
@@ -153,6 +126,34 @@ namespace kCura.ScheduleQueue.Core.Services
             result.JobState = JobLogState.Deleted;
 
             return result;
+        }
+
+        public DateTime? GetJobNextUtcRunDateTime(Job job, IScheduleRuleFactory scheduleRuleFactory, TaskResult taskResult)
+        {
+            if (scheduleRuleFactory == null)
+            {
+                throw new ArgumentNullException(nameof(scheduleRuleFactory));
+            }
+
+            if (job == null)
+            {
+                _log.LogWarning("Job is null. Return NextUtcRunDateTime as null");
+                return null;
+            }
+
+            IScheduleRule scheduleRule = scheduleRuleFactory.Deserialize(job);
+            DateTime? nextUtcRunDateTime = null;
+            if (scheduleRule != null)
+            {
+#if TIME_MACHINE
+                scheduleRule.TimeService = new TimeMachineService(job.WorkspaceID);
+#endif
+                nextUtcRunDateTime = scheduleRule.GetNextUTCRunDateTime();
+            }
+
+            _log.LogInformation("NextUtcRunDateTime has been calculated for {nextUtcRunDateTime}.", nextUtcRunDateTime);
+
+            return nextUtcRunDateTime;
         }
 
         public void UnlockJobs(int agentID)
