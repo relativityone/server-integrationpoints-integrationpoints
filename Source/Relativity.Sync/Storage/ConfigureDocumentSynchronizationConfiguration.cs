@@ -31,12 +31,14 @@ namespace Relativity.Sync.Storage
 
         public bool ImageImport => _cache.GetFieldValue(x => x.ImageImport);
 
-        public string FolderPathField => _cache.GetFieldValue(x => x.FolderPathSourceFieldName);
+        public string FolderPathSourceFieldName => _cache.GetFieldValue(x => x.FolderPathSourceFieldName);
 
         public DestinationFolderStructureBehavior DestinationFolderStructureBehavior => _cache.GetFieldValue(x => x.DestinationFolderStructureBehavior);
 
         public int DataDestinationArtifactId => _cache.GetFieldValue(x => x.DataDestinationArtifactId);
 
         public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue(x => x.NativesBehavior);
+
+        public bool MoveExistingDocuments => _cache.GetFieldValue(x => x.MoveExistingDocuments);
     }
 }

@@ -7,7 +7,9 @@ using NUnit.Framework;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.System.Core;
+using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Sync.Tests.System.ExecutorTests.TestsSetup;
+using Relativity.Sync.Toggles;
 
 namespace Relativity.Sync.Tests.System.ExecutorTests
 {
@@ -16,7 +18,17 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
         private const string _sourceWorkspace = "ConfigureDocumentSynchronizationTests-Source";
         private const string _destinationWorkspace = "ConfigureDocumentSynchronizationTests-Destination";
 
+        private TestSyncToggleProvider _syncToggleProvider;
+
+        [OneTimeSetUp]
+        public async Task OnetimeSetUp()
+        {
+            _syncToggleProvider = new TestSyncToggleProvider();
+            await _syncToggleProvider.SetAsync<EnableIAPIv2Toggle>(true).ConfigureAwait(false);
+        }
+
         [Test]
+        [Ignore("IAPI 2.0 Defect TBD")]
         public async Task ExecuteAsync_ShouldCreateBasicIAPIv2Job()
         {
             // Arrange
@@ -28,7 +40,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
                 .SetupDocumentConfiguration(
                     IdentifierFieldMap,
                     nativeFileCopyMode: ImportNativeFileCopyMode.DoNotImportNativeFiles)
-                .SetupContainer()
+                .SetupContainer(toggleProvider: _syncToggleProvider)
                 .ExecutePreRequisteExecutor<IDataSourceSnapshotConfiguration>();
 
             IExecutor<IConfigureDocumentSynchronizationConfiguration> sut = setup.Container.Resolve<IExecutor<IConfigureDocumentSynchronizationConfiguration>>();
@@ -42,6 +54,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
 
         [TestCase(ImportNativeFileCopyMode.SetFileLinks)]
         [TestCase(ImportNativeFileCopyMode.CopyFiles)]
+        [Ignore("IAPI 2.0 Defect TBD")]
         public async Task ExecuteAsync_ShouldCreateIAPIJob_WithMativesConfigured(ImportNativeFileCopyMode fileCopyMode)
         {
             // Arrange
@@ -53,7 +66,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
                 .SetupDocumentConfiguration(
                     IdentifierFieldMap,
                     nativeFileCopyMode: fileCopyMode)
-                .SetupContainer()
+                .SetupContainer(toggleProvider: _syncToggleProvider)
                 .ExecutePreRequisteExecutor<IDataSourceSnapshotConfiguration>();
 
             IExecutor<IConfigureDocumentSynchronizationConfiguration> sut = setup.Container.Resolve<IExecutor<IConfigureDocumentSynchronizationConfiguration>>();
@@ -66,6 +79,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
         }
 
         [Test]
+        [Ignore("IAPI 2.0 Defect TBD")]
         public async Task ExecuteAsync_ShouldCreateIAPIJob_WithMappingConfigured()
         {
             // Arrange
@@ -85,7 +99,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
                 .ForWorkspaces(_sourceWorkspace, _destinationWorkspace)
                 .SetupDocumentConfiguration(
                     MappedFields)
-                .SetupContainer()
+                .SetupContainer(toggleProvider: _syncToggleProvider)
                 .ExecutePreRequisteExecutor<IDataSourceSnapshotConfiguration>();
 
             IExecutor<IConfigureDocumentSynchronizationConfiguration> sut = setup.Container.Resolve<IExecutor<IConfigureDocumentSynchronizationConfiguration>>();
@@ -98,6 +112,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
         }
 
         [Test]
+        [Ignore("IAPI 2.0 Defect TBD")]
         public async Task ExecueAsync_ShouldCreateIAPIJob_WithFolderReadFromField()
         {
             // Arrange
@@ -105,18 +120,18 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
                 => GetFieldsMappingAsync(
                         sourceWorkspaceId,
                         destinationWorkspaceId,
-                        new string[] { "Original Folder Path" })
+                        new string[] { "MD5 Hash", "Original Folder Path" })
                     .GetAwaiter().GetResult();
 
             ExecutorTestSetup setup = new ExecutorTestSetup(Environment, ServiceFactory)
                 .ForWorkspaces(_sourceWorkspace, _destinationWorkspace)
                 .SetupDocumentConfiguration(
                     MappedFields,
+                    nativeFileCopyMode: ImportNativeFileCopyMode.DoNotImportNativeFiles,
                     folderStructure: DestinationFolderStructureBehavior.ReadFromField,
                     folderPathField: "Original Folder Path",
                     exportRunId: Guid.NewGuid())
-                .SetupContainer();
-                //.ExecutePreRequisteExecutor<IDataSourceSnapshotConfiguration>();
+                .SetupContainer(toggleProvider: _syncToggleProvider);
 
             IExecutor<IConfigureDocumentSynchronizationConfiguration> sut = setup.Container.Resolve<IExecutor<IConfigureDocumentSynchronizationConfiguration>>();
 

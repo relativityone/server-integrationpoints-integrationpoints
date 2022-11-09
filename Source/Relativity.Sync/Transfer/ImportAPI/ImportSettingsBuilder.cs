@@ -65,13 +65,31 @@ namespace Relativity.Sync.Transfer.ImportAPI
                 mappedFields,
                 configuration.DestinationFolderStructureBehavior,
                 configuration.DataDestinationArtifactId,
-                configuration.FolderPathField);
+                configuration.FolderPathSourceFieldName);
+
+            ConfigureMoveExistingDocuments(
+                advancedSettings,
+                configuration.MoveExistingDocuments,
+                configuration.ImportOverwriteMode,
+                configuration.FolderPathSourceFieldName);
 
             ConfigureAuditSettings(advancedSettings);
 
             await ConfigureBatchSizeSettingsAsync(advancedSettings).ConfigureAwait(false);
 
             return (importSettings, advancedSettings);
+        }
+
+        private void ConfigureMoveExistingDocuments(
+            AdvancedImportSettings advancedSettings,
+            bool moveExistingDocuments,
+            ImportOverwriteMode importOverwriteMode,
+            string folderPathField)
+        {
+            advancedSettings.Folder.MoveExistingDocuments =
+                importOverwriteMode != ImportOverwriteMode.AppendOnly &&
+                moveExistingDocuments &&
+                !string.IsNullOrEmpty(folderPathField);
         }
 
         private AdvancedImportSettings CreateAdvancedImportSettings()
@@ -107,7 +125,7 @@ namespace Relativity.Sync.Transfer.ImportAPI
             FieldOverlayBehavior overlayBehavior,
             IEnumerable<FieldInfoDto> mappedFields)
         {
-            string identityKeyField = mappedFields.Single(x => x.IsIdentifier).DestinationFieldName;
+            Func<string> identityKeyFieldFunc = () => mappedFields.Single(x => x.IsIdentifier).DestinationFieldName;
 
             _logger.LogInformation(
                 "Configuring OverlayMode - OverwriteMode: {overwriteMode}, OverlayBehavior: {overlayBehavior}", overwriteMode, overlayBehavior);
@@ -118,11 +136,11 @@ namespace Relativity.Sync.Transfer.ImportAPI
 
                 case ImportOverwriteMode.AppendOverlay:
                     return overlayModeSettings.WithAppendOverlayMode(
-                        x => x.WithKeyField(identityKeyField)
+                        x => x.WithKeyField(identityKeyFieldFunc())
                             .WithMultiFieldOverlayBehaviour(overlayBehavior.ToMultiFieldOverlayBehaviour()));
                 case ImportOverwriteMode.OverlayOnly:
                     return overlayModeSettings.WithOverlayMode(
-                        x => x.WithKeyField(identityKeyField)
+                        x => x.WithKeyField(identityKeyFieldFunc())
                             .WithMultiFieldOverlayBehaviour(overlayBehavior.ToMultiFieldOverlayBehaviour()));
                 default:
                     throw new NotSupportedException($"ImportOverwriteMode {overwriteMode} is not supported.");
@@ -213,7 +231,7 @@ namespace Relativity.Sync.Transfer.ImportAPI
         }
 
         private ImportDocumentSettings ConfigureDestinationFolderStructure(
-            IWithFolders input,
+            IWithFolders withFolders,
             IEnumerable<FieldInfoDto> mappedFields,
             DestinationFolderStructureBehavior folderStructureBehavior,
             int destinationFolderArtifactId,
@@ -222,18 +240,18 @@ namespace Relativity.Sync.Transfer.ImportAPI
             switch (folderStructureBehavior)
             {
                 case DestinationFolderStructureBehavior.None:
-                    return input.WithFolders(f =>
+                    return withFolders.WithFolders(f =>
                         f.WithRootFolderID(destinationFolderArtifactId, r =>
                             r.WithAllDocumentsInRootFolder()));
 
                 case DestinationFolderStructureBehavior.ReadFromField:
-                    return input.WithFolders(f =>
+                    return withFolders.WithFolders(f =>
                         f.WithRootFolderID(destinationFolderArtifactId, r =>
                             r.WithFolderPathDefinedInColumn(
                                 GetFieldIndex(mappedFields, folderPathField))));
 
                 case DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure:
-                    return input.WithFolders(f =>
+                    return withFolders.WithFolders(f =>
                         f.WithRootFolderID(destinationFolderArtifactId, r =>
                             r.WithFolderPathDefinedInColumn(
                                 GetFieldIndex(mappedFields, SpecialFieldType.FolderPath))));

@@ -223,7 +223,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ImportAPI
                 .ReturnsAsync(fields);
 
             _configurationFake.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.ReadFromField);
-            _configurationFake.SetupGet(x => x.FolderPathField).Returns(folderPathField.SourceFieldName);
+            _configurationFake.SetupGet(x => x.FolderPathSourceFieldName).Returns(folderPathField.SourceFieldName);
 
             // Act
             var result = await _sut.BuildAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
@@ -248,7 +248,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ImportAPI
                 .ReturnsAsync(fields);
 
             _configurationFake.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.RetainSourceWorkspaceStructure);
-            _configurationFake.SetupGet(x => x.FolderPathField).Returns(folderPathField.SourceFieldName);
+            _configurationFake.SetupGet(x => x.FolderPathSourceFieldName).Returns(folderPathField.SourceFieldName);
 
             // Act
             var result = await _sut.BuildAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
@@ -256,6 +256,21 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ImportAPI
             // Assert
             result.importSettings.Folder.RootFolderID.Should().BePositive();
             result.importSettings.Folder.FolderPathColumnIndex.Should().Be(folderPathField.DocumentFieldIndex);
+        }
+
+        [Test]
+        public async Task BuildAsync_ShouldConfigureMoveExistingDocuments_WhenConditionsAreMet()
+        {
+            // Arrange
+            _configurationFake.SetupGet(x => x.FolderPathSourceFieldName).Returns(_fxt.Create<string>());
+            _configurationFake.SetupGet(x => x.MoveExistingDocuments).Returns(true);
+            _configurationFake.SetupGet(x => x.ImportOverwriteMode).Returns(ImportOverwriteMode.AppendOverlay);
+
+            // Act
+            var result = await _sut.BuildAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
+
+            // Assert
+            result.advancedSettings.Folder.MoveExistingDocuments.Should().BeTrue();
         }
 
         private List<FieldInfoDto> GetIdentifierOnlyFieldsMapping()
