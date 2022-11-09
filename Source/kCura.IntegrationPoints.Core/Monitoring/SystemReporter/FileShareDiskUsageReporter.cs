@@ -45,9 +45,9 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
                     LogFileShareNameIfNeeded(fileShare);
                     System.IO.Directory.GetFiles(fileShare);
                 }
-                catch (Exception exception)
+                catch (Exception ex)
                 {
-                    _logger.LogWarning(exception, "Cannot get files list on {fileShareName}", fileShare);
+                    _logger.LogWarning(ex, "Cannot get files list on {fileShareName}", fileShare);
                     return false;
                 }
             }

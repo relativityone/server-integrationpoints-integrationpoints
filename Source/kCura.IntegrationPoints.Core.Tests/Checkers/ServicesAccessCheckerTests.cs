@@ -1,4 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using kCura.IntegrationPoints.Core.Checkers;
 using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
@@ -10,82 +14,75 @@ namespace kCura.IntegrationPoints.Core.Tests.Checkers
 {
     public class ServicesAccessCheckerTests
     {
-        private Mock<IAPILog> _loggerMock;
-        private Mock<IServiceHealthChecker> _databasePingReporterMock;
-        private Mock<IServiceHealthChecker> _keplerPingReporterMock;
-        private Mock<IServiceHealthChecker> _fileShareDiskUsageReporterMock;
-
-        private ServicesAccessChecker _sut;
-
-        [SetUp]
-        public void SetUp()
-        {
-            _loggerMock = new Mock<IAPILog>();
-            _databasePingReporterMock = new Mock<IServiceHealthChecker>();
-            _keplerPingReporterMock = new Mock<IServiceHealthChecker>();
-            _fileShareDiskUsageReporterMock = new Mock<IServiceHealthChecker>();
-
-            _databasePingReporterMock.Setup(x => x.IsServiceHealthyAsync()).ReturnsAsync(true);
-            _keplerPingReporterMock.Setup(x => x.IsServiceHealthyAsync()).ReturnsAsync(true);
-            _fileShareDiskUsageReporterMock.Setup(x => x.IsServiceHealthyAsync()).ReturnsAsync(true);
-
-            _sut = new ServicesAccessChecker(
-                _databasePingReporterMock.Object,
-                _keplerPingReporterMock.Object,
-                _fileShareDiskUsageReporterMock.Object,
-                _loggerMock.Object);
-        }
-
         [Test]
-        public async Task AreServicesHealthy_ShouldReturnHealthyState_WhenAllServicesAreHealthy()
+        public async Task AreServicesHealthyAsync_ShouldReturnTrue_WhenAllServicesAreHealthy()
         {
+            // Arrange
+            const int numberOfHealthCheckers = 3;
+
+            List<Mock<IServiceHealthChecker>> healthChecks = Enumerable
+                .Range(0, numberOfHealthCheckers)
+                .Select(x =>
+                {
+                    Mock<IServiceHealthChecker> mock = new Mock<IServiceHealthChecker>();
+                    mock.Setup(m => m.IsServiceHealthyAsync()).ReturnsAsync(true);
+                    return mock;
+                })
+                .ToList();
+
+            ServicesAccessChecker sut = PrepareSut(healthChecks.Select(x => x.Object));
+
             // Act
-            bool areServicesHealthy = await _sut.AreServicesHealthyAsync().ConfigureAwait(false);
+            bool areServicesHealthy = await sut.AreServicesHealthyAsync().ConfigureAwait(false);
 
             // Assert
             areServicesHealthy.ShouldBeEquivalentTo(true);
+            foreach (Mock<IServiceHealthChecker> healthCheck in healthChecks)
+            {
+                healthCheck.Verify(x => x.IsServiceHealthyAsync(), Times.Once);
+            }
         }
 
         [Test]
-        public async Task AreServicesHealthy_ShouldReturnNotHealthyState_WhenDatabasePingReporterIsNotHealthy()
+        public async Task AreServicesHealthyAsync_ShouldReturnFalse_WhenOneHealthCheckFail()
         {
             // Arrange
-            _databasePingReporterMock.Setup(x => x.IsServiceHealthyAsync()).ReturnsAsync(false);
+            Mock<IServiceHealthChecker> healthyService = new Mock<IServiceHealthChecker>();
+            healthyService.Setup(x => x.IsServiceHealthyAsync()).ReturnsAsync(true);
+
+            Mock<IServiceHealthChecker> badService = new Mock<IServiceHealthChecker>();
+            badService.Setup(x => x.IsServiceHealthyAsync()).ReturnsAsync(false);
+
+            ServicesAccessChecker sut = PrepareSut(new[] { healthyService.Object, badService.Object });
 
             // Act
-            bool areServicesHealthy = await _sut.AreServicesHealthyAsync().ConfigureAwait(false);
+            bool areServicesHealthy = await sut.AreServicesHealthyAsync().ConfigureAwait(false);
 
             // Assert
             areServicesHealthy.ShouldBeEquivalentTo(false);
-            _loggerMock.Verify(x => x.LogError("Database is not accessible."), Times.Once);
+            healthyService.Verify(x => x.IsServiceHealthyAsync(), Times.Once);
+            badService.Verify(x => x.IsServiceHealthyAsync(), Times.Once);
         }
 
         [Test]
-        public async Task AreServicesHealthy_ShouldReturnNotHealthyState_WhenKeplerPingReporterIsNotHealthy()
+        public void AreServicesHealthyAsync_ShouldNotThrow_WhenHealthCheckThrows()
         {
             // Arrange
-            _keplerPingReporterMock.Setup(x => x.IsServiceHealthyAsync()).ReturnsAsync(false);
+            Mock<IServiceHealthChecker> badService = new Mock<IServiceHealthChecker>();
+            badService.Setup(x => x.IsServiceHealthyAsync()).Throws<InvalidOperationException>();
+
+            ServicesAccessChecker sut = PrepareSut(new[] { badService.Object });
 
             // Act
-            bool areServicesHealthy = await _sut.AreServicesHealthyAsync().ConfigureAwait(false);
+            Func<Task<bool>> action = () => sut.AreServicesHealthyAsync();
 
             // Assert
-            areServicesHealthy.ShouldBeEquivalentTo(false);
-            _loggerMock.Verify(x => x.LogError("Kepler service is not accessible."), Times.Once);
+            action.ShouldNotThrow();
         }
 
-        [Test]
-        public async Task AreServicesHealthy_ShouldReturnNotHealthyState_WhenFileShareDiskUsageReporterIsNotHealthy()
+        private ServicesAccessChecker PrepareSut(IEnumerable<IServiceHealthChecker> healthChecks)
         {
-            // Arrange
-            _fileShareDiskUsageReporterMock.Setup(x => x.IsServiceHealthyAsync()).ReturnsAsync(false);
-
-            // Act
-            bool areServicesHealthy = await _sut.AreServicesHealthyAsync().ConfigureAwait(false);
-
-            // Assert
-            areServicesHealthy.ShouldBeEquivalentTo(false);
-            _loggerMock.Verify(x => x.LogError("Not all fileShares are healthy."), Times.Once);
+            return new ServicesAccessChecker(healthChecks, Mock.Of<IAPILog>());
         }
     }
 }
