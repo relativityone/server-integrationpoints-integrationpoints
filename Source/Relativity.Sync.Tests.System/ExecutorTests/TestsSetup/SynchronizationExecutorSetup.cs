@@ -45,8 +45,8 @@ namespace Relativity.Sync.Tests.System.ExecutorTests.TestsSetup
 
         public ExecutorTestSetup ForWorkspaces(string sourceWorkspaceName, string destinationWorkspaceName)
         {
-            SourceWorkspace = /*Environment.GetWorkspaceAsync(1019288).GetAwaiter().GetResult();*/ Environment.CreateWorkspaceWithFieldsAsync(sourceWorkspaceName).GetAwaiter().GetResult();
-            DestinationWorkspace = /*Environment.GetWorkspaceAsync(1019291).GetAwaiter().GetResult();*/ Environment.CreateWorkspaceWithFieldsAsync(destinationWorkspaceName).GetAwaiter().GetResult();
+            SourceWorkspace = Environment.CreateWorkspaceWithFieldsAsync(sourceWorkspaceName).GetAwaiter().GetResult();
+            DestinationWorkspace = Environment.CreateWorkspaceWithFieldsAsync(destinationWorkspaceName).GetAwaiter().GetResult();
 
             Configuration.SourceWorkspaceArtifactId = SourceWorkspace.ArtifactID;
             Configuration.DestinationWorkspaceArtifactId = DestinationWorkspace.ArtifactID;

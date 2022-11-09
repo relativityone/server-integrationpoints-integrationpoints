@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
 using FluentAssertions;
@@ -142,32 +143,65 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
                 .ExecutePreRequisteExecutor<IConfigureDocumentSynchronizationConfiguration>();
 
             IExecutor<IBatchDataSourcePreparationConfiguration> sut = setup.Container.Resolve<IExecutor<IBatchDataSourcePreparationConfiguration>>();
-            TokenDrainStoppingAfterProcessingFirstBatch cancellationToken =
-                new TokenDrainStoppingAfterProcessingFirstBatch();
+            CompositeCancellationTokenStub token = new CompositeCancellationTokenStub
+            {
+                IsDrainStopRequestedFunc = () => true
+            };
 
             // Act
-            ExecutionResult result = await sut.ExecuteAsync(setup.Configuration, cancellationToken);
+            ExecutionResult result = await sut.ExecuteAsync(setup.Configuration, token);
 
             // Assert
+            IBatchRepository batchRepository = setup.Container.Resolve<IBatchRepository>();
+            IEnumerable<IBatch> batches = await batchRepository.GetAllAsync(
+                setup.Configuration.SourceWorkspaceArtifactId,
+                setup.Configuration.SyncConfigurationArtifactId,
+                setup.Configuration.ExportRunId)
+            .ConfigureAwait(false);
+
             result.Status.Should().Be(ExecutionStatus.Paused);
+            batches.FirstOrDefault().Status.Should().Be(BatchStatus.Paused);
+            batches.FirstOrDefault().StartingIndex.Should().Be(0);
         }
 
-        private class TokenDrainStoppingAfterProcessingFirstBatch : CompositeCancellationTokenStub
+        [Test]
+        public async Task ExecuteAsync_ShouldCancelExecution_WhenCancellationIsRequested()
         {
-            public int ChecksCount { get; private set; }
+            // Arrange
+            FileShareServiceMock fileShareMock = new FileShareServiceMock(_workspaceFileSharePath);
+            List<FieldMap> IdentifierFieldMap(int sourceWorkspaceId, int destinationWorkspaceId)
+                => GetDocumentIdentifierMappingAsync(sourceWorkspaceId, destinationWorkspaceId).GetAwaiter().GetResult();
 
-            public TokenDrainStoppingAfterProcessingFirstBatch()
+            ExecutorTestSetup setup = new ExecutorTestSetup(Environment, ServiceFactory)
+                .ForWorkspaces(_sourceWorkspaceName, _destinationWorkspaceName)
+                .ImportData(dataSet: Dataset.NativesAndExtractedText, extractedText: true, natives: true)
+                .SetupDocumentConfiguration(IdentifierFieldMap)
+                .SetupContainer(b =>
+                {
+                    b.RegisterInstance<IFileShareService>(fileShareMock);
+                })
+                .PrepareBatches()
+                .ExecutePreRequisteExecutor<IConfigureDocumentSynchronizationConfiguration>();
+
+            IExecutor<IBatchDataSourcePreparationConfiguration> sut = setup.Container.Resolve<IExecutor<IBatchDataSourcePreparationConfiguration>>();
+            CompositeCancellationTokenStub token = new CompositeCancellationTokenStub
             {
-                IsDrainStopRequestedFunc = ShouldDrainStopOnceOnFirstCall;
-            }
+                IsStopRequestedFunc = () => true
+            };
 
-            private bool ShouldDrainStopOnceOnFirstCall()
-            {
-                bool shouldDrainStop = ChecksCount == 0;
-                ++ChecksCount;
+            // Act
+            ExecutionResult result = await sut.ExecuteAsync(setup.Configuration, token);
 
-                return shouldDrainStop;
-            }
+            // Assert
+            IBatchRepository batchRepository = setup.Container.Resolve<IBatchRepository>();
+            IEnumerable<IBatch> batches = await batchRepository.GetAllAsync(
+                setup.Configuration.SourceWorkspaceArtifactId,
+                setup.Configuration.SyncConfigurationArtifactId,
+                setup.Configuration.ExportRunId)
+            .ConfigureAwait(false);
+
+            result.Status.Should().Be(ExecutionStatus.Canceled);
+            batches.FirstOrDefault().Status.Should().Be(BatchStatus.Cancelled);
         }
     }
 }
