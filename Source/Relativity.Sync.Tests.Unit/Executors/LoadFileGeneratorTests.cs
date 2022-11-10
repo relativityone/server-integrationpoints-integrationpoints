@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -31,6 +30,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IItemLevelErrorHandler> _itemLevelErrorHandlerMock;
         private Mock<IBatch> _batchMock;
         private Mock<IAPILog> _loggerMock;
+        private CompositeCancellationTokenStub _token;
 
         private string _serverPath;
         private string _workspacePath;
@@ -48,6 +48,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _itemLevelErrorHandlerMock = new Mock<IItemLevelErrorHandler>();
             _batchMock = new Mock<IBatch>();
             _loggerMock = new Mock<IAPILog>();
+            _token = new CompositeCancellationTokenStub();
 
             _configurationMock.Setup(x => x.DestinationWorkspaceArtifactId).Returns(_DESTINATION_WORKSPACE_ID);
             _configurationMock.Setup(x => x.ExportRunId).Returns(It.IsAny<Guid>());
@@ -57,7 +58,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _batchMock.Setup(x => x.BatchGuid).Returns(new Guid(_BATCH_GUID));
             _batchMock.Setup(x => x.ExportRunId).Returns(new Guid(_EXPORT_RUN_ID));
 
-            _dataReaderFactoryMock.Setup(x => x.CreateNativeSourceWorkspaceDataReader(_batchMock.Object, CancellationToken.None)).Returns(_dataReaderMock.Object);
+            _dataReaderFactoryMock.Setup(x => x.CreateNativeSourceWorkspaceDataReader(_batchMock.Object, _token.AnyReasonCancellationToken)).Returns(_dataReaderMock.Object);
             _dataReaderMock.Setup(x => x.ItemStatusMonitor).Returns(_itemStatusMonitorMock.Object);
 
             _sut = new LoadFileGenerator(
@@ -91,7 +92,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 .ReturnsAsync(_workspacePath);
 
             // Act
-            ILoadFile result = await _sut.GenerateAsync(_batchMock.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+            ILoadFile result = await _sut.GenerateAsync(_batchMock.Object, _token).ConfigureAwait(false);
 
             // Assert
             result.Should().NotBeNull();
@@ -108,7 +109,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 .ReturnsAsync(_workspacePath);
 
             // Act
-            ILoadFile result = await _sut.GenerateAsync(_batchMock.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+            ILoadFile result = await _sut.GenerateAsync(_batchMock.Object, _token).ConfigureAwait(false);
 
             // Assert
             result.Should().NotBeNull();
@@ -128,7 +129,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 .ReturnsAsync(rootDirectory);
 
             // Act
-            Func<Task<ILoadFile>> function = async () => await _sut.GenerateAsync(_batchMock.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+            Func<Task<ILoadFile>> function = async () => await _sut.GenerateAsync(_batchMock.Object, _token).ConfigureAwait(false);
 
             // Assert
             function.Should().Throw<Exception>().WithMessage(expectedErrorMessage);
@@ -156,7 +157,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             });
 
             // Act
-            ILoadFile result = await _sut.GenerateAsync(_batchMock.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+            ILoadFile result = await _sut.GenerateAsync(_batchMock.Object, _token).ConfigureAwait(false);
 
             // Assert
             _itemLevelErrorHandlerMock.Verify(x => x.Initialize(_dataReaderMock.Object.ItemStatusMonitor), Times.Once);
@@ -180,6 +181,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             {
                 IsStopRequestedFunc = () => true
             };
+            _dataReaderFactoryMock.Setup(x => x.CreateNativeSourceWorkspaceDataReader(_batchMock.Object, token.AnyReasonCancellationToken)).Returns(_dataReaderMock.Object);
 
             // Act
             ILoadFile result = await _sut.GenerateAsync(_batchMock.Object, token).ConfigureAwait(false);
@@ -204,6 +206,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             {
                 IsDrainStopRequestedFunc = () => true
             };
+            _dataReaderFactoryMock.Setup(x => x.CreateNativeSourceWorkspaceDataReader(_batchMock.Object, token.AnyReasonCancellationToken)).Returns(_dataReaderMock.Object);
 
             // Act
             ILoadFile result = await _sut.GenerateAsync(_batchMock.Object, token).ConfigureAwait(false);

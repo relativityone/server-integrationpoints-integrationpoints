@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using FluentAssertions;
@@ -9,6 +10,7 @@ using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
@@ -143,10 +145,8 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
                 .ExecutePreRequisteExecutor<IConfigureDocumentSynchronizationConfiguration>();
 
             IExecutor<IBatchDataSourcePreparationConfiguration> sut = setup.Container.Resolve<IExecutor<IBatchDataSourcePreparationConfiguration>>();
-            CompositeCancellationTokenStub token = new CompositeCancellationTokenStub
-            {
-                IsDrainStopRequestedFunc = () => true
-            };
+
+            CompositeCancellationToken token = new CompositeCancellationToken(CancellationToken.None, new CancellationToken(true), new EmptyLogger());
 
             // Act
             ExecutionResult result = await sut.ExecuteAsync(setup.Configuration, token);
@@ -184,10 +184,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
                 .ExecutePreRequisteExecutor<IConfigureDocumentSynchronizationConfiguration>();
 
             IExecutor<IBatchDataSourcePreparationConfiguration> sut = setup.Container.Resolve<IExecutor<IBatchDataSourcePreparationConfiguration>>();
-            CompositeCancellationTokenStub token = new CompositeCancellationTokenStub
-            {
-                IsStopRequestedFunc = () => true
-            };
+            CompositeCancellationToken token = new CompositeCancellationToken(new CancellationToken(true), CancellationToken.None, new EmptyLogger());
 
             // Act
             ExecutionResult result = await sut.ExecuteAsync(setup.Configuration, token);
@@ -200,7 +197,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
                 setup.Configuration.ExportRunId)
             .ConfigureAwait(false);
 
-            result.Status.Should().Be(ExecutionStatus.Canceled);
+            result.Status.Should().Be(ExecutionStatus.Completed);
             batches.FirstOrDefault().Status.Should().Be(BatchStatus.Cancelled);
         }
     }

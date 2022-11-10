@@ -49,13 +49,15 @@ namespace Relativity.Sync.Executors
                         IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
                         ILoadFile loadFile = await _fileGenerator.GenerateAsync(batch, token).ConfigureAwait(false);
 
-                        if (token.IsStopRequested)
+                        if (batch.Status == BatchStatus.Cancelled)
                         {
                             await CancelJobAsync(job, configuration).ConfigureAwait(false);
-                            return ExecutionResult.Canceled();
+
+                            // After every cancellation we need to end this execution with success to get into DocumentSynchronizationMonitorExecutor
+                            return ExecutionResult.Success();
                         }
 
-                        if (token.IsDrainStopRequested)
+                        if (batch.Status == BatchStatus.Paused)
                         {
                             return ExecutionResult.Paused();
                         }
@@ -69,8 +71,10 @@ namespace Relativity.Sync.Executors
 
                         if (!result.IsSuccess)
                         {
+                            _logger.LogInformation("Could not add data source for batch id {batchGuid}. Error: {errorCode} {errorMessage}", batch.BatchGuid, result.ErrorCode, result.ErrorMessage);
                             await CancelJobAsync(job, configuration).ConfigureAwait(false);
-                            return ExecutionResult.Failure($"Could not send load file for batch ID: {batch.ArtifactId} to IAPI 2.0. {result.ErrorMessage}");
+                            await batch.SetStatusAsync(BatchStatus.Failed).ConfigureAwait(false);
+                            return ExecutionResult.Success();
                         }
 
                         await batch.SetStatusAsync(BatchStatus.Generated).ConfigureAwait(false);
@@ -82,7 +86,6 @@ namespace Relativity.Sync.Executors
                 {
                     _logger.LogError(ex, "Batch Data Source preparation failed");
                     await CancelJobAsync(job, configuration).ConfigureAwait(false);
-                    return ExecutionResult.Failure(ex);
                 }
             }
 
