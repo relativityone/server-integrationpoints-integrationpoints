@@ -273,7 +273,11 @@ namespace kCura.ScheduleQueue.AgentBase
                         continue;
                     }
 
-                    job.MarkJobAsFailed(new TimeoutException($"Job {job.JobId} has failed due to timeout. Contact your system administrator."), false);
+                    job.MarkJobAsFailed(
+                        new TimeoutException(
+                        $"Job {job.JobId} has failed due to timeout. Contact your system administrator."),
+                        false,
+                        false);
                     Logger.LogInformation("Starting Job in Transient State {jobId} processing...", job.JobId);
 
                     TaskResult result = ProcessJob(job);
@@ -312,7 +316,7 @@ namespace kCura.ScheduleQueue.AgentBase
                 Exceptions = new List<Exception> { validationResult.Exception }
             };
 
-            job.MarkJobAsFailed(validationResult.Exception, true);
+            job.MarkJobAsFailed(validationResult.Exception, true, validationResult.MaximumConsecutiveFailuresReached);
             FinalizeJobExecution(job, failedJobResult);
         }
 
@@ -481,7 +485,7 @@ namespace kCura.ScheduleQueue.AgentBase
                 PreValidationResult result = _queueJobValidator.ValidateAsync(job).GetAwaiter().GetResult();
                 if (!result.IsValid)
                 {
-                    job.MarkJobAsFailed(result.Exception, result.ShouldBreakSchedule);
+                    job.MarkJobAsFailed(result.Exception, result.ShouldBreakSchedule, result.MaximumConsecutiveFailuresReached);
                     LogValidationJobFailed(job, result);
                 }
 

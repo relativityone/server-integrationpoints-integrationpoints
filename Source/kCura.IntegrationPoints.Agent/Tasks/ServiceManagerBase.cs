@@ -251,9 +251,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     {
                         Result.Status = TaskStatusEnum.Success;
                     }
+
                     JobService.UpdateStopState(new List<long> { job.JobId }, StopState.None);
                     IntegrationPointDto.NextScheduledRuntimeUTC = JobService.GetJobNextUtcRunDateTime(job, ScheduleRuleFactory, Result);
                 }
+
                 IntegrationPointRepository.Update(IntegrationPointDto);
                 LogUpdateIntegrationPointRuntimesSuccessfulEnd(job);
             }

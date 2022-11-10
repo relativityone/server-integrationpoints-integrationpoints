@@ -173,7 +173,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
                 .WithJobId(expectedJobId)
                 .WithRelatedObjectArtifactId(integrationPointId)
                 .Build();
-            job.MarkJobAsFailed(expectedException, false);
+            job.MarkJobAsFailed(expectedException, false, false);
 
             // Act
             TaskResult result = sut.ProcessJob_Test(job);

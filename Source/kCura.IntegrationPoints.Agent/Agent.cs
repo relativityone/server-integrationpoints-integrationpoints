@@ -149,7 +149,24 @@ namespace kCura.IntegrationPoints.Agent
                 {
                     if (job.JobFailed != null)
                     {
-                        MarkJobHistoryAsFailedAsync(Container, job).GetAwaiter().GetResult();
+                        IIntegrationPointRepository integrationPointRepository = Container.Resolve<IIntegrationPointRepository>();
+                        IntegrationPoint integrationPoint = integrationPointRepository.ReadAsync(job.RelatedObjectArtifactID).GetAwaiter().GetResult();
+                        if (integrationPoint == null)
+                        {
+                            throw new NullReferenceException(
+                                $"Unable to retrieve the integration point for the following job: {job.JobId}");
+                        }
+
+                        if (job.JobFailed.ShouldBreakSchedule)
+                        {
+                            integrationPoint.ScheduleRule = null;
+                            integrationPoint.NextScheduledRuntimeUTC = null;
+                            integrationPoint.EnableScheduler = job.JobFailed.MaximumConsecutiveFailuresReached;
+                        }
+
+                        integrationPointRepository.Update(integrationPoint);
+
+                        MarkJobHistoryAsFailed(integrationPoint, job);
                         return new TaskResult
                         {
                             Status = TaskStatusEnum.Fail,
@@ -237,18 +254,10 @@ namespace kCura.IntegrationPoints.Agent
             return result;
         }
 
-        private async Task MarkJobHistoryAsFailedAsync(IWindsorContainer container, Job job)
+        private void MarkJobHistoryAsFailed(IntegrationPoint integrationPoint, Job job)
         {
-            IntegrationPoint integrationPoint = await container.Resolve<IIntegrationPointRepository>()
-                .ReadAsync(job.RelatedObjectArtifactID).ConfigureAwait(false);
-            if (integrationPoint == null)
-            {
-                throw new NullReferenceException(
-                    $"Unable to retrieve the integration point for the following job: {job.JobId}");
-            }
-
             ITaskFactoryJobHistoryService jobHistoryService =
-                container.Resolve<ITaskFactoryJobHistoryServiceFactory>()
+                Container.Resolve<ITaskFactoryJobHistoryServiceFactory>()
                     .CreateJobHistoryService(integrationPoint);
             jobHistoryService.SetJobIdOnJobHistory(job);
             jobHistoryService.UpdateJobHistoryOnFailure(job, job.JobFailed.Exception);
