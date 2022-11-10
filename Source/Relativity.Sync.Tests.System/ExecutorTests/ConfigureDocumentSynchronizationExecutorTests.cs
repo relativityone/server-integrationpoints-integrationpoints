@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
         }
 
         [Test]
-        [Ignore("IAPI 2.0 Defect TBD")]
+        [Ignore("REL-774348")]
         public async Task ExecuteAsync_ShouldCreateBasicIAPIv2Job()
         {
             // Arrange
@@ -54,7 +54,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
 
         [TestCase(ImportNativeFileCopyMode.SetFileLinks)]
         [TestCase(ImportNativeFileCopyMode.CopyFiles)]
-        [Ignore("IAPI 2.0 Defect TBD")]
+        [Ignore("REL-774348")]
         public async Task ExecuteAsync_ShouldCreateIAPIJob_WithMativesConfigured(ImportNativeFileCopyMode fileCopyMode)
         {
             // Arrange
@@ -79,7 +79,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
         }
 
         [Test]
-        [Ignore("IAPI 2.0 Defect TBD")]
+        [Ignore("REL-774348")]
         public async Task ExecuteAsync_ShouldCreateIAPIJob_WithMappingConfigured()
         {
             // Arrange
@@ -112,7 +112,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
         }
 
         [Test]
-        [Ignore("IAPI 2.0 Defect TBD")]
+        [Ignore("REL-774348")]
         public async Task ExecueAsync_ShouldCreateIAPIJob_WithFolderReadFromField()
         {
             // Arrange
