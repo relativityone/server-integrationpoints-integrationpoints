@@ -161,6 +161,7 @@ namespace Relativity.Sync.Tests.System
                 DestinationFolderArtifactId = _destinationFolderArtifactId,
                 ExecutingUserId = _user.ArtifactID
             };
+            PrepareSyncConfigurationAndAssignId(_configurationStub);
 
             // Initialize container
             IContainer container = ContainerHelper.Create(_configurationStub);

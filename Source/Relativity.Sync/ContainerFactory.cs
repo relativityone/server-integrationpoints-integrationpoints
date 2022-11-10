@@ -46,6 +46,9 @@ namespace Relativity.Sync
             containerBuilder.RegisterType<JobEndMetricsServiceFactory>().As<IJobEndMetricsServiceFactory>();
             containerBuilder.RegisterType<RipWorkarounds>().As<IRipWorkarounds>();
             containerBuilder.RegisterType<IAPIv2RunChecker>().As<IIAPIv2RunChecker>().SingleInstance();
+            containerBuilder.RegisterType<ProgressHandler>().As<IProgressHandler>();
+            containerBuilder.RegisterType<JobProgressUpdater>().As<IJobProgressUpdater>();
+            containerBuilder.RegisterType<TimerFactory>().As<ITimerFactory>();
 
             containerBuilder.RegisterInstance(ToggleProvider.Current).As<IToggleProvider>().SingleInstance().PreserveExistingDefaults();
 

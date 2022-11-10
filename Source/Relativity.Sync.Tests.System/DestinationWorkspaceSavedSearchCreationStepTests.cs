@@ -48,6 +48,7 @@ namespace Relativity.Sync.Tests.System
                 SourceJobTagArtifactId = sourceJobTagArtifactId
             };
             configuration.SetSourceJobTagName(sourceJobTagName);
+            PrepareSyncConfigurationAndAssignId(configuration);
 
             ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IDestinationWorkspaceSavedSearchCreationConfiguration>(configuration);
             

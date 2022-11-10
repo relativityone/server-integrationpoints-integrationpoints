@@ -47,6 +47,7 @@ namespace Relativity.Sync.Executors
             int readerLineNumber = 0;
             try
             {
+                _logger.LogInformation("Generating LoadFile for Batch {batchId}", batch.ArtifactId);
                 using (ISourceWorkspaceDataReader reader = _dataReaderFactory.CreateNativeSourceWorkspaceDataReader(batch, token.AnyReasonCancellationToken))
                 using (StreamWriter writer = new StreamWriter(batchPath, append: true))
                 {
@@ -63,6 +64,8 @@ namespace Relativity.Sync.Executors
 
                 await HandleBatchStatusOnProcessingStop(token, batch, readerLineNumber).ConfigureAwait(false);
                 await _itemLevelErrorHandler.HandleDataSourceProcessingFinishedAsync(batch).ConfigureAwait(false);
+
+                _logger.LogInformation("LoadFile for batch {batchId} was written with {recordsCount} records - {path}", batch.ArtifactId, readerLineNumber, batchPath);
             }
             catch (Exception ex)
             {
@@ -101,6 +104,7 @@ namespace Relativity.Sync.Executors
 
         private async Task<string> CreateBatchFullPath(IBatch batch)
         {
+            _logger.LogInformation("Preparing LoadFile path for Batch {batchId} - {batchGuid}...", batch.ArtifactId, batch.BatchGuid);
             string batchFullPath = string.Empty;
             try
             {
@@ -130,6 +134,7 @@ namespace Relativity.Sync.Executors
                 throw;
             }
 
+            _logger.LogInformation("LoadFile Path for Batch {batchId} was prepared - {batchPath}", batch.ArtifactId, batchFullPath);
             return batchFullPath;
         }
 

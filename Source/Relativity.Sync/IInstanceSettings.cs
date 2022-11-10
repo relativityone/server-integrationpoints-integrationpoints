@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace Relativity.Sync
 {
@@ -13,6 +14,8 @@ namespace Relativity.Sync
         Task<bool> GetShouldForceADFTransferAsync(bool defaultValue = false);
 
         Task<int> GetSyncMaxThreadsCountAsync(int defaultValue = 4);
+
+        Task<TimeSpan> GetSyncProgressUpdatePeriodAsync(TimeSpan defaultValue);
 
         Task<T> GetAsync<T>(string name, string section, T defaultValue);
     }

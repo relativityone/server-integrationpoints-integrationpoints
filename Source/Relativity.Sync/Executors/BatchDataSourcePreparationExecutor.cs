@@ -44,8 +44,10 @@ namespace Relativity.Sync.Executors
                              .ConfigureAwait(false))
                              .ToList();
 
+                    _logger.LogInformation("Retrieved {batchesCount} Batches to Import.", batchIdList.Count);
                     foreach (int batchId in batchIdList)
                     {
+                        _logger.LogInformation("Reading Batch {batchId}...", batchId);
                         IBatch batch = await _batchRepository.GetAsync(configuration.SourceWorkspaceArtifactId, batchId).ConfigureAwait(false);
                         ILoadFile loadFile = await _fileGenerator.GenerateAsync(batch, token).ConfigureAwait(false);
 

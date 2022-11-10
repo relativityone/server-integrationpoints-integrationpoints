@@ -36,5 +36,7 @@ namespace Relativity.Sync.Storage
         public DestinationFolderStructureBehavior DestinationFolderStructureBehavior => _cache.GetFieldValue(x => x.DestinationFolderStructureBehavior);
 
         public int DataDestinationArtifactId => _cache.GetFieldValue(x => x.DataDestinationArtifactId);
+
+        public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue(x => x.NativesBehavior);
     }
 }

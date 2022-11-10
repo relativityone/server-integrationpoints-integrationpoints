@@ -60,7 +60,9 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
             ExecutorTestSetup setup = new ExecutorTestSetup(Environment, ServiceFactory)
                 .ForWorkspaces(_sourceWorkspaceName, _destinationWorkspaceName)
                 .ImportData(dataSet: Dataset.NativesAndExtractedText, extractedText: true)
-                .SetupDocumentConfiguration(IdentifierFieldMap)
+                .SetupDocumentConfiguration(
+                    IdentifierFieldMap,
+                    nativeFileCopyMode: ImportNativeFileCopyMode.DoNotImportNativeFiles)
                 .SetupContainer(b =>
                 {
                     b.RegisterInstance<IFileShareService>(fileShareMock);
@@ -89,7 +91,8 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
             ExecutorTestSetup setup = new ExecutorTestSetup(Environment, ServiceFactory)
                 .ForWorkspaces(_sourceWorkspaceName, _destinationWorkspaceName)
                 .ImportData(dataSet: Dataset.NativesAndExtractedText, extractedText: true, natives: true)
-                .SetupDocumentConfiguration(IdentifierFieldMap)
+                .SetupDocumentConfiguration(
+                    IdentifierFieldMap)
                 .SetupContainer(b =>
                 {
                     b.RegisterInstance<IFileShareService>(fileShareMock);

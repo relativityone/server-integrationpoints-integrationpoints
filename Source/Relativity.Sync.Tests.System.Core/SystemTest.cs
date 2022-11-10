@@ -182,6 +182,18 @@ namespace Relativity.Sync.Tests.System.Core
             return new ProductionDto { ArtifactId = productionId, Name = productionName };
         }
 
+        protected void PrepareSyncConfigurationAndAssignId(ConfigurationStub configuration)
+        {
+            int syncConfigurationArtifactId =
+             Rdos.CreateSyncConfigurationRdoAsync(
+                 configuration.SourceWorkspaceArtifactId,
+                 configuration,
+                 TestLogHelper.GetLogger())
+             .GetAwaiter().GetResult();
+
+            configuration.SyncConfigurationArtifactId = syncConfigurationArtifactId;
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             Environment?.Dispose();

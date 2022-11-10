@@ -66,6 +66,7 @@ namespace Relativity.Sync.Tests.System
             };
             configuration.SetFieldMappings(_serializer.Deserialize<List<FieldMap>>(fieldsMap));
             configuration.SetJobName(_JOB_HISTORY_NAME);
+            PrepareSyncConfigurationAndAssignId(configuration);
 
             // act
             ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IValidationConfiguration>(configuration);
@@ -131,6 +132,7 @@ namespace Relativity.Sync.Tests.System
             };
             configuration.SetFieldMappings(_serializer.Deserialize<List<FieldMap>>(fieldsMap));
             configuration.SetJobName(_JOB_HISTORY_NAME);
+            PrepareSyncConfigurationAndAssignId(configuration);
 
             // act
             ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IValidationConfiguration>(configuration);
