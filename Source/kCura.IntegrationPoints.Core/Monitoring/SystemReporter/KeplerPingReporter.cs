@@ -28,19 +28,20 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
 
         public async Task<bool> IsServiceHealthyAsync()
         {
-            bool ping = false;
+            bool ping;
+
             try
             {
                 using (var pingService = _helper.GetServicesManager().CreateProxy<IPingService>(ExecutionIdentity.System))
                 {
                     string pingResponse = await pingService.Ping().ConfigureAwait(false);
                     ping = pingResponse.Equals(PING_RESPONSE, StringComparison.InvariantCultureIgnoreCase);
-                    return ping;
                 }
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                _logger.LogWarning(exception, $"Cannot check Kepler Service Status.");
+                _logger.LogWarning(ex, "Error while checking Kepler service accessibility: {keplerServiceName}", nameof(IPingService));
+                ping = false;
             }
 
             return ping;
