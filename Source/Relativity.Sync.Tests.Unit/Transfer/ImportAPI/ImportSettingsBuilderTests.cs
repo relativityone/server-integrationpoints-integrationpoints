@@ -51,7 +51,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ImportAPI
             var result = await _sut.BuildAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            result.importSettings.Fields.FieldMappings
+            result.DocumentSettings.Fields.FieldMappings
                 .Should().OnlyContain(x => x.ColumnIndex > 0);
         }
 
@@ -66,7 +66,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ImportAPI
             var result = await _sut.BuildAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            result.importSettings.Overlay.Should().BeNull();
+            result.DocumentSettings.Overlay.Should().BeNull();
         }
 
         [TestCase(ImportOverwriteMode.OverlayOnly, FieldOverlayBehavior.UseFieldSettings, OverlayMode.Overlay, MultiFieldOverlayBehaviour.UseRelativityDefaults)]
@@ -94,9 +94,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ImportAPI
             // Assert
             FieldInfoDto identityField = fields.Single(x => x.IsIdentifier);
 
-            result.importSettings.Overlay.Mode.Should().Be(iapiOverwriteMode);
-            result.importSettings.Overlay.MultiFieldOverlayBehaviour.Should().Be(iapiOverlayBehavior);
-            result.importSettings.Overlay.KeyField.Should().Be(identityField.DestinationFieldName);
+            result.DocumentSettings.Overlay.Mode.Should().Be(iapiOverwriteMode);
+            result.DocumentSettings.Overlay.MultiFieldOverlayBehaviour.Should().Be(iapiOverlayBehavior);
+            result.DocumentSettings.Overlay.KeyField.Should().Be(identityField.DestinationFieldName);
         }
 
         [Test]
@@ -109,8 +109,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ImportAPI
             var result = await _sut.BuildAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            result.importSettings.Native.Should().BeNull();
-            result.importSettings.Image.Should().BeNull();
+            result.DocumentSettings.Native.Should().BeNull();
+            result.DocumentSettings.Image.Should().BeNull();
         }
 
         [TestCase(ImportNativeFileCopyMode.CopyFiles)]
@@ -129,19 +129,19 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ImportAPI
             var result = await _sut.BuildAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            result.importSettings.Native.FileNameColumnIndex
+            result.DocumentSettings.Native.FileNameColumnIndex
                 .Should().Be(fields.Single(x => x.SpecialFieldType == SpecialFieldType.NativeFileFilename).DocumentFieldIndex);
-            result.importSettings.Native.FilePathColumnIndex
+            result.DocumentSettings.Native.FilePathColumnIndex
                 .Should().Be(fields.Single(x => x.SpecialFieldType == SpecialFieldType.NativeFileLocation).DocumentFieldIndex);
 
-            result.advancedSettings.Native.FileSizeColumnIndex
+            result.AdvancedSettings.Native.FileSizeColumnIndex
                 .Should().Be(fields.Single(x => x.SpecialFieldType == SpecialFieldType.NativeFileSize).DocumentFieldIndex);
-            result.advancedSettings.Native.FileType.SupportedByViewerColumnIndex
+            result.AdvancedSettings.Native.FileType.SupportedByViewerColumnIndex
                 .Should().Be(fields.Single(x => x.SpecialFieldType == SpecialFieldType.SupportedByViewer).DocumentFieldIndex);
-            result.advancedSettings.Native.FileType.RelativityNativeTypeColumnIndex
+            result.AdvancedSettings.Native.FileType.RelativityNativeTypeColumnIndex
                 .Should().Be(fields.Single(x => x.SpecialFieldType == SpecialFieldType.RelativityNativeType).DocumentFieldIndex);
 
-            result.importSettings.Image.Should().BeNull();
+            result.DocumentSettings.Image.Should().BeNull();
         }
 
         [Test]
@@ -159,8 +159,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ImportAPI
             var result = await _sut.BuildAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            result.advancedSettings.Other.Billable.Should().BeTrue();
-            result.advancedSettings.Native.ValidateFileLocation.Should().BeFalse();
+            result.AdvancedSettings.Other.Billable.Should().BeTrue();
+            result.AdvancedSettings.Native.ValidateFileLocation.Should().BeFalse();
         }
 
         [Test]
@@ -186,7 +186,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ImportAPI
             var result = await _sut.BuildAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            result.importSettings.Fields.FieldMappings.Should()
+            result.DocumentSettings.Fields.FieldMappings.Should()
                 .Contain(x => x.Field == yesNoField.DestinationFieldName)
                 .And.NotContain(x => x.Field == specialField.DestinationFieldName);
         }
@@ -201,8 +201,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ImportAPI
             var result = await _sut.BuildAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            result.importSettings.Folder.RootFolderID.Should().BePositive();
-            result.importSettings.Folder.FolderPathColumnIndex.Should().BeNull();
+            result.DocumentSettings.Folder.RootFolderID.Should().BePositive();
+            result.DocumentSettings.Folder.FolderPathColumnIndex.Should().BeNull();
         }
 
         [Test]
@@ -229,8 +229,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ImportAPI
             var result = await _sut.BuildAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            result.importSettings.Folder.RootFolderID.Should().BePositive();
-            result.importSettings.Folder.FolderPathColumnIndex.Should().Be(folderPathField.DocumentFieldIndex);
+            result.DocumentSettings.Folder.RootFolderID.Should().BePositive();
+            result.DocumentSettings.Folder.FolderPathColumnIndex.Should().Be(folderPathField.DocumentFieldIndex);
         }
 
         [Test]
@@ -254,8 +254,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ImportAPI
             var result = await _sut.BuildAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            result.importSettings.Folder.RootFolderID.Should().BePositive();
-            result.importSettings.Folder.FolderPathColumnIndex.Should().Be(folderPathField.DocumentFieldIndex);
+            result.DocumentSettings.Folder.RootFolderID.Should().BePositive();
+            result.DocumentSettings.Folder.FolderPathColumnIndex.Should().Be(folderPathField.DocumentFieldIndex);
         }
 
         [Test]
@@ -270,7 +270,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ImportAPI
             var result = await _sut.BuildAsync(_configurationFake.Object, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            result.advancedSettings.Folder.MoveExistingDocuments.Should().BeTrue();
+            result.AdvancedSettings.Folder.MoveExistingDocuments.Should().BeTrue();
         }
 
         private List<FieldInfoDto> GetIdentifierOnlyFieldsMapping()

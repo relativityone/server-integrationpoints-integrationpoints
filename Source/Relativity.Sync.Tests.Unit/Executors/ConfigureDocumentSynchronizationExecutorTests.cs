@@ -65,7 +65,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             _settingsBuilderFake = new Mock<IImportSettingsBuilder>();
             _settingsBuilderFake.Setup(x => x.BuildAsync(It.IsAny<IConfigureDocumentSynchronizationConfiguration>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((new ImportDocumentSettings(), new AdvancedImportSettings()));
+                .ReturnsAsync(new ImportSettings(new ImportDocumentSettings(), new AdvancedImportSettings()));
 
             _sut = new ConfigureDocumentSynchronizationExecutor(
                 FakeHelper.CreateSyncJobParameters(),

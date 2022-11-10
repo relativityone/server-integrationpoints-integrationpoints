@@ -31,7 +31,7 @@ namespace Relativity.Sync.Transfer.ImportAPI
             _logger = logger;
         }
 
-        public async Task<(ImportDocumentSettings importSettings, AdvancedImportSettings advancedSettings)> BuildAsync(IConfigureDocumentSynchronizationConfiguration configuration, CancellationToken token)
+        public async Task<ImportSettings> BuildAsync(IConfigureDocumentSynchronizationConfiguration configuration, CancellationToken token)
         {
             _logger.LogInformation("Creating ImportDocumentSettingsBuilder...");
 
@@ -77,7 +77,7 @@ namespace Relativity.Sync.Transfer.ImportAPI
 
             await ConfigureBatchSizeSettingsAsync(advancedSettings).ConfigureAwait(false);
 
-            return (importSettings, advancedSettings);
+            return new ImportSettings(importSettings, advancedSettings);
         }
 
         private void ConfigureMoveExistingDocuments(
@@ -123,7 +123,7 @@ namespace Relativity.Sync.Transfer.ImportAPI
             IWithOverlayMode overlayModeSettings,
             ImportOverwriteMode overwriteMode,
             FieldOverlayBehavior overlayBehavior,
-            IEnumerable<FieldInfoDto> mappedFields)
+            IReadOnlyList<FieldInfoDto> mappedFields)
         {
             Func<string> identityKeyFieldFunc = () => mappedFields.Single(x => x.IsIdentifier).DestinationFieldName;
 
@@ -191,14 +191,14 @@ namespace Relativity.Sync.Transfer.ImportAPI
             }
         }
 
-        private void ConfigureFileTypeSettings(IEnumerable<FieldInfoDto> mappedFields, AdvancedImportSettings advancedSettings)
+        private void ConfigureFileTypeSettings(IReadOnlyList<FieldInfoDto> mappedFields, AdvancedImportSettings advancedSettings)
         {
             advancedSettings.Native.FileSizeColumnIndex = GetFieldIndex(mappedFields, SpecialFieldType.NativeFileSize);
             advancedSettings.Native.FileType.SupportedByViewerColumnIndex = GetFieldIndex(mappedFields, SpecialFieldType.SupportedByViewer);
             advancedSettings.Native.FileType.RelativityNativeTypeColumnIndex = GetFieldIndex(mappedFields, SpecialFieldType.RelativityNativeType);
         }
 
-        private IWithFolders ConfigureFieldsMappingSettings(IWithFieldsMapping fieldsMappingSettings, IEnumerable<FieldInfoDto> mappedFields)
+        private IWithFolders ConfigureFieldsMappingSettings(IWithFieldsMapping fieldsMappingSettings, IReadOnlyList<FieldInfoDto> mappedFields)
         {
             _logger.LogInformation("Configuring FieldsMapping...");
             return fieldsMappingSettings.WithFieldsMapped(x =>
@@ -232,7 +232,7 @@ namespace Relativity.Sync.Transfer.ImportAPI
 
         private ImportDocumentSettings ConfigureDestinationFolderStructure(
             IWithFolders withFolders,
-            IEnumerable<FieldInfoDto> mappedFields,
+            IReadOnlyList<FieldInfoDto> mappedFields,
             DestinationFolderStructureBehavior folderStructureBehavior,
             int destinationFolderArtifactId,
             string folderPathField)
@@ -260,10 +260,10 @@ namespace Relativity.Sync.Transfer.ImportAPI
             }
         }
 
-        private int GetFieldIndex(IEnumerable<FieldInfoDto> mappedFields, SpecialFieldType specialFieldType)
+        private int GetFieldIndex(IReadOnlyList<FieldInfoDto> mappedFields, SpecialFieldType specialFieldType)
             => mappedFields.Single(x => x.SpecialFieldType == specialFieldType).DocumentFieldIndex;
 
-        private int GetFieldIndex(IEnumerable<FieldInfoDto> fieldMappings, string filedName)
+        private int GetFieldIndex(IReadOnlyList<FieldInfoDto> fieldMappings, string filedName)
         {
             FieldInfoDto field = fieldMappings.FirstOrDefault(x => x.SourceFieldName == filedName);
             return field?.DocumentFieldIndex ?? -1;

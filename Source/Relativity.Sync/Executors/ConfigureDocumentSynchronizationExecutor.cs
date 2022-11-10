@@ -33,16 +33,15 @@ namespace Relativity.Sync.Executors
         {
             try
             {
-                (ImportDocumentSettings importSettings, AdvancedImportSettings advancedSettings) =
-                    await _settingsBuilder.BuildAsync(configuration, token.AnyReasonCancellationToken).ConfigureAwait(false);
+                ImportSettings settings = await _settingsBuilder.BuildAsync(configuration, token.AnyReasonCancellationToken).ConfigureAwait(false);
 
                 ImportContext context = new ImportContext(configuration.ExportRunId, configuration.DestinationWorkspaceArtifactId);
 
                 await CreateImportJobAsync(context).ConfigureAwait(false);
 
-                await AttachImportSettingsToImportJobAsync(context, importSettings).ConfigureAwait(false);
+                await AttachImportSettingsToImportJobAsync(context, settings.DocumentSettings).ConfigureAwait(false);
 
-                await AttachAdvancedImportSettingsToImportJobAsync(context, advancedSettings).ConfigureAwait(false);
+                await AttachAdvancedImportSettingsToImportJobAsync(context, settings.AdvancedSettings).ConfigureAwait(false);
 
                 await BeginImportJobAsync(context).ConfigureAwait(false);
             }
