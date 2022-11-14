@@ -30,6 +30,17 @@ namespace Relativity.Sync.Executors
 
         public async Task<ExecutionResult> ExecuteAsync(IDocumentSynchronizationMonitorConfiguration configuration, CompositeCancellationToken token)
         {
+            // Followig if statements are temporary solution. Logic for handling Drain Stop and Cancel tokens should be implemented within: REL-770973
+            if (token.IsDrainStopRequested)
+            {
+                return ExecutionResult.Paused();
+            }
+
+            if (token.IsStopRequested)
+            {
+                return ExecutionResult.Canceled();
+            }
+
             ExecutionResult jobStatus;
             try
             {
