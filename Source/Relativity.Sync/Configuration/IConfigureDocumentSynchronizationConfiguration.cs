@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Configuration
 {
@@ -18,9 +16,11 @@ namespace Relativity.Sync.Configuration
 
         bool ImageImport { get; }
 
-        string FolderPathField { get; }
+        string FolderPathSourceFieldName { get; }
 
         DestinationFolderStructureBehavior DestinationFolderStructureBehavior { get; }
+
+        bool MoveExistingDocuments { get; }
 
         int DataDestinationArtifactId { get; }
     }

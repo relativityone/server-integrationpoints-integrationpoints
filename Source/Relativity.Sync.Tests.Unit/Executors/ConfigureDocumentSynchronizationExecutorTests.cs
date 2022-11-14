@@ -15,6 +15,7 @@ using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
+using Relativity.Sync.Transfer.ImportAPI;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
@@ -24,9 +25,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IDestinationServiceFactoryForUser> _serviceFactoryMock;
         private Mock<IImportJobController> _importJobControllerMock;
         private Mock<IDocumentConfigurationController> _documentConfigurationControllerMock;
-        private Mock<IFieldMappings> _fieldMapingMock;
-        private Mock<IFieldManager> _fieldManagerMock;
+        private Mock<IAdvancedConfigurationController> _advancedConfigurationControllerMock;
         private Mock<IConfigureDocumentSynchronizationConfiguration> _executorConfigurationMock;
+        private Mock<IImportSettingsBuilder> _settingsBuilderFake;
 
         private ConfigureDocumentSynchronizationExecutor _sut;
 
@@ -38,55 +39,56 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _importJobControllerMock = new Mock<IImportJobController>();
             _importJobControllerMock.Setup(x =>
                     x.CreateAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()))
-                .ReturnsAsync(new Response(Guid.Empty, true, null, null));
+                .ReturnsAsync(Response.CreateForSuccess(Guid.NewGuid()));
             _importJobControllerMock.Setup(x =>
                     x.BeginAsync(It.IsAny<int>(), It.IsAny<Guid>()))
-                .ReturnsAsync(new Response(Guid.Empty, true, null, null));
+                .ReturnsAsync(Response.CreateForSuccess(Guid.NewGuid()));
 
             _documentConfigurationControllerMock = new Mock<IDocumentConfigurationController>();
             _documentConfigurationControllerMock.Setup(x =>
                     x.CreateAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<ImportDocumentSettings>()))
-                .ReturnsAsync(new Response(Guid.Empty, true, null, null));
+                .ReturnsAsync(Response.CreateForSuccess(Guid.NewGuid()));
+
+            _advancedConfigurationControllerMock = new Mock<IAdvancedConfigurationController>();
+            _advancedConfigurationControllerMock.Setup(x =>
+                    x.CreateAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<AdvancedImportSettings>()))
+                .ReturnsAsync(Response.CreateForSuccess(Guid.NewGuid()));
 
             _serviceFactoryMock.Setup(x => x.CreateProxyAsync<IImportJobController>())
                 .ReturnsAsync(_importJobControllerMock.Object);
             _serviceFactoryMock.Setup(x => x.CreateProxyAsync<IDocumentConfigurationController>())
                 .ReturnsAsync(_documentConfigurationControllerMock.Object);
-
-            _fieldMapingMock = new Mock<IFieldMappings>();
-
-            _fieldManagerMock = new Mock<IFieldManager>();
-            List<FieldInfoDto> specialFields = new List<FieldInfoDto>
-            {
-                new FieldInfoDto(SpecialFieldType.NativeFileLocation, "NativeFileLocation", "NativeFileLocation", false, true),
-                new FieldInfoDto(SpecialFieldType.NativeFileFilename, "NativeFileFilename", "NativeFileFilename", false, true),
-            };
-            _fieldManagerMock.Setup(x => x.GetNativeSpecialFields()).Returns(specialFields);
-            _fieldManagerMock.Setup(x => x.GetNativeAllFieldsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(specialFields);
+            _serviceFactoryMock.Setup(x => x.CreateProxyAsync<IAdvancedConfigurationController>())
+                .ReturnsAsync(_advancedConfigurationControllerMock.Object);
 
             _executorConfigurationMock = new Mock<IConfigureDocumentSynchronizationConfiguration>();
+
+            _settingsBuilderFake = new Mock<IImportSettingsBuilder>();
+            _settingsBuilderFake.Setup(x => x.BuildAsync(It.IsAny<IConfigureDocumentSynchronizationConfiguration>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new ImportSettings(new ImportDocumentSettings(), new AdvancedImportSettings()));
 
             _sut = new ConfigureDocumentSynchronizationExecutor(
                 FakeHelper.CreateSyncJobParameters(),
                 _serviceFactoryMock.Object,
-                _fieldMapingMock.Object,
-                _fieldManagerMock.Object,
+                _settingsBuilderFake.Object,
                 Mock.Of<IAPILog>());
         }
 
         [Test]
         public async Task ExecuteAsync_ShouldCreateAndConfigureAndBeginJob()
         {
+            // Act
             ExecutionResult result = await _sut
                 .ExecuteAsync(_executorConfigurationMock.Object, CompositeCancellationToken.None)
                 .ConfigureAwait(false);
 
-            _importJobControllerMock.Verify(x =>
-                x.CreateAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
-            _documentConfigurationControllerMock.Verify(x =>
-                x.CreateAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<ImportDocumentSettings>()), Times.Once);
-            _importJobControllerMock.Verify(x =>
-                x.BeginAsync(It.IsAny<int>(), It.IsAny<Guid>()), Times.Once);
+            // Assert
+            _importJobControllerMock.Verify(
+                x => x.CreateAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            _documentConfigurationControllerMock.Verify(
+                x => x.CreateAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<ImportDocumentSettings>()), Times.Once);
+            _importJobControllerMock.Verify(
+                x => x.BeginAsync(It.IsAny<int>(), It.IsAny<Guid>()), Times.Once);
 
             result.Status.Should().Be(ExecutionStatus.Completed);
         }
@@ -102,12 +104,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 .ExecuteAsync(_executorConfigurationMock.Object, CompositeCancellationToken.None)
                 .ConfigureAwait(false);
 
-            _importJobControllerMock.Verify(x =>
-                x.CreateAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
-            _documentConfigurationControllerMock.Verify(x =>
-                x.CreateAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<ImportDocumentSettings>()), Times.Never);
-            _importJobControllerMock.Verify(x =>
-                x.BeginAsync(It.IsAny<int>(), It.IsAny<Guid>()), Times.Never);
+            _importJobControllerMock.Verify(
+                x => x.CreateAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            _documentConfigurationControllerMock.Verify(
+                x => x.CreateAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<ImportDocumentSettings>()), Times.Never);
+            _importJobControllerMock.Verify(
+                x => x.BeginAsync(It.IsAny<int>(), It.IsAny<Guid>()), Times.Never);
 
             result.Status.Should().Be(ExecutionStatus.Failed);
         }
@@ -123,12 +125,15 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 .ExecuteAsync(_executorConfigurationMock.Object, CompositeCancellationToken.None)
                 .ConfigureAwait(false);
 
-            _importJobControllerMock.Verify(x =>
-                x.CreateAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
-            _documentConfigurationControllerMock.Verify(x =>
-                x.CreateAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<ImportDocumentSettings>()), Times.Once);
-            _importJobControllerMock.Verify(x =>
-                x.BeginAsync(It.IsAny<int>(), It.IsAny<Guid>()), Times.Never);
+            _importJobControllerMock.Verify(
+                x => x.CreateAsync(
+                    It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            _documentConfigurationControllerMock.Verify(
+                x => x.CreateAsync(
+                    It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<ImportDocumentSettings>()), Times.Once);
+            _importJobControllerMock.Verify(
+                x => x.BeginAsync(
+                    It.IsAny<int>(), It.IsAny<Guid>()), Times.Never);
 
             result.Status.Should().Be(ExecutionStatus.Failed);
         }
@@ -144,12 +149,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 .ExecuteAsync(_executorConfigurationMock.Object, CompositeCancellationToken.None)
                 .ConfigureAwait(false);
 
-            _importJobControllerMock.Verify(x =>
-                x.CreateAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
-            _documentConfigurationControllerMock.Verify(x =>
-                x.CreateAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<ImportDocumentSettings>()), Times.Once);
-            _importJobControllerMock.Verify(x =>
-                x.BeginAsync(It.IsAny<int>(), It.IsAny<Guid>()), Times.Once);
+            _importJobControllerMock.Verify(
+                x => x.CreateAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            _documentConfigurationControllerMock.Verify(
+                x => x.CreateAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<ImportDocumentSettings>()), Times.Once);
+            _importJobControllerMock.Verify(
+                x => x.BeginAsync(It.IsAny<int>(), It.IsAny<Guid>()), Times.Once);
 
             result.Status.Should().Be(ExecutionStatus.Failed);
         }
