@@ -1,6 +1,6 @@
-﻿using Relativity.Sync.Logging;
-using System;
+﻿using System;
 using System.Threading;
+using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Tests.Common
 {

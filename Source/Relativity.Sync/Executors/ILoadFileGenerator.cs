@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Executors
 {
     internal interface ILoadFileGenerator
     {
-        Task<ILoadFile> GenerateAsync(IBatch batch);
+        Task<ILoadFile> GenerateAsync(IBatch batch, CompositeCancellationToken token);
     }
 }
