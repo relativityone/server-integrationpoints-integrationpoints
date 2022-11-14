@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using Castle.Windsor;
 using kCura.Agent.CustomAttributes;
 using kCura.Apps.Common.Config;
@@ -157,15 +156,7 @@ namespace kCura.IntegrationPoints.Agent
                                 $"Unable to retrieve the integration point for the following job: {job.JobId}");
                         }
 
-                        if (job.JobFailed.ShouldBreakSchedule)
-                        {
-                            integrationPoint.ScheduleRule = null;
-                            integrationPoint.NextScheduledRuntimeUTC = null;
-                            integrationPoint.EnableScheduler = job.JobFailed.MaximumConsecutiveFailuresReached;
-                        }
-
-                        integrationPointRepository.Update(integrationPoint);
-
+                        UpdateIntegrationPointOnScheduleBreak(integrationPointRepository, integrationPoint, job);
                         MarkJobHistoryAsFailed(integrationPoint, job);
                         return new TaskResult
                         {
@@ -224,6 +215,21 @@ namespace kCura.IntegrationPoints.Agent
             {
                 Container.Dispose();
                 Container = null;
+            }
+        }
+
+        private void UpdateIntegrationPointOnScheduleBreak(
+            IIntegrationPointRepository integrationPointRepository,
+            IntegrationPoint integrationPoint,
+            Job job)
+        {
+            if (job.JobFailed.ShouldBreakSchedule)
+            {
+                integrationPoint.ScheduleRule = null;
+                integrationPoint.NextScheduledRuntimeUTC = null;
+                integrationPoint.EnableScheduler = job.JobFailed.MaximumConsecutiveFailuresReached;
+
+                integrationPointRepository.Update(integrationPoint);
             }
         }
 
