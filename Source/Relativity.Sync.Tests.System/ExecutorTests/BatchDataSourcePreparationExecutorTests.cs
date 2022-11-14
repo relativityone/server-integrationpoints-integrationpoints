@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using FluentAssertions;
@@ -8,7 +10,9 @@ using NUnit.Framework;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
@@ -132,6 +136,82 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
             }
 
             createdItemLevelErrorsCount.Should().Be(expectedItemLevelErrorsCount);
+        }
+
+        [Test]
+        public async Task ExecuteAsync_ShouldPauseExecution_WhenDrainStopIsRequested()
+        {
+            // Arrange
+            FileShareServiceMock fileShareMock = new FileShareServiceMock(_workspaceFileSharePath);
+            List<FieldMap> IdentifierFieldMap(int sourceWorkspaceId, int destinationWorkspaceId)
+                => GetDocumentIdentifierMappingAsync(sourceWorkspaceId, destinationWorkspaceId).GetAwaiter().GetResult();
+
+            ExecutorTestSetup setup = new ExecutorTestSetup(Environment, ServiceFactory)
+                .ForWorkspaces(_sourceWorkspaceName, _destinationWorkspaceName)
+                .ImportData(dataSet: Dataset.NativesAndExtractedText, extractedText: true, natives: true)
+                .SetupDocumentConfiguration(IdentifierFieldMap)
+                .SetupContainer(b =>
+                {
+                    b.RegisterInstance<IFileShareService>(fileShareMock);
+                })
+                .PrepareBatches()
+                .ExecutePreRequisteExecutor<IConfigureDocumentSynchronizationConfiguration>();
+
+            IExecutor<IBatchDataSourcePreparationConfiguration> sut = setup.Container.Resolve<IExecutor<IBatchDataSourcePreparationConfiguration>>();
+
+            CompositeCancellationToken token = new CompositeCancellationToken(CancellationToken.None, new CancellationToken(true), new EmptyLogger());
+
+            // Act
+            ExecutionResult result = await sut.ExecuteAsync(setup.Configuration, token);
+
+            // Assert
+            IBatchRepository batchRepository = setup.Container.Resolve<IBatchRepository>();
+            IEnumerable<IBatch> batches = await batchRepository.GetAllAsync(
+                setup.Configuration.SourceWorkspaceArtifactId,
+                setup.Configuration.SyncConfigurationArtifactId,
+                setup.Configuration.ExportRunId)
+            .ConfigureAwait(false);
+
+            result.Status.Should().Be(ExecutionStatus.Paused);
+            batches.FirstOrDefault().Status.Should().Be(BatchStatus.Paused);
+            batches.FirstOrDefault().StartingIndex.Should().Be(0);
+        }
+
+        [Test]
+        public async Task ExecuteAsync_ShouldCancelExecution_WhenCancellationIsRequested()
+        {
+            // Arrange
+            FileShareServiceMock fileShareMock = new FileShareServiceMock(_workspaceFileSharePath);
+            List<FieldMap> IdentifierFieldMap(int sourceWorkspaceId, int destinationWorkspaceId)
+                => GetDocumentIdentifierMappingAsync(sourceWorkspaceId, destinationWorkspaceId).GetAwaiter().GetResult();
+
+            ExecutorTestSetup setup = new ExecutorTestSetup(Environment, ServiceFactory)
+                .ForWorkspaces(_sourceWorkspaceName, _destinationWorkspaceName)
+                .ImportData(dataSet: Dataset.NativesAndExtractedText, extractedText: true, natives: true)
+                .SetupDocumentConfiguration(IdentifierFieldMap)
+                .SetupContainer(b =>
+                {
+                    b.RegisterInstance<IFileShareService>(fileShareMock);
+                })
+                .PrepareBatches()
+                .ExecutePreRequisteExecutor<IConfigureDocumentSynchronizationConfiguration>();
+
+            IExecutor<IBatchDataSourcePreparationConfiguration> sut = setup.Container.Resolve<IExecutor<IBatchDataSourcePreparationConfiguration>>();
+            CompositeCancellationToken token = new CompositeCancellationToken(new CancellationToken(true), CancellationToken.None, new EmptyLogger());
+
+            // Act
+            ExecutionResult result = await sut.ExecuteAsync(setup.Configuration, token);
+
+            // Assert
+            IBatchRepository batchRepository = setup.Container.Resolve<IBatchRepository>();
+            IEnumerable<IBatch> batches = await batchRepository.GetAllAsync(
+                setup.Configuration.SourceWorkspaceArtifactId,
+                setup.Configuration.SyncConfigurationArtifactId,
+                setup.Configuration.ExportRunId)
+            .ConfigureAwait(false);
+
+            result.Status.Should().Be(ExecutionStatus.Completed);
+            batches.FirstOrDefault().Status.Should().Be(BatchStatus.Cancelled);
         }
     }
 }

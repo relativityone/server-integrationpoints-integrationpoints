@@ -170,5 +170,29 @@
   {
     "Jira": "REL-743071",
     "Exception": "*kCura.WinEDDS.Service.BulkImportManager+BulkImportSqlException:*SQL Statement Failed*The given key was not present in the dictionary*"
+  },
+  {
+    "Jira": "REL-773839",
+    "Exception": "*Relativity.Sync.SyncException*Failed to create Saved Search*The DLL*Relativity.Sync.Executors.DestinationWorkspaceSavedSearchCreationExecutor*ExecuteAsync*"
+  },
+  {
+    "Jira": "REL-773842",
+    "Exception": "*Relativity.Sync.SyncException*Failed to create Saved Search*Could not find a part of the path*Relativity.Sync.Executors.DestinationWorkspaceSavedSearchCreationExecutor*ExecuteAsync*"
+  },
+  {
+    "Jira": "REL-773848",
+    "Exception": "*Relativity.Sync.SyncException*Failed to create Saved Search*Logged in user ID*Relativity.Sync.Executors.DestinationWorkspaceSavedSearchCreationExecutor*ExecuteAsync*"
+  },
+  {
+    "Jira": "REL-773857",
+    "Exception": "*Relativity.Sync.KeplerFactory.SyncMaxKeplerRetriesException*Relativity.Kepler.Exceptions.ServiceNotFoundException*Failed to create tags*"
+  },
+  {
+    "Jira": "REL-773864",
+    "Exception": "*Relativity.Sync.Transfer.SourceDataReaderException*Failed to get next batch from exporter*A task was canceled*"
+  },
+  {
+    "Jira": "REL-773898",
+    "Exception": "*Relativity.Sync.Executors.ImportFailedException*The duplicate key*"
   }
 ]

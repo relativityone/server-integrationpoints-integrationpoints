@@ -13,6 +13,7 @@ namespace Relativity.Sync.Tests.System.Core
         private static Uri _relativityServicesUrl;
         private static Uri _relativityWebApiUrl;
         private static Uri _relativityUrl;
+
         public static bool IsSettingsFileSet => TestContext.Parameters.Names.Any();
 
         public static string RelativityHostName => TestContext.Parameters.Exists("RelativityHostAddress")
