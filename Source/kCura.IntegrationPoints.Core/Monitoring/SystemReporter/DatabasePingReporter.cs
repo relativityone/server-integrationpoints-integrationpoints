@@ -28,19 +28,20 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
 
         public Task<bool> IsServiceHealthyAsync()
         {
-            bool sqlStatementResult = false;
+            bool sqlStatementResult;
+
             const int queryValue = 1;
             string sql = $"Select {queryValue}";
+
             try
             {
-                _logger.LogInformation("Checking access to SQL");
-
                 DataTable result = _context.ExecuteSqlStatementAsDataTable(sql);
                 sqlStatementResult = result.Columns.Count.Equals(queryValue);
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                _logger.LogWarning(exception, "Cannot check Database Service Status.");
+                _logger.LogError(ex, "SQL health check failed.");
+                sqlStatementResult = false;
             }
 
             return Task.FromResult(sqlStatementResult);

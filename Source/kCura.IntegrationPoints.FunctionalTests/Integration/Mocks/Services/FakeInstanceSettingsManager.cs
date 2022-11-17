@@ -39,5 +39,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
         {
             return 1000;
         }
+
+        public int GetMaxFailedScheduledJobsCount()
+        {
+            return 100;
+        }
     }
 }

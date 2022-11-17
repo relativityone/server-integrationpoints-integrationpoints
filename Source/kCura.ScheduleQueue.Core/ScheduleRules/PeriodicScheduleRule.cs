@@ -43,6 +43,9 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
         public int? Reoccur { get; set; }
 
         [DataMember]
+        public int FailedScheduledJobsCount { get; set; }
+
+        [DataMember]
         public OccuranceInMonth? OccuranceInMonth { get; set; }
 
         ///<summary>
@@ -63,7 +66,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             ScheduleInterval interval, DateTime startDate, TimeSpan localTimeOfDay,
             DateTime? endDate = null, int? timeZoneOffset = null, DaysOfWeek? daysToRun = null,
             int? dayOfMonth = null, bool? setLastDayOfMonth = null,
-            int? reoccur = null, OccuranceInMonth? occuranceInMonth = null, string timeZoneId = null)
+            int? reoccur = null, int failedScheduledJobsCount = 0, OccuranceInMonth? occuranceInMonth = null, string timeZoneId = null)
             : this()
         {
             Interval = interval;
@@ -74,6 +77,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
             DayOfMonth = dayOfMonth;
             SetLastDayOfMonth = setLastDayOfMonth;
             Reoccur = reoccur;
+            FailedScheduledJobsCount = failedScheduledJobsCount;
             TimeZoneOffsetInMinute = timeZoneOffset;
             OccuranceInMonth = occuranceInMonth;
             TimeZoneId = timeZoneId;
@@ -120,6 +124,21 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
            
             return AdjustToDaylightSavingOrStandardTime(nextRunTimeUtc, clientTimeZoneInfo,
             clientUtcOffset);
+        }
+
+        public override int GetNumberOfContinuouslyFailedScheduledJobs()
+        {
+            return FailedScheduledJobsCount;
+        }
+
+        public override void IncrementConsecutiveFailedScheduledJobsCount()
+        {
+            ++FailedScheduledJobsCount;
+        }
+
+        public override void ResetConsecutiveFailedScheduledJobsCount()
+        {
+            FailedScheduledJobsCount = 0;
         }
 
         /// <summary>

@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Checkers;
 using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
+using kCura.IntegrationPoints.Core.Monitoring.SystemReporter.DNS;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
@@ -158,11 +159,6 @@ namespace kCura.ScheduleQueue.AgentBase
                 _jobService = new JobService(_agentService, new JobServiceDataProvider(_queueManager), _kubernetesModeLazy.Value, Helper);
             }
 
-            if (_queueJobValidator == null)
-            {
-                _queueJobValidator = new QueueJobValidator(Helper, Logger);
-            }
-
             if (_dateTime == null)
             {
                 _dateTime = new DateTimeWrapper();
@@ -183,6 +179,11 @@ namespace kCura.ScheduleQueue.AgentBase
             if (_config == null)
             {
                 _config = IntegrationPoints.Config.Config.Instance;
+            }
+
+            if (_queueJobValidator == null)
+            {
+                _queueJobValidator = new QueueJobValidator(Helper, _config, ScheduleRuleFactory, Logger);
             }
 
             if (_apm == null)
@@ -326,15 +327,18 @@ namespace kCura.ScheduleQueue.AgentBase
         private void CheckServicesAccess()
         {
             WorkspaceDBContext workspaceDbContext = new WorkspaceDBContext(Helper.GetDBContext(-1));
-            DatabasePingReporter dbPingReporter = new DatabasePingReporter(workspaceDbContext, Logger);
-            KeplerPingReporter keplerPingReporter = new KeplerPingReporter(Helper, Logger);
-            FileShareDiskUsageReporter fileShareDiskUsageReporter = new FileShareDiskUsageReporter(Helper, Logger);
-            ServicesAccessChecker servicesAccessChecker = new ServicesAccessChecker(dbPingReporter, keplerPingReporter, fileShareDiskUsageReporter, Logger);
+            IServiceHealthChecker dbHealthChecker = new DatabasePingReporter(workspaceDbContext, Logger);
+            IServiceHealthChecker keplerHealthChecker = new KeplerPingReporter(Helper, Logger);
+            IServiceHealthChecker fileShareHealthChecker = new FileShareDiskUsageReporter(Helper, Logger);
+            IServiceHealthChecker dnsHealthChecker = new DnsHealthReporter(new RealDnsService(), Logger);
+
+            ServicesAccessChecker servicesAccessChecker = new ServicesAccessChecker(new [] { dbHealthChecker, keplerHealthChecker, fileShareHealthChecker, dnsHealthChecker }, Logger);
+
             bool areServicesHealthy = servicesAccessChecker.AreServicesHealthyAsync().GetAwaiter().GetResult();
 
             if (!areServicesHealthy)
             {
-                Logger.LogError("Not all Services are accessible by the Agent; _agentInstanceGuid - {_agentInstanceGuid}", _agentInstanceGuid);
+                Logger.LogFatal("Not all Services are accessible by the Agent; _agentInstanceGuid - {_agentInstanceGuid}", _agentInstanceGuid);
                 if (_kubernetesModeLazy.Value.IsEnabled())
                 {
                     Environment.Exit(1);
@@ -342,8 +346,6 @@ namespace kCura.ScheduleQueue.AgentBase
 
                 throw new Exception($"Not all Services are accessible by the Agent; _agentInstanceGuid - {_agentInstanceGuid}");
             }
-
-            Logger.LogInformation("All services are Healthy. Agent can proceed with running job.");
         }
 
         private void CompleteExecution()

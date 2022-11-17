@@ -11,6 +11,7 @@ using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
 using Relativity.API;
 using IKubernetesMode = kCura.IntegrationPoints.Domain.EnvironmentalVariables.IKubernetesMode;
+using kCura.IntegrationPoints.Config;
 
 namespace kCura.ScheduleQueue.Core.Services
 {
@@ -18,6 +19,7 @@ namespace kCura.ScheduleQueue.Core.Services
     {
         private readonly IKubernetesMode _kubernetesMode;
         private readonly IAPILog _log;
+        private readonly IConfig _config;
 
         public JobService(IAgentService agentService, IJobServiceDataProvider dataProvider, IKubernetesMode kubernetesMode, IHelper dbHelper)
         {
@@ -25,6 +27,7 @@ namespace kCura.ScheduleQueue.Core.Services
             AgentService = agentService;
             _log = dbHelper.GetLoggerFactory().GetLogger().ForContext<JobService>();
             DataProvider = dataProvider;
+            _config = IntegrationPoints.Config.Config.Instance;
         }
 
         protected IJobServiceDataProvider DataProvider { get; set; }
@@ -107,22 +110,36 @@ namespace kCura.ScheduleQueue.Core.Services
             var result = new FinalizeJobResult();
 
             DateTime? nextUtcRunDateTime = GetJobNextUtcRunDateTime(job, scheduleRuleFactory, taskResult);
+
+            IScheduleRule scheduleRule = scheduleRuleFactory.Deserialize(job);
+
             bool shouldBreakSchedule = job.JobFailed?.ShouldBreakSchedule ?? false;
+
             if (!shouldBreakSchedule && nextUtcRunDateTime.HasValue)
             {
-                _log.LogInformation("Job {jobId} was scheduled with following details: " +
-                                    "NextRunTime - {nextRunTime} " +
-                                    "ScheduleRule - {scheduleRule}",
-                    job.JobId, nextUtcRunDateTime, job.ScheduleRule);
+                if (taskResult.Status == TaskStatusEnum.Fail)
+                {
+                    scheduleRule.IncrementConsecutiveFailedScheduledJobsCount();
+                }
+                else if (taskResult.Status == TaskStatusEnum.Success)
+                {
+                    scheduleRule.ResetConsecutiveFailedScheduledJobsCount();
+                }
+
+                _log.LogInformation(
+                    "Job {jobId} was scheduled with following details: " +
+                    "NextRunTime - {nextRunTime} " +
+                    "ScheduleRule - {scheduleRule}",
+                    job.JobId,
+                    nextUtcRunDateTime,
+                    job.ScheduleRule);
 
                 TaskParameters taskParameters = new TaskParameters()
                 {
                     BatchInstance = Guid.NewGuid()
                 };
                 string jobDeatils = new JSONSerializer().Serialize(taskParameters);
-                CreateNewAndDeleteOldScheduledJob(job.JobId, job.WorkspaceID, job.RelatedObjectArtifactID, job.TaskType, scheduleRuleFactory.Deserialize(job),
-                    jobDeatils, job.SubmittedBy, job.RootJobId,
-                    job.ParentJobId);
+                CreateNewAndDeleteOldScheduledJob(job.JobId, job.WorkspaceID, job.RelatedObjectArtifactID, job.TaskType, scheduleRule, jobDeatils, job.SubmittedBy, job.RootJobId, job.ParentJobId);
             }
             else
             {
@@ -133,6 +150,7 @@ namespace kCura.ScheduleQueue.Core.Services
             }
 
             result.JobState = JobLogState.Deleted;
+
             return result;
         }
 
@@ -320,7 +338,7 @@ namespace kCura.ScheduleQueue.Core.Services
             LogUpdateJobDetails(job);
             DataProvider.UpdateJobDetails(job.JobId, job.JobDetails);
         }
-        
+
         public void CleanupJobQueueTable()
         {
             _log.LogInformation("Attempting to Cleanup Job queue table in {TypeName}", nameof(JobService));

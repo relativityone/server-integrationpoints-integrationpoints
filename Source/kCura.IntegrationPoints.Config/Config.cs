@@ -8,6 +8,8 @@ namespace kCura.IntegrationPoints.Config
         private const int _BATCH_SIZE_DEFAULT = 1000;
         private const string _BATCH_SIZE = "BatchSize";
         private const string _DISABLE_NATIVE_LOCATION_VALIDATION = "DisableNativeLocationValidation";
+        private const int _MAX_FAILED_SCHEDULED_JOBS_COUNT_DEFAULT = 100;
+        private const string _MAX_FAILED_SCHEDULED_JOBS_COUNT = "MaxFailedScheduledJobsCount";
         private const string _DISABLE_NATIVE_VALIDATION = "DisableNativeValidation";
         private const string _RIP_METRICS_CONFIGURATION = "MetricsConfiguration";
         private const string _RIP_METRICS_THROTTLING = "MetricsThrottlingSeconds";
@@ -50,6 +52,15 @@ namespace kCura.IntegrationPoints.Config
             {
                 int value = GetValue(_BATCH_SIZE, _BATCH_SIZE_DEFAULT);
                 return value >= 0 ? value : _BATCH_SIZE_DEFAULT;
+            }
+        }
+
+        public int MaxFailedScheduledJobsCount
+        {
+            get
+            {
+                int value = GetValue(_MAX_FAILED_SCHEDULED_JOBS_COUNT, _MAX_FAILED_SCHEDULED_JOBS_COUNT_DEFAULT);
+                return value > 0 ? value : _MAX_FAILED_SCHEDULED_JOBS_COUNT_DEFAULT;
             }
         }
 
