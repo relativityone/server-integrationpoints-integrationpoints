@@ -17,6 +17,7 @@ using Relativity.Sync.Tests.Common.RdoGuidProviderStubs;
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Sync.Tests.System.Core.Helpers;
 using Relativity.Sync.Tests.System.ExecutorTests.TestsSetup;
+using Relativity.Sync.Toggles;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.System.ExecutorTests
@@ -27,6 +28,15 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
         private string _destinationWorkspaceName;
 
         private string _workspaceFileSharePath;
+
+        private TestSyncToggleProvider _syncToggleProvider;
+
+        [OneTimeSetUp]
+        public async Task OnetimeSetUp()
+        {
+            _syncToggleProvider = new TestSyncToggleProvider();
+            await _syncToggleProvider.SetAsync<EnableIAPIv2Toggle>(true).ConfigureAwait(false);
+        }
 
         [SetUp]
         public void SetUp()
@@ -66,7 +76,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
                 .SetupContainer(b =>
                 {
                     b.RegisterInstance<IFileShareService>(fileShareMock);
-                })
+                }, _syncToggleProvider)
                 .PrepareBatches()
                 .ExecutePreRequisteExecutor<IConfigureDocumentSynchronizationConfiguration>();
 
@@ -97,7 +107,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
                 {
                     b.RegisterInstance<IFileShareService>(fileShareMock);
                     b.RegisterInstance<IAntiMalwareHandler>(malwareHandlerMock);
-                })
+                }, _syncToggleProvider)
                 .PrepareBatches()
                 .ExecutePreRequisteExecutor<IConfigureDocumentSynchronizationConfiguration>();
 
@@ -143,7 +153,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
                 .SetupContainer(b =>
                 {
                     b.RegisterInstance<IFileShareService>(fileShareMock);
-                })
+                }, _syncToggleProvider)
                 .PrepareBatches()
                 .ExecutePreRequisteExecutor<IConfigureDocumentSynchronizationConfiguration>();
 
@@ -182,7 +192,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
                 .SetupContainer(b =>
                 {
                     b.RegisterInstance<IFileShareService>(fileShareMock);
-                })
+                }, _syncToggleProvider)
                 .PrepareBatches()
                 .ExecutePreRequisteExecutor<IConfigureDocumentSynchronizationConfiguration>();
 

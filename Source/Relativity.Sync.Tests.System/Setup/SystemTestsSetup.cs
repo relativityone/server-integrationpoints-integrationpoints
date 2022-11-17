@@ -2,6 +2,7 @@
 using Relativity.Sync.Tests.System.Core;
 using Relativity.Testing.Framework;
 using Relativity.Testing.Framework.Api.Services;
+using Relativity.Testing.Framework.Models;
 
 // ReSharper disable once CheckNamespace
 // No namespace applies this to the whole assembly
@@ -18,6 +19,9 @@ public class SystemTestsSetup : InstanceTestsSetup
     {
         ILibraryApplicationService applicationService = RelativityFacade.Instance.Resolve<ILibraryApplicationService>();
 
-        applicationService.InstallToLibrary(AppSettings.RelativityImportRAPPath);
+        applicationService.InstallToLibrary(AppSettings.RelativityImportRAPPath, new LibraryApplicationInstallOptions
+        {
+            IgnoreVersion = true
+        });
     }
 }
