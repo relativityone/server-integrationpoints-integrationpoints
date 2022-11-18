@@ -31,7 +31,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _statusMonitorMock = new Mock<IItemStatusMonitor>();
             _loggerMock = new Mock<IAPILog>();
             _batchMock = new Mock<IBatch>();
-            _sut = new ItemLevelErrorHandler(_configurationMock.Object, _jobHistoryErrorRepositoryMock.Object, _loggerMock.Object);
+            _sut = new ItemLevelErrorHandler(_configurationMock.Object, _jobHistoryErrorRepositoryMock.Object, _statusMonitorMock.Object, _loggerMock.Object);
         }
 
         [Test]
@@ -41,7 +41,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
             ItemLevelError itemLevelError = new ItemLevelError("testId", "testMessage");
 
             // Act
-            _sut.Initialize(_statusMonitorMock.Object);
             _sut.HandleItemLevelError(It.IsAny<long>(), itemLevelError);
 
             // Assert
@@ -74,7 +73,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Arrange
             int expectedItemLEvelErrorsCount = 10;
             _statusMonitorMock.Setup(x => x.FailedItemsCount).Returns(expectedItemLEvelErrorsCount);
-            _sut.Initialize(_statusMonitorMock.Object);
 
             // Act
             await _sut.HandleDataSourceProcessingFinishedAsync(_batchMock.Object).ConfigureAwait(false);
@@ -83,24 +81,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _batchMock.Verify(x => x.SetFailedDocumentsCountAsync(expectedItemLEvelErrorsCount));
         }
 
-        [Test]
-        public void Initialize_ShouldThrow_IfErrorQueueIsnotEmpty()
-        {
-            // Arrange
-            string expectedErrormessage = "Unhandled item level errors from previous batch were found - error collection is not empty.";
-            PrepareTestItemLevelErrors(expectedItemLEvelErrorsCount: 2);
-
-            // Act
-            Action action = () => _sut.Initialize(_statusMonitorMock.Object);
-
-            // Assert
-            action.Should().Throw<SyncException>().WithMessage(expectedErrormessage);
-        }
-
         private void PrepareTestItemLevelErrors(int expectedItemLEvelErrorsCount)
         {
             ItemLevelError itemLevelError = new ItemLevelError("testId", "testMessage");
-            _sut.Initialize(_statusMonitorMock.Object);
             for (int i = 0; i < expectedItemLEvelErrorsCount; i++)
             {
                 _sut.HandleItemLevelError(It.IsAny<long>(), itemLevelError);

@@ -20,8 +20,7 @@ namespace Relativity.Sync.Executors
 
         public IItemLevelErrorHandler Create(IItemStatusMonitor statusMonitor)
         {
-            ItemLevelErrorHandler itemLevelErrorHandler = new ItemLevelErrorHandler(_configuration, _jobHistoryErrorRepository, _logger);
-            itemLevelErrorHandler.Initialize(statusMonitor);
+            ItemLevelErrorHandler itemLevelErrorHandler = new ItemLevelErrorHandler(_configuration, _jobHistoryErrorRepository, statusMonitor, _logger);
             return itemLevelErrorHandler;
         }
     }

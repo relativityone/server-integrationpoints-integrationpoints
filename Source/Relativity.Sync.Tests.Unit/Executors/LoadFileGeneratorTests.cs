@@ -27,6 +27,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<ISourceWorkspaceDataReaderFactory> _dataReaderFactoryMock;
         private Mock<ISourceWorkspaceDataReader> _dataReaderMock;
         private Mock<IItemStatusMonitor> _itemStatusMonitorMock;
+        private Mock<IItemLevelErrorHandlerFactory> _itemLevelErrorHandlerFactoryMock;
         private Mock<IItemLevelErrorHandler> _itemLevelErrorHandlerMock;
         private Mock<IBatch> _batchMock;
         private Mock<IAPILog> _loggerMock;
@@ -45,6 +46,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _dataReaderFactoryMock = new Mock<ISourceWorkspaceDataReaderFactory>();
             _dataReaderMock = new Mock<ISourceWorkspaceDataReader>();
             _itemStatusMonitorMock = new Mock<IItemStatusMonitor>();
+            _itemLevelErrorHandlerFactoryMock = new Mock<IItemLevelErrorHandlerFactory>();
             _itemLevelErrorHandlerMock = new Mock<IItemLevelErrorHandler>();
             _batchMock = new Mock<IBatch>();
             _loggerMock = new Mock<IAPILog>();
@@ -61,11 +63,15 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _dataReaderFactoryMock.Setup(x => x.CreateNativeSourceWorkspaceDataReader(_batchMock.Object, _token.AnyReasonCancellationToken)).Returns(_dataReaderMock.Object);
             _dataReaderMock.Setup(x => x.ItemStatusMonitor).Returns(_itemStatusMonitorMock.Object);
 
+            _itemLevelErrorHandlerFactoryMock
+                .Setup(x => x.Create(It.IsAny<IItemStatusMonitor>()))
+                .Returns(_itemLevelErrorHandlerMock.Object);
+
             _sut = new LoadFileGenerator(
                 _configurationMock.Object,
                 _dataReaderFactoryMock.Object,
                 _fileshareServiceMock.Object,
-                _itemLevelErrorHandlerMock.Object,
+                _itemLevelErrorHandlerFactoryMock.Object,
                 _loggerMock.Object);
         }
 
@@ -160,7 +166,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
             ILoadFile result = await _sut.GenerateAsync(_batchMock.Object, _token).ConfigureAwait(false);
 
             // Assert
-            _itemLevelErrorHandlerMock.Verify(x => x.Initialize(_dataReaderMock.Object.ItemStatusMonitor), Times.Once);
             _itemLevelErrorHandlerMock.Verify(x => x.HandleItemLevelError(completedItemTestValue, testItemLevelError), Times.Exactly(expectedNumberOfItemLevelErrors));
             _itemLevelErrorHandlerMock.Verify(x => x.HandleDataSourceProcessingFinishedAsync(_batchMock.Object), Times.Once);
         }
