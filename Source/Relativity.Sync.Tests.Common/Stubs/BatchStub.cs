@@ -7,7 +7,7 @@ namespace Relativity.Sync.Tests.Common.Stubs
     internal sealed class BatchStub : IBatch
     {
         public int ArtifactId { get; set; }
-        
+
         public int StartingIndex { get; set; }
 
         public int FailedItemsCount { get; set; }
@@ -28,12 +28,14 @@ namespace Relativity.Sync.Tests.Common.Stubs
 
         public Guid ExportRunId { get; set; } = Guid.Empty;
         public int TransferredItemsCount { get; set; }
-        
+
         public BatchStatus Status { get; set; }
 
         public int TaggedDocumentsCount { get; set; }
 
         public Guid BatchGuid { get; set; } = Guid.Empty;
+
+        public bool IsCompleted => false;
 
         public Task SetFailedItemsCountAsync(int failedItemsCount)
         {
