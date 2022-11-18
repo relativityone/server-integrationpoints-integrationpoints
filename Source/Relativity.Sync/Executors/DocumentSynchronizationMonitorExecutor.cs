@@ -73,7 +73,7 @@ namespace Relativity.Sync.Executors
                     while (!result.Value.IsFinished);
 
                     await _progressHandler.HandleProgressAsync().ConfigureAwait(false);
-                    jobStatus = GetFinalJobStatus(result.Value.State, token);
+                    jobStatus = GetFinalJobStatus(batches, result.Value.State, token);
                 }
             }
             catch (Exception ex)
