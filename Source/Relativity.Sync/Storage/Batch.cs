@@ -63,7 +63,7 @@ namespace Relativity.Sync.Storage
 
         public BatchStatus Status => _batchRdo.Status;
 
-        public bool IsCompleted => _batchRdo.Status.IsIn(BatchStatus.Completed, BatchStatus.CompletedWithErrors, BatchStatus.Cancelled, BatchStatus.Failed);
+        public bool IsFinished => _batchRdo.Status.IsIn(BatchStatus.Completed, BatchStatus.CompletedWithErrors, BatchStatus.Cancelled, BatchStatus.Failed);
 
         public async Task SetFailedItemsCountAsync(int failedItemsCount)
         {

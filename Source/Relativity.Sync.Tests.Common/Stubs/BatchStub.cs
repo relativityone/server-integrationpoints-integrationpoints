@@ -35,7 +35,7 @@ namespace Relativity.Sync.Tests.Common.Stubs
 
         public Guid BatchGuid { get; set; } = Guid.Empty;
 
-        public bool IsCompleted => false;
+        public bool IsFinished => false;
 
         public Task SetFailedItemsCountAsync(int failedItemsCount)
         {
