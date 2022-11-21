@@ -4,18 +4,21 @@ using Castle.Windsor;
 using kCura.IntegrationPoint.Tests.Core.FluentAssertions;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using Relativity.IntegrationPoints.Services.Installers.Context;
+using kCura.IntegrationPoints.Data.DbContext;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.IntegrationPoints.Services.Installers.Context;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Installers.Context
 {
-    [TestFixture, Category("Unit")]
+    [TestFixture]
+    [Category("Unit")]
     public class WorkspaceContextRegistrationTests
     {
-        private IWindsorContainer _container;
         private const int _WORKSPACE_ID = 64531421;
+
+        private IWindsorContainer _container;
 
         [SetUp]
         public void SetUp()
@@ -27,70 +30,70 @@ namespace Relativity.IntegrationPoints.Services.Tests.Installers.Context
         [Test]
         public void ObjectManagerService_ShouldBeResolvedAndNotThrow()
         {
-            // arrange
+            // Arrange
             RegisterInstallerDependencies(_container);
 
-            // assert
+            // Assert
             _container.Should().ResolveWithoutThrowing<IRelativityObjectManagerService>();
         }
 
         [Test]
         public void ObjectManagerService_ShouldResolveProperImplementation()
         {
-            // arrange
+            // Arrange
             RegisterInstallerDependencies(_container);
 
-            // assert
+            // Assert
             _container.Should().ResolveImplementationWithoutThrowing<IRelativityObjectManagerService, RelativityObjectManagerService>();
         }
 
         [Test]
         public void IServiceContextHelper_ShouldBeResolvedAndNotThrow()
         {
-            // arrange
+            // Arrange
             RegisterInstallerDependencies(_container);
 
-            // assert
+            // Assert
             _container.Should().ResolveWithoutThrowing<IServiceContextHelper>();
         }
 
         [Test]
         public void IServiceContextHelper_ShouldResolveProperImplementation()
         {
-            // arrange
+            // Arrange
             RegisterInstallerDependencies(_container);
 
-            // assert
+            // Assert
             _container.Should().ResolveImplementationWithoutThrowing<IServiceContextHelper, ServiceContextHelperForKeplerService>();
         }
 
         [Test]
         public void IWorkspaceDBContext_ShouldBeResolvedAndNotThrow()
         {
-            // arrange
+            // Arrange
             RegisterInstallerDependencies(_container);
 
-            // assert
+            // Assert
             _container.Should().ResolveWithoutThrowing<IWorkspaceDBContext>();
         }
 
         [Test]
         public void IWorkspaceDBContext_ShouldResolveProperImplementation()
         {
-            // arrange
+            // Arrange
             RegisterInstallerDependencies(_container);
 
-            // assert
+            // Assert
             _container.Should().ResolveImplementationWithoutThrowing<IWorkspaceDBContext, WorkspaceDBContext>();
         }
 
         [Test]
         public void IWorkspaceDBContext_ShouldBeRegisteredWithProperLifestyle()
         {
-            // arrange
+            // Arrange
             RegisterInstallerDependencies(_container);
 
-            // assert
+            // Assert
             _container.Should().HaveRegisteredSingleComponent<IWorkspaceDBContext>()
                 .Which.Should()
                 .BeRegisteredWithLifestyle(LifestyleType.Transient);
@@ -104,7 +107,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Installers.Context
             {
                 Component
                     .For<IHelper, IServiceHelper>()
-                    .UsingFactoryMethod(k=>helperMock.Object)
+                    .UsingFactoryMethod(k => helperMock.Object)
             };
 
             container.Register(dependencies);

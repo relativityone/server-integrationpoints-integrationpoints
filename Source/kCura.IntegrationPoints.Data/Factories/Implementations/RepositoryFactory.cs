@@ -1,20 +1,21 @@
-﻿using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using Relativity;
-using Relativity.API;
-using Relativity.Data;
-using System;
+﻿using System;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
+using kCura.IntegrationPoints.Data.DbContext;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using Relativity;
+using Relativity.API;
 using Relativity.API.Foundation.Repositories;
+using Relativity.Data;
 using Relativity.Services.ResourceServer;
 using ArtifactType = Relativity.ArtifactType;
 using Context = kCura.Data.RowDataGateway.Context;
 using IAuditRepository = kCura.IntegrationPoints.Data.Repositories.IAuditRepository;
-using IFoundationAuditRepository = Relativity.API.Foundation.Repositories.IAuditRepository;
 using IErrorRepository = kCura.IntegrationPoints.Data.Repositories.IErrorRepository;
 using IFieldRepository = kCura.IntegrationPoints.Data.Repositories.IFieldRepository;
+using IFoundationAuditRepository = Relativity.API.Foundation.Repositories.IAuditRepository;
 using IObjectRepository = kCura.IntegrationPoints.Data.Repositories.IObjectRepository;
 using QueryFieldLookup = Relativity.Data.QueryFieldLookup;
 
@@ -36,8 +37,9 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
             _objectManagerFactory = CreateRelativityObjectManagerFactory(helper);
             _instrumentationProvider = CreateInstrumentationProvider(helper);
         }
-        
+
         private IRelativityObjectManagerFactory ObjectManagerFactory => _objectManagerFactory.Value;
+
         private IExternalServiceInstrumentationProvider InstrumentationProvider => _instrumentationProvider.Value;
 
         public IArtifactGuidRepository GetArtifactGuidRepository(int workspaceArtifactId)
@@ -145,10 +147,10 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
             //todo: think how to inject ripdbcontext to here
             IDBContext dbContext = _helper.GetDBContext(workspaceArtifactID);
             return new ScratchTableRepository(
-                new WorkspaceDBContext(dbContext), 
+                new WorkspaceDBContext(dbContext),
                 GetDocumentRepository(workspaceArtifactID),
                 GetFieldQueryRepository(workspaceArtifactID),
-                new ResourceDbProvider(_helper), 
+                new ResourceDbProvider(_helper),
                 tablePrefix,
                 tableSuffix,
                 workspaceArtifactID

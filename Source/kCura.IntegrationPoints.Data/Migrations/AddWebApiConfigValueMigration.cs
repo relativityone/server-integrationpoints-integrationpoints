@@ -1,4 +1,6 @@
-﻿namespace kCura.IntegrationPoints.Data.Migrations
+﻿using kCura.IntegrationPoints.Data.DbContext;
+
+namespace kCura.IntegrationPoints.Data.Migrations
 {
     public class AddWebApiConfigValueMigration : IMigration
     {

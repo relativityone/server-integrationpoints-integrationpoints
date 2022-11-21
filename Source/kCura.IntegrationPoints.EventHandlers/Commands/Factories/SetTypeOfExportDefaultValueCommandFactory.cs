@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
@@ -10,23 +13,21 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
+using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
-using System;
-using System.Linq;
-using kCura.IntegrationPoints.Common.Agent;
-using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 {
@@ -81,8 +82,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 
             ISecretsRepository secretsRepository = new SecretsRepository(
                 SecretStoreFacadeFactory_Deprecated.Create(helper.GetSecretStore, logger),
-                logger
-            );
+                logger);
+
             IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
                 caseServiceContext.RelativityObjectManagerService.RelativityObjectManager,
                 integrationPointSerializer,
@@ -103,8 +104,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
             return new SetTypeOfExportDefaultValueCommand(
                 integrationPointRepository,
                 integrationPointProfileService,
-                sourceConfigurationTypeOfExpertUpdater
-            );
+                objectManager,
+                sourceConfigurationTypeOfExpertUpdater);
         }
     }
 }

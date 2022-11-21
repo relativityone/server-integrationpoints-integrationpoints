@@ -1,5 +1,6 @@
-﻿using kCura.IntegrationPoints.Data.Factories;
-using System.Data;
+﻿using System.Data;
+using kCura.IntegrationPoints.Data.DbContext;
+using kCura.IntegrationPoints.Data.Factories;
 
 namespace kCura.IntegrationPoints.Data.Queries
 {

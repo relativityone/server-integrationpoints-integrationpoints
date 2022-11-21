@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data.SqlClient;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 
@@ -10,7 +11,9 @@ namespace kCura.IntegrationPoints.Data.Queries
         private readonly IRepositoryFactory _repositoryFactory;
         private readonly IWorkspaceDBContext _context;
 
-        public JobStatisticsQuery(IRepositoryFactory repositoryFactory, IWorkspaceDBContext context)
+        public JobStatisticsQuery(
+            IRepositoryFactory repositoryFactory,
+            IWorkspaceDBContext context)
         {
             _repositoryFactory = repositoryFactory;
             _context = context;

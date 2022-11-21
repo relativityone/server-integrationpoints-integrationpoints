@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Provider;
 using kCura.IntegrationPoints.Core.Provider.Internals;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
@@ -30,8 +30,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             IEHHelper helper,
             IKubernetesMode kubernetesMode,
             IToggleProvider toggleProvider,
-            IRipProviderInstaller ripProviderInstaller 
-        )
+            IRipProviderInstaller ripProviderInstaller)
         {
             _logger = logger.ForContext<InProcessSourceProviderInstaller>();
             _helper = helper;
@@ -50,8 +49,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
                 .Match(
                     success => _logger.LogInformation("Internal source providers installed successfully."),
                     error => throw new InvalidSourceProviderException(error),
-                    Bottom: () => _logger.LogFatal("Unexpected state of Either")
-                );
+                    Bottom: () => _logger.LogFatal("Unexpected state of Either"));
 
             return Task.CompletedTask;
         }
@@ -94,8 +92,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
                 sourceProviderRepository,
                 applicationGuidFinder,
                 dataProviderFactoryFactory,
-                _toggleProvider
-            );
+                _toggleProvider);
         }
 
         private IRelativityObjectManager CreateObjectManager(int workspaceID)
