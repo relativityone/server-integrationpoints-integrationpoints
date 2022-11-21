@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Core.Provider;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Installers;
@@ -194,7 +195,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
         private void RegisterRipServices(int sourceWorkspaceId)
         {
-            Container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(c => new FakeWorkspaceDbContext(SourceWorkspace.ArtifactId, FakeRelativityInstance))
+            Container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(c => new FakeWorkspaceDbContext(FakeRelativityInstance))
                 .Named(nameof(FakeWorkspaceDbContext)).IsDefault());
 
             Container.Register(Component.For<IServiceContextHelper>().IsDefault().IsFallback().OverWrite().UsingFactoryMethod(c =>

@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
@@ -10,24 +13,22 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
+using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
+using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
-using System;
-using System.Linq;
-using kCura.IntegrationPoints.Common.Agent;
-using kCura.IntegrationPoints.Data.Facades.SecretStore.Implementation;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
-using kCura.ScheduleQueue.Core.Interfaces;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 {
@@ -37,7 +38,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
         {
             IServiceContextHelper serviceContextHelper = new ServiceContextHelperForEventHandlers(helper, helper.GetActiveCaseID());
             ICaseServiceContext caseServiceContext = new CaseServiceContext(serviceContextHelper);
-            
+
             IAPILog logger = helper.GetLoggerFactory().GetLogger();
             IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer(logger);
 
@@ -66,10 +67,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
             IMessageService messageService = new MessageService();
 
             IJobHistoryService jobHistoryService = new JobHistoryService(
-                caseServiceContext.RelativityObjectManagerService.RelativityObjectManager, 
-                federatedInstanceManager, 
-                workspaceManager, 
-                logger, 
+                caseServiceContext.RelativityObjectManagerService.RelativityObjectManager,
+                federatedInstanceManager,
+                workspaceManager,
+                logger,
                 integrationPointSerializer);
 
             IManagerFactory managerFactory = new ManagerFactory(helper, new FakeNonRemovableAgent());
@@ -81,9 +82,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
             IValidationExecutor validationExecutor = new ValidationExecutor(ipValidator, permissionValidator, helper);
 
             ISecretsRepository secretsRepository = new SecretsRepository(
-                SecretStoreFacadeFactory_Deprecated.Create(helper.GetSecretStore, logger), 
-                logger
-            );
+                SecretStoreFacadeFactory_Deprecated.Create(helper.GetSecretStore, logger),
+                logger);
+
             IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
                 caseServiceContext.RelativityObjectManagerService.RelativityObjectManager,
                 integrationPointSerializer,
@@ -92,21 +93,20 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 
             IIntegrationPointProfileService integrationPointProfileService = new IntegrationPointProfileService(
                 helper,
-                caseServiceContext, 
-                integrationPointSerializer, 
+                caseServiceContext,
+                integrationPointSerializer,
                 choiceQuery,
-                managerFactory, 
-                validationExecutor, 
+                managerFactory,
+                validationExecutor,
                 objectManager);
 
             ISourceConfigurationTypeOfExportUpdater sourceConfigurationTypeOfExpertUpdater = new SourceConfigurationTypeOfExportUpdater(providerTypeService);
 
             return new SetTypeOfExportDefaultValueCommand(
-                integrationPointRepository, 
+                integrationPointRepository,
                 integrationPointProfileService,
-                objectManager, 
-                sourceConfigurationTypeOfExpertUpdater
-            );
+                objectManager,
+                sourceConfigurationTypeOfExpertUpdater);
         }
     }
 }
