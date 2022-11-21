@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Utils;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -17,14 +18,11 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {
     public class JobStatisticsService : IJobStatisticsService
     {
-        private Job _job;
-        private int _rowErrors;
         private static object _lockToken = new object();
 
         private readonly IMessageService _messageService;
         private readonly IIntegrationPointProviderTypeService _integrationPointProviderTypeService;
         private readonly IDiagnosticLog _diagnosticLog;
-        private readonly IWorkspaceDBContext _context;
         private readonly ITaskParameterHelper _helper;
         private readonly IJobStatisticsQuery _query;
         private readonly IJobHistoryService _jobHistoryService;
@@ -32,11 +30,11 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
         private readonly IFileSizesStatisticsService _fileSizeStatisticsService;
 
-        private SourceConfiguration IntegrationPointSourceConfiguration { get; set; }
+        private Job _job;
+        private int _rowErrors;
 
-        private ImportSettings IntegrationPointImportSettings { get; set; }
-
-        public JobStatisticsService(IJobStatisticsQuery query,
+        public JobStatisticsService(
+            IJobStatisticsQuery query,
             ITaskParameterHelper taskParameterHelper,
             IJobHistoryService jobHistoryService,
             IWorkspaceDBContext context,
@@ -49,7 +47,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             _query = query;
             _helper = taskParameterHelper;
             _jobHistoryService = jobHistoryService;
-            _context = context;
             _messageService = messageService;
             _integrationPointProviderTypeService = integrationPointProviderTypeService;
             _diagnosticLog = diagnosticLog;
@@ -65,6 +62,10 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         {
         }
 
+        private SourceConfiguration IntegrationPointSourceConfiguration { get; set; }
+
+        private ImportSettings IntegrationPointImportSettings { get; set; }
+
         public void Subscribe(IBatchReporter reporter, Job job)
         {
             _job = job;
@@ -77,6 +78,24 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
                 reporter.OnStatisticsUpdate += OnStatisticsUpdate;
                 reporter.OnBatchComplete += OnJobComplete;
                 reporter.OnDocumentError += RowError;
+            }
+        }
+
+        public void SetIntegrationPointConfiguration(ImportSettings importSettings, SourceConfiguration sourceConfiguration)
+        {
+            IntegrationPointSourceConfiguration = sourceConfiguration;
+            IntegrationPointImportSettings = importSettings;
+        }
+
+        public void Update(Guid identifier, int transferredItem, int erroredCount)
+        {
+            lock (_lockToken)
+            {
+                _diagnosticLog.LogDiagnostic(
+                    "Updating... Identifier: {identifier}, TransferredItemsCount: {itemsCount}, ErrorItemsCount: {errorsCount}",
+                    transferredItem,
+                    erroredCount);
+                UpdateJobHistory(transferredItem, erroredCount);
             }
         }
 
@@ -104,12 +123,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         private void RowError(string documentIdentifier, string errorMessage)
         {
             _rowErrors++;
-        }
-
-        public void SetIntegrationPointConfiguration(ImportSettings importSettings, SourceConfiguration sourceConfiguration)
-        {
-            IntegrationPointSourceConfiguration = sourceConfiguration;
-            IntegrationPointImportSettings = importSettings;
         }
 
         private void OnJobComplete(DateTime start, DateTime end, int total, int errorCount)
@@ -145,18 +158,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             _diagnosticLog.LogDiagnostic("Status Update: ImportedDocsCount {importedDocsCount}, ErroredDocsCount {erroredDocsCount}", importedCount, errorCount);
 
             Update(_helper.GetBatchInstance(_job), importedCount, errorCount);
-        }
-
-        public void Update(Guid identifier, int transferredItem, int erroredCount)
-        {
-            lock (_lockToken)
-            {
-                _diagnosticLog.LogDiagnostic(
-                    "Updating... Identifier: {identifier}, TransferredItemsCount: {itemsCount}, ErrorItemsCount: {errorsCount}",
-                    transferredItem,
-                    erroredCount);
-                UpdateJobHistory(transferredItem, erroredCount);
-            }
         }
 
         private void UpdateJobHistory(Guid batchInstance, JobStatistics stats, long totalSize)

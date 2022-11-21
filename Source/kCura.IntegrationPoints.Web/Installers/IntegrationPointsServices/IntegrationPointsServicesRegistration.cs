@@ -6,7 +6,7 @@ using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
 using kCura.IntegrationPoints.Core.Interfaces.TextSanitizer;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Web.IntegrationPointsServices;
 using Relativity.API;
@@ -46,8 +46,7 @@ namespace kCura.IntegrationPoints.Web.Installers.IntegrationPointsServices
                 Component
                     .For<ITextSanitizer>()
                     .ImplementedBy<TextSanitizer>()
-                    .LifestylePerWebRequest()
-            );
+                    .LifestylePerWebRequest());
         }
 
         private static IWindsorContainer RegisterHelpers(this IWindsorContainer container)
@@ -56,8 +55,7 @@ namespace kCura.IntegrationPoints.Web.Installers.IntegrationPointsServices
                 Component
                     .For<IFolderTreeBuilder>()
                     .ImplementedBy<FolderTreeBuilder>()
-                    .LifestyleTransient()
-            );
+                    .LifestyleTransient());
         }
 
         private static WebClientFactory WebClientFactoryFactory(IKernel kernel)

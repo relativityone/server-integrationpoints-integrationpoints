@@ -5,18 +5,19 @@ using kCura.IntegrationPoint.Tests.Core.FluentAssertions;
 using kCura.IntegrationPoints.Core.Provider;
 using kCura.IntegrationPoints.Core.Provider.Internals;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
-using Relativity.IntegrationPoints.Services.Installers.ProviderManager;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.IntegrationPoints.Services.Installers.ProviderManager;
 using Relativity.Toggles;
 using static kCura.IntegrationPoint.Tests.Core.TestHelpers.WindsorContainerTestHelpers;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Installers.ProviderManager
 {
-    [TestFixture, Category("Unit")]
+    [TestFixture]
+    [Category("Unit")]
     public class ProviderInstallerAndUninstallerRegistrationTests
     {
         private IWindsorContainer _container;
@@ -31,10 +32,10 @@ namespace Relativity.IntegrationPoints.Services.Tests.Installers.ProviderManager
         [Test]
         public void IIntegrationPointsRemover_ShouldBeRegisteredWithProperLifestyle()
         {
-            // arrange
+            // Arrange
             RegisterInstallerDependencies(_container);
 
-            // assert
+            // Assert
             _container.Should().HaveRegisteredSingleComponent<IIntegrationPointsRemover>()
                 .Which.Should()
                 .BeRegisteredWithLifestyle(LifestyleType.Transient);
@@ -43,30 +44,30 @@ namespace Relativity.IntegrationPoints.Services.Tests.Installers.ProviderManager
         [Test]
         public void IIntegrationPointsRemover_ShouldBeRegisteredWithProperImplementation()
         {
-            // arrange
+            // Arrange
             RegisterInstallerDependencies(_container);
 
-            // assert
+            // Assert
             _container.Should().HaveRegisteredProperImplementation<IIntegrationPointsRemover, IntegrationPointsRemover>();
         }
 
         [Test]
         public void IIntegrationPointsRemover_ShouldBeResolvedAndNotThrow()
         {
-            // arrange
+            // Arrange
             RegisterInstallerDependencies(_container);
 
-            // assert
+            // Assert
             _container.Should().ResolveWithoutThrowing<IIntegrationPointsRemover>();
         }
 
         [Test]
         public void IApplicationGuidFinder_ShouldBeRegisteredWithProperLifestyle()
         {
-            // arrange
+            // Arrange
             RegisterInstallerDependencies(_container);
 
-            // assert
+            // Assert
             _container.Should().HaveRegisteredSingleComponent<IApplicationGuidFinder>()
                 .Which.Should()
                 .BeRegisteredWithLifestyle(LifestyleType.Transient);
@@ -75,30 +76,30 @@ namespace Relativity.IntegrationPoints.Services.Tests.Installers.ProviderManager
         [Test]
         public void IApplicationGuidFinder_ShouldBeRegisteredWithProperImplementation()
         {
-            // arrange
+            // Arrange
             RegisterInstallerDependencies(_container);
 
-            // assert
+            // Assert
             _container.Should().HaveRegisteredProperImplementation<IApplicationGuidFinder, ApplicationGuidFinder>();
         }
 
         [Test]
         public void IApplicationGuidFinder_ShouldBeResolvedAndNotThrow()
         {
-            // arrange
+            // Arrange
             RegisterInstallerDependencies(_container);
 
-            // assert
+            // Assert
             _container.Should().ResolveWithoutThrowing<IApplicationGuidFinder>();
         }
 
         [Test]
         public void IDataProviderFactoryFactory_ShouldBeRegisteredWithProperLifestyle()
         {
-            // arrange
+            // Arrange
             RegisterInstallerDependencies(_container);
 
-            // assert
+            // Assert
             _container.Should().HaveRegisteredSingleComponent<IDataProviderFactoryFactory>()
                 .Which.Should()
                 .BeRegisteredWithLifestyle(LifestyleType.Transient);
@@ -107,30 +108,30 @@ namespace Relativity.IntegrationPoints.Services.Tests.Installers.ProviderManager
         [Test]
         public void IDataProviderFactoryFactory_ShouldBeRegisteredWithProperImplementation()
         {
-            // arrange
+            // Arrange
             RegisterInstallerDependencies(_container);
 
-            // assert
+            // Assert
             _container.Should().HaveRegisteredProperImplementation<IDataProviderFactoryFactory, DataProviderFactoryFactory>();
         }
 
         [Test]
         public void IDataProviderFactoryFactory_ShouldBeResolvedAndNotThrow()
         {
-            // arrange
+            // Arrange
             RegisterInstallerDependencies(_container);
 
-            // assert
+            // Assert
             _container.Should().ResolveWithoutThrowing<IDataProviderFactoryFactory>();
         }
 
         [Test]
         public void IRipProviderInstaller_ShouldBeRegisteredWithProperLifestyle()
         {
-            // arrange
+            // Arrange
             RegisterInstallerDependencies(_container);
 
-            // assert
+            // Assert
             _container.Should().HaveRegisteredSingleComponent<IRipProviderInstaller>()
                 .Which.Should()
                 .BeRegisteredWithLifestyle(LifestyleType.Transient);
@@ -139,30 +140,30 @@ namespace Relativity.IntegrationPoints.Services.Tests.Installers.ProviderManager
         [Test]
         public void IRipProviderInstaller_ShouldBeRegisteredWithProperImplementation()
         {
-            // arrange
+            // Arrange
             RegisterInstallerDependencies(_container);
 
-            // assert
+            // Assert
             _container.Should().HaveRegisteredProperImplementation<IRipProviderInstaller, RipProviderInstaller>();
         }
 
         [Test]
         public void IRipProviderInstaller_ShouldBeResolvedAndNotThrow()
         {
-            // arrange
+            // Arrange
             RegisterInstallerDependencies(_container);
 
-            // assert
+            // Assert
             _container.Should().ResolveWithoutThrowing<IRipProviderInstaller>();
         }
 
         [Test]
         public void IRipProviderUninstaller_ShouldBeRegisteredWithProperLifestyle()
         {
-            // arrange
+            // Arrange
             RegisterInstallerDependencies(_container);
 
-            // assert
+            // Assert
             _container.Should().HaveRegisteredSingleComponent<IRipProviderUninstaller>()
                 .Which.Should()
                 .BeRegisteredWithLifestyle(LifestyleType.Transient);
@@ -171,20 +172,20 @@ namespace Relativity.IntegrationPoints.Services.Tests.Installers.ProviderManager
         [Test]
         public void IRipProviderUninstaller_ShouldBeRegisteredWithProperImplementation()
         {
-            // arrange
+            // Arrange
             RegisterInstallerDependencies(_container);
 
-            // assert
+            // Assert
             _container.Should().HaveRegisteredProperImplementation<IRipProviderUninstaller, RipProviderUninstaller>();
         }
 
         [Test]
         public void IRipProviderUninstaller_ShouldBeResolvedAndNotThrow()
         {
-            // arrange
+            // Arrange
             RegisterInstallerDependencies(_container);
 
-            // assert
+            // Assert
             _container.Should().ResolveWithoutThrowing<IRipProviderUninstaller>();
         }
 

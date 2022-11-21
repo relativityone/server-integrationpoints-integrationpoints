@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
 using kCura.IntegrationPoints.Core.Monitoring.SystemReporter.DNS;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Logging;

@@ -1,35 +1,35 @@
+using System;
 using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
+using Castle.MicroKernel.Resolvers;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Agent.Context;
+using kCura.IntegrationPoints.Agent.Installer.Components;
 using kCura.IntegrationPoints.Agent.Monitoring;
+using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
+using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Agent.Validation;
+using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Core.Authentication;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Factories.Implementations;
+using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
-using System;
-using Castle.MicroKernel.Resolvers;
-using kCura.IntegrationPoints.Core.Validation;
-using kCura.IntegrationPoints.Agent.Installer.Components;
-using kCura.IntegrationPoints.Core.Factories.Implementations;
-using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
-using kCura.IntegrationPoints.Agent.Interfaces;
-using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 using Relativity.AutomatedWorkflows.SDK;
-using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
-using kCura.IntegrationPoints.Common.Helpers;
-using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
+using ITaskFactory = kCura.IntegrationPoints.Agent.TaskFactory.ITaskFactory;
 
 namespace kCura.IntegrationPoints.Agent.Installer
 {
@@ -123,7 +123,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
             container.Register(Component.For<ITaskFactoryJobHistoryServiceFactory>().ImplementedBy<TaskFactoryJobHistoryServiceFactory>().LifestyleTransient());
             container.Register(Component.For<ITaskFactory>().ImplementedBy<TaskFactory.TaskFactory>().DependsOn(new { container }).LifestyleTransient());
 
-
             container.Register(Component
                 .For<IAuthTokenGenerator>()
                 .ImplementedBy<OAuth2TokenGenerator>()
@@ -133,25 +132,21 @@ namespace kCura.IntegrationPoints.Agent.Installer
                 Component
                     .For<IExportServiceObserversFactory>()
                     .ImplementedBy<ExportServiceObserversFactory>()
-                    .LifestyleTransient()
-                );
+                    .LifestyleTransient());
 
             container.Register(Component
-                .For<Core.Factories.IExporterFactory>()
+                .For<IExporterFactory>()
                 .ImplementedBy<ExporterFactory>()
-                .LifestyleTransient()
-            );
+                .LifestyleTransient());
 
             container.Register(Component
                 .For<IExternalServiceInstrumentationProvider>()
                 .ImplementedBy<ExternalServiceInstrumentationProviderWithJobContext>()
-                .LifestyleSingleton()
-            );
+                .LifestyleSingleton());
             container.Register(Component
                 .For<IInstanceSettingsBundle>()
                 .UsingFactoryMethod(kernel => kernel.Resolve<IHelper>().GetInstanceSettingBundle())
-                .LifestyleTransient()
-            );
+                .LifestyleTransient());
 
             container.AddEmailSender();
         }
@@ -163,8 +158,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 
             container.Register(Component
                 .For<ILazyComponentLoader>()
-                .ImplementedBy<LazyOfTComponentLoader>()
-            );
+                .ImplementedBy<LazyOfTComponentLoader>());
         }
 
         private static void ConfigureMonitoring(IWindsorContainer container)
@@ -183,7 +177,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
             container.Register(Component.For<IHealthStatisticReporter>().ImplementedBy<SystemStatisticsReporter>().LifestyleTransient());
 
             container.Register(Component.For<IHeartbeatReporter>().ImplementedBy<HeartbeatReporter>().LifestyleTransient());
-
         }
     }
 }

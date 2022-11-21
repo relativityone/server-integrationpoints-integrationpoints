@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using FluentAssertions;
 using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
@@ -13,7 +13,8 @@ using Relativity.Services.ResourceServer;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
 {
-    [TestFixture, Category("Unit")]
+    [TestFixture]
+    [Category("Unit")]
     public class SystemHealthReporterTests
     {
         private Mock<IServicesMgr> _servicesMgrFake;
@@ -47,46 +48,46 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _databasePingReporterFake = new DatabasePingReporter(_context.Object, _loggerMock.Object);
         }
 
-
         [Test]
         public void SystemHealthReporter_FileShareServiceShouldNotBeAvailable_WhenDiskUsageReporterThrows()
         {
-            // ARRANGE
+            // Arrange
             _helperMock.Setup(h => h.GetServicesManager()).Throws(_exception);
             _sut = new SystemHealthReporter(new[] { _fileShareDiskUsageReporterFake });
 
-            // ACT
+            // Act
             Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult();
 
-            // ASSERT
+            // Assert
             result["IsFileShareServiceAccessible"].ShouldBeEquivalentTo(false);
         }
 
         [Test]
         public void SystemHealthReporter_FileShareServiceShouldNotBeAvailable_WhenDiskUsageReporterReturnsEmptyList()
         {
-            // ARRANGE
+            // Arrange
             var emptyResultSet = new FileShareQueryResultSet();
 
             _fileShareServerManagerMock.Setup(x => x.QueryAsync(It.IsAny<Query>())).ReturnsAsync(emptyResultSet);
             _sut = new SystemHealthReporter(new[] { _fileShareDiskUsageReporterFake });
 
-            // ACT
+            // Act
             Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult();
 
-            // ASSERT
+            // Assert
             result["IsFileShareServiceAccessible"].ShouldBeEquivalentTo(false);
         }
 
         [Test]
         public void SystemHealthReporter_ShouldSendSystemDiscUsage()
         {
-            // ARRANGE
+            // Arrange
             _sut = new SystemHealthReporter(new[] { _systemStatisticsReporterFake });
-            // ACT
+
+            // Act
             Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult();
 
-            // ASSERT
+            // Assert
             result.Should().ContainKey(@"SystemDisc_C:\_UsagePercentage");
             result.Should().ContainKey(@"SystemDisc_C:\_FreeSpaceGB");
         }
@@ -94,40 +95,40 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         [Test]
         public void SystemHealthReporter_ShouldSendCPUUsage()
         {
-            // ARRANGE
+            // Arrange
             _sut = new SystemHealthReporter(new[] { _systemStatisticsReporterFake });
 
-            // ACT
+            // Act
             Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult();
 
-            // ASSERT
+            // Assert
             result.Should().ContainKey("CpuUsageSystem");
         }
 
         [Test]
         public void SystemHealthReporter_ShouldSendSystemMemoryStatistics()
         {
-            // ARRANGE
+            // Arrange
             _sut = new SystemHealthReporter(new[] { _systemStatisticsReporterFake });
 
-            // ACT
+            // Act
             Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult();
 
-            // ASSERT
+            // Assert
             result.Should().ContainKey("SystemFreeMemoryPercentage");
         }
 
         [Test]
         public void SystemHealthReporter_ShouldSendKeplerServiceStatusTrue_WhenStatusIsOk()
         {
-            // ARRANGE
+            // Arrange
             _pingServiceMock.Setup(x => x.Ping()).ReturnsAsync("OK");
             _sut = new SystemHealthReporter(new[] { _keplerPingReporterFake });
 
-            // ACT
+            // Act
             Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult();
 
-            // ASSERT
+            // Assert
             Dictionary<string, object> expectedResult = new Dictionary<string, object>
             {
                 { "IsKeplerServiceAccessible", true }
@@ -138,14 +139,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         [Test]
         public void SystemHealthReporter_ShouldSendKeplerServiceStatusFalse_WhenStatusIsDown()
         {
-            // ARRANGE
+            // Arrange
             _pingServiceMock.Setup(x => x.Ping()).ReturnsAsync("Down");
             _sut = new SystemHealthReporter(new[] { _keplerPingReporterFake });
 
-            // ACT
+            // Act
             Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult();
 
-            // ASSERT
+            // Assert
             Dictionary<string, object> expectedResult = new Dictionary<string, object>
             {
                 { "IsKeplerServiceAccessible", false }
@@ -156,14 +157,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         [Test]
         public void SystemHealthReporter_ShouldSendKeplerServiceStatusFalse_WhenServiceThrows()
         {
-            // ARRANGE
+            // Arrange
             _helperMock.Setup(h => h.GetServicesManager()).Throws(_exception);
             _sut = new SystemHealthReporter(new[] { _keplerPingReporterFake });
 
-            // ACT
+            // Act
             Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult();
 
-            // ASSERT
+            // Assert
             Dictionary<string, object> expectedResult = new Dictionary<string, object>
             {
                 { "IsKeplerServiceAccessible", false }
@@ -171,11 +172,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             result.Should().Contain(expectedResult);
         }
 
-
         [Test]
         public void SystemHealthReporter_ShouldSendDatabaseStatusTrue_WhenDatabaseIsOk()
         {
-            // ARRANGE
+            // Arrange
             DataTable mockDataTable = new DataTable()
             {
                 Columns = { new DataColumn() }
@@ -183,10 +183,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _context.Setup(x => x.ExecuteSqlStatementAsDataTable(It.IsAny<string>())).Returns(mockDataTable);
             _sut = new SystemHealthReporter(new[] { _databasePingReporterFake });
 
-            // ACT
+            // Act
             Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult();
 
-            // ASSERT
+            // Assert
             Dictionary<string, object> expectedResult = new Dictionary<string, object>
             {
                 { "IsDatabaseAccessible", true }
@@ -197,14 +197,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         [Test]
         public void SystemHealthReporter_ShouldSendDatabaseStatusFalse_WhenDatabaseResponseIsNotAsExpected()
         {
-            // ARRANGE
+            // Arrange
             _context.Setup(x => x.ExecuteNonQuerySQLStatement(It.IsAny<string>())).Returns(69);
             _sut = new SystemHealthReporter(new[] { _databasePingReporterFake });
 
-            // ACT
+            // Act
             Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult();
 
-            // ASSERT
+            // Assert
             Dictionary<string, object> expectedResult = new Dictionary<string, object>
             {
                 { "IsDatabaseAccessible", false }
@@ -215,14 +215,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         [Test]
         public void SystemHealthReporter_ShouldSendDatabaseStatusFalse_WhenDatabaseThrows()
         {
-            // ARRANGE
+            // Arrange
             _context.Setup(x => x.ExecuteNonQuerySQLStatement(It.IsAny<string>())).Throws(_exception);
             _sut = new SystemHealthReporter(new[] { _databasePingReporterFake });
 
-            // ACT
+            // Act
             Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult();
 
-            // ASSERT
+            // Assert
             Dictionary<string, object> expectedResult = new Dictionary<string, object>
             {
                 { "IsDatabaseAccessible", false }

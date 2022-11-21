@@ -18,6 +18,7 @@ using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.RelativitySync;
@@ -30,14 +31,17 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
     [SetUpFixture]
     public class SystemTestsSetupFixture
     {
+        private static readonly IList<int> _managedWorkspacesIDs = new List<int>();
+
         public static IWindsorContainer Container { get; private set; }
+
         public static IConfigurationStore ConfigurationStore { get; private set; }
+
         public static ITestHelper TestHelper { get; private set; }
 
         public static WorkspaceRef SourceWorkspace { get; private set; }
-        public static WorkspaceRef DestinationWorkspace { get; private set; }
 
-        private static readonly IList<int> _managedWorkspacesIDs = new List<int>();
+        public static WorkspaceRef DestinationWorkspace { get; private set; }
 
         [OneTimeSetUp]
         public static void InitializeFixture()
@@ -50,6 +54,59 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
             InitializeContainer();
 
             InitializeRelativityInstanceSettingsClient();
+        }
+
+        [OneTimeTearDown]
+        public static void TearDownFixture()
+        {
+            DeleteSourceAndDestinationWorkspacesAsync().GetAwaiter().GetResult();
+
+            foreach (int workspaceId in _managedWorkspacesIDs)
+            {
+                Workspace.DeleteWorkspaceAsync(workspaceId).GetAwaiter().GetResult();
+            }
+        }
+
+        public static Task<WorkspaceRef> CreateManagedWorkspaceWithDefaultNameAsync(string templateName = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME) =>
+            CreateManagedWorkspaceAsync($"Rip.SystemTests.Managed-{DateTime.Now.Ticks}", templateName);
+
+        public static Task<WorkspaceRef> CreateManagedWorkspaceAsync(string workspaceName, string templateName = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME)
+        {
+            return Workspace.CreateWorkspaceAsync(workspaceName, templateName);
+        }
+
+        public static void Log(string message) => Console.WriteLine($@"[{nameof(SystemTestsSetupFixture)}] {message}");
+
+        public static void ResetFixture(Exception cause = null)
+        {
+            Log($"Resetting fixture... (Caused by {TestContext.CurrentContext.Test.FullName})");
+            if (cause != null)
+            {
+                Log($"[CAUSE] {cause}");
+            }
+
+            var timer = Stopwatch.StartNew();
+
+            DeleteSourceAndDestinationWorkspacesAsync().GetAwaiter().GetResult();
+            InitializeFixture();
+
+            timer.Stop();
+            Log($"Resetting fixture done in {timer.Elapsed.TotalSeconds} seconds");
+        }
+
+        public static void InvokeActionsAndResetFixtureOnException(IEnumerable<Action> actions)
+        {
+            try
+            {
+                foreach (var action in actions)
+                {
+                    action();
+                }
+            }
+            catch (Exception e)
+            {
+                ResetFixture(e);
+            }
         }
 
         private static async Task CreateAndConfigureWorkspacesAsync()
@@ -69,8 +126,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
         {
             Container.Register(Component
                 .For<ILazyComponentLoader>()
-                .ImplementedBy<LazyOfTComponentLoader>()
-            );
+                .ImplementedBy<LazyOfTComponentLoader>());
             Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => TestHelper, managedExternally: true));
             Container.Register(Component.For<IAPILog>().UsingFactoryMethod(k => TestHelper.GetLoggerFactory().GetLogger()));
             Container.Register(Component.For<IServiceContextHelper>()
@@ -114,64 +170,10 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
             Manager.Settings.Factory = new HelperConfigSqlServiceFactory(TestHelper);
         }
 
-        public static Task<WorkspaceRef> CreateManagedWorkspaceWithDefaultNameAsync(string templateName = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME) =>
-            CreateManagedWorkspaceAsync($"Rip.SystemTests.Managed-{DateTime.Now.Ticks}", templateName);
-
-        public static Task<WorkspaceRef> CreateManagedWorkspaceAsync(string workspaceName, string templateName = WorkspaceTemplateNames.FUNCTIONAL_TEMPLATE_NAME)
-        {
-            return Workspace.CreateWorkspaceAsync(workspaceName, templateName);
-        }
-
-        [OneTimeTearDown]
-        public static void TearDownFixture()
-        {
-            DeleteSourceAndDestinationWorkspacesAsync().GetAwaiter().GetResult();
-
-            foreach (int workspaceId in _managedWorkspacesIDs)
-            {
-                Workspace.DeleteWorkspaceAsync(workspaceId).GetAwaiter().GetResult();
-            }
-        }
-
         private static async Task DeleteSourceAndDestinationWorkspacesAsync()
         {
             await Workspace.DeleteWorkspaceAsync(SourceWorkspace.ArtifactID).ConfigureAwait(false);
             await Workspace.DeleteWorkspaceAsync(DestinationWorkspace.ArtifactID).ConfigureAwait(false);
-        }
-
-        public static void Log(string message) =>
-            Console.WriteLine($@"[{nameof(SystemTestsSetupFixture)}] {message}");
-
-        public static void ResetFixture(Exception cause = null)
-        {
-            Log($"Resetting fixture... (Caused by {TestContext.CurrentContext.Test.FullName})");
-            if (cause != null)
-            {
-                Log($"[CAUSE] {cause}");
-            }
-
-            var timer = Stopwatch.StartNew();
-
-            DeleteSourceAndDestinationWorkspacesAsync().GetAwaiter().GetResult();
-            InitializeFixture();
-
-            timer.Stop();
-            Log($"Resetting fixture done in {timer.Elapsed.TotalSeconds} seconds");
-        }
-
-        public static void InvokeActionsAndResetFixtureOnException(IEnumerable<Action> actions)
-        {
-            try
-            {
-                foreach (var action in actions)
-                {
-                    action();
-                }
-            }
-            catch (Exception e)
-            {
-                ResetFixture(e);
-            }
         }
     }
 }

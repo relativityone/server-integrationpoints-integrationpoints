@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Data.DbContext;
 
 namespace kCura.IntegrationPoints.Data.Migrations
 {
@@ -6,11 +7,13 @@ namespace kCura.IntegrationPoints.Data.Migrations
     {
         private readonly IEddsDBContext _eddsContext;
         private readonly IWorkspaceDBContext _workspaceContext;
-        public MigrationRunner(IEddsDBContext eddsContext,IWorkspaceDBContext workspaceContext)
+
+        public MigrationRunner(IEddsDBContext eddsContext, IWorkspaceDBContext workspaceContext)
         {
             _eddsContext = eddsContext;
             _workspaceContext = workspaceContext;
         }
+
         public void Run()
         {
             foreach (var migration in GetMigrations())

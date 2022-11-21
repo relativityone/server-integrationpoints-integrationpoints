@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using kCura.IntegrationPoints.Data.DbContext;
 
 namespace kCura.IntegrationPoints.Data.Migrations
 {
     public class UpdateJobErrorsBlankToNo : IMigration
-    {    private readonly IWorkspaceDBContext _context;
-    public UpdateJobErrorsBlankToNo(IWorkspaceDBContext context)
+    {
+        private readonly IWorkspaceDBContext _context;
+
+        public UpdateJobErrorsBlankToNo(IWorkspaceDBContext context)
         {
             _context = context;
         }

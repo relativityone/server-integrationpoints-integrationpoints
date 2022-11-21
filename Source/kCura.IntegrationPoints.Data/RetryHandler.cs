@@ -1,12 +1,12 @@
-﻿using Polly;
-using Polly.Retry;
-using Relativity.API;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Common.Handlers;
+using Polly;
+using Polly.Retry;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data
 {
@@ -27,23 +27,20 @@ namespace kCura.IntegrationPoints.Data
             _logger = logger?.ForContext<RetryHandler>();
             _asyncRetryPolicy = CreateAsyncRetryPolicy();
             _retryPolicy = CreateRetryPolicy();
-
         }
 
         public Task<T> ExecuteWithRetriesAsync<T>(Func<Task<T>> function, [CallerMemberName] string callerName = "")
         {
             return _asyncRetryPolicy.ExecuteAsync(
                 context => function(),
-                CreateContextData(callerName)
-            );
+                CreateContextData(callerName));
         }
 
         public Task ExecuteWithRetriesAsync(Func<Task> function, [CallerMemberName] string callerName = "")
         {
             return _asyncRetryPolicy.ExecuteAsync(
-                context => function(), 
-                CreateContextData(callerName)
-            );
+                context => function(),
+                CreateContextData(callerName));
         }
 
         public T ExecuteWithRetries<T>(Func<T> function, [CallerMemberName] string callerName = "")
@@ -84,9 +81,8 @@ namespace kCura.IntegrationPoints.Data
             string callerName = GetCallerName(context);
             string policyKey = context.PolicyKey;
 
-            _logger?.LogWarning(exception,
-                "Requested operation failed. Caller: {callerName}, retryCount: {retryCount}, waitTime: {waitTime}, correlationId: {policyKey}",
-                callerName, retryCount, waitTime, policyKey);
+            _logger?.LogWarning(
+                exception, "Requested operation failed. Caller: {callerName}, retryCount: {retryCount}, waitTime: {waitTime}, correlationId: {policyKey}", callerName, retryCount, waitTime, policyKey);
         }
 
         private string GetCallerName(IDictionary<string, object> contextData)

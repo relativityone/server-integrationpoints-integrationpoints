@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
