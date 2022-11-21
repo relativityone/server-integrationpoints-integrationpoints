@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
 using LanguageExt;
 
 namespace kCura.IntegrationPoints.Core.Provider.Internals
@@ -55,6 +55,7 @@ namespace kCura.IntegrationPoints.Core.Provider.Internals
             {
                 return result;
             }
+
             return $"Application Guid value is in invalid format. Value: {applicationGuidValueAsString}";
         }
     }

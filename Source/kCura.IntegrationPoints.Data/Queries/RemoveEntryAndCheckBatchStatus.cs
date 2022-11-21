@@ -1,8 +1,9 @@
-﻿using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using kCura.IntegrationPoints.Data.DbContext;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.Data.Queries
 {
@@ -15,8 +16,13 @@ namespace kCura.IntegrationPoints.Data.Queries
         private readonly long _jobId;
         private readonly bool _batchIsFinished;
 
-        public RemoveEntryAndCheckBatchStatus(IRepositoryFactory repositoryFactory, IWorkspaceDBContext context,
-            string tableName, int workspaceId, long jobId, bool batchIsFinished)
+        public RemoveEntryAndCheckBatchStatus(
+            IRepositoryFactory repositoryFactory,
+            IWorkspaceDBContext context,
+            string tableName,
+            int workspaceId,
+            long jobId,
+            bool batchIsFinished)
         {
             _repositoryFactory = repositoryFactory;
             _context = context;
@@ -30,8 +36,11 @@ namespace kCura.IntegrationPoints.Data.Queries
         {
             IScratchTableRepository scratchTableRepository = _repositoryFactory.GetScratchTableRepository(_workspaceId, string.Empty, string.Empty);
 
-            string sql = string.Format(Resources.Resource.RemoveEntryAndCheckBatchStatus, scratchTableRepository.GetResourceDBPrepend(), 
-                scratchTableRepository.GetSchemalessResourceDataBasePrepend(), _tableName);
+            string sql = string.Format(
+                Resources.Resource.RemoveEntryAndCheckBatchStatus,
+                scratchTableRepository.GetResourceDBPrepend(),
+                scratchTableRepository.GetSchemalessResourceDataBasePrepend(),
+                _tableName);
             IList<SqlParameter> sqlParams = new List<SqlParameter>
             {
                 new SqlParameter("@jobID", _jobId),

@@ -2,6 +2,7 @@
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
 using Relativity.API;
 
 namespace Relativity.IntegrationPoints.Services.Installers.Context
@@ -24,14 +25,16 @@ namespace Relativity.IntegrationPoints.Services.Installers.Context
                         managedExternally: true),
                 Component
                     .For<IServiceContextHelper>()
-                    .UsingFactoryMethod(k => new ServiceContextHelperForKeplerService(k.Resolve<IServiceHelper>(), workspaceID)
-                ),
+                    .UsingFactoryMethod(
+                        k => new ServiceContextHelperForKeplerService(
+                            k.Resolve<IServiceHelper>(), workspaceID)),
                 Component
                     .For<IWorkspaceDBContext>()
                     .ImplementedBy<WorkspaceDBContext>()
-                    .UsingFactoryMethod(k => new WorkspaceDBContext(k.Resolve<IHelper>().GetDBContext(workspaceID)))
-                    .LifestyleTransient()
-            );
+                    .UsingFactoryMethod(
+                        k => new WorkspaceDBContext(
+                            k.Resolve<IHelper>().GetDBContext(workspaceID)))
+                    .LifestyleTransient());
 
             return container;
         }

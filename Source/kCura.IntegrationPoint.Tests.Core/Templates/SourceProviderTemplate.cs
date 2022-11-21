@@ -1,6 +1,14 @@
+using System.Collections.Generic;
+using System.Linq;
 using Castle.MicroKernel.Registration;
+using Castle.MicroKernel.Resolvers;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
+using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core.Constants;
+using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Common.Agent;
+using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Installers;
@@ -8,24 +16,17 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Domain.Authentication;
+using kCura.IntegrationPoints.RelativitySync;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.Objects.DataContracts;
-using System.Collections.Generic;
-using System.Linq;
-using Castle.MicroKernel.Resolvers;
-using kCura.IntegrationPoint.Tests.Core.Constants;
-using kCura.IntegrationPoint.Tests.Core.TestHelpers;
-using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using Relativity.Services.Folder;
+using Relativity.Services.Objects.DataContracts;
 using Component = Castle.MicroKernel.Registration.Component;
-using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Common.Agent;
-using kCura.IntegrationPoints.RelativitySync;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
@@ -34,21 +35,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
     {
         private readonly string _workspaceName;
         private readonly string _workspaceTemplate;
-
-        protected int RelativityDestinationProviderArtifactId { get; private set; }
-        protected IEnumerable<SourceProvider> SourceProviders { get; private set; }
-        protected ICaseServiceContext CaseContext { get; private set; }
-        protected IRelativityObjectManager ObjectManager { get; private set; }
-        protected IIntegrationPointRepository IntegrationPointRepository { get; private set; }
-        protected IIntegrationPointService IntegrationPointService { get; private set; }
-        protected ISerializer Serializer { get; private set; }
-        protected IAPILog Logger { get; private set; }
-
-        protected bool CreatingAgentEnabled { get; set; } = true;
-        protected bool CreatingWorkspaceEnabled { get; set; } = true;
-
-        protected int WorkspaceArtifactId { get; private set; }
-        protected int AgentArtifactId { get; private set; }
 
         protected SourceProviderTemplate(
             string workspaceName,
@@ -67,6 +53,30 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
             WorkspaceArtifactId = workspaceId;
             CreatingWorkspaceEnabled = false;
         }
+
+        protected int RelativityDestinationProviderArtifactId { get; private set; }
+
+        protected IEnumerable<SourceProvider> SourceProviders { get; private set; }
+
+        protected ICaseServiceContext CaseContext { get; private set; }
+
+        protected IRelativityObjectManager ObjectManager { get; private set; }
+
+        protected IIntegrationPointRepository IntegrationPointRepository { get; private set; }
+
+        protected IIntegrationPointService IntegrationPointService { get; private set; }
+
+        protected ISerializer Serializer { get; private set; }
+
+        protected IAPILog Logger { get; private set; }
+
+        protected bool CreatingAgentEnabled { get; set; } = true;
+
+        protected bool CreatingWorkspaceEnabled { get; set; } = true;
+
+        protected int WorkspaceArtifactId { get; private set; }
+
+        protected int AgentArtifactId { get; private set; }
 
         public override void SuiteSetup()
         {
@@ -107,8 +117,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
         {
             Container.Register(Component
                 .For<ILazyComponentLoader>()
-                .ImplementedBy<LazyOfTComponentLoader>()
-            );
+                .ImplementedBy<LazyOfTComponentLoader>());
 
             Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => Helper, managedExternally: true));
             Container.Register(Component.For<IAPILog>().UsingFactoryMethod(k => Helper.GetLoggerFactory().GetLogger()));
@@ -125,38 +134,35 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
                     .LifeStyle.Transient);
 
             Container.Register(Component.For<IRelativityObjectManagerService>().Instance(new RelativityObjectManagerService(Container.Resolve<IHelper>(), WorkspaceArtifactId)).LifestyleTransient());
-            Container.Register(Component.For<IntegrationPoints.Core.Factories.IExporterFactory>().ImplementedBy<ExporterFactory>());
+            Container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>());
             Container.Register(Component.For<IExportServiceObserversFactory>().ImplementedBy<ExportServiceObserversFactory>());
             Container.Register(Component.For<IAuthTokenGenerator>().ImplementedBy<ClaimsTokenGenerator>().LifestyleTransient());
 
             Container.Register(
                 Component.For<IFolderManager>().UsingFactoryMethod(f =>
-                    f.Resolve<IServicesMgr>().CreateProxy<IFolderManager>(ExecutionIdentity.CurrentUser)
-                )
-            );
+                    f.Resolve<IServicesMgr>().CreateProxy<IFolderManager>(ExecutionIdentity.CurrentUser)));
+
             Container.Register(Component.For<FolderWithDocumentsIdRetriever>().ImplementedBy<FolderWithDocumentsIdRetriever>());
+
             Container.Register(
                 Component
                     .For<IExternalServiceInstrumentationProvider>()
                     .ImplementedBy<ExternalServiceInstrumentationProviderWithoutJobContext>()
-                    .LifestyleSingleton()
-            );
+                    .LifestyleSingleton());
             Container.Register(Component.For<IFileRepository>().ImplementedBy<FileRepository>().LifestyleTransient());
 
             Container.Register(Component.For<IRemovableAgent>().ImplementedBy<FakeNonRemovableAgent>().LifestyleTransient());
 
-#pragma warning disable 618
             var dependencies = new IWindsorInstaller[]
             {
                 new QueryInstallers(),
                 new KeywordInstaller(),
                 new SharedAgentInstaller(),
-                new IntegrationPoints.Core.Installers.ServicesInstaller(),
+                new ServicesInstaller(),
                 new ValidationInstaller(),
                 new RelativitySyncInstaller(),
                 new IntegrationPoints.ImportProvider.Parser.Installers.ServicesInstaller()
             };
-#pragma warning restore 618
 
             foreach (IWindsorInstaller dependency in dependencies)
             {
@@ -188,7 +194,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
             IntegrationPointProfileModel newModel = IntegrationPointProfileModel.FromIntegrationPointProfile(rdo);
             return newModel;
         }
-        
+
         private IEnumerable<SourceProvider> GetSourceProviders()
         {
             var queryRequest = new QueryRequest();
@@ -202,7 +208,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
             {
                 Fields = new List<FieldRef>
                 {
-                    new FieldRef {Guid = DestinationProviderFieldGuids.IdentifierGuid}
+                    new FieldRef { Guid = DestinationProviderFieldGuids.IdentifierGuid }
                 }
             };
 
