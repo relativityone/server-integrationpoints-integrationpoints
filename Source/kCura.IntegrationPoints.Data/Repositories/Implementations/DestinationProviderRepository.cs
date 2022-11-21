@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 {
                     Guid = Guid.Parse(ObjectTypeGuids.DestinationProvider)
                 },
-                Fields = RDOConverter.ConvertPropertiesToFields<DestinationProvider>(),
+                Fields = RDOConverter.GetFieldList<DestinationProvider>(),
                 Condition = $"'{DestinationProviderFields.Identifier}' == '{providerGuid}'"
             };
             IList<DestinationProvider> destinationProviders = _relativityObjectManager.Query<DestinationProvider>(queryRequest);

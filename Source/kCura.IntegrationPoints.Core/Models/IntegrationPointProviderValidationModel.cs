@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Models
 {
@@ -8,11 +10,11 @@ namespace kCura.IntegrationPoints.Core.Models
         {
         }
 
-        public IntegrationPointProviderValidationModel(IntegrationPointModelBase model)
+        public IntegrationPointProviderValidationModel(IntegrationPointDtoBase model)
         {
-            FieldsMap = model.Map;
+            FieldsMap = model.FieldMappings;
             SourceConfiguration = model.SourceConfiguration;
-            DestinationConfiguration = model.Destination;
+            DestinationConfiguration = model.DestinationConfiguration;
             SourceProviderArtifactId = model.SourceProvider;
             DestinationProviderArtifactId = model.DestinationProvider;
             Type = model.Type;
@@ -26,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Models
 
         public int Type { get; set; }
 
-        public string FieldsMap { get; set; }
+        public List<FieldMap> FieldsMap { get; set; }
 
         public string SourceProviderIdentifier { get; set; }
 

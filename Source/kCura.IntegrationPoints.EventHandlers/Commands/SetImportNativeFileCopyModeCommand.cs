@@ -1,6 +1,5 @@
-﻿using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories;
+﻿using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands
 {
@@ -28,28 +27,28 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 
         private void SetImportNativeFileCopyModeForIntegrationPoints()
         {
-            foreach (IntegrationPoint point in _integrationPointService.GetAllRDOsWithAllFields())
+            foreach (IntegrationPointDto point in _integrationPointService.ReadAll())
             {
-                string resultConf = _importNativeFileCopyModeUpdater.GetCorrectedConfiguration(point.SourceProvider,
+                string destinationConfiguration = _importNativeFileCopyModeUpdater.GetCorrectedConfiguration(point.SourceProvider,
                     point.DestinationProvider, point.DestinationConfiguration);
-                if (resultConf != null)
+                if (destinationConfiguration != null)
                 {
-                    point.DestinationConfiguration = resultConf;
-                    _integrationPointService.UpdateIntegrationPoint(point);
+                    _integrationPointService.UpdateConfiguration(point.ArtifactId, point.SourceConfiguration, destinationConfiguration);
                 }
             }
         }
 
         private void SetImportNativeFileCopyModeForIntegrationPointProfiles()
         {
-            foreach (IntegrationPointProfile profile in _integrationPointProfileService.GetAllRDOsWithAllFields())
+            foreach (IntegrationPointProfileDto profile in _integrationPointProfileService.ReadAll())
             {
-                string resultConf = _importNativeFileCopyModeUpdater.GetCorrectedConfiguration(profile.SourceProvider,
-                    profile.DestinationProvider, profile.SourceConfiguration);
-                if (resultConf != null)
+                string destinationConfiguration = _importNativeFileCopyModeUpdater.GetCorrectedConfiguration(
+                    profile.SourceProvider,
+                    profile.DestinationProvider,
+                    profile.SourceConfiguration);
+                if (destinationConfiguration != null)
                 {
-                    profile.DestinationConfiguration = resultConf;
-                    _integrationPointProfileService.UpdateIntegrationPointProfile(profile);
+                    _integrationPointProfileService.UpdateConfiguration(profile.ArtifactId, profile.SourceConfiguration, destinationConfiguration);
                 }
             }
         }

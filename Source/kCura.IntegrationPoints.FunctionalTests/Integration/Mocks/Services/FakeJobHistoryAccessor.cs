@@ -3,7 +3,7 @@ using Relativity.IntegrationPoints.Services.Repositories;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 {
-    class FakeJobHistoryRepository : IJobHistoryRepository
+    class FakeJobHistoryAccessor : IJobHistoryAccessor
     {
         public JobHistorySummaryModel GetJobHistory(JobHistoryRequest request)
         {

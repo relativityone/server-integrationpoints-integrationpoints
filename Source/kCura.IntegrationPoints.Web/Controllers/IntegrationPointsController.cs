@@ -15,15 +15,15 @@ namespace kCura.IntegrationPoints.Web.Controllers
         private readonly IIntegrationPointService _integrationPointService;
 
         public IntegrationPointsController(
-            IObjectTypeRepository objectTypeRepository, 
+            IObjectTypeRepository objectTypeRepository,
             IRepositoryFactory repositoryFactory,
             ITabService tabService,
             IIntegrationPointService integrationPointService,
             IWorkspaceContext workspaceIdProvider,
             IUserContext userContext
         ) : base(
-            objectTypeRepository, 
-            repositoryFactory, 
+            objectTypeRepository,
+            repositoryFactory,
             tabService,
             workspaceIdProvider,
             userContext
@@ -36,9 +36,9 @@ namespace kCura.IntegrationPoints.Web.Controllers
         protected override string ObjectType => ObjectTypes.IntegrationPoint;
         protected override string APIControllerName => Core.Constants.IntegrationPoints.API_CONTROLLER_NAME;
 
-        protected override IntegrationPointModelBase GetIntegrationPointBaseModel(int id)
+        protected override IntegrationPointDtoBase GetIntegrationPointBaseModel(int id)
         {
-            return _integrationPointService.ReadIntegrationPointModel(id);
+            return _integrationPointService.Read(id);
         }
 
         public ActionResult SaveAsProfileModal()

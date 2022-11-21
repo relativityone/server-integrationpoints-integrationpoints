@@ -14,8 +14,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Relativity.IntegrationPoints.Contracts.Models;
-using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
@@ -33,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         protected IHelper _helper;
 
         protected static readonly object Lock = new object();
-        
+
         protected abstract string UnableToSaveFormat { get; }
 
         protected IntegrationPointServiceBase(
@@ -54,13 +52,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             ObjectManager = objectManager;
         }
 
-        public FieldEntry GetIdentifierFieldEntry(string fieldMap)
-        {
-            var fields = Serializer.Deserialize<List<FieldMap>>(fieldMap);
-            return fields.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.Identifier)?.SourceField;
-        }
-
-        protected PeriodicScheduleRule ConvertModelToScheduleRule(IntegrationPointModelBase model)
+        protected PeriodicScheduleRule ConvertModelToScheduleRule(IntegrationPointDtoBase model)
         {
             const string dateFormat = "M/dd/yyyy";
             var periodicScheduleRule = new PeriodicScheduleRule();
@@ -174,7 +166,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             return integrationPointType;
         }
 
-        protected void ValidateConfigurationWhenUpdatingObject(IntegrationPointModelBase model, IntegrationPointModelBase existingModel)
+        protected void ValidateConfigurationWhenUpdatingObject(IntegrationPointDtoBase model, IntegrationPointDtoBase existingModel)
         {
             // check that only fields that are allowed to be changed are changed
             List<string> invalidProperties = new List<string>();
@@ -187,10 +179,10 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             {
                 invalidProperties.Add("Destination Provider");
             }
-            if (existingModel.Destination != model.Destination)
+            if (existingModel.DestinationConfiguration != model.DestinationConfiguration)
             {
-                dynamic existingDestination = JsonConvert.DeserializeObject(existingModel.Destination);
-                dynamic newDestination = JsonConvert.DeserializeObject(model.Destination);
+                dynamic existingDestination = JsonConvert.DeserializeObject(existingModel.DestinationConfiguration);
+                dynamic newDestination = JsonConvert.DeserializeObject(model.DestinationConfiguration);
 
                 if (existingDestination.artifactTypeID != newDestination.artifactTypeID)
                 {
@@ -236,9 +228,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         }
 
         protected void RunValidation(
-            IntegrationPointModelBase model, 
-            SourceProvider sourceProvider, 
-            DestinationProvider destinationProvider, 
+            IntegrationPointDtoBase model,
+            SourceProvider sourceProvider,
+            DestinationProvider destinationProvider,
             IntegrationPointType integrationPointType,
             Guid objectTypeGuid)
         {

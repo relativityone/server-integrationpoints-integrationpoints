@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Domain.Models;
-using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
@@ -12,54 +11,48 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         /// Retrieves all the integration points in the workspace.
         /// </summary>
         /// <returns>A list of integration point objects.</returns>
-        IList<Data.IntegrationPoint> GetAllRDOs();
-
-        /// <summary>
-        /// Retrieves all the integration points in the workspace including all data fields.
-        /// </summary>
-        /// <returns>A list of integration point objects.</returns>
-        IList<Data.IntegrationPoint> GetAllRDOsWithAllFields();
-
-        /// <summary>
-        /// Retrieves the identifier field information for the field map.
-        /// </summary>
-        /// <param name="fieldMap">Field map.</param>
-        /// <returns>The field entry information for the source identifier field.</returns>
-        FieldEntry GetIdentifierFieldEntry(string fieldMap);
+        List<IntegrationPointDto> ReadAll();
 
         /// <summary>
         /// Retrieves an integration model of the integration point given the integration point artifact id.
         /// </summary>
         /// <param name="artifactID">Artifact id of the integration point.</param>
         /// <returns>The integration model object of the integration point.</returns>
-        IntegrationPointModel ReadIntegrationPointModel(int artifactID);
-
-        /// <summary>
-        /// Retrieves an integration point given the integration point artifact id.
-        /// </summary>
-        /// <param name="artifactID">Artifact id of the integration point.</param>
-        /// <returns>The integration point object.</returns>
-        Data.IntegrationPoint ReadIntegrationPoint(int artifactID);
+        IntegrationPointDto Read(int artifactID);
 
         /// <summary>
         /// Retrieves the field mapping for the integration point given the artifact id.
         /// </summary>
         /// <param name="artifactId">Artifact id of the integration point.</param>
         /// <returns>A list of field mappings for the integration point.</returns>
-        IEnumerable<FieldMap> GetFieldMap(int artifactId);
+        List<FieldMap> GetFieldMap(int artifactId);
+
+        /// <summary>
+        /// Gets all integration points with given source and destination provider.
+        /// </summary>
+        List<IntegrationPointDto> GetBySourceAndDestinationProvider(int sourceProviderArtifactID, int destinationProviderArtifactID);
 
         /// <summary>
         /// Creates or updates an integration point.
         /// </summary>
-        /// <param name="model">The integration point model.</param>
+        /// <param name="dto">The integration point model.</param>
         /// <returns>The artifact id of the integration point.</returns>
-        int SaveIntegration(IntegrationPointModel model);
+        int SaveIntegrationPoint(IntegrationPointDto dto);
 
         /// <summary>
-        /// Updates an integration point.
+        /// Updates last runtime and next runtime.
         /// </summary>
-        /// <param name="integrationPoint">The integration point.</param>
-        void UpdateIntegrationPoint(Data.IntegrationPoint integrationPoint);
+        void UpdateLastAndNextRunTime(int artifactId, DateTime? lastRuntime, DateTime? nextRuntime);
+
+        /// <summary>
+        /// Updates job history.
+        /// </summary>
+        void UpdateJobHistory(int artifactId, List<int> jobHistory);
+
+        /// <summary>
+        /// Updates configuration
+        /// </summary>
+        void UpdateConfiguration(int artifactId, string sourceConfiguration, string destinationConfiguration);
 
         /// <summary>
         /// Run integration point as a new job.

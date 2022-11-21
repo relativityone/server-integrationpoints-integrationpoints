@@ -19,13 +19,13 @@ using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Config;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Logging;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Extensions;
@@ -238,8 +238,8 @@ namespace kCura.IntegrationPoints.Agent
 
         private async Task MarkJobHistoryAsFailedAsync(IWindsorContainer container, Job job)
         {
-            IntegrationPoint integrationPoint = await container.Resolve<IIntegrationPointRepository>()
-                .ReadAsync(job.RelatedObjectArtifactID).ConfigureAwait(false);
+            IntegrationPointDto integrationPoint = container.Resolve<IIntegrationPointService>()
+                .Read(job.RelatedObjectArtifactID);
             if (integrationPoint == null)
             {
                 throw new NullReferenceException(
@@ -285,7 +285,7 @@ namespace kCura.IntegrationPoints.Agent
                 Logger.LogInformation("Job will be executed in case of BatchInstanceId: {batchInstanceId}", batchInstanceId);
                 if (!IsJobResumed(container, batchInstanceId))
                 {
-                    IntegrationPoint integrationPoint = integrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
+                    IntegrationPointDto integrationPoint = integrationPointService.Read(job.RelatedObjectArtifactID);
                     var message = new JobStartedMessage
                     {
                         Provider = integrationPoint.GetProviderName(providerTypeService),

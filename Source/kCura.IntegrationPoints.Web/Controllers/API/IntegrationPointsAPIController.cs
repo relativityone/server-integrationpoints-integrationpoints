@@ -25,12 +25,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         private readonly IRelativityUrlHelper _urlHelper;
         private readonly Core.Services.Synchronizer.IRdoSynchronizerProvider _provider;
         private readonly ICPHelper _cpHelper;
-        private readonly IAPILog _logger;        
+        private readonly IAPILog _logger;
 
         public IntegrationPointsAPIController(
             IServiceFactory serviceFactory,
             IRelativityUrlHelper urlHelper,
-            Core.Services.Synchronizer.IRdoSynchronizerProvider provider,           
+            Core.Services.Synchronizer.IRdoSynchronizerProvider provider,
             ICPHelper cpHelper,
             IAPILog logger)
         {
@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             _urlHelper = urlHelper;
             _provider = provider;
             _cpHelper = cpHelper;
-            _logger = logger;           
+            _logger = logger;
         }
 
         [HttpGet]
@@ -47,12 +47,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         {
             try
             {
-                var model = new IntegrationPointModel();
-                model.ArtifactID = id;
+                var model = new IntegrationPointDto();
+                model.ArtifactId = id;
                 if (id > 0)
                 {
                     IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_cpHelper);
-                    model = integrationPointService.ReadIntegrationPointModel(id);
+                    model = integrationPointService.Read(id);
                 }
                 if (model.DestinationProvider == 0)
                 {
@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
         [HttpPost]
         [LogApiExceptionFilter(Message = "Unable to save or update integration point.")]
-        public HttpResponseMessage Update(int workspaceID, IntegrationPointModel model, bool mappingHasWarnings = false, bool destinationWorkspaceChanged = false,
+        public HttpResponseMessage Update(int workspaceID, IntegrationPointDto dto, bool mappingHasWarnings = false, bool destinationWorkspaceChanged = false,
             bool clearAndProceedSelected = false, MappingType mappingType = MappingType.Loaded)
         {
             if (mappingHasWarnings)
@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
             if (destinationWorkspaceChanged)
             {
-                _logger.LogInformation("Saving Integration Point Artifact ID: {IntegrationPointID} with changed destination workspace.", model.ArtifactID);
+                _logger.LogInformation("Saving Integration Point Artifact ID: {IntegrationPointID} with changed destination workspace.", dto.ArtifactId);
             }
 
             LogMappingInfo(mappingHasWarnings, clearAndProceedSelected, mappingType);
@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             int createdId;
             try
             {
-                createdId = integrationPointService.SaveIntegration(model);
+                createdId = integrationPointService.SaveIntegrationPoint(dto);
             }
             catch (IntegrationPointValidationException ex)
             {
@@ -111,30 +111,30 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         }
 
         private void LogMappingInfo(bool mappingHasWarnings, bool clearAndProceedSelected, MappingType mappingType)
-        { 
+        {
             _logger.LogInformation("Saved IntegrationPoint with following options: {options}", new
             {
                 MappingHasWarnings = mappingHasWarnings,
                 ClearAndProceedSelected = clearAndProceedSelected,
-                MappingType = mappingType                
+                MappingType = mappingType
             });
-        }        
+        }
 
-        private IntegrationPointModel RemoveInstanceToInstanceSettingsFromModel(IntegrationPointModel model)
+        private IntegrationPointDto RemoveInstanceToInstanceSettingsFromModel(IntegrationPointDto dto)
         {
             //We need to reset the values from the database that have federated instance other than null.
             //We do not want to forward the federated instance to the user interface.
-            if (!model.SourceConfiguration.Contains("\"FederatedInstanceArtifactId\":null") &&
-                model.SourceConfiguration.Contains("FederatedInstanceArtifactId"))
+            if (!dto.SourceConfiguration.Contains("\"FederatedInstanceArtifactId\":null") &&
+                dto.SourceConfiguration.Contains("FederatedInstanceArtifactId"))
             {
-                model.SourceConfiguration = null;
+                dto.SourceConfiguration = null;
             }
-            else if (model.SourceConfiguration.Contains("\"FederatedInstanceArtifactId\":null"))
+            else if (dto.SourceConfiguration.Contains("\"FederatedInstanceArtifactId\":null"))
             {
-                model.SourceConfiguration = JsonUtils.RemoveProperty(model.SourceConfiguration, "FederatedInstanceArtifactId");
+                dto.SourceConfiguration = JsonUtils.RemoveProperty(dto.SourceConfiguration, "FederatedInstanceArtifactId");
             }
 
-            return model;
+            return dto;
         }
 
         public enum MappingType

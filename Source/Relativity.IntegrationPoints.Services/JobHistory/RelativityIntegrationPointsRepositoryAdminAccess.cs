@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories;
 using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.Services.JobHistory
@@ -9,22 +10,22 @@ namespace Relativity.IntegrationPoints.Services.JobHistory
     public class RelativityIntegrationPointsRepositoryAdminAccess : IRelativityIntegrationPointsRepository
     {
         private readonly IRelativityObjectManagerService _relativityObjectManagerService;
-        private readonly IIntegrationPointRepository _integrationPointRepository;
+        private readonly IIntegrationPointService _integrationPointService;
 
         public RelativityIntegrationPointsRepositoryAdminAccess(
             IRelativityObjectManagerService relativityObjectManagerService,
-            IIntegrationPointRepository integrationPointRepository)
+            IIntegrationPointService integrationPointService)
         {
             _relativityObjectManagerService = relativityObjectManagerService;
-            _integrationPointRepository = integrationPointRepository;
+            _integrationPointService = integrationPointService;
         }
 
-        public List<kCura.IntegrationPoints.Core.Models.IntegrationPointModel> RetrieveIntegrationPoints()
+        public List<IntegrationPointDto> RetrieveIntegrationPoints()
         {
             var sourceProviderIds = RetrieveRelativitySourceProviderIds();
             var destinationProviderIds = RetrieveRelativityDestinationProviderIds();
 
-            return RetrieveIntegrationPoints(sourceProviderIds, destinationProviderIds);
+            return _integrationPointService.GetBySourceAndDestinationProvider(sourceProviderIds[0], destinationProviderIds[0]);
         }
 
         private IList<int> RetrieveRelativitySourceProviderIds()
@@ -43,15 +44,6 @@ namespace Relativity.IntegrationPoints.Services.JobHistory
                 Condition = $"'{DestinationProviderFields.Identifier}' == '{kCura.IntegrationPoints.Core.Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID}'"
             };
             return GetArtifactIds(_relativityObjectManagerService.RelativityObjectManager.Query<DestinationProvider>(request));
-        }
-
-        private List<kCura.IntegrationPoints.Core.Models.IntegrationPointModel> RetrieveIntegrationPoints(IList<int> sourceProvider, IList<int> destinationProvider)
-        {
-            return _integrationPointRepository
-                .GetAllBySourceAndDestinationProviderIDsAsync(sourceProvider[0], destinationProvider[0])
-                .GetAwaiter().GetResult()
-                .Select(kCura.IntegrationPoints.Core.Models.IntegrationPointModel.FromIntegrationPoint)
-                .ToList();
         }
 
         private List<int> GetArtifactIds<T>(List<T> results) where T : BaseRdo

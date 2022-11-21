@@ -19,7 +19,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
         private ICompletedJobsHistoryRepository _completedJobsHistoryRepository;
         private IJobHistoryAccess _jobHistoryAccess;
         private IJobHistorySummaryModelBuilder _summaryModelBuilder;
-        private JobHistoryRepository _jobHistoryRepository;
+        private JobHistoryAccessor _jobHistoryAccessor;
 
         private IFederatedInstanceManager _federatedInstanceManager;
         private IWorkspaceManager _workspaceManager;
@@ -36,7 +36,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             IDestinationParser destinationParser = new DestinationParser();
             _federatedInstanceManager = Substitute.For<IFederatedInstanceManager>();
 
-            _jobHistoryRepository = new JobHistoryRepository(
+            _jobHistoryAccessor = new JobHistoryAccessor(
                 _relativityIntegrationPointsRepository,
                 _completedJobsHistoryRepository,
                 managerFactory,
@@ -55,8 +55,8 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             string localInstance = "This Instance";
             string localworkspace1 = "Workspace1 - 1";
             string localworkspace2 = "Workspace2 - 4";
-            var integrationPoint1 = new kCura.IntegrationPoints.Core.Models.IntegrationPointModel { ArtifactID = 1 };
-            var integrationPoint2 = new kCura.IntegrationPoints.Core.Models.IntegrationPointModel { ArtifactID = 2 };
+            var integrationPoint1 = new kCura.IntegrationPoints.Core.Models.IntegrationPointDto { ArtifactId = 1 };
+            var integrationPoint2 = new kCura.IntegrationPoints.Core.Models.IntegrationPointDto { ArtifactId = 2 };
 
             var request = new JobHistoryRequest
             {
@@ -73,7 +73,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
                 new WorkspaceDTO {ArtifactId = 3}
             };
 
-            var integrationPoints = new List<kCura.IntegrationPoints.Core.Models.IntegrationPointModel>
+            var integrationPoints = new List<kCura.IntegrationPoints.Core.Models.IntegrationPointDto>
             {
                 integrationPoint1,
                 integrationPoint2
@@ -104,8 +104,8 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             _workspaceManager.GetUserWorkspaces().Returns(workspaces);
 
             _relativityIntegrationPointsRepository.RetrieveIntegrationPoints().Returns(integrationPoints);
-            _completedJobsHistoryRepository.RetrieveCompleteJobsForIntegrationPoint(request, integrationPoint1.ArtifactID).Returns(queryResult1);
-            _completedJobsHistoryRepository.RetrieveCompleteJobsForIntegrationPoint(request, integrationPoint2.ArtifactID).Returns(queryResult2);
+            _completedJobsHistoryRepository.RetrieveCompleteJobsForIntegrationPoint(request, integrationPoint1.ArtifactId).Returns(queryResult1);
+            _completedJobsHistoryRepository.RetrieveCompleteJobsForIntegrationPoint(request, integrationPoint2.ArtifactId).Returns(queryResult2);
 
             var expectedJobHistories = new List<JobHistoryModel>();
             expectedJobHistories.AddRange(queryResult1);
@@ -121,7 +121,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             _summaryModelBuilder.Create(request.Page, request.PageSize, Arg.Do<IList<JobHistoryModel>>(x => CollectionAssert.AreEquivalent(x, sortedJobHistories))).Returns(expectedResult);
 
             // act
-            JobHistorySummaryModel actualResult = _jobHistoryRepository.GetJobHistory(request);
+            JobHistorySummaryModel actualResult = _jobHistoryAccessor.GetJobHistory(request);
 
             // assert
             Assert.That(actualResult, Is.EqualTo(expectedResult));
@@ -139,14 +139,14 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
                 SortDescending = true
             };
 
-            var integrationPoints = new List<kCura.IntegrationPoints.Core.Models.IntegrationPointModel>();
+            var integrationPoints = new List<kCura.IntegrationPoints.Core.Models.IntegrationPointDto>();
             var queryResult = new List<JobHistoryModel>();
 
             _relativityIntegrationPointsRepository.RetrieveIntegrationPoints().Returns(integrationPoints);
 
             _completedJobsHistoryRepository.RetrieveCompleteJobsForIntegrationPoints(request, Arg.Any<List<int>>()).Returns(queryResult);
 
-            _jobHistoryRepository.GetJobHistory(request);
+            _jobHistoryAccessor.GetJobHistory(request);
 
             _workspaceManager.Received(0).GetUserWorkspaces();
         }

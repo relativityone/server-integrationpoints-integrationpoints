@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
@@ -31,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 
         private JobHistoryService _instance;
         private IIntegrationPointSerializer _serializer;
-        private Data.IntegrationPoint _integrationPoint;
+        private IntegrationPointDto _integrationPoint;
         private ImportSettings _settings;
         private WorkspaceDTO _workspace;
         private int _jobHistoryArtifactId;
@@ -46,13 +47,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             _logger = Substitute.For<IAPILog>();
             _serializer = Substitute.For<IIntegrationPointSerializer>();
 
-            _integrationPoint = new Data.IntegrationPoint()
+            _integrationPoint = new IntegrationPointDto
             {
                 ArtifactId = 98475,
                 Name = "RIP RIP",
                 DestinationConfiguration = "dest config",
-                OverwriteFields = OverwriteFieldsChoices.IntegrationPointAppendOnly,
-                JobHistory = new[] { 4543, 443 },
+                SelectedOverwrite = OverwriteFieldsChoices.IntegrationPointAppendOnly.ToString(),
+                //JobHistory = new[] { 4543, 443 },
                 SourceProvider = 0,
                 DestinationProvider = 0
             };

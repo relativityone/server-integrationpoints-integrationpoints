@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _cpHelperFake = new Mock<ICPHelper>();
             _cpHelperFake.Setup(m => m.GetServicesManager()).Returns(svcMgrStub.Object);
 
-            _integrationPointServiceFake = new Mock<IIntegrationPointService>();    
+            _integrationPointServiceFake = new Mock<IIntegrationPointService>();
             _profileServiceFake = new Mock<IIntegrationPointProfileService>();
             _urlHelperFake = new Mock<IRelativityUrlHelper>();
             _objectManagerFake = new Mock<IRelativityObjectManager>();
@@ -82,12 +82,12 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         {
             // arrange
             const int integrationPointProfileID = 100;
-            var model = new IntegrationPointProfileModel()
+            var model = new IntegrationPointProfileDto()
             {
                 Name = "Integration Point Test Profile"
             };
 
-            _profileServiceFake.Setup(m => m.SaveIntegration(model)).Returns(integrationPointProfileID);
+            _profileServiceFake.Setup(m => m.SaveProfile(model)).Returns(integrationPointProfileID);
 
             // act
             HttpResponseMessage response = _sut.Save(_WORKSPACE_ID, model);
@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         public void Save_ShouldReturnNotAcceptable_WhenIntegrationPointProfileValidationFails()
         {
             // arrange
-            var model = new IntegrationPointProfileModel()
+            var model = new IntegrationPointProfileDto()
             {
                 Name = "Integration Point Test Profile"
             };
@@ -108,7 +108,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             var errors = new List<string> { "Error1", "Error2" };
             var validationResult = new ValidationResult(errors);
 
-            _profileServiceFake.Setup(m => m.SaveIntegration(model)).Throws(new IntegrationPointValidationException(validationResult));
+            _profileServiceFake.Setup(m => m.SaveProfile(model)).Throws(new IntegrationPointValidationException(validationResult));
 
             // act
             HttpResponseMessage response = _sut.Save(_WORKSPACE_ID, model);
@@ -127,15 +127,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             // arrange
             const string profileName = "Integration Point Test Profile";
             const int integrationPointArtifactID = 123123;
-            var integrationPoint = TestRdoGenerator.GetDefault<Data.IntegrationPoint>(integrationPointArtifactID);
 
-            _integrationPointServiceFake.Setup(m => m.ReadIntegrationPoint(integrationPointArtifactID))
-                .Returns(integrationPoint);
+            _integrationPointServiceFake.Setup(m => m.Read(integrationPointArtifactID))
+                .Returns(new IntegrationPointDto { ArtifactId = integrationPointArtifactID });
 
             var errors = new List<string> { "Error1", "Error2" };
             var validationResult = new ValidationResult(errors);
 
-            _profileServiceFake.Setup(m => m.SaveIntegration(It.IsAny<IntegrationPointProfileModel>()))
+            _profileServiceFake.Setup(m => m.SaveProfile(It.IsAny<IntegrationPointProfileDto>()))
                 .Throws(new IntegrationPointValidationException(validationResult));
 
             // act
@@ -158,15 +157,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         {
             // Arrange
             const int integrationPointArtifactID = 123123;
-            Data.IntegrationPoint integrationPoint = TestRdoGenerator.GetDefault<Data.IntegrationPoint>(integrationPointArtifactID);
 
-            _integrationPointServiceFake.Setup(m => m.ReadIntegrationPoint(integrationPointArtifactID))
-                .Returns(integrationPoint);
+            _integrationPointServiceFake.Setup(m => m.Read(integrationPointArtifactID))
+                .Returns(new IntegrationPointDto { ArtifactId = integrationPointArtifactID });
 
             const int integrationPointProfileID = 100;
             const string profileName = "Integration Point Test Profile";
 
-            _profileServiceFake.Setup(m => m.SaveIntegration(It.IsAny<IntegrationPointProfileModel>()))
+            _profileServiceFake.Setup(m => m.SaveProfile(It.IsAny<IntegrationPointProfileDto>()))
                 .Returns(integrationPointProfileID);
 
             _apmManagerFake.Setup(x => x.Dispose()).Throws<Exception>();

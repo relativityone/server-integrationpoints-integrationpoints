@@ -24,14 +24,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             private IProviderTypeService _providerTypeServiceMock;
             private IDateTimeHelper _currentTimeProvider;
 
-            private readonly Data.IntegrationPoint _firstIntegrationPoint = new Data.IntegrationPoint
+            private readonly IntegrationPointDto _firstIntegrationPoint = new IntegrationPointDto
             {
                 ArtifactId = 1,
                 SourceProvider = _SOURCE_PROVIDER_ID,
                 DestinationProvider = _DESTINATION_PROVIDER_ID
             };
 
-            private readonly Data.IntegrationPoint _secondIntegrationPoint = new Data.IntegrationPoint
+            private readonly IntegrationPointDto _secondIntegrationPoint = new IntegrationPointDto
             {
                 ArtifactId = 2,
                 SourceProvider = _SOURCE_PROVIDER_ID + 1,
@@ -153,7 +153,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
                 _providerTypeServiceMock = Substitute.For<IProviderTypeService>();
 
                 _integrationPointServiceMock = Substitute.For<IIntegrationPointService>();
-                _integrationPointServiceMock.ReadIntegrationPoint(0).ReturnsForAnyArgs(new Data.IntegrationPoint
+                _integrationPointServiceMock.Read(0).ReturnsForAnyArgs(new IntegrationPointDto
                 {
                     SourceProvider = _SOURCE_PROVIDER_ID,
                     DestinationProvider = _DESTINATION_PROVIDER_ID
@@ -241,13 +241,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
                 _service.GetProviderType(1);
                 _service.GetProviderType(2);
 
-                _integrationPointServiceMock.Received(1).ReadIntegrationPoint(1);
-                _integrationPointServiceMock.Received(1).ReadIntegrationPoint(2);
+                _integrationPointServiceMock.Received(1).Read(1);
+                _integrationPointServiceMock.Received(1).Read(2);
             }
 
             private void VerifyBothServicesCalled(int times = 1, int integrationPointId = 1)
             {
-                _integrationPointServiceMock.Received(times).ReadIntegrationPoint(integrationPointId);
+                _integrationPointServiceMock.Received(times).Read(integrationPointId);
                 _providerTypeServiceMock.Received(times).GetProviderType(_SOURCE_PROVIDER_ID, _DESTINATION_PROVIDER_ID);
             }
         }

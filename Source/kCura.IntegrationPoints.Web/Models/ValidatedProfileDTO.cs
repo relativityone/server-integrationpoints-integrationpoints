@@ -5,12 +5,13 @@ namespace kCura.IntegrationPoints.Web.Models
 {
     public class ValidatedProfileDTO
     {
-        public IntegrationPointProfileModel Model { get; }
+        public IntegrationPointProfileDto Dto { get; }
+
         public ValidationResultDTO ValidationResult { get; }
 
-        public ValidatedProfileDTO(IntegrationPointProfileModel model, ValidationResultDTO validationResult)
+        public ValidatedProfileDTO(IntegrationPointProfileDto dto, ValidationResultDTO validationResult)
         {
-            Model = model;
+            Dto = dto;
             ValidationResult = validationResult;
         }
     }

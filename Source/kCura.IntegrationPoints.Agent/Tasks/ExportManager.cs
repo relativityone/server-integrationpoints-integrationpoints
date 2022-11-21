@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -60,7 +61,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             _exportInitProcessService = exportInitProcessService;
             _logger = Helper.GetLoggerFactory().GetLogger().ForContext<ExportManager>();
         }
-        
+
         protected override TaskType GetTaskType()
         {
             return TaskType.ExportWorker;
@@ -82,7 +83,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         public override long BatchTask(Job job, IEnumerable<string> batchIDs)
         {
             LogBatchTaskStart(job, batchIDs);
-            IntegrationPoint integrationPoint = IntegrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
+            IntegrationPointDto integrationPoint = IntegrationPointService.Read(job.RelatedObjectArtifactID);
 
             if (integrationPoint == null)
             {

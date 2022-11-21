@@ -4,7 +4,7 @@ using Relativity.IntegrationPoints.Services.Repositories;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 {
-    class FakeIntegrationPointTypeRepository : IIntegrationPointTypeRepository
+    class FakeIntegrationPointTypeAccessor : IIntegrationPointTypeAccessor
     {
         public IList<IntegrationPointTypeModel> GetIntegrationPointTypes()
         {

@@ -50,7 +50,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
             List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMapping(destinationWorkspace, (int)ArtifactType.Document);
 
-            integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
+            integrationPoint.FieldMappings = fieldsMapping;
             integrationPoint.SourceConfiguration = _serializer.Serialize(new SourceConfiguration
             {
                 SourceWorkspaceArtifactId = Workspace.ArtifactId,
@@ -83,7 +83,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
         {
             IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
             SavedSearchTest sourceSavedSearch = Workspace.SavedSearches.First();
-            integrationPointProfile.SourceConfiguration = _serializer.Serialize(new 
+            integrationPointProfile.SourceConfiguration = _serializer.Serialize(new
             {
                 SourceWorkspaceArtifactId = Workspace.ArtifactId,
                 TargetWorkspaceArtifactId = destinationWorkspace.ArtifactId,
@@ -101,7 +101,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMapping(destinationWorkspace, (int)ArtifactType.Document);
             fieldsMapping[0].SourceField.DisplayName = new string(Enumerable.Repeat('-', longTextLimit / 2).ToArray());
             fieldsMapping[0].DestinationField.DisplayName = new string(Enumerable.Repeat('-', longTextLimit / 2).ToArray());
-            integrationPointProfile.FieldMappings = _serializer.Serialize(fieldsMapping);
+            integrationPointProfile.FieldMappings = fieldsMapping;
 
             return integrationPointProfile;
         }
@@ -124,27 +124,27 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return integrationPointProfile;
         }
 
-        public IntegrationPointProfileModel CreateSavedSearchIntegrationPointAsIntegrationPointProfileModel(WorkspaceTest destinationWorkspace)
+        public IntegrationPointProfileDto CreateSavedSearchIntegrationPointAsIntegrationPointProfileModel(WorkspaceTest destinationWorkspace)
         {
             IntegrationPointProfileTest integrationPointProfile = CreateSavedSearchIntegrationPointProfile(destinationWorkspace);
-            IntegrationPointProfileModel integrationPointProfileModel = new IntegrationPointProfileModel
+            IntegrationPointProfileDto integrationPointProfileDto = new IntegrationPointProfileDto
             {
                 Name = integrationPointProfile.Name,
                 SelectedOverwrite = integrationPointProfile.OverwriteFields == null ? string.Empty : integrationPointProfile.OverwriteFields.Name,
                 SourceProvider = integrationPointProfile.SourceProvider.GetValueOrDefault(0),
-                Destination = integrationPointProfile.DestinationConfiguration,
+                DestinationConfiguration = integrationPointProfile.DestinationConfiguration,
                 SourceConfiguration = integrationPointProfile.SourceConfiguration,
                 DestinationProvider = integrationPointProfile.DestinationProvider.GetValueOrDefault(0),
                 Type = integrationPointProfile.Type,
                 Scheduler = new Scheduler(integrationPointProfile.EnableScheduler.GetValueOrDefault(false), integrationPointProfile.ScheduleRule),
-                NotificationEmails = integrationPointProfile.EmailNotificationRecipients ?? string.Empty,
+                EmailNotificationRecipients = integrationPointProfile.EmailNotificationRecipients ?? string.Empty,
                 LogErrors = integrationPointProfile.LogErrors.GetValueOrDefault(false),
                 NextRun = integrationPointProfile.NextScheduledRuntimeUTC,
-                Map = integrationPointProfile.FieldMappings
+                FieldMappings = integrationPointProfile.FieldMappings
             };
 
             Workspace.IntegrationPointProfiles.Remove(integrationPointProfile);
-            return integrationPointProfileModel;
+            return integrationPointProfileDto;
         }
     }
 }

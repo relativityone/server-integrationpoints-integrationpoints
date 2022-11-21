@@ -4,7 +4,7 @@ using Relativity.IntegrationPoints.Services.Repositories;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 {
-    class FakeProviderRepository : IProviderRepository
+    class FakeProviderAccessor : IProviderAccessor
     {
         public int GetDestinationProviderArtifactId(int workspaceArtifactId, string destinationProviderGuidIdentifier)
         {

@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Extensions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -19,7 +20,6 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.DTO;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Logging;
@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IManagerFactory managerFactory,
             IJobService jobService,
             IProviderTypeService providerTypeService,
-            IIntegrationPointRepository integrationPointRepository,
+            IIntegrationPointService integrationPointService,
             IDiagnosticLog diagnosticLog)
             : base(
                 caseServiceContext,
@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 jobManager,
                 managerFactory,
                 jobService,
-                integrationPointRepository,
+                integrationPointService,
                 diagnosticLog)
         {
             BatchStatus = statuses;
@@ -134,7 +134,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 destinationSettings.OnBehalfOfUserId = job.SubmittedBy;
                 destinationSettings.CorrelationId = BatchInstance;
                 destinationSettings.JobID = job.RootJobId;
-                destinationSettings.Provider = IntegrationPoint.GetProviderType(_providerTypeService).ToString();
+                destinationSettings.Provider = IntegrationPointDto.GetProviderType(_providerTypeService).ToString();
                 destinationConfiguration = Serializer.Serialize(destinationSettings);
             }
 
@@ -247,29 +247,34 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
                 SetIntegrationPoint(job);
 
-                DeserializeAndSetupIntegrationPointsConfigurationForStatisticsService(IntegrationPoint);
+                DeserializeAndSetupIntegrationPointsConfigurationForStatisticsService(IntegrationPointDto);
 
                 List<string> entryIDs = GetEntryIDs(job);
                 SetJobHistory();
 
                 ConfigureJobStopManager(job, true);
 
-                if (!IntegrationPoint.SourceProvider.HasValue)
+                if (IntegrationPointDto.SourceProvider == 0)
                 {
                     LogUnknownSourceProvider(job);
                     throw new ArgumentException("Cannot import source provider with unknown id.");
                 }
-                if (!IntegrationPoint.DestinationProvider.HasValue)
+                if (IntegrationPointDto.DestinationProvider == 0)
                 {
                     LogUnknownDestinationProvider(job);
                     throw new ArgumentException("Cannot import destination provider with unknown id.");
                 }
-                IEnumerable<FieldMap> fieldMap = GetFieldMap(IntegrationPoint.FieldMappings);
 
                 JobStopManager?.ThrowIfStopRequested();
 
-                ExecuteImport(fieldMap, new DataSourceProviderConfiguration(IntegrationPoint.SourceConfiguration, IntegrationPoint.SecuredConfiguration),
-                    IntegrationPoint.DestinationConfiguration, entryIDs, SourceProvider, DestinationProvider, job);
+                ExecuteImport(
+                    IntegrationPointDto.FieldMappings,
+                    new DataSourceProviderConfiguration(IntegrationPointDto.SourceConfiguration, IntegrationPointDto.SecuredConfiguration),
+                    IntegrationPointDto.DestinationConfiguration,
+                    entryIDs,
+                    SourceProvider,
+                    DestinationProvider,
+                    job);
 
                 LogExecuteTaskSuccesfulEnd(job);
             }
@@ -365,7 +370,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             {
                 if (JobStopManager?.IsStopRequested() == true)
                 {
-                    IList<Job> jobs = JobManager.GetJobsByBatchInstanceId(IntegrationPoint.ArtifactId, BatchInstance);
+                    IList<Job> jobs = JobManager.GetJobsByBatchInstanceId(IntegrationPointDto.ArtifactId, BatchInstance);
                     if (jobs.Any())
                     {
                         List<long> ids = jobs.Select(agentJob => agentJob.JobId).ToList();
@@ -402,7 +407,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             }
 
             List<long> jobsToUpdate =
-                JobManager.GetJobsByBatchInstanceId(IntegrationPoint.ArtifactId, BatchInstance)
+                JobManager.GetJobsByBatchInstanceId(IntegrationPointDto.ArtifactId, BatchInstance)
                     .Where(x => x.StopState != StopState.DrainStopped && x.StopState != StopState.DrainStopping)
                     .Select(agentJob => agentJob.JobId)
                     .ToList();
@@ -464,7 +469,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             }
         }
 
-        private void DeserializeAndSetupIntegrationPointsConfigurationForStatisticsService(IntegrationPoint ip)
+        private void DeserializeAndSetupIntegrationPointsConfigurationForStatisticsService(IntegrationPointDto ip)
         {
             SourceConfiguration sourceConfiguration = null;
             ImportSettings importSettings = null;
@@ -514,7 +519,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             _logger.LogError(ex, msg, sourceConfigForLogging, settingsForLogging);
         }
 
-        private void LogDeserializeIntegrationPointsConfigurationForStatisticsServiceWarning(IntegrationPoint ip, Exception ex)
+        private void LogDeserializeIntegrationPointsConfigurationForStatisticsServiceWarning(IntegrationPointDto ip, Exception ex)
         {
             string msg = "Failed to deserialize integration point configuration for statistics service.";
             _logger.LogWarning(ex, msg);

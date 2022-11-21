@@ -38,9 +38,9 @@ namespace Relativity.IntegrationPoints.Services.Installers
         {
             container.Register(Component.For<IUserInfo>().UsingFactoryMethod(k => k.Resolve<IServiceHelper>().GetAuthenticationManager().UserInfo, true));
             
-            container.Register(Component.For<IIntegrationPointRepository>().ImplementedBy<IntegrationPointRepository>().LifestyleTransient());
-            container.Register(Component.For<IIntegrationPointProfileRepository>().ImplementedBy<IntegrationPointProfileRepository>().LifestyleTransient());
-            container.Register(Component.For<IProviderRepository>().ImplementedBy<ProviderRepository>().LifestyleTransient());
+            container.Register(Component.For<IIntegrationPointAccessor>().ImplementedBy<IntegrationPointAccessor>().LifestyleTransient());
+            container.Register(Component.For<IIntegrationPointProfileAccessor>().ImplementedBy<IntegrationPointProfileAccessor>().LifestyleTransient());
+            container.Register(Component.For<IProviderAccessor>().ImplementedBy<ProviderAccessor>().LifestyleTransient());
             container.Register(Component.For<IBackwardCompatibility>().ImplementedBy<BackwardCompatibility>().LifestyleTransient());
             container.Register(Component.For<IIntegrationPointRuntimeServiceFactory>().ImplementedBy<IntegrationPointRuntimeServiceFactory>().LifestyleTransient());
 

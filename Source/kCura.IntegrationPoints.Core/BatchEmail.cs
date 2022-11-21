@@ -6,13 +6,13 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Keywords;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.ScheduleQueue.Core;
@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Core
             IEmailFormatter converter,
             IManagerFactory managerFactory,
             IJobService jobService,
-            IIntegrationPointRepository integrationPointRepository,
+            IIntegrationPointService integrationPointService,
             IDiagnosticLog diagnosticLog)
             : base(
                 caseServiceContext,
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Core
                 jobManager,
                 managerFactory,
                 jobService,
-                integrationPointRepository,
+                integrationPointService,
                 diagnosticLog)
         {
             _jobStatusUpdater = jobStatusUpdater;
@@ -77,13 +77,13 @@ namespace kCura.IntegrationPoints.Core
         {
             TaskParameters taskParameters = Serializer.Deserialize<TaskParameters>(job.JobDetails);
             ChoiceRef jobStatus = _jobStatusUpdater.GenerateStatus(taskParameters.BatchInstance);
-        
-            EmailJobParameters jobParameters = GenerateEmailJobParameters(jobStatus, emails);            
+
+            EmailJobParameters jobParameters = GenerateEmailJobParameters(jobStatus, emails);
             TaskParameters emailTaskParameters = new TaskParameters
             {
                 BatchInstance = taskParameters.BatchInstance,
                 BatchParameters = jobParameters
-            };            
+            };
             Job sendEmailJob = JobManager.CreateJob(job, emailTaskParameters, TaskType.SendEmailWorker);
             JobService.UpdateStopState(new List<long> { sendEmailJob.JobId }, StopState.None);
         }

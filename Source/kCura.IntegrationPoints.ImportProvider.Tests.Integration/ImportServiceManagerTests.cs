@@ -35,6 +35,8 @@ using kCura.IntegrationPoints.Domain.Managers;
 using kCura.IntegrationPoints.Core.Contracts.Import;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Logging;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using Relativity.AutomatedWorkflows.SDK;
 using kCura.IntegrationPoints.Domain.Logging;
 
@@ -43,7 +45,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
     [TestFixture]
     public class ImportServiceManagerTests : SourceProviderTemplate
     {
-        private Data.IntegrationPoint _ip;
+        private IntegrationPointDto _ip;
         private IImportFileLocationService _importFileLocationService;
         private ImportServiceManager _instanceUnderTest;
 
@@ -78,7 +80,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
             IJobHistoryErrorService jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
             _importFileLocationService = Substitute.For<IImportFileLocationService>();
             IAgentValidator agentValidator = Substitute.For<IAgentValidator>();
-            IIntegrationPointRepository integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
+            IIntegrationPointService integrationPointService = Substitute.For<IIntegrationPointService>();
             IJobStatusUpdater jobStatusUpdater = Substitute.For<IJobStatusUpdater>();
             IJobTracker jobTrackerFake = Substitute.For<IJobTracker>();
             IInstanceSettingsManager instanceSettingsManager = Substitute.For<IInstanceSettingsManager>();
@@ -120,11 +122,11 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
             objectManager.Read<SourceProvider>(Arg.Any<int>()).Returns(p);
 
             //IpLibrary
-            _ip = new Data.IntegrationPoint();
+            _ip = new IntegrationPointDto();
             _ip.SecuredConfiguration = "";
             _ip.SourceProvider = -1;
 
-            integrationPointRepository.ReadWithFieldMappingAsync(Arg.Any<int>()).Returns(_ip);
+            integrationPointService.Read(Arg.Any<int>()).Returns(_ip);
 
             //JobStopManager
             IJobStopManager stopManager = Substitute.For<IJobStopManager>();
@@ -138,7 +140,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
                 ItemsTransferred = 0,
                 ItemsWithErrors = 0
             };
-            jobHistoryService.GetOrCreateScheduledRunHistoryRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), Arg.Any<DateTime>())
+            jobHistoryService.GetOrCreateScheduledRunHistoryRdo(Arg.Any<IntegrationPointDto>(), Arg.Any<Guid>(), Arg.Any<DateTime>())
                 .Returns(jobHistoryDto);
             jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(jobHistoryDto);
 
@@ -173,7 +175,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
                 dataReaderFactory,
                 _importFileLocationService,
                 agentValidator,
-                integrationPointRepository,
+                integrationPointService,
                 jobStatusUpdater,
                 automatedWorkflowsManager,
                 jobTrackerFake,
@@ -202,12 +204,12 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration
             settingsObjects.ImportSettings.RelativityPassword = SharedVariables.RelativityPassword;
             _ip.SourceConfiguration = _serializer.Serialize(settingsObjects.ImportProviderSettings);
             _ip.DestinationConfiguration = _serializer.Serialize(settingsObjects.ImportSettings);
-            _ip.FieldMappings = _serializer.Serialize(settingsObjects.FieldMaps);
+            _ip.FieldMappings = settingsObjects.FieldMaps;
 
             System.IO.FileInfo fileInfo = new System.IO.FileInfo(
                 Path.Combine(_testDataDirectory, settingsObjects.ImportProviderSettings.LoadFile));
 
-            _importFileLocationService.LoadFileInfo(Arg.Any<Data.IntegrationPoint>())
+            _importFileLocationService.LoadFileInfo(Arg.Any<string>(), Arg.Any<string>())
                 .Returns(new LoadFileInfo { FullPath = fileInfo.FullName, Size = fileInfo.Length, LastModifiedDate = fileInfo.LastWriteTimeUtc });
 
             Job job = PrepareImportJob(fileInfo);

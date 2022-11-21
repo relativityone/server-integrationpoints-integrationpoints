@@ -41,7 +41,7 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (IWindsorContainer container = GetDependenciesContainer(request.WorkspaceArtifactId))
                 {
-                    var jobHistoryRepository = container.Resolve<IJobHistoryRepository>();
+                    var jobHistoryRepository = container.Resolve<IJobHistoryAccessor>();
                     return await Task.Run(() => jobHistoryRepository.GetJobHistory(request)).ConfigureAwait(false);
                 }
             }

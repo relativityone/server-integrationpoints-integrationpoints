@@ -124,7 +124,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             var request = new ReadRequest
             {
                 Object = new RelativityObjectRef { ArtifactID = artifactId },
-                Fields = new T().ToFieldList()
+                Fields = RDOConverter.GetFieldList<T>()
             };
             return SendReadRequestAsync<T>(request, executionIdentity: executionIdentity).GetAwaiter().GetResult();
         }

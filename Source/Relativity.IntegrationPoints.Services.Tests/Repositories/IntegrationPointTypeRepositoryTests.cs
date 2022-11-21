@@ -13,7 +13,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
     [TestFixture, Category("Unit")]
     public class IntegrationPointTypeRepositoryTests : TestBase
     {
-        private IntegrationPointTypeRepository _integrationPointTypeRepository;
+        private IntegrationPointTypeAccessor _integrationPointTypeAccessor;
         private IRelativityObjectManager _objectManager;
 
         public override void SetUp()
@@ -22,7 +22,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             IRelativityObjectManagerService objectManagerService = Substitute.For<IRelativityObjectManagerService>();
             objectManagerService.RelativityObjectManager.Returns(_objectManager);
 
-            _integrationPointTypeRepository = new IntegrationPointTypeRepository(objectManagerService);
+            _integrationPointTypeAccessor = new IntegrationPointTypeAccessor(objectManagerService);
         }
 
         [Test]
@@ -44,7 +44,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 
             _objectManager.Query<IntegrationPointType>(Arg.Any<QueryRequest>()).Returns(expectedResult);
 
-            IList<IntegrationPointTypeModel> actualResult = _integrationPointTypeRepository.GetIntegrationPointTypes();
+            IList<IntegrationPointTypeModel> actualResult = _integrationPointTypeAccessor.GetIntegrationPointTypes();
 
             Assert.That(actualResult,
                 Is.EquivalentTo(expectedResult).Using(new Func<IntegrationPointTypeModel, IntegrationPointType, bool>((x, y) => (x.Name == y.Name) && (x.ArtifactId == y.ArtifactId))));

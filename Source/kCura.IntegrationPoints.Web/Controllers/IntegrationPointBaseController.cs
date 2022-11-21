@@ -77,14 +77,14 @@ namespace kCura.IntegrationPoints.Web.Controllers
         
         public ActionResult Details(int id)
         {
-            IntegrationPointModelBase integrationViewModel = GetIntegrationPointBaseModel(id);
+            IntegrationPointDtoBase integrationViewModel = GetIntegrationPointBaseModel(id);
 
             var model = new IpDetailModel { DataModel = integrationViewModel };
 
             return View("~/Views/IntegrationPoints/Details.cshtml", model);
         }
 
-        protected abstract IntegrationPointModelBase GetIntegrationPointBaseModel(int id);
+        protected abstract IntegrationPointDtoBase GetIntegrationPointBaseModel(int id);
 
         public ActionResult StepDetails()
         {

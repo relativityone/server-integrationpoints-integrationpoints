@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
@@ -9,7 +11,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
     public class IntegrationPointTest : RdoTestBase
     {
         public static Guid FieldsMappingGuid { get; } = new Guid("1b065787-a6e4-4d70-a7ed-f49d770f0bc7");
-        
+
         public DateTime? NextScheduledRuntimeUTC { get; set; }
 
         public DateTime? LastRuntimeUTC { get; set; }
@@ -295,7 +297,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 ArtifactId = ArtifactId,
                 ParentArtifactId = ParentObjectArtifactId,
                 NextScheduledRuntimeUTC = NextScheduledRuntimeUTC,
-                LastRuntimeUTC = LastRuntimeUTC, 
+                LastRuntimeUTC = LastRuntimeUTC,
                 FieldMappings = FieldMappings,
                 EnableScheduler = EnableScheduler,
                 SourceConfiguration = SourceConfiguration,
@@ -312,6 +314,30 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 SecuredConfiguration = SecuredConfiguration,
                 PromoteEligible = PromoteEligible,
                 Name = Name
+            };
+        }
+
+        public IntegrationPointDto ToDto()
+        {
+            var rdo = this.ToRdo();
+            return new IntegrationPointDto
+            {
+                ArtifactId = rdo.ArtifactId,
+                Name = rdo.Name,
+                SelectedOverwrite = rdo.OverwriteFields == null ? string.Empty : rdo.OverwriteFields.Name,
+                SourceProvider = rdo.SourceProvider.GetValueOrDefault(0),
+                DestinationConfiguration = rdo.DestinationConfiguration,
+                SourceConfiguration = rdo.SourceConfiguration,
+                DestinationProvider = rdo.DestinationProvider.GetValueOrDefault(0),
+                Type = rdo.Type.GetValueOrDefault(0),
+                Scheduler = new Scheduler(rdo.EnableScheduler.GetValueOrDefault(false), rdo.ScheduleRule),
+                EmailNotificationRecipients = rdo.EmailNotificationRecipients ?? string.Empty,
+                LogErrors = rdo.LogErrors.GetValueOrDefault(false),
+                HasErrors = rdo.HasErrors.GetValueOrDefault(false),
+                LastRun = rdo.LastRuntimeUTC,
+                NextRun = rdo.NextScheduledRuntimeUTC,
+                SecuredConfiguration = rdo.SecuredConfiguration,
+                JobHistory = rdo.JobHistory.ToList(),
             };
         }
     }

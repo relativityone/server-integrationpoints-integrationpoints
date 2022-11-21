@@ -1,9 +1,10 @@
-﻿using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+﻿using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 
 namespace Relativity.IntegrationPoints.Services.Helpers
 {
     public interface IIntegrationPointRuntimeServiceFactory
     {
-        IIntegrationPointService CreateIntegrationPointRuntimeService(kCura.IntegrationPoints.Core.Models.IntegrationPointModel model);
+        IIntegrationPointService CreateIntegrationPointRuntimeService(IntegrationPointDto dto);
     }
 }

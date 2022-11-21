@@ -5,6 +5,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
     public interface IIntegrationPointProviderTypeService
     {
         ProviderType GetProviderType(int integrationPointArtifactId);
-        ProviderType GetProviderType(Data.IntegrationPoint integrationPoint);
+
+        ProviderType GetProviderType(IntegrationPointDto integrationPoint);
     }
 }

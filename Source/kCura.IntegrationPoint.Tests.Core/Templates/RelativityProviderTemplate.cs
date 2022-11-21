@@ -1,21 +1,23 @@
-using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.ScheduleQueue.Core.ScheduleRules;
-using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core.Constants;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Domain.Models;
+using kCura.ScheduleQueue.Core.ScheduleRules;
 using NSubstitute;
+using NUnit.Framework;
 using Relativity;
-using Relativity.IntegrationPoints.Services;
+using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Folder;
 using Relativity.Toggles;
 
@@ -79,7 +81,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
         public override void SuiteTeardown()
         {
-            if(!HasTestFailed())
+            if (!HasTestFailed())
             {
                 Workspace.DeleteWorkspaceAsync(TargetWorkspaceArtifactID).GetAwaiter().GetResult();
             }
@@ -137,7 +139,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
             int sourceWorkspaceArtifactId,
             SourceConfiguration.ExportType exportType)
         {
-            SourceConfiguration sourceConfiguration = CreateSourceConfigWithCustomParameters(targetWorkspaceId, 
+            SourceConfiguration sourceConfiguration = CreateSourceConfigWithCustomParameters(targetWorkspaceId,
                 savedSearchArtifactId, sourceWorkspaceArtifactId, exportType);
             return Serializer.Serialize(sourceConfiguration);
         }
@@ -173,13 +175,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
             };
         }
 
-        protected string CreateDefaultFieldMap()
-        {
-            FieldMap[] map = GetDefaultFieldMap();
-            return Serializer.Serialize(map);
-        }
-
-        protected FieldMap[] GetDefaultFieldMap(bool withObjectIdentifierBracket = true)
+        protected List<FieldMap> GetDefaultFieldMap(bool withObjectIdentifierBracket = true)
         {
             IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
             IFieldQueryRepository sourceFieldQueryRepository = repositoryFactory.GetFieldQueryRepository(SourceWorkspaceArtifactID);
@@ -203,7 +199,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
                         IsIdentifier = true,
                         IsRequired = true
                     },
-                    FieldMapType = FieldMapType.Identifier,
+                    FieldMapType = FieldMapTypeEnum.Identifier,
                     DestinationField = new FieldEntry
                     {
                         FieldIdentifier = targetDto.ArtifactId.ToString(),
@@ -213,7 +209,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
                     },
                 }
             };
-            return map;
+            return map.ToList();
         }
 
         private async Task SetupAsync()
@@ -226,33 +222,33 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
             TypeOfExport = (int)SourceConfiguration.ExportType.SavedSearch;
         }
 
-        protected IntegrationPoints.Core.Models.IntegrationPointModel CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum overwriteMode, string name, string overwrite)
+        protected IntegrationPointDto CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum overwriteMode, string name, string overwrite)
         {
-            IntegrationPoints.Core.Models.IntegrationPointModel integrationModel = new IntegrationPoints.Core.Models.IntegrationPointModel();
-            SetIntegrationPointBaseModelProperties(integrationModel, overwriteMode, name, overwrite);
-            return integrationModel;
+            IntegrationPointDto integrationDto = new IntegrationPointDto();
+            SetIntegrationPointBaseModelProperties(integrationDto, overwriteMode, name, overwrite);
+            return integrationDto;
         }
 
-        protected IntegrationPointProfileModel CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum overwriteMode, string name, string overwrite)
+        protected IntegrationPointProfileDto CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum overwriteMode, string name, string overwrite)
         {
-            IntegrationPointProfileModel integrationModel = new IntegrationPointProfileModel();
-            SetIntegrationPointBaseModelProperties(integrationModel, overwriteMode, name, overwrite);
-            return integrationModel;
+            IntegrationPointProfileDto integrationDto = new IntegrationPointProfileDto();
+            SetIntegrationPointBaseModelProperties(integrationDto, overwriteMode, name, overwrite);
+            return integrationDto;
         }
 
-        private void SetIntegrationPointBaseModelProperties(IntegrationPointModelBase modelBase, ImportOverwriteModeEnum overwriteMode, string name, string overwrite)
+        private void SetIntegrationPointBaseModelProperties(IntegrationPointDtoBase dtoBase, ImportOverwriteModeEnum overwriteMode, string name, string overwrite)
         {
-            modelBase.Destination = CreateDestinationConfig(overwriteMode);
-            modelBase.DestinationProvider = RelativityDestinationProviderArtifactId;
-            modelBase.SourceProvider = RelativityProvider.ArtifactId;
-            modelBase.SourceConfiguration = CreateDefaultSourceConfig();
-            modelBase.LogErrors = true;
-            modelBase.NotificationEmails = "test@relativity.com";
-            modelBase.Name = $"{name}{DateTime.Now:yy-MM-dd HH-mm-ss}";
-            modelBase.SelectedOverwrite = overwrite;
-            modelBase.Scheduler = new Scheduler() { EnableScheduler = false };
-            modelBase.Map = CreateDefaultFieldMap();
-            modelBase.Type =
+            dtoBase.DestinationConfiguration = CreateDestinationConfig(overwriteMode);
+            dtoBase.DestinationProvider = RelativityDestinationProviderArtifactId;
+            dtoBase.SourceProvider = RelativityProvider.ArtifactId;
+            dtoBase.SourceConfiguration = CreateDefaultSourceConfig();
+            dtoBase.LogErrors = true;
+            dtoBase.EmailNotificationRecipients = "test@relativity.com";
+            dtoBase.Name = $"{name}{DateTime.Now:yy-MM-dd HH-mm-ss}";
+            dtoBase.SelectedOverwrite = overwrite;
+            dtoBase.Scheduler = new Scheduler() { EnableScheduler = false };
+            dtoBase.FieldMappings = GetDefaultFieldMap();
+            dtoBase.Type =
                 Container.Resolve<IIntegrationPointTypeService>()
                     .GetIntegrationPointType(IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid)
                     .ArtifactId;
@@ -264,38 +260,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
             {
                 return folderManager.GetWorkspaceRootAsync(workspaceArtifactId).GetAwaiter().GetResult().ArtifactID;
             }
-        }
-
-        protected IntegrationPoints.Core.Models.IntegrationPointModel CreateDefaultIntegrationPointModelScheduled(ImportOverwriteModeEnum overwriteMode, string name, string overwrite, string startDate, string endDate, ScheduleInterval interval)
-        {
-            const int offsetInSeconds = 30;
-            DateTime newScheduledTime = DateTime.UtcNow.AddSeconds(offsetInSeconds);
-
-            var integrationModel = new IntegrationPoints.Core.Models.IntegrationPointModel
-            {
-                Destination = CreateDestinationConfig(overwriteMode),
-                DestinationProvider = RelativityDestinationProviderArtifactId,
-                SourceProvider = RelativityProvider.ArtifactId,
-                SourceConfiguration = CreateDefaultSourceConfig(),
-                LogErrors = true,
-                Name = $"{name}{DateTime.Now:yy-MM-dd HH-mm-ss}",
-                SelectedOverwrite = overwrite,
-                Scheduler = new Scheduler()
-                {
-                    EnableScheduler = true,
-                    //Date format "MM/dd/yyyy". For testing purpose. No sanity check here
-                    StartDate = startDate,
-                    EndDate = endDate,
-                    ScheduledTime = newScheduledTime.ToString("HH:mm:ss"),
-                    Reoccur = 0,
-                    SelectedFrequency = interval.ToString(),
-                    TimeZoneId = TimeZoneInfo.Utc.Id
-                },
-                Map = CreateDefaultFieldMap(),
-                Type = Container.Resolve<IIntegrationPointTypeService>().GetIntegrationPointType(IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid).ArtifactId
-            };
-
-            return integrationModel;
         }
 
         #endregion Helper Methods

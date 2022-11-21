@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.AgentBase;
@@ -44,7 +45,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 
             var taskFactoryJobHistoryServiceFactory = Substitute.For<ITaskFactoryJobHistoryServiceFactory>();
             _jobHistoryService = Substitute.For<ITaskFactoryJobHistoryService>();
-            taskFactoryJobHistoryServiceFactory.CreateJobHistoryService(Arg.Any<Data.IntegrationPoint>())
+            taskFactoryJobHistoryServiceFactory.CreateJobHistoryService(Arg.Any<IntegrationPointDto>())
                 .Returns(_jobHistoryService);
 
             _sut = new JobSynchronizationChecker(helper, _jobService, managerFactory, taskFactoryJobHistoryServiceFactory);
@@ -58,7 +59,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             Job job = new JobBuilder().WithJobId(jobId).Build();
 
             int integrationPointArtifactId = 434641;
-            var ip = new Data.IntegrationPoint
+            var ip = new IntegrationPointDto
             {
                 ArtifactId = integrationPointArtifactId
             };
@@ -77,7 +78,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             Job job = new JobBuilder().WithJobId(jobId).Build();
 
             int integrationPointArtifactId = 434641;
-            var ip = new Data.IntegrationPoint
+            var ip = new IntegrationPointDto
             {
                 ArtifactId = integrationPointArtifactId
             };
@@ -96,7 +97,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             Job job = new JobBuilder().WithJobId(jobId).Build();
 
             int integrationPointArtifactId = 434641;
-            var ip = new Data.IntegrationPoint
+            var ip = new IntegrationPointDto
             {
                 ArtifactId = integrationPointArtifactId
             };
@@ -115,7 +116,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             Job job = new JobBuilder().WithJobId(jobId).Build();
 
             int integrationPointArtifactId = 434641;
-            var ip = new Data.IntegrationPoint
+            var ip = new IntegrationPointDto
             {
                 ArtifactId = integrationPointArtifactId
             };
@@ -134,7 +135,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             Job job = new JobBuilder().WithJobId(jobId).WithScheduleRuleType("scheduledJob").Build();
 
             int integrationPointArtifactId = 434641;
-            var ip = new Data.IntegrationPoint
+            var ip = new IntegrationPointDto
             {
                 ArtifactId = integrationPointArtifactId
             };
@@ -162,7 +163,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             Job job = new JobBuilder().WithJobId(jobId).Build();
 
             int integrationPointArtifactId = 434641;
-            var ip = new Data.IntegrationPoint
+            var ip = new IntegrationPointDto
             {
                 ArtifactId = integrationPointArtifactId
             };
@@ -209,7 +210,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             { }
 
             public override string Name { get; }
-            
+
             protected override TaskResult ProcessJob(Job job)
             {
                 throw new NotImplementedException();

@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -52,7 +53,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         private SyncManager _instance;
         private Job _job;
         private SourceProvider _sourceProvider;
-        private Data.IntegrationPoint _integrationPoint;
+        private IntegrationPointDto _integrationPoint;
         private IDataReader _dataReader;
         private string _data;
         private IJobHistoryErrorService _jobHistoryErrorService;
@@ -94,12 +95,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 ApplicationIdentifier = Guid.NewGuid().ToString(),
                 Identifier = Guid.NewGuid().ToString()
             };
-            _integrationPoint = new Data.IntegrationPoint()
+            _integrationPoint = new IntegrationPointDto()
             {
                 SourceProvider = 8502,
                 SourceConfiguration = "sourceConfiguration",
                 SecuredConfiguration = "securedConfiguration",
-                FieldMappings = "fields"
             };
             _jobHistory = new JobHistory()
             {
@@ -115,7 +115,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 batchStatuses, _agentValidator, new EmptyDiagnosticLog())
             {
                 BatchInstance = _batchInstance,
-                IntegrationPoint = _integrationPoint
+                IntegrationPointDto = _integrationPoint
             };
 
             _syncManagerEventHelper = new TestSyncManager(_caseServiceContext, dataProviderFactory, _jobManager, _jobService, _helper,
@@ -124,7 +124,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                batchStatuses, _agentValidator);
 
             _data = "data";
-            _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
+            _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider).Returns(_sourceProvider);
             dataProviderFactory.GetDataProvider(
                     Arg.Is<Guid>(appGuid => appGuid == new Guid(_sourceProvider.ApplicationIdentifier)),
                     Arg.Is<Guid>(providerGuid => providerGuid == new Guid(_sourceProvider.Identifier))).Returns(dataSourceProvider);
@@ -325,10 +325,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             // assert
             Assert.AreEqual(_batchInstance, _syncManagerEventHelper.BatchInstance);
-            Assert.AreSame(_integrationPoint, _syncManagerEventHelper.IntegrationPoint);
+            Assert.AreSame(_integrationPoint, _syncManagerEventHelper.IntegrationPointDto);
             Assert.AreSame(_jobHistory, _syncManagerEventHelper.JobHistory);
 
-            _jobHistoryErrorService.Received(1).IntegrationPoint = _integrationPoint;
+            _jobHistoryErrorService.Received(1).IntegrationPointDto = _integrationPoint;
             _jobHistoryErrorService.Received(1).JobHistory = _jobHistory;
 
             // We expect to update Start Time and State of JobHistory object
@@ -362,15 +362,15 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _job.ScheduleRule = null;
             PreJobExecutionGoldFlowSetup();
             _syncManagerEventHelper.RaisePreEvent(_job, _taskResult);
-            _integrationPoint.NextScheduledRuntimeUTC = null;
+            _integrationPoint.NextRun = null;
             _jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(_jobHistory);
             // act
             _syncManagerEventHelper.RaisePostEvent(_job, _taskResult, itemCount);
 
             // assert
             _batchStatus.Received(1).OnJobComplete(_job);
-            Assert.IsNull(_integrationPoint.NextScheduledRuntimeUTC);
-            _integrationPointService.UpdateIntegrationPoint(_integrationPoint);
+            Assert.IsNull(_integrationPoint.NextRun);
+            _integrationPointService.UpdateLastAndNextRunTime(_integrationPoint.ArtifactId, _integrationPoint.LastRun, _integrationPoint.NextRun);
             _jobHistoryService.Received().UpdateRdo(_jobHistory);
             _jobHistoryErrorService.Received().CommitErrors();
         }
@@ -384,7 +384,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             PreJobExecutionGoldFlowSetup();
             _syncManagerEventHelper.RaisePreEvent(_job, _taskResult);
             _syncManagerEventHelper.BatchJobCount = 0;
-            _integrationPoint.NextScheduledRuntimeUTC = null;
+            _integrationPoint.NextRun = null;
             _jobStopManager.IsStopRequested().Returns(true);
             _jobHistoryService.GetRdo(Arg.Any<Guid>()).Returns(_jobHistory);
 
@@ -410,7 +410,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             _syncManagerEventHelper.RaisePreEvent(_job, _taskResult);
             _integrationPointService
-                .When(fake => fake.UpdateIntegrationPoint(_integrationPoint))
+                .When(fake => fake.UpdateLastAndNextRunTime(_integrationPoint.ArtifactId, _integrationPoint.LastRun, _integrationPoint.NextRun))
                 .Do(call => throw exception1);
             _jobService.When(obj => obj.UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.None)).Do(info => { throw exception2; });
             _batchStatus.When(obj => obj.OnJobComplete(_job)).Do(info => { throw exception3; });
@@ -577,8 +577,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _jobService.Received(1).UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.None);
             _batchStatus.Received(1).OnJobComplete(_job);
             _jobHistoryManager.Received(1).SetErrorStatusesToExpired(_caseServiceContext.WorkspaceID, _jobHistory.ArtifactId);
-            Assert.IsNotNull(_integrationPoint.NextScheduledRuntimeUTC);
-            _integrationPointService.Received(1).UpdateIntegrationPoint(_integrationPoint);
+            Assert.IsNotNull(_integrationPoint.NextRun);
+            _integrationPointService.Received(1).UpdateLastAndNextRunTime(_integrationPoint.ArtifactId, _integrationPoint.LastRun, _integrationPoint.NextRun);
             _jobHistoryService.Received().UpdateRdo(_jobHistory);
             _jobHistoryErrorService.Received().CommitErrors();
         }
@@ -586,7 +586,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         private void PreJobExecutionGoldFlowSetup()
         {
             _job.JobDetails = "something something here";
-            _integrationPointService.ReadIntegrationPoint(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
+            _integrationPointService.Read(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
             _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(_integrationPoint, _batchInstance, Arg.Any<DateTime>())
                 .Returns(_jobHistory);
             _jobHistory.StartTimeUTC = null;

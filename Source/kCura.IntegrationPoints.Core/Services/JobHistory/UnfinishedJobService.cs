@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
             var request = new QueryRequest
             {
-                Fields = new Data.JobHistory().ToFieldList(),
+                Fields = RDOConverter.GetFieldList<Data.JobHistory>(),
                 Condition = $"'{JobHistoryFields.JobStatus}' IN CHOICE [{string.Join(",", unfinishedChoicesNames)}]"
             };
 

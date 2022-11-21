@@ -21,8 +21,8 @@ namespace Relativity.IntegrationPoints.Services
         /// <param name="permissionRepositoryFactory"></param>
         /// <param name="container"></param>
         internal IntegrationPointManager(
-            ILog logger, 
-            IPermissionRepositoryFactory permissionRepositoryFactory, 
+            ILog logger,
+            IPermissionRepositoryFactory permissionRepositoryFactory,
             IWindsorContainer container)
             : base(logger, permissionRepositoryFactory, container)
         {
@@ -41,9 +41,9 @@ namespace Relativity.IntegrationPoints.Services
             LogInvocation(nameof(CreateIntegrationPointAsync));
 
             CheckPermissions(
-                nameof(CreateIntegrationPointAsync), 
+                nameof(CreateIntegrationPointAsync),
                 request.WorkspaceArtifactId,
-                
+
                 new[]
                 {
                     new PermissionModel(ObjectTypeGuids.IntegrationPointGuid, ObjectTypes.IntegrationPoint, ArtifactPermission.Create)
@@ -52,8 +52,8 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
                 {
-                    IIntegrationPointRepository integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
-                    return await Task.Run(() => integrationPointRepository.CreateIntegrationPoint(request)).ConfigureAwait(false);
+                    IIntegrationPointAccessor integrationPointAccessor = container.Resolve<IIntegrationPointAccessor>();
+                    return await Task.Run(() => integrationPointAccessor.CreateIntegrationPoint(request)).ConfigureAwait(false);
                 }
             }
             catch (Exception e)
@@ -68,7 +68,7 @@ namespace Relativity.IntegrationPoints.Services
             LogInvocation(nameof(UpdateIntegrationPointAsync));
 
             CheckPermissions(
-                nameof(UpdateIntegrationPointAsync), 
+                nameof(UpdateIntegrationPointAsync),
                 request.WorkspaceArtifactId,
                 new[]
                 {
@@ -78,8 +78,8 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
                 {
-                    IIntegrationPointRepository integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
-                    return await Task.Run(() => integrationPointRepository.UpdateIntegrationPoint(request)).ConfigureAwait(false);
+                    IIntegrationPointAccessor integrationPointAccessor = container.Resolve<IIntegrationPointAccessor>();
+                    return await Task.Run(() => integrationPointAccessor.UpdateIntegrationPoint(request)).ConfigureAwait(false);
                 }
             }
             catch (Exception e)
@@ -97,8 +97,8 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (var container = GetDependenciesContainer(workspaceArtifactId))
                 {
-                    IIntegrationPointRepository integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
-                    return await Task.Run(() => integrationPointRepository.GetIntegrationPoint(integrationPointArtifactId)).ConfigureAwait(false);
+                    IIntegrationPointAccessor integrationPointAccessor = container.Resolve<IIntegrationPointAccessor>();
+                    return await Task.Run(() => integrationPointAccessor.GetIntegrationPoint(integrationPointArtifactId)).ConfigureAwait(false);
                 }
             }
             catch (Exception e)
@@ -118,8 +118,8 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (var container = GetDependenciesContainer(workspaceArtifactId))
                 {
-                    IIntegrationPointRepository integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
-                    return await Task.Run(() => integrationPointRepository.RunIntegrationPoint(workspaceArtifactId, integrationPointArtifactId)).ConfigureAwait(false);
+                    IIntegrationPointAccessor integrationPointAccessor = container.Resolve<IIntegrationPointAccessor>();
+                    return await Task.Run(() => integrationPointAccessor.RunIntegrationPoint(workspaceArtifactId, integrationPointArtifactId)).ConfigureAwait(false);
                 }
             }
             catch (Exception e)
@@ -128,7 +128,7 @@ namespace Relativity.IntegrationPoints.Services
                 throw CreateInternalServerErrorException();
             }
         }
-        
+
         public async Task<object> RetryIntegrationPointAsync(int workspaceArtifactId, int integrationPointArtifactId, bool switchToAppendOverlayMode)
         {
             LogInvocation(nameof(RunIntegrationPointAsync));
@@ -139,8 +139,8 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (var container = GetDependenciesContainer(workspaceArtifactId))
                 {
-                    IIntegrationPointRepository integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
-                    return await Task.Run(() => integrationPointRepository.RetryIntegrationPoint(workspaceArtifactId, integrationPointArtifactId, switchToAppendOverlayMode)).ConfigureAwait(false);
+                    IIntegrationPointAccessor integrationPointAccessor = container.Resolve<IIntegrationPointAccessor>();
+                    return await Task.Run(() => integrationPointAccessor.RetryIntegrationPoint(workspaceArtifactId, integrationPointArtifactId, switchToAppendOverlayMode)).ConfigureAwait(false);
                 }
             }
             catch (Exception e)
@@ -158,8 +158,8 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (var container = GetDependenciesContainer(workspaceArtifactId))
                 {
-                    IIntegrationPointRepository integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
-                    return await Task.Run(() => integrationPointRepository.GetAllIntegrationPoints()).ConfigureAwait(false);
+                    IIntegrationPointAccessor integrationPointAccessor = container.Resolve<IIntegrationPointAccessor>();
+                    return await Task.Run(() => integrationPointAccessor.GetAllIntegrationPoints()).ConfigureAwait(false);
                 }
             }
             catch (Exception e)
@@ -182,8 +182,8 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (var container = GetDependenciesContainer(workspaceArtifactId))
                 {
-                    IIntegrationPointRepository integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
-                    return await Task.Run(() => integrationPointRepository.GetOverwriteFieldChoices()).ConfigureAwait(false);
+                    IIntegrationPointAccessor integrationPointAccessor = container.Resolve<IIntegrationPointAccessor>();
+                    return await Task.Run(() => integrationPointAccessor.GetOverwriteFieldChoices()).ConfigureAwait(false);
                 }
             }
             catch (Exception e)
@@ -207,8 +207,8 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (var container = GetDependenciesContainer(workspaceArtifactId))
                 {
-                    IIntegrationPointRepository integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
-                    return await Task.Run(() => integrationPointRepository.CreateIntegrationPointFromProfile(profileArtifactId, integrationPointName)).ConfigureAwait(false);
+                    IIntegrationPointAccessor integrationPointAccessor = container.Resolve<IIntegrationPointAccessor>();
+                    return await Task.Run(() => integrationPointAccessor.CreateIntegrationPointFromProfile(profileArtifactId, integrationPointName)).ConfigureAwait(false);
                 }
             }
             catch (Exception e)
@@ -226,8 +226,8 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (var container = GetDependenciesContainer(workspaceArtifactId))
                 {
-                    IIntegrationPointRepository integrationPointRepository = container.Resolve<IIntegrationPointRepository>();
-                    return await Task.Run(() => integrationPointRepository.GetIntegrationPointArtifactTypeId()).ConfigureAwait(false);
+                    IIntegrationPointAccessor integrationPointAccessor = container.Resolve<IIntegrationPointAccessor>();
+                    return await Task.Run(() => integrationPointAccessor.GetIntegrationPointArtifactTypeId()).ConfigureAwait(false);
                 }
             }
             catch (Exception e)

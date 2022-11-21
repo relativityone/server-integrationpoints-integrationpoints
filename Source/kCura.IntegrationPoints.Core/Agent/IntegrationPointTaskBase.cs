@@ -6,16 +6,16 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.Conversion;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Logging;
-using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Agent
         protected IManagerFactory ManagerFactory;
         protected ISerializer Serializer;
         protected ISynchronizerFactory AppDomainRdoSynchronizerFactoryFactory;
-        protected IIntegrationPointRepository IntegrationPointRepository;
+        protected IIntegrationPointService IntegrationPointService;
         protected SourceProvider _sourceProvider;
         protected readonly IDiagnosticLog DiagnosticLog;
         protected readonly IHelper Helper;
@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.Core.Agent
             IJobManager jobManager,
             IManagerFactory managerFactory,
             IJobService jobService,
-            IIntegrationPointRepository integrationPointRepository,
+            IIntegrationPointService integrationPointService,
             IDiagnosticLog diagnosticLog)
         {
             CaseServiceContext = caseServiceContext;
@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Core.Agent
             JobManager = jobManager;
             ManagerFactory = managerFactory;
             JobService = jobService;
-            IntegrationPointRepository = integrationPointRepository;
+            IntegrationPointService = integrationPointService;
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointTaskBase>();
 
             DiagnosticLog = diagnosticLog;
@@ -78,34 +78,35 @@ namespace kCura.IntegrationPoints.Core.Agent
         {
             get
             {
-                if (IntegrationPoint == null)
+                if (IntegrationPointDto == null)
                 {
                     LogRetrievingDestinationProviderError();
                     throw new ArgumentException("The Integration Point Rdo has not been set yet.");
                 }
                 if (_destinationProvider == null)
                 {
-                    _destinationProvider = CaseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<DestinationProvider>(IntegrationPoint.DestinationProvider.Value);
+                    _destinationProvider = CaseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<DestinationProvider>(IntegrationPointDto.DestinationProvider);
                 }
                 return _destinationProvider;
             }
         }
 
-        protected IntegrationPoint IntegrationPoint { get; set; }
+        protected IntegrationPointDto IntegrationPointDto { get; set; }
+
         public JobHistory JobHistory { get; set; }
 
         protected SourceProvider SourceProvider
         {
             get
             {
-                if (IntegrationPoint == null)
+                if (IntegrationPointDto == null)
                 {
                     LogRetrievingSourceProviderError();
                     throw new ArgumentException("The Integration Point Rdo has not been set yet.");
                 }
                 if (_sourceProvider == null)
                 {
-                    _sourceProvider = CaseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(IntegrationPoint.SourceProvider.Value);
+                    _sourceProvider = CaseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(IntegrationPointDto.SourceProvider);
                 }
                 return _sourceProvider;
             }
@@ -133,28 +134,17 @@ namespace kCura.IntegrationPoints.Core.Agent
             return destinationProvider;
         }
 
-        protected virtual IEnumerable<FieldMap> GetFieldMap(string serializedFieldMappings)
-        {
-            IEnumerable<FieldMap> fieldMaps = Serializer.Deserialize<List<FieldMap>>(serializedFieldMappings);
-            foreach (FieldMap fieldMap in fieldMaps)
-            {
-                bool isIdentifier = fieldMap.FieldMapType == FieldMapTypeEnum.Identifier;
-                fieldMap.SourceField.IsIdentifier = isIdentifier;
-            }
-            return fieldMaps;
-        }
-
         protected List<string> GetRecipientEmails()
         {
-            return GetRecipientEmails(IntegrationPoint, _logger);
+            return GetRecipientEmails(IntegrationPointDto, _logger);
         }
 
-        public static List<string> GetRecipientEmails(IntegrationPoint integrationPoint, IAPILog logger)
+        public static List<string> GetRecipientEmails(IntegrationPointDto integrationPointDto, IAPILog logger)
         {
             string emailRecipients = string.Empty;
             try
             {
-                emailRecipients = integrationPoint.EmailNotificationRecipients;
+                emailRecipients = integrationPointDto.EmailNotificationRecipients;
             }
             catch (Exception e)
             {
@@ -203,14 +193,14 @@ namespace kCura.IntegrationPoints.Core.Agent
 
         protected void SetIntegrationPoint(Job job)
         {
-            if (IntegrationPoint != null)
+            if (IntegrationPointDto != null)
             {
                 return;
             }
 
             int integrationPointId = job.RelatedObjectArtifactID;
-            IntegrationPoint = IntegrationPointRepository.ReadWithFieldMappingAsync(integrationPointId).GetAwaiter().GetResult();
-            if (IntegrationPoint == null)
+            IntegrationPointDto = IntegrationPointService.Read(integrationPointId);
+            if (IntegrationPointDto == null)
             {
                 LogSettingIntegrationPointError(job);
                 throw new ArgumentException("Failed to retrieve corresponding Integration Point Rdo.");
@@ -225,9 +215,9 @@ namespace kCura.IntegrationPoints.Core.Agent
             }
 
             // TODO: it is possible here that the Job Type is not Run Now - verify expected usage
-            JobHistory = JobHistoryService.CreateRdo(IntegrationPoint, BatchInstance, JobTypeChoices.JobHistoryRun, DateTime.UtcNow);
+            JobHistory = JobHistoryService.CreateRdo(IntegrationPointDto, BatchInstance, JobTypeChoices.JobHistoryRun, DateTime.UtcNow);
             JobHistoryErrorService.JobHistory = JobHistory;
-            JobHistoryErrorService.IntegrationPoint = IntegrationPoint;
+            JobHistoryErrorService.IntegrationPointDto = IntegrationPointDto;
         }
 
         #region Logging

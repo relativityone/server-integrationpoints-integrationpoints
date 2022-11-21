@@ -195,7 +195,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
                     integrationPoint.DestinationProvider.Value);
                 bool sourceProviderIsRelativity = providerType == ProviderType.Relativity;
 
-                IntegrationPointModel model = new IntegrationPointModel
+                IntegrationPointDto dto = new IntegrationPointDto
                 {
                     HasErrors = integrationPoint.HasErrors,
                     LastRun = integrationPoint.LastRuntimeUTC,
@@ -215,7 +215,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
                     integrationPoint.Name,
                     buttonStates);
 
-                await Clients.Group(key.ToString()).updateIntegrationPointData(model, buttonStates, onClickEvents, sourceProviderIsRelativity);
+                await Clients.Group(key.ToString()).updateIntegrationPointData(dto, buttonStates, onClickEvents, sourceProviderIsRelativity);
             }
             catch (Exception exception)
             {

@@ -1,22 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.RelativitySync.Utils;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
-using SyncFieldMap = Relativity.Sync.Storage.FieldMap;
 using SyncFieldEntry = Relativity.Sync.Storage.FieldEntry;
+using SyncFieldMap = Relativity.Sync.Storage.FieldMap;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
     internal static class FieldMapHelper
     {
-        public static List<SyncFieldMap> FixedSyncMapping(string fieldsMapping, ISerializer serializer, IAPILog logger)
+        public static List<SyncFieldMap> FixedSyncMapping(List<FieldMap> fieldsMapping, IAPILog logger)
         {
-            List<FieldMap> fields = FixedMapping(fieldsMapping, serializer, logger);
+            List<FieldMap> fields = FixedMapping(fieldsMapping, logger);
 
             return fields.Select(x => new SyncFieldMap
             {
@@ -37,20 +36,19 @@ namespace kCura.IntegrationPoints.RelativitySync
             }).ToList();
         }
 
-        private static List<FieldMap> FixedMapping(string fieldMappings, ISerializer serializer, IAPILog logger)
+        private static List<FieldMap> FixedMapping(List<FieldMap> fieldsMapping, IAPILog logger)
         {
-            List<FieldMap> fields = serializer.Deserialize<List<FieldMap>>(fieldMappings);
-            if (fields == null)
+            if (fieldsMapping == null)
             {
                 return new List<FieldMap>();
             }
 
-            fields = FixFolderPathMapping(fields);
-            fields = RemoveSpecialFieldMappings(fields);
-            fields = FixControlNumberFieldName(fields);
-            fields = Deduplicate(fields, logger);
+            fieldsMapping = FixFolderPathMapping(fieldsMapping);
+            fieldsMapping = RemoveSpecialFieldMappings(fieldsMapping);
+            fieldsMapping = FixControlNumberFieldName(fieldsMapping);
+            fieldsMapping = Deduplicate(fieldsMapping, logger);
 
-            return fields;
+            return fieldsMapping;
         }
 
         private static List<FieldMap> FixFolderPathMapping(List<FieldMap> fields)

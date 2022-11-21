@@ -151,7 +151,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
                 new QueryInstallers(),
                 new KeywordInstaller(),
                 new SharedAgentInstaller(),
-                new IntegrationPoints.Core.Installers.ServicesInstaller(),
+                new ServicesInstaller(),
                 new ValidationInstaller(),
                 new RelativitySyncInstaller(),
                 new IntegrationPoints.ImportProvider.Parser.Installers.ServicesInstaller()
@@ -164,31 +164,26 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
             }
         }
 
-        protected int CreateOrUpdateIntegrationPointRdo(IntegrationPointModel model)
+        protected int CreateOrUpdateIntegrationPointRdo(IntegrationPointDto dto)
         {
-            return IntegrationPointService.SaveIntegration(model);
+            return IntegrationPointService.SaveIntegrationPoint(dto);
         }
 
-        protected IntegrationPointModel CreateOrUpdateIntegrationPoint(IntegrationPointModel model)
+        protected IntegrationPointDto CreateOrUpdateIntegrationPoint(IntegrationPointDto dto)
         {
-            int integrationPointArtifactId = CreateOrUpdateIntegrationPointRdo(model);
-
-            IntegrationPoints.Data.IntegrationPoint rdo = IntegrationPointService.ReadIntegrationPoint(integrationPointArtifactId);
-            IntegrationPointModel newModel = IntegrationPointModel.FromIntegrationPoint(rdo);
-            return newModel;
+            int integrationPointArtifactId = CreateOrUpdateIntegrationPointRdo(dto);
+            return IntegrationPointService.Read(integrationPointArtifactId);
         }
 
-        protected IntegrationPointProfileModel CreateOrUpdateIntegrationPointProfile(IntegrationPointProfileModel model)
+        protected IntegrationPointProfileDto CreateOrUpdateIntegrationPointProfile(IntegrationPointProfileDto dto)
         {
             IIntegrationPointProfileService service = Container.Resolve<IIntegrationPointProfileService>();
 
-            int integrationPointArtifactId = service.SaveIntegration(model);
+            int integrationPointArtifactId = service.SaveProfile(dto);
 
-            IntegrationPointProfile rdo = service.ReadIntegrationPointProfile(integrationPointArtifactId);
-            IntegrationPointProfileModel newModel = IntegrationPointProfileModel.FromIntegrationPointProfile(rdo);
-            return newModel;
+            return service.Read(integrationPointArtifactId);
         }
-        
+
         private IEnumerable<SourceProvider> GetSourceProviders()
         {
             var queryRequest = new QueryRequest();

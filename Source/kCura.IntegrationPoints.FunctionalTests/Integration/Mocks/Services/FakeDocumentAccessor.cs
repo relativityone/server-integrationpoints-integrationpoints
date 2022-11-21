@@ -5,7 +5,7 @@ using Relativity.IntegrationPoints.Services.Repositories;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 {
-    class FakeDocumentRepository : IDocumentRepository
+    class FakeDocumentAccessor : IDocumentAccessor
     {
         public Task<CurrentPromotionStatusModel> GetCurrentPromotionStatusAsync(CurrentPromotionStatusRequest request)
         {

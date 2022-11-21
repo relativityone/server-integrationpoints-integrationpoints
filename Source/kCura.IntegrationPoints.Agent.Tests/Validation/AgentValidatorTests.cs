@@ -2,6 +2,7 @@
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Agent.Validation;
 using kCura.IntegrationPoints.Core.Exceptions;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
@@ -17,11 +18,11 @@ namespace kCura.IntegrationPoints.Agent.Tests.Validation
 
         private AgentValidator _instanceUnderTest;
 
-        private Data.IntegrationPoint _integrationPoint;
+        private IntegrationPointDto _integrationPoint;
 
         private ICaseServiceContext _caseContext;
         private IValidationExecutor _validationExecutor;
-        
+
 
         private const int _ARTIFATC_ID = 1234;
         private const int _TYPE_ID = 1;
@@ -44,30 +45,29 @@ namespace kCura.IntegrationPoints.Agent.Tests.Validation
             _validationExecutor = Substitute.For<IValidationExecutor>();
             _caseContext = Substitute.For<ICaseServiceContext>();
 
-            _integrationPoint = new Data.IntegrationPoint()
+            _integrationPoint = new IntegrationPointDto
             {
                 ArtifactId = _ARTIFATC_ID,
                 Type = _TYPE_ID,
                 SourceProvider = _SOURCE_PROVIDER_ID,
                 DestinationProvider = _DEST_PROVIDER_ID,
                 Name = "Name",
-                OverwriteFields = OverwriteFieldsChoices.IntegrationPointAppendOnly,
+                SelectedOverwrite = OverwriteFieldsChoices.IntegrationPointAppendOnly.Name,
                 DestinationConfiguration = string.Empty,
                 SourceConfiguration = string.Empty,
-                EnableScheduler = false,
-                ScheduleRule = string.Empty, 
+                Scheduler = null,
                 EmailNotificationRecipients = string.Empty,
                 LogErrors= false,
                 HasErrors = false,
-                LastRuntimeUTC = DateTime.Now,
-                NextScheduledRuntimeUTC = DateTime.Now,
-                FieldMappings = string.Empty,
+                LastRun = DateTime.Now,
+                NextRun = DateTime.Now,
+                FieldMappings = null,
                 SecuredConfiguration = string.Empty
             };
 
-            _caseContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(_sourceProvider);
-            _caseContext.RelativityObjectManagerService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value).Returns(_destinationProvider);
-            _caseContext.RelativityObjectManagerService.RelativityObjectManager.Read<IntegrationPointType>(_integrationPoint.Type.Value).Returns(_integrationPointType);
+            _caseContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider).Returns(_sourceProvider);
+            _caseContext.RelativityObjectManagerService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider).Returns(_destinationProvider);
+            _caseContext.RelativityObjectManagerService.RelativityObjectManager.Read<IntegrationPointType>(_integrationPoint.Type).Returns(_integrationPointType);
 
             _instanceUnderTest = new AgentValidator(_validationExecutor, _caseContext);
         }
@@ -89,13 +89,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.Validation
                 x.SourceProvider == _sourceProvider &&
                 x.UserId == _USER_ID &&
                 x.DestinationProvider == _destinationProvider &&
-                x.Model.ArtifactID ==  _integrationPoint.ArtifactId &&
+                x.Model.ArtifactId ==  _integrationPoint.ArtifactId &&
                 x.ObjectTypeGuid == ObjectTypeGuids.IntegrationPointGuid)
             );
 
-            _caseContext.Received().RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value);
-            _caseContext.Received().RelativityObjectManagerService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value).Returns(_destinationProvider);
-            _caseContext.Received().RelativityObjectManagerService.RelativityObjectManager.Read<IntegrationPointType>(_integrationPoint.Type.Value).Returns(_integrationPointType);
+            _caseContext.Received().RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider);
+            _caseContext.Received().RelativityObjectManagerService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider).Returns(_destinationProvider);
+            _caseContext.Received().RelativityObjectManagerService.RelativityObjectManager.Read<IntegrationPointType>(_integrationPoint.Type).Returns(_integrationPointType);
         }
 
         [Test]
@@ -109,7 +109,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Validation
                     x.SourceProvider == _sourceProvider &&
                     x.UserId == _USER_ID &&
                     x.DestinationProvider == _destinationProvider &&
-                    x.Model.ArtifactID == _integrationPoint.ArtifactId &&
+                    x.Model.ArtifactId == _integrationPoint.ArtifactId &&
                     x.ObjectTypeGuid == ObjectTypeGuids.IntegrationPointGuid)))
                 .Do(o => { throw new PermissionException(); });
 
@@ -118,9 +118,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Validation
             Assert.Throws<PermissionException>(() => _instanceUnderTest.Validate(_integrationPoint, _USER_ID));
 
             // Assert
-            _caseContext.Received().RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value);
-            _caseContext.Received().RelativityObjectManagerService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value).Returns(_destinationProvider);
-            _caseContext.Received().RelativityObjectManagerService.RelativityObjectManager.Read<IntegrationPointType>(_integrationPoint.Type.Value).Returns(_integrationPointType);
+            _caseContext.Received().RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider);
+            _caseContext.Received().RelativityObjectManagerService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider).Returns(_destinationProvider);
+            _caseContext.Received().RelativityObjectManagerService.RelativityObjectManager.Read<IntegrationPointType>(_integrationPoint.Type).Returns(_integrationPointType);
         }
     }
 }

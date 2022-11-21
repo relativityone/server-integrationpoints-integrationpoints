@@ -24,13 +24,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
         private readonly IEHHelper _helper;
 
         public DataTransferLocationMigration(
-            IAPILog logger, 
-            IDestinationProviderRepository destinationProviderRepository, 
-            ISourceProviderRepository sourceProviderRepository, 
+            IAPILog logger,
+            IDestinationProviderRepository destinationProviderRepository,
+            ISourceProviderRepository sourceProviderRepository,
             IDataTransferLocationMigrationHelper dataTransferLocationMigrationHelper,
             IIntegrationPointRepository integrationPointRepository,
-            IDataTransferLocationService dataTransferLocationService, 
-            IResourcePoolManager resourcePoolManager, 
+            IDataTransferLocationService dataTransferLocationService,
+            IResourcePoolManager resourcePoolManager,
             IEHHelper helper)
         {
             _logger = logger;
@@ -80,11 +80,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
             }
         }
 
-        private Task<IList<IntegrationPoint>> GetAllExportIntegrationPointsAsync(int relativitySourceProviderArtifactId, int loadFileDestinationProviderArtifactId)
+        private Task<List<IntegrationPoint>> GetAllExportIntegrationPointsAsync(int relativitySourceProviderArtifactId, int loadFileDestinationProviderArtifactId)
         {
             try
             {
-                return _integrationPointRepository.GetAllBySourceAndDestinationProviderIDsAsync(
+                return _integrationPointRepository.GetBySourceAndDestinationProviderAsync(
                     relativitySourceProviderArtifactId,
                     loadFileDestinationProviderArtifactId
                 );

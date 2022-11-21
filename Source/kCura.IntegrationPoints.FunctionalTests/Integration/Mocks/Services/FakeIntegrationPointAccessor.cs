@@ -4,11 +4,11 @@ using Relativity.IntegrationPoints.Services.Repositories;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
 {
-    class FakeIntegrationPointRepository : IIntegrationPointRepository
+    class FakeIntegrationPointAccessor : IIntegrationPointAccessor
     {
         protected readonly IntegrationPointModel IntegrationPointModel;
 
-        public FakeIntegrationPointRepository()
+        public FakeIntegrationPointAccessor()
         {
             IntegrationPointModel = new IntegrationPointModel
             {
@@ -18,6 +18,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
                 EmailNotificationRecipients = "Adler Sieben"
             };
         }
+
         public IntegrationPointModel CreateIntegrationPoint(CreateIntegrationPointRequest request)
         {
             return IntegrationPointModel;

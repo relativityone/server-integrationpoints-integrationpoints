@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
@@ -47,7 +48,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
         public Data.JobHistory JobHistory { get; set; }
 
-        public Data.IntegrationPoint IntegrationPoint { get; set; }
+        public IntegrationPointDto IntegrationPointDto { get; set; }
 
         public IJobStopManager JobStopManager { get; set; }
 
@@ -126,9 +127,9 @@ namespace kCura.IntegrationPoints.Core.Services
                 {
                     _errorOccurredDuringJob = true;
 
-                    if (IntegrationPoint != null)
+                    if (IntegrationPointDto != null)
                     {
-                        IntegrationPoint.HasErrors = true;
+                        IntegrationPointDto.HasErrors = true;
                     }
 
                     List<List<object>> values = new List<List<object>>();
@@ -172,9 +173,9 @@ namespace kCura.IntegrationPoints.Core.Services
                     _logger.LogInformation("Successfully mass-created item level errors count: {count}", createdJobHistoryErrors.Count);
                 }
 
-                if ((IntegrationPoint != null && !_errorOccurredDuringJob) || (JobStopManager?.IsStopRequested() == true))
+                if ((IntegrationPointDto != null && !_errorOccurredDuringJob) || (JobStopManager?.IsStopRequested() == true))
                 {
-                    IntegrationPoint.HasErrors = false;
+                    IntegrationPointDto.HasErrors = false;
                 }
 
                 _logger.LogInformation("Successfully mass-created item level errors count: {count}", createdJobHistoryErrors.Count);
@@ -245,7 +246,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
         private void OnRowError(string documentIdentifier, string errorMessage)
         {
-            if (IntegrationPoint.LogErrors.GetValueOrDefault(false))
+            if (IntegrationPointDto?.LogErrors == true)
             {
                 if (JobStopManager?.IsStopRequested() == true)
                 {
@@ -265,9 +266,9 @@ namespace kCura.IntegrationPoints.Core.Services
         {
             try
             {
-                if (IntegrationPoint != null)
+                if (IntegrationPointDto != null && IntegrationPointDto.HasErrors.HasValue)
                 {
-                    _integrationPointRepository.Update(IntegrationPoint);
+                    _integrationPointRepository.UpdateHasErrors(IntegrationPointDto.ArtifactId, IntegrationPointDto.HasErrors.Value);
                 }
             }
             catch (Exception e)

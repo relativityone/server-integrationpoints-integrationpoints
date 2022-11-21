@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Validation
         }
 
         public override ValidationResult Validate(
-            IntegrationPointModelBase model,
+            IntegrationPointDtoBase model,
             SourceProvider sourceProvider,
             DestinationProvider destinationProvider,
             IntegrationPointType integrationPointType,
@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Core.Validation
 
             foreach (IValidator validator in _validatorsMap[Constants.IntegrationPointProfiles.Validation.EMAIL])
             {
-                result.Add(validator.Validate(model.NotificationEmails));
+                result.Add(validator.Validate(model.EmailNotificationRecipients));
             }
 
             foreach (IValidator validator in _validatorsMap[Constants.IntegrationPointProfiles.Validation.NAME])
@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.Core.Validation
                     result.Add(validator.Validate(validationModel));
                 }
             }
-            
+
             return result;
         }
 

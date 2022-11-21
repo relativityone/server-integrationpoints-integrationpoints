@@ -6,7 +6,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Validation.Abstract
 {
@@ -30,18 +29,18 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
         }
 
         public IntegrationPointProviderValidationModel CreateValidationModel(
-            IntegrationPointModelBase model,
+            IntegrationPointDtoBase model,
             SourceProvider sourceProvider,
             DestinationProvider destinationProvider,
             IntegrationPointType integrationPointType,
             Guid objectTypeGuid,
             int userId)
         {
-            ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(model.Destination);
+            ImportSettings destinationConfiguration = _serializer.Deserialize<ImportSettings>(model.DestinationConfiguration);
 
             return new IntegrationPointProviderValidationModel(model)
             {
-                ArtifactId = model.ArtifactID,
+                ArtifactId = model.ArtifactId,
                 ArtifactTypeId = destinationConfiguration.ArtifactTypeId,
                 UserId = userId,
                 SourceProviderIdentifier = sourceProvider.Identifier,
@@ -49,8 +48,8 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
                 SourceConfiguration = model.SourceConfiguration,
                 DestinationProviderIdentifier = destinationProvider.Identifier,
                 DestinationProviderArtifactId = destinationProvider.ArtifactId,
-                DestinationConfiguration = model.Destination,
-                FieldsMap = model.Map,
+                DestinationConfiguration = model.DestinationConfiguration,
+                FieldsMap = model.FieldMappings,
                 Type = model.Type,
                 IntegrationPointTypeIdentifier = integrationPointType.Identifier,
                 ObjectTypeGuid = objectTypeGuid,
@@ -61,7 +60,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
 
 
         public abstract ValidationResult Validate(
-            IntegrationPointModelBase model,
+            IntegrationPointDtoBase model,
             SourceProvider sourceProvider,
             DestinationProvider destinationProvider,
             IntegrationPointType integrationPointType,

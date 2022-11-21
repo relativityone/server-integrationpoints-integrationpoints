@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
+using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
@@ -24,53 +25,29 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             IManagerFactory managerFactory,
             IValidationExecutor validationExecutor,
             IRelativityObjectManager objectManager)
-            : base(helper, 
-                context, 
-                choiceQuery, 
-                serializer, 
-                managerFactory, 
-                validationExecutor, 
+            : base(helper,
+                context,
+                choiceQuery,
+                serializer,
+                managerFactory,
+                validationExecutor,
                 objectManager)
         {
         }
 
         protected override string UnableToSaveFormat => "Unable to save Integration Point Profile:{0} cannot be changed once the Integration Point Profile has been saved";
 
-        public IList<IntegrationPointProfile> GetAllRDOs()
-        {
-            IEnumerable<FieldRef> fields = BaseRdo.GetFieldMetadata(
-                typeof(IntegrationPointProfile)).Values.ToList()
-                    .Select(field => new FieldRef { Guid = field.FieldGuid }
-            );
-
-            var query = new QueryRequest
-            {
-                Fields = fields
-            };
-
-            return ObjectManager.Query<IntegrationPointProfile>(query);
-        }
-
-        public IList<IntegrationPointProfile> GetAllRDOsWithAllFields()
-        {
-            var query = new QueryRequest();
-            IList<IntegrationPointProfile> result = ObjectManager.Query<IntegrationPointProfile>(query);
-            result.Select(integrationPoint => ObjectManager.Read<IntegrationPointProfile>(integrationPoint.ArtifactId))
-                .ToList();
-            return result;
-        }
-
-        public IntegrationPointProfile ReadIntegrationPointProfile(int artifactId)
+        public IntegrationPointProfileDto Read(int artifactId)
         {
             try
             {
-                IntegrationPointProfile integrationPointProfile = ObjectManager.Read<IntegrationPointProfile>(artifactId);
+                IntegrationPointProfile profile = ObjectManager.Read<IntegrationPointProfile>(artifactId);
 
-                integrationPointProfile.DestinationConfiguration = GetDestinationConfiguration(artifactId);
-                integrationPointProfile.SourceConfiguration = GetSourceConfiguration(artifactId);
-                integrationPointProfile.FieldMappings = GetFieldMappings(artifactId);
+                profile.DestinationConfiguration = GetDestinationConfiguration(artifactId);
+                profile.SourceConfiguration = GetSourceConfiguration(artifactId);
+                profile.FieldMappings = GetFieldMappings(artifactId);
 
-                return integrationPointProfile;
+                return ToDto(profile);
             }
             catch (Exception ex)
             {
@@ -78,75 +55,48 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             }
         }
 
-        private string GetDestinationConfiguration(int integrationPointProfileArtifactId)
+        public IList<IntegrationPointProfileDto> ReadAll()
         {
-            return GetUnicodeLongText(integrationPointProfileArtifactId, new FieldRef { Guid = IntegrationPointProfileFieldGuids.DestinationConfigurationGuid });
-        }
+            IEnumerable<FieldRef> fields = BaseRdo
+                .GetFieldMetadata(typeof(IntegrationPointProfile))
+                .Values
+                .ToList()
+                .Select(field => new FieldRef { Guid = field.FieldGuid });
 
-        private string GetSourceConfiguration(int integrationPointProfileArtifactId)
-        {
-            return GetUnicodeLongText(integrationPointProfileArtifactId, new FieldRef { Guid = IntegrationPointProfileFieldGuids.SourceConfigurationGuid });
-        }
-
-        private string GetFieldMappings(int integrationPointProfileArtifactId)
-        {
-            return GetUnicodeLongText(integrationPointProfileArtifactId, new FieldRef { Guid = IntegrationPointProfileFieldGuids.FieldMappingsGuid });
-        }
-
-        private string GetUnicodeLongText(int artifactId, FieldRef field)
-        {
-            Stream unicodeLongTextStream = ObjectManager.StreamUnicodeLongText(artifactId, field);
-            using (StreamReader unicodeLongTextStreamReader = new StreamReader(unicodeLongTextStream))
+            var query = new QueryRequest
             {
-                return unicodeLongTextStreamReader.ReadToEnd();
-            }
+                Fields = fields
+            };
+
+            List<IntegrationPointProfile> profiles = ObjectManager.Query<IntegrationPointProfile>(query);
+            return profiles.Select(ToDto).ToList();
         }
 
-        public virtual IntegrationPointProfileModel ReadIntegrationPointProfileModel(int artifactId)
-        {
-            IntegrationPointProfile integrationPoint = ReadIntegrationPointProfile(artifactId);
-            IntegrationPointProfileModel integrationPointProfileModel = IntegrationPointProfileModel.FromIntegrationPointProfile(integrationPoint);
-            return integrationPointProfileModel;
-        }
-
-        public IList<IntegrationPointProfileModel> ReadIntegrationPointProfiles()
-        {
-            IList<IntegrationPointProfile> integrationPointProfiles = GetAllRDOs();
-            return integrationPointProfiles.Select(IntegrationPointProfileModel.FromIntegrationPointProfile).ToList();
-        }
-
-        public IList<IntegrationPointProfileModel> ReadIntegrationPointProfilesSimpleModel()
-        {
-            IList<IntegrationPointProfile> integrationPointProfiles = GetAllRDOsWithBasicProfileColumns();
-            return integrationPointProfiles.Select(IntegrationPointProfileModel.FromIntegrationPointProfileSimpleModel).ToList();
-        }
-
-        public int SaveIntegration(IntegrationPointProfileModel model)
+        public int SaveProfile(IntegrationPointProfileDto dto)
         {
             IntegrationPointProfile profile;
             PeriodicScheduleRule rule;
             try
             {
-                IList<global::Relativity.Services.Choice.ChoiceRef> choices =
+                IList<ChoiceRef> choices =
                     ChoiceQuery.GetChoicesOnField(Context.WorkspaceID, Guid.Parse(IntegrationPointProfileFieldGuids.OverwriteFields));
 
-                rule = ConvertModelToScheduleRule(model);
-                profile = model.ToRdo(choices, rule);
+                rule = ConvertModelToScheduleRule(dto);
 
-                IntegrationPointProfileModel integrationProfilePointModel = IntegrationPointProfileModel.FromIntegrationPointProfile(profile);
 
-                SourceProvider sourceProvider = GetSourceProvider(profile.SourceProvider);
-                DestinationProvider destinationProvider = GetDestinationProvider(profile.DestinationProvider);
-                IntegrationPointType integrationPointType = GetIntegrationPointType(profile.Type);
+                SourceProvider sourceProvider = GetSourceProvider(dto.SourceProvider);
+                DestinationProvider destinationProvider = GetDestinationProvider(dto.DestinationProvider);
+                IntegrationPointType integrationPointType = GetIntegrationPointType(dto.Type);
 
                 RunValidation(
-                    integrationProfilePointModel,
+                    dto,
                     sourceProvider,
                     destinationProvider,
                     integrationPointType,
                     ObjectTypeGuids.IntegrationPointProfileGuid);
 
                 //save RDO
+                profile = ToRdo(dto, choices, rule);
                 if (profile.ArtifactId > 0)
                 {
                     ObjectManager.Update(profile);
@@ -178,33 +128,94 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             return profile.ArtifactId;
         }
 
-        public void UpdateIntegrationPointProfile(IntegrationPointProfile profile)
+        public void UpdateConfiguration(int profileArtifactId, string sourceConfiguration, string destinationConfiguration)
         {
+            IntegrationPointProfile profile = ObjectManager.Read<IntegrationPointProfile>(profileArtifactId);
+            profile.SourceConfiguration = sourceConfiguration;
+            profile.DestinationConfiguration = destinationConfiguration;
             ObjectManager.Update(profile);
         }
 
-        protected IList<IntegrationPointProfile> GetAllRDOsWithBasicProfileColumns()
+        private string GetDestinationConfiguration(int integrationPointProfileArtifactId)
         {
-            IEnumerable<FieldRef> fields = BaseRdo
-                .GetFieldMetadata(typeof(IntegrationPointProfile))
-                .Values
-                .ToList()
-                .Select(fieldGuid => fieldGuid.FieldGuid)
-                .Where(fieldGuid => fieldGuid.Equals(IntegrationPointProfileFieldGuids.DestinationProviderGuid) ||
-                                    fieldGuid.Equals(IntegrationPointProfileFieldGuids.SourceProviderGuid) ||
-                                    fieldGuid.Equals(IntegrationPointProfileFieldGuids.NameGuid) ||
-                                    fieldGuid.Equals(IntegrationPointProfileFieldGuids.TypeGuid))
-                .Select(fieldGuid => new FieldRef
-                {
-                    Guid = fieldGuid
-                });
+            return GetUnicodeLongText(integrationPointProfileArtifactId, new FieldRef { Guid = IntegrationPointProfileFieldGuids.DestinationConfigurationGuid });
+        }
 
-            var query = new QueryRequest()
+        private string GetSourceConfiguration(int integrationPointProfileArtifactId)
+        {
+            return GetUnicodeLongText(integrationPointProfileArtifactId, new FieldRef { Guid = IntegrationPointProfileFieldGuids.SourceConfigurationGuid });
+        }
+
+        private string GetFieldMappings(int integrationPointProfileArtifactId)
+        {
+            return GetUnicodeLongText(integrationPointProfileArtifactId, new FieldRef { Guid = IntegrationPointProfileFieldGuids.FieldMappingsGuid });
+        }
+
+        private string GetUnicodeLongText(int artifactId, FieldRef field)
+        {
+            Stream unicodeLongTextStream = ObjectManager.StreamUnicodeLongText(artifactId, field);
+            using (StreamReader unicodeLongTextStreamReader = new StreamReader(unicodeLongTextStream))
             {
-                Fields = fields
+                return unicodeLongTextStreamReader.ReadToEnd();
+            }
+        }
+
+        private static IntegrationPointProfileDto ToDto(IntegrationPointProfile profile)
+        {
+            return new IntegrationPointProfileDto
+            {
+                ArtifactId = profile.ArtifactId,
+                Name = profile.Name,
+                SelectedOverwrite = profile.OverwriteFields == null ? string.Empty : profile.OverwriteFields.Name,
+                SourceProvider = profile.SourceProvider.GetValueOrDefault(0),
+                DestinationConfiguration = profile.DestinationConfiguration,
+                SourceConfiguration = profile.SourceConfiguration,
+                DestinationProvider = profile.DestinationProvider.GetValueOrDefault(0),
+                Type = profile.Type.GetValueOrDefault(0),
+                Scheduler = new Scheduler(profile.EnableScheduler.GetValueOrDefault(false), profile.ScheduleRule),
+                EmailNotificationRecipients = profile.EmailNotificationRecipients ?? string.Empty,
+                LogErrors = profile.LogErrors.GetValueOrDefault(false),
+            };
+        }
+
+        private IntegrationPointProfile ToRdo(IntegrationPointProfileDto dto, IEnumerable<ChoiceRef> choices, PeriodicScheduleRule rule)
+        {
+            ChoiceRef choice = choices.FirstOrDefault(x => x.Name.Equals(dto.SelectedOverwrite));
+            if (choice == null)
+            {
+                throw new Exception("Cannot find choice by the name " + dto.SelectedOverwrite);
+            }
+            var profile = new IntegrationPointProfile
+            {
+                ArtifactId = dto.ArtifactId,
+                Name = dto.Name,
+                OverwriteFields = new ChoiceRef(choice.ArtifactID) {Name = choice.Name},
+                SourceConfiguration = dto.SourceConfiguration,
+                SourceProvider = dto.SourceProvider,
+                Type = dto.Type,
+                DestinationConfiguration = dto.DestinationConfiguration,
+                FieldMappings = Serializer.Serialize(dto.FieldMappings),
+                EnableScheduler = dto.Scheduler.EnableScheduler,
+                DestinationProvider = dto.DestinationProvider,
+                LogErrors = dto.LogErrors,
+                EmailNotificationRecipients = string.Join("; ",
+                    (dto.EmailNotificationRecipients ?? string.Empty).Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(x => x.Trim())
+                        .ToList())
             };
 
-            return ObjectManager.Query<IntegrationPointProfile>(query);
+            if (profile.EnableScheduler.GetValueOrDefault(false))
+            {
+                profile.ScheduleRule = rule.ToSerializedString();
+                profile.NextScheduledRuntimeUTC = rule.GetNextUTCRunDateTime();
+            }
+            else
+            {
+                profile.ScheduleRule = string.Empty;
+                profile.NextScheduledRuntimeUTC = null;
+            }
+
+            return profile;
         }
     }
 }

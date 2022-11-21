@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.RelativitySync
@@ -15,7 +16,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
         public int IntegrationPointId { get; set; }
 
-        public IntegrationPoint IntegrationPointModel { get; set; }
+        public IntegrationPointDto IntegrationPointDto { get; set; }
 
         public Guid JobIdentifier { get; set; }
 

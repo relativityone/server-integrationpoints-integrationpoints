@@ -19,8 +19,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
         public CachedIntegrationPointProviderTypeService(
             IProviderTypeService providerTypeService,
-            IIntegrationPointService integrationPointService, 
-            IDateTimeHelper currentDateTimeProvider, 
+            IIntegrationPointService integrationPointService,
+            IDateTimeHelper currentDateTimeProvider,
             TimeSpan cacheRefreshDelay)
         {
             _cacheRefreshDelay = cacheRefreshDelay;
@@ -34,12 +34,12 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             return GetProviderType(integrationPointArtifactId, null);
         }
 
-        public ProviderType GetProviderType(Data.IntegrationPoint integrationPoint)
+        public ProviderType GetProviderType(IntegrationPointDto integrationPoint)
         {
             return GetProviderType(integrationPoint.ArtifactId, integrationPoint);
         }
 
-        private ProviderType GetProviderType(int integrationPointArtifactId, Data.IntegrationPoint integrationPoint)
+        private ProviderType GetProviderType(int integrationPointArtifactId, IntegrationPointDto integrationPoint)
         {
             lock (_providerTypesCacheLock)
             {
@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             }
         }
 
-        private ProviderType GetProviderTypeFromCache(int integrationPointArtifactId, Data.IntegrationPoint integrationPoint)
+        private ProviderType GetProviderTypeFromCache(int integrationPointArtifactId, IntegrationPointDto integrationPoint)
         {
             ProviderType providerType;
             if (_providerTypesCache.TryGetValue(integrationPointArtifactId, out providerType))
@@ -64,12 +64,12 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             return providerType;
         }
 
-        
-        private ProviderType GetProviderTypeFromService(int integrationPointArtifactID, Data.IntegrationPoint integrationPoint)
+
+        private ProviderType GetProviderTypeFromService(int integrationPointArtifactID, IntegrationPointDto integrationPoint)
         {
             if (integrationPoint == null)
             {
-                integrationPoint = _integrationPointService.ReadIntegrationPoint(integrationPointArtifactID);
+                integrationPoint = _integrationPointService.Read(integrationPointArtifactID);
             }
 
             ProviderType providerType = integrationPoint.GetProviderType(_providerTypeService);

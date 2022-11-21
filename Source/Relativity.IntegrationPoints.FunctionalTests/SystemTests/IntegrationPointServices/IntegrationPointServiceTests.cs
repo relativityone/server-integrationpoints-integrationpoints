@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Castle.Windsor;
 using FluentAssertions;
@@ -7,6 +8,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -22,7 +24,6 @@ using Relativity.Testing.Identification;
 using Rip.TestUtilities;
 using CoreConstants = kCura.IntegrationPoints.Core.Constants;
 using FieldEntry = Relativity.IntegrationPoints.Contracts.Models.FieldEntry;
-using IntegrationPointModel = kCura.IntegrationPoints.Core.Models.IntegrationPointModel;
 
 namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPointServices
 {
@@ -103,11 +104,10 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
 
             // act
             int integrationPointArtifactID = CreateRelativityProviderIntegrationPoint(integrationPointName, fieldMapping);
-            IntegrationPointModel retrievedIntegrationPoint = _integrationPointService.ReadIntegrationPointModel(integrationPointArtifactID);
+            IntegrationPointDto retrievedIntegrationPoint = _integrationPointService.Read(integrationPointArtifactID);
 
             // assert
-            string expectedFieldMapping = _serializer.Serialize(fieldMapping);
-            retrievedIntegrationPoint.Map.Should().Be(expectedFieldMapping);
+            retrievedIntegrationPoint.FieldMappings.Should().Equal(fieldMapping.ToList());
         }
 
         private async Task<IList<FieldEntry>> CreateNameFields(int workspaceID, int numberOfFields)
@@ -152,7 +152,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
         private int CreateRelativityProviderIntegrationPoint(string name, FieldMap[] fieldMapping)
         {
             IntegrationPointModelBuilder builder = new IntegrationPointModelBuilder(_serializer, _objectManager);
-            IntegrationPointModel integrationPointModel = builder
+            IntegrationPointDto integrationPointDto = builder
                 .WithType(_integrationPointExportType)
                 .WithName(name)
                 .WithSourceProvider(CoreConstants.IntegrationPoints.RELATIVITY_PROVIDER_NAME)
@@ -163,7 +163,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
                 .WithOverwriteMode(ImportOverwriteModeEnum.AppendOnly)
                 .Build();
 
-            int integrationPointArtifactID = _integrationPointService.SaveIntegration(integrationPointModel);
+            int integrationPointArtifactID = _integrationPointService.SaveIntegrationPoint(integrationPointDto);
             _integrationPointArtifactIds.Add(integrationPointArtifactID);
             return integrationPointArtifactID;
         }

@@ -1,7 +1,6 @@
 ﻿using System;
 using FluentAssertions;
 using kCura.IntegrationPoints.Core.Validation;
-using kCura.IntegrationPoints.Data;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using Relativity.Testing.Identification;
 
@@ -13,25 +12,25 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
         public void Validate_ShouldNotThrow()
         {
             // Arrange
-            IntegrationPoint integrationPoint = PrepareIntegrationPoint();
+            IntegrationPointTest integrationPoint = PrepareIntegrationPoint();
 
             IAgentValidator sut = Container.Resolve<IAgentValidator>();
 
             // Act
-            Action validation = () => sut.Validate(integrationPoint, User.ArtifactId);
+            Action validation = () => sut.Validate(integrationPoint.ToDto(), User.ArtifactId);
 
             // Assert
             validation.ShouldNotThrow();
         }
 
-        private IntegrationPoint PrepareIntegrationPoint()
+        private IntegrationPointTest PrepareIntegrationPoint()
         {
             WorkspaceTest destinationWorkspace = FakeRelativityInstance.Helpers.WorkspaceHelper.CreateWorkspace();
 
             IntegrationPointTest integrationPoint =
                 SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(destinationWorkspace);
 
-            return integrationPoint.ToRdo();
+            return integrationPoint;
         }
     }
 }

@@ -284,14 +284,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration
                 Container.Resolve<IPermissionRepositoryFactory>(),
                 Container)));
 
-            Container.Register(Component.For<IDocumentRepository>().ImplementedBy<FakeDocumentRepository>().LifestyleTransient().IsDefault());
-            Container.Register(Component.For<IProviderRepository>().ImplementedBy<FakeProviderRepository>().LifestyleTransient().IsDefault());
+            Container.Register(Component.For<IDocumentAccessor>().ImplementedBy<FakeDocumentAccessor>().LifestyleTransient().IsDefault());
+            Container.Register(Component.For<IProviderAccessor>().ImplementedBy<FakeProviderAccessor>().LifestyleTransient().IsDefault());
             Container.Register(Component.For<IRipProviderInstaller>().ImplementedBy<FakeRipProviderInstaller>().LifestyleTransient().IsDefault());
             Container.Register(Component.For<IRipProviderUninstaller>().ImplementedBy<FakeRipProviderUninstaller>().LifestyleTransient().IsDefault());
-            Container.Register(Component.For<IIntegrationPointRepository>().ImplementedBy<FakeIntegrationPointRepository>().LifestyleTransient().IsDefault());
-            Container.Register(Component.For<IIntegrationPointProfileRepository>().ImplementedBy<FakeIntegrationPointProfileRepository>().LifestyleTransient().IsDefault());
-            Container.Register(Component.For<IIntegrationPointTypeRepository>().ImplementedBy<FakeIntegrationPointTypeRepository>().LifestyleTransient().IsDefault());
-            Container.Register(Component.For<IJobHistoryRepository>().ImplementedBy<FakeJobHistoryRepository>().LifestyleTransient().IsDefault());
+            Container.Register(Component.For<IIntegrationPointAccessor>().ImplementedBy<FakeIntegrationPointAccessor>().LifestyleTransient().IsDefault());
+            Container.Register(Component.For<IIntegrationPointProfileAccessor>().ImplementedBy<FakeIntegrationPointProfileAccessor>().LifestyleTransient().IsDefault());
+            Container.Register(Component.For<IIntegrationPointTypeAccessor>().ImplementedBy<FakeIntegrationPointTypeAccessor>().LifestyleTransient().IsDefault());
+            Container.Register(Component.For<IJobHistoryAccessor>().ImplementedBy<FakeJobHistoryAccessor>().LifestyleTransient().IsDefault());
             Container.Register(Component.For<IDocumentTotalStatistics>().ImplementedBy<FakeDocumentStatistics>().Named("IDocumentTotalStatistics").LifestyleTransient().IsDefault());
             Container.Register(Component.For<INativeTotalStatistics>().ImplementedBy<FakeDocumentStatistics>().Named("INativeTotalStatistics").LifestyleTransient().IsDefault());
             Container.Register(Component.For<IImageTotalStatistics>().ImplementedBy<FakeDocumentStatistics>().Named("IImageTotalStatistics").LifestyleTransient().IsDefault());

@@ -5,6 +5,7 @@ using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Validation;
@@ -22,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
     [TestFixture, Category("Unit")]
     public class JobHistoryErrorServiceTest : TestBase
     {
-        private Data.IntegrationPoint _integrationPoint;
+        private IntegrationPointDto _integrationPoint;
         private Data.JobHistory _jobHistory;
         private Mock<IRelativityObjectManager> _relativityObjectManagerFake;
         private Mock<IHelper> _helperFake;
@@ -43,7 +44,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
         [SetUp]
         public override void SetUp()
         {
-            _integrationPoint = new Data.IntegrationPoint() { LogErrors = true };
+            _integrationPoint = new IntegrationPointDto { LogErrors = true };
             _jobHistory = new Data.JobHistory { ArtifactId = 111 };
 
             _relativityObjectManagerFake = new Mock<IRelativityObjectManager>();
@@ -64,7 +65,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 
             _instance = new JobHistoryErrorService(_relativityObjectManagerFake.Object, _helperFake.Object, _integrationPointRepositoryFake.Object)
             {
-                IntegrationPoint = _integrationPoint,
+                IntegrationPointDto = _integrationPoint,
                 JobHistory = _jobHistory,
                 JobStopManager = _stopJobManagerFake.Object
             };
@@ -128,7 +129,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             // arrange
             var errorMessages = new[] { "Message 1", "Message 2" };
 
-            // act 
+            // act
             _instance.AddError(ErrorTypeChoices.JobHistoryErrorJob, new IntegrationPointValidationException(new ValidationResult(errorMessages)));
 
             // assert
@@ -142,7 +143,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             _instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier", "Fake item error.", "stack trace");
             _instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier2", "Fake item error2.", "stack trace2");
 
-            _instance.IntegrationPoint.HasErrors = false;
+            _instance.IntegrationPointDto.HasErrors = false;
 
             // act
             _instance.CommitErrors();
@@ -157,15 +158,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             Assert.AreEqual(ErrorTypeChoices.JobHistoryErrorItem.Name, _errors[1].ErrorType.Name);
             Assert.AreEqual("Fake item error2.", _errors[1].Error);
             Assert.AreEqual("stack trace2", _errors[1].StackTrace);
-            Assert.IsNotNull(_instance.IntegrationPoint.HasErrors);
-            Assert.IsTrue(_instance.IntegrationPoint.HasErrors.Value);
+            Assert.IsNotNull(_instance.IntegrationPointDto.HasErrors);
+            Assert.IsTrue(_instance.IntegrationPointDto.HasErrors.Value);
         }
 
         [Test]
         public void AddError_CommitsJobHistoryErrors_ForJobLevelErrors()
         {
             // arrange
-            _instance.IntegrationPoint.HasErrors = false;
+            _instance.IntegrationPointDto.HasErrors = false;
 
             // act
             _instance.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error.", "stack trace");
@@ -179,15 +180,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
         public void CommitErrors_HasJobHistory_NoErrorsToCommit()
         {
             // arrange
-            _instance.IntegrationPoint.HasErrors = true;
+            _instance.IntegrationPointDto.HasErrors = true;
 
             // act
             _instance.CommitErrors();
 
             // assert
             _relativityObjectManagerFake.Verify(x => x.MassCreateAsync(It.IsAny<MassCreateRequest>(), ExecutionIdentity.CurrentUser), Times.Never);
-            Assert.IsNotNull(_instance.IntegrationPoint.HasErrors);
-            Assert.IsFalse(_instance.IntegrationPoint.HasErrors.Value);
+            Assert.IsNotNull(_instance.IntegrationPointDto.HasErrors);
+            Assert.IsFalse(_instance.IntegrationPointDto.HasErrors.Value);
         }
 
         [Test]
@@ -199,7 +200,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             _relativityObjectManagerFake.Setup(x => x.MassCreateAsync(It.IsAny<MassCreateRequest>(), ExecutionIdentity.CurrentUser))
                 .ThrowsAsync(new Exception());
 
-            _instance.IntegrationPoint.HasErrors = false;
+            _instance.IntegrationPointDto.HasErrors = false;
 
             // act
             Exception returnedException = Assert.Throws<Exception>(() => _instance.CommitErrors());
@@ -217,7 +218,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             // arrange
             _relativityObjectManagerFake.Setup(x => x.MassCreateAsync(It.IsAny<MassCreateRequest>(), ExecutionIdentity.CurrentUser))
                 .ThrowsAsync(new Exception());
-            _instance.IntegrationPoint.HasErrors = false;
+            _instance.IntegrationPointDto.HasErrors = false;
 
             // act
             //Adding job level error automatically commits errors
@@ -301,10 +302,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
                 _instance.AddError(ErrorTypeChoices.JobHistoryErrorItem, exception);
             }
 
-            // assert 
+            // assert
             request.ValueLists.Count.Should().Be(JobHistoryErrorService.ERROR_BATCH_SIZE);
         }
-        
+
         [Test]
         public void CommitErrors_SetHasErrorToFalseWhenStopAndNoErrorOccured()
         {
@@ -316,7 +317,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 
             // assert
             Assert.IsFalse(_integrationPoint.HasErrors);
-            _integrationPointRepositoryFake.Verify(x => x.Update(_integrationPoint), Times.Once);
+            _integrationPointRepositoryFake.Verify(x => x.UpdateHasErrors(_integrationPoint.ArtifactId, _integrationPoint.HasErrors.Value), Times.Once);
         }
 
         [Test]
@@ -330,7 +331,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 
             // assert
             Assert.IsFalse(_integrationPoint.HasErrors);
-            _integrationPointRepositoryFake.Verify(x => x.Update(_integrationPoint), Times.Once);
+            _integrationPointRepositoryFake.Verify(x => x.UpdateHasErrors(_integrationPoint.ArtifactId, _integrationPoint.HasErrors.Value), Times.Once);
         }
 
         [Test]
@@ -345,7 +346,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 
             // assert
             Assert.IsFalse(_integrationPoint.HasErrors);
-            _integrationPointRepositoryFake.Verify(x => x.Update(_integrationPoint), Times.Once);
+            _integrationPointRepositoryFake.Verify(x => x.UpdateHasErrors(_integrationPoint.ArtifactId, _integrationPoint.HasErrors.Value), Times.Once);
         }
 
         [Test]
@@ -360,7 +361,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
 
             // assert
             Assert.IsTrue(_integrationPoint.HasErrors);
-            _integrationPointRepositoryFake.Verify(x => x.Update(_integrationPoint), Times.Once);
+            _integrationPointRepositoryFake.Verify(x => x.UpdateHasErrors(_integrationPoint.ArtifactId, _integrationPoint.HasErrors.Value), Times.Once);
         }
 
         [Test]

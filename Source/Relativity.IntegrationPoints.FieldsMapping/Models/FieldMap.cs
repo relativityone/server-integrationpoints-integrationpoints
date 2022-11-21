@@ -12,7 +12,7 @@ namespace Relativity.IntegrationPoints.FieldsMapping.Models
         /// Gets or sets the field in the source where the data is stored.
         /// </summary>
         public FieldEntry SourceField { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the field in the workspace used to store data imported from a data source.
         /// </summary>

@@ -10,7 +10,7 @@ using Relativity.IntegrationPoints.Services.Installers.Context;
 using Relativity.API;
 using System.Collections.Generic;
 using Castle.MicroKernel;
-using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using Relativity.IntegrationPoints.Services.JobHistory;
 
 namespace Relativity.IntegrationPoints.Services.Installers
@@ -36,7 +36,7 @@ namespace Relativity.IntegrationPoints.Services.Installers
             container.Register(Component.For<IDestinationParser>().ImplementedBy<DestinationParser>().LifestyleTransient());
             container.Register(Component.For<IJobHistoryAccess>().ImplementedBy<JobHistoryAccess>().LifestyleTransient());
             container.Register(Component.For<IJobHistorySummaryModelBuilder>().ImplementedBy<JobHistorySummaryModelBuilder>().LifestyleTransient());
-            container.Register(Component.For<Repositories.IJobHistoryRepository>().ImplementedBy<Repositories.Implementations.JobHistoryRepository>().LifestyleTransient());
+            container.Register(Component.For<Repositories.IJobHistoryAccessor>().ImplementedBy<Repositories.Implementations.JobHistoryAccessor>().LifestyleTransient());
             container.Register(Component
                 .For<IRelativityIntegrationPointsRepository>()
                 .ImplementedBy<RelativityIntegrationPointsRepositoryAdminAccess>()
@@ -53,11 +53,11 @@ namespace Relativity.IntegrationPoints.Services.Installers
         private IRelativityIntegrationPointsRepository CreateRelativityIntegrationPointsRepository(IKernel k, int workspaceID)
         {
             var relativityObjectManagerServiceAdminAccess = new RelativityObjectManagerServiceAdminAccess(k.Resolve<IHelper>(), workspaceID);
-            IIntegrationPointRepository integrationPointRepository = k.Resolve<IIntegrationPointRepository>();
+            IIntegrationPointService integrationPointService = k.Resolve<IIntegrationPointService>();
 
             return new RelativityIntegrationPointsRepositoryAdminAccess(
                 relativityObjectManagerServiceAdminAccess,
-                integrationPointRepository
+                integrationPointService
             );
         }
     }

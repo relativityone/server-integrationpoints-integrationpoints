@@ -4,6 +4,7 @@ using Castle.MicroKernel.Registration;
 using FluentAssertions;
 using kCura.IntegrationPoints.Common.Toggles;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
@@ -76,7 +77,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
 
             IValidationExecutor sut = PrepareSut();
 
-            // Act 
+            // Act
             ValidationResult result = sut.ValidateOnProfile(context);
 
             // Assert
@@ -107,7 +108,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
 
             IValidationExecutor sut = PrepareSut();
 
-            // Act 
+            // Act
             Action validation = () => validateAction(sut, context);
 
             // Assert
@@ -121,7 +122,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
 
             IValidationExecutor sut = PrepareSut();
 
-            // Act 
+            // Act
             Action validation = () => validateAction(sut, context);
 
             // Assert
@@ -143,7 +144,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
 
             ValidationContext context = new ValidationContext
             {
-                Model = IntegrationPointModel.FromIntegrationPoint(integrationPoint.ToRdo()),
+                Model = integrationPoint.ToDto(),
                 SourceProvider = sourceProvider.ToRdo(),
                 DestinationProvider = destinationProvider.ToRdo(),
                 IntegrationPointType = integrationPointType.ToRdo(),
@@ -174,7 +175,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Validation
                 SourceWorkspace.Helpers.IntegrationPointHelper.CreateImportEntityFromLdapIntegrationPoint(isMappingIdentifierOnly: isMappingIdentifierOnly);
             return integrationPoint;
         }
-        
+
         private void SetupNonDocumentFlowToggle(bool enable)
         {
             Mock<IToggleProvider> toggleProvider = new Mock<IToggleProvider>();

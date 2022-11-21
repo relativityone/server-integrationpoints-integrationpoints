@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using kCura.IntegrationPoints.Core.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Logging;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Internals;
@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
             IJobManager jobManager,
             IManagerFactory managerFactory,
             IJobService jobService,
-            IIntegrationPointRepository integrationPointRepository,
+            IIntegrationPointService integrationPointService,
             IDiagnosticLog diagnosticLog)
             : base(
                 caseServiceContext,
@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
                 jobManager,
                 managerFactory,
                 jobService,
-                integrationPointRepository,
+                integrationPointService,
                 diagnosticLog)
         {
             _job = job;
@@ -58,10 +58,10 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
         public string Convert()
         {
             SetIntegrationPoint(_job);
-            string sourceConfiguration = IntegrationPoint.SourceConfiguration;
-            IEnumerable<FieldMap> fieldMap = GetFieldMap(IntegrationPoint.FieldMappings);
-            FieldMap[] fieldMaps = fieldMap as FieldMap[] ?? fieldMap.ToArray();
-            List<FieldEntry> sourceFields = GetSourceFields(fieldMaps);
+            string sourceConfiguration = IntegrationPointDto.SourceConfiguration;
+            List<FieldMap> fieldMap = IntegrationPointDto.FieldMappings;
+            fieldMap.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
+            List<FieldEntry> sourceFields = GetSourceFields(fieldMap.ToArray());
             IDataSourceProvider sourceProvider = GetSourceProvider(SourceProvider, _job);
 
             string returnValue = string.Empty;

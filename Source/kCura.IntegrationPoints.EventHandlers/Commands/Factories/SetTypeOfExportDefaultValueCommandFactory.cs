@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
         {
             IServiceContextHelper serviceContextHelper = new ServiceContextHelperForEventHandlers(helper, helper.GetActiveCaseID());
             ICaseServiceContext caseServiceContext = new CaseServiceContext(serviceContextHelper);
-            
+
             IAPILog logger = helper.GetLoggerFactory().GetLogger();
             IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer(logger);
 
@@ -65,10 +65,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
             IMessageService messageService = new MessageService();
 
             IJobHistoryService jobHistoryService = new JobHistoryService(
-                caseServiceContext.RelativityObjectManagerService.RelativityObjectManager, 
-                federatedInstanceManager, 
-                workspaceManager, 
-                logger, 
+                caseServiceContext.RelativityObjectManagerService.RelativityObjectManager,
+                federatedInstanceManager,
+                workspaceManager,
+                logger,
                 integrationPointSerializer);
 
             IManagerFactory managerFactory = new ManagerFactory(helper, new FakeNonRemovableAgent());
@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
             IValidationExecutor validationExecutor = new ValidationExecutor(ipValidator, permissionValidator, helper);
 
             ISecretsRepository secretsRepository = new SecretsRepository(
-                SecretStoreFacadeFactory_Deprecated.Create(helper.GetSecretStore, logger), 
+                SecretStoreFacadeFactory_Deprecated.Create(helper.GetSecretStore, logger),
                 logger
             );
             IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
@@ -91,19 +91,18 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
 
             IIntegrationPointProfileService integrationPointProfileService = new IntegrationPointProfileService(
                 helper,
-                caseServiceContext, 
-                integrationPointSerializer, 
+                caseServiceContext,
+                integrationPointSerializer,
                 choiceQuery,
-                managerFactory, 
-                validationExecutor, 
+                managerFactory,
+                validationExecutor,
                 objectManager);
 
             ISourceConfigurationTypeOfExportUpdater sourceConfigurationTypeOfExpertUpdater = new SourceConfigurationTypeOfExportUpdater(providerTypeService);
 
             return new SetTypeOfExportDefaultValueCommand(
-                integrationPointRepository, 
+                integrationPointRepository,
                 integrationPointProfileService,
-                objectManager, 
                 sourceConfigurationTypeOfExpertUpdater
             );
         }

@@ -42,7 +42,7 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
                 {
-                    var documentRepository = container.Resolve<IDocumentRepository>();
+                    var documentRepository = container.Resolve<IDocumentAccessor>();
                     return await documentRepository.GetPercentagePushedToReviewAsync(request).ConfigureAwait(false);
                 }
             }
@@ -60,7 +60,7 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
                 {
-                    var documentRepository = container.Resolve<IDocumentRepository>();
+                    var documentRepository = container.Resolve<IDocumentAccessor>();
                     return await documentRepository.GetCurrentPromotionStatusAsync(request).ConfigureAwait(false);
                 }
             }
@@ -78,7 +78,7 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
                 {
-                    var documentRepository = container.Resolve<IDocumentRepository>();
+                    var documentRepository = container.Resolve<IDocumentAccessor>();
                     return await documentRepository.GetHistoricalPromotionStatusAsync(request).ConfigureAwait(false);
                 }
             }

@@ -9,6 +9,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation.Parts
 {
@@ -34,7 +35,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
             {
                 ArtifactTypeId = 42,
                 SourceConfiguration = "{\"SourceWorkspaceArtifactId\":1000000}",
-                FieldsMap = fieldsMap
+                FieldsMap = serializer.Deserialize<List<FieldMap>>(fieldsMap),
             };
 
             // act
@@ -47,7 +48,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
 
         [TestCase(null, _EXPORTABLE_FIELDS)]
         [TestCase("", _EXPORTABLE_FIELDS)]
-        [TestCase("     ", _EXPORTABLE_FIELDS)]        
+        [TestCase("     ", _EXPORTABLE_FIELDS)]
         public void ItShouldFailValidationForInvalidMappingObject(string fieldsMap, string exportableFields)
         {
             // arrange
@@ -65,7 +66,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
             {
                 ArtifactTypeId = 42,
                 SourceConfiguration = "{\"SourceWorkspaceArtifactId\":1000000}",
-                FieldsMap = fieldsMap
+                FieldsMap = serializer.Deserialize<List<FieldMap>>(fieldsMap),
             };
 
             // act
@@ -94,7 +95,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
             {
                 ArtifactTypeId = 42,
                 SourceConfiguration = "{\"SourceWorkspaceArtifactId\":1000000}",
-                FieldsMap = fieldsMap
+                FieldsMap = serializer.Deserialize<List<FieldMap>>(fieldsMap),
             };
 
             // act
@@ -124,7 +125,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
             {
                 ArtifactTypeId = 42,
                 SourceConfiguration = "{\"SourceWorkspaceArtifactId\":1000000}",
-                FieldsMap = fieldsMap
+                FieldsMap = serializer.Deserialize<List<FieldMap>>(fieldsMap),
             };
 
             // act

@@ -2,19 +2,19 @@
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
-    public static class IntegrationPointExtensions
+    public static class IntegrationPointProviderTypeExtensions
     {
-        public static ProviderType GetProviderType(this Data.IntegrationPoint integrationPoint, IProviderTypeService providerTypeService)
+        public static ProviderType GetProviderType(this IntegrationPointDto integrationPoint, IProviderTypeService providerTypeService)
         {
             ProviderType providerType = providerTypeService.GetProviderType(
-                integrationPoint.SourceProvider.GetValueOrDefault(),
-                integrationPoint.DestinationProvider.GetValueOrDefault());
+                integrationPoint.SourceProvider,
+                integrationPoint.DestinationProvider);
             return providerType;
         }
 
-        public static string GetProviderName(this Data.IntegrationPoint integrationPoint, IProviderTypeService providerTypeService) =>
+        public static string GetProviderName(this IntegrationPointDto integrationPoint, IProviderTypeService providerTypeService) =>
             providerTypeService.GetProviderName(
-                integrationPoint.SourceProvider.GetValueOrDefault(),
-                integrationPoint.DestinationProvider.GetValueOrDefault());
+                integrationPoint.SourceProvider,
+                integrationPoint.DestinationProvider);
     }
 }

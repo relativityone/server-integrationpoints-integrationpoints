@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
 
         private LoadFileTaskParameters BuildLoadFileParameters(IntegrationPoint integrationPoint)
         {
-            LoadFileInfo loadFile = _importFileLocationService.LoadFileInfo(integrationPoint);
+            LoadFileInfo loadFile = _importFileLocationService.LoadFileInfo(integrationPoint.SourceConfiguration, integrationPoint.DestinationConfiguration);
 
             return new LoadFileTaskParameters
             {

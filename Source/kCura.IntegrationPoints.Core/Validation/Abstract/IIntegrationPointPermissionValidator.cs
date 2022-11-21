@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
     public interface IIntegrationPointPermissionValidator : IIntegrationPointValidator
     {
         ValidationResult ValidateSave(
-            IntegrationPointModelBase model,
+            IntegrationPointDtoBase model,
             SourceProvider sourceProvider,
             DestinationProvider destinationProvider,
             IntegrationPointType integrationPointType,
@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Core.Validation.Abstract
         ValidationResult ValidateViewErrors(int workspaceArtifactId);
 
         ValidationResult ValidateStop(
-            IntegrationPointModelBase model,
+            IntegrationPointDtoBase model,
             SourceProvider sourceProvider,
             DestinationProvider destinationProvider,
             IntegrationPointType integrationPointType,

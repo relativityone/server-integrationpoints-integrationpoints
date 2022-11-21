@@ -1,10 +1,9 @@
 ﻿using System;
-using Castle.Core;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
 
@@ -14,7 +13,7 @@ namespace kCura.IntegrationPoints.RelativitySync
     {
         private Guid? _identifier;
         private int? _jobHistoryId;
-        private IntegrationPoint _integrationPoint;
+        private IntegrationPointDto _integrationPoint;
 
         private readonly IJobHistoryService _jobHistoryService;
         private readonly IIntegrationPointService _integrationPointService;
@@ -30,16 +29,6 @@ namespace kCura.IntegrationPoints.RelativitySync
             _logger = logger;
         }
 
-        [DoNotSelect]
-        public ExtendedJob(Job job, IJobHistoryService jobHistoryService, IntegrationPoint integrationPoint, ISerializer serializer, IAPILog logger)
-        {
-            Job = job;
-            _jobHistoryService = jobHistoryService;
-            _integrationPoint = integrationPoint;
-            _serializer = serializer;
-            _logger = logger;
-        }
-
         public Job Job { get; }
 
         public long JobId => Job.JobId;
@@ -50,7 +39,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
         public int IntegrationPointId => Job.RelatedObjectArtifactID;
 
-        public IntegrationPoint IntegrationPointModel
+        public IntegrationPointDto IntegrationPointDto
         {
             get
             {
@@ -58,7 +47,7 @@ namespace kCura.IntegrationPoints.RelativitySync
                 {
                     try
                     {
-                        _integrationPoint = _integrationPointService.ReadIntegrationPoint(IntegrationPointId);
+                        _integrationPoint = _integrationPointService.Read(IntegrationPointId);
                     }
                     catch (Exception e)
                     {
@@ -98,7 +87,7 @@ namespace kCura.IntegrationPoints.RelativitySync
             {
                 if (!_jobHistoryId.HasValue)
                 {
-                    _jobHistoryId = _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(IntegrationPointModel, JobIdentifier, DateTime.UtcNow).ArtifactId;
+                    _jobHistoryId = _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(IntegrationPointDto, JobIdentifier, DateTime.UtcNow).ArtifactId;
                 }
 
                 return _jobHistoryId.Value;

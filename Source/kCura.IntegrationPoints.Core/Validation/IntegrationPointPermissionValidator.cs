@@ -5,7 +5,6 @@ using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Validation
 {
@@ -17,7 +16,7 @@ namespace kCura.IntegrationPoints.Core.Validation
         }
 
         public override ValidationResult Validate(
-            IntegrationPointModelBase model,
+            IntegrationPointDtoBase model,
             SourceProvider sourceProvider,
             DestinationProvider destinationProvider,
             IntegrationPointType integrationPointType,
@@ -29,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Validation
         }
 
         public ValidationResult ValidateSave(
-            IntegrationPointModelBase model,
+            IntegrationPointDtoBase model,
             SourceProvider sourceProvider,
             DestinationProvider destinationProvider,
             IntegrationPointType integrationPointType,
@@ -65,7 +64,7 @@ namespace kCura.IntegrationPoints.Core.Validation
         }
 
         public ValidationResult ValidateStop(
-            IntegrationPointModelBase model,
+            IntegrationPointDtoBase model,
             SourceProvider sourceProvider,
             DestinationProvider destinationProvider,
             IntegrationPointType integrationPointType,
@@ -133,6 +132,5 @@ namespace kCura.IntegrationPoints.Core.Validation
 
             return result;
         }
-
     }
 }

@@ -53,14 +53,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return ReadAsync(integrationPointArtifactID, IntegrationPointQueryOptions.All());
         }
 
-        public async Task<IEnumerable<FieldMap>> GetFieldMappingAsync(int integrationPointArtifactID)
+        public async Task<List<FieldMap>> GetFieldMappingAsync(int integrationPointArtifactID)
         {
-            IEnumerable<FieldMap> fieldMapping = new List<FieldMap>();
-
-            if (integrationPointArtifactID <= 0)
-            {
-                return fieldMapping;
-            }
+            List<FieldMap> fieldMapping = new List<FieldMap>();
 
             string fieldMappingJson = await GetFieldMappingsAsync(integrationPointArtifactID).ConfigureAwait(false);
 
@@ -71,7 +66,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
             try
             {
-                fieldMapping = _serializer.Deserialize<IEnumerable<FieldMap>>(fieldMappingJson);
+                fieldMapping = _serializer.Deserialize<List<FieldMap>>(fieldMappingJson);
             }
             catch (Exception ex)
             {
@@ -124,12 +119,21 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             integrationPoint.SecuredConfiguration = decryptedSecuredConfiguration;
         }
 
+        // This method is used by JobHistoryErrorService.
+        // It should be placed in IntegrationPointService but this will cause circular dependencies. We need to clean up dependencies hell first and then move this method to the right place.
+        public void UpdateHasErrors(int integrationPointArtifactId, bool hasErrors)
+        {
+            IntegrationPoint integrationPoint = _objectManager.Read<IntegrationPoint>(integrationPointArtifactId);
+            integrationPoint.HasErrors = hasErrors;
+            _objectManager.Update(integrationPoint);
+        }
+
         public void Delete(int integrationPointID)
         {
             _objectManager.Delete(integrationPointID);
         }
 
-        public IList<IntegrationPoint> GetAll(List<int> integrationPointIDs)
+        public List<IntegrationPoint> GetAll(List<int> integrationPointIDs)
         {
             var request = new QueryRequest
             {
@@ -139,7 +143,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return Query(_workspaceID, request);
         }
 
-        public async Task<IList<IntegrationPoint>> GetAllBySourceAndDestinationProviderIDsAsync(int sourceProviderArtifactID, int destinationProviderArtifactID)
+        public async Task<List<IntegrationPoint>> GetBySourceAndDestinationProviderAsync(int sourceProviderArtifactID, int destinationProviderArtifactID)
         {
             var query = new QueryRequest
             {
@@ -147,12 +151,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                     $"'{IntegrationPointFields.SourceProvider}' == {sourceProviderArtifactID} " +
                     $"AND " +
                     $"'{IntegrationPointFields.DestinationProvider}' == {destinationProviderArtifactID}",
-                Fields = new IntegrationPoint().ToFieldList().Where(field => 
+                Fields = RDOConverter.GetFieldList<IntegrationPoint>().Where(field =>
                     (field.Guid != IntegrationPointFieldGuids.SourceConfigurationGuid)
                     && (field.Guid != IntegrationPointFieldGuids.DestinationConfigurationGuid)
                     && (field.Guid != IntegrationPointFieldGuids.FieldMappingsGuid))
             };
-            IList<IntegrationPoint> integrationPoints = Query(_workspaceID, query);
+            List<IntegrationPoint> integrationPoints = Query(_workspaceID, query);
 
             foreach (IntegrationPoint integrationPoint in integrationPoints)
             {
@@ -164,7 +168,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return integrationPoints;
         }
 
-        public IList<IntegrationPoint> GetIntegrationPoints(List<int> sourceProviderIds)
+        public List<IntegrationPoint> GetIntegrationPoints(List<int> sourceProviderIds)
         {
             QueryRequest sourceProviderQuery = GetBasicSourceProviderQuery(sourceProviderIds);
 
@@ -176,35 +180,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return Query(_workspaceID, sourceProviderQuery);
         }
 
-        public IList<IntegrationPoint> GetAllIntegrationPoints()
+        public List<IntegrationPoint> GetIntegrationPointsWithAllFields()
         {
-            var query = new QueryRequest()
-            {
-                Fields = GetFields()
-            };
-
-            return Query(_workspaceID, query);
-        }
-
-        public IList<IntegrationPoint> GetIntegrationPointsWithAllFields()
-        {
-            IList<IntegrationPoint> integrationPointsWithoutFields = GetAllIntegrationPointsWithoutFields();
+            var query = new QueryRequest();
+            var integrationPointsWithoutFields = Query(_workspaceID, query);
 
             return integrationPointsWithoutFields
                 .Select(integrationPoint => ReadAsync(integrationPoint.ArtifactId).GetAwaiter().GetResult())
                 .ToList();
-        }
-
-        private IList<IntegrationPoint> GetAllIntegrationPointsWithoutFields()
-        {
-            var query = new QueryRequest();
-
-            return Query(_workspaceID, query);
-        }
-
-        private IEnumerable<FieldRef> GetFields()
-        {
-            return BaseRdo.GetFieldMetadata(typeof(IntegrationPoint)).Values.ToList().Select(field => new FieldRef { Guid = field.FieldGuid });
         }
 
         private QueryRequest GetBasicSourceProviderQuery(List<int> sourceProviderIds)
@@ -233,7 +216,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return integrationPoint;
         }
 
-        private IList<IntegrationPoint> Query(int workspaceID, QueryRequest queryRequest)
+        private List<IntegrationPoint> Query(int workspaceID, QueryRequest queryRequest)
         {
             return _objectManager
                 .Query<IntegrationPoint>(queryRequest)
@@ -319,8 +302,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             try
             {
                 SecretPath secretPath = GetSecretPathOrGenerateNewOne(
-                    workspaceID, 
-                    integrationPoint.ArtifactId, 
+                    workspaceID,
+                    integrationPoint.ArtifactId,
                     secretID
                 );
                 Dictionary<string, string> secretData = CreateSecuredConfigurationSecretData(

@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
         protected override void Run()
         {
-            IList<IntegrationPoint> integrationPoints = IntegrationPointRepository.GetAllIntegrationPoints();
+            IList<IntegrationPoint> integrationPoints = IntegrationPointRepository.GetIntegrationPointsWithAllFields();
             IList<IntegrationPointType> integrationPointTypes = IntegrationPointTypeService.GetAllIntegrationPointTypes();
 
             foreach (IntegrationPoint integrationPoint in integrationPoints)
@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
                     ObjectManager,
                     new IntegrationPointSerializer(logger),
                     new SecretsRepository(
-                        SecretStoreFacadeFactory_Deprecated.Create(Helper.GetSecretStore, logger), 
+                        SecretStoreFacadeFactory_Deprecated.Create(Helper.GetSecretStore, logger),
                         logger
                     ),
                     logger
