@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Checkers;
 using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
+using kCura.IntegrationPoints.Core.Monitoring.SystemReporter.DNS;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
@@ -250,19 +251,10 @@ namespace kCura.ScheduleQueue.AgentBase
 
                 IEnumerable<Job> transientStateJobs = _jobService.GetAllScheduledJobs()
                     .Where(x => (x.Heartbeat != null && utcNow.Subtract(x.Heartbeat.Value) > transientStateJobTimeout) || x.IsBlocked());
+
                 foreach (Job job in transientStateJobs)
                 {
-                    Logger.LogError(
-                        "Job {jobId}, will be failed due timeout. " +
-                            "LockedByAgent: {lockedByAgent}, " +
-                            "StopState: {stopState}, " +
-                            "Last Heartbeat: {heartbeat}, " +
-                            "DateTimeUtc {utcNow}",
-                        job.JobId,
-                        job.LockedByAgentID,
-                        job.StopState,
-                        job.Heartbeat,
-                        utcNow);
+                    Logger.LogError("Job {jobId} failed at {time} because Kubernetes Agent container crashed and job was left in unknown status. Job details: {@job}", job.JobId, utcNow, job.RemoveSensitiveData());
 
                     SendJobInTransientStateMetric(job);
 
@@ -274,10 +266,9 @@ namespace kCura.ScheduleQueue.AgentBase
                     }
 
                     job.MarkJobAsFailed(
-                        new TimeoutException(
-                        $"Job {job.JobId} has failed due to timeout. Contact your system administrator."),
-                        false,
-                        false);
+                        new Exception($"Job {job.JobId} failed because Kubernetes Agent container crashed and job was left in unknown status. Please try to run this job again."),
+                         false,
+                         false);
                     Logger.LogInformation("Starting Job in Transient State {jobId} processing...", job.JobId);
 
                     TaskResult result = ProcessJob(job);
@@ -331,15 +322,18 @@ namespace kCura.ScheduleQueue.AgentBase
         private void CheckServicesAccess()
         {
             WorkspaceDBContext workspaceDbContext = new WorkspaceDBContext(Helper.GetDBContext(-1));
-            DatabasePingReporter dbPingReporter = new DatabasePingReporter(workspaceDbContext, Logger);
-            KeplerPingReporter keplerPingReporter = new KeplerPingReporter(Helper, Logger);
-            FileShareDiskUsageReporter fileShareDiskUsageReporter = new FileShareDiskUsageReporter(Helper, Logger);
-            ServicesAccessChecker servicesAccessChecker = new ServicesAccessChecker(dbPingReporter, keplerPingReporter, fileShareDiskUsageReporter, Logger);
+            IServiceHealthChecker dbHealthChecker = new DatabasePingReporter(workspaceDbContext, Logger);
+            IServiceHealthChecker keplerHealthChecker = new KeplerPingReporter(Helper, Logger);
+            IServiceHealthChecker fileShareHealthChecker = new FileShareDiskUsageReporter(Helper, Logger);
+            IServiceHealthChecker dnsHealthChecker = new DnsHealthReporter(new RealDnsService(), Logger);
+
+            ServicesAccessChecker servicesAccessChecker = new ServicesAccessChecker(new [] { dbHealthChecker, keplerHealthChecker, fileShareHealthChecker, dnsHealthChecker }, Logger);
+
             bool areServicesHealthy = servicesAccessChecker.AreServicesHealthyAsync().GetAwaiter().GetResult();
 
             if (!areServicesHealthy)
             {
-                Logger.LogError("Not all Services are accessible by the Agent; _agentInstanceGuid - {_agentInstanceGuid}", _agentInstanceGuid);
+                Logger.LogFatal("Not all Services are accessible by the Agent; _agentInstanceGuid - {_agentInstanceGuid}", _agentInstanceGuid);
                 if (_kubernetesModeLazy.Value.IsEnabled())
                 {
                     Environment.Exit(1);
@@ -347,8 +341,6 @@ namespace kCura.ScheduleQueue.AgentBase
 
                 throw new Exception($"Not all Services are accessible by the Agent; _agentInstanceGuid - {_agentInstanceGuid}");
             }
-
-            Logger.LogInformation("All services are Healthy. Agent can proceed with running job.");
         }
 
         private void CompleteExecution()

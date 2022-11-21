@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
 using Relativity.API;
 
@@ -6,65 +9,45 @@ namespace kCura.IntegrationPoints.Core.Checkers
 {
     public class ServicesAccessChecker
     {
+        private readonly IEnumerable<IServiceHealthChecker> _healthCheckers;
         private readonly IAPILog _logger;
-        private readonly IServiceHealthChecker _databasePingReporter;
-        private readonly IServiceHealthChecker _keplerPingReporter;
-        private readonly IServiceHealthChecker _fileShareDiskUsageReporter;
 
-        public ServicesAccessChecker(
-            IServiceHealthChecker databasePingReporter,
-            IServiceHealthChecker keplerPingReporter,
-            IServiceHealthChecker fileShareDiskUsageReporter,
-            IAPILog logger)
+        public ServicesAccessChecker(IEnumerable<IServiceHealthChecker> healthCheckers, IAPILog logger)
         {
-            _databasePingReporter = databasePingReporter;
-            _keplerPingReporter = keplerPingReporter;
-            _fileShareDiskUsageReporter = fileShareDiskUsageReporter;
+            _healthCheckers = healthCheckers;
             _logger = logger;
         }
 
         public async Task<bool> AreServicesHealthyAsync()
         {
-            bool areServicesAccessible = await CheckDatabaseAccessAsync().ConfigureAwait(false);
-            areServicesAccessible &= await CheckKeplerAccessAsync().ConfigureAwait(false);
-            areServicesAccessible &= await GetFileShareDiskUsageReporterAsync().ConfigureAwait(false);
-            return areServicesAccessible;
-        }
+            bool allServicesHealthy;
 
-        private async Task<bool> CheckDatabaseAccessAsync()
-        {
-            bool isDatabaseHealthy = await _databasePingReporter.IsServiceHealthyAsync().ConfigureAwait(false);
-            if (isDatabaseHealthy)
+            try
             {
-                return true;
+                List<Task<bool>> tasks = new List<Task<bool>>();
+
+                foreach (IServiceHealthChecker healthChecker in _healthCheckers)
+                {
+                    Task<bool> task = Task.Run(healthChecker.IsServiceHealthyAsync);
+                    tasks.Add(task);
+                }
+
+                bool[] results = await Task.WhenAll(tasks).ConfigureAwait(false);
+
+                allServicesHealthy = results.All(isHealthy => isHealthy);
+
+                if (!allServicesHealthy)
+                {
+                    _logger.LogError("Not all services are healthy.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to perform health checks");
+                allServicesHealthy = false;
             }
 
-            _logger.LogError("Database is not accessible.");
-            return false;
-        }
-
-        private async Task<bool> CheckKeplerAccessAsync()
-        {
-            bool isKeplerServiceHealthy = await _keplerPingReporter.IsServiceHealthyAsync().ConfigureAwait(false);
-            if (isKeplerServiceHealthy)
-            {
-                return true;
-            }
-
-            _logger.LogError("Kepler service is not accessible.");
-            return false;
-        }
-
-        private async Task<bool> GetFileShareDiskUsageReporterAsync()
-        {
-            bool areFileSharesHealthy = await _fileShareDiskUsageReporter.IsServiceHealthyAsync().ConfigureAwait(false);
-
-            if (!areFileSharesHealthy)
-            {
-                _logger.LogError("Not all fileShares are healthy.");
-            }
-
-            return areFileSharesHealthy;
+            return allServicesHealthy;
         }
     }
 }
