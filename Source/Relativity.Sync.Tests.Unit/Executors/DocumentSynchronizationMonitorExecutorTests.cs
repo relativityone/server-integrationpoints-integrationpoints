@@ -12,6 +12,9 @@ using Relativity.Import.V1.Services;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common;
+using Relativity.Sync.Tests.Common.Stubs;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
@@ -19,6 +22,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
     public class DocumentSynchronizationMonitorExecutorTests
     {
         private const int _DESTINATION_WORKSPACE_ID = -1000001;
+        private const int _SOURCE_WORKSPACE_ID = -1000002;
         private const string _EXPORT_RUN_ID = "11111111-2222-3333-4444-555555555555";
 
         private Mock<IDestinationServiceFactoryForUser> _serviceFactoryMock;
@@ -27,6 +31,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IProgressHandler> _progressHandlerMock;
         private Mock<IImportJobController> _jobControllerMock;
         private Mock<IDocumentSynchronizationMonitorConfiguration> _configurationMock;
+        private Mock<IBatchRepository> _batchRepository;
 
         private DocumentSynchronizationMonitorExecutor _sut;
 
@@ -39,14 +44,16 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _sourceControllerMock = new Mock<IImportSourceController>();
             _jobControllerMock = new Mock<IImportJobController>();
             _configurationMock = new Mock<IDocumentSynchronizationMonitorConfiguration>();
+            _batchRepository = new Mock<IBatchRepository>();
 
             _serviceFactoryMock.Setup(x => x.CreateProxyAsync<IImportSourceController>()).ReturnsAsync(_sourceControllerMock.Object);
             _serviceFactoryMock.Setup(x => x.CreateProxyAsync<IImportJobController>()).ReturnsAsync(_jobControllerMock.Object);
 
+            _configurationMock.Setup(x => x.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ID);
             _configurationMock.Setup(x => x.DestinationWorkspaceArtifactId).Returns(_DESTINATION_WORKSPACE_ID);
             _configurationMock.Setup(x => x.ExportRunId).Returns(new Guid(_EXPORT_RUN_ID));
 
-            _sut = new DocumentSynchronizationMonitorExecutor(_serviceFactoryMock.Object, _progressHandlerMock.Object, _loggerMock.Object);
+            _sut = new DocumentSynchronizationMonitorExecutor(_serviceFactoryMock.Object, _progressHandlerMock.Object, _batchRepository.Object, _loggerMock.Object);
         }
 
         [Test]
@@ -163,14 +170,95 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _loggerMock.Verify(x => x.LogError(It.IsAny<SyncException>(), "Document synchronization monitoring error"));
         }
 
-        private void PrepareTestDataSources(DataSourceState testedSourceState = DataSourceState.Completed)
+        [Test]
+        public async Task ExecuteAsync_ShouldBePaused_OnDrainStop()
         {
-            List<Guid> sourceGuids = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() };
-            DataSources sources = new DataSources(sourceGuids, 2);
+            // Arrange
+            PrepareTestDataSources(DataSourceState.Inserting);
+            CompositeCancellationTokenStub token = new CompositeCancellationTokenStub
+            {
+                IsDrainStopRequestedFunc = () => true
+            };
 
-            ValueResponse<DataSources> response = new ValueResponse<DataSources>(new Guid(_EXPORT_RUN_ID), true, string.Empty, string.Empty, sources);
+            // Act
+            ExecutionResult result = await _sut.ExecuteAsync(_configurationMock.Object, token).ConfigureAwait(false);
 
-            _jobControllerMock.Setup(x => x.GetSourcesAsync(_configurationMock.Object.DestinationWorkspaceArtifactId, _configurationMock.Object.ExportRunId)).ReturnsAsync(response);
+            // Assert
+            result.Status.Should().Be(ExecutionStatus.Paused);
+            _jobControllerMock.Verify(x => x.GetDetailsAsync(It.IsAny<int>(), It.IsAny<Guid>()), Times.Never);
+            _sourceControllerMock.Verify(x => x.GetDetailsAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<Guid>()), Times.Never);
+            _progressHandlerMock.Verify(x => x.HandleProgressAsync(), Times.Never);
+        }
+
+        [Test]
+        public async Task ExecuteAsync_ShouldCallIAPICancellation_WhenCancelWasRequestedAtMonitoringStage()
+        {
+            // Arrange
+            PrepareTestDataSources(DataSourceState.Inserting);
+            CompositeCancellationTokenStub token = new CompositeCancellationTokenStub
+            {
+                IsStopRequestedFunc = () => true
+            };
+            ValueResponse<ImportDetails> jobDetailsResponse = PrepareImportDetailsResponse(ImportState.Canceled);
+
+            _jobControllerMock.Setup(x => x.GetDetailsAsync(_configurationMock.Object.DestinationWorkspaceArtifactId, _configurationMock.Object.ExportRunId))
+                .ReturnsAsync(jobDetailsResponse);
+            _jobControllerMock.Setup(x => x.CancelAsync(It.IsAny<int>(), It.IsAny<Guid>()))
+                .ReturnsAsync(new Response(It.IsAny<Guid>(), true, string.Empty, string.Empty));
+
+            // Act
+            ExecutionResult result = await _sut.ExecuteAsync(_configurationMock.Object, token).ConfigureAwait(false);
+
+            // Assert
+            result.Status.Should().Be(ExecutionStatus.Canceled);
+            _jobControllerMock.Verify(x => x.CancelAsync(It.IsAny<int>(), It.IsAny<Guid>()), Times.Once);
+            _jobControllerMock.Verify(x => x.GetDetailsAsync(It.IsAny<int>(), It.IsAny<Guid>()), Times.Once);
+            _progressHandlerMock.Verify(x => x.HandleProgressAsync(), Times.Once);
+        }
+
+        [Test]
+        public async Task ExecuteAsync_ShouldNotCallIAPICancellation_WhenCancelWasRequestedBeforeMonitoringStage()
+        {
+            // Arrange
+            PrepareTestDataSources(DataSourceState.Inserting, BatchStatus.Cancelled);
+            CompositeCancellationTokenStub token = new CompositeCancellationTokenStub
+            {
+                IsStopRequestedFunc = () => true
+            };
+            ValueResponse<ImportDetails> jobDetailsResponse = PrepareImportDetailsResponse(ImportState.Canceled);
+
+            _jobControllerMock.Setup(x => x.GetDetailsAsync(_configurationMock.Object.DestinationWorkspaceArtifactId, _configurationMock.Object.ExportRunId))
+                .ReturnsAsync(jobDetailsResponse);
+            _jobControllerMock.Setup(x => x.CancelAsync(It.IsAny<int>(), It.IsAny<Guid>()))
+                .ReturnsAsync(new Response(It.IsAny<Guid>(), true, string.Empty, string.Empty));
+
+            // Act
+            ExecutionResult result = await _sut.ExecuteAsync(_configurationMock.Object, token).ConfigureAwait(false);
+
+            // Assert
+            result.Status.Should().Be(ExecutionStatus.Canceled);
+            _jobControllerMock.Verify(x => x.CancelAsync(It.IsAny<int>(), It.IsAny<Guid>()), Times.Never);
+            _jobControllerMock.Verify(x => x.GetDetailsAsync(It.IsAny<int>(), It.IsAny<Guid>()), Times.Once);
+            _progressHandlerMock.Verify(x => x.HandleProgressAsync(), Times.Once);
+        }
+
+        private void PrepareTestDataSources(DataSourceState testedSourceState = DataSourceState.Completed, BatchStatus testedBatchInitialStatus = BatchStatus.New)
+        {
+            List<IBatch> testBatchList = new List<IBatch>();
+
+            for (int i = 0; i < 3; i++)
+            {
+                BatchStub fakeBatch = new BatchStub
+                {
+                    BatchGuid = Guid.NewGuid(),
+                    ExportRunId = new Guid(_EXPORT_RUN_ID),
+                    Status = i == 0 ? testedBatchInitialStatus : BatchStatus.New
+                };
+
+                testBatchList.Add(fakeBatch);
+            }
+
+            _batchRepository.Setup(x => x.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Guid>())).ReturnsAsync(testBatchList.ToArray());
             SetupDataSourceResultsSequence(testedSourceState);
         }
 
@@ -183,6 +271,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     new DataSourceDetails() { State = testedSourceState }))
+                .ReturnsAsync(new ValueResponse<DataSourceDetails>(
+                    It.IsAny<Guid>(),
+                    true,
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    new DataSourceDetails() { State = DataSourceState.Completed }))
                 .ReturnsAsync(new ValueResponse<DataSourceDetails>(
                     It.IsAny<Guid>(),
                     true,

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Relativity.Sync.Extensions;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Common.Stubs
@@ -35,7 +36,7 @@ namespace Relativity.Sync.Tests.Common.Stubs
 
         public Guid BatchGuid { get; set; } = Guid.Empty;
 
-        public bool IsFinished => false;
+        public bool IsFinished => Status.IsIn(BatchStatus.Completed, BatchStatus.CompletedWithErrors, BatchStatus.Cancelled, BatchStatus.Failed);
 
         public Task SetFailedItemsCountAsync(int failedItemsCount)
         {

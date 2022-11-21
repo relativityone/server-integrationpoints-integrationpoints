@@ -114,7 +114,6 @@ namespace Relativity.Sync.Executors
             IImportSourceController sourceController,
             IDocumentSynchronizationMonitorConfiguration configuration)
         {
-
             List<IBatch> unprocessedBatches = batches.Where(x => !x.IsFinished).ToList();
             foreach (IBatch batch in unprocessedBatches)
             {
