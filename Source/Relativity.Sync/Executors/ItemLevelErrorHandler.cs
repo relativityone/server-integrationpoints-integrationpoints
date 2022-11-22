@@ -1,8 +1,16 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.API;
+using Relativity.Import.V1;
+using Relativity.Import.V1.Models;
+using Relativity.Import.V1.Models.Errors;
+using Relativity.Import.V1.Models.Sources;
+using Relativity.Import.V1.Services;
+using Relativity.Services.Exceptions;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
@@ -32,9 +40,7 @@ namespace Relativity.Sync.Executors
 
         public void HandleItemLevelError(long completedItem, ItemLevelError itemLevelError)
         {
-            int itemArtifactId = _statusMonitor.GetArtifactId(itemLevelError.Identifier);
-            _itemLevelErrorLogAggregator.AddItemLevelError(itemLevelError, itemArtifactId);
-            _statusMonitor.MarkItemAsFailed(itemLevelError.Identifier);
+            MarkItemAsFailed(itemLevelError);
 
             CreateJobHistoryErrorDto itemError = new CreateJobHistoryErrorDto(ErrorType.Item)
             {
@@ -50,6 +56,26 @@ namespace Relativity.Sync.Executors
             }
         }
 
+        public async Task HandleIApiItemLevelErrors(
+            IImportSourceController sourceController,
+            DataSources dataSources,
+            IDocumentSynchronizationMonitorConfiguration configuration)
+        {
+            foreach (Guid sourceId in dataSources.Sources)
+            {
+                ImportErrors itemLevelErrors = await GetItemLevelErrors(sourceController, configuration, sourceId);
+                DataSourceDetails dataSourceDetails = await GetDataSourceDetails(sourceController, configuration, sourceId);
+                foreach (ImportError error in itemLevelErrors.Errors)
+                {
+                    int lineNumber = error.LineNumber;
+                    foreach (ErrorDetail errorDetail in error.ErrorDetails)
+                    {
+                        CreateItemLevelErrorInJobHistory(errorDetail, dataSourceDetails, lineNumber);
+                    }
+                }
+            }
+        }
+
         public async Task HandleDataSourceProcessingFinishedAsync(IBatch batch)
         {
             if (_batchItemErrors.Any())
@@ -59,6 +85,87 @@ namespace Relativity.Sync.Executors
 
             await batch.SetFailedDocumentsCountAsync(_statusMonitor.FailedItemsCount).ConfigureAwait(false);
             await _itemLevelErrorLogAggregator.LogAllItemLevelErrorsAsync().ConfigureAwait(false);
+        }
+
+        private async Task<DataSourceDetails> GetDataSourceDetails(
+            IImportSourceController sourceController,
+            IDocumentSynchronizationMonitorConfiguration configuration,
+            Guid sourceId)
+        {
+            ValueResponse<DataSourceDetails> dataSourceResponse = await sourceController.GetDetailsAsync(
+                    configuration.DestinationWorkspaceArtifactId,
+                    configuration.ExportRunId,
+                    sourceId)
+                .ConfigureAwait(false);
+            if (!dataSourceResponse.IsSuccess)
+            {
+                string message = string.Format(
+                    "Unable to retrieve Data source details. DestinationWorkspaceArtifactId - {0}, jobId - {1}, sourceId - {2}",
+                    configuration.DestinationWorkspaceArtifactId,
+                    configuration.ExportRunId,
+                    sourceId);
+                throw new NotFoundException(message);
+            }
+
+            DataSourceDetails dataSourceDetails = dataSourceResponse.Value;
+            return dataSourceDetails;
+        }
+
+        private async Task<ImportErrors> GetItemLevelErrors(
+            IImportSourceController sourceController,
+            IDocumentSynchronizationMonitorConfiguration configuration,
+            Guid sourceId)
+        {
+            ValueResponse<ImportErrors> itemLevelErrorsResponse = await sourceController
+                .GetItemErrorsAsync(
+                    configuration.DestinationWorkspaceArtifactId,
+                    configuration.ExportRunId,
+                    sourceId)
+                .ConfigureAwait(false);
+            if (!itemLevelErrorsResponse.IsSuccess)
+            {
+                string message = string.Format(
+                    "Unable to retrieve Item Level Errors. DestinationWorkspaceArtifactId - {0}, jobId - {1}, sourceId - {2}",
+                    configuration.DestinationWorkspaceArtifactId,
+                    configuration.ExportRunId,
+                    sourceId);
+                throw new NotFoundException(message);
+            }
+
+            ImportErrors itemLevelErrors = itemLevelErrorsResponse.Value;
+            return itemLevelErrors;
+        }
+
+        private void CreateItemLevelErrorInJobHistory(
+            ErrorDetail errorDetail,
+            DataSourceDetails dataSourceDetails,
+            int lineNumber)
+        {
+            string errorMessage = errorDetail.ErrorMessage;
+            bool isIdentifierReturned = errorDetail
+                .ErrorProperties
+                .TryGetValue("Identifier", out string identifier);
+
+            if (!isIdentifierReturned)
+            {
+                string itemLevelErrorRow = File
+                    .ReadLines(dataSourceDetails.DataSourceSettings.Path)
+                    .Skip(lineNumber)
+                    .Take(1)
+                    .First();
+                const int identifierColumnIndex = 0;
+                identifier = itemLevelErrorRow.Split(dataSourceDetails.DataSourceSettings.ColumnDelimiter)[identifierColumnIndex];
+            }
+
+            ItemLevelError itemLevelError = new ItemLevelError(identifier, errorMessage);
+            HandleItemLevelError(0, itemLevelError);
+        }
+
+        private void MarkItemAsFailed(ItemLevelError itemLevelError)
+        {
+            int itemArtifactId = _statusMonitor.GetArtifactId(itemLevelError.Identifier);
+            _itemLevelErrorLogAggregator.AddItemLevelError(itemLevelError, itemArtifactId);
+            _statusMonitor.MarkItemAsFailed(itemLevelError.Identifier);
         }
 
         private void CreateJobHistoryErrors()

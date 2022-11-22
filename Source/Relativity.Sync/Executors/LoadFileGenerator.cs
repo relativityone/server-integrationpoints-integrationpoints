@@ -105,7 +105,7 @@ namespace Relativity.Sync.Executors
         private async Task<string> CreateBatchFullPath(IBatch batch)
         {
             _logger.LogInformation("Preparing LoadFile path for Batch {batchId} - {batchGuid}...", batch.ArtifactId, batch.BatchGuid);
-            string batchFullPath = string.Empty;
+            string batchFullPath;
             try
             {
                 int workspaceId = _configuration.DestinationWorkspaceArtifactId;
