@@ -49,7 +49,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             JobController sut = PrepareSut(HttpMethod.Post, "/run");
 
             // Act
-            var response = await sut.Run(payload).ConfigureAwait(false);
+            var response = sut.Run(payload);
 
             // Assert
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -73,8 +73,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             JobController sut = PrepareSut(HttpMethod.Post, "/run");
 
             // Act
-            var response = await sut.Run(payload).ConfigureAwait(false);
-            var response2 = await sut.Run(payload).ConfigureAwait(false);
+            var response = sut.Run(payload);
+            var response2 = sut.Run(payload);
 
             // Assert
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -121,8 +121,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
                 SourceWorkspace.Helpers.IntegrationPointHelper.CreateSavedSearchSyncIntegrationPoint(_destinationWorkspace);
             integrationPoint.HasErrors = true;
             ConvertToOverwriteChoice(integrationPoint, initialOverwriteMode);
-            
-            SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(new JobTest(), integrationPoint);          
+
+            SourceWorkspace.Helpers.JobHistoryHelper.CreateJobHistory(new JobTest(), integrationPoint);
 
             JobController.Payload payload = new JobController.Payload
             {
@@ -137,7 +137,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 
             // Assert
             JobHistoryTest addedJobHistoryForNextRun = SourceWorkspace.JobHistory.LastOrDefault();
-            addedJobHistoryForNextRun.Overwrite.Should().Be(expectedOverwriteMode);           
+            addedJobHistoryForNextRun.Overwrite.Should().Be(expectedOverwriteMode);
         }
 
         [IdentifiedTest("EEDDA654-F7C0-4843-BAF6-ADBDB57EFC22")]
@@ -347,7 +347,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             JobController sut = PrepareSut(HttpMethod.Post, "/run");
 
             // Act
-            var response = await sut.Run(payload).ConfigureAwait(false);
+            var response = sut.Run(payload);
 
             // Assert
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -383,7 +383,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             JobController sut = PrepareSut(HttpMethod.Post, "/run");
 
             // Act
-            HttpResponseMessage response = await sut.Run(payload).ConfigureAwait(false);
+            HttpResponseMessage response = sut.Run(payload);
 
             // Assert
             response.IsSuccessStatusCode.Should().BeFalse();
@@ -430,7 +430,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
                     break;
                 case OverwriteModeNames.OverlayOnlyModeName:
                     integrationPoint.OverwriteFields = OverwriteFieldsChoices.IntegrationPointOverlayOnly;
-                    break;                              
+                    break;
             }
         }
     }

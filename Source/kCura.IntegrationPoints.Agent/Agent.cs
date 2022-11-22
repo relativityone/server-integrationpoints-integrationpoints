@@ -148,7 +148,7 @@ namespace kCura.IntegrationPoints.Agent
                 {
                     if (job.JobFailed != null)
                     {
-                        MarkJobHistoryAsFailedAsync(Container, job).GetAwaiter().GetResult();
+                        MarkJobHistoryAsFailed(Container, job);
                         return new TaskResult
                         {
                             Status = TaskStatusEnum.Fail,
@@ -236,7 +236,7 @@ namespace kCura.IntegrationPoints.Agent
             return result;
         }
 
-        private async Task MarkJobHistoryAsFailedAsync(IWindsorContainer container, Job job)
+        private void MarkJobHistoryAsFailed(IWindsorContainer container, Job job)
         {
             IntegrationPointDto integrationPoint = container.Resolve<IIntegrationPointService>()
                 .Read(job.RelatedObjectArtifactID);

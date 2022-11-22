@@ -39,8 +39,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
         [LogApiExceptionFilter(Message = "Unable to get SummaryPage for requested Integration Point")]
         public ActionResult GetSummaryPage(int id, string controllerType)
         {
-            Tuple<int, int> providerIds = GetSourceAndDestinationProviderIdsAsync(id, controllerType)
-                .GetAwaiter().GetResult();
+            Tuple<int, int> providerIds = GetSourceAndDestinationProviderIdsAsync(id, controllerType);
 
             ProviderType providerType = _providerTypeService.GetProviderType(providerIds.Item1, providerIds.Item2);
 
@@ -79,7 +78,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
             return Json(_documentAccumulatedStatistics.GetImagesStatisticsForProductionAsync(workspaceId, productionId).GetAwaiter().GetResult());
         }
 
-        private async Task<Tuple<int, int>> GetSourceAndDestinationProviderIdsAsync(int integrationPointId, string controllerType)
+        private Tuple<int, int> GetSourceAndDestinationProviderIdsAsync(int integrationPointId, string controllerType)
         {
             if (controllerType == IntegrationPointApiControllerNames.IntegrationPointApiControllerName)
             {

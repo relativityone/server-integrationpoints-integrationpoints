@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
                 .Throw(exception);
 
             // Act
-            HttpResponseMessage response = await _instance.Run(_payload).ConfigureAwait(false);
+            HttpResponseMessage response = _instance.Run(_payload);
 
             // Assert
             _auditRepository.Received(1)
@@ -136,7 +136,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
                 .Throw(exceptionToBeThrown);
 
             // Act
-            HttpResponseMessage response = await _instance.Run(_payload).ConfigureAwait(false);
+            HttpResponseMessage response = _instance.Run(_payload);
 
             // Assert
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
@@ -158,7 +158,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             _instance.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(0)));
 
             // Act
-            HttpResponseMessage response = await _instance.Run(_payload).ConfigureAwait(false);
+            HttpResponseMessage response = _instance.Run(_payload);
 
             // Assert
             _integrationPointService.Received(1).RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0);
@@ -185,7 +185,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             _instance.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 
             // Act
-            HttpResponseMessage response = await _instance.Run(_payload).ConfigureAwait(false);
+            HttpResponseMessage response = _instance.Run(_payload);
 
             // Assert
             _integrationPointService.Received(1).RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, _USERID);

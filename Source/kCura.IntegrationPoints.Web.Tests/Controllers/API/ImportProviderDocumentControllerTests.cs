@@ -170,7 +170,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _importLocationService.ErrorFilePath(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(string.Empty);
             _fileIo.Exists(Arg.Any<string>()).Returns(true);
 
-            IHttpActionResult result = await _controller.CheckErrorFile(-1, -1).ConfigureAwait(false);
+            IHttpActionResult result = _controller.CheckErrorFile(-1, -1);
 
             Assert.IsInstanceOf(typeof(StatusCodeResult), result);
             StatusCodeResult statusCodeResult = result as StatusCodeResult;
@@ -183,7 +183,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _importLocationService.ErrorFilePath(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(string.Empty);
             _fileIo.Exists(Arg.Any<string>()).Returns(false);
 
-            IHttpActionResult result = await _controller.CheckErrorFile(-1, -1).ConfigureAwait(false);
+            IHttpActionResult result = _controller.CheckErrorFile(-1, -1);
 
             Assert.IsInstanceOf(typeof(BadRequestResult), result);
         }
@@ -194,7 +194,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _importLocationService.ErrorFilePath(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(string.Empty);
             _memoryStream.GetBuffer().Returns(_FILE_CONTENT_MEM_STREAM_BYTES);
 
-            IHttpActionResult result = await _controller.DownloadErrorFile(-1, -1).ConfigureAwait(false);
+            IHttpActionResult result = _controller.DownloadErrorFile(-1, -1);
             ResponseMessageResult responseResult = (ResponseMessageResult)result;
             Task<byte[]> t = responseResult.Response.Content.ReadAsByteArrayAsync();
             t.Wait();

@@ -128,7 +128,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
         [HttpGet]
         [LogApiExceptionFilter(Message = "Unable to check error file location.")]
-        public async Task<IHttpActionResult> CheckErrorFile(int artifactId, int workspaceId)
+        public IHttpActionResult CheckErrorFile(int artifactId, int workspaceId)
         {
             IntegrationPointDto integrationPoint = _integrationPointService.Read(artifactId);
             string errorFilePath = _importFileLocationService.ErrorFilePath(
@@ -152,7 +152,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
         [HttpGet]
         [LogApiExceptionFilter(Message = "Unable to retrieve error file for download.")]
-        public async Task<IHttpActionResult> DownloadErrorFile(int artifactId, int workspaceId)
+        public IHttpActionResult DownloadErrorFile(int artifactId, int workspaceId)
         {
             IntegrationPointDto integrationPoint = _integrationPointService.Read(artifactId);
             string errorFilePath = _importFileLocationService.ErrorFilePath(

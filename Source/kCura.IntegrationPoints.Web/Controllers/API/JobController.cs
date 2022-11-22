@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         // POST API/Job/Run
         [HttpPost]
         [LogApiExceptionFilter(Message = "Unable to run the transfer job.")]
-        public async Task<HttpResponseMessage> Run(Payload payload)
+        public HttpResponseMessage Run(Payload payload)
         {
             try
             {
