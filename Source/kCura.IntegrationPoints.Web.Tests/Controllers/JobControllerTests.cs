@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
         [TestCase(null)]
         [TestCase(1000)]
-        public async Task ControllerDoesNotHaveUserIdInTheHeaderWhenTryingToSubmitPushingJob_ExpectBadRequest(int? federatedInstanceArtifactId)
+        public void ControllerDoesNotHaveUserIdInTheHeaderWhenTryingToSubmitPushingJob_ExpectBadRequest(int? federatedInstanceArtifactId)
         {
             // Arrange
             var integrationPoint = new IntegrationPointDto()
@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
         [TestCase(null)]
         [TestCase(1000)]
-        public async Task KeplerCallThrowsException(int? federatedInstanceArtifactId)
+        public void KeplerCallThrowsException(int? federatedInstanceArtifactId)
         {
             // Arrange
             var claims = new List<Claim>(1)
@@ -145,7 +145,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
         [TestCase(null)]
         [TestCase(1000)]
-        public async Task ControllerDoesNotHaveUserIdInTheHeaderWhenTryingToSubmitNormalJob_ExpectNoError(int? federatedInstanceArtifactId)
+        public void ControllerDoesNotHaveUserIdInTheHeaderWhenTryingToSubmitNormalJob_ExpectNoError(int? federatedInstanceArtifactId)
         {
             // Arrange
             var integrationPoint = new IntegrationPointDto()
@@ -167,7 +167,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
         [TestCase(null)]
         [TestCase(1000)]
-        public async Task NonRelativityProviderCall(int? federatedInstanceArtifactId)
+        public void NonRelativityProviderCall(int? federatedInstanceArtifactId)
         {
             // Arrange
             var claims = new List<Claim>(1)

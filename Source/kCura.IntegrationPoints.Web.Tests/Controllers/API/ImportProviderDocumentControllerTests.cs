@@ -165,7 +165,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         }
 
         [Test]
-        public async Task ItShouldReturnNoContentResultIfErrorFileExists()
+        public void ItShouldReturnNoContentResultIfErrorFileExists()
         {
             _importLocationService.ErrorFilePath(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(string.Empty);
             _fileIo.Exists(Arg.Any<string>()).Returns(true);
@@ -178,7 +178,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         }
 
         [Test]
-        public async Task ItShouldReturnBadRequestResultIfErrorFileMissing()
+        public void ItShouldReturnBadRequestResultIfErrorFileMissing()
         {
             _importLocationService.ErrorFilePath(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(string.Empty);
             _fileIo.Exists(Arg.Any<string>()).Returns(false);
@@ -189,7 +189,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         }
 
         [Test]
-        public async Task ItShouldReturnCorrectResponseMessageResultForDownload()
+        public void ItShouldReturnCorrectResponseMessageResultForDownload()
         {
             _importLocationService.ErrorFilePath(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(string.Empty);
             _memoryStream.GetBuffer().Returns(_FILE_CONTENT_MEM_STREAM_BYTES);

@@ -518,7 +518,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         public void RetryIntegrationPoint_ShouldThrowPermissionException_WhenInsufficientPermissions()
         {
             // Arrange
-            _integrationPointDto.HasErrors = true;
+            _integrationPoint.HasErrors = true;
 
             SetupLastRunJobHistory(
                 _fxt.Build<Data.JobHistory>()
@@ -628,7 +628,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         public void RetryIntegrationPoint_ShouldScheduleRetryJob()
         {
             // Arrange
-            _integrationPointDto.HasErrors = true;
+            _integrationPoint.HasErrors = true;
 
             SetupLastRunJobHistory(
                 _fxt.Build<Data.JobHistory>()

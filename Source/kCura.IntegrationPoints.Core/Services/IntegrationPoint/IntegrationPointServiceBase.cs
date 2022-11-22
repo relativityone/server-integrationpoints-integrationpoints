@@ -106,9 +106,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             return periodicScheduleRule;
         }
 
-        protected SourceProvider GetSourceProvider(int? sourceProviderArtifactId)
+        protected SourceProvider GetSourceProvider(int sourceProviderArtifactId)
         {
-            if (!sourceProviderArtifactId.HasValue)
+            if (sourceProviderArtifactId == 0)
             {
                 throw new Exception(Constants.IntegrationPoints.NO_SOURCE_PROVIDER_SPECIFIED);
             }
@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             SourceProvider sourceProvider = null;
             try
             {
-                sourceProvider = ObjectManager.Read<SourceProvider>(sourceProviderArtifactId.Value);
+                sourceProvider = ObjectManager.Read<SourceProvider>(sourceProviderArtifactId);
             }
             catch (Exception e)
             {
@@ -126,9 +126,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             return sourceProvider;
         }
 
-        protected DestinationProvider GetDestinationProvider(int? destinationProviderArtifactId)
+        protected DestinationProvider GetDestinationProvider(int destinationProviderArtifactId)
         {
-            if (!destinationProviderArtifactId.HasValue)
+            if (destinationProviderArtifactId == 0)
             {
                 throw new Exception(Constants.IntegrationPoints.NO_DESTINATION_PROVIDER_SPECIFIED);
             }
@@ -136,19 +136,19 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             DestinationProvider destinationProvider = null;
             try
             {
-                destinationProvider = ObjectManager.Read<DestinationProvider>(destinationProviderArtifactId.Value);
+                destinationProvider = ObjectManager.Read<DestinationProvider>(destinationProviderArtifactId);
             }
             catch (Exception e)
             {
-                throw new Exception(string.Format(Core.Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_DESTINATION_PROVIDER_ARTIFACT_ID, destinationProviderArtifactId), e);
+                throw new Exception(string.Format(Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_DESTINATION_PROVIDER_ARTIFACT_ID, destinationProviderArtifactId), e);
             }
 
             return destinationProvider;
         }
 
-        protected IntegrationPointType GetIntegrationPointType(int? integrationPointTypeArtifactId)
+        protected IntegrationPointType GetIntegrationPointType(int integrationPointTypeArtifactId)
         {
-            if (!integrationPointTypeArtifactId.HasValue)
+            if (integrationPointTypeArtifactId == 0)
             {
                 throw new Exception(Constants.IntegrationPoints.NO_INTEGRATION_POINT_TYPE_SPECIFIED);
             }
@@ -156,11 +156,11 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             IntegrationPointType integrationPointType = null;
             try
             {
-                integrationPointType = ObjectManager.Read<Data.IntegrationPointType>(integrationPointTypeArtifactId.Value);
+                integrationPointType = ObjectManager.Read<IntegrationPointType>(integrationPointTypeArtifactId);
             }
             catch (Exception e)
             {
-                throw new Exception(Core.Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_INTEGRATION_POINT_TYPE, e);
+                throw new Exception(Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_INTEGRATION_POINT_TYPE, e);
             }
 
             return integrationPointType;

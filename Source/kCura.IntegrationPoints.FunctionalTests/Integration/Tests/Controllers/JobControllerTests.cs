@@ -34,7 +34,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         }
 
         [IdentifiedTest("A1CDEE5D-5292-4B0C-9982-EE3679F757F8")]
-        public async Task Run_ShouldScheduleJob()
+        public void Run_ShouldScheduleJob()
         {
             // Arrange
             IntegrationPointTest integrationPoint =
@@ -58,7 +58,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         }
 
         [IdentifiedTest("CCAFB6E8-9D1C-424F-BBBF-AE8A83F4A7AB")]
-        public async Task Run_ShouldNotScheduleJobTwice()
+        public void Run_ShouldNotScheduleJobTwice()
         {
             // Arrange
             IntegrationPointTest integrationPoint =
@@ -321,7 +321,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         }
 
         [IdentifiedTest("610B7F40-F951-4FBC-A70F-C5AA4EBC65C4")]
-        public async Task Run_ShouldScheduleImportLoadFileJobWithLoadFileInfo()
+        public void Run_ShouldScheduleImportLoadFileJobWithLoadFileInfo()
         {
             // Arrange
             const string loadFile = "DataTransfer\\Import\\SaltPepper\\saltvpepper-no_errors.dat";
@@ -363,7 +363,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
         }
 
         [IdentifiedTest("7F3A7A24-AFE0-414F-A6AD-629A84218ED8")]
-        public async Task Run_ShouldResultInValidationFailed()
+        public void Run_ShouldResultInValidationFailed()
         {
             // Arrange
             Proxy.PermissionManager.GrantNotConfiguredPermissions = false;
