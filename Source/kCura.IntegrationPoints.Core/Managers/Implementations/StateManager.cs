@@ -25,6 +25,9 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             bool downloadErrorFileLinkEnabled = IsDownloadErrorFileLinkEnabled(hasErrors);
             bool downloadErrorFileLinkVisible = IsDownloadErrorFileLinkVisible(providerType);
 
+            // TODO: introduce place in code where this flag will be kept and changed according to calculation state
+            bool calculateStatsButtonEnabled = true;
+
             return new ButtonStateDTO
             {
                 RetryErrorsButtonEnabled = retryErrorsButtonEnabled,
@@ -35,7 +38,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
                 StopButtonEnabled = stopButtonEnabled,
                 SaveAsProfileButtonVisible = saveAsProfileButtonVisible,
                 DownloadErrorFileLinkEnabled = downloadErrorFileLinkEnabled,
-                DownloadErrorFileLinkVisible = downloadErrorFileLinkVisible
+                DownloadErrorFileLinkVisible = downloadErrorFileLinkVisible,
+                CalculateStatisticsButtonEnabled = calculateStatsButtonEnabled
             };
         }
 

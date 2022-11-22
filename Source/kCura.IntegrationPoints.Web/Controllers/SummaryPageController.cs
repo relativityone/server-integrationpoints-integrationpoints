@@ -20,7 +20,8 @@ namespace kCura.IntegrationPoints.Web.Controllers
         private readonly SummaryPageSelector _summaryPageSelector;
         private readonly IDocumentAccumulatedStatistics _documentAccumulatedStatistics;
 
-        public SummaryPageController(ICaseServiceContext context,
+        public SummaryPageController(
+            ICaseServiceContext context,
             IProviderTypeService providerTypeService,
             IIntegrationPointRepository integrationPointRepository,
             SummaryPageSelector summaryPageSelector,
@@ -92,8 +93,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
                 IntegrationPointProfile integrationPointProfile =
                     _context.RelativityObjectManagerService.RelativityObjectManager.Read<IntegrationPointProfile>(integrationPointId);
 
-                return new Tuple<int, int>(integrationPointProfile.SourceProvider.Value,
-                    integrationPointProfile.DestinationProvider.Value);
+                return new Tuple<int, int>(integrationPointProfile.SourceProvider.Value, integrationPointProfile.DestinationProvider.Value);
             }
         }
     }
@@ -101,6 +101,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
     public static class IntegrationPointApiControllerNames
     {
         public static string IntegrationPointApiControllerName => "IntegrationPointsAPI";
+
         public static string IntegrationPointProfileApiControllerName => "IntegrationPointProfilesAPI";
     }
 }

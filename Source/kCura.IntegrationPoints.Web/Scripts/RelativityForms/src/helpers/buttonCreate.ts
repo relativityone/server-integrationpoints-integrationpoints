@@ -1,5 +1,5 @@
 ﻿import { IConvenienceApi } from "../types/convenienceApi";
-import { postCreateIntegrationPointProfileRequest, postJobAPIRequest, prepareGetImportProviderDocumentAPIRequest, prepareGetViewErrorsPath } from "./buttonFunctionalities";
+import { postCreateIntegrationPointProfileRequest, postJobAPIRequest, prepareGetImportProviderDocumentAPIRequest, prepareGetViewErrorsPath, calculateStatsRequest } from "./buttonFunctionalities";
 
 export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number, lqMessageContainer:Element) {
     return consoleApi.generate.button({
@@ -114,6 +114,35 @@ export function createStopButton(consoleApi, convenienceApi: IConvenienceApi, ct
                                 return ctx.setErrorSummary(["Failed to stop the job. Check Errors tab for details."]);
                             }
                         });
+                }
+            })
+        }
+    });
+}
+
+export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number) {
+    return consoleApi.generate.button({
+        innerText: "Calculate",
+        disabled: !enabled,
+        onclick: function () {
+            return convenienceApi.modalService.confirm({
+                title: "Calculate statistics",
+                message: "This action will launch the calculation of Saved Search content. The operation can be time consuming. Refreshing or leaving this page will cancel calculation.",
+                acceptText: "Calculate statistics",
+                cancelText: "Cancel",
+                acceptAction: function () {
+
+                    var fakeNumber = -1000;
+                    convenienceApi.fieldHelper.setValue("Total of Documents", fakeNumber);
+                    //var request = calculateStatsRequest(convenienceApi, workspaceId);
+
+                    //convenienceApi.relativityHttpClient.get(request.url, request.options)
+                    //    .then(function (result) {
+                    //        if (!result.ok) {
+                    //            console.log(result);
+                    //            return ctx.setErrorSummary(["Failed to launch statistics calculation. Check Errors tab for details."]);
+                    //        } 
+                    //    });                  
                 }
             })
         }

@@ -31,8 +31,10 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
             _logger = logger;
         }
 
-        public async Task<DocumentsStatistics> GetNativesStatisticsForSavedSearchAsync(int workspaceId,
-            int savedSearchId, CancellationToken token = default(CancellationToken))
+        public async Task<DocumentsStatistics> GetNativesStatisticsForSavedSearchAsync(
+            int workspaceId,
+            int savedSearchId,
+            CancellationToken token = default(CancellationToken))
         {
             DocumentsStatistics StatisticsCalculation(DocumentsStatistics statistics, IEnumerable<RelativityObjectSlim> result)
             {
@@ -41,7 +43,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
                 statistics.DocumentsCount += result.Count();
                 statistics.TotalNativesCount += result.Count(DocumentHasNative);
-                
+
                 statistics.TotalNativesSizeBytes +=
                     _nativeFileSizeStatistics.GetTotalFileSize(result.Select(x => x.ArtifactID), workspaceId);
 
@@ -89,7 +91,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
                     })
                     .Select(x => x.ArtifactID)
                     .ToList();
-                    
+
                     stats.TotalImagesSizeBytes += _imageFileSizeStatistics.GetTotalFileSize(documentsWithImagesArtifactIDs, workspaceId);
                 }
 
@@ -103,7 +105,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
                     .AddField(DocumentFieldsConstants.HasImagesFieldName)
                     .AddField(DocumentFieldsConstants.RelativityImageCountGuid)
                     .Build();
-                
+
                 DocumentsStatistics statistics = await QueryDocumentsWithExport(workspaceId, query,
                     nameof(GetImagesStatisticsForSavedSearchAsync), token,
                     StatisticsCalculation).ConfigureAwait(false);
@@ -129,7 +131,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
                 statistics.DocumentsCount += result.Count();
                 statistics.TotalImagesCount += result.Sum(x => DocumentHasImage(x));
-                
+
                 statistics.TotalImagesSizeBytes += _imageFileSizeStatistics.GetTotalFileSize(productionId, workspaceId);
 
                 return statistics;
@@ -184,7 +186,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
                 while (result.Any());
 
                 stopwatch.Stop();
-                _logger.LogInformation("Calculated total items size for method {callingMethodName} in {elapsed} ms", 
+                _logger.LogInformation("Calculated total items size for method {callingMethodName} in {elapsed} ms",
                     callingMethodName, stopwatch.ElapsedMilliseconds);
 
                 return statistics;

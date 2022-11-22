@@ -1,27 +1,27 @@
 import { contextProvider } from "../helpers/contextProvider";
 import { IConvenienceApi } from "../types/convenienceApi";
 import { ButtonState } from "../types/buttonState";
-import { createDownloadErrorFileLink, createRetryErrorsButton, createRunButton, createSaveAsProfileButton, createStopButton, createViewErrorsLink, removeMessageContainers } from "../helpers/buttonCreate";
+import { createDownloadErrorFileLink, createRetryErrorsButton, createRunButton, createSaveAsProfileButton, createStopButton, createCalculateStatsButton, createViewErrorsLink, removeMessageContainers } from "../helpers/buttonCreate";
 
 export function createConsole(convenienceApi: IConvenienceApi): void {
     return contextProvider((ctx) => {
         var consoleApi = convenienceApi.console;
         var integrationPointId = ctx.artifactId;
-        var workspaceId = ctx.workspaceId;
+        var workspaceId = ctx.workspaceId;       
 
 
         return consoleApi.destroy().then(function () {
             return consoleApi.containersPromise;
          }).then(function (containers) {
                var buttonState = getButtonStateObject(convenienceApi, ctx, workspaceId, integrationPointId);
-               buttonState.then(function (btnStateObj: ButtonState) {
-                    var consoleContent = generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPointId, btnStateObj);
+             buttonState.then(function (btnStateObj: ButtonState) {
+                 var consoleContent = generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPointId, btnStateObj);
                    if (consoleContent) {
                         containers.rootElement.appendChild(consoleContent);
                     }
 
-                    let relativityWindow = convenienceApi.utilities.getRelativityPageBaseWindow();
-                    checkIfRefreshIsNeeded(btnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, relativityWindow.location.href);
+                 let relativityWindow = convenienceApi.utilities.getRelativityPageBaseWindow();
+                 checkIfRefreshIsNeeded(btnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, relativityWindow.location.href);
             });
         })
     })
@@ -142,6 +142,11 @@ function generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPoi
     if (buttonState.viewErrorsLinkVisible) {
         var viewErrorsLink = createViewErrorsLink(consoleApi, convenienceApi, ctx, buttonState.viewErrorsLinkEnabled, workspaceId, integrationPointId);
         transferSection.push(viewErrorsLink);
+    }
+
+    if (buttonState.calculateStatisticsButtonEnabled) {
+        var calculateStatsButton = createCalculateStatsButton(consoleApi, convenienceApi, ctx, buttonState.calculateStatisticsButtonEnabled, workspaceId);
+        transferSection.push(calculateStatsButton);
     }
 
     if (buttonState.saveAsProfileButtonVisible) {

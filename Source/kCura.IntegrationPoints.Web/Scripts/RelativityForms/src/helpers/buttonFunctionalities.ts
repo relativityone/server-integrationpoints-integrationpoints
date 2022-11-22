@@ -17,6 +17,19 @@ export function postJobAPIRequest(convenienceApi: IConvenienceApi, workspaceId, 
     return convenienceApi.relativityHttpClient.post(request.url, request.payload, request.options)
 }
 
+export function calculateStatsRequest(convenienceApi: IConvenienceApi, workspaceId) {
+    var request = {
+        options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
+            headers: {
+                "content-type": "application/json; charset=utf-8"
+            }
+        }),
+        url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/" + workspaceId + "/SummaryPage/GetNativesStatisticsForSavedSearch" + '&workspaceId=' + workspaceId 
+    };
+
+    return request;
+}
+
 export function postCreateIntegrationPointProfileRequest(convenienceApi: IConvenienceApi, workspaceId, integrationPointId, integrationPointProfileName) {
     var request = {
         options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
