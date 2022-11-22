@@ -4,10 +4,9 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.Core.RelativitySync;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Utils;
 using kCura.IntegrationPoints.Data;
@@ -35,30 +34,30 @@ namespace kCura.IntegrationPoints.RelativitySync
         private readonly IJobHistoryService _jobHistoryService;
         private readonly IJobHistorySyncService _jobHistorySyncService;
         private readonly ISyncOperationsWrapper _syncOperations;
-        private readonly IIntegrationPointService _integrationPointService;
         private readonly IAPILog _logger;
 
-        public IntegrationPointToSyncConverter(ISerializer serializer, IJobHistoryService jobHistoryService,
-            IJobHistorySyncService jobHistorySyncService, ISyncOperationsWrapper syncOperations, IIntegrationPointService integrationPointService, IAPILog logger)
+        public IntegrationPointToSyncConverter(
+            ISerializer serializer,
+            IJobHistoryService jobHistoryService,
+            IJobHistorySyncService jobHistorySyncService,
+            ISyncOperationsWrapper syncOperations,
+            IAPILog logger)
         {
             _serializer = serializer;
             _jobHistoryService = jobHistoryService;
             _jobHistorySyncService = jobHistorySyncService;
             _syncOperations = syncOperations;
-            _integrationPointService = integrationPointService;
             _logger = logger;
         }
 
-        public async Task<int> CreateSyncConfigurationAsync(int workspaceId, int integrationPointId, int jobHistoryId, int userId)
+        public async Task<int> CreateSyncConfigurationAsync(int workspaceId, IntegrationPointDto integrationPointDto, int jobHistoryId, int userId)
         {
             try
             {
-                IntegrationPointDto integrationPoint = _integrationPointService.Read(integrationPointId);
-
                 IExtendedJob extendedJob = new ExtendedJobForSyncApplication()
                 {
-                    IntegrationPointId = integrationPointId,
-                    IntegrationPointDto = integrationPoint,
+                    IntegrationPointId = integrationPointDto.ArtifactId,
+                    IntegrationPointDto = integrationPointDto,
                     JobHistoryId = jobHistoryId,
                     WorkspaceId = workspaceId,
                     SubmittedById = userId

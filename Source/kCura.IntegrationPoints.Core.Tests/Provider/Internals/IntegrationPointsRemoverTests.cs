@@ -21,6 +21,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Provider.Internals
         public override void SetUp()
         {
             _integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
+            _integrationPointRepository.GetIntegrationPoints(Arg.Any<List<int>>()).Returns(new List<Data.IntegrationPoint>());
             _deleteHistoryService = Substitute.For<IDeleteHistoryService>();
         }
 

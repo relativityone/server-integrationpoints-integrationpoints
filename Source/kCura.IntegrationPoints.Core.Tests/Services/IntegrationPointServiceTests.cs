@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.RelativitySync;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -233,7 +234,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             _relativitySyncAppIntegrationMock.Verify(
                 x => x.SubmitSyncJobAsync(
                     _WORKSPACE_ID,
-                    _integrationPointDto.ArtifactId,
+                    It.IsAny<IntegrationPointDto>(),
                     It.IsAny<int>(),
                     _USER_ID));
 

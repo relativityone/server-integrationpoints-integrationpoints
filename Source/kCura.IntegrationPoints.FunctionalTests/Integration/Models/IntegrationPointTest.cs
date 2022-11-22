@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
@@ -319,6 +321,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public IntegrationPointDto ToDto()
         {
+            var serializer = new JSONSerializer();
             var rdo = this.ToRdo();
             return new IntegrationPointDto
             {
@@ -338,6 +341,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 NextRun = rdo.NextScheduledRuntimeUTC,
                 SecuredConfiguration = rdo.SecuredConfiguration,
                 JobHistory = rdo.JobHistory.ToList(),
+                FieldMappings = serializer.Deserialize<List<FieldMap>>(rdo.FieldMappings),
             };
         }
     }

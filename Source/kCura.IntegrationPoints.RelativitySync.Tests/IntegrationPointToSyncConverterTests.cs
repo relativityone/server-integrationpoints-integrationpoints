@@ -6,10 +6,8 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.RelativitySync.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -40,7 +38,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 
         private Mock<ISerializer> _serializerFake;
         private Mock<IJobHistoryService> _jobHistoryServiceFake;
-        private Mock<IIntegrationPointService> _integrationPointService;
 
         private SourceConfiguration _sourceConfiguration;
         private ExtendedImportSettings _destinationConfiguration;
@@ -68,8 +65,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 
             _jobHistoryServiceFake = new Mock<IJobHistoryService>();
 
-            _integrationPointService = new Mock<IIntegrationPointService>();
-
             Mock<IJobHistorySyncService> jobHistorySyncService = new Mock<IJobHistorySyncService>();
             jobHistorySyncService.Setup(x => x.GetLastJobHistoryWithErrorsAsync(_SOURCE_WORKSPACE_ID, _INTEGRATION_POINT_ID))
                 .ReturnsAsync(new RelativityObject { ArtifactID = _JOB_HISTORY_TO_RETRY });
@@ -86,7 +81,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
                 _jobHistoryServiceFake.Object,
                 jobHistorySyncService.Object,
                 syncOperations,
-                _integrationPointService.Object,
                 log.Object);
         }
 

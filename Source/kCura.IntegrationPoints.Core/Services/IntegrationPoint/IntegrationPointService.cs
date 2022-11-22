@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.RelativitySync;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
@@ -250,7 +251,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             if (shouldUseRelativitySyncAppIntegration)
             {
                 _logger.LogInformation("Using Sync application to execute the job");
-                _relativitySyncAppIntegration.SubmitSyncJobAsync(workspaceArtifactId, integrationPointArtifactId, jobHistory.ArtifactId, userId).GetAwaiter().GetResult();
+                _relativitySyncAppIntegration.SubmitSyncJobAsync(workspaceArtifactId, integrationPointDto, jobHistory.ArtifactId, userId).GetAwaiter().GetResult();
                 _logger.LogInformation("Sync job has been submitted");
             }
             else

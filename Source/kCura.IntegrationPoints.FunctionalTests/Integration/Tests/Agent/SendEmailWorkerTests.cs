@@ -27,7 +27,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
         private const bool _SMTP_USE_SSL = false;
         private const string _SMTP_PASSWORD_SETTING = "A7Pass";
         private const string _SMTP_USER_NAME_SETTING = "A7";
-        
+
         [IdentifiedTest("3E578A6E-D86A-4711-93C9-DB6A1C562C65")]
         public void SyncWorker_ShouldAddSendEmailTaskTypeToScheduleQueue()
         {
@@ -109,10 +109,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             {
                 jobDetails = Newtonsoft.Json.JsonConvert.SerializeObject(message);
             }
-            
+
 
             job.JobDetails = jobDetails;
-            
+
             return job;
         }
 
@@ -128,7 +128,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             fakeInstanceSettingsBundle.SmtpConfigurationSettings.Add("EmailFrom", _EMAIL_FROM_ADDRESS);
 
             Container.Register(Component.For<IInstanceSettingsBundle>().Instance(fakeInstanceSettingsBundle).LifestyleTransient().IsDefault());
-            
+
             SendEmailWorker sut = Container.Resolve<SendEmailWorker>();
 
             return sut;
