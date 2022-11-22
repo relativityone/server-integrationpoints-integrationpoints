@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Data.Resources;
+﻿using kCura.IntegrationPoints.Data.DbContext;
+using kCura.IntegrationPoints.Data.Resources;
 
 namespace kCura.IntegrationPoints.Data.Migrations
 {

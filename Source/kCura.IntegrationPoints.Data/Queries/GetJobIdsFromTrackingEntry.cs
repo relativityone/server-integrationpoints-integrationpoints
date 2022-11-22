@@ -1,8 +1,9 @@
-﻿using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using kCura.IntegrationPoints.Data.DbContext;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.Data.Queries
 {
@@ -14,8 +15,12 @@ namespace kCura.IntegrationPoints.Data.Queries
         private readonly int _workspaceId;
         private readonly long _rootJobId;
 
-        public GetJobIdsFromTrackingEntry(IRepositoryFactory repositoryFactory, IWorkspaceDBContext context,
-            string tableName, int workspaceId, long rootJobId)
+        public GetJobIdsFromTrackingEntry(
+            IRepositoryFactory repositoryFactory,
+            IWorkspaceDBContext context,
+            string tableName,
+            int workspaceId,
+            long rootJobId)
         {
             _repositoryFactory = repositoryFactory;
             _context = context;

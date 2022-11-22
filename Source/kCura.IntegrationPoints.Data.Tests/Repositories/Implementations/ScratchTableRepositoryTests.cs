@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using FluentAssertions;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using Moq;
@@ -10,9 +11,16 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 {
-    [TestFixture, Category("Unit")]
+    [TestFixture]
+    [Category("Unit")]
     public class ScratchTableRepositoryTests
     {
+        private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 1234321;
+        private const string _PREFIX = "prefix";
+        private const string _SUFFIX = "_suffix";
+        private const string _RESOURCE_DB_PREPEND = "[Resource]";
+        private const string _DOCUMENT_ARTIFACT_ID_COLUMN_NAME = "ArtifactID";
+
         private Mock<IDocumentRepository> _documentRepositoryMock;
         private Mock<IFieldQueryRepository> _fieldRepositoryMock;
         private Mock<IResourceDbProvider> _resourceDbProviderMock;
@@ -21,11 +29,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         private ScratchTableRepository _sut;
         private string _schemalessResourceDatabasePrepend;
         private string _tableName;
-        private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 1234321;
-        private const string _PREFIX = "prefix";
-        private const string _SUFFIX = "_suffix";
-        private const string _RESOURCE_DB_PREPEND = "[Resource]";
-        private const string _DOCUMENT_ARTIFACT_ID_COLUMN_NAME = "ArtifactID";
 
         [SetUp]
         public void SetUp()
@@ -46,48 +49,47 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
                 _resourceDbProviderMock.Object,
                 _PREFIX,
                 _SUFFIX,
-                _SOURCE_WORKSPACE_ARTIFACT_ID
-            );
+                _SOURCE_WORKSPACE_ARTIFACT_ID);
         }
 
         [Test]
         public void DeleteTable_ShouldPassProperSqlQueryToContext()
         {
-            //ARRANGE
+            // Arrange
             string expectedQuery =
                 $@"
             IF EXISTS (SELECT * FROM EDDS{_SOURCE_WORKSPACE_ARTIFACT_ID}.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{_tableName}') 
             DROP TABLE [Resource].[{_tableName}]
             ";
 
-            //ACT
+            // Act
             _sut.DeleteTable();
 
-            //ASSERT
+            // Assert
             _workspaceDbContextMock.Verify(x => x.ExecuteNonQuerySQLStatement(expectedQuery), Times.Once);
         }
 
         [Test]
         public void GetDocumentIDsDataReaderFromTable_ShouldPassProperSqlQueryToContext()
         {
-            //ARRANGE
+            // Arrange
             string expectedQuery =
                 $@"
             IF EXISTS (SELECT * FROM {_schemalessResourceDatabasePrepend}.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{_tableName}') 
             SELECT [ArtifactID] FROM {_RESOURCE_DB_PREPEND}.[{_tableName}]
             ";
 
-            //ACT
+            // Act
             _sut.GetDocumentIDsDataReaderFromTable();
 
-            //ASSERT
+            // Assert
             _workspaceDbContextMock.Verify(x => x.ExecuteSQLStatementAsReader(expectedQuery), Times.Once);
         }
 
         [Test]
         public void ReadDocumentIDs_ShouldPassProperSqlQueryToContext()
         {
-            //ARRANGE
+            // Arrange
             Mock<IDataReader> dataReaderMock = new Mock<IDataReader>();
             _workspaceDbContextMock.Setup(x =>
                     x.ExecuteSQLStatementAsReader(It.IsAny<string>()))
@@ -101,17 +103,17 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             SELECT [ArtifactID] FROM {_RESOURCE_DB_PREPEND}.[{_tableName}]
             ORDER BY [ArtifactID] OFFSET {offset} ROWS FETCH NEXT {size} ROWS ONLY";
 
-            //ACT
+            // Act
             _sut.ReadArtifactIDs(offset, size);
 
-            //ASSERT
+            // Assert
             _workspaceDbContextMock.Verify(x => x.ExecuteSQLStatementAsReader(expectedQuery), Times.Once);
         }
 
         [Test]
         public void RemoveErrorDocuments_ShouldPassProperSqlQueryToContext()
         {
-            //ARRANGE
+            // Arrange
             string[] documentControlNumbers = { "CN1", "CN2", "CN3" };
             int[] documentArtifactIDs = { 1, 2, 3 };
             string documentArtifactIDsAsString = $"({string.Join(",", documentArtifactIDs)})";
@@ -119,37 +121,36 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             _documentRepositoryMock.Setup(x =>
                 x.RetrieveDocumentsAsync(
                     It.IsAny<string>(),
-                    It.IsAny<ICollection<string>>()
-                )
-            ).ReturnsAsync(documentArtifactIDs.ToArray());
+                    It.IsAny<ICollection<string>>()))
+                .ReturnsAsync(documentArtifactIDs.ToArray());
 
             string expectedQuery = $@"DELETE FROM {_RESOURCE_DB_PREPEND}.[{_tableName}] WHERE [{_DOCUMENT_ARTIFACT_ID_COLUMN_NAME}] in {documentArtifactIDsAsString}";
 
-            //ACT
+            // Act
             _sut.RemoveErrorDocuments(documentControlNumbers);
 
-            //ASSERT
+            // Assert
             _workspaceDbContextMock.Verify(x => x.ExecuteNonQuerySQLStatement(expectedQuery), Times.Once);
         }
 
         [Test]
         public void RemoveErrorDocuments_ShouldNotThrowIfParameterIsNull()
         {
-            //ARRANGE
+            // Arrange
             Action action = () => _sut.RemoveErrorDocuments(documentControlNumbers: null);
 
-            //ACT & ASSERT
+            // Act & Assert
             action.ShouldNotThrow();
         }
 
         [Test]
         public void RemoveErrorDocuments_ShouldNotThrowIfParameterIsEmptyArray()
         {
-            //ARRANGE
+            // Arrange
             string[] emptyArray = { };
             Action action = () => _sut.RemoveErrorDocuments(documentControlNumbers: emptyArray);
 
-            //ACT & ASSERT
+            // Act & Assert
             action.ShouldNotThrow();
         }
     }

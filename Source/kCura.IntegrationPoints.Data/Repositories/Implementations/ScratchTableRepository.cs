@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoints.Common.Extensions.DotNet;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Models;
 
@@ -12,11 +13,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
     public class ScratchTableRepository : IScratchTableRepository
     {
-        private IDataReader _reader;
-        private string _docIdentifierFieldName;
-        private string _tempTableName;
         private const int _SCRATCH_TABLE_NAME_LENGTH_LIMIT = 128;
         private const string _DOCUMENT_ARTIFACT_ID_COLUMN_NAME = "ArtifactID";
+
         private readonly IDocumentRepository _documentRepository;
         private readonly IFieldQueryRepository _fieldQueryRepository;
         private readonly int _workspaceId;
@@ -25,6 +24,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         private readonly IWorkspaceDBContext _caseContext;
         private readonly string _tablePrefix;
         private readonly string _tableSuffix;
+
+        private IDataReader _reader;
+        private string _docIdentifierFieldName;
+        private string _tempTableName;
 
         public ScratchTableRepository(
             IWorkspaceDBContext caseContext,
@@ -72,6 +75,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             {
                 return;
             }
+
             string documentList = $"({string.Join(",", docIds)})";
 
             string fullTableName = GetTempTableName();
@@ -87,6 +91,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             {
                 _reader = CreateDocumentIDsReader();
             }
+
             return _reader;
         }
 
@@ -99,6 +104,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                     _reader.Close();
                     _reader = null;
                 }
+
                 DeleteTable();
             }
             catch (Exception)
@@ -189,7 +195,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         {
             return ReadArtifactIDsInternal(offset, size).ToList();
         }
-        
+
         public string GetTempTableName()
         {
             if (_tempTableName == null)
@@ -200,6 +206,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                     throw new IntegrationPointsException($"Unable to create scratch table - {_tempTableName}. The name of the table is too long (limit: {_SCRATCH_TABLE_NAME_LENGTH_LIMIT}). Please contact the system administrator.");
                 }
             }
+
             return _tempTableName;
         }
 
@@ -226,7 +233,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
         private ICollection<int> GetErroredDocumentId(ICollection<string> documentControlNumbers)
         {
-            if (String.IsNullOrEmpty(_docIdentifierFieldName))
+            if (string.IsNullOrEmpty(_docIdentifierFieldName))
             {
                 _docIdentifierFieldName = GetDocumentIdentifierField();
             }
@@ -238,19 +245,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         private string GetDocumentIdentifierField()
         {
             ArtifactDTO[] fieldArtifacts = _fieldQueryRepository.RetrieveFieldsAsync(
-                rdoTypeID: 10,
-                fieldNames: new HashSet<string>(
-                    new[]
-                    {
-                        Fields.Name,
-                        Fields.IsIdentifier
-                    }
-                )
-            )
-            .GetAwaiter()
-            .GetResult();
+                    rdoTypeID: 10,
+                    fieldNames: new HashSet<string>(
+                        new[]
+                        {
+                            Fields.Name,
+                            Fields.IsIdentifier
+                        }))
+                .GetAwaiter()
+                .GetResult();
 
-            string fieldName = String.Empty;
+            string fieldName = string.Empty;
             foreach (ArtifactDTO fieldArtifact in fieldArtifacts)
             {
                 int isIdentifierFieldValue = 0;
@@ -260,6 +265,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                     {
                         fieldName = field.Value.ToString();
                     }
+
                     if (field.Name == Fields.IsIdentifier)
                     {
                         try
@@ -272,11 +278,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                         }
                     }
                 }
+
                 if (isIdentifierFieldValue == 1)
                 {
                     break;
                 }
             }
+
             return fieldName;
         }
 
@@ -308,7 +316,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         {
             string sql = CreateSQLForGettingDocumentIDsReader();
             return _caseContext.ExecuteSQLStatementAsReader(sql);
-
         }
 
         private IDataReader CreateBatchOfDocumentIdReader(int offset, int size)
@@ -331,7 +338,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return sql;
         }
 
-        private static class Fields //MNG: similar to class used in DocumentTransferProvider, probably find a better way to reference these
+        private static class Fields
         {
             internal static readonly string Name = "Name";
             internal static readonly string IsIdentifier = "Is Identifier";

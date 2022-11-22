@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using kCura.EventHandler.CustomAttributes;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Migrations;
 using Relativity.API;
 
