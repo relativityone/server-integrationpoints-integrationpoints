@@ -12,6 +12,7 @@ using Relativity.Import.V1.Services;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
@@ -27,6 +28,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IProgressHandler> _progressHandlerMock;
         private Mock<IImportJobController> _jobControllerMock;
         private Mock<IDocumentSynchronizationMonitorConfiguration> _configurationMock;
+        private Mock<IItemLevelErrorHandlerFactory> _itemLevelErrorHandlerFactory;
         private Mock<IItemLevelErrorHandler> _itemLevelErrorHandler;
 
         private DocumentSynchronizationMonitorExecutor _sut;
@@ -40,7 +42,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _sourceControllerMock = new Mock<IImportSourceController>();
             _jobControllerMock = new Mock<IImportJobController>();
             _configurationMock = new Mock<IDocumentSynchronizationMonitorConfiguration>();
+            _itemLevelErrorHandlerFactory = new Mock<IItemLevelErrorHandlerFactory>();
             _itemLevelErrorHandler = new Mock<IItemLevelErrorHandler>();
+
+            _itemLevelErrorHandlerFactory.Setup(x => x.Create(It.IsAny<IItemStatusMonitor>()))
+                .Returns(_itemLevelErrorHandler.Object);
 
             _serviceFactoryMock.Setup(x => x.CreateProxyAsync<IImportSourceController>()).ReturnsAsync(_sourceControllerMock.Object);
             _serviceFactoryMock.Setup(x => x.CreateProxyAsync<IImportJobController>()).ReturnsAsync(_jobControllerMock.Object);
@@ -48,7 +54,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _configurationMock.Setup(x => x.DestinationWorkspaceArtifactId).Returns(_DESTINATION_WORKSPACE_ID);
             _configurationMock.Setup(x => x.ExportRunId).Returns(new Guid(_EXPORT_RUN_ID));
 
-            _sut = new DocumentSynchronizationMonitorExecutor(_serviceFactoryMock.Object, _progressHandlerMock.Object, _itemLevelErrorHandler.Object, _loggerMock.Object);
+            _sut = new DocumentSynchronizationMonitorExecutor(_serviceFactoryMock.Object, _progressHandlerMock.Object, _itemLevelErrorHandlerFactory.Object, _loggerMock.Object);
         }
 
         [Test]

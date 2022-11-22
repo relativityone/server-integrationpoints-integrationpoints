@@ -9,6 +9,7 @@ using Relativity.Import.V1.Models.Sources;
 using Relativity.Import.V1.Services;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
 {
@@ -17,17 +18,17 @@ namespace Relativity.Sync.Executors
         private readonly IDestinationServiceFactoryForUser _serviceFactory;
         private readonly IProgressHandler _progressHandler;
         private readonly IAPILog _logger;
-        private readonly IItemLevelErrorHandler _itemLevelErrorHandler;
+        private readonly IItemLevelErrorHandlerFactory _itemLevelErrorHandlerFactory;
 
         public DocumentSynchronizationMonitorExecutor(
             IDestinationServiceFactoryForUser serviceFactory,
             IProgressHandler progressHandler,
-            IItemLevelErrorHandler itemLevelErrorHandler,
+            IItemLevelErrorHandlerFactory itemLevelErrorHandlerFactory,
             IAPILog logger)
         {
             _serviceFactory = serviceFactory;
             _progressHandler = progressHandler;
-            _itemLevelErrorHandler = itemLevelErrorHandler;
+            _itemLevelErrorHandlerFactory = itemLevelErrorHandlerFactory;
             _logger = logger;
         }
 
@@ -75,7 +76,9 @@ namespace Relativity.Sync.Executors
 
                     jobStatus = GetFinalJobStatus(result.Value.State, processedSources);
 
-                    await _itemLevelErrorHandler.HandleIApiItemLevelErrors(sourceController, dataSources, configuration)
+                    IItemLevelErrorHandler itemLevelErrorHandler = _itemLevelErrorHandlerFactory.Create(new ItemStatusMonitor());
+
+                    await itemLevelErrorHandler.HandleIApiItemLevelErrors(sourceController, dataSources, configuration)
                         .ConfigureAwait(false);
                 }
             }
