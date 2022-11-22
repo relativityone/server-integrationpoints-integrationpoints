@@ -27,6 +27,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IProgressHandler> _progressHandlerMock;
         private Mock<IImportJobController> _jobControllerMock;
         private Mock<IDocumentSynchronizationMonitorConfiguration> _configurationMock;
+        private Mock<IItemLevelErrorHandler> _itemLevelErrorHandler;
 
         private DocumentSynchronizationMonitorExecutor _sut;
 
@@ -39,6 +40,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _sourceControllerMock = new Mock<IImportSourceController>();
             _jobControllerMock = new Mock<IImportJobController>();
             _configurationMock = new Mock<IDocumentSynchronizationMonitorConfiguration>();
+            _itemLevelErrorHandler = new Mock<IItemLevelErrorHandler>();
 
             _serviceFactoryMock.Setup(x => x.CreateProxyAsync<IImportSourceController>()).ReturnsAsync(_sourceControllerMock.Object);
             _serviceFactoryMock.Setup(x => x.CreateProxyAsync<IImportJobController>()).ReturnsAsync(_jobControllerMock.Object);
@@ -46,7 +48,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _configurationMock.Setup(x => x.DestinationWorkspaceArtifactId).Returns(_DESTINATION_WORKSPACE_ID);
             _configurationMock.Setup(x => x.ExportRunId).Returns(new Guid(_EXPORT_RUN_ID));
 
-            _sut = new DocumentSynchronizationMonitorExecutor(_serviceFactoryMock.Object, _progressHandlerMock.Object, _loggerMock.Object);
+            _sut = new DocumentSynchronizationMonitorExecutor(_serviceFactoryMock.Object, _progressHandlerMock.Object, _itemLevelErrorHandler.Object, _loggerMock.Object);
         }
 
         [Test]

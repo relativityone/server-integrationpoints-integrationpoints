@@ -17,14 +17,17 @@ namespace Relativity.Sync.Executors
         private readonly IDestinationServiceFactoryForUser _serviceFactory;
         private readonly IProgressHandler _progressHandler;
         private readonly IAPILog _logger;
+        private readonly IItemLevelErrorHandler _itemLevelErrorHandler;
 
         public DocumentSynchronizationMonitorExecutor(
             IDestinationServiceFactoryForUser serviceFactory,
             IProgressHandler progressHandler,
+            IItemLevelErrorHandler itemLevelErrorHandler,
             IAPILog logger)
         {
             _serviceFactory = serviceFactory;
             _progressHandler = progressHandler;
+            _itemLevelErrorHandler = itemLevelErrorHandler;
             _logger = logger;
         }
 
@@ -57,8 +60,7 @@ namespace Relativity.Sync.Executors
                     _logger.LogInformation("Retrieved DataSources to monitor: {@dataSources}", dataSources.Sources);
 
                     IDictionary<Guid, DataSourceState> processedSources = new Dictionary<Guid, DataSourceState>();
-
-                    ValueResponse<ImportDetails> result = null;
+                    ValueResponse<ImportDetails> result;
                     do
                     {
                         await Task.Delay(TimeSpan.FromSeconds(10)).ConfigureAwait(false);
@@ -72,6 +74,9 @@ namespace Relativity.Sync.Executors
                     await _progressHandler.HandleProgressAsync().ConfigureAwait(false);
 
                     jobStatus = GetFinalJobStatus(result.Value.State, processedSources);
+
+                    await _itemLevelErrorHandler.HandleIApiItemLevelErrors(sourceController, dataSources, configuration)
+                        .ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -79,6 +84,7 @@ namespace Relativity.Sync.Executors
                 _logger.LogError(ex, "Document synchronization monitoring error");
                 jobStatus = ExecutionResult.Failure($"Job progress monitoring failed. {ex.Message}");
             }
+
 
             return jobStatus;
         }
@@ -116,7 +122,6 @@ namespace Relativity.Sync.Executors
                         sourceId)
                     .ConfigureAwait(false))
                     .Value;
-
                 if (dataSource.State >= DataSourceState.Canceled)
                 {
                     _logger.LogInformation("DataSource {dataSource} has finished with status {state}.", sourceId, dataSource.State);
