@@ -104,7 +104,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
             return new SetTypeOfExportDefaultValueCommand(
                 integrationPointRepository,
                 integrationPointProfileService,
-                objectManager,
                 sourceConfigurationTypeOfExpertUpdater);
         }
     }

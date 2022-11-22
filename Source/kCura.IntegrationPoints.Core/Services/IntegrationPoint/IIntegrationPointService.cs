@@ -21,6 +21,11 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         IntegrationPointDto Read(int artifactID);
 
         /// <summary>
+        /// Retrieves an integration point dto with FieldsMapping
+        /// </summary>
+        IntegrationPointDto ReadWithFieldsMaping(int artifactID);
+
+        /// <summary>
         /// Retrieves the field mapping for the integration point given the artifact id.
         /// </summary>
         /// <param name="artifactId">Artifact id of the integration point.</param>

@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
                 Name = "RIP RIP",
                 DestinationConfiguration = "dest config",
                 SelectedOverwrite = OverwriteFieldsChoices.IntegrationPointAppendOnly.ToString(),
-                //JobHistory = new[] { 4543, 443 },
+                JobHistory = new List<int> { 4543, 443 },
                 SourceProvider = 0,
                 DestinationProvider = 0
             };

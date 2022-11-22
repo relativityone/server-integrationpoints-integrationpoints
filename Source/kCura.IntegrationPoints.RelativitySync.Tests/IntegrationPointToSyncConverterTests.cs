@@ -361,7 +361,10 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
 
             // Assert
-            _documentSyncConfigurationBuilderMock.Verify(x => x.DisableItemLevelErrorLogging(), Times.Never);
+            Times expectedTimes = logErrors
+                ? Times.Never()
+                : Times.Once();
+            _documentSyncConfigurationBuilderMock.Verify(x => x.DisableItemLevelErrorLogging(), expectedTimes);
         }
 
         [Test]
@@ -391,7 +394,10 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
 
             // Assert
-            _imageSyncConfigurationBuilderMock.Verify(x => x.DisableItemLevelErrorLogging(), Times.Never);
+            Times expectedTimes = logErrors
+                ? Times.Never()
+                : Times.Once();
+            _imageSyncConfigurationBuilderMock.Verify(x => x.DisableItemLevelErrorLogging(), expectedTimes);
         }
 
         [Test]

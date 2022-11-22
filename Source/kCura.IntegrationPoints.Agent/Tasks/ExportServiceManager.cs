@@ -250,7 +250,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             SetImportAuditLevel(importSettings);
             SetOverwriteModeAccordingToUsersChoice(importSettings);
 
-            bool shouldUseDgPaths = ShouldUseDgPaths(importSettings, IntegrationPointDto.FieldMappings, SourceConfiguration);
+            bool shouldUseDgPaths = ShouldUseDgPaths(IntegrationPointDto.FieldMappings, SourceConfiguration);
             Logger.LogInformation("Should use DataGrid Paths set to {shouldUseDgPath}", shouldUseDgPaths);
             importSettings.LoadImportedFullTextFromServer = shouldUseDgPaths;
         }
@@ -272,7 +272,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             }
         }
 
-        private bool ShouldUseDgPaths(ImportSettings settings, List<FieldMap> fieldMap, SourceConfiguration configuration)
+        private bool ShouldUseDgPaths(List<FieldMap> fieldMap, SourceConfiguration configuration)
         {
             IQueryFieldLookupRepository sourceQueryFieldLookupRepository =
                 _repositoryFactory.GetQueryFieldLookupRepository(configuration.SourceWorkspaceArtifactId);

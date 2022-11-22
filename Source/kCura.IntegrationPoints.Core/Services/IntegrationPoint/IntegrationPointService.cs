@@ -77,6 +77,12 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         public IntegrationPointDto Read(int artifactID)
         {
             Data.IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(artifactID).GetAwaiter().GetResult();
+            return ToDto(integrationPoint);
+        }
+
+        public IntegrationPointDto ReadWithFieldsMaping(int artifactID)
+         {
+            Data.IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(artifactID).GetAwaiter().GetResult();
             IntegrationPointDto dto = ToDto(integrationPoint);
             dto.FieldMappings = _integrationPointRepository.GetFieldMappingAsync(artifactID).GetAwaiter().GetResult();
             return dto;
@@ -213,7 +219,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
         public void RunIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId)
         {
-            Data.IntegrationPoint integrationPoint;
+            IntegrationPointDto integrationPointDto;
             SourceProvider sourceProvider;
             DestinationProvider destinationProvider;
 
@@ -221,9 +227,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
             try
             {
-                integrationPoint = _integrationPointRepository.ReadWithFieldMappingAsync(integrationPointArtifactId).GetAwaiter().GetResult();
-                sourceProvider = GetSourceProvider(integrationPoint.SourceProvider);
-                destinationProvider = GetDestinationProvider(integrationPoint.DestinationProvider);
+                integrationPointDto = ReadWithFieldsMaping(integrationPointArtifactId);
+                sourceProvider = GetSourceProvider(integrationPointDto.SourceProvider);
+                destinationProvider = GetDestinationProvider(integrationPointDto.DestinationProvider);
             }
             catch (Exception e)
             {
@@ -235,8 +241,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             }
 
             Guid jobRunId = Guid.NewGuid();
-
-            IntegrationPointDto integrationPointDto = ToDto(integrationPoint);
             Data.JobHistory jobHistory = CreateJobHistory(integrationPointDto, jobRunId, JobTypeChoices.JobHistoryRun);
 
             ValidateIntegrationPointBeforeRun(userId, integrationPointDto, sourceProvider, destinationProvider, jobHistory);
@@ -252,14 +256,14 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             else
             {
                 _logger.LogInformation("Using Sync DLL to execute the job");
-                CreateJob(integrationPoint, sourceProvider, destinationProvider, jobRunId, workspaceArtifactId, userId);
+                CreateJob(integrationPointDto, sourceProvider, destinationProvider, jobRunId, workspaceArtifactId, userId);
                 _logger.LogInformation("Run request was completed successfully and job has been added to Schedule Queue.");
             }
         }
 
         public void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId, bool switchToAppendOverlayMode)
         {
-            Data.IntegrationPoint integrationPoint;
+            IntegrationPointDto integrationPointDto;
             SourceProvider sourceProvider;
             DestinationProvider destinationProvider;
 
@@ -267,9 +271,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
             try
             {
-                integrationPoint = _integrationPointRepository.ReadWithFieldMappingAsync(integrationPointArtifactId).GetAwaiter().GetResult();
-                sourceProvider = GetSourceProvider(integrationPoint.SourceProvider);
-                destinationProvider = GetDestinationProvider(integrationPoint.DestinationProvider);
+                integrationPointDto = ReadWithFieldsMaping(integrationPointArtifactId);
+                sourceProvider = GetSourceProvider(integrationPointDto.SourceProvider);
+                destinationProvider = GetDestinationProvider(integrationPointDto.DestinationProvider);
             }
             catch (Exception e)
             {
@@ -280,16 +284,15 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 throw new Exception(Constants.IntegrationPoints.UNABLE_TO_RETRY_INTEGRATION_POINT_USER_MESSAGE);
             }
 
-            ValidateIntegrationPointBeforeRetryErrors(workspaceArtifactId, integrationPointArtifactId, integrationPoint, sourceProvider);
+            ValidateIntegrationPointBeforeRetryErrors(workspaceArtifactId, integrationPointArtifactId, integrationPointDto, sourceProvider);
 
             Guid jobRunId = Guid.NewGuid();
 
-            IntegrationPointDto integrationPointDto = ToDto(integrationPoint);
             Data.JobHistory jobHistory = CreateJobHistory(integrationPointDto, jobRunId, JobTypeChoices.JobHistoryRetryErrors, switchToAppendOverlayMode);
 
             ValidateIntegrationPointBeforeRun(userId, integrationPointDto, sourceProvider, destinationProvider, jobHistory);
 
-            CreateJob(integrationPoint, sourceProvider, destinationProvider, jobRunId, workspaceArtifactId, userId);
+            CreateJob(integrationPointDto, sourceProvider, destinationProvider, jobRunId, workspaceArtifactId, userId);
 
             _logger.LogInformation("Retry request was completed successfully and job has been added to Schedule Queue.");
         }
@@ -429,17 +432,16 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
         private void CheckStopPermission(int integrationPointArtifactId)
         {
-            Data.IntegrationPoint integrationPoint =
-                _integrationPointRepository.ReadWithFieldMappingAsync(integrationPointArtifactId).GetAwaiter().GetResult();
-            SourceProvider sourceProvider = GetSourceProvider(integrationPoint.SourceProvider);
-            DestinationProvider destinationProvider = GetDestinationProvider(integrationPoint.DestinationProvider);
-            IntegrationPointType integrationPointType = GetIntegrationPointType(integrationPoint.Type);
+            IntegrationPointDto dto = ReadWithFieldsMaping(integrationPointArtifactId);
+            SourceProvider sourceProvider = GetSourceProvider(dto.SourceProvider);
+            DestinationProvider destinationProvider = GetDestinationProvider(dto.DestinationProvider);
+            IntegrationPointType integrationPointType = GetIntegrationPointType(dto.Type);
 
             var context = new ValidationContext
             {
                 DestinationProvider = destinationProvider,
                 IntegrationPointType = integrationPointType,
-                Model = ToDto(integrationPoint),
+                Model = dto,
                 ObjectTypeGuid = ObjectTypeGuids.IntegrationPointGuid,
                 SourceProvider = sourceProvider,
                 UserId = -1
@@ -459,7 +461,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         }
 
         private void CreateJob(
-            Data.IntegrationPoint integrationPoint,
+            IntegrationPointDto integrationPoint,
             SourceProvider sourceProvider,
             DestinationProvider destinationProvider,
             Guid jobRunId,
@@ -476,7 +478,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
                 CheckForOtherJobsExecutingOrInQueue(jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId);
 
-                TaskParameters jobDetails = _taskParametersBuilder.Build(jobTaskType, jobRunId, integrationPoint);
+                TaskParameters jobDetails = _taskParametersBuilder.Build(jobTaskType, jobRunId, integrationPoint.SourceConfiguration, integrationPoint.DestinationConfiguration);
 
                 _jobManager.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
             }
@@ -594,8 +596,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
         private void SetHasErrorOnIntegrationPoint(int integrationPointArtifactId)
         {
-            Data.IntegrationPoint integrationPoint =
-                _integrationPointRepository.ReadWithFieldMappingAsync(integrationPointArtifactId).GetAwaiter().GetResult();
+            Data.IntegrationPoint integrationPoint =  _integrationPointRepository.ReadAsync(integrationPointArtifactId).GetAwaiter().GetResult();
             integrationPoint.HasErrors = true;
             _integrationPointRepository.Update(integrationPoint);
         }
@@ -651,8 +652,11 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             }
         }
 
-        private void ValidateIntegrationPointBeforeRetryErrors(int workspaceArtifactId,
-            int integrationPointArtifactId, Data.IntegrationPoint integrationPoint, SourceProvider sourceProvider)
+        private void ValidateIntegrationPointBeforeRetryErrors(
+            int workspaceArtifactId,
+            int integrationPointArtifactId,
+            IntegrationPointDto integrationPoint,
+            SourceProvider sourceProvider)
         {
             if (!sourceProvider.Identifier.Equals(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID, StringComparison.InvariantCultureIgnoreCase))
             {

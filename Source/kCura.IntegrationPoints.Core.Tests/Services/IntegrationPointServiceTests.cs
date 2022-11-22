@@ -27,6 +27,7 @@ using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
@@ -58,6 +59,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         private SourceProvider _sourceProvider;
         private DestinationProvider _destinationProvider;
         private IntegrationPointDto _integrationPointDto;
+        private Data.IntegrationPoint _integrationPoint;
         private DestinationConfiguration _destinationConfiguration;
         private IntegrationPointType _integrationPointType;
 
@@ -79,13 +81,33 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                 .With(x => x.Identifier, Constants.IntegrationPoints.RELATIVITY_DESTINATION_PROVIDER_GUID.ToString())
                 .Create();
             _integrationPointType = _fxt.Create<IntegrationPointType>();
-            _integrationPointDto = _fxt.Build<IntegrationPointDto>()
+
+            _integrationPoint = _fxt.Build<Data.IntegrationPoint>()
                 .With(x => x.SourceProvider, _sourceProvider.ArtifactId)
                 .With(x => x.DestinationProvider, _destinationProvider.ArtifactId)
                 .With(x => x.DestinationConfiguration, JsonConvert.SerializeObject(_destinationConfiguration))
                 .With(x => x.Type, _integrationPointType.ArtifactId)
-                .With(x => x.Scheduler, (Scheduler)null)
+                .With(x => x.ScheduleRule, (string)null)
+                .With(x => x.OverwriteFields, OverwriteFieldsChoices.IntegrationPointAppendOnly)
+                .With(x => x.FieldMappings, String.Empty)
+                .Create();
+
+
+            _integrationPointDto = _fxt.Build<IntegrationPointDto>()
+                .With(x => x.ArtifactId, _integrationPoint.ArtifactId)
+                .With(x => x.Name, _integrationPoint.Name)
+                .With(x => x.SourceProvider, _sourceProvider.ArtifactId)
+                .With(x => x.SourceConfiguration, _integrationPoint.SourceConfiguration)
+                .With(x => x.DestinationProvider, _destinationProvider.ArtifactId)
+                .With(x => x.DestinationConfiguration, JsonConvert.SerializeObject(_destinationConfiguration))
+                .With(x => x.Type, _integrationPointType.ArtifactId)
+                .With(x => x.Scheduler, new Scheduler(false, null))
                 .With(x => x.SelectedOverwrite, OverwriteFieldsChoices.IntegrationPointAppendOnly.Name)
+                .With(x => x.EmailNotificationRecipients, _integrationPoint.EmailNotificationRecipients)
+                .With(x => x.LastRun, _integrationPoint.LastRuntimeUTC)
+                .With(x => x.NextRun, _integrationPoint.NextScheduledRuntimeUTC)
+                .With(x => x.SecuredConfiguration, _integrationPoint.SecuredConfiguration)
+                .With(x => x.FieldMappings, new List<FieldMap>())
                 .Create();
 
             _contextFake = _fxt.Freeze<Mock<ICaseServiceContext>>();
@@ -94,6 +116,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             _USER_ID = _contextFake.Object.EddsUserID;
 
             _integrationPointRepositoryMock = _fxt.Freeze<Mock<IIntegrationPointRepository>>();
+            _integrationPointRepositoryMock.Setup(x => x.ReadAsync(_integrationPoint.ArtifactId))
+                .ReturnsAsync(_integrationPoint);
+            _integrationPointRepositoryMock.Setup(x => x.GetFieldMappingAsync(_integrationPoint.ArtifactId))
+                .ReturnsAsync(new List<FieldMap>());
+
 
             _objectManagerFake = _fxt.Freeze<Mock<IRelativityObjectManager>>();
             _objectManagerFake.Setup(x => x.Read<SourceProvider>(_sourceProvider.ArtifactId, It.IsAny<ExecutionIdentity>()))
@@ -150,6 +177,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                 });
 
             _relativitySyncConstrainsCheckerFake = _fxt.Freeze<Mock<IRelativitySyncConstrainsChecker>>();
+            _relativitySyncConstrainsCheckerFake.Setup(x => x.ShouldUseRelativitySyncApp(_integrationPoint.ArtifactId))
+                .Returns(false);
 
             _relativitySyncAppIntegrationMock = _fxt.Freeze<Mock<IRelativitySyncAppIntegration>>();
 
@@ -184,7 +213,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                 It.IsAny<long?>()));
 
             _jobHistoryServiceMock.Verify(x => x.CreateRdo(
-                _integrationPointDto,
+                It.IsAny<IntegrationPointDto>(),
                 It.IsAny<Guid>(),
                 It.IsAny<ChoiceRef>(),
                 It.IsAny<DateTime?>()));
@@ -461,7 +490,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         public void RetryIntegrationPoint_ShouldThrowException_WhenIntegrationPointHasNoErrors()
         {
             // Arrange
-            _integrationPointDto.HasErrors = null;
+            _integrationPoint.HasErrors = null;
 
             SetupLastRunJobHistory(
                 _fxt.Build<Data.JobHistory>()
@@ -612,7 +641,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             // Assert
             _jobHistoryServiceMock.Verify(
                 x => x.CreateRdo(
-                    _integrationPointDto,
+                    It.IsAny<IntegrationPointDto>(),
                     It.IsAny<Guid>(),
                     It.Is<ChoiceRef>(y => y.EqualsToChoice(JobTypeChoices.JobHistoryRetryErrors)),
                     It.IsAny<DateTime?>()));
@@ -631,7 +660,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         public void RunIntegrationPoint_ShouldNotScheduleJob_WhenSourceProviderIsNull()
         {
             // Arrange
-            _integrationPointDto.SourceProvider = 0;
+            _integrationPoint.SourceProvider = null;
 
             // Act
             Action action = () => _sut.RunIntegrationPoint(_WORKSPACE_ID, _integrationPointDto.ArtifactId, _USER_ID);
@@ -679,7 +708,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                 .With(x => x.DestinationConfiguration, _integrationPointDto.DestinationConfiguration)
                 .Create();
 
-            _integrationPointRepositoryMock.Setup(x => x.ReadWithFieldMappingAsync(_integrationPointDto.ArtifactId))
+            _integrationPointRepositoryMock.Setup(x => x.ReadAsync(_integrationPointDto.ArtifactId))
                 .Throws<ServiceException>();
 
             // Act
@@ -757,7 +786,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             // Arrange
             IntegrationPointDto dtoToSave = CloneIntegrationPoint(_integrationPointDto);
 
-            _integrationPointRepositoryMock.Setup(x => x.ReadWithFieldMappingAsync(_integrationPointDto.ArtifactId))
+            _integrationPointRepositoryMock.Setup(x => x.ReadAsync(_integrationPointDto.ArtifactId))
                 .Throws<NotFoundException>();
 
             // Act
@@ -884,7 +913,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
         public void ReadIntegrationPoint_ShouldThrowException_WhenRepositoryThrowsException()
         {
             // Arrange
-            _integrationPointRepositoryMock.Setup(x => x.ReadWithFieldMappingAsync(_integrationPointDto.ArtifactId))
+            _integrationPointRepositoryMock.Setup(x => x.ReadAsync(_integrationPoint.ArtifactId))
                 .Throws<NotFoundException>();
 
             // Act
@@ -896,7 +925,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
 
         private void SetupLastRunJobHistory(Data.JobHistory jobHistory)
         {
-            _jobHistoryManagerFake.Setup(x => x.GetLastJobHistoryArtifactId(_WORKSPACE_ID, _integrationPointDto.ArtifactId))
+            _jobHistoryManagerFake.Setup(x => x.GetLastJobHistoryArtifactId(_WORKSPACE_ID, _integrationPoint.ArtifactId))
                 .Returns(jobHistory.ArtifactId);
 
             _objectManagerFake.Setup(x => x.Query<Data.JobHistory>(It.IsAny<QueryRequest>(), It.IsAny<ExecutionIdentity>()))

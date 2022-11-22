@@ -3,9 +3,8 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Helpers;
@@ -16,21 +15,24 @@ namespace kCura.IntegrationPoints.Web.Controllers
     {
         private readonly ICaseServiceContext _context;
         private readonly IProviderTypeService _providerTypeService;
-        private readonly IIntegrationPointRepository _integrationPointRepository;
         private readonly SummaryPageSelector _summaryPageSelector;
         private readonly IDocumentAccumulatedStatistics _documentAccumulatedStatistics;
+        private readonly IIntegrationPointService _integrationPointService;
+        private readonly IIntegrationPointProfileService _integrationPointProfileService;
 
         public SummaryPageController(ICaseServiceContext context,
             IProviderTypeService providerTypeService,
-            IIntegrationPointRepository integrationPointRepository,
             SummaryPageSelector summaryPageSelector,
-            IDocumentAccumulatedStatistics documentAccumulatedStatistics)
+            IDocumentAccumulatedStatistics documentAccumulatedStatistics,
+            IIntegrationPointService integrationPointService,
+            IIntegrationPointProfileService integrationPointProfileService)
         {
             _context = context;
             _providerTypeService = providerTypeService;
-            _integrationPointRepository = integrationPointRepository;
             _summaryPageSelector = summaryPageSelector;
             _documentAccumulatedStatistics = documentAccumulatedStatistics;
+            _integrationPointService = integrationPointService;
+            _integrationPointProfileService = integrationPointProfileService;
         }
 
         [HttpPost]
@@ -81,19 +83,15 @@ namespace kCura.IntegrationPoints.Web.Controllers
         {
             if (controllerType == IntegrationPointApiControllerNames.IntegrationPointApiControllerName)
             {
-                IntegrationPoint integrationPoint = await _integrationPointRepository
-                    .ReadWithFieldMappingAsync(integrationPointId)
-                    .ConfigureAwait(false);
+                IntegrationPointDto integrationPoint = _integrationPointService.Read(integrationPointId);
 
-                return new Tuple<int, int>(integrationPoint.SourceProvider.Value, integrationPoint.DestinationProvider.Value);
+                return new Tuple<int, int>(integrationPoint.SourceProvider, integrationPoint.DestinationProvider);
             }
             else
             {
-                IntegrationPointProfile integrationPointProfile =
-                    _context.RelativityObjectManagerService.RelativityObjectManager.Read<IntegrationPointProfile>(integrationPointId);
+                IntegrationPointProfileDto integrationPointProfile = _integrationPointProfileService.Read(integrationPointId);
 
-                return new Tuple<int, int>(integrationPointProfile.SourceProvider.Value,
-                    integrationPointProfile.DestinationProvider.Value);
+                return new Tuple<int, int>(integrationPointProfile.SourceProvider, integrationPointProfile.DestinationProvider);
             }
         }
     }

@@ -31,6 +31,7 @@ using NUnit.Framework;
 using Relativity.API;
 using Relativity.IntegrationPoints.Contracts.Models;
 using Relativity.IntegrationPoints.Contracts.Provider;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
@@ -100,6 +101,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 SourceProvider = 8502,
                 SourceConfiguration = "sourceConfiguration",
                 SecuredConfiguration = "securedConfiguration",
+                FieldMappings = new List<FieldMap>(),
             };
             _jobHistory = new JobHistory()
             {
@@ -410,10 +412,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             _syncManagerEventHelper.RaisePreEvent(_job, _taskResult);
             _integrationPointService
-                .When(fake => fake.UpdateLastAndNextRunTime(_integrationPoint.ArtifactId, _integrationPoint.LastRun, _integrationPoint.NextRun))
+                .When(fake => fake.UpdateLastAndNextRunTime(_integrationPoint.ArtifactId, Arg.Any<DateTime>(), Arg.Any<DateTime>()))
                 .Do(call => throw exception1);
-            _jobService.When(obj => obj.UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.None)).Do(info => { throw exception2; });
-            _batchStatus.When(obj => obj.OnJobComplete(_job)).Do(info => { throw exception3; });
+            _jobService.When(obj => obj.UpdateStopState(Arg.Is<IList<long>>(lst => lst.SequenceEqual(new[] { _job.JobId })), StopState.None))
+                .Do(info => { throw exception2; });
+            _batchStatus.When(obj => obj.OnJobComplete(_job))
+                .Do(info => { throw exception3; });
             _jobHistoryManager
                 .When(obj => obj.SetErrorStatusesToExpired(_caseServiceContext.WorkspaceID, _jobHistory.ArtifactId))
                 .Do(info =>

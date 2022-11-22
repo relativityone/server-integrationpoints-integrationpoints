@@ -311,7 +311,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             SyncEntityManagerWorker task =
                 new SyncEntityManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null, null);
             _integrationPoint.DestinationConfiguration = _jsonParam2;
-            task.GetType().GetProperty("IntegrationPoint", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).SetValue(task, _integrationPoint);
+            task.GetType().GetProperty("IntegrationPointDto", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).SetValue(task, _integrationPoint);
 
             //ACT
             MethodInfo dynMethod = task.GetType().GetMethod("ReconfigureImportAPISettings",

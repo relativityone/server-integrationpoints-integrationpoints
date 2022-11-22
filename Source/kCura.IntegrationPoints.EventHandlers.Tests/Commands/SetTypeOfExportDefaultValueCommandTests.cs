@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
             cmd.Execute();
 
             _integrationPointRepository.Received().Update(Arg.Any<Data.IntegrationPoint>());
-            _objectManager.Received().Update(Arg.Any<IntegrationPointProfile>());
+            _integrationPointProfileService.Received().UpdateConfiguration(Arg.Any<int>(), Arg.Any<string>(), Arg.Any<string>());
         }
 
         private void SetUpIntegrationPointProfilesMock()

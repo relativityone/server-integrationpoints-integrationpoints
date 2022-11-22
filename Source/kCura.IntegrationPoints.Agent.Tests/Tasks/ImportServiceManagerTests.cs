@@ -153,7 +153,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 SourceConfiguration = "source config",
                 DestinationConfiguration = "destination config",
                 SourceProvider = 741,
-                SecuredConfiguration = "secured config"
+                SecuredConfiguration = "secured config",
+                FieldMappings = new List<FieldMap>(),
             };
             SourceConfiguration configuration = new SourceConfiguration()
             {

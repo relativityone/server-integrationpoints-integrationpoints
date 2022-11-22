@@ -181,7 +181,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 SourceConfiguration = "source config",
                 DestinationConfiguration = "destination config",
                 SourceProvider = 741,
-                SecuredConfiguration = "secured config"
+                SecuredConfiguration = "secured config",
+                FieldMappings = new List<FieldMap>(),
             };
             _configuration = new SourceConfiguration()
             {
@@ -277,7 +278,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         public void Execute_EnsureToSanatizeFieldMappings()
         {
             // ARRANGE
-            List<FieldMap> mappedFields = new List<FieldMap>
+            _integrationPointDto.FieldMappings = new List<FieldMap>
             {
                 new FieldMap()
                 {
@@ -291,7 +292,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _instance.Execute(_job);
 
             // ASSERT
-            Assert.IsTrue(mappedFields[0].SourceField.IsIdentifier);
+            Assert.IsTrue(_integrationPointDto.FieldMappings[0].SourceField.IsIdentifier);
         }
 
         [Test]

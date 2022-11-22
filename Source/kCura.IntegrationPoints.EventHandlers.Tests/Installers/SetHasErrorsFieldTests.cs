@@ -131,7 +131,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
             var pendingJob = new JobHistory { ArtifactId = 3, JobStatus = JobStatusChoices.JobHistoryPending, EndTimeUTC = null };
             var jobHistories = new[] { pendingJob };
             Data.IntegrationPoint integrationPoint = CreateIntegrationPoint(jobHistories.Select(x => x.ArtifactId).ToArray());
-            IList<Data.IntegrationPoint> integrationPoints = new[] { integrationPoint };
+            List<Data.IntegrationPoint> integrationPoints = new List<Data.IntegrationPoint> { integrationPoint };
 
             _integrationPointRepository.GetIntegrationPointsWithAllFields().Returns(integrationPoints);
             _jobHistoryService.GetJobHistory(Arg.Is<int[]>(x => CompareLists(x, integrationPoint.JobHistory))).Returns(jobHistories);

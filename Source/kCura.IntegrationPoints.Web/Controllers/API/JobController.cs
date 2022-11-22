@@ -8,11 +8,10 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Validation;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Models;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
@@ -32,20 +31,20 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         private readonly IServiceFactory _serviceFactory;
         private readonly ICPHelper _helper;
         private readonly IManagerFactory _managerFactory;
-        private readonly IIntegrationPointRepository _integrationPointRepository;
+        private readonly IIntegrationPointService _integrationPointService;
         private readonly IAPILog _log;
 
         public JobController(
             IServiceFactory serviceFactory,
             ICPHelper helper,
             IManagerFactory managerFactory,
-            IIntegrationPointRepository integrationPointRepository,
+            IIntegrationPointService integrationPointService,
             IAPILog log)
         {
             _serviceFactory = serviceFactory;
             _helper = helper;
             _managerFactory = managerFactory;
-            _integrationPointRepository = integrationPointRepository;
+            _integrationPointService = integrationPointService;
             _log = log;
         }
 
@@ -58,9 +57,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             {
                 AuditAction(payload, _RUN_AUDIT_MESSAGE);
 
-                IntegrationPoint integrationPoint = await _integrationPointRepository
-                    .ReadWithFieldMappingAsync(Convert.ToInt32(payload.ArtifactId))
-                    .ConfigureAwait(false);
+                IntegrationPointDto integrationPoint = _integrationPointService
+                    .Read(Convert.ToInt32(payload.ArtifactId));
 
                 // this validation was introduced due to an issue with ARMed workspaces (REL-171985)
                 // so far, ARM is not capable of copying SQL Secret Catalog records for integration points in workspace database
@@ -73,12 +71,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                                                          "Please try to edit integration point configuration and reenter credentials.");
                 }
 
-                IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_helper);
-
                 HttpResponseMessage httpResponseMessage = RunInternal(
                     payload.AppId,
                     payload.ArtifactId,
-                    integrationPointService,
+                    _integrationPointService,
                     ActionType.Run
                 );
                 return httpResponseMessage;

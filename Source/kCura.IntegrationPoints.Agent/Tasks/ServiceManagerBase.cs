@@ -359,7 +359,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         private void SanitizeMappedFields()
         {
-            IntegrationPointDto.FieldMappings.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
+            IntegrationPointDto.FieldMappings?.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
         }
 
         private void ConfigureJobStopManager(Job job, bool supportsDrainStop)

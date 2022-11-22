@@ -228,9 +228,9 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             _integrationPointLocalService.Received(1).ReadAll();
 
             Assert.That(result, Is.EquivalentTo(expectedResult).
-                Using(new Func<IntegrationPointModel, IntegrationPoint, bool>(
-                    (actual, expected) => (actual.Name == expected.Name) && (actual.SourceProvider == expected.SourceProvider.Value) && (actual.ArtifactId == expected.ArtifactId)
-                                        && (actual.DestinationProvider == expected.DestinationProvider.Value))));
+                Using(new Func<IntegrationPointModel, IntegrationPointDto, bool>(
+                    (actual, expected) => (actual.Name == expected.Name) && (actual.SourceProvider == expected.SourceProvider) && (actual.ArtifactId == expected.ArtifactId)
+                                        && (actual.DestinationProvider == expected.DestinationProvider))));
         }
 
         [Test]

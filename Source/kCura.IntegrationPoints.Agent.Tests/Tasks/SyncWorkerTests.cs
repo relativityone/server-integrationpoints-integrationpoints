@@ -102,7 +102,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 DestinationProvider = 942,
                 SourceConfiguration = "source config",
                 DestinationConfiguration = "dest config",
-                SecuredConfiguration = "sec config"
+                SecuredConfiguration = "sec config",
+                FieldMappings = new List<FieldMap>(),
             };
             SourceProvider sourceProvider = new SourceProvider() { Identifier = Guid.NewGuid().ToString(), ApplicationIdentifier = Guid.NewGuid().ToString() };
             DestinationProvider destinationProvider = new DestinationProvider() { Identifier = Guid.NewGuid().ToString() };

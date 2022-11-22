@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
             _importFileLocationService = importFileLocationService;
         }
 
-        public TaskParameters Build(TaskType taskType, Guid batchInstanceId, IntegrationPoint integrationPoint)
+        public TaskParameters Build(TaskType taskType, Guid batchInstanceId, string sourceConfiguration, string destinationConfiguration)
         {
             TaskParameters parameters = new TaskParameters
             {
@@ -24,16 +24,16 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
             switch(taskType)
             {
                 case TaskType.ImportService:
-                    parameters.BatchParameters = BuildLoadFileParameters(integrationPoint);
+                    parameters.BatchParameters = BuildLoadFileParameters(sourceConfiguration, destinationConfiguration);
                     break;
             }
 
             return parameters;
         }
 
-        private LoadFileTaskParameters BuildLoadFileParameters(IntegrationPoint integrationPoint)
+        private LoadFileTaskParameters BuildLoadFileParameters(string sourceConfiguration, string destinationConfiguration)
         {
-            LoadFileInfo loadFile = _importFileLocationService.LoadFileInfo(integrationPoint.SourceConfiguration, integrationPoint.DestinationConfiguration);
+            LoadFileInfo loadFile = _importFileLocationService.LoadFileInfo(sourceConfiguration, destinationConfiguration);
 
             return new LoadFileTaskParameters
             {

@@ -141,7 +141,7 @@ namespace kCura.IntegrationPoints.RelativitySync
                 syncConfigurationRoot.IsRetry(new RetryOptions(jobToRetry.ArtifactID));
             }
 
-            if (job.IntegrationPointDto.LogErrors)
+            if (job.IntegrationPointDto.LogErrors == false)
             {
                 syncConfigurationRoot.DisableItemLevelErrorLogging();
             }
@@ -184,7 +184,7 @@ namespace kCura.IntegrationPoints.RelativitySync
                 syncConfigurationRoot.IsRetry(new RetryOptions(jobToRetry.ArtifactID));
             }
 
-            if (job.IntegrationPointDto.LogErrors)
+            if (job.IntegrationPointDto.LogErrors == false)
             {
                 syncConfigurationRoot.DisableItemLevelErrorLogging();
             }
@@ -213,7 +213,7 @@ namespace kCura.IntegrationPoints.RelativitySync
                         FieldsOverlayBehavior = importSettings.ImportOverlayBehavior.ToSyncFieldOverlayBehavior()
                     });
 
-            if (job.IntegrationPointDto.LogErrors)
+            if (job.IntegrationPointDto.LogErrors == false)
             {
                 syncConfigurationRoot.DisableItemLevelErrorLogging();
             }

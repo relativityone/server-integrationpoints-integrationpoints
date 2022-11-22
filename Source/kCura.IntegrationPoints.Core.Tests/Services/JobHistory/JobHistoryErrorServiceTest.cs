@@ -206,7 +206,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             Exception returnedException = Assert.Throws<Exception>(() => _instance.CommitErrors());
 
             // assert
-            _integrationPointRepositoryFake.Verify(x => x.Update(It.IsAny<Data.IntegrationPoint>()));
+            _integrationPointRepositoryFake.Verify(x => x.UpdateHasErrors(It.IsAny<int>(), true));
 
             Assert.IsTrue(returnedException.Message.Contains("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine));
             Assert.IsTrue(returnedException.Message.Contains("Type: Item    Identifier: MyIdentifier    Error: Fake item error."));
@@ -225,7 +225,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             Exception returnedException = Assert.Throws<Exception>(() => _instance.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error.", null));
 
             // assert
-            _integrationPointRepositoryFake.Verify(x => x.Update(It.IsAny<Data.IntegrationPoint>()), Times.Once);
+            _integrationPointRepositoryFake.Verify(x => x.UpdateHasErrors(It.IsAny<int>(), true), Times.Once);
             Assert.IsTrue(returnedException.Message.Contains("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine));
             Assert.IsTrue(returnedException.Message.Contains("Type: Job    Error: Fake job error." + Environment.NewLine));
         }

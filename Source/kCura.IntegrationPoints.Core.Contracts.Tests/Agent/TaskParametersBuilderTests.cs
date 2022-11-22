@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Tests.Agent
         public void Build_ShouldReturnLoadFileInfo_WhenImportLoadFileTaskTypeIsSelected()
         {
             // Act
-            TaskParameters taskParameters = _sut.Build(TaskType.ImportService, _BATCH_INSTANCE_ID, It.IsAny<Data.IntegrationPoint>());
+            TaskParameters taskParameters = _sut.Build(TaskType.ImportService, _BATCH_INSTANCE_ID, It.IsAny<string>(), It.IsAny<string>());
 
             // Assert
             taskParameters.BatchInstance.Should().Be(_BATCH_INSTANCE_ID);
@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Tests.Agent
         public void Build_ShouldReturnEmptyTaskParameters_WhenAnyTaskTypeWasSelected()
         {
             // Act
-            TaskParameters taskParameters = _sut.Build(It.IsAny<TaskType>(), _BATCH_INSTANCE_ID, It.IsAny<Data.IntegrationPoint>());
+            TaskParameters taskParameters = _sut.Build(It.IsAny<TaskType>(), _BATCH_INSTANCE_ID, It.IsAny<string>(), It.IsAny<string>());
 
             // Assert
             taskParameters.BatchInstance.Should().Be(_BATCH_INSTANCE_ID);

@@ -46,7 +46,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
             Assert.That(actual.MessageTexts.Count(), Is.EqualTo(0));
         }
 
-        [TestCase(null, _EXPORTABLE_FIELDS)]
         [TestCase("", _EXPORTABLE_FIELDS)]
         [TestCase("     ", _EXPORTABLE_FIELDS)]
         public void ItShouldFailValidationForInvalidMappingObject(string fieldsMap, string exportableFields)
