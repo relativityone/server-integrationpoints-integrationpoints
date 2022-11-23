@@ -21,8 +21,8 @@ namespace Relativity.IntegrationPoints.Services
         /// <param name="permissionRepositoryFactory"></param>
         /// <param name="container"></param>
         internal IntegrationPointManager(
-            ILog logger, 
-            IPermissionRepositoryFactory permissionRepositoryFactory, 
+            ILog logger,
+            IPermissionRepositoryFactory permissionRepositoryFactory,
             IWindsorContainer container)
             : base(logger, permissionRepositoryFactory, container)
         {

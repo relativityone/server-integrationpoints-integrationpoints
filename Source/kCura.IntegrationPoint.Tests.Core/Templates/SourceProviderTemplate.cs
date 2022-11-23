@@ -127,11 +127,14 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
                     IHelper helper = k.Resolve<IHelper>();
                     return new TestServiceContextHelper(helper, WorkspaceArtifactId);
                 }));
+            Container.Register(Component.For<IDbContextFactory>().ImplementedBy<DbContextFactory>());
             Container.Register(
                 Component.For<IWorkspaceDBContext>()
                     .ImplementedBy<WorkspaceDBContext>()
-                    .UsingFactoryMethod(k => new WorkspaceDBContext(k.Resolve<IHelper>().GetDBContext(WorkspaceArtifactId)))
-                    .LifeStyle.Transient);
+                    .UsingFactoryMethod(k =>
+                        k.Resolve<IDbContextFactory>()
+                            .CreateWorkspaceDbContext(WorkspaceArtifactId))
+                    .LifestyleTransient());
 
             Container.Register(Component.For<IRelativityObjectManagerService>().Instance(new RelativityObjectManagerService(Container.Resolve<IHelper>(), WorkspaceArtifactId)).LifestyleTransient());
             Container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>());

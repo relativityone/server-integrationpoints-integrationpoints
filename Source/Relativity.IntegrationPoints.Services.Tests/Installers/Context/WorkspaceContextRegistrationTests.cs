@@ -101,13 +101,21 @@ namespace Relativity.IntegrationPoints.Services.Tests.Installers.Context
 
         private void RegisterInstallerDependencies(IWindsorContainer container)
         {
+            var loggerFactory = new Mock<ILogFactory>();
+            loggerFactory.Setup(x => x.GetLogger())
+                .Returns(new Mock<IAPILog>().Object);
             var helperMock = new Mock<IServiceHelper>();
+            helperMock.Setup(x => x.GetLoggerFactory())
+                .Returns(loggerFactory.Object);
 
             IRegistration[] dependencies =
             {
                 Component
                     .For<IHelper, IServiceHelper>()
-                    .UsingFactoryMethod(k => helperMock.Object)
+                    .UsingFactoryMethod(k => helperMock.Object),
+                Component
+                    .For<IDbContextFactory>()
+                    .ImplementedBy<DbContextFactory>()
             };
 
             container.Register(dependencies);

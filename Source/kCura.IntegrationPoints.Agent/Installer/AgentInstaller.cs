@@ -71,11 +71,17 @@ namespace kCura.IntegrationPoints.Agent.Installer
                 IJobContextProvider jobContextProvider = k.Resolve<IJobContextProvider>();
                 d.InsertTyped(jobContextProvider.Job.WorkspaceID);
             }).LifestyleTransient());
-
             container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(k =>
             {
                 IJobContextProvider jobContextProvider = k.Resolve<IJobContextProvider>();
-                return new WorkspaceDBContext(_agentHelper.GetDBContext(jobContextProvider.Job.WorkspaceID));
+
+                IDbContextFactory dbContextFactory = k.Resolve<IDbContextFactory>();
+                return dbContextFactory.CreateWorkspaceDbContext(jobContextProvider.Job.WorkspaceID);
+            }).LifestyleTransient().IsFallback());
+            container.Register(Component.For<IEddsDBContext>().UsingFactoryMethod(k =>
+            {
+                IDbContextFactory dbContextFactory = k.Resolve<IDbContextFactory>();
+                return dbContextFactory.CreatedEDDSDbContext();
             }).LifestyleTransient().IsFallback());
 
             container.Register(Component.For<Job>().UsingFactoryMethod(k =>

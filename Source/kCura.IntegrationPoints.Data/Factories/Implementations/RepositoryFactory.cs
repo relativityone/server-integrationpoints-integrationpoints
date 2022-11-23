@@ -144,10 +144,10 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
         public IScratchTableRepository GetScratchTableRepository(int workspaceArtifactID, string tablePrefix, string tableSuffix)
         {
-            //todo: think how to inject ripdbcontext to here
-            IDBContext dbContext = _helper.GetDBContext(workspaceArtifactID);
+            IDbContextFactory dbContextFactory = new DbContextFactory(_helper);
+
             return new ScratchTableRepository(
-                new WorkspaceDBContext(dbContext),
+                dbContextFactory.CreateWorkspaceDbContext(workspaceArtifactID),
                 GetDocumentRepository(workspaceArtifactID),
                 GetFieldQueryRepository(workspaceArtifactID),
                 new ResourceDbProvider(_helper),

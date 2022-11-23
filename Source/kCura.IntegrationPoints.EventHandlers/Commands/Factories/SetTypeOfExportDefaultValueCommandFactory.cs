@@ -53,8 +53,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
             IJobService jobService = new JobService(agentService, jobServiceDataProvider, new KubernetesMode(logger), helper);
             IEddsServiceContext eddsServiceContext = new EddsServiceContext(serviceContextHelper);
             IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, servicesManager);
-            IDBContext dbContext = helper.GetDBContext(helper.GetActiveCaseID());
-            IWorkspaceDBContext workspaceDbContext = new WorkspaceDBContext(dbContext);
+            IDbContextFactory dbContextFactory = new DbContextFactory(helper);
+            IWorkspaceDBContext workspaceDbContext = dbContextFactory.CreateWorkspaceDbContext(helper.GetActiveCaseID());
             IJobTrackerQueryManager jobTrackerQueryManager = new JobTrackerQueryManager(repositoryFactory, workspaceDbContext);
             IJobResourceTracker jobResourceTracker = new JobResourceTracker(jobTrackerQueryManager, queryManager);
             IJobTracker jobTracker = new JobTracker(jobResourceTracker, logger);
