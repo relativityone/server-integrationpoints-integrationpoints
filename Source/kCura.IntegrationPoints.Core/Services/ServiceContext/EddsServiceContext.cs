@@ -1,4 +1,4 @@
-﻿using Relativity.API;
+﻿using kCura.IntegrationPoints.Data.DbContext;
 
 namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 {
@@ -6,7 +6,7 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
     {
         private readonly IServiceContextHelper _serviceContextHelper;
         private int? _userId;
-        private IDBContext _sqlContext;
+        private IRipDBContext _sqlContext;
 
         public EddsServiceContext(IServiceContextHelper serviceContextHelper)
         {
@@ -21,12 +21,17 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
                 {
                     _userId = _serviceContextHelper.GetEddsUserID();
                 }
+
                 return _userId.Value;
             }
-            set { _userId = value; }
+
+            set
+            {
+                _userId = value;
+            }
         }
 
-        public IDBContext SqlContext
+        public IRipDBContext SqlContext
         {
             get
             {
@@ -34,6 +39,7 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
                 {
                     _sqlContext = _serviceContextHelper.GetDBContext(-1);
                 }
+
                 return _sqlContext;
             }
         }

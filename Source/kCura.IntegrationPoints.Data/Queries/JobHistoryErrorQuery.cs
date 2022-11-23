@@ -8,6 +8,7 @@ namespace kCura.IntegrationPoints.Data.Queries
     public class JobHistoryErrorQuery
     {
         private readonly IRelativityObjectManagerService _service;
+
         public JobHistoryErrorQuery(IRelativityObjectManagerService service)
         {
             _service = service;

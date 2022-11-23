@@ -2,30 +2,28 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using Relativity.API;
+using kCura.IntegrationPoints.Data.DbContext;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
     public class QueueRepository : IQueueRepository
     {
         private const string _SCHEDULE_AGENT_QUEUE_TABLE_NAME = GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME;
-        private readonly IDBContext _dbContext;
+        private readonly IEddsDBContext _dbContext;
 
-        public QueueRepository(IHelper helper)
+        public QueueRepository(IEddsDBContext dbContext)
         {
-            _dbContext = helper.GetDBContext(-1);
+            _dbContext = dbContext;
         }
 
         public int GetNumberOfJobsExecutingOrInQueue(int workspaceId, int integrationPointId)
         {
-            //excludes scheduled jobs
-            string queuedOrRunningJobsSql = 
-                
-            $@"SELECT count(*) 
-            FROM [{_SCHEDULE_AGENT_QUEUE_TABLE_NAME}] 
-            WHERE [WorkspaceID] = @workspaceId 
-                AND [RelatedObjectArtifactID] = @integrationPointId 
-                AND [ScheduleRuleType] is null";
+            string queuedOrRunningJobsSql =
+                $@"SELECT count(*) 
+                FROM [{_SCHEDULE_AGENT_QUEUE_TABLE_NAME}] 
+                WHERE [WorkspaceID] = @workspaceId 
+                    AND [RelatedObjectArtifactID] = @integrationPointId 
+                    AND [ScheduleRuleType] is null";
 
             IEnumerable<SqlParameter> queuedOrRunningJobParameters = new List<SqlParameter>
             {

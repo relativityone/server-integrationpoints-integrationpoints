@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Data.Common;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.EventHandlers.Commands.Context;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Commands.Helpers
 {
@@ -13,11 +13,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Helpers
 
         private readonly IEHContext _context;
         private readonly IRepositoryFactory _repositoryFactory;
+        private readonly IDbContextFactory _dbContextFactory;
 
         public ArtifactsToDelete(IEHContext context, IRepositoryFactory repositoryFactory)
         {
             _context = context;
             _repositoryFactory = repositoryFactory;
+            _dbContextFactory = new DbContextFactory(_context.Helper);
         }
 
         public List<int> GetIds()
@@ -30,21 +32,22 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Helpers
                     artifactIds.Add(reader.GetInt32(0));
                 }
             }
+
             return artifactIds;
         }
 
         private DbDataReader GetArtifactsToBeDeleted()
         {
-            IDBContext dbContext = GetWorkspaceDbContext();
+            IWorkspaceDBContext dbContext = GetWorkspaceDbContext();
             IScratchTableRepository scratchTableRepository = _repositoryFactory.GetScratchTableRepository(_context.Helper.GetActiveCaseID(), string.Empty, string.Empty);
 
             string sql = string.Format(_SQL, scratchTableRepository.GetResourceDBPrepend(), _context.TempTableNameWithParentArtifactsToDelete);
             return dbContext.ExecuteSqlStatementAsDbDataReader(sql);
         }
 
-        private IDBContext GetWorkspaceDbContext()
+        private IWorkspaceDBContext GetWorkspaceDbContext()
         {
-            return _context.Helper.GetDBContext(_context.Helper.GetActiveCaseID());
+            return _dbContextFactory.CreateWorkspaceDbContext(_context.Helper.GetActiveCaseID());
         }
     }
 }

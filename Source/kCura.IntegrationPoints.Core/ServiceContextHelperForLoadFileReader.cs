@@ -1,6 +1,7 @@
 ﻿using System;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core
@@ -14,7 +15,7 @@ namespace kCura.IntegrationPoints.Core
 
         public int WorkspaceID { get; }
 
-        public IDBContext GetDBContext(int workspaceID = -1)
+        public IRipDBContext GetDBContext(int workspaceID = -1)
         {
             throw new NotImplementedException();
         }
