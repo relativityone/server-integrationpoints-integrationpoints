@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Toggles;
@@ -16,6 +18,7 @@ namespace Relativity.Sync.Pipelines
         private readonly IIAPIv2RunCheckerConfiguration _configuration;
         private readonly IFieldMappings _fieldMappings;
         private readonly IObjectFieldTypeRepository _objectFieldTypeRepository;
+        private readonly IAPILog _logger;
 
         private bool? _shouldBeUsed;
 
@@ -23,35 +26,43 @@ namespace Relativity.Sync.Pipelines
             IIAPIv2RunCheckerConfiguration configuration,
             ISyncToggles toggles,
             IFieldMappings fieldMappings,
-            IObjectFieldTypeRepository objectFieldTypeRepository)
+            IObjectFieldTypeRepository objectFieldTypeRepository,
+            IAPILog logger)
         {
             _toggles = toggles;
             _configuration = configuration;
             _fieldMappings = fieldMappings;
             _objectFieldTypeRepository = objectFieldTypeRepository;
+            _logger = logger;
         }
 
         public bool ShouldBeUsed()
         {
             if (!_shouldBeUsed.HasValue)
             {
-                _shouldBeUsed = CheckConditions();
+                _shouldBeUsed = CheckConditionsAsync().GetAwaiter().GetResult();
             }
 
             return _shouldBeUsed.Value;
         }
 
-        private bool CheckConditions()
+        private async Task<bool> CheckConditionsAsync()
         {
-            bool hasLongTextFieldsMapped = LongTextFieldsMapped().GetAwaiter().GetResult();
-
-            return _toggles.IsEnabled<EnableIAPIv2Toggle>()
-                 && _configuration.RdoArtifactTypeId == (int)ArtifactType.Document
-                 && (_configuration.NativeBehavior == ImportNativeFileCopyMode.SetFileLinks || _configuration.NativeBehavior == ImportNativeFileCopyMode.DoNotImportNativeFiles)
-                 && !_configuration.IsRetried
-                 && !_configuration.IsDrainStopped
-                 && !hasLongTextFieldsMapped
-                 && !_configuration.ImageImport;
+            try
+            {
+                return _toggles.IsEnabled<EnableIAPIv2Toggle>()
+                       && _configuration.RdoArtifactTypeId == (int)ArtifactType.Document
+                       && (_configuration.NativeBehavior == ImportNativeFileCopyMode.SetFileLinks || _configuration.NativeBehavior == ImportNativeFileCopyMode.DoNotImportNativeFiles)
+                       && !_configuration.IsRetried
+                       && !_configuration.IsDrainStopped
+                       && !_configuration.ImageImport
+                       && !await LongTextFieldsMapped().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Exception occurred while checking if IAPI 2.0 should be used");
+                throw;
+            }
         }
 
         private async Task<bool> LongTextFieldsMapped()
