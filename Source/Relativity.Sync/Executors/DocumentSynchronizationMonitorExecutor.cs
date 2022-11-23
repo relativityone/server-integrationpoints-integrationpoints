@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,6 +9,7 @@ using Relativity.Import.V1.Models.Sources;
 using Relativity.Import.V1.Services;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
+using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Executors
 {
@@ -16,31 +17,23 @@ namespace Relativity.Sync.Executors
     {
         private readonly IDestinationServiceFactoryForUser _serviceFactory;
         private readonly IProgressHandler _progressHandler;
+        private readonly IBatchRepository _batchRepository;
         private readonly IAPILog _logger;
 
         public DocumentSynchronizationMonitorExecutor(
             IDestinationServiceFactoryForUser serviceFactory,
             IProgressHandler progressHandler,
+            IBatchRepository batchRepository,
             IAPILog logger)
         {
             _serviceFactory = serviceFactory;
             _progressHandler = progressHandler;
+            _batchRepository = batchRepository;
             _logger = logger;
         }
 
         public async Task<ExecutionResult> ExecuteAsync(IDocumentSynchronizationMonitorConfiguration configuration, CompositeCancellationToken token)
         {
-            // Followig if statements are temporary solution. Logic for handling Drain Stop and Cancel tokens should be implemented within: REL-770973
-            if (token.IsDrainStopRequested)
-            {
-                return ExecutionResult.Paused();
-            }
-
-            if (token.IsStopRequested)
-            {
-                return ExecutionResult.Canceled();
-            }
-
             ExecutionResult jobStatus;
             try
             {
@@ -52,26 +45,33 @@ namespace Relativity.Sync.Executors
                     configuration.JobHistoryArtifactId,
                     configuration.ExportRunId))
                 {
-                    DataSources dataSources = await GetDataSourcesAsync(jobController, configuration).ConfigureAwait(false);
+                    IEnumerable<IBatch> allBatchQuery = await _batchRepository.GetAllAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, configuration.ExportRunId).ConfigureAwait(false);
+                    List<IBatch> batches = allBatchQuery.ToList();
 
-                    _logger.LogInformation("Retrieved DataSources to monitor: {@dataSources}", dataSources.Sources);
-
-                    IDictionary<Guid, DataSourceState> processedSources = new Dictionary<Guid, DataSourceState>();
+                    _logger.LogInformation("Retrieved DataSources to monitor: {@dataSources}", batches.Where(x => !x.IsFinished).Select(x => x.BatchGuid).ToList());
 
                     ValueResponse<ImportDetails> result = null;
                     do
                     {
+                        if (token.IsStopRequested)
+                        {
+                            await HandleJobCancellation(batches, configuration, jobController).ConfigureAwait(false);
+                        }
+
+                        if (token.IsDrainStopRequested)
+                        {
+                            return ExecutionResult.Paused();
+                        }
+
                         await Task.Delay(TimeSpan.FromSeconds(10)).ConfigureAwait(false);
 
                         result = await GetImportStatusAsync(jobController, configuration).ConfigureAwait(false);
-
-                        await HandleDataSourceStatusAsync(dataSources, processedSources, sourceController, configuration).ConfigureAwait(false);
+                        await HandleDataSourceStatusAsync(batches, sourceController, configuration).ConfigureAwait(false);
                     }
                     while (!result.Value.IsFinished);
 
                     await _progressHandler.HandleProgressAsync().ConfigureAwait(false);
-
-                    jobStatus = GetFinalJobStatus(result.Value.State, processedSources);
+                    jobStatus = GetFinalJobStatus(batches, result.Value.State, token);
                 }
             }
             catch (Exception ex)
@@ -83,8 +83,13 @@ namespace Relativity.Sync.Executors
             return jobStatus;
         }
 
-        private ExecutionResult GetFinalJobStatus(ImportState jobState, IDictionary<Guid, DataSourceState> processedSources)
+        private ExecutionResult GetFinalJobStatus(List<IBatch> batches, ImportState jobState, CompositeCancellationToken token)
         {
+            if (token.IsStopRequested && jobState != ImportState.Canceled)
+            {
+                _logger.LogInformation("Cancellation was requested for Sync job but IAPI 2.0 returned job import state: {importState}", jobState.ToString());
+            }
+
             switch (jobState)
             {
                 case ImportState.Failed:
@@ -94,7 +99,7 @@ namespace Relativity.Sync.Executors
                 case ImportState.Paused:
                     return ExecutionResult.Paused();
                 case ImportState.Completed:
-                    return processedSources.Any(x => x.Value == DataSourceState.CompletedWithItemErrors) ?
+                    return batches.Any(x => x.Status == BatchStatus.CompletedWithErrors) ?
                         ExecutionResult.SuccessWithErrors() : ExecutionResult.Success();
                 default:
                     _logger.LogError("Unknown import job state. Received value: {importState}", jobState);
@@ -103,37 +108,26 @@ namespace Relativity.Sync.Executors
         }
 
         private async Task HandleDataSourceStatusAsync(
-            DataSources dataSources,
-            IDictionary<Guid, DataSourceState> processedSources,
+            List<IBatch> batches,
             IImportSourceController sourceController,
             IDocumentSynchronizationMonitorConfiguration configuration)
         {
-            foreach (Guid sourceId in dataSources.Sources.Except(processedSources.Keys))
+            List<IBatch> unprocessedBatches = batches.Where(x => !x.IsFinished).ToList();
+            foreach (IBatch batch in unprocessedBatches)
             {
                 DataSourceDetails dataSource = (await sourceController.GetDetailsAsync(
                         configuration.DestinationWorkspaceArtifactId,
                         configuration.ExportRunId,
-                        sourceId)
+                        batch.BatchGuid)
                     .ConfigureAwait(false))
                     .Value;
 
                 if (dataSource.State >= DataSourceState.Canceled)
                 {
-                    _logger.LogInformation("DataSource {dataSource} has finished with status {state}.", sourceId, dataSource.State);
-
-                    processedSources.Add(sourceId, dataSource.State);
+                    _logger.LogInformation("DataSource {dataSource} has finished with status {state}.", batch.BatchGuid, dataSource.State);
+                    await MarkBatchAsProcessed(batch, dataSource.State).ConfigureAwait(false);
                 }
             }
-        }
-
-        private async Task<DataSources> GetDataSourcesAsync(IImportJobController jobController, IDocumentSynchronizationMonitorConfiguration configuration)
-        {
-            ValueResponse<DataSources> response = await jobController.GetSourcesAsync(
-                        configuration.DestinationWorkspaceArtifactId,
-                        configuration.ExportRunId)
-                    .ConfigureAwait(false);
-
-            return TryGetValueResponse(response).Value;
         }
 
         private async Task<ValueResponse<ImportDetails>> GetImportStatusAsync(IImportJobController jobController, IDocumentSynchronizationMonitorConfiguration configuration)
@@ -155,6 +149,46 @@ namespace Relativity.Sync.Executors
             }
 
             return response;
+        }
+
+        private async Task MarkBatchAsProcessed(IBatch batch, DataSourceState state)
+        {
+            switch (state)
+            {
+                case DataSourceState.Completed:
+                    await batch.SetStatusAsync(BatchStatus.Completed).ConfigureAwait(false);
+                    break;
+                case DataSourceState.Canceled:
+                    await batch.SetStatusAsync(BatchStatus.Cancelled).ConfigureAwait(false);
+                    break;
+                case DataSourceState.CompletedWithItemErrors:
+                    await batch.SetStatusAsync(BatchStatus.CompletedWithErrors).ConfigureAwait(false);
+                    break;
+                case DataSourceState.Failed:
+                    await batch.SetStatusAsync(BatchStatus.Failed).ConfigureAwait(false);
+                    break;
+                default:
+                    _logger.LogWarning("Incorrect attempt of changing batch status. Batch {batchGuid} should not be marked as finished because it's current state is {state}", batch.BatchGuid, state);
+                    break;
+            }
+        }
+
+        private async Task HandleJobCancellation(List<IBatch> batches, IDocumentSynchronizationMonitorConfiguration configuration, IImportJobController jobController)
+        {
+            if (batches.Any(x => x.Status == BatchStatus.Cancelled))
+            {
+                _logger.LogInformation("Waiting on cancellation of job {jobId} in IAPI 2.0", configuration.ExportRunId);
+            }
+            else
+            {
+                _logger.LogInformation("Executing job {jobId} cancel request at monitoring stage", configuration.ExportRunId);
+                Response result = await jobController.CancelAsync(configuration.DestinationWorkspaceArtifactId, configuration.ExportRunId).ConfigureAwait(false);
+
+                if (!result.IsSuccess)
+                {
+                    _logger.LogError("Could not cancel Job ID = {jobId}. {errorMessage}", configuration.ExportRunId, result.ErrorMessage);
+                }
+            }
         }
     }
 }
