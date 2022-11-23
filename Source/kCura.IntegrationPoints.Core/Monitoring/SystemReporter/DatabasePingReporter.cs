@@ -9,10 +9,10 @@ namespace kCura.IntegrationPoints.Core.Monitoring.SystemReporter
 {
     public class DatabasePingReporter : IHealthStatisticReporter, IServiceHealthChecker
     {
-        private readonly IWorkspaceDBContext _context;
+        private readonly IEddsDBContext _context;
         private readonly IAPILog _logger;
 
-        public DatabasePingReporter(IWorkspaceDBContext context, IAPILog logger)
+        public DatabasePingReporter(IEddsDBContext context, IAPILog logger)
         {
             _context = context;
             _logger = logger;

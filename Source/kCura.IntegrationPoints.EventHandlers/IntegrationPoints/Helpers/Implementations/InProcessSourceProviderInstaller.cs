@@ -103,8 +103,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
         private IApplicationGuidFinder CreateApplicationGuidFinder(int workspaceID)
         {
-            IDBContext workspaceDbContext = _helper.GetDBContext(workspaceID);
-            var workspaceDbContextAsWorkspaceContext = new WorkspaceDBContext(workspaceDbContext);
+            IDbContextFactory dbContextFactory = new DbContextFactory(_helper);
+            var workspaceDbContextAsWorkspaceContext = dbContextFactory.CreateWorkspaceDbContext(workspaceID);
             return new ApplicationGuidFinder(workspaceDbContextAsWorkspaceContext);
         }
 

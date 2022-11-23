@@ -41,8 +41,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Authentication.WebApi.LoginHelperFa
             _loginHelperMock
                 .SetupSequence(x => x.LoginUsingAuthToken(
                     It.IsAny<string>(),
-                    It.IsAny<CookieContainer>())
-                )
+                    It.IsAny<CookieContainer>()))
                 .Throws<InvalidOperationException>()
                 .Returns(expectedResult);
 

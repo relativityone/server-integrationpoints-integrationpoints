@@ -32,8 +32,7 @@ namespace Relativity.IntegrationPoints.Services.Installers.Context
                     .For<IWorkspaceDBContext>()
                     .ImplementedBy<WorkspaceDBContext>()
                     .UsingFactoryMethod(
-                        k => new WorkspaceDBContext(
-                            k.Resolve<IHelper>().GetDBContext(workspaceID)))
+                        k => k.Resolve<IDbContextFactory>().CreateWorkspaceDbContext(workspaceID))
                     .LifestyleTransient());
 
             return container;

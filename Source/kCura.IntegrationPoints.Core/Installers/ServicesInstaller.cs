@@ -59,6 +59,7 @@ using Relativity.IntegrationPoints.FieldsMapping.ImportApi;
 using Relativity.Telemetry.APM;
 using Relativity.Toggles;
 using SystemInterface.IO;
+using kCura.IntegrationPoints.Data.DbContext;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {
@@ -80,6 +81,7 @@ namespace kCura.IntegrationPoints.Core.Installers
                 return new ObjectTypeRepository(contextHelper.WorkspaceID, helper.GetServicesManager(), helper, objectManager);
             }).LifestyleTransient());
 
+            container.Register(Component.For<IDbContextFactory>().ImplementedBy<DbContextFactory>().LifestyleTransient());
             container.Register(Component.For<IRelativitySyncConstrainsChecker>().ImplementedBy<RelativitySyncConstrainsChecker>());
             container.Register(Component.For<IRelativitySyncAppIntegration>().ImplementedBy<RelativitySyncAppIntegration>());
 

@@ -1,4 +1,5 @@
 using kCura.IntegrationPoints.Common.Context;
+using kCura.IntegrationPoints.Data.DbContext;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
@@ -12,6 +13,13 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
         {
             _helper = helper;
             _workspaceIdProvider = workspaceIdProvider;
+        }
+
+        public IWorkspaceDBContext CreateWorkspaceDbContext()
+        {
+            IDbContextFactory dbContextFactory = new DbContextFactory(_helper);
+            int workspaceId = _workspaceIdProvider.GetWorkspaceID();
+            return dbContextFactory.CreateWorkspaceDbContext(workspaceId);
         }
 
         public IDBContext CreateDbContext()
