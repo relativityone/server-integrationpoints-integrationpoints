@@ -26,8 +26,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
         protected override void Run()
         {
-            EddsDBContext eddsDbContext = new EddsDBContext(Helper.GetDBContext(-1));
-            WorkspaceDBContext workspaceDbContext = new WorkspaceDBContext(Helper.GetDBContext(Helper.GetActiveCaseID()));
+            IDbContextFactory dbContextFactory = new DbContextFactory(Helper);
+
+            IEddsDBContext eddsDbContext = dbContextFactory.CreatedEDDSDbContext();
+            IWorkspaceDBContext workspaceDbContext = dbContextFactory.CreateWorkspaceDbContext(Helper.GetActiveCaseID());
 
             new MigrationRunner(eddsDbContext, workspaceDbContext).Run();
         }

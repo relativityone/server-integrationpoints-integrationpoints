@@ -29,6 +29,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
         private const string _STOP_STATE = "StopState";
         private const string _HEARTBEAT = "Heartbeat";
 
+        private IsJobFailed _jobFailed;
         private DataRow _jobData;
 
         public JobBuilder()
@@ -38,7 +39,13 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 
         public Job Build()
         {
-            return new Job(_jobData);
+            Job job = new Job(_jobData);
+            if (_jobFailed != null)
+            {
+                job.MarkJobAsFailed(_jobFailed.Exception, _jobFailed.ShouldBreakSchedule, _jobFailed.MaximumConsecutiveFailuresReached);
+            }
+
+            return job;
         }
 
         public JobBuilder WithJob(Job job)
@@ -122,6 +129,12 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
         public JobBuilder WithHeartbeat(DateTime heartbeat)
         {
             _jobData[_HEARTBEAT] = heartbeat;
+            return this;
+        }
+
+        public JobBuilder WithJobFailed(IsJobFailed isJobFailed)
+        {
+            _jobFailed = isJobFailed;
             return this;
         }
 

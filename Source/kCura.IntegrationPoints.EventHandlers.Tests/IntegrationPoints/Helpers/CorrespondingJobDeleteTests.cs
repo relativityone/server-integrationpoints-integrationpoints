@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Core.Contracts.Helpers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Interfaces;
 using NSubstitute;
 using NUnit.Framework;
 

@@ -11,9 +11,11 @@ using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Validation;
 using Relativity.API;
@@ -47,6 +49,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
             IDateTime dateTime = null,
             IConfig config = null,
             IAPM apm = null,
+            IDbContextFactory dbContextFactory = null,
             bool shouldRunOnce = true)
             : base(
                 agent.AgentGuid,
@@ -59,7 +62,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
                 dateTime,
                 logger,
                 config,
-                apm)
+                apm,
+                dbContextFactory)
         {
             _shouldRunOnce = shouldRunOnce;
             _container = container;
@@ -95,7 +99,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks
                 kubernetesMode: container.Resolve<IKubernetesMode>(),
                 dateTime: container.Resolve<IDateTime>(),
                 config: container.Resolve<IConfig>(),
-                apm: container.Resolve<IAPM>());
+                apm: container.Resolve<IAPM>(),
+                dbContextFactory: container.Resolve<IDbContextFactory>());
 
             container
                 .Register(Component.For<IRemovableAgent>().UsingFactoryMethod(c => fakeAgent)

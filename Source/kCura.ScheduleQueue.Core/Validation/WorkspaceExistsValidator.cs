@@ -30,7 +30,10 @@ namespace kCura.ScheduleQueue.Core.Validation
 
                 return result.TotalCount > 0
                     ? PreValidationResult.Success
-                    : PreValidationResult.InvalidJob($"Workspace {job.WorkspaceID} does not exist anymore", false);
+                    : PreValidationResult.InvalidJob(
+                        $"Workspace {job.WorkspaceID} does not exist anymore",
+                        false,
+                        false);
             }
         }
     }
