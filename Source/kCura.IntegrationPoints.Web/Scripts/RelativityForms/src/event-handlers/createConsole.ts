@@ -7,8 +7,7 @@ export function createConsole(convenienceApi: IConvenienceApi): void {
     return contextProvider((ctx) => {
         var consoleApi = convenienceApi.console;
         var integrationPointId = ctx.artifactId;
-        var workspaceId = ctx.workspaceId;       
-
+        var workspaceId = ctx.workspaceId;             
 
         return consoleApi.destroy().then(function () {
             return consoleApi.containersPromise;
@@ -115,7 +114,7 @@ function generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPoi
             var val = ctx.backingModelData[value];
         }
         integrationPoint[trimmedKey] = val;
-    });
+    });       
 
     var transferOptionsTitle = consoleApi.generate.sectionTitle({
         innerText: "Transfer Options",
@@ -145,7 +144,7 @@ function generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPoi
     }
 
     if (buttonState.calculateStatisticsButtonEnabled) {
-        var calculateStatsButton = createCalculateStatsButton(consoleApi, convenienceApi, ctx, buttonState.calculateStatisticsButtonEnabled, workspaceId);
+        var calculateStatsButton = createCalculateStatsButton(consoleApi, convenienceApi, ctx, buttonState.calculateStatisticsButtonEnabled);
         transferSection.push(calculateStatsButton);
     }
 

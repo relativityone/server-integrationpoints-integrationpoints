@@ -7,7 +7,7 @@ import { updeteJobHistoryTable } from "./helpers/itemListModify";
 
 export default function (eventNames: typeof EventNames, convenienceApi: IConvenienceApi) {
 
-    var eventHandlers = {};
+    var eventHandlers = {};   
 
     let sourceConfiguration;
     let destinationConfiguration;
@@ -20,9 +20,10 @@ export default function (eventNames: typeof EventNames, convenienceApi: IConveni
 
     eventHandlers[eventNames.HYDRATE_LAYOUT_COMPLETE] = function (layoutData) {
         setFieldsValues(layoutData, convenienceApi, sourceConfiguration, destinationConfiguration)
-    };
+    };    
+
     eventHandlers[eventNames.CREATE_CONSOLE] = createConsole(convenienceApi);
-    eventHandlers[eventNames.UPDATE_CONSOLE] = createConsole(convenienceApi);
+    eventHandlers[eventNames.UPDATE_CONSOLE] = createConsole(convenienceApi);    
 
     eventHandlers[eventNames.ITEM_LIST_MODIFY_ACTIONS] = function (itemListActionsApi, itemListView) {
         try {

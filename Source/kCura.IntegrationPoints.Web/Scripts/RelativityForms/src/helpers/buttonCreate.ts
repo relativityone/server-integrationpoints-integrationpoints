@@ -1,7 +1,7 @@
 ﻿import { IConvenienceApi } from "../types/convenienceApi";
 import { postCreateIntegrationPointProfileRequest, postJobAPIRequest, prepareGetImportProviderDocumentAPIRequest, prepareGetViewErrorsPath, calculateStatsRequest } from "./buttonFunctionalities";
 
-export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number, lqMessageContainer:Element) {
+export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number, lqMessageContainer: Element) {
     return consoleApi.generate.button({
         innerText: "Run",
         disabled: !enabled,
@@ -81,7 +81,7 @@ function createMessageContainer(message: string, theme: string, lqMessageContain
         messageContainer.setAttribute("message-collection-title-prefix", title);
     }
     messageContainer.setAttribute("messages", message);
-    lqMessageContainer.appendChild(messageContainer); 
+    lqMessageContainer.appendChild(messageContainer);
 }
 
 export function removeMessageContainers() {
@@ -93,7 +93,7 @@ export function removeMessageContainers() {
     } catch (err) {
         console.log(err)
     }
-    
+
 }
 
 export function createStopButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number) {
@@ -120,7 +120,7 @@ export function createStopButton(consoleApi, convenienceApi: IConvenienceApi, ct
     });
 }
 
-export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number) {
+export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean) {
     return consoleApi.generate.button({
         innerText: "Calculate",
         disabled: !enabled,
@@ -128,26 +128,32 @@ export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenie
             return convenienceApi.modalService.confirm({
                 title: "Calculate statistics",
                 message: "This action will launch the calculation of Saved Search content. The operation can be time consuming. Refreshing or leaving this page will cancel calculation.",
-                acceptText: "Calculate statistics",
+                acceptText: "Calculate",
                 cancelText: "Cancel",
                 acceptAction: function () {
 
-                    var fakeNumber = -1000;
-                    convenienceApi.fieldHelper.setValue("Total of Documents", fakeNumber);
-                    //var request = calculateStatsRequest(convenienceApi, workspaceId);
+                    let keys = Object.keys(ctx.backingModelData);
+                    keys.sort((a, b) => { return Number(a) - Number(b) });
+                    let sourceConfiguration;
+                    try {
+                        sourceConfiguration = JSON.parse(ctx.backingModelData[keys[4].toString()]);
+                    } catch (e) {
+                        sourceConfiguration = {
+                            "SourceConfiguration": ctx.backingModelData[keys[4].toString()]
+                        }
+                    }
+                    let destinationConfiguration = JSON.parse(ctx.backingModelData[keys[5].toString()]);
 
-                    //convenienceApi.relativityHttpClient.get(request.url, request.options)
-                    //    .then(function (result) {
-                    //        if (!result.ok) {
-                    //            console.log(result);
-                    //            return ctx.setErrorSummary(["Failed to launch statistics calculation. Check Errors tab for details."]);
-                    //        } 
-                    //    });                  
+                    calculateStatsRequest(convenienceApi, sourceConfiguration, destinationConfiguration);                
                 }
-            })
+            });
         }
     });
 }
+
+function importImageFiles(destinationConfiguration: Object) {
+    return (destinationConfiguration["ImageImport"] == 'true' && (!destinationConfiguration["ImagePrecedence"] || destinationConfiguration["ImagePrecedence"].length == 0))
+};
 
 export function createRetryErrorsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number, overwriteOption: string, lqMessageContainer: Element) {
 
@@ -263,7 +269,7 @@ export function createRetryErrorsButton(consoleApi, convenienceApi: IConvenience
                                 model.cancel("Cancel payload");
                             }
                         }
-                    ] 
+                    ]
                 };
 
                 return convenienceApi.modalService.openCustomModal(model);
