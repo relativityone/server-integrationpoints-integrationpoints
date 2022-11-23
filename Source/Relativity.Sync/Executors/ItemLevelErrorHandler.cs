@@ -9,7 +9,7 @@ using Relativity.Import.V1;
 using Relativity.Import.V1.Models.Errors;
 using Relativity.Import.V1.Models.Sources;
 using Relativity.Import.V1.Services;
-using Relativity.Services.Exceptions;
+using Relativity.Shared.V1.Exceptions;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
@@ -19,7 +19,7 @@ namespace Relativity.Sync.Executors
 {
     internal class ItemLevelErrorHandler : IItemLevelErrorHandler
     {
-        private const int _BATCH_ITEM_ERRORS_MAX_COUNT_FOR_RDO_CREATE = 1000;
+        private const int _BATCH_ITEM_ERRORS_COUNT_FOR_RDO_CREATE = 1000;
 
         private readonly IItemLevelErrorHandlerConfiguration _configuration;
         private readonly IItemLevelErrorLogAggregator _itemLevelErrorLogAggregator;
@@ -49,7 +49,7 @@ namespace Relativity.Sync.Executors
 
             _batchItemErrors.Enqueue(itemError);
 
-            if (_batchItemErrors.Count >= _BATCH_ITEM_ERRORS_MAX_COUNT_FOR_RDO_CREATE)
+            if (_batchItemErrors.Count >= _BATCH_ITEM_ERRORS_COUNT_FOR_RDO_CREATE)
             {
                 CreateJobHistoryErrors();
             }
@@ -60,7 +60,7 @@ namespace Relativity.Sync.Executors
             List<IBatch> batches,
             IDocumentSynchronizationMonitorConfiguration configuration)
         {
-            foreach (var batch in batches)
+            foreach (IBatch batch in batches)
             {
                 ImportErrors itemLevelErrors = await GetItemLevelErrors(sourceController, configuration, batch.BatchGuid);
                 DataSourceDetails dataSourceDetails = await GetDataSourceDetails(sourceController, configuration, batch.BatchGuid);
@@ -89,20 +89,20 @@ namespace Relativity.Sync.Executors
         private async Task<DataSourceDetails> GetDataSourceDetails(
             IImportSourceController sourceController,
             IDocumentSynchronizationMonitorConfiguration configuration,
-            Guid sourceId)
+            Guid batchId)
         {
             ValueResponse<DataSourceDetails> dataSourceResponse = await sourceController.GetDetailsAsync(
                     configuration.DestinationWorkspaceArtifactId,
                     configuration.ExportRunId,
-                    sourceId)
+                    batchId)
                 .ConfigureAwait(false);
             if (!dataSourceResponse.IsSuccess)
             {
                 string message = string.Format(
-                    "Unable to retrieve Data source details. DestinationWorkspaceArtifactId - {0}, jobId - {1}, sourceId - {2}",
+                    "Unable to retrieve Data source details. DestinationWorkspaceArtifactId - {0}, jobId - {1}, batchId - {2}",
                     configuration.DestinationWorkspaceArtifactId,
                     configuration.ExportRunId,
-                    sourceId);
+                    batchId);
                 throw new NotFoundException(message);
             }
 
@@ -113,21 +113,23 @@ namespace Relativity.Sync.Executors
         private async Task<ImportErrors> GetItemLevelErrors(
             IImportSourceController sourceController,
             IDocumentSynchronizationMonitorConfiguration configuration,
-            Guid sourceId)
+            Guid batchId)
         {
             ValueResponse<ImportErrors> itemLevelErrorsResponse = await sourceController
                 .GetItemErrorsAsync(
                     configuration.DestinationWorkspaceArtifactId,
                     configuration.ExportRunId,
-                    sourceId)
+                    batchId,
+                    0,
+                    int.MaxValue)
                 .ConfigureAwait(false);
             if (!itemLevelErrorsResponse.IsSuccess)
             {
                 string message = string.Format(
-                    "Unable to retrieve Item Level Errors. DestinationWorkspaceArtifactId - {0}, jobId - {1}, sourceId - {2}",
+                    "Unable to retrieve Item Level Errors. DestinationWorkspaceArtifactId - {0}, jobId - {1}, batchId - {2}",
                     configuration.DestinationWorkspaceArtifactId,
                     configuration.ExportRunId,
-                    sourceId);
+                    batchId);
                 throw new NotFoundException(message);
             }
 

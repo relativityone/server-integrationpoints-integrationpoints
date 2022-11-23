@@ -77,9 +77,7 @@ namespace Relativity.Sync.Executors
                     jobStatus = GetFinalJobStatus(batches, result.Value.State, token);
 
                     IItemLevelErrorHandler itemLevelErrorHandler = _itemLevelErrorHandlerFactory.Create(new ItemStatusMonitor());
-
-                    await itemLevelErrorHandler.HandleIApiItemLevelErrors(sourceController, batches, configuration)
-                        .ConfigureAwait(false);
+                    await itemLevelErrorHandler.HandleIApiItemLevelErrors(sourceController, batches, configuration).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)

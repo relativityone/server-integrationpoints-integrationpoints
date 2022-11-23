@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.Unit.Stubs
         {
             _rdo = rdo;
         }
-        
+
         public void Dispose()
         {
         }
@@ -33,7 +33,7 @@ namespace Relativity.Sync.Tests.Unit.Stubs
             RdoFieldInfo fieldInfo = _rdoFieldsInfo.Fields[fieldGuid];
 
             fieldInfo.PropertyInfo.SetValue(_rdo, value);
-            
+
             return Task.CompletedTask;
         }
     }
