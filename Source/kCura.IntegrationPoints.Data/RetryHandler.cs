@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Google.Protobuf.WellKnownTypes;
 using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Domain.Extensions;
 using Polly;
 using Polly.Retry;
 using Polly.Wrap;
 using Relativity.API;
-using Relativity.Kepler.Exceptions;
 using Relativity.Services.Exceptions;
 
 namespace kCura.IntegrationPoints.Data
@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Data
             _exponentialWaitTimeBaseInSeconds = exponentialWaitTimeBaseInSeconds;
             _logger = logger?.ForContext<RetryHandler>();
 
-            _random = new Random();
+            _random = new Random((int)DateTimeOffset.Now.ToUnixTimeSeconds());
         }
 
         public Task<T> ExecuteWithRetriesAsync<T>(Func<Task<T>> function, [CallerMemberName] string callerName = "")
