@@ -135,7 +135,6 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
                     IHelper helper = k.Resolve<IHelper>();
                     return new TestServiceContextHelper(helper, SourceWorkspace.ArtifactID);
                 }));
-            Container.Register(Component.For<IDbContextFactory>().ImplementedBy<DbContextFactory>());
             Container.Register(
                 Component.For<IWorkspaceDBContext>()
                     .ImplementedBy<WorkspaceDBContext>()
