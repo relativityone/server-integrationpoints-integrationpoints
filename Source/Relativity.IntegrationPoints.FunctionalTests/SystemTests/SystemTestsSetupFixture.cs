@@ -129,6 +129,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
                 .ImplementedBy<LazyOfTComponentLoader>());
             Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => TestHelper, managedExternally: true));
             Container.Register(Component.For<IAPILog>().UsingFactoryMethod(k => TestHelper.GetLoggerFactory().GetLogger()));
+            Container.Register(Component.For<IDbContextFactory>().ImplementedBy<DbContextFactory>());
             Container.Register(Component.For<IServiceContextHelper>()
                 .UsingFactoryMethod(k =>
                 {
