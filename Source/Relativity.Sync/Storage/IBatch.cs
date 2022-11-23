@@ -33,6 +33,8 @@ namespace Relativity.Sync.Storage
 
         int TaggedDocumentsCount { get; }
 
+        bool IsFinished { get; }
+
         Task SetTransferredItemsCountAsync(int transferredItemsCount);
 
         Task SetFailedItemsCountAsync(int failedItemsCount);

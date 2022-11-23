@@ -33,5 +33,7 @@ namespace Relativity.Sync.Storage
         public int JobHistoryArtifactId => _cache.GetFieldValue(x => x.JobHistoryId);
 
         public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
+
+        public int SyncConfigurationArtifactId => _syncJobParameters.SyncConfigurationArtifactId;
     }
 }

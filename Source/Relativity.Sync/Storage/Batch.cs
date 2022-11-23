@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Sync.Extensions;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.RDOs.Framework;
@@ -61,6 +62,8 @@ namespace Relativity.Sync.Storage
         public int StartingIndex => _batchRdo.StartingIndex;
 
         public BatchStatus Status => _batchRdo.Status;
+
+        public bool IsFinished => _batchRdo.Status.IsIn(BatchStatus.Completed, BatchStatus.CompletedWithErrors, BatchStatus.Cancelled, BatchStatus.Failed);
 
         public async Task SetFailedItemsCountAsync(int failedItemsCount)
         {
