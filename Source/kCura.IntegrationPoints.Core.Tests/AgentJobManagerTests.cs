@@ -14,6 +14,7 @@ using Relativity.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.ScheduleQueue.Core.Interfaces;
 
 namespace kCura.IntegrationPoints.Core.Tests
 {

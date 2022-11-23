@@ -16,6 +16,7 @@ using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
+using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Services;
 using kCura.ScheduleQueue.Core.Validation;
@@ -265,7 +266,10 @@ namespace kCura.ScheduleQueue.AgentBase
                         continue;
                     }
 
-                    job.MarkJobAsFailed(new Exception($"Job {job.JobId} failed because Kubernetes Agent container crashed and job was left in unknown status. Please try to run this job again."), false);
+                    job.MarkJobAsFailed(
+                        new Exception($"Job {job.JobId} failed because Kubernetes Agent container crashed and job was left in unknown status. Please try to run this job again."),
+                         false,
+                         false);
                     Logger.LogInformation("Starting Job in Transient State {jobId} processing...", job.JobId);
 
                     TaskResult result = ProcessJob(job);
@@ -304,7 +308,7 @@ namespace kCura.ScheduleQueue.AgentBase
                 Exceptions = new List<Exception> { validationResult.Exception }
             };
 
-            job.MarkJobAsFailed(validationResult.Exception, true);
+            job.MarkJobAsFailed(validationResult.Exception, true, validationResult.MaximumConsecutiveFailuresReached);
             FinalizeJobExecution(job, failedJobResult);
         }
 
@@ -474,7 +478,7 @@ namespace kCura.ScheduleQueue.AgentBase
                 PreValidationResult result = _queueJobValidator.ValidateAsync(job).GetAwaiter().GetResult();
                 if (!result.IsValid)
                 {
-                    job.MarkJobAsFailed(result.Exception, result.ShouldBreakSchedule);
+                    job.MarkJobAsFailed(result.Exception, result.ShouldBreakSchedule, result.MaximumConsecutiveFailuresReached);
                     LogValidationJobFailed(job, result);
                 }
 

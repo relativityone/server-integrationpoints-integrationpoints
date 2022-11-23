@@ -74,9 +74,9 @@ namespace kCura.IntegrationPoints.Data
         [Write(false)]
         public IsJobFailed JobFailed { get; private set; }
 
-        public void MarkJobAsFailed(Exception ex, bool shouldBreakSchedule)
+        public void MarkJobAsFailed(Exception ex, bool shouldBreakSchedule, bool maximumConsecutiveFailuresReached)
         {
-            JobFailed = new IsJobFailed(ex, shouldBreakSchedule);
+            JobFailed = new IsJobFailed(ex, shouldBreakSchedule, maximumConsecutiveFailuresReached);
         }
 
         /// <summary>

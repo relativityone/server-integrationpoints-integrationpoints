@@ -23,6 +23,7 @@ using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
+using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
@@ -250,9 +251,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     {
                         Result.Status = TaskStatusEnum.Success;
                     }
+
                     JobService.UpdateStopState(new List<long> { job.JobId }, StopState.None);
                     IntegrationPointDto.NextScheduledRuntimeUTC = JobService.GetJobNextUtcRunDateTime(job, ScheduleRuleFactory, Result);
                 }
+
                 IntegrationPointRepository.Update(IntegrationPointDto);
                 LogUpdateIntegrationPointRuntimesSuccessfulEnd(job);
             }
