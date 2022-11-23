@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Relativity.Import.V1.Models;
 using Relativity.Import.V1.Services;
 using Relativity.Sync.Configuration;
@@ -15,7 +16,7 @@ namespace Relativity.Sync.Executors
 
         Task HandleIApiItemLevelErrors(
             IImportSourceController sourceController,
-            DataSources dataSources,
+            List<IBatch> batches,
             IDocumentSynchronizationMonitorConfiguration configuration);
     }
 }

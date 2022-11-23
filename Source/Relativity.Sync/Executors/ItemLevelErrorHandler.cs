@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Import.V1;
-using Relativity.Import.V1.Models;
 using Relativity.Import.V1.Models.Errors;
 using Relativity.Import.V1.Models.Sources;
 using Relativity.Import.V1.Services;
@@ -58,13 +57,13 @@ namespace Relativity.Sync.Executors
 
         public async Task HandleIApiItemLevelErrors(
             IImportSourceController sourceController,
-            DataSources dataSources,
+            List<IBatch> batches,
             IDocumentSynchronizationMonitorConfiguration configuration)
         {
-            foreach (Guid sourceId in dataSources.Sources)
+            foreach (var batch in batches)
             {
-                ImportErrors itemLevelErrors = await GetItemLevelErrors(sourceController, configuration, sourceId);
-                DataSourceDetails dataSourceDetails = await GetDataSourceDetails(sourceController, configuration, sourceId);
+                ImportErrors itemLevelErrors = await GetItemLevelErrors(sourceController, configuration, batch.BatchGuid);
+                DataSourceDetails dataSourceDetails = await GetDataSourceDetails(sourceController, configuration, batch.BatchGuid);
                 foreach (ImportError error in itemLevelErrors.Errors)
                 {
                     int lineNumber = error.LineNumber;

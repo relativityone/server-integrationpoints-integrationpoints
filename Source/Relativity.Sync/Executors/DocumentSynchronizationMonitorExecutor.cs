@@ -78,7 +78,7 @@ namespace Relativity.Sync.Executors
 
                     IItemLevelErrorHandler itemLevelErrorHandler = _itemLevelErrorHandlerFactory.Create(new ItemStatusMonitor());
 
-                    await itemLevelErrorHandler.HandleIApiItemLevelErrors(sourceController, dataSources, configuration)
+                    await itemLevelErrorHandler.HandleIApiItemLevelErrors(sourceController, batches, configuration)
                         .ConfigureAwait(false);
                 }
             }
