@@ -45,10 +45,8 @@ namespace Relativity.Sync.Executors
                     configuration.JobHistoryArtifactId,
                     configuration.ExportRunId))
                 {
-                    List<IBatch> batches = _batchRepository.GetAllAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, configuration.ExportRunId)
-                                                              .GetAwaiter()
-                                                              .GetResult()
-                                                              .ToList();
+                    IEnumerable<IBatch> allBatchQuery = await _batchRepository.GetAllAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, configuration.ExportRunId).ConfigureAwait(false);
+                    List<IBatch> batches = allBatchQuery.ToList();
 
                     _logger.LogInformation("Retrieved DataSources to monitor: {@dataSources}", batches.Where(x => !x.IsFinished).Select(x => x.BatchGuid).ToList());
 
