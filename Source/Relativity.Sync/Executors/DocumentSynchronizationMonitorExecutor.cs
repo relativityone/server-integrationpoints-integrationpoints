@@ -10,7 +10,6 @@ using Relativity.Import.V1.Services;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
-using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
 {
@@ -53,6 +52,7 @@ namespace Relativity.Sync.Executors
                     List<IBatch> batches = allBatchQuery.ToList();
 
                     ValueResponse<ImportDetails> result;
+                    IImportApiItemLevelErrorHandler itemLevelErrorHandler = _itemLevelErrorHandlerFactory.CreateIApiHandler();
                     _logger.LogInformation("Retrieved batches to monitor: {@batches}", batches.Where(x => !x.IsFinished).Select(x => x.BatchGuid).ToList());
                     do
                     {
@@ -69,15 +69,12 @@ namespace Relativity.Sync.Executors
                         await Task.Delay(TimeSpan.FromSeconds(10)).ConfigureAwait(false);
 
                         result = await GetImportStatusAsync(jobController, configuration).ConfigureAwait(false);
-                        await HandleDataSourceStatusAsync(batches, sourceController, configuration).ConfigureAwait(false);
+                        await HandleDataSourceStatusAsync(batches, sourceController, configuration, itemLevelErrorHandler).ConfigureAwait(false);
                     }
                     while (!result.Value.IsFinished);
 
                     await _progressHandler.HandleProgressAsync().ConfigureAwait(false);
                     jobStatus = GetFinalJobStatus(batches, result.Value.State, token);
-
-                    IItemLevelErrorHandler itemLevelErrorHandler = _itemLevelErrorHandlerFactory.Create(new ItemStatusMonitor());
-                    await itemLevelErrorHandler.HandleIApiItemLevelErrors(sourceController, batches, configuration).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -88,6 +85,40 @@ namespace Relativity.Sync.Executors
 
 
             return jobStatus;
+        }
+
+        private async Task<ValueResponse<ImportDetails>> GetImportStatusAsync(IImportJobController jobController, IDocumentSynchronizationMonitorConfiguration configuration)
+        {
+            ValueResponse<ImportDetails> response = await jobController.GetDetailsAsync(
+                    configuration.DestinationWorkspaceArtifactId,
+                    configuration.ExportRunId)
+                .ConfigureAwait(false);
+
+            return TryGetValueResponse(response);
+        }
+
+        private async Task HandleDataSourceStatusAsync(
+            List<IBatch> batches,
+            IImportSourceController sourceController,
+            IDocumentSynchronizationMonitorConfiguration configuration,
+            IImportApiItemLevelErrorHandler itemLevelErrorHandler)
+        {
+            List<IBatch> unprocessedBatches = batches.Where(x => !x.IsFinished).ToList();
+            foreach (IBatch batch in unprocessedBatches)
+            {
+                DataSourceDetails dataSource = (await sourceController.GetDetailsAsync(
+                        configuration.DestinationWorkspaceArtifactId,
+                        configuration.ExportRunId,
+                        batch.BatchGuid)
+                    .ConfigureAwait(false))
+                    .Value;
+                if (dataSource.State >= DataSourceState.Canceled)
+                {
+                    _logger.LogInformation("DataSource {dataSource} has finished with status {state}.", batch.BatchGuid, dataSource.State);
+                    await MarkBatchAsProcessedAsync(batch, dataSource.State).ConfigureAwait(false);
+                    await itemLevelErrorHandler.HandleItemLevelErrorsAsync(sourceController, batch, configuration).ConfigureAwait(false);
+                }
+            }
         }
 
         private ExecutionResult GetFinalJobStatus(List<IBatch> batches, ImportState jobState, CompositeCancellationToken token)
@@ -114,37 +145,7 @@ namespace Relativity.Sync.Executors
             }
         }
 
-        private async Task HandleDataSourceStatusAsync(
-            List<IBatch> batches,
-            IImportSourceController sourceController,
-            IDocumentSynchronizationMonitorConfiguration configuration)
-        {
-            List<IBatch> unprocessedBatches = batches.Where(x => !x.IsFinished).ToList();
-            foreach (IBatch batch in unprocessedBatches)
-            {
-                DataSourceDetails dataSource = (await sourceController.GetDetailsAsync(
-                        configuration.DestinationWorkspaceArtifactId,
-                        configuration.ExportRunId,
-                        batch.BatchGuid)
-                    .ConfigureAwait(false))
-                    .Value;
-                if (dataSource.State >= DataSourceState.Canceled)
-                {
-                    _logger.LogInformation("DataSource {dataSource} has finished with status {state}.", batch.BatchGuid, dataSource.State);
-                    await MarkBatchAsProcessed(batch, dataSource.State).ConfigureAwait(false);
-                }
-            }
-        }
-
-        private async Task<ValueResponse<ImportDetails>> GetImportStatusAsync(IImportJobController jobController, IDocumentSynchronizationMonitorConfiguration configuration)
-        {
-            ValueResponse<ImportDetails> response = await jobController.GetDetailsAsync(
-                                configuration.DestinationWorkspaceArtifactId,
-                                configuration.ExportRunId)
-                            .ConfigureAwait(false);
-
-            return TryGetValueResponse(response);
-        }
+        
 
         private ValueResponse<T> TryGetValueResponse<T>(ValueResponse<T> response)
         {
@@ -157,7 +158,7 @@ namespace Relativity.Sync.Executors
             return response;
         }
 
-        private async Task MarkBatchAsProcessed(IBatch batch, DataSourceState state)
+        private async Task MarkBatchAsProcessedAsync(IBatch batch, DataSourceState state)
         {
             switch (state)
             {

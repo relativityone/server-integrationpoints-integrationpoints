@@ -23,5 +23,11 @@ namespace Relativity.Sync.Executors
             ItemLevelErrorHandler itemLevelErrorHandler = new ItemLevelErrorHandler(_configuration, _jobHistoryErrorRepository, statusMonitor, _logger);
             return itemLevelErrorHandler;
         }
+
+        public IImportApiItemLevelErrorHandler CreateIApiHandler()
+        {
+            ImportApiItemLevelErrorHandler itemLevelErrorHandler = new ImportApiItemLevelErrorHandler(_configuration, _jobHistoryErrorRepository);
+            return itemLevelErrorHandler;
+        }
     }
 }
