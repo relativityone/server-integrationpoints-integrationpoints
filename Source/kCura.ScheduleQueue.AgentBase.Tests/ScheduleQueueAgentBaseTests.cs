@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Validation;
 using Moq;
@@ -354,7 +355,7 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
 
             const string exceptionMessage = "Invalid job";
             _queueJobValidatorFake.Setup(x => x.ValidateAsync(It.Is<Job>(y => y.JobId == jobId)))
-                .ReturnsAsync(PreValidationResult.InvalidJob(exceptionMessage, false));
+                .ReturnsAsync(PreValidationResult.InvalidJob(exceptionMessage, false, false));
 
             // Act
             sut.Execute();
@@ -424,10 +425,10 @@ namespace kCura.ScheduleQueue.AgentBase.Tests
             }
         }
 
-        private void SetupJobAsInvalid(Job job, bool shouldExecute = false)
+        private void SetupJobAsInvalid(Job job, bool shouldExecute = false, bool maximumConsecutiveFailuresReached = false)
         {
             _queueJobValidatorFake.Setup(x => x.ValidateAsync(job))
-                .ReturnsAsync(PreValidationResult.InvalidJob(It.IsAny<string>(), shouldExecute));
+                .ReturnsAsync(PreValidationResult.InvalidJob(It.IsAny<string>(), shouldExecute, maximumConsecutiveFailuresReached));
         }
 
         private class TestAgent : ScheduleQueueAgentBase

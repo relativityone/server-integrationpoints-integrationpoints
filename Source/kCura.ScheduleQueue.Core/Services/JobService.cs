@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Data;
-using kCura.IntegrationPoints.Data;
+using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
 using Relativity.API;
 using IKubernetesMode = kCura.IntegrationPoints.Domain.EnvironmentalVariables.IKubernetesMode;
-using kCura.IntegrationPoints.Config;
 
 namespace kCura.ScheduleQueue.Core.Services
 {
@@ -19,7 +19,6 @@ namespace kCura.ScheduleQueue.Core.Services
     {
         private readonly IKubernetesMode _kubernetesMode;
         private readonly IAPILog _log;
-        private readonly IConfig _config;
 
         public JobService(IAgentService agentService, IJobServiceDataProvider dataProvider, IKubernetesMode kubernetesMode, IHelper dbHelper)
         {
@@ -27,7 +26,6 @@ namespace kCura.ScheduleQueue.Core.Services
             AgentService = agentService;
             _log = dbHelper.GetLoggerFactory().GetLogger().ForContext<JobService>();
             DataProvider = dataProvider;
-            _config = IntegrationPoints.Config.Config.Instance;
         }
 
         protected IJobServiceDataProvider DataProvider { get; set; }
@@ -39,22 +37,22 @@ namespace kCura.ScheduleQueue.Core.Services
         public Job GetNextQueueJob(IEnumerable<int> resourceGroupIds, int agentID, long? rootJobId = null)
         {
             DataRow row;
-            
+
             if (_kubernetesMode.IsEnabled())
             {
                 row = DataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID, rootJobId);
             }
             else
             {
-                int[] resurceGroupIdsArray = resourceGroupIds?.ToArray() ?? Array.Empty<int>();
+                int[] resourceGroupIdsArray = resourceGroupIds?.ToArray() ?? Array.Empty<int>();
 
-                if (resurceGroupIdsArray.Length == 0)
+                if (resourceGroupIdsArray.Length == 0)
                 {
                     throw new ArgumentException($"Did not find any resource group ids for agent with id '{agentID}'." +
                                                         " Please validate EnableKubernetesMode toggle value, current value: False");
                 }
 
-                row = DataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID, resurceGroupIdsArray);
+                row = DataProvider.GetNextQueueJob(agentID, AgentTypeInformation.AgentTypeID, resourceGroupIdsArray);
             }
 
             Job job = CreateJob(row);
@@ -64,33 +62,6 @@ namespace kCura.ScheduleQueue.Core.Services
             }    
 
             return job;
-        }
-
-        public DateTime? GetJobNextUtcRunDateTime(Job job, IScheduleRuleFactory scheduleRuleFactory, TaskResult taskResult)
-        {
-            if (scheduleRuleFactory == null)
-            {
-                throw new ArgumentNullException(nameof(scheduleRuleFactory));
-            }
-            if (job == null)
-            {
-                _log.LogWarning("Job is null. Return NextUtcRunDateTime as null");
-                return null;
-            }
-
-            IScheduleRule scheduleRule = scheduleRuleFactory.Deserialize(job);
-            DateTime? nextUtcRunDateTime = null;
-            if (scheduleRule != null)
-            {
-#if TIME_MACHINE
-                scheduleRule.TimeService = new TimeMachineService(job.WorkspaceID);
-#endif
-                nextUtcRunDateTime = scheduleRule.GetNextUTCRunDateTime();
-            }
-
-            _log.LogInformation("NextUtcRunDateTime has been calculated for {nextUtcRunDateTime}.", nextUtcRunDateTime);
-
-            return nextUtcRunDateTime;
         }
 
         public FinalizeJobResult FinalizeJob(Job job, IScheduleRuleFactory scheduleRuleFactory, TaskResult taskResult)
@@ -138,8 +109,8 @@ namespace kCura.ScheduleQueue.Core.Services
                 {
                     BatchInstance = Guid.NewGuid()
                 };
-                string jobDeatils = new JSONSerializer().Serialize(taskParameters);
-                CreateNewAndDeleteOldScheduledJob(job.JobId, job.WorkspaceID, job.RelatedObjectArtifactID, job.TaskType, scheduleRule, jobDeatils, job.SubmittedBy, job.RootJobId, job.ParentJobId);
+                string jobDetails = new JSONSerializer().Serialize(taskParameters);
+                CreateNewAndDeleteOldScheduledJob(job.JobId, job.WorkspaceID, job.RelatedObjectArtifactID, job.TaskType, scheduleRule, jobDetails, job.SubmittedBy, job.RootJobId, job.ParentJobId);
             }
             else
             {
@@ -152,6 +123,34 @@ namespace kCura.ScheduleQueue.Core.Services
             result.JobState = JobLogState.Deleted;
 
             return result;
+        }
+
+        public DateTime? GetJobNextUtcRunDateTime(Job job, IScheduleRuleFactory scheduleRuleFactory, TaskResult taskResult)
+        {
+            if (scheduleRuleFactory == null)
+            {
+                throw new ArgumentNullException(nameof(scheduleRuleFactory));
+            }
+
+            if (job == null)
+            {
+                _log.LogWarning("Job is null. Return NextUtcRunDateTime as null");
+                return null;
+            }
+
+            IScheduleRule scheduleRule = scheduleRuleFactory.Deserialize(job);
+            DateTime? nextUtcRunDateTime = null;
+            if (scheduleRule != null)
+            {
+#if TIME_MACHINE
+                scheduleRule.TimeService = new TimeMachineService(job.WorkspaceID);
+#endif
+                nextUtcRunDateTime = scheduleRule.GetNextUTCRunDateTime();
+            }
+
+            _log.LogInformation("NextUtcRunDateTime has been calculated for {nextUtcRunDateTime}.", nextUtcRunDateTime);
+
+            return nextUtcRunDateTime;
         }
 
         public void UnlockJobs(int agentID)

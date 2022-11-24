@@ -15,6 +15,7 @@ using NUnit.Framework;
 using Relativity.IntegrationPoints.Services.Helpers;
 using Relativity.Logging;
 using System.Linq;
+using kCura.ScheduleQueue.Core.Interfaces;
 using WorkloadDiscovery;
 
 namespace Relativity.IntegrationPoints.Services.Tests.Managers

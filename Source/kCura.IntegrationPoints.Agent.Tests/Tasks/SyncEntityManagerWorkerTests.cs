@@ -28,6 +28,7 @@ using kCura.IntegrationPoints.Domain.Synchronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
+using kCura.ScheduleQueue.Core.Interfaces;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;

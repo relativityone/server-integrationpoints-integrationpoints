@@ -41,6 +41,7 @@ using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.ScheduleQueue.Core.Interfaces;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 {

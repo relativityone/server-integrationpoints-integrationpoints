@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using Castle.Windsor;
 using kCura.Agent.CustomAttributes;
 using kCura.Apps.Common.Config;
@@ -24,6 +23,7 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
@@ -35,6 +35,7 @@ using kCura.IntegrationPoints.RelativitySync;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
+using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.TimeMachine;
 using kCura.ScheduleQueue.Core.Validation;
@@ -84,7 +85,8 @@ namespace kCura.IntegrationPoints.Agent
             IDateTime dateTime = null,
             IAPILog logger = null,
             IConfig config = null,
-            IAPM apm = null)
+            IAPM apm = null,
+            IDbContextFactory dbContextFactory = null)
             : base(
                 agentGuid,
                 kubernetesMode,
@@ -96,7 +98,8 @@ namespace kCura.IntegrationPoints.Agent
                 dateTime,
                 logger,
                 config,
-                apm)
+                apm,
+                dbContextFactory)
         {
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
@@ -148,7 +151,16 @@ namespace kCura.IntegrationPoints.Agent
                 {
                     if (job.JobFailed != null)
                     {
-                        MarkJobHistoryAsFailed(Container, job);
+                        IIntegrationPointRepository integrationPointRepository = Container.Resolve<IIntegrationPointRepository>();
+                        IntegrationPoint integrationPoint = integrationPointRepository.ReadAsync(job.RelatedObjectArtifactID).GetAwaiter().GetResult();
+                        if (integrationPoint == null)
+                        {
+                            throw new NullReferenceException(
+                                $"Unable to retrieve the integration point for the following job: {job.JobId}");
+                        }
+
+                        UpdateIntegrationPointOnScheduleBreak(integrationPointRepository, integrationPoint, job);
+                        MarkJobHistoryAsFailed(integrationPoint, job);
                         return new TaskResult
                         {
                             Status = TaskStatusEnum.Fail,
@@ -209,6 +221,21 @@ namespace kCura.IntegrationPoints.Agent
             }
         }
 
+        private void UpdateIntegrationPointOnScheduleBreak(
+            IIntegrationPointRepository integrationPointRepository,
+            IntegrationPoint integrationPoint,
+            Job job)
+        {
+            if (job.JobFailed.ShouldBreakSchedule)
+            {
+                integrationPoint.ScheduleRule = null;
+                integrationPoint.NextScheduledRuntimeUTC = null;
+                integrationPoint.EnableScheduler = job.JobFailed.MaximumConsecutiveFailuresReached;
+
+                integrationPointRepository.Update(integrationPoint);
+            }
+        }
+
         private IDisposable StartMemoryUsageMetricReporting(IWindsorContainer container, Job job)
         {
             return container.Resolve<IMemoryUsageReporter>()
@@ -236,18 +263,10 @@ namespace kCura.IntegrationPoints.Agent
             return result;
         }
 
-        private void MarkJobHistoryAsFailed(IWindsorContainer container, Job job)
+        private void MarkJobHistoryAsFailed(IntegrationPointDto integrationPoint, Job job)
         {
-            IntegrationPointDto integrationPoint = container.Resolve<IIntegrationPointService>()
-                .Read(job.RelatedObjectArtifactID);
-            if (integrationPoint == null)
-            {
-                throw new NullReferenceException(
-                    $"Unable to retrieve the integration point for the following job: {job.JobId}");
-            }
-
             ITaskFactoryJobHistoryService jobHistoryService =
-                container.Resolve<ITaskFactoryJobHistoryServiceFactory>()
+                Container.Resolve<ITaskFactoryJobHistoryServiceFactory>()
                     .CreateJobHistoryService(integrationPoint);
             jobHistoryService.SetJobIdOnJobHistory(job);
             jobHistoryService.UpdateJobHistoryOnFailure(job, job.JobFailed.Exception);

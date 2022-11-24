@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using FluentAssertions;
@@ -11,8 +12,8 @@ using kCura.IntegrationPoints.Agent.Monitoring.HearbeatReporter;
 using kCura.IntegrationPoints.Agent.Monitoring.MemoryUsageReporter;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Common.Helpers;
-using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
+using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -24,6 +25,8 @@ using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
+using kCura.ScheduleQueue.Core.Interfaces;
+using kCura.ScheduleQueue.Core.ScheduleRules;
 using Moq;
 using NSubstitute;
 using NUnit.Framework;
@@ -33,9 +36,14 @@ using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Agent.Tests
 {
-    [TestFixture, Category("Unit")]
+    [TestFixture]
+    [Category("Unit")]
     public class AgentTests
     {
+        private const string _PROVIDER_NAME = "TestProvider";
+
+        private readonly Guid _batchInstanceGuid = Guid.NewGuid();
+
         private Mock<IMessageService> _messageServiceMock;
         private Mock<IJobHistoryService> _jobHistoryServiceFake;
         private Mock<IMemoryUsageReporter> _memoryUsageReporter;
@@ -43,9 +51,6 @@ namespace kCura.IntegrationPoints.Agent.Tests
         private Mock<IAPILog> _loggerMock;
 
         private IWindsorContainer _container;
-
-        private const string _PROVIDER_NAME = "TestProvider";
-        private readonly Guid _BATCH_INSTANCE_GUID = Guid.NewGuid();
         private Mock<IKubernetesMode> _kubernetesModeMock;
 
         [SetUp]
@@ -108,7 +113,9 @@ namespace kCura.IntegrationPoints.Agent.Tests
             sut.ProcessJob_Test(job);
 
             // Assert
-            _memoryUsageReporter.Verify(x => x.ActivateTimer(
+            _memoryUsageReporter.Verify(
+                x =>
+                    x.ActivateTimer(
                 It.IsAny<long>(),
                 It.IsAny<string>(),
                 It.Is<string>(jobType => jobType == "ExportService")), Times.Once);
@@ -120,7 +127,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
             // Arrange
             TestAgent sut = PrepareSut();
 
-            _jobHistoryServiceFake.Setup(x => x.GetRdoWithoutDocuments(_BATCH_INSTANCE_GUID))
+            _jobHistoryServiceFake.Setup(x => x.GetRdoWithoutDocuments(_batchInstanceGuid))
                 .Returns((JobHistory)null);
 
             Job job = JobExtensions.CreateJob();
@@ -130,6 +137,46 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
             // Assert
             action.ShouldNotThrow();
+        }
+
+        [Test]
+        public void ProcessJob_ShouldBreakSchedule_WhenBreakScheduleFlagIsTrue()
+        {
+            // Arrange
+            TestAgent sut = PrepareSut();
+
+            const int integrationPointId = 200;
+            Mock<ITaskFactoryJobHistoryService> jobHistoryServiceMock = new Mock<ITaskFactoryJobHistoryService>();
+
+            Mock<IIntegrationPointRepository> integrationPointRepositoryFake = new Mock<IIntegrationPointRepository>();
+            integrationPointRepositoryFake.Setup(x => x.ReadAsync(integrationPointId)).ReturnsAsync(new Data.IntegrationPoint());
+
+            Mock<ITaskFactoryJobHistoryServiceFactory> jobHistoryServiceFactoryFake = new Mock<ITaskFactoryJobHistoryServiceFactory>();
+            jobHistoryServiceFactoryFake.Setup(x => x.CreateJobHistoryService(It.IsAny<Data.IntegrationPoint>())).Returns(jobHistoryServiceMock.Object);
+            RegisterMock(integrationPointRepositoryFake);
+            RegisterMock(jobHistoryServiceFactoryFake);
+
+            IScheduleRule scheduleRule = new PeriodicScheduleRule(ScheduleInterval.Daily, DateTime.Now, TimeSpan.FromDays(2));
+            IsJobFailed jobFailed = new IsJobFailed(new InvalidOperationException(), true, true);
+            Job job = new JobBuilder()
+                .WithRelatedObjectArtifactId(integrationPointId)
+                .WithScheduleRule(scheduleRule)
+                .WithJobFailed(jobFailed)
+                .Build();
+
+            // Act
+            TaskResult result = sut.ProcessJob_Test(job);
+
+            // Assert
+            result.Status.Should().Be(TaskStatusEnum.Fail);
+            result.Exceptions.Single().Should().BeOfType<InvalidOperationException>();
+            integrationPointRepositoryFake.Verify(
+                x =>
+                    x.Update(It.Is<Data.IntegrationPoint>(
+                        y =>
+                            y.ScheduleRule == null &&
+                            y.NextScheduledRuntimeUTC == null &&
+                            y.EnableScheduler == job.JobFailed.MaximumConsecutiveFailuresReached)));
         }
 
         [Test]
@@ -144,8 +191,12 @@ namespace kCura.IntegrationPoints.Agent.Tests
             sut.Execute();
 
             // Assert
-            _loggerMock.Verify(x => x.LogInformation("Attempting to initialize Config Settings factory in {TypeName}",
-                nameof(ScheduleQueueAgentBase)), Times.Never);
+            _loggerMock.Verify(
+                x =>
+                    x.LogInformation(
+                        "Attempting to initialize Config Settings factory in {TypeName}",
+                        nameof(ScheduleQueueAgentBase)),
+                Times.Never);
         }
 
         [Test]
@@ -173,7 +224,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
                 .WithJobId(expectedJobId)
                 .WithRelatedObjectArtifactId(integrationPointId)
                 .Build();
-            job.MarkJobAsFailed(expectedException, false);
+            job.MarkJobAsFailed(expectedException, false, false);
 
             // Act
             TaskResult result = sut.ProcessJob_Test(job);
@@ -205,7 +256,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
             relativitySyncConstrainsChecker.Setup(x => x.ShouldUseRelativitySync(It.IsAny<int>())).Returns(false);
 
             Mock<ITaskParameterHelper> taskParameterHelper = new Mock<ITaskParameterHelper>();
-            taskParameterHelper.Setup(x => x.GetBatchInstance(It.IsAny<Job>())).Returns(_BATCH_INSTANCE_GUID);
+            taskParameterHelper.Setup(x => x.GetBatchInstance(It.IsAny<Job>())).Returns(_batchInstanceGuid);
 
             Mock<IIntegrationPointService> integrationPointService = new Mock<IIntegrationPointService>();
             integrationPointService.Setup(x => x.Read(It.IsAny<int>()))
@@ -244,7 +295,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
 
         private void SetupJobHistoryStatus(ChoiceRef jobStatus)
         {
-            _jobHistoryServiceFake.Setup(x => x.GetRdoWithoutDocuments(_BATCH_INSTANCE_GUID))
+            _jobHistoryServiceFake.Setup(x => x.GetRdoWithoutDocuments(_batchInstanceGuid))
                 .Returns(new JobHistory
                 {
                     JobStatus = jobStatus
@@ -265,12 +316,11 @@ namespace kCura.IntegrationPoints.Agent.Tests
                 _logMock = logger;
             }
 
+            protected override IAPILog Logger => _logMock.Object;
+
             public TaskResult ProcessJob_Test(Job job) => ProcessJob(job);
 
             protected override IWindsorContainer CreateAgentLevelContainer() => Container;
-
-            protected override IAPILog Logger => _logMock.Object;
-
         }
     }
 }

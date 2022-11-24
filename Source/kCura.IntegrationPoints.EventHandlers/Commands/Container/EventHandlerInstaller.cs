@@ -60,7 +60,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Container
             container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(k =>
             {
                 IEHContext context = k.Resolve<IEHContext>();
-                return new WorkspaceDBContext(context.Helper.GetDBContext(context.Helper.GetActiveCaseID()));
+
+                return new DbContextFactory(context.Helper)
+                    .CreateWorkspaceDbContext(context.Helper.GetActiveCaseID());
             }).LifestyleTransient());
 
             container.Register(Component.For<IWorkspaceContext>()

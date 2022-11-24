@@ -3,6 +3,7 @@ using System.Linq;
 using kCura.IntegrationPoints.Core.Contracts.Helpers;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Interfaces;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations
 {

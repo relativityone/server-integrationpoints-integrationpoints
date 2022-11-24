@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         private Mock<IPingService> _pingServiceMock;
         private Mock<IHelper> _helperMock;
         private DatabasePingReporter _databasePingReporterFake;
-        private Mock<IWorkspaceDBContext> _context;
+        private Mock<IEddsDBContext> _context;
         private Mock<IAPILog> _loggerMock;
         private SystemHealthReporter _sut;
         private Exception _exception = new Exception();
@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _servicesMgrFake.Setup(s => s.CreateProxy<IFileShareServerManager>(ExecutionIdentity.System)).Returns(_fileShareServerManagerMock.Object);
             _servicesMgrFake.Setup(s => s.CreateProxy<IPingService>(ExecutionIdentity.System)).Returns(_pingServiceMock.Object);
             _helperMock.Setup(h => h.GetServicesManager()).Returns(_servicesMgrFake.Object);
-            _context = new Mock<IWorkspaceDBContext>();
+            _context = new Mock<IEddsDBContext>();
             _databasePingReporterFake = new DatabasePingReporter(_context.Object, _loggerMock.Object);
         }
 
