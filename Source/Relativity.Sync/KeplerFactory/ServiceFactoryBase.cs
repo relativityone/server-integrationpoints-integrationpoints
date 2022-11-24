@@ -10,12 +10,13 @@ namespace Relativity.Sync.KeplerFactory
 {
     internal abstract class ServiceFactoryBase
     {
-
         protected readonly IRandom Random;
         protected readonly IAPILog Logger;
+
         protected int RetryMaxCount = 2;
         protected int AuthTokenRetriesMaxCount = 2;
-        public double SecondsBetweenRetries = 2;
+
+        internal double SecondsBetweenRetries { get; set; } = 2;
 
         protected ServiceFactoryBase(IRandom random, IAPILog logger)
         {
@@ -23,11 +24,8 @@ namespace Relativity.Sync.KeplerFactory
             Logger = logger;
         }
 
-        protected abstract Task<T> CreateProxyInternalAsync<T>() where T : class, IDisposable;
-
         public async Task<T> CreateProxyAsync<T>() where T : class, IDisposable
         {
-
             RetryPolicy errorsPolicy = GetErrorsPolicy();
             RetryPolicy authTokenPolicy = GetAuthenticationTokenPolicy();
             Policy.WrapAsync(errorsPolicy, authTokenPolicy);
@@ -37,6 +35,8 @@ namespace Relativity.Sync.KeplerFactory
 
             return proxy;
         }
+
+        protected abstract Task<T> CreateProxyInternalAsync<T>() where T : class, IDisposable;
 
         private RetryPolicy GetErrorsPolicy()
         {
