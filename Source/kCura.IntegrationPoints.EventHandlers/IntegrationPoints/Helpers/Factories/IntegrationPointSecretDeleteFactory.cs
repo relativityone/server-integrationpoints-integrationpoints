@@ -14,20 +14,18 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
         {
             IAPILog logger = helper.GetLoggerFactory().GetLogger();
             ISecretsRepository secretsRepository = new SecretsRepository(
-                SecretStoreFacadeFactory_Deprecated.Create(helper.GetSecretStore, logger), 
+                SecretStoreFacadeFactory_Deprecated.Create(helper.GetSecretStore, logger),
                 logger
             );
             IRelativityObjectManager relativityObjectManager = CreateObjectManager(helper);
-            IIntegrationPointSerializer integrationPointSerializer = CreateIntegrationPointSerializer(logger);
             IIntegrationPointRepository integrationPointRepository =
                 CreateIntegrationPointRepository(
-                    relativityObjectManager, 
-                    integrationPointSerializer,
+                    relativityObjectManager,
                     secretsRepository,
                     logger);
             return new IntegrationPointSecretDelete(
-                helper.GetActiveCaseID(), 
-                secretsRepository, 
+                helper.GetActiveCaseID(),
+                secretsRepository,
                 integrationPointRepository);
         }
 
@@ -36,20 +34,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Factor
             return new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(helper.GetActiveCaseID());
         }
 
-        private static IIntegrationPointSerializer CreateIntegrationPointSerializer(IAPILog logger)
-        {
-            return new IntegrationPointSerializer(logger);
-        }
-
         private static IIntegrationPointRepository CreateIntegrationPointRepository(
             IRelativityObjectManager objectManager,
-            IIntegrationPointSerializer serializer,
             ISecretsRepository secretsRepository,
             IAPILog logger)
         {
             return new IntegrationPointRepository(
-                objectManager, 
-                serializer,
+                objectManager,
                 secretsRepository,
                 logger
             );

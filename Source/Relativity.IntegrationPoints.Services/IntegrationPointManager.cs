@@ -28,7 +28,8 @@ namespace Relativity.IntegrationPoints.Services
         {
         }
 
-        public IntegrationPointManager(ILog logger) : base(logger)
+        public IntegrationPointManager(ILog logger)
+            : base(logger)
         {
         }
 

@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Data.Installers;
 using Relativity.IntegrationPoints.Services.Installers.Context;
 using Relativity.API;
 using System.Collections.Generic;
+using kCura.IntegrationPoints.Core.Factories.Implementations;
 using Relativity.IntegrationPoints.Services.Installers.Authentication;
 using Relativity.IntegrationPoints.Services.Helpers;
 using Relativity.IntegrationPoints.Services.Repositories;
@@ -37,12 +38,11 @@ namespace Relativity.IntegrationPoints.Services.Installers
         protected override void RegisterComponents(IWindsorContainer container, IConfigurationStore store, int workspaceID)
         {
             container.Register(Component.For<IUserInfo>().UsingFactoryMethod(k => k.Resolve<IServiceHelper>().GetAuthenticationManager().UserInfo, true));
-            
+
             container.Register(Component.For<IIntegrationPointAccessor>().ImplementedBy<IntegrationPointAccessor>().LifestyleTransient());
             container.Register(Component.For<IIntegrationPointProfileAccessor>().ImplementedBy<IntegrationPointProfileAccessor>().LifestyleTransient());
             container.Register(Component.For<IProviderAccessor>().ImplementedBy<ProviderAccessor>().LifestyleTransient());
             container.Register(Component.For<IBackwardCompatibility>().ImplementedBy<BackwardCompatibility>().LifestyleTransient());
-            container.Register(Component.For<IIntegrationPointRuntimeServiceFactory>().ImplementedBy<IntegrationPointRuntimeServiceFactory>().LifestyleTransient());
 
             container
                 .AddWorkspaceContext(workspaceID)

@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
         internal void ExecuteInstanced()
         {
-            IList<Data.IntegrationPoint> integrationPoints = _integrationPointRepository.GetIntegrationPointsWithAllFields();
+            IList<Data.IntegrationPoint> integrationPoints = _integrationPointRepository.ReadAll();
 
             foreach (Data.IntegrationPoint integrationPoint in integrationPoints)
             {
@@ -92,7 +92,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
             );
             _integrationPointRepository = new IntegrationPointRepository(
                 caseServiceContext.RelativityObjectManagerService.RelativityObjectManager,
-                integrationPointSerializer,
                 secretsRepository,
                 Logger);
         }

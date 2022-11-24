@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
             _integrationPointRepositoryMock.Setup(x => x.ReadAsync(_integrationPoint.ArtifactId))
                 .ReturnsAsync(_integrationPoint);
             _integrationPointRepositoryMock.Setup(x => x.GetFieldMappingAsync(_integrationPoint.ArtifactId))
-                .ReturnsAsync(new List<FieldMap>());
+                .ReturnsAsync(String.Empty);
 
 
             _objectManagerFake = _fxt.Freeze<Mock<IRelativityObjectManager>>();

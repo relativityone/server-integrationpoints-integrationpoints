@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
@@ -8,7 +7,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
     {
         Task<IntegrationPoint> ReadAsync(int integrationPointArtifactID);
         Task<IntegrationPoint> ReadEncryptedAsync(int integrationPointArtifactID);
-        Task<List<FieldMap>> GetFieldMappingAsync(int integrationPointArtifactID);
+        Task<string> GetFieldMappingAsync(int integrationPointArtifactID);
         string GetSecuredConfiguration(int integrationPointArtifactID);
         string GetName(int integrationPointArtifactID);
         int CreateOrUpdate(IntegrationPoint integrationPoint);
@@ -16,11 +15,11 @@ namespace kCura.IntegrationPoints.Data.Repositories
         void UpdateHasErrors(int integrationPointArtifactId, bool hasErrors);
         void Delete(int integrationPointID);
 
-        List<IntegrationPoint> GetAll(List<int> integrationPointIDs);
-        Task<List<IntegrationPoint>> GetBySourceAndDestinationProviderAsync(
+        List<IntegrationPoint> ReadAllByIds(List<int> integrationPointIDs);
+        Task<List<IntegrationPoint>> ReadBySourceAndDestinationProviderAsync(
             int sourceProviderArtifactID,
             int destinationProviderArtifactID);
-        List<IntegrationPoint> GetIntegrationPoints(List<int> sourceProviderIds);
-        List<IntegrationPoint> GetIntegrationPointsWithAllFields();
+        List<IntegrationPoint> ReadBySourceProviders(List<int> sourceProviderIds);
+        List<IntegrationPoint> ReadAll();
     }
 }

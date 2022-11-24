@@ -11,6 +11,7 @@ using Relativity.API;
 using System.Collections.Generic;
 using Castle.MicroKernel;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+using kCura.IntegrationPoints.RelativitySync;
 using Relativity.IntegrationPoints.Services.JobHistory;
 
 namespace Relativity.IntegrationPoints.Services.Installers
@@ -25,7 +26,10 @@ namespace Relativity.IntegrationPoints.Services.Installers
             {
                 new QueryInstallers(),
                 new SharedAgentInstaller(),
-                new ServicesInstaller()
+                new ServicesInstaller(),
+                new ValidationInstaller(),
+                new RelativitySyncInstaller(),
+                new kCura.IntegrationPoints.ImportProvider.Parser.Installers.ServicesInstaller(),
             };
         }
 

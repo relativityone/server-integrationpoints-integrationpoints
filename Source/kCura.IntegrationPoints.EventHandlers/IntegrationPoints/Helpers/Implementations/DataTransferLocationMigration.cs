@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
         {
             try
             {
-                return _integrationPointRepository.GetBySourceAndDestinationProviderAsync(
+                return _integrationPointRepository.ReadBySourceAndDestinationProviderAsync(
                     relativitySourceProviderArtifactId,
                     loadFileDestinationProviderArtifactId
                 );

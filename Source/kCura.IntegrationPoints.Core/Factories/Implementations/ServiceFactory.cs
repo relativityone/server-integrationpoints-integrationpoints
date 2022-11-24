@@ -65,7 +65,6 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
             );
             IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(
                 _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager,
-                _serializer,
                 secretsRepository,
                 logger
             );

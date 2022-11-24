@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
@@ -245,6 +246,11 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             };
 
             _validationExecutor.ValidateOnSave(context);
+        }
+
+        protected void SanitizeFieldsMapping(List<FieldMap> fieldsMapping)
+        {
+            fieldsMapping?.ForEach(map => map.SourceField.IsIdentifier = map.FieldMapType == FieldMapTypeEnum.Identifier);
         }
     }
 }

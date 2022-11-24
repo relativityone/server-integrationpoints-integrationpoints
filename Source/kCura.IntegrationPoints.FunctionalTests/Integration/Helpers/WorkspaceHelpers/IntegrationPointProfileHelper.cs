@@ -50,7 +50,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
             List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMapping(destinationWorkspace, (int)ArtifactType.Document);
 
-            integrationPoint.FieldMappings = fieldsMapping;
+            integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
             integrationPoint.SourceConfiguration = _serializer.Serialize(new SourceConfiguration
             {
                 SourceWorkspaceArtifactId = Workspace.ArtifactId,
@@ -101,7 +101,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierFieldsMapping(destinationWorkspace, (int)ArtifactType.Document);
             fieldsMapping[0].SourceField.DisplayName = new string(Enumerable.Repeat('-', longTextLimit / 2).ToArray());
             fieldsMapping[0].DestinationField.DisplayName = new string(Enumerable.Repeat('-', longTextLimit / 2).ToArray());
-            integrationPointProfile.FieldMappings = fieldsMapping;
+            integrationPointProfile.FieldMappings = _serializer.Serialize(fieldsMapping);
 
             return integrationPointProfile;
         }
@@ -140,7 +140,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
                 EmailNotificationRecipients = integrationPointProfile.EmailNotificationRecipients ?? string.Empty,
                 LogErrors = integrationPointProfile.LogErrors.GetValueOrDefault(false),
                 NextRun = integrationPointProfile.NextScheduledRuntimeUTC,
-                FieldMappings = integrationPointProfile.FieldMappings
+                FieldMappings = _serializer.Deserialize<List<FieldMap>>(integrationPointProfile.FieldMappings),
             };
 
             Workspace.IntegrationPointProfiles.Remove(integrationPointProfile);

@@ -135,20 +135,19 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
                 if (_dataTransferLocationMigration == null)
                 {
                     _dataTransferLocationMigration = new DataTransferLocationMigration(
-                        Logger, 
+                        Logger,
                         DestinationProviderRepository,
-                        SourceProviderRepository, 
-                        DataTransferLocationMigrationHelper, 
+                        SourceProviderRepository,
+                        DataTransferLocationMigrationHelper,
                         new IntegrationPointRepository(
-                            ObjectManager, 
-                            new IntegrationPointSerializer(Logger), 
+                            ObjectManager,
                             new SecretsRepository(
-                                SecretStoreFacadeFactory_Deprecated.Create(Helper.GetSecretStore, Logger), 
+                                SecretStoreFacadeFactory_Deprecated.Create(Helper.GetSecretStore, Logger),
                                 Logger
-                            ), 
-                            Logger), 
-                        DataTransferLocationService, 
-                        ResourcePoolManager, 
+                            ),
+                            Logger),
+                        DataTransferLocationService,
+                        ResourcePoolManager,
                         Helper);
                 }
 

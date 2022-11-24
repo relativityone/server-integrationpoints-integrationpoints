@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 
         private void SetTypeOfExportForIntegrationPoints()
         {
-            foreach (IntegrationPoint point in _integrationPointRepository.GetIntegrationPointsWithAllFields())
+            foreach (IntegrationPoint point in _integrationPointRepository.ReadAll())
             {
                 string resultConf = _sourceConfigurationTypeOfExpertUpdater.GetCorrectedSourceConfiguration(point.SourceProvider,
                     point.DestinationProvider, point.SourceConfiguration);

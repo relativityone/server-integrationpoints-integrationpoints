@@ -175,13 +175,12 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
                 var permissionRepository = new PermissionRepository(helper, key.WorkspaceId);
                 IRelativityObjectManager objectManager = CreateObjectManager(helper, key.WorkspaceId);
                 IAPILog logger = ConnectionHelper.Helper().GetLoggerFactory().GetLogger();
-                IIntegrationPointSerializer integrationPointSerializer = CreateIntegrationPointSerializer(logger);
                 ISecretsRepository secretsRepository = new SecretsRepository(
                     SecretStoreFacadeFactory_Deprecated.Create(helper.GetSecretStore, logger),
                     logger
                 );
                 IIntegrationPointRepository integrationPointRepository =
-                    CreateIntegrationPointRepository(objectManager, integrationPointSerializer, secretsRepository, logger);
+                    CreateIntegrationPointRepository(objectManager, secretsRepository, logger);
                 var providerTypeService = new ProviderTypeService(objectManager);
                 var buttonStateBuilder = new ButtonStateBuilder(providerTypeService, _queueManager, _jobHistoryManager,
                     _stateManager, permissionRepository, _permissionValidator, integrationPointRepository, false);
@@ -228,20 +227,13 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
             return new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(workspaceId);
         }
 
-        private static IIntegrationPointSerializer CreateIntegrationPointSerializer(IAPILog logger)
-        {
-            return new IntegrationPointSerializer(logger);
-        }
-
         private static IIntegrationPointRepository CreateIntegrationPointRepository(
             IRelativityObjectManager relativityObjectManager,
-            IIntegrationPointSerializer serializer,
             ISecretsRepository secretsRepository,
             IAPILog logger)
         {
             return new IntegrationPointRepository(
                 relativityObjectManager,
-                serializer,
                 secretsRepository,
                 logger);
         }

@@ -106,7 +106,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
             PopulateIntegrationPointsList();
 
             _integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
-            _integrationPointRepository.GetIntegrationPointsWithAllFields().Returns(_integrationPoints);
+            _integrationPointRepository.ReadAll().Returns(_integrationPoints);
         }
 
         private void PopulateIntegrationPointsList()

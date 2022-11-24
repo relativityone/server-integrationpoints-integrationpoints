@@ -11,11 +11,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
     public class IntegrationPointProfileTest : RdoTestBase
     {
+        private readonly JSONSerializer _serializer = new JSONSerializer();
+
         public static Guid FieldsMappingGuid { get; } = new Guid("8ae37734-29d1-4441-b5d8-483134f98818");
 
         public DateTime? NextScheduledRuntimeUTC { get; set; }
 
-        public List<FieldMap> FieldMappings { get; set; }
+        public string FieldMappings { get; set; } = "[]";
 
         public bool? EnableScheduler { get; set; }
 
@@ -234,14 +236,13 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public IntegrationPointProfile ToRdo()
         {
-            JSONSerializer serializer = new JSONSerializer();
             return new IntegrationPointProfile
             {
                 RelativityObject = ToRelativityObject(),
                 ArtifactId = ArtifactId,
                 ParentArtifactId = ParentObjectArtifactId,
                 NextScheduledRuntimeUTC = NextScheduledRuntimeUTC,
-                FieldMappings = serializer.Serialize(FieldMappings),
+                FieldMappings = FieldMappings,
                 EnableScheduler = EnableScheduler,
                 SourceConfiguration = SourceConfiguration,
                 DestinationConfiguration = DestinationConfiguration,
@@ -272,7 +273,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 Scheduler = new Scheduler(EnableScheduler.GetValueOrDefault(false), ScheduleRule),
                 EmailNotificationRecipients = EmailNotificationRecipients ?? string.Empty,
                 LogErrors = LogErrors.GetValueOrDefault(false),
-                FieldMappings = FieldMappings,
+                FieldMappings = _serializer.Deserialize<List<FieldMap>>(FieldMappings),
                 NextRun = null,
                 PromoteEligible = false,
                 SecuredConfiguration = null

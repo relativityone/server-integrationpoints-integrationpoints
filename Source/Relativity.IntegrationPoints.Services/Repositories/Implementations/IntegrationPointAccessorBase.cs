@@ -24,7 +24,7 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
             return Save(request.IntegrationPoint, overwriteFieldsName);
         }
 
-        public abstract int Save(IntegrationPointModel model, string overwriteFieldsName);
+        protected abstract int Save(IntegrationPointModel model, string overwriteFieldsName);
 
         protected string GetOverwriteFieldsName(int overwriteFieldsId)
         {

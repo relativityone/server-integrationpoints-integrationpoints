@@ -7,17 +7,13 @@ using kCura.IntegrationPoints.Data.Models;
 using kCura.IntegrationPoints.Data.QueryOptions;
 using kCura.IntegrationPoints.Data.Transformers;
 using Relativity.API;
-using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
     public class IntegrationPointRepository : IIntegrationPointRepository
     {
-        private const string _ERROR_DESERIALIZING_FIELD_MAPPING = "Failed to deserialize field mapping for Integration Point";
-
         private readonly IRelativityObjectManager _objectManager;
-        private readonly IIntegrationPointSerializer _serializer;
         private readonly ISecretsRepository _secretsRepository;
         private readonly IAPILog _logger;
 
@@ -27,12 +23,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
         public IntegrationPointRepository(
             IRelativityObjectManager objectManager,
-            IIntegrationPointSerializer serializer,
             ISecretsRepository secretsRepository,
             IAPILog apiLog)
         {
             _objectManager = objectManager;
-            _serializer = serializer;
             _secretsRepository = secretsRepository;
             _logger = apiLog.ForContext<IntegrationPointRepository>();
             _workspaceID = _objectManager.GetWorkspaceID_Deprecated();
@@ -48,33 +42,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return ReadAsync(integrationPointArtifactID, IntegrationPointQueryOptions.All());
         }
 
-        public async Task<List<FieldMap>> GetFieldMappingAsync(int integrationPointArtifactID)
+        public async Task<string> GetFieldMappingAsync(int integrationPointArtifactID)
         {
-            List<FieldMap> fieldMapping = new List<FieldMap>();
-
-            if (integrationPointArtifactID <= 0)
-            {
-                return fieldMapping;
-            }
-
-            string fieldMappingJson = await GetFieldMappingsAsync(integrationPointArtifactID).ConfigureAwait(false);
-
-            if (string.IsNullOrEmpty(fieldMappingJson))
-            {
-                return fieldMapping;
-            }
-
-            try
-            {
-                fieldMapping = _serializer.Deserialize<List<FieldMap>>(fieldMappingJson);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, _ERROR_DESERIALIZING_FIELD_MAPPING);
-                throw;
-            }
-
-            return fieldMapping;
+            return await GetUnicodeLongTextAsync(integrationPointArtifactID, new FieldRef { Guid = IntegrationPointFieldGuids.FieldMappingsGuid });
         }
 
         public string GetSecuredConfiguration(int integrationPointArtifactID)
@@ -97,6 +67,63 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 .GetResult();
 
             return integrationPoint.Name;
+        }
+
+        public List<IntegrationPoint> ReadAll()
+        {
+            var query = new QueryRequest();
+            var integrationPointsWithoutFields = Query(_workspaceID, query);
+
+            return integrationPointsWithoutFields
+                .Select(integrationPoint => ReadAsync(integrationPoint.ArtifactId).GetAwaiter().GetResult())
+                .ToList();
+        }
+
+        public List<IntegrationPoint> ReadAllByIds(List<int> integrationPointIDs)
+        {
+            var request = new QueryRequest
+            {
+                Condition = $"'ArtifactId' in [{string.Join(",", integrationPointIDs)}]"
+
+            };
+            return Query(_workspaceID, request);
+        }
+
+        public async Task<List<IntegrationPoint>> ReadBySourceAndDestinationProviderAsync(int sourceProviderArtifactID, int destinationProviderArtifactID)
+        {
+            var query = new QueryRequest
+            {
+                Condition =
+                    $"'{IntegrationPointFields.SourceProvider}' == {sourceProviderArtifactID} " +
+                    $"AND " +
+                    $"'{IntegrationPointFields.DestinationProvider}' == {destinationProviderArtifactID}",
+                Fields = RDOConverter.GetFieldList<IntegrationPoint>().Where(field =>
+                    (field.Guid != IntegrationPointFieldGuids.SourceConfigurationGuid)
+                    && (field.Guid != IntegrationPointFieldGuids.DestinationConfigurationGuid)
+                    && (field.Guid != IntegrationPointFieldGuids.FieldMappingsGuid))
+            };
+            List<IntegrationPoint> integrationPoints = Query(_workspaceID, query);
+
+            foreach (IntegrationPoint integrationPoint in integrationPoints)
+            {
+                integrationPoint.SourceConfiguration = await GetSourceConfigurationAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
+                integrationPoint.DestinationConfiguration = await GetDestinationConfigurationAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
+                integrationPoint.FieldMappings = await GetFieldMappingAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
+            }
+
+            return integrationPoints;
+        }
+
+        public List<IntegrationPoint> ReadBySourceProviders(List<int> sourceProviderIds)
+        {
+            QueryRequest sourceProviderQuery = GetBasicSourceProviderQuery(sourceProviderIds);
+
+            sourceProviderQuery.Fields = new List<FieldRef>
+            {
+                new FieldRef {Name = IntegrationPointFields.Name}
+            };
+
+            return Query(_workspaceID, sourceProviderQuery);
         }
 
         public int CreateOrUpdate(IntegrationPoint integrationPoint)
@@ -133,63 +160,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             _objectManager.Delete(integrationPointID);
         }
 
-        public List<IntegrationPoint> GetAll(List<int> integrationPointIDs)
-        {
-            var request = new QueryRequest
-            {
-                Condition = $"'ArtifactId' in [{string.Join(",", integrationPointIDs)}]"
-
-            };
-            return Query(_workspaceID, request);
-        }
-
-        public async Task<List<IntegrationPoint>> GetBySourceAndDestinationProviderAsync(int sourceProviderArtifactID, int destinationProviderArtifactID)
-        {
-            var query = new QueryRequest
-            {
-                Condition =
-                    $"'{IntegrationPointFields.SourceProvider}' == {sourceProviderArtifactID} " +
-                    $"AND " +
-                    $"'{IntegrationPointFields.DestinationProvider}' == {destinationProviderArtifactID}",
-                Fields = RDOConverter.GetFieldList<IntegrationPoint>().Where(field =>
-                    (field.Guid != IntegrationPointFieldGuids.SourceConfigurationGuid)
-                    && (field.Guid != IntegrationPointFieldGuids.DestinationConfigurationGuid)
-                    && (field.Guid != IntegrationPointFieldGuids.FieldMappingsGuid))
-            };
-            List<IntegrationPoint> integrationPoints = Query(_workspaceID, query);
-
-            foreach (IntegrationPoint integrationPoint in integrationPoints)
-            {
-                integrationPoint.SourceConfiguration = await GetSourceConfigurationAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
-                integrationPoint.DestinationConfiguration = await GetDestinationConfigurationAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
-                integrationPoint.FieldMappings = await GetFieldMappingsAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
-            }
-
-            return integrationPoints;
-        }
-
-        public List<IntegrationPoint> GetIntegrationPoints(List<int> sourceProviderIds)
-        {
-            QueryRequest sourceProviderQuery = GetBasicSourceProviderQuery(sourceProviderIds);
-
-            sourceProviderQuery.Fields = new List<FieldRef>
-            {
-                new FieldRef {Name = IntegrationPointFields.Name}
-            };
-
-            return Query(_workspaceID, sourceProviderQuery);
-        }
-
-        public List<IntegrationPoint> GetIntegrationPointsWithAllFields()
-        {
-            var query = new QueryRequest();
-            var integrationPointsWithoutFields = Query(_workspaceID, query);
-
-            return integrationPointsWithoutFields
-                .Select(integrationPoint => ReadAsync(integrationPoint.ArtifactId).GetAwaiter().GetResult())
-                .ToList();
-        }
-
         private QueryRequest GetBasicSourceProviderQuery(List<int> sourceProviderIds)
         {
             return new QueryRequest
@@ -209,7 +179,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
             if (queryOptions.FieldMapping)
             {
-                integrationPoint.FieldMappings = await GetFieldMappingsAsync(integrationPointArtifactID)
+                integrationPoint.FieldMappings = await GetFieldMappingAsync(integrationPointArtifactID)
                     .ConfigureAwait(false);
             }
 
@@ -222,11 +192,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 .Query<IntegrationPoint>(queryRequest)
                 .Select(ip => SetDecryptedSecuredConfiguration(workspaceID, ip))
                 .ToList();
-        }
-
-        private Task<string> GetFieldMappingsAsync(int integrationPointArtifactID)
-        {
-            return GetUnicodeLongTextAsync(integrationPointArtifactID, new FieldRef {Guid = IntegrationPointFieldGuids.FieldMappingsGuid});
         }
 
         private Task<string> GetSourceConfigurationAsync(int integrationPointArtifactID)

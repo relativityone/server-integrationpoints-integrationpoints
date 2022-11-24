@@ -39,7 +39,7 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
             return GetIntegrationPointProfile(artifactId);
         }
 
-        public override int Save(IntegrationPointModel model, string overwriteFieldsName)
+        protected override int Save(IntegrationPointModel model, string overwriteFieldsName)
         {
             var integrationPointProfileModel = model.ToCoreProfileModel(overwriteFieldsName);
             return _integrationPointProfileService.SaveProfile(integrationPointProfileModel);
