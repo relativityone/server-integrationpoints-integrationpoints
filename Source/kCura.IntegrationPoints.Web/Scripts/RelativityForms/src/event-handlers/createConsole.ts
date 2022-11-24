@@ -144,7 +144,7 @@ function generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPoi
     }
 
     if (buttonState.calculateStatisticsButtonEnabled) {
-        var calculateStatsButton = createCalculateStatsButton(consoleApi, convenienceApi, ctx, buttonState.calculateStatisticsButtonEnabled);
+        var calculateStatsButton = createCalculateStatsButton(consoleApi, convenienceApi, ctx, buttonState.calculateStatisticsButtonEnabled, integrationPointId);
         transferSection.push(calculateStatsButton);
     }
 

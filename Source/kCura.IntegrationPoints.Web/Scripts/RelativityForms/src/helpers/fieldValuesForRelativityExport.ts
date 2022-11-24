@@ -30,7 +30,7 @@ export async function getFolderPathInformation(convenienceApi: IConvenienceApi, 
     }
 }
 
-export async function getNativesStats(convenienceApi: IConvenienceApi, workspaceId: number, savedSearchId: number) {
+export async function getNativesStats(convenienceApi: IConvenienceApi, workspaceId: number, savedSearchId: number, integrationPointId: number) {
     let request = {
         options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
             headers: {
@@ -39,7 +39,8 @@ export async function getNativesStats(convenienceApi: IConvenienceApi, workspace
         }),
         payload: {
             workspaceId: workspaceId,
-            savedSearchId: savedSearchId
+            savedSearchId: savedSearchId,
+            integrationPointId: integrationPointId
         },
         url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/SummaryPage/GetNativesStatisticsForSavedSearch"
     };
@@ -55,7 +56,7 @@ export async function getNativesStats(convenienceApi: IConvenienceApi, workspace
     return resp;
 }
 
-export async function getImagesStatsForSavedSearch(convenienceApi: IConvenienceApi, workspaceId: number, savedSearchId: number, importNatives: boolean) {
+export async function getImagesStatsForSavedSearch(convenienceApi: IConvenienceApi, workspaceId: number, savedSearchId: number, importNatives: boolean, integrationPointId: number) {
     let request = {
         options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
             headers: {
@@ -65,7 +66,8 @@ export async function getImagesStatsForSavedSearch(convenienceApi: IConvenienceA
         payload: {
             workspaceId: workspaceId,
             savedSearchId: savedSearchId,
-            calculateSize: importNatives
+            calculateSize: importNatives,
+            integrationPointId: integrationPointId
         },
         url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/SummaryPage/GetImagesStatisticsForSavedSearch"
     };
@@ -81,7 +83,7 @@ export async function getImagesStatsForSavedSearch(convenienceApi: IConvenienceA
     return resp;
 }
 
-export async function getImagesStatsForProduction(convenienceApi: IConvenienceApi, workspaceId: number, productionId: number) {
+export async function getImagesStatsForProduction(convenienceApi: IConvenienceApi, workspaceId: number, productionId: number, integrationPointId: number) {
     let request = {
         options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
             headers: {
@@ -90,7 +92,8 @@ export async function getImagesStatsForProduction(convenienceApi: IConvenienceAp
         }),
         payload: {
             workspaceId: workspaceId,
-            productionId: productionId
+            productionId: productionId,
+            integrationPointId: integrationPointId
         },
         url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/SummaryPage/GetImagesStatisticsForProduction"
     };

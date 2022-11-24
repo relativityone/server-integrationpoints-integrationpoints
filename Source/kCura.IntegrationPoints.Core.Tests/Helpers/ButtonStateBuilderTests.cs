@@ -107,7 +107,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                     Arg.Is(hasErrors),
                     Arg.Is(hasErrorViewPermission),
                     Arg.Any<bool>(),
-                    Arg.Is(hasAddProfilePermission));
+                    Arg.Is(hasAddProfilePermission),
+                    Arg.Any<bool>());
         }
 
         [TestCase(ProviderType.Other, true, false, false, false, 0, true)]
@@ -152,6 +153,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                     Arg.Any<bool>(),
                     Arg.Any<bool>(),
                     Arg.Is(expectedIsStoppable),
+                    Arg.Any<bool>(),
                     Arg.Any<bool>());
         }
 
@@ -213,6 +215,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                     Arg.Any<bool>(),
                     Arg.Any<bool>(),
                     Arg.Is(expectedHasStoppableJobs),
+                    Arg.Any<bool>(),
                     Arg.Any<bool>());
 
             _queueManager.DidNotReceive();

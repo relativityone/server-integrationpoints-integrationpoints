@@ -181,7 +181,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
                     integrationPoint.HasErrors.Value,
                     hasViewErrorsPermissions,
                     hasStoppableJobs,
-                    hasProfileAddPermission)
+                    hasProfileAddPermission, 
+                    false)
                 .Returns(buttonStates);
 
             string actionButtonOnClickEvent;
@@ -348,7 +349,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
             };
 
             _stateManager
-                .GetButtonState(sourceConfiguration.TypeOfExport, providerType, hasJobsExecutingOrInQueue, true, true, providerType == ProviderType.LoadFile && hasStoppableJobs, true)
+                .GetButtonState(sourceConfiguration.TypeOfExport, providerType, hasJobsExecutingOrInQueue, true, true, providerType == ProviderType.LoadFile && hasStoppableJobs, true, false)
                 .Returns(buttonStates);
 
             string actionButtonOnClickEvent;

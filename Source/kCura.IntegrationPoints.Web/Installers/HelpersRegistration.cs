@@ -47,7 +47,6 @@ namespace kCura.IntegrationPoints.Web.Installers
                     .For<IFieldsMappingValidator>()
                     .ImplementedBy<FieldsMappingValidator>()
                     .LifestyleTransient(),
-
                 Component
                     .For<IMetricBucketNameGenerator>()
                     .ImplementedBy<MetricBucketNameGenerator>()
@@ -60,7 +59,6 @@ namespace kCura.IntegrationPoints.Web.Installers
                     .For<IMetricsSink>()
                     .ImplementedBy<SplunkMetricsSink>()
                     .LifestyleTransient(),
-
                 Component
                     .For<IControllerActionExecutionTimeMetrics>()
                     .ImplementedBy<ControllerActionExecutionTimeMetrics>()

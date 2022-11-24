@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Statistics;
+using kCura.IntegrationPoints.Data.Statistics.Implementations;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Helpers;
 
@@ -19,6 +20,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
         private readonly IIntegrationPointRepository _integrationPointRepository;
         private readonly SummaryPageSelector _summaryPageSelector;
         private readonly IDocumentAccumulatedStatistics _documentAccumulatedStatistics;
+        private readonly ICalculationChecker _calculationChecker;
 
         public SummaryPageController(
             ICaseServiceContext context,
@@ -32,6 +34,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
             _integrationPointRepository = integrationPointRepository;
             _summaryPageSelector = summaryPageSelector;
             _documentAccumulatedStatistics = documentAccumulatedStatistics;
+            _calculationChecker = new CalculationChecker();
         }
 
         [HttpPost]
@@ -57,25 +60,35 @@ namespace kCura.IntegrationPoints.Web.Controllers
 
         [HttpPost]
         [LogApiExceptionFilter(Message = "Unable to get natives statistics for saved search")]
-        public async Task<ActionResult> GetNativesStatisticsForSavedSearch(int workspaceId, int savedSearchId)
+        public async Task<ActionResult> GetNativesStatisticsForSavedSearch(int workspaceId, int savedSearchId, int integrationPointId)
         {
+            _calculationChecker.MarkAsCalculating(integrationPointId);
             DocumentsStatistics result = await
                 _documentAccumulatedStatistics.GetNativesStatisticsForSavedSearchAsync(workspaceId, savedSearchId).ConfigureAwait(false);
+            _calculationChecker.MarkCalculationFinished(integrationPointId);
             return Json(result);
         }
 
         [HttpPost]
         [LogApiExceptionFilter(Message = "Unable to get images statistics for saved search")]
-        public ActionResult GetImagesStatisticsForSavedSearch(int workspaceId, int savedSearchId, bool calculateSize)
+        public async Task<ActionResult> GetImagesStatisticsForSavedSearch(int workspaceId, int savedSearchId, bool calculateSize, int integrationPointId)
         {
-            return Json(_documentAccumulatedStatistics.GetImagesStatisticsForSavedSearchAsync(workspaceId, savedSearchId, calculateSize).GetAwaiter().GetResult());
+            _calculationChecker.MarkAsCalculating(integrationPointId);
+            DocumentsStatistics result = await _documentAccumulatedStatistics.GetImagesStatisticsForSavedSearchAsync(workspaceId, savedSearchId, calculateSize).ConfigureAwait(false);
+            _calculationChecker.MarkCalculationFinished(integrationPointId);
+            return Json(result);
+            //return Json(_documentAccumulatedStatistics.GetImagesStatisticsForSavedSearchAsync(workspaceId, savedSearchId, calculateSize).GetAwaiter().GetResult());
         }
 
         [HttpPost]
         [LogApiExceptionFilter(Message = "Unable to get images statistics for production")]
-        public ActionResult GetImagesStatisticsForProduction(int workspaceId, int productionId)
+        public async Task<ActionResult> GetImagesStatisticsForProduction(int workspaceId, int productionId, int integrationPointId)
         {
-            return Json(_documentAccumulatedStatistics.GetImagesStatisticsForProductionAsync(workspaceId, productionId).GetAwaiter().GetResult());
+            _calculationChecker.MarkAsCalculating(integrationPointId);
+            DocumentsStatistics result = await _documentAccumulatedStatistics.GetImagesStatisticsForProductionAsync(workspaceId, productionId).ConfigureAwait(false);
+            _calculationChecker.MarkCalculationFinished(integrationPointId);
+            return Json(result);
+            //return Json(_documentAccumulatedStatistics.GetImagesStatisticsForProductionAsync(workspaceId, productionId).GetAwaiter().GetResult());
         }
 
         private async Task<Tuple<int, int>> GetSourceAndDestinationProviderIdsAsync(int integrationPointId, string controllerType)

@@ -35,10 +35,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             bool hasErrors = true;
             bool hasViewPermissions = true;
             bool hasProfileAddPermission = false;
+            bool isCalculating = false;
 
             //Act
             ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, providerType, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
-                hasProfileAddPermission);
+                hasProfileAddPermission, isCalculating);
 
             //Assert
             Assert.IsFalse(buttonStates.RunButtonEnabled);
@@ -69,10 +70,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             bool hasErrors = true;
             bool hasViewPermissions = true;
             bool hasProfileAddPermission = false;
+            bool isCalculating = false;
 
             //Act
             ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, providerType, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
-                hasProfileAddPermission);
+                hasProfileAddPermission, isCalculating);
 
             //Assert
             Assert.IsTrue(buttonStates.RunButtonEnabled);
@@ -103,10 +105,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             bool hasErrors = true;
             bool hasViewPermissions = true;
             bool hasProfileAddPermission = false;
+            bool isCalculating = false;
 
             //Act
             ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, providerType, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
-                hasProfileAddPermission);
+                hasProfileAddPermission, isCalculating);
 
             //Assert
             Assert.IsFalse(buttonStates.RunButtonEnabled);
@@ -132,10 +135,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             bool hasViewPermissions = false;
             bool hasStoppableJobs = true;
             bool hasProfileAddPermission = false;
+            bool isCalculating = false;
 
             //Act
             ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, ProviderType.Relativity, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
-                hasProfileAddPermission);
+                hasProfileAddPermission, isCalculating);
 
             //Assert
             Assert.IsFalse(buttonStates.RunButtonEnabled);
@@ -159,10 +163,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             bool hasViewPermissions = true;
             bool hasStoppableJobs = false;
             bool hasProfileAddPermission = false;
+            bool isCalculating = false;
 
             //Act
             ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, ProviderType.Relativity, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
-                hasProfileAddPermission);
+                hasProfileAddPermission, isCalculating);
 
             //Assert
             Assert.IsTrue(buttonStates.RunButtonEnabled);
@@ -188,10 +193,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             bool hasViewPermissions = true;
             bool hasStoppableJobs = false;
             bool hasProfileAddPermission = false;
+            bool isCalculating = false;
 
             //Act
             ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, ProviderType.Relativity, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
-                hasProfileAddPermission);
+                hasProfileAddPermission, isCalculating);
 
             //Assert Enable
             Assert.IsTrue(buttonStates.RunButtonEnabled);
@@ -217,10 +223,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             bool hasViewPermissions = false;
             bool hasStoppableJobs = true;
             bool hasProfileAddPermission = false;
+            bool isCalculating = false;
 
             //Act
             ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, ProviderType.Relativity, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
-                hasProfileAddPermission);
+                hasProfileAddPermission, isCalculating);
 
             //Assert
             Assert.IsFalse(buttonStates.RunButtonEnabled);
@@ -246,10 +253,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             bool hasViewPermissions = true;
             bool hasStoppableJobs = false;
             bool hasProfileAddPermission = false;
+            bool isCalculating = false;
 
             //Act
             ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, ProviderType.Relativity, hasJobsExecutingOrInQueue,
-                hasErrors, hasViewPermissions, hasStoppableJobs, hasProfileAddPermission);
+                hasErrors, hasViewPermissions, hasStoppableJobs, hasProfileAddPermission, isCalculating);
 
             //Assert
             Assert.IsTrue(buttonStates.RunButtonEnabled);
@@ -275,10 +283,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             bool hasViewPermissions = false;
             bool hasStoppableJobs = false;
             bool hasProfileAddPermission = false;
+            bool isCalculating = false;
 
             //Act
             ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, ProviderType.Relativity, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
-                hasProfileAddPermission);
+                hasProfileAddPermission, isCalculating);
 
             //Assert
             Assert.IsTrue(buttonStates.RunButtonEnabled);
@@ -304,10 +313,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             bool hasViewPermissions = false;
             bool hasStoppableJobs = false;
             bool hasProfileAddPermission = true;
+            bool isCalculating = false;
 
             //Act
             ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, ProviderType.Relativity, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
-                hasProfileAddPermission);
+                hasProfileAddPermission, isCalculating);
 
             //Assert
             Assert.IsTrue(buttonStates.RunButtonEnabled);
@@ -338,10 +348,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             bool hasViewPermissions = false;
             bool hasStoppableJobs = false;
             bool hasProfileAddPermission = true;
+            bool isCalculating = false;
 
             //Act
             ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, providerType, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
-                hasProfileAddPermission);
+                hasProfileAddPermission, isCalculating);
 
             //Assert
             Assert.IsTrue(buttonStates.RunButtonEnabled);
@@ -368,10 +379,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Managers
             bool hasErrors = true;
             bool hasViewPermissions = true;
             bool hasProfileAddPermission = false;
+            bool isCalculating = false;
 
             //Act
             ButtonStateDTO buttonStates = _instance.GetButtonState(exportType, providerType, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions, hasStoppableJobs,
-                hasProfileAddPermission);
+                hasProfileAddPermission, isCalculating);
 
             //Assert
             buttonStates.RetryErrorsButtonVisible.Should().Be(expectedRetryErrorsVisibility);

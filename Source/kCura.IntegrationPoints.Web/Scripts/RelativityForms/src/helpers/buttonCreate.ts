@@ -120,7 +120,7 @@ export function createStopButton(consoleApi, convenienceApi: IConvenienceApi, ct
     });
 }
 
-export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean) {
+export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, integrationPointId: number) {
     return consoleApi.generate.button({
         innerText: "Calculate",
         disabled: !enabled,
@@ -144,7 +144,7 @@ export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenie
                     }
                     let destinationConfiguration = JSON.parse(ctx.backingModelData[keys[5].toString()]);
 
-                    calculateStatsRequest(convenienceApi, sourceConfiguration, destinationConfiguration);                
+                    calculateStatsRequest(convenienceApi, sourceConfiguration, destinationConfiguration, integrationPointId);                
                 }
             });
         }

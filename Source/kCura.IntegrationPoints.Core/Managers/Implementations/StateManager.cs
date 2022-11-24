@@ -13,7 +13,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             bool hasErrors,
             bool hasErrorViewPermissions,
             bool hasStoppableJobs,
-            bool hasProfileAddPermission)
+            bool hasProfileAddPermission,
+            bool calculationInProgress)
         {
             bool runButtonEnabled = IsRunButtonEnable(hasJobsExecutingOrInQueue);
             bool viewErrorsLinkEnabled = IsViewErrorsLinkEnabled(providerType, hasJobsExecutingOrInQueue, hasErrors, hasErrorViewPermissions);
@@ -24,9 +25,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
             bool saveAsProfileButtonVisible = IsSaveAsProfileButtonVisible(hasProfileAddPermission);
             bool downloadErrorFileLinkEnabled = IsDownloadErrorFileLinkEnabled(hasErrors);
             bool downloadErrorFileLinkVisible = IsDownloadErrorFileLinkVisible(providerType);
-
-            // TODO: introduce place in code where this flag will be kept and changed according to calculation state
-            bool calculateStatsButtonEnabled = true;
+            bool calculateStatsButtonEnabled = IsCalculateStatisticsButtonEnabled(providerType, calculationInProgress);
 
             return new ButtonStateDTO
             {
@@ -41,6 +40,11 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
                 DownloadErrorFileLinkVisible = downloadErrorFileLinkVisible,
                 CalculateStatisticsButtonEnabled = calculateStatsButtonEnabled
             };
+        }
+
+        private bool IsCalculateStatisticsButtonEnabled(ProviderType providerType, bool calculationInProgress)
+        {
+            return (providerType == ProviderType.Relativity) && !calculationInProgress;
         }
 
         private bool IsRunButtonEnable(bool hasJobsExecutingOrInQueue)

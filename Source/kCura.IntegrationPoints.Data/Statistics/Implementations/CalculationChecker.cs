@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Concurrent;
 
 namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 {
     public class CalculationChecker : ICalculationChecker
     {
-        private ConcurrentDictionary<int, bool> _itemsWithCalculationInProgress = new ConcurrentDictionary<int, bool>();
+        private static ConcurrentDictionary<int, bool> _itemsWithCalculationInProgress = new ConcurrentDictionary<int, bool>();
 
         public bool IsCalculating(int integrationPointId)
         {
@@ -35,7 +30,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
         public void MarkCalculationFinished(int integrationPointId)
         {
-            bool removed = _itemsWithCalculationInProgress.TryRemove(integrationPointId, out bool value);
+            bool removed = _itemsWithCalculationInProgress.TryRemove(integrationPointId, out _);
 
             if (!removed && _itemsWithCalculationInProgress.ContainsKey(integrationPointId))
             {
