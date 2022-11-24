@@ -129,6 +129,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 artifactId,
                 def.ToFieldList(),
                 executionIdentity);
+            //var request = new ReadRequest
+            //{
+            //    Object = new RelativityObjectRef { ArtifactID = artifactId },
+            //    Fields = new T().ToFieldList()
+            //};
+            //return SendReadRequestAsync<T>(request, executionIdentity: executionIdentity).GetAwaiter().GetResult();
         }
 
         public T Read<T>(
@@ -143,6 +149,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 artifactId,
                 fields,
                 executionIdentity);
+            //var request = new ReadRequest
+            //{
+            //    Object = new RelativityObjectRef { ArtifactID = artifactId },
+            //    Fields = fieldsGuids.Select(x => new FieldRef { Guid = x }).ToArray()
+            //};
+            //return SendReadRequestAsync<T>(request, executionIdentity: executionIdentity).GetAwaiter().GetResult();
         }
 
         public T Read<T>(
@@ -162,13 +174,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 Condition = $"'ArtifactID' == {artifactId}"
             };
 
-            ResultSet<T> result = Query<T>(request, 0, 1, executionIdentity: executionIdentity);
+            List<T> result = Query<T>(request, executionIdentity);
 
-            if (result.ResultCount == 1)
+            if (result.Count == 1)
             {
-                return result.Items.Single();
+                return result.Single();
             }
-            else if (result.ResultCount == 0)
+            else if (result.Count == 0)
             {
                 throw new NotFoundException($"ObjectType: {objectType.Guid}, ArtifactId: {artifactId}.");
             }
