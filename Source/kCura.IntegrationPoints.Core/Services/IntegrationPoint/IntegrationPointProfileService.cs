@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
@@ -42,12 +43,11 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             try
             {
                 IntegrationPointProfile profile = ObjectManager.Read<IntegrationPointProfile>(artifactId);
-
-                profile.DestinationConfiguration = GetDestinationConfiguration(artifactId);
-                profile.SourceConfiguration = GetSourceConfiguration(artifactId);
-                profile.FieldMappings = GetFieldMappings(artifactId);
-
-                return ToDto(profile);
+                IntegrationPointProfileDto profileDto = ToDto(profile);
+                profileDto.DestinationConfiguration = GetDestinationConfiguration(artifactId);
+                profileDto.SourceConfiguration = GetSourceConfiguration(artifactId);
+                profileDto.FieldMappings = GetFieldMappings(artifactId);
+                return profileDto;
             }
             catch (Exception ex)
             {
@@ -146,9 +146,15 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             return GetUnicodeLongText(integrationPointProfileArtifactId, new FieldRef { Guid = IntegrationPointProfileFieldGuids.SourceConfigurationGuid });
         }
 
-        private string GetFieldMappings(int integrationPointProfileArtifactId)
+        private List<FieldMap> GetFieldMappings(int integrationPointProfileArtifactId)
         {
-            return GetUnicodeLongText(integrationPointProfileArtifactId, new FieldRef { Guid = IntegrationPointProfileFieldGuids.FieldMappingsGuid });
+            // TODO retry start
+            string fieldMapString = GetUnicodeLongText(integrationPointProfileArtifactId, new FieldRef { Guid = IntegrationPointProfileFieldGuids.FieldMappingsGuid });
+            List<FieldMap> fieldMapList = Serializer.Deserialize<List<FieldMap>>(fieldMapString);
+            SanitizeFieldsMapping(fieldMapList);
+            // TODO retry end
+
+            return fieldMapList;
         }
 
         private string GetUnicodeLongText(int artifactId, FieldRef field)
@@ -160,9 +166,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             }
         }
 
-        private static IntegrationPointProfileDto ToDto(IntegrationPointProfile profile)
+        private IntegrationPointProfileDto ToDto(IntegrationPointProfile profile)
         {
-            return new IntegrationPointProfileDto
+            var dto = new IntegrationPointProfileDto
             {
                 ArtifactId = profile.ArtifactId,
                 Name = profile.Name,
@@ -175,7 +181,10 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 Scheduler = new Scheduler(profile.EnableScheduler.GetValueOrDefault(false), profile.ScheduleRule),
                 EmailNotificationRecipients = profile.EmailNotificationRecipients ?? string.Empty,
                 LogErrors = profile.LogErrors.GetValueOrDefault(false),
+                FieldMappings = Serializer.Deserialize<List<FieldMap>>(profile.FieldMappings ?? string.Empty),
             };
+            SanitizeFieldsMapping(dto.FieldMappings);
+            return dto;
         }
 
         private IntegrationPointProfile ToRdo(IntegrationPointProfileDto dto, IEnumerable<ChoiceRef> choices, PeriodicScheduleRule rule)
@@ -194,7 +203,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 SourceProvider = dto.SourceProvider,
                 Type = dto.Type,
                 DestinationConfiguration = dto.DestinationConfiguration,
-                FieldMappings = Serializer.Serialize(dto.FieldMappings),
+                FieldMappings = Serializer.Serialize(dto.FieldMappings ?? new List<FieldMap>()),
                 EnableScheduler = dto.Scheduler.EnableScheduler,
                 DestinationProvider = dto.DestinationProvider,
                 LogErrors = dto.LogErrors,

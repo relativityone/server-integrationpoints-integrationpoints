@@ -85,22 +85,33 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
          {
             Data.IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(artifactID).GetAwaiter().GetResult();
             IntegrationPointDto dto = ToDto(integrationPoint);
-            dto.FieldMappings = _integrationPointRepository.GetFieldMappingAsync(artifactID).GetAwaiter().GetResult();
+            dto.FieldMappings = GetFieldMappings(artifactID);
             return dto;
         }
 
         public List<IntegrationPointDto> ReadAll()
         {
             return _integrationPointRepository
-                .GetIntegrationPointsWithAllFields()
+                .ReadAll()
                 .Select(ToDto)
                 .ToList();
+        }
+
+        private List<FieldMap> GetFieldMappings(int artifactId)
+        {
+            // TODO retry start
+            string fieldMapString = _integrationPointRepository.GetFieldMappingAsync(artifactId).GetAwaiter().GetResult();
+            List<FieldMap> fieldMapList = Serializer.Deserialize<List<FieldMap>>(fieldMapString);
+            SanitizeFieldsMapping(fieldMapList);
+            // TODO retry end
+
+            return fieldMapList;
         }
 
         public List<IntegrationPointDto> GetBySourceAndDestinationProvider(int sourceProviderArtifactID, int destinationProviderArtifactID)
         {
             List<Data.IntegrationPoint> rdos = _integrationPointRepository
-                .GetBySourceAndDestinationProviderAsync(sourceProviderArtifactID, destinationProviderArtifactID)
+                .ReadBySourceAndDestinationProviderAsync(sourceProviderArtifactID, destinationProviderArtifactID)
                 .GetAwaiter()
                 .GetResult();
 
@@ -300,7 +311,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
         public List<FieldMap> GetFieldMap(int artifactID)
         {
-            return _integrationPointRepository.GetFieldMappingAsync(artifactID).GetAwaiter().GetResult();
+            return null;// _integrationPointRepository.GetFieldMappingAsync(artifactID).GetAwaiter().GetResult();
         }
 
         public void MarkIntegrationPointToStopJobs(int workspaceArtifactId, int integrationPointArtifactId)
@@ -674,7 +685,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
         private IntegrationPointDto ToDto(Data.IntegrationPoint rdo)
         {
-            return new IntegrationPointDto
+            var dto = new IntegrationPointDto
             {
                 ArtifactId = rdo.ArtifactId,
                 Name = rdo.Name,
@@ -692,7 +703,10 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 NextRun = rdo.NextScheduledRuntimeUTC,
                 SecuredConfiguration = rdo.SecuredConfiguration,
                 JobHistory = rdo.JobHistory.ToList(),
+                FieldMappings = Serializer.Deserialize<List<FieldMap>>(rdo.FieldMappings ?? string.Empty),
             };
+            SanitizeFieldsMapping(dto.FieldMappings);
+            return dto;
         }
 
         private Data.IntegrationPoint ToRdo(IntegrationPointDto dto, IEnumerable<ChoiceRef> choices, PeriodicScheduleRule rule)
@@ -712,7 +726,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 SourceProvider = dto.SourceProvider,
                 Type = dto.Type,
                 DestinationConfiguration = dto.DestinationConfiguration,
-                FieldMappings = Serializer.Serialize(dto.FieldMappings),
+                FieldMappings = Serializer.Serialize(dto.FieldMappings ?? new List<FieldMap>()),
                 EnableScheduler = dto.Scheduler.EnableScheduler,
                 DestinationProvider = dto.DestinationProvider,
                 LogErrors = dto.LogErrors,
@@ -721,7 +735,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                     string.Join("; ", (dto.EmailNotificationRecipients ?? string.Empty).Split(new[] {";"}, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList()),
                 LastRuntimeUTC = dto.LastRun,
                 SecuredConfiguration = dto.SecuredConfiguration,
-                JobHistory = dto.JobHistory.ToArray(),
+                JobHistory = dto.JobHistory?.ToArray(),
             };
 
             if (IntegrationPointRdo.EnableScheduler.GetValueOrDefault(false))

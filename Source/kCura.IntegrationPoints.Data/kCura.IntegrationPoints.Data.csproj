@@ -132,7 +132,6 @@
     <Compile Include="QueryBuilders\Implementations\QueryBuilder.cs" />
     <Compile Include="QueryBuilders\Implementations\SourceProviderArtifactIdByGuidQueryBuilder.cs" />
     <Compile Include="QueryBuilders\ISourceProviderArtifactIdByGuidQueryBuilder.cs" />
-    <Compile Include="QueryOptions\IntegrationPointQueryOptions.cs" />
     <Compile Include="QueryOptions\JobHistoryQueryOptions.cs" />
     <Compile Include="Repositories\ApplicationRepository.cs" />
     <Compile Include="Repositories\DTO\ArtifactRef.cs" />

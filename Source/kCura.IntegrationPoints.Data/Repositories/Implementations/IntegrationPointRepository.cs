@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Models;
-using kCura.IntegrationPoints.Data.QueryOptions;
 using kCura.IntegrationPoints.Data.Transformers;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
@@ -34,12 +33,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
         public Task<IntegrationPoint> ReadAsync(int integrationPointArtifactID)
         {
-            return ReadAsync(integrationPointArtifactID, IntegrationPointQueryOptions.All().Decrypted());
+            return ReadAsync(integrationPointArtifactID, true);
         }
 
         public Task<IntegrationPoint> ReadEncryptedAsync(int integrationPointArtifactID)
         {
-            return ReadAsync(integrationPointArtifactID, IntegrationPointQueryOptions.All());
+            return ReadAsync(integrationPointArtifactID, false);
         }
 
         public async Task<string> GetFieldMappingAsync(int integrationPointArtifactID)
@@ -47,11 +46,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return await GetUnicodeLongTextAsync(integrationPointArtifactID, new FieldRef { Guid = IntegrationPointFieldGuids.FieldMappingsGuid });
         }
 
-        public string GetSecuredConfiguration(int integrationPointArtifactID)
+        public string GetEncryptedSecuredConfiguration(int integrationPointArtifactID)
         {
             IntegrationPoint integrationPoint = ReadAsync(
                     integrationPointArtifactID,
-                    IntegrationPointQueryOptions.All())
+                    false)
                 .GetAwaiter()
                 .GetResult();
 
@@ -60,9 +59,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
         public string GetName(int integrationPointArtifactID)
         {
-            IntegrationPoint integrationPoint = ReadAsync(
-                    integrationPointArtifactID,
-                    IntegrationPointQueryOptions.All())
+            IntegrationPoint integrationPoint = ReadAsync(integrationPointArtifactID, false)
                 .GetAwaiter()
                 .GetResult();
 
@@ -71,11 +68,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
         public List<IntegrationPoint> ReadAll()
         {
-            var query = new QueryRequest();
-            var integrationPointsWithoutFields = Query(_workspaceID, query);
+            var integrationPointsWithoutFields = _objectManager.Query<IntegrationPoint>(new QueryRequest()).ToList();
 
             return integrationPointsWithoutFields
-                .Select(integrationPoint => ReadAsync(integrationPoint.ArtifactId).GetAwaiter().GetResult())
+                .Select(integrationPoint => ReadAsync(integrationPoint.ArtifactId, false).GetAwaiter().GetResult())
                 .ToList();
         }
 
@@ -84,9 +80,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             var request = new QueryRequest
             {
                 Condition = $"'ArtifactId' in [{string.Join(",", integrationPointIDs)}]"
-
             };
-            return Query(_workspaceID, request);
+            return _objectManager.Query<IntegrationPoint>(request).ToList();
         }
 
         public async Task<List<IntegrationPoint>> ReadBySourceAndDestinationProviderAsync(int sourceProviderArtifactID, int destinationProviderArtifactID)
@@ -102,7 +97,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                     && (field.Guid != IntegrationPointFieldGuids.DestinationConfigurationGuid)
                     && (field.Guid != IntegrationPointFieldGuids.FieldMappingsGuid))
             };
-            List<IntegrationPoint> integrationPoints = Query(_workspaceID, query);
+            List<IntegrationPoint> integrationPoints = _objectManager.Query<IntegrationPoint>(query).ToList();
 
             foreach (IntegrationPoint integrationPoint in integrationPoints)
             {
@@ -117,13 +112,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         public List<IntegrationPoint> ReadBySourceProviders(List<int> sourceProviderIds)
         {
             QueryRequest sourceProviderQuery = GetBasicSourceProviderQuery(sourceProviderIds);
-
             sourceProviderQuery.Fields = new List<FieldRef>
             {
-                new FieldRef {Name = IntegrationPointFields.Name}
+                new FieldRef { Name = IntegrationPointFields.Name }
             };
 
-            return Query(_workspaceID, sourceProviderQuery);
+            return _objectManager.Query<IntegrationPoint>(sourceProviderQuery).ToList();
         }
 
         public int CreateOrUpdate(IntegrationPoint integrationPoint)
@@ -168,30 +162,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             };
         }
 
-        private async Task<IntegrationPoint> ReadAsync(int integrationPointArtifactID, IntegrationPointQueryOptions queryOptions)
+        private async Task<IntegrationPoint> ReadAsync(int integrationPointArtifactID, bool decryptSecuredConfiguration)
         {
             IntegrationPoint integrationPoint = _objectManager.Read<IntegrationPoint>(integrationPointArtifactID);
 
-            if (queryOptions.Decrypt)
+            if (decryptSecuredConfiguration)
             {
-                SetDecryptedSecuredConfiguration(_workspaceID, integrationPoint);
-            }
-
-            if (queryOptions.FieldMapping)
-            {
-                integrationPoint.FieldMappings = await GetFieldMappingAsync(integrationPointArtifactID)
-                    .ConfigureAwait(false);
+                string decryptedConfiguration = await DecryptSecuredConfigurationAsync(_workspaceID, integrationPoint);
+                integrationPoint.SecuredConfiguration = decryptedConfiguration ?? integrationPoint.SecuredConfiguration;
             }
 
             return integrationPoint;
-        }
-
-        private List<IntegrationPoint> Query(int workspaceID, QueryRequest queryRequest)
-        {
-            return _objectManager
-                .Query<IntegrationPoint>(queryRequest)
-                .Select(ip => SetDecryptedSecuredConfiguration(workspaceID, ip))
-                .ToList();
         }
 
         private Task<string> GetSourceConfigurationAsync(int integrationPointArtifactID)
@@ -224,7 +205,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 return;
             }
 
-            string secretID = GetSecuredConfiguration(integrationPoint.ArtifactId);
+            string secretID = GetEncryptedSecuredConfiguration(integrationPoint.ArtifactId);
 
             integrationPoint.SecuredConfiguration = EncryptSecuredConfigurationAsync(
                     secretID,
@@ -233,26 +214,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 )
                 .GetAwaiter()
                 .GetResult();
-        }
-
-        private IntegrationPoint SetDecryptedSecuredConfiguration(int workspaceID, IntegrationPoint rdo)
-        {
-            string secretID = rdo.GetField<string>(_securedConfigurationGuid);
-            if (string.IsNullOrWhiteSpace(secretID))
-            {
-                return rdo;
-            }
-
-            string decryptedSecret = DecryptSecuredConfigurationAsync(workspaceID, rdo)
-                .GetAwaiter()
-                .GetResult();
-            if (string.IsNullOrWhiteSpace(decryptedSecret))
-            {
-                return rdo;
-            }
-
-            rdo.SetField(_securedConfigurationGuid, decryptedSecret);
-            return rdo;
         }
 
         private async Task<string> EncryptSecuredConfigurationAsync(

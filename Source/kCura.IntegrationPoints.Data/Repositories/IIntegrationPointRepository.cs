@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
         Task<IntegrationPoint> ReadAsync(int integrationPointArtifactID);
         Task<IntegrationPoint> ReadEncryptedAsync(int integrationPointArtifactID);
         Task<string> GetFieldMappingAsync(int integrationPointArtifactID);
-        string GetSecuredConfiguration(int integrationPointArtifactID);
+        string GetEncryptedSecuredConfiguration(int integrationPointArtifactID);
         string GetName(int integrationPointArtifactID);
         int CreateOrUpdate(IntegrationPoint integrationPoint);
         void Update(IntegrationPoint integrationPoint);

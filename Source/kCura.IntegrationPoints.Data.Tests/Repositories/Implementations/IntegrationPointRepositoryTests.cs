@@ -274,7 +274,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             _objectManagerMock.Setup(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser)).Returns(_integrationPoint);
 
             // Act
-            string actualResult = _sut.GetSecuredConfiguration(_ARTIFACT_ID);
+            string actualResult = _sut.GetEncryptedSecuredConfiguration(_ARTIFACT_ID);
 
             // Assert
             _objectManagerMock.Verify(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser), Times.Once);
@@ -294,7 +294,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             _objectManagerMock.Setup(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser)).Throws<Exception>();
 
             // Act
-            Action action = () => _sut.GetSecuredConfiguration(_ARTIFACT_ID);
+            Action action = () => _sut.GetEncryptedSecuredConfiguration(_ARTIFACT_ID);
 
             // Assert
             action.ShouldThrow<Exception>();
