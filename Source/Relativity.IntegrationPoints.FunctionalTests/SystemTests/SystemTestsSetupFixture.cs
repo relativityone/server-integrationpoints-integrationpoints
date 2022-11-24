@@ -137,10 +137,15 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests
                 }));
             Container.Register(
                 Component.For<IWorkspaceDBContext>()
-                    .ImplementedBy<WorkspaceDBContext>()
                     .UsingFactoryMethod(k =>
                         k.Resolve<IDbContextFactory>()
                             .CreateWorkspaceDbContext(SourceWorkspace.ArtifactID))
+                    .LifestyleTransient());
+            Container.Register(
+                Component.For<IEddsDBContext>()
+                    .UsingFactoryMethod(k =>
+                        k.Resolve<IDbContextFactory>()
+                            .CreatedEDDSDbContext())
                     .LifestyleTransient());
             Container.Register(Component.For<IRelativityObjectManagerService>().Instance(new RelativityObjectManagerService(Container.Resolve<IHelper>(), SourceWorkspace.ArtifactID)).LifestyleTransient());
             Container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>());
