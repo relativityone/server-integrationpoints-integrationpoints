@@ -13,7 +13,9 @@ using kCura.IntegrationPoints.Domain.Exceptions;
 using Relativity.API;
 using Relativity.Kepler.Transport;
 using Relativity.Services.DataContracts.DTOs.Results;
+using Relativity.Services.Exceptions;
 using Relativity.Services.Objects.DataContracts;
+using Relativity.Services.Objects.Exceptions;
 using FieldRef = Relativity.Services.Objects.DataContracts.FieldRef;
 using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 using RelativityObjectRef = Relativity.Services.Objects.DataContracts.RelativityObjectRef;
@@ -121,12 +123,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         public T Read<T>(int artifactId, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
             where T : BaseRdo, new()
         {
-            var request = new ReadRequest
-            {
-                Object = new RelativityObjectRef { ArtifactID = artifactId },
-                Fields = new T().ToFieldList()
-            };
-            return SendReadRequestAsync<T>(request, executionIdentity: executionIdentity).GetAwaiter().GetResult();
+            T def = new T();
+
+            return Read<T>(
+                artifactId,
+                def.ToFieldList(),
+                executionIdentity);
         }
 
         public T Read<T>(
@@ -135,12 +137,45 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
             where T : BaseRdo, new()
         {
-            var request = new ReadRequest
+            IEnumerable<FieldRef> fields = fieldsGuids.Select(x => new FieldRef { Guid = x }).ToArray();
+
+            return Read<T>(
+                artifactId,
+                fields,
+                executionIdentity);
+        }
+
+        public T Read<T>(
+            int artifactId,
+            IEnumerable<FieldRef> fieldsGuids,
+            ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+            where T : BaseRdo, new()
+        {
+            T def = new T();
+
+            ObjectTypeRef objectType = def.ToObjectType();
+
+            var request = new QueryRequest
             {
-                Object = new RelativityObjectRef { ArtifactID = artifactId },
-                Fields = fieldsGuids.Select(x => new FieldRef { Guid = x }).ToArray()
+                ObjectType = objectType,
+                Fields = fieldsGuids,
+                Condition = $"'ArtifactID' == {artifactId}"
             };
-            return SendReadRequestAsync<T>(request, executionIdentity: executionIdentity).GetAwaiter().GetResult();
+
+            ResultSet<T> result = Query<T>(request, 0, 1, executionIdentity: executionIdentity);
+
+            if (result.ResultCount == 1)
+            {
+                return result.Items.Single();
+            }
+            else if (result.ResultCount == 0)
+            {
+                throw new NotFoundException($"ObjectType: {objectType.Guid}, ArtifactId: {artifactId}.");
+            }
+            else
+            {
+                throw new DuplicateArtifactException($"Multiple objects of type {objectType.Guid} have been found with artifactID - {artifactId}");
+            }
         }
 
         public bool Update(
