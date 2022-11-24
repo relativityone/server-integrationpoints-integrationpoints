@@ -11,9 +11,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         private const string _SCHEDULE_AGENT_QUEUE_TABLE_NAME = GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME;
         private readonly IEddsDBContext _dbContext;
 
-        public QueueRepository(IEddsDBContext dbContext)
+        public QueueRepository(IDbContextFactory dbContextFactory)
         {
-            _dbContext = dbContext;
+            _dbContext = dbContextFactory.CreatedEDDSDbContext();
         }
 
         public int GetNumberOfJobsExecutingOrInQueue(int workspaceId, int integrationPointId)

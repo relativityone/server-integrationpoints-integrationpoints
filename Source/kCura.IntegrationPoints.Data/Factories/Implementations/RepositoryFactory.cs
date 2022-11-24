@@ -141,8 +141,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
         public IQueueRepository GetQueueRepository()
         {
-            return new QueueRepository(
-                _dbContextFactory.CreatedEDDSDbContext());
+            return new QueueRepository(_dbContextFactory);
         }
 
         public IScratchTableRepository GetScratchTableRepository(int workspaceArtifactID, string tablePrefix, string tableSuffix)
