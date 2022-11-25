@@ -4,6 +4,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Toggles;
@@ -31,7 +32,7 @@ namespace Relativity.Sync.Tests.Unit.Pipelines
 
             SetUpInitialValuesForPositiveCheck();
 
-            _sut = new IAPIv2RunChecker(_runCheckerConfig.Object, _togglesMock.Object, _fieldMappingsMock.Object, _objectFieldTypeRepositoryMock.Object);
+            _sut = new IAPIv2RunChecker(_runCheckerConfig.Object, _togglesMock.Object, _fieldMappingsMock.Object, _objectFieldTypeRepositoryMock.Object, new EmptyLogger());
         }
 
         [Test]
