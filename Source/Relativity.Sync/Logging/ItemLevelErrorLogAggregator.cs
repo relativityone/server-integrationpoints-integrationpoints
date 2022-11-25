@@ -24,7 +24,7 @@ namespace Relativity.Sync.Logging
             ErrorInLine,
             FieldAndError,
         };
-        
+
         private readonly Task _processingTask;
         private int _itemLevelErrorCount = 0;
 
@@ -91,7 +91,7 @@ namespace Relativity.Sync.Logging
                         stopwatch.Restart();
                         _itemLevelErrorCount++;
                         string message = error.Message;
-                        
+
                         foreach (Func<string, ItemLevelError, (bool matched, string newMessage)> func in _standarizationFunctions)
                         {
                             (bool matched, string newMessage) = func(message, error);

@@ -24,15 +24,12 @@ namespace Relativity.Sync.Executors
             IBatch batch,
             IDocumentSynchronizationMonitorConfiguration configuration)
         {
-            if (batch.Status.IsIn(BatchStatus.CompletedWithErrors, BatchStatus.Cancelled, BatchStatus.Failed))
-            {
-                ImportErrors itemLevelErrors = await GetItemLevelErrorsAsync(sourceController, configuration, batch.BatchGuid);
-                List<ErrorDetail> errorDetails = itemLevelErrors.Errors.SelectMany(x => x.ErrorDetails).ToList();
+            ImportErrors itemLevelErrors = await GetItemLevelErrorsAsync(sourceController, configuration, batch.BatchGuid);
+            List<ErrorDetail> errorDetails = itemLevelErrors.Errors.SelectMany(x => x.ErrorDetails).ToList();
 
-                foreach (ErrorDetail errorDetail in errorDetails)
-                {
-                    CreateItemLevelErrorInJobHistory(errorDetail);
-                }
+            foreach (ErrorDetail errorDetail in errorDetails)
+            {
+                CreateItemLevelErrorInJobHistory(errorDetail);
             }
         }
 
@@ -41,7 +38,7 @@ namespace Relativity.Sync.Executors
             IDocumentSynchronizationMonitorConfiguration configuration,
             Guid batchId)
         {
-            ValueResponse<ImportErrors> itemLevelErrorsResponse = await sourceController
+            ValueResponse<ImportErrors> response = await sourceController
                 .GetItemErrorsAsync(
                     configuration.DestinationWorkspaceArtifactId,
                     configuration.ExportRunId,
@@ -49,20 +46,8 @@ namespace Relativity.Sync.Executors
                     0,
                     int.MaxValue)
                 .ConfigureAwait(false);
-            if (!itemLevelErrorsResponse.IsSuccess)
-            {
-                string message = string.Format(
-                    "Unable to retrieve Item Level Errors. DestinationWorkspaceArtifactId - {0}, jobId - {1}, batchId - {2}, ErrorCode - {3}, ErrorMessage - {4}",
-                    configuration.DestinationWorkspaceArtifactId,
-                    configuration.ExportRunId,
-                    batchId,
-                    itemLevelErrorsResponse.ErrorCode,
-                    itemLevelErrorsResponse.ErrorMessage);
-                throw new Exception(message);
-            }
 
-            ImportErrors itemLevelErrors = itemLevelErrorsResponse.Value;
-            return itemLevelErrors;
+            return response.UnwrapOrThrow();
         }
 
         private void CreateItemLevelErrorInJobHistory(

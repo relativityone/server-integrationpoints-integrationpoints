@@ -8,6 +8,7 @@ using FluentAssertions;
 using Moq;
 using Moq.Language;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -200,10 +201,14 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             const int batchSize = 2;
             ExportBatcherReturnsBatches(GenerateBatch(batchSize), EmptyBatch());
             CancellationTokenSource tokenSource = new CancellationTokenSource();
+
+            IAPILog log = new EmptyLogger();
+
             var dataReader = new SourceWorkspaceDataReader(new SimpleBatchDataReaderBuilder(_identifierField), 
                 _configuration.Object,
                 _exportBatcher.Object,
                 _fieldManager.Object,
+                new ItemLevelErrorLogAggregator(log),
                 _itemStatusMonitor.Object,
                 new EmptyLogger(),
                 tokenSource.Token);
@@ -359,12 +364,16 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
         private SourceWorkspaceDataReader BuildInstanceUnderTest(IBatchDataReaderBuilder dataTableBuilder, CancellationToken token)
         {
-            return new SourceWorkspaceDataReader(dataTableBuilder,
+            IAPILog log = new EmptyLogger();
+
+            return new SourceWorkspaceDataReader(
+                dataTableBuilder,
                 _configuration.Object,
                 _exportBatcher.Object,
                 _fieldManager.Object,
+                new ItemLevelErrorLogAggregator(log),
                 _itemStatusMonitor.Object,
-                new EmptyLogger(),
+                log,
                 token);
         }
 

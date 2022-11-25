@@ -13,6 +13,7 @@ using Relativity.Services.Interfaces.UserInfo;
 using Relativity.Services.Interfaces.UserInfo.Models;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Integration.Helpers;
@@ -84,6 +85,7 @@ namespace Relativity.Sync.Tests.Integration
                 _configuration,
                 batcher,
                 fieldManager,
+                new ItemLevelErrorLogAggregator(syncLog),
                 new ItemStatusMonitor(),
                 syncLog,
                 CancellationToken.None

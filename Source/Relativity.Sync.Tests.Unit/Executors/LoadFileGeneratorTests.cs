@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<ISourceWorkspaceDataReader> _dataReaderMock;
         private Mock<IItemStatusMonitor> _itemStatusMonitorMock;
         private Mock<IItemLevelErrorHandlerFactory> _itemLevelErrorHandlerFactoryMock;
-        private Mock<IItemLevelErrorHandler> _itemLevelErrorHandlerMock;
+        private Mock<IItemLevelErrorHandler_TEMP> _itemLevelErrorHandlerMock;
         private Mock<IBatch> _batchMock;
         private Mock<IAPILog> _loggerMock;
         private CompositeCancellationTokenStub _token;
@@ -47,7 +47,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _dataReaderMock = new Mock<ISourceWorkspaceDataReader>();
             _itemStatusMonitorMock = new Mock<IItemStatusMonitor>();
             _itemLevelErrorHandlerFactoryMock = new Mock<IItemLevelErrorHandlerFactory>();
-            _itemLevelErrorHandlerMock = new Mock<IItemLevelErrorHandler>();
+            _itemLevelErrorHandlerMock = new Mock<IItemLevelErrorHandler_TEMP>();
             _batchMock = new Mock<IBatch>();
             _loggerMock = new Mock<IAPILog>();
             _token = new CompositeCancellationTokenStub();
@@ -64,14 +64,14 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _dataReaderMock.Setup(x => x.ItemStatusMonitor).Returns(_itemStatusMonitorMock.Object);
 
             _itemLevelErrorHandlerFactoryMock
-                .Setup(x => x.Create(It.IsAny<IItemStatusMonitor>()))
+                .Setup(x => x.CreateBatchItemLevelErrorHandler(It.IsAny<IItemStatusMonitor>()))
                 .Returns(_itemLevelErrorHandlerMock.Object);
 
             _sut = new LoadFileGenerator(
                 _configurationMock.Object,
                 _dataReaderFactoryMock.Object,
                 _fileshareServiceMock.Object,
-                _itemLevelErrorHandlerFactoryMock.Object,
+                null,
                 _loggerMock.Object);
         }
 

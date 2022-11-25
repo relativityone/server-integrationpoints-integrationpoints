@@ -20,7 +20,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IAPILog> _loggerMock;
         private Mock<IBatch> _batchMock;
 
-        private ItemLevelErrorHandler _sut;
+        private ItemLevelErrorHandler_TEMP _sut;
 
         [SetUp]
         public void Setup()
@@ -30,7 +30,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _statusMonitorMock = new Mock<IItemStatusMonitor>();
             _loggerMock = new Mock<IAPILog>();
             _batchMock = new Mock<IBatch>();
-            _sut = new ItemLevelErrorHandler(_configurationMock.Object, _jobHistoryErrorRepositoryFake.Object, _statusMonitorMock.Object, _loggerMock.Object);
+            _sut = new ItemLevelErrorHandler_TEMP(_configurationMock.Object, _jobHistoryErrorRepositoryFake.Object, _statusMonitorMock.Object, _loggerMock.Object);
         }
 
         [Test]

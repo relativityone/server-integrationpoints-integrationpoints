@@ -120,7 +120,7 @@ namespace Relativity.Sync.Executors
             builder.RegisterType<FmsClient>().As<IFmsClient>();
             builder.RegisterType<FmsRunner>().As<IFmsRunner>();
             builder.RegisterType<LoadFileGenerator>().As<ILoadFileGenerator>();
-            builder.RegisterType<ItemLevelErrorHandler>().As<IItemLevelErrorHandler>();
+            builder.RegisterType<ItemLevelErrorHandler_TEMP>().As<IItemLevelErrorHandler_TEMP>();
             builder.RegisterType<ImportApiItemLevelErrorHandler>().As<IImportApiItemLevelErrorHandler>();
             builder.RegisterType<ItemLevelErrorHandlerFactory>().As<IItemLevelErrorHandlerFactory>();
 

@@ -6,6 +6,7 @@ namespace Relativity.Sync.Transfer
     internal class ItemStatusMonitor : IItemStatusMonitor
     {
         private readonly Dictionary<string, ItemInfo> _items = new Dictionary<string, ItemInfo>();
+        private int _readItemsCount = 0;
 
         public void AddItem(string itemIdentifier, int artifactId)
         {
@@ -28,6 +29,7 @@ namespace Relativity.Sync.Transfer
             if (_items.TryGetValue(itemIdentifier, out item))
             {
                 item.Status = status;
+                ++_readItemsCount;
             }
         }
 
@@ -67,6 +69,8 @@ namespace Relativity.Sync.Transfer
         public int ProcessedItemsCount => _items.Count(x => x.Value.Status == ItemStatus.Succeed);
 
         public int FailedItemsCount => _items.Count(x => x.Value.Status == ItemStatus.Failed);
+
+        public int ReadItemsCount => _readItemsCount;
 
         public int GetArtifactId(string itemIdentifier)
         {

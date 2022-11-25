@@ -50,7 +50,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _itemLevelErrorHandlerFactory = new Mock<IItemLevelErrorHandlerFactory>();
             _itemLevelErrorHandler = new Mock<IImportApiItemLevelErrorHandler>();
 
-            _itemLevelErrorHandlerFactory.Setup(x => x.CreateIApiHandler())
+            _itemLevelErrorHandlerFactory.Setup(x => x.CreateIApiItemLevelErrorHandler())
                 .Returns(_itemLevelErrorHandler.Object);
             _batchRepository = new Mock<IBatchRepository>();
 

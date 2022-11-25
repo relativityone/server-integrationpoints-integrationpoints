@@ -18,13 +18,13 @@ namespace Relativity.Sync.Executors
             _logger = logger;
         }
 
-        public IItemLevelErrorHandler Create(IItemStatusMonitor statusMonitor)
+        public IItemLevelErrorHandler_TEMP CreateBatchItemLevelErrorHandler(IItemStatusMonitor statusMonitor)
         {
-            ItemLevelErrorHandler itemLevelErrorHandler = new ItemLevelErrorHandler(_configuration, _jobHistoryErrorRepository, statusMonitor, _logger);
+            ItemLevelErrorHandler_TEMP itemLevelErrorHandler = new ItemLevelErrorHandler_TEMP(_configuration, _jobHistoryErrorRepository, statusMonitor, _logger);
             return itemLevelErrorHandler;
         }
 
-        public IImportApiItemLevelErrorHandler CreateIApiHandler()
+        public IImportApiItemLevelErrorHandler CreateIApiItemLevelErrorHandler()
         {
             ImportApiItemLevelErrorHandler itemLevelErrorHandler = new ImportApiItemLevelErrorHandler(_configuration, _jobHistoryErrorRepository);
             return itemLevelErrorHandler;

@@ -50,11 +50,12 @@ namespace Relativity.Sync.Executors
                     configuration.JobHistoryArtifactId,
                     configuration.ExportRunId))
                 {
+                    IImportApiItemLevelErrorHandler itemLevelErrorHandler = _itemLevelErrorHandlerFactory.CreateIApiItemLevelErrorHandler();
+
                     IEnumerable<IBatch> allBatchQuery = await _batchRepository.GetAllAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, configuration.ExportRunId).ConfigureAwait(false);
                     List<IBatch> batches = allBatchQuery.ToList();
 
                     ValueResponse<ImportDetails> result;
-                    IImportApiItemLevelErrorHandler itemLevelErrorHandler = _itemLevelErrorHandlerFactory.CreateIApiHandler();
                     _logger.LogInformation("Retrieved batches to monitor: {@batches}", batches.Where(x => !x.IsFinished).Select(x => x.BatchGuid).ToList());
                     do
                     {
@@ -84,7 +85,6 @@ namespace Relativity.Sync.Executors
                 _logger.LogError(ex, "Document synchronization monitoring error");
                 jobStatus = ExecutionResult.Failure($"Job progress monitoring failed. {ex.Message}");
             }
-
 
             return jobStatus;
         }
@@ -146,8 +146,6 @@ namespace Relativity.Sync.Executors
                     return ExecutionResult.Failure("Unknown job import state");
             }
         }
-
-        
 
         private ValueResponse<T> TryGetValueResponse<T>(ValueResponse<T> response)
         {
