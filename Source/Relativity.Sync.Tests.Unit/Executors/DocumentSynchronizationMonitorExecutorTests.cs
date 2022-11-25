@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
@@ -15,7 +16,6 @@ using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Common.Stubs;
-using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Executors
 {
@@ -33,7 +33,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IImportJobController> _jobControllerMock;
         private Mock<IDocumentSynchronizationMonitorConfiguration> _configurationMock;
         private Mock<IItemLevelErrorHandlerFactory> _itemLevelErrorHandlerFactory;
-        private Mock<IItemLevelErrorHandler> _itemLevelErrorHandler;
+        private Mock<IImportApiItemLevelErrorHandler> _itemLevelErrorHandler;
         private Mock<IBatchRepository> _batchRepository;
 
         private DocumentSynchronizationMonitorExecutor _sut;
@@ -48,9 +48,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _jobControllerMock = new Mock<IImportJobController>();
             _configurationMock = new Mock<IDocumentSynchronizationMonitorConfiguration>();
             _itemLevelErrorHandlerFactory = new Mock<IItemLevelErrorHandlerFactory>();
-            _itemLevelErrorHandler = new Mock<IItemLevelErrorHandler>();
+            _itemLevelErrorHandler = new Mock<IImportApiItemLevelErrorHandler>();
 
-            _itemLevelErrorHandlerFactory.Setup(x => x.Create(It.IsAny<IItemStatusMonitor>()))
+            _itemLevelErrorHandlerFactory.Setup(x => x.CreateIApiHandler())
                 .Returns(_itemLevelErrorHandler.Object);
             _batchRepository = new Mock<IBatchRepository>();
 
@@ -62,6 +62,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _configurationMock.Setup(x => x.ExportRunId).Returns(new Guid(_EXPORT_RUN_ID));
 
             _sut = new DocumentSynchronizationMonitorExecutor(_serviceFactoryMock.Object, _progressHandlerMock.Object, _itemLevelErrorHandlerFactory.Object, _batchRepository.Object, _loggerMock.Object);
+
+            _sut.GetType()?.GetField("_delayTime", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(_sut, 0.1);
         }
 
         [Test]

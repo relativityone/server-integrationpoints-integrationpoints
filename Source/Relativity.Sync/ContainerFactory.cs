@@ -50,7 +50,7 @@ namespace Relativity.Sync
             containerBuilder.RegisterType<ProgressHandler>().As<IProgressHandler>();
             containerBuilder.RegisterType<JobProgressUpdater>().As<IJobProgressUpdater>();
             containerBuilder.RegisterType<TimerFactory>().As<ITimerFactory>();
-            containerBuilder.RegisterType<IItemLevelErrorHandlerFactory>().As<ItemLevelErrorHandlerFactory>();
+            containerBuilder.RegisterType<ItemLevelErrorHandlerFactory>().As<IItemLevelErrorHandlerFactory>();
 
             containerBuilder.RegisterInstance(ToggleProvider.Current).As<IToggleProvider>().SingleInstance().PreserveExistingDefaults();
 

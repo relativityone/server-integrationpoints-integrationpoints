@@ -15,6 +15,8 @@ namespace Relativity.Sync.Executors
 {
     internal class DocumentSynchronizationMonitorExecutor : IExecutor<IDocumentSynchronizationMonitorConfiguration>
     {
+        private readonly double _delayTime = 10;
+
         private readonly IDestinationServiceFactoryForUser _serviceFactory;
         private readonly IProgressHandler _progressHandler;
         private readonly IBatchRepository _batchRepository;
@@ -66,7 +68,7 @@ namespace Relativity.Sync.Executors
                             return ExecutionResult.Paused();
                         }
 
-                        await Task.Delay(TimeSpan.FromSeconds(10)).ConfigureAwait(false);
+                        await Task.Delay(TimeSpan.FromSeconds(_delayTime)).ConfigureAwait(false);
 
                         result = await GetImportStatusAsync(jobController, configuration).ConfigureAwait(false);
                         await HandleDataSourceStatusAsync(batches, sourceController, configuration, itemLevelErrorHandler).ConfigureAwait(false);

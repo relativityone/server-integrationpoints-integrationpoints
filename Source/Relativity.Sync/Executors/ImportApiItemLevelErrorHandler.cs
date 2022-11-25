@@ -75,7 +75,7 @@ namespace Relativity.Sync.Executors
 
             if (!isIdentifierReturned)
             {
-                identifier = "Unknown identifier";
+                identifier = $"Unknown identifier - {Guid.NewGuid()}";
                 errorMessage = $"It was impossible to determine document identifier. ErrorMessage: {errorMessage}";
             }
 
