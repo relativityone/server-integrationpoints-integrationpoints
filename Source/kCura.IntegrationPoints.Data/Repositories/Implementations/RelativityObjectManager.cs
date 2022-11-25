@@ -123,18 +123,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         public T Read<T>(int artifactId, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
             where T : BaseRdo, new()
         {
-            //T def = new T();
+            T def = new T();
 
-            //return Read<T>(
-            //    artifactId,
-            //    def.ToFieldList(),
-            //    executionIdentity);
-            var request = new ReadRequest
-            {
-                Object = new RelativityObjectRef { ArtifactID = artifactId },
-                Fields = new T().ToFieldList()
-            };
-            return SendReadRequestAsync<T>(request, executionIdentity: executionIdentity).GetAwaiter().GetResult();
+            return Read<T>(
+                artifactId,
+                def.ToFieldList(),
+                executionIdentity);
         }
 
         public T Read<T>(
@@ -143,18 +137,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
             where T : BaseRdo, new()
         {
-            //IEnumerable<FieldRef> fields = fieldsGuids.Select(x => new FieldRef { Guid = x }).ToArray();
+            IEnumerable<FieldRef> fields = fieldsGuids.Select(x => new FieldRef { Guid = x }).ToArray();
 
-            //return Read<T>(
-            //    artifactId,
-            //    fields,
-            //    executionIdentity);
-            var request = new ReadRequest
-            {
-                Object = new RelativityObjectRef { ArtifactID = artifactId },
-                Fields = fieldsGuids.Select(x => new FieldRef { Guid = x }).ToArray()
-            };
-            return SendReadRequestAsync<T>(request, executionIdentity: executionIdentity).GetAwaiter().GetResult();
+            return Read<T>(
+                artifactId,
+                fields,
+                executionIdentity);
         }
 
         public T Read<T>(
