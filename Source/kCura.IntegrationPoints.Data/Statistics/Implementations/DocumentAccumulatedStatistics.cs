@@ -52,9 +52,6 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
             try
             {
-                // TODO: REMOVE AFTER TESTS
-                await Task.Delay(TimeSpan.FromSeconds(60)).ConfigureAwait(false);
-
                 QueryRequest query = new DocumentQueryBuilder()
                     .AddSavedSearchCondition(savedSearchId)
                     .AddField(DocumentFieldsConstants.HasNativeFieldGuid)

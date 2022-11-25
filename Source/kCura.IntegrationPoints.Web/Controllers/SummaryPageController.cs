@@ -77,7 +77,6 @@ namespace kCura.IntegrationPoints.Web.Controllers
             DocumentsStatistics result = await _documentAccumulatedStatistics.GetImagesStatisticsForSavedSearchAsync(workspaceId, savedSearchId, calculateSize).ConfigureAwait(false);
             _calculationChecker.MarkCalculationFinished(integrationPointId);
             return Json(result);
-            //return Json(_documentAccumulatedStatistics.GetImagesStatisticsForSavedSearchAsync(workspaceId, savedSearchId, calculateSize).GetAwaiter().GetResult());
         }
 
         [HttpPost]
@@ -88,7 +87,6 @@ namespace kCura.IntegrationPoints.Web.Controllers
             DocumentsStatistics result = await _documentAccumulatedStatistics.GetImagesStatisticsForProductionAsync(workspaceId, productionId).ConfigureAwait(false);
             _calculationChecker.MarkCalculationFinished(integrationPointId);
             return Json(result);
-            //return Json(_documentAccumulatedStatistics.GetImagesStatisticsForProductionAsync(workspaceId, productionId).GetAwaiter().GetResult());
         }
 
         private async Task<Tuple<int, int>> GetSourceAndDestinationProviderIdsAsync(int integrationPointId, string controllerType)

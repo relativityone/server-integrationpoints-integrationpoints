@@ -7,20 +7,20 @@ export function createConsole(convenienceApi: IConvenienceApi): void {
     return contextProvider((ctx) => {
         var consoleApi = convenienceApi.console;
         var integrationPointId = ctx.artifactId;
-        var workspaceId = ctx.workspaceId;             
+        var workspaceId = ctx.workspaceId;
 
         return consoleApi.destroy().then(function () {
             return consoleApi.containersPromise;
-         }).then(function (containers) {
-               var buttonState = getButtonStateObject(convenienceApi, ctx, workspaceId, integrationPointId);
-             buttonState.then(function (btnStateObj: ButtonState) {
-                 var consoleContent = generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPointId, btnStateObj);
-                   if (consoleContent) {
-                        containers.rootElement.appendChild(consoleContent);
-                    }
+        }).then(function (containers) {
+            var buttonState = getButtonStateObject(convenienceApi, ctx, workspaceId, integrationPointId);
+            buttonState.then(function (btnStateObj: ButtonState) {
+                var consoleContent = generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPointId, btnStateObj);
+                if (consoleContent) {
+                    containers.rootElement.appendChild(consoleContent);
+                }
 
-                 let relativityWindow = convenienceApi.utilities.getRelativityPageBaseWindow();
-                 checkIfRefreshIsNeeded(btnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, relativityWindow.location.href);
+                let relativityWindow = convenienceApi.utilities.getRelativityPageBaseWindow();
+                checkIfRefreshIsNeeded(btnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, relativityWindow.location.href);
             });
         })
     })
@@ -33,7 +33,7 @@ function checkIfRefreshIsNeeded(btnStateObj, convenienceApi, ctx, workspaceId, i
         if (typeof newBtnStateObj === 'undefined') {
             throw new TypeError("Button state is undefined");
         }
-        else if(compareButtonStates(btnStateObj, newBtnStateObj)) {
+        else if (compareButtonStates(btnStateObj, newBtnStateObj)) {
             if (currentPage === relativityWindow) {
                 setTimeout(checkIfRefreshIsNeeded, 5000, newBtnStateObj, convenienceApi, ctx, workspaceId, integrationPointId, relativityWindow);
             }
@@ -92,7 +92,7 @@ async function getButtonStateObject(convenienceApi, ctx, workspaceId, integratio
         setTimeout(getButtonStateObject, 2000, convenienceApi, ctx, workspaceId, integrationPointId);
     }
 
-    
+
 }
 
 function generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPointId, btnStateObj) {
@@ -114,7 +114,7 @@ function generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPoi
             var val = ctx.backingModelData[value];
         }
         integrationPoint[trimmedKey] = val;
-    });       
+    });
 
     var transferOptionsTitle = consoleApi.generate.sectionTitle({
         innerText: "Transfer Options",
@@ -143,10 +143,9 @@ function generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPoi
         transferSection.push(viewErrorsLink);
     }
 
-    if (buttonState.calculateStatisticsButtonEnabled) {
-        var calculateStatsButton = createCalculateStatsButton(consoleApi, convenienceApi, ctx, buttonState.calculateStatisticsButtonEnabled, integrationPointId);
-        transferSection.push(calculateStatsButton);
-    }
+    var calculateStatsButton = createCalculateStatsButton(consoleApi, convenienceApi, ctx, buttonState.calculateStatisticsButtonEnabled, integrationPointId);
+    transferSection.push(calculateStatsButton);
+
 
     if (buttonState.saveAsProfileButtonVisible) {
         var saveAsProfileButton = createSaveAsProfileButton(consoleApi, convenienceApi, ctx, workspaceId, integrationPointId, integrationPoint);

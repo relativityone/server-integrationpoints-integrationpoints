@@ -20,10 +20,9 @@ export function postJobAPIRequest(convenienceApi: IConvenienceApi, workspaceId, 
 
 export function calculateStatsRequest(convenienceApi: IConvenienceApi, sourceConfiguration, destinationConfiguration, integrationPointId) {
 
-    convenienceApi.fieldHelper.setValue("Total of Documents", "Calculating...(leaving this page will cancel calculation)");
-    convenienceApi.fieldHelper.setValue("Total of Images", "Calculating...(leaving this page will cancel calculation)");
-    convenienceApi.fieldHelper.setValue("Total of Documents", "Calculating...(leaving this page will cancel calculation)");
-    convenienceApi.fieldHelper.setValue("Total of Natives", "Calculating...(leaving this page will cancel calculation)");
+    convenienceApi.fieldHelper.setValue("Total of Documents", "Calculating...");
+    convenienceApi.fieldHelper.setValue("Total of Images", "Calculating...");    
+    convenienceApi.fieldHelper.setValue("Total of Natives", "Calculating...");
 
     if (sourceConfiguration["SourceProductionId"]) {
         getImagesStatsForProduction(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], sourceConfiguration["SourceProductionId"], integrationPointId).then(data => {

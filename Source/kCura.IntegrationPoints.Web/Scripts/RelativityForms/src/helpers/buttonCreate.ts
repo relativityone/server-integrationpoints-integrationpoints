@@ -122,7 +122,7 @@ export function createStopButton(consoleApi, convenienceApi: IConvenienceApi, ct
 
 export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, integrationPointId: number) {
     return consoleApi.generate.button({
-        innerText: "Calculate",
+        innerText: "Get statistics",
         disabled: !enabled,
         onclick: function () {
             return convenienceApi.modalService.confirm({

@@ -89,10 +89,10 @@ export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sou
     convenienceApi.fieldHelper.setValue("Filename Prefix", sourceConfiguration["filename_prefix"]);
     convenienceApi.fieldHelper.setValue("Timezone Offset", sourceConfiguration["TimezoneOffset"]);
 
-    convenienceApi.fieldHelper.setValue("Total of Documents", "Press 'Calculate' button to get the value");
-    convenienceApi.fieldHelper.setValue("Total of Images", "Press 'Calculate' button to get the value");
-    convenienceApi.fieldHelper.setValue("Total of Documents", "Press 'Calculate' button to get the value");
-    convenienceApi.fieldHelper.setValue("Total of Natives", "Press 'Calculate' button to get the value");
+    convenienceApi.fieldHelper.setValue("Total of Documents", "Press 'Get statistics' button to calculate");
+    convenienceApi.fieldHelper.setValue("Total of Images", "Press 'Get statistics' button to calculate");
+    convenienceApi.fieldHelper.setValue("Total of Documents", "Press 'Get statistics' button to calculate");
+    convenienceApi.fieldHelper.setValue("Total of Natives", "Press 'Get statistics' button to calculate");
 
     if (destinationConfiguration["artifactTypeID"] == 10 && destinationConfiguration["Provider"] === "relativity") {
         //if (sourceConfiguration["SourceProductionId"]) {
