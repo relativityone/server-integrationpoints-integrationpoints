@@ -1,10 +1,10 @@
-﻿using Relativity.API;
+﻿using kCura.IntegrationPoints.Data.DbContext;
 
 namespace kCura.ScheduleQueue.Core.Data
 {
     public interface IQueueDBContext
     {
         string TableName { get; }
-        IDBContext EddsDBContext { get; }
+        IEddsDBContext EddsDBContext { get; }
     }
 }

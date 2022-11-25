@@ -2,68 +2,68 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Domain.Models;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
     public class DynamicFolderPathReader : IFolderPathReader
     {
         private const string _DYNAMIC_FOLDER_PATH_SQL = @"
-DECLARE @FolderPaths TABLE (ArtifactId INT, FolderPath NVARCHAR(MAX));
-INSERT @FolderPaths(ArtifactId) (SELECT * FROM @ArtifactIds);
+            DECLARE @FolderPaths TABLE (ArtifactId INT, FolderPath NVARCHAR(MAX));
+            INSERT @FolderPaths(ArtifactId) (SELECT * FROM @ArtifactIds);
 
-DECLARE @ArtifactId INT;
+            DECLARE @ArtifactId INT;
 
-DECLARE @path NVARCHAR(MAX);
-DECLARE @docID INT;
-DECLARE @folderID INT;
-DECLARE @current INT;
+            DECLARE @path NVARCHAR(MAX);
+            DECLARE @docID INT;
+            DECLARE @folderID INT;
+            DECLARE @current INT;
 
-DECLARE @delimiter NVARCHAR(3) SET @delimiter = CAST('\' AS NVARCHAR(1))
-DECLARE @rootFolderID INT SET @rootFolderID = (SELECT ArtifactID FROM SystemArtifact WITH (NOLOCK) WHERE SystemArtifactIdentifier = 'RootFolder')
+            DECLARE @delimiter NVARCHAR(3) SET @delimiter = CAST('\' AS NVARCHAR(1))
+            DECLARE @rootFolderID INT SET @rootFolderID = (SELECT ArtifactID FROM SystemArtifact WITH (NOLOCK) WHERE SystemArtifactIdentifier = 'RootFolder')
 
-DECLARE MY_CURSOR CURSOR 
-  LOCAL STATIC READ_ONLY FORWARD_ONLY
-FOR 
-SELECT ArtifactId FROM @FolderPaths
+            DECLARE MY_CURSOR CURSOR 
+              LOCAL STATIC READ_ONLY FORWARD_ONLY
+            FOR 
+            SELECT ArtifactId FROM @FolderPaths
 
-OPEN MY_CURSOR
-FETCH NEXT FROM MY_CURSOR INTO @ArtifactId
-WHILE @@FETCH_STATUS = 0
-BEGIN
-    --BEGIN RETRIEVING PATH
-    SET @path = NULL
-    SET @docID = @ArtifactId
+            OPEN MY_CURSOR
+            FETCH NEXT FROM MY_CURSOR INTO @ArtifactId
+            WHILE @@FETCH_STATUS = 0
+            BEGIN
+                --BEGIN RETRIEVING PATH
+                SET @path = NULL
+                SET @docID = @ArtifactId
 
-    SELECT TOP 1 @docID = ArtifactID, @folderID = ParentArtifactID_D FROM Document WITH (NOLOCK) WHERE ArtifactId = @docID
+                SELECT TOP 1 @docID = ArtifactID, @folderID = ParentArtifactID_D FROM Document WITH (NOLOCK) WHERE ArtifactId = @docID
 
-    SET @current = @docID
+                SET @current = @docID
 
-    WHILE NOT (SELECT TOP 1 ParentArtifactID FROM Artifact WITH (NOLOCK) WHERE ArtifactID = @current) IS NULL BEGIN
-        IF NOT @path IS NULL AND NOT @current = @rootFolderID BEGIN 
-            SET @path = (SELECT @delimiter + @path)
-        END
-        SET @current = (SELECT ParentArtifactID FROM Artifact WITH (NOLOCK) WHERE ArtifactID = @current)
-        IF NOT @current = @docID AND NOT @current = @rootFolderID BEGIN
-            SET @path = (SELECT TextIdentifier FROM Artifact WITH (NOLOCK) WHERE ArtifactID = @current) + ISNULL(@path, '')
-        END
-    END
+                WHILE NOT (SELECT TOP 1 ParentArtifactID FROM Artifact WITH (NOLOCK) WHERE ArtifactID = @current) IS NULL BEGIN
+                    IF NOT @path IS NULL AND NOT @current = @rootFolderID BEGIN 
+                        SET @path = (SELECT @delimiter + @path)
+                    END
+                    SET @current = (SELECT ParentArtifactID FROM Artifact WITH (NOLOCK) WHERE ArtifactID = @current)
+                    IF NOT @current = @docID AND NOT @current = @rootFolderID BEGIN
+                        SET @path = (SELECT TextIdentifier FROM Artifact WITH (NOLOCK) WHERE ArtifactID = @current) + ISNULL(@path, '')
+                    END
+                END
 
-    UPDATE @FolderPaths SET FolderPath = @path WHERE ArtifactId = @ArtifactId
+                UPDATE @FolderPaths SET FolderPath = @path WHERE ArtifactId = @ArtifactId
 
-    --END
-    FETCH NEXT FROM MY_CURSOR INTO @ArtifactId
-END
-CLOSE MY_CURSOR
-DEALLOCATE MY_CURSOR
+                --END
+                FETCH NEXT FROM MY_CURSOR INTO @ArtifactId
+            END
+            CLOSE MY_CURSOR
+            DEALLOCATE MY_CURSOR
 
-SELECT * FROM @FolderPaths";
+            SELECT * FROM @FolderPaths";
 
-        private readonly IDBContext _dbContext;
+        private readonly IWorkspaceDBContext _dbContext;
 
-        public DynamicFolderPathReader(IDBContext dbContext)
+        public DynamicFolderPathReader(IWorkspaceDBContext dbContext)
         {
             _dbContext = dbContext;
         }

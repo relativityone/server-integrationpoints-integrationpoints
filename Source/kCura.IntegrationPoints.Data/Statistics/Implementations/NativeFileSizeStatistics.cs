@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
@@ -22,12 +23,14 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
         private readonly IHelper _helper;
         private readonly IAPILog _logger;
         private readonly IRelativityObjectManagerFactory _relativityObjectManagerFactory;
+        private readonly IDbContextFactory _dbContextFactory;
 
         public NativeFileSizeStatistics(IHelper helper, IRelativityObjectManagerFactory relativityObjectManagerFactory)
         {
             _helper = helper;
             _logger = _helper.GetLoggerFactory().GetLogger().ForContext<NativeFileSizeStatistics>();
             _relativityObjectManagerFactory = relativityObjectManagerFactory;
+            _dbContextFactory = new DbContextFactory(_helper, _logger);
         }
 
         public long ForFolder(int workspaceArtifactId, int folderId, int viewId, bool includeSubFoldersTotals)
@@ -98,19 +101,21 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
         {
             const string sqlText = "SELECT COALESCE(SUM([Size]),0) FROM [File] WHERE [Type] = @FileType AND [DocumentArtifactID] IN (SELECT * FROM @ArtifactIds)";
 
-            var artifactIdsParameter = new SqlParameter("@ArtifactIds", SqlDbType.Structured)
+            IEnumerable<SqlParameter> sqlParams = new[]
             {
-                TypeName = "IDs",
-                Value = artifactIds.ToDataTable()
+                new SqlParameter("@ArtifactIds", SqlDbType.Structured)
+                {
+                    TypeName = "IDs",
+                    Value = artifactIds.ToDataTable()
+                },
+                new SqlParameter("@FileType", SqlDbType.Int)
+                {
+                    Value = FileType.Native
+                }
             };
 
-            var fileTypeParameter = new SqlParameter("@FileType", SqlDbType.Int)
-            {
-                Value = FileType.Native
-            };
-
-            IDBContext dbContext = _helper.GetDBContext(workspaceArtifactId);
-            return dbContext.ExecuteSqlStatementAsScalar<long>(sqlText, artifactIdsParameter, fileTypeParameter);
+            IWorkspaceDBContext dbContext = _dbContextFactory.CreateWorkspaceDbContext(workspaceArtifactId);
+            return dbContext.ExecuteSqlStatementAsScalar<long>(sqlText, sqlParams);
         }
 
         private List<RelativityObjectSlim> ExecuteQuery(QueryRequest query, int workspaceArtifactId, out List<FieldMetadata> fieldsMetadata)

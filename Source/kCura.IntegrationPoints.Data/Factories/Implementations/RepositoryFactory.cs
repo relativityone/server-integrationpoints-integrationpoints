@@ -28,6 +28,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
         private readonly IServicesMgr _sourceServiceMgr;
         private readonly Lazy<IRelativityObjectManagerFactory> _objectManagerFactory;
         private readonly Lazy<IExternalServiceInstrumentationProvider> _instrumentationProvider;
+        private readonly IDbContextFactory _dbContextFactory;
 
         public RepositoryFactory(IHelper helper, IServicesMgr destinationServiceMgr)
         {
@@ -36,6 +37,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
             _sourceServiceMgr = _helper.GetServicesManager(); //TODO: it's on our wall of shame
             _objectManagerFactory = CreateRelativityObjectManagerFactory(helper);
             _instrumentationProvider = CreateInstrumentationProvider(helper);
+            _dbContextFactory = new DbContextFactory(_helper);
         }
 
         private IRelativityObjectManagerFactory ObjectManagerFactory => _objectManagerFactory.Value;
@@ -139,22 +141,19 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
         public IQueueRepository GetQueueRepository()
         {
-            return new QueueRepository(_helper);
+            return new QueueRepository(_dbContextFactory);
         }
 
         public IScratchTableRepository GetScratchTableRepository(int workspaceArtifactID, string tablePrefix, string tableSuffix)
         {
-            IDbContextFactory dbContextFactory = new DbContextFactory(_helper);
-
             return new ScratchTableRepository(
-                dbContextFactory.CreateWorkspaceDbContext(workspaceArtifactID),
+                _dbContextFactory.CreateWorkspaceDbContext(workspaceArtifactID),
                 GetDocumentRepository(workspaceArtifactID),
                 GetFieldQueryRepository(workspaceArtifactID),
                 new ResourceDbProvider(_helper),
                 tablePrefix,
                 tableSuffix,
-                workspaceArtifactID
-            );
+                workspaceArtifactID);
         }
 
         public ISourceJobRepository GetSourceJobRepository(int workspaceArtifactId)
