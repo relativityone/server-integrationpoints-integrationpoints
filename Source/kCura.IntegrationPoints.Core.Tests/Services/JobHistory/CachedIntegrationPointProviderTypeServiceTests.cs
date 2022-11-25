@@ -153,7 +153,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
                 _providerTypeServiceMock = Substitute.For<IProviderTypeService>();
 
                 _integrationPointServiceMock = Substitute.For<IIntegrationPointService>();
-                _integrationPointServiceMock.Read(0).ReturnsForAnyArgs(new IntegrationPointDto
+                _integrationPointServiceMock.ReadSlim(0).ReturnsForAnyArgs(new IntegrationPointDto
                 {
                     SourceProvider = _SOURCE_PROVIDER_ID,
                     DestinationProvider = _DESTINATION_PROVIDER_ID
@@ -241,13 +241,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
                 _service.GetProviderType(1);
                 _service.GetProviderType(2);
 
-                _integrationPointServiceMock.Received(1).Read(1);
-                _integrationPointServiceMock.Received(1).Read(2);
+                _integrationPointServiceMock.Received(1).ReadSlim(1);
+                _integrationPointServiceMock.Received(1).ReadSlim(2);
             }
 
             private void VerifyBothServicesCalled(int times = 1, int integrationPointId = 1)
             {
-                _integrationPointServiceMock.Received(times).Read(integrationPointId);
+                _integrationPointServiceMock.Received(times).ReadSlim(integrationPointId);
                 _providerTypeServiceMock.Received(times).GetProviderType(_SOURCE_PROVIDER_ID, _DESTINATION_PROVIDER_ID);
             }
         }

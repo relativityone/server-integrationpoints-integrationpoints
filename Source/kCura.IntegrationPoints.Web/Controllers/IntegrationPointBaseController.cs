@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
                                     permissionRepository.UserHasArtifactInstancePermission(integrationPointsObjectTypeGuid, artifactId.Value, ArtifactPermission.Edit);
             return canImport && canAddOrEdit && canEditExistingIp;
         }
-        
+
         public ActionResult Details(int id)
         {
             IntegrationPointDtoBase integrationViewModel = GetIntegrationPointBaseModel(id);

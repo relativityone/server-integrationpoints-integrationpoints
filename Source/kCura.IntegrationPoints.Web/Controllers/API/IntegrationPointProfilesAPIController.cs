@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         [LogApiExceptionFilter(Message = "Unable to retrieve integration point profiles.")]
         public HttpResponseMessage GetAll()
         {
-            var models = _profileService.ReadAll();
+            var models = _profileService.ReadAllSlim();
             return Request.CreateResponse(HttpStatusCode.OK, models);
         }
 
@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         [LogApiExceptionFilter(Message = "Unable to retrieve integration point profiles.")]
         public HttpResponseMessage GetByType(int artifactId)
         {
-            var models = _profileService.ReadAll();
+            var models = _profileService.ReadAllSlim();
             var profileModelsByType = models.Where(_ => _.Type == artifactId);
             return Request.CreateResponse(HttpStatusCode.OK, profileModelsByType);
         }

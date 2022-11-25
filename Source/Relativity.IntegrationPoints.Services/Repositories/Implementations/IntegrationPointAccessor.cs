@@ -59,7 +59,7 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
 
         public IntegrationPointModel GetIntegrationPoint(int integrationPointArtifactId)
         {
-            return _integrationPointService.Read(integrationPointArtifactId).ToIntegrationPointModel();
+            return _integrationPointService.ReadSlim(integrationPointArtifactId).ToIntegrationPointModel();
         }
 
         public object RunIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId)
@@ -76,7 +76,7 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
 
         public IList<IntegrationPointModel> GetAllIntegrationPoints()
         {
-            IList<IntegrationPointDto> integrationPoints = _integrationPointService.ReadAll();
+            IList<IntegrationPointDto> integrationPoints = _integrationPointService.ReadAllSlim();
             return integrationPoints.Select(x => x.ToIntegrationPointModel()).ToList();
         }
 

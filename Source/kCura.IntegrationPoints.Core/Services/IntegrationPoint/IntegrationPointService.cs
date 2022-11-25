@@ -80,21 +80,21 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         protected override string UnableToSaveFormat
             => "Unable to save Integration Point:{0} cannot be changed once the Integration Point has been run";
 
-        public IntegrationPointDto Read(int artifactID)
+        public IntegrationPointDto ReadSlim(int artifactID)
         {
             Data.IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(artifactID).GetAwaiter().GetResult();
             return ToDto(integrationPoint);
         }
 
-        public IntegrationPointDto ReadWithFieldsMaping(int artifactID)
+        public IntegrationPointDto Read(int artifactID)
          {
             Data.IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(artifactID).GetAwaiter().GetResult();
             IntegrationPointDto dto = ToDto(integrationPoint);
-            dto.FieldMappings = GetFieldMappings(artifactID);
+            dto.FieldMappings = GetFieldMap(artifactID);
             return dto;
         }
 
-        public List<IntegrationPointDto> ReadAll()
+        public List<IntegrationPointDto> ReadAllSlim()
         {
             return _integrationPointRepository
                 .ReadAll()
@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 .ToList();
         }
 
-        private List<FieldMap> GetFieldMappings(int artifactId)
+        public List<FieldMap> GetFieldMap(int artifactId)
         {
             return _retryHandler.Execute<List<FieldMap>, RipSerializationException>(
                 ReadFieldMapping,
@@ -264,7 +264,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
             try
             {
-                integrationPointDto = ReadWithFieldsMaping(integrationPointArtifactId);
+                integrationPointDto = Read(integrationPointArtifactId);
                 sourceProvider = GetSourceProvider(integrationPointDto.SourceProvider);
                 destinationProvider = GetDestinationProvider(integrationPointDto.DestinationProvider);
             }
@@ -308,7 +308,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
             try
             {
-                integrationPointDto = ReadWithFieldsMaping(integrationPointArtifactId);
+                integrationPointDto = Read(integrationPointArtifactId);
                 sourceProvider = GetSourceProvider(integrationPointDto.SourceProvider);
                 destinationProvider = GetDestinationProvider(integrationPointDto.DestinationProvider);
             }
@@ -332,11 +332,6 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             CreateJob(integrationPointDto, sourceProvider, destinationProvider, jobRunId, workspaceArtifactId, userId);
 
             _logger.LogInformation("Retry request was completed successfully and job has been added to Schedule Queue.");
-        }
-
-        public List<FieldMap> GetFieldMap(int artifactID)
-        {
-            return null;// _integrationPointRepository.GetFieldMappingAsync(artifactID).GetAwaiter().GetResult();
         }
 
         public void MarkIntegrationPointToStopJobs(int workspaceArtifactId, int integrationPointArtifactId)
@@ -469,7 +464,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
         private void CheckStopPermission(int integrationPointArtifactId)
         {
-            IntegrationPointDto dto = ReadWithFieldsMaping(integrationPointArtifactId);
+            IntegrationPointDto dto = Read(integrationPointArtifactId);
             SourceProvider sourceProvider = GetSourceProvider(dto.SourceProvider);
             DestinationProvider destinationProvider = GetDestinationProvider(dto.DestinationProvider);
             IntegrationPointType integrationPointType = GetIntegrationPointType(dto.Type);

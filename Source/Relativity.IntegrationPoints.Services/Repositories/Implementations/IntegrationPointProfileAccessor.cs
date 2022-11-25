@@ -53,7 +53,7 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
 
         public IList<IntegrationPointModel> GetAllIntegrationPointProfiles()
         {
-            IList<IntegrationPointProfileDto> profiles = _integrationPointProfileService.ReadAll();
+            IList<IntegrationPointProfileDto> profiles = _integrationPointProfileService.ReadAllSlim();
             return profiles.Select(x => x.ToIntegrationPointModel()).ToList();
         }
 

@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 
         private void SetImportNativeFileCopyModeForIntegrationPoints()
         {
-            foreach (IntegrationPointDto point in _integrationPointService.ReadAll())
+            foreach (IntegrationPointDto point in _integrationPointService.ReadAllSlim())
             {
                 string destinationConfiguration = _importNativeFileCopyModeUpdater.GetCorrectedConfiguration(point.SourceProvider,
                     point.DestinationProvider, point.DestinationConfiguration);
@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 
         private void SetImportNativeFileCopyModeForIntegrationPointProfiles()
         {
-            foreach (IntegrationPointProfileDto profile in _integrationPointProfileService.ReadAll())
+            foreach (IntegrationPointProfileDto profile in _integrationPointProfileService.ReadAllSlim())
             {
                 string destinationConfiguration = _importNativeFileCopyModeUpdater.GetCorrectedConfiguration(
                     profile.SourceProvider,

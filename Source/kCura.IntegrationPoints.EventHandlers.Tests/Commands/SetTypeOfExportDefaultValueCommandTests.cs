@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
             PopulateIntegrationPointProfilesList();
 
             _integrationPointProfileService = Substitute.For<IIntegrationPointProfileService>();
-            _integrationPointProfileService.ReadAll().Returns(_integrationPointProfiles);
+            _integrationPointProfileService.ReadAllSlim().Returns(_integrationPointProfiles);
         }
 
         private void PopulateIntegrationPointProfilesList()

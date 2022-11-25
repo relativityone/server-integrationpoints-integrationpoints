@@ -63,7 +63,20 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             }
         }
 
-        public IList<IntegrationPointProfileDto> ReadAll()
+        public IntegrationPointProfileDto ReadSlim(int artifactId)
+        {
+            try
+            {
+                IntegrationPointProfile profile = ObjectManager.Read<IntegrationPointProfile>(artifactId);
+                return ToDto(profile);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_INTEGRATION_POINT_PROFILE, ex);
+            }
+        }
+
+        public IList<IntegrationPointProfileDto> ReadAllSlim()
         {
             IEnumerable<FieldRef> fields = BaseRdo
                 .GetFieldMetadata(typeof(IntegrationPointProfile))

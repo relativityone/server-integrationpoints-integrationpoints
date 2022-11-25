@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Core.Tests
             _messageServiceMock = new Mock<IMessageService>();
 
             Mock<IIntegrationPointService> integrationPointService = new Mock<IIntegrationPointService>();
-            integrationPointService.Setup(x => x.Read(It.IsAny<int>()))
+            integrationPointService.Setup(x => x.ReadSlim(It.IsAny<int>()))
                 .Returns(new IntegrationPointDto
                 {
                     SourceProvider = It.IsAny<int>(),

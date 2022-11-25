@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
 
             Exception exception = new Exception(expectedErrorMessage);
 
-            _integrationPointService.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+            _integrationPointService.ReadSlim(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 
             _integrationPointService.When(
                 service => service.RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0))
@@ -129,7 +129,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
                 SecuredConfiguration = _EMPTY_SECURED_CONFIG
             };
 
-            _integrationPointService.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+            _integrationPointService.ReadSlim(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
 
             _integrationPointService.When(
                 service => service.RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, _USERID))
@@ -154,7 +154,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
                 SecuredConfiguration = _EMPTY_SECURED_CONFIG
             };
 
-            _integrationPointService.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+            _integrationPointService.ReadSlim(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
             _instance.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(0)));
 
             // Act
@@ -181,7 +181,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
                 SecuredConfiguration = _EMPTY_SECURED_CONFIG
             };
 
-            _integrationPointService.Read(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
+            _integrationPointService.ReadSlim(_INTEGRATION_POINT_ARTIFACT_ID).Returns(integrationPoint);
             _instance.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 
             // Act

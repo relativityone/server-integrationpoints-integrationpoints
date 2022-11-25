@@ -7,7 +7,9 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
     {
         IntegrationPointProfileDto Read(int artifactId);
 
-        IList<IntegrationPointProfileDto> ReadAll();
+        IntegrationPointProfileDto ReadSlim(int artifactId);
+
+        IList<IntegrationPointProfileDto> ReadAllSlim();
 
         int SaveProfile(IntegrationPointProfileDto dto);
 

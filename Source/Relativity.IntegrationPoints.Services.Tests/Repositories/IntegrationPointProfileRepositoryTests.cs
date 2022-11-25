@@ -150,11 +150,11 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             };
 
             var expectedResult = new List<IntegrationPointProfileDto> { integrationPointProfile1, integrationPointProfile2 };
-            _integrationPointProfileService.ReadAll().Returns(expectedResult);
+            _integrationPointProfileService.ReadAllSlim().Returns(expectedResult);
 
             var result = _integrationPointProfileAccessor.GetAllIntegrationPointProfiles();
 
-            _integrationPointProfileService.Received(1).ReadAll();
+            _integrationPointProfileService.Received(1).ReadAllSlim();
 
             Assert.That(result, Is.EquivalentTo(expectedResult).
                 Using(new Func<IntegrationPointModel, IntegrationPointProfileDto, bool>(

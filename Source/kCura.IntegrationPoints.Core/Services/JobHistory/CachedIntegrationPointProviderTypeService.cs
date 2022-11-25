@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         {
             if (integrationPoint == null)
             {
-                integrationPoint = _integrationPointService.Read(integrationPointArtifactID);
+                integrationPoint = _integrationPointService.ReadSlim(integrationPointArtifactID);
             }
 
             ProviderType providerType = integrationPoint.GetProviderType(_providerTypeService);

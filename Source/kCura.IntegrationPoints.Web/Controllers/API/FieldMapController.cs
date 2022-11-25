@@ -15,11 +15,11 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
     public class FieldMapController : ApiController
     {
         private readonly IAPILog _apiLog;
-        private readonly IIntegrationPointService _integrationPointReader;
+        private readonly IIntegrationPointService _integrationPointService;
 
-        public FieldMapController(IIntegrationPointService integrationPointReader, ICPHelper helper)
+        public FieldMapController(IIntegrationPointService integrationPointService, ICPHelper helper)
         {
-            _integrationPointReader = integrationPointReader;
+            _integrationPointService = integrationPointService;
             _apiLog = helper.GetLoggerFactory().GetLogger().ForContext<FieldMapController>();
         }
 
@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         public HttpResponseMessage Get(int id)
         {
             _apiLog.LogInformation("Retriving field mapping for Relativity Provider");
-            List<FieldMap> fieldsMaps = _integrationPointReader.GetFieldMap(id).ToList();
+            List<FieldMap> fieldsMaps = _integrationPointService.GetFieldMap(id).ToList();
             fieldsMaps.RemoveAll(
                 fieldMap =>
                     fieldMap.FieldMapType == FieldMapTypeEnum.FolderPathInformation &&

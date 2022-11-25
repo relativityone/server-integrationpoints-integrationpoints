@@ -74,7 +74,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             _integrationPointAccessor.CreateIntegrationPoint(createRequest);
 
             _backwardCompatibility.Received(1).FixIncompatibilities(createRequest.IntegrationPoint, overwriteFieldsChoiceName);
-            _integrationPointService.Received(1).Read(integrationPointArtifactId);
+            _integrationPointService.Received(1).ReadSlim(integrationPointArtifactId);
         }
 
         [Test]
@@ -90,13 +90,13 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
                 integrationPointArtifactId, federatedInstanceArtifactId);
 
             _integrationPointService.SaveIntegrationPoint(
-                Arg.Is<kCura.IntegrationPoints.Core.Models.IntegrationPointDto>(x => x.ArtifactId == createRequest.IntegrationPoint.ArtifactId))
+                Arg.Is<IntegrationPointDto>(x => x.ArtifactId == createRequest.IntegrationPoint.ArtifactId))
                 .Returns(integrationPointArtifactId);
 
             _integrationPointAccessor.CreateIntegrationPoint(createRequest);
 
             _backwardCompatibility.Received(1).FixIncompatibilities(createRequest.IntegrationPoint, overwriteFieldsChoiceName);
-            _integrationPointService.Received(1).Read(integrationPointArtifactId);
+            _integrationPointService.Received(1).ReadSlim(integrationPointArtifactId);
         }
 
         private void SetUpDestinationConfiguration(int? federatedInstanceArtifactId = null)
@@ -143,6 +143,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             var integrationPoint = CreateIntegrationPoint(integrationPointArtifactId, overwriteFieldsChoiceId, overwriteFieldsChoiceName);
 
             _integrationPointService.Read(integrationPointArtifactId).Returns(integrationPoint);
+            _integrationPointService.ReadSlim(integrationPointArtifactId).Returns(integrationPoint);
 
             _choiceQuery.GetChoicesOnField(_workspaceArtifactId, new Guid(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<ChoiceRef>
             {
@@ -182,11 +183,11 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             int artifactId = 884;
             var integrationPoint = CreateIntegrationPoint(artifactId);
 
-            _integrationPointService.Read(artifactId).Returns(integrationPoint);
+            _integrationPointService.ReadSlim(artifactId).Returns(integrationPoint);
 
             var result = _integrationPointAccessor.GetIntegrationPoint(artifactId);
 
-            _integrationPointService.Received(1).Read(artifactId);
+            _integrationPointService.Received(1).ReadSlim(artifactId);
 
             Assert.That(result.SourceProvider, Is.EqualTo(integrationPoint.SourceProvider));
             Assert.That(result.DestinationProvider, Is.EqualTo(integrationPoint.DestinationProvider));
@@ -219,11 +220,11 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             var integrationPoint2 = CreateIntegrationPoint(204);
 
             var expectedResult = new List<IntegrationPointDto> { integrationPoint1, integrationPoint2 };
-            _integrationPointService.ReadAll().Returns(expectedResult);
+            _integrationPointService.ReadAllSlim().Returns(expectedResult);
 
             var result = _integrationPointAccessor.GetAllIntegrationPoints();
 
-            _integrationPointService.Received(1).ReadAll();
+            _integrationPointService.Received(1).ReadAllSlim();
 
             Assert.That(result, Is.EquivalentTo(expectedResult).
                 Using(new Func<IntegrationPointModel, IntegrationPointDto, bool>(
@@ -296,13 +297,13 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 
             _integrationPointProfileService.Read(profileArtifactId).Returns(profile);
             _integrationPointService.SaveIntegrationPoint(Arg.Any<IntegrationPointDto>()).Returns(artifactId);
-            _integrationPointService.Read(artifactId).Returns(integrationPoint);
+            _integrationPointService.ReadSlim(artifactId).Returns(integrationPoint);
 
             _integrationPointAccessor.CreateIntegrationPointFromProfile(profileArtifactId, integrationPointName);
 
             _integrationPointProfileService.Received(1).Read(profileArtifactId);
             _integrationPointService.Received(1).SaveIntegrationPoint(Arg.Is<IntegrationPointDto>(x => x.Name == integrationPointName && x.ArtifactId == 0));
-            _integrationPointService.Received(1).Read(artifactId);
+            _integrationPointService.Received(1).ReadSlim(artifactId);
         }
     }
 }
