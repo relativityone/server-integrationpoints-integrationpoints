@@ -58,7 +58,7 @@ namespace Relativity.Sync.Executors
                             }
                         }
 
-                        await HandleBatchStatusOnProcessingStop(token, batch, reader.ItemStatusMonitor).ConfigureAwait(false);
+                        await HandleBatchStatusOnReadFinish(token, batch, reader.ItemStatusMonitor).ConfigureAwait(false);
                         await _itemLevelErrorHandler.HandleRemainingErrorsAsync()
                             .ConfigureAwait(false);
 
@@ -142,12 +142,15 @@ namespace Relativity.Sync.Executors
             return batchFullPath;
         }
 
-        private async Task HandleBatchStatusOnProcessingStop(CompositeCancellationToken token, IBatch batch, IItemStatusMonitor monitor)
+        private async Task HandleBatchStatusOnReadFinish(CompositeCancellationToken token, IBatch batch, IItemStatusMonitor monitor)
         {
+            await batch.SetFailedDocumentsCountAsync(monitor.FailedItemsCount).ConfigureAwait(false);
+
             if (token.IsStopRequested)
             {
                 _logger.LogInformation("Cancellation requested for job ID: {jobId}, batch GUID: {batchId}", _configuration.ExportRunId, batch.BatchGuid);
                 await batch.SetStatusAsync(BatchStatus.Cancelled).ConfigureAwait(false);
+                return;
             }
 
             if (token.IsDrainStopRequested)
@@ -155,6 +158,7 @@ namespace Relativity.Sync.Executors
                 _logger.LogInformation("Drain stop requested for job ID: {jobId}, batch GUID: {batchId}", _configuration.ExportRunId, batch.BatchGuid);
                 await batch.SetStatusAsync(BatchStatus.Paused).ConfigureAwait(false);
                 await batch.SetStartingIndexAsync(monitor.ReadItemsCount).ConfigureAwait(false);
+                return;
             }
         }
     }

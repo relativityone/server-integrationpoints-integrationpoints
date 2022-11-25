@@ -32,7 +32,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IProgressHandler> _progressHandlerMock;
         private Mock<IImportJobController> _jobControllerMock;
         private Mock<IDocumentSynchronizationMonitorConfiguration> _configurationMock;
-        private Mock<IItemLevelErrorHandlerFactory> _itemLevelErrorHandlerFactory;
         private Mock<IImportApiItemLevelErrorHandler> _itemLevelErrorHandler;
         private Mock<IBatchRepository> _batchRepository;
 
@@ -47,11 +46,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _sourceControllerMock = new Mock<IImportSourceController>();
             _jobControllerMock = new Mock<IImportJobController>();
             _configurationMock = new Mock<IDocumentSynchronizationMonitorConfiguration>();
-            _itemLevelErrorHandlerFactory = new Mock<IItemLevelErrorHandlerFactory>();
             _itemLevelErrorHandler = new Mock<IImportApiItemLevelErrorHandler>();
 
-            _itemLevelErrorHandlerFactory.Setup(x => x.CreateIApiItemLevelErrorHandler())
-                .Returns(_itemLevelErrorHandler.Object);
             _batchRepository = new Mock<IBatchRepository>();
 
             _serviceFactoryMock.Setup(x => x.CreateProxyAsync<IImportSourceController>()).ReturnsAsync(_sourceControllerMock.Object);

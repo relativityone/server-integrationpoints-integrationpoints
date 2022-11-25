@@ -1,9 +1,8 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-using Relativity.API;
-using Relativity.DataExchange.Export.VolumeManagerV2;
 using Relativity.Import.V1.Models.Errors;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Logging;
@@ -12,46 +11,11 @@ using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors
 {
-    internal class ItemLevelErrorHandler_TEMP : ItemLevelErrorHandlerBase, IItemLevelErrorHandler_TEMP
-    {
-        private readonly IItemStatusMonitor _statusMonitor;
-        private readonly IItemLevelErrorLogAggregator _itemLevelErrorLogAggregator;
-
-        public ItemLevelErrorHandler_TEMP(IItemLevelErrorHandlerConfiguration configuration, IJobHistoryErrorRepository jobHistoryErrorRepository, IItemStatusMonitor statusMonitor, IAPILog logger)
-            : base(configuration, jobHistoryErrorRepository)
-        {
-            _statusMonitor = statusMonitor;
-            _itemLevelErrorLogAggregator = new ItemLevelErrorLogAggregator(logger);
-        }
-
-        public void HandleItemLevelError(long completedItem, ItemLevelError itemLevelError)
-        {
-            MarkItemAsFailed(itemLevelError);
-            HandleBatchItemErrors(itemLevelError);
-        }
-
-        public async Task HandleDataSourceProcessingFinishedAsync(IBatch batch)
-        {
-            if (BatchItemErrors.Any())
-            {
-                CreateJobHistoryErrors();
-            }
-
-            await batch.SetFailedDocumentsCountAsync(_statusMonitor.FailedItemsCount).ConfigureAwait(false);
-            await _itemLevelErrorLogAggregator.LogAllItemLevelErrorsAsync().ConfigureAwait(false);
-        }
-
-        private void MarkItemAsFailed(ItemLevelError itemLevelError)
-        {
-            int itemArtifactId = _statusMonitor.GetArtifactId(itemLevelError.Identifier);
-            _itemLevelErrorLogAggregator.AddItemLevelError(itemLevelError, itemArtifactId);
-            _statusMonitor.MarkItemAsFailed(itemLevelError.Identifier);
-        }
-    }
-
     internal class ItemLevelErrorHandler : IItemLevelErrorHandler
     {
         private const int _ITEM_LEVEL_ERRORS_CREATE_BATCH_SIZE = 10000;
+        private const string _IDENTIFIER_NOT_FOUND = "[NOT_FOUND]";
+        private const string _IAPI_DOCUMENT_IDENTIFIER_COLUMN = "Identifier";
 
         private readonly IItemLevelErrorHandlerConfiguration _configuration;
         private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
@@ -69,15 +33,19 @@ namespace Relativity.Sync.Executors
             _itemLevelErrorLogAggregator = itemLevelErrorLogAggregator;
         }
 
-        public void HandleIAPIItemLevelErrors(IEnumerable<ImportErrors> errors)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public void HandleItemLevelError(long completedItem, ItemLevelError itemLevelError)
         {
             HandleBatchItemErrorAsync(itemLevelError)
                 .GetAwaiter().GetResult();
+        }
+
+        public async Task HandleIAPIItemLevelErrorsAsync(ImportErrors errors)
+        {
+            foreach (var error in errors.Errors.SelectMany(x => x.ErrorDetails))
+            {
+                ItemLevelError itemLevelError = ToItemLevelError(error);
+                await HandleBatchItemErrorAsync(itemLevelError).ConfigureAwait(false);
+            }
         }
 
         public async Task HandleRemainingErrorsAsync()
@@ -126,6 +94,15 @@ namespace Relativity.Sync.Executors
                         itemLevelErrors)
                     .ConfigureAwait(false);
             }
+        }
+
+        private ItemLevelError ToItemLevelError(ErrorDetail error)
+        {
+            return new ItemLevelError(
+                error.ErrorProperties.TryGetValue(_IAPI_DOCUMENT_IDENTIFIER_COLUMN, out string identifier)
+                    ? identifier
+                    : _IDENTIFIER_NOT_FOUND,
+                error.ErrorMessage);
         }
     }
 }
