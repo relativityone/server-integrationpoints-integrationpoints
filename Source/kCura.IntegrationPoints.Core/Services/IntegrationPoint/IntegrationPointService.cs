@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -39,6 +41,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         private readonly ITaskParametersBuilder _taskParametersBuilder;
         private readonly IRelativitySyncConstrainsChecker _relativitySyncConstrainsChecker;
         private readonly IRelativitySyncAppIntegration _relativitySyncAppIntegration;
+        private readonly IRetryHandler _retryHandler;
 
         public IntegrationPointService(
             IHelper helper,
@@ -70,6 +73,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             _taskParametersBuilder = taskParametersBuilder;
             _relativitySyncConstrainsChecker = relativitySyncConstrainsChecker;
             _relativitySyncAppIntegration = relativitySyncAppIntegration;
+
+            _retryHandler = new RetryHandlerFactory(_logger).Create();
         }
 
         protected override string UnableToSaveFormat
@@ -99,13 +104,24 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
         private List<FieldMap> GetFieldMappings(int artifactId)
         {
-            // TODO retry start
-            string fieldMapString = _integrationPointRepository.GetFieldMappingAsync(artifactId).GetAwaiter().GetResult();
-            List<FieldMap> fieldMapList = Serializer.Deserialize<List<FieldMap>>(fieldMapString);
-            SanitizeFieldsMapping(fieldMapList);
-            // TODO retry end
+            return _retryHandler.Execute<List<FieldMap>, RipSerializationException>(
+                ReadFieldMapping,
+                exception =>
+                {
+                    _logger.LogWarning(
+                        exception,
+                        "Unable to deserialize field mapping for integration point: {integrationPointId}. Mapping value: {fieldMapping}. Operation will be retried.",
+                        artifactId,
+                        exception.Value);
+                });
 
-            return fieldMapList;
+            List<FieldMap> ReadFieldMapping()
+            {
+                string fieldMapString = _integrationPointRepository.GetFieldMappingAsync(artifactId).GetAwaiter().GetResult();
+                List<FieldMap> fieldMap = Serializer.Deserialize<List<FieldMap>>(fieldMapString);
+                SanitizeFieldsMapping(fieldMap);
+                return fieldMap;
+            }
         }
 
         public List<IntegrationPointDto> GetBySourceAndDestinationProvider(int sourceProviderArtifactID, int destinationProviderArtifactID)
@@ -211,6 +227,15 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             Data.IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(artifactId).GetAwaiter().GetResult();
             integrationPoint.LastRuntimeUTC = lastRuntime;
             integrationPoint.NextScheduledRuntimeUTC = nextRuntime;
+            _integrationPointRepository.Update(integrationPoint);
+        }
+
+        public void DisableScheduler(int artifactId)
+        {
+            Data.IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(artifactId).GetAwaiter().GetResult();
+            integrationPoint.ScheduleRule = null;
+            integrationPoint.NextScheduledRuntimeUTC = null;
+            integrationPoint.EnableScheduler = false;
             _integrationPointRepository.Update(integrationPoint);
         }
 

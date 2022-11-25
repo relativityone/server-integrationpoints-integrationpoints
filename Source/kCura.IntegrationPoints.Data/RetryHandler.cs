@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Google.Protobuf.WellKnownTypes;
 using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Domain.Extensions;
 using Polly;
@@ -68,6 +67,21 @@ namespace kCura.IntegrationPoints.Data
                     CancellationToken.None);
         }
 
+        public T Execute<T, TException>(Func<T> function, Action<TException> onRetry)
+            where TException : Exception
+        {
+            RetryPolicy genericPolicy = HandleGenericException<TException>()
+                .WaitAndRetry(
+                    _maxNumberOfRetries,
+                    CalculateSleepTimeForHttpException,
+                    (Exception exception, TimeSpan waitTime) => onRetry(exception as TException));
+
+            return genericPolicy
+                .Execute(
+                    token => function(),
+                    CancellationToken.None);
+        }
+
         private Dictionary<string, object> CreateContextData(string callerName)
         {
             return new Dictionary<string, object>
@@ -84,7 +98,7 @@ namespace kCura.IntegrationPoints.Data
                     CalculateSleepTimeForSQLException,
                     OnRetry);
 
-            RetryPolicy genericPolicy = HandleHttpException()
+            RetryPolicy genericPolicy = HandleGenericException<Exception>()
                 .WaitAndRetry(
                     _maxNumberOfRetries,
                     CalculateSleepTimeForHttpException,
@@ -96,7 +110,7 @@ namespace kCura.IntegrationPoints.Data
 
         private PolicyWrap CreateAsyncRetryPolicy()
         {
-            RetryPolicy httpPolicy = HandleHttpException()
+            RetryPolicy httpPolicy = HandleGenericException<Exception>()
                 .WaitAndRetryAsync(
                     _maxNumberOfRetries,
                     CalculateSleepTimeForHttpException,
@@ -112,10 +126,11 @@ namespace kCura.IntegrationPoints.Data
             return wrapperPolicies;
         }
 
-        private PolicyBuilder HandleHttpException()
+        private PolicyBuilder HandleGenericException<TException>()
+            where TException : Exception
         {
             return Policy
-                .Handle<Exception>();
+                .Handle<TException>();
         }
 
         private PolicyBuilder HandleSQLException()

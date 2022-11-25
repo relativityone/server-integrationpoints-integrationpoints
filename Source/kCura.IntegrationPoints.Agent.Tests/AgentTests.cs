@@ -152,7 +152,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
             integrationPointRepositoryFake.Setup(x => x.ReadAsync(integrationPointId)).ReturnsAsync(new Data.IntegrationPoint());
 
             Mock<ITaskFactoryJobHistoryServiceFactory> jobHistoryServiceFactoryFake = new Mock<ITaskFactoryJobHistoryServiceFactory>();
-            jobHistoryServiceFactoryFake.Setup(x => x.CreateJobHistoryService(It.IsAny<Data.IntegrationPoint>())).Returns(jobHistoryServiceMock.Object);
+            jobHistoryServiceFactoryFake.Setup(x => x.CreateJobHistoryService(It.IsAny<IntegrationPointDto>())).Returns(jobHistoryServiceMock.Object);
             RegisterMock(integrationPointRepositoryFake);
             RegisterMock(jobHistoryServiceFactoryFake);
 

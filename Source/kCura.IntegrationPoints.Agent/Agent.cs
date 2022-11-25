@@ -151,16 +151,15 @@ namespace kCura.IntegrationPoints.Agent
                 {
                     if (job.JobFailed != null)
                     {
-                        IIntegrationPointRepository integrationPointRepository = Container.Resolve<IIntegrationPointRepository>();
-                        IntegrationPoint integrationPoint = integrationPointRepository.ReadAsync(job.RelatedObjectArtifactID).GetAwaiter().GetResult();
-                        if (integrationPoint == null)
+                        IIntegrationPointService integrationPointService = Container.Resolve<IIntegrationPointService>();
+                        IntegrationPointDto integrationPointDto = integrationPointService.Read(job.RelatedObjectArtifactID);
+
+                        if (job.JobFailed.ShouldBreakSchedule)
                         {
-                            throw new NullReferenceException(
-                                $"Unable to retrieve the integration point for the following job: {job.JobId}");
+                            integrationPointService.DisableScheduler(integrationPointDto.ArtifactId);
                         }
 
-                        UpdateIntegrationPointOnScheduleBreak(integrationPointRepository, integrationPoint, job);
-                        MarkJobHistoryAsFailed(integrationPoint, job);
+                        MarkJobHistoryAsFailed(integrationPointDto, job);
                         return new TaskResult
                         {
                             Status = TaskStatusEnum.Fail,
@@ -218,21 +217,6 @@ namespace kCura.IntegrationPoints.Agent
             {
                 Container.Dispose();
                 Container = null;
-            }
-        }
-
-        private void UpdateIntegrationPointOnScheduleBreak(
-            IIntegrationPointRepository integrationPointRepository,
-            IntegrationPoint integrationPoint,
-            Job job)
-        {
-            if (job.JobFailed.ShouldBreakSchedule)
-            {
-                integrationPoint.ScheduleRule = null;
-                integrationPoint.NextScheduledRuntimeUTC = null;
-                integrationPoint.EnableScheduler = job.JobFailed.MaximumConsecutiveFailuresReached;
-
-                integrationPointRepository.Update(integrationPoint);
             }
         }
 

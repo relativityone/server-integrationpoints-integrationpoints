@@ -50,6 +50,12 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         void UpdateLastAndNextRunTime(int artifactId, DateTime? lastRuntime, DateTime? nextRuntime);
 
         /// <summary>
+        /// Disables scheduler for given integration point.
+        /// </summary>
+        /// <param name="artifactId">Integration point artifactId.</param>
+        void DisableScheduler(int artifactId);
+
+        /// <summary>
         /// Updates job history.
         /// </summary>
         void UpdateJobHistory(int artifactId, List<int> jobHistory);

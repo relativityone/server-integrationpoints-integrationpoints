@@ -190,6 +190,7 @@
     </Compile>
     <Compile Include="RetryHandler.cs" />
     <Compile Include="RetryHandlerFactory.cs" />
+    <Compile Include="RipSerializationException.cs" />
     <Compile Include="SerializerWithLogging.cs" />
     <Compile Include="Statistics\DocumentsStatistics.cs" />
     <Compile Include="Statistics\IErrorFilesSizeStatistics.cs" />

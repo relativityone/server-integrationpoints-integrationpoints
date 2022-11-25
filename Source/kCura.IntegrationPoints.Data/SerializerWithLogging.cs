@@ -1,6 +1,5 @@
 ﻿using System;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Domain.Exceptions;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data
@@ -30,8 +29,8 @@ namespace kCura.IntegrationPoints.Data
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "An error occurred serializing object. Type: {objectType}", @object?.GetType());
-                throw new IntegrationPointsException(IntegrationPointsExceptionMessages.ERROR_OCCURED_CONTACT_ADMINISTRATOR, e);
+                _logger?.LogWarning(e, "An error occurred serializing object. Type: {objectType}", @object?.GetType());
+                throw new RipSerializationException("An error occurred serializing object.", @object.ToString(), e);
             }
         }
 
@@ -43,8 +42,8 @@ namespace kCura.IntegrationPoints.Data
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "An error occurred deserializing object. Type: {objectType}", objectType);
-                throw new IntegrationPointsException(IntegrationPointsExceptionMessages.ERROR_OCCURED_CONTACT_ADMINISTRATOR, e);
+                _logger?.LogWarning(e, "An error occurred deserializing object. Type: {objectType}", objectType);
+                throw new RipSerializationException("An error occurred deserializing object.", serializedString, e);
             }
         }
 
@@ -56,8 +55,8 @@ namespace kCura.IntegrationPoints.Data
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "An error occurred deserializing object. Type: {objectType}", typeof(T));
-                throw new IntegrationPointsException(IntegrationPointsExceptionMessages.ERROR_OCCURED_CONTACT_ADMINISTRATOR, e);
+                _logger?.LogWarning(e, "An error occurred deserializing object. Type: {objectType}", typeof(T));
+                throw new RipSerializationException("An error occurred deserializing object.", serializedString, e);
             }
         }
     }

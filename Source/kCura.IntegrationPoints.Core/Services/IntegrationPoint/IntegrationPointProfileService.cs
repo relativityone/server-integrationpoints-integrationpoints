@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using kCura.IntegrationPoints.Common;
+using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
@@ -19,7 +21,11 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 {
     public class IntegrationPointProfileService : IntegrationPointServiceBase, IIntegrationPointProfileService
     {
-        public IntegrationPointProfileService(IHelper helper,
+        private readonly IAPILog _logger;
+        private readonly IRetryHandler _retryHandler;
+
+        public IntegrationPointProfileService(
+            IHelper helper,
             ICaseServiceContext context,
             IIntegrationPointSerializer serializer,
             IChoiceQuery choiceQuery,
@@ -34,6 +40,8 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 validationExecutor,
                 objectManager)
         {
+            _logger = helper.GetLoggerFactory().GetLogger().ForContext<IntegrationPointService>();
+            _retryHandler = new RetryHandlerFactory(_logger).Create();
         }
 
         protected override string UnableToSaveFormat => "Unable to save Integration Point Profile:{0} cannot be changed once the Integration Point Profile has been saved";
@@ -146,15 +154,26 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             return GetUnicodeLongText(integrationPointProfileArtifactId, new FieldRef { Guid = IntegrationPointProfileFieldGuids.SourceConfigurationGuid });
         }
 
-        private List<FieldMap> GetFieldMappings(int integrationPointProfileArtifactId)
+        private List<FieldMap> GetFieldMappings(int artifactId)
         {
-            // TODO retry start
-            string fieldMapString = GetUnicodeLongText(integrationPointProfileArtifactId, new FieldRef { Guid = IntegrationPointProfileFieldGuids.FieldMappingsGuid });
-            List<FieldMap> fieldMapList = Serializer.Deserialize<List<FieldMap>>(fieldMapString);
-            SanitizeFieldsMapping(fieldMapList);
-            // TODO retry end
+            return _retryHandler.Execute<List<FieldMap>, RipSerializationException>(
+                ReadFieldMapping,
+                exception =>
+                {
+                    _logger.LogWarning(
+                        exception,
+                        "Unable to deserialize field mapping for integration point profile: {integrationPointProfileId}. Mapping value: {fieldMapping}. Operation will be retried.",
+                        artifactId,
+                        exception.Value);
+                });
 
-            return fieldMapList;
+            List<FieldMap> ReadFieldMapping()
+            {
+                string fieldMapString = GetUnicodeLongText(artifactId, new FieldRef { Guid = IntegrationPointProfileFieldGuids.FieldMappingsGuid });
+                List<FieldMap> fieldMap = Serializer.Deserialize<List<FieldMap>>(fieldMapString);
+                SanitizeFieldsMapping(fieldMap);
+                return fieldMap;
+            }
         }
 
         private string GetUnicodeLongText(int artifactId, FieldRef field)
