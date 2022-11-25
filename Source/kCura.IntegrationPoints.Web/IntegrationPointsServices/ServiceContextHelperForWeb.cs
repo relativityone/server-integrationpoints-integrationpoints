@@ -1,6 +1,7 @@
 ﻿using kCura.IntegrationPoints.Common.Context;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Web.Context.UserContext;
 using Relativity.API;
 
@@ -8,15 +9,16 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
 {
     internal class ServiceContextHelperForWeb : IServiceContextHelper
     {
-        private int? _workspaceId;
-
         private const int _ADMIN_CASE_WORKSPACE_ARTIFACT_ID = -1;
         private const int _MINIMUM_VALID_WORKSPACE_ARTIFACT_ID = 1;
 
         private readonly IAPILog _logger;
         private readonly IUserContext _userContext;
+        private readonly IDbContextFactory _dbContextFactory;
         private readonly IHelper _helper;
         private readonly IWorkspaceContext _workspaceContext;
+
+        private int? _workspaceId;
 
         public ServiceContextHelperForWeb(
             IAPILog logger,
@@ -28,8 +30,8 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
             _helper = helper;
             _workspaceContext = workspaceContext;
             _userContext = userContext;
+            _dbContextFactory = new DbContextFactory(helper, logger);
         }
-
 
         public int WorkspaceID
         {
@@ -59,19 +61,19 @@ namespace kCura.IntegrationPoints.Web.IntegrationPointsServices
             if (WorkspaceID < _MINIMUM_VALID_WORKSPACE_ARTIFACT_ID)
             {
                 _logger.LogWarning(
-                    "Cannot create {service} because workspaceId is invalid: {workspaceId}", 
-                    nameof(IRelativityObjectManagerService), 
-                    WorkspaceID
-                );
+                    "Cannot create {service} because workspaceId is invalid: {workspaceId}",
+                    nameof(IRelativityObjectManagerService),
+                    WorkspaceID);
+
                 return null;
             }
 
             return ServiceContextFactory.CreateRelativityObjectManagerService(_helper, WorkspaceID);
         }
 
-        public IDBContext GetDBContext(int workspaceId = _ADMIN_CASE_WORKSPACE_ARTIFACT_ID)
+        public IRipDBContext GetDBContext(int workspaceId = _ADMIN_CASE_WORKSPACE_ARTIFACT_ID)
         {
-            return _helper.GetDBContext(workspaceId);
+            return _dbContextFactory.CreateWorkspaceDbContext(workspaceId);
         }
     }
 }

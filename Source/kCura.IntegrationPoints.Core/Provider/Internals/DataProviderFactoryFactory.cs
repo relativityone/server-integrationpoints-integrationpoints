@@ -1,11 +1,12 @@
-﻿using kCura.IntegrationPoints.Core.Services.Domain;
+﻿using System;
+using kCura.IntegrationPoints.Core.Services.Domain;
 using kCura.IntegrationPoints.Core.Services.Provider;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Domain;
+using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using LanguageExt;
 using Relativity.API;
-using System;
-using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Core.Provider.Internals
@@ -47,8 +48,8 @@ namespace kCura.IntegrationPoints.Core.Provider.Internals
         {
             try
             {
-                IDBContext adminCaseDbContext = _helper.GetDBContext(_ADMIN_CASE_ID);
-                var getAppBinaries = new GetApplicationBinaries(adminCaseDbContext);
+                IEddsDBContext dbContext = new DbContextFactory(_helper, _logger).CreatedEDDSDbContext();
+                var getAppBinaries = new GetApplicationBinaries(dbContext);
                 IPluginProvider pluginProvider = new DefaultSourcePluginProvider(getAppBinaries);
                 var relativityFeaturePathService = new RelativityFeaturePathService();
                 var domainHelper = new AppDomainHelper(pluginProvider, _helper, relativityFeaturePathService, _toggleProvider, _kubernetesMode);

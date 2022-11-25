@@ -1,14 +1,14 @@
-﻿using kCura.IntegrationPoints.Synchronizers.RDO;
+﻿using kCura.IntegrationPoints.Data.DbContext;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations
 {
     public class FolderPathInformation : IFolderPathInformation
     {
-        private readonly IDBContext _dbContext;
+        private readonly IWorkspaceDBContext _dbContext;
 
-        public FolderPathInformation(IDBContext dbContext)
+        public FolderPathInformation(IWorkspaceDBContext dbContext)
         {
             _dbContext = dbContext;
         }

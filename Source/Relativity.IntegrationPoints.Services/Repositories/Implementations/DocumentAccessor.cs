@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Factories;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
@@ -153,11 +154,11 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
         private async Task<IList<HistoricalPromotionStatusModel>> GetHistoricalDocumentModelAsync(int workspaceId)
         {
 #pragma warning disable CS0618 // Type or member is obsolete REL-292860
-            IDBContext workspaceContext = global::Relativity.API.Services.Helper.GetDBContext(workspaceId);
+            IWorkspaceDBContext workspaceContext = new DbContextFactory(global::Relativity.API.Services.Helper).CreateWorkspaceDbContext(workspaceId);
 #pragma warning restore CS0618 // Type or member is obsolete
 
             List<HistoricalPromotionStatusModel> historicalModels = new List<HistoricalPromotionStatusModel>();
-            using (SqlDataReader reader = workspaceContext.ExecuteSQLStatementAsReader(_DOCUMENT_VOLUME_SQL))
+            using (SqlDataReader reader = workspaceContext.ExecuteSQLStatementAsReader(_DOCUMENT_VOLUME_SQL, -1))
             {
                 while (await reader.ReadAsync().ConfigureAwait(false))
                 {
@@ -171,6 +172,7 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
                     historicalModels.Add(historicalModel);
                 }
             }
+
             return historicalModels;
         }
 
@@ -180,7 +182,7 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
             SqlParameter[] sqlParameters = {artifactGuidParameter};
 
 #pragma warning disable CS0618 // Type or member is obsolete REL-292860
-            IDBContext workspaceContext = global::Relativity.API.Services.Helper.GetDBContext(workspaceArtifactId);
+            IWorkspaceDBContext workspaceContext = new DbContextFactory(global::Relativity.API.Services.Helper).CreateWorkspaceDbContext(workspaceArtifactId);
 #pragma warning restore CS0618 // Type or member is obsolete
             string displayName = workspaceContext.ExecuteSqlStatementAsScalar<string>(_DISPLAY_NAME_SQL, sqlParameters);
             return displayName;

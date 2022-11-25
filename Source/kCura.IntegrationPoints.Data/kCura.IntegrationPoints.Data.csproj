@@ -123,7 +123,6 @@
     <Compile Include="Queries\GetSavedSearchQuery.cs" />
     <Compile Include="Queries\IJobResourceTracker.cs" />
     <Compile Include="Queries\IJobStatisticsQuery.cs" />
-    <Compile Include="Queries\InsertDataToEntityManagerResourceTable.cs" />
     <Compile Include="Queries\JobStatistics.cs" />
     <Compile Include="QueryBuilders\Implementations\AllIntegrationPointTypesQueryBuilder.cs" />
     <Compile Include="QueryBuilders\IDestinationProviderArtifactIdByGuidQueryBuilder.cs" />
@@ -270,7 +269,6 @@
     <Compile Include="StreamWrappers\SelfDisposingStream.cs" />
     <Compile Include="StreamWrappers\SelfRecreatingStream.cs" />
     <Compile Include="DbContext\WorkspaceDBContext.cs" />
-    <Compile Include="Extensions\DBContextExtensions.cs" />
     <Compile Include="DbContext\IWorkspaceDBContext.cs" />
     <Compile Include="IObjectTypeQuery.cs" />
     <Compile Include="IRelativityObjectManagerService.cs" />
