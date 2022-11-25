@@ -167,7 +167,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
             // Assert
             result.Status.Should().Be(TaskStatusEnum.Fail);
             result.Exceptions.Single().Should().BeOfType<InvalidOperationException>();
-            _integrationPointServiceMock.Verify(x => x.DisableScheduler(Arg.Any<int>()), Times.Once);
+            _integrationPointServiceMock.Verify(x => x.DisableScheduler(It.IsAny<int>()), Times.Once);
         }
 
         [Test]
