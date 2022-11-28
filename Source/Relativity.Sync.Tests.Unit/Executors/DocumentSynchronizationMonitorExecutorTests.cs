@@ -57,7 +57,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _configurationMock.Setup(x => x.DestinationWorkspaceArtifactId).Returns(_DESTINATION_WORKSPACE_ID);
             _configurationMock.Setup(x => x.ExportRunId).Returns(new Guid(_EXPORT_RUN_ID));
 
-            _sut = new DocumentSynchronizationMonitorExecutor(_serviceFactoryMock.Object, _progressHandlerMock.Object, _itemLevelErrorHandler.Object, _batchRepository.Object, _loggerMock.Object);
+            _sut = new DocumentSynchronizationMonitorExecutor(_serviceFactoryMock.Object, _progressHandlerMock.Object, _itemLevelErrorHandler.Object, _batchRepository.Object, null, _loggerMock.Object);
 
             _sut.GetType()?.GetField("_delayTime", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(_sut, 0.1);
         }
