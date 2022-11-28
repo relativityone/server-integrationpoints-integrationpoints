@@ -8,10 +8,9 @@ namespace kCura.IntegrationPoints.Data.Statistics
 {
     public interface ICalculationChecker
     {
-        bool IsCalculating(int integrationPointId);
-
-        void MarkAsCalculating(int integrationPointId);
-
-        void MarkCalculationFinished(int integrationPointId);
+        // Methods to:
+        // 1. Get Integration Point RDO field state
+        // 2. Integration Point RDO field state update to 'calculation in progress' = true
+        // 3. Integration Point RDO field state  update to 'calculation in progress' = false (and set reason: (a) error occurred, (b) statistics value available
     }
 }

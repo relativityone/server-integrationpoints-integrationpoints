@@ -122,12 +122,12 @@ export function createStopButton(consoleApi, convenienceApi: IConvenienceApi, ct
 
 export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, integrationPointId: number) {
     return consoleApi.generate.button({
-        innerText: "Get statistics",
+        innerText: "Calculate statistics",
         disabled: !enabled,
         onclick: function () {
             return convenienceApi.modalService.confirm({
                 title: "Calculate statistics",
-                message: "This action will launch the calculation of Saved Search content. The operation can be time consuming. Refreshing or leaving this page will cancel calculation.",
+                message: "This action will launch the calculation of Saved Search content. The operation can be time consuming.",
                 acceptText: "Calculate",
                 cancelText: "Cancel",
                 acceptAction: function () {

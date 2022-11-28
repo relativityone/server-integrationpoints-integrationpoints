@@ -62,10 +62,8 @@ namespace kCura.IntegrationPoints.Web.Controllers
         [LogApiExceptionFilter(Message = "Unable to get natives statistics for saved search")]
         public async Task<ActionResult> GetNativesStatisticsForSavedSearch(int workspaceId, int savedSearchId, int integrationPointId)
         {
-            _calculationChecker.MarkAsCalculating(integrationPointId);
             DocumentsStatistics result = await
                 _documentAccumulatedStatistics.GetNativesStatisticsForSavedSearchAsync(workspaceId, savedSearchId).ConfigureAwait(false);
-            _calculationChecker.MarkCalculationFinished(integrationPointId);
             return Json(result);
         }
 
@@ -73,9 +71,8 @@ namespace kCura.IntegrationPoints.Web.Controllers
         [LogApiExceptionFilter(Message = "Unable to get images statistics for saved search")]
         public async Task<ActionResult> GetImagesStatisticsForSavedSearch(int workspaceId, int savedSearchId, bool calculateSize, int integrationPointId)
         {
-            _calculationChecker.MarkAsCalculating(integrationPointId);
-            DocumentsStatistics result = await _documentAccumulatedStatistics.GetImagesStatisticsForSavedSearchAsync(workspaceId, savedSearchId, calculateSize).ConfigureAwait(false);
-            _calculationChecker.MarkCalculationFinished(integrationPointId);
+            DocumentsStatistics result = await _documentAccumulatedStatistics.GetImagesStatisticsForSavedSearchAsync(workspaceId, savedSearchId, calculateSize)
+                .ConfigureAwait(false);
             return Json(result);
         }
 
@@ -83,9 +80,8 @@ namespace kCura.IntegrationPoints.Web.Controllers
         [LogApiExceptionFilter(Message = "Unable to get images statistics for production")]
         public async Task<ActionResult> GetImagesStatisticsForProduction(int workspaceId, int productionId, int integrationPointId)
         {
-            _calculationChecker.MarkAsCalculating(integrationPointId);
-            DocumentsStatistics result = await _documentAccumulatedStatistics.GetImagesStatisticsForProductionAsync(workspaceId, productionId).ConfigureAwait(false);
-            _calculationChecker.MarkCalculationFinished(integrationPointId);
+            DocumentsStatistics result = await _documentAccumulatedStatistics.GetImagesStatisticsForProductionAsync(workspaceId, productionId)
+                .ConfigureAwait(false);
             return Json(result);
         }
 

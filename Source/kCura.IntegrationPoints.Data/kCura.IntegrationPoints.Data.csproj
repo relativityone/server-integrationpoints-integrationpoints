@@ -189,6 +189,7 @@
     <Compile Include="RetryHandler.cs" />
     <Compile Include="RetryHandlerFactory.cs" />
     <Compile Include="SerializerWithLogging.cs" />
+    <Compile Include="Statistics\CalculationState.cs" />
     <Compile Include="Statistics\DocumentsStatistics.cs" />
     <Compile Include="Statistics\ICalculationChecker.cs" />
     <Compile Include="Statistics\IErrorFilesSizeStatistics.cs" />

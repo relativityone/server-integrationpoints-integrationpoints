@@ -12,8 +12,6 @@ using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Statistics;
-using kCura.IntegrationPoints.Data.Statistics.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
@@ -133,8 +131,10 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
             bool integrationPointHasErrors = integrationPoint.HasErrors.GetValueOrDefault(false);
 
-            ICalculationChecker calculationStatusChecker = new CalculationChecker();
-            bool calculationInProgress = calculationStatusChecker.IsCalculating(integrationPointArtifactId);
+            // TODO:
+            // We need to replace hardcoded false value with getting an actual information from Integration Point RDO field
+            // 1. get RDO string value, 2. deserialize, 3. read 'in progress' flag value and assign it here
+            bool calculationInProgress = false;
 
             ButtonStateDTO buttonState = _stateManager.GetButtonState(
                 exportType,
