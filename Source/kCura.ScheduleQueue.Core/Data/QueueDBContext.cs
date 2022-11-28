@@ -1,4 +1,5 @@
-﻿using Relativity.API;
+﻿using kCura.IntegrationPoints.Data.DbContext;
+using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.Data
 {
@@ -8,16 +9,17 @@ namespace kCura.ScheduleQueue.Core.Data
         {
             this.DBHelper = dbHelper;
             this.TableName = tableNameName;
+            
         }
 
         public IHelper DBHelper { get; private set; }
         public string TableName { get; private set; }
 
-        public IDBContext EddsDBContext
+        public IEddsDBContext EddsDBContext
         {
             get
             {
-                return DBHelper.GetDBContext(-1);
+                return new DbContextFactory(DBHelper).CreatedEDDSDbContext();
             }
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.QueryBuilders.Implementations;
@@ -20,9 +21,12 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
         private const string _PRODUCTION_DOCUMENT_FILE_TABLE_PREFIX = "ProductionDocumentFile_";
         
+        private readonly IDbContextFactory _dbContextFactory;
+
         public ImageFileSizeStatistics(IHelper helper, IRelativityObjectManagerFactory relativityObjectManagerFactory)
             : base(relativityObjectManagerFactory, helper, helper.GetLoggerFactory().GetLogger().ForContext<ImageTotalStatistics>())
         {
+            _dbContextFactory = new DbContextFactory(_helper);
         }
 
         public long ForFolder(int workspaceArtifactId, int folderId, int viewId, bool includeSubFoldersTotals)
@@ -86,18 +90,21 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
             DataTable idsDataTable = artifactIds.ToDataTable();
 
-            SqlParameter artifactIdsParameter = new SqlParameter("@ArtifactIds", SqlDbType.Structured)
+            IEnumerable<SqlParameter> sqlParams = new[]
             {
-                TypeName = "IDs",
-                Value = idsDataTable
-            };
-            SqlParameter fileTypeParameter = new SqlParameter("@FileType", SqlDbType.Int)
-            {
-                Value = FileType.Tif
+                new SqlParameter("@ArtifactIds", SqlDbType.Structured)
+                {
+                    TypeName = "IDs",
+                    Value = idsDataTable
+                },
+                new SqlParameter("@FileType", SqlDbType.Int)
+                {
+                    Value = FileType.Tif
+                }
             };
 
-            var dbContext = _helper.GetDBContext(workspaceArtifactId);
-            return dbContext.ExecuteSqlStatementAsScalar<long>(sqlText, artifactIdsParameter, fileTypeParameter);
+            IWorkspaceDBContext dbContext = _dbContextFactory.CreateWorkspaceDbContext(workspaceArtifactId);
+            return dbContext.ExecuteSqlStatementAsScalar<long>(sqlText, sqlParams);
         }
 
         public long GetTotalFileSize(int productionSetId, int workspaceArtifactId)
@@ -106,7 +113,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
             string tableName = $"{_PRODUCTION_DOCUMENT_FILE_TABLE_PREFIX}{productionSetId}";
 
-            IDBContext dbContext = _helper.GetDBContext(workspaceArtifactId);
+            IWorkspaceDBContext dbContext = _dbContextFactory.CreateWorkspaceDbContext(workspaceArtifactId);
             return dbContext.ExecuteSqlStatementAsScalar<long>(string.Format(sqlText, tableName));
         }
 

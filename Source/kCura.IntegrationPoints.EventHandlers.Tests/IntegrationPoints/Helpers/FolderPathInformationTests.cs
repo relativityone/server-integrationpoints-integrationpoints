@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
@@ -14,11 +15,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
     {
         public override void SetUp()
         {
-            _dbContext = Substitute.For<IDBContext>();
+            _dbContext = Substitute.For<IWorkspaceDBContext>();
             _instace = new FolderPathInformation(_dbContext);
         }
 
-        private IDBContext _dbContext;
+        private IWorkspaceDBContext _dbContext;
         private FolderPathInformation _instace;
 
         [TestCase(ImportOverwriteModeEnum.AppendOnly, false)]

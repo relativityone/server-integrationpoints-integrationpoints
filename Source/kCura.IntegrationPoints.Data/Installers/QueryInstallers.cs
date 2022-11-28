@@ -1,6 +1,7 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.QueryBuilders;
@@ -27,8 +28,12 @@ namespace kCura.IntegrationPoints.Data.Installers
             container.Register(Component.For<IObjectTypeQuery>().ImplementedBy<SqlObjectTypeQuery>().LifestyleTransient());
             container.Register(Component.For<IChoiceQuery>().ImplementedBy<ChoiceQuery>().LifestyleTransient());
             container.Register(Component.For<IInstanceSettingRepository>().ImplementedBy<KeplerInstanceSettingRepository>().LifestyleSingleton());
-            container.Register(Component.For<GetApplicationBinaries>().ImplementedBy<GetApplicationBinaries>()
-                .DynamicParameters((k, d) => d["eddsDBcontext"] = k.Resolve<IHelper>().GetDBContext(-1)).LifestyleTransient());
+            container.Register(Component.For<GetApplicationBinaries>()
+                .UsingFactoryMethod(k =>
+                {
+                    IEddsDBContext dbContext = new DbContextFactory(k.Resolve<IHelper>()).CreatedEDDSDbContext();
+                    return new GetApplicationBinaries(dbContext);
+                }).LifestyleTransient());
             container.Register(Component.For<IQueueRepository>().ImplementedBy<QueueRepository>().LifestyleTransient());
             container.Register(Component.For<ISystemEventLoggingService>().ImplementedBy<SystemEventLoggingService>().LifestyleTransient());
 

@@ -67,7 +67,6 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.JobHistory
         [IdentifiedTestCase("8ee8815c-ff17-4917-becd-e083bc3a592a", 1, 0)]
         [IdentifiedTestCase("a9bda829-054a-440f-9f37-22d89893566f", 1, 1)]
         [IdentifiedTestCase("f8f1b639-4f50-488a-984f-c75efb899eb2", 7, 15)]
-        [IdentifiedTestCase("0217d61c-203c-4eae-b293-4aa40ce1f512", 1, 75000, Category = TestCategories.STRESS_TEST, Explicit = true)]
         public async Task ShouldSetErrorStatusesToExpired(
             int numberOfJobLevelErrors,
             int numberOfItemLevelErrors)
