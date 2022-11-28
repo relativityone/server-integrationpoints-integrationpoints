@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 
         private void SetTypeOfExportForIntegrationPointProfiles()
         {
-            foreach (IntegrationPointProfileDto profile in _integrationPointProfileService.ReadAllSlim())
+            foreach (IntegrationPointProfileDto profile in _integrationPointProfileService.ReadAll())
             {
                 string sourceConfiguration = _sourceConfigurationTypeOfExpertUpdater.GetCorrectedSourceConfiguration(profile.SourceProvider,
                     profile.DestinationProvider, profile.SourceConfiguration);

@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
             PopulateIntegrationPointProfilesList();
 
             _integrationPointProfileService = Substitute.For<IIntegrationPointProfileService>();
-            _integrationPointProfileService.ReadAllSlim().Returns(_integrationPointProfiles);
+            _integrationPointProfileService.ReadAll().Returns(_integrationPointProfiles);
         }
 
         private void PopulateIntegrationPointProfilesList()
@@ -96,7 +96,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Commands
                     {
                         SourceProvider = (int) ProviderType.Relativity,
                         DestinationProvider = 789,
-                        SourceConfiguration = "Source configuration"
                     }
                 };
         }

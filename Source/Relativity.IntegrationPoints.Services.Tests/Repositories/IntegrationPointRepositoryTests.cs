@@ -136,14 +136,13 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             return createRequest;
         }
 
-        private IntegrationPointDto SetUpGetDto(int integrationPointArtifactId, int overwriteFieldsChoiceId = 123, string overwriteFieldsChoiceName = "choice123", int? federatedInstanceArtifactId = null)
+        private IntegrationPointSlimDto SetUpGetDto(int integrationPointArtifactId, int overwriteFieldsChoiceId = 123, string overwriteFieldsChoiceName = "choice123", int? federatedInstanceArtifactId = null)
         {
             SetUpDestinationConfiguration(federatedInstanceArtifactId);
 
-            var integrationPoint = CreateIntegrationPoint(integrationPointArtifactId, overwriteFieldsChoiceId, overwriteFieldsChoiceName);
+            var integrationPointSlim = CreateIntegrationPointSlim(integrationPointArtifactId, overwriteFieldsChoiceId, overwriteFieldsChoiceName);
 
-            _integrationPointService.Read(integrationPointArtifactId).Returns(integrationPoint);
-            _integrationPointService.ReadSlim(integrationPointArtifactId).Returns(integrationPoint);
+            _integrationPointService.ReadSlim(integrationPointArtifactId).Returns(integrationPointSlim);
 
             _choiceQuery.GetChoicesOnField(_workspaceArtifactId, new Guid(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<ChoiceRef>
             {
@@ -153,16 +152,15 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
                 }
             });
 
-            return integrationPoint;
+            return integrationPointSlim;
         }
 
-        private IntegrationPointDto CreateIntegrationPoint(int integrationPointArtifactId, int overwriteFieldsChoiceId = 123, string overwriteFieldsChoiceName = "choice123")
+        private IntegrationPointSlimDto CreateIntegrationPointSlim(int integrationPointArtifactId, int overwriteFieldsChoiceId = 123, string overwriteFieldsChoiceName = "choice123")
         {
-            return new IntegrationPointDto
+            return new IntegrationPointSlimDto
             {
                 ArtifactId = integrationPointArtifactId,
                 Name = "name_762",
-                DestinationConfiguration = _serializedDestinationConfiguration,
                 DestinationProvider = 715,
                 EmailNotificationRecipients = "emails",
                 HasErrors = false,
@@ -170,7 +168,6 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
                 LastRun = null,
                 LogErrors = false,
                 SourceProvider = 718,
-                SourceConfiguration = "",
                 SelectedOverwrite = overwriteFieldsChoiceName,
                 Type = 0,
                 SecuredConfiguration = string.Empty
@@ -181,7 +178,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
         public void ItShouldGetIntegrationPoint()
         {
             int artifactId = 884;
-            var integrationPoint = CreateIntegrationPoint(artifactId);
+            var integrationPoint = CreateIntegrationPointSlim(artifactId);
 
             _integrationPointService.ReadSlim(artifactId).Returns(integrationPoint);
 
@@ -216,10 +213,10 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
         [Test]
         public void ItShouldGetAllIntegrationPoints()
         {
-            var integrationPoint1 = CreateIntegrationPoint(263);
-            var integrationPoint2 = CreateIntegrationPoint(204);
+            var integrationPoint1 = CreateIntegrationPointSlim(263);
+            var integrationPoint2 = CreateIntegrationPointSlim(204);
 
-            var expectedResult = new List<IntegrationPointDto> { integrationPoint1, integrationPoint2 };
+            var expectedResult = new List<IntegrationPointSlimDto> { integrationPoint1, integrationPoint2 };
             _integrationPointService.ReadAllSlim().Returns(expectedResult);
 
             var result = _integrationPointAccessor.GetAllIntegrationPoints();
@@ -227,7 +224,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             _integrationPointService.Received(1).ReadAllSlim();
 
             Assert.That(result, Is.EquivalentTo(expectedResult).
-                Using(new Func<IntegrationPointModel, IntegrationPointDto, bool>(
+                Using(new Func<IntegrationPointModel, IntegrationPointSlimDto, bool>(
                     (actual, expected) => (actual.Name == expected.Name) && (actual.SourceProvider == expected.SourceProvider) && (actual.ArtifactId == expected.ArtifactId)
                                         && (actual.DestinationProvider == expected.DestinationProvider))));
         }

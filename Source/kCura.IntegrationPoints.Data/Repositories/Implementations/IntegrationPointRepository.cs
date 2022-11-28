@@ -175,12 +175,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             return integrationPoint;
         }
 
-        private Task<string> GetSourceConfigurationAsync(int integrationPointArtifactID)
+        public Task<string> GetSourceConfigurationAsync(int integrationPointArtifactID)
         {
             return GetUnicodeLongTextAsync(integrationPointArtifactID, new FieldRef { Guid = IntegrationPointFieldGuids.SourceConfigurationGuid });
         }
 
-        private Task<string> GetDestinationConfigurationAsync(int integrationPointArtifactID)
+        public Task<string> GetDestinationConfigurationAsync(int integrationPointArtifactID)
         {
             return GetUnicodeLongTextAsync(integrationPointArtifactID, new FieldRef { Guid = IntegrationPointFieldGuids.DestinationConfigurationGuid });
         }

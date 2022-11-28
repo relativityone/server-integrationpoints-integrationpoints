@@ -20,7 +20,7 @@ namespace Relativity.IntegrationPoints.Services.JobHistory
             _integrationPointService = integrationPointService;
         }
 
-        public List<IntegrationPointDto> RetrieveIntegrationPoints()
+        public List<IntegrationPointSlimDto> RetrieveIntegrationPoints()
         {
             var sourceProviderIds = RetrieveRelativitySourceProviderIds();
             var destinationProviderIds = RetrieveRelativityDestinationProviderIds();

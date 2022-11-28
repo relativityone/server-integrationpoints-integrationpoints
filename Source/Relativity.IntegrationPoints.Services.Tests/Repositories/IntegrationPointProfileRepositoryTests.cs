@@ -53,7 +53,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             _integrationPointProfileAccessor.CreateIntegrationPointProfile(createRequest);
 
             _backwardCompatibility.Received(1).FixIncompatibilities(createRequest.IntegrationPoint, overwriteFieldsChoiceName);
-            _integrationPointProfileService.Received(1).Read(integrationPointProfileArtifactId);
+            _integrationPointProfileService.Received(1).ReadSlim(integrationPointProfileArtifactId);
         }
 
         [Test]
@@ -71,7 +71,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             _integrationPointProfileAccessor.CreateIntegrationPointProfile(createRequest);
 
             _backwardCompatibility.Received(1).FixIncompatibilities(createRequest.IntegrationPoint, overwriteFieldsChoiceName);
-            _integrationPointProfileService.Received(1).Read(integrationPointProfileArtifactId);
+            _integrationPointProfileService.Received(1).ReadSlim(integrationPointProfileArtifactId);
         }
 
         private UpdateIntegrationPointRequest SetUpCreateOrUpdateTest(int overwriteFieldsChoiceId, string overwriteFieldsChoiceName, int integrationPointProfileArtifactId)
@@ -97,7 +97,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
                     Name = overwriteFieldsChoiceName
                 }
             });
-            _integrationPointProfileService.Read(integrationPointProfileArtifactId).Returns(new IntegrationPointProfileDto
+            _integrationPointProfileService.ReadSlim(integrationPointProfileArtifactId).Returns(new IntegrationPointProfileSlimDto
             {
                 ArtifactId = integrationPointProfileArtifactId,
                 Name = "name_982",
@@ -111,7 +111,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
         public void ItShouldGetIntegrationPoint()
         {
             int artifactId = 924;
-            var integrationPointProfile = new IntegrationPointProfileDto
+            var integrationPointProfile = new IntegrationPointProfileSlimDto
             {
                 ArtifactId = 235,
                 Name = "ip_name_350",
@@ -119,11 +119,11 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
                 DestinationProvider = 817
             };
 
-            _integrationPointProfileService.Read(artifactId).Returns(integrationPointProfile);
+            _integrationPointProfileService.ReadSlim(artifactId).Returns(integrationPointProfile);
 
             var result = _integrationPointProfileAccessor.GetIntegrationPointProfile(artifactId);
 
-            _integrationPointProfileService.Received(1).Read(artifactId);
+            _integrationPointProfileService.Received(1).ReadSlim(artifactId);
 
             Assert.That(result.SourceProvider, Is.EqualTo(integrationPointProfile.SourceProvider));
             Assert.That(result.DestinationProvider, Is.EqualTo(integrationPointProfile.DestinationProvider));
@@ -134,14 +134,14 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
         [Test]
         public void ItShouldGetAllIntegrationPoints()
         {
-            var integrationPointProfile1 = new IntegrationPointProfileDto
+            var integrationPointProfile1 = new IntegrationPointProfileSlimDto
             {
                 ArtifactId = 844,
                 Name = "ip_name_234",
                 SourceProvider = 871,
                 DestinationProvider = 143
             };
-            var integrationPointProfile2 = new IntegrationPointProfileDto
+            var integrationPointProfile2 = new IntegrationPointProfileSlimDto
             {
                 ArtifactId = 526,
                 Name = "ip_name_617",
@@ -149,7 +149,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
                 DestinationProvider = 158
             };
 
-            var expectedResult = new List<IntegrationPointProfileDto> { integrationPointProfile1, integrationPointProfile2 };
+            var expectedResult = new List<IntegrationPointProfileSlimDto> { integrationPointProfile1, integrationPointProfile2 };
             _integrationPointProfileService.ReadAllSlim().Returns(expectedResult);
 
             var result = _integrationPointProfileAccessor.GetAllIntegrationPointProfiles();
@@ -157,7 +157,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             _integrationPointProfileService.Received(1).ReadAllSlim();
 
             Assert.That(result, Is.EquivalentTo(expectedResult).
-                Using(new Func<IntegrationPointModel, IntegrationPointProfileDto, bool>(
+                Using(new Func<IntegrationPointModel, IntegrationPointProfileSlimDto, bool>(
                     (actual, expected) => (actual.Name == expected.Name) && (actual.SourceProvider == expected.SourceProvider) && (actual.ArtifactId == expected.ArtifactId)
                                         && (actual.DestinationProvider == expected.DestinationProvider))));
         }
@@ -208,7 +208,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
                 Name = "ip_346",
                 SecuredConfiguration = "{}"
             };
-            var integrationPointProfile = new IntegrationPointProfileDto
+            var integrationPointProfile = new IntegrationPointProfileSlimDto
             {
                 Name = "profile_990",
                 SourceProvider = 451,
@@ -217,13 +217,13 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 
             _integrationPointService.Read(integrationPointArtifactId).Returns(integrationPoint);
             _integrationPointProfileService.SaveProfile(Arg.Any<IntegrationPointProfileDto>()).Returns(artifactId);
-            _integrationPointProfileService.Read(artifactId).Returns(integrationPointProfile);
+            _integrationPointProfileService.ReadSlim(artifactId).Returns(integrationPointProfile);
 
             _integrationPointProfileAccessor.CreateIntegrationPointProfileFromIntegrationPoint(integrationPointArtifactId, profileName);
 
             _integrationPointService.Received(1).Read(integrationPointArtifactId);
             _integrationPointProfileService.Received(1).SaveProfile(Arg.Is<IntegrationPointProfileDto>(x => x.Name == profileName && x.ArtifactId == 0));
-            _integrationPointProfileService.Received(1).Read(artifactId);
+            _integrationPointProfileService.Received(1).ReadSlim(artifactId);
         }
     }
 }

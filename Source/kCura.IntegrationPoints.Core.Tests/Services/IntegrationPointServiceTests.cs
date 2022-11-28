@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Services
                     It.IsAny<Guid>(),
                     It.IsAny<ChoiceRef>(),
                     It.IsAny<DateTime?>()))
-                .Returns((IntegrationPointDto _integrationPointDto, Guid batchInstanceId, ChoiceRef jobType, DateTime? startTimeUtc) =>
+                .Returns((IntegrationPointSlimDto _integrationPointDto, Guid batchInstanceId, ChoiceRef jobType, DateTime? startTimeUtc) =>
                 {
                     return _fxt.Build<Data.JobHistory>()
                         .With(x => x.BatchInstance, batchInstanceId.ToString())

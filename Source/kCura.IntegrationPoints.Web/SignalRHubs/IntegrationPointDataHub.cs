@@ -194,7 +194,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
                     integrationPoint.DestinationProvider.Value);
                 bool sourceProviderIsRelativity = providerType == ProviderType.Relativity;
 
-                IntegrationPointDto dto = new IntegrationPointDto
+                IntegrationPointSlimDto dto = new IntegrationPointSlimDto
                 {
                     HasErrors = integrationPoint.HasErrors,
                     LastRun = integrationPoint.LastRuntimeUTC,

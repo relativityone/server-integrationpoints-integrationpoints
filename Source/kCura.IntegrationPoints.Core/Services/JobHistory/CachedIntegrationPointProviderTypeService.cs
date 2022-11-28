@@ -31,25 +31,15 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
         public ProviderType GetProviderType(int integrationPointArtifactId)
         {
-            return GetProviderType(integrationPointArtifactId, null);
-        }
-
-        public ProviderType GetProviderType(IntegrationPointDto integrationPoint)
-        {
-            return GetProviderType(integrationPoint.ArtifactId, integrationPoint);
-        }
-
-        private ProviderType GetProviderType(int integrationPointArtifactId, IntegrationPointDto integrationPoint)
-        {
             lock (_providerTypesCacheLock)
             {
                 RefreshCache();
 
-                return GetProviderTypeFromCache(integrationPointArtifactId, integrationPoint);
+                return GetProviderTypeFromCache(integrationPointArtifactId);
             }
         }
 
-        private ProviderType GetProviderTypeFromCache(int integrationPointArtifactId, IntegrationPointDto integrationPoint)
+        private ProviderType GetProviderTypeFromCache(int integrationPointArtifactId)
         {
             ProviderType providerType;
             if (_providerTypesCache.TryGetValue(integrationPointArtifactId, out providerType))
@@ -57,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
                 return providerType;
             }
 
-            providerType = GetProviderTypeFromService(integrationPointArtifactId, integrationPoint);
+            providerType = GetProviderTypeFromService(integrationPointArtifactId);
 
             _providerTypesCache[integrationPointArtifactId] = providerType;
 
@@ -65,16 +55,10 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         }
 
 
-        private ProviderType GetProviderTypeFromService(int integrationPointArtifactID, IntegrationPointDto integrationPoint)
+        private ProviderType GetProviderTypeFromService(int integrationPointArtifactID)
         {
-            if (integrationPoint == null)
-            {
-                integrationPoint = _integrationPointService.ReadSlim(integrationPointArtifactID);
-            }
-
-            ProviderType providerType = integrationPoint.GetProviderType(_providerTypeService);
-
-            return providerType;
+            IntegrationPointSlimDto integrationPoint = _integrationPointService.ReadSlim(integrationPointArtifactID);
+            return integrationPoint.GetProviderType(_providerTypeService);
         }
 
         private void RefreshCache()

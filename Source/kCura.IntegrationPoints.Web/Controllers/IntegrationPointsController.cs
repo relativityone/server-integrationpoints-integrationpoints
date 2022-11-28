@@ -36,9 +36,9 @@ namespace kCura.IntegrationPoints.Web.Controllers
         protected override string ObjectType => ObjectTypes.IntegrationPoint;
         protected override string APIControllerName => Core.Constants.IntegrationPoints.API_CONTROLLER_NAME;
 
-        protected override IntegrationPointDtoBase GetIntegrationPointBaseModel(int id)
+        protected override IntegrationPointSlimDtoBase GetIntegrationPointBaseModel(int id)
         {
-            return _integrationPointService.Read(id);
+            return _integrationPointService.ReadSlim(id);
         }
 
         public ActionResult SaveAsProfileModal()

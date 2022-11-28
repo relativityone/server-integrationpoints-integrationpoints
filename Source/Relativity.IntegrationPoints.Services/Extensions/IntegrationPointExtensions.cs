@@ -4,7 +4,7 @@ namespace Relativity.IntegrationPoints.Services.Extensions
 {
     public static class IntegrationPointExtensions
     {
-        public static IntegrationPointModel ToIntegrationPointModel(this IntegrationPointDto data)
+        public static IntegrationPointModel ToIntegrationPointModel(this IntegrationPointSlimDto data)
         {
             return new IntegrationPointModel()
             {
@@ -16,7 +16,7 @@ namespace Relativity.IntegrationPoints.Services.Extensions
             };
         }
 
-        public static IntegrationPointModel ToIntegrationPointModel(this IntegrationPointProfileDto data)
+        public static IntegrationPointModel ToIntegrationPointModel(this IntegrationPointProfileSlimDto data)
         {
             return new IntegrationPointModel()
             {

@@ -4,6 +4,6 @@ namespace Relativity.IntegrationPoints.Services.JobHistory
 {
     public interface IRelativityIntegrationPointsRepository
     {
-        List<kCura.IntegrationPoints.Core.Models.IntegrationPointDto> RetrieveIntegrationPoints();
+        List<kCura.IntegrationPoints.Core.Models.IntegrationPointSlimDto> RetrieveIntegrationPoints();
     }
 }

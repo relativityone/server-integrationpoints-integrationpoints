@@ -82,9 +82,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
         public void ControllerDoesNotHaveUserIdInTheHeaderWhenTryingToSubmitPushingJob_ExpectBadRequest(int? federatedInstanceArtifactId)
         {
             // Arrange
-            var integrationPoint = new IntegrationPointDto()
+            var integrationPoint = new IntegrationPointSlimDto()
             {
-                DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
                 SecuredConfiguration = _EMPTY_SECURED_CONFIG
             };
             const string expectedErrorMessage = @"Unable to determine the user id. Please contact your system administrator.";
@@ -123,9 +122,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
             AggregateException exceptionToBeThrown =
                 new AggregateException("ABC", new AccessViolationException("123"), new Exception("456"));
 
-            var integrationPoint = new IntegrationPointDto()
+            var integrationPoint = new IntegrationPointSlimDto()
             {
-                DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
                 SecuredConfiguration = _EMPTY_SECURED_CONFIG
             };
 
@@ -148,9 +146,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
         public void ControllerDoesNotHaveUserIdInTheHeaderWhenTryingToSubmitNormalJob_ExpectNoError(int? federatedInstanceArtifactId)
         {
             // Arrange
-            var integrationPoint = new IntegrationPointDto()
+            var integrationPoint = new IntegrationPointSlimDto()
             {
-                DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
                 SecuredConfiguration = _EMPTY_SECURED_CONFIG
             };
 
@@ -175,9 +172,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers
                 new Claim("rel_uai", _userIdString)
             };
 
-            var integrationPoint = new IntegrationPointDto()
+            var integrationPoint = new IntegrationPointSlimDto()
             {
-                DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
                 SecuredConfiguration = _EMPTY_SECURED_CONFIG
             };
 

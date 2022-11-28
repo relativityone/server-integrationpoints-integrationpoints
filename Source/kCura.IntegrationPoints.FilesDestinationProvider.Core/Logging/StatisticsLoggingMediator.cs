@@ -158,7 +158,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 
         private string GetProviderName()
         {
-            return _integrationPointProviderTypeService.GetProviderType(_historyErrorService.IntegrationPointDto).ToString();
+            return _integrationPointProviderTypeService.GetProviderType(_historyErrorService.IntegrationPointDto.ArtifactId).ToString();
         }
 
         private bool CanUpdateJobStatus(ExportEventArgs exportArgs)

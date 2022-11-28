@@ -236,19 +236,19 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
             return integrationDto;
         }
 
-        private void SetIntegrationPointBaseModelProperties(IntegrationPointDtoBase dtoBase, ImportOverwriteModeEnum overwriteMode, string name, string overwrite)
+        private void SetIntegrationPointBaseModelProperties(IntegrationPointDtoBase dto, ImportOverwriteModeEnum overwriteMode, string name, string overwrite)
         {
-            dtoBase.DestinationConfiguration = CreateDestinationConfig(overwriteMode);
-            dtoBase.DestinationProvider = RelativityDestinationProviderArtifactId;
-            dtoBase.SourceProvider = RelativityProvider.ArtifactId;
-            dtoBase.SourceConfiguration = CreateDefaultSourceConfig();
-            dtoBase.LogErrors = true;
-            dtoBase.EmailNotificationRecipients = "test@relativity.com";
-            dtoBase.Name = $"{name}{DateTime.Now:yy-MM-dd HH-mm-ss}";
-            dtoBase.SelectedOverwrite = overwrite;
-            dtoBase.Scheduler = new Scheduler() { EnableScheduler = false };
-            dtoBase.FieldMappings = GetDefaultFieldMap();
-            dtoBase.Type =
+            dto.DestinationConfiguration = CreateDestinationConfig(overwriteMode);
+            dto.DestinationProvider = RelativityDestinationProviderArtifactId;
+            dto.SourceProvider = RelativityProvider.ArtifactId;
+            dto.SourceConfiguration = CreateDefaultSourceConfig();
+            dto.LogErrors = true;
+            dto.EmailNotificationRecipients = "test@relativity.com";
+            dto.Name = $"{name}{DateTime.Now:yy-MM-dd HH-mm-ss}";
+            dto.SelectedOverwrite = overwrite;
+            dto.Scheduler = new Scheduler() { EnableScheduler = false };
+            dto.FieldMappings = GetDefaultFieldMap();
+            dto.Type =
                 Container.Resolve<IIntegrationPointTypeService>()
                     .GetIntegrationPointType(IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid)
                     .ArtifactId;

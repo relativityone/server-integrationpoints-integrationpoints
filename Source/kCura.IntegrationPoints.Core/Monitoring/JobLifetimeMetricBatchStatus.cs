@@ -158,7 +158,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 
         private string GetProviderName(Job job)
         {
-            IntegrationPointDto integrationPoint = _integrationPointService.ReadSlim(job.RelatedObjectArtifactID);
+            IntegrationPointSlimDto integrationPoint = _integrationPointService.ReadSlim(job.RelatedObjectArtifactID);
 
             return integrationPoint.GetProviderName(_providerTypeService);
         }

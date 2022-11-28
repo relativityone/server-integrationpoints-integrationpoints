@@ -82,13 +82,13 @@ namespace kCura.IntegrationPoints.Web.Controllers
         {
             if (controllerType == IntegrationPointApiControllerNames.IntegrationPointApiControllerName)
             {
-                IntegrationPointDto integrationPoint = _integrationPointService.Read(integrationPointId);
+                IntegrationPointSlimDto integrationPoint = _integrationPointService.ReadSlim(integrationPointId);
 
                 return new Tuple<int, int>(integrationPoint.SourceProvider, integrationPoint.DestinationProvider);
             }
             else
             {
-                IntegrationPointProfileDto integrationPointProfile = _integrationPointProfileService.Read(integrationPointId);
+                IntegrationPointProfileSlimDto integrationPointProfile = _integrationPointProfileService.ReadSlim(integrationPointId);
 
                 return new Tuple<int, int>(integrationPointProfile.SourceProvider, integrationPointProfile.DestinationProvider);
             }

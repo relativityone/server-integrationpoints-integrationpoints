@@ -55,8 +55,8 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             string localInstance = "This Instance";
             string localworkspace1 = "Workspace1 - 1";
             string localworkspace2 = "Workspace2 - 4";
-            var integrationPoint1 = new kCura.IntegrationPoints.Core.Models.IntegrationPointDto { ArtifactId = 1 };
-            var integrationPoint2 = new kCura.IntegrationPoints.Core.Models.IntegrationPointDto { ArtifactId = 2 };
+            var integrationPoint1 = new kCura.IntegrationPoints.Core.Models.IntegrationPointSlimDto { ArtifactId = 1 };
+            var integrationPoint2 = new kCura.IntegrationPoints.Core.Models.IntegrationPointSlimDto { ArtifactId = 2 };
 
             var request = new JobHistoryRequest
             {
@@ -73,7 +73,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
                 new WorkspaceDTO {ArtifactId = 3}
             };
 
-            var integrationPoints = new List<kCura.IntegrationPoints.Core.Models.IntegrationPointDto>
+            var integrationPoints = new List<kCura.IntegrationPoints.Core.Models.IntegrationPointSlimDto>
             {
                 integrationPoint1,
                 integrationPoint2
@@ -139,7 +139,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
                 SortDescending = true
             };
 
-            var integrationPoints = new List<kCura.IntegrationPoints.Core.Models.IntegrationPointDto>();
+            var integrationPoints = new List<kCura.IntegrationPoints.Core.Models.IntegrationPointSlimDto>();
             var queryResult = new List<JobHistoryModel>();
 
             _relativityIntegrationPointsRepository.RetrieveIntegrationPoints().Returns(integrationPoints);

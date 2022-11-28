@@ -63,12 +63,12 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             }
         }
 
-        public IntegrationPointProfileDto ReadSlim(int artifactId)
+        public IntegrationPointProfileSlimDto ReadSlim(int artifactId)
         {
             try
             {
                 IntegrationPointProfile profile = ObjectManager.Read<IntegrationPointProfile>(artifactId);
-                return ToDto(profile);
+                return ToSlim(profile);
             }
             catch (Exception ex)
             {
@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             }
         }
 
-        public IList<IntegrationPointProfileDto> ReadAllSlim()
+        public IList<IntegrationPointProfileSlimDto> ReadAllSlim()
         {
             IEnumerable<FieldRef> fields = BaseRdo
                 .GetFieldMetadata(typeof(IntegrationPointProfile))
@@ -90,7 +90,33 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             };
 
             List<IntegrationPointProfile> profiles = ObjectManager.Query<IntegrationPointProfile>(query);
-            return profiles.Select(ToDto).ToList();
+            return profiles.Select(ToSlim).ToList();
+        }
+
+        public IList<IntegrationPointProfileDto> ReadAll()
+        {
+            IEnumerable<FieldRef> fields = BaseRdo
+                .GetFieldMetadata(typeof(IntegrationPointProfile))
+                .Values
+                .ToList()
+                .Select(field => new FieldRef { Guid = field.FieldGuid });
+
+            var query = new QueryRequest
+            {
+                Fields = fields
+            };
+
+            List<IntegrationPointProfile> profiles = ObjectManager.Query<IntegrationPointProfile>(query);
+            List<IntegrationPointProfileDto> dtoList = profiles.Select(ToDto).ToList();
+
+            foreach (var dto in dtoList)
+            {
+                dto.FieldMappings = GetFieldMappings(dto.ArtifactId);
+                dto.SourceConfiguration = GetSourceConfiguration(dto.ArtifactId);
+                dto.DestinationConfiguration = GetDestinationConfiguration(dto.ArtifactId);
+            }
+
+            return dtoList;
         }
 
         public int SaveProfile(IntegrationPointProfileDto dto)
@@ -217,6 +243,22 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             };
             SanitizeFieldsMapping(dto.FieldMappings);
             return dto;
+        }
+
+        private IntegrationPointProfileSlimDto ToSlim(IntegrationPointProfile profile)
+        {
+            return new IntegrationPointProfileSlimDto
+            {
+                ArtifactId = profile.ArtifactId,
+                Name = profile.Name,
+                SelectedOverwrite = profile.OverwriteFields == null ? string.Empty : profile.OverwriteFields.Name,
+                SourceProvider = profile.SourceProvider.GetValueOrDefault(0),
+                DestinationProvider = profile.DestinationProvider.GetValueOrDefault(0),
+                Type = profile.Type.GetValueOrDefault(0),
+                Scheduler = new Scheduler(profile.EnableScheduler.GetValueOrDefault(false), profile.ScheduleRule),
+                EmailNotificationRecipients = profile.EmailNotificationRecipients ?? string.Empty,
+                LogErrors = profile.LogErrors.GetValueOrDefault(false),
+            };
         }
 
         private IntegrationPointProfile ToRdo(IntegrationPointProfileDto dto, IEnumerable<ChoiceRef> choices, PeriodicScheduleRule rule)

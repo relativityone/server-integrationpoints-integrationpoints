@@ -80,10 +80,10 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         protected override string UnableToSaveFormat
             => "Unable to save Integration Point:{0} cannot be changed once the Integration Point has been run";
 
-        public IntegrationPointDto ReadSlim(int artifactID)
+        public IntegrationPointSlimDto ReadSlim(int artifactID)
         {
             Data.IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(artifactID).GetAwaiter().GetResult();
-            return ToDto(integrationPoint);
+            return ToSlim(integrationPoint);
         }
 
         public IntegrationPointDto Read(int artifactID)
@@ -91,15 +91,34 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             Data.IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(artifactID).GetAwaiter().GetResult();
             IntegrationPointDto dto = ToDto(integrationPoint);
             dto.FieldMappings = GetFieldMap(artifactID);
+            dto.SourceConfiguration = _integrationPointRepository.GetSourceConfigurationAsync(artifactID).GetAwaiter().GetResult();
+            dto.DestinationConfiguration = _integrationPointRepository.GetDestinationConfigurationAsync(artifactID).GetAwaiter().GetResult();
             return dto;
         }
 
-        public List<IntegrationPointDto> ReadAllSlim()
+        public List<IntegrationPointSlimDto> ReadAllSlim()
         {
             return _integrationPointRepository
                 .ReadAll()
+                .Select(ToSlim)
+                .ToList();
+        }
+
+        public List<IntegrationPointDto> ReadAll()
+        {
+            List<IntegrationPointDto> dtoList = _integrationPointRepository
+                .ReadAll()
                 .Select(ToDto)
                 .ToList();
+
+            foreach (var dto in dtoList)
+            {
+                dto.FieldMappings = GetFieldMap(dto.ArtifactId);
+                dto.SourceConfiguration = _integrationPointRepository.GetSourceConfigurationAsync(dto.ArtifactId).GetAwaiter().GetResult();
+                dto.DestinationConfiguration = _integrationPointRepository.GetDestinationConfigurationAsync(dto.ArtifactId).GetAwaiter().GetResult();
+            }
+
+            return dtoList;
         }
 
         public List<FieldMap> GetFieldMap(int artifactId)
@@ -124,14 +143,14 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             }
         }
 
-        public List<IntegrationPointDto> GetBySourceAndDestinationProvider(int sourceProviderArtifactID, int destinationProviderArtifactID)
+        public List<IntegrationPointSlimDto> GetBySourceAndDestinationProvider(int sourceProviderArtifactID, int destinationProviderArtifactID)
         {
             List<Data.IntegrationPoint> rdos = _integrationPointRepository
                 .ReadBySourceAndDestinationProviderAsync(sourceProviderArtifactID, destinationProviderArtifactID)
                 .GetAwaiter()
                 .GetResult();
 
-            return rdos.Select(ToDto).ToList();
+            return rdos.Select(ToSlim).ToList();
         }
 
         public int SaveIntegrationPoint(IntegrationPointDto dto)
@@ -727,6 +746,27 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             };
             SanitizeFieldsMapping(dto.FieldMappings);
             return dto;
+        }
+
+        private IntegrationPointSlimDto ToSlim(Data.IntegrationPoint rdo)
+        {
+            return new IntegrationPointSlimDto
+            {
+                ArtifactId = rdo.ArtifactId,
+                Name = rdo.Name,
+                SelectedOverwrite = rdo.OverwriteFields == null ? string.Empty : rdo.OverwriteFields.Name,
+                SourceProvider = rdo.SourceProvider.GetValueOrDefault(0),
+                DestinationProvider = rdo.DestinationProvider.GetValueOrDefault(0),
+                Type = rdo.Type.GetValueOrDefault(0),
+                Scheduler = new Scheduler(rdo.EnableScheduler.GetValueOrDefault(false), rdo.ScheduleRule),
+                EmailNotificationRecipients = rdo.EmailNotificationRecipients ?? string.Empty,
+                LogErrors = rdo.LogErrors.GetValueOrDefault(false),
+                HasErrors = rdo.HasErrors.GetValueOrDefault(false),
+                LastRun = rdo.LastRuntimeUTC,
+                NextRun = rdo.NextScheduledRuntimeUTC,
+                SecuredConfiguration = rdo.SecuredConfiguration,
+                JobHistory = rdo.JobHistory.ToList(),
+            };
         }
 
         private Data.IntegrationPoint ToRdo(IntegrationPointDto dto, IEnumerable<ChoiceRef> choices, PeriodicScheduleRule rule)

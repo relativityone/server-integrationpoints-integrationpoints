@@ -11,7 +11,13 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         /// Retrieves all the integration points in the workspace.
         /// </summary>
         /// <returns>A list of integration point objects.</returns>
-        List<IntegrationPointDto> ReadAllSlim();
+        List<IntegrationPointSlimDto> ReadAllSlim();
+
+        /// <summary>
+        /// Retrieves all the integration points in the workspace.
+        /// </summary>
+        /// <returns>A list of integration point objects.</returns>
+        List<IntegrationPointDto> ReadAll();
 
         /// <summary>
         /// Retrieves an integration point with all fields including long text fields (fields mapping, source configuration, destination configuration)
@@ -23,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         /// <summary>
         /// Retrieves an integration point WITHOUT long text fields (fields mapping, source configuration, destination configuration)
         /// </summary>
-        IntegrationPointDto ReadSlim(int artifactID);
+        IntegrationPointSlimDto ReadSlim(int artifactID);
 
         /// <summary>
         /// Retrieves the field mapping for the integration point given the artifact id.
@@ -35,7 +41,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         /// <summary>
         /// Gets all integration points with given source and destination provider.
         /// </summary>
-        List<IntegrationPointDto> GetBySourceAndDestinationProvider(int sourceProviderArtifactID, int destinationProviderArtifactID);
+        List<IntegrationPointSlimDto> GetBySourceAndDestinationProvider(int sourceProviderArtifactID, int destinationProviderArtifactID);
 
         /// <summary>
         /// Creates or updates an integration point.

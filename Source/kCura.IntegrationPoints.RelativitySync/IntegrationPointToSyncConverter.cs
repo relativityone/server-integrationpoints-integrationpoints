@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.RelativitySync
         {
             try
             {
-                IExtendedJob extendedJob = new ExtendedJobForSyncApplication()
+                IExtendedJob extendedJob = new ExtendedJobForSyncApplication
                 {
                     IntegrationPointId = integrationPointDto.ArtifactId,
                     IntegrationPointDto = integrationPointDto,

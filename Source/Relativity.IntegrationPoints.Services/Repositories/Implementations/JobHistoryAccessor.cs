@@ -36,7 +36,7 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
 
         public JobHistorySummaryModel GetJobHistory(JobHistoryRequest request)
         {
-            List<kCura.IntegrationPoints.Core.Models.IntegrationPointDto> integrationPoints = _relativityIntegrationPointsRepository.RetrieveIntegrationPoints();
+            List<kCura.IntegrationPoints.Core.Models.IntegrationPointSlimDto> integrationPoints = _relativityIntegrationPointsRepository.RetrieveIntegrationPoints();
 
             var allCompletedJobs = new List<JobHistoryModel>();
             var workspacesWithAccess = new Dictionary<int, IList<int>>();

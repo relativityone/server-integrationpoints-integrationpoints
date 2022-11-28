@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         private IRelativityUrlHelper _relativityUrlHelper;
         private IRdoSynchronizerProvider _rdoSynchronizerProvider;
         private ICPHelper _cpHelper;
-        private IServicesMgr _svcMgr;        
+        private IServicesMgr _svcMgr;
 
         private const int _WORKSPACE_ID = 23432;
         private const int _INTEGRATION_POINT_ID = 23432;
@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _rdoSynchronizerProvider = Substitute.For<IRdoSynchronizerProvider>();
             _serviceFactory = Substitute.For<IServiceFactory>();
             _cpHelper = Substitute.For<ICPHelper>();
-            _svcMgr = Substitute.For<IServicesMgr>();            
+            _svcMgr = Substitute.For<IServicesMgr>();
 
             _cpHelper.GetServicesManager().Returns(_svcMgr);
             _svcMgr.CreateProxy<IMetricsManager>(Arg.Any<ExecutionIdentity>())
@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _sut = new IntegrationPointsAPIController(
                 _serviceFactory,
                 _relativityUrlHelper,
-                _rdoSynchronizerProvider,                
+                _rdoSynchronizerProvider,
                 _cpHelper,
                 _loggerFake.Object
                 )
@@ -223,7 +223,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model, true, true, true, IntegrationPointsAPIController.MappingType.SavedSearch);
 
             // Assert
-            _loggerFake.Verify(x => x.LogInformation("Saved IntegrationPoint with following options: {options}", 
+            _loggerFake.Verify(x => x.LogInformation("Saved IntegrationPoint with following options: {options}",
                 It.Is<object>(o => MappingInfoObjectIsCorrect(o))));
         }
 

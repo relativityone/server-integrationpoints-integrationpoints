@@ -257,6 +257,13 @@ namespace kCura.IntegrationPoints.Agent.Tests
                     SourceProvider = It.IsAny<int>(),
                     DestinationProvider = It.IsAny<int>()
                 });
+            _integrationPointServiceMock.Setup(x => x.ReadSlim(It.IsAny<int>()))
+                .Returns(new IntegrationPointSlimDto
+                {
+                    Name = "abc",
+                    SourceProvider = It.IsAny<int>(),
+                    DestinationProvider = It.IsAny<int>()
+                });
 
             Mock<IProviderTypeService> providerTypeService = new Mock<IProviderTypeService>();
             providerTypeService.Setup(x => x.GetProviderName(It.IsAny<int>(), It.IsAny<int>())).Returns(_PROVIDER_NAME);

@@ -288,7 +288,7 @@ namespace kCura.IntegrationPoints.Agent
                 Logger.LogInformation("Job will be executed in case of BatchInstanceId: {batchInstanceId}", batchInstanceId);
                 if (!IsJobResumed(container, batchInstanceId))
                 {
-                    IntegrationPointDto integrationPoint = integrationPointService.Read(job.RelatedObjectArtifactID);
+                    IntegrationPointSlimDto integrationPoint = integrationPointService.ReadSlim(job.RelatedObjectArtifactID);
                     var message = new JobStartedMessage
                     {
                         Provider = integrationPoint.GetProviderName(providerTypeService),

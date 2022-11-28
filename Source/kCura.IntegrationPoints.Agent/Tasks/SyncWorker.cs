@@ -481,7 +481,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             }
             catch (Exception ex)
             {
-                LogDeserializeIntegrationPointsConfigurationForStatisticsServiceWarning(ip, ex);
+                LogDeserializeIntegrationPointsConfigurationForStatisticsServiceWarning(ex);
             }
 
             SetupIntegrationPointsConfigurationForStatisticsService(sourceConfiguration, importSettings);
@@ -520,7 +520,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             _logger.LogError(ex, msg, sourceConfigForLogging, settingsForLogging);
         }
 
-        private void LogDeserializeIntegrationPointsConfigurationForStatisticsServiceWarning(IntegrationPointDto ip, Exception ex)
+        private void LogDeserializeIntegrationPointsConfigurationForStatisticsServiceWarning(Exception ex)
         {
             string msg = "Failed to deserialize integration point configuration for statistics service.";
             _logger.LogWarning(ex, msg);

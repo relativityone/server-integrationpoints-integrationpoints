@@ -47,13 +47,13 @@ namespace Relativity.IntegrationPoints.Services.Repositories.Implementations
 
         public IntegrationPointModel GetIntegrationPointProfile(int integrationPointProfileArtifactId)
         {
-            IntegrationPointProfileDto integrationPointProfile = _integrationPointProfileService.Read(integrationPointProfileArtifactId);
+            IntegrationPointProfileSlimDto integrationPointProfile = _integrationPointProfileService.ReadSlim(integrationPointProfileArtifactId);
             return integrationPointProfile.ToIntegrationPointModel();
         }
 
         public IList<IntegrationPointModel> GetAllIntegrationPointProfiles()
         {
-            IList<IntegrationPointProfileDto> profiles = _integrationPointProfileService.ReadAllSlim();
+            IList<IntegrationPointProfileSlimDto> profiles = _integrationPointProfileService.ReadAllSlim();
             return profiles.Select(x => x.ToIntegrationPointModel()).ToList();
         }
 

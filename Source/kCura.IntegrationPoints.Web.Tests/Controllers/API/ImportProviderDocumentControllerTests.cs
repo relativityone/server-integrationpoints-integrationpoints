@@ -48,7 +48,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         private IAPILog _logger;
         private ICryptographyHelper _cryptographyHelper;
         private IIntegrationPointService _integrationPointService;
-        private IntegrationPointDto _integrationPointDto;
 
         [SetUp]
         public override void SetUp()
@@ -74,9 +73,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _logFactory.GetLogger().Returns(_logger);
             _cryptographyHelper = Substitute.For<ICryptographyHelper>();
 
-            _integrationPointDto = new IntegrationPointDto();
             _integrationPointService = Substitute.For<IIntegrationPointService>();
-            _integrationPointService.Read(Arg.Any<int>()).Returns(_integrationPointDto);
+            _integrationPointService.Read(Arg.Any<int>()).Returns(new IntegrationPointDto());
 
             _controller = new ImportProviderDocumentController(_fieldParserFactory,
                 _importTypeService,

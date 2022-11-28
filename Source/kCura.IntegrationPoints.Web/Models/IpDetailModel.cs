@@ -5,7 +5,7 @@ namespace kCura.IntegrationPoints.Web.Models
 {
     public class IpDetailModel
     {
-        public IntegrationPointDtoBase DataModel { get; set; }
+        public IntegrationPointSlimDtoBase DataModel { get; set; }
 
         public GridModel Grid { get; set; }
     }

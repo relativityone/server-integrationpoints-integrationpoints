@@ -42,7 +42,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 
             // Assert
             var objectContent = response.Content as ObjectContent;
-            var result = (List<IntegrationPointProfileDto>)objectContent?.Value;
+            var result = (List<IntegrationPointProfileSlimDto>)objectContent?.Value;
             var expected = SourceWorkspace.IntegrationPointProfiles.Select(x => x.ToIntegrationPointProfileModel());
 
             result.ShouldAllBeEquivalentTo(expected);
@@ -102,7 +102,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             var response = sut.GetByType(integrationPointProfile.Type);
 
             // Assert
-            var result = FormatResponseToGetValueFromObjectContent<IEnumerable<IntegrationPointProfileDto>>(response);
+            var result = FormatResponseToGetValueFromObjectContent<IEnumerable<IntegrationPointProfileSlimDto>>(response);
 
             AssertIntegrationPointProfilesSimpleMatches(integrationPointProfile, result.First());
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -240,7 +240,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             return result;
         }
 
-        private void AssertIntegrationPointProfilesSimpleMatches(IntegrationPointProfileTest initial, IntegrationPointProfileDto result)
+        private void AssertIntegrationPointProfilesSimpleMatches(IntegrationPointProfileTest initial, IntegrationPointProfileSlimDto result)
         {
             result.ArtifactId.Should().Be(initial.ArtifactId);
             result.Name.Should().Be(initial.Name);

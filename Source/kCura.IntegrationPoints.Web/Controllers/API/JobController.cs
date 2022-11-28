@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             {
                 AuditAction(payload, _RUN_AUDIT_MESSAGE);
 
-                IntegrationPointDto integrationPoint = _integrationPointService
+                IntegrationPointSlimDto integrationPoint = _integrationPointService
                     .ReadSlim(Convert.ToInt32(payload.ArtifactId));
 
                 // this validation was introduced due to an issue with ARMed workspaces (REL-171985)
