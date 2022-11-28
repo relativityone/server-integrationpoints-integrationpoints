@@ -226,23 +226,20 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
         private IntegrationPointProfileDto ToDto(IntegrationPointProfile profile)
         {
-            var dto = new IntegrationPointProfileDto
+            // May have your attention please!
+            // Long Text fields are intentionally not mapped here to avoid deserialization issues of truncated jsons
+            return new IntegrationPointProfileDto
             {
                 ArtifactId = profile.ArtifactId,
                 Name = profile.Name,
                 SelectedOverwrite = profile.OverwriteFields == null ? string.Empty : profile.OverwriteFields.Name,
                 SourceProvider = profile.SourceProvider.GetValueOrDefault(0),
-                DestinationConfiguration = profile.DestinationConfiguration,
-                SourceConfiguration = profile.SourceConfiguration,
                 DestinationProvider = profile.DestinationProvider.GetValueOrDefault(0),
                 Type = profile.Type.GetValueOrDefault(0),
                 Scheduler = new Scheduler(profile.EnableScheduler.GetValueOrDefault(false), profile.ScheduleRule),
                 EmailNotificationRecipients = profile.EmailNotificationRecipients ?? string.Empty,
                 LogErrors = profile.LogErrors.GetValueOrDefault(false),
-                FieldMappings = Serializer.Deserialize<List<FieldMap>>(profile.FieldMappings ?? string.Empty),
             };
-            SanitizeFieldsMapping(dto.FieldMappings);
-            return dto;
         }
 
         private IntegrationPointProfileSlimDto ToSlim(IntegrationPointProfile profile)

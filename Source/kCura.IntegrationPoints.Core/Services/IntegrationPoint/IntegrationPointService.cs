@@ -724,14 +724,14 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
         private IntegrationPointDto ToDto(Data.IntegrationPoint rdo)
         {
-            var dto = new IntegrationPointDto
+            // May have your attention please!
+            // Long Text fields are intentionally not mapped here to avoid deserialization issues of truncated jsons
+            return new IntegrationPointDto
             {
                 ArtifactId = rdo.ArtifactId,
                 Name = rdo.Name,
                 SelectedOverwrite = rdo.OverwriteFields == null ? string.Empty : rdo.OverwriteFields.Name,
                 SourceProvider = rdo.SourceProvider.GetValueOrDefault(0),
-                DestinationConfiguration = rdo.DestinationConfiguration,
-                SourceConfiguration = rdo.SourceConfiguration,
                 DestinationProvider = rdo.DestinationProvider.GetValueOrDefault(0),
                 Type = rdo.Type.GetValueOrDefault(0),
                 Scheduler = new Scheduler(rdo.EnableScheduler.GetValueOrDefault(false), rdo.ScheduleRule),
@@ -742,10 +742,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 NextRun = rdo.NextScheduledRuntimeUTC,
                 SecuredConfiguration = rdo.SecuredConfiguration,
                 JobHistory = rdo.JobHistory.ToList(),
-                FieldMappings = Serializer.Deserialize<List<FieldMap>>(rdo.FieldMappings ?? string.Empty),
             };
-            SanitizeFieldsMapping(dto.FieldMappings);
-            return dto;
         }
 
         private IntegrationPointSlimDto ToSlim(Data.IntegrationPoint rdo)
