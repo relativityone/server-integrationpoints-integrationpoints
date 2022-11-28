@@ -1,21 +1,17 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Utils;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Web.Attributes;
+using kCura.IntegrationPoints.Web.Extensions;
 using kCura.IntegrationPoints.Web.Helpers;
+using kCura.IntegrationPoints.Web.Models;
 using kCura.IntegrationPoints.Web.Models.Validation;
 using Relativity.API;
-using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -47,19 +43,19 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         {
             try
             {
-                var model = new IntegrationPointDto();
-                model.ArtifactId = id;
+                var model = new IntegrationPointWebModel();
+                model.ArtifactID = id;
                 if (id > 0)
                 {
                     IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_cpHelper);
-                    model = integrationPointService.Read(id);
+                    model = integrationPointService.Read(id).ToWebModel();
                 }
                 if (model.DestinationProvider == 0)
                 {
                     model.DestinationProvider = _provider.GetRdoSynchronizerId();
                 }
 
-                model = RemoveInstanceToInstanceSettingsFromModel(model);
+                RemoveInstanceToInstanceSettingsFromModel(model);
 
                 return Request.CreateResponse(HttpStatusCode.Accepted, model);
             }
@@ -71,7 +67,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
         [HttpPost]
         [LogApiExceptionFilter(Message = "Unable to save or update integration point.")]
-        public HttpResponseMessage Update(int workspaceID, IntegrationPointDto dto, bool mappingHasWarnings = false, bool destinationWorkspaceChanged = false,
+        public HttpResponseMessage Update(int workspaceID, IntegrationPointWebModel webModel, bool mappingHasWarnings = false, bool destinationWorkspaceChanged = false,
             bool clearAndProceedSelected = false, MappingType mappingType = MappingType.Loaded)
         {
             if (mappingHasWarnings)
@@ -81,7 +77,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
             if (destinationWorkspaceChanged)
             {
-                _logger.LogInformation("Saving Integration Point Artifact ID: {IntegrationPointID} with changed destination workspace.", dto.ArtifactId);
+                _logger.LogInformation("Saving Integration Point Artifact ID: {IntegrationPointID} with changed destination workspace.", webModel.ArtifactID);
             }
 
             LogMappingInfo(mappingHasWarnings, clearAndProceedSelected, mappingType);
@@ -91,7 +87,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             int createdId;
             try
             {
-                createdId = integrationPointService.SaveIntegrationPoint(dto);
+                createdId = integrationPointService.SaveIntegrationPoint(webModel.ToDto());
             }
             catch (IntegrationPointValidationException ex)
             {
@@ -120,21 +116,19 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             });
         }
 
-        private IntegrationPointDto RemoveInstanceToInstanceSettingsFromModel(IntegrationPointDto dto)
+        private void RemoveInstanceToInstanceSettingsFromModel(IntegrationPointWebModel webModel)
         {
             //We need to reset the values from the database that have federated instance other than null.
             //We do not want to forward the federated instance to the user interface.
-            if (!dto.SourceConfiguration.Contains("\"FederatedInstanceArtifactId\":null") &&
-                dto.SourceConfiguration.Contains("FederatedInstanceArtifactId"))
+            if (!webModel.SourceConfiguration.Contains("\"FederatedInstanceArtifactId\":null") &&
+                webModel.SourceConfiguration.Contains("FederatedInstanceArtifactId"))
             {
-                dto.SourceConfiguration = null;
+                webModel.SourceConfiguration = null;
             }
-            else if (dto.SourceConfiguration.Contains("\"FederatedInstanceArtifactId\":null"))
+            else if (webModel.SourceConfiguration.Contains("\"FederatedInstanceArtifactId\":null"))
             {
-                dto.SourceConfiguration = JsonUtils.RemoveProperty(dto.SourceConfiguration, "FederatedInstanceArtifactId");
+                webModel.SourceConfiguration = JsonUtils.RemoveProperty(webModel.SourceConfiguration, "FederatedInstanceArtifactId");
             }
-
-            return dto;
         }
 
         public enum MappingType

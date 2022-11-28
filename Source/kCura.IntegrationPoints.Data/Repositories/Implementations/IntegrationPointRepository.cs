@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
         public async Task<string> GetFieldMappingAsync(int integrationPointArtifactID)
         {
-            return await GetUnicodeLongTextAsync(integrationPointArtifactID, new FieldRef { Guid = IntegrationPointFieldGuids.FieldMappingsGuid });
+            return await GetUnicodeLongTextAsync(integrationPointArtifactID, new FieldRef { Guid = IntegrationPointFieldGuids.FieldMappingsGuid }).ConfigureAwait(false);
         }
 
         public string GetEncryptedSecuredConfiguration(int integrationPointArtifactID)

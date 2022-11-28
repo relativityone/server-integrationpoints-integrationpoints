@@ -1,17 +1,16 @@
-﻿using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Web.Models.Validation;
+﻿using kCura.IntegrationPoints.Web.Models.Validation;
 
 namespace kCura.IntegrationPoints.Web.Models
 {
     public class ValidatedProfileDTO
     {
-        public IntegrationPointProfileDto Dto { get; }
+        public IntegrationPointProfileWebModel Dto { get; }
 
         public ValidationResultDTO ValidationResult { get; }
 
-        public ValidatedProfileDTO(IntegrationPointProfileDto dto, ValidationResultDTO validationResult)
+        public ValidatedProfileDTO(IntegrationPointProfileWebModel profileWebModel, ValidationResultDTO validationResult)
         {
-            Dto = dto;
+            Dto = profileWebModel;
             ValidationResult = validationResult;
         }
     }

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using Castle.Core.Internal;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -13,6 +12,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Web.Attributes;
+using kCura.IntegrationPoints.Web.Extensions;
 using kCura.IntegrationPoints.Web.Helpers;
 using kCura.IntegrationPoints.Web.Models;
 using kCura.IntegrationPoints.Web.Models.Validation;
@@ -67,17 +67,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         [LogApiExceptionFilter(Message = "Unable to retrieve integration point profile.")]
         public HttpResponseMessage Get(int artifactId)
         {
-            IntegrationPointProfileDto dto;
+            IntegrationPointProfileWebModel webModel;
             if (artifactId > 0)
             {
-                dto = _profileService.Read(artifactId);
+                webModel = _profileService.Read(artifactId).ToWebModel();
             }
             else
             {
-                dto = new IntegrationPointProfileDto();
+                webModel = new IntegrationPointProfileWebModel();
             }
 
-            return Request.CreateResponse(HttpStatusCode.OK, dto);
+            return Request.CreateResponse(HttpStatusCode.OK, webModel);
         }
 
         [LogApiExceptionFilter(Message = "Unable to validate integration point profile.")]
@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                 IntegrationPointProfileDto dto = _profileService.Read(artifactId);
                 ValidationResultDTO validationResult = ValidateIntegrationPointProfile(dto);
 
-                var output = new ValidatedProfileDTO(dto, validationResult);
+                var output = new ValidatedProfileDTO(dto.ToWebModel(), validationResult);
                 return Request.CreateResponse(HttpStatusCode.OK, output);
             }
 
@@ -97,13 +97,13 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
         [HttpPost]
         [LogApiExceptionFilter(Message = "Unable to save or update integration point profile.")]
-        public HttpResponseMessage Save(int workspaceID, IntegrationPointProfileDto dto)
+        public HttpResponseMessage Save(int workspaceID, IntegrationPointProfileWebModel webModel)
         {
             using (IAPMManager apmManger = _cpHelper.GetServicesManager().CreateProxy<IAPMManager>(ExecutionIdentity.CurrentUser))
             {
                 using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
                 {
-                    string nameHash = _cryptographyHelper.CalculateHash(dto.Name);
+                    string nameHash = _cryptographyHelper.CalculateHash(webModel.Name);
                     var apmMetricProperties = new APMMetric
                     {
                         Name =
@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                         using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_PROFILE_SAVE_DURATION_METRIC_COLLECTOR,
                             Guid.Empty, nameHash))
                         {
-                            return SaveIntegrationPointProfile(workspaceID, dto);
+                            return SaveIntegrationPointProfile(workspaceID, webModel.ToDto());
                         }
                     }
                 }
@@ -170,12 +170,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             }
         }
 
-        private HttpResponseMessage SaveIntegrationPointProfile(int workspaceID, IntegrationPointProfileDto dto)
+        private HttpResponseMessage SaveIntegrationPointProfile(int workspaceID, IntegrationPointProfileDto profileDto)
         {
             int createdID;
             try
             {
-                createdID = _profileService.SaveProfile(dto);
+                createdID = _profileService.SaveProfile(profileDto);
             }
             catch (IntegrationPointValidationException ex)
             {

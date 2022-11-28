@@ -19,6 +19,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using kCura.IntegrationPoints.Web.Extensions;
+using NSubstitute;
 
 namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 {
@@ -90,7 +92,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _profileServiceFake.Setup(m => m.SaveProfile(model)).Returns(integrationPointProfileID);
 
             // act
-            HttpResponseMessage response = _sut.Save(_WORKSPACE_ID, model);
+            HttpResponseMessage response = _sut.Save(_WORKSPACE_ID, model.ToWebModel());
 
             // assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -108,10 +110,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             var errors = new List<string> { "Error1", "Error2" };
             var validationResult = new ValidationResult(errors);
 
-            _profileServiceFake.Setup(m => m.SaveProfile(model)).Throws(new IntegrationPointValidationException(validationResult));
+            _profileServiceFake.Setup(m => m.SaveProfile(It.IsAny<IntegrationPointProfileDto>())).Throws(new IntegrationPointValidationException(validationResult));
 
             // act
-            HttpResponseMessage response = _sut.Save(_WORKSPACE_ID, model);
+            HttpResponseMessage response = _sut.Save(_WORKSPACE_ID, model.ToWebModel());
             string responseContent = response.Content.ReadAsStringAsync().Result;
             ValidationResultDTO contentAsValidationResult = JsonConvert.DeserializeObject<ValidationResultDTO>(responseContent);
 

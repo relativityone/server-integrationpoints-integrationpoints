@@ -258,7 +258,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             };
         }
 
-        public IntegrationPointProfileDto ToIntegrationPointProfileModel()
+        public IntegrationPointProfileDto ToIntegrationPointProfileDto()
         {
             return new IntegrationPointProfileDto
             {

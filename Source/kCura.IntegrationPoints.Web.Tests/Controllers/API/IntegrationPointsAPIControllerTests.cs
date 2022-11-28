@@ -16,6 +16,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Controllers.API;
+using kCura.IntegrationPoints.Web.Extensions;
 using kCura.IntegrationPoints.Web.Helpers;
 using kCura.IntegrationPoints.Web.Models.Validation;
 using Moq;
@@ -135,7 +136,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 
             _serviceFactory.CreateIntegrationPointService(_cpHelper).Returns(_integrationPointService);
 
-            _integrationPointService.SaveIntegrationPoint(Arg.Is(model)).Returns(model.ArtifactId);
+            _integrationPointService.SaveIntegrationPoint(Arg.Any<IntegrationPointDto>()).Returns(model.ArtifactId);
 
             string url = "http://lolol.com";
             _relativityUrlHelper.GetRelativityViewUrl(
@@ -145,14 +146,15 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
                 .Returns(url);
 
             // Act
-            HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model);
+            HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model.ToWebModel());
 
             // Assert
             Assert.IsNotNull(response, "Response should not be null");
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, "HttpStatusCode should be OK");
-            Assert.AreEqual(JsonConvert.SerializeObject(new { returnURL = url }), response.Content.ReadAsStringAsync().Result, "The HttpContent should be as expected");
+            var result = response.Content.ReadAsStringAsync().Result;
+            Assert.AreEqual(JsonConvert.SerializeObject(new { returnURL = url }), result, "The HttpContent should be as expected");
 
-            _integrationPointService.Received(1).SaveIntegrationPoint(model);
+            _integrationPointService.Received(1).SaveIntegrationPoint(Arg.Any<IntegrationPointDto>());
             _relativityUrlHelper
                 .Received(1)
                 .GetRelativityViewUrl(
@@ -178,7 +180,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _integrationPointService.SaveIntegrationPoint(Arg.Any<IntegrationPointDto>()).Throws(expectException);
 
             // Act
-            HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model);
+            HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model.ToWebModel());
 
             Assert.IsNotNull(response);
             String actual = response.Content.ReadAsStringAsync().Result;
@@ -220,7 +222,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
                 .Returns(url);
 
             // Act
-            HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model, true, true, true, IntegrationPointsAPIController.MappingType.SavedSearch);
+            HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model.ToWebModel(), true, true, true, IntegrationPointsAPIController.MappingType.SavedSearch);
 
             // Assert
             _loggerFake.Verify(x => x.LogInformation("Saved IntegrationPoint with following options: {options}",

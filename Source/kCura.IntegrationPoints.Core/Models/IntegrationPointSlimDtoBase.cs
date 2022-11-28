@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Models
 {

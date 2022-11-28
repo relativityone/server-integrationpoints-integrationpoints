@@ -1,5 +1,4 @@
-﻿using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+﻿using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.Tabs;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
@@ -7,6 +6,8 @@ using kCura.IntegrationPoints.Data.Repositories;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Common.Context;
 using kCura.IntegrationPoints.Web.Context.UserContext;
+using kCura.IntegrationPoints.Web.Extensions;
+using kCura.IntegrationPoints.Web.Models;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
@@ -36,9 +37,9 @@ namespace kCura.IntegrationPoints.Web.Controllers
         protected override string ObjectType => ObjectTypes.IntegrationPoint;
         protected override string APIControllerName => Core.Constants.IntegrationPoints.API_CONTROLLER_NAME;
 
-        protected override IntegrationPointSlimDtoBase GetIntegrationPointBaseModel(int id)
+        protected override IntegrationPointWebModelBase GetIntegrationPoint(int id)
         {
-            return _integrationPointService.ReadSlim(id);
+            return _integrationPointService.Read(id).ToWebModel();
         }
 
         public ActionResult SaveAsProfileModal()
