@@ -32,7 +32,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IProgressHandler> _progressHandlerMock;
         private Mock<IImportJobController> _jobControllerMock;
         private Mock<IDocumentSynchronizationMonitorConfiguration> _configurationMock;
-        private Mock<IImportApiItemLevelErrorHandler> _itemLevelErrorHandler;
+        private Mock<IItemLevelErrorHandler> _itemLevelErrorHandler;
         private Mock<IBatchRepository> _batchRepository;
 
         private DocumentSynchronizationMonitorExecutor _sut;
@@ -46,7 +46,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _sourceControllerMock = new Mock<IImportSourceController>();
             _jobControllerMock = new Mock<IImportJobController>();
             _configurationMock = new Mock<IDocumentSynchronizationMonitorConfiguration>();
-            _itemLevelErrorHandler = new Mock<IImportApiItemLevelErrorHandler>();
+            _itemLevelErrorHandler = new Mock<IItemLevelErrorHandler>();
 
             _batchRepository = new Mock<IBatchRepository>();
 
@@ -57,7 +57,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _configurationMock.Setup(x => x.DestinationWorkspaceArtifactId).Returns(_DESTINATION_WORKSPACE_ID);
             _configurationMock.Setup(x => x.ExportRunId).Returns(new Guid(_EXPORT_RUN_ID));
 
-            _sut = new DocumentSynchronizationMonitorExecutor(_serviceFactoryMock.Object, _progressHandlerMock.Object, _itemLevelErrorHandlerFactory.Object, _batchRepository.Object, _loggerMock.Object);
+            _sut = new DocumentSynchronizationMonitorExecutor(_serviceFactoryMock.Object, _progressHandlerMock.Object, _itemLevelErrorHandler.Object, _batchRepository.Object, _loggerMock.Object);
 
             _sut.GetType()?.GetField("_delayTime", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(_sut, 0.1);
         }
