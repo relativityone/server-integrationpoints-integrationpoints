@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Factories;
 using Relativity;
 using Relativity.API;
@@ -12,6 +14,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
         private readonly IHelper _helper;
         private readonly IRepositoryFactory _repositoryFactory;
         private readonly IAPILog _logger;
+        private readonly IDbContextFactory _dbContextFactory;
 
         private const string _FOR_JOBHISTORY_ERROR = "Failed to retrieve total files size for job history id: {JobHistoryArtifactId}.";
 
@@ -20,8 +23,9 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
             _helper = helper;
             _repositoryFactory = repositoryFactory;
             _logger = _helper.GetLoggerFactory().GetLogger().ForContext<ErrorFilesSizeStatistics>();
+            _dbContextFactory = new DbContextFactory(_helper);
         }
-        
+
         public long ForJobHistoryOmmitedFiles(int workspaceArtifactId, int jobHistoryArtifactId)
         {
             try
@@ -44,13 +48,16 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
                             JOIN [File] F ON D.ArtifactID = F.DocumentArtifactID
                     WHERE    [ParentArtifactID] = @artifactId";
 
-                var fileTypeParameter = new SqlParameter("@artifactId", SqlDbType.Int)
+                IEnumerable<SqlParameter> sqlParams = new[]
                 {
-                    Value = jobHistoryArtifactId
+                    new SqlParameter("@artifactId", SqlDbType.Int)
+                    {
+                        Value = jobHistoryArtifactId
+                    }
                 };
 
-                IDBContext dbContext = _helper.GetDBContext(workspaceArtifactId);
-                return dbContext.ExecuteSqlStatementAsScalar<long>(sqlText, fileTypeParameter);
+                IWorkspaceDBContext dbContext = _dbContextFactory.CreateWorkspaceDbContext(workspaceArtifactId);
+                return dbContext.ExecuteSqlStatementAsScalar<long>(sqlText, sqlParams);
             }
             catch (Exception e)
             {

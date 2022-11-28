@@ -1,6 +1,7 @@
 ﻿using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
 using Relativity.API;
 using Constants = kCura.IntegrationPoints.Core.Constants;
@@ -38,8 +39,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Script
 
         private ICommonScripts CreateForExportProviders(EventHandlerBase eventHandler)
         {
+            IWorkspaceDBContext context = new DbContextFactory(eventHandler.Helper).CreateWorkspaceDbContext(eventHandler.Helper.GetActiveCaseID());
             return new RelativityProviderScripts(new ScriptsHelper(eventHandler, _caseServiceContext, _fieldsConstants, _apiControllerName), _guidsConstants,
-                new FolderPathInformation(eventHandler.Helper.GetDBContext(eventHandler.Helper.GetActiveCaseID())));
+                new FolderPathInformation(context));
         }
 
         private ICommonScripts CreateForImportProviders(EventHandlerBase eventHandler)
