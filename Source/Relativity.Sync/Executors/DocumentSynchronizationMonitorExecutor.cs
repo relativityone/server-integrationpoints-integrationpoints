@@ -8,6 +8,7 @@ using Relativity.Import.V1.Models;
 using Relativity.Import.V1.Models.Errors;
 using Relativity.Import.V1.Models.Sources;
 using Relativity.Import.V1.Services;
+using Relativity.Services;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Extensions;
 using Relativity.Sync.KeplerFactory;
@@ -207,11 +208,8 @@ namespace Relativity.Sync.Executors
 
         private async Task CancelImportJob(List<IBatch> batches, IDocumentSynchronizationMonitorConfiguration configuration, IImportJobController jobController)
         {
-            if (batches.Any(x => x.Status == BatchStatus.Cancelled))
-            {
-                _logger.LogInformation("Waiting on cancellation of job {jobId} in IAPI 2.0", configuration.ExportRunId);
-            }
-            else
+            var status = await GetImportStatusAsync(jobController, configuration).ConfigureAwait(false);
+            if (status.State != ImportState.Canceled)
             {
                 _logger.LogInformation("Executing job {jobId} cancel request at monitoring stage", configuration.ExportRunId);
                 Response response = await jobController.CancelAsync(configuration.DestinationWorkspaceArtifactId, configuration.ExportRunId).ConfigureAwait(false);
