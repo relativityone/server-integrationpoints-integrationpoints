@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
+using AutoFixture;
+using AutoFixture.AutoMoq;
 using FluentAssertions;
 using kCura.IntegrationPoints.Data.Models;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -47,10 +49,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         private const string _FIELD_MAPPING_INVALID = "fieldMappingInvalid";
         private const string _SECURED_CONFIGURATION = "2ddbfb34-5dce-47a2-99ab-a7328600673b";
         private const string _NAME = "Test Integration Point";
+        private const string _SOURCE_CONFIGURATION = "SOURCE_CONFIGURATION";
+        private const string _DESTINATION_CONFIGURATION = "DESTINATION_CONFIGURATION";
+
+        private IFixture _fxt;
 
         [SetUp]
         public void SetUp()
         {
+            _fxt = new Fixture().Customize(new AutoMoqCustomization() { ConfigureMembers = true });
+
             _objectManagerMock = new Mock<IRelativityObjectManager>();
             _serializerMock = new Mock<IIntegrationPointSerializer>();
             _loggerMock = new Mock<IAPILog>();
@@ -65,11 +73,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             _serializerMock.Setup(x => x.Deserialize<IEnumerable<FieldMap>>(_FIELD_MAPPING_LONG)).Returns(_fieldMapping);
             _serializerMock.Setup(x => x.Deserialize<IEnumerable<FieldMap>>(_FIELD_MAPPING_INVALID))
                 .Throws<SerializationException>();
-            
+
             _nextScheduledRuntime = DateTime.UtcNow.AddDays(1);
             _lastRuntime = DateTime.UtcNow.AddDays(-1);
             _sut = new IntegrationPointRepository(
-                _objectManagerMock.Object, 
+                _objectManagerMock.Object,
                 _serializerMock.Object,
                 _secretsRepositoryMock.Object,
                 _loggerMock.Object);
@@ -86,6 +94,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
                     It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
                     ExecutionIdentity.CurrentUser))
                 .Returns(_fieldMappingStream);
+
+            SetupConfigurationStreamRead();
+
             IntegrationPoint expectedResult = CreateTestIntegrationPoint();
             expectedResult.FieldMappings = _FIELD_MAPPING_LONG;
 
@@ -116,12 +127,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             _integrationPoint = CreateTestIntegrationPoint();
             _objectManagerMock.Setup(x => x.Read<IntegrationPoint>(_ARTIFACT_ID,ExecutionIdentity.CurrentUser)).Returns(_integrationPoint);
 
+            SetupConfigurationStreamRead();
+
             // Act
             IntegrationPoint actualResult = await _sut.ReadEncryptedAsync(_ARTIFACT_ID).ConfigureAwait(false);
 
             // Assert
             _secretsRepositoryMock.Verify(x => x.DecryptAsync(It.IsAny<SecretPath>()), Times.Never);
-            _objectManagerMock.Verify(x => x.StreamUnicodeLongText(It.IsAny<int>(), It.IsAny<FieldRef>(), ExecutionIdentity.CurrentUser), Times.Never);
             _objectManagerMock.Verify(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser), Times.Once);
             _internalLoggerMock.Verify(
                 x => x.LogError(
@@ -398,6 +410,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         public void GetName_ShouldReturnValidName()
         {
             // Arrange
+            const string streamString = "DOESN'T CARE VALUE";
+
             _integrationPoint = CreateTestIntegrationPoint();
             _objectManagerMock.Setup(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser)).Returns(_integrationPoint);
 
@@ -473,8 +487,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             {
                 ArtifactId = _ARTIFACT_ID,
                 Name = _NAME,
-                SourceConfiguration = "sourceConf",
-                DestinationConfiguration = "destConf",
+                SourceConfiguration = _SOURCE_CONFIGURATION,
+                DestinationConfiguration = _DESTINATION_CONFIGURATION,
                 FieldMappings = "fieldMappingsShort",
                 SecuredConfiguration = _SECURED_CONFIGURATION,
                 SourceProvider = _SOURCE_PROVIDER,
@@ -500,6 +514,23 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
             writer.Flush();
             stream.Position = 0;
             return stream;
+        }
+
+        private void SetupConfigurationStreamRead()
+        {
+            _objectManagerMock.Setup(
+                    x => x.StreamUnicodeLongText(
+                        _ARTIFACT_ID,
+                        It.Is<FieldRef>(f => f.Guid.ToString() == IntegrationPointFieldGuids.SourceConfiguration),
+                        ExecutionIdentity.CurrentUser))
+                .Returns(() => GenerateStreamFromString(_SOURCE_CONFIGURATION));
+
+            _objectManagerMock.Setup(
+                    x => x.StreamUnicodeLongText(
+                        _ARTIFACT_ID,
+                        It.Is<FieldRef>(f => f.Guid.ToString() == IntegrationPointFieldGuids.DestinationConfiguration),
+                        ExecutionIdentity.CurrentUser))
+                .Returns(() => GenerateStreamFromString(_DESTINATION_CONFIGURATION));
         }
 
         private static bool AreIntegrationPointsEqual(IntegrationPoint integrationPoint1, IntegrationPoint integrationPoint2)

@@ -41,6 +41,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
         public void Execute_ShouldAbortGetUnbatchedIDs_WhenDrainStopTimeoutExceeded()
         {
             // Arrange
+            string xmlPath = PrepareRecords();
+
             Guid customProviderId = Guid.NewGuid();
 
             SourceProviderTest provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateCustomProvider(nameof(FakeCustomProvider), customProviderId);
@@ -56,7 +58,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
 
             Context.InstanceSettings.DrainStopTimeout = TimeSpan.FromSeconds(1);
 
-            JobTest job = PrepareJob(provider, out JobHistoryTest jobHistory);
+            JobTest job = PrepareJob(provider, out JobHistoryTest jobHistory, xmlPath);
 
             SyncManager sut = PrepareSutWithCustomProvider(customProviderImpl, customProviderId);
 
@@ -149,6 +151,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
         public void Execute_ShouldFail_WhenGetBatchableIdsThrowException()
         {
             // Arrange
+            string xmlPath = PrepareRecords();
             Guid customProviderId = Guid.NewGuid();
 
             SourceProviderTest provider = SourceWorkspace.Helpers.SourceProviderHelper.CreateCustomProvider(nameof(FakeCustomProvider), customProviderId);
@@ -161,7 +164,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
                 }
             };
 
-            JobTest job = PrepareJob(provider, out JobHistoryTest jobHistory);
+            JobTest job = PrepareJob(provider, out JobHistoryTest jobHistory, xmlPath);
 
             SyncManager sut = PrepareSutWithCustomProvider(customProviderImpl, customProviderId);
 
@@ -237,7 +240,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             thread.Join();
         }
 
-        private string PrepareRecords(int numberOfRecords)
+        private string PrepareRecords(int numberOfRecords = 0)
         {
             string xml = new MyFirstProviderXmlGenerator().GenerateRecords(numberOfRecords);
             string tmpPath = Path.GetTempFileName();
