@@ -219,6 +219,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         {
             IntegrationPoint integrationPoint = _objectManager.Read<IntegrationPoint>(integrationPointArtifactID);
 
+            integrationPoint.SourceConfiguration = await GetSourceConfigurationAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
+            integrationPoint.DestinationConfiguration = await GetDestinationConfigurationAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
+
             if (queryOptions.Decrypt)
             {
                 SetDecryptedSecuredConfiguration(_workspaceID, integrationPoint);
