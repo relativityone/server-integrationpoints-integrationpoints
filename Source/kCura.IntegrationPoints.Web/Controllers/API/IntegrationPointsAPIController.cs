@@ -43,13 +43,18 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         {
             try
             {
-                var model = new IntegrationPointWebModel();
-                model.ArtifactID = id;
+                var model = new IntegrationPointWebModel
+                {
+                    ArtifactID = id,
+                    LogErrors = true,
+                };
+
                 if (id > 0)
                 {
                     IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_cpHelper);
                     model = integrationPointService.Read(id).ToWebModel();
                 }
+
                 if (model.DestinationProvider == 0)
                 {
                     model.DestinationProvider = _provider.GetRdoSynchronizerId();

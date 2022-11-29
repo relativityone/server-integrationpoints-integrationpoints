@@ -6,11 +6,6 @@ namespace kCura.IntegrationPoints.Core.Models
 {
     public abstract class IntegrationPointDtoBase
     {
-        public IntegrationPointDtoBase()
-        {
-            LogErrors = true;
-        }
-
         public int ArtifactId { get; set; }
         public string Name { get; set; }
         public string SelectedOverwrite { get; set; }

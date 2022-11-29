@@ -176,6 +176,10 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                         dto.LastRun = existingDto.LastRun;
                     }
                 }
+                else
+                {
+                    dto.HasErrors = false;
+                }
 
                 IList<ChoiceRef> choices = ChoiceQuery.GetChoicesOnField(Context.WorkspaceID, Guid.Parse(IntegrationPointFieldGuids.OverwriteFields));
                 PeriodicScheduleRule rule = ConvertModelToScheduleRule(dto);

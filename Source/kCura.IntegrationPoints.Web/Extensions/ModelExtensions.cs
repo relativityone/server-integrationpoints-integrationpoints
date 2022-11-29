@@ -83,6 +83,25 @@ namespace kCura.IntegrationPoints.Web.Extensions
             };
         }
 
+        public static IntegrationPointProfileWebModel ToWebModel(this IntegrationPointProfileSlimDto dto)
+        {
+            return new IntegrationPointProfileWebModel
+            {
+                ArtifactID = dto.ArtifactId,
+                Name = dto.Name,
+                SelectedOverwrite = dto.SelectedOverwrite,
+                SourceProvider = dto.SourceProvider,
+                Type = dto.Type,
+                Scheduler = dto.Scheduler,
+                DestinationProvider = dto.DestinationProvider,
+                LogErrors = dto.LogErrors,
+                NotificationEmails = dto.EmailNotificationRecipients,
+                SecuredConfiguration = dto.SecuredConfiguration,
+                NextRun = dto.NextRun,
+                PromoteEligible = dto.PromoteEligible,
+            };
+        }
+
         public static IntegrationPointProfileDto ToDto(this IntegrationPointProfileWebModel webModel)
         {
             JSONSerializer serializer = new JSONSerializer();
