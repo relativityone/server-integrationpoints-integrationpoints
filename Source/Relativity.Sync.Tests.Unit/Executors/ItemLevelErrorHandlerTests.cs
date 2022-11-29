@@ -1,12 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using AutoFixture;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Import.V1.Models.Errors;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
+using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Tests.Unit.Executors
@@ -14,86 +21,191 @@ namespace Relativity.Sync.Tests.Unit.Executors
     [TestFixture]
     public class ItemLevelErrorHandlerTests
     {
-        private Mock<IItemLevelErrorHandlerConfiguration> _configurationMock;
-        private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepositoryFake;
+        private Mock<IItemLevelErrorHandlerConfiguration> _configurationFake;
+        private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepositoryMock;
         private Mock<IItemStatusMonitor> _statusMonitorMock;
-        private Mock<IAPILog> _loggerMock;
-        private Mock<IBatch> _batchMock;
+        private Mock<IItemLevelErrorLogAggregator> _itemLevelErrorAggregatorFake;
 
         private ItemLevelErrorHandler _sut;
+
+        private IFixture _fxt;
 
         [SetUp]
         public void Setup()
         {
-            PrepareFakeConfiguration();
-            _jobHistoryErrorRepositoryFake = new Mock<IJobHistoryErrorRepository>();
+            _fxt = FixtureFactory.Create();
+
+            _configurationFake = new Mock<IItemLevelErrorHandlerConfiguration>();
+            _configurationFake.Setup(x => x.SourceWorkspaceArtifactId)
+                .Returns(_fxt.Create<int>());
+            _configurationFake.Setup(x => x.JobHistoryArtifactId)
+                .Returns(_fxt.Create<int>());
+
+            _jobHistoryErrorRepositoryMock = new Mock<IJobHistoryErrorRepository>();
             _statusMonitorMock = new Mock<IItemStatusMonitor>();
-            _loggerMock = new Mock<IAPILog>();
-            _batchMock = new Mock<IBatch>();
-            _sut = new ItemLevelErrorHandler(_configurationMock.Object, _jobHistoryErrorRepositoryFake.Object, null);
+            _itemLevelErrorAggregatorFake = new Mock<IItemLevelErrorLogAggregator>();
+
+            _sut = new ItemLevelErrorHandler(
+                _configurationFake.Object,
+                _jobHistoryErrorRepositoryMock.Object,
+                _itemLevelErrorAggregatorFake.Object);
         }
 
         [Test]
-        public void HandleItemLevelError_ShouldPrepareErrorEntry()
+        public async Task HandleItemLevelError_ShouldPrepareErrorEntry()
         {
             // Arrange
-            ItemLevelError itemLevelError = new ItemLevelError("testId", "testMessage");
+            ItemLevelError itemLevelError = _fxt.Create<ItemLevelError>();
 
             // Act
             _sut.HandleItemLevelError(It.IsAny<long>(), itemLevelError);
 
             // Assert
-            _statusMonitorMock.Verify(x => x.GetArtifactId(itemLevelError.Identifier), Times.Once);
-            _statusMonitorMock.Verify(x => x.MarkItemAsFailed(itemLevelError.Identifier), Times.Once);
-            _jobHistoryErrorRepositoryFake.Verify(x => x.MassCreateAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<List<CreateJobHistoryErrorDto>>()), Times.Never);
+            await _sut.HandleRemainingErrorsAsync().ConfigureAwait(false);
+
+            _jobHistoryErrorRepositoryMock.Verify(
+                x => x.MassCreateAsync(
+                    _configurationFake.Object.SourceWorkspaceArtifactId,
+                    _configurationFake.Object.JobHistoryArtifactId,
+                    It.Is<IList<CreateJobHistoryErrorDto>>(
+                        errors => errors.Any(
+                            e => e.ErrorMessage == itemLevelError.Message &&
+                                e.SourceUniqueId == itemLevelError.Identifier))));
         }
 
-        //[Test]
-        //public async Task HandleDataSourceProcessingFinishedAsync_ShouldCreateCorrectNumberJobHistoryErrorEntries()
-        //{
-        //    // Arrange
-        //    int expectedItemLEvelErrorsCount = 3;
-        //    PrepareTestItemLevelErrors(expectedItemLEvelErrorsCount);
-
-        //    // Act
-        //    await _sut.HandleDataSourceProcessingFinishedAsync(_batchMock.Object).ConfigureAwait(false);
-
-        //    // Assert
-        //    _jobHistoryErrorRepositoryFake.Verify(
-        //        x => x.MassCreateAsync(
-        //        _configurationMock.Object.SourceWorkspaceArtifactId,
-        //        _configurationMock.Object.JobHistoryArtifactId,
-        //        It.Is<List<CreateJobHistoryErrorDto>>(item => item.Count == expectedItemLEvelErrorsCount)), Times.Once);
-        //}
-
-        //[Test]
-        //public async Task HandleDataSourceProcessingFinishedAsync_ShouldCorrectlyUpdateBatchFailedDocumentsCount()
-        //{
-        //    // Arrange
-        //    int expectedItemLEvelErrorsCount = 10;
-        //    _statusMonitorMock.Setup(x => x.FailedItemsCount).Returns(expectedItemLEvelErrorsCount);
-
-        //    // Act
-        //    await _sut.HandleDataSourceProcessingFinishedAsync(_batchMock.Object).ConfigureAwait(false);
-
-        //    // Assert
-        //    _batchMock.Verify(x => x.SetFailedDocumentsCountAsync(expectedItemLEvelErrorsCount));
-        //}
-
-        private void PrepareTestItemLevelErrors(int expectedItemLEvelErrorsCount)
+        [Test]
+        public async Task HandleRemainingErrorsAsync_ShouldHandleItemLevelErrorsInBatches()
         {
-            ItemLevelError itemLevelError = new ItemLevelError("testId", "testMessage");
-            for (int i = 0; i < expectedItemLEvelErrorsCount; i++)
+            // Arrange
+            const int expectedErrorBatchesCount = 2;
+            const int expectedErrorsCount = 15000;
+            IEnumerable<ItemLevelError> itemLevelErrors = _fxt.CreateMany<ItemLevelError>(expectedErrorsCount);
+
+            itemLevelErrors.ForEach(e => _sut.HandleItemLevelError(It.IsAny<long>(), e));
+
+            // Act
+            await _sut.HandleRemainingErrorsAsync().ConfigureAwait(false);
+
+            // Assert
+            _jobHistoryErrorRepositoryMock.Verify(
+                x => x.MassCreateAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<int>(),
+                    It.IsAny<IList<CreateJobHistoryErrorDto>>()),
+                Times.Exactly(expectedErrorBatchesCount));
+        }
+
+        [Test]
+        public async Task HandleIAPIItemLevelErrorsAsync_ShouldNotThrow_WhenDocumentIdentifierIsNotPresent()
+        {
+            // Arrange
+            ImportErrors errors = CreateImportErrorsWithProperties(() => new Dictionary<string, string>());
+
+            // Act
+            Func<Task> action = async () => await _sut.HandleIAPIItemLevelErrorsAsync(errors).ConfigureAwait(false);
+
+            // Assert
+            action.Should().NotThrow();
+
+            await _sut.HandleRemainingErrorsAsync().ConfigureAwait(false);
+
+            _jobHistoryErrorRepositoryMock.Verify(
+                x => x.MassCreateAsync(
+                    _configurationFake.Object.SourceWorkspaceArtifactId,
+                    _configurationFake.Object.JobHistoryArtifactId,
+                    It.IsAny<IList<CreateJobHistoryErrorDto>>()));
+        }
+
+        [Test]
+        public async Task HandleIAPIItemLevelErrorsAsync_ShouldCreateErrorBasedOnIdentifier()
+        {
+            // Arrange
+            ImportErrors errors = CreateImportErrorsWithProperties(() => new Dictionary<string, string>
             {
-                _sut.HandleItemLevelError(It.IsAny<long>(), itemLevelError);
-            }
+                { "Identifier", _fxt.Create<string>() }
+            });
+
+            // Act
+            Func<Task> action = async () => await _sut.HandleIAPIItemLevelErrorsAsync(errors).ConfigureAwait(false);
+
+            // Assert
+            action.Should().NotThrow();
+
+            await _sut.HandleRemainingErrorsAsync().ConfigureAwait(false);
+
+            _jobHistoryErrorRepositoryMock.Verify(
+                x => x.MassCreateAsync(
+                    _configurationFake.Object.SourceWorkspaceArtifactId,
+                    _configurationFake.Object.JobHistoryArtifactId,
+                    It.Is<IList<CreateJobHistoryErrorDto>>(
+                        y => y.All(e => e.SourceUniqueId != "[NOT_FOUND]"))));
         }
 
-        private void PrepareFakeConfiguration()
+        [Test]
+        public async Task HandleIAPIItemLevelErrorsAsync_ShouldHandleIAPIErrorsEvenIfMultiple()
         {
-            _configurationMock = new Mock<IItemLevelErrorHandlerConfiguration>();
-            _configurationMock.Setup(x => x.SourceWorkspaceArtifactId).Returns(It.IsAny<int>());
-            _configurationMock.Setup(x => x.JobHistoryArtifactId).Returns(It.IsAny<int>());
+            // Arrange
+            ImportErrors errors = _fxt.Create<ImportErrors>();
+
+            int expectedErrorsCount = errors.Errors.Select(x => x.ErrorDetails.Count).Sum();
+
+            // Act
+            await _sut.HandleIAPIItemLevelErrorsAsync(errors).ConfigureAwait(false);
+
+            // Assert
+            await _sut.HandleRemainingErrorsAsync().ConfigureAwait(false);
+
+            _jobHistoryErrorRepositoryMock.Verify(
+                x => x.MassCreateAsync(
+                    _configurationFake.Object.SourceWorkspaceArtifactId,
+                    _configurationFake.Object.JobHistoryArtifactId,
+                    It.Is<IList<CreateJobHistoryErrorDto>>(
+                        e => e.Count == expectedErrorsCount)));
+        }
+
+        [Test]
+        public async Task HandleIAPIItemLevelErrorsAsync_Should()
+        {
+            // Arrange
+            ImportErrors errors = _fxt.Create<ImportErrors>();
+
+            int expectedErrorsCount = errors.Errors.Select(x => x.ErrorDetails.Count).Sum();
+
+            // Act
+            await _sut.HandleIAPIItemLevelErrorsAsync(errors).ConfigureAwait(false);
+
+            // Assert
+            await _sut.HandleRemainingErrorsAsync().ConfigureAwait(false);
+
+            _jobHistoryErrorRepositoryMock.Verify(
+                x => x.MassCreateAsync(
+                    _configurationFake.Object.SourceWorkspaceArtifactId,
+                    _configurationFake.Object.JobHistoryArtifactId,
+                    It.Is<IList<CreateJobHistoryErrorDto>>(
+                        e => e.Count == expectedErrorsCount)));
+        }
+
+        private ImportErrors CreateImportErrorsWithProperties(Func<Dictionary<string, string>> propertiesFunc)
+        {
+            int importErrorsCount = _fxt.Create<int>();
+            int errorDetailsCount = _fxt.Create<int>();
+
+            List<ErrorDetail> errorDetails = _fxt.Build<ErrorDetail>()
+                .With(y => y.ErrorProperties, propertiesFunc())
+                .CreateMany(errorDetailsCount)
+                .ToList();
+
+            List<ImportError> importErrors =
+                _fxt.Build<ImportError>()
+                    .With(x => x.ErrorDetails, errorDetails)
+                    .CreateMany(importErrorsCount)
+                    .ToList();
+
+            ImportErrors errors = _fxt.Build<ImportErrors>()
+                .With(x => x.Errors, importErrors)
+                .Create();
+
+            return errors;
         }
     }
 }

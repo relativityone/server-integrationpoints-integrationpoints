@@ -6,7 +6,7 @@ namespace Relativity.Sync.Extensions
     {
         public static void Validate(this Response response)
         {
-            if (response.IsSuccess)
+            if (!response.IsSuccess)
             {
                 string message = $"ImportJobId: {response.ImportJobID}, Error code: {response.ErrorCode}, message: {response.ErrorMessage}";
                 throw new SyncException(message);

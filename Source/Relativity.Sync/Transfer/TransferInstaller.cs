@@ -3,6 +3,7 @@ using Relativity.AntiMalware.SDK;
 using Relativity.API;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Extensions;
+using Relativity.Sync.Logging;
 using Relativity.Sync.Transfer.ImportAPI;
 using Relativity.Sync.Transfer.StreamWrappers;
 
@@ -39,6 +40,7 @@ namespace Relativity.Sync.Transfer
             builder.RegisterType<AntiMalwareHandler>().As<IAntiMalwareHandler>();
             builder.RegisterType<AntiMalwareConfiguration>().As<IAntiMalwareConfiguration>();
             builder.RegisterType<FileStreamBuilder>().As<IFileStreamBuilder>();
+            builder.RegisterType<ItemLevelErrorLogAggregator>().As<IItemLevelErrorLogAggregator>();
 
             builder.RegisterType<ImportSettingsBuilder>().As<IImportSettingsBuilder>();
         }

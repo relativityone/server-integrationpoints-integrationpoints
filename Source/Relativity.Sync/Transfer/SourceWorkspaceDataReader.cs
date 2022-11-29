@@ -46,6 +46,7 @@ namespace Relativity.Sync.Transfer
             _exportBatcher = exportBatcher;
             _fieldManager = fieldManager;
             _logger = logger;
+            _itemLevelErrorLogAggregator = itemLevelErrorLogAggregator;
             _cancellationToken = cancellationToken;
 
             ItemStatusMonitor = itemStatusMonitor;
