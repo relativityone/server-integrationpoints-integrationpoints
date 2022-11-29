@@ -790,27 +790,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             }
         }
 
-        private async Task<T> SendReadRequestAsync<T>(
-            ReadRequest request,
-            ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
-            where T : BaseRdo, new()
-        {
-            try
-            {
-                using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
-                {
-                    ReadResult result = await client.ReadAsync(_workspaceArtifactId, request).ConfigureAwait(false);
-                    return result.Object.ToRDO<T>();
-                }
-            }
-            catch (Exception ex)
-            {
-                string rdoType = GetRdoType(new T());
-                HandleObjectManagerException(ex, message: GetErrorMessage<ReadRequest>(rdoType));
-                throw;
-            }
-        }
-
         private async Task<int> SendCreateRequestAsync(CreateRequest request, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
         {
             try
