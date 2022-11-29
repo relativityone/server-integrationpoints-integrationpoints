@@ -19,13 +19,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
     {
         private Mock<IServicesMgr> _servicesMgrFake;
         private Mock<IFileShareServerManager> _fileShareServerManagerMock;
-        private FileShareDiskUsageReporter _fileShareDiskUsageReporterFake;
         private SystemStatisticsReporter _systemStatisticsReporterFake;
         private KeplerPingReporter _keplerPingReporterFake;
         private Mock<IPingService> _pingServiceMock;
         private Mock<IHelper> _helperMock;
         private DatabasePingReporter _databasePingReporterFake;
-        private Mock<IWorkspaceDBContext> _context;
+        private Mock<IEddsDBContext> _context;
         private Mock<IAPILog> _loggerMock;
         private SystemHealthReporter _sut;
         private Exception _exception = new Exception();
@@ -35,7 +34,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
         {
             _helperMock = new Mock<IHelper>();
             _loggerMock = new Mock<IAPILog>();
-            _fileShareDiskUsageReporterFake = new FileShareDiskUsageReporter(_helperMock.Object, _loggerMock.Object);
             _fileShareServerManagerMock = new Mock<IFileShareServerManager>();
             _systemStatisticsReporterFake = new SystemStatisticsReporter(_loggerMock.Object);
             _keplerPingReporterFake = new KeplerPingReporter(_helperMock.Object, _loggerMock.Object);
@@ -44,40 +42,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Monitoring
             _servicesMgrFake.Setup(s => s.CreateProxy<IFileShareServerManager>(ExecutionIdentity.System)).Returns(_fileShareServerManagerMock.Object);
             _servicesMgrFake.Setup(s => s.CreateProxy<IPingService>(ExecutionIdentity.System)).Returns(_pingServiceMock.Object);
             _helperMock.Setup(h => h.GetServicesManager()).Returns(_servicesMgrFake.Object);
-            _context = new Mock<IWorkspaceDBContext>();
+            _context = new Mock<IEddsDBContext>();
             _databasePingReporterFake = new DatabasePingReporter(_context.Object, _loggerMock.Object);
         }
-
-        [Test]
-        public void SystemHealthReporter_FileShareServiceShouldNotBeAvailable_WhenDiskUsageReporterThrows()
-        {
-            // Arrange
-            _helperMock.Setup(h => h.GetServicesManager()).Throws(_exception);
-            _sut = new SystemHealthReporter(new[] { _fileShareDiskUsageReporterFake });
-
-            // Act
-            Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult();
-
-            // Assert
-            result["IsFileShareServiceAccessible"].ShouldBeEquivalentTo(false);
-        }
-
-        [Test]
-        public void SystemHealthReporter_FileShareServiceShouldNotBeAvailable_WhenDiskUsageReporterReturnsEmptyList()
-        {
-            // Arrange
-            var emptyResultSet = new FileShareQueryResultSet();
-
-            _fileShareServerManagerMock.Setup(x => x.QueryAsync(It.IsAny<Query>())).ReturnsAsync(emptyResultSet);
-            _sut = new SystemHealthReporter(new[] { _fileShareDiskUsageReporterFake });
-
-            // Act
-            Dictionary<string, object> result = _sut.GetSystemHealthStatisticsAsync().GetAwaiter().GetResult();
-
-            // Assert
-            result["IsFileShareServiceAccessible"].ShouldBeEquivalentTo(false);
-        }
-
+        
         [Test]
         public void SystemHealthReporter_ShouldSendSystemDiscUsage()
         {

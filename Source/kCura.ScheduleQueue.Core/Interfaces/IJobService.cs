@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 
-namespace kCura.ScheduleQueue.Core
+namespace kCura.ScheduleQueue.Core.Interfaces
 {
     public interface IJobService
     {

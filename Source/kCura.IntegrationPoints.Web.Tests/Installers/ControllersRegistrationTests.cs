@@ -1,16 +1,15 @@
-﻿using Castle.Core;
+﻿using System;
+using System.Linq;
+using System.Web.Http.Controllers;
+using System.Web.Mvc;
+using Castle.Core;
 using Castle.Windsor;
 using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.FluentAssertions;
 using kCura.IntegrationPoints.Web.Controllers;
 using kCura.IntegrationPoints.Web.Installers;
-using Microsoft.AspNet.SignalR.Hubs;
 using NUnit.Framework;
-using System;
-using System.Linq;
-using System.Web.Http.Controllers;
-using System.Web.Mvc;
 
 namespace kCura.IntegrationPoints.Web.Tests.Installers
 {
@@ -92,40 +91,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Installers
             _sut.Should()
                 .HaveRegisteredMultipleComponents<IHttpController>()
                 .And.AllExposeThemselvesAsService("because all api controllers should expose themselves as service");
-        }
-
-        [Test]
-        public void SignalRHubsShouldHaveHubSufix()
-        {
-            InterfaceImplementationInWebProjectShouldHaveSufix<IHub>("Hub");
-        }
-
-        [Test]
-        public void SignalRHubsShouldLiveInSignalRHubsNamespace()
-        {
-            InterfaceImplementationInWebProjectShouldLiveInNamespace<IHub>("SignalRHubs");
-        }
-
-        [Test]
-        public void SignalRHubsAreRegistered()
-        {
-            InterfaceImplementationInWebProjectShouldBeRegistered<IHub>();
-        }
-
-        [Test]
-        public void SignalRHubsAreTransient()
-        {
-            _sut.Should()
-                .HaveRegisteredMultipleComponents<IHub>()
-                .And.AllWithLifestyle(LifestyleType.Transient, "because all SignalR hubs should be transient");
-        }
-
-        [Test]
-        public void SignalRHubsExposeThemselvesAsService()
-        {
-            _sut.Should()
-                .HaveRegisteredMultipleComponents<IHub>()
-                .And.AllExposeThemselvesAsService("because all SignalR hubs should expose themselves as service");
         }
 
         private void InterfaceImplementationInWebProjectShouldHaveSufix<T>(string sufix)

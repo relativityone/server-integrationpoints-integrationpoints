@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using kCura.IntegrationPoints.Data.DbContext;
@@ -76,6 +77,31 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Services
         }
 
         public IDataReader ExecuteSQLStatementAsReader(string sql)
+        {
+            throw new NotImplementedException();
+        }
+
+        public SqlConnection GetConnection()
+        {
+            throw new NotImplementedException();
+        }
+
+        public DbDataReader ExecuteSqlStatementAsDbDataReader(string sqlStatement)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T ExecuteSqlStatementAsScalar<T>(string sqlStatement)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RollbackTransaction()
+        {
+            throw new NotImplementedException();
+        }
+
+        public SqlDataReader ExecuteSQLStatementAsReader(string sqlStatement, int timeout = -1)
         {
             throw new NotImplementedException();
         }

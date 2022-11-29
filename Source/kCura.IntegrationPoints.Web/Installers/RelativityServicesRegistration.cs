@@ -35,8 +35,7 @@ namespace kCura.IntegrationPoints.Web.Installers
                 Component
                     .For<global::Relativity.API.IDBContext>()
                     .UsingFactoryMethod(k => k.Resolve<WebClientFactory>().CreateDbContext())
-                    .LifestyleTransient()
-            );
+                    .LifestyleTransient());
         }
     }
 }

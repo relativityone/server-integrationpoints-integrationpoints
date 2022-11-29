@@ -59,5 +59,42 @@ namespace kCura.IntegrationPoints.Domain.Extensions
 
             return stringBuilder.ToString();
         }
+
+        /// <summary>
+        /// Check if <paramref name="ex"/> contains <typeparamref name="T"/> as inner exception
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <returns></returns>
+        public static bool HasInnerException<T>(this Exception ex) where T : Exception
+        {
+            Exception currentEx = ex;
+            while (currentEx.InnerException != null)
+            {
+                if (currentEx.InnerException is T)
+                {
+                    return true;
+                }
+
+                currentEx = currentEx.InnerException;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Check if <paramref name="message"/> is part of <paramref name="ex"/>.Message
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public static bool HasMessage(this Exception ex, string message)
+        {
+            if (ex is null)
+            {
+                return false;
+            }
+
+            return ex.Message.Contains(message);
+        }
     }
 }

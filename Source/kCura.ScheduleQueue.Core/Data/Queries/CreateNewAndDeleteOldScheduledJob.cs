@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.ScheduleQueue.Core.Properties;
 using Relativity.API;
 
@@ -25,7 +26,8 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
         private readonly long? _rootJobId;
         private readonly long? _parentJobId;
 
-        public CreateNewAndDeleteOldScheduledJob(IQueueDBContext dbContext,
+        public CreateNewAndDeleteOldScheduledJob(
+            IQueueDBContext dbContext,
             long oldScheduledJobId,
             int workspaceID,
             int relatedObjectArtifactID,
@@ -59,7 +61,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 
         public void Execute()
         {
-            IDBContext dbContext = _dbContext.EddsDBContext;
+            IEddsDBContext dbContext = _dbContext.EddsDBContext;
             try
             {
                 dbContext.BeginTransaction();
@@ -77,7 +79,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
             }
         }
 
-        private void DeleteJob(IDBContext dbContext)
+        private void DeleteJob(IEddsDBContext dbContext)
         {
             string sql = string.Format(Resources.DeleteJob, _dbContext.TableName);
             List<SqlParameter> sqlParams = new List<SqlParameter>();
@@ -86,7 +88,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
             dbContext.ExecuteNonQuerySQLStatement(sql, sqlParams.ToArray());
         }
 
-        private void CreateScheduledJob(IDBContext dbContext)
+        private void CreateScheduledJob(IEddsDBContext dbContext)
         {
             string sql = string.Format(Resources.CreateScheduledJob, _dbContext.TableName);
 

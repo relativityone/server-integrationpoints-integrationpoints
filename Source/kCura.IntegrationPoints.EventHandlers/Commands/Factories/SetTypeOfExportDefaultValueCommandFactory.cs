@@ -25,6 +25,7 @@ using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Domain.Managers;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
+using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
@@ -52,8 +53,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
             IJobService jobService = new JobService(agentService, jobServiceDataProvider, new KubernetesMode(logger), helper);
             IEddsServiceContext eddsServiceContext = new EddsServiceContext(serviceContextHelper);
             IRepositoryFactory repositoryFactory = new RepositoryFactory(helper, servicesManager);
-            IDBContext dbContext = helper.GetDBContext(helper.GetActiveCaseID());
-            IWorkspaceDBContext workspaceDbContext = new WorkspaceDBContext(dbContext);
+            IDbContextFactory dbContextFactory = new DbContextFactory(helper);
+            IWorkspaceDBContext workspaceDbContext = dbContextFactory.CreateWorkspaceDbContext(helper.GetActiveCaseID());
             IJobTrackerQueryManager jobTrackerQueryManager = new JobTrackerQueryManager(repositoryFactory, workspaceDbContext);
             IJobResourceTracker jobResourceTracker = new JobResourceTracker(jobTrackerQueryManager, queryManager);
             IJobTracker jobTracker = new JobTracker(jobResourceTracker, logger);

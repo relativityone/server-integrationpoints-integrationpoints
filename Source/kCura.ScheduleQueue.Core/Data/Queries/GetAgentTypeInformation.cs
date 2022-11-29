@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
 using kCura.ScheduleQueue.Core.Properties;
-using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.Data.Queries
 {
     public class GetAgentTypeInformation : IQuery<DataRow>
     {
-        private readonly IDBContext DBContext;
+        private readonly IEddsDBContext DBContext;
         private readonly Guid _agentGuid;
 
-        public GetAgentTypeInformation(IDBContext dbContext, Guid agentGuid)
+        public GetAgentTypeInformation(IEddsDBContext dbContext, Guid agentGuid)
         {
             this.DBContext = dbContext;
             _agentGuid = agentGuid;

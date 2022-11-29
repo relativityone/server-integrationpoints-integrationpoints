@@ -16,6 +16,7 @@ using kCura.IntegrationPoints.Domain.Extensions;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Data;
+using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.ScheduleQueue.Core.Services;
 using kCura.ScheduleQueue.Core.Validation;
@@ -50,6 +51,7 @@ namespace kCura.ScheduleQueue.AgentBase
         private ITaskParameterHelper _taskParameterHelper;
         private IConfig _config;
         private IAPM _apm;
+        private IDbContextFactory _dbContextFactory;
 
         private DateTime _agentStartTime;
 
@@ -64,7 +66,8 @@ namespace kCura.ScheduleQueue.AgentBase
             IDateTime dateTime = null,
             IAPILog logger = null,
             IConfig config = null,
-            IAPM apm = null)
+            IAPM apm = null,
+            IDbContextFactory dbContextFactory = null)
         {
             // Lazy init is required for things depending on Helper
             // Helper property in base class is assigned AFTER object construction
@@ -84,6 +87,7 @@ namespace kCura.ScheduleQueue.AgentBase
             _queueManager = queryManager;
             _config = config;
             _apm = apm;
+            _dbContextFactory = dbContextFactory;
             ScheduleRuleFactory = scheduleRuleFactory ?? new DefaultScheduleRuleFactory();
 
             _agentId = new Lazy<int>(GetAgentID);
@@ -192,6 +196,11 @@ namespace kCura.ScheduleQueue.AgentBase
                 _apm = Client.APMClient;
             }
 
+            if (_dbContextFactory == null)
+            {
+                _dbContextFactory = new DbContextFactory(Helper, Logger);
+            }
+
             _agentStartTime = _dateTime.UtcNow;
         }
 
@@ -265,7 +274,10 @@ namespace kCura.ScheduleQueue.AgentBase
                         continue;
                     }
 
-                    job.MarkJobAsFailed(new Exception($"Job {job.JobId} failed because Kubernetes Agent container crashed and job was left in unknown status. Please try to run this job again."), false);
+                    job.MarkJobAsFailed(
+                        new Exception($"Job {job.JobId} failed because Kubernetes Agent container crashed and job was left in unknown status. Please try to run this job again."),
+                         false,
+                         false);
                     Logger.LogInformation("Starting Job in Transient State {jobId} processing...", job.JobId);
 
                     TaskResult result = ProcessJob(job);
@@ -304,27 +316,26 @@ namespace kCura.ScheduleQueue.AgentBase
                 Exceptions = new List<Exception> { validationResult.Exception }
             };
 
-            job.MarkJobAsFailed(validationResult.Exception, true);
+            job.MarkJobAsFailed(validationResult.Exception, true, validationResult.MaximumConsecutiveFailuresReached);
             FinalizeJobExecution(job, failedJobResult);
         }
 
         private void PreExecute()
         {
-            CheckServicesAccess();
             Initialize();
+            CheckServicesAccess();
             InitializeManagerConfigSettingsFactory();
             CheckQueueTable();
         }
 
         private void CheckServicesAccess()
         {
-            WorkspaceDBContext workspaceDbContext = new WorkspaceDBContext(Helper.GetDBContext(-1));
-            IServiceHealthChecker dbHealthChecker = new DatabasePingReporter(workspaceDbContext, Logger);
+            IEddsDBContext eddsDBContext = _dbContextFactory.CreatedEDDSDbContext();
+            IServiceHealthChecker dbHealthChecker = new DatabasePingReporter(eddsDBContext, Logger);
             IServiceHealthChecker keplerHealthChecker = new KeplerPingReporter(Helper, Logger);
-            IServiceHealthChecker fileShareHealthChecker = new FileShareDiskUsageReporter(Helper, Logger);
             IServiceHealthChecker dnsHealthChecker = new DnsHealthReporter(new RealDnsService(), Logger);
 
-            ServicesAccessChecker servicesAccessChecker = new ServicesAccessChecker(new [] { dbHealthChecker, keplerHealthChecker, fileShareHealthChecker, dnsHealthChecker }, Logger);
+            ServicesAccessChecker servicesAccessChecker = new ServicesAccessChecker(new [] { dbHealthChecker, keplerHealthChecker, dnsHealthChecker }, Logger);
 
             bool areServicesHealthy = servicesAccessChecker.AreServicesHealthyAsync().GetAwaiter().GetResult();
 
@@ -474,7 +485,7 @@ namespace kCura.ScheduleQueue.AgentBase
                 PreValidationResult result = _queueJobValidator.ValidateAsync(job).GetAwaiter().GetResult();
                 if (!result.IsValid)
                 {
-                    job.MarkJobAsFailed(result.Exception, result.ShouldBreakSchedule);
+                    job.MarkJobAsFailed(result.Exception, result.ShouldBreakSchedule, result.MaximumConsecutiveFailuresReached);
                     LogValidationJobFailed(job, result);
                 }
 
