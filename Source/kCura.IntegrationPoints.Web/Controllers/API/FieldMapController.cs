@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -27,7 +25,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         public HttpResponseMessage Get(int id)
         {
             _apiLog.LogInformation("Retriving field mapping for Relativity Provider");
-            List<FieldMap> fieldsMaps = _integrationPointService.GetFieldMap(id).ToList();
+
+            // we need this hack because frontend calls this endpoint on step3 initialization,
+            // whether it is editing or creating new integration point.
+            List<FieldMap> fieldsMaps = id > 0
+                ? _integrationPointService.GetFieldMap(id)
+                : new List<FieldMap>();
             fieldsMaps.RemoveAll(
                 fieldMap =>
                     fieldMap.FieldMapType == FieldMapTypeEnum.FolderPathInformation &&

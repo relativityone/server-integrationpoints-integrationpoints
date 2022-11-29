@@ -9,7 +9,6 @@ namespace kCura.IntegrationPoints.Core.Models
         public IntegrationPointDtoBase()
         {
             LogErrors = true;
-            SourceConfiguration = string.Empty;
         }
 
         public int ArtifactId { get; set; }

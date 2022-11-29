@@ -55,8 +55,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                     model.DestinationProvider = _provider.GetRdoSynchronizerId();
                 }
 
-                RemoveInstanceToInstanceSettingsFromModel(model);
-
                 return Request.CreateResponse(HttpStatusCode.Accepted, model);
             }
             catch (Exception exception)
@@ -114,21 +112,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                 ClearAndProceedSelected = clearAndProceedSelected,
                 MappingType = mappingType
             });
-        }
-
-        private void RemoveInstanceToInstanceSettingsFromModel(IntegrationPointWebModel webModel)
-        {
-            //We need to reset the values from the database that have federated instance other than null.
-            //We do not want to forward the federated instance to the user interface.
-            if (!webModel.SourceConfiguration.Contains("\"FederatedInstanceArtifactId\":null") &&
-                webModel.SourceConfiguration.Contains("FederatedInstanceArtifactId"))
-            {
-                webModel.SourceConfiguration = null;
-            }
-            else if (webModel.SourceConfiguration.Contains("\"FederatedInstanceArtifactId\":null"))
-            {
-                webModel.SourceConfiguration = JsonUtils.RemoveProperty(webModel.SourceConfiguration, "FederatedInstanceArtifactId");
-            }
         }
 
         public enum MappingType

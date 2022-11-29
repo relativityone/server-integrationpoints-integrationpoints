@@ -76,51 +76,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _sut.Request.SetConfiguration(new HttpConfiguration());
         }
 
-
-        [Test]
-        public async Task Get_WhenFederatedInstanceIsSetUp_ShouldReturnNullSourceConfiguration()
-        {
-            // Arrange
-            var model = new IntegrationPointDto()
-            {
-                ArtifactId = 123,
-                SourceConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = 12345 })
-            };
-
-            _serviceFactory.CreateIntegrationPointService(_cpHelper).Returns(_integrationPointService);
-
-            _integrationPointService.Read(Arg.Any<int>()).Returns(model);
-
-            // Act
-            HttpResponseMessage httpResponse = _sut.Get(_INTEGRATION_POINT_ID);
-
-            // Assert
-            IntegrationPointDto integrationPointDto = await GetIntegrationPointModelFromHttpResponse(httpResponse).ConfigureAwait(false);
-            integrationPointDto.SourceConfiguration.Should().BeNull();
-        }
-
-        [Test]
-        public async Task Get_WhenFederatedInstanceIsNotSetUp_ShouldReturnValidSourceConfiguration()
-        {
-            // Arrange
-            var model = new IntegrationPointDto()
-            {
-                ArtifactId = 123,
-                SourceConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = null })
-            };
-
-            _serviceFactory.CreateIntegrationPointService(_cpHelper).Returns(_integrationPointService);
-
-            _integrationPointService.Read(Arg.Any<int>()).Returns(model);
-
-            // Act
-            HttpResponseMessage httpResponse = _sut.Get(_INTEGRATION_POINT_ID);
-
-            // Assert
-            IntegrationPointDto integrationPointDto = await GetIntegrationPointModelFromHttpResponse(httpResponse).ConfigureAwait(false);
-            integrationPointDto.SourceConfiguration.Should().NotContain("FederatedInstanceArtifactId");
-        }
-
         [TestCase(null)]
         [TestCase(1000)]
         public void Update_StandardSourceProvider_NoJobsRun_GoldFlow(int? federatedInstanceArtifactId)
