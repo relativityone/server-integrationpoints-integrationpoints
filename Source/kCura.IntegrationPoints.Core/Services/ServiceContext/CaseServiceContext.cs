@@ -1,16 +1,18 @@
 ﻿using Castle.Core;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 {
     public class CaseServiceContext : ICaseServiceContext
     {
+        private readonly IServiceContextHelper _serviceContextHelper;
+
         private int? _eddsUserId;
         private int? _workspaceUserId;
         private IRelativityObjectManagerService _relativityObjectManagerService;
-        private IDBContext _sqlContext;
-        private readonly IServiceContextHelper _serviceContextHelper;
+        private IRipDBContext _sqlContext;
 
         public CaseServiceContext(IServiceContextHelper serviceContextHelper)
         {
@@ -28,9 +30,14 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
                 {
                     _eddsUserId = _serviceContextHelper.GetEddsUserID();
                 }
+
                 return _eddsUserId.Value;
             }
-            set { _eddsUserId = value; }
+
+            set
+            {
+                _eddsUserId = value;
+            }
         }
 
         public int WorkspaceUserID
@@ -41,9 +48,14 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
                 {
                     _workspaceUserId = _serviceContextHelper.GetWorkspaceUserID();
                 }
+
                 return _workspaceUserId.Value;
             }
-            set { _workspaceUserId = value; }
+
+            set
+            {
+                _workspaceUserId = value;
+            }
         }
 
         [DoNotWire]
@@ -55,13 +67,18 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
                 {
                     _relativityObjectManagerService = _serviceContextHelper.GetRelativityObjectManagerService();
                 }
+
                 return _relativityObjectManagerService;
             }
-            set { _relativityObjectManagerService = value; }
+
+            set
+            {
+                _relativityObjectManagerService = value;
+            }
         }
 
         [DoNotWire]
-        public IDBContext SqlContext
+        public IRipDBContext SqlContext
         {
             get
             {
@@ -69,9 +86,14 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
                 {
                     _sqlContext = _serviceContextHelper.GetDBContext(this.WorkspaceID);
                 }
+
                 return _sqlContext;
             }
-            set { _sqlContext = value; }
+
+            set
+            {
+                _sqlContext = value;
+            }
         }
     }
 }

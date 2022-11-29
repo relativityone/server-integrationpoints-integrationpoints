@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.DbContext;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.ServiceContext
@@ -6,11 +7,14 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
     public class ServiceContextHelperForKeplerService : IServiceContextHelper
     {
         private readonly IServiceHelper _helper;
+        private readonly IDbContextFactory _dbContextFactory;
 
         public ServiceContextHelperForKeplerService(IServiceHelper helper, int workspaceArtifactId)
         {
             _helper = helper;
             WorkspaceID = workspaceArtifactId;
+            _dbContextFactory = new DbContextFactory(helper);
+
         }
 
         public int WorkspaceID { get; }
@@ -25,9 +29,9 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
             return _helper.GetAuthenticationManager().UserInfo.WorkspaceUserArtifactID;
         }
 
-        public IDBContext GetDBContext(int workspaceId = -1)
+        public IRipDBContext GetDBContext(int workspaceId = -1)
         {
-            return _helper.GetDBContext(workspaceId);
+            return _dbContextFactory.CreateWorkspaceDbContext(workspaceId);
         }
 
         public IRelativityObjectManagerService GetRelativityObjectManagerService()
