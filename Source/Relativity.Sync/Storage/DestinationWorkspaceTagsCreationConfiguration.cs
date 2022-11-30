@@ -8,7 +8,7 @@ namespace Relativity.Sync.Storage
     {
         private readonly IConfiguration _cache;
         private readonly SyncJobParameters _syncJobParameters;
-        
+
         public DestinationWorkspaceTagsCreationConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters)
         {
             _cache = cache;

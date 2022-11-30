@@ -12,7 +12,6 @@ using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Transfer.ADLS;
-using Relativity.Sync.Transfer.FileMovementService.Models;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors
@@ -264,7 +263,10 @@ namespace Relativity.Sync.Executors
                                     fmsBatches = await UploadBatchFilesToAdlsAsync(token, importJob).ConfigureAwait(false);
                                     await PerformFmsTransfer(fmsBatches, token.AnyReasonCancellationToken).ConfigureAwait(false);
 
-                                    TaggingExecutionResult taggingResult = await TagObjectsAsync(importJob, configuration, token).ConfigureAwait(false);
+                                    TaggingExecutionResult taggingResult = configuration.EnableTagging
+                                        ? await TagObjectsAsync(importJob, configuration, token).ConfigureAwait(false)
+                                        : TaggingExecutionResult.Success();
+
                                     int documentsTaggedCount = taggingResult.TaggedDocumentsCount;
                                     await batch.SetTaggedDocumentsCountAsync(batch.TaggedDocumentsCount + documentsTaggedCount).ConfigureAwait(false);
                                     batchProcessingResult.TotalRecordsTagged = documentsTaggedCount;

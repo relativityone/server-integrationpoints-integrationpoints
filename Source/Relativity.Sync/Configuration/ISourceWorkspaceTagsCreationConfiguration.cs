@@ -12,6 +12,8 @@ namespace Relativity.Sync.Configuration
 
         bool IsDestinationWorkspaceTagArtifactIdSet { get; }
 
+        bool EnableTagging { get; }
+
         Task SetDestinationWorkspaceTagArtifactIdAsync(int artifactId);
     }
 }

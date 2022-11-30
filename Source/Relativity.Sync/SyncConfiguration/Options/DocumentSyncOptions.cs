@@ -23,6 +23,11 @@ namespace Relativity.Sync.SyncConfiguration.Options
         public ImportNativeFileCopyMode CopyNativesMode { get; set; }
 
         /// <summary>
+        /// Specifies if transferred documents should be tagged
+        /// </summary>
+        public bool EnableTagging { get; set; }
+
+        /// <summary>
         /// Creates new instance of <see cref="DocumentSyncOptions"/> class.
         /// </summary>
         /// <param name="savedSearchId">Saved search Artifact ID.</param>

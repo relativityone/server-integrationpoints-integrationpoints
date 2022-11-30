@@ -11,9 +11,14 @@ namespace Relativity.Sync.SyncConfiguration
     {
         private readonly IFieldsMappingBuilder _fieldsMappingBuilder;
 
-        internal ImageSyncConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
-            IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, ImageSyncOptions options,
-            RdoOptions rdoOptions, IRdoManager rdoManager) 
+        internal ImageSyncConfigurationBuilder(
+                ISyncContext syncContext,
+                ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
+                IFieldsMappingBuilder fieldsMappingBuilder,
+                ISerializer serializer,
+                ImageSyncOptions options,
+                RdoOptions rdoOptions,
+                IRdoManager rdoManager)
             : base(syncContext, serviceFactoryForAdmin, rdoOptions, rdoManager, serializer)
         {
             _fieldsMappingBuilder = fieldsMappingBuilder;
@@ -26,6 +31,8 @@ namespace Relativity.Sync.SyncConfiguration
             SyncConfiguration.DataDestinationArtifactId = options.DestinationLocationId;
             SyncConfiguration.ImageFileCopyMode = options.CopyImagesMode;
             SyncConfiguration.IncludeOriginalImages = true;
+
+            SyncConfiguration.EnableTagging = options.EnableTagging;
         }
 
         public new IImageSyncConfigurationBuilder CorrelationId(string correlationId)
@@ -70,7 +77,7 @@ namespace Relativity.Sync.SyncConfiguration
 
             return this;
         }
-        
+
         public new IImageSyncConfigurationBuilder DisableItemLevelErrorLogging()
         {
             base.DisableItemLevelErrorLogging();

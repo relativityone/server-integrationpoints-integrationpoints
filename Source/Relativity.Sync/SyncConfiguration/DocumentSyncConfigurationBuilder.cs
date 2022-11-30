@@ -15,12 +15,17 @@ namespace Relativity.Sync.SyncConfiguration
         private readonly IFieldsMappingBuilder _fieldsMappingBuilder;
 
         private Action<IFieldsMappingBuilder> _fieldsMappingAction;
-        
+
         private DestinationFolderStructureOptions _destinationFolderStructureOptions;
 
-        internal DocumentSyncConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
-            IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, DocumentSyncOptions options,
-            RdoOptions rdoOptions, IRdoManager rdoManager) 
+        internal DocumentSyncConfigurationBuilder(
+                ISyncContext syncContext,
+                ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
+                IFieldsMappingBuilder fieldsMappingBuilder,
+                ISerializer serializer,
+                DocumentSyncOptions options,
+                RdoOptions rdoOptions,
+                IRdoManager rdoManager)
             : base(syncContext, serviceFactoryForAdmin, rdoOptions, rdoManager, serializer)
         {
             _fieldsMappingBuilder = fieldsMappingBuilder;
@@ -33,6 +38,8 @@ namespace Relativity.Sync.SyncConfiguration
             SyncConfiguration.DataSourceArtifactId = options.SavedSearchId;
             SyncConfiguration.DataDestinationArtifactId = options.DestinationFolderId;
             SyncConfiguration.NativesBehavior = options.CopyNativesMode;
+
+            SyncConfiguration.EnableTagging = options.EnableTagging;
         }
 
         public IDocumentSyncConfigurationBuilder DestinationFolderStructure(DestinationFolderStructureOptions options)
@@ -122,15 +129,17 @@ namespace Relativity.Sync.SyncConfiguration
 
             DestinationFolderStructureCleanup();
 
-            SyncConfiguration.DestinationFolderStructureBehavior = 
+            SyncConfiguration.DestinationFolderStructureBehavior =
                 _destinationFolderStructureOptions.DestinationFolderStructure;
 
             if (_destinationFolderStructureOptions.DestinationFolderStructure == DestinationFolderStructureBehavior.ReadFromField)
             {
                 using (var fieldManager = await ServiceFactoryForAdmin.CreateProxyAsync<IFieldManager>())
                 {
-                    var folderPathField = await fieldManager.ReadAsync(SyncContext.SourceWorkspaceId,
-                        _destinationFolderStructureOptions.FolderPathSourceFieldId).ConfigureAwait(false);
+                    var folderPathField = await fieldManager.ReadAsync(
+                            SyncContext.SourceWorkspaceId,
+                            _destinationFolderStructureOptions.FolderPathSourceFieldId)
+                        .ConfigureAwait(false);
 
                     if (folderPathField == null)
                     {
@@ -147,7 +156,7 @@ namespace Relativity.Sync.SyncConfiguration
                 SyncConfiguration.MoveExistingDocuments = _destinationFolderStructureOptions.MoveExistingDocuments;
             }
         }
-        
+
         private void DestinationFolderStructureCleanup()
         {
             SyncConfiguration.DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None;

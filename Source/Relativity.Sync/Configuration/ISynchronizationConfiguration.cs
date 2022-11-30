@@ -45,6 +45,8 @@ namespace Relativity.Sync.Configuration
 
         char NestedValueDelimiter { get; }
 
+        bool EnableTagging { get; }
+
         Task<int> GetImportApiBatchSizeAsync();
     }
 }

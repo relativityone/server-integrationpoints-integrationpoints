@@ -43,6 +43,7 @@ namespace Relativity.Sync.RDOs
         public const string SourceJobTagNameGuid = "DA0E1931-9460-4A61-9033-A8035697C1A4";
         public const string SourceWorkspaceTagArtifactIdGuid = "FEAB129B-AEEF-4AA4-BC91-9EAE9A4C35F6";
         public const string SourceWorkspaceTagNameGuid = "D828B69E-AAAE-4639-91E2-416E35C163B1";
+        public const string EnableTaggingGuid = "102C14FA-AD6C-46F1-9420-0DAF3750EC11";
 
         public const string JobHistoryTypeGuid = "52234DAA-2E06-4449-8456-8B0D2C219DF6";
         public const string JobHistoryStatusGuid = "33AC7C48-3D46-4D08-9C65-544984B886C9";

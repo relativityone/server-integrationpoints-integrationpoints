@@ -33,14 +33,22 @@ namespace Relativity.Sync.SyncConfiguration.Options
         public ImportImageFileCopyMode CopyImagesMode { get; set; }
 
         /// <summary>
+        /// Specifies if transferred images should be tagged
+        /// </summary>
+        public bool EnableTagging { get; set; }
+
+        /// <summary>
         /// Creates new instance of <see cref="ImageSyncOptions"/> class.
         /// </summary>
         /// <param name="dataSourceType">Data source type.</param>
         /// <param name="dataSourceId">Data source object Artifact ID.</param>
         /// <param name="destinationLocationType">Destination location type.</param>
         /// <param name="destinationLocationId">Destination object Artifact ID.</param>
-        public ImageSyncOptions(DataSourceType dataSourceType, int dataSourceId, 
-            DestinationLocationType destinationLocationType, int destinationLocationId)
+        public ImageSyncOptions(
+            DataSourceType dataSourceType,
+            int dataSourceId,
+            DestinationLocationType destinationLocationType,
+            int destinationLocationId)
         {
             DataSourceType = dataSourceType;
             DataSourceId = dataSourceId;
