@@ -20,7 +20,6 @@ namespace Relativity.Sync.Tests.System
 
         private const int _NOT_EXISTING_WORKSPACE = 1;
 
-
         [SetUp]
         public async Task SetUp()
         {

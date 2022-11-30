@@ -49,6 +49,7 @@ namespace Relativity.Sync.KeplerFactory
             {
                 invocation.ReturnValue = HandleAsync(invocation);
             }
+
             if (delegateType == MethodType.AsyncFunction)
             {
                 ExecuteHandleAsyncWithResultUsingReflection(invocation);
@@ -188,6 +189,7 @@ namespace Relativity.Sync.KeplerFactory
             {
                 return MethodType.AsyncFunction;
             }
+
             return MethodType.Synchronous;
         }
 

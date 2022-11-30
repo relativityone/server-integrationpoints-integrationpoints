@@ -128,7 +128,7 @@ namespace Relativity.Sync.Tests.Integration
             // Act
             ExecutionResult validationResult = await instance.ExecuteAsync(_configurationStubFake, CompositeCancellationToken.None).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             validationResult.Status.Should().Be(ExecutionStatus.Completed);
         }
 
@@ -145,7 +145,7 @@ namespace Relativity.Sync.Tests.Integration
             // Act
             ExecutionResult validationResult = await instance.ExecuteAsync(_configurationStubFake, CompositeCancellationToken.None).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             validationResult.Status.Should().Be(ExecutionStatus.Failed);
             validationResult.Message.Should().Be("Permission checks failed. See messages for more details.");
         }

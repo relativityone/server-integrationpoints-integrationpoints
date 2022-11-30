@@ -45,6 +45,7 @@ namespace Relativity.Sync.Executors.Validation
                 _logger.LogError(ex, message, configuration.SourceWorkspaceArtifactId);
                 throw;
             }
+
             return result;
         }
 

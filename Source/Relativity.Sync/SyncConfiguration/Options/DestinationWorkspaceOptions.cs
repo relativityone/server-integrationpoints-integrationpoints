@@ -38,7 +38,7 @@ namespace Relativity.Sync.SyncConfiguration.Options
         public Guid DestinationWorkspaceNameGuid { get; private set; }
 
         /// <summary>
-        /// GUID for Destination Workspace Artifact ID field (whole number) 
+        /// GUID for Destination Workspace Artifact ID field (whole number)
         /// </summary>
         public Guid DestinationWorkspaceArtifactIdGuid { get; private set; }
 

@@ -227,7 +227,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
             await _sut.UpdateAsync(sourceWorkspaceArtifactId, destinationWorkspaceTag).ConfigureAwait(false);
 
             // assert
-
             _objectManager.Verify(x => x.UpdateAsync(sourceWorkspaceArtifactId, It.Is<UpdateRequest>(request =>
                 VerifyUpdateRequest(
                     request,
@@ -247,6 +246,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             {
                 checkPredicates = checkPredicates && fields.Exists(predicate);
             }
+
             return request.Object.ArtifactID == tagArtifactId &&
                     fields.Count == predicates.Length &&
                     checkPredicates;

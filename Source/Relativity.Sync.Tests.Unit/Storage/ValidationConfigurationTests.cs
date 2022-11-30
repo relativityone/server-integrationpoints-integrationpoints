@@ -19,7 +19,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
         private const int _WORKSPACE_ID = 111;
         private const int _USER_ID = 323454;
 
-
         [SetUp]
         public void SetUp()
         {

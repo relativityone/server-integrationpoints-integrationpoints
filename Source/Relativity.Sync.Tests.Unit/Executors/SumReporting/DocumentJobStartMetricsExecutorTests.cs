@@ -71,8 +71,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
                 _jobStatisticsContainer,
                 _fileStatisticsCalculatorFake.Object,
                 queryRequestProvider.Object,
-                _loggerMock.Object
-                );
+                _loggerMock.Object);
         }
 
         [Test]

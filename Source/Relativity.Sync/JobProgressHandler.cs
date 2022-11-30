@@ -34,8 +34,7 @@ namespace Relativity.Sync
                         alreadyExecutedBatch.ArtifactId, totalItems:
                         alreadyExecutedBatch.TotalDocumentsCount,
                         alreadyExecutedBatch.FailedItemsCount,
-                        alreadyExecutedBatch.TransferredItemsCount
-                    )
+                        alreadyExecutedBatch.TransferredItemsCount)
                 { Completed = true };
             }
 
@@ -85,7 +84,6 @@ namespace Relativity.Sync
                     // When IAPI completes processing of batch, it checks each item if it was successfully processed. If not, it fires OnError event for each of the items.
                     // That's why in HandleItemError method, we are decrementing number of successfully processed items and
                     // incrementing number of failed items.
-
                     batchProgress.ItemsFailed++;
                     batchProgress.ItemsProcessed--;
                     _changeSignal.OnNext(Unit.Default);
@@ -98,8 +96,7 @@ namespace Relativity.Sync
                 .Do(_ =>
                     {
                         batchProgress.Completed = true;
-                    }
-                );
+                    });
 
             IDisposable jobReportsSubscription = Observable
                 .FromEvent<SyncJobEventHandler<ImportApiJobStatistics>, ImportApiJobStatistics>(

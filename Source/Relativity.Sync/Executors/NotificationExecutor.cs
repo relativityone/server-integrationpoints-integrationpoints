@@ -57,6 +57,7 @@ namespace Relativity.Sync.Executors
                 {
                     await emailManager.SendEmailNotificationAsync(emailRequest).ConfigureAwait(false);
                 }
+
                 return ExecutionResult.Success();
             }
             catch (Exception emailRequestException)
@@ -84,6 +85,7 @@ namespace Relativity.Sync.Executors
             {
                 jobStatus = progresses.OrderByDescending(x => x.Status).First().Status;
             }
+
             await FillEmailRequestAsync(emailRequest, configuration, jobStatus, token).ConfigureAwait(false);
             return emailRequest;
         }
@@ -163,6 +165,7 @@ namespace Relativity.Sync.Executors
                     "Failed to retrieve the destination workspace tag information for source workspace {SourceWorkspace} and destination workspace {DestinationWorkspace}.",
                     configuration.SourceWorkspaceArtifactId, configuration.DestinationWorkspaceArtifactId);
             }
+
             return destinationInfo;
         }
 
@@ -187,6 +190,7 @@ namespace Relativity.Sync.Executors
                     "Failed to retrieve the job history error information for source workspace {SourceWorkspace} and destination workspace {DestinationWorkspace}.",
                     configuration.SourceWorkspaceArtifactId, configuration.DestinationWorkspaceArtifactId);
             }
+
             return errorMessage;
         }
     }

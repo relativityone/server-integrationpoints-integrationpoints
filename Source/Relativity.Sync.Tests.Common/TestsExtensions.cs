@@ -17,6 +17,7 @@ namespace Relativity.Sync.Tests.Common
                 list[k] = list[n];
                 list[n] = value;
             }
+
             return list;
         }
     }

@@ -11,7 +11,7 @@ namespace Relativity.Sync.Tests.Unit.RDOs
         [Test]
         public void GetValue_ShouldReturnCorrectValue()
         {
-            // Arrange 
+            // Arrange
             var sut = new RdoGuidProvider();
 
             // Act

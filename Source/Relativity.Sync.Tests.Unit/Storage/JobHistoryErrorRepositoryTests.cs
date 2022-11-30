@@ -293,7 +293,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
             _objectManagerMock.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<MassCreateRequest>()))
                 .Returns((int workspaceId, MassCreateRequest request) => Task.FromResult(GetResultFrom(request, true)));
 
-            // Act 
+            // Act
             await _sut.MassCreateAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID, new List<CreateJobHistoryErrorDto>()
                 {
                     itemLevelErrorDto, jobLevelErrorDto

@@ -110,7 +110,7 @@ namespace Relativity.Sync.Tests.Integration
             const int bufferLength = 1024;
             byte[] streamedResultBuffer = new byte[bufferLength];
             int bytesRead = resultStream.Read(streamedResultBuffer, 0, streamedResultBuffer.Length);
-            string reconstructedString = string.Join("", Encoding.Unicode.GetChars(streamedResultBuffer, 0, bytesRead));
+            string reconstructedString = string.Join(string.Empty, Encoding.Unicode.GetChars(streamedResultBuffer, 0, bytesRead));
             reconstructedString.Should().Be(sanitizingFieldValue);
         }
 
@@ -351,7 +351,6 @@ namespace Relativity.Sync.Tests.Integration
         private static bool MatchAll(object _) => true;
 
         // The next two methods do need to check ArtifactTypeId/Name by default so that we can differentiate between the two OM calls.
-
         private ISetup<IObjectManager, Task<QueryResultSlim>> SetupItemArtifactIdRequest(Func<QueryRequest, bool> queryMatcher)
         {
             return _objectManager.Setup(x => x.QuerySlimAsync(

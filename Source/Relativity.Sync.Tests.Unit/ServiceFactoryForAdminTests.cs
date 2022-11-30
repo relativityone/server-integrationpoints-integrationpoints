@@ -27,7 +27,6 @@ namespace Relativity.Sync.Tests.Unit
             Mock<IRandom> randomFake = new Mock<IRandom>();
             Mock<IAPILog> syncLogMock = new Mock<IAPILog>();
 
-
             _instance = new ServiceFactoryForAdmin(_servicesMgr.Object, _proxyFactory.Object,
                 randomFake.Object, syncLogMock.Object);
 

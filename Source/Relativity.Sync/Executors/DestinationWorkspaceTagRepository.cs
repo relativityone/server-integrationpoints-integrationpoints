@@ -58,6 +58,7 @@ namespace Relativity.Sync.Executors
                     DestinationWorkspaceArtifactId = Convert.ToInt32(tag[_rdoGuidConfiguration.DestinationWorkspace.DestinationWorkspaceArtifactIdGuid].Value, CultureInfo.InvariantCulture)
                 };
             }
+
             return destinationWorkspaceTag;
         }
 
@@ -244,6 +245,7 @@ namespace Relativity.Sync.Executors
                     _logger.LogError(ex, "Failed to query {TagObject} object: {Request}.", nameof(DestinationWorkspaceTag), request);
                     throw new SyncKeplerException($"Failed to query {nameof(DestinationWorkspaceTag)} in workspace {sourceWorkspaceArtifactId}.", ex);
                 }
+
                 return queryResult.Objects.FirstOrDefault();
             }
         }
@@ -260,6 +262,7 @@ namespace Relativity.Sync.Executors
                 };
                 objectRefs[i] = objectRef;
             }
+
             return objectRefs;
         }
 

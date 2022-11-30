@@ -15,7 +15,7 @@
 
         /// <summary>
         /// Creates the instance for batch with given Id.
-        /// 
+        ///
         /// All public properties setters are thread-safe
         /// </summary>
         /// <param name="batchId">Id of monitored batch</param>

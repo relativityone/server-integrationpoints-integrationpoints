@@ -100,6 +100,7 @@ namespace Relativity.Sync.Nodes
                             status = ExecutionStatus.None;
                             break;
                     }
+
                     if (context.CancelProcessing)
                     {
                         status = ExecutionStatus.Canceled;
@@ -109,6 +110,7 @@ namespace Relativity.Sync.Nodes
                     return jobEndMetricsService.ExecuteAsync(status);
                 }
             }
+
             return Task.FromResult(ExecutionResult.Skipped());
         }
 

@@ -35,7 +35,7 @@ namespace Relativity.Sync.Tests.System
         [IdentifiedTest("A272AEC0-D482-437B-9B83-2650757A03F7")]
         public async Task RelativitySourceCaseTagReadShouldBeEqualToCreated()
         {
-            //Arrange
+            // Arrange
             JobHistoryNameQuery jobHistoryNameQuery =
                 new JobHistoryNameQuery(new ServiceFactoryStub(ServiceFactory), Logger);
 

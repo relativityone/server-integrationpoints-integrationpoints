@@ -289,7 +289,6 @@ namespace Relativity.Sync.Tests.System.Core.Helpers.APIHelper
 
         public bool IsMasterDatabase { get; }
 
-
         #endregion
     }
 }

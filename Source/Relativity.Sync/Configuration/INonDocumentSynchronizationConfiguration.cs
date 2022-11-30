@@ -2,7 +2,7 @@
 {
     interface INonDocumentSynchronizationConfiguration : ISynchronizationConfiguration
     {
-        // add config required for object 
+        // add config required for object
         int DestinationRdoArtifactTypeId { get; }
     }
 }

@@ -49,8 +49,7 @@ namespace Relativity.Sync.Tests.Unit
             {
                 _syncImportBulkArtifactJobMock.Raise(x => x.OnItemLevelError += null, new ItemLevelError(
                     identifier,
-                    message
-                ));
+                    message));
                 _syncImportBulkArtifactJobMock.Raise(x => x.OnComplete += null, CreateJobReport());
             });
 
@@ -81,8 +80,7 @@ namespace Relativity.Sync.Tests.Unit
 
                 _syncImportBulkArtifactJobMock.Raise(x => x.OnItemLevelError += null, new ItemLevelError(
                     identifier,
-                    message
-                ));
+                    message));
                 _syncImportBulkArtifactJobMock.Raise(x => x.OnComplete += null, CreateJobReport());
             });
 

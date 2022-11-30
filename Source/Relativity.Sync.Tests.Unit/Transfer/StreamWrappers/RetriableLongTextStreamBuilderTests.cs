@@ -34,7 +34,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
         private const int _WORKSPACE_ARTIFACT_ID = 1014023;
         private const string _LONG_TEXT_FIELD_NAME = "bar";
 
-
         [SetUp]
         public void SetUp()
         {

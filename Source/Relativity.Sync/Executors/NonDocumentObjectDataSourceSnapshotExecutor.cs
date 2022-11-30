@@ -79,7 +79,6 @@ namespace Relativity.Sync.Executors
                         _logger.LogInformation("Retrieved {objectsCount} objects from view {viewId} in step ObjectsToLink",
                             exportResults.RecordCount, configuration.DataSourceArtifactId);
 
-
                         // if there are no matching records, no need to save the export
                         if (exportResults.RecordCount > 0)
                         {
@@ -133,7 +132,6 @@ namespace Relativity.Sync.Executors
                     _logger.LogInformation("Retrieved {objectsCount} objects from view {viewId} in step AllObjects",
                         exportResults.RecordCount, configuration.DataSourceArtifactId);
                 }
-
 
                 await configuration.SetSnapshotDataAsync(exportResults.RunID, (int)exportResults.RecordCount);
 

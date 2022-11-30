@@ -101,7 +101,6 @@ namespace Relativity.Sync.Tests.Unit
             var data = Enumerable.Range(1, 10)
                 .Select(x => new DocumentImageData { DocumentArtifactId = x, ProductionId = 1 }).ToList();
 
-
             MockProductions(data);
 
             // Act
@@ -171,7 +170,6 @@ namespace Relativity.Sync.Tests.Unit
 
             MockProductions(productionData);
 
-
             _searchServiceMock.Setup(x => x.RetrieveImagesForSearchAsync(WORKSPACE_ID, It.IsAny<int[]>(), It.IsAny<string>()))
                 .ReturnsAsync(CreateDataSet(productionData.Where(x => x.ProductionId == 1)));
 
@@ -192,7 +190,6 @@ namespace Relativity.Sync.Tests.Unit
                 It.Is<int[]>(expectedIds => expectedIds.Intersect(documentIdsWithProductionId).Any()), It.IsAny<string>()), Times.Never);
         }
 
-
         [Test]
         public async Task QueryImagesForDocumentsAsync_ShouldReturnProducedDocumentImages_WithRespectToProductionPrecedence()
         {
@@ -211,7 +208,6 @@ namespace Relativity.Sync.Tests.Unit
 
             // Assert
             result.Select(x => x.DocumentArtifactId).Should().BeEquivalentTo(Enumerable.Range(1, 10));
-
 
             result.Where(x => x.ProductionId == 1).Select(x => x.DocumentArtifactId).Should()
                 .BeEquivalentTo(Enumerable.Range(6, 5));
@@ -232,7 +228,6 @@ namespace Relativity.Sync.Tests.Unit
 
             MockProductions(data);
 
-
             // Act
             IEnumerable<ImageFile> result = await _sut.QueryImagesForDocumentsAsync(WORKSPACE_ID, data.Select(x => x.DocumentArtifactId).ToArray(),
                 new QueryImagesOptions { ProductionIds = new[] { 1, 2 } }).ConfigureAwait(false);
@@ -241,7 +236,6 @@ namespace Relativity.Sync.Tests.Unit
             _searchServiceMock.Verify(x => x.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetAsync(WORKSPACE_ID, 1, It.IsAny<int[]>(), It.IsAny<string>()), Times.Once);
             _searchServiceMock.Verify(x => x.RetrieveImagesByProductionArtifactIDForProductionExportByDocumentSetAsync(WORKSPACE_ID, 2, It.IsAny<int[]>(), It.IsAny<string>()), Times.Never);
         }
-
 
         private void MockProductions(IEnumerable<DocumentImageData> data)
         {
@@ -273,7 +267,7 @@ namespace Relativity.Sync.Tests.Unit
 
                 dataRow["DocumentArtifactID"] = imageData.DocumentArtifactId;
                 dataRow["NativeIdentifier"] = imageData.DocumentArtifactId.ToString();
-                dataRow["Identifier"] = imageData.Identifier ?? (imageData.DocumentArtifactId.ToString() + (imageData.ProductionId != null ? "_" + imageData.ProductionId : ""));
+                dataRow["Identifier"] = imageData.Identifier ?? (imageData.DocumentArtifactId.ToString() + (imageData.ProductionId != null ? "_" + imageData.ProductionId : string.Empty));
                 dataRow["Location"] = "location";
                 dataRow["ImageFileName"] = imageData.DocumentArtifactId.ToString();
                 dataRow["Filename"] = imageData.DocumentArtifactId.ToString();

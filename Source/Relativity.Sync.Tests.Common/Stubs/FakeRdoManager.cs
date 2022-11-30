@@ -27,8 +27,6 @@ namespace Relativity.Sync.Tests.Common.Stubs
 
         public Mock<IRdoManager> Mock { get; } = new Mock<IRdoManager>();
 
-
-
         public Task EnsureTypeExistsAsync<TRdo>(int workspaceId) where TRdo : IRdoType
         {
             Mock.Object.EnsureTypeExistsAsync<TRdo>(workspaceId);
@@ -67,6 +65,7 @@ namespace Relativity.Sync.Tests.Common.Stubs
             {
                 rdo.ArtifactId = _defaultArtifactId;
             }
+
             return Mock.Object.CreateAsync(workspaceId, rdo, parentObjectId);
         }
 

@@ -46,6 +46,7 @@ namespace Relativity.Sync.Tests.Integration
             {
                 ContainerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
             }
+
             IntegrationTestsContainerBuilder.MockStepsExcept<T>(ContainerBuilder);
 
             ContainerBuilder.RegisterInstance(_syncLog.Object).As<IAPILog>();
@@ -104,7 +105,6 @@ namespace Relativity.Sync.Tests.Integration
             T snapshotPartitionConfiguration =
                 GetSnapshotPartitionConfigurationMockAndSetup(batchSize,
                     numberOfItems);
-
 
             _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), 1, 1))
                 .ReturnsAsync(new QueryResult

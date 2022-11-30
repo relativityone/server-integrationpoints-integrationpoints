@@ -389,6 +389,7 @@ namespace Relativity.Sync.Tests.Unit
             {
                 Assert.Fail($"Cannot find field '{fieldName}' in type '{interceptor.GetType()}'");
             }
+
             millisecondsBetweenHttpRetriesBaseField.SetValue(interceptor, delayBaseMs);
         }
 

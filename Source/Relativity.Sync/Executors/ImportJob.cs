@@ -154,6 +154,7 @@ namespace Relativity.Sync.Executors
                 executionResult = ExecutionResult.Canceled();
                 return new ImportJobResult(executionResult, GetMetadataSize(), GetFilesSize(), GetJobSize());
             }
+
             if (token.IsDrainStopRequested)
             {
                 _logger.LogInformation("Drain-Stop was requested. IAPI job won't be run. Returning Paused execution result.");
@@ -209,6 +210,7 @@ namespace Relativity.Sync.Executors
             {
                 metadataSize = _importApiJobStatistics.MetadataBytes;
             }
+
             return metadataSize;
         }
 
@@ -219,6 +221,7 @@ namespace Relativity.Sync.Executors
             {
                 metadataSize = _importApiJobStatistics.FileBytes;
             }
+
             return metadataSize;
         }
 

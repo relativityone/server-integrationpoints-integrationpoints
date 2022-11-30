@@ -53,7 +53,7 @@ namespace Relativity.Sync.Transfer
             string cacheKey = $"{nameof(UserFieldSanitizer)}_{userArtifactId}";
 
             string cacheUserEmail = _memoryCache.Get<string>(cacheKey);
-            if (!String.IsNullOrEmpty(cacheUserEmail))
+            if (!string.IsNullOrEmpty(cacheUserEmail))
             {
                 return cacheUserEmail;
             }

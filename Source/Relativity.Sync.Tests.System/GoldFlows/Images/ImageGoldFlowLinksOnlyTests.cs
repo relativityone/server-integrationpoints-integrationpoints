@@ -55,13 +55,11 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 
             goldFlowTestRun.AssertDocuments(
                 documentsWithImagesInSourceWorkspace.Select(x => x.Name).ToArray(),
-                documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray()
-            );
+                documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray());
 
             goldFlowTestRun.AssertImages(
                 _goldFlowTestSuite.SourceWorkspace.ArtifactID, documentsWithImagesInSourceWorkspace.ToArray(),
-                goldFlowTestRun.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray()
-            );
+                goldFlowTestRun.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray());
         }
 
         [IdentifiedTest("C8B0E268-CC1C-4E0F-97BC-EE1CDE657AA5")]
@@ -91,13 +89,11 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 
             pushImagesWithLinksJob.AssertDocuments(
                 documentsWithImagesInSourceWorkspace.Select(x => x.Name).ToArray(),
-                documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray()
-            );
+                documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray());
 
             pushImagesWithLinksJob.AssertImages(
                 _goldFlowTestSuite.SourceWorkspace.ArtifactID, documentsWithImagesInSourceWorkspace.ToArray(),
-                pushMetadataOnlyJob.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray()
-            );
+                pushMetadataOnlyJob.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray());
         }
 
         private async Task ConfigureTestRunForImagesWithLinksOnlyAsync(WorkspaceRef sourceWorkspace, WorkspaceRef destinationWorkspace, ConfigurationStub configuration)

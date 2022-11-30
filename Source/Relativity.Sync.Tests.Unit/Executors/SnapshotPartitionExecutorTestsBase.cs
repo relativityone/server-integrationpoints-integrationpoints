@@ -48,6 +48,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             IBatch batch = null;
             BatchRepository.SetupSequence(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batch).Throws<InvalidOperationException>();
+
             // ACT
             ExecutionResult result = await Instance.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 

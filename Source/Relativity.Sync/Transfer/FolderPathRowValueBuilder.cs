@@ -28,10 +28,13 @@ namespace Relativity.Sync.Transfer
                     {
                         return _folderPathsMap[document.ArtifactID];
                     }
+
                     throw new SyncItemLevelErrorException($"Could not find folder for document with ID {document.ArtifactID}.");
                 }
+
                 return initialValue;
             }
+
             throw new ArgumentException($"Cannot build value for {nameof(SpecialFieldType)}.{fieldInfoDto.SpecialFieldType.ToString()}.", nameof(fieldInfoDto));
         }
     }

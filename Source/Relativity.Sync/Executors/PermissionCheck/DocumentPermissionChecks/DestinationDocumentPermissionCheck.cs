@@ -27,7 +27,6 @@ namespace Relativity.Sync.Executors.PermissionCheck.DocumentPermissionChecks
 
         private readonly ISyncObjectTypeManager _syncObjectTypeManager;
 
-
         public DestinationDocumentPermissionCheck(IDestinationServiceFactoryForUser destinationServiceFactory,
             ISyncObjectTypeManager syncObjectTypeManager, IAPILog logger) : base(destinationServiceFactory, logger)
         {
@@ -73,6 +72,7 @@ namespace Relativity.Sync.Executors.PermissionCheck.DocumentPermissionChecks
                 Logger.LogInformation(ex, "{PermissionCheck}: user does not have permission to access destination folder {FolderArtifactId} in destination workspace {ArtifactId}.",
                     nameof(DestinationPermissionCheckBase), configuration.DestinationFolderArtifactId, configuration.DestinationWorkspaceArtifactId);
             }
+
             const string errorCode = "20.009";
             const string errorMessage = "User does not have permission to access the folder in the destination workspace or the folder does not exist.";
 

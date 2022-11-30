@@ -68,7 +68,6 @@ namespace Relativity.Sync.SyncConfiguration.Options
         /// </summary>
         public Guid JobHistoryRelationGuid { get; private set; }
 
-
         /// <summary>
         /// Constructor. All parameters are mandatory
         /// </summary>

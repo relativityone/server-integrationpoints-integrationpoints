@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.Unit
 
             for (int i = 0; i < numRounds; i++)
             {
-                int expected = rng.Next(Int32.MaxValue);
+                int expected = rng.Next(int.MaxValue);
                 int actual = new ProgressStateCounter(expected).Next();
                 Assert.AreEqual(expected, actual);
             }

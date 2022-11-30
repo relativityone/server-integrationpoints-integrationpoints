@@ -83,6 +83,7 @@ namespace Relativity.Sync.Transfer
                 var choiceWithChildren = new ChoiceWithChildInfo(choice.ArtifactID, choice.Name, choiceChildren);
                 tree.Add(choiceWithChildren);
             }
+
             return tree;
         }
     }

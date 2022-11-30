@@ -32,8 +32,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
             Enumerable.Range(0, documentsCount).ForEach(documentNumber => documentData.AddDocument(
                 string.Format(CultureInfo.InvariantCulture, "{0}{1:D6}", controlNumberPrefix, documentNumber),
-                Enumerable.Empty<Tuple<string, string>>()
-            ));
+                Enumerable.Empty<Tuple<string, string>>()));
 
             return documentData;
         }
@@ -44,8 +43,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
 
             documentData.AddDocument(
                 string.Format(CultureInfo.InvariantCulture, "{0}{1:D6}", controlNumberPrefix, 0),
-                new[] { Tuple.Create(ImportDataTableWrapper.RelativitySyncTestUser, AppSettings.RelativityUserName) }
-            );
+                new[] { Tuple.Create(ImportDataTableWrapper.RelativitySyncTestUser, AppSettings.RelativityUserName) });
 
             return documentData;
         }
@@ -96,8 +94,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
                 {
                     FileInfo extractedTextFile = GetFileInfoFromFolder(extractedTextFolder, controlNumber);
                     columnValuePairs.Add(
-                        Tuple.Create(ImportDataTableWrapper.ExtractedTextFilePath, extractedTextFile.FullName)
-                    );
+                        Tuple.Create(ImportDataTableWrapper.ExtractedTextFilePath, extractedTextFile.FullName));
                     columnValuePairs.Add(Tuple.Create(ImportDataTableWrapper.SyncMultiChoice, "Choice 1"));
                 }
 
@@ -109,7 +106,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
                     {
                         Tuple.Create(ImportDataTableWrapper.FileName, nativeFile.Name),
                         Tuple.Create(ImportDataTableWrapper.NativeFilePath, nativeFile.FullName),
-                        Tuple.Create(ImportDataTableWrapper.FolderPath, "")
+                        Tuple.Create(ImportDataTableWrapper.FolderPath, string.Empty)
                     };
                     columnValuePairs.AddRange(nativeColumnValuePairs);
                 }
@@ -158,8 +155,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
                 .Skip(1)
                 .Aggregate(
                     enumerablesList.First(),
-                    (acc, enumerable) => acc.Intersect(enumerable)
-                );
+                    (acc, enumerable) => acc.Intersect(enumerable));
             return intersectionOfLists;
         }
 

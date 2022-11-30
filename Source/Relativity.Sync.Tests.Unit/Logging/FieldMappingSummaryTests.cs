@@ -81,8 +81,8 @@ namespace Relativity.Sync.Tests.Unit.Logging
                         {
                             ArtifactID = artifactIdCounter++,
                             Values = new List<object> { x.SourceFieldName, x.SourceFieldDataGridEnabled }
-                        }
-                    ).ToList()
+                        })
+                    .ToList()
                 });
 
             _objectManager
@@ -94,13 +94,13 @@ namespace Relativity.Sync.Tests.Unit.Logging
                         {
                             ArtifactID = artifactIdCounter++,
                             Values = new List<object> { x.DestinationFieldName, x.DestinationFieldDataGridEnabled }
-                        }
-                    ).ToList()
+                        })
+                    .ToList()
                 });
 
             _fieldManagerFake.Setup(x => x.GetMappedFieldsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(mapping.Select(x =>
-                new FieldInfoDto(x.SpecialFieldType, x.SourceFieldName, x.DestinationFieldName, true, true) { RelativityDataType = x.DataType }
-            ).ToList);
+                new FieldInfoDto(x.SpecialFieldType, x.SourceFieldName, x.DestinationFieldName, true, true) { RelativityDataType = x.DataType })
+            .ToList);
         }
 
         private void PrepareTestData()
@@ -161,8 +161,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             SourceFieldName = fieldName, DestinationFieldName = fieldName,
                             DataType = RelativityDataType.LongText
                         },
-                    }, PrepareSummaryWithDisabledDataGrid()
-                )
+                    }, PrepareSummaryWithDisabledDataGrid())
             { TestName = "{m}(DataGridSource=disable, DataGridDestination=disabled)" };
 
             yield return new TestCaseData(
@@ -174,8 +173,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
                             DestinationFieldDataGridEnabled = false
                         }
-                    }, PrepareSummaryWithEnabledDataGridInSource()
-                )
+                    }, PrepareSummaryWithEnabledDataGridInSource())
             { TestName = "{m}(DataGridSource=enabled, DataGridDestination=disabled)" };
 
             yield return new TestCaseData(
@@ -187,8 +185,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = false,
                             DestinationFieldDataGridEnabled = true
                         }
-                    }, PrepareSummaryWithEnabledDataGridInDestination()
-                )
+                    }, PrepareSummaryWithEnabledDataGridInDestination())
             { TestName = "{m}(DataGridSource=disabled, DataGridDestination=enabled)" };
 
             yield return new TestCaseData(
@@ -200,8 +197,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
                             DestinationFieldDataGridEnabled = true
                         }
-                    }, PrepareSummaryWithDataGridEnabledBothInSourceAndDestination()
-                )
+                    }, PrepareSummaryWithDataGridEnabledBothInSourceAndDestination())
             { TestName = "{m}(DataGridSource=enabled, tDataGridDestination=enabled)" };
 
             yield return new TestCaseData(
@@ -244,8 +240,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             { SourceFieldName = "5", DestinationFieldName = "5", DataType = RelativityDataType.YesNo },
                         new FieldMapDefinitionCase
                             { SourceFieldName = "6", DestinationFieldName = "6", DataType = RelativityDataType.YesNo },
-                    }, PrepareSummaryForCountingTypes()
-                )
+                    }, PrepareSummaryForCountingTypes())
             { TestName = "{m}(CountingTypes)" };
 
             yield return new TestCaseData(
@@ -269,8 +264,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
                             DestinationFieldDataGridEnabled = false
                         }
-                    }, PrepareSummaryForLongText()
-                )
+                    }, PrepareSummaryForLongText())
             { TestName = "{m}(LongText)" };
 
             yield return new TestCaseData(
@@ -308,8 +302,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             DestinationFieldDataGridEnabled = false,
                             SpecialFieldType = SpecialFieldType.SupportedByViewer
                         }
-                    }, PrepareSummaryForLoggingSpecialFields()
-                )
+                    }, PrepareSummaryForLoggingSpecialFields())
             { TestName = "{m}(ShouldLogSpecialFieldsWhenTheyHaveBeenMapped)" };
         }
 

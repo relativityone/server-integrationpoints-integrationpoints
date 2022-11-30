@@ -35,8 +35,7 @@ namespace Relativity.Sync.Tests.System
                 SourceWorkspaceArtifactId = _workspace.ArtifactID
             },
                 toggleProvider: null,
-                cb => cb.RegisterInstance(Logger).As<IAPILog>()
-            );
+                cb => cb.RegisterInstance(Logger).As<IAPILog>());
 
             _sut = container.Resolve<IImageFileRepository>();
         }

@@ -120,7 +120,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
                 bool fileExists = await fileManager.FileExists(destinationFile).ConfigureAwait(false);
                 if (!fileExists)
                 {
-                    using (Stream stream = File.OpenRead(filePath)) //Temp path if only name
+                    using (Stream stream = File.OpenRead(filePath)) // Temp path if only name
                     {
                         await fileShareManager.UploadStream(new KeplerStream(stream), destinationFile).ConfigureAwait(false);
                     }

@@ -50,8 +50,7 @@ namespace Relativity.Sync.Tests.Unit
         {
             // ARRANGE
             _syncConfigurationRdo.JobHistoryId = 5;
-            _syncConfigurationRdo.SnapshotId = new Guid();
-
+            _syncConfigurationRdo.SnapshotId = default(Guid);
 
             // ACT && ASSERT
             _sut.GetFieldValue(x => x.JobHistoryId).Should().Be(_syncConfigurationRdo.JobHistoryId);
@@ -59,7 +58,6 @@ namespace Relativity.Sync.Tests.Unit
 
             _sut.GetFieldValue(x => x.JobHistoryToRetryId).Should().Be(default(int?));
         }
-
 
         [Test]
         public void ItShouldFailWhenConfigurationNotFound()
@@ -74,7 +72,6 @@ namespace Relativity.Sync.Tests.Unit
             // ASSERT
             action.Should().Throw<SyncException>();
         }
-
 
         [Test]
         public async Task ItShouldUpdateField()

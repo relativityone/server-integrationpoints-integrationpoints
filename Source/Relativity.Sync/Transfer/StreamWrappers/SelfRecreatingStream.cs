@@ -61,6 +61,7 @@ namespace Relativity.Sync.Transfer.StreamWrappers
                     _innerStream.Value.Dispose();
                     _innerStream = new Lazy<Stream>(() => GetInnerStreamAsync().GetAwaiter().GetResult());
                 }
+
                 return _innerStream.Value.CanRead;
             }
         }

@@ -15,12 +15,12 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
     [TestFixture]
     public class NonDocumentSynchronizationExecutorConstrainsTests
     {
-        [TestCase(new int[0], false)]//Empty array
+        [TestCase(new int[0], false)]// Empty array
         [TestCase(null, false)]
-        [TestCase(new[] { 1 }, true)]//one element
+        [TestCase(new[] { 1 }, true)]// one element
         public async Task CanExecuteGoldFlowTests(IEnumerable<int> batchIds, bool expectedResult)
         {
-            //Arrange
+            // Arrange
             var fakeBatchRepository = new Mock<IBatchRepository>();
             var fakeSyncLog = new Mock<IAPILog>();
             var fakeConfiguration = new Mock<INonDocumentSynchronizationConfiguration>();
@@ -31,11 +31,11 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 
             var sut = new NonDocumentSynchronizationExecutionConstrains(fakeBatchRepository.Object, fakeSyncLog.Object);
 
-            //Act
+            // Act
             bool actualResult = await sut.CanExecuteAsync(fakeConfiguration.Object, It.IsAny<CancellationToken>())
                 .ConfigureAwait(false);
 
-            //Assert
+            // Assert
             actualResult.Should().Be(expectedResult);
         }
     }

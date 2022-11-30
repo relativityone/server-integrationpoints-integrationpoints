@@ -34,7 +34,6 @@ namespace Relativity.Sync.Tests.Integration
         private const string _REST_URL = "https://relativity.one/rest";
         private const string _TOKEN = "token";
 
-
         [SetUp]
         public void SetUp()
         {

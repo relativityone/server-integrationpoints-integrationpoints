@@ -23,7 +23,7 @@ namespace Relativity.Sync.Tests.Integration
         [Test]
         public async Task Read_ShouldReturnLongTextStream_WhenGivenShibboleth()
         {
-            // Arrange 
+            // Arrange
             const int batchSize = 100;
             SetUp(batchSize);
 
@@ -42,12 +42,12 @@ namespace Relativity.Sync.Tests.Integration
             const string expectedStreamContent = "Hello world!";
             _documentTransferServicesMocker.SetupLongTextStream(columnName, encoding, expectedStreamContent);
 
-            // Act 
+            // Act
             _instance.Read();
             int columnIndex = _instance.GetOrdinal(columnName);
             object actualValue = _instance.GetValue(columnIndex);
 
-            // Assert 
+            // Assert
             var streamValue = actualValue as Stream;
             streamValue.Should().NotBeNull();
 
@@ -60,7 +60,7 @@ namespace Relativity.Sync.Tests.Integration
         [Test]
         public async Task Read_ShouldReturnCorrectMultipleChoiceTree()
         {
-            // Arrange 
+            // Arrange
             const int batchSize = 100;
             SetUp(batchSize);
 
@@ -91,12 +91,12 @@ namespace Relativity.Sync.Tests.Integration
 
             await _documentTransferServicesMocker.SetupServicesWithNativesTestDataAsync(importData, batchSize).ConfigureAwait(false);
 
-            // Act 
+            // Act
             _instance.Read();
             int columnIndex = _instance.GetOrdinal(columnName);
             object actualValue = _instance.GetValue(columnIndex);
 
-            // Assert 
+            // Assert
             const char mult = (char)30;
             const char nest = (char)29;
             string expectedValue = $"Foo{nest}Bar{nest}Baz{mult}Foo{nest}Bat{mult}Bang{mult}";

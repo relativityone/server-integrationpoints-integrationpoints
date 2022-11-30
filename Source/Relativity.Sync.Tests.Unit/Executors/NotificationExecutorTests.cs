@@ -101,7 +101,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [Test]
         public async Task ExecuteAsyncSendFailedEmailTest()
         {
-            //Arrange
+            // Arrange
             IMock<INotificationConfiguration> configuration = GetNotificationConfiguration();
 
             var completedProgress = new Mock<IProgress>();
@@ -117,10 +117,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _jobHistoryErrorRepository.Setup(x => x.GetLastJobErrorAsync(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(jobHistory.Object);
 
-            //Act
+            // Act
             ExecutionResult actualResult = await _instance.ExecuteAsync(configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             actualResult.Status.Should().Be(ExecutionStatus.Completed);
 
             string expectedBody = GetExpectedBodyWithError(_MESSAGE_FAILED, _destinationCaseTag);
@@ -206,7 +206,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Assert
             actualResult.Status.Should().Be(ExecutionStatus.Completed);
 
-            string expectedBody = GetExpectedBodyWithError(_MESSAGE_FAILED, String.Empty);
+            string expectedBody = GetExpectedBodyWithError(_MESSAGE_FAILED, string.Empty);
             _emailManager.Verify(x => x.SendEmailNotificationAsync(It.Is<EmailNotificationRequest>(y => VerifyEmailRequest(y, expectedBody, _subjectFailed))));
         }
 

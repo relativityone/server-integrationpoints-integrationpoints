@@ -322,7 +322,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
             // arrange
             SelfRecreatingStream selfRecreatingStream = new SelfRecreatingStream(_streamBuilderMock.Object, new EmptyLogger());
 
-
             // act
             selfRecreatingStream.Dispose();
             Action action = () => selfRecreatingStream.Dispose();

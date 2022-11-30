@@ -60,8 +60,6 @@ namespace Relativity.Sync.Tests.Unit
             const int startingIndex = 5000;
             BatchStatus defaultStatus = BatchStatus.New;
 
-
-
             // ACT
             IBatch batch = await _batchRepository.CreateAsync(_WORKSPACE_ID, syncConfigurationArtifactId, ExportRunId, totalDocumentsCount, startingIndex).ConfigureAwait(false);
 
@@ -338,8 +336,6 @@ namespace Relativity.Sync.Tests.Unit
             // Arrange
             _objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(r => r.Condition.Contains("New")), 1, int.MaxValue)).ReturnsAsync(PrepareQueryResult(artifactId: 1));
             _objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(r => r.Condition.Contains("Paused")), 1, int.MaxValue)).ReturnsAsync(PrepareQueryResult(artifactId: 2));
-
-
 
             // Act
             IEnumerable<int> batchIds = await _batchRepository.GetAllBatchesIdsToExecuteAsync(_WORKSPACE_ID, _ARTIFACT_ID, ExportRunId).ConfigureAwait(false);

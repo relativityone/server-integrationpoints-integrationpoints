@@ -199,7 +199,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 new List<Guid>() { _FIELD_GUID }), Times.Once);
         }
 
-
         [Test]
         public void EnsureFieldsExistAsync_ShouldThrowException_WhenCreatingUnsupportedFieldType()
         {

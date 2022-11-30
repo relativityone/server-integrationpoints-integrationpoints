@@ -55,7 +55,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
             const int destinationWorkspaceTagArtifactId = 3;
             _configurationRdo.DestinationWorkspaceTagArtifactId = destinationWorkspaceTagArtifactId;
 
-
             // act
             int actualDestinationWorkspaceTagArtifactId = _syncConfig.DestinationWorkspaceTagArtifactId;
 
@@ -94,7 +93,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
         {
             const int sourceWorkspaceTagArtifactId = 105656;
             _configurationRdo.SourceWorkspaceTagArtifactId = sourceWorkspaceTagArtifactId;
-
 
             // act
             int actualSourceJobTagName = _syncConfig.SourceWorkspaceTagArtifactId;
@@ -198,7 +196,6 @@ namespace Relativity.Sync.Tests.Unit.Storage
             // Assert
             actualValue.Should().Be(importApiBatchSize);
         }
-
 
         static IEnumerable<TestCaseData> SnapshotCaseSource()
         {

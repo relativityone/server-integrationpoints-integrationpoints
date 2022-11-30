@@ -23,8 +23,7 @@ namespace Relativity.Sync.Tests.System.Helpers
         public async Task<INativeSpecialFieldRowValuesBuilder> GetRowValuesBuilderAsync(int sourceWorkspaceArtifactId, int[] documentArtifactIds)
         {
             return new NullSupportedByViewerFileInfoRowValuesBuilder(
-                await _fileInfoFieldsBuilder.GetRowValuesBuilderAsync(sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false)
-            );
+                await _fileInfoFieldsBuilder.GetRowValuesBuilderAsync(sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false));
         }
     }
 }

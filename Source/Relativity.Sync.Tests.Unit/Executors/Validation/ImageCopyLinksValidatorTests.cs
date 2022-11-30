@@ -140,7 +140,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             result.Messages.Should().BeEmpty();
         }
 
-
         private void SetupValidator(int userId, ImportImageFileCopyMode copyMode, bool isRestrictedCopyLinksOnly, bool toggleNonAdminCanSyncUsingLinks)
         {
             _userContextFake.Setup(c => c.ExecutingUserId).Returns(userId);

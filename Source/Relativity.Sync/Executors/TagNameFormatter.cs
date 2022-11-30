@@ -38,6 +38,7 @@ namespace Relativity.Sync.Executors
                 string trimmedJobHistoryName = jobHistoryName.Substring(0, jobHistoryName.Length - overflow);
                 name = GetFormatForSourceJobTagName(trimmedJobHistoryName, jobHistoryArtifactId);
             }
+
             return name;
         }
 
@@ -52,6 +53,7 @@ namespace Relativity.Sync.Executors
                 string trimmedInstanceName = instanceName.Substring(0, instanceName.Length - overflow);
                 name = GetFormatForSourceCaseTagName(trimmedInstanceName, sourceWorkspaceName, workspaceArtifactId);
             }
+
             return name;
         }
 

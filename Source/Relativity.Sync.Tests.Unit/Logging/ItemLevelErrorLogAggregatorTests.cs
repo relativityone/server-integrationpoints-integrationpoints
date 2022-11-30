@@ -104,8 +104,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
             // Arrange
             foreach ((ItemLevelError error, int i) in errors
                 .Select((x, i) =>
-                    (new ItemLevelError(x.identifier, x.error), i))
-            )
+                    (new ItemLevelError(x.identifier, x.error), i)))
             {
                 _sut.AddItemLevelError(error, i);
             }
@@ -138,8 +137,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
                     ("QWERTY",
                         "IAPI  - 20.006. Failed to copy source field into destination field due to missing child object. Review the following destination field(s): Some Field"),
                 },
-                "IAPI  - 20.006. Failed to copy source field into destination field due to missing child object"
-            )
+                "IAPI  - 20.006. Failed to copy source field into destination field due to missing child object")
             {
                 TestName =
                     "IAPI  - 20.006. Failed to copy source field into destination field due to missing child object. Review the following destination field(s):"
@@ -156,8 +154,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
                     ("ABC",
                         "IAPI  - An item with identifier ABC already exists in the workspace* - A non unique associated object is specified for this new object"),
                 },
-                "IAPI  - An item with identifier {0} already exists in the workspace"
-            )
+                "IAPI  - An item with identifier {0} already exists in the workspace")
             {
                 TestName = "IAPI  - An item with identifier {0} already exists in the workspace"
             };
@@ -169,8 +166,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
                     ("DEF",
                         "IAPI  - A non unique associated object is specified for this new object* - Field * Error: Incorrect function.*")
                 },
-                "IAPI  - A non unique associated object is specified for this new object"
-            )
+                "IAPI  - A non unique associated object is specified for this new object")
             {
                 TestName = "IAPI  - A non unique associated object is specified for this new object"
             };
@@ -183,8 +179,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
                     ("ABC",
                         "IAPI Error in line *, column *. Object identifier for field * references an identifier that is not unique.")
                 },
-                "IAPI Error in line *, column *."
-            )
+                "IAPI Error in line *, column *.")
             { TestName = "IAPI Error in line *, column *." };
 
             yield return new TestCaseData(
@@ -196,17 +191,15 @@ namespace Relativity.Sync.Tests.Unit.Logging
                     ("ABC", @"IAPI  - Field Control Number Error: Could not find file \\path\to\file."),
                     ("ABC", "IAPI  - Field Control Number Error: Insufficient system resources exist to complete the requested service."),
                 },
-                "IAPI Error in line *, column *."
-            )
+                "IAPI Error in line *, column *.")
             { TestName = "IAPI  - Field * Error" };
 
             yield return new TestCaseData(
                 new[]
                 {
-                    ("ABC", "IAPI  - One of the files specified for this document does not exist" ),
+                    ("ABC", "IAPI  - One of the files specified for this document does not exist"),
                 },
-                "IAPI  - One of the files specified for this document does not exist"
-            )
+                "IAPI  - One of the files specified for this document does not exist")
             { TestName = "IAPI  - One of the files specified for this document does not exist" };
         }
     }

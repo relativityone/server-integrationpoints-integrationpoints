@@ -74,11 +74,9 @@ namespace Relativity.Sync.Tests.System.GoldFlows
                 .WithFieldsMapping(mappingBuilder => mappingBuilder
                     .WithIdentifier()
                     .WithField("Email", "Email")
-                    .WithField("Manager", "Manager")
-                )
+                    .WithField("Manager", "Manager"))
                 .SaveAsync()
                 .ConfigureAwait(false);
-
 
             ContainerBuilder containerBuilder = new ContainerBuilder();
             SyncDataAndUserConfiguration syncDataAndUserConfiguration = new SyncDataAndUserConfiguration(User.ArtifactID);
@@ -95,8 +93,8 @@ namespace Relativity.Sync.Tests.System.GoldFlows
             result.Status.Should().Be(SyncJobStatus.Completed);
 
             await AssertEntityCountInDestinationAsync(_destinationWorkspace.ArtifactID, _destinationEntityArtifactTypeId,
-                expectedEntityCount: _entitiesCount + 1 // +1 for manager
-                       ).ConfigureAwait(false);
+                expectedEntityCount: _entitiesCount + 1) // +1 for manager
+                       .ConfigureAwait(false);
             List<RelativityObjectSlim> entitiesFromDesintion = await GetEntitiesFromDestinationAsync(_destinationWorkspace.ArtifactID, _destinationEntityArtifactTypeId, _entitiesCount).ConfigureAwait(false);
 
             AssertManagerIsLinked(_entitiesCount, entitiesFromDesintion);
@@ -154,7 +152,6 @@ namespace Relativity.Sync.Tests.System.GoldFlows
             {
                 ArtifactTypeID = entityArtifactTypeId
             };
-
 
             using (IObjectManager objectManager = ServiceFactory.CreateProxy<IObjectManager>())
             {

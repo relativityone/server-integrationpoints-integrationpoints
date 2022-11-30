@@ -73,6 +73,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
             {
                 userHasPermissions = permissionValues.All(x => x.Selected);
             }
+
             return userHasPermissions;
         }
 
@@ -84,6 +85,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
                 PermissionValue hasPermissionValue = permissionValues.First();
                 userHasPermissions = hasPermissionValue.Selected && hasPermissionValue.PermissionID == permissionId;
             }
+
             return userHasPermissions;
         }
 
@@ -95,6 +97,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
                 ValidationMessage validationMessage = (errorCode == null) ? new ValidationMessage(errorMessage) : new ValidationMessage(errorCode, errorMessage);
                 validationResult.Add(validationMessage);
             }
+
             return validationResult;
         }
     }

@@ -300,7 +300,7 @@ namespace Relativity.Sync.RDOs.Framework
                     return value?.ToString();
 
                 case RdoFieldType.FixedLengthText when fieldInfo.PropertyInfo.PropertyType.IsEnum:
-                    return (value is null || value.ToString() == "")
+                    return (value is null || value.ToString() == string.Empty)
                         ? null
                         : EnumExtensions.GetDescription(value, fieldInfo.PropertyInfo.PropertyType.ExtractTypeIfNullable());
 

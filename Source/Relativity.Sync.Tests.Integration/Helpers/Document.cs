@@ -19,6 +19,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
         public HashSet<string> FieldSet => new HashSet<string>(FieldValues.Select(x => x.Field));
 
 #pragma warning disable RG2011 // Avoid methods with more than 5 arguments, use DTO-style objects or structures for passing multiple arguments
+
         // Using this method spec. to avoid using DTOs; will make testing easier
         public static Document Create(int artifactId,
             string nativeFileLocation,

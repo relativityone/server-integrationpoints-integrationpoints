@@ -132,7 +132,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
         public async Task ReadAsync_ShouldReturnSourceJobTag()
         {
             // Arrange
-
             RelativitySourceJobTag expectedSourceJobTag = new RelativitySourceJobTag
             {
                 ArtifactId = 1,
@@ -141,7 +140,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 JobHistoryName = "Job History Name",
                 SourceCaseTagArtifactId = 3
             };
-
 
             _objectManager.Setup(x =>
                     x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))

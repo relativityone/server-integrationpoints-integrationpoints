@@ -43,10 +43,10 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 
             Mock<IPermissionManager> permissionManager = SetupPermissions();
 
-            //Act
+            // Act
             ValidationResult actualResult = await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             actualResult.IsValid.Should().BeTrue();
             actualResult.Messages.Should().HaveCount(0);
         }
@@ -67,7 +67,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
             ValidationResult actualResult =
                 await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             actualResult.IsValid.Should().BeFalse();
             actualResult.Messages.Should().HaveCount(1);
             actualResult.Messages.First().ShortMessage.Should().Be(
@@ -90,7 +90,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
             ValidationResult actualResult =
                 await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             actualResult.IsValid.Should().BeFalse();
             actualResult.Messages.Should().HaveCount(1);
             actualResult.Messages.First().ShortMessage.Should().Be(
@@ -112,7 +112,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
             ValidationResult actualResult =
                 await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             actualResult.IsValid.Should().BeFalse();
             actualResult.Messages.Should().HaveCount(1);
             actualResult.Messages.First().ShortMessage.Should().Be(
@@ -140,7 +140,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
             ValidationResult actualResult =
                 await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             actualResult.IsValid.Should().BeFalse();
             actualResult.Messages.Should().HaveCount(_EXPECTED_VALUE_FOR_DOCUMENT);
             actualResult.Messages.First().ShortMessage.Should().Be(

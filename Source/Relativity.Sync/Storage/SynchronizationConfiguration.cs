@@ -75,7 +75,6 @@ namespace Relativity.Sync.Storage
         public ImportImageFileCopyMode ImportImageFileCopyMode => _cache.GetFieldValue(x => x.ImageFileCopyMode);
 
         // Below settings are set in SynchronizationExecutor.
-
         public int IdentityFieldId { get; set; }
 
         public string FolderPathSourceFieldName { get; set; }

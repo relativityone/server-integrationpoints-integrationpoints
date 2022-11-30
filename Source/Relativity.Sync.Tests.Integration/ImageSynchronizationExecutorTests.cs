@@ -143,6 +143,7 @@ namespace Relativity.Sync.Tests.Integration
                 {
                     dataReader.Read();
                 }
+
                 _importBulkArtifactJob.Raise(x => x.OnComplete += null, _emptyJobStatistsics);
             });
 
@@ -190,8 +191,7 @@ namespace Relativity.Sync.Tests.Integration
                     dataReader.Read();
                     _importBulkArtifactJob.Raise(x => x.OnItemLevelError += null, new ItemLevelError(
                         document.Values[0].ToString(),
-                        "Some weird error message."
-                    ));
+                        "Some weird error message."));
                 }
 
                 for (int i = 0; i < completedItems; i++)

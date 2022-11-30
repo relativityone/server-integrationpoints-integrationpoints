@@ -137,6 +137,7 @@ namespace Relativity.Sync.Transfer
                 _mappedFieldsCache = await EnrichFieldsWithRelativityDataTypesAsync(fieldInfos, token).ConfigureAwait(false);
                 EnrichFieldsWithIndex(_mappedFieldsCache);
             }
+
             return _mappedFieldsCache;
         }
 
@@ -184,7 +185,7 @@ namespace Relativity.Sync.Transfer
                     IncludeNameInQueryResult = true
                 };
 
-                QueryResult result = await objectManager.QueryAsync(workspaceId, request, 0, Int32.MaxValue)
+                QueryResult result = await objectManager.QueryAsync(workspaceId, request, 0, int.MaxValue)
                     .ConfigureAwait(false);
                 return result.Objects.Select(x => x.Name).ToArray();
             }
@@ -263,6 +264,7 @@ namespace Relativity.Sync.Transfer
                     result.Add(mappedDocumentField);
                 }
             }
+
             result.AddRange(remainingSpecialFields);
 
             return result;
@@ -279,8 +281,7 @@ namespace Relativity.Sync.Transfer
                 })
                 .FirstOrDefault(field =>
                     field.DocumentField != null
-                    && (!field.SpecialField.IsDocumentField || !field.SpecialField.SourceFieldName.Equals(field.DocumentField.SourceFieldName, StringComparison.InvariantCultureIgnoreCase))
-                    )?.SpecialField;
+                    && (!field.SpecialField.IsDocumentField || !field.SpecialField.SourceFieldName.Equals(field.DocumentField.SourceFieldName, StringComparison.InvariantCultureIgnoreCase)))?.SpecialField;
 
             if (invalidSpecialField != null)
             {

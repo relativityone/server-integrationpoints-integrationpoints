@@ -48,7 +48,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             areEqual.Should().BeFalse();
         }
 
-
         [Test]
         public void Equals_ShouldCompareOnlyByDocumentArtifactId_WhenDocumentArtifactIdsAreEqual()
         {

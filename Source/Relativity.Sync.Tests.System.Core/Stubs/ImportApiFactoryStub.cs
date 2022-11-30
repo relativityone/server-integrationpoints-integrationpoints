@@ -10,7 +10,9 @@ namespace Relativity.Sync.Tests.System.Core.Stubs
         private readonly string _userName;
         private readonly string _password;
 
-        public ImportApiFactoryStub() : this(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword) { }
+        public ImportApiFactoryStub() : this(AppSettings.RelativityUserName, AppSettings.RelativityUserPassword)
+        {
+        }
 
         public ImportApiFactoryStub(string userName, string password)
         {

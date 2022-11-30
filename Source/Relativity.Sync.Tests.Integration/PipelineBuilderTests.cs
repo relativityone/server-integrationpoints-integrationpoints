@@ -203,7 +203,6 @@ namespace Relativity.Sync.Tests.Integration
 
             _containerBuilder.RegisterInstance(progress.Object).As<IProgress<SyncJobState>>();
 
-
             Type dataSnapshotConfigurationType = GetSnapshotNodeType(pipelineType).BaseType.GenericTypeArguments.First();
 
             IntegrationTestsContainerBuilder.MockCompletedWithErrorsStep(dataSnapshotConfigurationType, _containerBuilder);

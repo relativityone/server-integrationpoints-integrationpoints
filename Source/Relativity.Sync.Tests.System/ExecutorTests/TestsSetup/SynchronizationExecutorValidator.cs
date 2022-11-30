@@ -114,7 +114,8 @@ namespace Relativity.Sync.Tests.System.ExecutorTests.TestsSetup
                             .QueryAsync(Configuration.SourceWorkspaceArtifactId, transferredItemsCountQueryRequest, 0, 1).ConfigureAwait(false);
 
                         batchesTransferredItemsCounts.Add((int)(transferredItemsCountQueryResult.Objects.Single()[TransferredItemsCountField].Value ?? default(int)));
-                    };
+                    }
+;
                 }
             }
 

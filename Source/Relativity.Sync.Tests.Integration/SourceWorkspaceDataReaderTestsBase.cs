@@ -56,8 +56,7 @@ namespace Relativity.Sync.Tests.Integration
                 It.Is<int>(workspaceId => workspaceId == _WORKSPACE_ID),
                 It.Is<QueryRequest>(query => query.Condition == $@"('ArtifactID' == {_USER_ARTIFACT_ID})"),
                 It.Is<int>(start => start == 0),
-                It.Is<int>(length => length == 1)
-            )).ReturnsAsync(new UserInfoQueryResultSet()
+                It.Is<int>(length => length == 1))).ReturnsAsync(new UserInfoQueryResultSet()
             {
                 ResultCount = 1,
                 DataResults = new[] { new UserInfo { ArtifactID = _USER_ARTIFACT_ID, Email = _USER_EMAIL } }
@@ -86,8 +85,7 @@ namespace Relativity.Sync.Tests.Integration
                 fieldManager,
                 new ItemStatusMonitor(),
                 syncLog,
-                CancellationToken.None
-            );
+                CancellationToken.None);
         }
 
         protected abstract IBatchDataReaderBuilder CreateBatchDataReaderBuilder();

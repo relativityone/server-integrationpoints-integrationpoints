@@ -85,7 +85,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             _validationConfiguration.SetupGet(x => x.RdoArtifactTypeId).Returns((int)ArtifactType.Document);
             _validationConfiguration.SetupGet(x => x.DestinationRdoArtifactTypeId).Returns((int)ArtifactType.Document);
 
-
             SetUpObjectManagerQuery(_TEST_SOURCE_WORKSPACE_ARTIFACT_ID, _TEST_SOURCE_FIELD_ARTIFACT_ID, _TEST_SOURCE_FIELD_NAME);
             SetUpObjectManagerQuery(_TEST_DEST_WORKSPACE_ARTIFACT_ID, _TEST_DEST_FIELD_ARTIFACT_ID, _TEST_DEST_FIELD_NAME);
 

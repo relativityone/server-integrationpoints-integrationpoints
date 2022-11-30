@@ -20,8 +20,7 @@ namespace Relativity.Sync.Executors.Validation
         private readonly IAPILog _logger;
         private static readonly ValidationMessage SavedSearchNoAccess = new ValidationMessage(
             errorCode: $"20.004",
-            shortMessage: $"Saved search is not available or has been secured from this user. Contact your system administrator."
-        );
+            shortMessage: $"Saved search is not available or has been secured from this user. Contact your system administrator.");
 
         public SavedSearchValidator(ISourceServiceFactoryForUser serviceFactoryForUser, IAPILog logger)
         {

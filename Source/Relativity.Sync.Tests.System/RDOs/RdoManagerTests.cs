@@ -201,7 +201,7 @@ namespace Relativity.Sync.Tests.System.RDOs
 
             await _sut.EnsureTypeExistsAsync<ExtendedSampleRdo>(workspace.ArtifactID).ConfigureAwait(false);
 
-            string longText = string.Join("", Enumerable.Repeat("ą", 10000));
+            string longText = string.Join(string.Empty, Enumerable.Repeat("ą", 10000));
             string shortText = "Żółw";
 
             var extendedSampleRdo = new ExtendedSampleRdo()

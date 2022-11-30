@@ -49,8 +49,8 @@ namespace Relativity.Sync.Executors
                 return ExecutionResult.Failure("ExportAPI failed to initialize export.", e);
             }
 
-            //ExportInitializationResult provide list of fields with order they will be returned when retrieving metadata
-            //however, order is the same as order of fields in QueryRequest when they are provided explicitly
+            // ExportInitializationResult provide list of fields with order they will be returned when retrieving metadata
+            // however, order is the same as order of fields in QueryRequest when they are provided explicitly
             await configuration.SetSnapshotDataAsync(results.RunID, (int)results.RecordCount).ConfigureAwait(false);
 
             IJobProgressUpdater jobProgressUpdater = _jobProgressUpdaterFactory.CreateJobProgressUpdater();

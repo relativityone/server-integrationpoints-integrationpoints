@@ -78,6 +78,7 @@ namespace Relativity.Sync.Executors.Validation
             {
                 return false;
             }
+
             return Equals((ValidationMessage)obj);
         }
 

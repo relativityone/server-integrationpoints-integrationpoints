@@ -91,7 +91,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
         private async Task<WorkspaceRef> RestoreWorkspaceAsync(string armedWorkspaceFileName)
         {
-            string filePath = "";
+            string filePath = string.Empty;
             try
             {
                 filePath = await StorageHelper

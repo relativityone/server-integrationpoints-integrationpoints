@@ -1,16 +1,10 @@
-﻿using System;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
-using Relativity.Sync.RDOs;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
-    using RdoExpressionInt = Expression<Func<SyncConfigurationRdo, int>>;
-
-
     internal sealed class DestinationWorkspaceSavedSearchCreationConfigurationTests : ConfigurationTestBase
     {
         private DestinationWorkspaceSavedSearchCreationConfiguration _instance;

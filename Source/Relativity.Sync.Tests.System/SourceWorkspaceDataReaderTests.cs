@@ -164,8 +164,7 @@ namespace Relativity.Sync.Tests.System
                         ColumnName = ImportDataTableWrapper.ExtractedTextFilePath,
                         ActualValue = dataReader["Extracted Text"],
                         Validator = extractedTextValidator
-                    }
-                );
+                    });
             }
 
             validator.ValidateAllRead();

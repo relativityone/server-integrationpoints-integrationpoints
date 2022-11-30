@@ -177,7 +177,6 @@ namespace Relativity.Sync.RDOs
         public Guid JobHistoryStatusSuspended { get; set; }
 
         // JobHistoryError configuration
-
         [RdoField(SyncRdoGuids.JobHistoryErrorTypeGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryErrorType { get; set; }
 

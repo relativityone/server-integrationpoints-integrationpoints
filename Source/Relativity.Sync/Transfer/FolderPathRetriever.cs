@@ -104,6 +104,7 @@ namespace Relativity.Sync.Transfer
                     _logger.LogError(ex, "Failed to get folders in workspace: {workspaceArtifactId}", workspaceArtifactId);
                     throw new SyncKeplerException($"Failed to get folders in workspace {workspaceArtifactId}", ex);
                 }
+
                 if (result.Count != foldersWithIds.Count)
                 {
                     List<int> differentValues = foldersWithIds.Except(result.Select(x => x.ArtifactID)).ToList();
@@ -112,6 +113,7 @@ namespace Relativity.Sync.Transfer
                     string subsetArtifactIds = string.Join(",", differentValues.Take(subsetCount));
                     _logger.LogWarning($"Could not find folders with IDs {subsetArtifactIds} in workspace {workspaceArtifactId}.");
                 }
+
                 return result.ToDictionary(f => f.ArtifactID, f => RemoveUnnecessarySpaces(f.FullPath));
             }
         }

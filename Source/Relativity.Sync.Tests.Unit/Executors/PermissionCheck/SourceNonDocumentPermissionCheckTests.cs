@@ -238,8 +238,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
                 .Be("User does not have permission to export in the source workspace.");
         }
 
-
-
         [Test]
         public async Task ExecutePermissionValueListEmptyTest()
         {

@@ -358,7 +358,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
                     new FieldRefValuePair
                     {
                         Field = new FieldRef { Guid = JobHistoryMultiObjectFieldGuid },
-                        Value = new [] { new RelativityObjectRef { ArtifactID = jobHistoryArtifactId } }
+                        Value = new[] { new RelativityObjectRef { ArtifactID = jobHistoryArtifactId } }
                     }
                 },
                 Object = new RelativityObjectRef
@@ -393,10 +393,10 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
                 ImageImport = configurationStub.ImageImport,
                 IncludeOriginalImages = configurationStub.ProductionImagePrecedence is null || configurationStub.IncludeOriginalImageIfNotFoundInProductions,
                 ImageFileCopyMode = configurationStub.ImportImageFileCopyMode,
-                ProductionImagePrecedence = configurationStub.ProductionImagePrecedence is null ? String.Empty : serializer.Serialize(configurationStub.ProductionImagePrecedence),
+                ProductionImagePrecedence = configurationStub.ProductionImagePrecedence is null ? string.Empty : serializer.Serialize(configurationStub.ProductionImagePrecedence),
                 LogItemLevelErrors = configurationStub.LogItemLevelErrors,
 
-                //Drain-Stop
+                // Drain-Stop
                 SyncStatisticsId = configurationStub.SyncStatisticsId,
 
                 // JobHistoryGuids

@@ -88,7 +88,6 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
             return await ImportJobExecutor.ExecuteAsync(importJob).ConfigureAwait(false);
         }
 
-
         private async Task<ImportJobErrors> ConfigureAndRunImageImportApiJobAsync(int workspaceArtifactId,
             ImportDataTableWrapper dataTable, ImportAPI importApi, int? productionId)
         {

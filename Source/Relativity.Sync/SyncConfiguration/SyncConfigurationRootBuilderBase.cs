@@ -24,8 +24,12 @@ namespace Relativity.Sync.SyncConfiguration
 
         public readonly SyncConfigurationRdo SyncConfiguration;
 
-        protected SyncConfigurationRootBuilderBase(ISyncContext syncContext, IProxyFactory serviceFactoryForAdmin,
-            RdoOptions rdoOptions, IRdoManager rdoManager, ISerializer serializer)
+        protected SyncConfigurationRootBuilderBase(
+            ISyncContext syncContext,
+            IProxyFactory serviceFactoryForAdmin,
+            RdoOptions rdoOptions,
+            IRdoManager rdoManager,
+            ISerializer serializer)
         {
             SyncContext = syncContext;
             ServiceFactoryForAdmin = serviceFactoryForAdmin;
@@ -175,7 +179,7 @@ namespace Relativity.Sync.SyncConfiguration
                 GetValidationInfo(RdoOptions.JobHistoryStatus, x => x.StoppedGuid),
                 GetValidationInfo(RdoOptions.JobHistoryStatus, x => x.SuspendingGuid),
                 GetValidationInfo(RdoOptions.JobHistoryStatus, x => x.SuspendedGuid),
-                
+
                 // JobHistoryError
                 GetValidationInfo(RdoOptions.JobHistoryError, x => x.TypeGuid),
                 GetValidationInfo(RdoOptions.JobHistoryError, x => x.NameGuid),
@@ -189,7 +193,7 @@ namespace Relativity.Sync.SyncConfiguration
                 GetValidationInfo(RdoOptions.JobHistoryError, x => x.ItemLevelErrorChoiceGuid),
                 GetValidationInfo(RdoOptions.JobHistoryError, x => x.JobLevelErrorChoiceGuid),
                 GetValidationInfo(RdoOptions.JobHistoryError, x => x.NewStatusGuid),
-                
+
                 // DestinationWorkspace
                 GetValidationInfo(RdoOptions.DestinationWorkspace, x => x.TypeGuid),
                 GetValidationInfo(RdoOptions.DestinationWorkspace, x => x.NameGuid),

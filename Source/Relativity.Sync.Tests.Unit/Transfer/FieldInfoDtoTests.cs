@@ -20,7 +20,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             // Act
             FieldInfoDto result = FieldInfoDto.GenericSpecialField(specialFieldType, sourceFieldName, destinationFieldName);
 
-            //Assert
+            // Assert
             result.SpecialFieldType.Should().Be(specialFieldType);
             result.SourceFieldName.Should().Be(sourceFieldName);
             result.DestinationFieldName.Should().Be(destinationFieldName);
@@ -39,7 +39,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             // Act
             FieldInfoDto result = FieldInfoDto.DocumentField(sourceFieldName, destinationFieldName, isIdentifier);
 
-            //Assert
+            // Assert
             result.SourceFieldName.Should().Be(sourceFieldName);
             result.DestinationFieldName.Should().Be(destinationFieldName);
             result.IsDocumentField.Should().BeTrue();
@@ -52,7 +52,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             // Act
             FieldInfoDto result = FieldInfoDto.FolderPathFieldFromSourceWorkspaceStructure();
 
-            //Assert
+            // Assert
             result.SpecialFieldType.Should().Be(SpecialFieldType.FolderPath);
             result.SourceFieldName.Should().BeEmpty();
             result.DestinationFieldName.Should().Be("FolderPath_76B270CB-7CA9-4121-B9A1-BC0D655E5B2D");
@@ -69,7 +69,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             // Act
             FieldInfoDto result = FieldInfoDto.FolderPathFieldFromDocumentField(fieldName);
 
-            //Assert
+            // Assert
             result.SpecialFieldType.Should().Be(SpecialFieldType.FolderPath);
             result.SourceFieldName.Should().Be(fieldName);
             result.DestinationFieldName.Should().Be("FolderPath_76B270CB-7CA9-4121-B9A1-BC0D655E5B2D");
@@ -83,7 +83,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             // Act
             FieldInfoDto result = FieldInfoDto.NativeFileFilenameField();
 
-            //Assert
+            // Assert
             result.SpecialFieldType.Should().Be(SpecialFieldType.NativeFileFilename);
             result.SourceFieldName.Should().BeEmpty();
             result.DestinationFieldName.Should().Be("NativeFileFilename");
@@ -97,7 +97,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             // Act
             FieldInfoDto result = FieldInfoDto.NativeFileSizeField();
 
-            //Assert
+            // Assert
             result.SpecialFieldType.Should().Be(SpecialFieldType.NativeFileSize);
             result.SourceFieldName.Should().BeEmpty();
             result.DestinationFieldName.Should().Be("NativeFileSize");
@@ -111,7 +111,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             // Act
             FieldInfoDto result = FieldInfoDto.NativeFileLocationField();
 
-            //Assert
+            // Assert
             result.SpecialFieldType.Should().Be(SpecialFieldType.NativeFileLocation);
             result.SourceFieldName.Should().BeEmpty();
             result.DestinationFieldName.Should().Be("NativeFileLocation");
@@ -125,7 +125,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             // Act
             FieldInfoDto result = FieldInfoDto.SupportedByViewerField();
 
-            //Assert
+            // Assert
             result.SpecialFieldType.Should().Be(SpecialFieldType.SupportedByViewer);
             result.SourceFieldName.Should().Be("SupportedByViewer");
             result.DestinationFieldName.Should().Be("SupportedByViewer");
@@ -139,7 +139,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             // Act
             FieldInfoDto result = FieldInfoDto.RelativityNativeTypeField();
 
-            //Assert
+            // Assert
             result.SpecialFieldType.Should().Be(SpecialFieldType.RelativityNativeType);
             result.SourceFieldName.Should().Be("RelativityNativeType");
             result.DestinationFieldName.Should().Be("RelativityNativeType");
@@ -192,7 +192,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         private static IEnumerable<TestCaseData> EqualsDifferentPropertyCases()
         {
             // Each FieldInfoDto pair differ in only one property which is also the name of the test case.
-
             yield return new TestCaseData(
                 FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "source", "dest"),
                 FieldInfoDto.GenericSpecialField(SpecialFieldType.RelativityNativeType, "source", "dest"))
@@ -356,7 +355,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         private static IEnumerable<TestCaseData> GetHashCodeDifferentPropertyCases()
         {
             // Each FieldInfoDto pair differ in only one immutable property which is also the name of the test case.
-
             yield return new TestCaseData(
                 FieldInfoDto.GenericSpecialField(SpecialFieldType.FolderPath, "test", "test"),
                 FieldInfoDto.GenericSpecialField(SpecialFieldType.RelativityNativeType, "test", "test"))

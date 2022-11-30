@@ -87,6 +87,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
                 IEnumerable<FieldMap> extractedTextMapping = await GetExtractedTextMappingAsync(SourceWorkspace.ArtifactID, DestinationWorkspace.ArtifactID).ConfigureAwait(false);
                 Configuration.SetFieldMappings(Configuration.GetFieldMappings().Concat(extractedTextMapping).ToArray());
             }
+
             Logger.LogInformation("Fields mapping ready");
         }
 
@@ -113,7 +114,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
             itemsTranferred.Should().Be(_expectedTotalItems - _expectedItemsWithErrors);
             itemsWithErrors.Should().Be(_expectedItemsWithErrors);
 
-            // Retry 
+            // Retry
             Configuration.JobHistoryToRetryId = Configuration.JobHistoryArtifactId;
             Configuration.JobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, SourceWorkspace.ArtifactID).ConfigureAwait(false);
             ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IRetryDataSourceSnapshotConfiguration>(Configuration);

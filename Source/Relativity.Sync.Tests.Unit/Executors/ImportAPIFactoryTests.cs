@@ -48,18 +48,17 @@ namespace Relativity.Sync.Tests.Unit
                 _userServiceFake.Object,
                 _extendedImportAPIFake.Object,
                 _helperFake.Object,
-                _syncLogMock.Object
-                );
+                _syncLogMock.Object);
         }
 
         [TestCase(_USER_IS_ADMIN_ID)]
         [TestCase(_USER_IS_NON_ADMIN_ID)]
         public async Task CreateImportApiAsync_ShouldCreateIapiWithUserID_WhenToggleIsDisabled(int userId)
         {
-            //ARRANGE
+            // ARRANGE
             _userContextConfigurationFake.SetupGet(x => x.ExecutingUserId).Returns(userId);
 
-            //ACT
+            // ACT
             await _sut.CreateImportApiAsync().ConfigureAwait(false);
 
             // ASSERT
@@ -69,14 +68,14 @@ namespace Relativity.Sync.Tests.Unit
         [Test]
         public async Task CreateImportApiAsync_ShouldCreateIapiWithGlobalAdminUserID_WhenToggleIsEnabledAndUserIsNotAdmin()
         {
-            //ARRANGE
+            // ARRANGE
             int userId = _USER_IS_NON_ADMIN_ID;
             _userContextConfigurationFake.SetupGet(x => x.ExecutingUserId).Returns(userId);
             _userServiceFake.Setup(x => x.ExecutingUserIsAdminAsync(It.IsAny<int>()))
                 .Returns(Task.FromResult(false));
             _syncTogglesFake.Setup(x => x.IsEnabled<EnableNonAdminSyncLinksToggle>()).Returns(true);
 
-            //ACT
+            // ACT
             await _sut.CreateImportApiAsync().ConfigureAwait(false);
 
             // ASSERT
@@ -86,14 +85,14 @@ namespace Relativity.Sync.Tests.Unit
         [Test]
         public async Task CreateImportApiAsync_ShouldCreateIapiWithAdminUserID_WhenToggleIsEnabledAndUserAdmin()
         {
-            //ARRANGE
+            // ARRANGE
             int userId = _USER_IS_ADMIN_ID;
             _userContextConfigurationFake.SetupGet(x => x.ExecutingUserId).Returns(userId);
             _userServiceFake.Setup(x => x.ExecutingUserIsAdminAsync(It.IsAny<int>()))
                 .Returns(Task.FromResult(true));
             _syncTogglesFake.Setup(x => x.IsEnabled<EnableNonAdminSyncLinksToggle>()).Returns(true);
 
-            //ACT
+            // ACT
             await _sut.CreateImportApiAsync().ConfigureAwait(false);
 
             // ASSERT

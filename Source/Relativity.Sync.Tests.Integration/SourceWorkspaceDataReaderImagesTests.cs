@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.Integration
         [Test]
         public void Read_ShouldReadMultipleBlocksAndConstructColumns()
         {
-            // Arrange 
+            // Arrange
             const int batchSize = 500;
             const int blockSize = 300;
             SetUp(batchSize);
@@ -29,7 +29,7 @@ namespace Relativity.Sync.Tests.Integration
             _configuration.SetFieldMappings(importData.FieldMappings);
             _documentTransferServicesMocker.SetupServicesWithImagesTestDataAsync(importData, blockSize);
 
-            // Act/Assert 
+            // Act/Assert
             foreach (Document document in importData.Documents)
             {
                 bool hasMoreData = _instance.Read();
@@ -57,7 +57,7 @@ namespace Relativity.Sync.Tests.Integration
         [Test]
         public void Read_ShouldReadRowForEachImageInDocument()
         {
-            // Arrange 
+            // Arrange
             const int numberOfDocuments = 1;
             const int numberOfImages = 3;
 

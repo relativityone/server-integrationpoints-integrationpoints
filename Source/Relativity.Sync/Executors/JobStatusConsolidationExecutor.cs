@@ -45,6 +45,7 @@ namespace Relativity.Sync.Executors
                     totalItemsCount = await GetTotalItemsCountAsync(batches).ConfigureAwait(false);
                     failedItemsCount = batches.Sum(batch => batch.FailedItemsCount);
                 }
+
                 updateResult = await UpdateJobHistoryAsync(configuration, completedItemsCount, failedItemsCount, totalItemsCount).ConfigureAwait(false);
             }
             catch (Exception e)

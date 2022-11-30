@@ -42,7 +42,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.DocumentTaggers
         {
             // Arrange
             TaggingExecutionResult taggingResult =
-                new TaggingExecutionResult(ExecutionStatus.Completed, "", new Exception())
+                new TaggingExecutionResult(ExecutionStatus.Completed, string.Empty, new Exception())
                 {
                     TaggedDocumentsCount = _pushedDocumentsArtifactIds.Count()
                 };
@@ -63,7 +63,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.DocumentTaggers
         {
             // Arrange
             TaggingExecutionResult taggingResult =
-                new TaggingExecutionResult(ExecutionStatus.Completed, "", new Exception())
+                new TaggingExecutionResult(ExecutionStatus.Completed, string.Empty, new Exception())
                 {
                     TaggedDocumentsCount = _pushedDocumentsArtifactIds.Count()
                 };
@@ -87,13 +87,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.DocumentTaggers
         {
             // Arrange
             TaggingExecutionResult sourceTaggingResult =
-                new TaggingExecutionResult(ExecutionStatus.Failed, "", new Exception())
+                new TaggingExecutionResult(ExecutionStatus.Failed, string.Empty, new Exception())
                 {
                     TaggedDocumentsCount = _pushedDocumentsArtifactIds.Count()
                 };
 
             TaggingExecutionResult destinationTaggingResult =
-                new TaggingExecutionResult(ExecutionStatus.Completed, "", new Exception())
+                new TaggingExecutionResult(ExecutionStatus.Completed, string.Empty, new Exception())
                 {
                     TaggedDocumentsCount = _pushedDocumentsIdentifiers.Count()
                 };
@@ -113,13 +113,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.DocumentTaggers
         {
             // Arrange
             TaggingExecutionResult sourceTaggingResult =
-                new TaggingExecutionResult(ExecutionStatus.Completed, "", new Exception())
+                new TaggingExecutionResult(ExecutionStatus.Completed, string.Empty, new Exception())
                 {
                     TaggedDocumentsCount = _pushedDocumentsArtifactIds.Count()
                 };
 
             TaggingExecutionResult destinationTaggingResult =
-                new TaggingExecutionResult(ExecutionStatus.Failed, "", new Exception())
+                new TaggingExecutionResult(ExecutionStatus.Failed, string.Empty, new Exception())
                 {
                     TaggedDocumentsCount = _pushedDocumentsIdentifiers.Count()
                 };
@@ -140,13 +140,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.DocumentTaggers
             // Arrange
             int taggedDestinationDocuments = 5;
             TaggingExecutionResult sourceTaggingResult =
-                new TaggingExecutionResult(ExecutionStatus.Completed, "", new Exception())
+                new TaggingExecutionResult(ExecutionStatus.Completed, string.Empty, new Exception())
                 {
                     TaggedDocumentsCount = _pushedDocumentsArtifactIds.Count()
                 };
 
             TaggingExecutionResult destinationTaggingResult =
-                new TaggingExecutionResult(ExecutionStatus.Completed, "", new Exception())
+                new TaggingExecutionResult(ExecutionStatus.Completed, string.Empty, new Exception())
                 {
                     TaggedDocumentsCount = taggedDestinationDocuments
                 };

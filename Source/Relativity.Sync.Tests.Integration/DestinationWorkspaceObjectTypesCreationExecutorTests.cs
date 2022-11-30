@@ -281,6 +281,7 @@ namespace Relativity.Sync.Tests.Integration
                 {
                     SetupObjectTypeCreation(objectTypeArtifactId, objectTypeName, parentObjectTypePredicate);
                 }
+
                 SetupGuidAssociationWithArtifact(objectTypeArtifactId, objectTypeGuid, formattedParameters);
             }
         }

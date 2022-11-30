@@ -102,7 +102,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             _sut = new FieldMappingValidator(sourceServiceFactoryForUser.Object, destinationServiceFactoryForUser.Object, new EmptyLogger());
         }
 
-
         [Test]
         public async Task ValidateAsync_ShouldPassGoldFlow()
         {

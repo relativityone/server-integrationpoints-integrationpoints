@@ -88,7 +88,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
                     }
                 };
 
-                return (await objectManager.QuerySlimAsync(workspaceId, query, 0, Int32.MaxValue)).Objects;
+                return (await objectManager.QuerySlimAsync(workspaceId, query, 0, int.MaxValue)).Objects;
             }
         }
 
@@ -149,7 +149,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
                 .ConfigureAwait(false);
 
             IList<string> destinationWorkspaceDocuments = await Rdos
-                .QueryDocumentNamesAsync(ServiceFactory, destinationWorkspaceId, "")
+                .QueryDocumentNamesAsync(ServiceFactory, destinationWorkspaceId, string.Empty)
                 .ConfigureAwait(false);
 
             goldFlowTestRun.AssertDocuments(sourceWorkspaceDocuments.ToArray(), destinationWorkspaceDocuments.ToArray());

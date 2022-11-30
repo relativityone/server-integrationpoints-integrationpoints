@@ -84,7 +84,6 @@ namespace Relativity.Sync.Tests.Integration
             destinationServiceFactoryMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_destinationObjectManagerMock.Object);
             destinationServiceFactoryMock.Setup(x => x.CreateProxyAsync<IWorkspaceManager>()).ReturnsAsync(_workspaceManagerMock.Object);
 
-
             containerBuilder.RegisterInstance(sourceServiceFactoryMock.Object).As<ISourceServiceFactoryForUser>();
             containerBuilder.RegisterInstance(destinationServiceFactoryMock.Object).As<IDestinationServiceFactoryForUser>();
             containerBuilder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
@@ -118,10 +117,10 @@ namespace Relativity.Sync.Tests.Integration
                 .ReturnsAsync(new QueryResult())
                 .Verifiable();
 
-            // Act 
+            // Act
             ExecutionResult executionResult = await _executor.ExecuteAsync(_configurationStub, _token).ConfigureAwait(false);
 
-            // Assert 
+            // Assert
             executionResult.Status.Should().Be(ExecutionStatus.Completed);
             Mock.Verify(_sourceObjectManagerMock);
         }
@@ -149,10 +148,10 @@ namespace Relativity.Sync.Tests.Integration
                 .ReturnsAsync(new UpdateResult())
                 .Verifiable();
 
-            // Act 
+            // Act
             await _executor.ExecuteAsync(_configurationStub, _token).ConfigureAwait(false);
 
-            // Assert 
+            // Assert
             Assert.AreEqual(_TEST_DEST_CASE_TAG_ARTIFACT_ID, _configurationStub.DestinationWorkspaceTagArtifactId);
 
             Mock.Verify(_sourceObjectManagerMock, _destinationObjectManagerMock);
@@ -198,10 +197,10 @@ namespace Relativity.Sync.Tests.Integration
                 .ReturnsAsync(new UpdateResult())
                 .Verifiable();
 
-            // Act 
+            // Act
             await _executor.ExecuteAsync(_configurationStub, _token).ConfigureAwait(false);
 
-            // Assert 
+            // Assert
             Assert.AreEqual(_TEST_DEST_CASE_TAG_ARTIFACT_ID, _configurationStub.DestinationWorkspaceTagArtifactId);
 
             Mock.Verify(_sourceObjectManagerMock, _destinationObjectManagerMock);
@@ -241,10 +240,10 @@ namespace Relativity.Sync.Tests.Integration
                 .ReturnsAsync(new UpdateResult())
                 .Verifiable();
 
-            // Act 
+            // Act
             await _executor.ExecuteAsync(_configurationStub, _token).ConfigureAwait(false);
 
-            // Assert 
+            // Assert
             Assert.AreEqual(_TEST_DEST_CASE_TAG_ARTIFACT_ID, _configurationStub.DestinationWorkspaceTagArtifactId);
 
             Mock.Verify(_sourceObjectManagerMock, _destinationObjectManagerMock);
@@ -277,10 +276,10 @@ namespace Relativity.Sync.Tests.Integration
                 .ReturnsAsync(new UpdateResult())
                 .Verifiable();
 
-            // Act 
+            // Act
             await _executor.ExecuteAsync(_configurationStub, _token).ConfigureAwait(false);
 
-            // Assert 
+            // Assert
             Assert.AreEqual(_TEST_DEST_CASE_TAG_ARTIFACT_ID, _configurationStub.DestinationWorkspaceTagArtifactId);
 
             Mock.Verify(_sourceObjectManagerMock, _destinationObjectManagerMock);
@@ -294,10 +293,10 @@ namespace Relativity.Sync.Tests.Integration
             _workspaceManagerMock.Setup(x => x.ReadAsync(_TEST_DEST_CASE_ARTIFACT_ID))
                 .ReturnsAsync((WorkspaceResponse)null);
 
-            // Act 
+            // Act
             ExecutionResult result = await _executor.ExecuteAsync(_configurationStub, _token).ConfigureAwait(false);
 
-            // Assert 
+            // Assert
             Assert.AreEqual(ExecutionStatus.Failed, result.Status);
             Assert.IsNotNull(result.Exception);
             Assert.IsInstanceOf<SyncException>(result.Exception);
@@ -389,10 +388,10 @@ namespace Relativity.Sync.Tests.Integration
                 It.Is<UpdateRequest>(y => y.Object.ArtifactID == _TEST_JOB_ARTIFACT_ID)))
                 .Throws<Exception>();
 
-            // Act 
+            // Act
             ExecutionResult result = await _executor.ExecuteAsync(_configurationStub, _token).ConfigureAwait(false);
 
-            // Assert 
+            // Assert
             Assert.AreEqual(ExecutionStatus.Failed, result.Status);
             Assert.IsNotNull(result.Exception);
             Assert.IsInstanceOf<DestinationWorkspaceTagsLinkerException>(result.Exception);
@@ -410,10 +409,10 @@ namespace Relativity.Sync.Tests.Integration
                 It.IsAny<int>()))
                 .Throws<Exception>();
 
-            // Act 
+            // Act
             ExecutionResult result = await _executor.ExecuteAsync(_configurationStub, _token).ConfigureAwait(false);
 
-            // Assert 
+            // Assert
             Assert.AreEqual(ExecutionStatus.Failed, result.Status);
             Assert.IsNotNull(result.Exception);
             Assert.IsInstanceOf<SyncKeplerException>(result.Exception);

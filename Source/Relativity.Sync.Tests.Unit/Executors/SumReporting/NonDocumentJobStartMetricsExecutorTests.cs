@@ -87,7 +87,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
                 m.FlowType == TelemetryConstants.FLOW_TYPE_VIEW_NON_DOCUMENT_OBJECTS)));
         }
 
-
         [Test]
         public async Task ExecuteAsync_ShouldReportRetryMetric_WhenRetryFlowIsSelected()
         {
@@ -130,7 +129,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             // Assert
             action.Should().NotThrow();
         }
-
 
         [Test]
         public async Task ExecuteAsync_ShouldLogFieldsMappingDetails()

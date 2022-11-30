@@ -196,7 +196,6 @@ namespace Relativity.Sync.Tests.Unit
             const string exception = null;
             const string message = null;
 
-
             QueryResult result = PrepareQueryResult(string.Empty, 0, "Completed With Errors", exception, message);
             _objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(result);
 
@@ -410,7 +409,7 @@ namespace Relativity.Sync.Tests.Unit
         [Test]
         public async Task ItShouldQueryAllProgressTests()
         {
-            //Arrange
+            // Arrange
             const string name = "progress name 1";
             const int order = 3;
             const string statusDescription = "In Progress";
@@ -424,11 +423,11 @@ namespace Relativity.Sync.Tests.Unit
             QueryResult queryResult2 = PrepareQueryResult();
             _objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult2);
 
-            //Act
+            // Act
             IEnumerable<IProgress> progress = await _progressRepository.QueryAllAsync(_WORKSPACE_ID, syncConfigurationArtifactId)
                 .ConfigureAwait(false);
 
-            //Assert
+            // Assert
             progress.Count().Should().Be(0);
             progress.Should().BeEmpty();
 
@@ -446,7 +445,7 @@ namespace Relativity.Sync.Tests.Unit
         [Test]
         public async Task ItShouldQueryAllCompletedWithErrorsTests()
         {
-            //Arrange
+            // Arrange
             const string name = "progress name 1";
             const int order = 3;
             const string statusDescription = "In Progress";
@@ -462,11 +461,11 @@ namespace Relativity.Sync.Tests.Unit
             QueryResult queryResult2 = PrepareQueryResult();
             _objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult2);
 
-            //Act
+            // Act
             IEnumerable<IProgress> progress = await _progressRepository.QueryAllAsync(_WORKSPACE_ID, syncConfigurationArtifactId)
                 .ConfigureAwait(false);
 
-            //Assert
+            // Assert
             progress.First().Status.Should().Be(expectedStatus);
             progress.First().Exception.Should().Be("exception");
             progress.First().Message.Should().Be("message");
@@ -477,7 +476,7 @@ namespace Relativity.Sync.Tests.Unit
         [Test]
         public async Task ItShouldQueryAllThrowExceptionTests()
         {
-            //Arrange
+            // Arrange
             const string name = "progress name 1";
             const int order = 3;
             const string statusDescription = "In Progress";
@@ -489,11 +488,11 @@ namespace Relativity.Sync.Tests.Unit
             result.TotalCount = 1;
             _objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, It.IsAny<int>())).Throws<Exception>();
 
-            //Act
+            // Act
             IEnumerable<IProgress> progress = await _progressRepository.QueryAllAsync(_WORKSPACE_ID, syncConfigurationArtifactId)
                 .ConfigureAwait(false);
 
-            //Assert
+            // Assert
             progress.Count().Should().Be(0);
             progress.Should().BeEmpty();
         }

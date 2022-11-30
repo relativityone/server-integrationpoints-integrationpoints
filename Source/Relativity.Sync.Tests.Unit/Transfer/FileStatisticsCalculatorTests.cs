@@ -182,7 +182,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             VerifyCalculatedResultsWasSaved(files);
 
             int expectedBatchesCount = (int)Math.Ceiling((double)(files.Count - calculatedFilesCount) / _BATCH_SIZE_FOR_FILES_QUERIES);
-            VerifyBatchesWasRetrieved(expectedBatchesCount + 1); //Last run returns null
+            VerifyBatchesWasRetrieved(expectedBatchesCount + 1); // Last run returns null
         }
 
         [Test]
@@ -217,7 +217,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             VerifyCalculatedResultsWasSaved(files);
 
             int expectedBatchesCount = (int)Math.Ceiling((double)(files.Count - calculatedFilesCount) / _BATCH_SIZE_FOR_FILES_QUERIES);
-            VerifyBatchesWasRetrieved(expectedBatchesCount + 1); //Last run returns null
+            VerifyBatchesWasRetrieved(expectedBatchesCount + 1); // Last run returns null
         }
 
         [Test]
@@ -306,12 +306,12 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             _imageFileRepositoryFake.Setup(x => x.QueryImagesForDocumentsAsync(
                     _WORKSPACE_ID, It.IsAny<int[]>(), It.IsAny<QueryImagesOptions>()))
                 .ReturnsAsync((int workspaceId, int[] artifactIds, QueryImagesOptions options) =>
-                    files.Where(f => artifactIds.Contains(f.ArtifactId)).Select(f => new ImageFile(0, "", "", "", f.Size)));
+                    files.Where(f => artifactIds.Contains(f.ArtifactId)).Select(f => new ImageFile(0, string.Empty, string.Empty, string.Empty, f.Size)));
 
             _nativeFileRepositoryFake.Setup(x => x.QueryAsync(
                     _WORKSPACE_ID, It.IsAny<ICollection<int>>()))
                 .ReturnsAsync((int workspaceId, ICollection<int> artifactIds) =>
-                    files.Where(f => artifactIds.Contains(f.ArtifactId)).Select(f => new NativeFile(0, "", "", f.Size)));
+                    files.Where(f => artifactIds.Contains(f.ArtifactId)).Select(f => new NativeFile(0, string.Empty, string.Empty, f.Size)));
 
             _objectManagerMock.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1))
                 .ReturnsAsync(new ExportInitializationResults

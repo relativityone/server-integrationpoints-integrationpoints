@@ -9,7 +9,9 @@ namespace Relativity.Sync.Tests.Common
 
     internal sealed class ProgressStub : IProgress
     {
-        public ProgressStub() { }
+        public ProgressStub()
+        {
+        }
 
         public ProgressStub(string name)
         {

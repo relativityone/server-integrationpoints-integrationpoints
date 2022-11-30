@@ -123,7 +123,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
             action.Should().Throw<RelativitySourceCaseTagRepositoryException>().WithInnerException<InvalidOperationException>();
         }
 
-
         [Test]
         public async Task ItShouldCreateDestinationWorkspaceTag()
         {
@@ -220,14 +219,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
             await _sut.UpdateAsync(destinationWorkspaceArtifactId, tag).ConfigureAwait(false);
 
             // assert
-
             _objectManager.Verify(x => x.UpdateAsync(destinationWorkspaceArtifactId, It.Is<UpdateRequest>(request =>
                 VerifyUpdateRequest(request, tagArtifactId,
                     f => "Name".Equals(f.Field.Name, StringComparison.InvariantCulture) && string.Equals(f.Value, sourceTagName),
                     f => caseIdFieldNameGuid.Equals(f.Field.Guid) && string.Equals(f.Value, sourceWorkspaceArtifactId),
                     f => instanceNameFieldGuid.Equals(f.Field.Guid) && Equals(f.Value, sourceInstanceName),
-                    f => sourceWorkspaceNameGuid.Equals(f.Field.Guid) && string.Equals(f.Value, sourceWorkspaceName)
-                    ))));
+                    f => sourceWorkspaceNameGuid.Equals(f.Field.Guid) && string.Equals(f.Value, sourceWorkspaceName)))));
         }
 
         private bool VerifyUpdateRequest(UpdateRequest request, int tagArtifactId, params System.Predicate<FieldRefValuePair>[] predicates)
@@ -238,6 +235,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             {
                 checkPredicates = checkPredicates && fields.Exists(predicate);
             }
+
             return request.Object.ArtifactID == tagArtifactId &&
                     fields.Count == predicates.Length &&
                     checkPredicates;

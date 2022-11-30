@@ -96,26 +96,24 @@ namespace Relativity.Sync.Tests.Integration
                 destinationWorkspaceArtifactId,
                 It.Is<QueryRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)),
                 0,
-                1)
-            ).Returns(Task.FromResult(new QueryResult()));
+                1))
+            .Returns(Task.FromResult(new QueryResult()));
 
             _objectManagerMock.Setup(x => x.CreateAsync(
                 destinationWorkspaceArtifactId,
-                It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)))
-            ).Returns(Task.FromResult(new CreateResult { Object = new RelativityObject { ArtifactID = newSourceWorkspaceTagArtifactId } })
-            ).Verifiable();
+                It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid))))
+            .Returns(Task.FromResult(new CreateResult { Object = new RelativityObject { ArtifactID = newSourceWorkspaceTagArtifactId } }))
+            .Verifiable();
 
             _objectManagerMock.Setup(x => x.QueryAsync(
                 sourceWorkspaceArtifactId,
                 It.Is<QueryRequest>(y => y.Condition.Contains(jobArtifactId.ToString(CultureInfo.InvariantCulture))),
                 0,
-                1
-            )).Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = jobHistoryName } } }));
+                1)).Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = jobHistoryName } } }));
 
             _objectManagerMock.Setup(x => x.CreateAsync(
                 destinationWorkspaceArtifactId,
-                It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceJobTagObjectType))
-            )).Returns(Task.FromResult(new CreateResult { Object = new RelativityObject { ArtifactID = newSourceJobTagArtifactId } }));
+                It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceJobTagObjectType)))).Returns(Task.FromResult(new CreateResult { Object = new RelativityObject { ArtifactID = newSourceJobTagArtifactId } }));
 
             SetupObjectManagerWithNonExistingSourceJobTag(destinationWorkspaceArtifactId);
 
@@ -153,17 +151,15 @@ namespace Relativity.Sync.Tests.Integration
             _workspaceManagerMock.Setup(x => x.ReadAsync(sourceWorkspaceArtifactId))
                 .ReturnsAsync(new WorkspaceResponse { Name = newSourceWorkspaceName });
 
-
             _workspaceManagerMock.Setup(x => x.ReadAsync(destinationWorkspaceArtifactId))
                 .ReturnsAsync(new WorkspaceResponse { Name = destinationWorkspaceName });
-
 
             _objectManagerMock.Setup(x => x.QueryAsync(
                 destinationWorkspaceArtifactId,
                 It.Is<QueryRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)),
                 0,
-                1)
-            ).Returns(Task.FromResult(new QueryResult
+                1))
+            .Returns(Task.FromResult(new QueryResult
             {
                 ObjectType = new ObjectType
                 {
@@ -201,20 +197,17 @@ namespace Relativity.Sync.Tests.Integration
                 destinationWorkspaceArtifactId,
                 It.Is<UpdateRequest>(y => VerifyUpdateRequest(y, sourceWorkspaceTagArtifactId,
                     pair => pair.Field.Guid.Equals(CaseIdFieldGuid) && pair.Value.Equals(sourceWorkspaceArtifactId),
-                    pair => pair.Field.Guid.Equals(SourceWorkspaceNameFieldGuid) && pair.Value.Equals(newSourceWorkspaceName)))
-                )).Returns(Task.FromResult(new UpdateResult())).Verifiable();
+                    pair => pair.Field.Guid.Equals(SourceWorkspaceNameFieldGuid) && pair.Value.Equals(newSourceWorkspaceName))))).Returns(Task.FromResult(new UpdateResult())).Verifiable();
 
             _objectManagerMock.Setup(x => x.QueryAsync(
                 sourceWorkspaceArtifactId,
                 It.Is<QueryRequest>(y => y.Condition.Contains(jobArtifactId.ToString(CultureInfo.InvariantCulture))),
                 0,
-                1
-            )).Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = jobHistoryName } } }));
+                1)).Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = jobHistoryName } } }));
 
             _objectManagerMock.Setup(x => x.CreateAsync(
                 destinationWorkspaceArtifactId,
-                It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceJobTagObjectType))
-            )).Returns(Task.FromResult(new CreateResult { Object = new RelativityObject { ArtifactID = newSourceJobTagArtifactId } }));
+                It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceJobTagObjectType)))).Returns(Task.FromResult(new CreateResult { Object = new RelativityObject { ArtifactID = newSourceJobTagArtifactId } }));
 
             SetupObjectManagerWithNonExistingSourceJobTag(destinationWorkspaceArtifactId);
 
@@ -262,8 +255,8 @@ namespace Relativity.Sync.Tests.Integration
                 destinationWorkspaceArtifactId,
                 It.Is<QueryRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)),
                 0,
-                1)
-            ).Returns(Task.FromResult(new QueryResult
+                1))
+            .Returns(Task.FromResult(new QueryResult
             {
                 ObjectType = new ObjectType
                 {
@@ -299,20 +292,17 @@ namespace Relativity.Sync.Tests.Integration
 
             _objectManagerMock.Verify(x => x.UpdateAsync(
                 destinationWorkspaceArtifactId,
-                It.Is<UpdateRequest>(y => VerifyUpdateRequest(y, sourceWorkspaceTagArtifactId))
-                ), Times.Never);
+                It.Is<UpdateRequest>(y => VerifyUpdateRequest(y, sourceWorkspaceTagArtifactId))), Times.Never);
 
             _objectManagerMock.Setup(x => x.QueryAsync(
                 sourceWorkspaceArtifactId,
                 It.Is<QueryRequest>(y => y.Condition.Contains(jobArtifactId.ToString(CultureInfo.InvariantCulture))),
                 0,
-                1
-            )).Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = jobHistoryName } } }));
+                1)).Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = jobHistoryName } } }));
 
             _objectManagerMock.Setup(x => x.CreateAsync(
                 destinationWorkspaceArtifactId,
-                It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceJobTagObjectType))
-            )).Returns(Task.FromResult(new CreateResult { Object = new RelativityObject { ArtifactID = sourceJobTagArtifactId } }));
+                It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceJobTagObjectType)))).Returns(Task.FromResult(new CreateResult { Object = new RelativityObject { ArtifactID = sourceJobTagArtifactId } }));
 
             SetupObjectManagerWithNonExistingSourceJobTag(destinationWorkspaceArtifactId);
 
@@ -385,8 +375,8 @@ namespace Relativity.Sync.Tests.Integration
                 destinationWorkspaceArtifactId,
                 It.Is<QueryRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)),
                 0,
-                1)
-            ).Throws<ServiceException>();
+                1))
+            .Throws<ServiceException>();
 
             // Act
             ExecutionResult result = await _executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -422,13 +412,13 @@ namespace Relativity.Sync.Tests.Integration
                 destinationWorkspaceArtifactId,
                 It.Is<QueryRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)),
                 0,
-                1)
-            ).Returns(Task.FromResult(new QueryResult()));
+                1))
+            .Returns(Task.FromResult(new QueryResult()));
 
             _objectManagerMock.Setup(x => x.CreateAsync(
                 destinationWorkspaceArtifactId,
-                It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)))
-            ).Throws<ServiceException>();
+                It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid))))
+            .Throws<ServiceException>();
 
             // Act
             ExecutionResult result = await _executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -461,26 +451,24 @@ namespace Relativity.Sync.Tests.Integration
             _workspaceManagerMock.Setup(x => x.ReadAsync(sourceWorkspaceArtifactId))
                 .ReturnsAsync(new WorkspaceResponse { Name = sourceWorkspaceName });
 
-
             _objectManagerMock.Setup(x => x.QueryAsync(
                 destinationWorkspaceArtifactId,
                 It.Is<QueryRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)),
                 0,
-                1)
-            ).Returns(Task.FromResult(new QueryResult()));
+                1))
+            .Returns(Task.FromResult(new QueryResult()));
 
             _objectManagerMock.Setup(x => x.CreateAsync(
                 destinationWorkspaceArtifactId,
-                It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)))
-            ).Returns(Task.FromResult(new CreateResult { Object = new RelativityObject { ArtifactID = newSourceWorkspaceTagArtifactId } })
-            ).Verifiable();
+                It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid))))
+            .Returns(Task.FromResult(new CreateResult { Object = new RelativityObject { ArtifactID = newSourceWorkspaceTagArtifactId } }))
+            .Verifiable();
 
             _objectManagerMock.Setup(x => x.QueryAsync(
                 sourceWorkspaceArtifactId,
                 It.Is<QueryRequest>(y => y.Condition.Contains(jobArtifactId.ToString(CultureInfo.InvariantCulture))),
                 0,
-                1
-            )).Throws<ServiceException>();
+                1)).Throws<ServiceException>();
 
             SetupObjectManagerWithNonExistingSourceJobTag(destinationWorkspaceArtifactId);
 
@@ -518,26 +506,24 @@ namespace Relativity.Sync.Tests.Integration
                 destinationWorkspaceArtifactId,
                 It.Is<QueryRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)),
                 0,
-                1)
-            ).Returns(Task.FromResult(new QueryResult()));
+                1))
+            .Returns(Task.FromResult(new QueryResult()));
 
             _objectManagerMock.Setup(x => x.CreateAsync(
                 destinationWorkspaceArtifactId,
-                It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)))
-            ).Returns(Task.FromResult(new CreateResult { Object = new RelativityObject { ArtifactID = newSourceWorkspaceTagArtifactId } })
-            ).Verifiable();
+                It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid))))
+            .Returns(Task.FromResult(new CreateResult { Object = new RelativityObject { ArtifactID = newSourceWorkspaceTagArtifactId } }))
+            .Verifiable();
 
             _objectManagerMock.Setup(x => x.QueryAsync(
                 sourceWorkspaceArtifactId,
                 It.Is<QueryRequest>(y => y.Condition.Contains(jobArtifactId.ToString(CultureInfo.InvariantCulture))),
                 0,
-                1
-            )).Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = jobHistoryName } } }));
+                1)).Returns(Task.FromResult(new QueryResult() { Objects = new List<RelativityObject> { new RelativityObject() { Name = jobHistoryName } } }));
 
             _objectManagerMock.Setup(x => x.CreateAsync(
                 destinationWorkspaceArtifactId,
-                It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceJobTagObjectType))
-            )).Throws<ServiceException>();
+                It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceJobTagObjectType)))).Throws<ServiceException>();
 
             SetupObjectManagerWithNonExistingSourceJobTag(destinationWorkspaceArtifactId);
 
@@ -570,8 +556,7 @@ namespace Relativity.Sync.Tests.Integration
                     -1,
                     It.Is<QueryRequest>(y => y.Condition.Contains(destinationWorkspaceArtifactId.ToString(CultureInfo.InvariantCulture))),
                     It.IsAny<int>(),
-                    It.IsAny<int>()
-                    ))
+                    It.IsAny<int>()))
                     .Returns(Task.FromResult(new QueryResult()));
 
             // Act
@@ -603,8 +588,7 @@ namespace Relativity.Sync.Tests.Integration
                     -1,
                     It.Is<QueryRequest>(y => y.Condition.Contains(sourceWorkspaceArtifactId.ToString(CultureInfo.InvariantCulture))),
                     It.IsAny<int>(),
-                    It.IsAny<int>()
-                    ))
+                    It.IsAny<int>()))
                     .Returns(Task.FromResult(new QueryResult()));
 
             // Act

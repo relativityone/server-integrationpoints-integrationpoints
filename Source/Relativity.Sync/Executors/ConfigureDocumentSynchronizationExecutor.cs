@@ -42,8 +42,7 @@ namespace Relativity.Sync.Executors
                 await AttachImportSettingsToImportJobAsync(context, settings.DocumentSettings).ConfigureAwait(false);
 
                 // Ucomment once REL-774348 will be resolved
-                //await AttachAdvancedImportSettingsToImportJobAsync(context, settings.AdvancedSettings).ConfigureAwait(false);
-
+                // await AttachAdvancedImportSettingsToImportJobAsync(context, settings.AdvancedSettings).ConfigureAwait(false);
                 await BeginImportJobAsync(context).ConfigureAwait(false);
             }
             catch (Exception ex)

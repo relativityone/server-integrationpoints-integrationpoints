@@ -196,7 +196,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
                 new EmptyLogger());
 
             // Act & Assert
-
             for (int i = 0; i < 2; i++)
             {
                 sut.CanCancel.Should().BeFalse();

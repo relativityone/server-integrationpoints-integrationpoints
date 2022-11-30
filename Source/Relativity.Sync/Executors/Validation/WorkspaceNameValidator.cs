@@ -22,6 +22,7 @@ namespace Relativity.Sync.Executors.Validation
             {
                 _logger.LogError("Invalid workspace name (ArtifactID: {workspaceArtifactId})", workspaceArtifactId);
             }
+
             return isWorkspaceNameValid;
         }
     }

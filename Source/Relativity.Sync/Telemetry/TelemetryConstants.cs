@@ -56,7 +56,6 @@
             public const string DATA_FIELDS_TOTAL_REQUESTED = "Relativity.Sync.Data.Fields.TotalRequested";
             public const string DATA_FIELDS_LINKS_MAPPED = "Relativity.Sync.Data.Fields.LinksMapped";
 
-
             public const string DATA_LONGTEXT_STREAM_AVERAGE_SIZE_LESSTHAN1MB = "Relativity.Sync.Data.LongTextStream.AverageSize.LessThan1MB";
             public const string DATA_LONGTEXT_STREAM_AVERAGE_TIME_LESSTHAN1MB = "Relativity.Sync.Data.LongTextStream.AverageTime.LessThan1MB";
 

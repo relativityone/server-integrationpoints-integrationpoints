@@ -346,7 +346,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         // We use these builder methods instead of a dedicated instance variable b/c the data reader
         // implements IDisposable, so we would have to make the entire test fixture IDisposable if we
         // kept around a reference.
-
         private SourceWorkspaceDataReader BuildInstanceUnderTest()
         {
             return BuildInstanceUnderTest(new SimpleBatchDataReaderBuilder(_identifierField));

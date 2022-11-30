@@ -81,7 +81,6 @@ namespace Relativity.Sync.Tests.Integration
             _keplerStream.SetupSequence(ks => ks.GetStreamAsync()).ReturnsAsync(unreadableStream).ReturnsAsync(readableStream);
 
             // Act
-
             Stopwatch stopwatch = Stopwatch.StartNew();
             Stream result = await _instance.GetStreamAsync().ConfigureAwait(false);
             stopwatch.Stop();

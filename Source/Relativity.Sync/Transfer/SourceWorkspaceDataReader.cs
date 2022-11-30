@@ -92,6 +92,7 @@ namespace Relativity.Sync.Transfer
             {
                 _logger.LogInformation("No more data to be read from source workspace.");
             }
+
             return dataRead;
         }
 

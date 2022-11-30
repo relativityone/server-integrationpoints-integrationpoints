@@ -164,7 +164,6 @@ namespace Relativity.Sync.Transfer
 
             string identifier = GetValue<string>(dataRow, _IDENTIFIER);
 
-
             return new ImageFile(documentArtifactId, identifier, location, fileName, size);
         }
 

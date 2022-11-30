@@ -76,7 +76,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             JobEndMetricsConfigurationFake.SetupGet(x => x.DestinationType).Returns(destinationType);
             JobEndMetricsConfigurationFake.SetupGet(x => x.ImportNativeFileCopyMode).Returns(nativeFileCopyMode);
 
-
             const long jobSize = 12345;
             const long metadataSize = 6667;
             const long nativesSize = 5678;

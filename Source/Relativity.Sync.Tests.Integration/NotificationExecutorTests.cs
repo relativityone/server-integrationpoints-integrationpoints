@@ -44,7 +44,6 @@ namespace Relativity.Sync.Tests.Integration
         private const string _JOB_NAME = "My Special IP Job";
         private const string _SOURCE_CASE_TAG = "My ECA Case";
 
-
         private readonly Guid _destinationWorkspaceTagObjectTypeGuid = new Guid("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
         private readonly Guid _jobHistoryErrorObjectGuid = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
         private readonly Guid _progressObjectTypeGuid = new Guid("3D107450-DB18-4FE1-8219-73EE1F921ED9");

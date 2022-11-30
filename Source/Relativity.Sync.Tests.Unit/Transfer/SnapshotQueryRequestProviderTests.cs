@@ -29,7 +29,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         private Mock<IObjectManager> _objectManager;
         private Mock<IChoiceQueryManager> _choiceQueryManager;
 
-
         private SnapshotQueryRequestProvider _sut;
 
         private readonly IEnumerable<FieldInfoDto> _expectedFields = new[]
@@ -71,8 +70,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
                 _pipelineSelectorFake.Object,
                 _fieldManagerFake.Object,
                 _serviceFactoryForAdmin.Object,
-                new EmptyLogger()
-                );
+                new EmptyLogger());
         }
 
         [Test]
@@ -309,7 +307,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
             _fieldManagerFake.Setup(x => x.GetMappedFieldsNonDocumentForLinksAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(fieldsForLinks);
-
 
             // Act
             QueryRequest request = await _sut.GetRequestForLinkingNonDocumentObjectsAsync(CancellationToken.None).ConfigureAwait(false);

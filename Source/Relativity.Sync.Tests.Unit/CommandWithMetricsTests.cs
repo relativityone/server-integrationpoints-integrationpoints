@@ -117,7 +117,6 @@ namespace Relativity.Sync.Tests.Unit
             VerifySentMetric(m => m.ExecutionStatus == ExecutionStatus.Canceled);
         }
 
-
         [Test]
         public async Task ExecuteAsync_ShouldReportCanceledStatusWhenExecutionCanceledGracefuly()
         {

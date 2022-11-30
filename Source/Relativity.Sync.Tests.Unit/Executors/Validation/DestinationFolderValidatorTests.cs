@@ -52,7 +52,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             // Arrange
             _getAccessStatusAsyncResult.Exists = true;
 
-            //Act
+            // Act
             ValidationResult result = await _sut.ValidateAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
@@ -68,7 +68,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
             // Act
             ValidationResult result = await _sut.ValidateAsync(_configurationMock.Object, CancellationToken.None).ConfigureAwait(false);
-
 
             // Assert
             result.IsValid.Should().BeFalse();

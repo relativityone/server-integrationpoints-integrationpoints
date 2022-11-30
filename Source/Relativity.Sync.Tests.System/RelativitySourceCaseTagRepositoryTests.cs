@@ -32,7 +32,7 @@ namespace Relativity.Sync.Tests.System
         [IdentifiedTest("4D1CE900-A2A9-4388-852E-16C14AB6BADC")]
         public async Task RelativitySourceCaseTagReadShouldBeEqualToCreated()
         {
-            //Arrange
+            // Arrange
             RelativitySourceCaseTagRepository repository =
                 new RelativitySourceCaseTagRepository(new ServiceFactoryStub(ServiceFactory), Logger);
 

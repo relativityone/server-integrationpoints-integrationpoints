@@ -153,6 +153,7 @@ namespace Relativity.Sync.Storage
                 {
                     throw new SyncException($"Progress ArtifactID: {ArtifactId} not found.");
                 }
+
                 PopulateProgressProperties(queryResult.Objects.Single());
             }
         }
@@ -180,6 +181,7 @@ namespace Relativity.Sync.Storage
                     objectExists = true;
                 }
             }
+
             return objectExists;
         }
 
@@ -218,6 +220,7 @@ namespace Relativity.Sync.Storage
                 _logger.LogError(progressQueryAllException, "Failed to retrieve all progress information for workspace {WorkspaceArtifactID} and sync configuration object {SyncConfigArtifactID}.",
                     _workspaceArtifactId, _syncConfigurationArtifactId);
             }
+
             return progresses;
         }
 

@@ -55,6 +55,7 @@ namespace Relativity.Sync.Transfer
                     throw new SyncItemLevelErrorException($"Reading LongText field value failed: {ex.Message}");
                 }
             }
+
             return initialValue;
         }
 

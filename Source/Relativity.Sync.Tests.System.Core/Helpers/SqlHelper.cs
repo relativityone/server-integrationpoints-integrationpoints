@@ -8,7 +8,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
     {
         public static SqlConnection CreateConnectionFromAppConfig(int workspaceArtifactId)
         {
-            SecureString password = new NetworkCredential("", AppSettings.SqlPassword).SecurePassword;
+            SecureString password = new NetworkCredential(string.Empty, AppSettings.SqlPassword).SecurePassword;
             password.MakeReadOnly();
             SqlCredential credential = new SqlCredential(AppSettings.SqlUsername, password);
 

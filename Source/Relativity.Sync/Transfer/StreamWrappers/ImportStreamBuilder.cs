@@ -32,6 +32,7 @@ namespace Relativity.Sync.Transfer.StreamWrappers
             {
                 wrappedStream = new AsciiToUnicodeStream(wrappedStream);
             }
+
             var streamWithMetrics = new StreamWithMetrics(wrappedStream, _stopwatchFactory(), documentArtifactID, _jobStatisticsContainer, _logger);
             var selfDisposingStream = new SelfDisposingStream(streamWithMetrics, _logger);
             return selfDisposingStream;

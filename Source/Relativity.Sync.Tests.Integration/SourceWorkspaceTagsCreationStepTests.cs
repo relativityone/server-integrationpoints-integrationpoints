@@ -78,7 +78,6 @@ namespace Relativity.Sync.Tests.Integration
             destinationServiceFactoryMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).Returns(Task.FromResult(_destinationObjectManagerMock.Object));
             destinationServiceFactoryMock.Setup(x => x.CreateProxyAsync<IWorkspaceManager>()).Returns(Task.FromResult(_workspaceManagerMock.Object));
 
-
             containerBuilder.RegisterInstance(sourceServiceFactoryMock.Object).As<ISourceServiceFactoryForUser>();
             containerBuilder.RegisterInstance(destinationServiceFactoryMock.Object).As<IDestinationServiceFactoryForUser>();
             containerBuilder.RegisterType<SourceWorkspaceTagsCreationExecutor>().As<IExecutor<ISourceWorkspaceTagsCreationConfiguration>>();
@@ -90,6 +89,7 @@ namespace Relativity.Sync.Tests.Integration
         }
 
 #pragma warning disable S1135 // Track uses of "TODO" tags
+
         // TODO REL-304544: Write integration tests to ensure we are querying for/setting NULL for DestinationInstanceArtifactID when it's -1
 #pragma warning restore S1135 // Track uses of "TODO" tags
 
@@ -317,7 +317,6 @@ namespace Relativity.Sync.Tests.Integration
             _workspaceManagerMock.Setup(x => x.ReadAsync(destinationWorkspaceArtifactID))
                 .ReturnsAsync(new WorkspaceResponse { Name = destinationWorkspaceName });
 
-
             _sourceObjectManagerMock.Setup(x => x.QueryAsync(
                 sourceWorkspaceArtifactID,
                 It.IsAny<QueryRequest>(),
@@ -394,7 +393,6 @@ namespace Relativity.Sync.Tests.Integration
 
             _workspaceManagerMock.Setup(x => x.ReadAsync(destinationWorkspaceArtifactID))
                 .ReturnsAsync((WorkspaceResponse)null);
-
 
             // Act
             ExecutionResult result = await _executor.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -594,7 +592,6 @@ namespace Relativity.Sync.Tests.Integration
 
             _workspaceManagerMock.Setup(x => x.ReadAsync(destinationWorkspaceArtifactID))
                 .ReturnsAsync(new WorkspaceResponse { Name = destinationWorkspaceName });
-
 
             _sourceObjectManagerMock.Setup(x => x.QueryAsync(
                 sourceWorkspaceArtifactID,
