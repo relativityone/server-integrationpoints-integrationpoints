@@ -8,7 +8,6 @@ using Relativity.Import.V1.Models;
 using Relativity.Import.V1.Models.Errors;
 using Relativity.Import.V1.Models.Sources;
 using Relativity.Import.V1.Services;
-using Relativity.Services;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Extensions;
 using Relativity.Sync.KeplerFactory;
@@ -45,7 +44,6 @@ namespace Relativity.Sync.Executors
 
         public async Task<ExecutionResult> ExecuteAsync(IDocumentSynchronizationMonitorConfiguration configuration, CompositeCancellationToken token)
         {
-            ExecutionResult jobStatus;
             try
             {
                 using (IImportSourceController sourceController = await _serviceFactory.CreateProxyAsync<IImportSourceController>().ConfigureAwait(false))
@@ -56,20 +54,27 @@ namespace Relativity.Sync.Executors
                     configuration.JobHistoryArtifactId,
                     configuration.ExportRunId))
                 {
-                    IEnumerable<IBatch> allBatchQuery = await _batchRepository.GetAllAsync(configuration.SourceWorkspaceArtifactId, configuration.SyncConfigurationArtifactId, configuration.ExportRunId).ConfigureAwait(false);
-                    List<IBatch> batches = allBatchQuery.ToList();
+                    List<IBatch> batches = (await _batchRepository.GetAllAsync(
+                            configuration.SourceWorkspaceArtifactId,
+                            configuration.SyncConfigurationArtifactId,
+                            configuration.ExportRunId)
+                        .ConfigureAwait(false))
+                        .ToList();
+
+                    _logger.LogInformation(
+                        "Retrieved batches to monitor: {@batches}",
+                        string.Join(",\n", batches.Select(x => $"{x.BatchGuid} - {x.Status}")));
 
                     TimeSpan statusCheckDelay = await _instanceSettings
                         .GetImportAPIStatusCheckDelayAsync(_DEFAULT_STATUS_CHECK_DELAY)
                         .ConfigureAwait(false);
 
                     ImportDetails result;
-                    _logger.LogInformation("Retrieved batches to monitor: {@batches}", batches.Where(x => !x.IsFinished).Select(x => x.BatchGuid).ToList());
                     do
                     {
-                        if (token.IsStopRequested) // TODO: We should not rely on BatchStatus.Cancelled
+                        if (token.IsStopRequested)
                         {
-                            await CancelImportJob(batches, configuration, jobController).ConfigureAwait(false);
+                            await CancelImportJob(configuration, jobController).ConfigureAwait(false);
                         }
 
                         if (token.IsDrainStopRequested)
@@ -85,16 +90,16 @@ namespace Relativity.Sync.Executors
                     while (!result.IsFinished);
 
                     await _progressHandler.HandleProgressAsync().ConfigureAwait(false);
-                    jobStatus = GetFinalJobStatus(batches, result.State, token);
+
+                    return GetFinalJobStatus(batches, result.State);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Document synchronization monitoring error");
-                jobStatus = ExecutionResult.Failure($"Job progress monitoring failed. {ex.Message}");
+                const string errorMsg = "Error occurred in Sync Job progress monitoring.";
+                _logger.LogError(ex, errorMsg);
+                return ExecutionResult.Failure($"{errorMsg}. Error: {ex.Message}");
             }
-
-            return jobStatus;
         }
 
         private async Task<ImportDetails> GetImportStatusAsync(IImportJobController jobController, IDocumentSynchronizationMonitorConfiguration configuration)
@@ -120,35 +125,29 @@ namespace Relativity.Sync.Executors
                         batch.BatchGuid)
                     .ConfigureAwait(false))
                     .Value;
-                if (dataSource.State >= DataSourceState.Canceled)
+                if (dataSource.IsFinished())
                 {
-                    _logger.LogInformation("DataSource {dataSource} has finished with status {state}.", batch.BatchGuid, dataSource.State);
+                    _logger.LogInformation("DataSource {dataSource} has finished with status {dataSourceStatus}.", batch.BatchGuid, dataSource.State);
                     await EndBatchAsync(batch, dataSource.State, configuration).ConfigureAwait(false);
                 }
             }
         }
 
-        private ExecutionResult GetFinalJobStatus(List<IBatch> batches, ImportState jobState, CompositeCancellationToken token)
+        private ExecutionResult GetFinalJobStatus(List<IBatch> batches, ImportState importState)
         {
-            if (token.IsStopRequested && jobState != ImportState.Canceled)
-            {
-                _logger.LogInformation("Cancellation was requested for Sync job but IAPI 2.0 returned job import state: {importState}", jobState.ToString());
-            }
-
-            switch (jobState)
+            switch (importState)
             {
                 case ImportState.Failed:
                     return ExecutionResult.Failure("Error - job failed");
                 case ImportState.Canceled:
                     return ExecutionResult.Canceled();
-                case ImportState.Paused:
-                    return ExecutionResult.Paused();
                 case ImportState.Completed:
                     return batches.Any(x => x.Status == BatchStatus.CompletedWithErrors) ?
                         ExecutionResult.SuccessWithErrors() : ExecutionResult.Success();
                 default:
-                    _logger.LogError("Unknown import job state. Received value: {importState}", jobState);
-                    return ExecutionResult.Failure("Unknown job import state");
+                    const string errorMsg = "Unknown Import Job state - {importState}";
+                    _logger.LogError(errorMsg, importState);
+                    return ExecutionResult.Failure(string.Format(errorMsg, importState));
             }
         }
 
@@ -206,13 +205,18 @@ namespace Relativity.Sync.Executors
             }
         }
 
-        private async Task CancelImportJob(List<IBatch> batches, IDocumentSynchronizationMonitorConfiguration configuration, IImportJobController jobController)
+        private async Task CancelImportJob(IDocumentSynchronizationMonitorConfiguration configuration, IImportJobController jobController)
         {
+            _logger.LogInformation("Cancelling Import Job {jobId}...", configuration.ExportRunId);
+
             var status = await GetImportStatusAsync(jobController, configuration).ConfigureAwait(false);
             if (status.State != ImportState.Canceled)
             {
-                _logger.LogInformation("Executing job {jobId} cancel request at monitoring stage", configuration.ExportRunId);
-                Response response = await jobController.CancelAsync(configuration.DestinationWorkspaceArtifactId, configuration.ExportRunId).ConfigureAwait(false);
+                _logger.LogInformation("Raise cancellation request for Import Job {jobId}.", configuration.ExportRunId);
+                Response response = await jobController.CancelAsync(
+                        configuration.DestinationWorkspaceArtifactId,
+                        configuration.ExportRunId)
+                    .ConfigureAwait(false);
                 response.Validate();
             }
         }
