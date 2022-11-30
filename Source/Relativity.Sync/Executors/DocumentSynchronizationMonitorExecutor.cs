@@ -127,7 +127,7 @@ namespace Relativity.Sync.Executors
                     .Value;
                 if (dataSource.IsFinished())
                 {
-                    _logger.LogInformation("DataSource {dataSource} has finished with status {dataSourceStatus}.", batch.BatchGuid, dataSource.State);
+                    _logger.LogInformation("DataSource {dataSource} has finished with status {dataSourceState}.", batch.BatchGuid, dataSource.State);
                     await EndBatchAsync(batch, dataSource.State, configuration).ConfigureAwait(false);
                 }
             }
