@@ -10,6 +10,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
         private readonly List<string> _errors;
 
         public IReadOnlyList<string> Errors => _errors.AsReadOnly();
+
         public bool Success => !Errors.Any();
 
         public ImportJobErrors(List<string> errors)

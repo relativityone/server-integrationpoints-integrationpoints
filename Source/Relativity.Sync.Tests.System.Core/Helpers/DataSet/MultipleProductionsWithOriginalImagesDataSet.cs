@@ -36,7 +36,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers.DataSet
             DocumentsWithFirstProductionDataSet = CreateProductionDataSetWithBasePath("Production1", ImportType.Production, ProductionControlNumberFunc);
 
             DocumentsWithSecondProductionDataSet = CreateProductionDataSetWithBasePath("Production2", ImportType.Production, ProductionControlNumberFunc);
-            
+
             DocumentsWithOriginalImagesDataSet = CreateDataSetWithBasePath("OriginalImages", ImportType.Image);
 
             DocumentsWithoutImagesDataSet = CreateDataSetWithBasePath("WithoutImages", ImportType.Native);
@@ -60,6 +60,5 @@ namespace Relativity.Sync.Tests.System.Core.Helpers.DataSet
 
             return new Dataset(setPath, importType, begBatesGetter: controlNumberFunc);
         }
-
     }
 }

@@ -82,7 +82,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             var completedProgress = new Mock<IProgress>();
             completedProgress.Setup(x => x.Status).Returns(expectedJobStatus);
-            _progressRepository.Setup(x => x.QueryAllAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(new []{completedProgress.Object});
+            _progressRepository.Setup(x => x.QueryAllAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(new[] { completedProgress.Object });
 
             DestinationWorkspaceTag destinationWorkspaceTag = GetDestinationWorkspaceTag();
             _destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(destinationWorkspaceTag);
@@ -107,7 +107,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             var completedProgress = new Mock<IProgress>();
             completedProgress.Setup(x => x.Status).Returns(SyncJobStatus.Failed);
             _progressRepository.Setup(x => x.QueryAllAsync(It.IsAny<int>(), It.IsAny<int>()))
-                .ReturnsAsync(new[] {completedProgress.Object});
+                .ReturnsAsync(new[] { completedProgress.Object });
 
             DestinationWorkspaceTag destinationWorkspaceTag = GetDestinationWorkspaceTag();
             _destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(destinationWorkspaceTag);
@@ -116,10 +116,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
             jobHistory.Setup(x => x.ErrorMessage).Returns(_ERROR_MESSAGE);
             _jobHistoryErrorRepository.Setup(x => x.GetLastJobErrorAsync(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(jobHistory.Object);
-            
+
             //Act
             ExecutionResult actualResult = await _instance.ExecuteAsync(configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
-             
+
             //Assert
             actualResult.Status.Should().Be(ExecutionStatus.Completed);
 
@@ -166,7 +166,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             var failedProgress = new Mock<IProgress>();
             failedProgress.Setup(x => x.Status).Returns(SyncJobStatus.Failed);
 
-            _progressRepository.Setup(x => x.QueryAllAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(new[] { completedProgress.Object, failedProgress.Object,completedWithErrorsProgress.Object });
+            _progressRepository.Setup(x => x.QueryAllAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(new[] { completedProgress.Object, failedProgress.Object, completedWithErrorsProgress.Object });
 
             DestinationWorkspaceTag destinationWorkspaceTag = GetDestinationWorkspaceTag();
             _destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(destinationWorkspaceTag);

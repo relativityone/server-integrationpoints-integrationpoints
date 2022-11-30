@@ -46,8 +46,8 @@ namespace Relativity.Sync.Tests.System
             IClientService clientService = RelativityFacade.Instance.Resolve<IClientService>();
             IPermissionService permissionService = RelativityFacade.Instance.Resolve<IPermissionService>();
 
-            Group group = groupService.Require(new Group {Name = "Test Group"});
-            
+            Group group = groupService.Require(new Group { Name = "Test Group" });
+
             _userService.Require(new User
             {
                 EmailAddress = userEmail,
@@ -90,7 +90,7 @@ namespace Relativity.Sync.Tests.System
             using (IPermissionManager permissionManager = await sut.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false))
             {
                 // ACT
-                permissionValues = await permissionManager.GetPermissionSelectedAsync(_workspace.ArtifactID, new List<PermissionRef> {permissionRef}).ConfigureAwait(false);
+                permissionValues = await permissionManager.GetPermissionSelectedAsync(_workspace.ArtifactID, new List<PermissionRef> { permissionRef }).ConfigureAwait(false);
             }
 
             // ASSERT

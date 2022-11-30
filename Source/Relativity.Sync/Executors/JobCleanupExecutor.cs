@@ -21,7 +21,7 @@ namespace Relativity.Sync.Executors
         {
             try
             {
-                if(token.IsDrainStopRequested)
+                if (token.IsDrainStopRequested)
                 {
                     return ExecutionResult.Success();
                 }

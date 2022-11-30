@@ -18,17 +18,17 @@ namespace Relativity.Sync.Executors.PermissionCheck.DocumentPermissionChecks
     {
         private const string _MISSING_DESTINATION_RDO_PERMISSIONS =
             "User does not have permissions to view, edit, and add Documents in the destination workspace.";
-        
+
         private const string _MISSING_DESTINATION_SAVED_SEARCH_ADD_PERMISSION =
             "User does not have permission to create saved searches in the destination workspace.";
 
         private const string _SOURCE_WORKSPACE_OBJECT_TYPE_NAME = "Relativity Source Case";
         private const string _SOURCE_JOB_OBJECT_TYPE_NAME = "Relativity Source Job";
-        
+
         private readonly ISyncObjectTypeManager _syncObjectTypeManager;
 
-        
-        public DestinationDocumentPermissionCheck(IDestinationServiceFactoryForUser destinationServiceFactory, 
+
+        public DestinationDocumentPermissionCheck(IDestinationServiceFactoryForUser destinationServiceFactory,
             ISyncObjectTypeManager syncObjectTypeManager, IAPILog logger) : base(destinationServiceFactory, logger)
         {
             _syncObjectTypeManager = syncObjectTypeManager;
@@ -39,23 +39,23 @@ namespace Relativity.Sync.Executors.PermissionCheck.DocumentPermissionChecks
         protected override async Task ValidateAsync(ValidationResult validationResult, IPermissionsCheckConfiguration configuration)
         {
             validationResult.Add(await ValidateUserCanCreateTagsInDestinationWorkspaceAsync(configuration).ConfigureAwait(false));
-            
+
             validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, (int)ArtifactType.Document,
                 new[] { PermissionType.View, PermissionType.Add, PermissionType.Edit }, _MISSING_DESTINATION_RDO_PERMISSIONS).ConfigureAwait(false));
-            
+
             if (configuration.CreateSavedSearchForTags)
             {
                 validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, (int)ArtifactType.Search,
                     new[] { PermissionType.Add }, _MISSING_DESTINATION_SAVED_SEARCH_ADD_PERMISSION).ConfigureAwait(false));
             }
-            
+
             validationResult.Add(await ValidateFolderPermissionsUserHasArtifactInstancePermissionAsync(configuration, (int)ArtifactType.Document,
                 PermissionType.Add).ConfigureAwait(false));
 
             validationResult.Add(await ValidateFolderPermissionsUserHasArtifactInstancePermissionAsync(configuration, (int)ArtifactType.Folder,
                 PermissionType.Add).ConfigureAwait(false));
         }
-        
+
         private async Task<ValidationResult> ValidateFolderPermissionsUserHasArtifactInstancePermissionAsync(IPermissionsCheckConfiguration configuration,
             int artifactTypeID, PermissionType artifactPermissions)
         {
@@ -78,7 +78,7 @@ namespace Relativity.Sync.Executors.PermissionCheck.DocumentPermissionChecks
 
             return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage, errorCode);
         }
-        
+
         private async Task<ValidationResult> ValidateUserCanCreateTagsInDestinationWorkspaceAsync(IPermissionsCheckConfiguration configuration)
         {
             ValidationResult validationResult = new ValidationResult();
@@ -86,7 +86,7 @@ namespace Relativity.Sync.Executors.PermissionCheck.DocumentPermissionChecks
             validationResult.Add(await ValidateUserCanCreateTagInDestinationWorkspaceAsync(configuration, _SOURCE_JOB_OBJECT_TYPE_NAME).ConfigureAwait(false));
             return validationResult;
         }
-        
+
         private async Task<ValidationResult> ValidateUserCanCreateTagInDestinationWorkspaceAsync(IPermissionsCheckConfiguration configuration, string objectTypeName)
         {
             QueryResult objectTypeQueryResult = await _syncObjectTypeManager
@@ -96,10 +96,10 @@ namespace Relativity.Sync.Executors.PermissionCheck.DocumentPermissionChecks
             {
                 string insufficientPermissionsMessage = $"User does not have permissions to create tag: {objectTypeName}";
                 int objectArtifactTypeID = await _syncObjectTypeManager.GetObjectTypeArtifactTypeIdAsync(configuration.DestinationWorkspaceArtifactId, objectTypeQueryResult.Objects.First().ArtifactID).ConfigureAwait(false);
-                
+
                 return await ValidateUserHasArtifactTypePermissionAsync(configuration,
                     objectArtifactTypeID, new[] { PermissionType.View, PermissionType.Add },
-                    insufficientPermissionsMessage).ConfigureAwait(false);    
+                    insufficientPermissionsMessage).ConfigureAwait(false);
             }
 
             throw new ValidationException($"Cannot find Object Type: {objectTypeName} in Destination Workspace Artifact ID: {configuration.DestinationWorkspaceArtifactId}");

@@ -21,7 +21,7 @@ namespace Relativity.Sync.KeplerFactory
 
         public ServiceFactoryForUser(IUserContextConfiguration userContextConfiguration, IServicesMgr servicesMgr, IAuthTokenGenerator tokenGenerator, IDynamicProxyFactory dynamicProxyFactory,
             IServiceFactoryFactory serviceFactoryFactory, IRandom random, IAPILog logger)
-            : base (random, logger)
+            : base(random, logger)
         {
             _userContextConfiguration = userContextConfiguration;
             _servicesMgr = servicesMgr;
@@ -49,7 +49,7 @@ namespace Relativity.Sync.KeplerFactory
                 _serviceFactory = await CreateServiceFactoryAsync().ConfigureAwait(false);
             }
 
-            return _dynamicProxyFactory.WrapKeplerService(_serviceFactory.CreateProxy<T>(), async() =>
+            return _dynamicProxyFactory.WrapKeplerService(_serviceFactory.CreateProxy<T>(), async () =>
             {
                 _serviceFactory = await CreateServiceFactoryAsync().ConfigureAwait(false);
                 return _serviceFactory.CreateProxy<T>();

@@ -27,6 +27,7 @@ namespace Relativity.Sync.Executors.Validation
         }
 
         public abstract Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token);
+
         public abstract bool ShouldValidate(ISyncPipeline pipeline);
 
         protected async Task<List<ValidationMessage>> BaseValidateAsync(IValidationConfiguration configuration, bool onlyIdentifierShouldBeMapped, CancellationToken token)

@@ -22,13 +22,13 @@ namespace Relativity.Sync.Tests.Common.Stubs
             _defaultArtifactId = defaultArtifactId;
 
             Mock.Setup(x => x.GetAsync<SyncBatchRdo>(It.IsAny<int>(), defaultArtifactId))
-                .ReturnsAsync(() => new SyncBatchRdo{ArtifactId = defaultArtifactId});
+                .ReturnsAsync(() => new SyncBatchRdo { ArtifactId = defaultArtifactId });
         }
 
         public Mock<IRdoManager> Mock { get; } = new Mock<IRdoManager>();
-        
-        
-        
+
+
+
         public Task EnsureTypeExistsAsync<TRdo>(int workspaceId) where TRdo : IRdoType
         {
             Mock.Object.EnsureTypeExistsAsync<TRdo>(workspaceId);
@@ -39,16 +39,16 @@ namespace Relativity.Sync.Tests.Common.Stubs
         {
             _rdosForGetAsync.Enqueue(rdo);
         }
-        
+
         public Task<TRdo> GetAsync<TRdo>(int workspaceId, int artifactId, params Expression<Func<TRdo, object>>[] fields) where TRdo : IRdoType, new()
         {
             Task<TRdo> result = Mock.Object.GetAsync(workspaceId, artifactId, fields);
-            
+
             if (_rdosForGetAsync.Any())
             {
                 return Task.FromResult((TRdo)_rdosForGetAsync.Dequeue());
             }
-            
+
             return result;
         }
 
@@ -56,7 +56,7 @@ namespace Relativity.Sync.Tests.Common.Stubs
         {
             _artifactIdsForCreate.Enqueue(artifactId);
         }
-        
+
         public Task CreateAsync<TRdo>(int workspaceId, TRdo rdo, int? parentObjectId = null) where TRdo : IRdoType
         {
             if (_artifactIdsForCreate.Any())
@@ -82,7 +82,7 @@ namespace Relativity.Sync.Tests.Common.Stubs
             typeInfo.Fields[fieldGuid].PropertyInfo.SetValue(rdo, value);
 
             Mock.Object.SetValueAsync(workspaceId, rdo, expression, value);
-            
+
             return Task.CompletedTask;
         }
     }

@@ -56,17 +56,17 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 {
                     new FieldValuePair()
                     {
-                        Field = new Field() {Guids = new List<Guid>() {instanceNameFieldGuid}},
+                        Field = new Field() { Guids = new List<Guid>() { instanceNameFieldGuid } },
                         Value = sourceInstanceName
                     },
                     new FieldValuePair()
                     {
-                        Field = new Field() {Guids = new List<Guid>() {sourceWorkspaceNameGuid}},
+                        Field = new Field() { Guids = new List<Guid>() { sourceWorkspaceNameGuid } },
                         Value = sourceWorkspaceName
                     },
                     new FieldValuePair()
                     {
-                        Field = new Field() {Guids = new List<Guid>() {caseIdFieldNameGuid}},
+                        Field = new Field() { Guids = new List<Guid>() { caseIdFieldNameGuid } },
                         Value = sourceWorkspaceArtifactId
                     }
                 }
@@ -122,7 +122,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // assert
             action.Should().Throw<RelativitySourceCaseTagRepositoryException>().WithInnerException<InvalidOperationException>();
         }
-        
+
 
         [Test]
         public async Task ItShouldCreateDestinationWorkspaceTag()
@@ -133,7 +133,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             const string sourceWorkspaceName = "workspace";
             const string sourceInstanceName = "instance";
             const string sourceTagName = "Source tag name";
-            
+
             CreateResult createResult = new CreateResult()
             {
                 Object = new RelativityObject()
@@ -266,6 +266,5 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // assert
             action.Should().Throw<RelativitySourceCaseTagRepositoryException>().WithInnerException<InvalidOperationException>();
         }
-
     }
 }

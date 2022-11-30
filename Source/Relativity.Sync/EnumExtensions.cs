@@ -9,7 +9,7 @@ namespace Relativity.Sync
         internal static T GetEnumFromDescription<T>(this string description)
         {
             Type type = typeof(T);
-            object result = GetEnumFromDescription(description, type) 
+            object result = GetEnumFromDescription(description, type)
                             ?? throw new InvalidOperationException($"The description could not be converted to the proper enum value: {description}.");
             return (T)result;
         }
@@ -20,7 +20,7 @@ namespace Relativity.Sync
             {
                 throw new InvalidOperationException($"The type specified is not an enum type: {type}.");
             }
-            
+
             if (string.IsNullOrEmpty(description))
             {
                 return null;

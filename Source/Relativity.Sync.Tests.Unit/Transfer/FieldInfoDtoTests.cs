@@ -16,7 +16,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             SpecialFieldType specialFieldType = SpecialFieldType.FolderPath;
             const string sourceFieldName = "Source Field";
             const string destinationFieldName = "Destination Field";
-            
+
             // Act
             FieldInfoDto result = FieldInfoDto.GenericSpecialField(specialFieldType, sourceFieldName, destinationFieldName);
 
@@ -35,7 +35,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             const string sourceFieldName = "Source Field";
             const string destinationFieldName = "Destination Field";
             const bool isIdentifier = true;
-            
+
             // Act
             FieldInfoDto result = FieldInfoDto.DocumentField(sourceFieldName, destinationFieldName, isIdentifier);
 
@@ -65,7 +65,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         {
             // Arrange
             const string fieldName = "Display Name Field";
-            
+
             // Act
             FieldInfoDto result = FieldInfoDto.FolderPathFieldFromDocumentField(fieldName);
 

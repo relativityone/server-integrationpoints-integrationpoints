@@ -14,7 +14,7 @@ namespace Relativity.Sync.Executors.Validation
         }
 
         protected override string ValidatorKind => "images";
-        
+
         public override bool ShouldValidate(ISyncPipeline pipeline) => pipeline.IsImagePipeline();
 
         protected override bool ShouldNotValidateReferentialFileLinksRestriction(IValidationConfiguration configuration)

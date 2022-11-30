@@ -424,11 +424,11 @@ namespace Relativity.Sync.Tests.Integration
         {
             var fieldValues = new Dictionary<Guid, object>
             {
-                {_nameFieldGuid, _TEST_DEST_CASE_TAG_NAME},
-                {_destinationWorkspaceNameFieldGuid, testDestinationCaseName},
-                {_destinationInstanceNameFieldGuid, testDestinationInstanceName},
-                {_destinationInstanceArtifactIdFieldGuid, _TEST_INSTANCE_ARTIFACT_ID},
-                {_destinationWorkspaceArtifactIdFieldGuid, _TEST_DEST_CASE_ARTIFACT_ID}
+                { _nameFieldGuid, _TEST_DEST_CASE_TAG_NAME },
+                { _destinationWorkspaceNameFieldGuid, testDestinationCaseName },
+                { _destinationInstanceNameFieldGuid, testDestinationInstanceName },
+                { _destinationInstanceArtifactIdFieldGuid, _TEST_INSTANCE_ARTIFACT_ID },
+                { _destinationWorkspaceArtifactIdFieldGuid, _TEST_DEST_CASE_ARTIFACT_ID }
             };
 
             return fieldValues

@@ -27,7 +27,7 @@ namespace Relativity.Sync.Tests.Integration
 
             // ACT
             formatter.Serialize(ms, originalException);
-            T deserializedException = (T) formatter.Deserialize(ms2);
+            T deserializedException = (T)formatter.Deserialize(ms2);
 
             // ASSERT
             deserializedException.InnerException.Should().NotBeNull();
@@ -60,7 +60,7 @@ namespace Relativity.Sync.Tests.Integration
         {
             object[] constructorArgs = { message, innerException };
             ConstructorInfo constructor = FindInnerExceptionConstructor(typeof(T));
-            return (T) constructor.Invoke(constructorArgs);
+            return (T)constructor.Invoke(constructorArgs);
         }
 
         private static ConstructorInfo FindInnerExceptionConstructor(Type exceptionType)

@@ -105,7 +105,7 @@ namespace Relativity.Sync.Tests.Unit
             CompositeCancellationToken compositeCancellationToken = new CompositeCancellationToken(tokenSource.Token, CancellationToken.None, new EmptyLogger());
             SyncExecutionContext context = new SyncExecutionContext(_syncJobProgress, compositeCancellationToken);
             tokenSource.Cancel();
-            
+
             // ACT
             await _instance.ExecuteAsync(context).ConfigureAwait(false);
 
@@ -135,7 +135,7 @@ namespace Relativity.Sync.Tests.Unit
         public void ItShouldReportFailureWhenConstrainsFailedWithException()
         {
             _command.Setup(x => x.CanExecuteAsync(CancellationToken.None)).Throws<InvalidOperationException>();
-            
+
             // ACT
             Func<Task> action = () => _instance.ExecuteAsync(_executionContext);
 

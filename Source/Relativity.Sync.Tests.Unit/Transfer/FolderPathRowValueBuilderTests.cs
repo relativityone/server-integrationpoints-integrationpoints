@@ -14,8 +14,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
     {
         private static readonly IDictionary<int, string> DefaultFolderPathsMap = new Dictionary<int, string>
         {
-            {0, "foo\\bar"},
-            {1, "bat\\baz\\bang"}
+            { 0, "foo\\bar" },
+            { 1, "bat\\baz\\bang" }
         };
 
         [TestCase(DestinationFolderStructureBehavior.None)]

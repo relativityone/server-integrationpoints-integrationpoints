@@ -66,7 +66,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             { _DOCUMENT_IDENTIFIER_FIELD.SourceFieldName, _DOCUMENT_IDENTIFIER_FIELD.RelativityDataType },
             { _DOCUMENT_MAPPED_FIELD.SourceFieldName, _DOCUMENT_MAPPED_FIELD.RelativityDataType },
             { _FOLDER_PATH_STRUCTURE_FIELD.SourceFieldName, RelativityDataType.FixedLengthText },
-            {_MANAGER_MAPPED_FIELD.SourceFieldName, RelativityDataType.SingleObject}
+            { _MANAGER_MAPPED_FIELD.SourceFieldName, RelativityDataType.SingleObject }
         };
 
         private readonly FieldInfoDto[] _NATIVE_SPECIAL_FIELDS = new FieldInfoDto[]

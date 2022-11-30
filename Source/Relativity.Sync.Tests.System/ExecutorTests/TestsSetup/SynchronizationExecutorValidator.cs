@@ -15,6 +15,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests.TestsSetup
     internal class SynchronizationExecutorValidator
     {
         public ConfigurationStub Configuration { get; }
+
         public ServiceFactory ServiceFactory { get; }
 
         private readonly Guid BatchObject = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
@@ -55,7 +56,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests.TestsSetup
             {
                 var sb = new StringBuilder();
                 sb.AppendLine($"Synchronization step failed: {syncResult.Message}: {syncResult.Exception}");
-                sb.Append(await objectManager.AggregateJobHistoryErrorMessagesAsync( workspaceId, jobHistoryId)
+                sb.Append(await objectManager.AggregateJobHistoryErrorMessagesAsync(workspaceId, jobHistoryId)
                     .ConfigureAwait(false));
 
                 return sb.ToString();

@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             const int secondDocumentArtifactId = 2;
             INativeFile file1 = new NativeFile(firstDocumentArtifactId, location, filename, size);
             INativeFile file2 = new NativeFile(secondDocumentArtifactId, location, filename, size);
-            
+
             // Act
             bool areEqual = _sut.Equals(file1, file2);
 

@@ -68,7 +68,7 @@ namespace Relativity.Sync.Executors.Validation
                     Condition = $"(('FieldArtifactTypeID' == {_DOCUMENT_ARTIFACT_TYPE_ID} AND 'Name' == '{configuration.GetFolderPathSourceFieldName()}'))",
                     Fields = new[]
                     {
-                        new FieldRef() {Name = fieldType},
+                        new FieldRef() { Name = fieldType },
                     }
                 };
                 const int start = 0;

@@ -7,9 +7,13 @@ namespace Relativity.Sync.Tests.Integration.Helpers
     internal sealed class Document
     {
         public int ArtifactId { get; set; }
+
         public FieldValue[] FieldValues { get; set; }
+
         public string WorkspaceFolderPath { get; set; }
+
         public INativeFile NativeFile { get; set; }
+
         public List<ImageFile> Images { get; set; } = new List<ImageFile>();
 
         public HashSet<string> FieldSet => new HashSet<string>(FieldValues.Select(x => x.Field));

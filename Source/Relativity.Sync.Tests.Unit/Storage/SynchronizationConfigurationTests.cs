@@ -81,7 +81,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
         {
             const int sourceJobTagArtifactId = 105649;
             _configurationRdo.SourceJobTagArtifactId = sourceJobTagArtifactId;
-                
+
             // act
             int actualSourceJobTagName = _syncConfig.SourceJobTagArtifactId;
 
@@ -94,7 +94,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
         {
             const int sourceWorkspaceTagArtifactId = 105656;
             _configurationRdo.SourceWorkspaceTagArtifactId = sourceWorkspaceTagArtifactId;
-            
+
 
             // act
             int actualSourceJobTagName = _syncConfig.SourceWorkspaceTagArtifactId;
@@ -130,7 +130,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
         public void ExportRunId_ShouldReturnExportRunId()
         {
             // ARRANGE
-            Guid runId = new Guid( "7B7CB209-69A5-4903-A210-3452EAB7BB34");
+            Guid runId = new Guid("7B7CB209-69A5-4903-A210-3452EAB7BB34");
 
             _configurationRdo.SnapshotId = runId;
 
@@ -202,8 +202,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
         static IEnumerable<TestCaseData> SnapshotCaseSource()
         {
-            yield return new TestCaseData((Guid?) null);
-            yield return new TestCaseData((Guid?) Guid.Empty);
+            yield return new TestCaseData((Guid?)null);
+            yield return new TestCaseData((Guid?)Guid.Empty);
         }
     }
 }

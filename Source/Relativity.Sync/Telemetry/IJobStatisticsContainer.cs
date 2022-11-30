@@ -46,7 +46,7 @@ namespace Relativity.Sync.Telemetry
         /// Returns statistics of the largest long text stream.
         /// </summary>
         LongTextStreamStatistics LargestLongTextStreamStatistics { get; }
-        
+
         /// <summary>
         /// Returns statistics of the smallest long text stream.
         /// </summary>

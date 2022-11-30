@@ -300,7 +300,7 @@ namespace Relativity.Sync.Tests.Integration
 
         private void SetupQueryingObjectTypeByName(int objectTypeArtifactId, string objectTypeName, bool objectTypeExists)
         {
-            QueryResult result = objectTypeExists ? CreateQueryResult(new RelativityObject {ArtifactID = objectTypeArtifactId}) : CreateQueryResult();
+            QueryResult result = objectTypeExists ? CreateQueryResult(new RelativityObject { ArtifactID = objectTypeArtifactId }) : CreateQueryResult();
             _objectManager.Setup(om => om.QueryAsync(_WORKSPACE_ID,
                     It.Is(BuildVerifyQueryRequestCondition(ArtifactType.ObjectType, $"'Name' == '{objectTypeName}'")), It.IsAny<int>(), It.IsAny<int>()))
                     .ReturnsAsync(result).Verifiable();
@@ -380,7 +380,7 @@ namespace Relativity.Sync.Tests.Integration
 
         private void SetupFieldQueryingByObjectManager(int fieldArtifactId, string fieldName, bool fieldExists, string parametersListForMessage)
         {
-            QueryResult result = fieldExists ? CreateQueryResult(new RelativityObject {ArtifactID = fieldArtifactId}) : CreateQueryResult();
+            QueryResult result = fieldExists ? CreateQueryResult(new RelativityObject { ArtifactID = fieldArtifactId }) : CreateQueryResult();
             _objectManager.Setup(om =>
                     om.QueryAsync(_WORKSPACE_ID, It.Is(BuildVerifyQueryRequestCondition(ArtifactType.Field, $"'Name' == '{fieldName}'")), It.IsAny<int>(), It.IsAny<int>()))
                     .ReturnsAsync(result)
@@ -437,13 +437,12 @@ namespace Relativity.Sync.Tests.Integration
 
         public static Expression<Func<QueryRequest, bool>> BuildVerifyQueryRequestCondition(ArtifactType artifactType, string condition)
         {
-            return r => r.ObjectType.ArtifactTypeID == (int) artifactType && r.Condition == condition;
-
+            return r => r.ObjectType.ArtifactTypeID == (int)artifactType && r.Condition == condition;
         }
 
         public static QueryResult CreateQueryResult(params RelativityObject[] results)
         {
-            return new QueryResult {Objects = new List<RelativityObject>(results)};
+            return new QueryResult { Objects = new List<RelativityObject>(results) };
         }
 
         private void VerifyMocks()

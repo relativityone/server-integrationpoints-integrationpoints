@@ -48,7 +48,7 @@ namespace Relativity.Sync.Tests.Unit
         {
             ProgressStub progress = new ProgressStub("FooBar");
             _progressRepository.ForQuery.Add(progress);
-             
+
             // ACT
             SyncJobState state = new SyncJobState("FooBar", string.Empty, SyncJobStatus.Failed, "A problem happened", new InvalidOperationException());
             _instance.Report(state);

@@ -6,7 +6,9 @@ namespace Relativity.Sync.RDOs.Framework.Attributes
     internal class RdoAttribute : Attribute
     {
         public Guid TypeGuid { get; }
+
         public string Name { get; }
+
         public Guid? ParentObjectTypeGuid { get; }
 
         /// <summary>

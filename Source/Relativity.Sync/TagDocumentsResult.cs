@@ -33,7 +33,7 @@ namespace Relativity.Sync
             bool success = true;
 
             var results = tagDocumentsResults.ToArray();
-            foreach(var result in results)
+            foreach (var result in results)
             {
                 failedDocuments.AddRange(result.FailedDocuments);
                 messageBuilder.AppendLine(result.Message);

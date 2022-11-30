@@ -27,17 +27,17 @@ namespace Relativity.Sync
         public static TaggingExecutionResult Compose(params TaggingExecutionResult[] executionResults)
         {
             var composedResult = TaggingExecutionResult.Success();
-            
+
             if (executionResults.Any(x => x.Status != ExecutionStatus.Completed))
             {
                 var notCompletedResults = executionResults.Where(x => x.Status != ExecutionStatus.Completed).ToList();
 
-                var composedMessage = $"Messages of tagging that not completed successfully: {string.Join("\n", notCompletedResults.Select( m => m.Message))}";
+                var composedMessage = $"Messages of tagging that not completed successfully: {string.Join("\n", notCompletedResults.Select(m => m.Message))}";
                 Exception composedException = new AggregateException(notCompletedResults.Select(m => m.Exception));
                 composedResult = TaggingExecutionResult.Failure(composedMessage, composedException);
             }
-            
-            composedResult.TaggedDocumentsCount = executionResults.Min( x => x.TaggedDocumentsCount);
+
+            composedResult.TaggedDocumentsCount = executionResults.Min(x => x.TaggedDocumentsCount);
 
             return composedResult;
         }

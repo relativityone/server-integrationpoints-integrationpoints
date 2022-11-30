@@ -72,7 +72,7 @@ namespace Relativity.Sync.Tests.System
             await CreateBatchesAsync(_sourceWorkspace.ArtifactID, configuration.SyncConfigurationArtifactId, batchCount, transferredItemsCountPerBatch, failedItemsCountPerBatch).ConfigureAwait(false);
 
             ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IJobStatusConsolidationConfiguration>(configuration);
-            
+
             // Act
             await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 

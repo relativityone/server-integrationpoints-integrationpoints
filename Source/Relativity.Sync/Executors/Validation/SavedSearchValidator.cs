@@ -51,7 +51,7 @@ namespace Relativity.Sync.Executors.Validation
                         Condition = $"(('ArtifactId' == {configuration.SavedSearchArtifactId}))",
                         Fields = new[]
                         {
-                            new FieldRef() {Name = owner}
+                            new FieldRef() { Name = owner }
                         }
                     };
 

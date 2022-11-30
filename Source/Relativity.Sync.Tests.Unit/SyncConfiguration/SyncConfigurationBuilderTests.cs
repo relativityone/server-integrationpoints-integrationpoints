@@ -58,11 +58,11 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
                     {
                         new RelativityObject()
                         {
-                            ArtifactID = 1, Guids = new List<Guid> {Guid.NewGuid()},
+                            ArtifactID = 1, Guids = new List<Guid> { Guid.NewGuid() },
                             FieldValues = new List<FieldValuePair>
                             {
-                                new FieldValuePair {Value = 1},
-                                new FieldValuePair {Value = 2}
+                                new FieldValuePair { Value = 1 },
+                                new FieldValuePair { Value = 2 }
                             }
                         }
                     },

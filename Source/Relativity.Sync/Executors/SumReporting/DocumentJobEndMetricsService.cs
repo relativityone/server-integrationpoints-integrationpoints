@@ -19,7 +19,7 @@ namespace Relativity.Sync.Executors.SumReporting
         private readonly ISyncMetrics _syncMetrics;
         private readonly IAPILog _logger;
 
-        public DocumentJobEndMetricsService(IBatchRepository batchRepository, IJobEndMetricsConfiguration configuration, IFieldManager fieldManager, 
+        public DocumentJobEndMetricsService(IBatchRepository batchRepository, IJobEndMetricsConfiguration configuration, IFieldManager fieldManager,
             IJobStatisticsContainer jobStatisticsContainer, ISyncMetrics syncMetrics, IAPILog logger)
             : base(batchRepository, configuration)
         {
@@ -100,7 +100,6 @@ namespace Relativity.Sync.Executors.SumReporting
             }
 
             return allNativesSize;
-        } 
-
+        }
     }
 }

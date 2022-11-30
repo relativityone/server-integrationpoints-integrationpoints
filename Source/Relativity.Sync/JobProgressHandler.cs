@@ -36,7 +36,7 @@ namespace Relativity.Sync
                         alreadyExecutedBatch.FailedItemsCount,
                         alreadyExecutedBatch.TransferredItemsCount
                     )
-                    {Completed = true};
+                { Completed = true };
             }
 
             _changeSubjectBufferSubscription = _changeSignal.Buffer(TimeSpan.FromSeconds(_THROTTHLE_FOR_SECONDS), timerScheduler ?? Scheduler.Default)

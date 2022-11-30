@@ -3,6 +3,7 @@
     internal interface IRetryDataSourceSnapshotConfiguration : IDataSourceSnapshotConfiguration
     {
         int? JobHistoryToRetryId { get; }
+
         ImportOverwriteMode ImportOverwriteMode { get; set; }
     }
 }

@@ -2,6 +2,5 @@
 {
     internal interface ISourceServiceFactoryForUser : IProxyFactory
     {
-
     }
 }

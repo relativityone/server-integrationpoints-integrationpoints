@@ -19,7 +19,7 @@ namespace Relativity.Sync.Executors.SumReporting
         private readonly IJobStatisticsContainer _jobStatisticsContainer;
         private readonly IFileStatisticsCalculator _fileStatisticsCalculator;
         private readonly ISnapshotQueryRequestProvider _queryRequestProvider;
-        
+
         public DocumentJobStartMetricsExecutor(ISyncMetrics syncMetrics, IFieldMappingSummary fieldMappingSummary, IJobStatisticsContainer jobStatisticsContainer,
             IFileStatisticsCalculator fileStatisticsCalculator, ISnapshotQueryRequestProvider queryRequestProvider, IAPILog logger)
         {
@@ -69,7 +69,7 @@ namespace Relativity.Sync.Executors.SumReporting
         private Task<long> CreateCalculateNativesTotalSizeTaskAsync(IDocumentJobStartMetricsConfiguration configuration,
             CompositeCancellationToken token)
         {
-            if(configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.CopyFiles)
+            if (configuration.ImportNativeFileCopyMode == ImportNativeFileCopyMode.CopyFiles)
             {
                 return Task.Run(async () =>
                 {

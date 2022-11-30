@@ -46,7 +46,7 @@ namespace Relativity.Sync.Tests.Integration
             string validWorkspaceName = "So much valid";
 
             _workspaceManagerMock.Setup(x => x.ReadAsync(_WORKSPACE_ARTIFACT_ID))
-                .ReturnsAsync(new WorkspaceResponse {Name = validWorkspaceName});
+                .ReturnsAsync(new WorkspaceResponse { Name = validWorkspaceName });
 
             _configuration.SourceWorkspaceArtifactId = _WORKSPACE_ARTIFACT_ID;
 
@@ -65,7 +65,7 @@ namespace Relativity.Sync.Tests.Integration
             string invalidWorkspaceName = "So ; much ; invalid";
 
             _workspaceManagerMock.Setup(x => x.ReadAsync(_WORKSPACE_ARTIFACT_ID))
-                .ReturnsAsync(new WorkspaceResponse {Name = invalidWorkspaceName});
+                .ReturnsAsync(new WorkspaceResponse { Name = invalidWorkspaceName });
 
             _configuration.SourceWorkspaceArtifactId = _WORKSPACE_ARTIFACT_ID;
 

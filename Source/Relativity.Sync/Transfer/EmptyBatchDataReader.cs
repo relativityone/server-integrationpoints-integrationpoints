@@ -147,8 +147,11 @@ namespace Relativity.Sync.Transfer
         }
 
         public int Depth { get; }
+
         public bool IsClosed { get; private set; }
+
         public int RecordsAffected { get; }
+
         public bool CanCancel { get; } = true;
     }
 }

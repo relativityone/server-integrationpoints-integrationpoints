@@ -41,7 +41,7 @@ namespace Relativity.Sync.Tests.Integration
         private Mock<IRdoManager> _rdoManagerMock;
 
         private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 10001;
-        private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 20002; 
+        private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 20002;
 
         private static readonly ImportApiJobStatistics _emptyJobStatistsics = new ImportApiJobStatistics(0, 0, 0, 0);
 
@@ -216,7 +216,7 @@ namespace Relativity.Sync.Tests.Integration
             SetupFolderQueryResult(documentIds, folderArtifactId);
             SetupFolderPaths(folderArtifactId);
             SetupTaggingOfDocuments(completedItems);
-            
+
             MassCreateResult massCreateResult = new MassCreateResult()
             {
                 Success = true,
@@ -351,7 +351,7 @@ namespace Relativity.Sync.Tests.Integration
                 }).ToList()
             };
             _objectManagerMock.Setup(x => x.QueryAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
-                    It.Is<QueryRequest>(qr => qr.ObjectType.ArtifactTypeID == (int) ArtifactType.Document && qr.Condition.Contains("\"ArtifactID\" IN [")),
+                    It.Is<QueryRequest>(qr => qr.ObjectType.ArtifactTypeID == (int)ArtifactType.Document && qr.Condition.Contains("\"ArtifactID\" IN [")),
                     It.IsAny<int>(),
                     It.IsAny<int>()))
                     .ReturnsAsync(folderQueryResult)
@@ -396,7 +396,7 @@ namespace Relativity.Sync.Tests.Integration
                     "HTML File"
                 }
             }).ToArray();
-            
+
             _objectManagerMock.Setup(x => x.RetrieveResultsBlockFromExportAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
                     It.IsAny<Guid>(),
                     documentIds.Count,
@@ -428,9 +428,9 @@ namespace Relativity.Sync.Tests.Integration
             _objectManagerMock.Setup(x => x.QueryAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<QueryRequest>(q => q.ObjectType.Guid == BatchObjectTypeGuid && q.Condition.Contains("New")), It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(queryResultForNewBatches)
                 .Verifiable();
-            
+
             _objectManagerMock.Setup(x => x.QueryAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<QueryRequest>(q => q.ObjectType.Guid == BatchObjectTypeGuid && q.Condition.Contains("Paused")), It.IsAny<int>(), It.IsAny<int>()))
-                .ReturnsAsync(new QueryResult{Objects = new List<RelativityObject>(), ResultCount = 0, TotalCount = 0})
+                .ReturnsAsync(new QueryResult { Objects = new List<RelativityObject>(), ResultCount = 0, TotalCount = 0 })
                 .Verifiable();
 
             _objectManagerMock.Setup(x => x.QuerySlimAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<QueryRequest>(q => q.ObjectType.Guid == BatchObjectTypeGuid && q.Condition.Contains("Completed")), It.IsAny<int>(), It.IsAny<int>()))

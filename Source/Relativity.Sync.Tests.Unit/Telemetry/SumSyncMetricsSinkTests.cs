@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
             Mock<IWorkspaceGuidService> workspaceGuidServiceFake = new Mock<IWorkspaceGuidService>();
             workspaceGuidServiceFake.Setup(x => x.GetWorkspaceGuidAsync(It.IsAny<int>())).ReturnsAsync(_workspaceGuid);
 
-            _sut = new SumSyncMetricsSink(serviceFactoryForAdminMock.Object, _syncLogMock.Object, 
+            _sut = new SumSyncMetricsSink(serviceFactoryForAdminMock.Object, _syncLogMock.Object,
                 workspaceGuidServiceFake.Object, _syncJobParamters);
         }
 
@@ -105,7 +105,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
             _sut.Send(metric);
 
             // Assert
-            _metricsManagerMock.Verify(x => x.LogPointInTimeDoubleAsync("TimedTestName", It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<double>()), 
+            _metricsManagerMock.Verify(x => x.LogPointInTimeDoubleAsync("TimedTestName", It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<double>()),
                 Times.Never);
         }
 

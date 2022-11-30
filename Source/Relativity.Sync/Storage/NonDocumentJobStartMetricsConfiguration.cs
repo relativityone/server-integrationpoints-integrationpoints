@@ -8,9 +8,13 @@ namespace Relativity.Sync.Storage
         private readonly IConfiguration _cache;
 
         public bool Resuming => _cache.GetFieldValue(x => x.Resuming);
+
         public int DestinationWorkspaceArtifactId => _cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);
+
         public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
+
         public int? JobHistoryToRetryId => _cache.GetFieldValue(x => x.JobHistoryToRetryId);
+
         public int RdoArtifactTypeId => _cache.GetFieldValue(x => x.RdoArtifactTypeId);
 
         public NonDocumentJobStartMetricsConfiguration(IConfiguration cache, SyncJobParameters syncJobParameters)

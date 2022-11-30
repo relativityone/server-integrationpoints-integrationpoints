@@ -22,10 +22,8 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
             return CreateConnectionFromAppConfig(-1);
         }
 
-        private static string GetConnectionString(int workspaceArtifactId) => workspaceArtifactId == -1 
-            ? AppSettings.ConnectionStringEDDS 
+        private static string GetConnectionString(int workspaceArtifactId) => workspaceArtifactId == -1
+            ? AppSettings.ConnectionStringEDDS
             : AppSettings.ConnectionStringWorkspace(workspaceArtifactId);
-
-
     }
 }

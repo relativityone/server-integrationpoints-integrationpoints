@@ -18,7 +18,7 @@ namespace Relativity.Sync.Executors.Validation
             _configuration = configuration;
             _serviceFactoryForAdmin = serviceFactoryForAdmin;
         }
-        
+
         public async Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token)
         {
             var result = new ValidationResult();
@@ -27,7 +27,7 @@ namespace Relativity.Sync.Executors.Validation
             {
                 result.Add($"Snapshot with Id [{configuration.SnapshotId}] does not exist in workspace {configuration.SourceWorkspaceArtifactId}");
             }
-            
+
             return result;
         }
 

@@ -18,8 +18,8 @@ namespace Relativity.Sync.Executors
 
         protected readonly IAPILog Logger;
 
-        public DataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactoryForUser, 
-            IJobProgressUpdaterFactory jobProgressUpdaterFactory, IAPILog logger, 
+        public DataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactoryForUser,
+            IJobProgressUpdaterFactory jobProgressUpdaterFactory, IAPILog logger,
             ISnapshotQueryRequestProvider snapshotQueryRequestProvider)
         {
             _serviceFactoryForUser = serviceFactoryForUser;

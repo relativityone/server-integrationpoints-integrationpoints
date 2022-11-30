@@ -27,9 +27,9 @@ namespace Relativity.Sync.Executors.PermissionCheck
             validationResult.Add(await ValidateUserHasPermissionToAccessWorkspaceAsync(configuration).ConfigureAwait(false));
 
             validationResult.Add(await ValidateUserCanImportHasPermissionAsync(configuration).ConfigureAwait(false));
-        
+
             await ValidateAsync(validationResult, configuration).ConfigureAwait(false);
-            
+
             return validationResult;
         }
 

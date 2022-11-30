@@ -64,7 +64,7 @@ namespace Relativity.Sync.Executors
                     {
                         Guid = RelativitySourceJobTypeGuid,
                     },
-                    ParentObject = new RelativityObjectRef {ArtifactID = sourceJobTag.SourceCaseTagArtifactId},
+                    ParentObject = new RelativityObjectRef { ArtifactID = sourceJobTag.SourceCaseTagArtifactId },
                     FieldValues = CreateFieldValues(sourceJobTag.Name, sourceJobTag.JobHistoryArtifactId, sourceJobTag.JobHistoryName)
                 };
 
@@ -94,7 +94,7 @@ namespace Relativity.Sync.Executors
                     JobHistoryArtifactId = sourceJobTag.JobHistoryArtifactId,
                     JobHistoryName = sourceJobTag.JobHistoryName
                 };
-                
+
                 return createdTag;
             }
         }
@@ -120,8 +120,8 @@ namespace Relativity.Sync.Executors
             {
                 ArtifactId = obj.ArtifactID,
                 Name = obj.Name,
-                JobHistoryArtifactId = (int) obj.FieldValues.First(x => x.Field.Guids.Contains(JobHistoryIdFieldGuid)).Value,
-                JobHistoryName = (string) obj.FieldValues.First(x => x.Field.Guids.Contains(JobHistoryNameGuid)).Value,
+                JobHistoryArtifactId = (int)obj.FieldValues.First(x => x.Field.Guids.Contains(JobHistoryIdFieldGuid)).Value,
+                JobHistoryName = (string)obj.FieldValues.First(x => x.Field.Guids.Contains(JobHistoryNameGuid)).Value,
                 SourceCaseTagArtifactId = obj.ParentObject.ArtifactID
             };
         }
@@ -132,17 +132,17 @@ namespace Relativity.Sync.Executors
             {
                 new FieldRefValuePair
                 {
-                    Field = new FieldRef {Name = _NAME_FIELD_NAME},
+                    Field = new FieldRef { Name = _NAME_FIELD_NAME },
                     Value = sourceJobTagName
                 },
                 new FieldRefValuePair
                 {
-                    Field = new FieldRef {Guid = JobHistoryIdFieldGuid},
+                    Field = new FieldRef { Guid = JobHistoryIdFieldGuid },
                     Value = jobHistoryArtifactId
                 },
                 new FieldRefValuePair
                 {
-                    Field = new FieldRef {Guid = JobHistoryNameGuid},
+                    Field = new FieldRef { Guid = JobHistoryNameGuid },
                     Value = jobHistoryName
                 }
             };

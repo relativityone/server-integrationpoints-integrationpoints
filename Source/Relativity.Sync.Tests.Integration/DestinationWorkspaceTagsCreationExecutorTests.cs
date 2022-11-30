@@ -46,7 +46,7 @@ namespace Relativity.Sync.Tests.Integration
             var sourceServiceFactoryForUserMock = new Mock<ISourceServiceFactoryForUser>();
             destinationServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IWorkspaceManager>()).Returns(Task.FromResult(_workspaceManagerMock.Object));
             sourceServiceFactoryForUserMock.Setup(x => x.CreateProxyAsync<IWorkspaceManager>()).Returns(Task.FromResult(_workspaceManagerMock.Object));
-            
+
             destinationServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).Returns(Task.FromResult(_objectManagerMock.Object));
             sourceServiceFactoryForUserMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).Returns(Task.FromResult(_objectManagerMock.Object));
 
@@ -98,7 +98,7 @@ namespace Relativity.Sync.Tests.Integration
                 0,
                 1)
             ).Returns(Task.FromResult(new QueryResult()));
-            
+
             _objectManagerMock.Setup(x => x.CreateAsync(
                 destinationWorkspaceArtifactId,
                 It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)))
@@ -151,12 +151,12 @@ namespace Relativity.Sync.Tests.Integration
             };
 
             _workspaceManagerMock.Setup(x => x.ReadAsync(sourceWorkspaceArtifactId))
-                .ReturnsAsync(new WorkspaceResponse {Name = newSourceWorkspaceName});
+                .ReturnsAsync(new WorkspaceResponse { Name = newSourceWorkspaceName });
 
-            
+
             _workspaceManagerMock.Setup(x => x.ReadAsync(destinationWorkspaceArtifactId))
-                .ReturnsAsync(new WorkspaceResponse {Name = destinationWorkspaceName});
-        
+                .ReturnsAsync(new WorkspaceResponse { Name = destinationWorkspaceName });
+
 
             _objectManagerMock.Setup(x => x.QueryAsync(
                 destinationWorkspaceArtifactId,
@@ -179,17 +179,17 @@ namespace Relativity.Sync.Tests.Integration
                         {
                             new FieldValuePair()
                             {
-                                Field = new Field() {Guids = new List<Guid> { CaseIdFieldGuid }},
+                                Field = new Field() { Guids = new List<Guid> { CaseIdFieldGuid } },
                                 Value = sourceWorkspaceArtifactId
                             },
                             new FieldValuePair()
                             {
-                                Field = new Field() {Guids = new List<Guid> { SourceWorkspaceNameFieldGuid }},
+                                Field = new Field() { Guids = new List<Guid> { SourceWorkspaceNameFieldGuid } },
                                 Value = oldSourceWorkspaceName
                             },
                             new FieldValuePair()
                             {
-                                Field = new Field() {Guids = new List<Guid> { InstanceNameFieldGuid }},
+                                Field = new Field() { Guids = new List<Guid> { InstanceNameFieldGuid } },
                                 Value = "This Instance"
                             }
                         }
@@ -253,10 +253,10 @@ namespace Relativity.Sync.Tests.Integration
             };
 
             _workspaceManagerMock.Setup(x => x.ReadAsync(sourceWorkspaceArtifactId))
-                .ReturnsAsync(new WorkspaceResponse {Name = sourceWorkspaceName});
+                .ReturnsAsync(new WorkspaceResponse { Name = sourceWorkspaceName });
 
             _workspaceManagerMock.Setup(x => x.ReadAsync(destinationWorkspaceArtifactId))
-                .ReturnsAsync(new WorkspaceResponse {Name = destinationWorkspaceName});
+                .ReturnsAsync(new WorkspaceResponse { Name = destinationWorkspaceName });
 
             _objectManagerMock.Setup(x => x.QueryAsync(
                 destinationWorkspaceArtifactId,
@@ -279,17 +279,17 @@ namespace Relativity.Sync.Tests.Integration
                         {
                             new FieldValuePair()
                             {
-                                Field = new Field() {Guids = new List<Guid> { CaseIdFieldGuid }},
+                                Field = new Field() { Guids = new List<Guid> { CaseIdFieldGuid } },
                                 Value = sourceWorkspaceArtifactId
                             },
                             new FieldValuePair()
                             {
-                                Field = new Field() {Guids = new List<Guid> { SourceWorkspaceNameFieldGuid }},
+                                Field = new Field() { Guids = new List<Guid> { SourceWorkspaceNameFieldGuid } },
                                 Value = sourceWorkspaceName
                             },
                             new FieldValuePair()
                             {
-                                Field = new Field() {Guids = new List<Guid> { InstanceNameFieldGuid }},
+                                Field = new Field() { Guids = new List<Guid> { InstanceNameFieldGuid } },
                                 Value = "This Instance"
                             }
                         }
@@ -379,7 +379,7 @@ namespace Relativity.Sync.Tests.Integration
             };
 
             _workspaceManagerMock.Setup(x => x.ReadAsync(sourceWorkspaceArtifactId))
-                .ReturnsAsync(new WorkspaceResponse {Name = sourceWorkspaceName});
+                .ReturnsAsync(new WorkspaceResponse { Name = sourceWorkspaceName });
 
             _objectManagerMock.Setup(x => x.QueryAsync(
                 destinationWorkspaceArtifactId,
@@ -416,7 +416,7 @@ namespace Relativity.Sync.Tests.Integration
             };
 
             _workspaceManagerMock.Setup(x => x.ReadAsync(sourceWorkspaceArtifactId))
-                .ReturnsAsync(new WorkspaceResponse {Name = sourceWorkspaceName});
+                .ReturnsAsync(new WorkspaceResponse { Name = sourceWorkspaceName });
 
             _objectManagerMock.Setup(x => x.QueryAsync(
                 destinationWorkspaceArtifactId,
@@ -457,11 +457,11 @@ namespace Relativity.Sync.Tests.Integration
                 DestinationWorkspaceArtifactId = destinationWorkspaceArtifactId,
                 JobHistoryArtifactId = jobArtifactId,
             };
-            
-            _workspaceManagerMock.Setup(x => x.ReadAsync(sourceWorkspaceArtifactId))
-                .ReturnsAsync(new WorkspaceResponse {Name = sourceWorkspaceName});
 
-        
+            _workspaceManagerMock.Setup(x => x.ReadAsync(sourceWorkspaceArtifactId))
+                .ReturnsAsync(new WorkspaceResponse { Name = sourceWorkspaceName });
+
+
             _objectManagerMock.Setup(x => x.QueryAsync(
                 destinationWorkspaceArtifactId,
                 It.Is<QueryRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)),
@@ -474,7 +474,7 @@ namespace Relativity.Sync.Tests.Integration
                 It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid)))
             ).Returns(Task.FromResult(new CreateResult { Object = new RelativityObject { ArtifactID = newSourceWorkspaceTagArtifactId } })
             ).Verifiable();
-            
+
             _objectManagerMock.Setup(x => x.QueryAsync(
                 sourceWorkspaceArtifactId,
                 It.Is<QueryRequest>(y => y.Condition.Contains(jobArtifactId.ToString(CultureInfo.InvariantCulture))),
@@ -512,7 +512,7 @@ namespace Relativity.Sync.Tests.Integration
             };
 
             _workspaceManagerMock.Setup(x => x.ReadAsync(sourceWorkspaceArtifactId))
-                .ReturnsAsync(new WorkspaceResponse {Name = sourceWorkspaceName});
+                .ReturnsAsync(new WorkspaceResponse { Name = sourceWorkspaceName });
 
             _objectManagerMock.Setup(x => x.QueryAsync(
                 destinationWorkspaceArtifactId,

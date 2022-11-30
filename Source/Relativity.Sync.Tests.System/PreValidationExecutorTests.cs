@@ -42,7 +42,7 @@ namespace Relativity.Sync.Tests.System
                 configuration, TestLogHelper.GetLogger()).GetAwaiter().GetResult();
 
             ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IPreValidationConfiguration>(configuration);
-            
+
             // Act & Assert
             return syncJob.ExecuteAsync(CompositeCancellationToken.None);
         }

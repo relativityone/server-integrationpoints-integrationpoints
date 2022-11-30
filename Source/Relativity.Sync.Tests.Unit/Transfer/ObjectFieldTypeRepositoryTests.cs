@@ -49,8 +49,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
             List<RelativityObjectSlim> returnObjects = new List<RelativityObjectSlim>
             {
-                new RelativityObjectSlim {Values = new List<object> { field1Name, field1RelativityDataType.GetDescription() }},
-                new RelativityObjectSlim {Values = new List<object> { field2Name, field2RelativityDataType.GetDescription() }}
+                new RelativityObjectSlim { Values = new List<object> { field1Name, field1RelativityDataType.GetDescription() } },
+                new RelativityObjectSlim { Values = new List<object> { field2Name, field2RelativityDataType.GetDescription() } }
             };
 
             QueryResultSlim queryResult = new QueryResultSlim { Objects = returnObjects };
@@ -105,8 +105,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         {
             get
             {
-                yield return new TestCaseData((object) null);
-                yield return new TestCaseData((object) Array.Empty<string>());
+                yield return new TestCaseData((object)null);
+                yield return new TestCaseData((object)Array.Empty<string>());
             }
         }
 

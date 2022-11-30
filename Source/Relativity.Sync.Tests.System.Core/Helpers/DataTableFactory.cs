@@ -34,7 +34,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
                 string.Format(CultureInfo.InvariantCulture, "{0}{1:D6}", controlNumberPrefix, documentNumber),
                 Enumerable.Empty<Tuple<string, string>>()
             ));
-            
+
             return documentData;
         }
 
@@ -123,7 +123,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
         public static ImportDataTableWrapper CreateImageImportDataTable(Dataset dataset)
         {
             IEnumerable<FileInfo> images = dataset.GetFiles();
-            
+
             ImportDataTableWrapper dataTableWrapper = new ImportDataTableWrapper(extractedText: true, natives: true, user: false, images: true, multiChoice: false);
 
             foreach (FileInfo imageFile in images)
@@ -137,7 +137,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
                     Tuple.Create(ImportDataTableWrapper.ImageFile, imageFile.FullName),
                     Tuple.Create(ImportDataTableWrapper.FileName, imageFile.Name),
                 };
-                
+
                 dataTableWrapper.AddDocument(controlNumber, columnValuePairs);
             }
 

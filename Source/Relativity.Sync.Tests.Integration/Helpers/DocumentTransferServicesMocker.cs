@@ -44,7 +44,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 
         private Mock<ISearchService> SearchService { get; }
 
-        private Mock<IInstanceSettingManager> InstanceSettingManager { get;  }
+        private Mock<IInstanceSettingManager> InstanceSettingManager { get; }
 
         public DocumentTransferServicesMocker()
         {
@@ -284,7 +284,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 
             return new DataSetWrapper(dataSet);
         }
-        
+
         private void SetupImages(Document[] documents)
         {
             DataSetWrapper searchServiceDataSet = GetSearchServiceDataSetForDocumentsWithImages(documents);
@@ -292,7 +292,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
                 .Setup(x => x.RetrieveImagesForSearchAsync(It.IsAny<int>(), It.IsAny<int[]>(), It.IsAny<string>()))
                 .ReturnsAsync(searchServiceDataSet);
         }
-        
+
         private static DataSetWrapper GetSearchServiceDataSetForDocumentsWithImages(Document[] documents)
         {
             DataSet dataSet = new DataSet();
@@ -320,10 +320,10 @@ namespace Relativity.Sync.Tests.Integration.Helpers
                     dataTable.Rows.Add(dataRow);
                 }
             }
-            
+
             return new DataSetWrapper(dataSet);
         }
-        
+
         private static bool MatchesQueryByIdentifierRequest(QueryRequest request)
         {
             return request.ObjectType.ArtifactTypeID == (int)ArtifactType.Document && request.Condition.Contains("'Control Number' ==");

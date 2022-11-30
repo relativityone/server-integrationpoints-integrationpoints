@@ -23,9 +23,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IArtifactGuidManager> _artifactGuidManagerMock;
         private Mock<IObjectManager> _objectManagerMock;
         private Mock<IFieldManager> _fieldManagerMock;
-        
+
         private SyncFieldManager _sut;
-        
+
         private const int _WORKSPACE_ID = 1;
         private const int _FIELD_ARTIFACT_ID = 10;
         private const string _FIELD_NAME = "My Field";
@@ -41,7 +41,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _serviceFactoryFake.Setup(x => x.CreateProxyAsync<IArtifactGuidManager>()).ReturnsAsync(_artifactGuidManagerMock.Object);
             _serviceFactoryFake.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManagerMock.Object);
             _serviceFactoryFake.Setup(x => x.CreateProxyAsync<IFieldManager>()).ReturnsAsync(_fieldManagerMock.Object);
-            
+
             _sut = new SyncFieldManager(_serviceFactoryFake.Object, new EmptyLogger());
         }
 
@@ -64,7 +64,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         {
             // Arrange
             SetupFieldGuidExists(_FIELD_GUID, false);
-            
+
             SetupFieldRead(_FIELD_NAME, CreateSingleFieldResult(_FIELD_ARTIFACT_ID));
 
             Dictionary<Guid, BaseFieldRequest> fieldRequest = new Dictionary<Guid, BaseFieldRequest>()
@@ -97,7 +97,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             // Assert
             _objectManagerMock.Verify();
-            _artifactGuidManagerMock.Verify(x => x.CreateSingleAsync(_WORKSPACE_ID, _FIELD_ARTIFACT_ID, 
+            _artifactGuidManagerMock.Verify(x => x.CreateSingleAsync(_WORKSPACE_ID, _FIELD_ARTIFACT_ID,
                 It.Is<List<Guid>>(list => list.Contains(_FIELD_GUID))));
         }
 
@@ -107,7 +107,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Arrange
             SetupFieldGuidExists(_FIELD_GUID, false);
 
-            _objectManagerMock.Setup(x => x.QueryAsync(_WORKSPACE_ID, GetFieldQueryRequest(_FIELD_NAME), 
+            _objectManagerMock.Setup(x => x.QueryAsync(_WORKSPACE_ID, GetFieldQueryRequest(_FIELD_NAME),
                     It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(CreateEmptyResult()).Verifiable();
 
@@ -160,7 +160,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             Dictionary<Guid, BaseFieldRequest> fieldRequest = new Dictionary<Guid, BaseFieldRequest>()
             {
-                {_FIELD_GUID, expectedFieldRequest}
+                { _FIELD_GUID, expectedFieldRequest }
             };
 
             // Act
@@ -195,7 +195,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             await _sut.EnsureFieldsExistAsync(_WORKSPACE_ID, fieldRequest).ConfigureAwait(false);
 
             // Assert
-            _artifactGuidManagerMock.Verify(x => x.CreateSingleAsync(_WORKSPACE_ID, _FIELD_ARTIFACT_ID, 
+            _artifactGuidManagerMock.Verify(x => x.CreateSingleAsync(_WORKSPACE_ID, _FIELD_ARTIFACT_ID,
                 new List<Guid>() { _FIELD_GUID }), Times.Once);
         }
 
@@ -210,7 +210,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             Dictionary<Guid, BaseFieldRequest> fieldRequest = new Dictionary<Guid, BaseFieldRequest>()
             {
-                {_FIELD_GUID, CreateFieldRequest<SingleChoiceFieldRequest>(_FIELD_NAME)}
+                { _FIELD_GUID, CreateFieldRequest<SingleChoiceFieldRequest>(_FIELD_NAME) }
             };
 
             // Act

@@ -17,7 +17,7 @@ namespace Relativity.Sync.Storage
         private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
         private readonly IDateTime _dateTime;
 
-        public BatchRepository(IRdoManager rdoManager,ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IDateTime dateTime)
+        public BatchRepository(IRdoManager rdoManager, ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IDateTime dateTime)
         {
             _rdoManager = rdoManager;
             _serviceFactoryForAdmin = serviceFactoryForAdmin;
@@ -77,7 +77,7 @@ namespace Relativity.Sync.Storage
         {
             return Batch.GetNextAsync(_rdoManager, _serviceFactoryForAdmin, workspaceArtifactId, syncConfigurationArtifactId, startingIndex, exportRunId);
         }
-        
+
         private static async Task<IEnumerable<int>> GetConfigurationsOlderThanAsync(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IDateTime dateTime, int workspaceArtifactId, TimeSpan olderThan)
         {
             DateTime createdBeforeDate = dateTime.UtcNow - olderThan;

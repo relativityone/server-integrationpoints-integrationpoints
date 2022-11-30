@@ -51,7 +51,7 @@ namespace Relativity.Sync.Tests.System
 
             configuration.SyncConfigurationArtifactId = await Rdos
                 .CreateSyncConfigurationRdoAsync(_sourceWorkspace.ArtifactID, configuration).ConfigureAwait(false);
-            
+
             ISyncJob syncJob = SyncJobHelper.CreateWithMockedAllSteps(configuration);
 
             // ACT

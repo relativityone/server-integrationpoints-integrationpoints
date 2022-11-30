@@ -25,7 +25,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
         public void Send_ShouldSendAggregateMetric()
         {
             // Arrange
-            IMetric metric = new TestMetric {TestValue = 1};
+            IMetric metric = new TestMetric { TestValue = 1 };
 
             // Act
             _sut.Send(metric);

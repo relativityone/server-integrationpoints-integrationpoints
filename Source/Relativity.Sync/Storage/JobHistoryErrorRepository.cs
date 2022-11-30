@@ -45,7 +45,6 @@ namespace Relativity.Sync.Storage
         public async Task<IEnumerable<int>> MassCreateAsync(int workspaceArtifactId, int jobHistoryArtifactId,
             IList<CreateJobHistoryErrorDto> createJobHistoryErrorDtos)
         {
-
             CreateJobHistoryErrorDto[] filteredErrors = createJobHistoryErrorDtos
                 .Where(x => _repositoryConfigration.LogItemLevelErrors || x.ErrorType == ErrorType.Job)
                 .ToArray();
@@ -54,7 +53,7 @@ namespace Relativity.Sync.Storage
             {
                 return Enumerable.Empty<int>();
             }
-            
+
             _logger.LogInformation("Mass creating errors count: {count}", filteredErrors.Length);
             return await MassCreateAsyncInternal(workspaceArtifactId, jobHistoryArtifactId, filteredErrors);
         }
@@ -93,7 +92,7 @@ namespace Relativity.Sync.Storage
                         new Sort
                         {
                             Direction = SortEnum.Descending,
-                            FieldIdentifier = new FieldRef {Guid = _rdoConfiguration.JobHistoryError.TimeStampGuid}
+                            FieldIdentifier = new FieldRef { Guid = _rdoConfiguration.JobHistoryError.TimeStampGuid }
                         }
                     }
                 };
@@ -180,7 +179,6 @@ namespace Relativity.Sync.Storage
             using (IObjectManager objectManager =
                    await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
-
                 List<List<object>> values = createJobHistoryErrorDtos.Select(x => new List<object>()
                 {
                     x.ErrorMessage,
@@ -191,7 +189,7 @@ namespace Relativity.Sync.Storage
                     x.StackTrace,
                     _dateTime.UtcNow
                 }).ToList();
-                
+
                 try
                 {
                     IEnumerable<int> artifactIds = new List<int>();
@@ -272,7 +270,7 @@ namespace Relativity.Sync.Storage
             List<int> result = new List<int>();
 
             const double numOfBatches = 2;
-            int batchSize = (int) Math.Ceiling(createJobHistoryErrorDtos.Count() / numOfBatches);
+            int batchSize = (int)Math.Ceiling(createJobHistoryErrorDtos.Count() / numOfBatches);
 
             if (batchSize == createJobHistoryErrorDtos.Count())
             {
@@ -293,25 +291,25 @@ namespace Relativity.Sync.Storage
 
         private ObjectTypeRef GetObjectTypeRef()
         {
-            return new ObjectTypeRef {Guid = _rdoConfiguration.JobHistoryError.TypeGuid};
+            return new ObjectTypeRef { Guid = _rdoConfiguration.JobHistoryError.TypeGuid };
         }
 
         private RelativityObjectRef GetParentObject(int jobHistoryArtifactId)
         {
-            return new RelativityObjectRef {ArtifactID = jobHistoryArtifactId};
+            return new RelativityObjectRef { ArtifactID = jobHistoryArtifactId };
         }
 
         private FieldRef[] GetFields()
         {
             return new[]
             {
-                new FieldRef {Guid = _rdoConfiguration.JobHistoryError.ErrorMessagesGuid},
-                new FieldRef {Guid = _rdoConfiguration.JobHistoryError.ErrorStatusGuid},
-                new FieldRef {Guid = _rdoConfiguration.JobHistoryError.ErrorTypeGuid},
-                new FieldRef {Guid = _rdoConfiguration.JobHistoryError.NameGuid},
-                new FieldRef {Guid = _rdoConfiguration.JobHistoryError.SourceUniqueIdGuid},
-                new FieldRef {Guid = _rdoConfiguration.JobHistoryError.StackTraceGuid},
-                new FieldRef {Guid = _rdoConfiguration.JobHistoryError.TimeStampGuid}
+                new FieldRef { Guid = _rdoConfiguration.JobHistoryError.ErrorMessagesGuid },
+                new FieldRef { Guid = _rdoConfiguration.JobHistoryError.ErrorStatusGuid },
+                new FieldRef { Guid = _rdoConfiguration.JobHistoryError.ErrorTypeGuid },
+                new FieldRef { Guid = _rdoConfiguration.JobHistoryError.NameGuid },
+                new FieldRef { Guid = _rdoConfiguration.JobHistoryError.SourceUniqueIdGuid },
+                new FieldRef { Guid = _rdoConfiguration.JobHistoryError.StackTraceGuid },
+                new FieldRef { Guid = _rdoConfiguration.JobHistoryError.TimeStampGuid }
             };
         }
 

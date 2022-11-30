@@ -125,7 +125,8 @@ namespace Relativity.Sync.Tests.System.GoldFlows
                     new QueryRequest()
                     {
                         ObjectType = entityObjectType,
-                        Fields = new[] {
+                        Fields = new[]
+                        {
                             new FieldRef
                             {
                                 Name = "Manager"

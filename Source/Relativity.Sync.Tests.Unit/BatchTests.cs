@@ -32,7 +32,7 @@ namespace Relativity.Sync.Tests.Unit
         private static readonly Guid BatchObjectTypeGuid = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
         private static readonly Guid StatusGuid = new Guid("D16FAF24-BC87-486C-A0AB-6354F36AF38E");
         private static readonly Guid ExportRunId = new Guid("86A98BD1-7593-46FE-B980-3114CF4D8572");
-        
+
         [SetUp]
         public void SetUp()
         {
@@ -43,7 +43,7 @@ namespace Relativity.Sync.Tests.Unit
 
             _objectManager = new Mock<IObjectManager>();
             serviceFactoryForAdminMock.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object);
-            
+
             _fakeRdoManager.Mock.Setup(x => x.CreateAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), It.IsAny<int?>()))
                 .Returns((int _, SyncBatchRdo rdo, int? __) =>
                 {
@@ -60,7 +60,7 @@ namespace Relativity.Sync.Tests.Unit
             const int startingIndex = 5000;
             BatchStatus defaultStatus = BatchStatus.New;
 
-            
+
 
             // ACT
             IBatch batch = await _batchRepository.CreateAsync(_WORKSPACE_ID, syncConfigurationArtifactId, ExportRunId, totalDocumentsCount, startingIndex).ConfigureAwait(false);
@@ -88,7 +88,7 @@ namespace Relativity.Sync.Tests.Unit
             const int metadataBytesTransferred = 1024;
             const int filesBytesTransferred = 5120;
             const int totalBytesTransferred = 6144;
-            
+
             SyncBatchRdo batchRdo = new SyncBatchRdo
             {
                 ArtifactId = _ARTIFACT_ID,
@@ -106,7 +106,7 @@ namespace Relativity.Sync.Tests.Unit
             };
 
             _fakeRdoManager.Mock.Setup(x => x.GetAsync<SyncBatchRdo>(_WORKSPACE_ID, _ARTIFACT_ID)).ReturnsAsync(batchRdo);
-            
+
             // ACT
             IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
@@ -138,7 +138,7 @@ namespace Relativity.Sync.Tests.Unit
             // ASSERT
             action.Should().Throw<SyncException>().Which.Message.Should().Be($"Batch ArtifactID: {_ARTIFACT_ID} not found.");
         }
-        
+
         [Test]
         public async Task SetFailedItemsCountAsync_ShouldUpdateFailedItemsCount()
         {
@@ -152,14 +152,14 @@ namespace Relativity.Sync.Tests.Unit
             // ASSERT
             batch.FailedItemsCount.Should().Be(failedItemsCount);
 
-            _fakeRdoManager.Mock.Verify(x => x.SetValueAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), v=> v.FailedItemsCount, failedItemsCount));
+            _fakeRdoManager.Mock.Verify(x => x.SetValueAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), v => v.FailedItemsCount, failedItemsCount));
         }
 
         [Test]
         public async Task SetTransferredItemsCountAsync_ShouldUpdateTransferredItemsCount()
         {
             const int transferredItemsCount = 849170;
-            
+
             IBatch batch = await _batchRepository.GetAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);
 
             // ACT
@@ -168,8 +168,7 @@ namespace Relativity.Sync.Tests.Unit
             // ASSERT
             batch.TransferredItemsCount.Should().Be(transferredItemsCount);
 
-            _fakeRdoManager.Mock.Verify(x => x.SetValueAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), v=> v.TransferredItemsCount, transferredItemsCount));
-
+            _fakeRdoManager.Mock.Verify(x => x.SetValueAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), v => v.TransferredItemsCount, transferredItemsCount));
         }
 
         [Test]
@@ -185,7 +184,7 @@ namespace Relativity.Sync.Tests.Unit
             // ASSERT
             batch.MetadataBytesTransferred.Should().Be(metadataBytesTransferred);
 
-            _fakeRdoManager.Mock.Verify(x => x.SetValueAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), v=> v.MetadataTransferredBytes, metadataBytesTransferred));
+            _fakeRdoManager.Mock.Verify(x => x.SetValueAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), v => v.MetadataTransferredBytes, metadataBytesTransferred));
         }
 
         [Test]
@@ -201,7 +200,7 @@ namespace Relativity.Sync.Tests.Unit
             // ASSERT
             batch.FilesBytesTransferred.Should().Be(filesBytesTransferred);
 
-            _fakeRdoManager.Mock.Verify(x => x.SetValueAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), v=> v.FilesTransferredBytes, filesBytesTransferred));
+            _fakeRdoManager.Mock.Verify(x => x.SetValueAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), v => v.FilesTransferredBytes, filesBytesTransferred));
         }
 
         [Test]
@@ -217,7 +216,7 @@ namespace Relativity.Sync.Tests.Unit
             // ASSERT
             batch.TotalBytesTransferred.Should().Be(totalBytesTransferred);
 
-            _fakeRdoManager.Mock.Verify(x => x.SetValueAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), v=> v.TotalTransferredBytes, totalBytesTransferred));
+            _fakeRdoManager.Mock.Verify(x => x.SetValueAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), v => v.TotalTransferredBytes, totalBytesTransferred));
         }
 
         [Test]
@@ -233,7 +232,7 @@ namespace Relativity.Sync.Tests.Unit
             // ASSERT
             batch.FailedDocumentsCount.Should().Be(failedDocumentsCount);
 
-            _fakeRdoManager.Mock.Verify(x => x.SetValueAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), v=> v.FailedDocumentsCount, failedDocumentsCount));
+            _fakeRdoManager.Mock.Verify(x => x.SetValueAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), v => v.FailedDocumentsCount, failedDocumentsCount));
         }
 
         [Test]
@@ -249,7 +248,7 @@ namespace Relativity.Sync.Tests.Unit
             // ASSERT
             batch.TransferredDocumentsCount.Should().Be(transferredDocumentsCount);
 
-            _fakeRdoManager.Mock.Verify(x => x.SetValueAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), v=> v.TransferredDocumentsCount, transferredDocumentsCount));
+            _fakeRdoManager.Mock.Verify(x => x.SetValueAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), v => v.TransferredDocumentsCount, transferredDocumentsCount));
         }
 
         [Test]
@@ -264,7 +263,7 @@ namespace Relativity.Sync.Tests.Unit
             // ASSERT
             batch.Status.Should().Be(status);
 
-            _fakeRdoManager.Mock.Verify(x => x.SetValueAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), v=> v.Status, status));
+            _fakeRdoManager.Mock.Verify(x => x.SetValueAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), v => v.Status, status));
         }
 
         [Test]
@@ -280,7 +279,7 @@ namespace Relativity.Sync.Tests.Unit
             // ASSERT
             batch.TaggedDocumentsCount.Should().Be(taggedDocumentsCount);
 
-            _fakeRdoManager.Mock.Verify(x => x.SetValueAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), v=> v.TaggedDocumentsCount, taggedDocumentsCount));
+            _fakeRdoManager.Mock.Verify(x => x.SetValueAsync(_WORKSPACE_ID, It.IsAny<SyncBatchRdo>(), v => v.TaggedDocumentsCount, taggedDocumentsCount));
         }
 
         [Test]
@@ -339,15 +338,15 @@ namespace Relativity.Sync.Tests.Unit
             // Arrange
             _objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(r => r.Condition.Contains("New")), 1, int.MaxValue)).ReturnsAsync(PrepareQueryResult(artifactId: 1));
             _objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(r => r.Condition.Contains("Paused")), 1, int.MaxValue)).ReturnsAsync(PrepareQueryResult(artifactId: 2));
-            
-            
+
+
 
             // Act
             IEnumerable<int> batchIds = await _batchRepository.GetAllBatchesIdsToExecuteAsync(_WORKSPACE_ID, _ARTIFACT_ID, ExportRunId).ConfigureAwait(false);
 
             // Assert
             batchIds.Should().NotBeNullOrEmpty();
-            batchIds.Should().ContainInOrder(new[] {2, 1});
+            batchIds.Should().ContainInOrder(new[] { 2, 1 });
 
             VerifyQueryAllRequests();
         }
@@ -422,7 +421,7 @@ namespace Relativity.Sync.Tests.Unit
                 request.ObjectIdentificationCriteria.ObjectType.Guid == BatchObjectTypeGuid &&
                 request.ObjectIdentificationCriteria.Condition == $"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {syncConfigurationArtifactId}";
         }
-        
+
         private void VerifyQueryAllRequests()
         {
             void VerifyStatusWasRead(BatchStatus status)
@@ -431,12 +430,12 @@ namespace Relativity.Sync.Tests.Unit
                     $"'{_PARENT_OBJECT_FIELD_NAME}' == OBJECT {_ARTIFACT_ID} AND '{StatusGuid}' == '{status.GetDescription()}' AND '{_EXPORT_RUN_ID_NAME}' == '{ExportRunId}'";
                 _objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(rr => rr.ObjectType.Guid == BatchObjectTypeGuid && rr.Condition == expectedCondition), 1, int.MaxValue), Times.Once);
             }
-            
+
             VerifyStatusWasRead(BatchStatus.Paused);
             VerifyStatusWasRead(BatchStatus.New);
         }
-        
-        private static QueryResult PrepareQueryResult( int? artifactId = null)
+
+        private static QueryResult PrepareQueryResult(int? artifactId = null)
         {
             QueryResult readResult = new QueryResult
             {
@@ -452,6 +451,7 @@ namespace Relativity.Sync.Tests.Unit
             readResult.TotalCount = readResult.Objects.Count();
             return readResult;
         }
+
         private static QueryResultSlim PrepareQueryResultSlim()
         {
             return new QueryResultSlim

@@ -104,7 +104,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         {
             // arrange
             const int totalItemsCount = 10;
-            
+
             SetupRetrieveResultsBlock(totalItemsCount);
 
             Mock<IBatch> batchStub = new Mock<IBatch>();

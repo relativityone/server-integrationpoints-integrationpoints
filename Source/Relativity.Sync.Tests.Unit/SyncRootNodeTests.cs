@@ -21,7 +21,7 @@ namespace Relativity.Sync.Tests.Unit
         private SyncExecutionContext _syncExecutionContext;
         private CancellationTokenSource _drainStopTokenSource;
         private CompositeCancellationToken _token;
-        
+
         private Mock<ICommand<IJobStatusConsolidationConfiguration>> _jobStatusConsolidationCommandFake;
         private Mock<ICommand<INotificationConfiguration>> _notificationCommandFake;
         private Mock<ICommand<IJobCleanupConfiguration>> _jobCleanupCommandFake;
@@ -31,7 +31,7 @@ namespace Relativity.Sync.Tests.Unit
         private Mock<IJobEndMetricsServiceFactory> _jobEndMetricsServiceFactory;
         private Mock<INode<SyncExecutionContext>> _childNodeFake;
         private Mock<IAPILog> _loggerFake;
-        
+
         [SetUp]
         public void SetUp()
         {
@@ -42,7 +42,7 @@ namespace Relativity.Sync.Tests.Unit
             _syncExecutionContext = new SyncExecutionContext(progress.Object, _token);
 
             _jobStatusConsolidationCommandFake = new Mock<ICommand<IJobStatusConsolidationConfiguration>>();
-            
+
             _notificationCommandFake = new Mock<ICommand<INotificationConfiguration>>();
 
             _jobCleanupCommandFake = new Mock<ICommand<IJobCleanupConfiguration>>();

@@ -19,15 +19,15 @@ namespace Relativity.Sync.Tests.Unit.RDOs
 
             // Assert
             var expectedValue = SampleRdo.ExpectedRdoInfo;
-            
+
             value.Name.Should().Be(expectedValue.Name);
             value.TypeGuid.Should().Be(expectedValue.TypeGuid);
             value.ParentTypeGuid.Should().Be(expectedValue.ParentTypeGuid);
-            
+
             foreach (var fieldInfoKeyValue in value.Fields)
             {
                 var expectedField = expectedValue.Fields[fieldInfoKeyValue.Key];
-            
+
                 fieldInfoKeyValue.Value.Guid.Should().Be(expectedField.Guid);
                 fieldInfoKeyValue.Value.Name.Should().Be(expectedField.Name);
                 fieldInfoKeyValue.Value.Type.Should().Be(expectedField.Type);

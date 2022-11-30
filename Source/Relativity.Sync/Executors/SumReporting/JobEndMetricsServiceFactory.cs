@@ -31,9 +31,9 @@ namespace Relativity.Sync.Executors.SumReporting
             _fieldManager = fieldManager;
             _jobStatisticsContainer = jobStatisticsContainer;
             _syncMetrics = syncMetrics;
-            
+
             _logger = logger;
-        }    
+        }
 
         public IJobEndMetricsService CreateJobEndMetricsService(bool isSuspended)
         {

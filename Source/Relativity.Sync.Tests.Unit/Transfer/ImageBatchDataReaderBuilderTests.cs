@@ -45,7 +45,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             _fieldManagerMock.Setup(fm => fm.GetImageAllFieldsAsync(CancellationToken.None)).ReturnsAsync(_getAllFieldsResult);
             _fieldManagerMock.Setup(fm => fm.GetObjectIdentifierFieldAsync(CancellationToken.None)).ReturnsAsync(_secondDocumentField);
         }
-        
+
         [Test]
         public async Task BuildAsync_ShouldInvokeGetImageAllFieldsAsync()
         {

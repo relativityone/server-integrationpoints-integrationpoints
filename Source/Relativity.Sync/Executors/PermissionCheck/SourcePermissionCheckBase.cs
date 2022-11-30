@@ -20,14 +20,14 @@ namespace Relativity.Sync.Executors.PermissionCheck
         public const string _PROGRESS_OBJECT_TYPE_ERROR = "User does not have permission to the Sync Progress object type in the source workspace.";
         public const string _SOURCE_WORKSPACE_NO_EXPORT = "User does not have permission to export in the source workspace.";
     }
-    
+
     internal abstract class SourcePermissionCheckBase : PermissionCheckBase
     {
         private const int _ALLOW_EXPORT_PERMISSION_ID = 159; // 159 is the artifact id of the "Allow Export" permission
-        
+
         private readonly Guid _batchObjectTypeGuid = new Guid(SyncBatchGuids.SyncBatchObjectTypeGuid);
         private readonly Guid _progressObjectTypeGuid = new Guid(SyncProgressGuids.ProgressObjectTypeGuid);
-        
+
         private readonly IAPILog _logger;
 
         public SourcePermissionCheckBase(IAPILog logger, ISourceServiceFactoryForUser serviceFactoryForUser) : base(serviceFactoryForUser)
@@ -51,7 +51,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
                     new[] { PermissionType.Add, PermissionType.Edit, PermissionType.View }, LackOfPermissionMessages._PROGRESS_OBJECT_TYPE_ERROR).ConfigureAwait(false));
 
             await ValidateAsync(validationResult, configuration).ConfigureAwait(false);
-            
+
             return validationResult;
         }
 
@@ -89,7 +89,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
             }
             catch (Exception ex)
             {
-                _logger.LogInformation(ex, "{PermissionCheck}: user does not have permission with ID {PermissionId} in the source workspace {ArtifactId}).", 
+                _logger.LogInformation(ex, "{PermissionCheck}: user does not have permission with ID {PermissionId} in the source workspace {ArtifactId}).",
                     nameof(SourcePermissionCheckBase), permissionId, configuration.SourceWorkspaceArtifactId);
             }
 
@@ -116,12 +116,12 @@ namespace Relativity.Sync.Executors.PermissionCheck
             return ValidateUserHasArtifactTypePermissionAsync(configuration, (int)artifactType, artifactPermissions,
                 errorMessage);
         }
-        
+
         protected Task<ValidationResult> ValidateUserHasArtifactTypePermissionAsync(IPermissionsCheckConfiguration configuration,
             int artifactType, PermissionType artifactPermissions, string errorMessage)
         {
             var artifactTypeIdentifier = new ArtifactTypeIdentifier(artifactType);
-            return ValidateArtifactPermissionsAsync(configuration, new []{ artifactPermissions }, errorMessage, artifactTypeIdentifier);
+            return ValidateArtifactPermissionsAsync(configuration, new[] { artifactPermissions }, errorMessage, artifactTypeIdentifier);
         }
 
         private async Task<ValidationResult> ValidateArtifactPermissionsAsync(IPermissionsCheckConfiguration configuration,
@@ -139,7 +139,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
             }
             catch (Exception ex)
             {
-                _logger.LogInformation(ex, "{PermissionCheck}: user does not have artifact type permission {ArtifactTypeIdentifier} in source workspace {ArtifactId}.", 
+                _logger.LogInformation(ex, "{PermissionCheck}: user does not have artifact type permission {ArtifactTypeIdentifier} in source workspace {ArtifactId}.",
                     nameof(SourcePermissionCheckBase), artifactTypeIdentifier, configuration.SourceWorkspaceArtifactId);
             }
 

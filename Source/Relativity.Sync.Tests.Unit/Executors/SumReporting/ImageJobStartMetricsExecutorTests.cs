@@ -83,7 +83,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             _configurationFake.SetupGet(x => x.Resuming).Returns(isResuming);
 
             _fileStatisticsCalculatorFake.Setup(x =>
-                    x.CalculateImagesStatisticsAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), 
+                    x.CalculateImagesStatisticsAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(),
                         It.IsAny<QueryImagesOptions>(), It.IsAny<CompositeCancellationToken>()))
                 .ReturnsAsync(expectedImageStatistics);
 

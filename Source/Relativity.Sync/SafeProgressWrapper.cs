@@ -22,7 +22,7 @@ namespace Relativity.Sync
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, 
+                _logger.LogWarning(ex,
                     $"Received error when invoking externally-provided implementation of {typeof(IProgress<T>)} ({{type}})",
                     _progress.GetType().FullName);
             }

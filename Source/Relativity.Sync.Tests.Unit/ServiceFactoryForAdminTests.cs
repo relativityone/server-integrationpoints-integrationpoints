@@ -55,7 +55,7 @@ namespace Relativity.Sync.Tests.Unit
         [Test]
         public void ItShouldNotThrowWhenCannotResolveService()
         {
-            _servicesMgr.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.System)).Returns((IObjectManager) null);
+            _servicesMgr.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.System)).Returns((IObjectManager)null);
 
             // act
             Func<Task> action = async () => await _instance.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);

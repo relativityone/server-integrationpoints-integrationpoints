@@ -45,7 +45,7 @@ namespace Relativity.Sync.Executors.Validation
 
                 _metrics.Send(metric);
             }
-            
+
             return result;
         }
 

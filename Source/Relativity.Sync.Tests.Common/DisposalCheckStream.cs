@@ -12,6 +12,7 @@ namespace Relativity.Sync.Tests.Common
     public sealed class DisposalCheckStream : Stream
     {
         private bool _canRead;
+
         public bool IsDisposed { get; set; }
 
         public void SetCanRead(bool canRead)
@@ -47,8 +48,11 @@ namespace Relativity.Sync.Tests.Common
         public override bool CanRead => _canRead;
 
         public override bool CanSeek { get; }
+
         public override bool CanWrite { get; }
+
         public override long Length { get; }
+
         public override long Position { get; set; }
 
         protected override void Dispose(bool disposing)

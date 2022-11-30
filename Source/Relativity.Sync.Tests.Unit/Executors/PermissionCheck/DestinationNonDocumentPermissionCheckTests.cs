@@ -19,7 +19,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
     {
         private DestinationNonDocumentPermissionCheck _sut;
         private Mock<IDestinationServiceFactoryForUser> _destinationServiceFactoryFake;
-        
+
         private const int _RDO_ARTIFACT_TYPE_ID = 420;
 
         private const int _ALLOW_IMPORT_PERMISSION_ID = 158; // 158 is the artifact id of the "Allow Import" permission
@@ -131,8 +131,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
             permissionManager
                 .Setup(x => x.GetPermissionSelectedAsync(
                     It.IsAny<int>(),
-                    It.Is<List<PermissionRef>>(permissionRefs => 
-                        permissionRefs.Any(z => z.ArtifactType.ID == _RDO_ARTIFACT_TYPE_ID 
+                    It.Is<List<PermissionRef>>(permissionRefs =>
+                        permissionRefs.Any(z => z.ArtifactType.ID == _RDO_ARTIFACT_TYPE_ID
                         && z.PermissionType.Equals(PermissionType.Edit)))))
                     .Throws<SyncException>();
 
@@ -216,7 +216,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
             var permissionToAdd = new List<PermissionValue> { new PermissionValue { Selected = true, ArtifactType = new ArtifactTypeIdentifier(_RDO_ARTIFACT_TYPE_ID), PermissionType = PermissionType.Add } };
             permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(),
                 It.Is<List<PermissionRef>>(y => y.Any(z => z.ArtifactType.ID == _RDO_ARTIFACT_TYPE_ID)))).ReturnsAsync(permissionToAdd);
-            
+
             return permissionManager;
         }
 
@@ -228,7 +228,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
             configuration.SetupGet(x => x.RdoArtifactTypeId).Returns(_RDO_ARTIFACT_TYPE_ID);
             configuration.SetupGet(x => x.DestinationRdoArtifactTypeId).Returns(_RDO_ARTIFACT_TYPE_ID);
             configuration.SetupGet(x => x.ImportOverwriteMode).Returns(importMode);
-            
+
             return configuration;
         }
     }

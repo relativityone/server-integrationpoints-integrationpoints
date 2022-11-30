@@ -9,7 +9,6 @@ namespace Relativity.Sync.Tests.Unit.Toggles
 {
     internal interface TestToggle : IToggle
     {
-
     }
 
     [TestFixture]

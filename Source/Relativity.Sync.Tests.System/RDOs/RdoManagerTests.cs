@@ -52,9 +52,9 @@ namespace Relativity.Sync.Tests.System.RDOs
                     Condition = $"'Name' == '{SampleRdo.ExpectedRdoInfo.Name}'",
                     Fields = new[]
                     {
-                        new FieldRef {Name = "Artifact Type ID"}
+                        new FieldRef { Name = "Artifact Type ID" }
                     },
-                    ObjectType = new ObjectTypeRef {ArtifactTypeID = (int) ArtifactType.ObjectType}
+                    ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.ObjectType }
                 }, 0, 1).ConfigureAwait(false);
 
                 var existingFieldsQueryResult = await objectManager.QueryAsync(workspace.ArtifactID, new QueryRequest()
@@ -62,7 +62,7 @@ namespace Relativity.Sync.Tests.System.RDOs
                     Condition = $"'FieldArtifactTypeID' == {typeQueryResult.Objects.First().FieldValues.First().Value}",
                     ObjectType = new ObjectTypeRef()
                     {
-                        ArtifactTypeID = (int) ArtifactType.Field
+                        ArtifactTypeID = (int)ArtifactType.Field
                     }
                 }, 0, int.MaxValue).ConfigureAwait(false);
 
@@ -129,9 +129,9 @@ namespace Relativity.Sync.Tests.System.RDOs
                     },
                     Fields = new[]
                     {
-                        new FieldRef {Name = "SomeField"},
-                        new FieldRef {Name = "OptionalTextField"},
-                        new FieldRef {Name = "ImportNativeFileCopyMode"}
+                        new FieldRef { Name = "SomeField" },
+                        new FieldRef { Name = "OptionalTextField" },
+                        new FieldRef { Name = "ImportNativeFileCopyMode" }
                     }
                 }, 0, 1);
 
@@ -214,7 +214,7 @@ namespace Relativity.Sync.Tests.System.RDOs
             await _sut.CreateAsync(workspace.ArtifactID, extendedSampleRdo).ConfigureAwait(false);
 
             // Act
-            var result = await _sut.GetAsync<ExtendedSampleRdo>(workspace.ArtifactID, extendedSampleRdo.ArtifactId, x => x.LongTextField, x=> x.OptionalTextField)
+            var result = await _sut.GetAsync<ExtendedSampleRdo>(workspace.ArtifactID, extendedSampleRdo.ArtifactId, x => x.LongTextField, x => x.OptionalTextField)
                 .ConfigureAwait(false);
 
             result.ArtifactId.Should().Be(extendedSampleRdo.ArtifactId);
@@ -254,8 +254,8 @@ namespace Relativity.Sync.Tests.System.RDOs
                     },
                     Fields = new[]
                     {
-                        new FieldRef {Name = "SomeField"},
-                        new FieldRef {Name = "OptionalTextField"}
+                        new FieldRef { Name = "SomeField" },
+                        new FieldRef { Name = "OptionalTextField" }
                     }
                 }, 0, 1);
 
@@ -266,7 +266,7 @@ namespace Relativity.Sync.Tests.System.RDOs
                 createdObject.Values[1].Should().Be(sampleRdo.OptionalTextField);
             }
         }
-        
+
         [IdentifiedTest("FEE486E9-C37C-437F-811D-DC9D81CF300C")]
         public async Task SetValuesAsync_ShouldUpdateOnlySpecifiedValue()
         {
@@ -300,8 +300,8 @@ namespace Relativity.Sync.Tests.System.RDOs
                     },
                     Fields = new[]
                     {
-                        new FieldRef {Name = "SomeField"},
-                        new FieldRef {Name = "OptionalTextField"}
+                        new FieldRef { Name = "SomeField" },
+                        new FieldRef { Name = "OptionalTextField" }
                     }
                 }, 0, 1);
 
@@ -325,10 +325,10 @@ namespace Relativity.Sync.Tests.System.RDOs
             {
                 LongField = BigLongValue
             };
-            
+
             // Act
             await _sut.CreateAsync(workspace.ArtifactID, sampleRdo).ConfigureAwait(false);
-            
+
             // Assert
             using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
             {
@@ -364,13 +364,13 @@ namespace Relativity.Sync.Tests.System.RDOs
             {
                 SomeField = 5,
             };
-            
+
             int artifactId = await CreateSampleRdoObject(workspace.ArtifactID, sampleRdo).ConfigureAwait(false);
             sampleRdo.ArtifactId = artifactId;
-            
+
             // Act
             await _sut.SetValueAsync(workspace.ArtifactID, sampleRdo, x => x.LongField, BigLongValue).ConfigureAwait(false);
-            
+
             // Assert
             using (var objectManager = ServiceFactory.CreateProxy<IObjectManager>())
             {
@@ -401,7 +401,7 @@ namespace Relativity.Sync.Tests.System.RDOs
             WorkspaceRef workspace = await Environment.CreateWorkspaceAsync();
 
             await CreaSampleRdoTypeInWorkspaceAsync(workspace.ArtifactID).ConfigureAwait(false);
-            
+
             int artifactId = await CreateSampleRdoObject(workspace.ArtifactID, new SampleRdo
             {
                 LongField = BigLongValue
@@ -409,7 +409,7 @@ namespace Relativity.Sync.Tests.System.RDOs
 
             // Act
             SampleRdo sampleRdo = await _sut.GetAsync<SampleRdo>(workspace.ArtifactID, artifactId).ConfigureAwait(false);
-            
+
             // Assert
             sampleRdo.LongField.Should().Be(BigLongValue);
         }
@@ -427,7 +427,7 @@ namespace Relativity.Sync.Tests.System.RDOs
                     .ConfigureAwait(false);
 
                 await guidManager.CreateSingleAsync(workspaceId, objectTypeArtifactId,
-                        new List<Guid>() {SampleRdo.ExpectedRdoInfo.TypeGuid})
+                        new List<Guid>() { SampleRdo.ExpectedRdoInfo.TypeGuid })
                     .ConfigureAwait(false);
 
                 using (IFieldManager fieldManager = ServiceFactory.CreateProxy<IFieldManager>())
@@ -439,7 +439,7 @@ namespace Relativity.Sync.Tests.System.RDOs
                                 .ConfigureAwait(false);
 
                         await guidManager
-                            .CreateSingleAsync(workspaceId, fieldId, new List<Guid>() {fieldInfo.Guid})
+                            .CreateSingleAsync(workspaceId, fieldId, new List<Guid>() { fieldInfo.Guid })
                             .ConfigureAwait(false);
                     }
                 }
@@ -457,7 +457,7 @@ namespace Relativity.Sync.Tests.System.RDOs
                 Name = SampleRdo.ExpectedRdoInfo.Name,
                 Notes = null,
                 ParentObjectType = new Securable<ObjectTypeIdentifier>(new ObjectTypeIdentifier
-                    {ArtifactTypeID = (int) ArtifactType.Case}),
+                { ArtifactTypeID = (int)ArtifactType.Case }),
                 PersistentListsEnabled = false,
                 PivotEnabled = false,
                 RelativityApplications = null,
@@ -477,7 +477,7 @@ namespace Relativity.Sync.Tests.System.RDOs
                         {
                             FilterType = FilterType.TextBox,
                             Name = fieldInfo.Name,
-                            ObjectType = new ObjectTypeIdentifier() {ArtifactID = objectTypeId},
+                            ObjectType = new ObjectTypeIdentifier() { ArtifactID = objectTypeId },
                             IsRequired = fieldInfo.IsRequired
                         });
                 case RdoFieldType.FixedLengthText:
@@ -486,7 +486,7 @@ namespace Relativity.Sync.Tests.System.RDOs
                         {
                             FilterType = FilterType.TextBox,
                             Name = fieldInfo.Name,
-                            ObjectType = new ObjectTypeIdentifier() {ArtifactID = objectTypeId},
+                            ObjectType = new ObjectTypeIdentifier() { ArtifactID = objectTypeId },
                             Length = fieldInfo.TextLength,
                             IsRequired = fieldInfo.IsRequired
                         });
@@ -496,7 +496,7 @@ namespace Relativity.Sync.Tests.System.RDOs
                         {
                             FilterType = FilterType.TextBox,
                             Name = fieldInfo.Name,
-                            ObjectType = new ObjectTypeIdentifier() {ArtifactID = objectTypeId},
+                            ObjectType = new ObjectTypeIdentifier() { ArtifactID = objectTypeId },
                             IsRequired = fieldInfo.IsRequired
                         });
 
@@ -506,7 +506,7 @@ namespace Relativity.Sync.Tests.System.RDOs
                         {
                             FilterType = FilterType.TextBox,
                             Name = fieldInfo.Name,
-                            ObjectType = new ObjectTypeIdentifier() {ArtifactID = objectTypeId},
+                            ObjectType = new ObjectTypeIdentifier() { ArtifactID = objectTypeId },
                             IsRequired = fieldInfo.IsRequired
                         });
 

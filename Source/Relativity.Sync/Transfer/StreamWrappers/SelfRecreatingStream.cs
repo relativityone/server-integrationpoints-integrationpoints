@@ -19,7 +19,7 @@ namespace Relativity.Sync.Transfer.StreamWrappers
 
         private readonly IRetriableStreamBuilder _streamBuilder;
         private readonly IAPILog _logger;
-        
+
         public SelfRecreatingStream(IRetriableStreamBuilder streamBuilder, IAPILog logger)
         {
             _streamBuilder = streamBuilder;

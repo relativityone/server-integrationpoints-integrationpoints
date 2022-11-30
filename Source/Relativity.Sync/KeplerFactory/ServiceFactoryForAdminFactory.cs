@@ -10,7 +10,7 @@ namespace Relativity.Sync.KeplerFactory
         private readonly IAPILog _logger;
         private readonly IRandom _random;
         private readonly Func<IStopwatch> _stopwatch;
-        
+
         internal ServiceFactoryForAdminFactory(IServicesMgr serviceManager, IAPILog logger)
         {
             _serviceManager = serviceManager;

@@ -23,7 +23,7 @@ namespace Relativity.Sync.RDOs
 
         [RdoField(SyncBatchGuids.TaggedDocumentsCountGuid, RdoFieldType.WholeNumber)]
         public int TaggedDocumentsCount { get; set; }
-        
+
         [RdoField(SyncBatchGuids.TransferredItemsCountGuid, RdoFieldType.WholeNumber)]
         public int TransferredItemsCount { get; set; }
 

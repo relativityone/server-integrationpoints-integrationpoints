@@ -24,7 +24,7 @@ namespace Relativity.Sync
         /// <summary>
         /// Cancellation token that signals a job to suspend (e.g. drain-stop)
         /// </summary>
-        public CancellationToken DrainStopCancellationToken { get;  }
+        public CancellationToken DrainStopCancellationToken { get; }
 
 
         /// <summary>

@@ -34,7 +34,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
                 new QueryResult
                 {
                     Objects = new List<RelativityObject>
-                        {new RelativityObject {ArtifactID = _configurationRdo.JobHistoryId, Name = jobName}}
+                        { new RelativityObject { ArtifactID = _configurationRdo.JobHistoryId, Name = jobName } }
                 });
         }
     }

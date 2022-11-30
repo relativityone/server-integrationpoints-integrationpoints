@@ -68,8 +68,7 @@ namespace Relativity.Sync.Executors.Validation
         }
 
         public abstract bool ShouldValidate(ISyncPipeline pipeline);
-        
-        protected abstract bool ShouldNotValidateReferentialFileLinksRestriction(IValidationConfiguration configuration);
 
+        protected abstract bool ShouldNotValidateReferentialFileLinksRestriction(IValidationConfiguration configuration);
     }
 }

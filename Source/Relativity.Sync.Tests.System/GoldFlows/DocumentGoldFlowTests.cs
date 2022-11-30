@@ -47,7 +47,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
             // Assert
             await goldFlowTestRun.AssertAsync(result, _dataset.TotalItemCount, _dataset.TotalDocumentCount).ConfigureAwait(false);
         }
-        
+
         [IdentifiedTest("215AD6CF-A79A-45A9-AEE2-22C4848F1F8B")]
         [TestType.MainFlow]
         public async Task SyncJob_Should_SyncDocuments_And_NotCreateErrors_WhenDisabled()
@@ -65,7 +65,6 @@ namespace Relativity.Sync.Tests.System.GoldFlows
                     configuration.ImportOverwriteMode = ImportOverwriteMode.AppendOnly;
                     await _goldFlowTestSuite.ImportDocumentsAsync(DataTableFactory.CreateImportDataTable(_dataset, true), destinationWorkspace)
                         .ConfigureAwait(false);
-                    
                 }).ConfigureAwait(false);
 
             // Act
@@ -111,12 +110,11 @@ namespace Relativity.Sync.Tests.System.GoldFlows
                     configuration.JobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory,
                             sourceWorkspace.ArtifactID, jobHistoryTypeGuid: CustomAppGuids.JobHistory.TypeGuid)
                         .ConfigureAwait(false);
-
                 }).ConfigureAwait(false);
-        
+
             // Act
             SyncJobState result = await goldFlowTestRun.RunAsync().ConfigureAwait(false);
-        
+
             // Assert
             await goldFlowTestRun.AssertAsync(result, _dataset.TotalItemCount, _dataset.TotalDocumentCount, CustomAppGuids.JobHistory.TypeGuid).ConfigureAwait(false);
         }
@@ -129,14 +127,13 @@ namespace Relativity.Sync.Tests.System.GoldFlows
             int jobHistoryToRetryId = -1, destinationWorkspaceId = -1;
             GoldFlowTestSuite.IGoldFlowTestRun goldFlowTestRun = await _goldFlowTestSuite.CreateTestRunAsync(async (sourceWorkspace, destinationWorkspace, configuration) =>
             {
-                    destinationWorkspaceId = destinationWorkspace.ArtifactID;
-                    await ConfigureTestRunAsync(sourceWorkspace, destinationWorkspace, configuration).ConfigureAwait(false);
+                destinationWorkspaceId = destinationWorkspace.ArtifactID;
+                await ConfigureTestRunAsync(sourceWorkspace, destinationWorkspace, configuration).ConfigureAwait(false);
 
-                    jobHistoryToRetryId = await Rdos.CreateJobHistoryInstanceAsync(_goldFlowTestSuite.ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID)
-                        .ConfigureAwait(false);
-                    configuration.JobHistoryToRetryId = jobHistoryToRetryId;
-
-                }).ConfigureAwait(false);
+                jobHistoryToRetryId = await Rdos.CreateJobHistoryInstanceAsync(_goldFlowTestSuite.ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID)
+                    .ConfigureAwait(false);
+                configuration.JobHistoryToRetryId = jobHistoryToRetryId;
+            }).ConfigureAwait(false);
 
             const int numberOfTaggedDocuments = 2;
             await Rdos.TagDocumentsAsync(ServiceFactory, _goldFlowTestSuite.SourceWorkspace.ArtifactID, jobHistoryToRetryId, numberOfTaggedDocuments).ConfigureAwait(false);

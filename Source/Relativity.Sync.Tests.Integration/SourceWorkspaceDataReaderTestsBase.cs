@@ -134,7 +134,7 @@ namespace Relativity.Sync.Tests.Integration
                         SourceField = new FieldEntry { DisplayName = field.SourceColumnName }
                     }).ToList();
         }
-        
+
         protected static Document CreateDocumentForNativesTransfer(int artifactId, HashSet<FieldConfiguration> values)
         {
             string nativeFileLocation = $"\\\\test\\foo\\foo{artifactId}.htm";
@@ -190,6 +190,5 @@ namespace Relativity.Sync.Tests.Integration
             string serialized = writer.ToString();
             return serializer.Deserialize(new JsonTextReader(new StringReader(serialized)));
         }
-
     }
 }

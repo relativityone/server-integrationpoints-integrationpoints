@@ -26,37 +26,37 @@ namespace Relativity.Sync.SyncConfiguration.Options
         /// GUID for RDO type
         /// </summary>
         public Guid TypeGuid { get; private set; }
-        
+
         /// <summary>
         /// GUID for Name field
         /// </summary>
         public Guid NameGuid { get; private set; }
-        
+
         /// <summary>
         /// GUID for Destination Workspace Name field (fixed-length text, 400)
         /// </summary>
         public Guid DestinationWorkspaceNameGuid { get; private set; }
-        
+
         /// <summary>
         /// GUID for Destination Workspace Artifact ID field (whole number) 
         /// </summary>
         public Guid DestinationWorkspaceArtifactIdGuid { get; private set; }
-        
+
         /// <summary>
         /// GUID for Destination Instance Name field (fixed-length text, 400)
         /// </summary>
         public Guid DestinationInstanceNameGuid { get; private set; }
-        
+
         /// <summary>
         /// GUID for Destination Instance Artifact Id field (whole number)
         /// </summary>
         public Guid DestinationInstanceArtifactIdGuid { get; private set; }
-        
+
         /// <summary>
         /// GUID for Job History field on Document (multiobject of JobHistory configured in JobHistory options)
         /// </summary>
         public Guid JobHistoryOnDocumentGuid { get; private set; }
-        
+
         /// <summary>
         /// GUID for Destination Workspace field on Document (multiobject of Destination Workspace)
         /// </summary>

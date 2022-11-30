@@ -21,7 +21,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
     internal class SnapshotQueryRequestProviderTests
     {
         private const int ViewArtifactId = 69;
-        
+
         private Mock<ISnapshotQueryConfiguration> _configurationFake;
         private Mock<IPipelineSelector> _pipelineSelectorFake;
         private Mock<IFieldManager> _fieldManagerFake;
@@ -82,14 +82,14 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             const int dataSourceArtifactId = 10;
 
             _configurationFake.SetupGet(x => x.DataSourceArtifactId).Returns(dataSourceArtifactId);
-            
+
             _pipelineSelectorFake.Setup(x => x.GetPipeline())
-                .Returns((ISyncPipeline) Activator.CreateInstance(typeof(SyncDocumentRunPipeline)));
+                .Returns((ISyncPipeline)Activator.CreateInstance(typeof(SyncDocumentRunPipeline)));
 
             string expectedDocumentCondition = $"('ArtifactId' IN SAVEDSEARCH {dataSourceArtifactId})";
 
             IEnumerable<FieldRef> expectedFieldRefs =
-                _expectedFields.Select(x => new FieldRef {Name = x.SourceFieldName});
+                _expectedFields.Select(x => new FieldRef { Name = x.SourceFieldName });
 
             // Act
             QueryRequest request = await _sut.GetRequestForCurrentPipelineAsync(CancellationToken.None).ConfigureAwait(false);
@@ -124,9 +124,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             VerifyQueryRequest(request, expectedDocumentRetryCondition, expectedFieldRefs);
         }
 
-        [TestCase(10, new [] {1}, true, "('ArtifactId' IN SAVEDSEARCH 10) AND (('Production::Image Count' > 0) OR ('Has Images' == CHOICE 1034243))")]
+        [TestCase(10, new[] { 1 }, true, "('ArtifactId' IN SAVEDSEARCH 10) AND (('Production::Image Count' > 0) OR ('Has Images' == CHOICE 1034243))")]
         [TestCase(10, new int[0], true, "('ArtifactId' IN SAVEDSEARCH 10) AND ('Has Images' == CHOICE 1034243)")]
-        [TestCase(10, new [] {1}, false, "('ArtifactId' IN SAVEDSEARCH 10) AND ('Production::Image Count' > 0)")]
+        [TestCase(10, new[] { 1 }, false, "('ArtifactId' IN SAVEDSEARCH 10) AND ('Production::Image Count' > 0)")]
         [TestCase(10, new int[0], false, "('ArtifactId' IN SAVEDSEARCH 10) AND ('Has Images' == CHOICE 1034243)")]
         public async Task GetRequestForCurrentPipelineAsync_ShouldPrepareQueryRequest_WhenImageFlowIsSelected(
             int dataSourceArtifactId, int[] productionImagePrecedence, bool includeOriginalImages, string expectedCondition)
@@ -169,7 +169,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
                 .Returns((ISyncPipeline)Activator.CreateInstance(typeof(SyncImageRunPipeline)));
 
             IEnumerable<FieldRef> expectedFieldRefs =
-                new []{ _expectedIdentifierField }.Select(x => new FieldRef { Name = x.SourceFieldName });
+                new[] { _expectedIdentifierField }.Select(x => new FieldRef { Name = x.SourceFieldName });
 
             // Act
             QueryRequest request = await _sut.GetRequestForCurrentPipelineAsync(CancellationToken.None).ConfigureAwait(false);
@@ -276,7 +276,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             SyncException syncException = Assert.ThrowsAsync<SyncException>(async () => await _sut.GetRequestForCurrentPipelineAsync(CancellationToken.None).ConfigureAwait(false));
             syncException.Message.Should().Be("Unable to find choice with \"Yes\" name for \"Has Images\" field - this system field is in invalid state");
         }
-        
+
         [Test]
         public async Task GetRequestForCurrentPipelineAsync_ShouldPrepareQueryRequest_WhenNonDocumentFlowIsSelected()
         {
@@ -285,14 +285,14 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
             _configurationFake.SetupGet(x => x.DataSourceArtifactId).Returns(dataSourceArtifactId);
             _configurationFake.SetupGet(x => x.RdoArtifactTypeId).Returns(420);
-            
+
             _pipelineSelectorFake.Setup(x => x.GetPipeline())
-                .Returns((ISyncPipeline) Activator.CreateInstance(typeof(SyncNonDocumentRunPipeline)));
+                .Returns((ISyncPipeline)Activator.CreateInstance(typeof(SyncNonDocumentRunPipeline)));
 
             string expectedDocumentCondition = $"('ArtifactId' IN VIEW {dataSourceArtifactId})";
 
             IEnumerable<FieldRef> expectedFieldRefs =
-                _expectedFields.Select(x => new FieldRef {Name = x.SourceFieldName});
+                _expectedFields.Select(x => new FieldRef { Name = x.SourceFieldName });
 
             // Act
             QueryRequest request = await _sut.GetRequestForCurrentPipelineAsync(CancellationToken.None).ConfigureAwait(false);
@@ -309,23 +309,23 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
             _fieldManagerFake.Setup(x => x.GetMappedFieldsNonDocumentForLinksAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(fieldsForLinks);
-            
-            
+
+
             // Act
             QueryRequest request = await _sut.GetRequestForLinkingNonDocumentObjectsAsync(CancellationToken.None).ConfigureAwait(false);
 
             // Assert
             string expectedDocumentCondition = $"( ('Link 1' ISSET) OR ('Link 2' ISSET) ) AND ('ArtifactId' IN VIEW {ViewArtifactId})";
-            IEnumerable<FieldRef> expectedFieldRefs = fieldsForLinks.Select(dto => new FieldRef {Name = dto.SourceFieldName});
+            IEnumerable<FieldRef> expectedFieldRefs = fieldsForLinks.Select(dto => new FieldRef { Name = dto.SourceFieldName });
             VerifyQueryRequest(request, expectedDocumentCondition, expectedFieldRefs);
         }
-        
+
         [Test]
         public async Task GetRequestForLinkingNonDocumentObjectsAsync_ShouldNotPrepareQuery_WhenThereAreNoFieldsForLinking()
         {
             // Arrange
             _fieldManagerFake.Setup(x => x.GetMappedFieldsNonDocumentForLinksAsync(It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<FieldInfoDto>{new FieldInfoDto(SpecialFieldType.None, "Id", "Id", true, false)});
+                .ReturnsAsync(new List<FieldInfoDto> { new FieldInfoDto(SpecialFieldType.None, "Id", "Id", true, false) });
 
             // Act
             QueryRequest request = await _sut.GetRequestForLinkingNonDocumentObjectsAsync(CancellationToken.None).ConfigureAwait(false);
@@ -333,7 +333,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             // Assert
             request.Should().BeNull();
         }
-        
+
         private IEnumerable<FieldInfoDto> GetFieldsForLinks()
         {
             yield return new FieldInfoDto(SpecialFieldType.None, "Id", "Id", true, false);
@@ -341,7 +341,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             yield return new FieldInfoDto(SpecialFieldType.None, "Link 2", "Link 2", false, false);
         }
 
-        private void VerifyQueryRequest(QueryRequest actualRequest, 
+        private void VerifyQueryRequest(QueryRequest actualRequest,
             string expectedCondition, IEnumerable<FieldRef> expectedFields)
         {
             actualRequest.ObjectType.ArtifactTypeID.Should().Be(_configurationFake.Object.RdoArtifactTypeId);

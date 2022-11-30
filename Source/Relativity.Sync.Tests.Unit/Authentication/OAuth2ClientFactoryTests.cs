@@ -36,7 +36,7 @@ namespace Relativity.Sync.Tests.Unit.Authentication
             Services.Security.Models.OAuth2Client expectedClient = new Services.Security.Models.OAuth2Client() { Name = clientName };
 
             Mock<IOAuth2ClientManager> clientManager = new Mock<IOAuth2ClientManager>();
-            clientManager.Setup(x => x.ReadAllAsync()).ReturnsAsync(new List<Services.Security.Models.OAuth2Client>() {expectedClient});
+            clientManager.Setup(x => x.ReadAllAsync()).ReturnsAsync(new List<Services.Security.Models.OAuth2Client>() { expectedClient });
             _serviceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IOAuth2ClientManager>()).Returns(Task.FromResult(clientManager.Object));
 
             // act

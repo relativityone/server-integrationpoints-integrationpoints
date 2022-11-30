@@ -126,7 +126,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             var dataReaderBuilder = new Mock<IBatchDataReaderBuilder>();
             dataReaderBuilder
                 .Setup(x => x.BuildAsync(It.IsAny<int>(), It.IsAny<RelativityObjectSlim[]>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(() => 
+                .ReturnsAsync(() =>
             {
                 previousReaderWasDisposed.Should().BeTrue();
                 previousReaderWasDisposed = false;
@@ -200,7 +200,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             const int batchSize = 2;
             ExportBatcherReturnsBatches(GenerateBatch(batchSize), EmptyBatch());
             CancellationTokenSource tokenSource = new CancellationTokenSource();
-            var dataReader = new SourceWorkspaceDataReader(new SimpleBatchDataReaderBuilder(_identifierField), 
+            var dataReader = new SourceWorkspaceDataReader(new SimpleBatchDataReaderBuilder(_identifierField),
                 _configuration.Object,
                 _exportBatcher.Object,
                 _fieldManager.Object,

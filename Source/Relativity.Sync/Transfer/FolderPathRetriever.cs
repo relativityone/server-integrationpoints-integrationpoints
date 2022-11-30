@@ -14,7 +14,7 @@ namespace Relativity.Sync.Transfer
 {
     internal sealed class FolderPathRetriever : IFolderPathRetriever
     {
-        private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
+        private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
         private const int _BATCH_SIZE = 100_000;
 
         private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
@@ -89,7 +89,7 @@ namespace Relativity.Sync.Transfer
             using (var folderManager = await _serviceFactoryForUser.CreateProxyAsync<IFolderManager>().ConfigureAwait(false))
             {
                 List<FolderPath> result;
-                List<int> foldersWithIds = folderIds.ToList(); 
+                List<int> foldersWithIds = folderIds.ToList();
                 try
                 {
                     result = await folderManager.GetFullPathListAsync(workspaceArtifactId, foldersWithIds).ConfigureAwait(false);

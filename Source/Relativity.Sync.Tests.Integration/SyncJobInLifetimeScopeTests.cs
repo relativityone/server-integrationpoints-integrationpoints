@@ -25,7 +25,7 @@ namespace Relativity.Sync.Tests.Integration
         public void SetUp()
         {
             _syncJob = new Mock<ISyncJob>();
-            
+
             _containerFactory = new Mock<IContainerFactory>();
             _containerFactory
                 .Setup(x => x.RegisterSyncDependencies(It.IsAny<ContainerBuilder>(), It.IsAny<SyncJobParameters>(), It.IsAny<IRelativityServices>(), It.IsAny<SyncJobExecutionConfiguration>(), It.IsAny<IAPILog>()))
@@ -59,7 +59,7 @@ namespace Relativity.Sync.Tests.Integration
 
             _syncJob.Verify(x => x.ExecuteAsync(progress, CompositeCancellationToken.None), Times.Once);
         }
-        
+
         [Test]
         public async Task ItShouldThrowSyncException_WhenCannotResolveSyncJobFromContainer()
         {

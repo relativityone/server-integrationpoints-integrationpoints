@@ -220,9 +220,9 @@ namespace Relativity.Sync.Executors
                     Fields = new List<FieldRef>
                     {
                         new FieldRef { Name = "ArtifactId" },
-                        new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationWorkspaceNameGuid},
+                        new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationWorkspaceNameGuid },
                         new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationInstanceNameGuid },
-                        new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationWorkspaceArtifactIdGuid},
+                        new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationWorkspaceArtifactIdGuid },
                         new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationInstanceArtifactIdGuid },
                         new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.NameGuid }
                     }
@@ -275,7 +275,7 @@ namespace Relativity.Sync.Executors
                 },
                 new FieldRefValuePair
                 {
-                    Field = new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationWorkspaceNameGuid},
+                    Field = new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationWorkspaceNameGuid },
                     Value = destinationWorkspaceName
                 },
                 new FieldRefValuePair

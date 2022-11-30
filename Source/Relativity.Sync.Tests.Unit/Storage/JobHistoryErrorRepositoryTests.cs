@@ -479,37 +479,37 @@ namespace Relativity.Sync.Tests.Unit.Storage
                 {
                     new FieldValuePair
                     {
-                        Field = new Field { Guids = new List<Guid>{_expectedErrorMessageField}},
+                        Field = new Field { Guids = new List<Guid> { _expectedErrorMessageField } },
                         Value = testErrorMessage
                     },
                     new FieldValuePair
                     {
-                        Field = new Field { Guids = new List<Guid>{_expectedErrorStatusField}},
+                        Field = new Field { Guids = new List<Guid> { _expectedErrorStatusField } },
                         Value = new Choice { Name = ErrorStatus.New.GetDescription() }
                     },
                     new FieldValuePair
                     {
-                        Field = new Field { Guids = new List<Guid>{_expectedErrorTypeField}},
+                        Field = new Field { Guids = new List<Guid> { _expectedErrorTypeField } },
                         Value = new Choice { Name = ErrorType.Job.ToString() }
                     },
                     new FieldValuePair
                     {
-                        Field = new Field { Guids = new List<Guid>{_expectedNameField}},
+                        Field = new Field { Guids = new List<Guid> { _expectedNameField } },
                         Value = Guid.NewGuid().ToString()
                     },
                     new FieldValuePair
                     {
-                        Field = new Field { Guids = new List<Guid>{_expectedSourceUniqueIdField}},
+                        Field = new Field { Guids = new List<Guid> { _expectedSourceUniqueIdField } },
                         Value = string.Empty
                     },
                     new FieldValuePair
                     {
-                        Field = new Field { Guids = new List<Guid>{_expectedStackTraceField}},
+                        Field = new Field { Guids = new List<Guid> { _expectedStackTraceField } },
                         Value = testErrorStack
                     },
                     new FieldValuePair
                     {
-                        Field = new Field { Guids = new List<Guid>{_expectedTimestampUtcField}},
+                        Field = new Field { Guids = new List<Guid> { _expectedTimestampUtcField } },
                         Value = DateTime.UtcNow
                     }
                 }

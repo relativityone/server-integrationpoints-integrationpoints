@@ -33,7 +33,6 @@ namespace Relativity.Sync.ExecutionConstrains
                        configuration.SynchronizationExecutionResult.Status == ExecutionStatus.CompletedWithErrors)
                    && await IsAutomatedWorkflowsInstalledAsync(configuration.DestinationWorkspaceArtifactId)
                        .ConfigureAwait(false);
-
         }
 
         private bool IsDocumentObjectFlow(IAutomatedWorkflowTriggerConfiguration configuration)
@@ -57,7 +56,7 @@ namespace Relativity.Sync.ExecutionConstrains
 
                     if (relativityApplicationObjectTypeQueryResult.ResultCount == 0)
                     {
-                        throw new Exception($"The { _RELATIVITY_APPLICATION_NAME} object type wasn't found.");
+                        throw new Exception($"The {_RELATIVITY_APPLICATION_NAME} object type wasn't found.");
                     }
 
                     int relativityApplicationObjectTypeArtifactId = relativityApplicationObjectTypeQueryResult.Objects[0].ArtifactID;

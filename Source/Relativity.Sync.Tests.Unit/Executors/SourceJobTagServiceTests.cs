@@ -30,7 +30,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [Test]
         public async Task ItShouldCreateSourceJobTag()
         {
-            const string jobHistoryName= "job name";
+            const string jobHistoryName = "job name";
             const string jobTagName = "tag name";
             _jobHistoryNameQuery.Setup(x => x.GetJobNameAsync(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None)).ReturnsAsync(jobHistoryName);
             _tagNameFormatter.Setup(x => x.FormatSourceJobTagName(It.IsAny<string>(), It.IsAny<int>())).Returns(jobTagName);
@@ -39,7 +39,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             await _sut.CreateOrReadSourceJobTagAsync(Mock.Of<IDestinationWorkspaceTagsCreationConfiguration>(), 0, CancellationToken.None).ConfigureAwait(false);
 
             // assert
-            _sourceJobTagRepository.Verify(x => x.CreateAsync(It.IsAny<int>(), It.Is<RelativitySourceJobTag>(tag => 
+            _sourceJobTagRepository.Verify(x => x.CreateAsync(It.IsAny<int>(), It.Is<RelativitySourceJobTag>(tag =>
                 tag.Name.Equals(jobTagName, StringComparison.InvariantCulture) && tag.JobHistoryName.Equals(jobHistoryName, StringComparison.InvariantCulture)), CancellationToken.None));
         }
     }

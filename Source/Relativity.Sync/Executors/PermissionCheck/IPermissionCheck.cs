@@ -8,6 +8,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
     internal interface IPermissionCheck
     {
         Task<ValidationResult> ValidateAsync(IPermissionsCheckConfiguration configuration);
+
         bool ShouldValidate(ISyncPipeline pipeline);
     }
 }

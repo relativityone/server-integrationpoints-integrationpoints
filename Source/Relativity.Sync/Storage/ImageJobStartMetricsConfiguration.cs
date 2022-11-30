@@ -10,8 +10,11 @@ namespace Relativity.Sync.Storage
         private readonly ISerializer _serializer;
 
         public bool Resuming => _cache.GetFieldValue(x => x.Resuming);
+
         public int DestinationWorkspaceArtifactId => _cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);
+
         public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
+
         public int? JobHistoryToRetryId => _cache.GetFieldValue(x => x.JobHistoryToRetryId);
 
         public int[] ProductionImagePrecedence => _serializer.Deserialize<int[]>(_cache.GetFieldValue(x => x.ProductionImagePrecedence));

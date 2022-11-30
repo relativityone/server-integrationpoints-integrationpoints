@@ -11,24 +11,34 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
         private readonly Func<FileInfo, string> _begBatesGetter;
         private readonly Func<FileInfo, string> _controlNumberGetter;
         private const string _DATASETS_FOLDER_PATH = "Data";
+
         private static string CurrentDirectory => AppDomain.CurrentDomain.BaseDirectory;
 
-        public static Dataset NativesAndExtractedText { get; } = 
+        public static Dataset NativesAndExtractedText { get; } =
             new Dataset(@"NativesAndExtractedText", ImportType.Native, elementsCountPath: @"NativesAndExtractedText\natives");
 
         public static Dataset Images { get; } = new Dataset("Images", ImportType.Image);
+
         public static Dataset ImagesBig { get; } = new Dataset("ImagesBig", ImportType.Image);
+
         public static Dataset ThreeImages { get; } = new Dataset("ThreeImages", ImportType.Image);
+
         public static Dataset TwoDocumentProduction { get; } = new Dataset("TwoDocumentProduction", ImportType.Production);
+
         public static Dataset SingleDocumentProduction { get; } = new Dataset("SingleDocumentProduction", ImportType.Production);
-        public static Dataset MultipleImagesPerDocument { get; } = 
+
+        public static Dataset MultipleImagesPerDocument { get; } =
             new Dataset("MultipleImagesPerDocument", ImportType.Image, GetControlNumberForMultipleImages);
 
         public string Name { get; }
+
         public ImportType ImportType { get; }
+
         public string FolderPath => GetDatasetPath(Name);
+
         public int TotalItemCount => GetFiles(GetDatasetPath(_elementsCountPath)).Count();
-        public int TotalDocumentCount  => GetFiles(GetDatasetPath(_elementsCountPath)).GroupBy(_controlNumberGetter).Count();
+
+        public int TotalDocumentCount => GetFiles(GetDatasetPath(_elementsCountPath)).GroupBy(_controlNumberGetter).Count();
 
         private static string GetControlNumberForMultipleImages(FileInfo file)
         {
@@ -67,6 +77,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
         }
 
         public string GetControlNumber(FileInfo file) => _controlNumberGetter(file);
+
         public string GetBegBates(FileInfo file) => _begBatesGetter(file);
     }
 

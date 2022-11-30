@@ -67,7 +67,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             _configurationFake.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ARTIFACT_ID);
             _configurationFake.SetupGet(x => x.DestinationWorkspaceArtifactId).Returns(_DESTINATION_WORKSPACE_ARTIFACT_ID);
             _configurationFake.SetupGet(x => x.RdoArtifactTypeId).Returns(_NON_DOCUMENT_ARTIFACT_TYPE_ID);
-            
+
             _sut = new NonDocumentJobStartMetricsExecutor(
                 _serviceFactory.Object,
                 _syncMetricsMock.Object,
@@ -82,7 +82,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            _syncMetricsMock.Verify(x => x.Send(It.Is<NonDocumentJobStartMetric>(m => 
+            _syncMetricsMock.Verify(x => x.Send(It.Is<NonDocumentJobStartMetric>(m =>
                 m.Type == TelemetryConstants.PROVIDER_NAME &&
                 m.FlowType == TelemetryConstants.FLOW_TYPE_VIEW_NON_DOCUMENT_OBJECTS)));
         }

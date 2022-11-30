@@ -6,7 +6,6 @@ namespace Relativity.Sync.Logging
     {
         private NonDocumentImportSettingsForLogging(ImportSettingsBase settings) : base(settings)
         {
-            
         }
 
         public static NonDocumentImportSettingsForLogging CreateWithoutSensitiveData(ImportSettingsBase settings)

@@ -28,6 +28,7 @@ namespace Relativity.Sync.Storage
             _fieldMappings = fieldMappings;
             SourceWorkspaceArtifactId = syncJobParameters.WorkspaceId;
         }
+
         public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue(x => x.NativesBehavior);
     }
 }

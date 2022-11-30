@@ -20,7 +20,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
             [Metric(MetricType.PointInTimeString, "APM.Ignored.Metric")]
             public string ApmIgnoredMetric { get; set; }
         }
-        
+
         private const string _APPLICATION_NAME = "Relativity.Sync";
         private const string _APPLICATION_TESTS_NAME = "Relativity.Sync.Tests";
 

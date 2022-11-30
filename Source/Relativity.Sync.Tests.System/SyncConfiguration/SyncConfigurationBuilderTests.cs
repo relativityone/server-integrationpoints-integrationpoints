@@ -18,11 +18,11 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
     class SyncConfigurationBuilderTests : SystemTest
     {
         private RdoOptions _rdoOptions;
-        
+
         protected override async Task ChildSuiteSetup()
         {
             await base.ChildSuiteSetup();
-            
+
             _rdoOptions = DefaultGuids.DefaultRdoOptions;
         }
 
@@ -35,18 +35,18 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
             Task<WorkspaceRef> destinationWorkspaceTask = Environment.CreateWorkspaceAsync();
 
             int jobHistoryId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory, sourceWorkspace.ArtifactID).ConfigureAwait(false);
-            
+
             int savedSearchId = await Rdos.GetSavedSearchInstanceAsync(ServiceFactory, sourceWorkspace.ArtifactID).ConfigureAwait(false);
 
             WorkspaceRef destinationWorkspace = await destinationWorkspaceTask.ConfigureAwait(false);
-            
+
             int destinationFolderId = await Rdos.GetRootFolderInstanceAsync(ServiceFactory, destinationWorkspace.ArtifactID).ConfigureAwait(false);
-            
+
             ISyncContext syncContext =
                 new SyncContext(sourceWorkspace.ArtifactID, destinationWorkspace.ArtifactID, jobHistoryId);
 
             DocumentSyncOptions options = new DocumentSyncOptions(savedSearchId, destinationFolderId);
-            
+
             // Act
             int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, new ServicesManagerStub(), new EmptyLogger())
                 .ConfigureRdos(_rdoOptions)
@@ -59,7 +59,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
             createdSyncConfiguration.ArtifactId.Should().Be(createdConfigurationId);
 
-            SyncStatisticsRdo syncStatistics = 
+            SyncStatisticsRdo syncStatistics =
                 await Rdos.ReadRdoAsync<SyncStatisticsRdo>(sourceWorkspace.ArtifactID, createdSyncConfiguration.SyncStatisticsId)
                     .ConfigureAwait(false);
 

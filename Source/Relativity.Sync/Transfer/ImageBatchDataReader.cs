@@ -52,7 +52,7 @@ namespace Relativity.Sync.Transfer
 
                     bool isCancellationWarningLogged = false;
                     CanCancel = false;
-                    
+
                     for (int i = 0; i < rows.Count; i++)
                     {
                         if (_cancellationToken.IsCancellationRequested && !isCancellationWarningLogged)

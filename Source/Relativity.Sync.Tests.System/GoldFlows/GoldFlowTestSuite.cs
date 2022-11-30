@@ -51,7 +51,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows
             ImportHelper importHelper = new ImportHelper(ServiceFactory);
             return importHelper.ImportDataAsync(SourceWorkspace.ArtifactID, importDataTable);
         }
-        
+
         public Task ImportDocumentsAsync(ImportDataTableWrapper importDataTable, WorkspaceRef workspace)
         {
             ImportHelper importHelper = new ImportHelper(ServiceFactory);
@@ -103,19 +103,24 @@ namespace Relativity.Sync.Tests.System.GoldFlows
         internal interface IGoldFlowTestRun
         {
             IToggleProvider ToggleProvider { get; }
+
             int DestinationWorkspaceArtifactId { get; }
+
             int SourceWorkspaceArtifactId { get; }
 
             Task<SyncJobState> RunAsync();
 
             Task AssertAsync(SyncJobState result, int expectedItemsTransferred, int expectedTotalItems, Guid? jobHistoryGuid = null);
+
             void AssertDocuments(string[] sourceDocumentsNames, string[] destinationDocumentsNames);
+
             void AssertImages(int sourceWorkspaceId, RelativityObject[] sourceWorkspaceDocuments, int destinationWorkspaceId, RelativityObject[] destinationWorkspaceDocumentIds);
         }
 
         private class GoldFlowTestRun : IGoldFlowTestRun
         {
             public IToggleProvider ToggleProvider { get; }
+
             private readonly GoldFlowTestSuite _goldFlowTestSuite;
             private readonly ConfigurationStub _configuration;
             private readonly SyncJobParameters _parameters;
@@ -235,7 +240,6 @@ namespace Relativity.Sync.Tests.System.GoldFlows
                     }
                 }
             }
-
         }
     }
 }

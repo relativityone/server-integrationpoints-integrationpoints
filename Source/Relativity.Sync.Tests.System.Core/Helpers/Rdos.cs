@@ -110,22 +110,22 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
                     {
                         new FieldRefValuePair
                         {
-                            Field = new FieldRef {Name = "Name"},
+                            Field = new FieldRef { Name = "Name" },
                             Value = tag.Name
                         },
                         new FieldRefValuePair
                         {
-                            Field = new FieldRef {Guid = _RELATIVITY_SOURCE_CASE_ID_FIELD_GUID},
+                            Field = new FieldRef { Guid = _RELATIVITY_SOURCE_CASE_ID_FIELD_GUID },
                             Value = tag.SourceWorkspaceArtifactId
                         },
                         new FieldRefValuePair
                         {
-                            Field = new FieldRef {Guid = _RELATIVITY_SOURCE_CASE_NAME_FIELD_GUID},
+                            Field = new FieldRef { Guid = _RELATIVITY_SOURCE_CASE_NAME_FIELD_GUID },
                             Value = tag.SourceWorkspaceName
                         },
                         new FieldRefValuePair
                         {
-                            Field = new FieldRef {Guid = _RELATIVITY_SOURCE_CASE_INSTANCE_NAME_FIELD_GUID},
+                            Field = new FieldRef { Guid = _RELATIVITY_SOURCE_CASE_INSTANCE_NAME_FIELD_GUID },
                             Value = tag.SourceInstanceName
                         }
                     },
@@ -151,17 +151,17 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
                     {
                         new FieldRefValuePair
                         {
-                            Field = new FieldRef {Name = "Name"},
+                            Field = new FieldRef { Name = "Name" },
                             Value = tag.Name
                         },
                         new FieldRefValuePair
                         {
-                            Field = new FieldRef {Guid = _RELATIVITY_SOURCE_JOB_JOB_HISTORY_ID_FIELD_GUID},
+                            Field = new FieldRef { Guid = _RELATIVITY_SOURCE_JOB_JOB_HISTORY_ID_FIELD_GUID },
                             Value = tag.JobHistoryArtifactId
                         },
                         new FieldRefValuePair
                         {
-                            Field = new FieldRef {Guid = _RELATIVITY_SOURCE_JOB_JOB_HISTORY_NAME_FIELD_GUID},
+                            Field = new FieldRef { Guid = _RELATIVITY_SOURCE_JOB_JOB_HISTORY_NAME_FIELD_GUID },
                             Value = tag.JobHistoryName
                         },
                     },
@@ -195,27 +195,27 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
                     {
                         new FieldRefValuePair
                         {
-                            Field = new FieldRef {Guid = _DESTINATION_WORKSPACE_DESTINATION_WORKSPACE_ARTIFACTID_GUID},
+                            Field = new FieldRef { Guid = _DESTINATION_WORKSPACE_DESTINATION_WORKSPACE_ARTIFACTID_GUID },
                             Value = destinationWorkspaceArtifactId
                         },
                         new FieldRefValuePair
                         {
-                            Field = new FieldRef {Guid = _DESTINATION_WORKSPACE_DESTINATION_INSTANCE_ARTIFACTID_GUID},
+                            Field = new FieldRef { Guid = _DESTINATION_WORKSPACE_DESTINATION_INSTANCE_ARTIFACTID_GUID },
                             Value = -1
                         },
                         new FieldRefValuePair
                         {
-                            Field = new FieldRef {Guid = _DESTINATION_WORKSPACE_DESTINATION_INSTANCE_NAME_GUID},
+                            Field = new FieldRef { Guid = _DESTINATION_WORKSPACE_DESTINATION_INSTANCE_NAME_GUID },
                             Value = destinationInstanceName
                         },
                         new FieldRefValuePair
                         {
-                            Field = new FieldRef {Guid = _DESTINATION_WORKSPACE_DESTINATION_WORKSPACE_NAME_GUID},
+                            Field = new FieldRef { Guid = _DESTINATION_WORKSPACE_DESTINATION_WORKSPACE_NAME_GUID },
                             Value = destinationWorkspaceName
                         },
                         new FieldRefValuePair
                         {
-                            Field = new FieldRef {Guid = _DESTINATION_WORKSPACE_NAME_GUID},
+                            Field = new FieldRef { Guid = _DESTINATION_WORKSPACE_NAME_GUID },
                             Value = tagName
                         }
                     }
@@ -357,8 +357,8 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
                 {
                     new FieldRefValuePair
                     {
-                        Field = new FieldRef {Guid = JobHistoryMultiObjectFieldGuid},
-                        Value = new [] {new RelativityObjectRef {ArtifactID = jobHistoryArtifactId}}
+                        Field = new FieldRef { Guid = JobHistoryMultiObjectFieldGuid },
+                        Value = new [] { new RelativityObjectRef { ArtifactID = jobHistoryArtifactId } }
                     }
                 },
                 Object = new RelativityObjectRef
@@ -372,11 +372,11 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
         {
             return new SyncConfigurationRdo
             {
-                CreateSavedSearchInDestination =  configurationStub.CreateSavedSearchForTags,
+                CreateSavedSearchInDestination = configurationStub.CreateSavedSearchForTags,
                 DataDestinationArtifactId = configurationStub.DestinationFolderArtifactId,
                 DataDestinationType = DestinationLocationType.Folder,
-                DataSourceArtifactId =  configurationStub.SavedSearchArtifactId,
-                DataSourceType =  DataSourceType.SavedSearch,
+                DataSourceArtifactId = configurationStub.SavedSearchArtifactId,
+                DataSourceType = DataSourceType.SavedSearch,
                 DestinationFolderStructureBehavior = configurationStub.DestinationFolderStructureBehavior,
                 FolderPathSourceFieldName = configurationStub.FolderPathSourceFieldName,
                 DestinationWorkspaceArtifactId = configurationStub.DestinationWorkspaceArtifactId,
@@ -405,7 +405,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
                 JobHistoryGuidFailedField = configurationStub.JobHistory.FailedItemsFieldGuid,
                 JobHistoryCompletedItemsField = configurationStub.JobHistory.CompletedItemsFieldGuid,
                 JobHistoryDestinationWorkspaceInformationField = configurationStub.JobHistory.DestinationWorkspaceInformationGuid,
-                
+
                 // JobHistoryErrorGuids
                 JobHistoryErrorType = configurationStub.JobHistoryError.TypeGuid,
                 JobHistoryErrorErrorMessages = configurationStub.JobHistoryError.ErrorMessagesGuid,
@@ -419,7 +419,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
                 JobHistoryErrorJobLevelError = configurationStub.JobHistoryError.JobLevelErrorGuid,
                 JobHistoryErrorJobHistoryRelation = configurationStub.JobHistoryError.JobHistoryRelationGuid,
                 JobHistoryErrorNewChoice = configurationStub.JobHistoryError.NewStatusGuid,
-                
+
                 // DestinationWorkspaceGuids
                 DestinationWorkspaceType = configurationStub.DestinationWorkspace.TypeGuid,
                 DestinationWorkspaceNameField = configurationStub.DestinationWorkspace.NameGuid,
@@ -458,7 +458,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
                 return documents;
             }
         }
-        
+
         public static async Task<RelativityObject> GetJobHistoryAsync(ServiceFactory serviceFactory, int workspaceId, int jobHistoryId, Guid jobHistoryGuid)
         {
             using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())
@@ -470,7 +470,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
                         Guid = jobHistoryGuid
                     },
                     Condition = $"'ArtifactId' == {jobHistoryId}",
-                    Fields = new []
+                    Fields = new[]
                     {
                         new FieldRef
                         {

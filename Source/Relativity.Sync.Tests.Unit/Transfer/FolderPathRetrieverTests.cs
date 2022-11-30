@@ -205,7 +205,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
                 .ReturnsAsync<int, QueryRequest, int, int, IObjectManager, QueryResult>((workspaceArtifactId, queryRequest, start, length) => BuildQueryResult(queryRequest));
 
             List<FolderPath> folderPaths = BuildFolderPathList(documentListId);
-            
+
             _folderManager
                 .Setup(x => x.GetFullPathListAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<List<int>>()))
                 .ReturnsAsync(folderPaths);

@@ -100,7 +100,6 @@ namespace Relativity.Sync.Tests.System.Core
                     ObjectType = new ObjectTypeRef
                     {
                         ArtifactTypeID = (int)ArtifactType.Document
-
                     }
                 }
             };
@@ -240,7 +239,8 @@ namespace Relativity.Sync.Tests.System.Core
                     GetInstallStatusResponse status = await applicationInstallManager
                         .GetStatusAsync(-1, appGuid, applicationInstallId).ConfigureAwait(false);
                     installStatusCode = status.InstallStatus.Code;
-                } while (installStatusCode == InstallStatusCode.Pending || installStatusCode == InstallStatusCode.InProgress);
+                }
+                while (installStatusCode == InstallStatusCode.Pending || installStatusCode == InstallStatusCode.InProgress);
             }
         }
 

@@ -16,7 +16,7 @@ namespace Relativity.Sync.Tests.Unit
         {
             // Act
             string actualString = StringExtensions.LimitLength(testString);
-            
+
             // Assert
             return actualString;
         }

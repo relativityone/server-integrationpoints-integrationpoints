@@ -16,7 +16,7 @@ namespace Relativity.Sync.Transfer
             _folderPathsMap = folderPathsMap;
         }
 
-        public IEnumerable<SpecialFieldType> AllowedSpecialFieldTypes => new[] {SpecialFieldType.FolderPath};
+        public IEnumerable<SpecialFieldType> AllowedSpecialFieldTypes => new[] { SpecialFieldType.FolderPath };
 
         public object BuildRowValue(FieldInfoDto fieldInfoDto, RelativityObjectSlim document, object initialValue)
         {
@@ -28,7 +28,7 @@ namespace Relativity.Sync.Transfer
                     {
                         return _folderPathsMap[document.ArtifactID];
                     }
-                    throw new SyncItemLevelErrorException($"Could not find folder for document with ID { document.ArtifactID }.");
+                    throw new SyncItemLevelErrorException($"Could not find folder for document with ID {document.ArtifactID}.");
                 }
                 return initialValue;
             }

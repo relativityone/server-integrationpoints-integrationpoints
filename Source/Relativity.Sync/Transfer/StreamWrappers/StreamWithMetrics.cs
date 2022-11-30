@@ -17,7 +17,7 @@ namespace Relativity.Sync.Transfer.StreamWrappers
         private bool _disposed;
         private int _readInvocationCount = 0;
         private long _totalBytesRead = 0;
-        
+
         internal StreamWithMetrics(Stream wrappedStream, IStopwatch readTimeStopwatch, int documentArtifactId, IJobStatisticsContainer jobStatisticsContainer, IAPILog logger)
         {
             _wrappedStream = wrappedStream;

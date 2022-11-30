@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
         {
             const int expected = 1;
             _configurationRdo.DestinationWorkspaceArtifactId = expected;
-            
+
             _sut.DestinationWorkspaceArtifactId.Should().Be(expected);
         }
 
@@ -49,7 +49,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
         {
             const int expected = 1;
             _configurationRdo.DataDestinationArtifactId = expected;
-            
+
             _sut.DestinationFolderArtifactId.Should().Be(expected);
         }
 
@@ -58,7 +58,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
         {
             const int expected = 1;
             _configurationRdo.DataSourceArtifactId = expected;
-            
+
             _sut.SavedSearchArtifactId.Should().Be(expected);
         }
 
@@ -67,7 +67,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
         {
             const string expected = "email1@example.com;email2@example.com";
             _configurationRdo.EmailNotificationRecipients = expected;
-            
+
             _sut.GetNotificationEmails().Should().Be(expected);
         }
 
@@ -76,7 +76,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
         {
             List<FieldMap> fieldMappings = new List<FieldMap>();
             _fieldMappings.Setup(x => x.GetFieldMappings()).Returns(fieldMappings);
-            
+
             _sut.GetFieldMappings().Should().BeSameAs(fieldMappings);
         }
 
@@ -85,7 +85,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
         {
             const FieldOverlayBehavior expected = FieldOverlayBehavior.UseFieldSettings;
             _configurationRdo.FieldOverlayBehavior = expected;
-            
+
             _sut.FieldOverlayBehavior.Should().Be(expected);
         }
 
@@ -94,7 +94,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
         {
             const string expected = "name";
             _configurationRdo.FolderPathSourceFieldName = expected;
-            
+
             _sut.GetFolderPathSourceFieldName().Should().Be(expected);
         }
 
@@ -103,7 +103,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
         {
             ImportOverwriteMode expected = ImportOverwriteMode.AppendOverlay;
             _configurationRdo.ImportOverwriteMode = expected;
-            
+
             _sut.ImportOverwriteMode.Should().Be(expected);
         }
 
@@ -112,7 +112,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
         {
             DestinationFolderStructureBehavior expected = DestinationFolderStructureBehavior.ReadFromField;
             _configurationRdo.DestinationFolderStructureBehavior = expected;
-            
+
             _sut.DestinationFolderStructureBehavior.Should().Be(expected);
         }
 
@@ -124,9 +124,9 @@ namespace Relativity.Sync.Tests.Unit.Storage
             var objectManagerMock = new Mock<IObjectManager>();
             _serviceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>())
                 .Returns(Task.FromResult(objectManagerMock.Object));
-            
+
             SetupJobName(objectManagerMock, jobName);
-            
+
             _sut.GetJobName().Should().Be(jobName);
         }
     }

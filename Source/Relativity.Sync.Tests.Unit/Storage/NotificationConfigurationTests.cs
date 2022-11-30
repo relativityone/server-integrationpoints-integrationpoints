@@ -47,7 +47,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
             var syncJobParameters = FakeHelper.CreateSyncJobParameters();
             var instance = new NotificationConfiguration(_configuration, syncJobParameters, _serviceFactoryForUserMock.Object);
             _configurationRdo.EmailNotificationRecipients = null;
-            
+
 
             // Act
             bool actualResult = instance.SendEmails;

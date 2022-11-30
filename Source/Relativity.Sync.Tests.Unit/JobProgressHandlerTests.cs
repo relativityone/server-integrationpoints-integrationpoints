@@ -51,8 +51,8 @@ namespace Relativity.Sync.Tests.Unit
             // Arrange
             const int totalItemsInBatch = 10;
 
-            BatchStub batch = new BatchStub() {ArtifactId = 1, TotalDocumentsCount = totalItemsInBatch};
-            
+            BatchStub batch = new BatchStub() { ArtifactId = 1, TotalDocumentsCount = totalItemsInBatch };
+
             // Act
             using (_sut.AttachToImportJob(_bulkImportJobStub.Object, batch))
             {
@@ -74,7 +74,7 @@ namespace Relativity.Sync.Tests.Unit
         public void AttachToImportJob_ShouldReportProperNumberOfItems(int numberOfItemProcessedEvents, int numberOfItemErrorEvents, int expectedNumberOfItemsProcessed)
         {
             // Arrange
-            BatchStub batch = new BatchStub() {ArtifactId = 1, TotalDocumentsCount = expectedNumberOfItemsProcessed};
+            BatchStub batch = new BatchStub() { ArtifactId = 1, TotalDocumentsCount = expectedNumberOfItemsProcessed };
 
             // Act
             using (_sut.AttachToImportJob(_bulkImportJobStub.Object, batch))
@@ -102,7 +102,7 @@ namespace Relativity.Sync.Tests.Unit
             // Arrange
             const int itemsProcessed = 10;
             const int itemsWithErrors = 15;
-            BatchStub batch = new BatchStub() {ArtifactId = 1, TotalDocumentsCount = 1};
+            BatchStub batch = new BatchStub() { ArtifactId = 1, TotalDocumentsCount = 1 };
 
             // Act
             using (_sut.AttachToImportJob(_bulkImportJobStub.Object, batch))
@@ -113,14 +113,14 @@ namespace Relativity.Sync.Tests.Unit
             // Assert
             _jobProgressUpdaterMock.Verify(x => x.UpdateJobProgressAsync(itemsProcessed, itemsWithErrors));
         }
-        
+
         [Test]
         public void AttachToImportJob_ShouldUpdateStatisticsWhenFatalExceptionOccurs()
         {
             // Arrange
             const int itemsProcessed = 10;
             const int itemsWithErrors = 10;
-            BatchStub batch = new BatchStub() {ArtifactId = 1, TotalDocumentsCount = 1};
+            BatchStub batch = new BatchStub() { ArtifactId = 1, TotalDocumentsCount = 1 };
 
             // Act
             using (_sut.AttachToImportJob(_bulkImportJobStub.Object, batch))
@@ -143,7 +143,7 @@ namespace Relativity.Sync.Tests.Unit
             // Act
             foreach (var bulkImportJob in bulkImportJobs)
             {
-                BatchStub batch = new BatchStub {ArtifactId = batchId++, TotalDocumentsCount = 1};
+                BatchStub batch = new BatchStub { ArtifactId = batchId++, TotalDocumentsCount = 1 };
                 using (_sut.AttachToImportJob(_bulkImportJobStub.Object, batch))
                 {
                     bulkImportJob.Raise(x => x.OnProgress += null, new ImportApiJobProgress(0));
@@ -163,8 +163,8 @@ namespace Relativity.Sync.Tests.Unit
         public void AttachToImportJob_ShouldAggregateProgressAndCompleteFromMultipleBatches()
         {
             // Arrange
-            BatchStub batch0 = new BatchStub() { TotalDocumentsCount = 1};
-            
+            BatchStub batch0 = new BatchStub() { TotalDocumentsCount = 1 };
+
             // Act
             using (_sut.AttachToImportJob(_bulkImportJobStub.Object, batch0))
             {
@@ -175,8 +175,8 @@ namespace Relativity.Sync.Tests.Unit
 
                 _bulkImportJobStub.Raise(x => x.OnComplete += null, CreateJobReport(1, 1));
             }
-            
-            BatchStub batch1 = new BatchStub() {ArtifactId = 1, TotalDocumentsCount = 1};
+
+            BatchStub batch1 = new BatchStub() { ArtifactId = 1, TotalDocumentsCount = 1 };
             using (_sut.AttachToImportJob(_bulkImportJobStub.Object, batch1))
             {
                 _bulkImportJobStub.Raise(x => x.OnProgress += null, new ImportApiJobProgress(0));
@@ -226,7 +226,7 @@ namespace Relativity.Sync.Tests.Unit
             //    jobMock.VerifyRemove(m => m.OnFatalException -= It.IsAny<SyncJobEventHandler<ImportApiJobStatistics>>(), Times.Exactly(batchCount));
             //}
         }
-        
+
         [Test]
         public void AttachToImportJob_ShouldNotStopReportingProgress_WhenProgressUpdaterThrows()
         {
@@ -257,8 +257,8 @@ namespace Relativity.Sync.Tests.Unit
             // Arrange
             _jobProgressUpdaterMock.Setup(x => x.UpdateJobProgressAsync(It.IsAny<int>(), It.IsAny<int>()))
                 .Throws(new Exception());
-            BatchStub batch = new BatchStub() {ArtifactId = 1, TotalDocumentsCount = 1};
-            
+            BatchStub batch = new BatchStub() { ArtifactId = 1, TotalDocumentsCount = 1 };
+
             // Act
             using (_sut.AttachToImportJob(_bulkImportJobStub.Object, batch))
             {
@@ -278,8 +278,8 @@ namespace Relativity.Sync.Tests.Unit
         public void AttachToImportJob_ShouldNotReportNegativeProcessedItems()
         {
             // Act
-            BatchStub batch = new BatchStub() {ArtifactId = 1, TotalDocumentsCount = 1};
-            
+            BatchStub batch = new BatchStub() { ArtifactId = 1, TotalDocumentsCount = 1 };
+
             using (_sut.AttachToImportJob(_bulkImportJobStub.Object, batch))
             {
                 _bulkImportJobStub.Raise(x => x.OnItemLevelError += null, new ItemLevelError());
@@ -298,7 +298,7 @@ namespace Relativity.Sync.Tests.Unit
 
             const int previouslyExecutedBatchFailedItemsCount = 2;
             const int previouslyExecutedBatchTransferredItemsCount = 8;
-            IBatch[] previouslyExecutedBatches = new []
+            IBatch[] previouslyExecutedBatches = new[]
             {
                 new BatchStub { ArtifactId = batchId++, FailedItemsCount = previouslyExecutedBatchFailedItemsCount, TransferredItemsCount = previouslyExecutedBatchTransferredItemsCount },
                 new BatchStub { ArtifactId = batchId++, FailedItemsCount = previouslyExecutedBatchFailedItemsCount, TransferredItemsCount = previouslyExecutedBatchTransferredItemsCount }
@@ -332,8 +332,8 @@ namespace Relativity.Sync.Tests.Unit
             // Arrange
             const int initialFailedItemsCount = 5;
             const int initialTransferredItemsCount = 6;
-            
-            BatchStub batch = new BatchStub() {FailedItemsCount = initialFailedItemsCount, TransferredItemsCount = initialTransferredItemsCount};
+
+            BatchStub batch = new BatchStub() { FailedItemsCount = initialFailedItemsCount, TransferredItemsCount = initialTransferredItemsCount };
 
             // Act
             using (_sut.AttachToImportJob(_bulkImportJobStub.Object, batch))
@@ -341,10 +341,10 @@ namespace Relativity.Sync.Tests.Unit
                 // report ItemLevelError
                 _bulkImportJobStub.Raise(x => x.OnProgress += null, new ImportApiJobProgress(0));
                 _bulkImportJobStub.Raise(x => x.OnItemLevelError += null, new ItemLevelError());
-                
+
                 // report one success
                 _bulkImportJobStub.Raise(x => x.OnProgress += null, new ImportApiJobProgress(0));
-                
+
                 _testScheduler.AdvanceBy(TimeSpan.FromSeconds(_THROTTLE_SECONDS).Ticks);
             }
 
@@ -409,7 +409,7 @@ namespace Relativity.Sync.Tests.Unit
         {
             return new ImportApiJobStatistics(itemsProcessed + itemsWithErrors, itemsWithErrors, 0, 0);
         }
-        
+
         public void Dispose()
         {
             _sut?.Dispose();

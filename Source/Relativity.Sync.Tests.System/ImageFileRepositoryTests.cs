@@ -31,9 +31,9 @@ namespace Relativity.Sync.Tests.System
             _workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 
             var container = ContainerHelper.Create(new ConfigurationStub
-                {
-                    SourceWorkspaceArtifactId = _workspace.ArtifactID
-                },
+            {
+                SourceWorkspaceArtifactId = _workspace.ArtifactID
+            },
                 toggleProvider: null,
                 cb => cb.RegisterInstance(Logger).As<IAPILog>()
             );

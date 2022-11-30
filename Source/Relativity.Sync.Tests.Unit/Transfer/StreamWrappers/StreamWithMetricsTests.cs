@@ -72,7 +72,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
             sut.Dispose();
 
             // Assert
-            _loggerMock.Verify(x => x.LogInformation(It.IsAny<string>(), 
+            _loggerMock.Verify(x => x.LogInformation(It.IsAny<string>(),
                 _DOC_ID, bytesRead, elapsedTime.TotalSeconds, readInvocationsCount));
 
             longTextStatistics.Count.Should().Be(1);

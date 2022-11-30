@@ -95,7 +95,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
             // Act
             ImagesStatistics result = await _sut
-                .CalculateImagesStatisticsAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 
+                .CalculateImagesStatisticsAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(),
                     It.IsAny<QueryImagesOptions>(), CompositeCancellationToken.None)
                 .ConfigureAwait(false);
 
@@ -175,7 +175,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             long result = await _sut
                 .CalculateNativesTotalSizeAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), CompositeCancellationToken.None)
                 .ConfigureAwait(false);
-            
+
             // Assert
             result.Should().Be(files.Sum(x => x.Size));
 
@@ -305,7 +305,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         {
             _imageFileRepositoryFake.Setup(x => x.QueryImagesForDocumentsAsync(
                     _WORKSPACE_ID, It.IsAny<int[]>(), It.IsAny<QueryImagesOptions>()))
-                .ReturnsAsync((int workspaceId, int[] artifactIds, QueryImagesOptions options) => 
+                .ReturnsAsync((int workspaceId, int[] artifactIds, QueryImagesOptions options) =>
                     files.Where(f => artifactIds.Contains(f.ArtifactId)).Select(f => new ImageFile(0, "", "", "", f.Size)));
 
             _nativeFileRepositoryFake.Setup(x => x.QueryAsync(
@@ -386,6 +386,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         private class File
         {
             public int ArtifactId { get; set; }
+
             public int Size { get; set; }
         }
     }

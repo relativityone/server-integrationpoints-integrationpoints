@@ -37,8 +37,8 @@ namespace Relativity.Sync.Tests.Integration
         private const string _IDENTIFIER_FIELD_VALUE = "blorgh";
         private const string _SANITIZING_SOURCE_FIELD_NAME = "bar";
         private const string _LONGTEXT_STREAM_SHIBBOLETH = "#KCURA99DF2F0FEB88420388879F1282A55760#";
-        private const char _NESTED_DELIM = (char) 29;
-        private const char _MULTI_DELIM = (char) 30;
+        private const char _NESTED_DELIM = (char)29;
+        private const char _MULTI_DELIM = (char)30;
 
         [SetUp]
         public void InitializeMocks()
@@ -232,7 +232,6 @@ namespace Relativity.Sync.Tests.Integration
 
             QueryResult queryResultForParent = new QueryResult
             {
-
                 Objects = new List<RelativityObject>
                 {
                     new RelativityObject
@@ -249,7 +248,6 @@ namespace Relativity.Sync.Tests.Integration
 
             QueryResult queryResultForNested = new QueryResult
             {
-
                 Objects = new List<RelativityObject>
                 {
                     new RelativityObject
@@ -264,7 +262,7 @@ namespace Relativity.Sync.Tests.Integration
                 }
             };
             _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(r =>
-                    r.Condition == $"'Artifact ID' == {nestedArtifactId}" ), It.IsAny<int>(), It.IsAny<int>()))
+                    r.Condition == $"'Artifact ID' == {nestedArtifactId}"), It.IsAny<int>(), It.IsAny<int>()))
                     .ReturnsAsync(queryResultForNested);
 
             string expectedResult = $"{parentChoice.Name}{_NESTED_DELIM}{nestedChoice.Name}{_MULTI_DELIM}";
@@ -399,7 +397,7 @@ namespace Relativity.Sync.Tests.Integration
             {
                 Objects = new List<RelativityObjectSlim>
                 {
-                    new RelativityObjectSlim {ArtifactID = artifactId}
+                    new RelativityObjectSlim { ArtifactID = artifactId }
                 }
             };
         }

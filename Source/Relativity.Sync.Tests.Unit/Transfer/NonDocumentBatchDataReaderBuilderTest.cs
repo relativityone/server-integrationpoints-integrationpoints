@@ -174,6 +174,5 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             // Assert
             result.Read().Should().BeFalse();
         }
-
     }
 }

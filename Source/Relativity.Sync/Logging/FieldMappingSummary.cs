@@ -69,8 +69,8 @@ namespace Relativity.Sync.Logging
                     $"'Name' IN [{concatenatedFieldNames}] AND 'Object Type Artifact Type ID' == {rdoArtifactTypeId}",
                 Fields = new[]
                 {
-                    new FieldRef {Name = "Name"},
-                    new FieldRef {Name = "Enable Data Grid"}
+                    new FieldRef { Name = "Name" },
+                    new FieldRef { Name = "Enable Data Grid" }
                 }
             };
 

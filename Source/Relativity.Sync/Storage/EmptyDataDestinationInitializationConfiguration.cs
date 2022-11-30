@@ -8,7 +8,9 @@ namespace Relativity.Sync.Storage
     internal sealed class EmptyDataDestinationInitializationConfiguration : IDataDestinationInitializationConfiguration
     {
         public string DataDestinationName { get; } = string.Empty;
+
         public bool IsDataDestinationArtifactIdSet { get; } = true;
+
         public int DataDestinationArtifactId { get; set; }
     }
 }

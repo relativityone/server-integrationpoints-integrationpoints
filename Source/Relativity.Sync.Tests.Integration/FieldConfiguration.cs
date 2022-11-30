@@ -6,10 +6,15 @@ namespace Relativity.Sync.Tests.Integration
     internal class FieldConfiguration
     {
         public string SourceColumnName { get; }
+
         public string DestinationColumnName { get; }
+
         public RelativityDataType DataType { get; }
+
         public FieldType Type { get; }
+
         public ImportNativeFileCopyMode ImportNativeFileCopyMode { get; }
+
         public object Value { get; }
 
         private FieldConfiguration(string sourceColumnName, string destinationColumnName, RelativityDataType dataType, FieldType fieldType, object value)

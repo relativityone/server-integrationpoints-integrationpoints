@@ -115,7 +115,7 @@ namespace Relativity.Sync.KeplerFactory
                     {
                         _logger.LogWarning(ex, "Auth token has expired for {IKepler}, attempting to generate new token and retry. Retry count: {retryCount}",
                             invocationKepler, retryCount);
-                        
+
                         authTokenRetries = retryCount;
 
                         IChangeProxyTarget changeProxyTarget = invocation as IChangeProxyTarget;
@@ -151,7 +151,7 @@ namespace Relativity.Sync.KeplerFactory
                     {
                         _currentInterceptorIndexField.SetValue(invocation, 0);
                         invocation.Proceed();
-                        return await ((Task<TResult>) invocation.ReturnValue).ConfigureAwait(false);
+                        return await ((Task<TResult>)invocation.ReturnValue).ConfigureAwait(false);
                     }).ConfigureAwait(false);
                 }
             }

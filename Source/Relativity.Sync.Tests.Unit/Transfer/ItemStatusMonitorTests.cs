@@ -307,10 +307,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         {
             //Arrange
             var sut = new ItemStatusMonitor();
-            
+
             var notExistingIdentifier = "AnyString";
             int expectedArtifactID = -1;
-            
+
             //Act
             var result = sut.GetArtifactId(notExistingIdentifier);
 

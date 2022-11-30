@@ -15,12 +15,12 @@ namespace Relativity.Sync.SyncConfiguration
         private readonly IFieldsMappingBuilder _fieldsMappingBuilder;
 
         private Action<IFieldsMappingBuilder> _fieldsMappingAction;
-        
+
         private DestinationFolderStructureOptions _destinationFolderStructureOptions;
 
         internal DocumentSyncConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
             IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, DocumentSyncOptions options,
-            RdoOptions rdoOptions, IRdoManager rdoManager) 
+            RdoOptions rdoOptions, IRdoManager rdoManager)
             : base(syncContext, serviceFactoryForAdmin, rdoOptions, rdoManager, serializer)
         {
             _fieldsMappingBuilder = fieldsMappingBuilder;
@@ -122,7 +122,7 @@ namespace Relativity.Sync.SyncConfiguration
 
             DestinationFolderStructureCleanup();
 
-            SyncConfiguration.DestinationFolderStructureBehavior = 
+            SyncConfiguration.DestinationFolderStructureBehavior =
                 _destinationFolderStructureOptions.DestinationFolderStructure;
 
             if (_destinationFolderStructureOptions.DestinationFolderStructure == DestinationFolderStructureBehavior.ReadFromField)
@@ -147,7 +147,7 @@ namespace Relativity.Sync.SyncConfiguration
                 SyncConfiguration.MoveExistingDocuments = _destinationFolderStructureOptions.MoveExistingDocuments;
             }
         }
-        
+
         private void DestinationFolderStructureCleanup()
         {
             SyncConfiguration.DestinationFolderStructureBehavior = DestinationFolderStructureBehavior.None;

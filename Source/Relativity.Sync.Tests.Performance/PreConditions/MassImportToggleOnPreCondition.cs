@@ -8,7 +8,7 @@ namespace Relativity.Sync.Tests.Performance.PreConditions
         private string _MASS_IMPORT_IMPROVEMENTS_TOGGLE = "Relativity.Core.Toggle.MassImportImprovementsToggle";
 
         public string Name => nameof(MassImportToggleOnPreCondition);
-        
+
         public bool Check()
         {
             var toggleValue = ToggleHelper.GetToggleAsync(_MASS_IMPORT_IMPROVEMENTS_TOGGLE).GetAwaiter().GetResult();

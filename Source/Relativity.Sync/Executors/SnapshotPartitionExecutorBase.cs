@@ -6,7 +6,7 @@ using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Executors
 {
-    internal abstract class SnapshotPartitionExecutorBase: IExecutor<ISnapshotPartitionConfiguration>
+    internal abstract class SnapshotPartitionExecutorBase : IExecutor<ISnapshotPartitionConfiguration>
     {
         private readonly IAPILog _logger;
         private readonly IBatchRepository _batchRepository;

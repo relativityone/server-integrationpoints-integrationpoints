@@ -46,16 +46,16 @@ namespace Relativity.Sync.Tests.Unit.Logging
 
             // Assert
             _loggerMock.Verify(x => x.LogWarning("Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
-                It.Is((string s) => s == SampleErrorMessage1)
-                , It.Is((string ids) => ids == "0, 1")), Times.Once);
-            
-            _loggerMock.Verify(x => x.LogWarning("Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
-                It.Is((string s) => s == SampleErrorMessage1)
-                , It.Is((string ids) => ids == "2, 3")), Times.Once);
+                It.Is((string s) => s == SampleErrorMessage1),
+                It.Is((string ids) => ids == "0, 1")), Times.Once);
 
             _loggerMock.Verify(x => x.LogWarning("Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
-                It.Is((string s) => s == SampleErrorMessage1)
-                , It.Is((string ids) => ids == "4")), Times.Once);
+                It.Is((string s) => s == SampleErrorMessage1),
+                It.Is((string ids) => ids == "2, 3")), Times.Once);
+
+            _loggerMock.Verify(x => x.LogWarning("Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
+                It.Is((string s) => s == SampleErrorMessage1),
+                It.Is((string ids) => ids == "4")), Times.Once);
         }
 
         [Test]
@@ -72,12 +72,12 @@ namespace Relativity.Sync.Tests.Unit.Logging
 
             // Assert
             _loggerMock.Verify(x => x.LogWarning("Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
-                It.Is((string s) => s == SampleErrorMessage1)
-                , It.Is((string ids) => ids == "0, 2, 3")));
+                It.Is((string s) => s == SampleErrorMessage1),
+                It.Is((string ids) => ids == "0, 2, 3")));
 
             _loggerMock.Verify(x => x.LogWarning("Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
-                It.Is((string s) => s == SampleErrorMessage2)
-                , It.Is((string ids) => ids == "1, 4")));
+                It.Is((string s) => s == SampleErrorMessage2),
+                It.Is((string ids) => ids == "1, 4")));
         }
 
         [Test]
@@ -115,8 +115,8 @@ namespace Relativity.Sync.Tests.Unit.Logging
 
             // Assert
             _loggerMock.Verify(x => x.LogWarning("Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
-                It.Is((string s) => s == expectedCleanedUpMessage)
-                , It.Is((string ids) => ids == string.Join(", ", Enumerable.Range(0, errors.Length)))));
+                It.Is((string s) => s == expectedCleanedUpMessage),
+                It.Is((string ids) => ids == string.Join(", ", Enumerable.Range(0, errors.Length)))));
         }
 
         private IEnumerable<ItemLevelError> GetErrors()
@@ -184,7 +184,8 @@ namespace Relativity.Sync.Tests.Unit.Logging
                         "IAPI Error in line *, column *. Object identifier for field * references an identifier that is not unique.")
                 },
                 "IAPI Error in line *, column *."
-            ) { TestName = "IAPI Error in line *, column *." };
+            )
+            { TestName = "IAPI Error in line *, column *." };
 
             yield return new TestCaseData(
                 new[]
@@ -196,7 +197,8 @@ namespace Relativity.Sync.Tests.Unit.Logging
                     ("ABC", "IAPI  - Field Control Number Error: Insufficient system resources exist to complete the requested service."),
                 },
                 "IAPI Error in line *, column *."
-            ) { TestName = "IAPI  - Field * Error" };
+            )
+            { TestName = "IAPI  - Field * Error" };
 
             yield return new TestCaseData(
                 new[]
@@ -204,7 +206,8 @@ namespace Relativity.Sync.Tests.Unit.Logging
                     ("ABC", "IAPI  - One of the files specified for this document does not exist" ),
                 },
                 "IAPI  - One of the files specified for this document does not exist"
-            ) { TestName = "IAPI  - One of the files specified for this document does not exist" };
+            )
+            { TestName = "IAPI  - One of the files specified for this document does not exist" };
         }
     }
 }

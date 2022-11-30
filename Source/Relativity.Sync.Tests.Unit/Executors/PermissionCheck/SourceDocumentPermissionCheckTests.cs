@@ -39,7 +39,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
         {
             _logger = new Mock<IAPILog>();
             _serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
-            _instance = new SourceDocumentPermissionCheck(_logger.Object,_serviceFactoryForUser.Object);
+            _instance = new SourceDocumentPermissionCheck(_logger.Object, _serviceFactoryForUser.Object);
         }
 
         [Test]

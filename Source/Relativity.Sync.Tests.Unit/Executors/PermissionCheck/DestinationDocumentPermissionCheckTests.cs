@@ -47,31 +47,31 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
             _syncObjectTypeManagerFake
                 .Setup(x => x.QueryObjectTypeByNameAsync(It.IsAny<int>(),
                     It.Is<string>(name => name == _SOURCE_WORKSPACE_OBJECT_TYPE_NAME))).ReturnsAsync(new QueryResult()
-                {
-                    Objects = new List<RelativityObject>()
+                    {
+                        Objects = new List<RelativityObject>()
                     {
                         new RelativityObject()
                         {
                             ArtifactID = sourceCaseObjectTypeArtifactId
                         }
                     }
-                });
+                    });
             _syncObjectTypeManagerFake
                 .Setup(x => x.QueryObjectTypeByNameAsync(It.IsAny<int>(),
                     It.Is<string>(name => name == _SOURCE_JOB_OBJECT_TYPE_NAME))).ReturnsAsync(new QueryResult()
-                {
-                    Objects = new List<RelativityObject>()
+                    {
+                        Objects = new List<RelativityObject>()
                     {
                         new RelativityObject()
                         {
                             ArtifactID = sourceJobObjectTypeArtifactId
                         }
                     }
-                });
+                    });
             _syncObjectTypeManagerFake
                 .Setup(x => x.GetObjectTypeArtifactTypeIdAsync(It.IsAny<int>(),
                     It.Is<int>(artifactID => artifactID == sourceCaseObjectTypeArtifactId)))
-                .ReturnsAsync( _SOURCE_CASE_OBJECT_TYPE_ARTIFACT_TYPE_ID);
+                .ReturnsAsync(_SOURCE_CASE_OBJECT_TYPE_ARTIFACT_TYPE_ID);
             _syncObjectTypeManagerFake
                 .Setup(x => x.GetObjectTypeArtifactTypeIdAsync(It.IsAny<int>(),
                     It.Is<int>(artifactID => artifactID == sourceJobObjectTypeArtifactId)))

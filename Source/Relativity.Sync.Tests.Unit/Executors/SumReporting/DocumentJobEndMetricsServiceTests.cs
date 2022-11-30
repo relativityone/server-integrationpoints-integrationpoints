@@ -138,7 +138,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
         {
             // Arrange
             const ExecutionStatus expectedStatus = ExecutionStatus.CompletedWithErrors;
-            
+
             // Act
             ExecutionResult actualResult = await _sut.ExecuteAsync(expectedStatus).ConfigureAwait(false);
 

@@ -106,8 +106,6 @@ namespace Relativity.Sync.Executors.SumReporting
 
                 return parentApplicationName;
             }
-
         }
-        
     }
 }

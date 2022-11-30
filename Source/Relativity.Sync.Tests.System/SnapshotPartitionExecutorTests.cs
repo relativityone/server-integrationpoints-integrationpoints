@@ -26,7 +26,7 @@ namespace Relativity.Sync.Tests.System
         private int _syncConfigurationId;
         private SnapshotPartitionExecutor _instance;
         private IBatchRepository _batchRepository;
-        
+
         private static readonly Guid StartingIndexGuid = new Guid("B56F4F70-CEB3-49B8-BC2B-662D481DDC8A");
         private static readonly Guid TotalDocumentsCountGuid = new Guid("C30CE15E-45D6-49E6-8F62-7C5AA45A4694");
         private static readonly Guid _SYNC_BATCH_OBJECT_TYPE = new Guid("18C766EB-EB71-49E4-983E-FFDE29B1A44E");
@@ -184,7 +184,7 @@ namespace Relativity.Sync.Tests.System
                             Direction = SortEnum.Ascending
                         }
                     },
-                    Fields = new []
+                    Fields = new[]
                     {
                         new FieldRef { Guid = StartingIndexGuid },
                         new FieldRef { Guid = TotalDocumentsCountGuid }
@@ -205,6 +205,5 @@ namespace Relativity.Sync.Tests.System
                 expectedStartIndex += (int)batch[TotalDocumentsCountGuid].Value;
             }
         }
-
     }
 }

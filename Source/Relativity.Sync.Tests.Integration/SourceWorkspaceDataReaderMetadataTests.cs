@@ -18,7 +18,6 @@ namespace Relativity.Sync.Tests.Integration
     [TestFixture]
     internal sealed class SourceWorkspaceDataReaderMetadataTests : SourceWorkspaceDataReaderTestsBase
     {
-
         private const int _CHOICE_ARTIFACT_TYPE_ID = 7;
 
         [Test]
@@ -115,7 +114,7 @@ namespace Relativity.Sync.Tests.Integration
                     int parentArtifactId = value.Parent;
                     objectManager
                         .Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(r => r.Condition == $"'Artifact ID' == {artifactId}"), It.IsAny<int>(), It.IsAny<int>()))
-                        .ReturnsAsync(new QueryResult { Objects = new List<RelativityObject> {new RelativityObject { ParentObject = new RelativityObjectRef { ArtifactID = parentArtifactId } } } });
+                        .ReturnsAsync(new QueryResult { Objects = new List<RelativityObject> { new RelativityObject { ParentObject = new RelativityObjectRef { ArtifactID = parentArtifactId } } } });
 
                     registered.Add(value.ArtifactID);
                 }

@@ -7,8 +7,11 @@ namespace Relativity.Sync.Tests.Performance.ARM
     public class ArmHelperException : Exception
     {
         public ArmHelperException() { }
+
         public ArmHelperException(string message) : base(message) { }
+
         public ArmHelperException(string message, Exception innerException) : base(message, innerException) { }
+
         protected ArmHelperException(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext) { }
     }
 }

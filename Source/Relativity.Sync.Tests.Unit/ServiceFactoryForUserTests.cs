@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.Unit
             Mock<IAPILog> syncLogMock = new Mock<IAPILog>();
 
             _instance = new ServiceFactoryForUser(userContextConfiguration.Object, servicesMgr.Object,
-                _tokenGenerator.Object, _dynamicProxyFactory.Object, new ServiceFactoryFactory(), 
+                _tokenGenerator.Object, _dynamicProxyFactory.Object, new ServiceFactoryFactory(),
                 randomFake.Object, syncLogMock.Object);
 
             _instance.SecondsBetweenRetries = 0.5;

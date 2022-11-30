@@ -103,9 +103,9 @@ namespace Relativity.Sync.Executors
         private void HandleItemLevelError(ItemLevelError itemLevelError)
         {
             _itemLevelErrorExists = true;
-            
+
             _itemLevelErrorLogAggregator.AddItemLevelError(itemLevelError, _syncImportBulkArtifactJob.ItemStatusMonitor.GetArtifactId(itemLevelError.Identifier));
-            
+
             _syncImportBulkArtifactJob.ItemStatusMonitor.MarkItemAsFailed(itemLevelError.Identifier);
             AddItemLevelError(itemLevelError.Identifier, itemLevelError.Message);
         }
@@ -176,7 +176,7 @@ namespace Relativity.Sync.Executors
             // Since the import job doesn't support cancellation, we also don't want to cancel waiting for the job to finish.
             // If it's started, we have to wait and release the semaphore as needed in the IAPI events.
             await _semaphoreSlim.WaitAsync().ConfigureAwait(false);
-            
+
             await _itemLevelErrorLogAggregator.LogAllItemLevelErrorsAsync().ConfigureAwait(false);
 
             if (_importApiFatalExceptionOccurred)

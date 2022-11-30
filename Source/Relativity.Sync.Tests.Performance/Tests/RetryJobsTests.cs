@@ -26,7 +26,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
         private readonly int _expectedTotalItems;
         private readonly int _expectedItemsWithErrors;
 
-        public RetryJobsTests(string sourceWorkspaceArmFile, int expectedTotalItems,int expectedItemsWithErrors )
+        public RetryJobsTests(string sourceWorkspaceArmFile, int expectedTotalItems, int expectedItemsWithErrors)
         {
             _sourceWorkspaceArmFile = sourceWorkspaceArmFile;
             _expectedTotalItems = expectedTotalItems;
@@ -141,6 +141,5 @@ namespace Relativity.Sync.Tests.Performance.Tests
             Logger.LogInformation("Starting the job");
             await syncRunner.RunAsync(jobParameters, User.ArtifactID).ConfigureAwait(false);
         }
-
     }
 }

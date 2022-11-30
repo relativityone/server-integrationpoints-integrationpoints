@@ -182,6 +182,7 @@ namespace Relativity.Sync.Storage
             }
             return objectExists;
         }
+
         private async Task<IReadOnlyCollection<IProgress>> QueryAllAsync()
         {
             var progresses = new ConcurrentBag<IProgress>();

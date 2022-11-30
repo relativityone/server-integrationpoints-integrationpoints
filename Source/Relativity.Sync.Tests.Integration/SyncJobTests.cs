@@ -29,7 +29,7 @@ namespace Relativity.Sync.Tests.Integration
         [Test]
         public void ItShouldAggregateExecutionResultExceptions()
         {
-            RegisterExecutorMock<IPermissionsCheckConfiguration>( _containerBuilder,
+            RegisterExecutorMock<IPermissionsCheckConfiguration>(_containerBuilder,
                 ExecutionResult.SuccessWithErrors(new ArgumentException("foo")));
             RegisterExecutorMock<IDataDestinationFinalizationConfiguration>(_containerBuilder,
                 ExecutionResult.Success());
@@ -64,7 +64,7 @@ namespace Relativity.Sync.Tests.Integration
             IContainer container = containerBuilder.Build();
             return new SyncJob(container.Resolve<INode<SyncExecutionContext>>(),
                 container.Resolve<ISyncExecutionContextFactory>(),
-                FakeHelper.CreateSyncJobParameters(), 
+                FakeHelper.CreateSyncJobParameters(),
                 Mock.Of<IProgress<SyncJobState>>(),
                 container.Resolve<ISyncToggles>(),
                 container.Resolve<IJobProgressUpdaterFactory>(),

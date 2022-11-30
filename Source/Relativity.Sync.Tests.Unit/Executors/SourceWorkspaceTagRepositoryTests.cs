@@ -23,7 +23,7 @@ using Relativity.Sync.Utils;
 namespace Relativity.Sync.Tests.Unit.Executors
 {
     [TestFixture]
-    public  sealed class SourceWorkspaceTagRepositoryTests
+    public sealed class SourceWorkspaceTagRepositoryTests
     {
         private Mock<IFieldMappings> _fieldMappings;
         private Mock<IObjectManager> _objectManager;
@@ -61,7 +61,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                     IsIdentifier = true
                 }
             };
-            _fieldMappings.Setup(x => x.GetFieldMappings()).Returns(new List<FieldMap>{ destinationIdentifier });
+            _fieldMappings.Setup(x => x.GetFieldMappings()).Returns(new List<FieldMap> { destinationIdentifier });
 
             _stopwatch = new Mock<IStopwatch>();
 

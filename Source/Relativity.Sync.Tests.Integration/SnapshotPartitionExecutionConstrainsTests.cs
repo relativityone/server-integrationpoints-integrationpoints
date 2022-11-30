@@ -56,7 +56,7 @@ namespace Relativity.Sync.Tests.Integration
 
             _rdoManagerMock = new Mock<IRdoManager>();
             containerBuilder.RegisterInstance(_rdoManagerMock.Object).As<IRdoManager>();
-            
+
             IContainer container = containerBuilder.Build();
             _instance = container.Resolve<IExecutionConstrains<ISnapshotPartitionConfiguration>>();
         }

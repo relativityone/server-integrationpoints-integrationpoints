@@ -38,10 +38,10 @@ namespace Relativity.Sync.Tests.Unit
             _syncConfigurationRdo = new SyncConfigurationRdo();
             _semaphoreSlim = new Mock<ISemaphoreSlim>();
             _rdoManagerMock = new Mock<IRdoManager>();
-            
+
             _rdoManagerMock.Setup(x => x.GetAsync<SyncConfigurationRdo>(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(_syncConfigurationRdo);
-        
+
             _sut = await Sync.Storage.Configuration.GetAsync(_syncJobParameters, _syncLog, _semaphoreSlim.Object, _rdoManagerMock.Object).ConfigureAwait(false);
         }
 
@@ -60,7 +60,7 @@ namespace Relativity.Sync.Tests.Unit
             _sut.GetFieldValue(x => x.JobHistoryToRetryId).Should().Be(default(int?));
         }
 
-        
+
         [Test]
         public void ItShouldFailWhenConfigurationNotFound()
         {
@@ -107,7 +107,7 @@ namespace Relativity.Sync.Tests.Unit
 
             _rdoManagerMock.Setup(x => x.SetValueAsync(_TEST_WORKSPACE_ID, It.IsAny<SyncConfigurationRdo>(), r => r.JobHistoryId, newValue))
                 .Throws<InvalidOperationException>();
-        
+
             // ACT
             Func<Task> action = () => _sut.UpdateFieldValueAsync(x => x.JobHistoryId, newValue);
 

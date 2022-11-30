@@ -20,7 +20,7 @@ namespace Relativity.Sync.Tests.Common
             var serializer = new JsonSerializer();
             serializer.Serialize(writer, value);
             string serialized = writer.ToString();
-            return (T) serializer.Deserialize(new JsonTextReader(new StringReader(serialized)));
+            return (T)serializer.Deserialize(new JsonTextReader(new StringReader(serialized)));
         }
 
         /// <summary>

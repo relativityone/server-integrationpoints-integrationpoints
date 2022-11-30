@@ -19,6 +19,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
     internal sealed class DocumentSynchronizationExecutorTests : SystemTest
     {
         private string SourceWorkspaceName => $"Source.{Guid.NewGuid()}";
+
         private string DestinationWorkspaceName => $"Destination.{Guid.NewGuid()}";
 
         [IdentifiedTestCase("edd705b0-5d9b-42df-a0a0-a801ba0a1b0d", 1000, 1)]

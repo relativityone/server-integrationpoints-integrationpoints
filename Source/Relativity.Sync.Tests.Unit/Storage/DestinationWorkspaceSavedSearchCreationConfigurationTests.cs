@@ -10,7 +10,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 {
     using RdoExpressionInt = Expression<Func<SyncConfigurationRdo, int>>;
 
-    
+
     internal sealed class DestinationWorkspaceSavedSearchCreationConfigurationTests : ConfigurationTestBase
     {
         private DestinationWorkspaceSavedSearchCreationConfiguration _instance;
@@ -47,7 +47,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
             const int expectedValue = 789456;
 
             _configurationRdo.SourceJobTagArtifactId = expectedValue;
-            
+
             _instance.SourceJobTagArtifactId.Should().Be(expectedValue);
         }
 
@@ -89,7 +89,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
             // Act
             await _instance.SetSavedSearchInDestinationArtifactIdAsync(artifactId).ConfigureAwait(false);
-            
+
             // Assert
             _configurationRdo.SavedSearchInDestinationArtifactId.Should().Be(artifactId);
         }
