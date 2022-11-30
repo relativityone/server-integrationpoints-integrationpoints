@@ -6,7 +6,7 @@ using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 {
-    class JobStartMetricTests : MetricTestsBase<JobStartMetric>
+    internal class JobStartMetricTests : MetricTestsBase<JobStartMetric>
     {
         private JobStartMetric _sut = new JobStartMetric
         {

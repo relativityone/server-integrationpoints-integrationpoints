@@ -162,7 +162,9 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
         public static object GetDefaultValue(Type t)
         {
             if (t.IsValueType && Nullable.GetUnderlyingType(t) == null)
+            {
                 return Activator.CreateInstance(t);
+            }
 
             return null;
         }

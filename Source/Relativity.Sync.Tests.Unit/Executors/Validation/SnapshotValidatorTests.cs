@@ -70,7 +70,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             _sut.ShouldValidate(null).Should().Be(resuming);
         }
 
-        static IEnumerable<TestCaseData> SnapshotCaseSource()
+        private static IEnumerable<TestCaseData> SnapshotCaseSource()
         {
             yield return new TestCaseData((Guid?)null, null, false);
             yield return new TestCaseData((Guid?)Guid.Empty, null, false);

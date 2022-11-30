@@ -19,7 +19,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
     [TestFixture]
     public class ImageBatchDataReaderTests
     {
-        const string IdentifierFieldName = "IdentifierField";
+        private const string IdentifierFieldName = "IdentifierField";
         private const int SourceWorkspaceId = 11;
 
         private FieldInfoDto _identifierField;

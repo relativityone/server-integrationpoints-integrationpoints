@@ -139,7 +139,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
             yield return new ItemLevelError("RIP 2", SampleErrorMessage2);
         }
 
-        static IEnumerable<TestCaseData> KnownItemLevelErrors()
+        private static IEnumerable<TestCaseData> KnownItemLevelErrors()
         {
             yield return new TestCaseData(
                 new[]

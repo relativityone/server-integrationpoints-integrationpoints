@@ -6,7 +6,7 @@ using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 {
-    class SourceWorkspaceTagMetricTests : MetricTestsBase<SourceWorkspaceTagMetric>
+    internal class SourceWorkspaceTagMetricTests : MetricTestsBase<SourceWorkspaceTagMetric>
     {
         private SourceWorkspaceTagMetric _sut = new SourceWorkspaceTagMetric
         {

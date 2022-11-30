@@ -171,7 +171,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             const int maxBatchSize = 10000;
             const int expectedNumberOfBatches = 2;
             int firstBatchSize = maxBatchSize;
-            int secondBatchSize = maxBatchSize / expectedNumberOfBatches - 1;
+            int secondBatchSize = (maxBatchSize / expectedNumberOfBatches) - 1;
             int testBatchSize = firstBatchSize + secondBatchSize;
             string[] testIdentifiers = Enumerable.Repeat("CONTROL_NUMBER", testBatchSize).ToArray();
 

@@ -7,7 +7,7 @@ using Relativity.Sync.Telemetry.Metrics;
 namespace Relativity.Sync.Tests.Unit.Telemetry
 {
     [TestFixture]
-    class SplunkSyncMetricsSinkTests
+    internal class SplunkSyncMetricsSinkTests
     {
         private Mock<IAPILog> _syncLogMock;
 

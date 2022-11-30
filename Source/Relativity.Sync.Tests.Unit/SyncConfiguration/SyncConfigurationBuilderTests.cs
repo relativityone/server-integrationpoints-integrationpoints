@@ -319,7 +319,7 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
                 .BeFalse();
         }
 
-        static IEnumerable<TestCaseData> RdoOptionsMembers()
+        private static IEnumerable<TestCaseData> RdoOptionsMembers()
         {
             var properties = typeof(RdoOptions).GetProperties()
                 .SelectMany(x =>

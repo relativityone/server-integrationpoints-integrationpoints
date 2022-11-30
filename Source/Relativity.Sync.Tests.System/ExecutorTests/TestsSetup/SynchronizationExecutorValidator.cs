@@ -116,7 +116,6 @@ namespace Relativity.Sync.Tests.System.ExecutorTests.TestsSetup
 
                         batchesTransferredItemsCounts.Add((int)(transferredItemsCountQueryResult.Objects.Single()[TransferredItemsCountField].Value ?? default(int)));
                     }
-                    ;
                 }
             }
 

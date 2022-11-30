@@ -1,6 +1,5 @@
 using Relativity.API;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Logging;
 using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;

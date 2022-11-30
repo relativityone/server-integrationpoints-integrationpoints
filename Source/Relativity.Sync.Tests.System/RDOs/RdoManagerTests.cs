@@ -25,7 +25,7 @@ namespace Relativity.Sync.Tests.System.RDOs
 {
     internal class RdoManagerTests : SystemTest
     {
-        const long BigLongValue = long.MaxValue;
+        private const long BigLongValue = long.MaxValue;
 
         private RdoManager _sut;
 

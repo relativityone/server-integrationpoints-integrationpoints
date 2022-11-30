@@ -12,7 +12,6 @@ using Relativity.Sync.Telemetry;
 using Relativity.Sync.Telemetry.Metrics;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Transfer.ADLS;
-using Relativity.Sync.Transfer.FileMovementService.Models;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Executors

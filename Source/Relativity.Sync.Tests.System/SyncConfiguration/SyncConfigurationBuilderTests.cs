@@ -1,7 +1,5 @@
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
-using Relativity.API;
 using Relativity.Services.Workspace;
 using Relativity.Sync.Logging;
 using Relativity.Sync.RDOs;
@@ -15,7 +13,7 @@ using Relativity.Testing.Identification;
 
 namespace Relativity.Sync.Tests.System.SyncConfiguration
 {
-    class SyncConfigurationBuilderTests : SystemTest
+    internal class SyncConfigurationBuilderTests : SystemTest
     {
         private RdoOptions _rdoOptions;
 

@@ -10,7 +10,6 @@ using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Storage.RdoGuidsProviders;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Storage

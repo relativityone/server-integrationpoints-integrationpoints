@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.Interfaces.Group;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Executors

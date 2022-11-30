@@ -65,7 +65,7 @@ namespace Relativity.Sync.Executors.SumReporting
 
         private async Task WriteBytesStatisticsAsync(DocumentJobEndMetric metric)
         {
-            metric.BytesNativesRequested = await GetAllNativesSizeAsync(); ;
+            metric.BytesNativesRequested = await GetAllNativesSizeAsync();
 
             // If IAPI job has failed, then it reports 0 bytes transferred and we don't want to send such metric.
             if (_jobStatisticsContainer.MetadataBytesTransferred != 0)

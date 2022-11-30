@@ -8,7 +8,6 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.Interfaces.Workspace;
 using Relativity.Services.Interfaces.Workspace.Models;
 using Relativity.Services.Objects;

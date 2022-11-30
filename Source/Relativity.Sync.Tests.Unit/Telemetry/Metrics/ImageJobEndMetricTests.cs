@@ -6,7 +6,7 @@ using Relativity.Telemetry.Services.Metrics;
 
 namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 {
-    class ImageJobEndMetricTests : MetricTestsBase<ImageJobEndMetric>
+    internal class ImageJobEndMetricTests : MetricTestsBase<ImageJobEndMetric>
     {
         private ImageJobEndMetric _sut = new ImageJobEndMetric
         {
