@@ -410,8 +410,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         public void GetName_ShouldReturnValidName()
         {
             // Arrange
-            const string streamString = "DOESN'T CARE VALUE";
-
             _integrationPoint = CreateTestIntegrationPoint();
             _objectManagerMock.Setup(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser)).Returns(_integrationPoint);
 
