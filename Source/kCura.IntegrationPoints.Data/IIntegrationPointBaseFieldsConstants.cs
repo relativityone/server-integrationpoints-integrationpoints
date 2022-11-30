@@ -116,6 +116,6 @@ namespace kCura.IntegrationPoints.Data
 
         public string Name => IntegrationPointProfileFieldGuids.Name;
 
-        public string CalculationState => Guid.Empty.ToString();
+        public string CalculationState => string.Empty;
     }
 }

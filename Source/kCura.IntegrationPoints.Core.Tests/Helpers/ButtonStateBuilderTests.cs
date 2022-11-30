@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
@@ -41,6 +42,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
         private ICPHelper _helper;
         private IRepositoryFactory _repositoryFactory;
         private IManagerFactory _managerFactory;
+        private ICalculationChecker _calculationChecker;
 
         [SetUp]
         public override void SetUp()
@@ -56,6 +58,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
             _helper = Substitute.For<ICPHelper>();
             _repositoryFactory = Substitute.For<IRepositoryFactory>();
             _managerFactory = Substitute.For<IManagerFactory>();
+            _calculationChecker= Substitute.For<ICalculationChecker>();
         }
 
         [TestCase(ExportType.SavedSearch, ProviderType.Relativity, true, true, true, true, false)]
@@ -173,6 +176,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                     _integrationPointRepository,
                     _providerTypeService,
                     _syncConstrainsChecker,
+                    _calculationChecker,
                     _WORKSPACE_ID,
                     _INTEGRATION_POINT_ID);
 
@@ -262,6 +266,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
                 _permissionRepository,
                 _permissionValidator,
                 _integrationPointRepository,
+                _calculationChecker,
                 isSyncAppInUse);
         }
     }

@@ -27,14 +27,15 @@ namespace kCura.IntegrationPoints.Web.Controllers
             IProviderTypeService providerTypeService,
             IIntegrationPointRepository integrationPointRepository,
             SummaryPageSelector summaryPageSelector,
-            IDocumentAccumulatedStatistics documentAccumulatedStatistics)
+            IDocumentAccumulatedStatistics documentAccumulatedStatistics,
+            ICalculationChecker calculationChecker)
         {
             _context = context;
             _providerTypeService = providerTypeService;
             _integrationPointRepository = integrationPointRepository;
             _summaryPageSelector = summaryPageSelector;
             _documentAccumulatedStatistics = documentAccumulatedStatistics;
-            _calculationChecker = new CalculationChecker();
+            _calculationChecker = calculationChecker;
         }
 
         [HttpPost]
@@ -62,27 +63,46 @@ namespace kCura.IntegrationPoints.Web.Controllers
         [LogApiExceptionFilter(Message = "Unable to get natives statistics for saved search")]
         public async Task<ActionResult> GetNativesStatisticsForSavedSearch(int workspaceId, int savedSearchId, int integrationPointId)
         {
-            DocumentsStatistics result = await
-                _documentAccumulatedStatistics.GetNativesStatisticsForSavedSearchAsync(workspaceId, savedSearchId).ConfigureAwait(false);
-            return Json(result);
+            CalculationState calculationState = await _calculationChecker.MarkAsCalculating(workspaceId, integrationPointId).ConfigureAwait(false);
+            if (!calculationState.HasErrors)
+            {
+                DocumentsStatistics result = await
+               _documentAccumulatedStatistics.GetNativesStatisticsForSavedSearchAsync(workspaceId, savedSearchId).ConfigureAwait(false);
+                calculationState = await _calculationChecker.MarkCalculationAsFinished(workspaceId, integrationPointId, result).ConfigureAwait(false);
+            }
+
+            return Json(calculationState);
         }
 
         [HttpPost]
         [LogApiExceptionFilter(Message = "Unable to get images statistics for saved search")]
         public async Task<ActionResult> GetImagesStatisticsForSavedSearch(int workspaceId, int savedSearchId, bool calculateSize, int integrationPointId)
         {
-            DocumentsStatistics result = await _documentAccumulatedStatistics.GetImagesStatisticsForSavedSearchAsync(workspaceId, savedSearchId, calculateSize)
-                .ConfigureAwait(false);
-            return Json(result);
+            CalculationState calculationState = await _calculationChecker.MarkAsCalculating(workspaceId, integrationPointId).ConfigureAwait(false);
+            if (!calculationState.HasErrors)
+            {
+                DocumentsStatistics result = await _documentAccumulatedStatistics.GetImagesStatisticsForSavedSearchAsync(workspaceId, savedSearchId, calculateSize)
+               .ConfigureAwait(false);
+
+                calculationState = await _calculationChecker.MarkCalculationAsFinished(workspaceId, integrationPointId, result).ConfigureAwait(false);
+            }
+
+            return Json(calculationState);
         }
 
         [HttpPost]
         [LogApiExceptionFilter(Message = "Unable to get images statistics for production")]
         public async Task<ActionResult> GetImagesStatisticsForProduction(int workspaceId, int productionId, int integrationPointId)
         {
-            DocumentsStatistics result = await _documentAccumulatedStatistics.GetImagesStatisticsForProductionAsync(workspaceId, productionId)
+            CalculationState calculationState = await _calculationChecker.MarkAsCalculating(workspaceId, integrationPointId).ConfigureAwait(false);
+            if (!calculationState.HasErrors)
+            {
+                DocumentsStatistics result = await _documentAccumulatedStatistics.GetImagesStatisticsForProductionAsync(workspaceId, productionId)
                 .ConfigureAwait(false);
-            return Json(result);
+                calculationState = await _calculationChecker.MarkCalculationAsFinished(workspaceId, integrationPointId, result).ConfigureAwait(false);
+            }
+
+            return Json(calculationState);
         }
 
         private async Task<Tuple<int, int>> GetSourceAndDestinationProviderIdsAsync(int integrationPointId, string controllerType)

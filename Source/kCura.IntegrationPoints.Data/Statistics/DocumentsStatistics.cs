@@ -1,4 +1,6 @@
-﻿namespace kCura.IntegrationPoints.Data.Statistics
+﻿using System;
+
+namespace kCura.IntegrationPoints.Data.Statistics
 {
     public class DocumentsStatistics
     {
@@ -11,5 +13,7 @@
         public long TotalImagesCount { get; set; }
 
         public long TotalImagesSizeBytes { get; set; }
+
+        public string CalculatedOn { get; set; }
     }
 }

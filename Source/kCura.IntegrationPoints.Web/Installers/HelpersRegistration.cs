@@ -66,8 +66,11 @@ namespace kCura.IntegrationPoints.Web.Installers
                 Component
                     .For<IDateTimeHelper>()
                     .ImplementedBy<DateTimeHelper>()
-                    .LifestyleTransient()
-            );
+                    .LifestyleTransient(),
+                Component
+                    .For<ICalculationChecker>()
+                    .ImplementedBy<CalculationChecker>()
+                    .LifestyleTransient());
         }
     }
 }

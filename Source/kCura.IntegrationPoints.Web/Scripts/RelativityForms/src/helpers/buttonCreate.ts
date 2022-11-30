@@ -120,7 +120,7 @@ export function createStopButton(consoleApi, convenienceApi: IConvenienceApi, ct
     });
 }
 
-export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, integrationPointId: number) {
+export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, integrationPointId: number, sourceConfiguration: Object, destinationConfiguration: Object) {
     return consoleApi.generate.button({
         innerText: "Calculate statistics",
         disabled: !enabled,
@@ -130,19 +130,7 @@ export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenie
                 message: "This action will launch the calculation of Saved Search content. The operation can be time consuming.",
                 acceptText: "Calculate",
                 cancelText: "Cancel",
-                acceptAction: function () {
-
-                    let keys = Object.keys(ctx.backingModelData);
-                    keys.sort((a, b) => { return Number(a) - Number(b) });
-                    let sourceConfiguration;
-                    try {
-                        sourceConfiguration = JSON.parse(ctx.backingModelData[keys[4].toString()]);
-                    } catch (e) {
-                        sourceConfiguration = {
-                            "SourceConfiguration": ctx.backingModelData[keys[4].toString()]
-                        }
-                    }
-                    let destinationConfiguration = JSON.parse(ctx.backingModelData[keys[5].toString()]);
+                acceptAction: function () {                   
 
                     calculateStatsRequest(convenienceApi, sourceConfiguration, destinationConfiguration, integrationPointId);                
                 }
@@ -151,9 +139,24 @@ export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenie
     });
 }
 
-function importImageFiles(destinationConfiguration: Object) {
-    return (destinationConfiguration["ImageImport"] == 'true' && (!destinationConfiguration["ImagePrecedence"] || destinationConfiguration["ImagePrecedence"].length == 0))
-};
+export function createStopCalculationsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean) {
+    return consoleApi.generate.button({
+        innerText: "Stop calculations",
+        disabled: !enabled,
+        onclick: function () {
+            return convenienceApi.modalService.confirm({
+                title: "Stop calculations",
+                message: "Statistics calculation process for this Integration Point is in progress. Do you want to cancel this process?",
+                acceptText: "Yes",
+                cancelText: "No",
+                acceptAction: function () {
+
+                   
+                }
+            });
+        }
+    });
+}
 
 export function createRetryErrorsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number, overwriteOption: string, lqMessageContainer: Element) {
 

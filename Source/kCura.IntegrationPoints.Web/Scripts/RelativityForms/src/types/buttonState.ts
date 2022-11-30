@@ -9,4 +9,5 @@
     viewErrorsLinkEnabled: boolean
     viewErrorsLinkVisible: boolean
     calculateStatisticsButtonEnabled: boolean
+    stopCalculationsButtonEnabled: boolean
 }

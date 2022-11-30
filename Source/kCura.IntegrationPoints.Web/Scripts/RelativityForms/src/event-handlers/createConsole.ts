@@ -1,13 +1,13 @@
 import { contextProvider } from "../helpers/contextProvider";
 import { IConvenienceApi } from "../types/convenienceApi";
 import { ButtonState } from "../types/buttonState";
-import { createDownloadErrorFileLink, createRetryErrorsButton, createRunButton, createSaveAsProfileButton, createStopButton, createCalculateStatsButton, createViewErrorsLink, removeMessageContainers } from "../helpers/buttonCreate";
+import { createDownloadErrorFileLink, createRetryErrorsButton, createRunButton, createSaveAsProfileButton, createStopButton, createCalculateStatsButton, createStopCalculationsButton, createViewErrorsLink, removeMessageContainers } from "../helpers/buttonCreate";
 
 export function createConsole(convenienceApi: IConvenienceApi): void {
     return contextProvider((ctx) => {
         var consoleApi = convenienceApi.console;
         var integrationPointId = ctx.artifactId;
-        var workspaceId = ctx.workspaceId;
+        var workspaceId = ctx.workspaceId;       
 
         return consoleApi.destroy().then(function () {
             return consoleApi.containersPromise;
@@ -114,7 +114,19 @@ function generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPoi
             var val = ctx.backingModelData[value];
         }
         integrationPoint[trimmedKey] = val;
-    });
+    });   
+
+    let keys = Object.keys(ctx.backingModelData);
+    keys.sort((a, b) => { return Number(a) - Number(b) });
+    let sourceConfiguration;
+    try {
+        sourceConfiguration = JSON.parse(ctx.backingModelData[keys[4].toString()]);
+    } catch (e) {
+        sourceConfiguration = {
+            "SourceConfiguration": ctx.backingModelData[keys[4].toString()]
+        }
+    }
+    let destinationConfiguration = JSON.parse(ctx.backingModelData[keys[5].toString()]);
 
     var transferOptionsTitle = consoleApi.generate.sectionTitle({
         innerText: "Transfer Options",
@@ -143,9 +155,14 @@ function generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPoi
         transferSection.push(viewErrorsLink);
     }
 
-    var calculateStatsButton = createCalculateStatsButton(consoleApi, convenienceApi, ctx, buttonState.calculateStatisticsButtonEnabled, integrationPointId);
-    transferSection.push(calculateStatsButton);
+    if (destinationConfiguration["artifactTypeID"] == 10 && destinationConfiguration["Provider"] === "relativity") {
 
+        var calculateStatsButton = createCalculateStatsButton(consoleApi, convenienceApi, ctx, buttonState.calculateStatisticsButtonEnabled, integrationPointId, sourceConfiguration, destinationConfiguration);
+        transferSection.push(calculateStatsButton);
+
+        var stopCalculationsButton = createStopCalculationsButton(consoleApi, convenienceApi, ctx, buttonState.stopCalculationsButtonEnabled);
+        transferSection.push(stopCalculationsButton);
+    }
 
     if (buttonState.saveAsProfileButtonVisible) {
         var saveAsProfileButton = createSaveAsProfileButton(consoleApi, convenienceApi, ctx, workspaceId, integrationPointId, integrationPoint);

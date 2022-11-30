@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core.Validation.Parts;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
@@ -28,6 +29,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
         private readonly IQueueManager _queueManager;
         private readonly IStateManager _stateManager;
         private readonly IIntegrationPointPermissionValidator _permissionValidator;
+        private readonly ICalculationChecker _calculationChecker;
 
         public bool IsSyncAppInUse { get; }
 
@@ -39,6 +41,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             IPermissionRepository permissionRepository,
             IIntegrationPointPermissionValidator permissionValidator,
             IIntegrationPointRepository integrationPointRepository,
+            ICalculationChecker calculationChecker,
             bool isSyncAppInUse)
         {
             _providerTypeService = providerTypeService;
@@ -48,6 +51,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             _permissionRepository = permissionRepository;
             _permissionValidator = permissionValidator;
             _integrationPointRepository = integrationPointRepository;
+            _calculationChecker = calculationChecker;
 
             IsSyncAppInUse = isSyncAppInUse;
         }
@@ -59,6 +63,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
             IIntegrationPointRepository integrationPointRepository,
             IProviderTypeService providerTypeService,
             IRelativitySyncConstrainsChecker relativitySyncConstrainsChecker,
+            ICalculationChecker calculationChecker,
             int workspaceId,
             int integrationPointId)
         {
@@ -87,6 +92,7 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
                 permissionRepository,
                 permissionValidator,
                 integrationPointRepository,
+                calculationChecker,
                 isSyncAppInUse);
 
             return buttonStateBuilder;
@@ -131,10 +137,8 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
             bool integrationPointHasErrors = integrationPoint.HasErrors.GetValueOrDefault(false);
 
-            // TODO:
-            // We need to replace hardcoded false value with getting an actual information from Integration Point RDO field
-            // 1. get RDO string value, 2. deserialize, 3. read 'in progress' flag value and assign it here
-            bool calculationInProgress = false;
+            CalculationState calculationState = await _calculationChecker.GetCalculationState(workspaceArtifactId, integrationPointArtifactId).ConfigureAwait(false);
+            bool calculationInProgress = calculationState.IsCalculating;
 
             ButtonStateDTO buttonState = _stateManager.GetButtonState(
                 exportType,

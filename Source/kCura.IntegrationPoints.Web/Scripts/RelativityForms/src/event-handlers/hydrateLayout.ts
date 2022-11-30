@@ -1,6 +1,6 @@
 import { getConnectionAuthenticationType, getFilter } from "../helpers/fieldValuesForImport";
 import { getDestinationDetails, getFilePath, getImageFileFormat, getImageFileType, getImagePrecedence, getImportType, getLoadFileFormat, getPrecedenceList, getSubdirectoryInfo, getTextAndNativeFileNames, getTextFileEncoding, getVolume } from "../helpers/fieldValuesForLoadFileExport";
-import { formatToYesOrNo, getExportType, getFolderPathInformation, getImagesStatsForProduction, getImagesStatsForSavedSearch, getNativesStats, getPrecenenceSummary, getSourceDetails, prepareStatsInfo } from "../helpers/fieldValuesForRelativityExport";
+import { formatToYesOrNo, getExportType, getFolderPathInformation, getPrecenenceSummary, getSourceDetails } from "../helpers/fieldValuesForRelativityExport";
 import { IConvenienceApi } from "../types/convenienceApi";
 
 export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sourceConfiguration: Object, destinationConfiguration: Object) {
@@ -89,10 +89,10 @@ export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sou
     convenienceApi.fieldHelper.setValue("Filename Prefix", sourceConfiguration["filename_prefix"]);
     convenienceApi.fieldHelper.setValue("Timezone Offset", sourceConfiguration["TimezoneOffset"]);
 
-    convenienceApi.fieldHelper.setValue("Total of Documents", "Press 'Get statistics' button to calculate");
-    convenienceApi.fieldHelper.setValue("Total of Images", "Press 'Get statistics' button to calculate");
-    convenienceApi.fieldHelper.setValue("Total of Documents", "Press 'Get statistics' button to calculate");
-    convenienceApi.fieldHelper.setValue("Total of Natives", "Press 'Get statistics' button to calculate");
+    convenienceApi.fieldHelper.setValue("Total of Documents", "Press 'Calculate statistics' button");
+    convenienceApi.fieldHelper.setValue("Total of Images", "Press 'Calculate statistics' button");
+    convenienceApi.fieldHelper.setValue("Total of Documents", "Press 'Calculate statistics' button");
+    convenienceApi.fieldHelper.setValue("Total of Natives", "Press 'Calculate statistics' button");
 
     if (destinationConfiguration["artifactTypeID"] == 10 && destinationConfiguration["Provider"] === "relativity") {
         //if (sourceConfiguration["SourceProductionId"]) {

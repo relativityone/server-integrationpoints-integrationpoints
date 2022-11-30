@@ -126,6 +126,58 @@ export function prepareStatsInfo(total, size) {
     return result;
 }
 
+export function handleStatisticsForImages(convenienceApi, data) {    
+
+    var error = validateCalculationState(data);    
+
+    if (error === "") {       
+
+        var stats = data["DocumentStatistics"];
+        var lastCalculationDate = "Calculated on: " + stats["CalculatedOn"] + " UTC";
+        var valueToDisplay = `${stats["DocumentsCount"]}
+${lastCalculationDate}`;        
+
+        convenienceApi.fieldHelper.setValue("Total of Documents", valueToDisplay);
+
+        var total = prepareStatsInfo(stats["TotalImagesCount"], stats["TotalImagesSizeBytes"]);
+        convenienceApi.fieldHelper.setValue("Total of Images", total);
+    }
+    else {
+        convenienceApi.fieldHelper.setValue("Total of Documents", error);
+        convenienceApi.fieldHelper.setValue("Total of Images", error);
+    }
+}
+
+export function handleStatisticsForNatives(convenienceApi, data) {
+    var error = validateCalculationState(data);
+    if (error === "") {
+        var stats = data["DocumentStatistics"];
+        var lastCalculationDate = " Last calculation: " + stats["CalculatedOn"] + " UTC";      
+
+        convenienceApi.fieldHelper.setValue("Total of Documents", stats["DocumentsCount"] + lastCalculationDate);
+
+        var total = prepareStatsInfo(stats["TotalNativesCount"], stats["TotalNativesSizeBytes"]);
+        convenienceApi.fieldHelper.setValue("Total of Natives", total);
+    }
+    else {
+        convenienceApi.fieldHelper.setValue("Total of Documents", error);
+        convenienceApi.fieldHelper.setValue("Total of Images", error);
+    }
+}
+
+function validateCalculationState(data) {
+    let result = "";
+    if (data === 'undefined') {
+        result = "Error occurred";
+        return result;
+    }
+    if (data["HasErrors"] === 'true') {
+        result = "Error occurred";
+        return result;
+    }
+    return result;   
+}
+
 function formatBytes(bytes) {
     if (bytes === 0) return '0 Bytes';
     let k = 1024;

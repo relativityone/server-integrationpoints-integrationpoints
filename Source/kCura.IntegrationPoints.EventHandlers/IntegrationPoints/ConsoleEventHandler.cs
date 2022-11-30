@@ -16,6 +16,8 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Data.Statistics;
+using kCura.IntegrationPoints.Data.Statistics.Implementations;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers;
 using kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implementations;
@@ -34,7 +36,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
         private readonly IConsoleBuilder _consoleBuilder;
         private readonly IHelperClassFactory _helperClassFactory;
-        
+
         public ConsoleEventHandler()
         {
             _helperClassFactory = new HelperClassFactory();
@@ -118,7 +120,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
                     IPermissionRepository permissionRepository = new PermissionRepository(Helper, Helper.GetActiveCaseID());
                     IProviderTypeService providerTypeService = new ProviderTypeService(objectManager);
                     _buttonStateBuilder = new ButtonStateBuilder(providerTypeService, queueManager, jobHistoryManager, stateManager,
-                        permissionRepository, permissionValidator, integrationPointRepository, false);
+                        permissionRepository, permissionValidator, integrationPointRepository, new CalculationChecker(objectManager, logger), false);
                 }
                 return _buttonStateBuilder;
             }

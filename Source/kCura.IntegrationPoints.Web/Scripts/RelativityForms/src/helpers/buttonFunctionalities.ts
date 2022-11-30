@@ -1,5 +1,5 @@
 ﻿import { IConvenienceApi } from "../types/convenienceApi";
-import { formatToYesOrNo, getExportType, getFolderPathInformation, getImagesStatsForProduction, getImagesStatsForSavedSearch, getNativesStats, getPrecenenceSummary, getSourceDetails, prepareStatsInfo } from "../helpers/fieldValuesForRelativityExport";
+import { getImagesStatsForProduction, getImagesStatsForSavedSearch, getNativesStats, handleStatisticsForImages, handleStatisticsForNatives } from "../helpers/fieldValuesForRelativityExport";
 
 export function postJobAPIRequest(convenienceApi: IConvenienceApi, workspaceId, integrationPointId, action = "") {
     var request = {
@@ -20,24 +20,27 @@ export function postJobAPIRequest(convenienceApi: IConvenienceApi, workspaceId, 
 
 export function calculateStatsRequest(convenienceApi: IConvenienceApi, sourceConfiguration, destinationConfiguration, integrationPointId) {
 
-    convenienceApi.fieldHelper.setValue("Total of Documents", "Calculating...");
-    convenienceApi.fieldHelper.setValue("Total of Images", "Calculating...");    
-    convenienceApi.fieldHelper.setValue("Total of Natives", "Calculating...");
+    convenienceApi.fieldHelper.setValue("Total of Documents", "Calculating. This may take a few minutes...");
+    convenienceApi.fieldHelper.setValue("Total of Images", "Calculating. This may take a few minutes...");    
+    convenienceApi.fieldHelper.setValue("Total of Natives", "Calculating. This may take a few minutes...");
 
     if (sourceConfiguration["SourceProductionId"]) {
         getImagesStatsForProduction(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], sourceConfiguration["SourceProductionId"], integrationPointId).then(data => {
-            convenienceApi.fieldHelper.setValue("Total of Documents", data["DocumentsCount"]);
-            convenienceApi.fieldHelper.setValue("Total of Images", prepareStatsInfo(data["TotalImagesCount"], data["TotalImagesSizeBytes"]));
+            handleStatisticsForImages(convenienceApi, data);
         })
     } else if (destinationConfiguration["importNativeFile"] == 'true' && !importImageFiles(destinationConfiguration)) {
         getNativesStats(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], sourceConfiguration["SavedSearchArtifactId"], integrationPointId).then(data => {
-            convenienceApi.fieldHelper.setValue("Total of Documents", data["DocumentsCount"]);
-            convenienceApi.fieldHelper.setValue("Total of Natives", prepareStatsInfo(data["TotalNativesCount"], data["TotalNativesSizeBytes"]));
+            handleStatisticsForNatives(convenienceApi, data);
         })
     } else {
         getImagesStatsForSavedSearch(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], sourceConfiguration["SavedSearchArtifactId"], (destinationConfiguration["getImagesStatsForProduction"] === 'true'), integrationPointId).then(data => {
-            convenienceApi.fieldHelper.setValue("Total of Documents", data["DocumentsCount"]);
-            convenienceApi.fieldHelper.setValue("Total of Images", prepareStatsInfo(data["TotalImagesCount"], data["TotalImagesSizeBytes"]));
+            console.log(data);
+            console.log("IsCalculating: " + data["IsCalculating"]);
+            console.log("HasErrors: " + data["HasErrors"]);
+            var stats = data["DocumentStatistics"];
+            console.log("TotalDocuments: " + stats["DocumentsCount"]);
+
+            handleStatisticsForImages(convenienceApi, data);
         })
     }  
 }
