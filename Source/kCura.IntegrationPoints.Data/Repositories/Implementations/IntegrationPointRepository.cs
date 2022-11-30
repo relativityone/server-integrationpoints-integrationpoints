@@ -40,17 +40,23 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
         public Task<IntegrationPoint> ReadAsync(int integrationPointArtifactID)
         {
-            return ReadAsync(integrationPointArtifactID, IntegrationPointQueryOptions.All().Decrypted());
+            return ReadAsync(
+                integrationPointArtifactID,
+                IntegrationPointQueryOptions.All().Decrypted().WithConfiguration());
         }
 
         public Task<IntegrationPoint> ReadWithFieldMappingAsync(int integrationPointArtifactID)
         {
-            return ReadAsync(integrationPointArtifactID, IntegrationPointQueryOptions.All().Decrypted().WithFieldMapping());
+            return ReadAsync(
+                integrationPointArtifactID,
+                IntegrationPointQueryOptions.All().Decrypted().WithFieldMapping().WithConfiguration());
         }
 
         public Task<IntegrationPoint> ReadEncryptedAsync(int integrationPointArtifactID)
         {
-            return ReadAsync(integrationPointArtifactID, IntegrationPointQueryOptions.All());
+            return ReadAsync(
+                integrationPointArtifactID,
+                IntegrationPointQueryOptions.All().WithConfiguration());
         }
 
         public async Task<IEnumerable<FieldMap>> GetFieldMappingAsync(int integrationPointArtifactID)
@@ -218,6 +224,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         private async Task<IntegrationPoint> ReadAsync(int integrationPointArtifactID, IntegrationPointQueryOptions queryOptions)
         {
             IntegrationPoint integrationPoint = _objectManager.Read<IntegrationPoint>(integrationPointArtifactID);
+
+            if (queryOptions.Configuration)
+            {
+                integrationPoint.SourceConfiguration = await GetSourceConfigurationAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
+                integrationPoint.DestinationConfiguration = await GetDestinationConfigurationAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
+            }
 
             if (queryOptions.Decrypt)
             {

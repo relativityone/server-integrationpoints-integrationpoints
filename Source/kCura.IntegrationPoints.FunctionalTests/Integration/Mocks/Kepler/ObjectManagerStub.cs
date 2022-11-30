@@ -240,60 +240,62 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
             };
         }
 
-        private List<RelativityObject> FindObjects<T>(Func<WorkspaceTest, IList<T>> collectionGetter,
-            Func<QueryRequest, IList<T>, IList<T>> customFilter, QueryRequest request, WorkspaceTest workspace)
+        private List<RelativityObject> FindObjects<T>(
+                Func<WorkspaceTest, IList<T>> collectionGetter,
+                Func<QueryRequest, IList<T>, IList<T>> customFilter,
+                QueryRequest request,
+                WorkspaceTest workspace)
             where T : RdoTestBase
         {
-            List<RelativityObject> foundObjects = new List<RelativityObject>();
-            if (customFilter != null)
+            IEnumerable<T> foundObjects = FindObjectsByStandardCondition(collectionGetter, request, workspace);
+            if (foundObjects == null)
             {
-                foundObjects.AddRange(customFilter(request, collectionGetter(workspace))
-                    .Select(x => x.ToRelativityObject()));
-            }
-            if (request.Condition != null && IsArtifactIdCondition(request.Condition, out int artifactId))
-            {
-                AddRelativityObjectsToResult(
-                    collectionGetter(workspace).Where(x => x.ArtifactId == artifactId)
-                    , foundObjects);
-            }
-            else if (request.Condition != null && IsArtifactIdListCondition(request.Condition, out int[] artifactIds))
-            {
-                AddRelativityObjectsToResult(
-                    collectionGetter(workspace).Where(x => artifactIds.Contains(x.ArtifactId))
-                    , foundObjects);
-            }
-            else if(string.IsNullOrEmpty(request.Condition) && request.ObjectType.Guid == ObjectTypeGuids.IntegrationPointTypeGuid)
-            {
-                AddRelativityObjectsToResult(collectionGetter(workspace), foundObjects);
+                foundObjects = customFilter != null
+                    ? customFilter(request, collectionGetter(workspace))
+                    : Enumerable.Empty<T>();
             }
 
-            return foundObjects;
+            return foundObjects.Select(x => x.ToRelativityObject()).ToList();
         }
 
-        private List<RelativityObject> FindObjects<T>(Func<WorkspaceTest, IList<T>> collectionGetter,
-            Func<QueryRequest, IList<T>, int, IList<T>> customFilter, QueryRequest request, WorkspaceTest workspace, int start)
+        private List<RelativityObject> FindObjects<T>(
+                Func<WorkspaceTest, IList<T>> collectionGetter,
+                Func<QueryRequest, IList<T>, int, IList<T>> customFilter,
+                QueryRequest request,
+                WorkspaceTest workspace, int start)
             where T : RdoTestBase
         {
-            List<RelativityObject> foundObjects = new List<RelativityObject>();
-            if (customFilter != null)
+            IEnumerable<T> foundObjects = FindObjectsByStandardCondition(collectionGetter, request, workspace);
+            if (foundObjects == null)
             {
-                foundObjects.AddRange(customFilter(request, collectionGetter(workspace), start)
-                    .Select(x => x.ToRelativityObject()));
+                foundObjects = customFilter != null
+                    ? customFilter(request, collectionGetter(workspace), start)
+                    : Enumerable.Empty<T>();
             }
 
+            return foundObjects.Select(x => x.ToRelativityObject()).ToList();
+        }
+
+        private IEnumerable<T> FindObjectsByStandardCondition<T>(
+                Func<WorkspaceTest, IList<T>> collectionGetter,
+                QueryRequest request,
+                WorkspaceTest workspace)
+            where T : RdoTestBase
+        {
             if (request.Condition != null && IsArtifactIdCondition(request.Condition, out int artifactId))
             {
-                AddRelativityObjectsToResult(
-                    collectionGetter(workspace).Where(x => x.ArtifactId == artifactId)
-                    , foundObjects);
+                return collectionGetter(workspace).Where(x => x.ArtifactId == artifactId);
             }
             else if (request.Condition != null && IsArtifactIdListCondition(request.Condition, out int[] artifactIds))
             {
-                AddRelativityObjectsToResult(
-                    collectionGetter(workspace).Where(x => artifactIds.Contains(x.ArtifactId))
-                    , foundObjects);
+                return collectionGetter(workspace).Where(x => artifactIds.Contains(x.ArtifactId));
             }
-            return foundObjects;
+            else if (string.IsNullOrEmpty(request.Condition))
+            {
+                return collectionGetter(workspace);
+            }
+
+            return null;
         }
 
         private static void AddRelativityObjectsToResult<T>(IEnumerable<T> objectsToAdd,
