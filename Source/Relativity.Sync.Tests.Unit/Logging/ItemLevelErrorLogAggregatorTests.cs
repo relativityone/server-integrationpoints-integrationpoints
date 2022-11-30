@@ -45,15 +45,21 @@ namespace Relativity.Sync.Tests.Unit.Logging
             await _sut.LogAllItemLevelErrorsAsync().ConfigureAwait(false);
 
             // Assert
-            _loggerMock.Verify(x => x.LogWarning("Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
+            _loggerMock.Verify(
+                x => x.LogWarning(
+                "Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
                 It.Is((string s) => s == SampleErrorMessage1),
                 It.Is((string ids) => ids == "0, 1")), Times.Once);
 
-            _loggerMock.Verify(x => x.LogWarning("Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
+            _loggerMock.Verify(
+                x => x.LogWarning(
+                "Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
                 It.Is((string s) => s == SampleErrorMessage1),
                 It.Is((string ids) => ids == "2, 3")), Times.Once);
 
-            _loggerMock.Verify(x => x.LogWarning("Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
+            _loggerMock.Verify(
+                x => x.LogWarning(
+                "Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
                 It.Is((string s) => s == SampleErrorMessage1),
                 It.Is((string ids) => ids == "4")), Times.Once);
         }
@@ -71,11 +77,13 @@ namespace Relativity.Sync.Tests.Unit.Logging
             await _sut.LogAllItemLevelErrorsAsync().ConfigureAwait(false);
 
             // Assert
-            _loggerMock.Verify(x => x.LogWarning("Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
+            _loggerMock.Verify(x => x.LogWarning(
+                "Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
                 It.Is((string s) => s == SampleErrorMessage1),
                 It.Is((string ids) => ids == "0, 2, 3")));
 
-            _loggerMock.Verify(x => x.LogWarning("Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
+            _loggerMock.Verify(x => x.LogWarning(
+                "Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
                 It.Is((string s) => s == SampleErrorMessage2),
                 It.Is((string ids) => ids == "1, 4")));
         }
@@ -93,12 +101,15 @@ namespace Relativity.Sync.Tests.Unit.Logging
             await _sut.LogAllItemLevelErrorsAsync().ConfigureAwait(false);
 
             // Assert
-            _loggerMock.Verify(x => x.LogWarning("Total count of item level errors in batch: {count}  Aggregated errors count: {errorsAggregateCount}",
+            _loggerMock.Verify(
+                x => x.LogWarning(
+                "Total count of item level errors in batch: {count}  Aggregated errors count: {errorsAggregateCount}",
                 5, 2), Times.Once);
         }
 
         [TestCaseSource(nameof(KnownItemLevelErrors))]
-        public async Task ShouldGroupAllKnowItemLevelErrors((string identifier, string error)[] errors,
+        public async Task ShouldGroupAllKnowItemLevelErrors(
+            (string identifier, string error)[] errors,
             string expectedCleanedUpMessage)
         {
             // Arrange
@@ -113,7 +124,8 @@ namespace Relativity.Sync.Tests.Unit.Logging
             await _sut.LogAllItemLevelErrorsAsync().ConfigureAwait(false);
 
             // Assert
-            _loggerMock.Verify(x => x.LogWarning("Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
+            _loggerMock.Verify(x => x.LogWarning(
+                "Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
                 It.Is((string s) => s == expectedCleanedUpMessage),
                 It.Is((string ids) => ids == string.Join(", ", Enumerable.Range(0, errors.Length)))));
         }

@@ -206,7 +206,8 @@ namespace Relativity.Sync.SyncConfiguration
             };
         }
 
-        private (Guid Guid, string PropertyPath) GetValidationInfo<TRdo>(TRdo rdo,
+        private (Guid Guid, string PropertyPath) GetValidationInfo<TRdo>(
+            TRdo rdo,
             Expression<Func<TRdo, Guid>> expression)
         {
             MemberExpression memberExpression = expression.Body as MemberExpression ??
@@ -223,7 +224,8 @@ namespace Relativity.Sync.SyncConfiguration
             using (var guidManager = await ServiceFactoryForAdmin.CreateProxyAsync<IArtifactGuidManager>().ConfigureAwait(false))
             {
                 List<GuidArtifactIDPair> guidArtifactIdPairs = await guidManager
-                    .ReadMultipleArtifactIdsAsync(SyncContext.SourceWorkspaceId,
+                    .ReadMultipleArtifactIdsAsync(
+                        SyncContext.SourceWorkspaceId,
                         validationInfos.Select(x => x.Guid).ToList())
                     .ConfigureAwait(false);
 
@@ -235,7 +237,8 @@ namespace Relativity.Sync.SyncConfiguration
 
                 if (notExistingGuidErrors.Any())
                 {
-                    throw new InvalidSyncConfigurationException(string.Join(System.Environment.NewLine,
+                    throw new InvalidSyncConfigurationException(string.Join(
+                        System.Environment.NewLine,
                         notExistingGuidErrors));
                 }
             }

@@ -107,8 +107,9 @@ namespace Relativity.Sync.Tests.System.GoldFlows
                     configuration.JobHistoryError = CustomAppGuids.JobHistoryError;
                     configuration.DestinationWorkspace = CustomAppGuids.DestinationWorkspace;
 
-                    configuration.JobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(ServiceFactory,
-                            sourceWorkspace.ArtifactID, jobHistoryTypeGuid: CustomAppGuids.JobHistory.TypeGuid)
+                    configuration.JobHistoryArtifactId = await Rdos.CreateJobHistoryInstanceAsync(
+                        ServiceFactory,
+                        sourceWorkspace.ArtifactID, jobHistoryTypeGuid: CustomAppGuids.JobHistory.TypeGuid)
                         .ConfigureAwait(false);
                 }).ConfigureAwait(false);
 

@@ -18,7 +18,8 @@ namespace Relativity.Sync.Executors
 
         protected readonly IAPILog Logger;
 
-        public DataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactoryForUser,
+        public DataSourceSnapshotExecutor(
+            ISourceServiceFactoryForUser serviceFactoryForUser,
             IJobProgressUpdaterFactory jobProgressUpdaterFactory, IAPILog logger,
             ISnapshotQueryRequestProvider snapshotQueryRequestProvider)
         {
@@ -30,7 +31,8 @@ namespace Relativity.Sync.Executors
 
         public virtual async Task<ExecutionResult> ExecuteAsync(IDataSourceSnapshotConfiguration configuration, CompositeCancellationToken token)
         {
-            Logger.LogInformation("Initializing export in workspace {workspaceId} with saved search {savedSearchId} and fields {@fields}.",
+            Logger.LogInformation(
+                "Initializing export in workspace {workspaceId} with saved search {savedSearchId} and fields {@fields}.",
                 configuration.SourceWorkspaceArtifactId, configuration.DataSourceArtifactId, configuration.GetFieldMappings());
 
             ExportInitializationResults results;

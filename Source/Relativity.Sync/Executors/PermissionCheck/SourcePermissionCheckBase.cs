@@ -96,35 +96,40 @@ namespace Relativity.Sync.Executors.PermissionCheck
             return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage);
         }
 
-        private Task<ValidationResult> ValidateUserHasArtifactTypePermissionAsync(IPermissionsCheckConfiguration configuration,
+        private Task<ValidationResult> ValidateUserHasArtifactTypePermissionAsync(
+            IPermissionsCheckConfiguration configuration,
             Guid artifactTypeGuid, PermissionType artifactPermission, string errorMessage)
         {
             return ValidateUserHasArtifactTypePermissionAsync(configuration, artifactTypeGuid,
                 new[] { artifactPermission }, errorMessage);
         }
 
-        private Task<ValidationResult> ValidateUserHasArtifactTypePermissionAsync(IPermissionsCheckConfiguration configuration,
+        private Task<ValidationResult> ValidateUserHasArtifactTypePermissionAsync(
+            IPermissionsCheckConfiguration configuration,
             Guid artifactTypeGuid, IEnumerable<PermissionType> artifactPermissions, string errorMessage)
         {
             var artifactTypeIdentifier = new ArtifactTypeIdentifier(artifactTypeGuid);
             return ValidateArtifactPermissionsAsync(configuration, artifactPermissions, errorMessage, artifactTypeIdentifier);
         }
 
-        private Task<ValidationResult> ValidateUserHasArtifactTypePermissionAsync(IPermissionsCheckConfiguration configuration,
+        private Task<ValidationResult> ValidateUserHasArtifactTypePermissionAsync(
+            IPermissionsCheckConfiguration configuration,
             ArtifactType artifactType, PermissionType artifactPermissions, string errorMessage)
         {
             return ValidateUserHasArtifactTypePermissionAsync(configuration, (int)artifactType, artifactPermissions,
                 errorMessage);
         }
 
-        protected Task<ValidationResult> ValidateUserHasArtifactTypePermissionAsync(IPermissionsCheckConfiguration configuration,
+        protected Task<ValidationResult> ValidateUserHasArtifactTypePermissionAsync(
+            IPermissionsCheckConfiguration configuration,
             int artifactType, PermissionType artifactPermissions, string errorMessage)
         {
             var artifactTypeIdentifier = new ArtifactTypeIdentifier(artifactType);
             return ValidateArtifactPermissionsAsync(configuration, new[] { artifactPermissions }, errorMessage, artifactTypeIdentifier);
         }
 
-        private async Task<ValidationResult> ValidateArtifactPermissionsAsync(IPermissionsCheckConfiguration configuration,
+        private async Task<ValidationResult> ValidateArtifactPermissionsAsync(
+            IPermissionsCheckConfiguration configuration,
             IEnumerable<PermissionType> artifactPermissions, string errorMessage, ArtifactTypeIdentifier artifactTypeIdentifier)
         {
             List<PermissionRef> permissionRefs = GetPermissionRefs(artifactTypeIdentifier, artifactPermissions);

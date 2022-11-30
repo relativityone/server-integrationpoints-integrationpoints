@@ -186,7 +186,9 @@ namespace Relativity.Sync.Tests.Unit
             await _sut.QueryImagesForDocumentsAsync(WORKSPACE_ID, documentIds, options).ConfigureAwait(false);
 
             // Assert
-            _searchServiceMock.Verify(x => x.RetrieveImagesForSearchAsync(WORKSPACE_ID,
+            _searchServiceMock.Verify(
+                x => x.RetrieveImagesForSearchAsync(
+                WORKSPACE_ID,
                 It.Is<int[]>(expectedIds => expectedIds.Intersect(documentIdsWithProductionId).Any()), It.IsAny<string>()), Times.Never);
         }
 

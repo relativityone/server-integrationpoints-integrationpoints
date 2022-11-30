@@ -54,7 +54,8 @@ namespace Relativity.Sync.Executors
 
         public async Task<RelativitySourceJobTag> CreateAsync(int destinationWorkspaceArtifactId, RelativitySourceJobTag sourceJobTag, CancellationToken token)
         {
-            _logger.LogVerbose($"Creating {nameof(RelativitySourceJobTag)} in destination workspace artifact ID: {{destinationWorkspaceArtifactId}} Source case tag artifact ID: {{sourceCaseTagArtifactId}}",
+            _logger.LogVerbose(
+                $"Creating {nameof(RelativitySourceJobTag)} in destination workspace artifact ID: {{destinationWorkspaceArtifactId}} Source case tag artifact ID: {{sourceCaseTagArtifactId}}",
                 destinationWorkspaceArtifactId, sourceJobTag.SourceCaseTagArtifactId);
             using (IObjectManager objectManager = await _serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {

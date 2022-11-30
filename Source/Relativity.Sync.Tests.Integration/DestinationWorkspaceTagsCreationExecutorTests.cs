@@ -216,7 +216,8 @@ namespace Relativity.Sync.Tests.Integration
 
             // Assert
             _objectManagerMock.Verify(
-                x => x.CreateAsync(destinationWorkspaceArtifactId,
+                x => x.CreateAsync(
+                    destinationWorkspaceArtifactId,
                     It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid))), Times.Never);
 
             _objectManagerMock.Verify();
@@ -290,7 +291,8 @@ namespace Relativity.Sync.Tests.Integration
                 }
             }));
 
-            _objectManagerMock.Verify(x => x.UpdateAsync(
+            _objectManagerMock.Verify(
+                x => x.UpdateAsync(
                 destinationWorkspaceArtifactId,
                 It.Is<UpdateRequest>(y => VerifyUpdateRequest(y, sourceWorkspaceTagArtifactId))), Times.Never);
 
@@ -311,7 +313,8 @@ namespace Relativity.Sync.Tests.Integration
 
             // Assert
             _objectManagerMock.Verify(
-                x => x.CreateAsync(destinationWorkspaceArtifactId,
+                x => x.CreateAsync(
+                    destinationWorkspaceArtifactId,
                     It.Is<CreateRequest>(y => y.ObjectType.Guid.Equals(SourceCaseTagObjectTypeGuid))), Times.Never);
 
             _objectManagerMock.Verify();

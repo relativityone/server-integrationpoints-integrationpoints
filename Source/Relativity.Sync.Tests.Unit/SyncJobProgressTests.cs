@@ -102,7 +102,8 @@ namespace Relativity.Sync.Tests.Unit
         public void ItShouldNotThrowWhenProgressCreationThrows()
         {
             Mock<IProgressRepository> progressRepositoryMock = new Mock<IProgressRepository>();
-            progressRepositoryMock.Setup(x => x.CreateAsync(It.IsAny<int>(),
+            progressRepositoryMock.Setup(x => x.CreateAsync(
+                It.IsAny<int>(),
                 It.IsAny<int>(),
                 It.IsAny<string>(),
                 It.IsAny<int>(),
@@ -122,7 +123,8 @@ namespace Relativity.Sync.Tests.Unit
         {
             Mock<IProgressRepository> progressRepositoryMock = new Mock<IProgressRepository>();
             Mock<IProgress> progress = new Mock<IProgress>();
-            progressRepositoryMock.Setup(x => x.QueryAsync(It.IsAny<int>(),
+            progressRepositoryMock.Setup(x => x.QueryAsync(
+                It.IsAny<int>(),
                 It.IsAny<int>(),
                 It.IsAny<string>())).ReturnsAsync(progress.Object);
             progress.Setup(x => x.SetStatusAsync(It.IsAny<SyncJobStatus>())).Throws<ServiceException>();

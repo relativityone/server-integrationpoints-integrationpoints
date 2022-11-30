@@ -54,7 +54,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _sourceWorkspace.Setup(x => x.TagDocumentsAsync(It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IList<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(documentsResult);
 
             // Act
-            ExecutionResult executionResult = await _instance.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(_config.Object,
+            ExecutionResult executionResult = await _instance.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(
+                _config.Object,
                 documentIdentifiers, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
@@ -81,7 +82,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _destinationWorkspace.Setup(x => x.TagDocumentsAsync(It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IList<int>>(), It.IsAny<CancellationToken>())).ReturnsAsync(documentsResult);
 
             // Act
-            ExecutionResult executionResult = await _instance.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(_config.Object,
+            ExecutionResult executionResult = await _instance.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(
+                _config.Object,
                 documentIdentifiers, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
@@ -101,7 +103,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _destinationWorkspace.Setup(x => x.TagDocumentsAsync(It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IList<int>>(), It.IsAny<CancellationToken>())).ReturnsAsync(documentsResult);
 
             // Act
-            ExecutionResult executionResult = await _instance.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(_config.Object,
+            ExecutionResult executionResult = await _instance.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(
+                _config.Object,
                 documentIdentifiers, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
@@ -119,7 +122,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _sourceWorkspace.Setup(x => x.TagDocumentsAsync(It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IList<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(documentsResult);
 
             // Act
-            ExecutionResult executionResult = await _instance.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(_config.Object,
+            ExecutionResult executionResult = await _instance.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(
+                _config.Object,
                 documentIdentifiers, CancellationToken.None).ConfigureAwait(false);
 
             // Assert

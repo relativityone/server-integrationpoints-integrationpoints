@@ -33,13 +33,15 @@ namespace Relativity.Sync.Logging
         {
             IList<FieldInfoDto> mappedFields = await _fieldManager.GetMappedFieldsAsync(token).ConfigureAwait(false);
 
-            Task<Dictionary<string, RelativityObjectSlim>> sourceFieldsDetailsTask = GetFieldsDetailsAsync(_configuration.SourceWorkspaceArtifactId,
+            Task<Dictionary<string, RelativityObjectSlim>> sourceFieldsDetailsTask = GetFieldsDetailsAsync(
+                _configuration.SourceWorkspaceArtifactId,
                 mappedFields
                     .Where(x => x.RelativityDataType == RelativityDataType.LongText)
                     .Select(x => x.SourceFieldName)
                     .ToList(), _configuration.RdoArtifactTypeId, token);
 
-            Task<Dictionary<string, RelativityObjectSlim>> destinationFieldsDetailsTask = GetFieldsDetailsAsync(_configuration.DestinationWorkspaceArtifactId,
+            Task<Dictionary<string, RelativityObjectSlim>> destinationFieldsDetailsTask = GetFieldsDetailsAsync(
+                _configuration.DestinationWorkspaceArtifactId,
                 mappedFields
                     .Where(x => x.RelativityDataType == RelativityDataType.LongText)
                     .Select(x => x.DestinationFieldName)
@@ -50,7 +52,8 @@ namespace Relativity.Sync.Logging
             return fieldsMappingSummary;
         }
 
-        private async Task<Dictionary<string, RelativityObjectSlim>> GetFieldsDetailsAsync(int workspaceId,
+        private async Task<Dictionary<string, RelativityObjectSlim>> GetFieldsDetailsAsync(
+            int workspaceId,
             List<string> fieldNames, int rdoArtifactTypeId, CancellationToken token)
         {
             if (fieldNames == null || !fieldNames.Any())
@@ -86,7 +89,8 @@ namespace Relativity.Sync.Logging
                 }
                 catch (ServiceException ex)
                 {
-                    _logger.LogError(ex,
+                    _logger.LogError(
+                        ex,
                         "Service call failed while querying non document fields in workspace {workspaceArtifactId} for mapping details",
                         workspaceId);
                     throw new SyncKeplerException(
@@ -95,7 +99,8 @@ namespace Relativity.Sync.Logging
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex,
+                    _logger.LogError(
+                        ex,
                         "Failed to query non document fields in workspace {workspaceArtifactId} for mapping details",
                         workspaceId);
                     throw new SyncKeplerException(
@@ -106,7 +111,8 @@ namespace Relativity.Sync.Logging
             return result.Objects.ToDictionary(x => x.Values[0].ToString(), x => x);
         }
 
-        private Dictionary<string, object> GetFieldsMappingSummary(IList<FieldInfoDto> mappings,
+        private Dictionary<string, object> GetFieldsMappingSummary(
+            IList<FieldInfoDto> mappings,
             IDictionary<string, RelativityObjectSlim> sourceLongTextFieldsDetails,
             IDictionary<string, RelativityObjectSlim> destinationLongTextFieldsDetails)
         {

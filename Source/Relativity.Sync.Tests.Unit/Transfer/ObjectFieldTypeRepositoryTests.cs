@@ -94,7 +94,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             // Assert
             const string expectedFieldNameArray =
                 "'Cool Field Name', 'Commas, Hello', 'Colon: A True Story', 'Sync\\'s Cool Field', 'Nice \\\\ Field'";
-            _objectManager.Verify(x => x.QuerySlimAsync(It.IsAny<int>(),
+            _objectManager.Verify(
+                x => x.QuerySlimAsync(
+                It.IsAny<int>(),
                 It.Is<QueryRequest>(q => ConditionContainsFieldNameArray(q, expectedFieldNameArray)),
                 It.IsAny<int>(),
                 It.IsAny<int>(),
@@ -216,7 +218,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
                 .ConfigureAwait(false);
 
             // Assert
-            _objectManager.Verify(x => x.QuerySlimAsync(It.IsAny<int>(),
+            _objectManager.Verify(
+                x => x.QuerySlimAsync(
+                It.IsAny<int>(),
                 It.Is<QueryRequest>(q => ConditionContainsExactFields(q, requestedFieldNames.Distinct())),
                 It.IsAny<int>(),
                 requestedFieldNames.Distinct().Count(),

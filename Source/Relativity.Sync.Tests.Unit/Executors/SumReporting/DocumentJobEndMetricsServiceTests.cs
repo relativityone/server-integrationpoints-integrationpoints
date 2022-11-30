@@ -91,7 +91,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             actualResult.Should().NotBeNull();
             actualResult.Status.Should().Be(ExecutionStatus.Completed);
 
-            SyncMetricsMock.Verify(x => x.Send(It.Is<DocumentJobEndMetric>(m =>
+            SyncMetricsMock.Verify(
+                x => x.Send(It.Is<DocumentJobEndMetric>(m =>
                 m.TotalRecordsTransferred == completedItemsPerBatch * testBatches.Count &&
                 m.TotalRecordsFailed == failedItemsPerBatch * testBatches.Count &&
                 m.TotalRecordsRequested == totalItemsCountPerBatch * testBatches.Count &&

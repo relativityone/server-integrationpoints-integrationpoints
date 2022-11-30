@@ -115,7 +115,8 @@ namespace Relativity.Sync.Executors.Validation
             return validationMessage;
         }
 
-        protected async Task<ValidationMessage> ValidateSourceFieldsAsync(IValidationConfiguration configuration,
+        protected async Task<ValidationMessage> ValidateSourceFieldsAsync(
+            IValidationConfiguration configuration,
             IList<FieldMap> fieldMaps, CancellationToken token)
         {
             _logger.LogInformation("Validating fields in source workspace");

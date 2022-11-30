@@ -99,7 +99,8 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
             }
         }
 
-        public static async Task<int> CreateRelativitySourceCaseInstanceAsync(ServiceFactory serviceFactory,
+        public static async Task<int> CreateRelativitySourceCaseInstanceAsync(
+            ServiceFactory serviceFactory,
             int destinationWorkspaceArtifactId, RelativitySourceCaseTag tag)
         {
             using (var objectManager = serviceFactory.CreateProxy<IObjectManager>())
@@ -140,7 +141,8 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
             }
         }
 
-        public static async Task<int> CreateRelativitySourceJobInstanceAsync(ServiceFactory serviceFactory,
+        public static async Task<int> CreateRelativitySourceJobInstanceAsync(
+            ServiceFactory serviceFactory,
             int destinationWorkspaceArtifactId, RelativitySourceJobTag tag)
         {
             using (var objectManager = serviceFactory.CreateProxy<IObjectManager>())
@@ -177,7 +179,8 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
             }
         }
 
-        public static async Task<int> CreateDestinationWorkspaceTagInstanceAsync(ServiceFactory serviceFactory,
+        public static async Task<int> CreateDestinationWorkspaceTagInstanceAsync(
+            ServiceFactory serviceFactory,
             int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, string destinationWorkspaceName)
         {
             const string destinationInstanceName = "This Instance";
@@ -318,7 +321,8 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
             return QueryDocumentNamesAsync(serviceFactory, workspaceId, string.Empty);
         }
 
-        public static async Task<IList<int>> QueryDocumentIdentifiersAsync(ServiceFactory serviceFactory,
+        public static async Task<IList<int>> QueryDocumentIdentifiersAsync(
+            ServiceFactory serviceFactory,
             int workspaceId, string condition)
         {
             IList<RelativityObject> documents =
@@ -327,7 +331,8 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
             return documents.Select(x => x.ArtifactID).ToList();
         }
 
-        public static async Task<IList<string>> QueryDocumentNamesAsync(ServiceFactory serviceFactory,
+        public static async Task<IList<string>> QueryDocumentNamesAsync(
+            ServiceFactory serviceFactory,
             int workspaceId, string condition)
         {
             IList<RelativityObject> documents =
@@ -432,7 +437,8 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
             };
         }
 
-        public static async Task<IList<RelativityObject>> QueryDocumentsAsync(ServiceFactory serviceFactory,
+        public static async Task<IList<RelativityObject>> QueryDocumentsAsync(
+            ServiceFactory serviceFactory,
             int workspaceId, string condition)
         {
             using (IObjectManager objectManager = serviceFactory.CreateProxy<IObjectManager>())
@@ -493,7 +499,8 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
             }
         }
 
-        public static async Task<int> CreateSyncConfigurationRdoAsync(int workspaceId,
+        public static async Task<int> CreateSyncConfigurationRdoAsync(
+            int workspaceId,
             ConfigurationStub configurationStub, IAPILog logger = null, ISerializer serializer = null)
         {
             serializer = serializer ?? new JSONSerializer();

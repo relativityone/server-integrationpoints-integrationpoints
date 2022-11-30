@@ -27,7 +27,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
         protected void SetupJobName(Mock<IObjectManager> objectManagerMock, string jobName)
         {
-            objectManagerMock.Setup(x => x.QueryAsync(It.IsAny<int>(),
+            objectManagerMock.Setup(x => x.QueryAsync(
+                It.IsAny<int>(),
                 It.Is<QueryRequest>(q =>
                     q.IncludeNameInQueryResult == true &&
                     q.Condition == $"'ArtifactId' == {_configurationRdo.JobHistoryId}"), 0, 1)).ReturnsAsync(

@@ -99,7 +99,8 @@ namespace Relativity.Sync.Tests.Integration
             _containerBuilder.RegisterInstance(_serviceFactory.Object).As<IDestinationServiceFactoryForAdmin>();
             _container = _containerBuilder.Build();
 
-            _instance = new DestinationWorkspaceObjectTypesCreationExecutor(_container.Resolve<ISyncObjectTypeManager>(),
+            _instance = new DestinationWorkspaceObjectTypesCreationExecutor(
+                _container.Resolve<ISyncObjectTypeManager>(),
                 _container.Resolve<ISyncFieldManager>(), new EmptyLogger());
         }
 
@@ -258,7 +259,8 @@ namespace Relativity.Sync.Tests.Integration
         }
 
 #pragma warning disable RG2011 // Method Argument Count Analyzer
-        private void SetupMocksForObjectType(int objectTypeArtifactId,
+        private void SetupMocksForObjectType(
+            int objectTypeArtifactId,
             Guid objectTypeGuid,
             string objectTypeName,
             Predicate<ObjectTypeIdentifier> parentObjectTypePredicate,
@@ -302,8 +304,9 @@ namespace Relativity.Sync.Tests.Integration
         private void SetupQueryingObjectTypeByName(int objectTypeArtifactId, string objectTypeName, bool objectTypeExists)
         {
             QueryResult result = objectTypeExists ? CreateQueryResult(new RelativityObject { ArtifactID = objectTypeArtifactId }) : CreateQueryResult();
-            _objectManager.Setup(om => om.QueryAsync(_WORKSPACE_ID,
-                    It.Is(BuildVerifyQueryRequestCondition(ArtifactType.ObjectType, $"'Name' == '{objectTypeName}'")), It.IsAny<int>(), It.IsAny<int>()))
+            _objectManager.Setup(om => om.QueryAsync(
+                _WORKSPACE_ID,
+                It.Is(BuildVerifyQueryRequestCondition(ArtifactType.ObjectType, $"'Name' == '{objectTypeName}'")), It.IsAny<int>(), It.IsAny<int>()))
                     .ReturnsAsync(result).Verifiable();
         }
 

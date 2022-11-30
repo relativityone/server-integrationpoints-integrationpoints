@@ -78,7 +78,8 @@ namespace Relativity.Sync.Transfer.StreamWrappers
         {
             if (disposing && !_disposed)
             {
-                _logger.LogInformation("Disposing long text stream. Document ArtifactID: {artifactID} Total bytes read: {totalBytesRead} Total read time (sec): {totalReadTime} Read invocations count: {readCount}",
+                _logger.LogInformation(
+                    "Disposing long text stream. Document ArtifactID: {artifactID} Total bytes read: {totalBytesRead} Total read time (sec): {totalReadTime} Read invocations count: {readCount}",
                     _documentArtifactID, _totalBytesRead, Math.Round(_readTimeStopwatch.Elapsed.TotalSeconds, 3), _readInvocationCount);
                 _jobStatisticsContainer.LongTextStatistics.Add(new LongTextStreamStatistics()
                 {

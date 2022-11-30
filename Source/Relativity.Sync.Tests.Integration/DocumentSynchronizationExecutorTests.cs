@@ -169,7 +169,9 @@ namespace Relativity.Sync.Tests.Integration
             // assert
             result.Status.Should().Be(ExecutionStatus.Completed);
             _objectManagerMock.Verify();
-            _objectManagerMock.Verify(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
+            _objectManagerMock.Verify(
+                x => x.CreateAsync(
+                _SOURCE_WORKSPACE_ARTIFACT_ID,
                 It.Is<CreateRequest>(cr => cr.ObjectType.Guid == JobHistoryErrorObjectTypeGuid)), Times.Never);
             _importBulkArtifactJob.Verify(x => x.Execute(), Times.Once);
         }
@@ -228,8 +230,9 @@ namespace Relativity.Sync.Tests.Integration
                     }
                 }
             };
-            _objectManagerMock.Setup(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
-                    It.Is<MassCreateRequest>(cr => cr.ValueLists.Count == failedDocuments.Count))).ReturnsAsync(massCreateResult)
+            _objectManagerMock.Setup(x => x.CreateAsync(
+                _SOURCE_WORKSPACE_ARTIFACT_ID,
+                It.Is<MassCreateRequest>(cr => cr.ValueLists.Count == failedDocuments.Count))).ReturnsAsync(massCreateResult)
                     .Verifiable();
 
             // act
@@ -269,8 +272,9 @@ namespace Relativity.Sync.Tests.Integration
                     }
                 }
             };
-            _objectManagerMock.Setup(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
-                    It.Is<MassCreateRequest>(cr => cr.ValueLists.Count == 1))).ReturnsAsync(massCreateResult)
+            _objectManagerMock.Setup(x => x.CreateAsync(
+                _SOURCE_WORKSPACE_ARTIFACT_ID,
+                It.Is<MassCreateRequest>(cr => cr.ValueLists.Count == 1))).ReturnsAsync(massCreateResult)
                     .Verifiable();
 
             // act
@@ -307,14 +311,16 @@ namespace Relativity.Sync.Tests.Integration
             {
                 Success = true
             };
-            _objectManagerMock.Setup(x => x.UpdateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
-                    It.Is<MassUpdateByObjectIdentifiersRequest>(request => request.Objects.Count == numberOfDocumentsToTag),
-                    It.Is<MassUpdateOptions>(options => options.UpdateBehavior == FieldUpdateBehavior.Merge), It.IsAny<CancellationToken>()))
+            _objectManagerMock.Setup(x => x.UpdateAsync(
+                _SOURCE_WORKSPACE_ARTIFACT_ID,
+                It.Is<MassUpdateByObjectIdentifiersRequest>(request => request.Objects.Count == numberOfDocumentsToTag),
+                It.Is<MassUpdateOptions>(options => options.UpdateBehavior == FieldUpdateBehavior.Merge), It.IsAny<CancellationToken>()))
                     .ReturnsAsync(taggingResult)
                     .Verifiable();
-            _objectManagerMock.Setup(x => x.UpdateAsync(_DESTINATION_WORKSPACE_ARTIFACT_ID,
-                    It.IsAny<MassUpdateByCriteriaRequest>(),
-                    It.Is<MassUpdateOptions>(options => options.UpdateBehavior == FieldUpdateBehavior.Merge), It.IsAny<CancellationToken>()))
+            _objectManagerMock.Setup(x => x.UpdateAsync(
+                _DESTINATION_WORKSPACE_ARTIFACT_ID,
+                It.IsAny<MassUpdateByCriteriaRequest>(),
+                It.Is<MassUpdateOptions>(options => options.UpdateBehavior == FieldUpdateBehavior.Merge), It.IsAny<CancellationToken>()))
                     .ReturnsAsync(taggingResult)
                     .Verifiable();
         }
@@ -350,10 +356,11 @@ namespace Relativity.Sync.Tests.Integration
                     };
                 }).ToList()
             };
-            _objectManagerMock.Setup(x => x.QueryAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
-                    It.Is<QueryRequest>(qr => qr.ObjectType.ArtifactTypeID == (int)ArtifactType.Document && qr.Condition.Contains("\"ArtifactID\" IN [")),
-                    It.IsAny<int>(),
-                    It.IsAny<int>()))
+            _objectManagerMock.Setup(x => x.QueryAsync(
+                _SOURCE_WORKSPACE_ARTIFACT_ID,
+                It.Is<QueryRequest>(qr => qr.ObjectType.ArtifactTypeID == (int)ArtifactType.Document && qr.Condition.Contains("\"ArtifactID\" IN [")),
+                It.IsAny<int>(),
+                It.IsAny<int>()))
                     .ReturnsAsync(folderQueryResult)
                     .Verifiable();
         }
@@ -374,11 +381,12 @@ namespace Relativity.Sync.Tests.Integration
                     }
                 }
             };
-            _objectManagerMock.Setup(x => x.QuerySlimAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
-                    It.Is<QueryRequest>(qr => qr.Condition.Contains("Control Number")),
-                    It.IsAny<int>(),
-                    It.IsAny<int>(),
-                    It.IsAny<CancellationToken>()))
+            _objectManagerMock.Setup(x => x.QuerySlimAsync(
+                _SOURCE_WORKSPACE_ARTIFACT_ID,
+                It.Is<QueryRequest>(qr => qr.Condition.Contains("Control Number")),
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<CancellationToken>()))
                     .ReturnsAsync(fieldQueryResult)
                     .Verifiable();
         }
@@ -397,10 +405,11 @@ namespace Relativity.Sync.Tests.Integration
                 }
             }).ToArray();
 
-            _objectManagerMock.Setup(x => x.RetrieveResultsBlockFromExportAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
-                    It.IsAny<Guid>(),
-                    documentIds.Count,
-                    It.IsAny<int>()))
+            _objectManagerMock.Setup(x => x.RetrieveResultsBlockFromExportAsync(
+                _SOURCE_WORKSPACE_ARTIFACT_ID,
+                It.IsAny<Guid>(),
+                documentIds.Count,
+                It.IsAny<int>()))
                     .ReturnsAsync(exportBlock)
                     .Verifiable();
 

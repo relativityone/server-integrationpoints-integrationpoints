@@ -62,10 +62,12 @@ namespace Relativity.Sync.Executors
             }
             catch (Exception emailRequestException)
             {
-                _logger.LogWarning(emailRequestException,
+                _logger.LogWarning(
+                    emailRequestException,
                     "Failed to send a notification email for job with ID {JobHistoryArtifactID} in workspace ID {WorkspaceArtifactID}.",
                     configuration.JobHistoryArtifactId, configuration.SourceWorkspaceArtifactId);
-                return ExecutionResult.Failure($"Failed to send a notification email for job with ID {configuration.JobHistoryArtifactId} in workspace ID {configuration.SourceWorkspaceArtifactId}.",
+                return ExecutionResult.Failure(
+                    $"Failed to send a notification email for job with ID {configuration.JobHistoryArtifactId} in workspace ID {configuration.SourceWorkspaceArtifactId}.",
                     emailRequestException);
             }
         }
@@ -161,7 +163,8 @@ namespace Relativity.Sync.Executors
             }
             catch (Exception readTagException)
             {
-                _logger.LogWarning(readTagException,
+                _logger.LogWarning(
+                    readTagException,
                     "Failed to retrieve the destination workspace tag information for source workspace {SourceWorkspace} and destination workspace {DestinationWorkspace}.",
                     configuration.SourceWorkspaceArtifactId, configuration.DestinationWorkspaceArtifactId);
             }
@@ -186,7 +189,8 @@ namespace Relativity.Sync.Executors
             }
             catch (Exception readErrorException)
             {
-                _logger.LogWarning(readErrorException,
+                _logger.LogWarning(
+                    readErrorException,
                     "Failed to retrieve the job history error information for source workspace {SourceWorkspace} and destination workspace {DestinationWorkspace}.",
                     configuration.SourceWorkspaceArtifactId, configuration.DestinationWorkspaceArtifactId);
             }

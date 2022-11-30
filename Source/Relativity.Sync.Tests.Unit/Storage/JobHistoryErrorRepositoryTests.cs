@@ -151,7 +151,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
             // Assert
             result.Should().HaveCount(itemLevelErrorsCount);
 
-            _objectManagerMock.Verify(x => x.CreateAsync(
+            _objectManagerMock.Verify(
+                x => x.CreateAsync(
                 It.Is<int>(y => y == _TEST_WORKSPACE_ARTIFACT_ID),
                 It.IsAny<MassCreateRequest>()), Times.Exactly(expectedCalls));
         }
@@ -173,7 +174,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
             // Assert
             action.Should().Throw<ServiceException>();
 
-            _objectManagerMock.Verify(x => x.CreateAsync(
+            _objectManagerMock.Verify(
+                x => x.CreateAsync(
                 It.Is<int>(y => y == _TEST_WORKSPACE_ARTIFACT_ID),
                 It.IsAny<MassCreateRequest>()), Times.Exactly(expectedCalls));
         }

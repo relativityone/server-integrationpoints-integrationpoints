@@ -327,7 +327,8 @@ namespace Relativity.Sync.Tests.System
 
             if (extractedTextFileSize > extractedTextSizeThreshold)
             {
-                actualExtractedTextObject.Should().BeAssignableTo<Stream>("document {0} has size {1}, which is above extracted text size threshold ({2}).",
+                actualExtractedTextObject.Should().BeAssignableTo<Stream>(
+                    "document {0} has size {1}, which is above extracted text size threshold ({2}).",
                     controlNumber, extractedTextFileSize, extractedTextSizeThreshold);
 
                 Stream actualExtractedTextStream = (Stream)actualExtractedTextObject;
@@ -335,7 +336,8 @@ namespace Relativity.Sync.Tests.System
             }
             else
             {
-                actualExtractedTextObject.Should().BeOfType<string>("document {0} has size {1}, which is below extracted text size threshold ({2}).",
+                actualExtractedTextObject.Should().BeOfType<string>(
+                    "document {0} has size {1}, which is below extracted text size threshold ({2}).",
                     controlNumber, extractedTextFileSize, extractedTextSizeThreshold);
 
                 string actualExtractedTextAsString = (string)actualExtractedTextObject;

@@ -40,8 +40,9 @@ namespace Relativity.Sync.Tests.System
                 new JobHistoryNameQuery(new ServiceFactoryStub(ServiceFactory), Logger);
 
             // Act
-            string sourceCaseTag = await jobHistoryNameQuery.GetJobNameAsync(_jobHistoryObjectTypeGuid,
-                    _jobHistory.ArtifactID, _sourceWorkspaceArtifactId, CancellationToken.None)
+            string sourceCaseTag = await jobHistoryNameQuery.GetJobNameAsync(
+                _jobHistoryObjectTypeGuid,
+                _jobHistory.ArtifactID, _sourceWorkspaceArtifactId, CancellationToken.None)
                 .ConfigureAwait(false);
 
             // Assert

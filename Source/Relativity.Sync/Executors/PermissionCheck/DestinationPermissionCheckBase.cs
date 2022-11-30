@@ -33,7 +33,8 @@ namespace Relativity.Sync.Executors.PermissionCheck
             return validationResult;
         }
 
-        protected abstract Task ValidateAsync(ValidationResult validationResult,
+        protected abstract Task ValidateAsync(
+            ValidationResult validationResult,
             IPermissionsCheckConfiguration configuration);
 
         private async Task<ValidationResult> ValidateUserHasPermissionToAccessWorkspaceAsync(IPermissionsCheckConfiguration configuration)
@@ -78,7 +79,8 @@ namespace Relativity.Sync.Executors.PermissionCheck
             return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage);
         }
 
-        protected async Task<ValidationResult> ValidateUserHasArtifactTypePermissionAsync(IPermissionsCheckConfiguration configuration,
+        protected async Task<ValidationResult> ValidateUserHasArtifactTypePermissionAsync(
+            IPermissionsCheckConfiguration configuration,
             int artifactTypeID, IEnumerable<PermissionType> artifactPermissions, string errorMessage)
         {
             var typeIdentifier = new ArtifactTypeIdentifier(artifactTypeID);

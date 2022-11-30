@@ -73,7 +73,8 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
                 .SetupDocumentConfiguration(
                     IdentifierFieldMap,
                     nativeFileCopyMode: ImportNativeFileCopyMode.DoNotImportNativeFiles)
-                .SetupContainer(b =>
+                .SetupContainer(
+                    b =>
                 {
                     b.RegisterInstance<IFileShareService>(fileShareMock);
                 }, _syncToggleProvider)
@@ -103,7 +104,8 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
                 .ImportData(dataSet: Dataset.NativesAndExtractedText, extractedText: true, natives: true)
                 .SetupDocumentConfiguration(
                     IdentifierFieldMap)
-                .SetupContainer(b =>
+                .SetupContainer(
+                    b =>
                 {
                     b.RegisterInstance<IFileShareService>(fileShareMock);
                     b.RegisterInstance<IAntiMalwareHandler>(malwareHandlerMock);
@@ -150,7 +152,8 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
                 .ForWorkspaces(_sourceWorkspaceName, _destinationWorkspaceName)
                 .ImportData(dataSet: Dataset.NativesAndExtractedText, extractedText: true, natives: true)
                 .SetupDocumentConfiguration(IdentifierFieldMap)
-                .SetupContainer(b =>
+                .SetupContainer(
+                    b =>
                 {
                     b.RegisterInstance<IFileShareService>(fileShareMock);
                 }, _syncToggleProvider)
@@ -189,7 +192,8 @@ namespace Relativity.Sync.Tests.System.ExecutorTests
                 .ForWorkspaces(_sourceWorkspaceName, _destinationWorkspaceName)
                 .ImportData(dataSet: Dataset.NativesAndExtractedText, extractedText: true, natives: true)
                 .SetupDocumentConfiguration(IdentifierFieldMap)
-                .SetupContainer(b =>
+                .SetupContainer(
+                    b =>
                 {
                     b.RegisterInstance<IFileShareService>(fileShareMock);
                 }, _syncToggleProvider)

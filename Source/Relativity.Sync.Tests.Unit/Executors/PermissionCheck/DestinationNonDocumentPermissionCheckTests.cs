@@ -184,7 +184,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 
             permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.IsAny<List<PermissionRef>>())).ReturnsAsync(permissionValuesDefault);
 
-            permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(),
+            permissionManager.Setup(x => x.GetPermissionSelectedAsync(
+                It.IsAny<int>(),
                 It.Is<List<PermissionRef>>(y => y.Any(z => z.PermissionID == _ALLOW_IMPORT_PERMISSION_ID)))).ReturnsAsync(permissionValuesDefault);
 
             // Act
@@ -210,11 +211,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
             permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.IsAny<List<PermissionRef>>())).ReturnsAsync(permissionValueDefault);
 
             var permissionToExport = new List<PermissionValue> { new PermissionValue { Selected = true, PermissionID = _ALLOW_IMPORT_PERMISSION_ID } };
-            permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(),
+            permissionManager.Setup(x => x.GetPermissionSelectedAsync(
+                It.IsAny<int>(),
                 It.Is<List<PermissionRef>>(y => y.Any(z => z.PermissionID == _ALLOW_IMPORT_PERMISSION_ID)))).ReturnsAsync(permissionToExport);
 
             var permissionToAdd = new List<PermissionValue> { new PermissionValue { Selected = true, ArtifactType = new ArtifactTypeIdentifier(_RDO_ARTIFACT_TYPE_ID), PermissionType = PermissionType.Add } };
-            permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(),
+            permissionManager.Setup(x => x.GetPermissionSelectedAsync(
+                It.IsAny<int>(),
                 It.Is<List<PermissionRef>>(y => y.Any(z => z.ArtifactType.ID == _RDO_ARTIFACT_TYPE_ID)))).ReturnsAsync(permissionToAdd);
 
             return permissionManager;

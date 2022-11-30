@@ -117,7 +117,8 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
             if (!string.IsNullOrEmpty(AppSettings.PerformanceResultsFilePath))
             {
-                File.WriteAllLines(AppSettings.PerformanceResultsFilePath,
+                File.WriteAllLines(
+                    AppSettings.PerformanceResultsFilePath,
                     TestTimes.Select(pair => $"{pair.Key};{pair.Value.TotalSeconds.ToString("0.##", CultureInfo.InvariantCulture)}\n"));
             }
 
@@ -234,7 +235,8 @@ namespace Relativity.Sync.Tests.Performance.Tests
         ///    Creates needed objects in Relativity
         /// </summary>
         /// <returns></returns>
-        public async Task SetupConfigurationAsync(string savedSearchName = "All Documents",
+        public async Task SetupConfigurationAsync(
+            string savedSearchName = "All Documents",
             IEnumerable<FieldMap> mapping = null, bool useRootWorkspaceFolder = true)
         {
             Logger.LogInformation("Setting up configuration");

@@ -35,7 +35,8 @@ namespace Relativity.Sync.Tests.System.ExecutorTests.TestsSetup
 
         public void AssertTotalTransferredItems(int expectedTotalCount)
         {
-            Assert.AreEqual(expectedTotalCount,
+            Assert.AreEqual(
+                expectedTotalCount,
                 GetTotalTransferredItemsCountAsync().GetAwaiter().GetResult());
         }
 
@@ -115,7 +116,7 @@ namespace Relativity.Sync.Tests.System.ExecutorTests.TestsSetup
 
                         batchesTransferredItemsCounts.Add((int)(transferredItemsCountQueryResult.Objects.Single()[TransferredItemsCountField].Value ?? default(int)));
                     }
-;
+                    ;
                 }
             }
 

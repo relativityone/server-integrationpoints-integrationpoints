@@ -37,7 +37,8 @@ namespace Relativity.Sync.Tests.System
                 DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID,
             };
 
-            configuration.SyncConfigurationArtifactId = Rdos.CreateSyncConfigurationRdoAsync(configuration.SourceWorkspaceArtifactId,
+            configuration.SyncConfigurationArtifactId = Rdos.CreateSyncConfigurationRdoAsync(
+                configuration.SourceWorkspaceArtifactId,
                 configuration, TestLogHelper.GetLogger()).GetAwaiter().GetResult();
 
             ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IPreValidationConfiguration>(configuration);
@@ -56,7 +57,8 @@ namespace Relativity.Sync.Tests.System
                 DestinationWorkspaceArtifactId = _NOT_EXISTING_WORKSPACE,
             };
 
-            configuration.SyncConfigurationArtifactId = Rdos.CreateSyncConfigurationRdoAsync(configuration.SourceWorkspaceArtifactId,
+            configuration.SyncConfigurationArtifactId = Rdos.CreateSyncConfigurationRdoAsync(
+                configuration.SourceWorkspaceArtifactId,
                 configuration, TestLogHelper.GetLogger()).GetAwaiter().GetResult();
 
             ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IPreValidationConfiguration>(configuration);

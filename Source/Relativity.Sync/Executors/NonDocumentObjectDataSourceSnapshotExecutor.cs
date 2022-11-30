@@ -17,7 +17,8 @@ namespace Relativity.Sync.Executors
         private readonly ISnapshotQueryRequestProvider _snapshotQueryRequestProvider;
         private readonly IAPILog _logger;
 
-        public NonDocumentObjectDataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactoryForUser,
+        public NonDocumentObjectDataSourceSnapshotExecutor(
+            ISourceServiceFactoryForUser serviceFactoryForUser,
             IJobProgressUpdaterFactory jobProgressUpdaterFactory,
             ISnapshotQueryRequestProvider snapshotQueryRequestProvider, IAPILog logger)
         {
@@ -27,7 +28,8 @@ namespace Relativity.Sync.Executors
             _logger = logger;
         }
 
-        public async Task<ExecutionResult> ExecuteAsync(INonDocumentDataSourceSnapshotConfiguration configuration,
+        public async Task<ExecutionResult> ExecuteAsync(
+            INonDocumentDataSourceSnapshotConfiguration configuration,
             CompositeCancellationToken token)
         {
             Task<ExecutionResult> allObjectsExportTask = InitializeAllObjectsExportAsync(configuration, token);
@@ -39,7 +41,8 @@ namespace Relativity.Sync.Executors
             return AggregateResults(allObjectsExportResult, objectToLinkExportResult);
         }
 
-        private ExecutionResult AggregateResults(ExecutionResult allObjectsExportResult,
+        private ExecutionResult AggregateResults(
+            ExecutionResult allObjectsExportResult,
             ExecutionResult objectToLinkExportResult)
         {
             return (allObjectsExportResult.Status, objectToLinkExportResult.Status) switch
@@ -47,7 +50,8 @@ namespace Relativity.Sync.Executors
                 (ExecutionStatus.Completed, ExecutionStatus.Completed) => ExecutionResult.Success(),
                 (ExecutionStatus.Failed, ExecutionStatus.Completed) => allObjectsExportResult,
                 (ExecutionStatus.Completed, ExecutionStatus.Failed) => objectToLinkExportResult,
-                _ => ExecutionResult.Failure("Failed to initialize objects exports",
+                _ => ExecutionResult.Failure(
+                    "Failed to initialize objects exports",
                     new AggregateException(allObjectsExportResult.Exception, objectToLinkExportResult.Exception))
             };
         }
@@ -76,7 +80,8 @@ namespace Relativity.Sync.Executors
                             .InitializeExportAsync(configuration.SourceWorkspaceArtifactId, queryRequest, 1)
                             .ConfigureAwait(false);
 
-                        _logger.LogInformation("Retrieved {objectsCount} objects from view {viewId} in step ObjectsToLink",
+                        _logger.LogInformation(
+                            "Retrieved {objectsCount} objects from view {viewId} in step ObjectsToLink",
                             exportResults.RecordCount, configuration.DataSourceArtifactId);
 
                         // if there are no matching records, no need to save the export
@@ -129,7 +134,8 @@ namespace Relativity.Sync.Executors
                         .InitializeExportAsync(configuration.SourceWorkspaceArtifactId, queryRequest, 1)
                         .ConfigureAwait(false);
 
-                    _logger.LogInformation("Retrieved {objectsCount} objects from view {viewId} in step AllObjects",
+                    _logger.LogInformation(
+                        "Retrieved {objectsCount} objects from view {viewId} in step AllObjects",
                         exportResults.RecordCount, configuration.DataSourceArtifactId);
                 }
 

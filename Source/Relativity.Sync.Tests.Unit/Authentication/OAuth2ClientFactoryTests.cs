@@ -44,7 +44,8 @@ namespace Relativity.Sync.Tests.Unit.Authentication
 
             // assert
             actualClient.Should().BeEquivalentTo(expectedClient);
-            clientManager.Verify(x => x.CreateAsync(It.IsAny<string>(), It.IsAny<OAuth2Flow>(), It.IsAny<IEnumerable<Uri>>(), It.IsAny<int>()),
+            clientManager.Verify(
+                x => x.CreateAsync(It.IsAny<string>(), It.IsAny<OAuth2Flow>(), It.IsAny<IEnumerable<Uri>>(), It.IsAny<int>()),
                 Times.Never);
         }
 
@@ -65,7 +66,8 @@ namespace Relativity.Sync.Tests.Unit.Authentication
 
             // assert
             actualClient.Should().BeEquivalentTo(expectedClient);
-            clientManager.Verify(x => x.CreateAsync(clientName, OAuth2Flow.ClientCredentials, It.IsAny<IEnumerable<Uri>>(), userId),
+            clientManager.Verify(
+                x => x.CreateAsync(clientName, OAuth2Flow.ClientCredentials, It.IsAny<IEnumerable<Uri>>(), userId),
                 Times.Once);
         }
 

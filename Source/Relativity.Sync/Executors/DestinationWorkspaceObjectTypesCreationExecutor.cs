@@ -70,12 +70,15 @@ namespace Relativity.Sync.Executors
         {
             ObjectTypeRequest sourceCaseObjectTypeRequest = GetObjectTypeRequest(_SOURCE_WORKSPACE_OBJECT_TYPE_NAME);
             sourceCaseObjectTypeRequest.ParentObjectType.Value.Name = "Workspace";
-            int sourceCaseObjectTypeArtifactId = await _syncObjectTypeManager.EnsureObjectTypeExistsAsync(destinationWorkspaceArtifactId,
+            int sourceCaseObjectTypeArtifactId = await _syncObjectTypeManager.EnsureObjectTypeExistsAsync(
+                destinationWorkspaceArtifactId,
                 SourceWorkspaceObjectTypeGuid, sourceCaseObjectTypeRequest).ConfigureAwait(false);
 
-            await _syncFieldManager.EnsureFieldsExistAsync(destinationWorkspaceArtifactId,
+            await _syncFieldManager.EnsureFieldsExistAsync(
+                destinationWorkspaceArtifactId,
                 GetSourceWorkspaceRdoFieldsRequests(sourceCaseObjectTypeArtifactId)).ConfigureAwait(false);
-            await _syncFieldManager.EnsureFieldsExistAsync(destinationWorkspaceArtifactId,
+            await _syncFieldManager.EnsureFieldsExistAsync(
+                destinationWorkspaceArtifactId,
                 GetDocumentFieldRequest(sourceCaseObjectTypeArtifactId, _SOURCE_WORKSPACE_OBJECT_TYPE_NAME, SourceWorkspaceFieldOnDocumentGuid)).ConfigureAwait(false);
             return sourceCaseObjectTypeArtifactId;
         }
@@ -87,9 +90,11 @@ namespace Relativity.Sync.Executors
             int sourceJobObjectTypeArtifactId = await _syncObjectTypeManager
                 .EnsureObjectTypeExistsAsync(destinationWorkspaceArtifactId, SourceJobObjectTypeGuid, sourceJobObjectTypeRequest).ConfigureAwait(false);
 
-            await _syncFieldManager.EnsureFieldsExistAsync(destinationWorkspaceArtifactId,
+            await _syncFieldManager.EnsureFieldsExistAsync(
+                destinationWorkspaceArtifactId,
                 GetSourceJobRdoFieldsRequests(sourceJobObjectTypeArtifactId)).ConfigureAwait(false);
-            await _syncFieldManager.EnsureFieldsExistAsync(destinationWorkspaceArtifactId,
+            await _syncFieldManager.EnsureFieldsExistAsync(
+                destinationWorkspaceArtifactId,
                 GetDocumentFieldRequest(sourceJobObjectTypeArtifactId, _SOURCE_JOB_OBJECT_TYPE_NAME, JobHistoryFieldOnDocumentGuid)).ConfigureAwait(false);
         }
 

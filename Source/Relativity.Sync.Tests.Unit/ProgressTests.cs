@@ -431,8 +431,10 @@ namespace Relativity.Sync.Tests.Unit
             progress.Count().Should().Be(0);
             progress.Should().BeEmpty();
 
-            _objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID,
-                    It.Is<QueryRequest>(qr => AssertQueryAllRequest(qr, syncConfigurationArtifactId)), 1, It.IsAny<int>()), Times.Once);
+            _objectManager.Verify(
+                x => x.QueryAsync(
+                _WORKSPACE_ID,
+                It.Is<QueryRequest>(qr => AssertQueryAllRequest(qr, syncConfigurationArtifactId)), 1, It.IsAny<int>()), Times.Once);
         }
 
         private bool AssertQueryAllRequest(QueryRequest queryRequest, int syncConfigurationArtifactId)

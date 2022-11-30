@@ -220,7 +220,8 @@ namespace Relativity.Sync.Storage
                                 $"No objects were created while Mass creation of item level errors. Message: {result.Message}");
                         }
 
-                        _logger.LogInformation("Successfully mass-created item level errors: {count}",
+                        _logger.LogInformation(
+                            "Successfully mass-created item level errors: {count}",
                             createJobHistoryErrorDtos.Count);
                         artifactIds = result.Objects.Select(x => x.ArtifactID);
                     }).ConfigureAwait(false);
@@ -234,7 +235,8 @@ namespace Relativity.Sync.Storage
                 }
                 catch (ServiceException ex) when (ex.Message.Contains(_REQUEST_ENTITY_TOO_LARGE_EXCEPTION))
                 {
-                    _logger.LogWarning(ex,
+                    _logger.LogWarning(
+                        ex,
                         "Job History Errors mass creation failed. Attempt to retry by creating errors in chunks");
                     return await MassCreateInBatchesAsync(workspaceArtifactId, jobHistoryArtifactId,
                         createJobHistoryErrorDtos).ConfigureAwait(false);
@@ -256,7 +258,8 @@ namespace Relativity.Sync.Storage
                     },
                     (ex, waitTime, retryCount, context) =>
                     {
-                        _logger.LogWarning(ex,
+                        _logger.LogWarning(
+                            ex,
                             "Encountered issue while Mass creation of item level errors, attempting to retry. Retry count: {retryCount} Wait time: {waitTimeMs} (ms)",
                             retryCount, waitTime.TotalMilliseconds);
                     });

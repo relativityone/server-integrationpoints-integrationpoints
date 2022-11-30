@@ -56,7 +56,8 @@ namespace Relativity.Sync.Tests.Unit
 
             _loggerFake = new Mock<IAPILog>();
 
-            _sut = new SyncRootNode(_jobEndMetricsServiceFactory.Object,
+            _sut = new SyncRootNode(
+                _jobEndMetricsServiceFactory.Object,
                 _jobStatusConsolidationCommandFake.Object,
                 _notificationCommandFake.Object,
                 _jobCleanupCommandFake.Object,

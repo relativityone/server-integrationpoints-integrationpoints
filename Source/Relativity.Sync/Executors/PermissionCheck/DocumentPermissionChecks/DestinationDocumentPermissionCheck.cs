@@ -27,7 +27,8 @@ namespace Relativity.Sync.Executors.PermissionCheck.DocumentPermissionChecks
 
         private readonly ISyncObjectTypeManager _syncObjectTypeManager;
 
-        public DestinationDocumentPermissionCheck(IDestinationServiceFactoryForUser destinationServiceFactory,
+        public DestinationDocumentPermissionCheck(
+            IDestinationServiceFactoryForUser destinationServiceFactory,
             ISyncObjectTypeManager syncObjectTypeManager, IAPILog logger) : base(destinationServiceFactory, logger)
         {
             _syncObjectTypeManager = syncObjectTypeManager;
@@ -55,7 +56,8 @@ namespace Relativity.Sync.Executors.PermissionCheck.DocumentPermissionChecks
                 PermissionType.Add).ConfigureAwait(false));
         }
 
-        private async Task<ValidationResult> ValidateFolderPermissionsUserHasArtifactInstancePermissionAsync(IPermissionsCheckConfiguration configuration,
+        private async Task<ValidationResult> ValidateFolderPermissionsUserHasArtifactInstancePermissionAsync(
+            IPermissionsCheckConfiguration configuration,
             int artifactTypeID, PermissionType artifactPermissions)
         {
             List<PermissionRef> permissionRefs = GetPermissionRefs(new ArtifactTypeIdentifier(artifactTypeID), artifactPermissions);
@@ -97,7 +99,8 @@ namespace Relativity.Sync.Executors.PermissionCheck.DocumentPermissionChecks
                 string insufficientPermissionsMessage = $"User does not have permissions to create tag: {objectTypeName}";
                 int objectArtifactTypeID = await _syncObjectTypeManager.GetObjectTypeArtifactTypeIdAsync(configuration.DestinationWorkspaceArtifactId, objectTypeQueryResult.Objects.First().ArtifactID).ConfigureAwait(false);
 
-                return await ValidateUserHasArtifactTypePermissionAsync(configuration,
+                return await ValidateUserHasArtifactTypePermissionAsync(
+                    configuration,
                     objectArtifactTypeID, new[] { PermissionType.View, PermissionType.Add },
                     insufficientPermissionsMessage).ConfigureAwait(false);
             }

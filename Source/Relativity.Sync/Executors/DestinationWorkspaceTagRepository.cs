@@ -42,7 +42,8 @@ namespace Relativity.Sync.Executors
 
         public async Task<DestinationWorkspaceTag> ReadAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, CancellationToken token)
         {
-            _logger.LogVerbose($"Reading {nameof(DestinationWorkspaceTag)}. Source workspace artifact ID: {{sourceWorkspaceArtifactId}} " +
+            _logger.LogVerbose(
+                $"Reading {nameof(DestinationWorkspaceTag)}. Source workspace artifact ID: {{sourceWorkspaceArtifactId}} " +
                 "Destination workspace artifact ID: {destinationWorkspaceArtifactId}",
                 sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
             RelativityObject tag = await QueryRelativityObjectTagAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, token).ConfigureAwait(false);
@@ -64,9 +65,10 @@ namespace Relativity.Sync.Executors
 
         public async Task<DestinationWorkspaceTag> CreateAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, string destinationWorkspaceName)
         {
-            _logger.LogVerbose($"Creating {nameof(DestinationWorkspaceTag)} in source workspace ID: {{sourceWorkspaceArtifactId}} " +
+            _logger.LogVerbose(
+                $"Creating {nameof(DestinationWorkspaceTag)} in source workspace ID: {{sourceWorkspaceArtifactId}} " +
                     "Destination workspace ID: {destinationWorkspaceArtifactId}",
-                    sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
+                sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
             string federatedInstanceName = await _federatedInstance.GetInstanceNameAsync().ConfigureAwait(false);
 
             int federatedInstanceId = await _federatedInstance.GetInstanceIdAsync().ConfigureAwait(false);

@@ -108,7 +108,8 @@ namespace Relativity.Sync.SyncConfiguration
                                                     throw new InvalidExpressionException(
                                                         "Expression must be a member expression");
 
-                throw GetExceptionForInvalidInput(memberExpression.Member.Name,
+                throw GetExceptionForInvalidInput(
+                    memberExpression.Member.Name,
                     typeof(TRdo).Name, guid.ToString());
             }
         }

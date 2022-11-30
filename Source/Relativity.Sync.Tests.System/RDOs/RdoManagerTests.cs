@@ -472,7 +472,8 @@ namespace Relativity.Sync.Tests.System.RDOs
             switch (fieldInfo.Type)
             {
                 case RdoFieldType.LongText:
-                    return fieldManager.CreateLongTextFieldAsync(workspaceId,
+                    return fieldManager.CreateLongTextFieldAsync(
+                        workspaceId,
                         new LongTextFieldRequest
                         {
                             FilterType = FilterType.TextBox,
@@ -481,7 +482,8 @@ namespace Relativity.Sync.Tests.System.RDOs
                             IsRequired = fieldInfo.IsRequired
                         });
                 case RdoFieldType.FixedLengthText:
-                    return fieldManager.CreateFixedLengthFieldAsync(workspaceId,
+                    return fieldManager.CreateFixedLengthFieldAsync(
+                        workspaceId,
                         new FixedLengthFieldRequest
                         {
                             FilterType = FilterType.TextBox,
@@ -491,7 +493,8 @@ namespace Relativity.Sync.Tests.System.RDOs
                             IsRequired = fieldInfo.IsRequired
                         });
                 case RdoFieldType.WholeNumber:
-                    return fieldManager.CreateWholeNumberFieldAsync(workspaceId,
+                    return fieldManager.CreateWholeNumberFieldAsync(
+                        workspaceId,
                         new WholeNumberFieldRequest
                         {
                             FilterType = FilterType.TextBox,
@@ -501,7 +504,8 @@ namespace Relativity.Sync.Tests.System.RDOs
                         });
 
                 case RdoFieldType.YesNo:
-                    return fieldManager.CreateYesNoFieldAsync(workspaceId,
+                    return fieldManager.CreateYesNoFieldAsync(
+                        workspaceId,
                         new YesNoFieldRequest
                         {
                             FilterType = FilterType.TextBox,

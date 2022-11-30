@@ -134,7 +134,8 @@ namespace Relativity.Sync.Tests.System
             }
         }
 
-        private async Task CreateBatchesAsync(int workspaceArtifactId,
+        private async Task CreateBatchesAsync(
+            int workspaceArtifactId,
             int syncConfigurationArtifactId,
             int batchCount,
             int transferredItemsCountPerBatch,
@@ -145,7 +146,8 @@ namespace Relativity.Sync.Tests.System
             IEnumerable<Task<IBatch>> batchCreationTasks = Enumerable
                 .Range(0, batchCount)
                 .Select(i => _batchRepository
-                    .CreateAsync(workspaceArtifactId,
+                    .CreateAsync(
+                        workspaceArtifactId,
                         syncConfigurationArtifactId,
                         ExportRunId,
                         itemsCountPerBatch,

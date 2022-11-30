@@ -34,7 +34,8 @@ namespace Relativity.Sync.Tests.Unit
             instance.Report(SyncJobState.Start("Test"));
 
             // ASSERT
-            logger.Verify(x => x.LogWarning(It.IsAny<InvalidOperationException>(),
+            logger.Verify(x => x.LogWarning(
+                It.IsAny<InvalidOperationException>(),
                 It.Is<string>(s => s.Contains("IProgress")),
                 It.IsAny<object[]>()));
         }

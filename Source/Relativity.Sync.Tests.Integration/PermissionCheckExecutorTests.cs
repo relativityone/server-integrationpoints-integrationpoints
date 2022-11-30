@@ -97,7 +97,8 @@ namespace Relativity.Sync.Tests.Integration
 
             const int tagArtifactId = 111;
             _objectManagerFake.Setup(x =>
-                    x.QueryAsync(It.IsAny<int>(),
+                    x.QueryAsync(
+                        It.IsAny<int>(),
                         It.Is<QueryRequest>(qr => qr.ObjectType.ArtifactTypeID == (int)ArtifactType.ObjectType),
                         It.IsAny<int>(), It.IsAny<int>()))
                         .ReturnsAsync(new QueryResult()
@@ -137,7 +138,8 @@ namespace Relativity.Sync.Tests.Integration
         {
             // Arrange
             var permissionToImport = new List<PermissionValue> { new PermissionValue { Selected = false, PermissionID = _ALLOW_IMPORT_PERMISSION_ID } };
-            _permissionManagerFake.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(),
+            _permissionManagerFake.Setup(x => x.GetPermissionSelectedAsync(
+                It.IsAny<int>(),
                 It.Is<List<PermissionRef>>(y => y.Any(z => z.PermissionID == _ALLOW_IMPORT_PERMISSION_ID)))).ReturnsAsync(permissionToImport);
 
             IExecutor<IPermissionsCheckConfiguration> instance = _container.Resolve<IExecutor<IPermissionsCheckConfiguration>>();
@@ -164,7 +166,8 @@ namespace Relativity.Sync.Tests.Integration
             _permissionManagerFake.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.PermissionID == _EDIT_DOCUMENT_PERMISSION_ID))))
                 .ReturnsAsync(permissionToEdit);
             var permissionToImport = new List<PermissionValue> { new PermissionValue { Selected = true, PermissionID = _ALLOW_IMPORT_PERMISSION_ID } };
-            _permissionManagerFake.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(),
+            _permissionManagerFake.Setup(x => x.GetPermissionSelectedAsync(
+                It.IsAny<int>(),
                 It.Is<List<PermissionRef>>(y => y.Any(z => z.PermissionID == _ALLOW_IMPORT_PERMISSION_ID)))).ReturnsAsync(permissionToImport);
 
             return _permissionManagerFake;

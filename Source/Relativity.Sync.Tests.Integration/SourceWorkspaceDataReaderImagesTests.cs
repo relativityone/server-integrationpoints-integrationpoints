@@ -22,7 +22,8 @@ namespace Relativity.Sync.Tests.Integration
             const int blockSize = 300;
             SetUp(batchSize);
 
-            DocumentImportJob importData = CreateDefaultDocumentImportJob(batchSize,
+            DocumentImportJob importData = CreateDefaultDocumentImportJob(
+                batchSize,
                 (artifactId, values) => CreateDocumentForImagesTransfer(artifactId, values, 1),
                 DefaultImageFieldConfiguration);
 
@@ -63,7 +64,8 @@ namespace Relativity.Sync.Tests.Integration
 
             SetUp(numberOfDocuments);
 
-            DocumentImportJob importData = CreateDefaultDocumentImportJob(numberOfDocuments,
+            DocumentImportJob importData = CreateDefaultDocumentImportJob(
+                numberOfDocuments,
                 (artifactId, values) => CreateDocumentForImagesTransfer(artifactId, values, numberOfImages),
                 DefaultImageFieldConfiguration);
 
@@ -108,7 +110,8 @@ namespace Relativity.Sync.Tests.Integration
 
         protected override IBatchDataReaderBuilder CreateBatchDataReaderBuilder()
         {
-            return new ImageBatchDataReaderBuilder(_container.Resolve<IFieldManager>(),
+            return new ImageBatchDataReaderBuilder(
+                _container.Resolve<IFieldManager>(),
                 _container.Resolve<IExportDataSanitizer>(), new EmptyLogger());
         }
     }

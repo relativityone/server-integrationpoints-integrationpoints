@@ -71,7 +71,8 @@ namespace Relativity.Sync.Tests.System
             Mock<IUserContextConfiguration> userContextConfiguration = new Mock<IUserContextConfiguration>();
             userContextConfiguration.SetupGet(x => x.ExecutingUserId).Returns(_userService.GetByEmail(userEmail).ArtifactID);
 
-            IAuthTokenGenerator authTokenGenerator = new OAuth2TokenGenerator(new OAuth2ClientFactory(_serviceFactoryForAdmin, new EmptyLogger()),
+            IAuthTokenGenerator authTokenGenerator = new OAuth2TokenGenerator(
+                new OAuth2ClientFactory(_serviceFactoryForAdmin, new EmptyLogger()),
                 new TokenProviderFactoryFactory(), AppSettings.RelativityUrl, new EmptyLogger());
             PermissionRef permissionRef = new PermissionRef
             {

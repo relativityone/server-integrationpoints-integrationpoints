@@ -18,7 +18,8 @@ namespace Relativity.Sync.Nodes
         private readonly IJobEndMetricsServiceFactory _jobEndMetricsServiceFactory;
         private readonly IAPILog _logger;
 
-        public SyncRootNode(IJobEndMetricsServiceFactory jobEndMetricsServiceFactory,
+        public SyncRootNode(
+            IJobEndMetricsServiceFactory jobEndMetricsServiceFactory,
             ICommand<IJobStatusConsolidationConfiguration> jobStatusConsolidationCommand,
             ICommand<INotificationConfiguration> notificationCommand,
             ICommand<IJobCleanupConfiguration> jobCleanupCommand,
@@ -39,7 +40,8 @@ namespace Relativity.Sync.Nodes
             ExecutionResult jobStatusConsolidationExecutionResult = RunJobStatusConsolidationAsync(context).GetAwaiter().GetResult();
             LogFailures(jobStatusConsolidationExecutionResult);
 
-            ExecutionResult[] executionResults = ExecuteTasksInParallelWithContextSync(context,
+            ExecutionResult[] executionResults = ExecuteTasksInParallelWithContextSync(
+                context,
                 ReportJobEndMetricsAsync,
                 RunNotificationCommandAsync,
                 RunJobAutomatedWorkflowTriggerAsync);
@@ -60,7 +62,8 @@ namespace Relativity.Sync.Nodes
             }
         }
 
-        private static ExecutionResult[] ExecuteTasksInParallelWithContextSync(IExecutionContext<SyncExecutionContext> context,
+        private static ExecutionResult[] ExecuteTasksInParallelWithContextSync(
+            IExecutionContext<SyncExecutionContext> context,
             params Func<IExecutionContext<SyncExecutionContext>, Task<ExecutionResult>>[] tasks)
         {
             return Task.WhenAll(tasks.Select(task => task(context))).GetAwaiter().GetResult();

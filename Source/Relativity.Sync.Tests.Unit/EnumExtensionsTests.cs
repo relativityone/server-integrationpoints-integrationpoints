@@ -23,7 +23,8 @@ namespace Relativity.Sync.Tests.Unit
         public void GetEnumFromDescriptionThrowsWhenNotEnumTypeTest()
         {
             // Act & Assert
-            Assert.Throws<InvalidOperationException>(() => string.Empty.GetEnumFromDescription<Type>(),
+            Assert.Throws<InvalidOperationException>(
+                () => string.Empty.GetEnumFromDescription<Type>(),
                 $"The type specified is not an enum type: {nameof(Type)}.");
         }
 
@@ -34,7 +35,8 @@ namespace Relativity.Sync.Tests.Unit
             string testDescription = "Append Only";
 
             // Act & Assert
-            Assert.Throws<InvalidOperationException>(() => testDescription.GetEnumFromDescription<ImportOverwriteMode>(),
+            Assert.Throws<InvalidOperationException>(
+                () => testDescription.GetEnumFromDescription<ImportOverwriteMode>(),
                 $"The description could not be converted to the proper enum value: {testDescription}.");
         }
 
@@ -45,7 +47,8 @@ namespace Relativity.Sync.Tests.Unit
             string testDescription = string.Empty;
 
             // Act & Assert
-            Assert.Throws<InvalidOperationException>(() => testDescription.GetEnumFromDescription<FieldOverlayBehavior>(),
+            Assert.Throws<InvalidOperationException>(
+                () => testDescription.GetEnumFromDescription<FieldOverlayBehavior>(),
                 $"The description could not be converted to the proper enum value: {testDescription}.");
         }
     }

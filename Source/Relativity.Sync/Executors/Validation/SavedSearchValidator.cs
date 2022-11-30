@@ -30,7 +30,8 @@ namespace Relativity.Sync.Executors.Validation
 
         public async Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token)
         {
-            _logger.LogInformation("Validating saved search artifact ID: {savedSearchArtifactId} in source workspace artifact ID: {sourceWorkspaceArtifactId}",
+            _logger.LogInformation(
+                "Validating saved search artifact ID: {savedSearchArtifactId} in source workspace artifact ID: {sourceWorkspaceArtifactId}",
                 configuration.SavedSearchArtifactId, configuration.SourceWorkspaceArtifactId);
 
             ValidationResult validationResult = new ValidationResult();

@@ -104,7 +104,8 @@ namespace Relativity.Sync.Tests.Integration
             return batcher;
         }
 
-        protected static DocumentImportJob CreateDefaultDocumentImportJob(int batchSize,
+        protected static DocumentImportJob CreateDefaultDocumentImportJob(
+            int batchSize,
             Func<int, HashSet<FieldConfiguration>, Document> documentFactory, HashSet<FieldConfiguration> fields)
         {
             IList<FieldMap> fieldMappings = CreateFieldMappings(fields);

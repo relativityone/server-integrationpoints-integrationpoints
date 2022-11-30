@@ -119,7 +119,8 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
             using (IObjectManager objectManager = ServiceFactory.CreateProxy<IObjectManager>())
             {
-                QueryResultSlim result = await objectManager.QuerySlimAsync(workspaceId,
+                QueryResultSlim result = await objectManager.QuerySlimAsync(
+                    workspaceId,
                     new QueryRequest()
                     {
                         ObjectType = entityObjectType,
@@ -155,7 +156,8 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
             using (IObjectManager objectManager = ServiceFactory.CreateProxy<IObjectManager>())
             {
-                QueryResultSlim result = await objectManager.QuerySlimAsync(workspaceId,
+                QueryResultSlim result = await objectManager.QuerySlimAsync(
+                    workspaceId,
                     new QueryRequest()
                     {
                         ObjectType = entityObjectType,

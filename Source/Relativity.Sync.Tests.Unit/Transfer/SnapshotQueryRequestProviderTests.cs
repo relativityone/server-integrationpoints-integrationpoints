@@ -338,7 +338,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             yield return new FieldInfoDto(SpecialFieldType.None, "Link 2", "Link 2", false, false);
         }
 
-        private void VerifyQueryRequest(QueryRequest actualRequest,
+        private void VerifyQueryRequest(
+            QueryRequest actualRequest,
             string expectedCondition, IEnumerable<FieldRef> expectedFields)
         {
             actualRequest.ObjectType.ArtifactTypeID.Should().Be(_configurationFake.Object.RdoArtifactTypeId);

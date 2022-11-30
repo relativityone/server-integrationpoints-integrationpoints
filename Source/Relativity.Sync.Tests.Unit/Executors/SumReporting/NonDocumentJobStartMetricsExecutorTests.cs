@@ -213,7 +213,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            _syncMetricsMock.Verify(x => x.Send(It.Is<JobResumeMetric>(metric =>
+            _syncMetricsMock.Verify(
+                x => x.Send(It.Is<JobResumeMetric>(metric =>
                 metric.Type == TelemetryConstants.PROVIDER_NAME)), Times.Once);
             _syncMetricsMock.Verify(x => x.Send(It.IsAny<NonDocumentJobStartMetric>()), Times.Never);
 

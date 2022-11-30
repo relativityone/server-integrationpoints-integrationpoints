@@ -145,7 +145,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
             // Assert
             read.Should().BeFalse();
-            itemLevelErrorHandlerMock.Verify(x => x(It.IsAny<string>(), It.Is<string>(message =>
+            itemLevelErrorHandlerMock.Verify(
+                x => x(It.IsAny<string>(), It.Is<string>(message =>
                 message.Contains($"Special fields builders should all return equal number of field values, but was: ImageFileName ({imageFileNameCount}),ImageFileLocation ({imageFileLocationCount})"))),
                 Times.Exactly(numberOfDocuments));
         }

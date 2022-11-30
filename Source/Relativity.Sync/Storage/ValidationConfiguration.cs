@@ -26,9 +26,10 @@ namespace Relativity.Sync.Storage
             {
                 using (var objectManager = serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false).GetAwaiter().GetResult())
                 {
-                    return objectManager.GetObjectNameAsync(syncJobParameters.WorkspaceId,
-                            _cache.GetFieldValue(x => x.JobHistoryId),
-                            _cache.GetFieldValue(x => x.JobHistoryType))
+                    return objectManager.GetObjectNameAsync(
+                        syncJobParameters.WorkspaceId,
+                        _cache.GetFieldValue(x => x.JobHistoryId),
+                        _cache.GetFieldValue(x => x.JobHistoryType))
                         .GetAwaiter().GetResult();
                 }
             });

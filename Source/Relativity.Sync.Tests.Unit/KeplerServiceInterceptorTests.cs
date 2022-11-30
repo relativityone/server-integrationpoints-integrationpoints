@@ -246,7 +246,9 @@ namespace Relativity.Sync.Tests.Unit
             await _sut.ExecuteAsync().ConfigureAwait(false);
 
             // ASSERT
-            _syncLogMock.Verify(m => m.LogWarning(exception,
+            _syncLogMock.Verify(
+                m => m.LogWarning(
+                exception,
                 It.Is<string>(messageTemplate => messageTemplate.Contains("{IKepler}")),
                 It.Is<object[]>(propertyValues => propertyValues.Contains(nameof(IStubForInterception)))),
                 Times.Exactly(expectedRetries));
@@ -279,7 +281,8 @@ namespace Relativity.Sync.Tests.Unit
             await _sut.ExecuteAsync().ConfigureAwait(false);
 
             // ASSERT
-            _syncLogMock.Verify(m => m.LogInformation(
+            _syncLogMock.Verify(
+                m => m.LogInformation(
                 It.Is<string>(messageTemplate => messageTemplate.Contains("{IKepler}")),
                 It.Is<object[]>(propertyValues => propertyValues.Contains(nameof(IStubForInterception)))),
                 Times.Once);

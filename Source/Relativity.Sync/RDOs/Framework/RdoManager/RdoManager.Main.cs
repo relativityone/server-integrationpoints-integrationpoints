@@ -79,7 +79,8 @@ namespace Relativity.Sync.RDOs.Framework
             using (var objectManager = await _serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
             {
                 await objectManager.UpdateAsync(workspaceId, request).ConfigureAwait(false);
-                _logger.LogInformation("Set {valuesCount} fields on object {artifactId} in workspace {workspaceId}",
+                _logger.LogInformation(
+                    "Set {valuesCount} fields on object {artifactId} in workspace {workspaceId}",
                     typeInfo.Fields.Count, rdo.ArtifactId, workspaceId);
             }
         }
@@ -105,7 +106,8 @@ namespace Relativity.Sync.RDOs.Framework
                 await objectManager.UpdateAsync(workspaceId, request).ConfigureAwait(false);
                 fieldInfo.PropertyInfo.SetValue(rdo, value);
 
-                _logger.LogInformation("Set field {field} on object {artifactId} in workspace {workspaceId}",
+                _logger.LogInformation(
+                    "Set field {field} on object {artifactId} in workspace {workspaceId}",
                     fieldGuid, rdo.ArtifactId, workspaceId);
             }
         }
@@ -261,7 +263,8 @@ namespace Relativity.Sync.RDOs.Framework
                    text.EndsWith(longTextTruncateMark, StringComparison.InvariantCulture);
         }
 
-        private IEnumerable<FieldRefValuePair> GetFieldRefValuePairsForSettingValue(RdoFieldInfo fieldInfo,
+        private IEnumerable<FieldRefValuePair> GetFieldRefValuePairsForSettingValue(
+            RdoFieldInfo fieldInfo,
             object value)
         {
             return new[]
@@ -277,7 +280,8 @@ namespace Relativity.Sync.RDOs.Framework
             };
         }
 
-        private IEnumerable<FieldRefValuePair> GetFieldRefValuePairsForSettingValues<TRdo>(TRdo rdo,
+        private IEnumerable<FieldRefValuePair> GetFieldRefValuePairsForSettingValues<TRdo>(
+            TRdo rdo,
             RdoFieldInfo[] fields)
             where TRdo : IRdoType
         {

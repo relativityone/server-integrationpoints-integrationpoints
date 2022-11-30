@@ -66,7 +66,8 @@ namespace Relativity.Sync.Logging
                         int batchCount = Math.Min(LogBatchSize, items.Count - i);
                         List<int> batch = items.GetRange(i, batchCount);
 
-                        _logger.LogWarning("Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
+                        _logger.LogWarning(
+                            "Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
                             keyValuePair.Key,
                             string.Join(", ", batch));
 

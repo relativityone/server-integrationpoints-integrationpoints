@@ -17,7 +17,8 @@ namespace Relativity.Sync.Tests.Unit
             CancellationTokenSource drainStopCancellationTokenSource = new CancellationTokenSource();
 
             CompositeCancellationToken sut =
-                new CompositeCancellationToken(cancelCancellationTokenSource.Token,
+                new CompositeCancellationToken(
+                    cancelCancellationTokenSource.Token,
                     drainStopCancellationTokenSource.Token, new EmptyLogger());
 
             // Act & Assert
@@ -39,7 +40,8 @@ namespace Relativity.Sync.Tests.Unit
             CancellationTokenSource drainStopCancellationTokenSource = new CancellationTokenSource();
 
             CompositeCancellationToken sut =
-                new CompositeCancellationToken(cancelCancellationTokenSource.Token,
+                new CompositeCancellationToken(
+                    cancelCancellationTokenSource.Token,
                     drainStopCancellationTokenSource.Token, new EmptyLogger());
 
             // Act
@@ -57,7 +59,8 @@ namespace Relativity.Sync.Tests.Unit
             CancellationTokenSource drainStopCancellationTokenSource = new CancellationTokenSource();
 
             CompositeCancellationToken sut =
-                new CompositeCancellationToken(cancelCancellationTokenSource.Token,
+                new CompositeCancellationToken(
+                    cancelCancellationTokenSource.Token,
                     drainStopCancellationTokenSource.Token, new EmptyLogger());
 
             // Act

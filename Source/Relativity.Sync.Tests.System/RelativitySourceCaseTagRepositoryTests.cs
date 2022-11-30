@@ -48,7 +48,8 @@ namespace Relativity.Sync.Tests.System
             RelativitySourceCaseTag createdSourceCaseTag = await repository.CreateAsync(_destinationWorkspaceArtifactId, relativitySourceCaseTag);
 
             // Act
-            RelativitySourceCaseTag sourceCaseTag = await repository.ReadAsync(_destinationWorkspaceArtifactId,
+            RelativitySourceCaseTag sourceCaseTag = await repository.ReadAsync(
+                _destinationWorkspaceArtifactId,
                 _sourceWorkspaceArtifactId, _INSTANCE_NAME, CancellationToken.None)
                 .ConfigureAwait(false);
 

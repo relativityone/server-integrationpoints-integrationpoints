@@ -103,7 +103,8 @@ namespace Relativity.Sync.Tests.Integration
             const int batchArtifactId = 1;
 
             T snapshotPartitionConfiguration =
-                GetSnapshotPartitionConfigurationMockAndSetup(batchSize,
+                GetSnapshotPartitionConfigurationMockAndSetup(
+                    batchSize,
                     numberOfItems);
 
             _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), 1, 1))
@@ -153,7 +154,8 @@ namespace Relativity.Sync.Tests.Integration
             Assert.AreEqual("Cannot read last batch.", actualResult.Message);
 
             Mock.Verify(_objectManager);
-            _syncLog.Verify(x => x.LogError(
+            _syncLog.Verify(
+                x => x.LogError(
                 It.IsAny<NotAuthorizedException>(),
                 It.Is<string>(y => y.StartsWith("Unable to retrieve last batch", StringComparison.InvariantCulture)),
                 It.IsAny<object[]>()), Times.Once);
@@ -205,7 +207,8 @@ namespace Relativity.Sync.Tests.Integration
 
             Mock.Verify(_objectManager);
             Mock.Verify(_rdoManagerMock);
-            _syncLog.Verify(x => x.LogError(
+            _syncLog.Verify(
+                x => x.LogError(
                 It.IsAny<NotAuthorizedException>(),
                 It.Is<string>(y => y.StartsWith("Unable to create batch", StringComparison.InvariantCulture)),
                 It.IsAny<object[]>()), Times.Once);

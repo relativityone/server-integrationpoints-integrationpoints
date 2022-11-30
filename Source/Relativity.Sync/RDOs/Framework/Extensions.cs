@@ -12,7 +12,8 @@ namespace Relativity.Sync.RDOs.Framework
             return provider.GetValue<TRdo>().TypeGuid;
         }
 
-        public static Guid GetGuidFromFieldExpression<TRdo, T>(this IRdoGuidProvider provider,
+        public static Guid GetGuidFromFieldExpression<TRdo, T>(
+            this IRdoGuidProvider provider,
             Expression<Func<TRdo, T>> expression) where TRdo : IRdoType
         {
             var memberExpression =

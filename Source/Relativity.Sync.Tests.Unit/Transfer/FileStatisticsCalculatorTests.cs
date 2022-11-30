@@ -339,7 +339,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
         private void VerifyCalculatedResultsWasSaved(List<File> files)
         {
-            _rdoManagerMock.Verify(x => x.SetValuesAsync(_WORKSPACE_ID,
+            _rdoManagerMock.Verify(x => x.SetValuesAsync(
+                _WORKSPACE_ID,
                 It.Is<SyncStatisticsRdo>(s =>
                     s.RunId == _EXPORT_RUN_ID &&
                     s.CalculatedDocuments == files.Count &&
@@ -349,7 +350,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
         private void VerifyBatchesWasRetrieved(int batchesCount)
         {
-            _objectManagerMock.Verify(x => x.RetrieveResultsBlockFromExportAsync(_WORKSPACE_ID, _EXPORT_RUN_ID,
+            _objectManagerMock.Verify(
+                x => x.RetrieveResultsBlockFromExportAsync(_WORKSPACE_ID, _EXPORT_RUN_ID,
                 It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(batchesCount));
         }
 

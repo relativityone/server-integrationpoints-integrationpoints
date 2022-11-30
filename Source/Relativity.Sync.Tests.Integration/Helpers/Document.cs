@@ -21,7 +21,8 @@ namespace Relativity.Sync.Tests.Integration.Helpers
 #pragma warning disable RG2011 // Avoid methods with more than 5 arguments, use DTO-style objects or structures for passing multiple arguments
 
         // Using this method spec. to avoid using DTOs; will make testing easier
-        public static Document Create(int artifactId,
+        public static Document Create(
+            int artifactId,
             string nativeFileLocation,
             string nativeFileFilename,
             long nativeFileSize,
@@ -37,7 +38,8 @@ namespace Relativity.Sync.Tests.Integration.Helpers
             };
         }
 
-        public static Document Create(int artifactId,
+        public static Document Create(
+            int artifactId,
             IEnumerable<ImageFile> images,
             string workspaceFolderPath,
             params FieldValue[] fieldValues)

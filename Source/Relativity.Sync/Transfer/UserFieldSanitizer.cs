@@ -128,7 +128,8 @@ namespace Relativity.Sync.Transfer
 
                 if (instanceUserArtifactId == 0)
                 {
-                    _log.LogWarning("Invalid InstanceUserArtifactID: {instanceUserArtifactId} was returned for UserArtifactId {userArtifactId}",
+                    _log.LogWarning(
+                        "Invalid InstanceUserArtifactID: {instanceUserArtifactId} was returned for UserArtifactId {userArtifactId}",
                         instanceUserArtifactId, userArtifactId);
                     return userArtifactId;
                 }

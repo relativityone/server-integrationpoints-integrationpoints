@@ -129,7 +129,8 @@ namespace Relativity.Sync.SyncConfiguration
             {
                 using (var fieldManager = await ServiceFactoryForAdmin.CreateProxyAsync<IFieldManager>())
                 {
-                    var folderPathField = await fieldManager.ReadAsync(SyncContext.SourceWorkspaceId,
+                    var folderPathField = await fieldManager.ReadAsync(
+                        SyncContext.SourceWorkspaceId,
                         _destinationFolderStructureOptions.FolderPathSourceFieldId).ConfigureAwait(false);
 
                     if (folderPathField == null)
