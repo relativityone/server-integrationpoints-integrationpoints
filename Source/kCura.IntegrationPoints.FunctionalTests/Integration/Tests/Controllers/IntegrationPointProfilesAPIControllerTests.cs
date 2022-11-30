@@ -43,8 +43,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 
             // Assert
             var objectContent = response.Content as ObjectContent;
-            var result = (List<IntegrationPointProfileSlimDto>)objectContent?.Value;
-            var expected = SourceWorkspace.IntegrationPointProfiles.Select(x => x.ToIntegrationPointProfileDto());
+            var result = (List<IntegrationPointProfileWebModel>)objectContent?.Value;
+            var expected = SourceWorkspace.IntegrationPointProfiles.Select(x => x.ToIntegrationPointProfileDto().ToWebModel()).ToList();
+            expected.ForEach(x =>
+            {
+                x.Map = null;
+                x.SourceConfiguration = null;
+                x.Destination = null;
+            });
 
             result.ShouldAllBeEquivalentTo(expected);
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -103,7 +109,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             var response = sut.GetByType(integrationPointProfile.Type);
 
             // Assert
-            var result = FormatResponseToGetValueFromObjectContent<IEnumerable<IntegrationPointProfileSlimDto>>(response);
+            var result = FormatResponseToGetValueFromObjectContent<IEnumerable<IntegrationPointProfileWebModel>>(response);
 
             AssertIntegrationPointProfilesSimpleMatches(integrationPointProfile, result.First());
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -228,6 +234,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 
             return sut;
         }
+
         private void AssertFieldDeserializationDoesNotThrow<T>(string fieldTextValue)
         {
             Action deserializeSourceConfig = () => Serializer.Deserialize<T>(fieldTextValue);
@@ -241,9 +248,9 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             return result;
         }
 
-        private void AssertIntegrationPointProfilesSimpleMatches(IntegrationPointProfileTest initial, IntegrationPointProfileSlimDto result)
+        private void AssertIntegrationPointProfilesSimpleMatches(IntegrationPointProfileTest initial, IntegrationPointProfileWebModel result)
         {
-            result.ArtifactId.Should().Be(initial.ArtifactId);
+            result.ArtifactID.Should().Be(initial.ArtifactId);
             result.Name.Should().Be(initial.Name);
             result.SourceProvider.Should().Be(initial.SourceProvider);
             result.DestinationProvider.Should().Be(initial.DestinationProvider);
