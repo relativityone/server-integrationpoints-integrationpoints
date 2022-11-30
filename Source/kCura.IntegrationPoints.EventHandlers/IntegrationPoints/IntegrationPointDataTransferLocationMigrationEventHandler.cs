@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
             {
                 if (_dataTransferLocationMigrationHelper == null)
                 {
-                    ISerializer serializer = new JSONSerializer();
+                    ISerializer serializer = new IntegrationPointSerializer(Helper.GetLoggerFactory().GetLogger());
                     _dataTransferLocationMigrationHelper = new DataTransferLocationMigrationHelper(serializer);
                 }
 

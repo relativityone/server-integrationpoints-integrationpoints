@@ -10,6 +10,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Authentication.WebApi;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Logging;
 using kCura.IntegrationPoints.Domain.Authentication;
 using kCura.IntegrationPoints.Domain.Managers;
@@ -72,8 +73,7 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
 
         private static void RegisterSerializer(WindsorContainer windsorContainer)
         {
-            JSONSerializer ser = new JSONSerializer();
-            windsorContainer.Register(Component.For<ISerializer>().Instance(ser));
+            windsorContainer.Register(Component.For<ISerializer>().Instance(IntegrationPointSerializer.CreateWithoutLogger()));
         }
 
         public static void RegisterSyncClasses(WindsorContainer windsorContainer)

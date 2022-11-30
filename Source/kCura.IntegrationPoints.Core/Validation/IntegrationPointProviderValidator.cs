@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
@@ -19,7 +20,7 @@ namespace kCura.IntegrationPoints.Core.Validation
     {
         private readonly IRelativityObjectManagerFactory _relativityObjectManagerFactory;
 
-        public IntegrationPointProviderValidator(IEnumerable<IValidator> validators, IIntegrationPointSerializer serializer, IRelativityObjectManagerFactory relativityObjectManagerFactory)
+        public IntegrationPointProviderValidator(IEnumerable<IValidator> validators, ISerializer serializer, IRelativityObjectManagerFactory relativityObjectManagerFactory)
             : base(validators, serializer)
         {
             _relativityObjectManagerFactory = relativityObjectManagerFactory;

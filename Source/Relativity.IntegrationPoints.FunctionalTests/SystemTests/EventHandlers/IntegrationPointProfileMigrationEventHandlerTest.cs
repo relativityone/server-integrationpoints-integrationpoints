@@ -54,7 +54,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
         [OneTimeSetUp]
         public async Task OneTimeSetUp()
         {
-            _serializer = new JSONSerializer();
+            _serializer = IntegrationPointSerializer.CreateWithoutLogger();
             _createdProfilesArtifactIDs = await CreateTestProfilesAsync(SystemTestsSetupFixture.SourceWorkspace.ArtifactID).ConfigureAwait(false);
         }
 
@@ -120,7 +120,7 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.EventHandlers
                 .ShouldAllBeEquivalentTo(true);
             targetWorkspaceProfiles.Select(p => p.Type)
                 .ShouldAllBeEquivalentTo(exportIntegrationPointTypeArtifactID);
-            
+
             List<SourceConfiguration> sourceConfigurations = targetWorkspaceProfiles
                 .Select(profile => profile.SourceConfiguration)
                 .Select(sourceConfigurationJson => _serializer.Deserialize<SourceConfiguration>(sourceConfigurationJson))

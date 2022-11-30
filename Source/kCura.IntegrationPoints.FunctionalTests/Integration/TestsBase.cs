@@ -81,6 +81,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
         public ISerializer Serializer { get; set; }
 
+        public ICamelCaseSerializer CamelCaseSerializer { get; set; }
+
         [SetUp]
         public virtual void SetUp()
         {
@@ -101,6 +103,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
             SetupContainer(sourceWorkspaceArtifactId);
             Serializer = Container.Resolve<ISerializer>();
+            CamelCaseSerializer = Container.Resolve<ICamelCaseSerializer>();
 
             FakeRelativityInstance = new RelativityInstanceTest(Proxy, Context, Serializer);
 
@@ -211,8 +214,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration
                 new AgentService(c.Resolve<IHelper>(), c.Resolve<IQueueQueryManager>(), Const.Agent.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)));
 
             Container.Register(Component.For<IJobServiceDataProvider>().ImplementedBy<JobServiceDataProvider>());
-            Container.Register(Component.For<IIntegrationPointSerializer>().ImplementedBy<IntegrationPointSerializer>());
-
             Container.Register(Component.For<ISecretStore>().UsingFactoryMethod(c => c.Resolve<IHelper>().GetSecretStore()).Named(Guid.NewGuid().ToString()).IsDefault());
             Container.Register(Component.For<Lazy<ISecretStore>>().UsingFactoryMethod(c =>
                 new Lazy<ISecretStore>(() => c.Resolve<IHelper>().GetSecretStore())).Named(Guid.NewGuid().ToString()).IsDefault());

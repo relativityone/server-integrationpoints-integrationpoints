@@ -1,11 +1,9 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
@@ -43,7 +41,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         private IServicesMgr _svcMgr;
 
         private const int _WORKSPACE_ID = 23432;
-        private const int _INTEGRATION_POINT_ID = 23432;
         private const string _CREDENTIALS = "{}";
 
         [SetUp]
@@ -67,8 +64,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
                 _relativityUrlHelper,
                 _rdoSynchronizerProvider,
                 _cpHelper,
-                _loggerFake.Object
-                )
+                _loggerFake.Object,
+                CamelCaseSerializer)
             {
                 Request = new HttpRequestMessage()
             };
@@ -101,7 +98,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
                 .Returns(url);
 
             // Act
-            HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model.ToWebModel());
+            HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model.ToWebModel(CamelCaseSerializer));
 
             // Assert
             Assert.IsNotNull(response, "Response should not be null");
@@ -135,7 +132,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _integrationPointService.SaveIntegrationPoint(Arg.Any<IntegrationPointDto>()).Throws(expectException);
 
             // Act
-            HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model.ToWebModel());
+            HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model.ToWebModel(CamelCaseSerializer));
 
             Assert.IsNotNull(response);
             String actual = response.Content.ReadAsStringAsync().Result;
@@ -177,7 +174,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
                 .Returns(url);
 
             // Act
-            HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model.ToWebModel(), true, true, true, IntegrationPointsAPIController.MappingType.SavedSearch);
+            HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model.ToWebModel(CamelCaseSerializer), true, true, true, IntegrationPointsAPIController.MappingType.SavedSearch);
 
             // Assert
             _loggerFake.Verify(x => x.LogInformation("Saved IntegrationPoint with following options: {options}",

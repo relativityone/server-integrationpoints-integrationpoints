@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Data;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoint.Tests.Core
@@ -6,6 +8,10 @@ namespace kCura.IntegrationPoint.Tests.Core
     [TestFixture]
     public abstract class TestBase
     {
+        public ISerializer Serializer { get; } = new IntegrationPointSerializer(null);
+
+        public ICamelCaseSerializer CamelCaseSerializer { get; } = new IntegrationPointSerializer(null);
+
         /// <summary>
         /// All classes that are based on TestBase are executing class SetUp method during OneTimeSetUp.
         /// </summary>

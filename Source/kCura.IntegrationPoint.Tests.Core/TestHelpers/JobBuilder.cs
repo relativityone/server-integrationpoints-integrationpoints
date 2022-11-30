@@ -29,6 +29,8 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
         private const string _STOP_STATE = "StopState";
         private const string _HEARTBEAT = "Heartbeat";
 
+        private readonly ISerializer _serializer = IntegrationPointSerializer.CreateWithoutLogger();
+
         private IsJobFailed _jobFailed;
         private DataRow _jobData;
 
@@ -74,7 +76,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
 
         public JobBuilder WithJobDetails(TaskParameters jobDetails)
         {
-            _jobData[_JOB_DETAILS] = new JSONSerializer().Serialize(jobDetails);
+            _jobData[_JOB_DETAILS] = _serializer.Serialize(jobDetails);
             return this;
         }
 
@@ -172,7 +174,7 @@ namespace kCura.IntegrationPoint.Tests.Core.TestHelpers
             _jobData[_TASK_TYPE] = TaskType.ExportService.ToString();
             _jobData[_NEXT_RUN_TIME] = default(DateTime);
             _jobData[_LAST_RUN_TIME] = default(DateTime);
-            _jobData[_JOB_DETAILS] = new JSONSerializer().Serialize(new TaskParameters { BatchInstance = Guid.NewGuid() });
+            _jobData[_JOB_DETAILS] = _serializer.Serialize(new TaskParameters { BatchInstance = Guid.NewGuid() });
             _jobData[_JOB_FLAGS] = default(int);
             _jobData[_SUBMITTED_DATE] = default(DateTime);
             _jobData[_SUBMITTED_BY] = default(int);

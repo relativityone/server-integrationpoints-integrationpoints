@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
@@ -10,7 +11,7 @@ namespace kCura.IntegrationPoints.Core.Validation
 {
     public class IntegrationPointPermissionValidator : BaseIntegrationPointValidator<IPermissionValidator>, IIntegrationPointPermissionValidator
     {
-        public IntegrationPointPermissionValidator(IEnumerable<IPermissionValidator> validators, IIntegrationPointSerializer serializer)
+        public IntegrationPointPermissionValidator(IEnumerable<IPermissionValidator> validators, ISerializer serializer)
             : base(validators, serializer)
         {
         }

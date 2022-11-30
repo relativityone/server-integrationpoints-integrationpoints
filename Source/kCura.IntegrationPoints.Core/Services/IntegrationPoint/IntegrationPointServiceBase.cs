@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
@@ -22,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
     {
         protected IRelativityObjectManager ObjectManager;
 
-        protected IIntegrationPointSerializer Serializer;
+        protected ISerializer Serializer;
         protected ICaseServiceContext Context;
 
         protected IChoiceQuery ChoiceQuery;
@@ -39,7 +40,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
             IHelper helper,
             ICaseServiceContext context,
             IChoiceQuery choiceQuery,
-            IIntegrationPointSerializer serializer,
+            ISerializer serializer,
             IManagerFactory managerFactory,
             IValidationExecutor validationExecutor,
             IRelativityObjectManager objectManager)

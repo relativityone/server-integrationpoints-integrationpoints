@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
@@ -40,7 +41,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands.Factories
             ICaseServiceContext caseServiceContext = new CaseServiceContext(serviceContextHelper);
 
             IAPILog logger = helper.GetLoggerFactory().GetLogger();
-            IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer(logger);
+            ISerializer integrationPointSerializer = new IntegrationPointSerializer(logger);
 
             IServicesMgr servicesManager = helper.GetServicesManager();
             IChoiceQuery choiceQuery = new ChoiceQuery(servicesManager);

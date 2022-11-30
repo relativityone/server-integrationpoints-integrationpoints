@@ -11,7 +11,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
     public class IntegrationPointProfileTest : RdoTestBase
     {
-        private readonly JSONSerializer _serializer = new JSONSerializer();
+        private readonly ISerializer _serializer = IntegrationPointSerializer.CreateWithoutLogger();
 
         public static Guid FieldsMappingGuid { get; } = new Guid("8ae37734-29d1-4441-b5d8-483134f98818");
 

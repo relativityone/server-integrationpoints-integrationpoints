@@ -4,8 +4,8 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
-using kCura.IntegrationPoints.Core.Utils;
 using kCura.IntegrationPoints.Core.Validation;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Extensions;
 using kCura.IntegrationPoints.Web.Helpers;
@@ -22,19 +22,22 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         private readonly Core.Services.Synchronizer.IRdoSynchronizerProvider _provider;
         private readonly ICPHelper _cpHelper;
         private readonly IAPILog _logger;
+        private readonly ICamelCaseSerializer _serializer;
 
         public IntegrationPointsAPIController(
             IServiceFactory serviceFactory,
             IRelativityUrlHelper urlHelper,
             Core.Services.Synchronizer.IRdoSynchronizerProvider provider,
             ICPHelper cpHelper,
-            IAPILog logger)
+            IAPILog logger,
+            ICamelCaseSerializer serializer)
         {
             _serviceFactory = serviceFactory;
             _urlHelper = urlHelper;
             _provider = provider;
             _cpHelper = cpHelper;
             _logger = logger;
+            _serializer = serializer;
         }
 
         [HttpGet]
@@ -52,7 +55,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                 if (id > 0)
                 {
                     IIntegrationPointService integrationPointService = _serviceFactory.CreateIntegrationPointService(_cpHelper);
-                    model = integrationPointService.Read(id).ToWebModel();
+                    model = integrationPointService.Read(id).ToWebModel(_serializer);
                 }
 
                 if (model.DestinationProvider == 0)
@@ -90,7 +93,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             int createdId;
             try
             {
-                createdId = integrationPointService.SaveIntegrationPoint(webModel.ToDto());
+                createdId = integrationPointService.SaveIntegrationPoint(webModel.ToDto(_serializer));
             }
             catch (IntegrationPointValidationException ex)
             {

@@ -12,6 +12,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
     public class IntegrationPointTest : RdoTestBase
     {
+        private readonly ISerializer _serializer = IntegrationPointSerializer.CreateWithoutLogger();
+
         public static Guid FieldsMappingGuid { get; } = new Guid("1b065787-a6e4-4d70-a7ed-f49d770f0bc7");
 
         public DateTime? NextScheduledRuntimeUTC { get; set; }
@@ -321,7 +323,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public IntegrationPointDto ToDto()
         {
-            var serializer = new JSONSerializer();
             var rdo = this.ToRdo();
             return new IntegrationPointDto
             {
@@ -341,7 +342,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 NextRun = rdo.NextScheduledRuntimeUTC,
                 SecuredConfiguration = rdo.SecuredConfiguration,
                 JobHistory = rdo.JobHistory.ToList(),
-                FieldMappings = serializer.Deserialize<List<FieldMap>>(rdo.FieldMappings),
+                FieldMappings = _serializer.Deserialize<List<FieldMap>>(rdo.FieldMappings),
             };
         }
     }

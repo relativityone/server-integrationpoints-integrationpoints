@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
@@ -74,7 +75,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
             IServiceContextHelper serviceContextHelper = new ServiceContextHelperForEventHandlers(Helper, Helper.GetActiveCaseID());
             ICaseServiceContext caseServiceContext = new CaseServiceContext(serviceContextHelper);
             IRepositoryFactory repositoryFactory = new RepositoryFactory(Helper, Helper.GetServicesManager());
-            IIntegrationPointSerializer integrationPointSerializer = new IntegrationPointSerializer(Logger);
+            ISerializer integrationPointSerializer = new IntegrationPointSerializer(Logger);
             IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
             IFederatedInstanceManager federatedInstanceManager = new FederatedInstanceManager();
 

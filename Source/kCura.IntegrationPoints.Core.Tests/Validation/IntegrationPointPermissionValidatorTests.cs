@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using NUnit.Framework;
 using kCura.IntegrationPoints.Core.Validation;
@@ -6,14 +7,13 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NSubstitute;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
 {
     [TestFixture, Category("Unit")]
     public class IntegrationPointPermissionValidatorTests
     {
-        private IIntegrationPointSerializer _serializer;
+        private ISerializer _serializer;
         private IntegrationPointDto _model;
         private int _artifactId = 123456;
         private SourceProvider _sourceProvider;
@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         [SetUp]
         public void SetUp()
         {
-            _serializer = Substitute.For<IIntegrationPointSerializer>();
+            _serializer = Substitute.For<ISerializer>();
             _model = new IntegrationPointDto() { DestinationConfiguration = $"{{ \"artifactTypeID\": { _artifactId } }}" };
             _serializer.Deserialize<ImportSettings>(_model.DestinationConfiguration).Returns(new ImportSettings() { ArtifactTypeId = _artifactId });
             _sourceProvider = new SourceProvider() { ArtifactId = 1000, Identifier = Guid.NewGuid().ToString() };

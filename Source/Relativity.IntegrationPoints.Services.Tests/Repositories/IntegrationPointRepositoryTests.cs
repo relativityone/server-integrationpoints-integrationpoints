@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts;
-using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -20,7 +20,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
     [TestFixture, Category("Unit")]
     public class IntegrationPointRepositoryTests : TestBase
     {
-        private IIntegrationPointSerializer _serializer;
+        private ISerializer _serializer;
         private IObjectTypeRepository _objectTypeRepository;
         private IUserInfo _userInfo;
         private IChoiceQuery _choiceQuery;
@@ -37,7 +37,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
         public override void SetUp()
         {
             _integrationPointService = Substitute.For<IIntegrationPointService>();
-            _serializer = Substitute.For<IIntegrationPointSerializer>();
+            _serializer = Substitute.For<ISerializer>();
             _integrationPointProfileService = Substitute.For<IIntegrationPointProfileService>();
             _objectTypeRepository = Substitute.For<IObjectTypeRepository>();
             _userInfo = Substitute.For<IUserInfo>();

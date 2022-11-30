@@ -17,7 +17,6 @@ using kCura.IntegrationPoints.ImportProvider.Parser.Interfaces;
 using kCura.IntegrationPoints.Core.Helpers;
 using Relativity.API;
 using SystemInterface.IO;
-using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Import;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 

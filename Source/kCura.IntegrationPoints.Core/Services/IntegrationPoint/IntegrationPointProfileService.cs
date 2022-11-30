@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Core.Exceptions;
@@ -27,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         public IntegrationPointProfileService(
             IHelper helper,
             ICaseServiceContext context,
-            IIntegrationPointSerializer serializer,
+            ISerializer serializer,
             IChoiceQuery choiceQuery,
             IManagerFactory managerFactory,
             IValidationExecutor validationExecutor,

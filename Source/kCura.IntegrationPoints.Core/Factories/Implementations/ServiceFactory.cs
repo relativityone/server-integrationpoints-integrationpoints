@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Common.RelativitySync;
+﻿using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.RelativitySync;
 using kCura.IntegrationPoints.Core.Services;
@@ -18,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
     public class ServiceFactory : IServiceFactory
     {
         private readonly ICaseServiceContext _caseServiceContext;
-        private readonly IIntegrationPointSerializer _serializer;
+        private readonly ISerializer _serializer;
         private readonly IChoiceQuery _choiceQuery;
         private readonly IJobManager _jobService;
         private readonly IManagerFactory _managerFactory;
@@ -30,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
         private readonly IRelativitySyncAppIntegration _relativitySyncAppIntegration;
 
         public ServiceFactory(ICaseServiceContext caseServiceContext,
-            IIntegrationPointSerializer serializer,
+            ISerializer serializer,
             IChoiceQuery choiceQuery,
             IJobManager jobService,
             IManagerFactory managerFactory,

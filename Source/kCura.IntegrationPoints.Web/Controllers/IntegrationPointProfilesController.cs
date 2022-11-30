@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Common.Context;
+﻿using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Common.Context;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.Tabs;
 using kCura.IntegrationPoints.Data;
@@ -13,6 +14,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
     public class IntegrationPointProfilesController : IntegrationPointBaseController
     {
         private readonly IIntegrationPointProfileService _profileService;
+        private readonly ICamelCaseSerializer _serializer;
 
         public IntegrationPointProfilesController(
             IObjectTypeRepository objectTypeRepository,
@@ -20,7 +22,8 @@ namespace kCura.IntegrationPoints.Web.Controllers
             ITabService tabService,
             IIntegrationPointProfileService profileService,
             IWorkspaceContext workspaceIdProvider,
-            IUserContext userContext
+            IUserContext userContext,
+            ICamelCaseSerializer serializer
         ) : base(
             objectTypeRepository,
             repositoryFactory,
@@ -30,6 +33,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
         )
         {
             _profileService = profileService;
+            _serializer = serializer;
         }
 
         protected override string ObjectTypeGuid => ObjectTypeGuids.IntegrationPointProfile;
@@ -38,7 +42,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 
         protected override IntegrationPointWebModelBase GetIntegrationPoint(int id)
         {
-            return _profileService.Read(id).ToWebModel();
+            return _profileService.Read(id).ToWebModel(_serializer);
         }
     }
 }

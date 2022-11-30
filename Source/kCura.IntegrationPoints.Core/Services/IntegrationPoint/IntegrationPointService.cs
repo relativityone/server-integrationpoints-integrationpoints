@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Handlers;
 using kCura.IntegrationPoints.Common.RelativitySync;
@@ -46,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
         public IntegrationPointService(
             IHelper helper,
             ICaseServiceContext context,
-            IIntegrationPointSerializer serializer,
+            ISerializer serializer,
             IChoiceQuery choiceQuery,
             IJobManager jobManager,
             IJobHistoryService jobHistoryService,

@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
@@ -14,9 +15,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private readonly IJobHistoryErrorService _jobHistoryErrorService;
         private readonly IJobHistoryService _jobHistoryService;
         private readonly IJobService _jobService;
-        private readonly IIntegrationPointSerializer _serializer;
+        private readonly ISerializer _serializer;
 
-        public TaskExceptionService(IAPILog logger, IJobHistoryErrorService jobHistoryErrorService, IJobHistoryService jobHistoryService, IJobService jobService, IIntegrationPointSerializer serializer)
+        public TaskExceptionService(IAPILog logger, IJobHistoryErrorService jobHistoryErrorService, IJobHistoryService jobHistoryService, IJobService jobService, ISerializer serializer)
         {
             _logger = logger?.ForContext<TaskExceptionService>();
             _jobHistoryErrorService = jobHistoryErrorService;

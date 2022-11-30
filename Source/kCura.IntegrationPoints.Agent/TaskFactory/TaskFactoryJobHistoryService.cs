@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Monitoring;
@@ -17,7 +18,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
     internal class TaskFactoryJobHistoryService : ITaskFactoryJobHistoryService
     {
         private readonly IAPILog _logger;
-        private readonly IIntegrationPointSerializer _serializer;
+        private readonly ISerializer _serializer;
         private readonly IJobHistoryService _jobHistoryService;
         private readonly IJobHistoryErrorService _jobHistoryErrorService;
         private readonly IIntegrationPointService _integrationPointService;
@@ -26,7 +27,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 
         public TaskFactoryJobHistoryService(
             IAPILog logger,
-            IIntegrationPointSerializer serializer,
+            ISerializer serializer,
             IServiceFactory serviceFactory,
             IJobHistoryErrorService jobHistoryErrorService,
             IIntegrationPointService integrationPointService,

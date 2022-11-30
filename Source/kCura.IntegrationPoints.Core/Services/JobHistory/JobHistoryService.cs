@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
@@ -25,14 +26,14 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         private readonly IFederatedInstanceManager _federatedInstanceManager;
         private readonly IWorkspaceManager _workspaceManager;
         private readonly IAPILog _logger;
-        private readonly IIntegrationPointSerializer _serializer;
+        private readonly ISerializer _serializer;
 
         public JobHistoryService(
             IRelativityObjectManager relativityObjectManager,
             IFederatedInstanceManager federatedInstanceManager,
             IWorkspaceManager workspaceManager,
             IAPILog logger,
-            IIntegrationPointSerializer serializer)
+            ISerializer serializer)
         {
             _relativityObjectManager = relativityObjectManager;
             _federatedInstanceManager = federatedInstanceManager;

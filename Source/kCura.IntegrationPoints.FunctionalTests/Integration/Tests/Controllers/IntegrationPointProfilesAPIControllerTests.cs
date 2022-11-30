@@ -16,7 +16,7 @@ using kCura.IntegrationPoints.Web.Models;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
 {
-    public class IntegrationPointProfilesAPIControllerTests: TestsBase
+    public class IntegrationPointProfilesAPIControllerTests : TestsBase
     {
         private int _longTextLimit;
         private const string _LONG_TEXT_LIMIT_SECTION = "kCura.EDDS.Web";
@@ -44,7 +44,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             // Assert
             var objectContent = response.Content as ObjectContent;
             var result = (List<IntegrationPointProfileWebModel>)objectContent?.Value;
-            var expected = SourceWorkspace.IntegrationPointProfiles.Select(x => x.ToIntegrationPointProfileDto().ToWebModel()).ToList();
+            var expected = SourceWorkspace.IntegrationPointProfiles.Select(x => x.ToIntegrationPointProfileDto().ToWebModel(CamelCaseSerializer)).ToList();
             expected.ForEach(x =>
             {
                 x.Map = null;
@@ -69,7 +69,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             var response = sut.Get(integrationPointProfile.ArtifactId);
 
             // Assert
-            var result = FormatResponseToGetValueFromObjectContent<IntegrationPointProfileWebModel>(response).ToDto();
+            var result = FormatResponseToGetValueFromObjectContent<IntegrationPointProfileWebModel>(response).ToDto(CamelCaseSerializer);
             var expected = SourceWorkspace.IntegrationPointProfiles.Select(x => x.ToIntegrationPointProfileDto()).First();
 
             result.ShouldBeEquivalentTo(expected);
@@ -89,7 +89,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             var response = sut.Get(integrationPointProfile.ArtifactId);
 
             // Assert
-            var result = FormatResponseToGetValueFromObjectContent<IntegrationPointProfileWebModel>(response).ToDto();
+            var result = FormatResponseToGetValueFromObjectContent<IntegrationPointProfileWebModel>(response).ToDto(CamelCaseSerializer);
             var expected = SourceWorkspace.IntegrationPointProfiles.Select(x => x.ToIntegrationPointProfileDto()).First();
 
             result.ShouldBeEquivalentTo(expected);
@@ -182,7 +182,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Controllers
             var expectedResult = new { returnURL = "RelativityViewUrlMock" };
 
             // Act
-            var response = sut.Save(SourceWorkspace.ArtifactId, integrationPointProfile.ToWebModel());
+            var response = sut.Save(SourceWorkspace.ArtifactId, integrationPointProfile.ToWebModel(CamelCaseSerializer));
 
             // Assert
             var objectContent = response.Content as ObjectContent;

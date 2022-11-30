@@ -71,7 +71,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
                 _objectManagerFake.Object,
                 _validationExecutorFake.Object,
                 _cryptographyHelperFake.Object,
-                _logFake.Object)
+                _logFake.Object,
+                CamelCaseSerializer)
             {
                 Request = new HttpRequestMessage()
             };
@@ -92,7 +93,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _profileServiceFake.Setup(m => m.SaveProfile(model)).Returns(integrationPointProfileID);
 
             // act
-            HttpResponseMessage response = _sut.Save(_WORKSPACE_ID, model.ToWebModel());
+            HttpResponseMessage response = _sut.Save(_WORKSPACE_ID, model.ToWebModel(CamelCaseSerializer));
 
             // assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -113,7 +114,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _profileServiceFake.Setup(m => m.SaveProfile(It.IsAny<IntegrationPointProfileDto>())).Throws(new IntegrationPointValidationException(validationResult));
 
             // act
-            HttpResponseMessage response = _sut.Save(_WORKSPACE_ID, model.ToWebModel());
+            HttpResponseMessage response = _sut.Save(_WORKSPACE_ID, model.ToWebModel(CamelCaseSerializer));
             string responseContent = response.Content.ReadAsStringAsync().Result;
             ValidationResultDTO contentAsValidationResult = JsonConvert.DeserializeObject<ValidationResultDTO>(responseContent);
 

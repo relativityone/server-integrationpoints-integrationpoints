@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.TaskFactory;
@@ -11,8 +12,6 @@ using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Data.Repositories;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using NSubstitute;
 using NUnit.Framework;
@@ -32,7 +31,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
         public void SetUp(IntegrationPointDto ip = null)
         {
             IAPILog logger = Substitute.For<IAPILog>();
-            IIntegrationPointSerializer serializer = Substitute.For<IIntegrationPointSerializer>();
+            ISerializer serializer = Substitute.For<ISerializer>();
             serializer.Deserialize<DestinationConfiguration>(Arg.Any<string>()).Returns(new DestinationConfiguration());
             serializer.Deserialize<TaskParameters>(Arg.Any<string>()).Returns(new TaskParameters());
 

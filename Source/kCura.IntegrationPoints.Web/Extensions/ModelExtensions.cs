@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.Models;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
 
@@ -8,9 +8,8 @@ namespace kCura.IntegrationPoints.Web.Extensions
 {
     public static class ModelExtensions
     {
-        public static IntegrationPointWebModel ToWebModel(this IntegrationPointDto dto)
+        public static IntegrationPointWebModel ToWebModel(this IntegrationPointDto dto, ICamelCaseSerializer serializer)
         {
-            JSONSerializer serializer = new JSONSerializer();
             return new IntegrationPointWebModel
             {
                 ArtifactID = dto.ArtifactId,
@@ -20,7 +19,7 @@ namespace kCura.IntegrationPoints.Web.Extensions
                 SourceProvider = dto.SourceProvider,
                 Type = dto.Type,
                 Destination = dto.DestinationConfiguration,
-                Map = serializer.Serialize(dto.FieldMappings),
+                Map = serializer.SerializeCamelCase(dto.FieldMappings),
                 Scheduler = dto.Scheduler,
                 DestinationProvider = dto.DestinationProvider,
                 LogErrors = dto.LogErrors,
@@ -34,9 +33,8 @@ namespace kCura.IntegrationPoints.Web.Extensions
             };
         }
 
-        public static IntegrationPointDto ToDto(this IntegrationPointWebModel webModel)
+        public static IntegrationPointDto ToDto(this IntegrationPointWebModel webModel, ICamelCaseSerializer serializer)
         {
-            JSONSerializer serializer = new JSONSerializer();
             return new IntegrationPointDto
             {
                 ArtifactId = webModel.ArtifactID,
@@ -60,9 +58,8 @@ namespace kCura.IntegrationPoints.Web.Extensions
             };
         }
 
-        public static IntegrationPointProfileWebModel ToWebModel(this IntegrationPointProfileDto dto)
+        public static IntegrationPointProfileWebModel ToWebModel(this IntegrationPointProfileDto dto, ICamelCaseSerializer serializer)
         {
-            JSONSerializer serializer = new JSONSerializer();
             return new IntegrationPointProfileWebModel
             {
                 ArtifactID = dto.ArtifactId,
@@ -72,7 +69,7 @@ namespace kCura.IntegrationPoints.Web.Extensions
                 SourceProvider = dto.SourceProvider,
                 Type = dto.Type,
                 Destination = dto.DestinationConfiguration,
-                Map = serializer.Serialize(dto.FieldMappings),
+                Map = serializer.SerializeCamelCase(dto.FieldMappings),
                 Scheduler = dto.Scheduler,
                 DestinationProvider = dto.DestinationProvider,
                 LogErrors = dto.LogErrors,
@@ -102,9 +99,8 @@ namespace kCura.IntegrationPoints.Web.Extensions
             };
         }
 
-        public static IntegrationPointProfileDto ToDto(this IntegrationPointProfileWebModel webModel)
+        public static IntegrationPointProfileDto ToDto(this IntegrationPointProfileWebModel webModel, ICamelCaseSerializer serializer)
         {
-            JSONSerializer serializer = new JSONSerializer();
             return new IntegrationPointProfileDto
             {
                 ArtifactId = webModel.ArtifactID,
