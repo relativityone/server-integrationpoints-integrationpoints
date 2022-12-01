@@ -94,7 +94,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 .Values
                 .Select(x => x.FieldGuid);
 
-            return guids.All(x => request.Fields.Any(y => y.Guid == x));
+            return guids.All(x => request.Fields.Any(y => y.Guid == x)) && string.IsNullOrEmpty(request.Condition);
         }
     }
 }

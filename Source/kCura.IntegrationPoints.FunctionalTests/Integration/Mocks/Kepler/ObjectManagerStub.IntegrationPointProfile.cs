@@ -18,6 +18,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
         {
             return list;
         }
+        
         private void SetupIntegrationPointProfile()
         {
             Mock.Setup(x => x.QueryAsync(It.IsAny<int>(), 
