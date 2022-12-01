@@ -138,7 +138,13 @@ We already have experience with IAPI 2.0 from Relativity.Sync so there should be
 
 ## Entity import
 
-This is most problematic part because of Managers linking process.
+This is most problematic part because of Managers linking process. I would implement it as separate service because it requires its own logic regarding fields mapping and Managers linking. There are couple of things to keep in mind:
+
+- require `First Name` and `Last Name` fields in the mapping
+- dynamically build `Full Name` and include it in the load file (remember to give it unique name to avoid conflicts with user-mapped fields, e.g. `FullName-1d6f71c8-05d5-4af0-9752-09ef2a7a627c`)
+- handle Manager Field ID
+
+Consider using ObjectManager mass update to link managers, or use Import API 2.0 as usual. Entity import is a little bit tricky and might require its own spike.
 
 ## What's next?
 
@@ -148,4 +154,4 @@ Next, we would love to clean up all the legacy mess. When implementation is done
 - `SyncWorker`
 - `RdoEntitySynchronizer`
 - `SyncEntityManagerWorker`
-- unfortunately we have to leave `RdoSynchronizer` alone, because it's used in productions push and to get list of fields in workspace. We can only remove method `public void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options, IJobStopManager jobStopManager, IDiagnosticLog diagnosticLog)` along with its unused dependencies. The other (overloaded) `SyncData` method is used in production push so it needs to stay untouched.
+- unfortunately we have to leave `RdoSynchronizer` alone, because it's used in productions push and to get list of fields in workspace. We can only remove method `public void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options, IJobStopManager jobStopManager, IDiagnosticLog diagnosticLog)` along with its unused dependencies. The other (overloaded) `SyncData` method is used in production push so it needs to stay untouched. Optionally, we could think about extracting `GetFields` method to separate service.
