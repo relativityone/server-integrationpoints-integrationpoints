@@ -30,6 +30,31 @@ export async function getFolderPathInformation(convenienceApi: IConvenienceApi, 
     }
 }
 
+
+export async function getCalculationStateInfo(convenienceApi: IConvenienceApi, integrationPointId: number) {
+    let request = {
+        options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
+            headers: {
+                "content-type": "application/json; charset=utf-8"
+            }
+        }),
+        payload: {            
+            integrationPointId: integrationPointId
+        },
+        url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/SummaryPage/GetCalculationStateInfo"
+    };
+
+    let resp = convenienceApi.relativityHttpClient.post(request.url, request.payload, request.options)
+        .then(function (result) {
+            if (!result.ok) {
+                console.log("error in get; ", result);
+            } else if (result.ok) {
+                return result.json();
+            }
+        });
+    return resp;
+}
+
 export async function getNativesStats(convenienceApi: IConvenienceApi, workspaceId: number, savedSearchId: number, integrationPointId: number) {
     let request = {
         options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
@@ -163,19 +188,6 @@ ${lastCalculationDate}`;
         var total = prepareStatsInfo(stats["TotalNativesCount"], stats["TotalNativesSizeBytes"]);
         convenienceApi.fieldHelper.setValue("Total of Natives", total);
     }    
-}
-
-function validateCalculationState(data) {
-    let result = "";
-    if (data === 'undefined') {
-        result = "Error occurred";
-        return result;
-    }
-    if (data["HasErrors"] === 'true') {
-        result = "Error occurred";
-        return result;
-    }
-    return result;   
 }
 
 function formatBytes(bytes) {

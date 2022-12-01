@@ -61,6 +61,14 @@ namespace kCura.IntegrationPoints.Web.Controllers
         }
 
         [HttpPost]
+        [LogApiExceptionFilter(Message = "Unable to get CalculationState info for IntegrationPoint")]
+        public async Task<ActionResult> GetCalculationStateInfo(int integrationPointId)
+        {
+            CalculationState calculationState = await _calculationChecker.GetCalculationState(integrationPointId).ConfigureAwait(false);
+            return Json(calculationState);
+        }
+
+        [HttpPost]
         [LogApiExceptionFilter(Message = "Unable to get natives statistics for saved search")]
         public async Task<ActionResult> GetNativesStatisticsForSavedSearch(int workspaceId, int savedSearchId, int integrationPointId)
         {
@@ -88,10 +96,10 @@ namespace kCura.IntegrationPoints.Web.Controllers
                 calculationState = await _calculationChecker.MarkCalculationAsFinished(integrationPointId, result).ConfigureAwait(false);
             }
 
-            if (token.IsCancellationRequested)
-            {
-                var test = "YUPPI";
-            }
+            //if (token.IsCancellationRequested)
+            //{
+            //    calculationState.Status = CalculationStatus.Canceled;
+            //}
 
             return Json(calculationState);
         }

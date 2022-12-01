@@ -58,6 +58,7 @@
     <Compile Include="BaseRdo.cs" />
     <Compile Include="Attributes\DynamicFieldAttribute.cs" />
     <Compile Include="Attributes\DynamicObjectAttribute.cs" />
+    <Compile Include="CalculationStatus.cs" />
     <Compile Include="ChoiceQuery.cs" />
     <Compile Include="Converters\FieldRefExtensions.cs" />
     <Compile Include="Converters\FieldUpdateRequestDtoExtensions.cs" />

@@ -152,8 +152,13 @@ export function createStopCalculationsButton(consoleApi, convenienceApi: IConven
                 acceptAction: function () {
 
                     //var xhr = new XMLHttpRequest(),
-                    //    method = "POST",
-                    //    url = convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/SummaryPage/GetImagesStatisticsForSavedSearch";
+                    //method = "POST",
+                    //url = convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/SummaryPage/GetImagesStatisticsForSavedSearch";
+
+                   
+
+                    //console.log(xhr);
+                        
                     //xhr.open(method, url, true);
 
                     //xhr.send();
