@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Core.Models;
@@ -76,7 +77,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 
         [HttpPost]
         [LogApiExceptionFilter(Message = "Unable to get images statistics for saved search")]
-        public async Task<ActionResult> GetImagesStatisticsForSavedSearch(int workspaceId, int savedSearchId, bool calculateSize, int integrationPointId)
+        public async Task<ActionResult> GetImagesStatisticsForSavedSearch(int workspaceId, int savedSearchId, bool calculateSize, int integrationPointId, CancellationToken token)
         {
             CalculationState calculationState = await _calculationChecker.MarkAsCalculating(workspaceId, integrationPointId).ConfigureAwait(false);
             if (!calculationState.HasErrors)
@@ -85,6 +86,11 @@ namespace kCura.IntegrationPoints.Web.Controllers
                .ConfigureAwait(false);
 
                 calculationState = await _calculationChecker.MarkCalculationAsFinished(workspaceId, integrationPointId, result).ConfigureAwait(false);
+            }
+
+            if (token.IsCancellationRequested)
+            {
+                var test = "YUPPI";
             }
 
             return Json(calculationState);

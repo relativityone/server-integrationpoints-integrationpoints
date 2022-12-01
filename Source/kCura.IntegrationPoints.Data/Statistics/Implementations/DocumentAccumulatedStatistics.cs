@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
             {
 
                 // TODO: REMOVE AFTER TESTS! IF YOU CAN SEE IT DURING REVIEW => SCREAM();
-                //await Task.Delay(TimeSpan.FromSeconds(40)).ConfigureAwait(false);
+                await Task.Delay(TimeSpan.FromSeconds(40)).ConfigureAwait(false);
 
                 QueryRequest query = new DocumentQueryBuilder()
                     .AddSavedSearchCondition(savedSearchId)
