@@ -44,7 +44,6 @@ namespace Relativity.Sync.Tests.Integration
         private const string _JOB_NAME = "My Special IP Job";
         private const string _SOURCE_CASE_TAG = "My ECA Case";
 
-
         private readonly Guid _destinationWorkspaceTagObjectTypeGuid = new Guid("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
         private readonly Guid _jobHistoryErrorObjectGuid = new Guid("17E7912D-4F57-4890-9A37-ABC2B8A37BDB");
         private readonly Guid _progressObjectTypeGuid = new Guid("3D107450-DB18-4FE1-8219-73EE1F921ED9");
@@ -188,7 +187,7 @@ namespace Relativity.Sync.Tests.Integration
             _objectManager.Setup(x => x.QueryAsync(_SOURCE_CASE_ARTIFACT_ID, It.Is<QueryRequest>(q => q.ObjectType.Guid == _progressObjectTypeGuid), 1, int.MaxValue)).ReturnsAsync(new QueryResult
             {
                 TotalCount = 1,
-                Objects = new List<RelativityObject> {new RelativityObject {ArtifactID = progressArtifactId } }
+                Objects = new List<RelativityObject> { new RelativityObject { ArtifactID = progressArtifactId } }
             });
 
             var queryResult = new QueryResult
@@ -202,27 +201,27 @@ namespace Relativity.Sync.Tests.Integration
                         {
                             new FieldValuePair
                             {
-                                Field = new Field {Guids = new List<Guid> {new Guid("AE2FCA2B-0E5C-4F35-948F-6C1654D5CF95") }},
+                                Field = new Field { Guids = new List<Guid> { new Guid("AE2FCA2B-0E5C-4F35-948F-6C1654D5CF95") } },
                                 Value = "Synchronization Step"
                             },
                             new FieldValuePair
                             {
-                                Field = new Field {Guids = new List<Guid> {new Guid("610A1E44-7AAA-47FC-8FA0-92F8C8C8A94A") }},
+                                Field = new Field { Guids = new List<Guid> { new Guid("610A1E44-7AAA-47FC-8FA0-92F8C8C8A94A") } },
                                 Value = 1
                             },
                             new FieldValuePair
                             {
-                                Field = new Field {Guids = new List<Guid> {new Guid("698E1BBE-13B7-445C-8A28-7D40FD232E1B") }},
+                                Field = new Field { Guids = new List<Guid> { new Guid("698E1BBE-13B7-445C-8A28-7D40FD232E1B") } },
                                 Value = progressStatus
                             },
                             new FieldValuePair
                             {
-                                Field = new Field {Guids = new List<Guid> {new Guid("2F2CFC2B-C9C0-406D-BD90-FB0133BCB939") }},
+                                Field = new Field { Guids = new List<Guid> { new Guid("2F2CFC2B-C9C0-406D-BD90-FB0133BCB939") } },
                                 Value = string.Empty
                             },
                             new FieldValuePair
                             {
-                                Field = new Field {Guids = new List<Guid> {new Guid("2E296F79-1B81-4BF6-98AD-68DA13F8DA44") }},
+                                Field = new Field { Guids = new List<Guid> { new Guid("2E296F79-1B81-4BF6-98AD-68DA13F8DA44") } },
                                 Value = string.Empty
                             }
                         }
@@ -245,17 +244,17 @@ namespace Relativity.Sync.Tests.Integration
                         {
                             new FieldValuePair
                             {
-                                Field = new Field {Guids = new List<Guid> {new Guid("348D7394-2658-4DA4-87D0-8183824ADF98")}},
+                                Field = new Field { Guids = new List<Guid> { new Guid("348D7394-2658-4DA4-87D0-8183824ADF98") } },
                                 Value = "My Review Workspace"
                             },
                             new FieldValuePair
                             {
-                                Field = new Field {Guids = new List<Guid> {new Guid("909ADC7C-2BB9-46CA-9F85-DA32901D6554")}},
+                                Field = new Field { Guids = new List<Guid> { new Guid("909ADC7C-2BB9-46CA-9F85-DA32901D6554") } },
                                 Value = "This Relativity Instance"
                             },
                             new FieldValuePair
                             {
-                                Field = new Field {Guids = new List<Guid> {new Guid("207E6836-2961-466B-A0D2-29974A4FAD36")}},
+                                Field = new Field { Guids = new List<Guid> { new Guid("207E6836-2961-466B-A0D2-29974A4FAD36") } },
                                 Value = _DEST_CASE_ARTIFACT_ID
                             }
                         }
@@ -281,37 +280,37 @@ namespace Relativity.Sync.Tests.Integration
                         {
                             new FieldValuePair
                             {
-                                Field = new Field {Guids = new List<Guid> {new Guid("4112B894-35B0-4E53-AB99-C9036D08269D") }},
+                                Field = new Field { Guids = new List<Guid> { new Guid("4112B894-35B0-4E53-AB99-C9036D08269D") } },
                                 Value = "The integration point failed to complete error message."
                             },
                             new FieldValuePair
                             {
-                                Field = new Field {Guids = new List<Guid> {new Guid("DE1A46D2-D615-427A-B9F2-C10769BC2678") }},
-                                Value = new Choice{Name = "New"}
+                                Field = new Field { Guids = new List<Guid> { new Guid("DE1A46D2-D615-427A-B9F2-C10769BC2678") } },
+                                Value = new Choice { Name = "New" }
                             },
                             new FieldValuePair
                             {
-                                Field = new Field {Guids = new List<Guid> {new Guid("EEFFA5D3-82E3-46F8-9762-B4053D73F973") }},
-                                Value = new Choice{Name = "Job"}
+                                Field = new Field { Guids = new List<Guid> { new Guid("EEFFA5D3-82E3-46F8-9762-B4053D73F973") } },
+                                Value = new Choice { Name = "Job" }
                             },
                             new FieldValuePair
                             {
-                                Field = new Field {Guids = new List<Guid> {new Guid("84E757CC-9DA2-435D-B288-0C21EC589E66") }},
+                                Field = new Field { Guids = new List<Guid> { new Guid("84E757CC-9DA2-435D-B288-0C21EC589E66") } },
                                 Value = "264886A4-1853-4DFA-98F9-133506520FB4"
                             },
                             new FieldValuePair
                             {
-                                Field = new Field {Guids = new List<Guid> {new Guid("5519435E-EE82-4820-9546-F1AF46121901") }},
+                                Field = new Field { Guids = new List<Guid> { new Guid("5519435E-EE82-4820-9546-F1AF46121901") } },
                                 Value = string.Empty
                             },
                             new FieldValuePair
                             {
-                                Field = new Field {Guids = new List<Guid> {new Guid("0353DBDE-9E00-4227-8A8F-4380A8891CFF") }},
+                                Field = new Field { Guids = new List<Guid> { new Guid("0353DBDE-9E00-4227-8A8F-4380A8891CFF") } },
                                 Value = "Stack trace of exception"
                             },
                             new FieldValuePair
                             {
-                                Field = new Field {Guids = new List<Guid> {new Guid("B9CBA772-E7C9-493E-B7F8-8D605A6BFE1F") }},
+                                Field = new Field { Guids = new List<Guid> { new Guid("B9CBA772-E7C9-493E-B7F8-8D605A6BFE1F") } },
                                 Value = DateTime.UtcNow
                             }
                         }

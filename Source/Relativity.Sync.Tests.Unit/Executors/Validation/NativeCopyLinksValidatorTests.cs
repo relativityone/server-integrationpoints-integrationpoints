@@ -31,7 +31,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
         private Mock<ISyncToggles> _nonAdminCanSyncUsingLinksFake;
         private Mock<IUserService> _userServiceFake;
 
-
         private const int _USER_IS_ADMIN_ID = 1;
         private const int _USER_IS_NON_ADMIN_ID = 2;
 
@@ -48,7 +47,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             _configurationFake = new Mock<IValidationConfiguration>();
             _nonAdminCanSyncUsingLinksFake = new Mock<ISyncToggles>();
             _userServiceFake = new Mock<IUserService>();
-
 
             _sut = new NativeCopyLinksValidator(
                 _instanceSettingsFake.Object,
@@ -133,7 +131,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             bool actualResult = _sut.ShouldValidate(pipelineObject);
 
             // Assert
-            actualResult.Should().Be(expectedResult,
+            actualResult.Should().Be(
+                expectedResult,
                 $"ShouldValidate should return {expectedResult} for pipeline {pipelineType.Name}");
         }
 

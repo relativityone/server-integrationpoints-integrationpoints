@@ -22,8 +22,6 @@ namespace Relativity.Sync.Transfer
 
         int FailedItemsCount { get; }
 
-        int ReadItemsCount { get; }
-
         int GetArtifactId(string itemIdentifier);
     }
 }

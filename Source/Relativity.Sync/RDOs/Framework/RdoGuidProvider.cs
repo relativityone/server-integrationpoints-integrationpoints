@@ -28,7 +28,8 @@ namespace Relativity.Sync.RDOs.Framework
                 ParentTypeGuid = rdoAttribute.ParentObjectTypeGuid,
                 Fields = t.GetProperties()
                     .Where(x => x.Name != nameof(IRdoType.ArtifactId))
-                    .ToDictionary(x => x.GetCustomAttribute<RdoFieldAttribute>().FieldGuid,
+                    .ToDictionary(
+                        x => x.GetCustomAttribute<RdoFieldAttribute>().FieldGuid,
                         x =>
                         {
                             RdoFieldAttribute fieldAttribute = x.GetCustomAttribute<RdoFieldAttribute>();

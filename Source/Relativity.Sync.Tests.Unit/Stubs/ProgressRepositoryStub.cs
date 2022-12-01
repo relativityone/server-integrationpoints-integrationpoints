@@ -13,7 +13,9 @@ namespace Relativity.Sync.Tests.Unit.Stubs
     internal sealed class ProgressRepositoryStub : IProgressRepository
     {
         public List<ProgressStub> ForCreate { get; } = new List<ProgressStub>();
+
         public List<ProgressStub> ForGet { get; } = new List<ProgressStub>();
+
         public List<ProgressStub> ForQuery { get; } = new List<ProgressStub>();
 
         public Task<IProgress> CreateAsync(int workspaceArtifactId, int syncConfigurationArtifactId, string name, int order, SyncJobStatus status)

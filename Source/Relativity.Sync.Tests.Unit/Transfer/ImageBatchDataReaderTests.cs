@@ -19,7 +19,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
     [TestFixture]
     public class ImageBatchDataReaderTests
     {
-        const string IdentifierFieldName = "IdentifierField";
+        private const string IdentifierFieldName = "IdentifierField";
         private const int SourceWorkspaceId = 11;
 
         private FieldInfoDto _identifierField;
@@ -145,7 +145,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
             // Assert
             read.Should().BeFalse();
-            itemLevelErrorHandlerMock.Verify(x => x(It.IsAny<string>(), It.Is<string>(message => 
+            itemLevelErrorHandlerMock.Verify(
+                x => x(It.IsAny<string>(), It.Is<string>(message =>
                 message.Contains($"Special fields builders should all return equal number of field values, but was: ImageFileName ({imageFileNameCount}),ImageFileLocation ({imageFileLocationCount})"))),
                 Times.Exactly(numberOfDocuments));
         }
@@ -196,7 +197,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
                 new EmptyLogger());
 
             // Act & Assert
-
             for (int i = 0; i < 2; i++)
             {
                 sut.CanCancel.Should().BeFalse();
@@ -241,6 +241,5 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             };
             return obj;
         }
-
     }
 }

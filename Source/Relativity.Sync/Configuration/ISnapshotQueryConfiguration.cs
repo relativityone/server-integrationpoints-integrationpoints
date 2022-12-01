@@ -11,7 +11,7 @@
         int[] ProductionImagePrecedence { get; }
 
         bool IncludeOriginalImageIfNotFoundInProductions { get; }
-        
+
         int RdoArtifactTypeId { get; }
     }
 }

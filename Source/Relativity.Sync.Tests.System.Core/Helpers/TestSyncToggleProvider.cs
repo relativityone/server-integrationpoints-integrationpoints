@@ -50,7 +50,9 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
         }
 
         public MissingFeatureBehavior DefaultMissingFeatureBehavior { get; }
+
         public bool CacheEnabled { get; set; }
+
         public int CacheTimeoutInSeconds { get; set; }
     }
 }

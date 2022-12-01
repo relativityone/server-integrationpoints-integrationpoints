@@ -10,7 +10,7 @@ using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Transfer
 {
-    internal class NonDocumentBatchDataReader: BatchDataReaderBase
+    internal class NonDocumentBatchDataReader : BatchDataReaderBase
     {
         public NonDocumentBatchDataReader(
             DataTable templateDataTable,
@@ -44,6 +44,7 @@ namespace Relativity.Sync.Transfer
                         _itemLevelErrorHandler(batchItem.ArtifactID.ToString(CultureInfo.InvariantCulture), ex.GetExceptionMessages());
                         continue;
                     }
+
                     yield return row;
                 }
             }

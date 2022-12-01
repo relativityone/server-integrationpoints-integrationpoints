@@ -37,7 +37,8 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
             ISyncContext syncContext =
                 new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
 
-            ImageSyncOptions options = new ImageSyncOptions(DataSourceType.SavedSearch,
+            ImageSyncOptions options = new ImageSyncOptions(
+                DataSourceType.SavedSearch,
                 _savedSearchId, DestinationLocationType.Folder, _destinationFolderId);
 
             // Act
@@ -55,12 +56,13 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
         {
             // Arrange
             SyncConfigurationRdo expectedSyncConfiguration = await CreateDefaultExpectedConfigurationAsync().ConfigureAwait(false);
-            expectedSyncConfiguration.ImageFileCopyMode =ImportImageFileCopyMode.CopyFiles;
+            expectedSyncConfiguration.ImageFileCopyMode = ImportImageFileCopyMode.CopyFiles;
 
             ISyncContext syncContext =
                 new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
 
-            ImageSyncOptions options = new ImageSyncOptions(DataSourceType.SavedSearch,
+            ImageSyncOptions options = new ImageSyncOptions(
+                DataSourceType.SavedSearch,
                 _savedSearchId, DestinationLocationType.Folder, _destinationFolderId);
             options.CopyImagesMode = ImportImageFileCopyMode.CopyFiles;
 
@@ -84,7 +86,8 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
             ISyncContext syncContext =
                 new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
 
-            ImageSyncOptions options = new ImageSyncOptions(DataSourceType.SavedSearch,
+            ImageSyncOptions options = new ImageSyncOptions(
+                DataSourceType.SavedSearch,
                 _savedSearchId, DestinationLocationType.Folder, _destinationFolderId);
             RetryOptions retryOptions = new RetryOptions(JobHistory.ArtifactID);
 
@@ -101,12 +104,18 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
         private static IEnumerable<object[]> OverwriteModeDataSource => new List<object[]>()
         {
-            new object[] {new OverwriteOptions(ImportOverwriteMode.AppendOnly),ImportOverwriteMode.AppendOnly, FieldOverlayBehavior.UseFieldSettings},
-            new object[] {new OverwriteOptions(ImportOverwriteMode.AppendOverlay) {FieldsOverlayBehavior = FieldOverlayBehavior.ReplaceValues},
-                ImportOverwriteMode.AppendOverlay, FieldOverlayBehavior.ReplaceValues},
-            new object[] {new OverwriteOptions(ImportOverwriteMode.AppendOverlay) { FieldsOverlayBehavior = FieldOverlayBehavior.MergeValues },
-                ImportOverwriteMode.AppendOverlay, FieldOverlayBehavior.MergeValues},
-            new object[] { new OverwriteOptions(ImportOverwriteMode.OverlayOnly), ImportOverwriteMode.OverlayOnly, FieldOverlayBehavior.UseFieldSettings}
+            new object[] { new OverwriteOptions(ImportOverwriteMode.AppendOnly), ImportOverwriteMode.AppendOnly, FieldOverlayBehavior.UseFieldSettings },
+            new object[]
+            {
+                new OverwriteOptions(ImportOverwriteMode.AppendOverlay) { FieldsOverlayBehavior = FieldOverlayBehavior.ReplaceValues },
+                ImportOverwriteMode.AppendOverlay, FieldOverlayBehavior.ReplaceValues
+            },
+            new object[]
+            {
+                new OverwriteOptions(ImportOverwriteMode.AppendOverlay) { FieldsOverlayBehavior = FieldOverlayBehavior.MergeValues },
+                ImportOverwriteMode.AppendOverlay, FieldOverlayBehavior.MergeValues
+            },
+            new object[] { new OverwriteOptions(ImportOverwriteMode.OverlayOnly), ImportOverwriteMode.OverlayOnly, FieldOverlayBehavior.UseFieldSettings }
         };
 
         [TestCaseSource(nameof(OverwriteModeDataSource))]
@@ -121,7 +130,8 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
             ISyncContext syncContext =
                 new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
 
-            ImageSyncOptions options = new ImageSyncOptions(DataSourceType.SavedSearch,
+            ImageSyncOptions options = new ImageSyncOptions(
+                DataSourceType.SavedSearch,
                 _savedSearchId, DestinationLocationType.Folder, _destinationFolderId);
 
             // Act
@@ -147,10 +157,11 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
             ISyncContext syncContext =
                 new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
 
-            ImageSyncOptions options = new ImageSyncOptions(DataSourceType.SavedSearch,
+            ImageSyncOptions options = new ImageSyncOptions(
+                DataSourceType.SavedSearch,
                 _savedSearchId, DestinationLocationType.Folder, _destinationFolderId);
             ProductionImagePrecedenceOptions productionOptions = new ProductionImagePrecedenceOptions(
-                new List<int> {1, 2}, includeOriginalImages);
+                new List<int> { 1, 2 }, includeOriginalImages);
 
             // Act
             int createdConfigurationId = await new SyncConfigurationBuilder(syncContext, ServicesMgr, new EmptyLogger())
@@ -173,7 +184,8 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
             ISyncContext syncContext =
                 new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
 
-            ImageSyncOptions options = new ImageSyncOptions(DataSourceType.SavedSearch,
+            ImageSyncOptions options = new ImageSyncOptions(
+                DataSourceType.SavedSearch,
                 _savedSearchId, DestinationLocationType.Folder, _destinationFolderId);
             EmailNotificationsOptions emailOptions = new EmailNotificationsOptions(new List<string>()
             {
@@ -202,7 +214,8 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
             ISyncContext syncContext =
                 new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
 
-            ImageSyncOptions options = new ImageSyncOptions(DataSourceType.SavedSearch,
+            ImageSyncOptions options = new ImageSyncOptions(
+                DataSourceType.SavedSearch,
                 _savedSearchId, DestinationLocationType.Folder, _destinationFolderId);
 
             // Act
@@ -217,7 +230,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
             await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
         }
 
-        async Task<SyncConfigurationRdo> CreateDefaultExpectedConfigurationAsync(List<FieldMap> expectedFieldsMapping = null)
+        private async Task<SyncConfigurationRdo> CreateDefaultExpectedConfigurationAsync(List<FieldMap> expectedFieldsMapping = null)
         {
             var fieldsMappingToSerialize = expectedFieldsMapping ?? await GetDocumentIdentifierMappingAsync(SourceWorkspaceId, DestinationWorkspaceId).ConfigureAwait(false);
 
@@ -225,7 +238,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
             {
                 RdoArtifactTypeId = 10,
                 DestinationRdoArtifactTypeId = 10,
-                DataSourceType =  DataSourceType.SavedSearch,
+                DataSourceType = DataSourceType.SavedSearch,
                 DataSourceArtifactId = _savedSearchId,
                 DestinationWorkspaceArtifactId = DestinationWorkspaceId,
                 DataDestinationArtifactId = _destinationFolderId,

@@ -37,7 +37,7 @@ namespace Relativity.Sync.Tests.Unit.Types
             AssemblyName syncAssemblyName = assemblies.Single(x => x.Name == "Relativity.Sync");
             Assembly syncAssembly = Assembly.Load(syncAssemblyName.FullName);
             Type[] syncTypes = syncAssembly.GetTypes();
-            
+
             // Act && Assert
             foreach (Type syncType in syncTypes)
             {
@@ -53,8 +53,9 @@ namespace Relativity.Sync.Tests.Unit.Types
                     var parameters = constructor.GetParameters();
                     foreach (var parameter in parameters)
                     {
-                        parameter.ParameterType.Should().NotBe(typeof(IServicesMgr), 
-                        $"Class {syncType} should not use {nameof(IServicesMgr)} type. Use {nameof(ISourceServiceFactoryForAdmin)} or {nameof(ISourceServiceFactoryForUser)} instead.");
+                        parameter.ParameterType.Should().NotBe(
+                            typeof(IServicesMgr),
+                            $"Class {syncType} should not use {nameof(IServicesMgr)} type. Use {nameof(ISourceServiceFactoryForAdmin)} or {nameof(ISourceServiceFactoryForUser)} instead.");
                     }
                 }
             }

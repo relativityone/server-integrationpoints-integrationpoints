@@ -10,7 +10,7 @@ namespace Relativity.Sync.Configuration
         int SourceWorkspaceArtifactId { get; }
 
         int DestinationWorkspaceArtifactId { get; }
-        
+
         int RdoArtifactTypeId { get; }
 
         int DestinationRdoArtifactTypeId { get; }

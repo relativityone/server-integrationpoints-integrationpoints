@@ -250,7 +250,8 @@ namespace Relativity.Sync.Storage
             return allBatches.SelectMany(x => x);
         }
 
-        private async Task<IEnumerable<int>> ReadBatchesIdsWithStatusAsync(int syncConfigurationArtifactId,
+        private async Task<IEnumerable<int>> ReadBatchesIdsWithStatusAsync(
+            int syncConfigurationArtifactId,
             BatchStatus batchStatus, Guid exportRunId)
         {
             IEnumerable<int> batchIds = System.Array.Empty<int>();
@@ -280,7 +281,8 @@ namespace Relativity.Sync.Storage
             return batchIds;
         }
 
-        private async Task<IEnumerable<IBatch>> ReadBatchesWithStatusAsync(int syncConfigurationArtifactId,
+        private async Task<IEnumerable<IBatch>> ReadBatchesWithStatusAsync(
+            int syncConfigurationArtifactId,
             BatchStatus batchStatus, Guid exportRunId)
         {
             var batches = new ConcurrentBag<IBatch>();
@@ -352,13 +354,15 @@ namespace Relativity.Sync.Storage
             return batches;
         }
 
-        private async Task UpdateFieldValueAsync<TValue>(Expression<Func<SyncBatchRdo, TValue>> expression,
+        private async Task UpdateFieldValueAsync<TValue>(
+            Expression<Func<SyncBatchRdo, TValue>> expression,
             TValue value)
         {
             await _rdoManager.SetValueAsync(_workspaceArtifactId, _batchRdo, expression, value).ConfigureAwait(false);
         }
 
-        public static async Task<IBatch> CreateAsync(IRdoManager rdoManager,
+        public static async Task<IBatch> CreateAsync(
+            IRdoManager rdoManager,
             ISourceServiceFactoryForAdmin serviceFactory, int workspaceArtifactId, int syncConfigurationArtifactId, Guid exportRunId,
             int totalDocumentsCount, int startingIndex)
         {
@@ -376,7 +380,8 @@ namespace Relativity.Sync.Storage
             return batch;
         }
 
-        public static async Task<IEnumerable<IBatch>> GetAllAsync(IRdoManager rdoManager,
+        public static async Task<IEnumerable<IBatch>> GetAllAsync(
+            IRdoManager rdoManager,
             ISourceServiceFactoryForAdmin serviceFactoryForAdmin, int workspaceArtifactId, int syncConfigurationArtifactId, Guid exportRunId)
         {
             Batch batch = new Batch(rdoManager, serviceFactoryForAdmin, workspaceArtifactId);
@@ -384,7 +389,8 @@ namespace Relativity.Sync.Storage
             return batches;
         }
 
-        public static async Task<IBatch> GetLastAsync(IRdoManager rdoManager,
+        public static async Task<IBatch> GetLastAsync(
+            IRdoManager rdoManager,
             ISourceServiceFactoryForAdmin serviceFactoryForAdmin, int workspaceArtifactId, int syncConfigurationArtifactId, Guid exportRunId)
         {
             Batch batch = new Batch(rdoManager, serviceFactoryForAdmin, workspaceArtifactId);
@@ -392,7 +398,8 @@ namespace Relativity.Sync.Storage
             return batchFound ? batch : null;
         }
 
-        public static async Task<IEnumerable<int>> GetAllBatchesIdsToExecuteAsync(IRdoManager rdoManager,
+        public static async Task<IEnumerable<int>> GetAllBatchesIdsToExecuteAsync(
+            IRdoManager rdoManager,
             ISourceServiceFactoryForAdmin serviceFactoryForAdmin, int workspaceArtifactId, int syncConfigurationId, Guid exportRunId)
         {
             var batch = new Batch(rdoManager, serviceFactoryForAdmin, workspaceArtifactId);
@@ -401,7 +408,8 @@ namespace Relativity.Sync.Storage
             return batchIds;
         }
 
-        public static async Task<IEnumerable<IBatch>> GetAllSuccessfullyExecutedBatchesAsync(IRdoManager rdoManager,
+        public static async Task<IEnumerable<IBatch>> GetAllSuccessfullyExecutedBatchesAsync(
+            IRdoManager rdoManager,
             ISourceServiceFactoryForAdmin serviceFactoryForAdmin, int workspaceArtifactId, int syncConfigurationId, Guid exportRunId)
         {
             var batch = new Batch(rdoManager, serviceFactoryForAdmin, workspaceArtifactId);
@@ -410,7 +418,8 @@ namespace Relativity.Sync.Storage
             return batches;
         }
 
-        public static async Task<IBatch> GetNextAsync(IRdoManager rdoManager,
+        public static async Task<IBatch> GetNextAsync(
+            IRdoManager rdoManager,
             ISourceServiceFactoryForAdmin serviceFactoryForAdmin, int workspaceArtifactId, int syncConfigurationArtifactId,
             int startingIndex, Guid exportRunId)
         {

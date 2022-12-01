@@ -261,7 +261,6 @@ namespace Relativity.Sync.Tests.Performance.ARM
                     {
                         File.Delete(archiveInformationFile);
                     }
-
                 }
             }
             catch (Exception ex)
@@ -288,7 +287,6 @@ namespace Relativity.Sync.Tests.Performance.ARM
                             CacheLocationID = AppSettings.ArmCacheLocationId,
                             FileRepositoryID = AppSettings.ArmFileRepositoryId
                         },
-
                     };
                     return await restoreJobManager.CreateAsync(request).ConfigureAwait(false);
                 }
@@ -365,7 +363,8 @@ namespace Relativity.Sync.Tests.Performance.ARM
                     }
 
                     await Task.Delay(delay).ConfigureAwait(false);
-                } while (jobStatus.JobState != JobState.Complete);
+                }
+                while (jobStatus.JobState != JobState.Complete);
             }
         }
 

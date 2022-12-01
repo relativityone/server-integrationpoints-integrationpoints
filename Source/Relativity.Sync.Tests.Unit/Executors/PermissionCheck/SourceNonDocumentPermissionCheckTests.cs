@@ -39,7 +39,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
         {
             _logger = new Mock<IAPILog>();
             _serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
-            _instance = new SourceNonDocumentPermissionCheck(_logger.Object,_serviceFactoryForUser.Object);
+            _instance = new SourceNonDocumentPermissionCheck(_logger.Object, _serviceFactoryForUser.Object);
         }
 
         [Test]
@@ -64,7 +64,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
             Mock<IPermissionsCheckConfiguration> configuration = ConfigurationSet();
             Mock<IPermissionManager> permissionManager = ArrangeSet();
 
-            permissionManager.Setup(x => x.GetPermissionSelectedAsync(-1,
+            permissionManager.Setup(x => x.GetPermissionSelectedAsync(
+                -1,
                 It.IsAny<List<PermissionRef>>(), It.IsAny<int>())).Throws<SyncException>();
 
             // Act
@@ -238,8 +239,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
                 .Be("User does not have permission to export in the source workspace.");
         }
 
-        
-
         [Test]
         public async Task ExecutePermissionValueListEmptyTest()
         {
@@ -278,7 +277,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
             var permissionToExport = new List<PermissionValue> { new PermissionValue { PermissionID = _ALLOW_EXPORT_PERMISSION_ID, Selected = true } };
             permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(y => y.Any(z => z.PermissionID == _ALLOW_EXPORT_PERMISSION_ID))))
                 .ReturnsAsync(permissionToExport);
-            
+
             return permissionManager;
         }
 
@@ -288,7 +287,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
             configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_TEST_WORKSPACE_ARTIFACT_ID);
             configuration.SetupGet(x => x.JobHistoryObjectTypeGuid).Returns(_jobHistory);
             configuration.SetupGet(x => x.RdoArtifactTypeId).Returns(_RDO_ARTIFACT_TYPE_ID);
-            
+
             return configuration;
         }
     }

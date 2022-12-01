@@ -50,7 +50,7 @@ namespace Relativity.Sync.Tests.Integration
                 {
                     Name = validWorkspaceName
                 });
-            
+
             _configuration.DestinationWorkspaceArtifactId = _WORKSPACE_ARTIFACT_ID;
 
             // Act
@@ -71,7 +71,7 @@ namespace Relativity.Sync.Tests.Integration
             {
                 Name = invalidWorkspaceName
             });
-            
+
             _configuration.DestinationWorkspaceArtifactId = _WORKSPACE_ARTIFACT_ID;
 
             // Act

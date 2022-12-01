@@ -30,7 +30,8 @@ namespace Relativity.Sync.Executors
 
                     if (workspace == null)
                     {
-                        _logger.LogError("Couldn't find workspace Artifact ID: {workspaceArtifactId}",
+                        _logger.LogError(
+                            "Couldn't find workspace Artifact ID: {workspaceArtifactId}",
                             workspaceArtifactId);
                         throw new SyncException($"Couldn't find workspace Artifact ID: {workspaceArtifactId}");
                     }

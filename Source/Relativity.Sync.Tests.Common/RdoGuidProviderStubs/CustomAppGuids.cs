@@ -72,20 +72,18 @@ namespace Relativity.Sync.Tests.Common.RdoGuidProviderStubs
                 JobHistory.TotalItemsFieldGuid,
                 JobHistory.DestinationWorkspaceInformationGuid,
                 JobHistory.StartTimeGuid,
-                JobHistory.EndTimeGuid
-            ),
+                JobHistory.EndTimeGuid),
             new JobHistoryStatusOptions(
-                JobHistoryStatus.ValidatingGuid,
-                JobHistoryStatus.ValidationFailedGuid,
-                JobHistoryStatus.ProcessingGuid,
-                JobHistoryStatus.CompletedGuid,
-                JobHistoryStatus.CompletedWithErrorsGuid,
-                JobHistoryStatus.JobFailedGuid,
-                JobHistoryStatus.StoppingGuid,
-                JobHistoryStatus.StoppedGuid,
-                JobHistoryStatus.SuspendingGuid,
-                JobHistoryStatus.SuspendedGuid
-            ),
+                    JobHistoryStatus.ValidatingGuid,
+                    JobHistoryStatus.ValidationFailedGuid,
+                    JobHistoryStatus.ProcessingGuid,
+                    JobHistoryStatus.CompletedGuid,
+                    JobHistoryStatus.CompletedWithErrorsGuid,
+                    JobHistoryStatus.JobFailedGuid,
+                    JobHistoryStatus.StoppingGuid,
+                    JobHistoryStatus.StoppedGuid,
+                    JobHistoryStatus.SuspendingGuid,
+                    JobHistoryStatus.SuspendedGuid),
             new JobHistoryErrorOptions(
                 JobHistoryError.TypeGuid,
                 JobHistoryError.NameGuid,
@@ -98,8 +96,7 @@ namespace Relativity.Sync.Tests.Common.RdoGuidProviderStubs
                 JobHistoryError.ErrorStatusGuid,
                 JobHistoryError.ItemLevelErrorGuid,
                 JobHistoryError.JobLevelErrorGuid,
-                JobHistoryError.NewStatusGuid
-            ),
+                JobHistoryError.NewStatusGuid),
             new DestinationWorkspaceOptions(
                 DestinationWorkspace.TypeGuid,
                 DestinationWorkspace.NameGuid,
@@ -108,8 +105,6 @@ namespace Relativity.Sync.Tests.Common.RdoGuidProviderStubs
                 DestinationWorkspace.DestinationInstanceNameGuid,
                 DestinationWorkspace.DestinationInstanceArtifactIdGuid,
                 DestinationWorkspace.JobHistoryOnDocumentGuid,
-                DestinationWorkspace.DestinationWorkspaceOnDocument
-            )
-        );
+                DestinationWorkspace.DestinationWorkspaceOnDocument));
     }
 }

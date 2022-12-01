@@ -1,6 +1,6 @@
-﻿using Relativity.API;
+﻿using System.Threading;
+using Relativity.API;
 using Relativity.Sync.Logging;
-using System.Threading;
 
 namespace Relativity.Sync
 {
@@ -24,8 +24,7 @@ namespace Relativity.Sync
         /// <summary>
         /// Cancellation token that signals a job to suspend (e.g. drain-stop)
         /// </summary>
-        public CancellationToken DrainStopCancellationToken { get;  }
-
+        public CancellationToken DrainStopCancellationToken { get; }
 
         /// <summary>
         /// Cancellation token that signals either cancel or drain stop

@@ -17,14 +17,14 @@ namespace Relativity.Sync.Tests.Unit
         private Mock<ISerializer> _serializer;
 
         private const string _FIELD_MAP = "field map";
-      
+
         [SetUp]
         public void Setup()
         {
             _serializer = new Mock<ISerializer>();
 
             _instance = new FieldMappings(_configuration, _serializer.Object, new EmptyLogger());
-           
+
             _configurationRdo.FieldsMapping = _FIELD_MAP;
         }
 

@@ -56,17 +56,17 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 {
                     new FieldValuePair()
                     {
-                        Field = new Field() {Guids = new List<Guid>() {instanceNameFieldGuid}},
+                        Field = new Field() { Guids = new List<Guid>() { instanceNameFieldGuid } },
                         Value = sourceInstanceName
                     },
                     new FieldValuePair()
                     {
-                        Field = new Field() {Guids = new List<Guid>() {sourceWorkspaceNameGuid}},
+                        Field = new Field() { Guids = new List<Guid>() { sourceWorkspaceNameGuid } },
                         Value = sourceWorkspaceName
                     },
                     new FieldValuePair()
                     {
-                        Field = new Field() {Guids = new List<Guid>() {caseIdFieldNameGuid}},
+                        Field = new Field() { Guids = new List<Guid>() { caseIdFieldNameGuid } },
                         Value = sourceWorkspaceArtifactId
                     }
                 }
@@ -122,7 +122,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // assert
             action.Should().Throw<RelativitySourceCaseTagRepositoryException>().WithInnerException<InvalidOperationException>();
         }
-        
 
         [Test]
         public async Task ItShouldCreateDestinationWorkspaceTag()
@@ -133,7 +132,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             const string sourceWorkspaceName = "workspace";
             const string sourceInstanceName = "instance";
             const string sourceTagName = "Source tag name";
-            
+
             CreateResult createResult = new CreateResult()
             {
                 Object = new RelativityObject()
@@ -220,14 +219,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
             await _sut.UpdateAsync(destinationWorkspaceArtifactId, tag).ConfigureAwait(false);
 
             // assert
-
             _objectManager.Verify(x => x.UpdateAsync(destinationWorkspaceArtifactId, It.Is<UpdateRequest>(request =>
                 VerifyUpdateRequest(request, tagArtifactId,
                     f => "Name".Equals(f.Field.Name, StringComparison.InvariantCulture) && string.Equals(f.Value, sourceTagName),
                     f => caseIdFieldNameGuid.Equals(f.Field.Guid) && string.Equals(f.Value, sourceWorkspaceArtifactId),
                     f => instanceNameFieldGuid.Equals(f.Field.Guid) && Equals(f.Value, sourceInstanceName),
-                    f => sourceWorkspaceNameGuid.Equals(f.Field.Guid) && string.Equals(f.Value, sourceWorkspaceName)
-                    ))));
+                    f => sourceWorkspaceNameGuid.Equals(f.Field.Guid) && string.Equals(f.Value, sourceWorkspaceName)))));
         }
 
         private bool VerifyUpdateRequest(UpdateRequest request, int tagArtifactId, params System.Predicate<FieldRefValuePair>[] predicates)
@@ -238,6 +235,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             {
                 checkPredicates = checkPredicates && fields.Exists(predicate);
             }
+
             return request.Object.ArtifactID == tagArtifactId &&
                     fields.Count == predicates.Length &&
                     checkPredicates;
@@ -266,6 +264,5 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // assert
             action.Should().Throw<RelativitySourceCaseTagRepositoryException>().WithInnerException<InvalidOperationException>();
         }
-
     }
 }

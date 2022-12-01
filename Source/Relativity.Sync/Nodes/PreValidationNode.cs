@@ -3,7 +3,7 @@ using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Nodes
 {
-    internal sealed class PreValidationNode: SyncNode<IPreValidationConfiguration>
+    internal sealed class PreValidationNode : SyncNode<IPreValidationConfiguration>
     {
         public PreValidationNode(ICommand<IPreValidationConfiguration> command, IAPILog logger) : base(command, logger)
         {

@@ -68,11 +68,11 @@ namespace Relativity.Sync.Tests.Unit.Storage
             _instance.IsSnapshotCreated.Should().Be(expectedValue);
         }
 
-        static IEnumerable<TestCaseData> SnapshotCaseSource()
+        private static IEnumerable<TestCaseData> SnapshotCaseSource()
         {
-            yield return new TestCaseData((Guid?) null, false);
-            yield return new TestCaseData((Guid?) Guid.Empty, false);
-            yield return new TestCaseData((Guid?) Guid.NewGuid(), true);
+            yield return new TestCaseData((Guid?)null, false);
+            yield return new TestCaseData((Guid?)Guid.Empty, false);
+            yield return new TestCaseData((Guid?)Guid.NewGuid(), true);
         }
 
         [Test]

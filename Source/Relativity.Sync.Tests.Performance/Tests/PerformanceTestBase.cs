@@ -38,6 +38,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
         public WorkspaceRef DestinationWorkspace { get; private set; }
 
         public ARMHelper ARMHelper { get; private set; }
+
         public AzureStorageHelper StorageHelper { get; private set; }
 
         public ConfigurationStub Configuration { get; set; }
@@ -61,7 +62,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
         public async Task UseArmWorkspaceAsync(string sourceWorkspaceArmFile, string destinationWorkspaceArmFile)
         {
             _workspaceType = WorkspaceType.ARM;
-            
+
             StorageHelper = AzureStorageHelper.CreateFromTestConfig();
 
             ARMHelper = ARMHelper.CreateInstance();
@@ -81,7 +82,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
             _workspaceType = WorkspaceType.Relativity;
 
             SourceWorkspace = await Environment.GetWorkspaceAsync(sourceWorkspaceName).ConfigureAwait(false);
-            
+
             if (!string.IsNullOrEmpty(destinationWorkspaceName))
             {
                 DestinationWorkspace = await Environment.GetWorkspaceAsync(destinationWorkspaceName).ConfigureAwait(false);
@@ -90,7 +91,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
         private async Task<WorkspaceRef> RestoreWorkspaceAsync(string armedWorkspaceFileName)
         {
-            string filePath = "";
+            string filePath = string.Empty;
             try
             {
                 filePath = await StorageHelper
@@ -108,7 +109,6 @@ namespace Relativity.Sync.Tests.Performance.Tests
             {
                 File.Delete(filePath);
             }
-
         }
 
         protected override async Task ChildSuiteTeardown()
@@ -117,7 +117,8 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
             if (!string.IsNullOrEmpty(AppSettings.PerformanceResultsFilePath))
             {
-                File.WriteAllLines(AppSettings.PerformanceResultsFilePath,
+                File.WriteAllLines(
+                    AppSettings.PerformanceResultsFilePath,
                     TestTimes.Select(pair => $"{pair.Key};{pair.Value.TotalSeconds.ToString("0.##", CultureInfo.InvariantCulture)}\n"));
             }
 
@@ -130,7 +131,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
             if (DestinationWorkspace == null)
             {
                 Logger.LogInformation("Creating destination workspace");
-                
+
                 DestinationWorkspace = await Environment
                     .CreateWorkspaceWithFieldsAsync(templateWorkspaceName: SourceWorkspace.Name).ConfigureAwait(false);
                 _wasDestinationForTestCaseCreated = true;
@@ -234,7 +235,8 @@ namespace Relativity.Sync.Tests.Performance.Tests
         ///    Creates needed objects in Relativity
         /// </summary>
         /// <returns></returns>
-        public async Task SetupConfigurationAsync(string savedSearchName = "All Documents",
+        public async Task SetupConfigurationAsync(
+            string savedSearchName = "All Documents",
             IEnumerable<FieldMap> mapping = null, bool useRootWorkspaceFolder = true)
         {
             Logger.LogInformation("Setting up configuration");
@@ -394,7 +396,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
 
         private async Task CleanUpWorkspacesAsync()
         {
-            if(_workspaceType == WorkspaceType.ARM)
+            if (_workspaceType == WorkspaceType.ARM)
             {
                 if (SourceWorkspace != null)
                 {

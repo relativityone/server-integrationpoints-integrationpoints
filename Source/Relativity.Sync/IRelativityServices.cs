@@ -18,7 +18,7 @@ namespace Relativity.Sync
         ///     Relativity authentication endpoint address
         /// </summary>
         Uri AuthenticationUri { get; }
-        
+
         /// <summary>
         ///     Interface with helper methods to programmatically interact with Relativity
         /// </summary>

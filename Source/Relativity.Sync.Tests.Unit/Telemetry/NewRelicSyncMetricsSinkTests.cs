@@ -26,7 +26,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
         public void Send_ShouldSendMetric_WhenValuesHasBeenFound()
         {
             // Arrange
-            TestMetric metric = new TestMetric {Value = 1};
+            TestMetric metric = new TestMetric { Value = 1 };
 
             // Act
             _sut.Send(metric);
@@ -62,7 +62,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
 
             // Act
             _sut.Send(metric);
-            
+
             // Assert
             _apmClientMock.Verify(x => x.Gauge(_APPLICATION_NAME, correlationId, It.IsAny<Dictionary<string, object>>()));
         }

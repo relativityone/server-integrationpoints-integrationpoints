@@ -16,14 +16,17 @@ namespace Relativity.Sync.Tests.Integration.Helpers
             {
                 return Convert.ToInt32(value, CultureInfo.InvariantCulture);
             }
+
             if (target == typeof(long))
             {
                 return Convert.ToInt64(value, CultureInfo.InvariantCulture);
             }
+
             if (target == typeof(bool))
             {
                 return Convert.ToBoolean(value, CultureInfo.InvariantCulture);
             }
+
             if (target == typeof(string))
             {
                 return value is DBNull ? null : Convert.ToString(value, CultureInfo.InvariantCulture);

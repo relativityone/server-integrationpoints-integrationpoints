@@ -24,7 +24,7 @@ namespace Relativity.Sync.Executors.Validation
             try
             {
                 List<ValidationMessage> allMessages = await BaseValidateAsync(configuration, onlyIdentifierShouldBeMapped: false, token).ConfigureAwait(false);
-                
+
                 return new ValidationResult(allMessages.ToArray());
             }
             catch (Exception ex)

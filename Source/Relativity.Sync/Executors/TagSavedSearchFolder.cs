@@ -76,6 +76,7 @@ namespace Relativity.Sync.Executors
             {
                 existingSearchContainer = result.Results[0].Artifact;
             }
+
             return existingSearchContainer;
         }
 

@@ -27,7 +27,7 @@ namespace Relativity.Sync.Transfer.StreamWrappers
         public bool LeaveOpen { get; }
 
         /// <summary>
-        /// Wrapper for the ASCII stream to provide data in Unicode format. 
+        /// Wrapper for the ASCII stream to provide data in Unicode format.
         /// </summary>
         public AsciiToUnicodeStream(Stream asciiStream, bool leaveOpen = false)
         {

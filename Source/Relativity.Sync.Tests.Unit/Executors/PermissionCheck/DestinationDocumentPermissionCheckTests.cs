@@ -45,41 +45,45 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
             const int sourceJobObjectTypeArtifactId = 333;
 
             _syncObjectTypeManagerFake
-                .Setup(x => x.QueryObjectTypeByNameAsync(It.IsAny<int>(),
+                .Setup(x => x.QueryObjectTypeByNameAsync(
+                    It.IsAny<int>(),
                     It.Is<string>(name => name == _SOURCE_WORKSPACE_OBJECT_TYPE_NAME))).ReturnsAsync(new QueryResult()
-                {
-                    Objects = new List<RelativityObject>()
+                    {
+                        Objects = new List<RelativityObject>()
                     {
                         new RelativityObject()
                         {
                             ArtifactID = sourceCaseObjectTypeArtifactId
                         }
                     }
-                });
+                    });
             _syncObjectTypeManagerFake
-                .Setup(x => x.QueryObjectTypeByNameAsync(It.IsAny<int>(),
+                .Setup(x => x.QueryObjectTypeByNameAsync(
+                    It.IsAny<int>(),
                     It.Is<string>(name => name == _SOURCE_JOB_OBJECT_TYPE_NAME))).ReturnsAsync(new QueryResult()
-                {
-                    Objects = new List<RelativityObject>()
+                    {
+                        Objects = new List<RelativityObject>()
                     {
                         new RelativityObject()
                         {
                             ArtifactID = sourceJobObjectTypeArtifactId
                         }
                     }
-                });
+                    });
             _syncObjectTypeManagerFake
-                .Setup(x => x.GetObjectTypeArtifactTypeIdAsync(It.IsAny<int>(),
+                .Setup(x => x.GetObjectTypeArtifactTypeIdAsync(
+                    It.IsAny<int>(),
                     It.Is<int>(artifactID => artifactID == sourceCaseObjectTypeArtifactId)))
-                .ReturnsAsync( _SOURCE_CASE_OBJECT_TYPE_ARTIFACT_TYPE_ID);
+                .ReturnsAsync(_SOURCE_CASE_OBJECT_TYPE_ARTIFACT_TYPE_ID);
             _syncObjectTypeManagerFake
-                .Setup(x => x.GetObjectTypeArtifactTypeIdAsync(It.IsAny<int>(),
+                .Setup(x => x.GetObjectTypeArtifactTypeIdAsync(
+                    It.IsAny<int>(),
                     It.Is<int>(artifactID => artifactID == sourceJobObjectTypeArtifactId)))
                 .ReturnsAsync(_SOURCE_JOB_OBJECT_TYPE_ARTIFACT_TYPE_ID);
 
-
             _destinationServiceFactoryFake = new Mock<IDestinationServiceFactoryForUser>();
-            _sut = new DestinationDocumentPermissionCheck(_destinationServiceFactoryFake.Object,
+            _sut = new DestinationDocumentPermissionCheck(
+                _destinationServiceFactoryFake.Object,
                 _syncObjectTypeManagerFake.Object, new EmptyLogger());
         }
 
@@ -91,10 +95,10 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 
             Mock<IPermissionManager> permissionManager = SetupPermissions();
 
-            //Act
+            // Act
             ValidationResult actualResult = await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             actualResult.IsValid.Should().BeTrue();
             actualResult.Messages.Should().HaveCount(0);
         }
@@ -115,7 +119,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
             ValidationResult actualResult =
                 await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             actualResult.IsValid.Should().BeFalse();
             actualResult.Messages.Should().HaveCount(1);
             actualResult.Messages.First().ShortMessage.Should().Be(
@@ -131,14 +135,14 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 
             Mock<IPermissionManager> permissionManager = SetupPermissions();
 
-            permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>
-                    (y => y.Any(z => z.PermissionID == _ALLOW_IMPORT_PERMISSION_ID)))).Throws<SyncException>();
+            permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(
+                    y => y.Any(z => z.PermissionID == _ALLOW_IMPORT_PERMISSION_ID)))).Throws<SyncException>();
 
             // Act
             ValidationResult actualResult =
                 await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             actualResult.IsValid.Should().BeFalse();
             actualResult.Messages.Should().HaveCount(1);
             actualResult.Messages.First().ShortMessage.Should().Be(
@@ -153,14 +157,14 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 
             Mock<IPermissionManager> permissionManager = SetupPermissions();
 
-            permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>
-                (y => y.Any(z => z.ArtifactType.ID == _ARTIFACT_TYPE_DOCUMENT)))).Throws<SyncException>();
+            permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(
+                y => y.Any(z => z.ArtifactType.ID == _ARTIFACT_TYPE_DOCUMENT)))).Throws<SyncException>();
 
             // Act
             ValidationResult actualResult =
                 await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             actualResult.IsValid.Should().BeFalse();
             actualResult.Messages.Should().HaveCount(1);
             actualResult.Messages.First().ShortMessage.Should().Be(
@@ -175,14 +179,14 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 
             Mock<IPermissionManager> permissionManager = SetupPermissions();
 
-            permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>
-                (y => y.Any(z => z.ArtifactType.ID == _ARTIFACT_TYPE_SEARCH)))).Throws<SyncException>();
+            permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(
+                y => y.Any(z => z.ArtifactType.ID == _ARTIFACT_TYPE_SEARCH)))).Throws<SyncException>();
 
             // Act
             ValidationResult actualResult =
                 await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             actualResult.IsValid.Should().BeFalse();
             actualResult.Messages.Should().HaveCount(1);
             actualResult.Messages.First().ShortMessage.Should().Be(
@@ -197,14 +201,14 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 
             Mock<IPermissionManager> permissionManager = SetupPermissions();
 
-            permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>
-                (y => y.Any(z => z.ArtifactType.ID == _ARTIFACT_TYPE_SEARCH)))).Throws<SyncException>();
+            permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(
+                y => y.Any(z => z.ArtifactType.ID == _ARTIFACT_TYPE_SEARCH)))).Throws<SyncException>();
 
             // Act
             ValidationResult actualResult =
                 await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             actualResult.IsValid.Should().BeTrue();
             actualResult.Messages.Should().HaveCount(0);
         }
@@ -228,7 +232,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
             ValidationResult actualResult =
                 await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             actualResult.IsValid.Should().BeFalse();
             actualResult.Messages.Should().HaveCount(_EXPECTED_VALUE_FOR_DOCUMENT);
             actualResult.Messages.First().ShortMessage.Should().Be(
@@ -244,14 +248,14 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 
             Mock<IPermissionManager> permissionManager = SetupPermissions();
 
-            permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>
-                (y => y.Any(z => z.ArtifactType.ID == _ARTIFACT_TYPE_FOLDER)), It.IsAny<int>())).Throws<SyncException>();
+            permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(
+                y => y.Any(z => z.ArtifactType.ID == _ARTIFACT_TYPE_FOLDER)), It.IsAny<int>())).Throws<SyncException>();
 
             // Act
             ValidationResult actualResult =
                 await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             actualResult.IsValid.Should().BeFalse();
             actualResult.Messages.Should().HaveCount(1);
             actualResult.Messages.First().ShortMessage.Should().Be(
@@ -296,7 +300,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 
             permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.IsAny<List<PermissionRef>>())).ReturnsAsync(permissionValuesDefault);
 
-            permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(),
+            permissionManager.Setup(x => x.GetPermissionSelectedAsync(
+                It.IsAny<int>(),
                 It.Is<List<PermissionRef>>(y => y.Any(z => z.PermissionID == _ALLOW_IMPORT_PERMISSION_ID)))).ReturnsAsync(permissionValuesDefault);
 
             // Act
@@ -337,7 +342,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
             AssertInsufficientPermissionsToCreateTagInDestination(actualResult);
         }
 
-
         private static void AssertInsufficientPermissionsToCreateTagInDestination(ValidationResult actualResult)
         {
             actualResult.IsValid.Should().BeFalse();
@@ -361,7 +365,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
             permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.IsAny<List<PermissionRef>>())).ReturnsAsync(permissionValueDefault);
 
             var permissionToExport = new List<PermissionValue> { new PermissionValue { Selected = true, PermissionID = _ALLOW_IMPORT_PERMISSION_ID } };
-            permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(),
+            permissionManager.Setup(x => x.GetPermissionSelectedAsync(
+                It.IsAny<int>(),
                 It.Is<List<PermissionRef>>(y => y.Any(z => z.PermissionID == _ALLOW_IMPORT_PERMISSION_ID)))).ReturnsAsync(permissionToExport);
 
             return permissionManager;

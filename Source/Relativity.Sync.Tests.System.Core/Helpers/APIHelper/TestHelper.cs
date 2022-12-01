@@ -83,7 +83,6 @@ namespace Relativity.Sync.Tests.System.Core.Helpers.APIHelper
             throw new NotImplementedException();
         }
 
-
         #endregion
     }
 }

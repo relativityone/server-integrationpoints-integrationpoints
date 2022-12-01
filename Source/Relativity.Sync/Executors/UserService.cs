@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.Interfaces.Group;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Sync.Configuration;
 using Relativity.Sync.KeplerFactory;
 
 namespace Relativity.Sync.Executors
@@ -12,13 +11,13 @@ namespace Relativity.Sync.Executors
     {
         private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
         private readonly IAPILog _logger;
-        
+
         public UserService(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IAPILog logger)
         {
             _serviceFactoryForAdmin = serviceFactoryForAdmin;
             _logger = logger;
         }
-        
+
         public async Task<bool> ExecutingUserIsAdminAsync(int userId)
         {
             _logger.LogInformation("Check if User {userId} is Admin", userId);
@@ -30,7 +29,7 @@ namespace Relativity.Sync.Executors
                 return result.Objects.Any();
             }
         }
-        
+
         private static QueryRequest BuildAdminGroupsQuery()
         {
             const string adminGroupType = "System Admin";

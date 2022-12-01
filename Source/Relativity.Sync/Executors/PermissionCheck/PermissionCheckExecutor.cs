@@ -31,7 +31,8 @@ namespace Relativity.Sync.Executors.PermissionCheck
             ExecutionResult executionResult = validationResult.IsValid
                 ? ExecutionResult.Success()
                 : ExecutionResult.Failure(
-                    new ValidationException("Permission checks failed. See messages for more details.",
+                    new ValidationException(
+                        "Permission checks failed. See messages for more details.",
                         validationResult));
 
             return executionResult;

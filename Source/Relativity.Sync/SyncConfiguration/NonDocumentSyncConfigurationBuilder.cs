@@ -50,7 +50,7 @@ namespace Relativity.Sync.SyncConfiguration
             if (_fieldsMappingAction != null)
             {
                 _fieldsMappingAction(_fieldsMappingBuilder);
-                
+
                 SyncConfiguration.FieldsMapping = Serializer.Serialize(
                     _fieldsMappingBuilder.FieldsMapping);
             }

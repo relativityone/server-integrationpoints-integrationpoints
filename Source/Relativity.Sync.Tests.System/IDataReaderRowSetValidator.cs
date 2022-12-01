@@ -3,6 +3,7 @@
     internal interface IDataReaderRowSetValidator
     {
         void ValidateAndRegisterRead(string controlNumber, params FieldVerifyData[] fieldVerifyData);
+
         void ValidateAllRead();
     }
 }

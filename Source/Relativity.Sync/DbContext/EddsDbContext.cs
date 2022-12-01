@@ -197,7 +197,7 @@ namespace Relativity.Sync.DbContext
         public SqlDataReader ExecuteParameterizedSQLStatementAsReader(string sqlStatement, IEnumerable<SqlParameter> parameters,
             int timeoutValue = -1, bool sequentialAccess = false)
         {
-            return _context.ExecuteParameterizedSQLStatementAsReader(sqlStatement, parameters, 
+            return _context.ExecuteParameterizedSQLStatementAsReader(sqlStatement, parameters,
                 timeoutValue, sequentialAccess);
         }
 
@@ -272,7 +272,9 @@ namespace Relativity.Sync.DbContext
         }
 
         public string Database => _context.Database;
+
         public string ServerName => _context.ServerName;
+
         public bool IsMasterDatabase => _context.IsMasterDatabase;
     }
 }

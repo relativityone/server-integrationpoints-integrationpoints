@@ -65,6 +65,7 @@ namespace Relativity.Sync.Storage
                 {
                     return objectManagerValue.Objects.First().ArtifactID;
                 }
+
                 throw new SyncException($"Error while querying for 'Relativity' provider using ObjectManager. Query returned {objectManagerValue.TotalCount} objects, but exactly {countOfObjects} was expected.");
             }
         }

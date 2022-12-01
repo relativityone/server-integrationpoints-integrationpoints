@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
             _serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
             _objectManager = new Mock<IObjectManager>();
             _sycJobParameters = FakeHelper.CreateSyncJobParameters();
-            _instance = new PermissionsCheckConfiguration(_configuration, _sycJobParameters,_serviceFactoryForUser.Object);
+            _instance = new PermissionsCheckConfiguration(_configuration, _sycJobParameters, _serviceFactoryForUser.Object);
         }
 
         [Test]
@@ -57,7 +57,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
             // Act
             int sourceArtifactId = _instance.SourceProviderArtifactId;
 
-            //Assert
+            // Assert
             sourceArtifactId.Should().Be(_WORKSPACE_ARTIFACT_ID);
         }
 
@@ -119,9 +119,9 @@ namespace Relativity.Sync.Tests.Unit.Storage
             // Act
             int sourceArtifactId = _instance.SourceProviderArtifactId;
 
-            //Assert
+            // Assert
             sourceArtifactId.Should().Be(_WORKSPACE_ARTIFACT_ID);
-            _objectManager.Verify(x => x.QueryAsync(It.IsAny<int>(),It.Is<QueryRequest>(qr => AssertQueryRequest(qr)), 0, 1));
+            _objectManager.Verify(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(qr => AssertQueryRequest(qr)), 0, 1));
         }
 
         private bool AssertQueryRequest(QueryRequest queryRequest)

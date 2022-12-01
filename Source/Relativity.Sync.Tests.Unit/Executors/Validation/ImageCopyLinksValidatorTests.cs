@@ -122,7 +122,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             bool actualResult = _sut.ShouldValidate(pipelineObject);
 
             // Assert
-            actualResult.Should().Be(expectedResult,
+            actualResult.Should().Be(
+                expectedResult,
                 $"ShouldValidate should return {expectedResult} for pipeline {pipelineType.Name}");
         }
 
@@ -139,7 +140,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             result.IsValid.Should().BeTrue();
             result.Messages.Should().BeEmpty();
         }
-
 
         private void SetupValidator(int userId, ImportImageFileCopyMode copyMode, bool isRestrictedCopyLinksOnly, bool toggleNonAdminCanSyncUsingLinks)
         {

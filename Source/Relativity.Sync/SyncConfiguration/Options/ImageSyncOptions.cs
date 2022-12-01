@@ -39,7 +39,7 @@ namespace Relativity.Sync.SyncConfiguration.Options
         /// <param name="dataSourceId">Data source object Artifact ID.</param>
         /// <param name="destinationLocationType">Destination location type.</param>
         /// <param name="destinationLocationId">Destination object Artifact ID.</param>
-        public ImageSyncOptions(DataSourceType dataSourceType, int dataSourceId, 
+        public ImageSyncOptions(DataSourceType dataSourceType, int dataSourceId,
             DestinationLocationType destinationLocationType, int destinationLocationId)
         {
             DataSourceType = dataSourceType;

@@ -21,16 +21,17 @@ namespace Relativity.Sync.Executors.PermissionCheck.NonDocumentPermissionChecks
         {
             int destinationRdoArtifactTypeId = configuration.DestinationRdoArtifactTypeId;
 
-            validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, destinationRdoArtifactTypeId, new []{ PermissionType.Add }, TransferredObjectNoAdd(destinationRdoArtifactTypeId)).ConfigureAwait(false));
-            
+            validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, destinationRdoArtifactTypeId, new[] { PermissionType.Add }, TransferredObjectNoAdd(destinationRdoArtifactTypeId)).ConfigureAwait(false));
+
             if (configuration.ImportOverwriteMode == ImportOverwriteMode.AppendOverlay ||
                 configuration.ImportOverwriteMode == ImportOverwriteMode.OverlayOnly)
             {
-                validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, destinationRdoArtifactTypeId, new []{ PermissionType.Edit }, TransferredObjectNoEdit(destinationRdoArtifactTypeId)).ConfigureAwait(false));
+                validationResult.Add(await ValidateUserHasArtifactTypePermissionAsync(configuration, destinationRdoArtifactTypeId, new[] { PermissionType.Edit }, TransferredObjectNoEdit(destinationRdoArtifactTypeId)).ConfigureAwait(false));
             }
         }
 
         private static string TransferredObjectNoAdd(int objectTypeArtifactId) => $"User does not have permission to add objects of type {objectTypeArtifactId} in the destination workspace.";
+
         private static string TransferredObjectNoEdit(int objectTypeArtifactId) => $"User does not have permission to edit objects of type {objectTypeArtifactId} in the destination workspace.";
     }
 }

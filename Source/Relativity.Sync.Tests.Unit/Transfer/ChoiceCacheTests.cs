@@ -51,13 +51,13 @@ namespace Relativity.Sync.Tests.Unit.Transfer
                             ArtifactID = parentArtifactId
                         }
                     }
-                } 
+                }
             };
             _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult)
                 .Verifiable();
 
             // act
-            IList<ChoiceWithParentInfo> choicesWithParentInfo = await _instance.GetChoicesWithParentInfoAsync(new List<Choice>() {choice}).ConfigureAwait(false);
+            IList<ChoiceWithParentInfo> choicesWithParentInfo = await _instance.GetChoicesWithParentInfoAsync(new List<Choice>() { choice }).ConfigureAwait(false);
 
             // assert
             _objectManager.Verify();

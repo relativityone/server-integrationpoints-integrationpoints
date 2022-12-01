@@ -10,8 +10,11 @@ namespace Relativity.Sync.Executors
         IItemStatusMonitor ItemStatusMonitor { get; }
 
         event SyncJobEventHandler<ItemLevelError> OnItemLevelError;
-        event SyncJobEventHandler<ImportApiJobProgress> OnProgress; 
+
+        event SyncJobEventHandler<ImportApiJobProgress> OnProgress;
+
         event SyncJobEventHandler<ImportApiJobStatistics> OnComplete;
+
         event SyncJobEventHandler<ImportApiJobStatistics> OnFatalException;
 
         void Execute();

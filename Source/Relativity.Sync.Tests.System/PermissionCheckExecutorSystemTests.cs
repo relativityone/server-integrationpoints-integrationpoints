@@ -141,7 +141,7 @@ namespace Relativity.Sync.Tests.System
 
             _groupService = RelativityFacade.Instance.Resolve<IGroupService>();
             string groupName = Guid.NewGuid().ToString();
-            _group = _groupService.Create(new Group {Name = groupName});
+            _group = _groupService.Create(new Group { Name = groupName });
 
             _userService = RelativityFacade.Instance.Resolve<IUserService>();
             _user = CreateAndSetUpUser(_TEST_USER_EMAIL, _TEST_PASSWORD, _group);

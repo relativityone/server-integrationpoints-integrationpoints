@@ -143,7 +143,7 @@ namespace Relativity.Sync.Tests.System
 
             QueryRequest request = GetNativesQueryRequest();
 
-            TokenDrainStoppingAfterProcessingFirstBatch cancellationToken = 
+            TokenDrainStoppingAfterProcessingFirstBatch cancellationToken =
                 new TokenDrainStoppingAfterProcessingFirstBatch();
 
             ConfigurationStub configuration = new ConfigurationStub

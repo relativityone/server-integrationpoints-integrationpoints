@@ -6,7 +6,9 @@ namespace Relativity.Sync.Transfer
     internal sealed class NativeFilePathStructure
     {
         public string ServerPath { get; }
+
         public string FullDirectoryPath { get; }
+
         public string FileName { get; }
 
         public NativeFilePathStructure(string fullFilePath)

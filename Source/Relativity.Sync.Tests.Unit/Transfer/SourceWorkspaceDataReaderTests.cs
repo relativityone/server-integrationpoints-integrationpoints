@@ -127,7 +127,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             var dataReaderBuilder = new Mock<IBatchDataReaderBuilder>();
             dataReaderBuilder
                 .Setup(x => x.BuildAsync(It.IsAny<int>(), It.IsAny<RelativityObjectSlim[]>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(() => 
+                .ReturnsAsync(() =>
             {
                 previousReaderWasDisposed.Should().BeTrue();
                 previousReaderWasDisposed = false;
@@ -204,7 +204,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
             IAPILog log = new EmptyLogger();
 
-            var dataReader = new SourceWorkspaceDataReader(new SimpleBatchDataReaderBuilder(_identifierField), 
+            var dataReader = new SourceWorkspaceDataReader(
+                new SimpleBatchDataReaderBuilder(_identifierField),
                 _configuration.Object,
                 _exportBatcher.Object,
                 _fieldManager.Object,
@@ -351,7 +352,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         // We use these builder methods instead of a dedicated instance variable b/c the data reader
         // implements IDisposable, so we would have to make the entire test fixture IDisposable if we
         // kept around a reference.
-
         private SourceWorkspaceDataReader BuildInstanceUnderTest()
         {
             return BuildInstanceUnderTest(new SimpleBatchDataReaderBuilder(_identifierField));

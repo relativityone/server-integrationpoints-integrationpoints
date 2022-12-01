@@ -10,7 +10,7 @@ using Relativity.Sync.Storage;
 namespace Relativity.Sync.Tests.Unit.Executors
 {
     [TestFixture]
-    internal abstract class SnapshotPartitionExecutorTestsBase<T> where T: ISnapshotPartitionConfiguration
+    internal abstract class SnapshotPartitionExecutorTestsBase<T> where T : ISnapshotPartitionConfiguration
     {
         protected SnapshotPartitionExecutorBase Instance;
 
@@ -48,6 +48,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             IBatch batch = null;
             BatchRepository.SetupSequence(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(batch).Throws<InvalidOperationException>();
+
             // ACT
             ExecutionResult result = await Instance.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
 
@@ -64,7 +65,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             const int items = 10;
             T configuration = ItShouldCreateBatchesWhenTheyDoNotExistMockConfiguration(items);
 
-            BatchRepository.Setup(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((IBatch) null);
+            BatchRepository.Setup(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((IBatch)null);
 
             // ACT
             ExecutionResult result = await Instance.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -95,7 +96,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             T configuration = ItShouldAddMissingBatchesMockConfiguration();
 
-            BatchRepository.Setup(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((IBatch) null);
+            BatchRepository.Setup(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((IBatch)null);
 
             // ACT
             ExecutionResult result = await Instance.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -118,7 +119,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             T configuration = ItShouldSucceedWhenNoMoreBatchesIsRequiredMockConfiguration(ten);
 
-            BatchRepository.Setup(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((IBatch) null);
+            BatchRepository.Setup(x => x.CreateAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((IBatch)null);
 
             // ACT
             ExecutionResult result = await Instance.ExecuteAsync(configuration, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -132,10 +133,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
         protected virtual T GetConfiguration()
         {
             Mock<ISnapshotPartitionConfiguration> configuration = new Mock<ISnapshotPartitionConfiguration>();
-            
+
             configuration.Setup(x => x.SourceWorkspaceArtifactId).Returns(_WORKSPACE_ID);
             configuration.Setup(x => x.SyncConfigurationArtifactId).Returns(_SYNC_CONF_ID);
-            
+
             return (T)configuration.Object;
         }
 

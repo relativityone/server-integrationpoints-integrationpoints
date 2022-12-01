@@ -54,7 +54,8 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
             IList<RelativityObject> documentsWithImagesInDestinationWorkspace = await Rdos.QueryDocumentsAsync(ServiceFactory, goldFlowTestRun.DestinationWorkspaceArtifactId,
                 $"'Has Images' == CHOICE {HAS_IMAGES_YES_CHOICE}").ConfigureAwait(false);
 
-            await goldFlowTestRun.AssertAsync(result,
+            await goldFlowTestRun.AssertAsync(
+                result,
                 documentsWithImagesInSourceWorkspace.Count,
                 documentsWithImagesInSourceWorkspace.Count).ConfigureAwait(false);
 
@@ -62,13 +63,11 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 
             goldFlowTestRun.AssertDocuments(
                 documentsWithImagesInSourceWorkspace.Select(x => x.Name).ToArray(),
-                documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray()
-            );
+                documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray());
 
             goldFlowTestRun.AssertImages(
                 _goldFlowTestSuite.SourceWorkspace.ArtifactID, documentsWithImagesInSourceWorkspace.ToArray(),
-                goldFlowTestRun.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray()
-            );
+                goldFlowTestRun.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray());
         }
 
         private async Task ConfigureTestRunAsync(WorkspaceRef sourceWorkspace, WorkspaceRef destinationWorkspace, ConfigurationStub configuration, int productionId)

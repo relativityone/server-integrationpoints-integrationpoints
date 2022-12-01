@@ -122,13 +122,13 @@ namespace Relativity.Sync.RDOs.Framework
                 QueryResult queryResult = await objectManager.QueryAsync(
                     workspaceId,
                     new QueryRequest()
-                {
-                    ObjectType = new ObjectTypeRef()
                     {
-                        ArtifactTypeID = (int)ArtifactType.Tab
+                        ObjectType = new ObjectTypeRef()
+                        {
+                            ArtifactTypeID = (int)ArtifactType.Tab
+                        },
+                        Condition = $"'Object Type' == '{objectTypeName}'"
                     },
-                    Condition = $"'Object Type' == '{objectTypeName}'"
-                },
                     0,
                     1).ConfigureAwait(false);
 

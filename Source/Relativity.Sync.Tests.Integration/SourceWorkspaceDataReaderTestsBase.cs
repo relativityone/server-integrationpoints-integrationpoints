@@ -57,8 +57,7 @@ namespace Relativity.Sync.Tests.Integration
                 It.Is<int>(workspaceId => workspaceId == _WORKSPACE_ID),
                 It.Is<QueryRequest>(query => query.Condition == $@"('ArtifactID' == {_USER_ARTIFACT_ID})"),
                 It.Is<int>(start => start == 0),
-                It.Is<int>(length => length == 1)
-            )).ReturnsAsync(new UserInfoQueryResultSet()
+                It.Is<int>(length => length == 1))).ReturnsAsync(new UserInfoQueryResultSet()
             {
                 ResultCount = 1,
                 DataResults = new[] { new UserInfo { ArtifactID = _USER_ARTIFACT_ID, Email = _USER_EMAIL } }
@@ -88,8 +87,7 @@ namespace Relativity.Sync.Tests.Integration
                 new ItemLevelErrorLogAggregator(syncLog),
                 new ItemStatusMonitor(),
                 syncLog,
-                CancellationToken.None
-            );
+                CancellationToken.None);
         }
 
         protected abstract IBatchDataReaderBuilder CreateBatchDataReaderBuilder();
@@ -108,7 +106,8 @@ namespace Relativity.Sync.Tests.Integration
             return batcher;
         }
 
-        protected static DocumentImportJob CreateDefaultDocumentImportJob(int batchSize,
+        protected static DocumentImportJob CreateDefaultDocumentImportJob(
+            int batchSize,
             Func<int, HashSet<FieldConfiguration>, Document> documentFactory, HashSet<FieldConfiguration> fields)
         {
             IList<FieldMap> fieldMappings = CreateFieldMappings(fields);
@@ -136,7 +135,7 @@ namespace Relativity.Sync.Tests.Integration
                         SourceField = new FieldEntry { DisplayName = field.SourceColumnName }
                     }).ToList();
         }
-        
+
         protected static Document CreateDocumentForNativesTransfer(int artifactId, HashSet<FieldConfiguration> values)
         {
             string nativeFileLocation = $"\\\\test\\foo\\foo{artifactId}.htm";
@@ -192,6 +191,5 @@ namespace Relativity.Sync.Tests.Integration
             string serialized = writer.ToString();
             return serializer.Deserialize(new JsonTextReader(new StringReader(serialized)));
         }
-
     }
 }

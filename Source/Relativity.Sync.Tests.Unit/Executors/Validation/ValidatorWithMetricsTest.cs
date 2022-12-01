@@ -50,7 +50,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
         public async Task ValidateAsync_ShouldReportCountOperation_WhenValidatorFails()
         {
             // Arrange
-            _internalValidator.Setup(x => x.ValidateAsync(It.IsAny<IValidationConfiguration>(), CancellationToken.None)).ReturnsAsync(new ValidationResult() {IsValid = false});
+            _internalValidator.Setup(x => x.ValidateAsync(It.IsAny<IValidationConfiguration>(), CancellationToken.None)).ReturnsAsync(new ValidationResult() { IsValid = false });
 
             // Act
             await _sut.ValidateAsync(Mock.Of<IValidationConfiguration>(), CancellationToken.None).ConfigureAwait(false);

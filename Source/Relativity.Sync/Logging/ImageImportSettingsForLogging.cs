@@ -31,18 +31,31 @@ namespace Relativity.Sync.Logging
         #region Properties
 
         public int ArtifactTypeId { get; set; }
+
         public bool AutoNumberImages { get; set; }
+
         public string BatesNumberField { get; set; }
+
         public int BeginBatesFieldArtifactID { get; set; }
+
         public bool? DisableImageLocationValidation { get; set; }
+
         public bool? DisableImageTypeValidation { get; set; }
+
         public string DocumentIdentifierField { get; set; }
+
         public string FileLocationField { get; set; }
+
         public string FileNameField { get; set; }
+
         public string FolderPathSourceFieldName { get; set; }
+
         public bool ForProduction { get; set; }
+
         public string ImageFilePathSourceFieldName { get; set; }
+
         public int ProductionArtifactID { get; set; }
+
         public string SelectedCasePath { get; set; }
 
         #endregion

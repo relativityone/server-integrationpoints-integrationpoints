@@ -11,15 +11,23 @@ namespace Relativity.Sync.Transfer
     public sealed class InvalidExportFieldValueException : Exception
     {
         /// <inheritdoc />
-        public InvalidExportFieldValueException() { }
+        public InvalidExportFieldValueException()
+        {
+        }
 
         /// <inheritdoc />
-        public InvalidExportFieldValueException(string message) : base(MessageTemplate(message)) { }
+        public InvalidExportFieldValueException(string message) : base(MessageTemplate(message))
+        {
+        }
 
         /// <inheritdoc />
-        public InvalidExportFieldValueException(string message, Exception innerException) : base(MessageTemplate(message), innerException) { }
+        public InvalidExportFieldValueException(string message, Exception innerException) : base(MessageTemplate(message), innerException)
+        {
+        }
 
-        private InvalidExportFieldValueException(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext) { }
+        private InvalidExportFieldValueException(SerializationInfo serializationInfo, StreamingContext streamingContext) : base(serializationInfo, streamingContext)
+        {
+        }
 
         private static string MessageTemplate(string message)
         {

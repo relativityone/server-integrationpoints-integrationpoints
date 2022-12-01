@@ -92,7 +92,8 @@ namespace Relativity.Sync.Executors.SumReporting
                         }
                         else
                         {
-                            _logger.LogWarning("Cannot read parent application name for Artifact Type ID: {artifactTypeId} Object Type Artifact ID: {objectTypeArtifactId} in Source Workspace ID: {sourceWorkspaceId}. " +
+                            _logger.LogWarning(
+                                "Cannot read parent application name for Artifact Type ID: {artifactTypeId} Object Type Artifact ID: {objectTypeArtifactId} in Source Workspace ID: {sourceWorkspaceId}. " +
                                                "Response was null - Object Type does not have associated Relativity Application or user does not have permissions to view Applications.",
                                 configuration.RdoArtifactTypeId, objectTypeIdentifier.ArtifactID, configuration.SourceWorkspaceArtifactId);
                         }
@@ -106,8 +107,6 @@ namespace Relativity.Sync.Executors.SumReporting
 
                 return parentApplicationName;
             }
-
         }
-        
     }
 }

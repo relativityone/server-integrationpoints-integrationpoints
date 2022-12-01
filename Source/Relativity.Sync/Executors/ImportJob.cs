@@ -13,12 +13,6 @@ namespace Relativity.Sync.Executors
 {
     internal sealed class ImportJob : IImportJob
     {
-        private bool _importApiFatalExceptionOccurred;
-        private bool _itemLevelErrorExists;
-        private bool _canReleaseSemaphore;
-        private Exception _importApiException;
-        private ImportApiJobStatistics _importApiJobStatistics;
-
         private const int _ITEMLEVEL_ERRORS_MASS_CREATE_SIZE = 10000;
 
         private readonly object _lockObject;
@@ -32,7 +26,19 @@ namespace Relativity.Sync.Executors
         private readonly ISemaphoreSlim _semaphoreSlim;
         private readonly IAPILog _logger;
 
-        public ImportJob(ISyncImportBulkArtifactJob syncImportBulkArtifactJob, ISemaphoreSlim semaphoreSlim, IJobHistoryErrorRepository jobHistoryErrorRepository, int sourceWorkspaceArtifactId, int jobHistoryArtifactId, IAPILog syncLog)
+        private bool _importApiFatalExceptionOccurred;
+        private bool _itemLevelErrorExists;
+        private bool _canReleaseSemaphore;
+        private Exception _importApiException;
+        private ImportApiJobStatistics _importApiJobStatistics;
+
+        public ImportJob(
+            ISyncImportBulkArtifactJob syncImportBulkArtifactJob,
+            ISemaphoreSlim semaphoreSlim,
+            IJobHistoryErrorRepository jobHistoryErrorRepository,
+            int sourceWorkspaceArtifactId,
+            int jobHistoryArtifactId,
+            IAPILog syncLog)
         {
             _lockObject = new object();
             _importApiFatalExceptionOccurred = false;
@@ -52,6 +58,80 @@ namespace Relativity.Sync.Executors
             _syncImportBulkArtifactJob.OnComplete += HandleComplete;
             _syncImportBulkArtifactJob.OnFatalException += HandleFatalException;
             _syncImportBulkArtifactJob.OnItemLevelError += HandleItemLevelError;
+        }
+
+        public ISyncImportBulkArtifactJob SyncImportBulkArtifactJob => _syncImportBulkArtifactJob;
+
+        public async Task<ImportJobResult> RunAsync(CompositeCancellationToken token)
+        {
+            ExecutionResult executionResult = ExecutionResult.Success();
+
+            if (token.IsStopRequested)
+            {
+                executionResult = ExecutionResult.Canceled();
+                return new ImportJobResult(executionResult, GetMetadataSize(), GetFilesSize(), GetJobSize());
+            }
+            else if (token.IsDrainStopRequested)
+            {
+                _logger.LogInformation("Drain-Stop was requested. IAPI job won't be run. Returning Paused execution result.");
+                executionResult = ExecutionResult.Paused();
+                return new ImportJobResult(executionResult, GetMetadataSize(), GetFilesSize(), GetJobSize());
+            }
+
+            try
+            {
+                await Task.Run(() => _syncImportBulkArtifactJob.Execute(), token.AnyReasonCancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                const string message = "Failed to start executing import job.";
+                _logger.LogError(ex, message);
+                await _itemLevelErrorLogAggregator.LogAllItemLevelErrorsAsync().ConfigureAwait(false);
+                throw new ImportFailedException(message, ex);
+            }
+
+            // Since the import job doesn't support cancellation, we also don't want to cancel waiting for the job to finish.
+            // If it's started, we have to wait and release the semaphore as needed in the IAPI events.
+            await _semaphoreSlim.WaitAsync().ConfigureAwait(false);
+
+            await _itemLevelErrorLogAggregator.LogAllItemLevelErrorsAsync().ConfigureAwait(false);
+
+            if (_importApiFatalExceptionOccurred)
+            {
+                const string fatalExceptionMessage = "Fatal exception occurred in Import API.";
+                _logger.LogError(_importApiException, fatalExceptionMessage);
+
+                var syncException = new ImportFailedException(fatalExceptionMessage, _importApiException);
+                executionResult = ExecutionResult.Failure(fatalExceptionMessage, syncException);
+            }
+            else if (token.IsDrainStopRequested)
+            {
+                _logger.LogInformation("IAPI job has finished due to drain-stop. Returning Paused execution result.");
+                executionResult = ExecutionResult.Paused();
+            }
+            else if (_itemLevelErrorExists)
+            {
+                _logger.LogInformation("IAPI job has finished with item level errors.");
+                const string completedWithErrors = "Import completed with item level errors.";
+                executionResult = new ExecutionResult(ExecutionStatus.CompletedWithErrors, completedWithErrors, null);
+            }
+
+            return new ImportJobResult(executionResult, GetMetadataSize(), GetFilesSize(), GetJobSize());
+        }
+
+        public Task<IEnumerable<int>> GetPushedDocumentArtifactIdsAsync()
+        {
+            return Task.FromResult(_syncImportBulkArtifactJob.ItemStatusMonitor.GetSuccessfulItemArtifactIds());
+        }
+
+        public Task<IEnumerable<string>> GetPushedDocumentIdentifiersAsync()
+        {
+            return Task.FromResult(_syncImportBulkArtifactJob.ItemStatusMonitor.GetSuccessfulItemIdentifiers());
+        }
+
+        public void Dispose()
+        {
+            _semaphoreSlim?.Dispose();
         }
 
         private void HandleComplete(ImportApiJobStatistics jobStatistics)
@@ -145,63 +225,6 @@ namespace Relativity.Sync.Executors
             _jobHistoryErrorRepository.CreateAsync(_sourceWorkspaceArtifactId, _jobHistoryArtifactId, jobError).ConfigureAwait(false);
         }
 
-        public async Task<ImportJobResult> RunAsync(CompositeCancellationToken token)
-        {
-            ExecutionResult executionResult = ExecutionResult.Success();
-
-            if (token.IsStopRequested)
-            {
-                executionResult = ExecutionResult.Canceled();
-                return new ImportJobResult(executionResult, GetMetadataSize(), GetFilesSize(), GetJobSize());
-            }
-            else if (token.IsDrainStopRequested)
-            {
-                _logger.LogInformation("Drain-Stop was requested. IAPI job won't be run. Returning Paused execution result.");
-                executionResult = ExecutionResult.Paused();
-                return new ImportJobResult(executionResult, GetMetadataSize(), GetFilesSize(), GetJobSize());
-            }
-
-            try
-            {
-                await Task.Run(() => _syncImportBulkArtifactJob.Execute(), token.AnyReasonCancellationToken).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                const string message = "Failed to start executing import job.";
-                _logger.LogError(ex, message);
-                await _itemLevelErrorLogAggregator.LogAllItemLevelErrorsAsync().ConfigureAwait(false);
-                throw new ImportFailedException(message, ex);
-            }
-
-            // Since the import job doesn't support cancellation, we also don't want to cancel waiting for the job to finish.
-            // If it's started, we have to wait and release the semaphore as needed in the IAPI events.
-            await _semaphoreSlim.WaitAsync().ConfigureAwait(false);
-
-            await _itemLevelErrorLogAggregator.LogAllItemLevelErrorsAsync().ConfigureAwait(false);
-
-            if (_importApiFatalExceptionOccurred)
-            {
-                const string fatalExceptionMessage = "Fatal exception occurred in Import API.";
-                _logger.LogError(_importApiException, fatalExceptionMessage);
-
-                var syncException = new ImportFailedException(fatalExceptionMessage, _importApiException);
-                executionResult = ExecutionResult.Failure(fatalExceptionMessage, syncException);
-            }
-            else if (token.IsDrainStopRequested)
-            {
-                _logger.LogInformation("IAPI job has finished due to drain-stop. Returning Paused execution result.");
-                executionResult = ExecutionResult.Paused();
-            }
-            else if (_itemLevelErrorExists)
-            {
-                _logger.LogInformation("IAPI job has finished with item level errors.");
-                const string completedWithErrors = "Import completed with item level errors.";
-                executionResult = new ExecutionResult(ExecutionStatus.CompletedWithErrors, completedWithErrors, null);
-            }
-
-            return new ImportJobResult(executionResult, GetMetadataSize(), GetFilesSize(), GetJobSize());
-        }
-
         private long GetMetadataSize()
         {
             long metadataSize = 0;
@@ -233,23 +256,6 @@ namespace Relativity.Sync.Executors
             }
 
             return jobSize;
-        }
-
-        public Task<IEnumerable<int>> GetPushedDocumentArtifactIdsAsync()
-        {
-            return Task.FromResult(_syncImportBulkArtifactJob.ItemStatusMonitor.GetSuccessfulItemArtifactIds());
-        }
-
-        public Task<IEnumerable<string>> GetPushedDocumentIdentifiersAsync()
-        {
-            return Task.FromResult(_syncImportBulkArtifactJob.ItemStatusMonitor.GetSuccessfulItemIdentifiers());
-        }
-
-        public ISyncImportBulkArtifactJob SyncImportBulkArtifactJob => _syncImportBulkArtifactJob;
-
-        public void Dispose()
-        {
-            _semaphoreSlim?.Dispose();
         }
     }
 }

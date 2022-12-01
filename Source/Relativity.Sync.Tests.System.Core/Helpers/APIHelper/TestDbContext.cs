@@ -284,9 +284,10 @@ namespace Relativity.Sync.Tests.System.Core.Helpers.APIHelper
         }
 
         public string Database { get; }
-        public string ServerName { get; }
-        public bool IsMasterDatabase { get; }
 
+        public string ServerName { get; }
+
+        public bool IsMasterDatabase { get; }
 
         #endregion
     }

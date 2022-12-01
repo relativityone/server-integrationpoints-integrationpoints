@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Banzai;
 using FluentAssertions;
 using NUnit.Framework;

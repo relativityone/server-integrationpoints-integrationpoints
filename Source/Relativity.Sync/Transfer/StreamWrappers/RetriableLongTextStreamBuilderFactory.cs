@@ -11,7 +11,8 @@ namespace Relativity.Sync.Transfer.StreamWrappers
         private readonly ISyncMetrics _syncMetrics;
         private readonly IAPILog _logger;
 
-        public RetriableLongTextStreamBuilderFactory(ISourceServiceFactoryForUser serviceFactoryForUser,
+        public RetriableLongTextStreamBuilderFactory(
+            ISourceServiceFactoryForUser serviceFactoryForUser,
             IStreamRetryPolicyFactory streamRetryPolicyFactory, ISyncMetrics syncMetrics, IAPILog logger)
         {
             _serviceFactoryForUser = serviceFactoryForUser;

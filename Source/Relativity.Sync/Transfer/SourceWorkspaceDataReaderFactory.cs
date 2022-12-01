@@ -43,7 +43,8 @@ namespace Relativity.Sync.Transfer
             return CreateSourceWorkspaceDataReader(batch, new NonDocumentBatchDataReaderBuilder(_fieldManager, _dataSanitizer, _logger), token);
         }
 
-        public ISourceWorkspaceDataReader CreateNonDocumentObjectLinkingSourceWorkspaceDataReader(IBatch batch,
+        public ISourceWorkspaceDataReader CreateNonDocumentObjectLinkingSourceWorkspaceDataReader(
+            IBatch batch,
             CancellationToken token)
         {
             return CreateSourceWorkspaceDataReader(batch, new NonDocumentObjectLinkingBatchDataReaderBuilder(_fieldManager, _dataSanitizer, _logger), token);

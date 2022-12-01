@@ -23,6 +23,7 @@ namespace Relativity.Sync
             {
                 actualBatchSize = int.MaxValue;
             }
+
             List<T> fullList = fullCollection.ToList();
 
             for (int i = 0; i < fullList.Count; i += actualBatchSize)

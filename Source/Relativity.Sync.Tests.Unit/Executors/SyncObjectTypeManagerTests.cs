@@ -74,9 +74,9 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 }
             };
             _objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.Is<QueryRequest>(request =>
-                request.ObjectType.ArtifactTypeID == (int) ArtifactType.ObjectType &&
+                request.ObjectType.ArtifactTypeID == (int)ArtifactType.ObjectType &&
                 request.Condition.Contains(name)), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
-            
+
             // act
             int actualArtifactId = await _instance.EnsureObjectTypeExistsAsync(_WORKSPACE_ID, _guid, new ObjectTypeRequest()
             {
@@ -139,7 +139,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 .ReturnsAsync(new ObjectTypeResponse()
                 {
                     ArtifactTypeID = artifactTypeId
-                }) ;
+                });
 
             // act
             int actualArtifactTypeId = await _instance.GetObjectTypeArtifactTypeIdAsync(_WORKSPACE_ID, _ARTIFACT_ID).ConfigureAwait(false);

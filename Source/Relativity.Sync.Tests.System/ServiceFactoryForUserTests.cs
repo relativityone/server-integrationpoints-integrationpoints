@@ -46,8 +46,8 @@ namespace Relativity.Sync.Tests.System
             IClientService clientService = RelativityFacade.Instance.Resolve<IClientService>();
             IPermissionService permissionService = RelativityFacade.Instance.Resolve<IPermissionService>();
 
-            Group group = groupService.Require(new Group {Name = "Test Group"});
-            
+            Group group = groupService.Require(new Group { Name = "Test Group" });
+
             _userService.Require(new User
             {
                 EmailAddress = userEmail,
@@ -71,7 +71,8 @@ namespace Relativity.Sync.Tests.System
             Mock<IUserContextConfiguration> userContextConfiguration = new Mock<IUserContextConfiguration>();
             userContextConfiguration.SetupGet(x => x.ExecutingUserId).Returns(_userService.GetByEmail(userEmail).ArtifactID);
 
-            IAuthTokenGenerator authTokenGenerator = new OAuth2TokenGenerator(new OAuth2ClientFactory(_serviceFactoryForAdmin, new EmptyLogger()),
+            IAuthTokenGenerator authTokenGenerator = new OAuth2TokenGenerator(
+                new OAuth2ClientFactory(_serviceFactoryForAdmin, new EmptyLogger()),
                 new TokenProviderFactoryFactory(), AppSettings.RelativityUrl, new EmptyLogger());
             PermissionRef permissionRef = new PermissionRef
             {
@@ -90,7 +91,7 @@ namespace Relativity.Sync.Tests.System
             using (IPermissionManager permissionManager = await sut.CreateProxyAsync<IPermissionManager>().ConfigureAwait(false))
             {
                 // ACT
-                permissionValues = await permissionManager.GetPermissionSelectedAsync(_workspace.ArtifactID, new List<PermissionRef> {permissionRef}).ConfigureAwait(false);
+                permissionValues = await permissionManager.GetPermissionSelectedAsync(_workspace.ArtifactID, new List<PermissionRef> { permissionRef }).ConfigureAwait(false);
             }
 
             // ASSERT

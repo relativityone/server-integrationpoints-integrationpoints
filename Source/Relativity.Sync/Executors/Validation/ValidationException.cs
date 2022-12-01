@@ -56,7 +56,7 @@ namespace Relativity.Sync.Executors.Validation
         /// <inheritdoc />
         private ValidationException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
-            ValidationResult = (ValidationResult) info.GetValue(nameof(ValidationResult), typeof(ValidationResult));
+            ValidationResult = (ValidationResult)info.GetValue(nameof(ValidationResult), typeof(ValidationResult));
         }
 
         /// <inheritdoc />
@@ -82,7 +82,7 @@ namespace Relativity.Sync.Executors.Validation
                 ValidationMessage message = validationMessages[i];
                 string errorCode = string.IsNullOrEmpty(message.ErrorCode) ? string.Empty : $"(Error code: {message.ErrorCode}) ";
 
-                messages.AppendLine($"{i+1}. {errorCode}{message.ShortMessage}");
+                messages.AppendLine($"{i + 1}. {errorCode}{message.ShortMessage}");
             }
 
             return $"Is valid: {ValidationResult.IsValid}{System.Environment.NewLine}{messages}";

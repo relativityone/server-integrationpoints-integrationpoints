@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.API;
-using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -42,7 +41,8 @@ namespace Relativity.Sync.Executors
 
         public async Task<DestinationWorkspaceTag> ReadAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, CancellationToken token)
         {
-            _logger.LogVerbose($"Reading {nameof(DestinationWorkspaceTag)}. Source workspace artifact ID: {{sourceWorkspaceArtifactId}} " +
+            _logger.LogVerbose(
+                $"Reading {nameof(DestinationWorkspaceTag)}. Source workspace artifact ID: {{sourceWorkspaceArtifactId}} " +
                 "Destination workspace artifact ID: {destinationWorkspaceArtifactId}",
                 sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
             RelativityObject tag = await QueryRelativityObjectTagAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, token).ConfigureAwait(false);
@@ -58,14 +58,16 @@ namespace Relativity.Sync.Executors
                     DestinationWorkspaceArtifactId = Convert.ToInt32(tag[_rdoGuidConfiguration.DestinationWorkspace.DestinationWorkspaceArtifactIdGuid].Value, CultureInfo.InvariantCulture)
                 };
             }
+
             return destinationWorkspaceTag;
         }
 
         public async Task<DestinationWorkspaceTag> CreateAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId, string destinationWorkspaceName)
         {
-            _logger.LogVerbose($"Creating {nameof(DestinationWorkspaceTag)} in source workspace ID: {{sourceWorkspaceArtifactId}} " +
+            _logger.LogVerbose(
+                $"Creating {nameof(DestinationWorkspaceTag)} in source workspace ID: {{sourceWorkspaceArtifactId}} " +
                     "Destination workspace ID: {destinationWorkspaceArtifactId}",
-                    sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
+                sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
             string federatedInstanceName = await _federatedInstance.GetInstanceNameAsync().ConfigureAwait(false);
 
             int federatedInstanceId = await _federatedInstance.GetInstanceIdAsync().ConfigureAwait(false);
@@ -220,9 +222,9 @@ namespace Relativity.Sync.Executors
                     Fields = new List<FieldRef>
                     {
                         new FieldRef { Name = "ArtifactId" },
-                        new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationWorkspaceNameGuid},
+                        new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationWorkspaceNameGuid },
                         new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationInstanceNameGuid },
-                        new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationWorkspaceArtifactIdGuid},
+                        new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationWorkspaceArtifactIdGuid },
                         new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationInstanceArtifactIdGuid },
                         new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.NameGuid }
                     }
@@ -244,6 +246,7 @@ namespace Relativity.Sync.Executors
                     _logger.LogError(ex, "Failed to query {TagObject} object: {Request}.", nameof(DestinationWorkspaceTag), request);
                     throw new SyncKeplerException($"Failed to query {nameof(DestinationWorkspaceTag)} in workspace {sourceWorkspaceArtifactId}.", ex);
                 }
+
                 return queryResult.Objects.FirstOrDefault();
             }
         }
@@ -260,6 +263,7 @@ namespace Relativity.Sync.Executors
                 };
                 objectRefs[i] = objectRef;
             }
+
             return objectRefs;
         }
 
@@ -275,7 +279,7 @@ namespace Relativity.Sync.Executors
                 },
                 new FieldRefValuePair
                 {
-                    Field = new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationWorkspaceNameGuid},
+                    Field = new FieldRef { Guid = _rdoGuidConfiguration.DestinationWorkspace.DestinationWorkspaceNameGuid },
                     Value = destinationWorkspaceName
                 },
                 new FieldRefValuePair

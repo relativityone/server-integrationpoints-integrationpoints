@@ -22,22 +22,22 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
             var configMock = new Mock<INonDocumentObjectLinkingConfiguration>();
             Guid exportRunId = Guid.NewGuid();
             configMock.SetupGet(x => x.ObjectLinkingSnapshotId)
-                .Returns(linkingExportExists ? (Guid?) exportRunId : null);
+                .Returns(linkingExportExists ? (Guid?)exportRunId : null);
 
             var batchRepositoryMock = new Mock<IBatchRepository>();
             batchRepositoryMock.Setup(x =>
                     x.GetAllBatchesIdsToExecuteAsync(It.IsAny<int>(), It.IsAny<int>(), exportRunId))
-                .ReturnsAsync(linkingExportExists ? new[] {1} : Array.Empty<int>());
+                .ReturnsAsync(linkingExportExists ? new[] { 1 } : Array.Empty<int>());
 
             var sut = new NonDocumentObjectLinkingExecutionConstrains(batchRepositoryMock.Object, new Mock<IAPILog>().Object);
-            
+
             // Act
             bool result = await sut.CanExecuteAsync(configMock.Object, CancellationToken.None).ConfigureAwait(false);
-            
+
             // Assert
             result.Should().Be(expectedResult);
         }
-        
+
         [Test]
         public async Task CanExecute_ShouldLogSkippingLinking()
         {
@@ -50,10 +50,10 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
 
             Mock<IAPILog> logMock = new Mock<IAPILog>();
             NonDocumentObjectLinkingExecutionConstrains sut = new NonDocumentObjectLinkingExecutionConstrains(batchRepositoryMock.Object, logMock.Object);
-            
+
             // Act
             bool result = await sut.CanExecuteAsync(configMock.Object, CancellationToken.None).ConfigureAwait(false);
-            
+
             // Assert
             result.Should().Be(false);
             logMock.Verify(x => x.LogInformation(

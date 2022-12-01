@@ -8,7 +8,6 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
     {
         public ImageGoldFlowMultipleImagesSetTests() : base(Dataset.MultipleImagesPerDocument, expectedItemsForRetry: 2)
         {
-    
         }
 
         [IdentifiedTest("7C83DFD4-28F6-4BD2-9113-E894554C5866")]

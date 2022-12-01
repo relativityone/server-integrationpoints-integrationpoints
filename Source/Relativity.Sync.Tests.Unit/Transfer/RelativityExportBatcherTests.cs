@@ -45,7 +45,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             batch.SetupGet(x => x.ExportRunId).Returns(Guid.Empty);
             batch.SetupGet(x => x.ExportRunId).Returns(exportRunId);
 
-
             RelativityExportBatcher sut = new RelativityExportBatcher(_serviceFactoryForUserStub.Object, batch.Object, It.IsAny<int>());
 
             // Act
@@ -98,13 +97,12 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             secondResultsBlock.Result.Length.Should().Be(totalItemsCount - maxResultsBlockSize);
         }
 
-
         [Test]
         public async Task GetNextItemsFromBatchAsync_ShouldNotCallObjectManagerWhenRemainingItemsIsZero()
         {
             // arrange
             const int totalItemsCount = 10;
-            
+
             SetupRetrieveResultsBlock(totalItemsCount);
 
             Mock<IBatch> batchStub = new Mock<IBatch>();
@@ -124,8 +122,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         private void SetupRetrieveResultsBlock(int maxResultSize)
         {
             _objectManagerMock.Setup(x =>
-                x.RetrieveResultsBlockFromExportAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>())
-            ).ReturnsAsync<int, Guid, int, int, IObjectManager, RelativityObjectSlim[]>((a, b, len, ind) =>
+                x.RetrieveResultsBlockFromExportAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>()))
+            .ReturnsAsync<int, Guid, int, int, IObjectManager, RelativityObjectSlim[]>((a, b, len, ind) =>
                 CreateBatch(ind, len).Take(maxResultSize).ToArray());
         }
 

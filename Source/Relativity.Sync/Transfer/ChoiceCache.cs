@@ -48,6 +48,7 @@ namespace Relativity.Sync.Transfer
                     choicesWithParentInfo.Add(choiceWithParentInfo);
                 }
             }
+
             return choicesWithParentInfo;
         }
 
@@ -76,6 +77,7 @@ namespace Relativity.Sync.Transfer
             {
                 parentArtifactId = null;
             }
+
             var choiceWithParentInfo = new ChoiceWithParentInfo(parentArtifactId, choice.ArtifactID, choice.Name);
             return choiceWithParentInfo;
         }

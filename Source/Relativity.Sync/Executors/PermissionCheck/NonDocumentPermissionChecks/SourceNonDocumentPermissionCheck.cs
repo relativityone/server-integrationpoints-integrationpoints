@@ -12,7 +12,7 @@ namespace Relativity.Sync.Executors.PermissionCheck.NonDocumentPermissionChecks
     internal class SourceNonDocumentPermissionCheck : SourcePermissionCheckBase
     {
         private string TransferredObjectNoView(int objectTypeArtifactId) => $"User does not have permission to view objects of type {objectTypeArtifactId} in the source workspace.";
-        
+
         public SourceNonDocumentPermissionCheck(IAPILog logger, ISourceServiceFactoryForUser serviceFactoryForUser) : base(logger, serviceFactoryForUser)
         {
         }

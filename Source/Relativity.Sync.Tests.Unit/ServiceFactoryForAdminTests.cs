@@ -27,7 +27,6 @@ namespace Relativity.Sync.Tests.Unit
             Mock<IRandom> randomFake = new Mock<IRandom>();
             Mock<IAPILog> syncLogMock = new Mock<IAPILog>();
 
-
             _instance = new ServiceFactoryForAdmin(_servicesMgr.Object, _proxyFactory.Object,
                 randomFake.Object, syncLogMock.Object);
 
@@ -55,7 +54,7 @@ namespace Relativity.Sync.Tests.Unit
         [Test]
         public void ItShouldNotThrowWhenCannotResolveService()
         {
-            _servicesMgr.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.System)).Returns((IObjectManager) null);
+            _servicesMgr.Setup(x => x.CreateProxy<IObjectManager>(ExecutionIdentity.System)).Returns((IObjectManager)null);
 
             // act
             Func<Task> action = async () => await _instance.CreateProxyAsync<IObjectManager>().ConfigureAwait(false);
