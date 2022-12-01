@@ -43,39 +43,39 @@ namespace Relativity.Sync.Executors
 
         private async Task GenerateLoadFileAsync(IBatch batch, string batchPath, DataSourceSettings settings, CompositeCancellationToken token)
         {
-                using (ISourceWorkspaceDataReader reader = _dataReaderFactory.CreateNativeSourceWorkspaceDataReader(batch, token.AnyReasonCancellationToken))
+            using (ISourceWorkspaceDataReader reader = _dataReaderFactory.CreateNativeSourceWorkspaceDataReader(batch, token.AnyReasonCancellationToken))
+            {
+                try
                 {
-                    try
+                    _logger.LogInformation("Generating LoadFile for Batch {batchId}", batch.ArtifactId);
+                    reader.OnItemReadError += _itemLevelErrorHandler.HandleItemLevelError;
+                    using (StreamWriter writer = new StreamWriter(batchPath, append: true))
                     {
-                        _logger.LogInformation("Generating LoadFile for Batch {batchId}", batch.ArtifactId);
-                        reader.OnItemReadError += _itemLevelErrorHandler.HandleItemLevelError;
-                        using (StreamWriter writer = new StreamWriter(batchPath, append: true))
+                        while (reader.Read())
                         {
-                            while (reader.Read())
-                            {
-                                string line = GetLineContent(reader, settings);
-                                writer.WriteLine(line);
-                            }
+                            string line = GetLineContent(reader, settings);
+                            writer.WriteLine(line);
                         }
+                    }
 
-                        await HandleBatchStatusOnReadFinish(token, batch, reader.ItemStatusMonitor).ConfigureAwait(false);
-                        await _itemLevelErrorHandler.HandleRemainingErrorsAsync()
+                    await HandleBatchStatusOnReadFinish(token, batch, reader.ItemStatusMonitor).ConfigureAwait(false);
+                    await _itemLevelErrorHandler.HandleRemainingErrorsAsync()
+                        .ConfigureAwait(false);
+
+                    _logger.LogInformation(
+                        "LoadFile for batch {batchId} was written with {recordsCount} records - {path}",
+                        batch.ArtifactId,
+                        reader.ItemStatusMonitor.ProcessedItemsCount,
+                        batchPath);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Load file generator error occurred in line: {readerLineNumber}", reader.ItemStatusMonitor.ReadItemsCount);
+                    await _itemLevelErrorHandler.HandleRemainingErrorsAsync()
                             .ConfigureAwait(false);
-
-                        _logger.LogInformation(
-                            "LoadFile for batch {batchId} was written with {recordsCount} records - {path}",
-                            batch.ArtifactId,
-                            reader.ItemStatusMonitor.ProcessedItemsCount,
-                            batchPath);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Load file generator error occurred in line: {readerLineNumber}", reader.ItemStatusMonitor.ReadItemsCount);
-                        await _itemLevelErrorHandler.HandleRemainingErrorsAsync()
-                                .ConfigureAwait(false);
-                        await batch.SetStatusAsync(BatchStatus.Failed).ConfigureAwait(false);
-                        throw;
-                    }
+                    await batch.SetStatusAsync(BatchStatus.Failed).ConfigureAwait(false);
+                    throw;
+                }
             }
         }
 
