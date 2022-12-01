@@ -22,73 +22,56 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
             _logger = logger;
         }
 
-        public async Task<CalculationState> MarkAsCalculating(int workspaceId, int integrationPointId)
+        public async Task<CalculationState> MarkAsCalculating(int integrationPointId)
         {
             CalculationState calculationState = new CalculationState
             {
-                IsCalculating = true,
-                HasErrors = false
+                Status = CalculationStatus.InProgress
             };
 
-            bool updated = await UpdateCalculationStateValue(workspaceId, integrationPointId, calculationState).ConfigureAwait(false);
+            bool updated = await UpdateCalculationStateValue(integrationPointId, calculationState).ConfigureAwait(false);
 
             if (!updated)
             {
-                calculationState.IsCalculating = false;
-                calculationState.HasErrors = true;
+                calculationState.Status = CalculationStatus.Error;
             }
 
             return calculationState;
         }
 
-        public async Task<CalculationState> MarkCalculationAsFinished(int workspaceId, int integrationPointId, DocumentsStatistics statistics)
+        public async Task<CalculationState> MarkCalculationAsFinished(int integrationPointId, DocumentsStatistics statistics)
         {
-            CalculationState calculationState = await GetCalculationStateValue(workspaceId, integrationPointId).ConfigureAwait(false);
+            CalculationState calculationState = await GetCalculationStateValue(integrationPointId).ConfigureAwait(false);
 
-            if (calculationState == null)
+            if (calculationState.Status == CalculationStatus.Error)
             {
-                return new CalculationState
-                {
-                    IsCalculating = false,
-                    HasErrors = true // int this case we should always have existing CalculationState field content!
-                };
-            }
-
-            if (!calculationState.IsCalculating)
-            {
-                _logger.LogError("Could not finish calculation for Integration Point {integrationPointId} as calculation is not in progress", integrationPointId);
-                calculationState.HasErrors = true;
                 return calculationState;
             }
 
-            calculationState.IsCalculating = false;
+            if (calculationState.Status != CalculationStatus.InProgress)
+            {
+                _logger.LogError("Could not finish calculation for Integration Point {integrationPointId} as calculation is not in progress", integrationPointId);
+                calculationState.Status = CalculationStatus.Error;
+                return calculationState;
+            }
+
+            calculationState.Status = CalculationStatus.Completed;
             statistics.CalculatedOn = DateTime.UtcNow.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture);  // should we use 'UtcNow' here?
             calculationState.DocumentStatistics = statistics;
 
-            await UpdateCalculationStateValue(workspaceId, integrationPointId, calculationState).ConfigureAwait(false);
+            await UpdateCalculationStateValue(integrationPointId, calculationState).ConfigureAwait(false);
 
             return calculationState;
         }
 
-        public async Task<CalculationState> GetCalculationState(int workspaceId, int integrationPointId)
+        public async Task<CalculationState> GetCalculationState(int integrationPointId)
         {
-            CalculationState calculationState = await GetCalculationStateValue(workspaceId, integrationPointId).ConfigureAwait(false);
-
-            if (calculationState == null)
-            {
-                return new CalculationState
-                {
-                    IsCalculating = false,
-                    HasErrors = true // something went wrong with reading RDO - otherwise we should get newly created CalculationState object
-                };
-            }
-
-            return calculationState;
+            return await GetCalculationStateValue(integrationPointId).ConfigureAwait(false);
         }
 
-        private async Task<CalculationState> GetCalculationStateValue(int workspaceId, int integrationPointId)
+        private async Task<CalculationState> GetCalculationStateValue(int integrationPointId)
         {
-            CalculationState result = null;
+            CalculationState result;
             try
             {
                 QueryRequest queryRequest = new QueryRequest()
@@ -107,8 +90,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
                 {
                     result = new CalculationState
                     {
-                        IsCalculating = false,
-                        HasErrors = false
+                        Status = CalculationStatus.New
                     };
                 }
                 else
@@ -120,13 +102,14 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Could not get calculation state for Integration Point {integrationPointId}", integrationPointId);
+                result = new CalculationState { Status = CalculationStatus.Error };
                 return result;
             }
 
             return result;
         }
 
-        private async Task<bool> UpdateCalculationStateValue(int workspaceId, int integrationPointId, CalculationState currentState)
+        private async Task<bool> UpdateCalculationStateValue(int integrationPointId, CalculationState currentState)
         {
             try
             {

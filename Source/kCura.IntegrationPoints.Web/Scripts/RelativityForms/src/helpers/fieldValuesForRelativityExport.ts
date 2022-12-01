@@ -128,9 +128,11 @@ export function prepareStatsInfo(total, size) {
 
 export function handleStatisticsForImages(convenienceApi, data) {    
 
-    var error = validateCalculationState(data);    
-
-    if (error === "") {       
+    if (data === 'undefined' || data["Status"] == 4) {
+        convenienceApi.fieldHelper.setValue("Total of Documents", "Error occurred");
+        convenienceApi.fieldHelper.setValue("Total of Images", "Error occurred");
+    }
+    else {       
 
         var stats = data["DocumentStatistics"];
         var lastCalculationDate = "Calculated on: " + stats["CalculatedOn"] + " UTC";
@@ -141,28 +143,26 @@ ${lastCalculationDate}`;
 
         var total = prepareStatsInfo(stats["TotalImagesCount"], stats["TotalImagesSizeBytes"]);
         convenienceApi.fieldHelper.setValue("Total of Images", total);
-    }
-    else {
-        convenienceApi.fieldHelper.setValue("Total of Documents", error);
-        convenienceApi.fieldHelper.setValue("Total of Images", error);
-    }
+    }    
 }
 
 export function handleStatisticsForNatives(convenienceApi, data) {
-    var error = validateCalculationState(data);
-    if (error === "") {
-        var stats = data["DocumentStatistics"];
-        var lastCalculationDate = " Last calculation: " + stats["CalculatedOn"] + " UTC";      
+    if (data === 'undefined' || data["Status"] == 4) {
+        convenienceApi.fieldHelper.setValue("Total of Documents", "Error occurred");
+        convenienceApi.fieldHelper.setValue("Total of Natives", "Error occurred");
+    }
+    else {
 
-        convenienceApi.fieldHelper.setValue("Total of Documents", stats["DocumentsCount"] + lastCalculationDate);
+        var stats = data["DocumentStatistics"];
+        var lastCalculationDate = "Calculated on: " + stats["CalculatedOn"] + " UTC";
+        var valueToDisplay = `${stats["DocumentsCount"]}
+${lastCalculationDate}`;      
+
+        convenienceApi.fieldHelper.setValue("Total of Documents", valueToDisplay);
 
         var total = prepareStatsInfo(stats["TotalNativesCount"], stats["TotalNativesSizeBytes"]);
         convenienceApi.fieldHelper.setValue("Total of Natives", total);
-    }
-    else {
-        convenienceApi.fieldHelper.setValue("Total of Documents", error);
-        convenienceApi.fieldHelper.setValue("Total of Images", error);
-    }
+    }    
 }
 
 function validateCalculationState(data) {

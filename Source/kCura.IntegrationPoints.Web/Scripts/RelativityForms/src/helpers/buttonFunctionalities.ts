@@ -35,8 +35,10 @@ export function calculateStatsRequest(convenienceApi: IConvenienceApi, sourceCon
     } else {
         getImagesStatsForSavedSearch(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], sourceConfiguration["SavedSearchArtifactId"], (destinationConfiguration["getImagesStatsForProduction"] === 'true'), integrationPointId).then(data => {
             console.log(data);
-            console.log("IsCalculating: " + data["IsCalculating"]);
-            console.log("HasErrors: " + data["HasErrors"]);
+            console.log("Status: " + data["Status"]);
+            if (data["Status"] == 2) {
+                console.log("Reading numeric value in condition works!");
+            }            
             var stats = data["DocumentStatistics"];
             console.log("TotalDocuments: " + stats["DocumentsCount"]);
 

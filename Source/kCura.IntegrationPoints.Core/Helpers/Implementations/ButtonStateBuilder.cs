@@ -137,8 +137,8 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 
             bool integrationPointHasErrors = integrationPoint.HasErrors.GetValueOrDefault(false);
 
-            CalculationState calculationState = await _calculationChecker.GetCalculationState(workspaceArtifactId, integrationPointArtifactId).ConfigureAwait(false);
-            bool calculationInProgress = calculationState.IsCalculating;
+            CalculationState calculationState = await _calculationChecker.GetCalculationState(integrationPointArtifactId).ConfigureAwait(false);
+            bool calculationInProgress = calculationState.Status == CalculationStatus.InProgress;
 
             ButtonStateDTO buttonState = _stateManager.GetButtonState(
                 exportType,
