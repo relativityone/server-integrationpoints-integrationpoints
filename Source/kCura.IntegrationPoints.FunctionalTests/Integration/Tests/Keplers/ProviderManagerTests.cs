@@ -80,7 +80,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         [IdentifiedTest("877eedb3-84e1-45a2-bf19-88bc2a6dd4e5")]
         public async Task GetDestinationProviders_ShouldReturnCorrectValues()
         {
-            //Arrange           
+            // Arrange
             IList<ProviderModel> expected = new List<ProviderModel>();
             foreach (var x in SourceWorkspace.DestinationProviders)
             {
@@ -91,10 +91,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
                 });
             }
 
-            //Act
+            // Act
             IList<ProviderModel> result = await _sut.GetDestinationProviders(SourceWorkspace.ArtifactId).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             result.Should().NotBeNull();
             result.Should().HaveCount(expected.Count);
             result.ShouldAllBeEquivalentTo(expected);

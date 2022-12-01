@@ -8,7 +8,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers
         public string GenerateRecords(int recordCount)
         {
             XmlDocument doc = new XmlDocument();
-            string[] columns = {"Name", "Field1", "Field2"};
+            string[] columns = { "Name", "Field1", "Field2" };
 
             XmlElement allColumnsNode = doc.CreateElement("columns");
             foreach (string column in columns)

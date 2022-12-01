@@ -1,13 +1,13 @@
-﻿using kCura.IntegrationPoints.Data;
-using Moq;
-using Relativity.IntegrationPoints.Tests.Integration.Models;
-using Relativity.Services.Objects.DataContracts;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data;
+using Moq;
+using Relativity.IntegrationPoints.Tests.Integration.Models;
+using Relativity.Services.Objects.DataContracts;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
 {
@@ -21,7 +21,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 {
                     return list.Where(x => x.Identifier.Equals(identifier, StringComparison.OrdinalIgnoreCase)).ToList();
                 }
-                return list;
+
+                return new List<DestinationProviderTest>();
             }
 
             Mock.Setup(x => x.QueryAsync(It.IsAny<int>(),
