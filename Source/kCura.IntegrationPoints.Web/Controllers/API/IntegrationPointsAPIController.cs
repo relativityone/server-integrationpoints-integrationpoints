@@ -50,6 +50,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
                 {
                     ArtifactID = id,
                     LogErrors = true,
+
+                    // we need this hack because frontend logic rely on this:
+                    // export-provider-fields-step.js: [if (typeof ip.sourceConfiguration === "string")]
+                    SourceConfiguration = string.Empty,
                 };
 
                 if (id > 0)

@@ -107,7 +107,8 @@ namespace Relativity.IntegrationPoints.FunctionalTests.SystemTests.IntegrationPo
             IntegrationPointDto retrievedIntegrationPoint = _integrationPointService.Read(integrationPointArtifactID);
 
             // assert
-            retrievedIntegrationPoint.FieldMappings.Should().Equal(fieldMapping.ToList());
+            string expectedFieldMappingString = _serializer.Serialize(fieldMapping);
+            _serializer.Serialize(retrievedIntegrationPoint.FieldMappings).Should().Be(expectedFieldMappingString);
         }
 
         private async Task<IList<FieldEntry>> CreateNameFields(int workspaceID, int numberOfFields)
