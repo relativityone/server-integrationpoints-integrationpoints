@@ -1,12 +1,12 @@
 import { getConnectionAuthenticationType, getFilter } from "../helpers/fieldValuesForImport";
 import { getDestinationDetails, getFilePath, getImageFileFormat, getImageFileType, getImagePrecedence, getImportType, getLoadFileFormat, getPrecedenceList, getSubdirectoryInfo, getTextAndNativeFileNames, getTextFileEncoding, getVolume } from "../helpers/fieldValuesForLoadFileExport";
-import { formatToYesOrNo, getExportType, getFolderPathInformation, getPrecenenceSummary, getSourceDetails } from "../helpers/fieldValuesForRelativityExport";
+import { formatToYesOrNo, getExportType, getFolderPathInformation, getPrecenenceSummary, getSourceDetails, getCalculationStateInfo, handleStatisticsForImages, handleStatisticsForNatives } from "../helpers/fieldValuesForRelativityExport";
 import { IConvenienceApi } from "../types/convenienceApi";
 
-export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sourceConfiguration: Object, destinationConfiguration: Object) {
+export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sourceConfiguration: Object, destinationConfiguration: Object, integrationPointArtifactId) {
 
     var sourceDetails = getSourceDetails(sourceConfiguration);
-    let exportType = getExportType(sourceConfiguration, destinationConfiguration);
+    let exportType = getExportType(sourceConfiguration, destinationConfiguration);    
 
     // export 
     convenienceApi.fieldHelper.setValue("Export Type", exportType);
@@ -87,30 +87,38 @@ export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sou
     convenienceApi.fieldHelper.setValue("Port", sourceConfiguration["port"]);
     convenienceApi.fieldHelper.setValue("Protocol", sourceConfiguration["protocol"]);
     convenienceApi.fieldHelper.setValue("Filename Prefix", sourceConfiguration["filename_prefix"]);
-    convenienceApi.fieldHelper.setValue("Timezone Offset", sourceConfiguration["TimezoneOffset"]);
-
-    convenienceApi.fieldHelper.setValue("Total of Documents", "Press 'Calculate statistics' button");
-    convenienceApi.fieldHelper.setValue("Total of Images", "Press 'Calculate statistics' button");
-    convenienceApi.fieldHelper.setValue("Total of Documents", "Press 'Calculate statistics' button");
-    convenienceApi.fieldHelper.setValue("Total of Natives", "Press 'Calculate statistics' button");
+    convenienceApi.fieldHelper.setValue("Timezone Offset", sourceConfiguration["TimezoneOffset"]);    
 
     if (destinationConfiguration["artifactTypeID"] == 10 && destinationConfiguration["Provider"] === "relativity") {
-        //if (sourceConfiguration["SourceProductionId"]) {
-        //    getImagesStatsForProduction(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], sourceConfiguration["SourceProductionId"]).then(data => {
-        //        convenienceApi.fieldHelper.setValue("Total of Documents", data["DocumentsCount"]);
-        //        convenienceApi.fieldHelper.setValue("Total of Images", prepareStatsInfo(data["TotalImagesCount"], data["TotalImagesSizeBytes"]));
-        //    })
-        //} else if (destinationConfiguration["importNativeFile"] == 'true' && !importImageFiles(destinationConfiguration)) {
-        //    getNativesStats(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], sourceConfiguration["SavedSearchArtifactId"]).then(data => {
-        //        convenienceApi.fieldHelper.setValue("Total of Documents", data["DocumentsCount"]);
-        //        convenienceApi.fieldHelper.setValue("Total of Natives", prepareStatsInfo(data["TotalNativesCount"], data["TotalNativesSizeBytes"]));
-        //    })
-        //} else {
-        //    getImagesStatsForSavedSearch(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], sourceConfiguration["SavedSearchArtifactId"], (destinationConfiguration["getImagesStatsForProduction"] === 'true')).then(data => {
-        //        convenienceApi.fieldHelper.setValue("Total of Documents", data["DocumentsCount"]);
-        //        convenienceApi.fieldHelper.setValue("Total of Images", prepareStatsInfo(data["TotalImagesCount"], data["TotalImagesSizeBytes"]));
-        //    })
-        //}
+
+        getCalculationStateInfo(convenienceApi, integrationPointArtifactId).then(data => {
+
+            if (data["Status"] == 2) {  //calculation completed - handle result from calculation state
+                
+                if (destinationConfiguration["importNativeFile"] == 'true' && !importImageFiles(destinationConfiguration)) {
+                    handleStatisticsForNatives(convenienceApi, data);
+                }
+                else {
+                    handleStatisticsForImages(convenienceApi, data);
+                }
+            } else {
+
+                var info = "";
+                if (data["Status"] == 4) {      // calculation status = error (from any reason)
+                    info = "Error occurred";
+                }
+                if (data["Status"] == 0 || data["Status"] == 3) {       // calculation status = new or canceled
+                    info = "Press 'Calculate statistics' button";
+                }
+                if (data["Status"] == 1) {      // calculation status = in progress
+                    info = "Calculating. This may take a few minutes...";
+                }
+
+                convenienceApi.fieldHelper.setValue("Total of Documents", info);
+                convenienceApi.fieldHelper.setValue("Total of Images", info);
+                convenienceApi.fieldHelper.setValue("Total of Natives", info);
+            }
+        })   
 
         convenienceApi.fieldHelper.setValue("Create Saved Search", formatToYesOrNo(destinationConfiguration["CreateSavedSearchForTagging"]));
     }

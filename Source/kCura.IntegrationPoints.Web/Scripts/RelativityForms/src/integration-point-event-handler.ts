@@ -19,7 +19,7 @@ export default function (eventNames: typeof EventNames, convenienceApi: IConveni
     };
 
     eventHandlers[eventNames.HYDRATE_LAYOUT_COMPLETE] = function (layoutData) {
-        setFieldsValues(layoutData, convenienceApi, sourceConfiguration, destinationConfiguration)
+        setFieldsValues(layoutData, convenienceApi, sourceConfiguration, destinationConfiguration, this.artifactId)
     };    
 
     eventHandlers[eventNames.CREATE_CONSOLE] = createConsole(convenienceApi);
