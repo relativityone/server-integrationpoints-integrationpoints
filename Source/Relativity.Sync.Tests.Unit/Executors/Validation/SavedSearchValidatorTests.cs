@@ -7,7 +7,6 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -56,7 +55,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             // Arrange
             _sourceServiceFactoryForUser.Setup(x => x.CreateProxyAsync<IObjectManager>()).ReturnsAsync(_objectManager.Object).Verifiable();
 
-            QueryResult queryResult = BuildQueryResult("");
+            QueryResult queryResult = BuildQueryResult(string.Empty);
             _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(queryResult);
 

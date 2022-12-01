@@ -85,7 +85,7 @@ namespace Relativity.Sync.Tests.Integration.Helpers
             Mock<IRdoManager> rdoManagerMock = new Mock<IRdoManager>();
             rdoManagerMock
                 .Setup(x => x.GetAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Expression<Func<SyncConfigurationRdo, object>>[]>()))
-                .ReturnsAsync(new SyncConfigurationRdo() { FieldsMapping = "[]"});
+                .ReturnsAsync(new SyncConfigurationRdo() { FieldsMapping = "[]" });
             containerBuilder.Register(context => rdoManagerMock.Object).As<IRdoManager>();
 
             return containerBuilder;

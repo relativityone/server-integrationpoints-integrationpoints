@@ -42,8 +42,7 @@ namespace Relativity.Sync.Executors
                 await AttachImportSettingsToImportJobAsync(context, settings.DocumentSettings).ConfigureAwait(false);
 
                 // Ucomment once REL-774348 will be resolved
-                //await AttachAdvancedImportSettingsToImportJobAsync(context, settings.AdvancedSettings).ConfigureAwait(false);
-
+                // await AttachAdvancedImportSettingsToImportJobAsync(context, settings.AdvancedSettings).ConfigureAwait(false);
                 await BeginImportJobAsync(context).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -82,25 +81,6 @@ namespace Relativity.Sync.Executors
                     context.DestinationWorkspaceId,
                     context.ImportJobId,
                     importSettings).ConfigureAwait(false);
-
-                ValidateResponse(response);
-            }
-        }
-
-        private async Task AttachAdvancedImportSettingsToImportJobAsync(ImportContext context, AdvancedImportSettings importSettings)
-        {
-            using (IAdvancedConfigurationController configurationController = await _serviceFactory.CreateProxyAsync<IAdvancedConfigurationController>().ConfigureAwait(false))
-            {
-                _logger.LogInformation(
-                    "Attaching AdvancedImportSettings to ImportJob {jobId}... - AdvancedImportSettings: {@importSettings}",
-                    context.ImportJobId,
-                    importSettings);
-
-                Response response = await configurationController.CreateAsync(
-                        context.DestinationWorkspaceId,
-                        context.ImportJobId,
-                        importSettings)
-                    .ConfigureAwait(false);
 
                 ValidateResponse(response);
             }

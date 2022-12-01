@@ -62,7 +62,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
         public void ReadShouldProperlyDecodeAllAsciiCharacters()
         {
             const int stringLength = 127;
-            string asciiTableString = string.Concat(Enumerable.Range(1, stringLength).Select(i => (char) i));
+            string asciiTableString = string.Concat(Enumerable.Range(1, stringLength).Select(i => (char)i));
             AsciiToUnicodeStream stream = CreateAsciiToUnicodeStream(asciiTableString);
             var outputBuffer = new byte[_DEFAULT_BUFFER_LENGTH];
 

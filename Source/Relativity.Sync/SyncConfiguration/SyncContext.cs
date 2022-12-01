@@ -19,7 +19,7 @@ namespace Relativity.Sync.SyncConfiguration
 
         /// <inheritdoc />
         public Version ExecutingApplicationVersion { get; }
-        
+
         /// <summary>
         /// Creates new instance of <see cref="SyncContext"/> class.
         /// </summary>
@@ -36,11 +36,13 @@ namespace Relativity.Sync.SyncConfiguration
             ExecutingApplication = executingApplication;
             ExecutingApplicationVersion = executingApplicationVersion;
         }
-        
+
         /// <summary>
         /// Internal constructor to make testing easier
         /// </summary>
-        internal SyncContext(int sourceWorkspaceId, int destinationWorkspaceId, int jobHistoryId) 
-            : this(sourceWorkspaceId, destinationWorkspaceId, jobHistoryId, "SyncTests", new Version()){}
+        internal SyncContext(int sourceWorkspaceId, int destinationWorkspaceId, int jobHistoryId)
+            : this(sourceWorkspaceId, destinationWorkspaceId, jobHistoryId, "SyncTests", new Version())
+        {
+        }
     }
 }

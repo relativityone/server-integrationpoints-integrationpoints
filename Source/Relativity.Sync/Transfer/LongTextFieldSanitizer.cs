@@ -55,6 +55,7 @@ namespace Relativity.Sync.Transfer
                     throw new SyncItemLevelErrorException($"Reading LongText field value failed: {ex.Message}");
                 }
             }
+
             return initialValue;
         }
 
@@ -79,7 +80,7 @@ namespace Relativity.Sync.Transfer
                     Condition = $"'{itemIdentifierSourceFieldName}' == '{itemIdentifier}'"
                 };
                 QueryResultSlim result = await objectManager.QuerySlimAsync(workspaceArtifactId, request, 0, 1).ConfigureAwait(false);
-                
+
                 if (result.Objects == null | !result.Objects.Any())
                 {
                     throw new SyncItemLevelErrorException($"Objects not found for itemIdentifier = {itemIdentifier}, itemIdentifierSourceFieldName = {itemIdentifierSourceFieldName}.");

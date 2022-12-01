@@ -13,7 +13,7 @@ namespace Relativity.Sync.Utils
             const string truncationEnding = "...";
 
             string truncatedValue = value.Length > maxLength
-                ? value.Remove(maxLength / two - three) + truncationEnding + value.Substring(value.Length - maxLength / two)
+                ? value.Remove((maxLength / two) - three) + truncationEnding + value.Substring(value.Length - (maxLength / two))
                 : value;
 
             return truncatedValue;

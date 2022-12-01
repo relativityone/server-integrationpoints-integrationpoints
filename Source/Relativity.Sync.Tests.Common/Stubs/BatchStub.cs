@@ -28,6 +28,7 @@ namespace Relativity.Sync.Tests.Common.Stubs
         public int FailedDocumentsCount { get; set; }
 
         public Guid ExportRunId { get; set; } = Guid.Empty;
+
         public int TransferredItemsCount { get; set; }
 
         public BatchStatus Status { get; set; }

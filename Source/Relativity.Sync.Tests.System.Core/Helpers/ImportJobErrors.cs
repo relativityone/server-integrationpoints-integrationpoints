@@ -10,6 +10,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
         private readonly List<string> _errors;
 
         public IReadOnlyList<string> Errors => _errors.AsReadOnly();
+
         public bool Success => !Errors.Any();
 
         public ImportJobErrors(List<string> errors)
@@ -26,6 +27,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
                     .AppendFormat(CultureInfo.InvariantCulture, "{0}. {1}", i + 1, _errors[i])
                     .AppendLine();
             }
+
             return errorMessageBuilder.ToString();
         }
     }

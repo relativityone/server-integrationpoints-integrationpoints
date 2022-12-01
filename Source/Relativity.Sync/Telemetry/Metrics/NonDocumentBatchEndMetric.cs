@@ -2,6 +2,5 @@
 {
     internal sealed class NonDocumentBatchEndMetric : BatchEndMetric<NonDocumentBatchEndMetric>
     {
-        
     }
 }

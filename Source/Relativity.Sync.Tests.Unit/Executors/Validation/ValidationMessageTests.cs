@@ -19,6 +19,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             validationMessage.ShortMessage.Should().Be(shortMessage);
             validationMessage.ErrorCode.Should().Be(errorCode);
         }
+
         [Test]
         public void ItShouldCreateValidationMessage()
         {
@@ -47,7 +48,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
         public void ItShouldNotThrowOnNulls()
         {
             var otherMessage = new ValidationMessage(null, null);
-            
+
             var validationMessage = new ValidationMessage(null, null);
 
             Func<bool> action = () => validationMessage.Equals(otherMessage);

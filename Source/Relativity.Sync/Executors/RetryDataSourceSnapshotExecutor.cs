@@ -8,16 +8,18 @@ namespace Relativity.Sync.Executors
 {
     internal class RetryDataSourceSnapshotExecutor : DataSourceSnapshotExecutor, IExecutor<IRetryDataSourceSnapshotConfiguration>
     {
-        public RetryDataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactoryForUser,
-                IJobProgressUpdaterFactory jobProgressUpdaterFactory, IAPILog logger,
-                ISnapshotQueryRequestProvider snapshotQueryRequestProvider)
+        public RetryDataSourceSnapshotExecutor(
+            ISourceServiceFactoryForUser serviceFactoryForUser,
+            IJobProgressUpdaterFactory jobProgressUpdaterFactory, IAPILog logger,
+            ISnapshotQueryRequestProvider snapshotQueryRequestProvider)
             : base(serviceFactoryForUser, jobProgressUpdaterFactory, logger, snapshotQueryRequestProvider)
         {
         }
 
         public Task<ExecutionResult> ExecuteAsync(IRetryDataSourceSnapshotConfiguration configuration, CompositeCancellationToken token)
         {
-            Logger.LogInformation("Setting {ImportOverwriteMode} from {currentMode} to {appendOverlay} for job retry",
+            Logger.LogInformation(
+                "Setting {ImportOverwriteMode} from {currentMode} to {appendOverlay} for job retry",
                 nameof(configuration.ImportOverwriteMode), configuration.ImportOverwriteMode, ImportOverwriteMode.AppendOverlay);
 
             configuration.ImportOverwriteMode = ImportOverwriteMode.AppendOverlay;

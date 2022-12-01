@@ -379,7 +379,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
             ImportBulkArtifactJob importBulkArtifactJob = new ImportBulkArtifactJob();
             ImportJobFactory instance = GetTestInstance(GetNonDocumentImportAPIFactoryMock(importBulkArtifactJob));
 
-
             // Act
             Sync.Executors.IImportJob result = await instance.CreateRdoLinkingJobAsync(_nonDocumentConfigurationMock.Object, _batch.Object, CancellationToken.None).ConfigureAwait(false);
 

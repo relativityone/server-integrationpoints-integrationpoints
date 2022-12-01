@@ -50,8 +50,8 @@ namespace Relativity.Sync.Transfer.StreamWrappers
             try
             {
                 IObjectManager objectManager = await GetObjectManagerAsync().ConfigureAwait(false);
-                var exportObject = new RelativityObjectRef {ArtifactID = _relativityObjectArtifactId};
-                var fieldRef = new FieldRef {Name = _fieldName};
+                var exportObject = new RelativityObjectRef { ArtifactID = _relativityObjectArtifactId };
+                var fieldRef = new FieldRef { Name = _fieldName };
                 IKeplerStream keplerStream = await objectManager.StreamLongTextAsync(_workspaceArtifactId, exportObject, fieldRef).ConfigureAwait(false);
                 return await keplerStream.GetStreamAsync().ConfigureAwait(false);
             }
@@ -73,7 +73,7 @@ namespace Relativity.Sync.Transfer.StreamWrappers
             stream?.Dispose();
             _logger.LogWarning(exception, "Retrying Kepler Stream creation inside {SelfRecreatingStream}. Attempt {retryAttempt} of {maxNumberOfRetries}",
                 nameof(SelfRecreatingStream), retryAttempt, _MAX_RETRY_ATTEMPTS);
-            
+
             _syncMetrics.Send(new StreamRetryMetric
             {
                 RetryCounter = Counter.Increment

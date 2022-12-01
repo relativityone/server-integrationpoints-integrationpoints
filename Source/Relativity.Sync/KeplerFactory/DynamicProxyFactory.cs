@@ -28,7 +28,7 @@ namespace Relativity.Sync.KeplerFactory
         public T WrapKeplerService<T>(T keplerService, Func<Task<T>> keplerServiceFactory) where T : class
         {
             KeplerServiceInterceptor<T> interceptor = new KeplerServiceInterceptor<T>(_stopwatch, keplerServiceFactory, _random, _logger);
-            
+
             return _proxyGenerator.CreateInterfaceProxyWithTargetInterface<T>(keplerService, interceptor);
         }
     }

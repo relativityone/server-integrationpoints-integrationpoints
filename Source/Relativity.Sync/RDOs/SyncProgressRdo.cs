@@ -7,7 +7,7 @@ namespace Relativity.Sync.RDOs
     internal sealed class SyncProgressRdo : IRdoType
     {
         public int ArtifactId { get; set; }
-        
+
         [RdoField(SyncProgressGuids.ExceptionGuid, RdoFieldType.LongText)]
         public string Exception { get; set; }
 

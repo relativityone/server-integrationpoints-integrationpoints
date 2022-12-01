@@ -4,7 +4,7 @@ namespace Relativity.Sync.Storage
 {
     internal class RetryDataSourceSnapshotConfiguration : DataSourceSnapshotConfiguration, IRetryDataSourceSnapshotConfiguration
     {
-        public RetryDataSourceSnapshotConfiguration(IConfiguration cache, IFieldMappings fieldMappings, SyncJobParameters syncJobParameters) 
+        public RetryDataSourceSnapshotConfiguration(IConfiguration cache, IFieldMappings fieldMappings, SyncJobParameters syncJobParameters)
             : base(cache, fieldMappings, syncJobParameters)
         {
         }

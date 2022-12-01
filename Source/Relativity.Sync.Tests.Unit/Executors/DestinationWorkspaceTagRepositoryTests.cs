@@ -8,7 +8,6 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.Exceptions;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
@@ -81,17 +80,17 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 {
                     new FieldValuePair
                     {
-                        Field = new Field {Guids = new List<Guid> {_destinationInstanceNameGuid}},
+                        Field = new Field { Guids = new List<Guid> { _destinationInstanceNameGuid } },
                         Value = destinationInstanceName
                     },
                     new FieldValuePair
                     {
-                        Field = new Field {Guids = new List<Guid> {_destinationWorkspaceNameGuid}},
+                        Field = new Field { Guids = new List<Guid> { _destinationWorkspaceNameGuid } },
                         Value = destinationWorkspaceName
                     },
                     new FieldValuePair
                     {
-                        Field = new Field {Guids = new List<Guid> {_destinationWorkspaceArtifactIdGuid}},
+                        Field = new Field { Guids = new List<Guid> { _destinationWorkspaceArtifactIdGuid } },
                         Value = destinationWorkspaceId
                     }
                 }
@@ -203,7 +202,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [Test]
         public async Task ItShouldUpdateTag()
         {
-
             const int tagArtifactId = 1;
             const int sourceWorkspaceArtifactId = 2;
             const int destinationWorkspaceArtifactId = 3;
@@ -228,7 +226,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
             await _sut.UpdateAsync(sourceWorkspaceArtifactId, destinationWorkspaceTag).ConfigureAwait(false);
 
             // assert
-
             _objectManager.Verify(x => x.UpdateAsync(sourceWorkspaceArtifactId, It.Is<UpdateRequest>(request =>
                 VerifyUpdateRequest(
                     request,
@@ -248,6 +245,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             {
                 checkPredicates = checkPredicates && fields.Exists(predicate);
             }
+
             return request.Object.ArtifactID == tagArtifactId &&
                     fields.Count == predicates.Length &&
                     checkPredicates;

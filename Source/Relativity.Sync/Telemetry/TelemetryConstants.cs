@@ -10,7 +10,7 @@
         public const string FLOW_TYPE_SAVED_SEARCH_IMAGES = "SavedSearch.Images";
         public const string FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA = "SavedSearch.NativesAndMetadata";
         public const string FLOW_TYPE_VIEW_NON_DOCUMENT_OBJECTS = "View.NonDocumentObjects";
-        
+
         public static class MetricIdentifiers
         {
             public const string KEPLER_SERVICE_INTERCEPTOR_DURATION_SUFFIX = "Duration";
@@ -56,7 +56,6 @@
             public const string DATA_FIELDS_TOTAL_REQUESTED = "Relativity.Sync.Data.Fields.TotalRequested";
             public const string DATA_FIELDS_LINKS_MAPPED = "Relativity.Sync.Data.Fields.LinksMapped";
 
-
             public const string DATA_LONGTEXT_STREAM_AVERAGE_SIZE_LESSTHAN1MB = "Relativity.Sync.Data.LongTextStream.AverageSize.LessThan1MB";
             public const string DATA_LONGTEXT_STREAM_AVERAGE_TIME_LESSTHAN1MB = "Relativity.Sync.Data.LongTextStream.AverageTime.LessThan1MB";
 
@@ -68,7 +67,7 @@
 
             public const string DATA_LONGTEXT_STREAM_AVERAGE_SIZE_OVER20MB = "Relativity.Sync.Data.LongTextStream.AverageSize.Over20MB";
             public const string DATA_LONGTEXT_STREAM_AVERAGE_TIME_OVER20MB = "Relativity.Sync.Data.LongTextStream.AverageTime.Over20MB";
-            
+
             public const string KEPLER_SERVICE_INTERCEPTOR_PREFIX = "Relativity.Sync.KeplerServiceInterceptor";
 
             public const string TAG_DOCUMENTS_SOURCE_UPDATE_TIME = "Relativity.Sync.TagDocuments.SourceUpdate.Time";

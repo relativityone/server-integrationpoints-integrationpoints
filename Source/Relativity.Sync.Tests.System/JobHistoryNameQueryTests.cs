@@ -21,7 +21,7 @@ namespace Relativity.Sync.Tests.System
         private int _sourceWorkspaceArtifactId;
         private RelativityObject _jobHistory;
         private Guid _jobHistoryObjectTypeGuid;
-        
+
         protected override async Task ChildSuiteSetup()
         {
             _jobHistoryObjectTypeGuid = new Guid("08F4B1F7-9692-4A08-94AB-B5F3A88B6CC9");
@@ -35,13 +35,14 @@ namespace Relativity.Sync.Tests.System
         [IdentifiedTest("A272AEC0-D482-437B-9B83-2650757A03F7")]
         public async Task RelativitySourceCaseTagReadShouldBeEqualToCreated()
         {
-            //Arrange
+            // Arrange
             JobHistoryNameQuery jobHistoryNameQuery =
                 new JobHistoryNameQuery(new ServiceFactoryStub(ServiceFactory), Logger);
 
             // Act
-            string sourceCaseTag = await jobHistoryNameQuery.GetJobNameAsync(_jobHistoryObjectTypeGuid, 
-                    _jobHistory.ArtifactID, _sourceWorkspaceArtifactId, CancellationToken.None)
+            string sourceCaseTag = await jobHistoryNameQuery.GetJobNameAsync(
+                _jobHistoryObjectTypeGuid,
+                _jobHistory.ArtifactID, _sourceWorkspaceArtifactId, CancellationToken.None)
                 .ConfigureAwait(false);
 
             // Assert
@@ -49,4 +50,3 @@ namespace Relativity.Sync.Tests.System
         }
     }
 }
-

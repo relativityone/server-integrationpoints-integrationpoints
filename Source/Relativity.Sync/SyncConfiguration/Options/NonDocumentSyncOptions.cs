@@ -27,7 +27,7 @@ namespace Relativity.Sync.SyncConfiguration.Options
         /// Determines Artifact Type ID of the destination RDO
         /// </summary>
         public int DestinationRdoArtifactTypeId { get; }
-                
+
         /// <summary>
         /// Determines the Artifact Id of the source objects view
         /// </summary>

@@ -8,7 +8,7 @@ namespace Relativity.Sync.Configuration
 
         int DestinationWorkspaceArtifactId { get; }
 
-        int DestinationFolderArtifactId { get;  }
+        int DestinationFolderArtifactId { get; }
 
         int SourceProviderArtifactId { get; }
 

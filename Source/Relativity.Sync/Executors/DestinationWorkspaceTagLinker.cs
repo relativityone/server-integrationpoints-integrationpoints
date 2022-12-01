@@ -20,7 +20,7 @@ namespace Relativity.Sync.Executors
             _serviceFactoryForUser = serviceFactoryForUser;
             _logger = logger;
         }
-        
+
         public async Task LinkDestinationWorkspaceTagToJobHistoryAsync(int sourceWorkspaceArtifactId, int destinationWorkspaceTagArtifactId, int jobArtifactId)
         {
             _logger.LogVerbose("Linking destination workspace tag Artifact ID: {destinationWorkspaceTagArtifactId} to job history Artifact ID: {jobArtifactId}");
@@ -32,7 +32,7 @@ namespace Relativity.Sync.Executors
                 {
                     await objectManager.UpdateAsync(sourceWorkspaceArtifactId, request).ConfigureAwait(false);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     _logger.LogError(ex, $"Failed to link {nameof(DestinationWorkspaceTag)} to Job History: {{request}}", request);
                     throw new DestinationWorkspaceTagsLinkerException($"Failed to link {nameof(DestinationWorkspaceTag)} to Job History", ex);
@@ -49,7 +49,7 @@ namespace Relativity.Sync.Executors
 
             UpdateRequest request = new UpdateRequest
             {
-                Object = new RelativityObjectRef {ArtifactID = jobArtifactId },
+                Object = new RelativityObjectRef { ArtifactID = jobArtifactId },
                 FieldValues = new[]
                 {
                     new FieldRefValuePair()

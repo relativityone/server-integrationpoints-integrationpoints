@@ -50,7 +50,8 @@ namespace Relativity.Sync.Tests.System
                 DestinationWorkspaceArtifactId = _destinationWorkspace.ArtifactID
             };
 
-            configuration.SyncConfigurationArtifactId = Rdos.CreateSyncConfigurationRdoAsync(configuration.SourceWorkspaceArtifactId,
+            configuration.SyncConfigurationArtifactId = Rdos.CreateSyncConfigurationRdoAsync(
+                configuration.SourceWorkspaceArtifactId,
                 configuration, TestLogHelper.GetLogger()).GetAwaiter().GetResult();
 
             // act

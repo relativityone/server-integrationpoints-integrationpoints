@@ -46,6 +46,7 @@ namespace Relativity.Sync.Tests.Integration
             {
                 ContainerBuilder = ContainerHelper.CreateInitializedContainerBuilder();
             }
+
             IntegrationTestsContainerBuilder.MockStepsExcept<T>(ContainerBuilder);
 
             ContainerBuilder.RegisterInstance(_syncLog.Object).As<IAPILog>();
@@ -88,7 +89,7 @@ namespace Relativity.Sync.Tests.Integration
 
             // Assert
             Assert.AreEqual(ExecutionStatus.Completed, actualResult.Status);
-            
+
             _rdoManagerMock.Verify(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<SyncBatchRdo>(), It.IsAny<int>()), Times.Exactly(expectedNumberOfBatches));
             _syncLog.Verify(x => x.LogError(It.IsAny<NotAuthorizedException>(), It.IsAny<string>(), It.IsAny<object[]>()), Times.Never);
         }
@@ -102,9 +103,9 @@ namespace Relativity.Sync.Tests.Integration
             const int batchArtifactId = 1;
 
             T snapshotPartitionConfiguration =
-                GetSnapshotPartitionConfigurationMockAndSetup(batchSize,
+                GetSnapshotPartitionConfigurationMockAndSetup(
+                    batchSize,
                     numberOfItems);
-
 
             _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), 1, 1))
                 .ReturnsAsync(new QueryResult
@@ -118,7 +119,7 @@ namespace Relativity.Sync.Tests.Integration
                     },
                     TotalCount = 1
                 }).Verifiable();
-            
+
             _rdoManagerMock.Setup(x => x.GetAsync<SyncBatchRdo>(It.IsAny<int>(), batchArtifactId))
                 .ReturnsAsync(new SyncBatchRdo
                 {
@@ -153,7 +154,8 @@ namespace Relativity.Sync.Tests.Integration
             Assert.AreEqual("Cannot read last batch.", actualResult.Message);
 
             Mock.Verify(_objectManager);
-            _syncLog.Verify(x => x.LogError(
+            _syncLog.Verify(
+                x => x.LogError(
                 It.IsAny<NotAuthorizedException>(),
                 It.Is<string>(y => y.StartsWith("Unable to retrieve last batch", StringComparison.InvariantCulture)),
                 It.IsAny<object[]>()), Times.Once);
@@ -174,7 +176,7 @@ namespace Relativity.Sync.Tests.Integration
             _rdoManagerMock.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<SyncBatchRdo>(), It.IsAny<int>()))
                 .Throws<NotAuthorizedException>()
                 .Verifiable();
-            
+
             _rdoManagerMock.Setup(x => x.GetAsync<SyncBatchRdo>(It.IsAny<int>(), batchArtifactId))
                 .ReturnsAsync(new SyncBatchRdo
                 {
@@ -182,7 +184,7 @@ namespace Relativity.Sync.Tests.Integration
                     TotalDocumentsCount = numberOfItems
                 })
                 .Verifiable();
-            
+
             _objectManager.Setup(x => x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), 1, 1))
                 .ReturnsAsync(new QueryResult
                 {
@@ -205,7 +207,8 @@ namespace Relativity.Sync.Tests.Integration
 
             Mock.Verify(_objectManager);
             Mock.Verify(_rdoManagerMock);
-            _syncLog.Verify(x => x.LogError(
+            _syncLog.Verify(
+                x => x.LogError(
                 It.IsAny<NotAuthorizedException>(),
                 It.Is<string>(y => y.StartsWith("Unable to create batch", StringComparison.InvariantCulture)),
                 It.IsAny<object[]>()), Times.Once);

@@ -53,7 +53,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
             // Assert
             Assert.IsFalse(actualResult);
-            _syncLog.Verify(x => x.LogError(
+            _syncLog.Verify(
+                x => x.LogError(
                 It.Is<string>(y => y.StartsWith("Invalid workspace name", StringComparison.InvariantCulture)),
                 It.Is<object[]>(y => (int)y[0] == testWorkspaceArtifactId)), Times.Once);
         }

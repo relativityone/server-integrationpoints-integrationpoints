@@ -26,7 +26,8 @@ namespace Relativity.Sync.Executors.Validation
 
         public async Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token)
         {
-            _logger.LogInformation("Validating destination folder. Workspace Artifact ID: {destinationWorkspaceArtifactId} Folder Artifact ID: {destinationFolderArtifactId}",
+            _logger.LogInformation(
+                "Validating destination folder. Workspace Artifact ID: {destinationWorkspaceArtifactId} Folder Artifact ID: {destinationFolderArtifactId}",
                 configuration.DestinationWorkspaceArtifactId, configuration.DestinationFolderArtifactId);
             ValidationResult validationResult = new ValidationResult();
 

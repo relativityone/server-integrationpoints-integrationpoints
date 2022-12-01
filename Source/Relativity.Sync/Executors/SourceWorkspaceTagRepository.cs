@@ -36,7 +36,7 @@ namespace Relativity.Sync.Executors
             _syncMetrics = syncMetrics;
             _stopwatch = stopwatch;
         }
-        
+
         protected override async Task<TagDocumentsResult<string>> TagDocumentsBatchAsync(
             ISynchronizationConfiguration synchronizationConfiguration, IList<string> batch, IEnumerable<FieldRefValuePair> fieldValues, MassUpdateOptions massUpdateOptions, CancellationToken token)
         {

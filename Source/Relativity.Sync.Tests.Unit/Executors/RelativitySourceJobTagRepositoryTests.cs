@@ -119,7 +119,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Arrange
             _objectManager.Setup(x =>
                     x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
-                .ReturnsAsync(new QueryResult {TotalCount = 0});
+                .ReturnsAsync(new QueryResult { TotalCount = 0 });
 
             // Act
             var result = await _sut.ReadAsync(It.IsAny<int>(), It.IsAny<int>(), CancellationToken.None).ConfigureAwait(false);
@@ -132,7 +132,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
         public async Task ReadAsync_ShouldReturnSourceJobTag()
         {
             // Arrange
-
             RelativitySourceJobTag expectedSourceJobTag = new RelativitySourceJobTag
             {
                 ArtifactId = 1,
@@ -141,7 +140,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 JobHistoryName = "Job History Name",
                 SourceCaseTagArtifactId = 3
             };
-            
 
             _objectManager.Setup(x =>
                     x.QueryAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
@@ -170,17 +168,17 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 {
                     new FieldValuePair
                     {
-                        Field = new Field {Guids = new List<Guid> {new Guid("0b8fcebf-4149-4f1b-a8bc-d88ff5917169")}},
+                        Field = new Field { Guids = new List<Guid> { new Guid("0b8fcebf-4149-4f1b-a8bc-d88ff5917169") } },
                         Value = sourceJobTag.JobHistoryName
                     },
                     new FieldValuePair
                     {
-                        Field = new Field {Guids = new List<Guid> {new Guid("2bf54e79-7f75-4a51-a99a-e4d68f40a231")}},
+                        Field = new Field { Guids = new List<Guid> { new Guid("2bf54e79-7f75-4a51-a99a-e4d68f40a231") } },
                         Value = sourceJobTag.JobHistoryArtifactId
                     }
                 },
                 Name = sourceJobTag.Name,
-                ParentObject = new RelativityObjectRef() {ArtifactID = sourceJobTag.SourceCaseTagArtifactId}
+                ParentObject = new RelativityObjectRef() { ArtifactID = sourceJobTag.SourceCaseTagArtifactId }
             };
         }
     }

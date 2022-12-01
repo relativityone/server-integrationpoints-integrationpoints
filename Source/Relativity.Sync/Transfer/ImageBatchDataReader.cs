@@ -52,12 +52,13 @@ namespace Relativity.Sync.Transfer
 
                     bool isCancellationWarningLogged = false;
                     CanCancel = false;
-                    
+
                     for (int i = 0; i < rows.Count; i++)
                     {
                         if (_cancellationToken.IsCancellationRequested && !isCancellationWarningLogged)
                         {
-                            _logger.LogWarning("Transfer cancellation was requested, but image transfer for current document is still in progress. Document Artifact ID: {artifactID}  Remaining images: {remainingImagesCount}",
+                            _logger.LogWarning(
+                                "Transfer cancellation was requested, but image transfer for current document is still in progress. Document Artifact ID: {artifactID}  Remaining images: {remainingImagesCount}",
                                 batchItem.ArtifactID, rows.Count - i);
                             isCancellationWarningLogged = true;
                         }
@@ -113,7 +114,8 @@ namespace Relativity.Sync.Transfer
         {
             Dictionary<SpecialFieldType, object[]> specialFieldsValues = _allFields
                 .Where(x => x.SpecialFieldType != SpecialFieldType.None)
-                .ToDictionary(x => x.SpecialFieldType,
+                .ToDictionary(
+                    x => x.SpecialFieldType,
                     field => BuildSpecialFieldValues(specialFieldBuilders, batchItem, field));
 
             int imageCountInternal = specialFieldsValues.Values.First().Length;

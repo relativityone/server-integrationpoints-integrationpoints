@@ -55,6 +55,7 @@ namespace Relativity.Sync.Tests.System.Core
                 {
                     throw new InvalidOperationException("Workspace creation failed. WorkspaceManager kepler service returned null");
                 }
+
                 _workspaces.Add(newWorkspace);
                 return newWorkspace;
             }
@@ -100,7 +101,6 @@ namespace Relativity.Sync.Tests.System.Core
                     ObjectType = new ObjectTypeRef
                     {
                         ArtifactTypeID = (int)ArtifactType.Document
-
                     }
                 }
             };
@@ -153,9 +153,10 @@ namespace Relativity.Sync.Tests.System.Core
         {
             using (var manager = _serviceFactory.CreateProxy<IWorkspaceManager>())
             {
-                // ReSharper disable once AccessToDisposedClosure - False positive. We're awaiting all tasks, so we can be sure dispose will be done after each call is handled 
+                // ReSharper disable once AccessToDisposedClosure - False positive. We're awaiting all tasks, so we can be sure dispose will be done after each call is handled
                 await Task.WhenAll(_workspaces.Select(w => manager.DeleteAsync(new WorkspaceRef(w.ArtifactID)))).ConfigureAwait(false);
             }
+
             _workspaces.Clear();
         }
 
@@ -182,12 +183,12 @@ namespace Relativity.Sync.Tests.System.Core
                     {
                         ArtifactID = 0,
                         ViewFieldID = 0,
-                        Name = ""
+                        Name = string.Empty
                     },
                     BatesPrefix = "PRE",
                     BatesSuffix = "SUF",
                     IncludePageNumbers = false,
-                    DocumentNumberPageNumberSeparator = "",
+                    DocumentNumberPageNumberSeparator = string.Empty,
                     NumberOfDigitsForPageNumbering = 0,
                     StartNumberingOnSecondPage = false
                 }
@@ -240,7 +241,8 @@ namespace Relativity.Sync.Tests.System.Core
                     GetInstallStatusResponse status = await applicationInstallManager
                         .GetStatusAsync(-1, appGuid, applicationInstallId).ConfigureAwait(false);
                     installStatusCode = status.InstallStatus.Code;
-                } while (installStatusCode == InstallStatusCode.Pending || installStatusCode == InstallStatusCode.InProgress);
+                }
+                while (installStatusCode == InstallStatusCode.Pending || installStatusCode == InstallStatusCode.InProgress);
             }
         }
 
@@ -265,7 +267,7 @@ namespace Relativity.Sync.Tests.System.Core
 
                 if (libraryAppVersion < appXmlAppVersion)
                 {
-                    // Rewinding stream as it will be reused. 
+                    // Rewinding stream as it will be reused.
                     fileStream.Seek(0, SeekOrigin.Begin);
                     using (var outStream = await CreateRapFileInMemoryAsync(fileStream).ConfigureAwait(false))
                     using (var keplerStream = new KeplerStream(outStream))
@@ -295,7 +297,7 @@ namespace Relativity.Sync.Tests.System.Core
                 }
             }
 
-            // Rewinding stream as it is meant to be reused. 
+            // Rewinding stream as it is meant to be reused.
             outStream.Seek(0, SeekOrigin.Begin);
             return outStream;
         }
@@ -313,12 +315,12 @@ namespace Relativity.Sync.Tests.System.Core
             return appXmlAppVersion;
         }
 
-        /// <summary> 
-        /// To prevent insecure DTD processing we have to load the XML in a specific way. 
-        /// See https://docs.microsoft.com/en-us/visualstudio/code-quality/ca3075-insecure-dtd-processing?view=vs-2017 for more info 
-        /// </summary> 
-        /// <param name="fileStream">Stream to be read</param> 
-        /// <returns>XML document loaded from given stream</returns> 
+        /// <summary>
+        /// To prevent insecure DTD processing we have to load the XML in a specific way.
+        /// See https://docs.microsoft.com/en-us/visualstudio/code-quality/ca3075-insecure-dtd-processing?view=vs-2017 for more info
+        /// </summary>
+        /// <param name="fileStream">Stream to be read</param>
+        /// <returns>XML document loaded from given stream</returns>
         private static XmlDocument SafeLoadXml(Stream fileStream)
         {
             var xmlReaderSettings = new XmlReaderSettings { XmlResolver = null };

@@ -38,7 +38,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [Test]
         public async Task ItShouldReturnFailedIdentifiersTest()
         {
-            //Arrange
+            // Arrange
             const string message = "Failed to tag synchronized documents in workspace. The first 3 out of 3 are: document1,document2,document3.";
 
             IEnumerable<string> listOfDocuments = new List<string>(new[] { "document1", "document2" });
@@ -53,11 +53,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             _sourceWorkspace.Setup(x => x.TagDocumentsAsync(It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IList<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(documentsResult);
 
-            //Act
-            ExecutionResult executionResult = await _instance.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(_config.Object,
+            // Act
+            ExecutionResult executionResult = await _instance.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(
+                _config.Object,
                 documentIdentifiers, CancellationToken.None).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             executionResult.Message.Should().Be(message);
             executionResult.Status.Should().Be(ExecutionStatus.Failed);
 
@@ -67,7 +68,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [Test]
         public async Task ItShouldReturnFailedArtifactIdsTest()
         {
-            //Arrange
+            // Arrange
             const int count = 3;
             const string message = "Failed to tag synchronized documents in workspace. The first 3 out of 3 are: 1,2,3.";
             IEnumerable<int> listOfDocuments = Enumerable.Range(1, count);
@@ -80,11 +81,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             _destinationWorkspace.Setup(x => x.TagDocumentsAsync(It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IList<int>>(), It.IsAny<CancellationToken>())).ReturnsAsync(documentsResult);
 
-            //Act
-            ExecutionResult executionResult = await _instance.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(_config.Object,
+            // Act
+            ExecutionResult executionResult = await _instance.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(
+                _config.Object,
                 documentIdentifiers, CancellationToken.None).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             executionResult.Message.Should().Be(message);
             executionResult.Status.Should().Be(ExecutionStatus.Failed);
 
@@ -94,36 +96,38 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [Test]
         public async Task ItShouldReturnSuccessForSourceWorkspaceTest()
         {
-            //Arrange
+            // Arrange
             IEnumerable<int> documentIdentifiers = new List<int>(new[] { 1 });
             List<TagDocumentsResult<int>> documentsResult = new List<TagDocumentsResult<int>>();
 
             _destinationWorkspace.Setup(x => x.TagDocumentsAsync(It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IList<int>>(), It.IsAny<CancellationToken>())).ReturnsAsync(documentsResult);
 
-            //Act
-            ExecutionResult executionResult = await _instance.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(_config.Object,
+            // Act
+            ExecutionResult executionResult = await _instance.TagDocumentsInSourceWorkspaceWithDestinationInfoAsync(
+                _config.Object,
                 documentIdentifiers, CancellationToken.None).ConfigureAwait(false);
 
-            //Assert
-            executionResult.Message.Should().Be("");
+            // Assert
+            executionResult.Message.Should().Be(string.Empty);
             executionResult.Status.Should().Be(ExecutionStatus.Completed);
         }
 
         [Test]
         public async Task ItShouldReturnSuccessForDestinationWorkspaceTest()
         {
-            //Arrange
+            // Arrange
             IEnumerable<string> documentIdentifiers = new List<string>(new[] { "documentIdentifiers" });
             List<TagDocumentsResult<string>> documentsResult = new List<TagDocumentsResult<string>>();
 
             _sourceWorkspace.Setup(x => x.TagDocumentsAsync(It.IsAny<ISynchronizationConfiguration>(), It.IsAny<IList<string>>(), It.IsAny<CancellationToken>())).ReturnsAsync(documentsResult);
 
-            //Act
-            ExecutionResult executionResult = await _instance.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(_config.Object,
+            // Act
+            ExecutionResult executionResult = await _instance.TagDocumentsInDestinationWorkspaceWithSourceInfoAsync(
+                _config.Object,
                 documentIdentifiers, CancellationToken.None).ConfigureAwait(false);
 
-            //Assert
-            executionResult.Message.Should().Be("");
+            // Assert
+            executionResult.Message.Should().Be(string.Empty);
             executionResult.Status.Should().Be(ExecutionStatus.Completed);
         }
 

@@ -13,7 +13,6 @@ using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Transfer;
 using Relativity.Sync.Utils;
 
 namespace Relativity.Sync.Tests.Unit.Storage
@@ -151,7 +150,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
             // Assert
             result.Should().HaveCount(itemLevelErrorsCount);
 
-            _objectManagerMock.Verify(x => x.CreateAsync(
+            _objectManagerMock.Verify(
+                x => x.CreateAsync(
                 It.Is<int>(y => y == _TEST_WORKSPACE_ARTIFACT_ID),
                 It.IsAny<MassCreateRequest>()), Times.Exactly(expectedCalls));
         }
@@ -173,7 +173,8 @@ namespace Relativity.Sync.Tests.Unit.Storage
             // Assert
             action.Should().Throw<ServiceException>();
 
-            _objectManagerMock.Verify(x => x.CreateAsync(
+            _objectManagerMock.Verify(
+                x => x.CreateAsync(
                 It.Is<int>(y => y == _TEST_WORKSPACE_ARTIFACT_ID),
                 It.IsAny<MassCreateRequest>()), Times.Exactly(expectedCalls));
         }
@@ -293,7 +294,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
             _objectManagerMock.Setup(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<MassCreateRequest>()))
                 .Returns((int workspaceId, MassCreateRequest request) => Task.FromResult(GetResultFrom(request, true)));
 
-            // Act 
+            // Act
             await _sut.MassCreateAsync(_TEST_WORKSPACE_ARTIFACT_ID, _TEST_JOB_HISTORY_ARTIFACT_ID, new List<CreateJobHistoryErrorDto>()
                 {
                     itemLevelErrorDto, jobLevelErrorDto
@@ -479,37 +480,37 @@ namespace Relativity.Sync.Tests.Unit.Storage
                 {
                     new FieldValuePair
                     {
-                        Field = new Field { Guids = new List<Guid>{_expectedErrorMessageField}},
+                        Field = new Field { Guids = new List<Guid> { _expectedErrorMessageField } },
                         Value = testErrorMessage
                     },
                     new FieldValuePair
                     {
-                        Field = new Field { Guids = new List<Guid>{_expectedErrorStatusField}},
+                        Field = new Field { Guids = new List<Guid> { _expectedErrorStatusField } },
                         Value = new Choice { Name = ErrorStatus.New.GetDescription() }
                     },
                     new FieldValuePair
                     {
-                        Field = new Field { Guids = new List<Guid>{_expectedErrorTypeField}},
+                        Field = new Field { Guids = new List<Guid> { _expectedErrorTypeField } },
                         Value = new Choice { Name = ErrorType.Job.ToString() }
                     },
                     new FieldValuePair
                     {
-                        Field = new Field { Guids = new List<Guid>{_expectedNameField}},
+                        Field = new Field { Guids = new List<Guid> { _expectedNameField } },
                         Value = Guid.NewGuid().ToString()
                     },
                     new FieldValuePair
                     {
-                        Field = new Field { Guids = new List<Guid>{_expectedSourceUniqueIdField}},
+                        Field = new Field { Guids = new List<Guid> { _expectedSourceUniqueIdField } },
                         Value = string.Empty
                     },
                     new FieldValuePair
                     {
-                        Field = new Field { Guids = new List<Guid>{_expectedStackTraceField}},
+                        Field = new Field { Guids = new List<Guid> { _expectedStackTraceField } },
                         Value = testErrorStack
                     },
                     new FieldValuePair
                     {
-                        Field = new Field { Guids = new List<Guid>{_expectedTimestampUtcField}},
+                        Field = new Field { Guids = new List<Guid> { _expectedTimestampUtcField } },
                         Value = DateTime.UtcNow
                     }
                 }

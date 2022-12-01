@@ -33,7 +33,7 @@ namespace Relativity.Sync.Executors.SumReporting
         }
 
         protected async Task WriteRecordsStatisticsAsync<T>(JobEndMetricBase<T> jobEndMetric)
-            where T: JobEndMetricBase<T>, new()
+            where T : JobEndMetricBase<T>, new()
         {
             jobEndMetric.TotalRecordsTransferred = 0;
             jobEndMetric.TotalRecordsTagged = 0;

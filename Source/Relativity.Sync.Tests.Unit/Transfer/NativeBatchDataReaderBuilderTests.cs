@@ -33,7 +33,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         private const string _FIRST_DOCUMENT_FIELD_NAME = "Test Field 1";
         private const string _SECOND_DOCUMENT_FIELD_NAME = "Test Field 2";
         private const string _SECOND_DOCUMENT_FIELD_VALUE = "test";
-        
+
         [SetUp]
         public void SetUp()
         {
@@ -41,9 +41,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             _firstDocumentField.DocumentFieldIndex = _FIRST_DOCUMENT_FIELD_INDEX_IN_BATCH;
             _secondDocumentField = FieldInfoDto.DocumentField(_SECOND_DOCUMENT_FIELD_NAME, _SECOND_DOCUMENT_FIELD_NAME, false);
             _secondDocumentField.DocumentFieldIndex = _SECOND_DOCUMENT_FIELD_INDEX_IN_BATCH;
-            _getAllFieldsResult = new List<FieldInfoDto> {_firstDocumentField, _secondDocumentField};
-            _batchObject = new RelativityObjectSlim {Values = new List<object> {_FIRST_DOCUMENT_FIELD_VALUE, _SECOND_DOCUMENT_FIELD_VALUE}};
-            _batch = new[] {_batchObject};
+            _getAllFieldsResult = new List<FieldInfoDto> { _firstDocumentField, _secondDocumentField };
+            _batchObject = new RelativityObjectSlim { Values = new List<object> { _FIRST_DOCUMENT_FIELD_VALUE, _SECOND_DOCUMENT_FIELD_VALUE } };
+            _batch = new[] { _batchObject };
             _exportDataSanitizerFake = new Mock<IExportDataSanitizer>();
             _exportDataSanitizerFake.Setup(s => s.ShouldSanitize(It.IsAny<RelativityDataType>())).Returns(false);
             _fieldManagerMock = new Mock<IFieldManager>();
@@ -70,7 +70,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             result[_FIRST_DOCUMENT_FIELD_NAME].Should().Be(_FIRST_DOCUMENT_FIELD_VALUE.ToString(CultureInfo.InvariantCulture));
             result[_SECOND_DOCUMENT_FIELD_NAME].Should().Be(_SECOND_DOCUMENT_FIELD_VALUE);
         }
-        
+
         private int GetColumnCount(IDataReader reader)
         {
             const int tmpObjectsTableSize = 10;
@@ -82,7 +82,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         public async Task BuildAsync_ShouldReturnDataReaderWithProperRowCount()
         {
             // Arrange
-            RelativityObjectSlim[] batchWithTwoRows = {_batchObject, _batchObject};
+            RelativityObjectSlim[] batchWithTwoRows = { _batchObject, _batchObject };
             NativeBatchDataReaderBuilder builder = PrepareSut();
 
             // Act
@@ -161,15 +161,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             const string specialFieldName = "Special field";
             var specialFieldValue = new Guid("56C1128A-64B7-4F67-A57F-0932CBAE1747");
             FieldInfoDto specialFieldDto = FieldInfoDto.GenericSpecialField(specialFieldType, specialFieldName, specialFieldName);
-            
+
             _getAllFieldsResult.Add(specialFieldDto);
 
             var specialFieldValueBuilder = new Mock<INativeSpecialFieldRowValuesBuilder>();
             specialFieldValueBuilder.Setup(b => b.BuildRowValue(specialFieldDto, It.IsAny<RelativityObjectSlim>(), It.IsAny<object>())).Returns(specialFieldValue);
             var buildersDictionary = new Dictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder>
             {
-                {specialFieldType, specialFieldValueBuilder.Object},
-                {differentSpecialFieldType, Mock.Of<INativeSpecialFieldRowValuesBuilder>()}
+                { specialFieldType, specialFieldValueBuilder.Object },
+                { differentSpecialFieldType, Mock.Of<INativeSpecialFieldRowValuesBuilder>() }
             };
             _fieldManagerMock.Setup(fm => fm.CreateNativeSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<int[]>())).ReturnsAsync(buildersDictionary);
             NativeBatchDataReaderBuilder builder = PrepareSut();
@@ -228,14 +228,14 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             const SpecialFieldType specialFieldType = SpecialFieldType.SupportedByViewer;
             const string specialFieldName = "Special field";
             FieldInfoDto specialFieldDto = FieldInfoDto.GenericSpecialField(specialFieldType, specialFieldName, specialFieldName);
-            
+
             _getAllFieldsResult.Add(specialFieldDto);
 
             var buildersDictionary = new Dictionary<SpecialFieldType, INativeSpecialFieldRowValuesBuilder>
             {
-                {differentSpecialFieldType, Mock.Of<INativeSpecialFieldRowValuesBuilder>()}
+                { differentSpecialFieldType, Mock.Of<INativeSpecialFieldRowValuesBuilder>() }
             };
-            
+
             _fieldManagerMock.Setup(fm => fm.CreateNativeSpecialFieldRowValueBuildersAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.IsAny<int[]>())).ReturnsAsync(buildersDictionary);
             NativeBatchDataReaderBuilder builder = PrepareSut();
             IDataReader reader = await builder.BuildAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, _batch, CancellationToken.None).ConfigureAwait(false);

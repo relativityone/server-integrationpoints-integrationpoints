@@ -1,8 +1,8 @@
 ﻿namespace Relativity.Sync.Configuration
 {
-    interface INonDocumentSynchronizationConfiguration : ISynchronizationConfiguration
+    internal interface INonDocumentSynchronizationConfiguration : ISynchronizationConfiguration
     {
-        // add config required for object 
+        // add config required for object
         int DestinationRdoArtifactTypeId { get; }
     }
 }

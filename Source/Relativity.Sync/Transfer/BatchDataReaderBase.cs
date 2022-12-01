@@ -151,7 +151,7 @@ namespace Relativity.Sync.Transfer
         public bool Read()
         {
             ThrowIfIsClosed();
-            
+
             return _batchEnumerator.MoveNext();
         }
 

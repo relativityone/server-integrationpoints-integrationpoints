@@ -6,7 +6,7 @@ namespace Relativity.Sync.RDOs
         public const string CorrelationIdGuid = "865E048E-9E64-4EA9-82FD-CFF6E17A7558";
         public const string ExecutingApplicationGuid = "21844CF4-5EDF-4E01-9702-D991D23E7101";
         public const string ExecutingApplicationVersionGuid = "9BB9A7B1-730B-4BBF-9010-370E578C4B33";
-        
+
         public const string ResumingGuid = "A5B0959D-96CE-4CA0-9E4A-576132F29165";
         public const string SyncStatisticsIdGuid = "6E07067A-AFDB-447F-8F90-C9A49E412714";
 

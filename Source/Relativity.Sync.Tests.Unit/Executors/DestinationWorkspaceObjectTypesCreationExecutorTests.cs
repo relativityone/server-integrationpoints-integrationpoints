@@ -52,7 +52,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             };
             _objectTypeManager.Setup(x => x.QueryObjectTypeByNameAsync(It.IsAny<int>(), It.Is<string>(s => s == _WORKSPACE_OBJECT_TYPE_NAME)))
                 .ReturnsAsync(queryResultForWorkspaceObjectType);
-            _fieldManager =new Mock<ISyncFieldManager>();
+            _fieldManager = new Mock<ISyncFieldManager>();
             _instance = new DestinationWorkspaceObjectTypesCreationExecutor(_objectTypeManager.Object, _fieldManager.Object, new EmptyLogger());
         }
 
@@ -62,7 +62,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             const int sourceCaseObjectTypeArtifactId = 2;
             _objectTypeManager.Setup(x => x.EnsureObjectTypeExistsAsync(It.IsAny<int>(), SourceWorkspaceObjectTypeGuid, It.Is<ObjectTypeRequest>(request =>
                 request.Name == _SOURCE_WORKSPACE_OBJECT_TYPE_NAME))).ReturnsAsync(sourceCaseObjectTypeArtifactId);
-            
+
             // act
             ExecutionResult result = await _instance.ExecuteAsync(Mock.Of<IDestinationWorkspaceObjectTypesCreationConfiguration>(), CompositeCancellationToken.None)
                 .ConfigureAwait(false);
@@ -77,7 +77,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
         [Test]
         public async Task ItShouldCreateFields()
-        {           
+        {
             // act
             ExecutionResult result = await _instance.ExecuteAsync(Mock.Of<IDestinationWorkspaceObjectTypesCreationConfiguration>(), CompositeCancellationToken.None)
                 .ConfigureAwait(false);

@@ -20,7 +20,8 @@ namespace Relativity.Sync.ExecutionConstrains
             _syncLog = syncLog;
         }
 
-        public async Task<bool> CanExecuteAsync(INonDocumentObjectLinkingConfiguration configuration,
+        public async Task<bool> CanExecuteAsync(
+            INonDocumentObjectLinkingConfiguration configuration,
             CancellationToken token)
         {
             bool canExecute = true;
@@ -35,7 +36,8 @@ namespace Relativity.Sync.ExecutionConstrains
                 }
 
                 IEnumerable<int> batchIds = await _batchRepository
-                    .GetAllBatchesIdsToExecuteAsync(configuration.SourceWorkspaceArtifactId,
+                    .GetAllBatchesIdsToExecuteAsync(
+                        configuration.SourceWorkspaceArtifactId,
                         configuration.SyncConfigurationArtifactId, configuration.ObjectLinkingSnapshotId.Value)
                     .ConfigureAwait(false);
                 if (batchIds == null || !batchIds.Any())

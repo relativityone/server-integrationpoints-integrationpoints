@@ -5,7 +5,6 @@ using Relativity.API;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.Logging;
 using Relativity.Sync.RDOs;
 using Relativity.Sync.RDOs.Framework;
 

@@ -7,7 +7,7 @@ namespace Relativity.Sync.Transfer
     internal interface ISnapshotQueryRequestProvider
     {
         Task<QueryRequest> GetRequestForCurrentPipelineAsync(CancellationToken token);
-        
+
         Task<QueryRequest> GetRequestWithIdentifierOnlyForCurrentPipelineAsync(CancellationToken token);
 
         /// <summary>

@@ -96,7 +96,6 @@ namespace Relativity.Sync.Tests.Common.RDOs
         };
     }
 
-
     [Rdo("3E4B704D-B5D5-4BD3-B3C1-ADA89F0856ED", nameof(SampleRdo))]
     internal sealed class ExtendedSampleRdo : IRdoType
     {

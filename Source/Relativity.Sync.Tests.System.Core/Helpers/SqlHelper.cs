@@ -8,7 +8,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
     {
         public static SqlConnection CreateConnectionFromAppConfig(int workspaceArtifactId)
         {
-            SecureString password = new NetworkCredential("", AppSettings.SqlPassword).SecurePassword;
+            SecureString password = new NetworkCredential(string.Empty, AppSettings.SqlPassword).SecurePassword;
             password.MakeReadOnly();
             SqlCredential credential = new SqlCredential(AppSettings.SqlUsername, password);
 
@@ -22,10 +22,8 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
             return CreateConnectionFromAppConfig(-1);
         }
 
-        private static string GetConnectionString(int workspaceArtifactId) => workspaceArtifactId == -1 
-            ? AppSettings.ConnectionStringEDDS 
+        private static string GetConnectionString(int workspaceArtifactId) => workspaceArtifactId == -1
+            ? AppSettings.ConnectionStringEDDS
             : AppSettings.ConnectionStringWorkspace(workspaceArtifactId);
-
-
     }
 }

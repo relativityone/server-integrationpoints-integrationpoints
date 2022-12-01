@@ -46,7 +46,8 @@ namespace Relativity.Sync.Transfer
             }
             catch (Exception ex) when (ex is JsonSerializationException || ex is JsonReaderException)
             {
-                throw new InvalidExportFieldValueException($"Expected value to be deserializable to {typeof(Choice[])}, but instead type was {initialValue.GetType()}.",
+                throw new InvalidExportFieldValueException(
+                    $"Expected value to be deserializable to {typeof(Choice[])}, but instead type was {initialValue.GetType()}.",
                     ex);
             }
 
@@ -83,6 +84,7 @@ namespace Relativity.Sync.Transfer
                 var choiceWithChildren = new ChoiceWithChildInfo(choice.ArtifactID, choice.Name, choiceChildren);
                 tree.Add(choiceWithChildren);
             }
+
             return tree;
         }
     }

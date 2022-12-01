@@ -41,7 +41,6 @@ namespace Relativity.Sync.Executors.SumReporting
                 await WriteBytesStatisticsAsync(metric).ConfigureAwait(false);
 
                 _syncMetrics.Send(metric);
-
             }
             catch (Exception e)
             {
@@ -88,7 +87,6 @@ namespace Relativity.Sync.Executors.SumReporting
             }
 
             return imagesStatistics;
-
-        } 
+        }
     }
 }

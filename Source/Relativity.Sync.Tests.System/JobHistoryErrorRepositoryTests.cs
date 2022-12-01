@@ -42,7 +42,7 @@ namespace Relativity.Sync.Tests.System
             Mock<IAPILog> syncLogMock = new Mock<IAPILog>();
 
             _workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
-            _serviceFactoryForUser = new ServiceFactoryForUser(ServiceFactory, new DynamicProxyFactoryStub(), 
+            _serviceFactoryForUser = new ServiceFactoryForUser(ServiceFactory, new DynamicProxyFactoryStub(),
                 randomFake.Object, syncLogMock.Object);
             _dateTime = new DateTimeWrapper();
             _logger = new EmptyLogger();
@@ -123,15 +123,15 @@ namespace Relativity.Sync.Tests.System
             QueryRequest queryRequest = new QueryRequest
             {
                 Condition = $"\"ArtifactId\"=={jobHistoryErrorArtifactId}",
-                ObjectType = new ObjectTypeRef {Guid = _jobHistoryErrorObject},
+                ObjectType = new ObjectTypeRef { Guid = _jobHistoryErrorObject },
                 IncludeNameInQueryResult = true,
                 Fields = new List<FieldRef>
                 {
-                    new FieldRef{Guid = _sourceUniqueIdField},
-                    new FieldRef{Guid = _errorMessageField},
-                    new FieldRef{Guid = _errorTypeField},
-                    new FieldRef{Guid = _stackTraceField},
-                    new FieldRef{Guid = _errorStatusField},
+                    new FieldRef { Guid = _sourceUniqueIdField },
+                    new FieldRef { Guid = _errorMessageField },
+                    new FieldRef { Guid = _errorTypeField },
+                    new FieldRef { Guid = _stackTraceField },
+                    new FieldRef { Guid = _errorStatusField },
                 }
             };
 

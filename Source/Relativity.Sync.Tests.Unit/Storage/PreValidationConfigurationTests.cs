@@ -21,7 +21,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
             const int expectedWorkspaceId = 100000;
 
             _configurationRdo.DestinationWorkspaceArtifactId = expectedWorkspaceId;
-            
+
             // Act & Assert
             _sut.DestinationWorkspaceArtifactId.Should().Be(expectedWorkspaceId);
         }

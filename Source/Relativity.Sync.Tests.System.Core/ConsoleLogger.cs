@@ -9,84 +9,84 @@ namespace Relativity.Sync.Tests.System.Core
     {
         public void LogVerbose(string messageTemplate, params object[] propertyValues)
         {
-            Console.WriteLine($"[VERBOSE] {messageTemplate}; {String.Join(", ", propertyValues)}");
-            TestContext.Progress.WriteLine($"[VERBOSE] {messageTemplate}; {String.Join(", ", propertyValues)}");
+            Console.WriteLine($"[VERBOSE] {messageTemplate}; {string.Join(", ", propertyValues)}");
+            TestContext.Progress.WriteLine($"[VERBOSE] {messageTemplate}; {string.Join(", ", propertyValues)}");
             Console.Out.Flush();
         }
 
         public void LogVerbose(Exception exception, string messageTemplate, params object[] propertyValues)
         {
-            Console.WriteLine($"[VERBOSE] {messageTemplate}; {String.Join(", ", propertyValues)}; {exception}");
-            TestContext.Progress.WriteLine($"[VERBOSE] {messageTemplate}; {String.Join(", ", propertyValues)}; {exception}");
+            Console.WriteLine($"[VERBOSE] {messageTemplate}; {string.Join(", ", propertyValues)}; {exception}");
+            TestContext.Progress.WriteLine($"[VERBOSE] {messageTemplate}; {string.Join(", ", propertyValues)}; {exception}");
             Console.Out.Flush();
         }
 
         public void LogDebug(string messageTemplate, params object[] propertyValues)
         {
-            Console.WriteLine($"[DEBUG] {messageTemplate}; {String.Join(", ", propertyValues)}");
-            TestContext.Progress.WriteLine($"[DEBUG] {messageTemplate}; {String.Join(", ", propertyValues)}");
+            Console.WriteLine($"[DEBUG] {messageTemplate}; {string.Join(", ", propertyValues)}");
+            TestContext.Progress.WriteLine($"[DEBUG] {messageTemplate}; {string.Join(", ", propertyValues)}");
             Console.Out.Flush();
         }
 
         public void LogDebug(Exception exception, string messageTemplate, params object[] propertyValues)
         {
-            Console.WriteLine($"[DEBUG] {messageTemplate}; {String.Join(", ", propertyValues)}; {exception}");
-            TestContext.Progress.WriteLine($"[DEBUG] {messageTemplate}; {String.Join(", ", propertyValues)}; {exception}");
+            Console.WriteLine($"[DEBUG] {messageTemplate}; {string.Join(", ", propertyValues)}; {exception}");
+            TestContext.Progress.WriteLine($"[DEBUG] {messageTemplate}; {string.Join(", ", propertyValues)}; {exception}");
             Console.Out.Flush();
         }
 
         public void LogInformation(string messageTemplate, params object[] propertyValues)
         {
-            Console.WriteLine($"[INFO] {messageTemplate}; {String.Join(", ", propertyValues)}");
-            TestContext.Progress.WriteLine($"[INFO] {messageTemplate}; {String.Join(", ", propertyValues)}");
+            Console.WriteLine($"[INFO] {messageTemplate}; {string.Join(", ", propertyValues)}");
+            TestContext.Progress.WriteLine($"[INFO] {messageTemplate}; {string.Join(", ", propertyValues)}");
         }
 
         public void LogInformation(Exception exception, string messageTemplate, params object[] propertyValues)
         {
-            Console.WriteLine($"[INFO] {messageTemplate}; {String.Join(", ", propertyValues)}; {exception}");
-            TestContext.Progress.WriteLine($"[INFO] {messageTemplate}; {String.Join(", ", propertyValues)}; {exception}");
+            Console.WriteLine($"[INFO] {messageTemplate}; {string.Join(", ", propertyValues)}; {exception}");
+            TestContext.Progress.WriteLine($"[INFO] {messageTemplate}; {string.Join(", ", propertyValues)}; {exception}");
             Console.Out.Flush();
         }
 
         public void LogWarning(string messageTemplate, params object[] propertyValues)
         {
-            Console.WriteLine($"[WARNING] {messageTemplate}; {String.Join(", ", propertyValues)}");
-            TestContext.Progress.WriteLine($"[WARNING] {messageTemplate}; {String.Join(", ", propertyValues)}");
+            Console.WriteLine($"[WARNING] {messageTemplate}; {string.Join(", ", propertyValues)}");
+            TestContext.Progress.WriteLine($"[WARNING] {messageTemplate}; {string.Join(", ", propertyValues)}");
             Console.Out.Flush();
         }
 
         public void LogWarning(Exception exception, string messageTemplate, params object[] propertyValues)
         {
-            Console.WriteLine($"[WARNING] {messageTemplate}; {String.Join(", ", propertyValues)}; {exception}");
-            TestContext.Progress.WriteLine($"[WARNING] {messageTemplate}; {String.Join(", ", propertyValues)}; {exception}");
+            Console.WriteLine($"[WARNING] {messageTemplate}; {string.Join(", ", propertyValues)}; {exception}");
+            TestContext.Progress.WriteLine($"[WARNING] {messageTemplate}; {string.Join(", ", propertyValues)}; {exception}");
             Console.Out.Flush();
         }
 
         public void LogError(string messageTemplate, params object[] propertyValues)
         {
-            Console.WriteLine($"[ERROR] {messageTemplate}; {String.Join(", ", propertyValues)}");
-            TestContext.Progress.WriteLine($"[ERROR] {messageTemplate}; {String.Join(", ", propertyValues)}");
+            Console.WriteLine($"[ERROR] {messageTemplate}; {string.Join(", ", propertyValues)}");
+            TestContext.Progress.WriteLine($"[ERROR] {messageTemplate}; {string.Join(", ", propertyValues)}");
             Console.Out.Flush();
         }
 
         public void LogError(Exception exception, string messageTemplate, params object[] propertyValues)
         {
-            Console.WriteLine($"[ERROR] {messageTemplate}; {String.Join(", ", propertyValues)}; {exception}");
-            TestContext.Progress.WriteLine($"[ERROR] {messageTemplate}; {String.Join(", ", propertyValues)}; {exception}");
+            Console.WriteLine($"[ERROR] {messageTemplate}; {string.Join(", ", propertyValues)}; {exception}");
+            TestContext.Progress.WriteLine($"[ERROR] {messageTemplate}; {string.Join(", ", propertyValues)}; {exception}");
             Console.Out.Flush();
         }
 
         public void LogFatal(string messageTemplate, params object[] propertyValues)
         {
-            Console.WriteLine($"[FATAL] {messageTemplate}; {String.Join(", ", propertyValues)}");
-            TestContext.Progress.WriteLine($"[FATAL] {messageTemplate}; {String.Join(", ", propertyValues)}");
+            Console.WriteLine($"[FATAL] {messageTemplate}; {string.Join(", ", propertyValues)}");
+            TestContext.Progress.WriteLine($"[FATAL] {messageTemplate}; {string.Join(", ", propertyValues)}");
             Console.Out.Flush();
         }
 
         public void LogFatal(Exception exception, string messageTemplate, params object[] propertyValues)
         {
-            Console.WriteLine($"[FATAL] {messageTemplate}; {String.Join(", ", propertyValues)}; {exception}");
-            TestContext.Progress.WriteLine($"[FATAL] {messageTemplate}; {String.Join(", ", propertyValues)}; {exception}");
+            Console.WriteLine($"[FATAL] {messageTemplate}; {string.Join(", ", propertyValues)}; {exception}");
+            TestContext.Progress.WriteLine($"[FATAL] {messageTemplate}; {string.Join(", ", propertyValues)}; {exception}");
             Console.Out.Flush();
         }
 

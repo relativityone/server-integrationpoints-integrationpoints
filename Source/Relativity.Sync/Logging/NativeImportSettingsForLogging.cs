@@ -33,29 +33,47 @@ namespace Relativity.Sync.Logging
         {
             return new NativeImportSettingsForLogging(settings);
         }
-        
+
         #region Properties
 
         public int ArtifactTypeId { get; set; }
+
         public string BulkLoadFileFieldDelimiter { get; set; }
+
         public bool DisableControlNumberCompatibilityMode { get; set; }
+
         public bool DisableExtractedTextFileLocationValidation { get; set; }
+
         public bool? DisableNativeLocationValidation { get; set; }
+
         public bool? DisableNativeValidation { get; set; }
+
         public string FolderPathSourceFieldName { get; set; }
+
         public string LongTextColumnThatContainsPathToFullText { get; set; }
+
         public char MultiValueDelimiter { get; set; }
+
         public string NativeFilePathSourceFieldName { get; set; }
+
         public char NestedValueDelimiter { get; set; }
+
         public bool OIFileIdMapped { get; set; }
+
         public string OIFileIdColumnName { get; set; }
+
         public string OIFileTypeColumnName { get; set; }
+
         public bool FileSizeMapped { get; set; }
+
         public string FileSizeColumn { get; set; }
+
         public string FileNameColumn { get; set; }
+
         public string SupportedByViewerColumn { get; set; }
+
         public ITimeKeeperManager TimeKeeperManager { get; set; }
-        
+
         #endregion
     }
 }

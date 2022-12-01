@@ -13,7 +13,7 @@ namespace Relativity.Sync.Configuration
         int SavedSearchArtifactId { get; }
 
         int DestinationFolderArtifactId { get; }
-        
+
         int RdoArtifactTypeId { get; }
 
         int DestinationRdoArtifactTypeId { get; }
@@ -29,7 +29,7 @@ namespace Relativity.Sync.Configuration
         ImportNativeFileCopyMode ImportNativeFileCopyMode { get; }
 
         ImportImageFileCopyMode ImportImageFileCopyMode { get; }
-        
+
         int? JobHistoryToRetryId { get; }
 
         string GetJobName();
@@ -39,9 +39,9 @@ namespace Relativity.Sync.Configuration
         IList<FieldMap> GetFieldMappings();
 
         string GetFolderPathSourceFieldName();
-        
+
         bool Resuming { get; }
-        
+
         Guid? SnapshotId { get; }
     }
 }

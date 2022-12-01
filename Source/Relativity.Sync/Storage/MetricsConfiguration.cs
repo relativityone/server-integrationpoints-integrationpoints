@@ -14,9 +14,9 @@ namespace Relativity.Sync.Storage
         }
 
         public string CorrelationId => _cache.GetFieldValue(x => x.CorrelationId);
-        
+
         public string ExecutingApplication => _cache.GetFieldValue(x => x.ExecutingApplication);
-        
+
         public string ExecutingApplicationVersion => _cache.GetFieldValue(x => x.ExecutingApplicationVersion);
 
         public DataSourceType DataSourceType => _cache.GetFieldValue(x => x.DataSourceType);

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -164,7 +163,6 @@ namespace Relativity.Sync.Executors
 
             importJob.Settings.MultiValueDelimiter = configuration.MultiValueDelimiter;
             importJob.Settings.NestedValueDelimiter = configuration.NestedValueDelimiter;
-
 
             bool shouldUseADFToCopyFiles = _isAdfTransferEnabled.Value;
             if (shouldUseADFToCopyFiles)

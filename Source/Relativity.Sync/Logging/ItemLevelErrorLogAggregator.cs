@@ -16,7 +16,8 @@ namespace Relativity.Sync.Logging
         private readonly IAPILog _logger;
         private readonly Dictionary<string, List<int>> _errorsAggregate;
         private readonly BlockingCollection<(ItemLevelError, int)> _queue = new BlockingCollection<(ItemLevelError, int)>();
-        private readonly Func<string, ItemLevelError, (bool matched, string newMessage)>[] _standarizationFunctions = {
+        private readonly Func<string, ItemLevelError, (bool matched, string newMessage)>[] _standarizationFunctions =
+        {
             ReplaceIdentifier,
             FailedToCopySourceField,
             NonUniqueAssociatedObject,
@@ -24,7 +25,7 @@ namespace Relativity.Sync.Logging
             ErrorInLine,
             FieldAndError,
         };
-        
+
         private readonly Task _processingTask;
         private int _itemLevelErrorCount = 0;
 
@@ -65,7 +66,8 @@ namespace Relativity.Sync.Logging
                         int batchCount = Math.Min(LogBatchSize, items.Count - i);
                         List<int> batch = items.GetRange(i, batchCount);
 
-                        _logger.LogWarning("Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
+                        _logger.LogWarning(
+                            "Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
                             keyValuePair.Key,
                             string.Join(", ", batch));
 
@@ -91,7 +93,7 @@ namespace Relativity.Sync.Logging
                         stopwatch.Restart();
                         _itemLevelErrorCount++;
                         string message = error.Message;
-                        
+
                         foreach (Func<string, ItemLevelError, (bool matched, string newMessage)> func in _standarizationFunctions)
                         {
                             (bool matched, string newMessage) = func(message, error);
@@ -124,7 +126,7 @@ namespace Relativity.Sync.Logging
         }
 
         #region Standarization functions
-        
+
         private static (bool matched, string newMessage) ReplaceIdentifier(string message, ItemLevelError error)
         {
             return (false, message.Replace(error.Identifier, "[identifier]"));
@@ -168,7 +170,8 @@ namespace Relativity.Sync.Logging
             return (false, null);
         }
 
-        private static Regex ErrorInLineRegex = new Regex("IAPI Error in line (.*), column"); 
+        private static Regex ErrorInLineRegex = new Regex("IAPI Error in line (.*), column");
+
         private static (bool, string) ErrorInLine(string message, ItemLevelError error)
         {
             if (ErrorInLineRegex.IsMatch(message))
@@ -178,8 +181,9 @@ namespace Relativity.Sync.Logging
 
             return (false, null);
         }
-        
-        private static Regex FieldAndErrorRegex = new Regex("IAPI  - Field (.*) Error"); 
+
+        private static Regex FieldAndErrorRegex = new Regex("IAPI  - Field (.*) Error");
+
         private static (bool, string) FieldAndError(string message, ItemLevelError error)
         {
             if (FieldAndErrorRegex.IsMatch(message))

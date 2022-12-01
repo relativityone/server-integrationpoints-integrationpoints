@@ -27,13 +27,14 @@ namespace Relativity.Sync.Executors.PermissionCheck
             validationResult.Add(await ValidateUserHasPermissionToAccessWorkspaceAsync(configuration).ConfigureAwait(false));
 
             validationResult.Add(await ValidateUserCanImportHasPermissionAsync(configuration).ConfigureAwait(false));
-        
+
             await ValidateAsync(validationResult, configuration).ConfigureAwait(false);
-            
+
             return validationResult;
         }
 
-        protected abstract Task ValidateAsync(ValidationResult validationResult,
+        protected abstract Task ValidateAsync(
+            ValidationResult validationResult,
             IPermissionsCheckConfiguration configuration);
 
         private async Task<ValidationResult> ValidateUserHasPermissionToAccessWorkspaceAsync(IPermissionsCheckConfiguration configuration)
@@ -51,6 +52,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
             {
                 Logger.LogInformation(ex, "{PermissionCheck}: user does not have permission to access workspace {ArtifactId}.", nameof(DestinationPermissionCheckBase), configuration.DestinationWorkspaceArtifactId);
             }
+
             const string errorCode = "20.001";
             const string errorMessage = "User does not have sufficient permissions to access destination workspace. Contact your system administrator.";
 
@@ -72,11 +74,13 @@ namespace Relativity.Sync.Executors.PermissionCheck
                 Logger.LogInformation(ex, "{PermissionCheck}: user does not have allow import permission in destination workspace {ArtifactId}.",
                     nameof(DestinationPermissionCheckBase), configuration.DestinationWorkspaceArtifactId);
             }
+
             const string errorMessage = "User does not have permission to import in the destination workspace.";
             return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage);
         }
 
-        protected async Task<ValidationResult> ValidateUserHasArtifactTypePermissionAsync(IPermissionsCheckConfiguration configuration,
+        protected async Task<ValidationResult> ValidateUserHasArtifactTypePermissionAsync(
+            IPermissionsCheckConfiguration configuration,
             int artifactTypeID, IEnumerable<PermissionType> artifactPermissions, string errorMessage)
         {
             var typeIdentifier = new ArtifactTypeIdentifier(artifactTypeID);
@@ -93,6 +97,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
                 Logger.LogInformation(ex, "{PermissionCheck}: user does not have artifact type {ArtifactTypeIdentifier} permission(s) in destination workspace {ArtifactId}.",
                     nameof(DestinationPermissionCheckBase), artifactTypeID, configuration.DestinationWorkspaceArtifactId);
             }
+
             return DoesUserHaveViewPermission(userHasViewPermissions, errorMessage);
         }
     }

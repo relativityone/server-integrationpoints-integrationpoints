@@ -157,8 +157,11 @@ namespace Relativity.Sync.Tests.Unit.Stubs
         }
 
         public int Depth { get; }
+
         public bool IsClosed { get; set; }
+
         public int RecordsAffected { get; }
+
         public bool CanCancel { get; } = true;
     }
 }

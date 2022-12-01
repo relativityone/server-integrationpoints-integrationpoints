@@ -27,7 +27,7 @@ namespace Relativity.Sync.Tests.Integration
 
             // ACT
             formatter.Serialize(ms, originalException);
-            SyncException deserializedException = (SyncException) formatter.Deserialize(ms2);
+            SyncException deserializedException = (SyncException)formatter.Deserialize(ms2);
 
             // ASSERT
             deserializedException.WorkflowId.Should().Be(originalException.WorkflowId);

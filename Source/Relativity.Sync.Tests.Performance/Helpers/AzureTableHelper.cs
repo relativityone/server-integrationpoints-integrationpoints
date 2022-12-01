@@ -24,7 +24,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 
         public Task InsertAsync(string tableName, TableEntity entity)
         {
-            if(entity == null)
+            if (entity == null)
             {
                 throw new ArgumentNullException(nameof(entity));
             }

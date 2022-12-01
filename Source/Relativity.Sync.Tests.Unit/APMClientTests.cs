@@ -27,8 +27,8 @@ namespace Relativity.Sync.Tests.Unit
                 It.IsAny<bool>(),
                 It.IsAny<int?>(),
                 It.Is<Dictionary<string, object>>(d => Enumerable.SequenceEqual(d, metricData)),
-                It.IsAny<IEnumerable<ISink>>())
-            ).Returns(counterMock.Object).Verifiable();
+                It.IsAny<IEnumerable<ISink>>()))
+            .Returns(counterMock.Object).Verifiable();
 
             // Act
             var client = new APMClient(apmMock.Object);
@@ -56,8 +56,8 @@ namespace Relativity.Sync.Tests.Unit
                 correlationId,
                 It.IsAny<string>(),
                 It.Is<Dictionary<string, object>>(d => Enumerable.SequenceEqual(d, metricData)),
-                It.IsAny<IEnumerable<ISink>>())
-            ).Returns(gaugeMeasure.Object).Verifiable();
+                It.IsAny<IEnumerable<ISink>>()))
+            .Returns(gaugeMeasure.Object).Verifiable();
 
             // Act
             var client = new APMClient(apmMock.Object);

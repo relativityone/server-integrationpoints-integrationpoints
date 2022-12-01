@@ -2,7 +2,7 @@
 
 namespace Relativity.Sync.Telemetry.Metrics
 {
-    internal abstract class JobEndMetricBase<T> : MetricBase<T> where T: JobEndMetricBase<T>, new()
+    internal abstract class JobEndMetricBase<T> : MetricBase<T> where T : JobEndMetricBase<T>, new()
     {
         public abstract string JobEndStatus { get; set; }
 

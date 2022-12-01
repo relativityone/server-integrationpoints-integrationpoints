@@ -9,7 +9,9 @@ namespace Relativity.Sync.Tests.Unit
 {
     public class PeriodicBatchingSinkStub : PeriodicBatchingSink
     {
-        public PeriodicBatchingSinkStub() : base(0, TimeSpan.Zero) { }
+        public PeriodicBatchingSinkStub() : base(0, TimeSpan.Zero)
+        {
+        }
 
         public string ToJson(IDictionary<string, object> dictionary)
         {

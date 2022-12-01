@@ -3,6 +3,7 @@
     public class ProductionDto
     {
         public int ArtifactId { get; set; }
+
         public string Name { get; set; }
     }
 }

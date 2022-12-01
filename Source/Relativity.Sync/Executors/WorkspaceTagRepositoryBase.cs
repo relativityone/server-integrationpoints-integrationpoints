@@ -44,6 +44,7 @@ namespace Relativity.Sync.Executors
                 TagDocumentsResult<TIdentifier> tagResult = await TagDocumentsBatchAsync(synchronizationConfiguration, documentArtifactIdBatch, fieldValues, massUpdateOptions, token).ConfigureAwait(false);
                 tagResults.Add(tagResult);
             }
+
             return tagResults;
         }
 
@@ -74,6 +75,7 @@ namespace Relativity.Sync.Executors
             {
                 failedDocumentArtifactIds = Array.Empty<TIdentifier>();
             }
+
             var result = new TagDocumentsResult<TIdentifier>(failedDocumentArtifactIds, updateResult.Message, updateResult.Success, updateResult.TotalObjectsUpdated);
             return result;
         }

@@ -2,8 +2,8 @@
 
 namespace Relativity.Sync.SyncConfiguration
 {
-    /// <summary> 
-    /// Provides methods for configuring image specific flow. 
+    /// <summary>
+    /// Provides methods for configuring image specific flow.
     /// </summary>
     public interface IImageSyncConfigurationBuilder : ISyncConfigurationRootBuilder<IImageSyncConfigurationBuilder>
     {

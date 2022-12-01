@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.API;
-using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -27,6 +26,7 @@ namespace Relativity.Sync.Executors.Validation
         }
 
         public abstract Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token);
+
         public abstract bool ShouldValidate(ISyncPipeline pipeline);
 
         protected async Task<List<ValidationMessage>> BaseValidateAsync(IValidationConfiguration configuration, bool onlyIdentifierShouldBeMapped, CancellationToken token)
@@ -67,7 +67,6 @@ namespace Relativity.Sync.Executors.Validation
             {
                 return new ValidationMessage("Only unique identifier must be mapped.");
             }
-
 
             bool anyIdentifierNotMatchingAnother = mappedFields.Any(x =>
                 x.SourceField != null &&
@@ -115,7 +114,8 @@ namespace Relativity.Sync.Executors.Validation
             return validationMessage;
         }
 
-        protected async Task<ValidationMessage> ValidateSourceFieldsAsync(IValidationConfiguration configuration,
+        protected async Task<ValidationMessage> ValidateSourceFieldsAsync(
+            IValidationConfiguration configuration,
             IList<FieldMap> fieldMaps, CancellationToken token)
         {
             _logger.LogInformation("Validating fields in source workspace");

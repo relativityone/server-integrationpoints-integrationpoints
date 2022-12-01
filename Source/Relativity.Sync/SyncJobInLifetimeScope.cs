@@ -56,8 +56,7 @@ namespace Relativity.Sync
             CompositeDisposable disposables = new CompositeDisposable(
                 _logger.LogContextPushProperty(nameof(SyncJobParameters.WorkflowId), _syncJobParameters.WorkflowId),
                 _logger.LogContextPushProperty(nameof(SyncJobParameters.SyncConfigurationArtifactId), _syncJobParameters.SyncConfigurationArtifactId),
-                _logger.LogContextPushProperty(nameof(SyncJobParameters.SyncBuildVersion), _syncJobParameters.SyncBuildVersion)
-            );
+                _logger.LogContextPushProperty(nameof(SyncJobParameters.SyncBuildVersion), _syncJobParameters.SyncBuildVersion));
 
             return disposables;
         }

@@ -126,8 +126,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
             // ACT & ASSERT
             SyncKeplerException thrown = Assert.ThrowsAsync<SyncKeplerException>(async () =>
-                await _instance.GetFolderPathsAsync(_WORKSPACE_ARTIFACT_ID, documentArtifactIds).ConfigureAwait(false)
-            );
+                await _instance.GetFolderPathsAsync(_WORKSPACE_ARTIFACT_ID, documentArtifactIds).ConfigureAwait(false));
 
             thrown.InnerException.Should().BeOfType<ServiceException>();
 
@@ -156,8 +155,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
             // ACT & ASSERT
             Assert.ThrowsAsync<SyncKeplerException>(async () =>
-                await _instance.GetFolderPathsAsync(_WORKSPACE_ARTIFACT_ID, documentArtifactIds).ConfigureAwait(false)
-            );
+                await _instance.GetFolderPathsAsync(_WORKSPACE_ARTIFACT_ID, documentArtifactIds).ConfigureAwait(false));
 
             // Task.WaitAll doesn't throw immediately when any Object or Folder Manager throws. Instead it waits for ALL tasks to complete in any way.
             // But at the end it throws the first exception thrown. That is why in this test case we check for `logError` called exactly `batchCount` times
@@ -183,8 +181,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
             // ACT & ASSERT
             SyncKeplerException thrown = Assert.ThrowsAsync<SyncKeplerException>(async () =>
-                await _instance.GetFolderPathsAsync(_WORKSPACE_ARTIFACT_ID, documentArtifactIds).ConfigureAwait(false)
-            );
+                await _instance.GetFolderPathsAsync(_WORKSPACE_ARTIFACT_ID, documentArtifactIds).ConfigureAwait(false));
 
             thrown.InnerException.Should().BeOfType<ServiceException>();
 
@@ -205,7 +202,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
                 .ReturnsAsync<int, QueryRequest, int, int, IObjectManager, QueryResult>((workspaceArtifactId, queryRequest, start, length) => BuildQueryResult(queryRequest));
 
             List<FolderPath> folderPaths = BuildFolderPathList(documentListId);
-            
+
             _folderManager
                 .Setup(x => x.GetFullPathListAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<List<int>>()))
                 .ReturnsAsync(folderPaths);
@@ -236,8 +233,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
             // ACT & ASSERT
             Assert.ThrowsAsync<SyncKeplerException>(async () =>
-                await _instance.GetFolderPathsAsync(_WORKSPACE_ARTIFACT_ID, documentArtifactIds).ConfigureAwait(false)
-            );
+                await _instance.GetFolderPathsAsync(_WORKSPACE_ARTIFACT_ID, documentArtifactIds).ConfigureAwait(false));
 
             _logger.Verify(x => x.LogError(It.IsAny<ServiceException>(), It.IsAny<string>(), It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID)), Times.Once);
         }

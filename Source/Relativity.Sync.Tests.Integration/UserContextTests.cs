@@ -34,7 +34,6 @@ namespace Relativity.Sync.Tests.Integration
         private const string _REST_URL = "https://relativity.one/rest";
         private const string _TOKEN = "token";
 
-
         [SetUp]
         public void SetUp()
         {
@@ -94,7 +93,7 @@ namespace Relativity.Sync.Tests.Integration
             tokenProvider.Setup(x => x.GetAccessTokenAsync()).ReturnsAsync(_TOKEN);
 
             Mock<ITokenProviderFactory> tokenProviderFactory = new Mock<ITokenProviderFactory>();
-            tokenProviderFactory.Setup(x => x.GetTokenProvider("WebApi", new List<string> {"UserInfoAccess"})).Returns(tokenProvider.Object);
+            tokenProviderFactory.Setup(x => x.GetTokenProvider("WebApi", new List<string> { "UserInfoAccess" })).Returns(tokenProvider.Object);
 
             Mock<ITokenProviderFactoryFactory> tokenProviderFactoryFactory = new Mock<ITokenProviderFactoryFactory>();
             tokenProviderFactoryFactory.Setup(x => x.Create(new Uri(_AUTH_ENDPOINT), _CLIENT_ID, _CLIENT_SECRET)).Returns(tokenProviderFactory.Object);
@@ -113,7 +112,7 @@ namespace Relativity.Sync.Tests.Integration
             _serviceFactoryFactoryStub.Settings.Should().NotBeNull();
             _serviceFactoryFactoryStub.Settings.RelativityRestUri.Should().Be(_REST_URL);
             _serviceFactoryFactoryStub.Settings.Credentials.Should().BeOfType<BearerTokenCredentials>();
-            ((BearerTokenCredentials) _serviceFactoryFactoryStub.Settings.Credentials).Token.Should().Be(_TOKEN);
+            ((BearerTokenCredentials)_serviceFactoryFactoryStub.Settings.Credentials).Token.Should().Be(_TOKEN);
         }
     }
 }

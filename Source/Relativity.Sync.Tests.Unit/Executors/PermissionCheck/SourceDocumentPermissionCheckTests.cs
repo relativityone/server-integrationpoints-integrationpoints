@@ -39,7 +39,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
         {
             _logger = new Mock<IAPILog>();
             _serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
-            _instance = new SourceDocumentPermissionCheck(_logger.Object,_serviceFactoryForUser.Object);
+            _instance = new SourceDocumentPermissionCheck(_logger.Object, _serviceFactoryForUser.Object);
         }
 
         [Test]
@@ -64,7 +64,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
             Mock<IPermissionsCheckConfiguration> configuration = ConfigurationSet();
             Mock<IPermissionManager> permissionManager = ArrangeSet();
 
-            permissionManager.Setup(x => x.GetPermissionSelectedAsync(-1,
+            permissionManager.Setup(x => x.GetPermissionSelectedAsync(
+                -1,
                 It.IsAny<List<PermissionRef>>(), It.IsAny<int>())).Throws<SyncException>();
 
             // Act

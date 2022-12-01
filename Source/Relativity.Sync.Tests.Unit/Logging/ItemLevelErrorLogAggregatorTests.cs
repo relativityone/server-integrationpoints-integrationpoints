@@ -45,17 +45,23 @@ namespace Relativity.Sync.Tests.Unit.Logging
             await _sut.LogAllItemLevelErrorsAsync().ConfigureAwait(false);
 
             // Assert
-            _loggerMock.Verify(x => x.LogWarning("Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
-                It.Is((string s) => s == SampleErrorMessage1)
-                , It.Is((string ids) => ids == "0, 1")), Times.Once);
-            
-            _loggerMock.Verify(x => x.LogWarning("Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
-                It.Is((string s) => s == SampleErrorMessage1)
-                , It.Is((string ids) => ids == "2, 3")), Times.Once);
+            _loggerMock.Verify(
+                x => x.LogWarning(
+                "Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
+                It.Is((string s) => s == SampleErrorMessage1),
+                It.Is((string ids) => ids == "0, 1")), Times.Once);
 
-            _loggerMock.Verify(x => x.LogWarning("Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
-                It.Is((string s) => s == SampleErrorMessage1)
-                , It.Is((string ids) => ids == "4")), Times.Once);
+            _loggerMock.Verify(
+                x => x.LogWarning(
+                "Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
+                It.Is((string s) => s == SampleErrorMessage1),
+                It.Is((string ids) => ids == "2, 3")), Times.Once);
+
+            _loggerMock.Verify(
+                x => x.LogWarning(
+                "Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
+                It.Is((string s) => s == SampleErrorMessage1),
+                It.Is((string ids) => ids == "4")), Times.Once);
         }
 
         [Test]
@@ -71,13 +77,15 @@ namespace Relativity.Sync.Tests.Unit.Logging
             await _sut.LogAllItemLevelErrorsAsync().ConfigureAwait(false);
 
             // Assert
-            _loggerMock.Verify(x => x.LogWarning("Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
-                It.Is((string s) => s == SampleErrorMessage1)
-                , It.Is((string ids) => ids == "0, 2, 3")));
+            _loggerMock.Verify(x => x.LogWarning(
+                "Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
+                It.Is((string s) => s == SampleErrorMessage1),
+                It.Is((string ids) => ids == "0, 2, 3")));
 
-            _loggerMock.Verify(x => x.LogWarning("Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
-                It.Is((string s) => s == SampleErrorMessage2)
-                , It.Is((string ids) => ids == "1, 4")));
+            _loggerMock.Verify(x => x.LogWarning(
+                "Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
+                It.Is((string s) => s == SampleErrorMessage2),
+                It.Is((string ids) => ids == "1, 4")));
         }
 
         [Test]
@@ -93,19 +101,21 @@ namespace Relativity.Sync.Tests.Unit.Logging
             await _sut.LogAllItemLevelErrorsAsync().ConfigureAwait(false);
 
             // Assert
-            _loggerMock.Verify(x => x.LogWarning("Total count of item level errors in batch: {count}  Aggregated errors count: {errorsAggregateCount}",
+            _loggerMock.Verify(
+                x => x.LogWarning(
+                "Total count of item level errors in batch: {count}  Aggregated errors count: {errorsAggregateCount}",
                 5, 2), Times.Once);
         }
 
         [TestCaseSource(nameof(KnownItemLevelErrors))]
-        public async Task ShouldGroupAllKnowItemLevelErrors((string identifier, string error)[] errors,
+        public async Task ShouldGroupAllKnowItemLevelErrors(
+            (string identifier, string error)[] errors,
             string expectedCleanedUpMessage)
         {
             // Arrange
             foreach ((ItemLevelError error, int i) in errors
                 .Select((x, i) =>
-                    (new ItemLevelError(x.identifier, x.error), i))
-            )
+                    (new ItemLevelError(x.identifier, x.error), i)))
             {
                 _sut.AddItemLevelError(error, i);
             }
@@ -114,9 +124,10 @@ namespace Relativity.Sync.Tests.Unit.Logging
             await _sut.LogAllItemLevelErrorsAsync().ConfigureAwait(false);
 
             // Assert
-            _loggerMock.Verify(x => x.LogWarning("Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
-                It.Is((string s) => s == expectedCleanedUpMessage)
-                , It.Is((string ids) => ids == string.Join(", ", Enumerable.Range(0, errors.Length)))));
+            _loggerMock.Verify(x => x.LogWarning(
+                "Item level error occured: {message} Artifact IDs: [{artifactIDs}]",
+                It.Is((string s) => s == expectedCleanedUpMessage),
+                It.Is((string ids) => ids == string.Join(", ", Enumerable.Range(0, errors.Length)))));
         }
 
         private IEnumerable<ItemLevelError> GetErrors()
@@ -128,7 +139,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
             yield return new ItemLevelError("RIP 2", SampleErrorMessage2);
         }
 
-        static IEnumerable<TestCaseData> KnownItemLevelErrors()
+        private static IEnumerable<TestCaseData> KnownItemLevelErrors()
         {
             yield return new TestCaseData(
                 new[]
@@ -138,8 +149,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
                     ("QWERTY",
                         "IAPI  - 20.006. Failed to copy source field into destination field due to missing child object. Review the following destination field(s): Some Field"),
                 },
-                "IAPI  - 20.006. Failed to copy source field into destination field due to missing child object"
-            )
+                "IAPI  - 20.006. Failed to copy source field into destination field due to missing child object")
             {
                 TestName =
                     "IAPI  - 20.006. Failed to copy source field into destination field due to missing child object. Review the following destination field(s):"
@@ -156,8 +166,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
                     ("ABC",
                         "IAPI  - An item with identifier ABC already exists in the workspace* - A non unique associated object is specified for this new object"),
                 },
-                "IAPI  - An item with identifier {0} already exists in the workspace"
-            )
+                "IAPI  - An item with identifier {0} already exists in the workspace")
             {
                 TestName = "IAPI  - An item with identifier {0} already exists in the workspace"
             };
@@ -169,8 +178,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
                     ("DEF",
                         "IAPI  - A non unique associated object is specified for this new object* - Field * Error: Incorrect function.*")
                 },
-                "IAPI  - A non unique associated object is specified for this new object"
-            )
+                "IAPI  - A non unique associated object is specified for this new object")
             {
                 TestName = "IAPI  - A non unique associated object is specified for this new object"
             };
@@ -183,8 +191,8 @@ namespace Relativity.Sync.Tests.Unit.Logging
                     ("ABC",
                         "IAPI Error in line *, column *. Object identifier for field * references an identifier that is not unique.")
                 },
-                "IAPI Error in line *, column *."
-            ) { TestName = "IAPI Error in line *, column *." };
+                "IAPI Error in line *, column *.")
+            { TestName = "IAPI Error in line *, column *." };
 
             yield return new TestCaseData(
                 new[]
@@ -195,16 +203,16 @@ namespace Relativity.Sync.Tests.Unit.Logging
                     ("ABC", @"IAPI  - Field Control Number Error: Could not find file \\path\to\file."),
                     ("ABC", "IAPI  - Field Control Number Error: Insufficient system resources exist to complete the requested service."),
                 },
-                "IAPI Error in line *, column *."
-            ) { TestName = "IAPI  - Field * Error" };
+                "IAPI Error in line *, column *.")
+            { TestName = "IAPI  - Field * Error" };
 
             yield return new TestCaseData(
                 new[]
                 {
-                    ("ABC", "IAPI  - One of the files specified for this document does not exist" ),
+                    ("ABC", "IAPI  - One of the files specified for this document does not exist"),
                 },
-                "IAPI  - One of the files specified for this document does not exist"
-            ) { TestName = "IAPI  - One of the files specified for this document does not exist" };
+                "IAPI  - One of the files specified for this document does not exist")
+            { TestName = "IAPI  - One of the files specified for this document does not exist" };
         }
     }
 }

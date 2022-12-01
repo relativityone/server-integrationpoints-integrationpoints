@@ -65,7 +65,7 @@ namespace Relativity.Sync.Tests.Performance.Tests
         {
             // Act
             await RunTestCaseAsync(testCase).ConfigureAwait(false);
-            
+
             // Assert
             TestResult result = PrepareTestResult(testCase);
             try

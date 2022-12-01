@@ -140,7 +140,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
                 .Verifiable();
 
             var instance = new LongTextFieldSanitizer(_serviceFactoryForUser.Object, _retriableStreamBuilderFactory.Object, _streamBuilder.Object, _logger.Object);
-            
+
             // Act
             const string initialValue = _LONGTEXT_STREAM_SHIBBOLETH;
             await instance.SanitizeAsync(workspaceArtifactId, itemIdentifierSourceFieldName, itemIdentifier, sanitizingSourceFieldName, initialValue)
@@ -193,7 +193,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             {
                 Objects = new List<RelativityObjectSlim>
                 {
-                    new RelativityObjectSlim {ArtifactID = artifactId}
+                    new RelativityObjectSlim { ArtifactID = artifactId }
                 }
             };
         }

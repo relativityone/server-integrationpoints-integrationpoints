@@ -27,7 +27,7 @@ namespace Relativity.Sync.Executors
                     return 0;
                 }
 
-                return (TotalRecordsCount - _numberOfRecordsIncludedInBatches - 1) / BatchSize + 1;
+                return ((TotalRecordsCount - _numberOfRecordsIncludedInBatches - 1) / BatchSize) + 1;
             }
         }
 
@@ -43,7 +43,7 @@ namespace Relativity.Sync.Executors
             _parts = new List<SnapshotPart>();
             for (int i = 0; i < TotalNumberOfBatchesToCreate; i++)
             {
-                int currentStartingIndex = i * BatchSize + _numberOfRecordsIncludedInBatches;
+                int currentStartingIndex = (i * BatchSize) + _numberOfRecordsIncludedInBatches;
                 int currentNumberOfRecords = Math.Min(BatchSize, TotalRecordsCount - currentStartingIndex);
                 _parts.Add(new SnapshotPart(currentStartingIndex, currentNumberOfRecords));
             }

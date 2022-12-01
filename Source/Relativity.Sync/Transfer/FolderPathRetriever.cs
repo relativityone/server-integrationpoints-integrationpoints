@@ -14,7 +14,7 @@ namespace Relativity.Sync.Transfer
 {
     internal sealed class FolderPathRetriever : IFolderPathRetriever
     {
-        private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
+        private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
         private const int _BATCH_SIZE = 100_000;
 
         private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
@@ -89,7 +89,7 @@ namespace Relativity.Sync.Transfer
             using (var folderManager = await _serviceFactoryForUser.CreateProxyAsync<IFolderManager>().ConfigureAwait(false))
             {
                 List<FolderPath> result;
-                List<int> foldersWithIds = folderIds.ToList(); 
+                List<int> foldersWithIds = folderIds.ToList();
                 try
                 {
                     result = await folderManager.GetFullPathListAsync(workspaceArtifactId, foldersWithIds).ConfigureAwait(false);
@@ -104,6 +104,7 @@ namespace Relativity.Sync.Transfer
                     _logger.LogError(ex, "Failed to get folders in workspace: {workspaceArtifactId}", workspaceArtifactId);
                     throw new SyncKeplerException($"Failed to get folders in workspace {workspaceArtifactId}", ex);
                 }
+
                 if (result.Count != foldersWithIds.Count)
                 {
                     List<int> differentValues = foldersWithIds.Except(result.Select(x => x.ArtifactID)).ToList();
@@ -112,6 +113,7 @@ namespace Relativity.Sync.Transfer
                     string subsetArtifactIds = string.Join(",", differentValues.Take(subsetCount));
                     _logger.LogWarning($"Could not find folders with IDs {subsetArtifactIds} in workspace {workspaceArtifactId}.");
                 }
+
                 return result.ToDictionary(f => f.ArtifactID, f => RemoveUnnecessarySpaces(f.FullPath));
             }
         }

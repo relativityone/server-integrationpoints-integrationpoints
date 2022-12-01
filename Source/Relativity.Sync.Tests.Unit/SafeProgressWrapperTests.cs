@@ -25,7 +25,7 @@ namespace Relativity.Sync.Tests.Unit
         [Test]
         public void ItShouldNotThrowWhenWrappedProgressThrows()
         {
-            var innerProgress =    new Mock<IProgress<SyncJobState>>();
+            var innerProgress = new Mock<IProgress<SyncJobState>>();
             innerProgress.Setup(x => x.Report(It.IsAny<SyncJobState>())).Throws<InvalidOperationException>();
             var logger = new Mock<IAPILog>();
             var instance = new SafeProgressWrapper<SyncJobState>(innerProgress.Object, logger.Object);
@@ -34,7 +34,8 @@ namespace Relativity.Sync.Tests.Unit
             instance.Report(SyncJobState.Start("Test"));
 
             // ASSERT
-            logger.Verify(x => x.LogWarning(It.IsAny<InvalidOperationException>(),
+            logger.Verify(x => x.LogWarning(
+                It.IsAny<InvalidOperationException>(),
                 It.Is<string>(s => s.Contains("IProgress")),
                 It.IsAny<object[]>()));
         }

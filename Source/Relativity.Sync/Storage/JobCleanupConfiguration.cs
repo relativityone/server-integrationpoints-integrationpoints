@@ -12,7 +12,9 @@ namespace Relativity.Sync.Storage
         }
 
         public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
+
         public int SyncConfigurationArtifactId => _syncJobParameters.SyncConfigurationArtifactId;
+
         public ExecutionResult SynchronizationExecutionResult { get; set; } = new ExecutionResult(ExecutionStatus.None, string.Empty, null);
     }
 }

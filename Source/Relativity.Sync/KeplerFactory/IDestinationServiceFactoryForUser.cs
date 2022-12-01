@@ -2,6 +2,5 @@
 {
     internal interface IDestinationServiceFactoryForUser : IProxyFactory
     {
-        
     }
 }

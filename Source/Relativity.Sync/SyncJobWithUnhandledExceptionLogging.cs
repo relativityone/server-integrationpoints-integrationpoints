@@ -27,7 +27,7 @@ namespace Relativity.Sync
         {
             return ExecuteWithUnhandledExceptionLoggingAsync(_syncJob.ExecuteAsync, progress, token);
         }
-        
+
         private async Task ExecuteWithUnhandledExceptionLoggingAsync(Func<CompositeCancellationToken, Task> action, CompositeCancellationToken token)
         {
             _appDomain.UnhandledException += OnUnhandledException;

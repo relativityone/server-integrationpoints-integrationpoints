@@ -22,7 +22,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
             _streamMock.Setup(x => x.CanRead).Returns(true);
             _streamBuilderMock = new Mock<IRetriableStreamBuilder>();
             _streamBuilderMock.Setup(sb => sb.GetStreamAsync()).ReturnsAsync(_streamMock.Object);
-
         }
 
         [Test]
@@ -40,7 +39,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
         public void ItShouldPassCanReadCall()
         {
             // arrange
-            const int expectedCallCount = 2; 
+            const int expectedCallCount = 2;
 
             _streamBuilderMock.Setup(sb => sb.GetStreamAsync()).ReturnsAsync(_streamMock.Object);
             SelfRecreatingStream selfRecreatingStream = new SelfRecreatingStream(_streamBuilderMock.Object, new EmptyLogger());
@@ -64,7 +63,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
             _streamBuilderMock.SetupSequence(sb => sb.GetStreamAsync())
                 .ReturnsAsync(unreadableStreamMock.Object)
                 .ReturnsAsync(_streamMock.Object);
-            
+
             SelfRecreatingStream selfRecreatingStream = new SelfRecreatingStream(_streamBuilderMock.Object, new EmptyLogger());
 
             // act
@@ -284,7 +283,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
             _streamBuilderMock.Setup(sb => sb.GetStreamAsync()).ReturnsAsync(stream);
 
             SelfRecreatingStream selfRecreatingStream = new SelfRecreatingStream(_streamBuilderMock.Object, new EmptyLogger());
-            
+
             // act
             bool canRead = selfRecreatingStream.CanRead;
             selfRecreatingStream.Dispose();
@@ -307,7 +306,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
             _streamBuilderMock.SetupSequence(sb => sb.GetStreamAsync()).ReturnsAsync(unreadableStream).ReturnsAsync(readableStream);
 
             SelfRecreatingStream selfRecreatingStream = new SelfRecreatingStream(_streamBuilderMock.Object, new EmptyLogger());
-            
+
             // act
             bool canRead = selfRecreatingStream.CanRead;
 
@@ -322,7 +321,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
         {
             // arrange
             SelfRecreatingStream selfRecreatingStream = new SelfRecreatingStream(_streamBuilderMock.Object, new EmptyLogger());
-
 
             // act
             selfRecreatingStream.Dispose();

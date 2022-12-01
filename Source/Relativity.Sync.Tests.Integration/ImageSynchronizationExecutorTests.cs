@@ -38,7 +38,7 @@ namespace Relativity.Sync.Tests.Integration
         private Mock<ISyncImportBulkArtifactJob> _importBulkArtifactJob;
         private Mock<IImageFileRepository> _imageFileRepository;
         private Mock<IRdoManager> _rdoManagerMock;
-        
+
         private const int _SOURCE_WORKSPACE_ARTIFACT_ID = 10001;
         private const int _DESTINATION_WORKSPACE_ARTIFACT_ID = 20002;
 
@@ -62,7 +62,7 @@ namespace Relativity.Sync.Tests.Integration
 
             Mock<ISemaphoreSlim> semaphoreSlim = new Mock<ISemaphoreSlim>();
             containerBuilder.RegisterInstance(semaphoreSlim.Object).As<ISemaphoreSlim>();
-            
+
             _rdoManagerMock = new Mock<IRdoManager>();
             containerBuilder.RegisterInstance(_rdoManagerMock.Object).As<IRdoManager>();
 
@@ -143,6 +143,7 @@ namespace Relativity.Sync.Tests.Integration
                 {
                     dataReader.Read();
                 }
+
                 _importBulkArtifactJob.Raise(x => x.OnComplete += null, _emptyJobStatistsics);
             });
 
@@ -157,7 +158,9 @@ namespace Relativity.Sync.Tests.Integration
             // assert
             result.Status.Should().Be(ExecutionStatus.Completed);
             _objectManagerMock.Verify();
-            _objectManagerMock.Verify(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
+            _objectManagerMock.Verify(
+                x => x.CreateAsync(
+                _SOURCE_WORKSPACE_ARTIFACT_ID,
                 It.Is<CreateRequest>(cr => cr.ObjectType.Guid == JobHistoryErrorObjectTypeGuid)), Times.Never);
             _importBulkArtifactJob.Verify(x => x.Execute(), Times.Once);
             _rdoManagerMock.Verify();
@@ -190,8 +193,7 @@ namespace Relativity.Sync.Tests.Integration
                     dataReader.Read();
                     _importBulkArtifactJob.Raise(x => x.OnItemLevelError += null, new ItemLevelError(
                         document.Values[0].ToString(),
-                        "Some weird error message."
-                    ));
+                        "Some weird error message."));
                 }
 
                 for (int i = 0; i < completedItems; i++)
@@ -218,8 +220,9 @@ namespace Relativity.Sync.Tests.Integration
                     }
                 }
             };
-            _objectManagerMock.Setup(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
-                    It.Is<MassCreateRequest>(cr => cr.ValueLists.Count == failedDocuments.Count))).ReturnsAsync(massCreateResult)
+            _objectManagerMock.Setup(x => x.CreateAsync(
+                _SOURCE_WORKSPACE_ARTIFACT_ID,
+                It.Is<MassCreateRequest>(cr => cr.ValueLists.Count == failedDocuments.Count))).ReturnsAsync(massCreateResult)
                     .Verifiable();
 
             // act
@@ -260,8 +263,9 @@ namespace Relativity.Sync.Tests.Integration
                     }
                 }
             };
-            _objectManagerMock.Setup(x => x.CreateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
-                    It.Is<MassCreateRequest>(cr => cr.ValueLists.Count == 1))).ReturnsAsync(massCreateResult)
+            _objectManagerMock.Setup(x => x.CreateAsync(
+                _SOURCE_WORKSPACE_ARTIFACT_ID,
+                It.Is<MassCreateRequest>(cr => cr.ValueLists.Count == 1))).ReturnsAsync(massCreateResult)
                     .Verifiable();
 
             // act
@@ -300,14 +304,16 @@ namespace Relativity.Sync.Tests.Integration
             {
                 Success = true
             };
-            _objectManagerMock.Setup(x => x.UpdateAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
-                    It.Is<MassUpdateByObjectIdentifiersRequest>(request => request.Objects.Count == numberOfDocumentsToTag),
-                    It.Is<MassUpdateOptions>(options => options.UpdateBehavior == FieldUpdateBehavior.Merge), It.IsAny<CancellationToken>()))
+            _objectManagerMock.Setup(x => x.UpdateAsync(
+                _SOURCE_WORKSPACE_ARTIFACT_ID,
+                It.Is<MassUpdateByObjectIdentifiersRequest>(request => request.Objects.Count == numberOfDocumentsToTag),
+                It.Is<MassUpdateOptions>(options => options.UpdateBehavior == FieldUpdateBehavior.Merge), It.IsAny<CancellationToken>()))
                     .ReturnsAsync(taggingResult)
                     .Verifiable();
-            _objectManagerMock.Setup(x => x.UpdateAsync(_DESTINATION_WORKSPACE_ARTIFACT_ID,
-                    It.IsAny<MassUpdateByCriteriaRequest>(),
-                    It.Is<MassUpdateOptions>(options => options.UpdateBehavior == FieldUpdateBehavior.Merge), It.IsAny<CancellationToken>()))
+            _objectManagerMock.Setup(x => x.UpdateAsync(
+                _DESTINATION_WORKSPACE_ARTIFACT_ID,
+                It.IsAny<MassUpdateByCriteriaRequest>(),
+                It.Is<MassUpdateOptions>(options => options.UpdateBehavior == FieldUpdateBehavior.Merge), It.IsAny<CancellationToken>()))
                     .ReturnsAsync(taggingResult)
                     .Verifiable();
         }
@@ -342,11 +348,12 @@ namespace Relativity.Sync.Tests.Integration
                     }
                 }
             };
-            _objectManagerMock.Setup(x => x.QuerySlimAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
-                    It.Is<QueryRequest>(qr => qr.Condition.Contains("Control Number")),
-                    It.IsAny<int>(),
-                    It.IsAny<int>(),
-                    It.IsAny<CancellationToken>()))
+            _objectManagerMock.Setup(x => x.QuerySlimAsync(
+                _SOURCE_WORKSPACE_ARTIFACT_ID,
+                It.Is<QueryRequest>(qr => qr.Condition.Contains("Control Number")),
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<CancellationToken>()))
                     .ReturnsAsync(fieldQueryResult)
                     .Verifiable();
         }
@@ -365,10 +372,11 @@ namespace Relativity.Sync.Tests.Integration
                 }
             }).ToArray();
 
-            _objectManagerMock.Setup(x => x.RetrieveResultsBlockFromExportAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
-                    It.IsAny<Guid>(),
-                    documentIds.Count,
-                    It.IsAny<int>()))
+            _objectManagerMock.Setup(x => x.RetrieveResultsBlockFromExportAsync(
+                _SOURCE_WORKSPACE_ARTIFACT_ID,
+                It.IsAny<Guid>(),
+                documentIds.Count,
+                It.IsAny<int>()))
                     .ReturnsAsync(exportBlock)
                     .Verifiable();
 
@@ -396,9 +404,9 @@ namespace Relativity.Sync.Tests.Integration
             _objectManagerMock.Setup(x => x.QueryAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<QueryRequest>(q => q.ObjectType.Guid == BatchObjectTypeGuid && q.Condition.Contains("New")), It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(queryResultForNewBatches)
                 .Verifiable();
-            
+
             _objectManagerMock.Setup(x => x.QueryAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<QueryRequest>(q => q.ObjectType.Guid == BatchObjectTypeGuid && q.Condition.Contains("Paused")), It.IsAny<int>(), It.IsAny<int>()))
-                .ReturnsAsync(new QueryResult{Objects = new List<RelativityObject>(), ResultCount = 0, TotalCount = 0})
+                .ReturnsAsync(new QueryResult { Objects = new List<RelativityObject>(), ResultCount = 0, TotalCount = 0 })
                 .Verifiable();
 
             _objectManagerMock.Setup(x => x.QuerySlimAsync(_SOURCE_WORKSPACE_ARTIFACT_ID, It.Is<QueryRequest>(q => q.ObjectType.Guid == BatchObjectTypeGuid && q.Condition.Contains("Completed")), It.IsAny<int>(), It.IsAny<int>()))
@@ -424,7 +432,8 @@ namespace Relativity.Sync.Tests.Integration
         {
             var imageFiles = documentIds.Select(x => new ImageFile(x, x.ToString(), $"\\\\location{x}", $"name{x}", 100)).ToList();
 
-            _imageFileRepository.Setup(x => x.QueryImagesForDocumentsAsync(_SOURCE_WORKSPACE_ARTIFACT_ID,
+            _imageFileRepository.Setup(x => x.QueryImagesForDocumentsAsync(
+                _SOURCE_WORKSPACE_ARTIFACT_ID,
                 It.Is<int[]>(d => d.Length == documentIds.Count), It.IsAny<QueryImagesOptions>()))
                 .ReturnsAsync(imageFiles);
         }

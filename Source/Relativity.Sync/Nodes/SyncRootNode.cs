@@ -18,7 +18,8 @@ namespace Relativity.Sync.Nodes
         private readonly IJobEndMetricsServiceFactory _jobEndMetricsServiceFactory;
         private readonly IAPILog _logger;
 
-        public SyncRootNode(IJobEndMetricsServiceFactory jobEndMetricsServiceFactory,
+        public SyncRootNode(
+            IJobEndMetricsServiceFactory jobEndMetricsServiceFactory,
             ICommand<IJobStatusConsolidationConfiguration> jobStatusConsolidationCommand,
             ICommand<INotificationConfiguration> notificationCommand,
             ICommand<IJobCleanupConfiguration> jobCleanupCommand,
@@ -39,7 +40,8 @@ namespace Relativity.Sync.Nodes
             ExecutionResult jobStatusConsolidationExecutionResult = RunJobStatusConsolidationAsync(context).GetAwaiter().GetResult();
             LogFailures(jobStatusConsolidationExecutionResult);
 
-            ExecutionResult[] executionResults = ExecuteTasksInParallelWithContextSync(context,
+            ExecutionResult[] executionResults = ExecuteTasksInParallelWithContextSync(
+                context,
                 ReportJobEndMetricsAsync,
                 RunNotificationCommandAsync,
                 RunJobAutomatedWorkflowTriggerAsync);
@@ -60,7 +62,8 @@ namespace Relativity.Sync.Nodes
             }
         }
 
-        private static ExecutionResult[] ExecuteTasksInParallelWithContextSync(IExecutionContext<SyncExecutionContext> context,
+        private static ExecutionResult[] ExecuteTasksInParallelWithContextSync(
+            IExecutionContext<SyncExecutionContext> context,
             params Func<IExecutionContext<SyncExecutionContext>, Task<ExecutionResult>>[] tasks)
         {
             return Task.WhenAll(tasks.Select(task => task(context))).GetAwaiter().GetResult();
@@ -100,6 +103,7 @@ namespace Relativity.Sync.Nodes
                             status = ExecutionStatus.None;
                             break;
                     }
+
                     if (context.CancelProcessing)
                     {
                         status = ExecutionStatus.Canceled;
@@ -109,15 +113,16 @@ namespace Relativity.Sync.Nodes
                     return jobEndMetricsService.ExecuteAsync(status);
                 }
             }
+
             return Task.FromResult(ExecutionResult.Skipped());
         }
 
         private Task<ExecutionResult> RunNotificationCommandAsync(IExecutionContext<SyncExecutionContext> context) => ExecuteCommandIfCanExecuteAsync(_notificationCommand, context);
-        
+
         private Task<ExecutionResult> RunJobStatusConsolidationAsync(IExecutionContext<SyncExecutionContext> context) => ExecuteCommandIfCanExecuteAsync(_jobStatusConsolidationCommand, context);
-        
+
         private Task<ExecutionResult> RunJobCleanupAsync(IExecutionContext<SyncExecutionContext> context) => ExecuteCommandIfCanExecuteAsync(_jobCleanupCommand, context);
-        
+
         private Task<ExecutionResult> RunJobAutomatedWorkflowTriggerAsync(IExecutionContext<SyncExecutionContext> context) => ExecuteCommandIfCanExecuteAsync(_automatedWfTriggerCommand, context);
 
         private static async Task<ExecutionResult> ExecuteCommandIfCanExecuteAsync<T>(ICommand<T> command, IExecutionContext<SyncExecutionContext> context) where T : IConfiguration

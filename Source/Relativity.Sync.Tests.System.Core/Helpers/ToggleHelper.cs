@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
                 SqlCommand toggleReadIsEnabledCommand = new SqlCommand(@"SELECT [IsEnabled] FROM [EDDS].[eddsdbo].[Toggle] WHERE Name = @toggleName", connection);
                 toggleReadIsEnabledCommand.Parameters.AddWithValue("toggleName", toggleName);
 
-                return (bool?) await toggleReadIsEnabledCommand.ExecuteScalarAsync().ConfigureAwait(false);
+                return (bool?)await toggleReadIsEnabledCommand.ExecuteScalarAsync().ConfigureAwait(false);
             }
         }
 

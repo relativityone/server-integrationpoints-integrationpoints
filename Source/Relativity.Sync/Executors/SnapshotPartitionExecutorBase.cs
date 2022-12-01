@@ -6,7 +6,7 @@ using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Executors
 {
-    internal abstract class SnapshotPartitionExecutorBase: IExecutor<ISnapshotPartitionConfiguration>
+    internal abstract class SnapshotPartitionExecutorBase : IExecutor<ISnapshotPartitionConfiguration>
     {
         private readonly IAPILog _logger;
         private readonly IBatchRepository _batchRepository;
@@ -48,7 +48,8 @@ namespace Relativity.Sync.Executors
             IBatch batch;
             try
             {
-                batch = await _batchRepository.GetLastAsync(configuration.SourceWorkspaceArtifactId,
+                batch = await _batchRepository.GetLastAsync(
+                    configuration.SourceWorkspaceArtifactId,
                     configuration.SyncConfigurationArtifactId, configuration.ExportRunId).ConfigureAwait(false);
             }
             catch (Exception e)
@@ -67,7 +68,8 @@ namespace Relativity.Sync.Executors
             if (batch != null)
             {
                 numberOfRecordsIncludedInBatches = batch.StartingIndex + batch.TotalDocumentsCount;
-                _logger.LogInformation("Last batch was not null. Starting partitioning at index {index}",
+                _logger.LogInformation(
+                    "Last batch was not null. Starting partitioning at index {index}",
                     numberOfRecordsIncludedInBatches);
             }
             else
@@ -90,9 +92,10 @@ namespace Relativity.Sync.Executors
             {
                 foreach (SnapshotPart snapshotPart in snapshot.GetSnapshotParts())
                 {
-                    await _batchRepository.CreateAsync(configuration.SourceWorkspaceArtifactId,
-                            configuration.SyncConfigurationArtifactId, configuration.ExportRunId, snapshotPart.NumberOfRecords,
-                            snapshotPart.StartingIndex)
+                    await _batchRepository.CreateAsync(
+                        configuration.SourceWorkspaceArtifactId,
+                        configuration.SyncConfigurationArtifactId, configuration.ExportRunId, snapshotPart.NumberOfRecords,
+                        snapshotPart.StartingIndex)
                         .ConfigureAwait(false);
                 }
             }
