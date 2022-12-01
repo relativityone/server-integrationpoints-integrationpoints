@@ -19,7 +19,8 @@ namespace Relativity.Sync.Executors.DocumentTaggers
             _logger = logger;
         }
 
-        public async Task<TaggingExecutionResult> TagObjectsAsync(IImportJob importJob,
+        public async Task<TaggingExecutionResult> TagObjectsAsync(
+            IImportJob importJob,
             ISynchronizationConfiguration configuration, CompositeCancellationToken token)
         {
             Task<TaggingExecutionResult> destinationDocumentsTaggingTask =

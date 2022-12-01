@@ -49,8 +49,7 @@ namespace Relativity.Sync.Tests.Unit
             {
                 _syncImportBulkArtifactJobMock.Raise(x => x.OnItemLevelError += null, new ItemLevelError(
                     identifier,
-                    message
-                ));
+                    message));
                 _syncImportBulkArtifactJobMock.Raise(x => x.OnComplete += null, CreateJobReport());
             });
 
@@ -74,15 +73,14 @@ namespace Relativity.Sync.Tests.Unit
 
             CancellationTokenSource drainStopTokenSource = new CancellationTokenSource();
             CompositeCancellationToken token = ComposeToken(CancellationToken.None, drainStopTokenSource.Token);
-            
+
             _syncImportBulkArtifactJobMock.Setup(x => x.Execute()).Callback(() =>
             {
                 drainStopTokenSource.Cancel();
 
                 _syncImportBulkArtifactJobMock.Raise(x => x.OnItemLevelError += null, new ItemLevelError(
                     identifier,
-                    message
-                ));
+                    message));
                 _syncImportBulkArtifactJobMock.Raise(x => x.OnComplete += null, CreateJobReport());
             });
 
@@ -187,7 +185,7 @@ namespace Relativity.Sync.Tests.Unit
             // assert
             action.Should().NotThrow<OperationCanceledException>();
         }
-        
+
         [Test]
         public void RunAsync_ShouldNotThrowExceptionWhenPausedBeforeExecution()
         {
@@ -200,7 +198,7 @@ namespace Relativity.Sync.Tests.Unit
             // assert
             action.Should().NotThrow<OperationCanceledException>();
         }
-        
+
         [Test]
         public async Task RunAsync_ShouldNotExecuteImportJob_WhenCancelledBeforeExecution()
         {
@@ -214,7 +212,7 @@ namespace Relativity.Sync.Tests.Unit
             // Assert
             _syncImportBulkArtifactJobMock.Verify(x => x.Execute(), Times.Never);
         }
-        
+
         [Test]
         public async Task RunAsync_ShouldNotExecuteImportJob_WhenDrainStoppedBeforeExecution()
         {

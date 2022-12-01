@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Sync.Telemetry
 {
-    enum Counter
+    internal enum Counter
     {
         Increment = 1
     }

@@ -11,7 +11,7 @@ namespace Relativity.Sync.Tests.Unit.RDOs
         [Test]
         public void GetValue_ShouldReturnCorrectValue()
         {
-            // Arrange 
+            // Arrange
             var sut = new RdoGuidProvider();
 
             // Act
@@ -19,15 +19,15 @@ namespace Relativity.Sync.Tests.Unit.RDOs
 
             // Assert
             var expectedValue = SampleRdo.ExpectedRdoInfo;
-            
+
             value.Name.Should().Be(expectedValue.Name);
             value.TypeGuid.Should().Be(expectedValue.TypeGuid);
             value.ParentTypeGuid.Should().Be(expectedValue.ParentTypeGuid);
-            
+
             foreach (var fieldInfoKeyValue in value.Fields)
             {
                 var expectedField = expectedValue.Fields[fieldInfoKeyValue.Key];
-            
+
                 fieldInfoKeyValue.Value.Guid.Should().Be(expectedField.Guid);
                 fieldInfoKeyValue.Value.Name.Should().Be(expectedField.Name);
                 fieldInfoKeyValue.Value.Type.Should().Be(expectedField.Type);

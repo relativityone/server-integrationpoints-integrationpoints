@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
     public class SnapshotValidatorTests
     {
         private const int WORKSPACE_ID = 5;
-        
+
         private Mock<IObjectManager> _objectManagerMock;
         private ConfigurationStub _configuration;
         private SnapshotValidator _sut;
@@ -31,31 +31,31 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
             _serviceFactoryForAdminMock.Setup(x => x.CreateProxyAsync<IObjectManager>())
                 .Returns(Task.FromResult(_objectManagerMock.Object));
-            
+
             _configuration = new ConfigurationStub();
 
             _sut = new SnapshotValidator(_configuration, _serviceFactoryForAdminMock.Object);
         }
-        
+
         [TestCaseSource(nameof(SnapshotCaseSource))]
         public async Task Validate_ShouldReturnExpectedValue(Guid? snapshotId, RelativityObjectSlim[] exportResult, bool expectedValue)
         {
             // Arrange
             _configuration.SourceWorkspaceArtifactId = WORKSPACE_ID;
             _configuration.SnapshotId = snapshotId;
-            _objectManagerMock.Setup(x => x.RetrieveResultsBlockFromExportAsync(WORKSPACE_ID, It.IsAny<Guid>(),1,0))
+            _objectManagerMock.Setup(x => x.RetrieveResultsBlockFromExportAsync(WORKSPACE_ID, It.IsAny<Guid>(), 1, 0))
                 .ReturnsAsync(exportResult);
-            
+
             // Act
             ValidationResult result =
                 await _sut.ValidateAsync(_configuration, CancellationToken.None).ConfigureAwait(false);
-            
+
             // Assert
             result.IsValid.Should().Be(expectedValue);
 
             if (snapshotId != null)
             {
-                _objectManagerMock.Verify(x => x.RetrieveResultsBlockFromExportAsync(WORKSPACE_ID, snapshotId.Value,1, 0), Times.Once);
+                _objectManagerMock.Verify(x => x.RetrieveResultsBlockFromExportAsync(WORKSPACE_ID, snapshotId.Value, 1, 0), Times.Once);
             }
         }
 
@@ -65,17 +65,17 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
         {
             // Arrange
             _configuration.Resuming = resuming;
-            
+
             // Act && Assert
             _sut.ShouldValidate(null).Should().Be(resuming);
         }
-        
-        static IEnumerable<TestCaseData> SnapshotCaseSource()
+
+        private static IEnumerable<TestCaseData> SnapshotCaseSource()
         {
-            yield return new TestCaseData((Guid?) null, null, false);
-            yield return new TestCaseData((Guid?) Guid.Empty, null, false);
-            yield return new TestCaseData((Guid?) Guid.NewGuid(), new RelativityObjectSlim[0], true);
-            yield return new TestCaseData((Guid?) Guid.NewGuid(), null, false);
+            yield return new TestCaseData((Guid?)null, null, false);
+            yield return new TestCaseData((Guid?)Guid.Empty, null, false);
+            yield return new TestCaseData((Guid?)Guid.NewGuid(), new RelativityObjectSlim[0], true);
+            yield return new TestCaseData((Guid?)Guid.NewGuid(), null, false);
         }
     }
 }

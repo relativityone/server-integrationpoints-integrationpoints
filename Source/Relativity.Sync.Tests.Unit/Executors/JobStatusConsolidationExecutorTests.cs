@@ -236,7 +236,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private void VerifyUpdateCall(int transferredCount, int failedCount, int totalItemCount)
         {
             _objectManagerFake
-                .Verify(x => x.UpdateAsync(It.IsAny<int>(), It.Is<UpdateRequest>(r =>
+                .Verify(
+                    x => x.UpdateAsync(It.IsAny<int>(), It.Is<UpdateRequest>(r =>
                     (int)r.FieldValues.Single(fvp => fvp.Field.Guid.Equals(_COMPLETED_ITEMS_COUNT_GUID)).Value == transferredCount &&
                     (int)r.FieldValues.Single(fvp => fvp.Field.Guid.Equals(_FAILED_ITEMS_COUNT_GUID)).Value == failedCount &&
                     (int)r.FieldValues.Single(fvp => fvp.Field.Guid.Equals(_TOTAL_ITEMS_COUNT_GUID)).Value == totalItemCount)),

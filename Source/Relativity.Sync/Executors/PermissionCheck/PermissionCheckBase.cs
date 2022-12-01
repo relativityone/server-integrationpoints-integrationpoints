@@ -20,6 +20,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
         }
 
         public abstract Task<ValidationResult> ValidateAsync(IPermissionsCheckConfiguration configuration);
+
         public abstract bool ShouldValidate(ISyncPipeline pipeline);
 
         protected async Task<IList<PermissionValue>> GetPermissionsForArtifactIdAsync(int workspaceArtifactId, int artifactId, List<PermissionRef> permissionRefs)
@@ -44,7 +45,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
         {
             var permissionRefs = new List<PermissionRef>
             {
-                new PermissionRef {PermissionID = permissionId}
+                new PermissionRef { PermissionID = permissionId }
             };
             return permissionRefs;
         }
@@ -72,6 +73,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
             {
                 userHasPermissions = permissionValues.All(x => x.Selected);
             }
+
             return userHasPermissions;
         }
 
@@ -83,6 +85,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
                 PermissionValue hasPermissionValue = permissionValues.First();
                 userHasPermissions = hasPermissionValue.Selected && hasPermissionValue.PermissionID == permissionId;
             }
+
             return userHasPermissions;
         }
 
@@ -94,6 +97,7 @@ namespace Relativity.Sync.Executors.PermissionCheck
                 ValidationMessage validationMessage = (errorCode == null) ? new ValidationMessage(errorMessage) : new ValidationMessage(errorCode, errorMessage);
                 validationResult.Add(validationMessage);
             }
+
             return validationResult;
         }
     }

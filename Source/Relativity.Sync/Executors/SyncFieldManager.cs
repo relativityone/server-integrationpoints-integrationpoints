@@ -42,7 +42,8 @@ namespace Relativity.Sync.Executors
                     if (!guidExists)
                     {
                         int fieldArtifactId = await ReadOrCreateFieldAsync(workspaceArtifactId, fieldRequest).ConfigureAwait(false);
-                        _logger.LogVerbose("Assigning GUID {fieldGuid} to field with Artifact ID {fieldArtifactId}",
+                        _logger.LogVerbose(
+                            "Assigning GUID {fieldGuid} to field with Artifact ID {fieldArtifactId}",
                             fieldGuid, fieldArtifactId);
                         await artifactGuidManager.CreateSingleAsync(workspaceArtifactId, fieldArtifactId, new List<Guid>() { fieldGuid }).ConfigureAwait(false);
                     }

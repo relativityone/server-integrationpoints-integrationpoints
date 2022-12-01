@@ -15,7 +15,6 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
             Duration = 1111,
             ExecutionStatus = ExecutionStatus.Completed,
         };
-        
 
         protected override IMetric ArrangeTestMetric()
         {

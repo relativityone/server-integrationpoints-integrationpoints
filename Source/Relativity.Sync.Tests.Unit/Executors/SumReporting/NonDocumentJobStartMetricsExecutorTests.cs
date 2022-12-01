@@ -67,7 +67,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             _configurationFake.SetupGet(x => x.SourceWorkspaceArtifactId).Returns(_SOURCE_WORKSPACE_ARTIFACT_ID);
             _configurationFake.SetupGet(x => x.DestinationWorkspaceArtifactId).Returns(_DESTINATION_WORKSPACE_ARTIFACT_ID);
             _configurationFake.SetupGet(x => x.RdoArtifactTypeId).Returns(_NON_DOCUMENT_ARTIFACT_TYPE_ID);
-            
+
             _sut = new NonDocumentJobStartMetricsExecutor(
                 _serviceFactory.Object,
                 _syncMetricsMock.Object,
@@ -82,11 +82,10 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            _syncMetricsMock.Verify(x => x.Send(It.Is<NonDocumentJobStartMetric>(m => 
+            _syncMetricsMock.Verify(x => x.Send(It.Is<NonDocumentJobStartMetric>(m =>
                 m.Type == TelemetryConstants.PROVIDER_NAME &&
                 m.FlowType == TelemetryConstants.FLOW_TYPE_VIEW_NON_DOCUMENT_OBJECTS)));
         }
-
 
         [Test]
         public async Task ExecuteAsync_ShouldReportRetryMetric_WhenRetryFlowIsSelected()
@@ -130,7 +129,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             // Assert
             action.Should().NotThrow();
         }
-
 
         [Test]
         public async Task ExecuteAsync_ShouldLogFieldsMappingDetails()
@@ -215,7 +213,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            _syncMetricsMock.Verify(x => x.Send(It.Is<JobResumeMetric>(metric =>
+            _syncMetricsMock.Verify(
+                x => x.Send(It.Is<JobResumeMetric>(metric =>
                 metric.Type == TelemetryConstants.PROVIDER_NAME)), Times.Once);
             _syncMetricsMock.Verify(x => x.Send(It.IsAny<NonDocumentJobStartMetric>()), Times.Never);
 

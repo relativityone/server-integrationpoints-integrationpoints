@@ -22,7 +22,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
 
             _sut = new SnapshotQueryConfiguration(_configuration, _serializer, _syncJobParameters);
         }
-        
+
         [Test]
         public void JobHistoryToRetryId_ShouldReturnValue()
         {
@@ -33,7 +33,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
             // Act & Assert
             _sut.JobHistoryToRetryId.Should().Be(jobHistoryArtifactId);
         }
-        
+
         [Test]
         public void DataSourceArtifactId_ShouldReturnValue()
         {

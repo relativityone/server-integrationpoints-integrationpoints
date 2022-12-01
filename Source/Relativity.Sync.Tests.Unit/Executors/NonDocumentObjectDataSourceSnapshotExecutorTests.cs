@@ -54,7 +54,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _jobProgressUpdater
                 .Setup(x => x.UpdateJobProgressAsync(It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(Task.CompletedTask);
-            
+
             _snapshotQueryRequestProvider = new Mock<ISnapshotQueryRequestProvider>();
             _logMock = new Mock<IAPILog>();
 
@@ -68,7 +68,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                     RecordCount = AllObjectsCount,
                     RunID = AllObjectsExportGuid
                 });
-            
+
             _objectManagerMock.Setup(x => x.InitializeExportAsync(It.IsAny<int>(), LinkingObjectsRequest, 1))
                 .ReturnsAsync(() => new ExportInitializationResults
                 {
@@ -85,8 +85,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 .ReturnsAsync(LinkingObjectsRequest);
 
             _configuration = new ConfigurationStub();
-            
-            _sut = new NonDocumentObjectDataSourceSnapshotExecutor(_serviceFactoryForUserMock.Object, _jobProgressUpdaterFactoryMock.Object,_snapshotQueryRequestProvider.Object, _logMock.Object);
+
+            _sut = new NonDocumentObjectDataSourceSnapshotExecutor(_serviceFactoryForUserMock.Object, _jobProgressUpdaterFactoryMock.Object, _snapshotQueryRequestProvider.Object, _logMock.Object);
         }
 
         [Test]
@@ -94,12 +94,12 @@ namespace Relativity.Sync.Tests.Unit.Executors
         {
             // Act
             ExecutionResult result = await _sut.ExecuteAsync(_configuration, new CompositeCancellationTokenStub());
-            
+
             // Assert
             result.Status.Should().BeEquivalentTo(ExecutionStatus.Completed);
             _configuration.ExportRunId.Should().Be(AllObjectsExportGuid);
             _configuration.TotalRecordsCount.Should().Be(AllObjectsCount);
-            
+
             _configuration.ObjectLinkingSnapshotId.Should().Be(LinkingObjectsExportGuid);
             _configuration.ObjectLinkingSnapshotRecordsCount.Should().Be(LinkingObjectsCount);
         }
@@ -111,15 +111,15 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _snapshotQueryRequestProvider.Setup(x =>
                     x.GetRequestForLinkingNonDocumentObjectsAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => null);
-            
+
             // Act
             ExecutionResult result = await _sut.ExecuteAsync(_configuration, new CompositeCancellationTokenStub()).ConfigureAwait(false);
-            
+
             // Assert
             result.Status.Should().BeEquivalentTo(ExecutionStatus.Completed);
             _configuration.ExportRunId.Should().Be(AllObjectsExportGuid);
             _configuration.TotalRecordsCount.Should().Be(AllObjectsCount);
-            
+
             _objectManagerMock.Verify(x => x.InitializeExportAsync(It.IsAny<int>(), It.Is<QueryRequest>(q => q != AllObjectsRequest), It.IsAny<int>()), Times.Never);
             _configuration.ObjectLinkingSnapshotId.Should().Be(null);
             _configuration.ObjectLinkingSnapshotRecordsCount.Should().Be(0);
@@ -140,15 +140,15 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _objectManagerMock.Setup(x =>
                     x.RetrieveResultsBlockFromExportAsync(It.IsAny<int>(), LinkingObjectsExportGuid, 0, 0))
                 .ReturnsAsync(Array.Empty<RelativityObjectSlim>());
-            
+
             // Act
             ExecutionResult result = await _sut.ExecuteAsync(_configuration, new CompositeCancellationTokenStub()).ConfigureAwait(false);
-            
+
             // Assert
             result.Status.Should().BeEquivalentTo(ExecutionStatus.Completed);
             _configuration.ExportRunId.Should().Be(AllObjectsExportGuid);
             _configuration.TotalRecordsCount.Should().Be(AllObjectsCount);
-            
+
             _configuration.ObjectLinkingSnapshotId.Should().Be(null);
             _configuration.ObjectLinkingSnapshotRecordsCount.Should().Be(0);
 
@@ -163,46 +163,46 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Arrange
             _objectManagerMock.Setup(x => x.InitializeExportAsync(It.IsAny<int>(), AllObjectsRequest, 1))
                 .Throws<Exception>();
-            
+
             // Act
             var result = await _sut.ExecuteAsync(_configuration, new CompositeCancellationTokenStub())
-                .ConfigureAwait(false); 
-            
+                .ConfigureAwait(false);
+
             // Assert
             result.Status.Should().Be(ExecutionStatus.Failed);
             result.Message.Should().Be("ExportAPI failed to initialize export for all non-document objects");
         }
-        
+
         [Test]
         public async Task Execute_ShouldFail_WhenObjectLinkingExportFails()
         {
             // Arrange
             _objectManagerMock.Setup(x => x.InitializeExportAsync(It.IsAny<int>(), LinkingObjectsRequest, 1))
                 .Throws<Exception>();
-            
+
             // Act
             var result = await _sut.ExecuteAsync(_configuration, new CompositeCancellationTokenStub())
-                .ConfigureAwait(false); 
-            
+                .ConfigureAwait(false);
+
             // Assert
             result.Status.Should().Be(ExecutionStatus.Failed);
             result.Message.Should().Be("ExportAPI failed to initialize export linking non-document objects");
         }
-        
+
         [Test]
         public async Task Execute_ShouldFail_WhenBothExportsFail()
         {
             // Arrange
             _objectManagerMock.Setup(x => x.InitializeExportAsync(It.IsAny<int>(), LinkingObjectsRequest, 1))
                 .Throws<Exception>();
-            
+
             _objectManagerMock.Setup(x => x.InitializeExportAsync(It.IsAny<int>(), AllObjectsRequest, 1))
                 .Throws<Exception>();
-            
+
             // Act
             var result = await _sut.ExecuteAsync(_configuration, new CompositeCancellationTokenStub())
-                .ConfigureAwait(false); 
-            
+                .ConfigureAwait(false);
+
             // Assert
             result.Status.Should().Be(ExecutionStatus.Failed);
             result.Message.Should().Be("Failed to initialize objects exports");

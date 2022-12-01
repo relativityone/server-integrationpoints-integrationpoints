@@ -42,7 +42,6 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
             _objectManagerMock = new Mock<IObjectManager>();
             _fieldManagerMock = new Mock<IFieldManager>();
 
-
             _guidManagerMock.Setup(x => x.ReadMultipleArtifactIdsAsync(_sourceWorkspaceId, It.IsAny<List<Guid>>()))
                 .ReturnsAsync((int _, List<Guid> guids) =>
                 {
@@ -58,17 +57,16 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
                     {
                         new RelativityObject()
                         {
-                            ArtifactID = 1, Guids = new List<Guid> {Guid.NewGuid()},
+                            ArtifactID = 1, Guids = new List<Guid> { Guid.NewGuid() },
                             FieldValues = new List<FieldValuePair>
                             {
-                                new FieldValuePair {Value = 1},
-                                new FieldValuePair {Value = 2}
+                                new FieldValuePair { Value = 1 },
+                                new FieldValuePair { Value = 2 }
                             }
                         }
                     },
                     ResultCount = 1
                 });
-
 
             _objectManagerMock.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<ReadRequest>()))
                 .ReturnsAsync(new ReadResult()
@@ -143,7 +141,6 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
                 return (Guid)propertyPath.GetValue(rdo);
             }).ToArray();
 
-
             expectedQueriedGuids.ForEach(g => _guidManagerMock.Verify(x =>
                 x.ReadMultipleArtifactIdsAsync(_sourceWorkspaceId, It.Is<List<Guid>>(l => l.Contains(g)))));
         }
@@ -157,7 +154,6 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
 
             object rdo = rdoPath.GetValue(rdoOptions);
             Guid notExistingGuid = (Guid)propertyPath.GetValue(rdo);
-
 
             _guidManagerMock.Setup(x => x.ReadMultipleArtifactIdsAsync(_sourceWorkspaceId, It.IsAny<List<Guid>>()))
                 .ReturnsAsync((int _, List<Guid> guids) =>
@@ -323,12 +319,11 @@ namespace Relativity.Sync.Tests.Unit.SyncConfiguration
                 .BeFalse();
         }
 
-        static IEnumerable<TestCaseData> RdoOptionsMembers()
+        private static IEnumerable<TestCaseData> RdoOptionsMembers()
         {
             var properties = typeof(RdoOptions).GetProperties()
                 .SelectMany(x =>
-                    x.PropertyType.GetProperties().Select(p => new { Rdo = x, Property = p })
-                );
+                    x.PropertyType.GetProperties().Select(p => new { Rdo = x, Property = p }));
 
             return properties
                 .Select(x =>

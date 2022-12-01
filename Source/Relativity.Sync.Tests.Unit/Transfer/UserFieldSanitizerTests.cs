@@ -33,8 +33,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         public void SetUp()
         {
             _userInfoManagerMock = new Mock<IUserInfoManager>();
-            _userInfoManagerMock.Setup(m => m.RetrieveUsersBy(It.IsAny<int>(),
-                    It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
+            _userInfoManagerMock.Setup(m => m.RetrieveUsersBy(
+                It.IsAny<int>(),
+                It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(new UserInfoQueryResultSet { ResultCount = 0, DataResults = Enumerable.Empty<UserInfo>() });
 
             Mock<ISourceServiceFactoryForAdmin> serviceFactoryForAdmin = new Mock<ISourceServiceFactoryForAdmin>();
@@ -67,8 +68,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         public async Task SanitizeAsync_ShouldReturnNull_WhenInitialValueIsNull()
         {
             // Act
-            object sanitizedValue = await _sut.SanitizeAsync(It.IsAny<int>(), 
-                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null)
+            object sanitizedValue = await _sut.SanitizeAsync(
+                It.IsAny<int>(),
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null)
                 .ConfigureAwait(false);
 
             // Assert
@@ -116,7 +118,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             object initialValue = GetInitialValue(instanceUserArtifactId);
 
             SetupWorkspaceInfoManagerForUser(instanceArtifactId, instanceUserArtifactId, expectedUserEmail);
-            
+
             // Act
             object sanitizedValue = await _sut.SanitizeAsync(
                     workspaceArtifactId, It.IsAny<string>(), It.IsAny<string>(),
@@ -129,8 +131,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             _memoryCacheStub.Verify(x => x.Add(It.IsAny<string>(), sanitizedValue, It.IsAny<CacheItemPolicy>()));
 
             _userInfoManagerMock.Verify(
-                x => x.RetrieveUsersBy(instanceArtifactId, It.Is<QueryRequest>(q => QueryWithUserArtifactId(q, instanceUserArtifactId))
-                    , It.IsAny<int>(), It.IsAny<int>()),
+                x => x.RetrieveUsersBy(instanceArtifactId, It.Is<QueryRequest>(q => QueryWithUserArtifactId(q, instanceUserArtifactId)),
+                    It.IsAny<int>(), It.IsAny<int>()),
                 Times.Once);
 
             _userInfoManagerMock.Verify(
@@ -166,7 +168,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
                 x => x.RetrieveUsersBy(instanceArtifactId, It.Is<QueryRequest>(q => QueryWithUserArtifactId(q, workspaceUserArtifactId)),
                     It.IsAny<int>(), It.IsAny<int>()),
                 Times.Once);
-            
+
             _userInfoManagerMock.Verify(
                 x => x.RetrieveUsersBy(workspaceArtifactId, It.Is<QueryRequest>(q => QueryWithUserArtifactId(q, workspaceUserArtifactId)),
                     It.IsAny<int>(), It.IsAny<int>()),
@@ -182,7 +184,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             object initialValue = GetInitialValue(nonExistingUserArtifactId);
 
             // Act
-            Func<Task> sanitizeAsync = () => _sut.SanitizeAsync(It.IsAny<int>(), 
+            Func<Task> sanitizeAsync = () => _sut.SanitizeAsync(
+                It.IsAny<int>(),
                 It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), initialValue);
 
             // Assert
@@ -213,7 +216,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             // Assert
             sanitizedValue.Should().Be(expectedUserEmail);
 
-            _memoryCacheStub.Verify(x => x.Add(It.Is<string>(s => s.Contains(restoredUserArtifactId.ToString())),
+            _memoryCacheStub.Verify(x => x.Add(
+                It.Is<string>(s => s.Contains(restoredUserArtifactId.ToString())),
                 sanitizedValue, It.IsAny<CacheItemPolicy>()));
         }
 

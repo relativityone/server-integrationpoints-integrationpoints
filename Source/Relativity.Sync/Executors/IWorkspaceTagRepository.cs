@@ -5,7 +5,7 @@ using Relativity.Sync.Configuration;
 
 namespace Relativity.Sync.Executors
 {
-    interface IWorkspaceTagRepository<TIdentifier>
+    internal interface IWorkspaceTagRepository<TIdentifier>
     {
         Task<IList<TagDocumentsResult<TIdentifier>>> TagDocumentsAsync(ISynchronizationConfiguration synchronizationConfiguration, IList<TIdentifier> documentIdentifiers, CancellationToken token);
     }

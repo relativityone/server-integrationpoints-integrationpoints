@@ -60,7 +60,8 @@ namespace Relativity.Sync.Executors.SumReporting
                 IncludeOriginalImageIfNotFoundInProductions = configuration.IncludeOriginalImageIfNotFoundInProductions
             };
 
-            Task<ImagesStatistics> calculateImagesTotalSizeTask = Task.Run(async () =>
+            Task<ImagesStatistics> calculateImagesTotalSizeTask = Task.Run(
+                async () =>
             {
                 _syncLog.LogInformation("Image statistics calculation has been started...");
                 QueryRequest request = await _queryRequestProvider.GetRequestWithIdentifierOnlyForCurrentPipelineAsync(token.StopCancellationToken).ConfigureAwait(false);

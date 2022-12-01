@@ -19,10 +19,15 @@ namespace Relativity.Sync.Tests.Unit.Logging
         internal class FieldMapDefinitionCase
         {
             public string SourceFieldName { get; set; }
+
             public string DestinationFieldName { get; set; }
+
             public RelativityDataType DataType { get; set; }
+
             public bool SourceFieldDataGridEnabled { get; set; }
+
             public bool DestinationFieldDataGridEnabled { get; set; }
+
             public SpecialFieldType SpecialFieldType { get; set; } = SpecialFieldType.None;
         }
 
@@ -76,8 +81,8 @@ namespace Relativity.Sync.Tests.Unit.Logging
                         {
                             ArtifactID = artifactIdCounter++,
                             Values = new List<object> { x.SourceFieldName, x.SourceFieldDataGridEnabled }
-                        }
-                    ).ToList()
+                        })
+                    .ToList()
                 });
 
             _objectManager
@@ -89,13 +94,13 @@ namespace Relativity.Sync.Tests.Unit.Logging
                         {
                             ArtifactID = artifactIdCounter++,
                             Values = new List<object> { x.DestinationFieldName, x.DestinationFieldDataGridEnabled }
-                        }
-                    ).ToList()
+                        })
+                    .ToList()
                 });
-            
+
             _fieldManagerFake.Setup(x => x.GetMappedFieldsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(mapping.Select(x =>
-                new FieldInfoDto(x.SpecialFieldType, x.SourceFieldName, x.DestinationFieldName, true, true) { RelativityDataType = x.DataType }
-            ).ToList);
+                new FieldInfoDto(x.SpecialFieldType, x.SourceFieldName, x.DestinationFieldName, true, true) { RelativityDataType = x.DataType })
+            .ToList);
         }
 
         private void PrepareTestData()
@@ -156,8 +161,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             SourceFieldName = fieldName, DestinationFieldName = fieldName,
                             DataType = RelativityDataType.LongText
                         },
-                    }, PrepareSummaryWithDisabledDataGrid()
-                )
+                    }, PrepareSummaryWithDisabledDataGrid())
             { TestName = "{m}(DataGridSource=disable, DataGridDestination=disabled)" };
 
             yield return new TestCaseData(
@@ -169,8 +173,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
                             DestinationFieldDataGridEnabled = false
                         }
-                    }, PrepareSummaryWithEnabledDataGridInSource()
-                )
+                    }, PrepareSummaryWithEnabledDataGridInSource())
             { TestName = "{m}(DataGridSource=enabled, DataGridDestination=disabled)" };
 
             yield return new TestCaseData(
@@ -182,8 +185,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = false,
                             DestinationFieldDataGridEnabled = true
                         }
-                    }, PrepareSummaryWithEnabledDataGridInDestination()
-                )
+                    }, PrepareSummaryWithEnabledDataGridInDestination())
             { TestName = "{m}(DataGridSource=disabled, DataGridDestination=enabled)" };
 
             yield return new TestCaseData(
@@ -195,8 +197,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
                             DestinationFieldDataGridEnabled = true
                         }
-                    }, PrepareSummaryWithDataGridEnabledBothInSourceAndDestination()
-                )
+                    }, PrepareSummaryWithDataGridEnabledBothInSourceAndDestination())
             { TestName = "{m}(DataGridSource=enabled, tDataGridDestination=enabled)" };
 
             yield return new TestCaseData(
@@ -228,19 +229,18 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             DataType = RelativityDataType.FixedLengthText
                         },
                         new FieldMapDefinitionCase
-                            {SourceFieldName = "1", DestinationFieldName = "1", DataType = RelativityDataType.Currency},
+                            { SourceFieldName = "1", DestinationFieldName = "1", DataType = RelativityDataType.Currency },
                         new FieldMapDefinitionCase
-                            {SourceFieldName = "2", DestinationFieldName = "2", DataType = RelativityDataType.Currency},
+                            { SourceFieldName = "2", DestinationFieldName = "2", DataType = RelativityDataType.Currency },
                         new FieldMapDefinitionCase
-                            {SourceFieldName = "3", DestinationFieldName = "3", DataType = RelativityDataType.YesNo},
+                            { SourceFieldName = "3", DestinationFieldName = "3", DataType = RelativityDataType.YesNo },
                         new FieldMapDefinitionCase
-                            {SourceFieldName = "4", DestinationFieldName = "4", DataType = RelativityDataType.YesNo},
+                            { SourceFieldName = "4", DestinationFieldName = "4", DataType = RelativityDataType.YesNo },
                         new FieldMapDefinitionCase
-                            {SourceFieldName = "5", DestinationFieldName = "5", DataType = RelativityDataType.YesNo},
+                            { SourceFieldName = "5", DestinationFieldName = "5", DataType = RelativityDataType.YesNo },
                         new FieldMapDefinitionCase
-                            {SourceFieldName = "6", DestinationFieldName = "6", DataType = RelativityDataType.YesNo},
-                    }, PrepareSummaryForCountingTypes()
-                )
+                            { SourceFieldName = "6", DestinationFieldName = "6", DataType = RelativityDataType.YesNo },
+                    }, PrepareSummaryForCountingTypes())
             { TestName = "{m}(CountingTypes)" };
 
             yield return new TestCaseData(
@@ -264,8 +264,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             DataType = RelativityDataType.LongText, SourceFieldDataGridEnabled = true,
                             DestinationFieldDataGridEnabled = false
                         }
-                    }, PrepareSummaryForLongText()
-                )
+                    }, PrepareSummaryForLongText())
             { TestName = "{m}(LongText)" };
 
             yield return new TestCaseData(
@@ -303,8 +302,7 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             DestinationFieldDataGridEnabled = false,
                             SpecialFieldType = SpecialFieldType.SupportedByViewer
                         }
-                    }, PrepareSummaryForLoggingSpecialFields()
-                )
+                    }, PrepareSummaryForLoggingSpecialFields())
             { TestName = "{m}(ShouldLogSpecialFieldsWhenTheyHaveBeenMapped)" };
         }
 
@@ -328,15 +326,15 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             {
                                 "Source", new Dictionary<string, object>()
                                 {
-                                    {"ArtifactId", 1},
-                                    {"DataGridEnabled", true}
+                                    { "ArtifactId", 1 },
+                                    { "DataGridEnabled", true }
                                 }
                             },
                             {
                                 "Destination", new Dictionary<string, object>()
                                 {
-                                    {"ArtifactId", 6},
-                                    {"DataGridEnabled", true}
+                                    { "ArtifactId", 6 },
+                                    { "DataGridEnabled", true }
                                 }
                             }
                         },
@@ -345,15 +343,15 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             {
                                 "Source", new Dictionary<string, object>()
                                 {
-                                    {"ArtifactId", 2},
-                                    {"DataGridEnabled", false}
+                                    { "ArtifactId", 2 },
+                                    { "DataGridEnabled", false }
                                 }
                             },
                             {
                                 "Destination", new Dictionary<string, object>()
                                 {
-                                    {"ArtifactId", 7},
-                                    {"DataGridEnabled", true}
+                                    { "ArtifactId", 7 },
+                                    { "DataGridEnabled", true }
                                 }
                             }
                         },
@@ -362,15 +360,15 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             {
                                 "Source", new Dictionary<string, object>()
                                 {
-                                    {"ArtifactId", 3},
-                                    {"DataGridEnabled", true}
+                                    { "ArtifactId", 3 },
+                                    { "DataGridEnabled", true }
                                 }
                             },
                             {
                                 "Destination", new Dictionary<string, object>()
                                 {
-                                    {"ArtifactId", 8},
-                                    {"DataGridEnabled", false}
+                                    { "ArtifactId", 8 },
+                                    { "DataGridEnabled", false }
                                 }
                             }
                         },
@@ -379,15 +377,15 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             {
                                 "Source", new Dictionary<string, object>()
                                 {
-                                    {"ArtifactId", 4},
-                                    {"DataGridEnabled", true}
+                                    { "ArtifactId", 4 },
+                                    { "DataGridEnabled", true }
                                 }
                             },
                             {
                                 "Destination", new Dictionary<string, object>()
                                 {
-                                    {"ArtifactId", 9},
-                                    {"DataGridEnabled", false}
+                                    { "ArtifactId", 9 },
+                                    { "DataGridEnabled", false }
                                 }
                             }
                         },
@@ -396,15 +394,15 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             {
                                 "Source", new Dictionary<string, object>()
                                 {
-                                    {"ArtifactId", 5},
-                                    {"DataGridEnabled", true}
+                                    { "ArtifactId", 5 },
+                                    { "DataGridEnabled", true }
                                 }
                             },
                             {
                                 "Destination", new Dictionary<string, object>()
                                 {
-                                    {"ArtifactId", 10},
-                                    {"DataGridEnabled", false}
+                                    { "ArtifactId", 10 },
+                                    { "DataGridEnabled", false }
                                 }
                             }
                         },
@@ -433,15 +431,15 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             {
                                 "Source", new Dictionary<string, object>()
                                 {
-                                    {"ArtifactId", 1},
-                                    {"DataGridEnabled", true}
+                                    { "ArtifactId", 1 },
+                                    { "DataGridEnabled", true }
                                 }
                             },
                             {
                                 "Destination", new Dictionary<string, object>()
                                 {
-                                    {"ArtifactId", 4},
-                                    {"DataGridEnabled", true}
+                                    { "ArtifactId", 4 },
+                                    { "DataGridEnabled", true }
                                 }
                             }
                         },
@@ -450,15 +448,15 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             {
                                 "Source", new Dictionary<string, object>()
                                 {
-                                    {"ArtifactId", 2},
-                                    {"DataGridEnabled", false}
+                                    { "ArtifactId", 2 },
+                                    { "DataGridEnabled", false }
                                 }
                             },
                             {
                                 "Destination", new Dictionary<string, object>()
                                 {
-                                    {"ArtifactId", 5},
-                                    {"DataGridEnabled", true}
+                                    { "ArtifactId", 5 },
+                                    { "DataGridEnabled", true }
                                 }
                             }
                         },
@@ -467,15 +465,15 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             {
                                 "Source", new Dictionary<string, object>()
                                 {
-                                    {"ArtifactId", 3},
-                                    {"DataGridEnabled", true}
+                                    { "ArtifactId", 3 },
+                                    { "DataGridEnabled", true }
                                 }
                             },
                             {
                                 "Destination", new Dictionary<string, object>()
                                 {
-                                    {"ArtifactId", 6},
-                                    {"DataGridEnabled", false}
+                                    { "ArtifactId", 6 },
+                                    { "DataGridEnabled", false }
                                 }
                             }
                         }
@@ -531,15 +529,15 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             {
                                 "Source", new Dictionary<string, object>
                                 {
-                                    {"ArtifactId", 1},
-                                    {"DataGridEnabled", true}
+                                    { "ArtifactId", 1 },
+                                    { "DataGridEnabled", true }
                                 }
                             },
                             {
                                 "Destination", new Dictionary<string, object>
                                 {
-                                    {"ArtifactId", 2},
-                                    {"DataGridEnabled", true}
+                                    { "ArtifactId", 2 },
+                                    { "DataGridEnabled", true }
                                 }
                             }
                         }
@@ -568,15 +566,15 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             {
                                 "Source", new Dictionary<string, object>
                                 {
-                                    {"ArtifactId", 1},
-                                    {"DataGridEnabled", false}
+                                    { "ArtifactId", 1 },
+                                    { "DataGridEnabled", false }
                                 }
                             },
                             {
                                 "Destination", new Dictionary<string, object>
                                 {
-                                    {"ArtifactId", 2},
-                                    {"DataGridEnabled", true}
+                                    { "ArtifactId", 2 },
+                                    { "DataGridEnabled", true }
                                 }
                             }
                         }
@@ -605,15 +603,15 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             {
                                 "Source", new Dictionary<string, object>
                                 {
-                                    {"ArtifactId", 1},
-                                    {"DataGridEnabled", true}
+                                    { "ArtifactId", 1 },
+                                    { "DataGridEnabled", true }
                                 }
                             },
                             {
                                 "Destination", new Dictionary<string, object>
                                 {
-                                    {"ArtifactId", 2},
-                                    {"DataGridEnabled", false}
+                                    { "ArtifactId", 2 },
+                                    { "DataGridEnabled", false }
                                 }
                             }
                         }
@@ -642,15 +640,15 @@ namespace Relativity.Sync.Tests.Unit.Logging
                             {
                                 "Source", new Dictionary<string, object>
                                 {
-                                    {"ArtifactId", 1},
-                                    {"DataGridEnabled", false}
+                                    { "ArtifactId", 1 },
+                                    { "DataGridEnabled", false }
                                 }
                             },
                             {
                                 "Destination", new Dictionary<string, object>
                                 {
-                                    {"ArtifactId", 2},
-                                    {"DataGridEnabled", false}
+                                    { "ArtifactId", 2 },
+                                    { "DataGridEnabled", false }
                                 }
                             }
                         }

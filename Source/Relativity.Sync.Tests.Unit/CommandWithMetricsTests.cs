@@ -113,10 +113,9 @@ namespace Relativity.Sync.Tests.Unit
 
             // ASSERT
             action.Should().Throw<OperationCanceledException>();
-            
+
             VerifySentMetric(m => m.ExecutionStatus == ExecutionStatus.Canceled);
         }
-
 
         [Test]
         public async Task ExecuteAsync_ShouldReportCanceledStatusWhenExecutionCanceledGracefuly()
@@ -159,11 +158,11 @@ namespace Relativity.Sync.Tests.Unit
             await _sut.CanExecuteAsync(CancellationToken.None).ConfigureAwait(false);
 
             // ASSERT
-            VerifySentMetric(m => 
+            VerifySentMetric(m =>
                 m.Duration == expectedMilliseconds &&
                 m.ExecutionStatus == ExecutionStatus.Completed);
         }
-        
+
         private void VerifySentMetric(Expression<Func<CommandMetric, bool>> validationFunc)
         {
             _metricsMock.Verify(x => x.Send(It.Is(validationFunc)));

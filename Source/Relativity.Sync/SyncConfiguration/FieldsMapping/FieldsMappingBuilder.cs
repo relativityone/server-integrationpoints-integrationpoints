@@ -29,7 +29,7 @@ namespace Relativity.Sync.SyncConfiguration.FieldsMapping
         }
 
         public List<FieldMap> FieldsMapping { get; }
-        
+
         public IFieldsMappingBuilder WithIdentifier()
         {
             if (FieldsMapping.Exists(x => x.FieldMapType == FieldMapType.Identifier))
@@ -121,7 +121,7 @@ namespace Relativity.Sync.SyncConfiguration.FieldsMapping
         private async Task<FieldEntry> ReadFieldEntryByIdAsync(int workspaceId, int fieldId, IFieldManager fieldManager)
         {
             var field = await fieldManager.ReadAsync(workspaceId, fieldId).ConfigureAwait(false);
-            
+
             if (field == null)
             {
                 throw InvalidFieldsMappingException.FieldNotFound(fieldId);
@@ -176,7 +176,7 @@ namespace Relativity.Sync.SyncConfiguration.FieldsMapping
             {
                 DisplayName = field.Name,
                 FieldIdentifier = field.ArtifactID,
-                IsIdentifier = (bool) field.FieldValues.Single().Value
+                IsIdentifier = (bool)field.FieldValues.Single().Value
             };
 
             if (fieldEntry.IsIdentifier)

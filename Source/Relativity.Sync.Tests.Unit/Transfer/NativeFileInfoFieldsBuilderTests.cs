@@ -6,7 +6,6 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Logging;
-using Relativity.Sync.Toggles;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Transfer.ADLS;
 

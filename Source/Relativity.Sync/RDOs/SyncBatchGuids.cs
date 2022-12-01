@@ -3,7 +3,7 @@
     internal static class SyncBatchGuids
     {
         public const string SyncBatchObjectTypeGuid = "18C766EB-EB71-49E4-983E-FFDE29B1A44E";
-        
+
         public const string TransferredItemsCountGuid = "B2D112CA-E81E-42C7-A6B2-C0E89F32F567";
         public const string FailedItemsCountGuid = "DC3228E4-2765-4C3B-B3B1-A0F054E280F6";
 

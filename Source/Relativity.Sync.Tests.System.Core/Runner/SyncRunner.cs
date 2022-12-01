@@ -68,7 +68,7 @@ namespace Relativity.Sync.Tests.System.Core.Runner
             {
                 result = state;
                 _logger.LogInformation(state.ToString());
-                _logger.LogInformation($"Elapsed time: {(stopwatch.ElapsedMilliseconds / second)}; From previous step: {(stopwatch.ElapsedMilliseconds - prevoiusStep) / second}");
+                _logger.LogInformation($"Elapsed time: {stopwatch.ElapsedMilliseconds / second}; From previous step: {(stopwatch.ElapsedMilliseconds - prevoiusStep) / second}");
                 prevoiusStep = stopwatch.ElapsedMilliseconds;
             });
 

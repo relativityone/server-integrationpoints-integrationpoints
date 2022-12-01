@@ -10,17 +10,27 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
         public DataTable Data { get; }
 
         public bool ExtractedText { get; }
+
         public bool Natives { get; }
+
         public bool Images { get; }
 
         public static string IdentifierFieldName => "Control Number";
+
         public static string ExtractedTextFilePath => "Extracted Text";
+
         public static string FileName => "File Name";
+
         public static string NativeFilePath => "Native File";
+
         public static string FolderPath => "Document Folder Path";
+
         public static string RelativitySyncTestUser => "Relativity Sync Test User";
+
         public static string ImageFile => "File";
+
         public static string BegBates => "Bates Beg";
+
         public static string SyncMultiChoice => "SyncMultiChoice";
 
         private static IEnumerable<DataColumn> DefaultColumns => new[]

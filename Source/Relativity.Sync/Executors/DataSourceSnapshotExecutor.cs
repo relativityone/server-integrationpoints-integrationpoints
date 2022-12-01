@@ -18,8 +18,9 @@ namespace Relativity.Sync.Executors
 
         protected readonly IAPILog Logger;
 
-        public DataSourceSnapshotExecutor(ISourceServiceFactoryForUser serviceFactoryForUser, 
-            IJobProgressUpdaterFactory jobProgressUpdaterFactory, IAPILog logger, 
+        public DataSourceSnapshotExecutor(
+            ISourceServiceFactoryForUser serviceFactoryForUser,
+            IJobProgressUpdaterFactory jobProgressUpdaterFactory, IAPILog logger,
             ISnapshotQueryRequestProvider snapshotQueryRequestProvider)
         {
             _serviceFactoryForUser = serviceFactoryForUser;
@@ -30,7 +31,8 @@ namespace Relativity.Sync.Executors
 
         public virtual async Task<ExecutionResult> ExecuteAsync(IDataSourceSnapshotConfiguration configuration, CompositeCancellationToken token)
         {
-            Logger.LogInformation("Initializing export in workspace {workspaceId} with saved search {savedSearchId} and fields {@fields}.",
+            Logger.LogInformation(
+                "Initializing export in workspace {workspaceId} with saved search {savedSearchId} and fields {@fields}.",
                 configuration.SourceWorkspaceArtifactId, configuration.DataSourceArtifactId, configuration.GetFieldMappings());
 
             ExportInitializationResults results;
@@ -49,8 +51,8 @@ namespace Relativity.Sync.Executors
                 return ExecutionResult.Failure("ExportAPI failed to initialize export.", e);
             }
 
-            //ExportInitializationResult provide list of fields with order they will be returned when retrieving metadata
-            //however, order is the same as order of fields in QueryRequest when they are provided explicitly
+            // ExportInitializationResult provide list of fields with order they will be returned when retrieving metadata
+            // however, order is the same as order of fields in QueryRequest when they are provided explicitly
             await configuration.SetSnapshotDataAsync(results.RunID, (int)results.RecordCount).ConfigureAwait(false);
 
             IJobProgressUpdater jobProgressUpdater = _jobProgressUpdaterFactory.CreateJobProgressUpdater();

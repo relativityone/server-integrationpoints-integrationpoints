@@ -81,6 +81,7 @@ namespace Relativity.Sync.Transfer
         private class ItemInfo
         {
             public int ArtifactId { get; }
+
             public ItemStatus Status { get; set; }
 
             public ItemInfo(int artifactId)

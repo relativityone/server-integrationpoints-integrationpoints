@@ -26,7 +26,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
 
         private Mock<IAPILog> _loggerMock;
         private Mock<ISyncMetrics> _syncMetricsMock;
-        
+
         private Mock<IFieldMappingSummary> _fieldMappingSummaryFake;
         private Mock<IObjectManager> _objectManagerFake;
 
@@ -45,7 +45,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             _loggerMock = new Mock<IAPILog>();
 
             _syncMetricsMock = new Mock<ISyncMetrics>();
-            
+
             _fieldMappingSummaryFake = new Mock<IFieldMappingSummary>();
 
             _objectManagerFake = new Mock<IObjectManager>(MockBehavior.Strict);
@@ -71,8 +71,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
                 _jobStatisticsContainer,
                 _fileStatisticsCalculatorFake.Object,
                 queryRequestProvider.Object,
-                _loggerMock.Object
-                );
+                _loggerMock.Object);
         }
 
         [Test]
@@ -82,7 +81,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            _syncMetricsMock.Verify(x => x.Send(It.Is<JobStartMetric>(m => 
+            _syncMetricsMock.Verify(x => x.Send(It.Is<JobStartMetric>(m =>
                 m.Type == TelemetryConstants.PROVIDER_NAME &&
                 m.FlowType == TelemetryConstants.FLOW_TYPE_SAVED_SEARCH_NATIVES_AND_METADATA)));
         }
@@ -206,12 +205,12 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            _syncMetricsMock.Verify(x => x.Send(It.Is<JobResumeMetric>(metric =>
+            _syncMetricsMock.Verify(
+                x => x.Send(It.Is<JobResumeMetric>(metric =>
                 metric.Type == TelemetryConstants.PROVIDER_NAME)), Times.Once);
             _syncMetricsMock.Verify(x => x.Send(It.IsAny<JobStartMetric>()), Times.Never);
 
             _loggerMock.Verify(x => x.LogInformation("Fields map configuration summary: {@summary}", It.IsAny<Dictionary<string, object>>()), Times.Never);
         }
-
     }
 }

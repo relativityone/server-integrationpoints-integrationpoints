@@ -76,7 +76,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
                 .ConfigureRdos(DefaultGuids.DefaultRdoOptions)
                 .ConfigureDocumentSync(
                     new DocumentSyncOptions(_savedSearchId, _destinationFolderId))
-                .WithFieldsMapping(builder => 
+                .WithFieldsMapping(builder =>
                     builder
                         .WithIdentifier()
                         .WithField(extractedTextField, extractedTextField))
@@ -112,12 +112,18 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
 
         private static IEnumerable<object[]> OverwriteModeDataSource => new List<object[]>()
         {
-            new object[] {new OverwriteOptions(ImportOverwriteMode.AppendOnly), ImportOverwriteMode.AppendOnly, FieldOverlayBehavior.UseFieldSettings},
-            new object[] {new OverwriteOptions(ImportOverwriteMode.AppendOverlay) {FieldsOverlayBehavior = FieldOverlayBehavior.ReplaceValues},
-                ImportOverwriteMode.AppendOverlay, FieldOverlayBehavior.ReplaceValues},
-            new object[] {new OverwriteOptions(ImportOverwriteMode.AppendOverlay) { FieldsOverlayBehavior = FieldOverlayBehavior.MergeValues },
-                ImportOverwriteMode.AppendOverlay, FieldOverlayBehavior.MergeValues},
-            new object[] { new OverwriteOptions(ImportOverwriteMode.OverlayOnly), ImportOverwriteMode.OverlayOnly, FieldOverlayBehavior.UseFieldSettings}
+            new object[] { new OverwriteOptions(ImportOverwriteMode.AppendOnly), ImportOverwriteMode.AppendOnly, FieldOverlayBehavior.UseFieldSettings },
+            new object[]
+            {
+                new OverwriteOptions(ImportOverwriteMode.AppendOverlay) { FieldsOverlayBehavior = FieldOverlayBehavior.ReplaceValues },
+                ImportOverwriteMode.AppendOverlay, FieldOverlayBehavior.ReplaceValues
+            },
+            new object[]
+            {
+                new OverwriteOptions(ImportOverwriteMode.AppendOverlay) { FieldsOverlayBehavior = FieldOverlayBehavior.MergeValues },
+                ImportOverwriteMode.AppendOverlay, FieldOverlayBehavior.MergeValues
+            },
+            new object[] { new OverwriteOptions(ImportOverwriteMode.OverlayOnly), ImportOverwriteMode.OverlayOnly, FieldOverlayBehavior.UseFieldSettings }
         };
 
         [TestCaseSource(nameof(OverwriteModeDataSource))]
@@ -160,7 +166,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
                 new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
 
             DocumentSyncOptions options = new DocumentSyncOptions(_savedSearchId, _destinationFolderId);
-            DestinationFolderStructureOptions folderOptions = 
+            DestinationFolderStructureOptions folderOptions =
                 DestinationFolderStructureOptions.RetainFolderStructureFromSourceWorkspace();
             folderOptions.MoveExistingDocuments = true;
 
@@ -192,7 +198,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
                 new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
 
             DocumentSyncOptions options = new DocumentSyncOptions(_savedSearchId, _destinationFolderId);
-            DestinationFolderStructureOptions folderOptions = 
+            DestinationFolderStructureOptions folderOptions =
                 DestinationFolderStructureOptions.ReadFromField(documentFolderPathFieldId);
             folderOptions.MoveExistingDocuments = true;
 
@@ -259,7 +265,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
             await AssertCreatedConfigurationAsync(createdConfigurationId, expectedSyncConfiguration).ConfigureAwait(false);
         }
 
-        async Task<SyncConfigurationRdo> CreateDefaultExpectedConfigurationAsync(List<FieldMap> expectedFieldsMapping = null)
+        private async Task<SyncConfigurationRdo> CreateDefaultExpectedConfigurationAsync(List<FieldMap> expectedFieldsMapping = null)
         {
             var fieldsMappingToSerialize = expectedFieldsMapping ?? await GetDocumentIdentifierMappingAsync(SourceWorkspaceId, DestinationWorkspaceId).ConfigureAwait(false);
 

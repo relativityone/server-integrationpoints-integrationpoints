@@ -76,7 +76,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             JobEndMetricsConfigurationFake.SetupGet(x => x.DestinationType).Returns(destinationType);
             JobEndMetricsConfigurationFake.SetupGet(x => x.ImportNativeFileCopyMode).Returns(nativeFileCopyMode);
 
-
             const long jobSize = 12345;
             const long metadataSize = 6667;
             const long nativesSize = 5678;
@@ -92,7 +91,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             actualResult.Should().NotBeNull();
             actualResult.Status.Should().Be(ExecutionStatus.Completed);
 
-            SyncMetricsMock.Verify(x => x.Send(It.Is<DocumentJobEndMetric>(m =>
+            SyncMetricsMock.Verify(
+                x => x.Send(It.Is<DocumentJobEndMetric>(m =>
                 m.TotalRecordsTransferred == completedItemsPerBatch * testBatches.Count &&
                 m.TotalRecordsFailed == failedItemsPerBatch * testBatches.Count &&
                 m.TotalRecordsRequested == totalItemsCountPerBatch * testBatches.Count &&
@@ -138,7 +138,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
         {
             // Arrange
             const ExecutionStatus expectedStatus = ExecutionStatus.CompletedWithErrors;
-            
+
             // Act
             ExecutionResult actualResult = await _sut.ExecuteAsync(expectedStatus).ConfigureAwait(false);
 

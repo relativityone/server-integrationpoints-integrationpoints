@@ -92,7 +92,6 @@ namespace Relativity.Sync.Tests.System
             };
             configuration.SetFieldMappings(fieldMap);
 
-
             var serviceFactoryStub = new ServiceFactoryStub(ServiceFactory);
             var logger = new EmptyLogger();
             Mock<IFieldMappings> fieldMappings = new Mock<IFieldMappings>(MockBehavior.Strict);

@@ -66,7 +66,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             { _DOCUMENT_IDENTIFIER_FIELD.SourceFieldName, _DOCUMENT_IDENTIFIER_FIELD.RelativityDataType },
             { _DOCUMENT_MAPPED_FIELD.SourceFieldName, _DOCUMENT_MAPPED_FIELD.RelativityDataType },
             { _FOLDER_PATH_STRUCTURE_FIELD.SourceFieldName, RelativityDataType.FixedLengthText },
-            {_MANAGER_MAPPED_FIELD.SourceFieldName, RelativityDataType.SingleObject}
+            { _MANAGER_MAPPED_FIELD.SourceFieldName, RelativityDataType.SingleObject }
         };
 
         private readonly FieldInfoDto[] _NATIVE_SPECIAL_FIELDS = new FieldInfoDto[]
@@ -156,8 +156,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
                 It.IsAny<int>(),
                 It.Is<QueryRequest>(r => r.ObjectType.ArtifactTypeID == (int)ArtifactType.Field),
                 It.IsAny<int>(),
-                It.IsAny<int>()
-                )).ReturnsAsync(queryResultForGetSameTypeFieldNames);
+                It.IsAny<int>())).ReturnsAsync(queryResultForGetSameTypeFieldNames);
 
             _objectManagerFake.Setup(x => x.QueryAsync(
                 It.IsAny<int>(),
@@ -312,7 +311,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         [Test]
         public async Task CreateNativeSpecialFieldRowValueBuildersAsync_ShouldReturnSpecialFieldBuilders()
         {
-            // Arrange 
+            // Arrange
             const SpecialFieldType nativeFileLocationType = SpecialFieldType.NativeFileLocation;
             const SpecialFieldType folderPathType = SpecialFieldType.FolderPath;
 
@@ -332,7 +331,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         [Test]
         public async Task CreateNativeSpecialFieldRowValueBuildersAsync_ShouldThrow_WhenRegisteringForTheSameSpecialFieldType()
         {
-            // Arrange 
+            // Arrange
             const SpecialFieldType nativeFileLocationType = SpecialFieldType.NativeFileLocation;
 
             _nativeSpecialFieldRowValuesBuilderFake.Setup(rb => rb.AllowedSpecialFieldTypes)
@@ -351,7 +350,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         [Test]
         public async Task CreateImageSpecialFieldRowValueBuildersAsync_ShouldReturnSpecialFieldBuilders()
         {
-            // Arrange 
+            // Arrange
             const SpecialFieldType imageFileLocationType = SpecialFieldType.ImageFileLocation;
             const SpecialFieldType imageFileNameType = SpecialFieldType.ImageFileName;
 

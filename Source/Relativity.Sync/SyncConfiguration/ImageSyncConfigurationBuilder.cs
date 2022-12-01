@@ -13,7 +13,7 @@ namespace Relativity.Sync.SyncConfiguration
 
         internal ImageSyncConfigurationBuilder(ISyncContext syncContext, ISourceServiceFactoryForAdmin serviceFactoryForAdmin,
             IFieldsMappingBuilder fieldsMappingBuilder, ISerializer serializer, ImageSyncOptions options,
-            RdoOptions rdoOptions, IRdoManager rdoManager) 
+            RdoOptions rdoOptions, IRdoManager rdoManager)
             : base(syncContext, serviceFactoryForAdmin, rdoOptions, rdoManager, serializer)
         {
             _fieldsMappingBuilder = fieldsMappingBuilder;
@@ -70,7 +70,7 @@ namespace Relativity.Sync.SyncConfiguration
 
             return this;
         }
-        
+
         public new IImageSyncConfigurationBuilder DisableItemLevelErrorLogging()
         {
             base.DisableItemLevelErrorLogging();

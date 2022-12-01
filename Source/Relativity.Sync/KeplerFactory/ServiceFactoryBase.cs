@@ -51,7 +51,8 @@ namespace Relativity.Sync.KeplerFactory
                 },
                 (ex, waitTime, retryCount, context) =>
                 {
-                    Logger.LogWarning(ex,
+                    Logger.LogWarning(
+                        ex,
                         $"Encountered error for {nameof(CreateProxyInternalAsync)}, attempting retry. Retry count: {retryCount} Wait time: {waitTime.TotalMilliseconds} (ms)");
                 });
 
@@ -62,8 +63,9 @@ namespace Relativity.Sync.KeplerFactory
         {
             RetryPolicy authTokenPolicy = Policy
                 .Handle<NotAuthorizedException>() // Thrown when token expired
-                .RetryAsync(AuthTokenRetriesMaxCount
-                    , (ex, retryCount, context) =>
+                .RetryAsync(
+                    AuthTokenRetriesMaxCount,
+                    (ex, retryCount, context) =>
                 {
                     Logger.LogWarning(ex, $"Auth token has expired for {nameof(CreateProxyInternalAsync)}, attempting to generate new token and retry. Retry count: {retryCount}");
                 });

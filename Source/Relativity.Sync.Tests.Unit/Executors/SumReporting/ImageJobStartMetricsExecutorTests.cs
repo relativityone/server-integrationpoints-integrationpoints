@@ -83,7 +83,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             _configurationFake.SetupGet(x => x.Resuming).Returns(isResuming);
 
             _fileStatisticsCalculatorFake.Setup(x =>
-                    x.CalculateImagesStatisticsAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(), 
+                    x.CalculateImagesStatisticsAsync(It.IsAny<int>(), It.IsAny<QueryRequest>(),
                         It.IsAny<QueryImagesOptions>(), It.IsAny<CompositeCancellationToken>()))
                 .ReturnsAsync(expectedImageStatistics);
 
@@ -105,7 +105,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             await _sut.ExecuteAsync(_configurationFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
             // Assert
-            _syncMetricsMock.Verify(x => x.Send(It.Is<JobResumeMetric>(metric =>
+            _syncMetricsMock.Verify(
+                x => x.Send(It.Is<JobResumeMetric>(metric =>
                 metric.Type == TelemetryConstants.PROVIDER_NAME)), Times.Once);
             _syncMetricsMock.Verify(x => x.Send(It.IsAny<JobStartMetric>()), Times.Never);
         }

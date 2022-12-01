@@ -25,6 +25,7 @@ namespace Relativity.Sync.Telemetry
                 Description = $"The count of auth token refreshes for {nameof(IObjectManager)} Kepler Service."
             }
         };
+
         public override string CategoryName { get; } = TelemetryConstants.SYNC_TELEMETRY_CATEGORY;
 
         protected override string ProviderName { get; } = nameof(KeplerTelemetryMetricsProvider);

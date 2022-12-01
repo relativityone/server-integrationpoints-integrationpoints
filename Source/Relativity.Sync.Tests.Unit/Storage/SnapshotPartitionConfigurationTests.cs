@@ -92,11 +92,11 @@ namespace Relativity.Sync.Tests.Unit.Storage
             // Assert
             actualSyncBatchSize.Should().Be(syncBatchSize);
         }
-        
-        static IEnumerable<TestCaseData> SnapshotCaseSource()
+
+        private static IEnumerable<TestCaseData> SnapshotCaseSource()
         {
-            yield return new TestCaseData((Guid?) null);
-            yield return new TestCaseData((Guid?) Guid.Empty);
+            yield return new TestCaseData((Guid?)null);
+            yield return new TestCaseData((Guid?)Guid.Empty);
         }
     }
 }

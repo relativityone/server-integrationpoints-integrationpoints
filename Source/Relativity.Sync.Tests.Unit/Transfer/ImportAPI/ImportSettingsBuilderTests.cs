@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture;
@@ -11,7 +9,6 @@ using NUnit.Framework;
 using Relativity.Import.V1.Models.Settings;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Tests.Common;
-using Relativity.Sync.Toggles.Service;
 using Relativity.Sync.Transfer;
 using Relativity.Sync.Transfer.ImportAPI;
 
@@ -22,9 +19,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer.ImportAPI
         private Mock<IConfigureDocumentSynchronizationConfiguration> _configurationFake;
 
         private Mock<IFieldManager> _fieldManagerFake;
-        private Mock<ISyncToggles> _syncTogglesFake;
-        private Mock<IInstanceSettings> _instanceSettingsFake;
-
         private ImportSettingsBuilder _sut;
 
         private IFixture _fxt;

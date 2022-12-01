@@ -9,6 +9,7 @@
         }
 
         public int StartingIndex { get; }
+
         public int NumberOfRecords { get; }
     }
 }

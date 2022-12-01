@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -101,7 +100,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
 
             _sut = new FieldMappingValidator(sourceServiceFactoryForUser.Object, destinationServiceFactoryForUser.Object, new EmptyLogger());
         }
-
 
         [Test]
         public async Task ValidateAsync_ShouldPassGoldFlow()
@@ -291,7 +289,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             var queryResult = new QueryResult
             {
                 Objects = fieldsAvailableInWorkspace.Select(x => new RelativityObject
-                    {Name = x.DisplayName, ArtifactID = x.FieldIdentifier}).ToList()
+                { Name = x.DisplayName, ArtifactID = x.FieldIdentifier }).ToList()
             };
 
             _objectManager.Setup(x => x.QueryAsync(It.Is<int>(y => y == workspaceArtifactId), It.IsAny<QueryRequest>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(queryResult);
@@ -316,7 +314,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             _objectManager.Verify(x => x.QueryAsync(
                 It.Is<int>(y => y == _TEST_SOURCE_WORKSPACE_ARTIFACT_ID),
                 It.Is<QueryRequest>(y => y.ObjectType.Name == expectedObjectTypeName && y.Condition == expectedSourceQueryCondition && y.IncludeNameInQueryResult == true),
-                It.Is<int>(y => y == 0), 
+                It.Is<int>(y => y == 0),
                 It.Is<int>(y => y == mappingToVerify.Count())));
         }
 

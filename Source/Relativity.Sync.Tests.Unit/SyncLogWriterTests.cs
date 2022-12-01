@@ -17,7 +17,7 @@ namespace Relativity.Sync.Tests.Unit
         private const string _MESSAGE_TEMPLATE = "message template {param1}";
         private const string _UNABLE_TO_RESOLVE_MESSAGE = "Unable to resolve logging message due to framework limitation.";
 
-        private readonly object[] _params = {"param1", 1};
+        private readonly object[] _params = { "param1", 1 };
 
         private readonly Exception _exception = new IOException();
 

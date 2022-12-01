@@ -18,11 +18,17 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
         }
 
         public int DocumentArtifactId { get; }
+
         public string Location { get; }
+
         public string Filename { get; }
+
         public long Size { get; }
+
         public int Order { get; }
+
         public int? ProductionId { get; }
+
         public string Identifier { get; }
 
         private static string _DOCUMENT_ARTIFACT_ID_COLUMN_NAME = "DocumentArtifactID";
@@ -41,7 +47,7 @@ namespace Relativity.Sync.Tests.System.Core.Helpers
             string identifier = GetValue<string>(dataRow, _IDENTIFIER);
 
             int order = GetValue<int>(dataRow, _ORDER);
-            
+
             return new TestImageFile(documentArtifactId, identifier, location, fileName, size, order);
         }
 

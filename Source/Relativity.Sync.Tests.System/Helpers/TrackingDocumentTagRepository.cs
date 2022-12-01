@@ -16,7 +16,8 @@ namespace Relativity.Sync.Tests.System.Helpers
 
         public static IDictionary<int, IList<int>> TaggedDocumentsInSourceWorkspaceWithDestinationInfoCounts { get; } = new Dictionary<int, IList<int>>();
 
-        public TrackingDocumentTagRepository(IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository,
+        public TrackingDocumentTagRepository(
+            IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository,
             ISourceWorkspaceTagRepository sourceWorkspaceTagRepository,
             IJobHistoryErrorRepository jobHistoryErrorRepository)
         {

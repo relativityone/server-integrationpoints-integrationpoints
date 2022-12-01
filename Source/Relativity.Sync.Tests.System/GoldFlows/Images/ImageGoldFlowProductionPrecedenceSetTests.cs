@@ -54,13 +54,11 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 
             goldFlowTestRun.AssertDocuments(
                 documentsWithImagesInSourceWorkspace.Select(x => x.Name).ToArray(),
-                documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray()
-            );
+                documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray());
 
             goldFlowTestRun.AssertImages(
                 _goldFlowTestSuite.SourceWorkspace.ArtifactID, documentsWithImagesInSourceWorkspace.ToArray(),
-                goldFlowTestRun.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray()
-            );
+                goldFlowTestRun.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray());
         }
 
         private async Task ConfigureTestRunAsync(WorkspaceRef sourceWorkspace, WorkspaceRef destinationWorkspace, ConfigurationStub configuration, int productionId)

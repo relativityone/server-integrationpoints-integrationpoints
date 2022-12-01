@@ -3,7 +3,6 @@ using System.Linq;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
-using Relativity.Sync.RDOs;
 using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.RDOs.Framework.Attributes;
 

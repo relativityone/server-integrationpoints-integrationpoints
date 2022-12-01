@@ -18,8 +18,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
     [Parallelizable(ParallelScope.All)]
     internal class MultipleObjectFieldSanitizerTests
     {
-        private const char _NESTED_DELIM = (char) 29;
-        private const char _MUTLI_DELIM = (char) 30;
+        private const char _NESTED_DELIM = (char)29;
+        private const char _MUTLI_DELIM = (char)30;
 
         [Test]
         public void ItShouldSupportMultipleObject()
@@ -145,7 +145,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             {
                 TestName = "Single"
             };
-            yield return new TestCaseData(ObjectValueJArrayFromNames("Sick Name", "Cool Name", "Awesome Name"),
+            yield return new TestCaseData(
+                ObjectValueJArrayFromNames("Sick Name", "Cool Name", "Awesome Name"),
                 $"Sick Name{_MUTLI_DELIM}Cool Name{_MUTLI_DELIM}Awesome Name")
             {
                 TestName = "Multiple"

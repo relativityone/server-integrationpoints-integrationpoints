@@ -6,7 +6,7 @@ namespace Relativity.Sync.ExecutionConstrains
 {
     internal sealed class NonDocumentSynchronizationExecutionConstrains : BaseSynchronizationExecutionConstrains<INonDocumentSynchronizationConfiguration>
     {
-        public NonDocumentSynchronizationExecutionConstrains(IBatchRepository batchRepository,IAPILog syncLog) : base(batchRepository, syncLog)
+        public NonDocumentSynchronizationExecutionConstrains(IBatchRepository batchRepository, IAPILog syncLog) : base(batchRepository, syncLog)
         {
         }
     }

@@ -3,9 +3,9 @@
     internal interface IMetricsConfiguration : IConfiguration
     {
         string CorrelationId { get; }
-        
+
         string ExecutingApplication { get; }
-        
+
         string ExecutingApplicationVersion { get; }
 
         DataSourceType DataSourceType { get; }
@@ -18,7 +18,7 @@
 
         string SyncVersion { get; }
 
-        int RdoArtifactTypeId { get;}
+        int RdoArtifactTypeId { get; }
 
         int DestinationRdoArtifactTypeId { get; }
     }

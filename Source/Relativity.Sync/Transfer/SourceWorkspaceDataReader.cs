@@ -29,7 +29,8 @@ namespace Relativity.Sync.Transfer
 
         public event OnSourceWorkspaceDataItemReadErrorEventHandler OnItemReadError;
 
-        public SourceWorkspaceDataReader(IBatchDataReaderBuilder readerBuilder,
+        public SourceWorkspaceDataReader(
+            IBatchDataReaderBuilder readerBuilder,
             ISynchronizationConfiguration configuration,
             IRelativityExportBatcher exportBatcher,
             IFieldManager fieldManager,
@@ -92,6 +93,7 @@ namespace Relativity.Sync.Transfer
             {
                 _logger.LogInformation("No more data to be read from source workspace.");
             }
+
             return dataRead;
         }
 

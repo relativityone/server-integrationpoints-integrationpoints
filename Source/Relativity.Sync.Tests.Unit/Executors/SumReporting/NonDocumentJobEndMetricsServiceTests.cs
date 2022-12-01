@@ -31,7 +31,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
                 .ReturnsAsync(new List<FieldInfoDto>().AsReadOnly());
             FieldManagerFake.Setup(x => x.GetAllAvailableFieldsToMap())
                 .Returns(new List<FieldInfoDto>());
-            
+
             _sut = new NonDocumentJobEndMetricsService(BatchRepositoryFake.Object, JobEndMetricsConfigurationFake.Object, FieldManagerFake.Object, JobStatisticsContainerFake.Object, SyncMetricsMock.Object, new EmptyLogger());
         }
 
@@ -87,7 +87,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             actualResult.Should().NotBeNull();
             actualResult.Status.Should().Be(ExecutionStatus.Completed);
 
-            SyncMetricsMock.Verify(x => x.Send(It.Is<NonDocumentJobEndMetric>(m =>
+            SyncMetricsMock.Verify(
+                x => x.Send(It.Is<NonDocumentJobEndMetric>(m =>
                 m.TotalRecordsTransferred == completedItemsPerBatch * testBatches.Count &&
                 m.TotalRecordsFailed == failedItemsPerBatch * testBatches.Count &&
                 m.TotalRecordsRequested == totalItemsCountPerBatch * testBatches.Count &&
@@ -115,13 +116,13 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             // Assert
             SyncMetricsMock.Verify(x => x.Send(It.Is<NonDocumentJobEndMetric>(m => m.RetryJobEndStatus == expectedStatusDescription)), Times.Once);
         }
-        
+
         [Test]
         public async Task ExecuteAsync_ShouldNotReportMetric_WhenJobFailed()
         {
             // Arrange
             const ExecutionStatus expectedStatus = ExecutionStatus.CompletedWithErrors;
-            
+
             // Act
             ExecutionResult actualResult = await _sut.ExecuteAsync(expectedStatus).ConfigureAwait(false);
 

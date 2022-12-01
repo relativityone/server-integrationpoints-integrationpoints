@@ -145,7 +145,7 @@ namespace Relativity.Sync.RDOs
 
         [RdoField(SyncRdoGuids.JobHistoryEndTimeGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryEndTimeField { get; set; }
-        
+
         [RdoField(SyncRdoGuids.JobHistoryStatusValidatingGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryStatusValidating { get; set; }
 
@@ -175,9 +175,8 @@ namespace Relativity.Sync.RDOs
 
         [RdoField(SyncRdoGuids.JobHistoryStatusSuspendedGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryStatusSuspended { get; set; }
-        
-        // JobHistoryError configuration
 
+        // JobHistoryError configuration
         [RdoField(SyncRdoGuids.JobHistoryErrorTypeGuid, RdoFieldType.FixedLengthText, fixedTextLength: 36)]
         public Guid JobHistoryErrorType { get; set; }
 

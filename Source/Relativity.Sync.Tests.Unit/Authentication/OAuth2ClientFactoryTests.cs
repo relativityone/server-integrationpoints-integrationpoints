@@ -36,7 +36,7 @@ namespace Relativity.Sync.Tests.Unit.Authentication
             Services.Security.Models.OAuth2Client expectedClient = new Services.Security.Models.OAuth2Client() { Name = clientName };
 
             Mock<IOAuth2ClientManager> clientManager = new Mock<IOAuth2ClientManager>();
-            clientManager.Setup(x => x.ReadAllAsync()).ReturnsAsync(new List<Services.Security.Models.OAuth2Client>() {expectedClient});
+            clientManager.Setup(x => x.ReadAllAsync()).ReturnsAsync(new List<Services.Security.Models.OAuth2Client>() { expectedClient });
             _serviceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IOAuth2ClientManager>()).Returns(Task.FromResult(clientManager.Object));
 
             // act
@@ -44,7 +44,8 @@ namespace Relativity.Sync.Tests.Unit.Authentication
 
             // assert
             actualClient.Should().BeEquivalentTo(expectedClient);
-            clientManager.Verify(x => x.CreateAsync(It.IsAny<string>(), It.IsAny<OAuth2Flow>(), It.IsAny<IEnumerable<Uri>>(), It.IsAny<int>()),
+            clientManager.Verify(
+                x => x.CreateAsync(It.IsAny<string>(), It.IsAny<OAuth2Flow>(), It.IsAny<IEnumerable<Uri>>(), It.IsAny<int>()),
                 Times.Never);
         }
 
@@ -65,7 +66,8 @@ namespace Relativity.Sync.Tests.Unit.Authentication
 
             // assert
             actualClient.Should().BeEquivalentTo(expectedClient);
-            clientManager.Verify(x => x.CreateAsync(clientName, OAuth2Flow.ClientCredentials, It.IsAny<IEnumerable<Uri>>(), userId),
+            clientManager.Verify(
+                x => x.CreateAsync(clientName, OAuth2Flow.ClientCredentials, It.IsAny<IEnumerable<Uri>>(), userId),
                 Times.Once);
         }
 

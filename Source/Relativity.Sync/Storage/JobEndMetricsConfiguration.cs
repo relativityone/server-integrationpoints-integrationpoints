@@ -9,14 +9,21 @@ namespace Relativity.Sync.Storage
         private readonly IConfiguration _cache;
 
         public int DestinationWorkspaceArtifactId => _cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);
+
         public int SourceWorkspaceArtifactId => _syncJobParameters.WorkspaceId;
+
         public int SyncConfigurationArtifactId => _syncJobParameters.SyncConfigurationArtifactId;
+
         public int? JobHistoryToRetryId => _cache.GetFieldValue(x => x.JobHistoryToRetryId);
 
         public ImportOverwriteMode ImportOverwriteMode => _cache.GetFieldValue(x => x.ImportOverwriteMode);
-        public DataSourceType DataSourceType =>  _cache.GetFieldValue(x => x.DataSourceType);
+
+        public DataSourceType DataSourceType => _cache.GetFieldValue(x => x.DataSourceType);
+
         public DestinationLocationType DestinationType => _cache.GetFieldValue(x => x.DataDestinationType);
+
         public ImportNativeFileCopyMode ImportNativeFileCopyMode => _cache.GetFieldValue(x => x.NativesBehavior);
+
         public ImportImageFileCopyMode ImportImageFileCopyMode => _cache.GetFieldValue(x => x.ImageFileCopyMode);
 
         public Guid ExportRunId

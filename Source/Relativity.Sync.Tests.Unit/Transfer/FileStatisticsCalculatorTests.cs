@@ -95,7 +95,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
             // Act
             ImagesStatistics result = await _sut
-                .CalculateImagesStatisticsAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 
+                .CalculateImagesStatisticsAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(),
                     It.IsAny<QueryImagesOptions>(), CompositeCancellationToken.None)
                 .ConfigureAwait(false);
 
@@ -175,14 +175,14 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             long result = await _sut
                 .CalculateNativesTotalSizeAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), CompositeCancellationToken.None)
                 .ConfigureAwait(false);
-            
+
             // Assert
             result.Should().Be(files.Sum(x => x.Size));
 
             VerifyCalculatedResultsWasSaved(files);
 
             int expectedBatchesCount = (int)Math.Ceiling((double)(files.Count - calculatedFilesCount) / _BATCH_SIZE_FOR_FILES_QUERIES);
-            VerifyBatchesWasRetrieved(expectedBatchesCount + 1); //Last run returns null
+            VerifyBatchesWasRetrieved(expectedBatchesCount + 1); // Last run returns null
         }
 
         [Test]
@@ -217,7 +217,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             VerifyCalculatedResultsWasSaved(files);
 
             int expectedBatchesCount = (int)Math.Ceiling((double)(files.Count - calculatedFilesCount) / _BATCH_SIZE_FOR_FILES_QUERIES);
-            VerifyBatchesWasRetrieved(expectedBatchesCount + 1); //Last run returns null
+            VerifyBatchesWasRetrieved(expectedBatchesCount + 1); // Last run returns null
         }
 
         [Test]
@@ -305,13 +305,13 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         {
             _imageFileRepositoryFake.Setup(x => x.QueryImagesForDocumentsAsync(
                     _WORKSPACE_ID, It.IsAny<int[]>(), It.IsAny<QueryImagesOptions>()))
-                .ReturnsAsync((int workspaceId, int[] artifactIds, QueryImagesOptions options) => 
-                    files.Where(f => artifactIds.Contains(f.ArtifactId)).Select(f => new ImageFile(0, "", "", "", f.Size)));
+                .ReturnsAsync((int workspaceId, int[] artifactIds, QueryImagesOptions options) =>
+                    files.Where(f => artifactIds.Contains(f.ArtifactId)).Select(f => new ImageFile(0, string.Empty, string.Empty, string.Empty, f.Size)));
 
             _nativeFileRepositoryFake.Setup(x => x.QueryAsync(
                     _WORKSPACE_ID, It.IsAny<ICollection<int>>()))
                 .ReturnsAsync((int workspaceId, ICollection<int> artifactIds) =>
-                    files.Where(f => artifactIds.Contains(f.ArtifactId)).Select(f => new NativeFile(0, "", "", f.Size)));
+                    files.Where(f => artifactIds.Contains(f.ArtifactId)).Select(f => new NativeFile(0, string.Empty, string.Empty, f.Size)));
 
             _objectManagerMock.Setup(x => x.InitializeExportAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1))
                 .ReturnsAsync(new ExportInitializationResults
@@ -339,7 +339,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
         private void VerifyCalculatedResultsWasSaved(List<File> files)
         {
-            _rdoManagerMock.Verify(x => x.SetValuesAsync(_WORKSPACE_ID,
+            _rdoManagerMock.Verify(x => x.SetValuesAsync(
+                _WORKSPACE_ID,
                 It.Is<SyncStatisticsRdo>(s =>
                     s.RunId == _EXPORT_RUN_ID &&
                     s.CalculatedDocuments == files.Count &&
@@ -349,7 +350,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
         private void VerifyBatchesWasRetrieved(int batchesCount)
         {
-            _objectManagerMock.Verify(x => x.RetrieveResultsBlockFromExportAsync(_WORKSPACE_ID, _EXPORT_RUN_ID,
+            _objectManagerMock.Verify(
+                x => x.RetrieveResultsBlockFromExportAsync(_WORKSPACE_ID, _EXPORT_RUN_ID,
                 It.IsAny<int>(), It.IsAny<int>()), Times.Exactly(batchesCount));
         }
 
@@ -386,6 +388,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         private class File
         {
             public int ArtifactId { get; set; }
+
             public int Size { get; set; }
         }
     }

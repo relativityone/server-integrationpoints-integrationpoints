@@ -43,6 +43,7 @@ namespace Relativity.Sync.Nodes
             {
                 HandleExecutionResult(context, ExecutionResult.Skipped());
             }
+
             return canExecute;
         }
 

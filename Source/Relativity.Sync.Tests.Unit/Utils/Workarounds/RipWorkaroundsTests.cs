@@ -123,7 +123,8 @@ namespace Relativity.Sync.Tests.Unit.Utils.Workarounds
             await _sut.TryUpdateIntegrationPointAsync(workspaceId, jobHistoryId, hasErrors, endTime);
 
             // Assert
-            _objectManager.Verify(x => x.UpdateAsync(It.IsAny<int>(), It.Is<UpdateRequest>(req => req.Object.ArtifactID == integrationPointId &&
+            _objectManager.Verify(
+                x => x.UpdateAsync(It.IsAny<int>(), It.Is<UpdateRequest>(req => req.Object.ArtifactID == integrationPointId &&
                                                                                                   (bool)req.FieldValues.Single(fieldValuePair => fieldValuePair.Field.Guid == _hasErrorsFieldGuid).Value == hasErrors &&
                                                                                                   ((DateTime)req.FieldValues.Single(fieldValuePair => fieldValuePair.Field.Guid == _lastRuntimeFieldGuid).Value).Ticks == endTime.Ticks)), Times.Once);
         }

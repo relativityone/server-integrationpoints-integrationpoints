@@ -296,7 +296,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             SetupBatchRepository(1);
             _importJobFake.Setup(x => x.RunAsync(It.IsAny<CompositeCancellationToken>())).ReturnsAsync(CreateJobResult());
 
-                        // Act
+            // Act
             await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
             // Assert

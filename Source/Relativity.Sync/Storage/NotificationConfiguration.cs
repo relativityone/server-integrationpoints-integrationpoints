@@ -20,21 +20,21 @@ namespace Relativity.Sync.Storage
         {
             _cache = cache;
             _syncJobParameters = syncJobParameters;
-            
+
             _jobNameLazy = new Lazy<string>(() =>
             {
                 using (var objectManager = serviceFactoryForUser.CreateProxyAsync<IObjectManager>().ConfigureAwait(false).GetAwaiter().GetResult())
                 {
-                    return objectManager.GetObjectNameAsync(syncJobParameters.WorkspaceId,
-                            _cache.GetFieldValue(x => x.JobHistoryId), 
-                            _cache.GetFieldValue(x => x.JobHistoryType))
+                    return objectManager.GetObjectNameAsync(
+                        syncJobParameters.WorkspaceId,
+                        _cache.GetFieldValue(x => x.JobHistoryId),
+                        _cache.GetFieldValue(x => x.JobHistoryType))
                         .GetAwaiter().GetResult();
                 }
             });
         }
 
         public int DestinationWorkspaceArtifactId => _cache.GetFieldValue(x => x.DestinationWorkspaceArtifactId);
-
 
         public int JobHistoryArtifactId => _cache.GetFieldValue(x => x.JobHistoryId);
 

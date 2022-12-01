@@ -41,6 +41,7 @@ namespace Relativity.Sync.Transfer
             {
                 folderPathsMap = await _folderPathRetriever.GetFolderPathsAsync(sourceWorkspaceArtifactId, documentArtifactIds).ConfigureAwait(false);
             }
+
             return folderPathsMap;
         }
     }

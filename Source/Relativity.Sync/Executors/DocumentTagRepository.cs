@@ -15,7 +15,8 @@ namespace Relativity.Sync.Executors
         private readonly ISourceWorkspaceTagRepository _sourceWorkspaceTagRepository;
         private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
 
-        public DocumentTagRepository(IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository,
+        public DocumentTagRepository(
+            IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository,
             ISourceWorkspaceTagRepository sourceWorkspaceTagRepository, IJobHistoryErrorRepository jobHistoryErrorRepository)
         {
             _destinationWorkspaceTagRepository = destinationWorkspaceTagRepository;

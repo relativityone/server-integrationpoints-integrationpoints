@@ -63,7 +63,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
             var stream = new Mock<Stream>();
             stream.Setup(x => x.Read(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<int>())).Returns(0);
             _streamBuilderMock.Setup(sb => sb.GetStreamAsync()).ReturnsAsync(stream.Object);
-            
+
             var instance = new ImportStreamBuilder(_stopwatchFake, _jobStatisticsContainerFake.Object, new EmptyLogger());
 
             // Act

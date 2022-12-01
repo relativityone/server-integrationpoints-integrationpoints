@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using ARMTestServices.Services.Interfaces;
 using Relativity.Kepler.Transport;
@@ -39,7 +38,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 
         public void Initialize()
         {
-            if(!_isInitialized)
+            if (!_isInitialized)
             {
                 Configure();
 
@@ -84,15 +83,14 @@ namespace Relativity.Sync.Tests.Performance.Helpers
             {
                 RelativityFacade.Instance.Resolve<ILibraryApplicationService>()
                     .InstallToLibrary(rapPath, new LibraryApplicationInstallOptions()
-                {
-                    CreateIfMissing = true
-                });
+                    {
+                        CreateIfMissing = true
+                    });
             }
             finally
             {
                 File.Delete(rapPath);
             }
-
         }
 
         private async Task<string> GetTestServicesRapPathAsync()
@@ -108,7 +106,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
 
         public async Task<string> UploadFileAsync(string filePath, string directory)
         {
-            if(!Path.IsPathRooted(directory))
+            if (!Path.IsPathRooted(directory))
             {
                 directory = Path.Combine(Path.GetPathRoot(SystemEnvironment.SystemDirectory), directory);
             }
@@ -121,7 +119,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
                 bool fileExists = await fileManager.FileExists(destinationFile).ConfigureAwait(false);
                 if (!fileExists)
                 {
-                    using (Stream stream = File.OpenRead(filePath)) //Temp path if only name
+                    using (Stream stream = File.OpenRead(filePath)) // Temp path if only name
                     {
                         await fileShareManager.UploadStream(new KeplerStream(stream), destinationFile).ConfigureAwait(false);
                     }
@@ -141,7 +139,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
             using (var directoryManager = _serviceFactory.GetServiceProxy<IDirectoryManager>())
             {
                 bool exists = directoryManager.DirectoryExists(directory).Result;
-                if(!exists)
+                if (!exists)
                 {
                     await directoryManager.DirectoryCreate(directory).ConfigureAwait(false);
                 }

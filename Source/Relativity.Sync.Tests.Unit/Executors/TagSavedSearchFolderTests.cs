@@ -59,8 +59,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _searchContainerManager
                 .Setup(x => x.QueryAsync(
                     It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID),
-                    It.Is<Services.Query>(y => VerifyQuery(y))
-                    )).ReturnsAsync(result);
+                    It.Is<Services.Query>(y => VerifyQuery(y)))).ReturnsAsync(result);
 
             // ACT
             int folderId = await _instance.GetFolderIdAsync(_WORKSPACE_ARTIFACT_ID).ConfigureAwait(false);
@@ -83,8 +82,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _searchContainerManager
                 .Setup(x => x.QueryAsync(
                     It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID),
-                    It.Is<Services.Query>(y => VerifyQuery(y))
-                    )).ReturnsAsync(result);
+                    It.Is<Services.Query>(y => VerifyQuery(y)))).ReturnsAsync(result);
 
             _searchContainerManager
                 .Setup(x => x.CreateSingleAsync(It.Is<int>(y => y == _WORKSPACE_ARTIFACT_ID), It.IsAny<SearchContainer>()))

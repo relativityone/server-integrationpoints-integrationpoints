@@ -43,25 +43,27 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
                 It.Is<int>(workspaceId => workspaceId == _DESTINATION_WORKSPACE_ARTIFACT_ID),
                 It.Is<QueryRequest>(qr => qr.ObjectType.ArtifactTypeID == (int)ArtifactType.ObjectType && qr.Condition == _RELATIVITY_APPLICATION_CONDITION),
                 It.Is<int>(start => start == 0),
-                It.Is<int>(length => length == 1)
-            )).Returns(Task.FromResult(new QueryResultSlim { TotalCount = 1, ResultCount = 1, Objects = new List<RelativityObjectSlim>
+                It.Is<int>(length => length == 1))).Returns(Task.FromResult(new QueryResultSlim
+            {
+                TotalCount = 1,
+                ResultCount = 1,
+                Objects = new List<RelativityObjectSlim>
             {
                 new RelativityObjectSlim { ArtifactID = _RELATIVITY_APPLICATIONS_ARTIFACT_ID }
-            }}));
-            
+            }
+            }));
+
             objectManagerFake.Setup(m => m.QuerySlimAsync(
                 It.Is<int>(workspaceId => workspaceId == _DESTINATION_WORKSPACE_ARTIFACT_ID),
                 It.Is<QueryRequest>(qr => qr.ObjectType.ArtifactTypeID == _RELATIVITY_APPLICATIONS_ARTIFACT_TYPE_ID && qr.Condition == _AUTOMATED_WORKFLOWS_APPLICATION_CONDITION),
                 It.Is<int>(start => start == 0),
-                It.Is<int>(length => length == 0)
-            )).Returns(Task.FromResult(new QueryResultSlim { TotalCount = isAutomatedWorkflowsInstalled ? 1 : 0 }));
+                It.Is<int>(length => length == 0))).Returns(Task.FromResult(new QueryResultSlim { TotalCount = isAutomatedWorkflowsInstalled ? 1 : 0 }));
 
             Mock<IObjectTypeManager> objectTypeManagerFake = new Mock<IObjectTypeManager>();
 
             objectTypeManagerFake.Setup(m => m.ReadAsync(
                 It.Is<int>(workspaceId => workspaceId == _DESTINATION_WORKSPACE_ARTIFACT_ID),
-                It.Is<int>(objectTypeId => objectTypeId == _RELATIVITY_APPLICATIONS_ARTIFACT_ID)
-            )).Returns(Task.FromResult(new ObjectTypeResponse { ArtifactTypeID = _RELATIVITY_APPLICATIONS_ARTIFACT_TYPE_ID }));
+                It.Is<int>(objectTypeId => objectTypeId == _RELATIVITY_APPLICATIONS_ARTIFACT_ID))).Returns(Task.FromResult(new ObjectTypeResponse { ArtifactTypeID = _RELATIVITY_APPLICATIONS_ARTIFACT_TYPE_ID }));
 
             Mock<IDestinationServiceFactoryForAdmin> serviceFactoryFake = new Mock<IDestinationServiceFactoryForAdmin>();
             serviceFactoryFake.Setup(m => m.CreateProxyAsync<IObjectManager>()).Returns(Task.FromResult(objectManagerFake.Object));

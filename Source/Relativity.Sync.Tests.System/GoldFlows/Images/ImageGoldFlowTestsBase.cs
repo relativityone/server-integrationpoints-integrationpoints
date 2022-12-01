@@ -55,13 +55,11 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 
             goldFlowTestRun.AssertDocuments(
                 documentsWithImagesInSourceWorkspace.Select(x => x.Name).ToArray(),
-                documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray()
-                );
+                documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray());
 
             goldFlowTestRun.AssertImages(
                 _goldFlowTestSuite.SourceWorkspace.ArtifactID, documentsWithImagesInSourceWorkspace.ToArray(),
-                goldFlowTestRun.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray()
-            );
+                goldFlowTestRun.DestinationWorkspaceArtifactId, documentsWithImagesInDestinationWorkspace.ToArray());
         }
 
         public virtual async Task SyncJob_Should_RetryImages()
@@ -91,8 +89,7 @@ namespace Relativity.Sync.Tests.System.GoldFlows.Images
 
             goldFlowTestRun.AssertDocuments(
                 documentsWithImagesInSourceWorkspace.Select(x => x.Name).ToArray(),
-                documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray()
-            );
+                documentsWithImagesInDestinationWorkspace.Select(x => x.Name).ToArray());
         }
 
         private async Task ConfigureTestRunAsync(WorkspaceRef sourceWorkspace, WorkspaceRef destinationWorkspace, ConfigurationStub configuration)

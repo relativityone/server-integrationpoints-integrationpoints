@@ -23,7 +23,8 @@ namespace Relativity.Sync.Transfer
 
         private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int)ArtifactType.Document;
 
-        public SnapshotQueryRequestProvider(ISnapshotQueryConfiguration configuration,
+        public SnapshotQueryRequestProvider(
+            ISnapshotQueryConfiguration configuration,
             IPipelineSelector pipelineSelector, IFieldManager fieldManager,
             ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IAPILog logger)
         {
@@ -49,7 +50,7 @@ namespace Relativity.Sync.Transfer
         {
             IReadOnlyList<FieldInfoDto> mappedFields = await _fieldManager.GetMappedFieldsNonDocumentForLinksAsync(token).ConfigureAwait(false);
             _logger.LogInformation("LinkingNonDocuments: Mapped fields count {mappedFieldsCount}", mappedFields.Count);
-            
+
             // GetMappedFieldsNonDocumentForLinksAsync always return at least Identifier field
             if (mappedFields.Any(x => !x.IsIdentifier))
             {
@@ -121,7 +122,8 @@ namespace Relativity.Sync.Transfer
             };
         }
 
-        private async Task<IEnumerable<FieldInfoDto>> GetDocumentFieldsAsync(bool withIdentifierOnly,
+        private async Task<IEnumerable<FieldInfoDto>> GetDocumentFieldsAsync(
+            bool withIdentifierOnly,
             CancellationToken token)
         {
             return withIdentifierOnly
@@ -205,7 +207,8 @@ namespace Relativity.Sync.Transfer
             using (IChoiceQueryManager choiceQueryManager = await _serviceFactoryForAdmin
                        .CreateProxyAsync<IChoiceQueryManager>().ConfigureAwait(false))
             {
-                QueryResult result = await objectManager.QueryAsync(_configuration.SourceWorkspaceArtifactId,
+                QueryResult result = await objectManager.QueryAsync(
+                    _configuration.SourceWorkspaceArtifactId,
                     new QueryRequest()
                     {
                         ObjectType = new ObjectTypeRef() { ArtifactTypeID = (int)ArtifactType.Field },

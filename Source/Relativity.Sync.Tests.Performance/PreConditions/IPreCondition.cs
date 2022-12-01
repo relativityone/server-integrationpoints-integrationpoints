@@ -3,7 +3,9 @@
     internal interface IPreCondition
     {
         string Name { get; }
+
         bool Check();
+
         FixResult TryFix();
     }
 }

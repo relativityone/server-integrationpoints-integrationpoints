@@ -86,7 +86,8 @@ namespace Relativity.Sync.Transfer.ADLS
 
             foreach (var endpoint in bedrockEndpoints)
             {
-                _logger.LogInformation("EndpointFqdn: {EndpointFqdn} StorageInterface: {StorageInterface}",
+                _logger.LogInformation(
+                    "EndpointFqdn: {EndpointFqdn} StorageInterface: {StorageInterface}",
                     endpoint.EndpointFqdn, endpoint.StorageInterface);
             }
 

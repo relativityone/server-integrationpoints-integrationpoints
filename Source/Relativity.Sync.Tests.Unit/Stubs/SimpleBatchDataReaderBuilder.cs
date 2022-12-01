@@ -40,11 +40,13 @@ namespace Relativity.Sync.Tests.Unit.Stubs
                     columns.Add(new DataColumn(Guid.NewGuid().ToString(), typeof(object)));
                 }
             }
+
             dt.Columns.AddRange(columns.ToArray());
             foreach (RelativityObjectSlim obj in batch)
             {
                 dt.Rows.Add(obj.Values.ToArray());
             }
+
             DataTableReader dataReader = dt.CreateDataReader();
             return new SimpleBatchDataReader(dataReader);
         }

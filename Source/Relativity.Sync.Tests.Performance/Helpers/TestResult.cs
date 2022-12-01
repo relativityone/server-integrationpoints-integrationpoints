@@ -7,7 +7,8 @@ namespace Relativity.Sync.Tests.Performance.Helpers
         public double Duration { get; set; }
 
         public TestResult()
-        { }
+        {
+        }
 
         public TestResult(string testName, string buildId)
         {

@@ -125,7 +125,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry
             // assert
             median.Should().Be(0);
         }
-        
+
         [Test]
         public void CalculateMedianLongTextStreamSize_ShouldReturnSingleValue_WhenOnlyOneStatisticsAvailable()
         {

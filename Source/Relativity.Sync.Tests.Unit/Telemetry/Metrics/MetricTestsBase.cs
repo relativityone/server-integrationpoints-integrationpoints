@@ -12,7 +12,7 @@ using Relativity.Telemetry.Services.Metrics;
 namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 {
     [TestFixture]
-    internal abstract class MetricTestsBase<T> where T: IMetric
+    internal abstract class MetricTestsBase<T> where T : IMetric
     {
         private const string _DOCUMENT_FLOW_NAME = "NativesOrMetadata";
         private const string _IMAGES_FLOW_NAME = "Images";
@@ -32,6 +32,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
         private Mock<IMetricsConfiguration> _metricsConfigurationFake;
 
         protected const string _APPLICATION_NAME = "Relativity.Sync";
+
         [SetUp]
         public void SetUp()
         {
@@ -113,7 +114,7 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
             const int rdoArtifactTypeId = (int)ArtifactType.Document;
             const int destinationRdoArtifactTypeId = (int)ArtifactType.Document;
             int? jobHistoryToRetry = 123;
-            
+
             _metricsConfigurationFake.SetupGet(x => x.CorrelationId).Returns(correlationId);
             _metricsConfigurationFake.SetupGet(x => x.ExecutingApplication).Returns(executingAppName);
             _metricsConfigurationFake.SetupGet(x => x.ExecutingApplicationVersion).Returns(executingAppVersion);

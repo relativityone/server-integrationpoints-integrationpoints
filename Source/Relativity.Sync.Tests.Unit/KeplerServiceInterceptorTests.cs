@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.Unit
         private Mock<Func<Task<IStubForInterception>>> _stubForInterceptionFactoryFake;
         private Mock<IAPILog> _syncLogMock;
         private Mock<IRandom> _randomFake;
-        
+
         private readonly TimeSpan _executionTime = TimeSpan.FromMinutes(1);
 
         [SetUp]
@@ -44,7 +44,7 @@ namespace Relativity.Sync.Tests.Unit
             Mock<IStopwatch> stopwatchFake = new Mock<IStopwatch>();
             stopwatchFake.Setup(x => x.Elapsed).Returns(_executionTime);
             Func<IStopwatch> stopwatchFactory = new Func<IStopwatch>(() => stopwatchFake.Object);
-            
+
             IDynamicProxyFactory dynamicProxyFactory = new DynamicProxyFactory(stopwatchFactory, _randomFake.Object, _syncLogMock.Object);
             _sut = dynamicProxyFactory.WrapKeplerService(_stubForInterceptionMock.Object, _stubForInterceptionFactoryFake.Object);
             const int delayBaseMs = 0;
@@ -246,10 +246,12 @@ namespace Relativity.Sync.Tests.Unit
             await _sut.ExecuteAsync().ConfigureAwait(false);
 
             // ASSERT
-            _syncLogMock.Verify(m => m.LogWarning(exception, 
-                It.Is<string>(messageTemplate => messageTemplate.Contains("{IKepler}")), 
-                It.Is<object[]>(propertyValues => propertyValues.Contains(nameof(IStubForInterception))))
-                , Times.Exactly(expectedRetries));
+            _syncLogMock.Verify(
+                m => m.LogWarning(
+                exception,
+                It.Is<string>(messageTemplate => messageTemplate.Contains("{IKepler}")),
+                It.Is<object[]>(propertyValues => propertyValues.Contains(nameof(IStubForInterception)))),
+                Times.Exactly(expectedRetries));
         }
 
         [Test]
@@ -279,10 +281,11 @@ namespace Relativity.Sync.Tests.Unit
             await _sut.ExecuteAsync().ConfigureAwait(false);
 
             // ASSERT
-            _syncLogMock.Verify(m => m.LogInformation(
+            _syncLogMock.Verify(
+                m => m.LogInformation(
                 It.Is<string>(messageTemplate => messageTemplate.Contains("{IKepler}")),
-                It.Is<object[]>(propertyValues => propertyValues.Contains(nameof(IStubForInterception))))
-                , Times.Once);
+                It.Is<object[]>(propertyValues => propertyValues.Contains(nameof(IStubForInterception)))),
+                Times.Once);
         }
 
         [Test]
@@ -377,7 +380,7 @@ namespace Relativity.Sync.Tests.Unit
             // assert
             field.Should().NotBeNull();
         }
-        
+
         private static void SetMillisecondsDelayBetweenHttpRetriesBase(IStubForInterception stub, int delayBaseMs)
         {
             global::System.Reflection.FieldInfo interceptorsField = stub.GetType().GetAllFields().Single(x => x.Name == "__interceptors");
@@ -389,6 +392,7 @@ namespace Relativity.Sync.Tests.Unit
             {
                 Assert.Fail($"Cannot find field '{fieldName}' in type '{interceptor.GetType()}'");
             }
+
             millisecondsBetweenHttpRetriesBaseField.SetValue(interceptor, delayBaseMs);
         }
 

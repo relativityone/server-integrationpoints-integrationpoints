@@ -28,7 +28,6 @@ namespace Relativity.Sync.Tests.System
     [Feature.DataTransfer.IntegrationPoints.Sync]
     internal sealed class SourceWorkspaceDataReaderTests : SystemTest
     {
-
         [IdentifiedTest("789d730f-1d5a-403e-83c8-b0f7bfae8a1a")]
         public async Task Read_ShouldPassGoldFlow_WhenPushingNatives()
         {
@@ -139,7 +138,7 @@ namespace Relativity.Sync.Tests.System
 
                 object controlNumberObject = dataReader["Control Number"];
                 controlNumberObject.Should().BeOfType<string>();
-                string controlNumber = (string) controlNumberObject;
+                string controlNumber = (string)controlNumberObject;
 
                 Action<string, object, object> extractedTextValidator =
                     (cn, extractedTextFilePathObject, actualExtractedTextObject) =>
@@ -150,12 +149,14 @@ namespace Relativity.Sync.Tests.System
                     controlNumber,
                     new FieldVerifyData
                     {
-                        ColumnName = ImportDataTableWrapper.FileName, ActualValue = dataReader["NativeFileFilename"],
+                        ColumnName = ImportDataTableWrapper.FileName,
+                        ActualValue = dataReader["NativeFileFilename"],
                         Validator = ValidateNativeFileName
                     },
                     new FieldVerifyData
                     {
-                        ColumnName = ImportDataTableWrapper.NativeFilePath, ActualValue = dataReader["NativeFileSize"],
+                        ColumnName = ImportDataTableWrapper.NativeFilePath,
+                        ActualValue = dataReader["NativeFileSize"],
                         Validator = ValidateNativeFileSize
                     },
                     new FieldVerifyData
@@ -163,8 +164,7 @@ namespace Relativity.Sync.Tests.System
                         ColumnName = ImportDataTableWrapper.ExtractedTextFilePath,
                         ActualValue = dataReader["Extracted Text"],
                         Validator = extractedTextValidator
-                    }
-                );
+                    });
             }
 
             validator.ValidateAllRead();
@@ -207,7 +207,7 @@ namespace Relativity.Sync.Tests.System
             int jobHistoryArtifactId = await Rdos
                 .CreateJobHistoryInstanceAsync(ServiceFactory, sourceWorkspaceArtifactId, jobHistoryName)
                 .ConfigureAwait(false);
-            
+
             // Create configuration
             ConfigurationStub configuration = new ConfigurationStub
             {
@@ -285,7 +285,7 @@ namespace Relativity.Sync.Tests.System
                 Condition = $"('Section' == '{instanceSettingSection}') AND ('Name' == '{instanceSettingName}')",
                 Fields = new[]
                 {
-                    new FieldRef {Name = "Value"}
+                    new FieldRef { Name = "Value" }
                 }
             };
 
@@ -327,7 +327,8 @@ namespace Relativity.Sync.Tests.System
 
             if (extractedTextFileSize > extractedTextSizeThreshold)
             {
-                actualExtractedTextObject.Should().BeAssignableTo<Stream>("document {0} has size {1}, which is above extracted text size threshold ({2}).",
+                actualExtractedTextObject.Should().BeAssignableTo<Stream>(
+                    "document {0} has size {1}, which is above extracted text size threshold ({2}).",
                     controlNumber, extractedTextFileSize, extractedTextSizeThreshold);
 
                 Stream actualExtractedTextStream = (Stream)actualExtractedTextObject;
@@ -335,7 +336,8 @@ namespace Relativity.Sync.Tests.System
             }
             else
             {
-                actualExtractedTextObject.Should().BeOfType<string>("document {0} has size {1}, which is below extracted text size threshold ({2}).",
+                actualExtractedTextObject.Should().BeOfType<string>(
+                    "document {0} has size {1}, which is below extracted text size threshold ({2}).",
                     controlNumber, extractedTextFileSize, extractedTextSizeThreshold);
 
                 string actualExtractedTextAsString = (string)actualExtractedTextObject;

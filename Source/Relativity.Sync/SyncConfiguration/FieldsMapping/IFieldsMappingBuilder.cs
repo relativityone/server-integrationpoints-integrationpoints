@@ -12,12 +12,12 @@ namespace Relativity.Sync.SyncConfiguration.FieldsMapping
         /// Gets the list of fields mapping.
         /// </summary>
         List<FieldMap> FieldsMapping { get; }
-        
+
         /// <summary>
         /// Adds identifier to the fields mapping.
         /// </summary>
         IFieldsMappingBuilder WithIdentifier();
-        
+
         /// <summary>
         /// Adds field to the mapping by field Artifact ID.
         /// </summary>

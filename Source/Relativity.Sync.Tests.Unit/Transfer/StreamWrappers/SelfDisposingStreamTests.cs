@@ -16,7 +16,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
         [Test]
         public void ItShouldInvokeFlushOnInnerStreamAndLogWarning()
         {
-            // arrange 
+            // arrange
             var streamMock = new Mock<Stream>();
             var selfDisposingStream = new SelfDisposingStream(streamMock.Object, new EmptyLogger());
 
@@ -48,7 +48,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
         [Test]
         public void ItShouldInvokeSetLengthOnInnerStreamAndLogWarning()
         {
-            // arrange 
+            // arrange
             var streamMock = new Mock<Stream>();
             var selfDisposingStream = new SelfDisposingStream(streamMock.Object, new EmptyLogger());
 
