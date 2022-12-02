@@ -13,7 +13,6 @@ using Relativity.Services.Interfaces.UserInfo;
 using Relativity.Services.Interfaces.UserInfo.Models;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Tests.Integration.Helpers;
@@ -58,10 +57,10 @@ namespace Relativity.Sync.Tests.Integration
                 It.Is<QueryRequest>(query => query.Condition == $@"('ArtifactID' == {_USER_ARTIFACT_ID})"),
                 It.Is<int>(start => start == 0),
                 It.Is<int>(length => length == 1))).ReturnsAsync(new UserInfoQueryResultSet()
-            {
-                ResultCount = 1,
-                DataResults = new[] { new UserInfo { ArtifactID = _USER_ARTIFACT_ID, Email = _USER_EMAIL } }
-            });
+                {
+                    ResultCount = 1,
+                    DataResults = new[] { new UserInfo { ArtifactID = _USER_ARTIFACT_ID, Email = _USER_EMAIL } }
+                });
             _documentTransferServicesMocker.ServiceFactoryForAdmin.Setup(x => x.CreateProxyAsync<IUserInfoManager>())
                 .ReturnsAsync(userInfoManagerMock.Object);
 
@@ -72,68 +71,30 @@ namespace Relativity.Sync.Tests.Integration
             _instance = CreateSourceWorkspaceDataReaderWithBatchSize(batchSize);
         }
 
-        private SourceWorkspaceDataReader CreateSourceWorkspaceDataReaderWithBatchSize(int batchSize)
-        {
-            IRelativityExportBatcher batcher = CreateExporterForGivenBatchSize(batchSize);
-            IBatchDataReaderBuilder batchDataReaderBuilder = CreateBatchDataReaderBuilder();
-            IFieldManager fieldManager = _container.Resolve<IFieldManager>();
-            IAPILog syncLog = Mock.Of<IAPILog>();
-
-            return new SourceWorkspaceDataReader(
-                batchDataReaderBuilder,
-                _configuration,
-                batcher,
-                fieldManager,
-                new ItemLevelErrorLogAggregator(syncLog),
-                new ItemStatusMonitor(),
-                syncLog,
-                CancellationToken.None);
-        }
-
-        protected abstract IBatchDataReaderBuilder CreateBatchDataReaderBuilder();
-
         public void Dispose()
         {
             _instance?.Dispose();
             _container?.Dispose();
         }
 
-        private IRelativityExportBatcher CreateExporterForGivenBatchSize(int batchSize)
+        protected static HashSet<FieldConfiguration> DefaultSpecialFields => new HashSet<FieldConfiguration>
         {
-            Mock<IBatch> batch = new Mock<IBatch>();
-            batch.SetupGet(x => x.TotalDocumentsCount).Returns(batchSize);
-            IRelativityExportBatcher batcher = _container.Resolve<IRelativityExportBatcherFactory>().CreateRelativityExportBatcher(batch.Object);
-            return batcher;
-        }
+            FieldConfiguration.Special("RelativityNativeType", "RelativityNativeType", RelativityDataType.FixedLengthText, "Internet HTML"),
+            FieldConfiguration.Special("SupportedByViewer", "SupportedByViewer", RelativityDataType.YesNo, true)
+        };
+
+        protected abstract IBatchDataReaderBuilder CreateBatchDataReaderBuilder();
 
         protected static DocumentImportJob CreateDefaultDocumentImportJob(
             int batchSize,
-            Func<int, HashSet<FieldConfiguration>, Document> documentFactory, HashSet<FieldConfiguration> fields)
+            Func<int, HashSet<FieldConfiguration>, Document> documentFactory,
+            HashSet<FieldConfiguration> fields)
         {
             IList<FieldMap> fieldMappings = CreateFieldMappings(fields);
             Dictionary<string, RelativityDataType> schema = fields.ToDictionary(x => x.SourceColumnName, x => x.DataType);
             Document[] documents = Enumerable.Range(1, batchSize).Select(i => documentFactory(i, fields)).ToArray();
 
             return DocumentImportJob.Create(schema, fieldMappings, documents);
-        }
-
-        private static IList<FieldMap> CreateFieldMappings(HashSet<FieldConfiguration> additionalFields)
-        {
-            return additionalFields
-                .Where(field => field.Type != FieldType.Special)
-                .Select(field => field.Type == FieldType.Identifier
-                    ? new FieldMap
-                    {
-                        FieldMapType = FieldMapType.Identifier,
-                        DestinationField = new FieldEntry { DisplayName = field.DestinationColumnName, IsIdentifier = true },
-                        SourceField = new FieldEntry { DisplayName = field.SourceColumnName, IsIdentifier = true }
-                    }
-                    : new FieldMap
-                    {
-                        FieldMapType = FieldMapType.None,
-                        DestinationField = new FieldEntry { DisplayName = field.DestinationColumnName },
-                        SourceField = new FieldEntry { DisplayName = field.SourceColumnName }
-                    }).ToList();
         }
 
         protected static Document CreateDocumentForNativesTransfer(int artifactId, HashSet<FieldConfiguration> values)
@@ -173,12 +134,6 @@ namespace Relativity.Sync.Tests.Integration
             return fields;
         }
 
-        protected static HashSet<FieldConfiguration> DefaultSpecialFields => new HashSet<FieldConfiguration>
-        {
-            FieldConfiguration.Special("RelativityNativeType", "RelativityNativeType", RelativityDataType.FixedLengthText, "Internet HTML"),
-            FieldConfiguration.Special("SupportedByViewer", "SupportedByViewer", RelativityDataType.YesNo, true)
-        };
-
         protected static HashSet<FieldConfiguration> DefaultIdentifierWithSpecialFields => IdentifierWithSpecialFields(_DEFAULT_IDENTIFIER_COLUMN_NAME, _DEFAULT_IDENTIFIER_COLUMN_NAME);
 
         protected static HashSet<FieldConfiguration> DefaultIdentifierWithoutSpecialFields => IdentifierWithoutSpecialFields(_DEFAULT_IDENTIFIER_COLUMN_NAME, _DEFAULT_IDENTIFIER_COLUMN_NAME);
@@ -190,6 +145,50 @@ namespace Relativity.Sync.Tests.Integration
             serializer.Serialize(writer, value);
             string serialized = writer.ToString();
             return serializer.Deserialize(new JsonTextReader(new StringReader(serialized)));
+        }
+
+        private SourceWorkspaceDataReader CreateSourceWorkspaceDataReaderWithBatchSize(int batchSize)
+        {
+            IRelativityExportBatcher batcher = CreateExporterForGivenBatchSize(batchSize);
+            IBatchDataReaderBuilder batchDataReaderBuilder = CreateBatchDataReaderBuilder();
+            IFieldManager fieldManager = _container.Resolve<IFieldManager>();
+            IAPILog syncLog = Mock.Of<IAPILog>();
+
+            return new SourceWorkspaceDataReader(
+                batchDataReaderBuilder,
+                _configuration,
+                batcher,
+                fieldManager,
+                new ItemStatusMonitor(),
+                syncLog,
+                CancellationToken.None);
+        }
+
+        private IRelativityExportBatcher CreateExporterForGivenBatchSize(int batchSize)
+        {
+            Mock<IBatch> batch = new Mock<IBatch>();
+            batch.SetupGet(x => x.TotalDocumentsCount).Returns(batchSize);
+            IRelativityExportBatcher batcher = _container.Resolve<IRelativityExportBatcherFactory>().CreateRelativityExportBatcher(batch.Object);
+            return batcher;
+        }
+
+        private static IList<FieldMap> CreateFieldMappings(HashSet<FieldConfiguration> additionalFields)
+        {
+            return additionalFields
+                .Where(field => field.Type != FieldType.Special)
+                .Select(field => field.Type == FieldType.Identifier
+                    ? new FieldMap
+                    {
+                        FieldMapType = FieldMapType.Identifier,
+                        DestinationField = new FieldEntry { DisplayName = field.DestinationColumnName, IsIdentifier = true },
+                        SourceField = new FieldEntry { DisplayName = field.SourceColumnName, IsIdentifier = true }
+                    }
+                    : new FieldMap
+                    {
+                        FieldMapType = FieldMapType.None,
+                        DestinationField = new FieldEntry { DisplayName = field.DestinationColumnName },
+                        SourceField = new FieldEntry { DisplayName = field.SourceColumnName }
+                    }).ToList();
         }
     }
 }

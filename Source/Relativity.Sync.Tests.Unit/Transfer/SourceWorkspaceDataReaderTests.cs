@@ -209,7 +209,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
                 _configuration.Object,
                 _exportBatcher.Object,
                 _fieldManager.Object,
-                new ItemLevelErrorLogAggregator(log),
                 _itemStatusMonitor.Object,
                 new EmptyLogger(),
                 tokenSource.Token);
@@ -371,7 +370,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
                 _configuration.Object,
                 _exportBatcher.Object,
                 _fieldManager.Object,
-                new ItemLevelErrorLogAggregator(log),
                 _itemStatusMonitor.Object,
                 log,
                 token);
