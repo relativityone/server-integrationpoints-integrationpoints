@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
@@ -11,7 +10,6 @@ using Relativity.API;
 using Relativity.Import.V1.Models.Errors;
 using Relativity.Sync.Configuration;
 using Relativity.Sync.Executors;
-using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Tests.Common;
 using Relativity.Sync.Transfer;
@@ -24,7 +22,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
         private Mock<IItemLevelErrorHandlerConfiguration> _configurationFake;
         private Mock<IJobHistoryErrorRepository> _jobHistoryErrorRepositoryMock;
         private Mock<IItemStatusMonitor> _statusMonitorMock;
-        private Mock<IItemLevelErrorLogAggregator> _itemLevelErrorAggregatorFake;
 
         private ItemLevelErrorHandler _sut;
 
@@ -43,12 +40,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             _jobHistoryErrorRepositoryMock = new Mock<IJobHistoryErrorRepository>();
             _statusMonitorMock = new Mock<IItemStatusMonitor>();
-            _itemLevelErrorAggregatorFake = new Mock<IItemLevelErrorLogAggregator>();
+
+            Mock<IAPILog> log = new Mock<IAPILog>();
 
             _sut = new ItemLevelErrorHandler(
                 _configurationFake.Object,
                 _jobHistoryErrorRepositoryMock.Object,
-                _itemLevelErrorAggregatorFake.Object);
+                log.Object);
         }
 
         [Test]

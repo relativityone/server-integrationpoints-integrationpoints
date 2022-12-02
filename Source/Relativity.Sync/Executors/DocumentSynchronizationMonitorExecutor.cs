@@ -202,6 +202,8 @@ namespace Relativity.Sync.Executors
                     await _itemLevelErrorHandler.HandleIAPIItemLevelErrorsAsync(errors).ConfigureAwait(false);
                 }
                 while (errors.HasMoreRecords);
+
+                await _itemLevelErrorHandler.HandleRemainingErrorsAsync().ConfigureAwait(false);
             }
         }
 

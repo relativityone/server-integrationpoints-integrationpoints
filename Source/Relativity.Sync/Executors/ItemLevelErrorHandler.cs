@@ -1,11 +1,10 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Relativity.API;
 using Relativity.Import.V1.Models.Errors;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
 
@@ -19,18 +18,18 @@ namespace Relativity.Sync.Executors
 
         private readonly IItemLevelErrorHandlerConfiguration _configuration;
         private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
-        private readonly IItemLevelErrorLogAggregator _itemLevelErrorLogAggregator;
+        private readonly IAPILog _log;
 
         private ConcurrentQueue<CreateJobHistoryErrorDto> _itemErrors = new ConcurrentQueue<CreateJobHistoryErrorDto>();
 
         public ItemLevelErrorHandler(
             IItemLevelErrorHandlerConfiguration configuration,
             IJobHistoryErrorRepository jobHistoryErrorRepository,
-            IItemLevelErrorLogAggregator itemLevelErrorLogAggregator)
+            IAPILog log)
         {
             _configuration = configuration;
             _jobHistoryErrorRepository = jobHistoryErrorRepository;
-            _itemLevelErrorLogAggregator = itemLevelErrorLogAggregator;
+            _log = log;
         }
 
         public void HandleItemLevelError(long completedItem, ItemLevelError itemLevelError)
@@ -54,8 +53,6 @@ namespace Relativity.Sync.Executors
             {
                 await CreateErrorsAsync().ConfigureAwait(false);
             }
-
-            await _itemLevelErrorLogAggregator.LogAllItemLevelErrorsAsync().ConfigureAwait(false);
         }
 
         private async Task HandleBatchItemErrorAsync(ItemLevelError itemLevelError)
@@ -67,6 +64,7 @@ namespace Relativity.Sync.Executors
             };
 
             _itemErrors.Enqueue(itemError);
+            _log.LogWarning("Item Level Error: {@itemLevelError}", itemLevelError);
 
             if (_itemErrors.Count >= _ITEM_LEVEL_ERRORS_CREATE_BATCH_SIZE)
             {
