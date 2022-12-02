@@ -47,13 +47,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
         private const string _SOURCE_CONFIGURATION = "SOURCE_CONFIGURATION";
         private const string _DESTINATION_CONFIGURATION = "DESTINATION_CONFIGURATION";
 
-        private IFixture _fxt;
-
         [SetUp]
         public void SetUp()
         {
-            _fxt = new Fixture().Customize(new AutoMoqCustomization() { ConfigureMembers = true });
-
             _objectManagerMock = new Mock<IRelativityObjectManager>();
             _loggerMock = new Mock<IAPILog>();
             _internalLoggerMock = new Mock<IAPILog>();
@@ -91,12 +87,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Repositories.Implementations
 
             // Assert
             _objectManagerMock.Verify(x => x.Read<IntegrationPoint>(_ARTIFACT_ID, ExecutionIdentity.CurrentUser), Times.Once);
-            _objectManagerMock.Verify(
-                x => x.StreamUnicodeLongText(
-                    _ARTIFACT_ID,
-                    It.Is<FieldRef>(f => f.Guid.ToString() == _guid.ToString()),
-                    ExecutionIdentity.CurrentUser),
-                Times.Once());
             _internalLoggerMock.Verify(
                 x => x.LogError(
                     It.IsAny<Exception>(),
