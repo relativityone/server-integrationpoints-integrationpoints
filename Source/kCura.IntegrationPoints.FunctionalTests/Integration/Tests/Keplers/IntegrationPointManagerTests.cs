@@ -90,9 +90,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
 
             // Assert
             func.ShouldNotThrow();
-            Proxy.ObjectManager.Mock.Verify(x => x.ReadAsync(SourceWorkspace.ArtifactId, It.Is<ReadRequest>(y =>
-                    y.Object.ArtifactID == request.IntegrationPoint.ArtifactId &&
-                    y.Fields.Count() == typeof(IntegrationPointFieldGuids).GetFields().Length)), Times.AtLeastOnce);
+            SourceWorkspace.JobHistory.Should()
+                .Contain(x => x.IntegrationPoint.Contains(request.IntegrationPoint.ArtifactId));
         }
 
         [IdentifiedTest("2035CBCC-D56D-493C-9B13-D273C2EA2790")]
@@ -114,9 +113,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
 
             // Assert
             func.ShouldNotThrow();
-            Proxy.ObjectManager.Mock.Verify(x => x.ReadAsync(SourceWorkspace.ArtifactId, It.Is<ReadRequest>(y =>
-                y.Object.ArtifactID == request.IntegrationPoint.ArtifactId &&
-                y.Fields.Count() == typeof(IntegrationPointFieldGuids).GetFields().Length)), Times.AtLeastOnce);
+            SourceWorkspace.JobHistory.Should()
+                .Contain(x => x.IntegrationPoint.Contains(request.IntegrationPoint.ArtifactId));
         }
 
         [IdentifiedTest("A04A9599-B4FE-4F7B-8F07-2851F981865A")]

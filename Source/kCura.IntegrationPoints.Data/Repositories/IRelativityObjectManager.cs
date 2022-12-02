@@ -26,6 +26,8 @@ namespace kCura.IntegrationPoints.Data.Repositories
 
         T Read<T>(int artifactId, IEnumerable<Guid> fieldsGuids, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new();
 
+        T Read<T>(int artifactId, IEnumerable<FieldRef> fieldsGuids, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new();
+
         bool Update(int artifactId, IList<FieldRefValuePair> fieldsValues, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser);
 
         bool Update<T>(T relativityObject, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser) where T : BaseRdo, new();

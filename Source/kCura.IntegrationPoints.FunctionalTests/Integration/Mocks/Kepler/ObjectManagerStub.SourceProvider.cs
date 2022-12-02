@@ -22,7 +22,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                 {
                     return list.Where(x => x.Identifier.Equals(identifier, StringComparison.OrdinalIgnoreCase)).ToList();
                 }
-                return list;
+
+                return new List<SourceProviderTest>();
             }
 
             Mock.Setup(x => x.QueryAsync(It.IsAny<int>(),
