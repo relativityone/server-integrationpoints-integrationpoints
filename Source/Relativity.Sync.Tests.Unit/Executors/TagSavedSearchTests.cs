@@ -16,7 +16,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
     [TestFixture]
     public class TagSavedSearchTests
     {
-
         private CancellationToken _token;
 
         private Mock<IDestinationServiceFactoryForUser> _destinationServiceFactoryForUser;

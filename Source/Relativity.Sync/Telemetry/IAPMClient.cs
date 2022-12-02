@@ -14,7 +14,6 @@ namespace Relativity.Sync.Telemetry
         /// <param name="customData">Data associated with the metric, namely value and metadata.</param>
         void Count(string name, Dictionary<string, object> customData);
 
-
         /// <summary>
         ///     Logs a single metric with the given data as gauge operation.
         /// </summary>

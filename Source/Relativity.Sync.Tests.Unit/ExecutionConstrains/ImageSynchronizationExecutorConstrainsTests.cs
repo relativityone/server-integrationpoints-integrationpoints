@@ -31,7 +31,7 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
         }
 
         [Test]
-        [TestCase(new []{1}, ExpectedResult = true)]
+        [TestCase(new[] { 1 }, ExpectedResult = true)]
         [TestCase(new int[0], ExpectedResult = false)]
         [TestCase(null, ExpectedResult = false)]
         public async Task<bool> CanExecuteAsyncGoldFlowTests(IEnumerable<int> batchIds)

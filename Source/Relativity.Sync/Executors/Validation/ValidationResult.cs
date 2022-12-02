@@ -85,6 +85,7 @@ namespace Relativity.Sync.Executors.Validation
             {
                 return;
             }
+
             Add(new ValidationMessage(shortMessage));
         }
 

@@ -62,7 +62,8 @@ namespace Relativity.Sync.Tests.Integration
             // ASSERT
             AssertExecutionOrder(expectedOrder, _executorTypesInActualExecutionOrder);
             expectedOrder.SelectMany(x => x).Count().Should()
-                .Be(_executorTypesInActualExecutionOrder.Count,
+                .Be(
+                    _executorTypesInActualExecutionOrder.Count,
                     "Expected nodes should have the same count as actual list");
         }
 
@@ -186,7 +187,8 @@ namespace Relativity.Sync.Tests.Integration
 
             // ASSERT
             action.Should().Throw<SyncException>();
-            AssertNodesReportedCompleted(progress,
+            AssertNodesReportedCompleted(
+                progress,
                 container.ResolveNode<IPermissionsCheckConfiguration>(),
                 container.ResolveNode<IValidationConfiguration>(),
                 container.ResolveNode<IDestinationWorkspaceObjectTypesCreationConfiguration>());
@@ -203,7 +205,6 @@ namespace Relativity.Sync.Tests.Integration
 
             _containerBuilder.RegisterInstance(progress.Object).As<IProgress<SyncJobState>>();
 
-
             Type dataSnapshotConfigurationType = GetSnapshotNodeType(pipelineType).BaseType.GenericTypeArguments.First();
 
             IntegrationTestsContainerBuilder.MockCompletedWithErrorsStep(dataSnapshotConfigurationType, _containerBuilder);
@@ -219,7 +220,8 @@ namespace Relativity.Sync.Tests.Integration
                 .Where(x => x.Type != GetSnapshotNodeType(pipelineType))
                 .Select(x => container.Resolve(x.Type) as INode<SyncExecutionContext>).ToArray();
             AssertNodesReportedCompleted(progress, completedNodes);
-            AssertNodesReportedCompletedWithErrors(progress,
+            AssertNodesReportedCompletedWithErrors(
+                progress,
                 container.Resolve(GetSnapshotNodeType(pipelineType)) as INode<SyncExecutionContext>);
         }
 

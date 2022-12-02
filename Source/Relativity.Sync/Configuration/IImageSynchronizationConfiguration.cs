@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Sync.Configuration
 {
-    interface IImageSynchronizationConfiguration : ISynchronizationConfiguration
+    internal interface IImageSynchronizationConfiguration : ISynchronizationConfiguration
     {
         string ImageFilePathSourceFieldName { get; set; }
 

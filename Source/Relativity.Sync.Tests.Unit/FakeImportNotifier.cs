@@ -9,17 +9,20 @@ namespace Relativity.Sync.Tests.Unit
     internal sealed class FakeImportNotifier : IImportNotifier
     {
         public event IImportNotifier.OnCompleteEventHandler OnComplete;
+
         public event IImportNotifier.OnProcessProgressEventHandler OnProcessProgress;
 
 #pragma warning disable 67 // Event is never used
         public event IImportNotifier.OnFatalExceptionEventHandler OnFatalException;
+
         public event IImportNotifier.OnProgressEventHandler OnProgress;
+
         public event IImportNotifier.OnBatchCompleteEventHandler OnBatchComplete;
 #pragma warning restore 67 // Event is never used
 
         public void RaiseOnProcessProgress(int failedItems, int totalItemsProcessed)
         {
-            OnProcessProgress?.Invoke(new FullStatus(0, totalItemsProcessed, 0, failedItems, DateTime.MinValue, 
+            OnProcessProgress?.Invoke(new FullStatus(0, totalItemsProcessed, 0, failedItems, DateTime.MinValue,
                 DateTime.MinValue, string.Empty, string.Empty, 0, 0, Guid.Empty, null));
         }
 

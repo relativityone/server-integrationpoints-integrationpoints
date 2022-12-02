@@ -196,7 +196,6 @@ namespace Relativity.Sync.Tests.Unit
             const string exception = null;
             const string message = null;
 
-
             QueryResult result = PrepareQueryResult(string.Empty, 0, "Completed With Errors", exception, message);
             _objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(result);
 
@@ -228,7 +227,7 @@ namespace Relativity.Sync.Tests.Unit
                     {
                         Field = new Field
                         {
-                            Guids = new List<Guid> {OrderGuid}
+                            Guids = new List<Guid> { OrderGuid }
                         },
                         Value = order
                     },
@@ -236,7 +235,7 @@ namespace Relativity.Sync.Tests.Unit
                     {
                         Field = new Field
                         {
-                            Guids = new List<Guid> {StatusGuid}
+                            Guids = new List<Guid> { StatusGuid }
                         },
                         Value = status
                     },
@@ -244,7 +243,7 @@ namespace Relativity.Sync.Tests.Unit
                     {
                         Field = new Field
                         {
-                            Guids = new List<Guid> {ExceptionGuid}
+                            Guids = new List<Guid> { ExceptionGuid }
                         },
                         Value = exception
                     },
@@ -252,7 +251,7 @@ namespace Relativity.Sync.Tests.Unit
                     {
                         Field = new Field
                         {
-                            Guids = new List<Guid> {MessageGuid}
+                            Guids = new List<Guid> { MessageGuid }
                         },
                         Value = message
                     }
@@ -403,37 +402,39 @@ namespace Relativity.Sync.Tests.Unit
             updateRequest.Object.ArtifactID.Should().Be(_ARTIFACT_ID);
             updateRequest.FieldValues.Count().Should().Be(1);
             updateRequest.FieldValues.Should().Contain(x => x.Field.Guid == fieldGuid);
-            updateRequest.FieldValues.Should().Contain(x => ((T) x.Value).Equals(value));
+            updateRequest.FieldValues.Should().Contain(x => ((T)x.Value).Equals(value));
             return true;
         }
 
         [Test]
         public async Task ItShouldQueryAllProgressTests()
         {
-            //Arrange
+            // Arrange
             const string name = "progress name 1";
             const int order = 3;
             const string statusDescription = "In Progress";
             const string exception = "exception 5";
             const string message = "message 10";
             const int syncConfigurationArtifactId = 854796;
-            
+
             QueryResult queryResult1 = PrepareQueryResult(name, order, statusDescription, exception, message);
             _objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, It.IsAny<int>())).ReturnsAsync(queryResult1);
 
             QueryResult queryResult2 = PrepareQueryResult();
             _objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult2);
 
-            //Act
+            // Act
             IEnumerable<IProgress> progress = await _progressRepository.QueryAllAsync(_WORKSPACE_ID, syncConfigurationArtifactId)
                 .ConfigureAwait(false);
 
-            //Assert
+            // Assert
             progress.Count().Should().Be(0);
             progress.Should().BeEmpty();
 
-            _objectManager.Verify(x => x.QueryAsync(_WORKSPACE_ID,
-                    It.Is<QueryRequest>(qr => AssertQueryAllRequest(qr, syncConfigurationArtifactId)), 1,It.IsAny<int>()), Times.Once);
+            _objectManager.Verify(
+                x => x.QueryAsync(
+                _WORKSPACE_ID,
+                It.Is<QueryRequest>(qr => AssertQueryAllRequest(qr, syncConfigurationArtifactId)), 1, It.IsAny<int>()), Times.Once);
         }
 
         private bool AssertQueryAllRequest(QueryRequest queryRequest, int syncConfigurationArtifactId)
@@ -446,7 +447,7 @@ namespace Relativity.Sync.Tests.Unit
         [Test]
         public async Task ItShouldQueryAllCompletedWithErrorsTests()
         {
-            //Arrange
+            // Arrange
             const string name = "progress name 1";
             const int order = 3;
             const string statusDescription = "In Progress";
@@ -462,11 +463,11 @@ namespace Relativity.Sync.Tests.Unit
             QueryResult queryResult2 = PrepareQueryResult();
             _objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 0, 1)).ReturnsAsync(queryResult2);
 
-            //Act
+            // Act
             IEnumerable<IProgress> progress = await _progressRepository.QueryAllAsync(_WORKSPACE_ID, syncConfigurationArtifactId)
                 .ConfigureAwait(false);
 
-            //Assert
+            // Assert
             progress.First().Status.Should().Be(expectedStatus);
             progress.First().Exception.Should().Be("exception");
             progress.First().Message.Should().Be("message");
@@ -477,7 +478,7 @@ namespace Relativity.Sync.Tests.Unit
         [Test]
         public async Task ItShouldQueryAllThrowExceptionTests()
         {
-            //Arrange
+            // Arrange
             const string name = "progress name 1";
             const int order = 3;
             const string statusDescription = "In Progress";
@@ -489,11 +490,11 @@ namespace Relativity.Sync.Tests.Unit
             result.TotalCount = 1;
             _objectManager.Setup(x => x.QueryAsync(_WORKSPACE_ID, It.IsAny<QueryRequest>(), 1, It.IsAny<int>())).Throws<Exception>();
 
-            //Act
+            // Act
             IEnumerable<IProgress> progress = await _progressRepository.QueryAllAsync(_WORKSPACE_ID, syncConfigurationArtifactId)
                 .ConfigureAwait(false);
 
-            //Assert
+            // Assert
             progress.Count().Should().Be(0);
             progress.Should().BeEmpty();
         }

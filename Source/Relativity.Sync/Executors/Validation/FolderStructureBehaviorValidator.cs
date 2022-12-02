@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.API;
-using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -68,7 +67,7 @@ namespace Relativity.Sync.Executors.Validation
                     Condition = $"(('FieldArtifactTypeID' == {_DOCUMENT_ARTIFACT_TYPE_ID} AND 'Name' == '{configuration.GetFolderPathSourceFieldName()}'))",
                     Fields = new[]
                     {
-                        new FieldRef() {Name = fieldType},
+                        new FieldRef() { Name = fieldType },
                     }
                 };
                 const int start = 0;

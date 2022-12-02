@@ -62,7 +62,7 @@ namespace Relativity.Sync
             {
                 throw new ArgumentNullException(nameof(logger));
             }
-            
+
             LogWriter.SetFactory(new SyncLogWriterFactory(logger));
 
             ServiceFactoryForAdminFactory serviceFactoryForAdminFactory = new ServiceFactoryForAdminFactory(relativityServices.Helper.GetServicesManager(), logger);

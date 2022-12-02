@@ -34,11 +34,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
         private const int _WORKSPACE_ARTIFACT_ID = 1014023;
         private const string _LONG_TEXT_FIELD_NAME = "bar";
 
-        
         [SetUp]
         public void SetUp()
         {
-            
             _readableStream = new Mock<Stream>();
             _readableStream.SetupGet(s => s.CanRead).Returns(true);
             _keplerStream = new Mock<IKeplerStream>();
@@ -53,7 +51,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
             _policyFactory.Setup(f => f.Create(It.IsAny<Func<Stream, bool>>(), It.IsAny<Action<Stream, Exception, int>>(), _RETRY_COUNT, It.IsAny<TimeSpan>()))
                 .Returns((Func<Stream, bool> shouldRetry, Action<Stream, Exception, int> onRetry, int retryCount, TimeSpan waitInterval) => GetRetryPolicy(shouldRetry, onRetry, retryCount));
             _syncMetrics = new Mock<ISyncMetrics>();
-            
+
             _instance = new RetriableLongTextStreamBuilder(_WORKSPACE_ARTIFACT_ID, _RELATIVITY_OBJECT_ARTIFACT_ID, _LONG_TEXT_FIELD_NAME, _serviceFactoryForUser.Object, _policyFactory.Object,
                 _syncMetrics.Object, new EmptyLogger());
         }
@@ -66,7 +64,7 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
 
             // Act
             Stream result = await _instance.GetStreamAsync().ConfigureAwait(false);
-            
+
             // Assert
             result.Should().Be(_readableStream.Object);
             _readableStream.VerifyGet(s => s.CanRead, Times.Once);
@@ -82,15 +80,15 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
             unreadableStream.SetupGet(s => s.CanRead).Returns(false);
 
             _keplerStream.SetupSequence(x => x.GetStreamAsync()).ReturnsAsync(unreadableStream.Object).ReturnsAsync(_readableStream.Object);
-            
+
             // Act
             Stream result = await _instance.GetStreamAsync().ConfigureAwait(false);
-            
+
             // Assert
             result.Should().Be(_readableStream.Object);
             _readableStream.VerifyGet(s => s.CanRead, Times.Once);
             _objectManager.Verify(om => om.StreamLongTextAsync(_WORKSPACE_ARTIFACT_ID, It.IsAny<RelativityObjectRef>(), It.IsAny<FieldRef>()), Times.Exactly(expectedCallCount));
-            
+
             _syncMetrics.Verify(x => x.Send(It.Is<StreamRetryMetric>(m => m.RetryCounter != null)), Times.Once);
         }
 
@@ -101,17 +99,17 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
             const int expectedCallCount = 2;
 
             _keplerStream.SetupSequence(x => x.GetStreamAsync()).Throws<ServiceException>().ReturnsAsync(_readableStream.Object);
-            
+
             // Act
             Stream result = await _instance.GetStreamAsync().ConfigureAwait(false);
-            
+
             // Assert
             result.Should().Be(_readableStream.Object);
             _readableStream.VerifyGet(s => s.CanRead, Times.Once);
             _objectManager.Verify(om => om.StreamLongTextAsync(_WORKSPACE_ARTIFACT_ID, It.IsAny<RelativityObjectRef>(), It.IsAny<FieldRef>()), Times.Exactly(expectedCallCount));
             _syncMetrics.Verify(x => x.Send(It.Is<StreamRetryMetric>(m => m.RetryCounter != null)), Times.Once);
         }
-        
+
         [Test]
         public async Task ItShouldReturnUnreadableStreamWhenAllAttemptsUnreadable()
         {
@@ -121,10 +119,10 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
             unreadableStream.SetupGet(s => s.CanRead).Returns(false);
 
             _keplerStream.Setup(x => x.GetStreamAsync()).ReturnsAsync(unreadableStream.Object);
-            
+
             // Act
             Stream result = await _instance.GetStreamAsync().ConfigureAwait(false);
-            
+
             // Assert
             result.Should().Be(unreadableStream.Object);
             _objectManager.Verify(om => om.StreamLongTextAsync(_WORKSPACE_ARTIFACT_ID, It.IsAny<RelativityObjectRef>(), It.IsAny<FieldRef>()), Times.Exactly(expectedCallCount));
@@ -137,12 +135,12 @@ namespace Relativity.Sync.Tests.Unit.Transfer.StreamWrappers
         {
             // Arrange
             const int expectedCallCount = _RETRY_COUNT + 1;
-            
+
             _keplerStream.Setup(x => x.GetStreamAsync()).Throws<ServiceException>();
-            
+
             // Act
             Func<Task<Stream>> action = () => _instance.GetStreamAsync();
-            
+
             // Assert
             await action.Should().ThrowAsync<ServiceException>().ConfigureAwait(false);
 

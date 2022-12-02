@@ -37,7 +37,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         {
             // Arrange
             _workspaceManagerMock.Setup(x => x.ReadAsync(It.IsAny<int>())).Throws<InvalidOperationException>();
-            
+
             // Act
             Func<Task> action = async () => await _sut.GetWorkspaceNameAsync(_serviceFactoryForUserMock.Object, 1, CancellationToken.None).ConfigureAwait(false);
 
@@ -65,14 +65,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
             string expectedWorkspaceName = "workspace name";
 
             _workspaceManagerMock.Setup(x => x.ReadAsync(It.IsAny<int>()))
-                .Returns(Task.FromResult(new WorkspaceResponse {Name = expectedWorkspaceName}));
+                .Returns(Task.FromResult(new WorkspaceResponse { Name = expectedWorkspaceName }));
 
             // Act
             string actualWorkspaceName = await _sut.GetWorkspaceNameAsync(_serviceFactoryForUserMock.Object, 1, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
             Assert.AreEqual(expectedWorkspaceName, actualWorkspaceName);
-
         }
     }
 }

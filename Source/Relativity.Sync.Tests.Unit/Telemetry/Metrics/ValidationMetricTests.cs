@@ -17,7 +17,6 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
             FailedCounter = Counter.Increment
         };
 
-
         protected override IMetric ArrangeTestMetric()
         {
             return _sut;

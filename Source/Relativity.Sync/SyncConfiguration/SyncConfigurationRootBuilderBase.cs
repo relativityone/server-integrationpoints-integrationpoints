@@ -24,8 +24,12 @@ namespace Relativity.Sync.SyncConfiguration
 
         public readonly SyncConfigurationRdo SyncConfiguration;
 
-        protected SyncConfigurationRootBuilderBase(ISyncContext syncContext, IProxyFactory serviceFactoryForAdmin,
-            RdoOptions rdoOptions, IRdoManager rdoManager, ISerializer serializer)
+        protected SyncConfigurationRootBuilderBase(
+            ISyncContext syncContext,
+            IProxyFactory serviceFactoryForAdmin,
+            RdoOptions rdoOptions,
+            IRdoManager rdoManager,
+            ISerializer serializer)
         {
             SyncContext = syncContext;
             ServiceFactoryForAdmin = serviceFactoryForAdmin;
@@ -175,7 +179,7 @@ namespace Relativity.Sync.SyncConfiguration
                 GetValidationInfo(RdoOptions.JobHistoryStatus, x => x.StoppedGuid),
                 GetValidationInfo(RdoOptions.JobHistoryStatus, x => x.SuspendingGuid),
                 GetValidationInfo(RdoOptions.JobHistoryStatus, x => x.SuspendedGuid),
-                
+
                 // JobHistoryError
                 GetValidationInfo(RdoOptions.JobHistoryError, x => x.TypeGuid),
                 GetValidationInfo(RdoOptions.JobHistoryError, x => x.NameGuid),
@@ -189,7 +193,7 @@ namespace Relativity.Sync.SyncConfiguration
                 GetValidationInfo(RdoOptions.JobHistoryError, x => x.ItemLevelErrorChoiceGuid),
                 GetValidationInfo(RdoOptions.JobHistoryError, x => x.JobLevelErrorChoiceGuid),
                 GetValidationInfo(RdoOptions.JobHistoryError, x => x.NewStatusGuid),
-                
+
                 // DestinationWorkspace
                 GetValidationInfo(RdoOptions.DestinationWorkspace, x => x.TypeGuid),
                 GetValidationInfo(RdoOptions.DestinationWorkspace, x => x.NameGuid),
@@ -202,7 +206,8 @@ namespace Relativity.Sync.SyncConfiguration
             };
         }
 
-        private (Guid Guid, string PropertyPath) GetValidationInfo<TRdo>(TRdo rdo,
+        private (Guid Guid, string PropertyPath) GetValidationInfo<TRdo>(
+            TRdo rdo,
             Expression<Func<TRdo, Guid>> expression)
         {
             MemberExpression memberExpression = expression.Body as MemberExpression ??
@@ -219,7 +224,8 @@ namespace Relativity.Sync.SyncConfiguration
             using (var guidManager = await ServiceFactoryForAdmin.CreateProxyAsync<IArtifactGuidManager>().ConfigureAwait(false))
             {
                 List<GuidArtifactIDPair> guidArtifactIdPairs = await guidManager
-                    .ReadMultipleArtifactIdsAsync(SyncContext.SourceWorkspaceId,
+                    .ReadMultipleArtifactIdsAsync(
+                        SyncContext.SourceWorkspaceId,
                         validationInfos.Select(x => x.Guid).ToList())
                     .ConfigureAwait(false);
 
@@ -231,7 +237,8 @@ namespace Relativity.Sync.SyncConfiguration
 
                 if (notExistingGuidErrors.Any())
                 {
-                    throw new InvalidSyncConfigurationException(string.Join(System.Environment.NewLine,
+                    throw new InvalidSyncConfigurationException(string.Join(
+                        System.Environment.NewLine,
                         notExistingGuidErrors));
                 }
             }

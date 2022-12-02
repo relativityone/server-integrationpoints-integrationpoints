@@ -63,7 +63,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
             // assert
             _fieldMappingsMock.Verify(x => x.GetFieldMappings());
         }
-        
+
         private FieldConfiguration PrepareSut()
         {
             return new FieldConfiguration(_cacheFake.Object, _fieldMappingsMock.Object, _syncJobParameters);

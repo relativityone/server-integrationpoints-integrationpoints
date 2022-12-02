@@ -19,8 +19,8 @@ namespace Relativity.Sync.Toggles.Service
 
             _cache = new ConcurrentDictionary<Type, bool>();
         }
-        
-        public bool IsEnabled<T>() where T: IToggle
+
+        public bool IsEnabled<T>() where T : IToggle
         {
             Type type = typeof(T);
 

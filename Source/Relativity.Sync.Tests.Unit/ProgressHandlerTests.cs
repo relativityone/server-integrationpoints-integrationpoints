@@ -5,7 +5,6 @@ using AutoFixture;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using Relativity.API;
 using Relativity.Import.V1;
 using Relativity.Import.V1.Models;
 using Relativity.Import.V1.Services;

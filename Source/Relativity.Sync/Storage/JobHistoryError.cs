@@ -22,7 +22,15 @@ namespace Relativity.Sync.Storage
 
         public DateTime TimestampUtc { get; }
 
-        public JobHistoryError(int artifactId, string errorMessage, ErrorStatus errorStatus, ErrorType errorType, int jobHistoryArtifactId, string name, string sourceUniqueId, string stackTrace,
+        public JobHistoryError(
+            int artifactId,
+            string errorMessage,
+            ErrorStatus errorStatus,
+            ErrorType errorType,
+            int jobHistoryArtifactId,
+            string name,
+            string sourceUniqueId,
+            string stackTrace,
             DateTime timestampUtc)
         {
             ArtifactId = artifactId;

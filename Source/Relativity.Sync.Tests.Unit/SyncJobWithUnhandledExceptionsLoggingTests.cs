@@ -46,7 +46,7 @@ namespace Relativity.Sync.Tests.Unit
             // ASSERT
             _syncJob.Verify(x => x.ExecuteAsync(progress, CompositeCancellationToken.None));
         }
-        
+
         [Test]
         public async Task ItShouldLogUnhandledExceptionWhenExecuted()
         {

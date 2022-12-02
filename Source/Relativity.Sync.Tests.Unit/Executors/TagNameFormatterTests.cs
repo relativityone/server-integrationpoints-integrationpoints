@@ -26,7 +26,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 "TooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLongNameTooLo";
 
             // act
-            string name = _sut.FormatWorkspaceDestinationTagName(destinationInstanceName,
+            string name = _sut.FormatWorkspaceDestinationTagName(
+                destinationInstanceName,
                 tooLongDestinationWorkspaceName, destinationWorkspaceArtifactId);
 
             // assert

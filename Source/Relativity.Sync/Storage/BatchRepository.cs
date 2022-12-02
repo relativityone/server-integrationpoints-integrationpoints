@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.KeplerFactory;
-using Relativity.Sync.RDOs;
 using Relativity.Sync.RDOs.Framework;
 using Relativity.Sync.Utils;
 
@@ -17,7 +15,7 @@ namespace Relativity.Sync.Storage
         private readonly ISourceServiceFactoryForAdmin _serviceFactoryForAdmin;
         private readonly IDateTime _dateTime;
 
-        public BatchRepository(IRdoManager rdoManager,ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IDateTime dateTime)
+        public BatchRepository(IRdoManager rdoManager, ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IDateTime dateTime)
         {
             _rdoManager = rdoManager;
             _serviceFactoryForAdmin = serviceFactoryForAdmin;
@@ -76,36 +74,6 @@ namespace Relativity.Sync.Storage
         public Task<IBatch> GetNextAsync(int workspaceArtifactId, int syncConfigurationArtifactId, Guid exportRunId, int startingIndex)
         {
             return Batch.GetNextAsync(_rdoManager, _serviceFactoryForAdmin, workspaceArtifactId, syncConfigurationArtifactId, startingIndex, exportRunId);
-        }
-        
-        private static async Task<IEnumerable<int>> GetConfigurationsOlderThanAsync(ISourceServiceFactoryForAdmin serviceFactoryForAdmin, IDateTime dateTime, int workspaceArtifactId, TimeSpan olderThan)
-        {
-            DateTime createdBeforeDate = dateTime.UtcNow - olderThan;
-            DateTime GetObjectCreationDate(RelativityObject relativityObject) => (DateTime)relativityObject.FieldValues.Single().Value;
-
-            using (IObjectManager objectManager = await serviceFactoryForAdmin.CreateProxyAsync<IObjectManager>().ConfigureAwait(false))
-            {
-                var request = new QueryRequest()
-                {
-                    ObjectType = new ObjectTypeRef()
-                    {
-                        Guid = new Guid(SyncRdoGuids.SyncConfigurationGuid)
-                    },
-                    Fields = new[]
-                    {
-                        new FieldRef()
-                        {
-                            Name = "System Created On"
-                        }
-                    },
-                    IncludeNameInQueryResult = true
-                };
-
-                QueryResult queryResult = await objectManager.QueryAsync(workspaceArtifactId, request, 0, int.MaxValue).ConfigureAwait(false);
-                IEnumerable<RelativityObject> oldConfigurations = queryResult.Objects.Where(configurationObject =>
-                    GetObjectCreationDate(configurationObject) < createdBeforeDate);
-                return oldConfigurations.Select(x => x.ArtifactID);
-            }
         }
     }
 }

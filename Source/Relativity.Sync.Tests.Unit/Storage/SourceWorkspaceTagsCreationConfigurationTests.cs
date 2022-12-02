@@ -70,6 +70,5 @@ namespace Relativity.Sync.Tests.Unit.Storage
             _configurationRdo.DestinationWorkspaceTagArtifactId.Should().Be(artifactId);
             _config.IsDestinationWorkspaceTagArtifactIdSet.Should().BeTrue();
         }
-
     }
 }

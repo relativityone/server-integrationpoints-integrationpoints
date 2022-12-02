@@ -49,8 +49,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
             List<RelativityObjectSlim> returnObjects = new List<RelativityObjectSlim>
             {
-                new RelativityObjectSlim {Values = new List<object> { field1Name, field1RelativityDataType.GetDescription() }},
-                new RelativityObjectSlim {Values = new List<object> { field2Name, field2RelativityDataType.GetDescription() }}
+                new RelativityObjectSlim { Values = new List<object> { field1Name, field1RelativityDataType.GetDescription() } },
+                new RelativityObjectSlim { Values = new List<object> { field2Name, field2RelativityDataType.GetDescription() } }
             };
 
             QueryResultSlim queryResult = new QueryResultSlim { Objects = returnObjects };
@@ -94,7 +94,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
             // Assert
             const string expectedFieldNameArray =
                 "'Cool Field Name', 'Commas, Hello', 'Colon: A True Story', 'Sync\\'s Cool Field', 'Nice \\\\ Field'";
-            _objectManager.Verify(x => x.QuerySlimAsync(It.IsAny<int>(),
+            _objectManager.Verify(
+                x => x.QuerySlimAsync(
+                It.IsAny<int>(),
                 It.Is<QueryRequest>(q => ConditionContainsFieldNameArray(q, expectedFieldNameArray)),
                 It.IsAny<int>(),
                 It.IsAny<int>(),
@@ -105,8 +107,8 @@ namespace Relativity.Sync.Tests.Unit.Transfer
         {
             get
             {
-                yield return new TestCaseData((object) null);
-                yield return new TestCaseData((object) Array.Empty<string>());
+                yield return new TestCaseData((object)null);
+                yield return new TestCaseData((object)Array.Empty<string>());
             }
         }
 
@@ -216,7 +218,9 @@ namespace Relativity.Sync.Tests.Unit.Transfer
                 .ConfigureAwait(false);
 
             // Assert
-            _objectManager.Verify(x => x.QuerySlimAsync(It.IsAny<int>(),
+            _objectManager.Verify(
+                x => x.QuerySlimAsync(
+                It.IsAny<int>(),
                 It.Is<QueryRequest>(q => ConditionContainsExactFields(q, requestedFieldNames.Distinct())),
                 It.IsAny<int>(),
                 requestedFieldNames.Distinct().Count(),

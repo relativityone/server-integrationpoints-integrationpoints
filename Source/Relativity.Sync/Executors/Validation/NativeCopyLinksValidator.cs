@@ -4,7 +4,6 @@ using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Pipelines.Extensions;
 using Relativity.Sync.Toggles.Service;
-using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors.Validation
 {

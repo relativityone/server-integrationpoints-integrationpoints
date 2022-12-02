@@ -29,7 +29,7 @@ namespace Relativity.Sync.Tests.Unit
             userContextConfiguration.Setup(x => x.ExecutingUserId).Returns(_USER_ID);
 
             var servicesMgr = new Mock<IServicesMgr>();
-            servicesMgr.Setup(x => x.GetRESTServiceUrl()).Returns(new Uri("", UriKind.Relative));
+            servicesMgr.Setup(x => x.GetRESTServiceUrl()).Returns(new Uri(string.Empty, UriKind.Relative));
 
             _tokenGenerator = new Mock<IAuthTokenGenerator>();
             _tokenGenerator.Setup(x => x.GetAuthTokenAsync(_USER_ID)).ReturnsAsync("token");
@@ -40,7 +40,7 @@ namespace Relativity.Sync.Tests.Unit
             Mock<IAPILog> syncLogMock = new Mock<IAPILog>();
 
             _instance = new ServiceFactoryForUser(userContextConfiguration.Object, servicesMgr.Object,
-                _tokenGenerator.Object, _dynamicProxyFactory.Object, new ServiceFactoryFactory(), 
+                _tokenGenerator.Object, _dynamicProxyFactory.Object, new ServiceFactoryFactory(),
                 randomFake.Object, syncLogMock.Object);
 
             _instance.SecondsBetweenRetries = 0.5;

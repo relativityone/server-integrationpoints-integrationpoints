@@ -23,7 +23,7 @@ namespace Relativity.Sync.Transfer
         private readonly IRdoManager _rdoManager;
         private readonly IAPILog _logger;
 
-        public FileStatisticsCalculator(IStatisticsConfiguration configuration, ISourceServiceFactoryForUser serviceFactoryForUser, 
+        public FileStatisticsCalculator(IStatisticsConfiguration configuration, ISourceServiceFactoryForUser serviceFactoryForUser,
             IImageFileRepository imageFileRepository, INativeFileRepository nativeFileRepository, IRdoManager rdoManager, IAPILog logger)
         {
             _configuration = configuration;
@@ -42,7 +42,8 @@ namespace Relativity.Sync.Transfer
             return result.CalculatedFilesSize;
         }
 
-        public async Task<ImagesStatistics> CalculateImagesStatisticsAsync(int workspaceId,
+        public async Task<ImagesStatistics> CalculateImagesStatisticsAsync(
+            int workspaceId,
             QueryRequest request, QueryImagesOptions options, CompositeCancellationToken token)
         {
             SyncStatisticsRdo result = await CalculateFilesTotalSizeAsync(workspaceId, request,
@@ -51,18 +52,20 @@ namespace Relativity.Sync.Transfer
             return new ImagesStatistics(result.CalculatedFilesCount, result.CalculatedFilesSize);
         }
 
-        private async Task<SyncStatisticsRdo> CalculateFilesTotalSizeAsync(int workspaceId, QueryRequest request, 
+        private async Task<SyncStatisticsRdo> CalculateFilesTotalSizeAsync(int workspaceId, QueryRequest request,
             Func<IList<int>, Task<FileSizeResult>> filesCalculationFunc, CompositeCancellationToken token)
         {
             SyncStatisticsRdo syncStatistics;
             try
             {
-                _logger.LogInformation("Initializing calculating total files size (in chunks of {batchSize})",
+                _logger.LogInformation(
+                    "Initializing calculating total files size (in chunks of {batchSize})",
                     _configuration.BatchSizeForFileQueries);
 
                 syncStatistics = await InitializeDocumentsQueryAsync(workspaceId, request).ConfigureAwait(false);
 
-                _logger.LogInformation("Calculation has been initialized - {documentsRequested} documents requested.",
+                _logger.LogInformation(
+                    "Calculation has been initialized - {documentsRequested} documents requested.",
                     syncStatistics.RequestedDocuments);
 
                 try
@@ -100,7 +103,8 @@ namespace Relativity.Sync.Transfer
                     await _rdoManager.SetValuesAsync(workspaceId, syncStatistics).ConfigureAwait(false);
                 }
 
-                _logger.LogInformation("Finished calculating total files size (in chunks of {batchSize}). Sync statistics: {@statistics} ",
+                _logger.LogInformation(
+                    "Finished calculating total files size (in chunks of {batchSize}). Sync statistics: {@statistics} ",
                     _configuration.BatchSizeForFileQueries, syncStatistics);
             }
             catch (Exception ex)
@@ -179,6 +183,7 @@ namespace Relativity.Sync.Transfer
         private class FileSizeResult
         {
             public long FilesCount { get; set; }
+
             public long FilesSize { get; set; }
         }
     }

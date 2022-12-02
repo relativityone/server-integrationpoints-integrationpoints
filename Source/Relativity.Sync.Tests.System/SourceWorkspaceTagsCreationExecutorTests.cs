@@ -27,7 +27,7 @@ namespace Relativity.Sync.Tests.System
         private static readonly Guid _DESTINATION_WORKSPACE_DESTINATION_WORKSPACE_NAME_FIELD_GUID = Guid.Parse("348D7394-2658-4DA4-87D0-8183824ADF98");
         private static readonly Guid _DESTINATION_WORKSPACE_GUID = Guid.Parse("3F45E490-B4CF-4C7D-8BB6-9CA891C0C198");
         private static readonly Guid _DESTINATION_WORKSPACE_JOB_HISTORY_FIELD_GUID = Guid.Parse("07B8A468-DEC8-45BD-B50A-989A35150BE2");
-        
+
         [SetUp]
         public async Task SetUp()
         {
@@ -63,7 +63,7 @@ namespace Relativity.Sync.Tests.System
             Assert.AreEqual(_destinationWorkspace.ArtifactID, tag.FieldValues.First(x => x.Field.Guids.Contains(_DESTINATION_WORKSPACE_DESTINATION_WORKSPACE_ARTIFACTID_FIELD_GUID)).Value);
             Assert.AreEqual(_destinationWorkspace.Name, tag.FieldValues.First(x => x.Field.Guids.Contains(_DESTINATION_WORKSPACE_DESTINATION_WORKSPACE_NAME_FIELD_GUID)).Value);
 
-            var relativityObjectValues = (List<RelativityObjectValue>) tag.FieldValues
+            var relativityObjectValues = (List<RelativityObjectValue>)tag.FieldValues
                 .First(x => x.Field.Guids.Contains(_DESTINATION_WORKSPACE_JOB_HISTORY_FIELD_GUID)).Value;
             Assert.AreEqual(1, relativityObjectValues.Count);
             Assert.AreEqual(jobHistoryArtifactId, relativityObjectValues.First().ArtifactID);
@@ -99,7 +99,7 @@ namespace Relativity.Sync.Tests.System
             Assert.AreEqual(_destinationWorkspace.ArtifactID, tag.FieldValues.First(x => x.Field.Guids.Contains(_DESTINATION_WORKSPACE_DESTINATION_WORKSPACE_ARTIFACTID_FIELD_GUID)).Value);
             Assert.AreEqual(_destinationWorkspace.Name, tag.FieldValues.First(x => x.Field.Guids.Contains(_DESTINATION_WORKSPACE_DESTINATION_WORKSPACE_NAME_FIELD_GUID)).Value);
 
-            var relativityObjectValues = (List<RelativityObjectValue>) tag.FieldValues
+            var relativityObjectValues = (List<RelativityObjectValue>)tag.FieldValues
                 .First(x => x.Field.Guids.Contains(_DESTINATION_WORKSPACE_JOB_HISTORY_FIELD_GUID)).Value;
             Assert.AreEqual(1, relativityObjectValues.Count);
             Assert.AreEqual(jobHistoryArtifactId, relativityObjectValues.First().ArtifactID);

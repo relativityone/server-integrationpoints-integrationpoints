@@ -5,10 +5,13 @@ namespace Relativity.Sync.RDOs.Framework.Attributes
     internal class RdoFieldAttribute : Attribute
     {
         public RdoFieldType FieldType { get; }
+
         public int FixedTextLength { get; }
+
         public bool Required { get; }
+
         public Guid FieldGuid { get; }
-        
+
         /// <summary>
         /// Attribute defining RDO field
         /// </summary>

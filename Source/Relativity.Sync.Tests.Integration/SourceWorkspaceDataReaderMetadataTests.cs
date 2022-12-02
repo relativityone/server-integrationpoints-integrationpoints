@@ -18,13 +18,12 @@ namespace Relativity.Sync.Tests.Integration
     [TestFixture]
     internal sealed class SourceWorkspaceDataReaderMetadataTests : SourceWorkspaceDataReaderTestsBase
     {
-
         private const int _CHOICE_ARTIFACT_TYPE_ID = 7;
 
         [Test]
         public async Task Read_ShouldReturnLongTextStream_WhenGivenShibboleth()
         {
-            // Arrange 
+            // Arrange
             const int batchSize = 100;
             SetUp(batchSize);
 
@@ -43,12 +42,12 @@ namespace Relativity.Sync.Tests.Integration
             const string expectedStreamContent = "Hello world!";
             _documentTransferServicesMocker.SetupLongTextStream(columnName, encoding, expectedStreamContent);
 
-            // Act 
+            // Act
             _instance.Read();
             int columnIndex = _instance.GetOrdinal(columnName);
             object actualValue = _instance.GetValue(columnIndex);
 
-            // Assert 
+            // Assert
             var streamValue = actualValue as Stream;
             streamValue.Should().NotBeNull();
 
@@ -61,7 +60,7 @@ namespace Relativity.Sync.Tests.Integration
         [Test]
         public async Task Read_ShouldReturnCorrectMultipleChoiceTree()
         {
-            // Arrange 
+            // Arrange
             const int batchSize = 100;
             SetUp(batchSize);
 
@@ -92,12 +91,12 @@ namespace Relativity.Sync.Tests.Integration
 
             await _documentTransferServicesMocker.SetupServicesWithNativesTestDataAsync(importData, batchSize).ConfigureAwait(false);
 
-            // Act 
+            // Act
             _instance.Read();
             int columnIndex = _instance.GetOrdinal(columnName);
             object actualValue = _instance.GetValue(columnIndex);
 
-            // Assert 
+            // Assert
             const char mult = (char)30;
             const char nest = (char)29;
             string expectedValue = $"Foo{nest}Bar{nest}Baz{mult}Foo{nest}Bat{mult}Bang{mult}";
@@ -115,7 +114,7 @@ namespace Relativity.Sync.Tests.Integration
                     int parentArtifactId = value.Parent;
                     objectManager
                         .Setup(x => x.QueryAsync(It.IsAny<int>(), It.Is<QueryRequest>(r => r.Condition == $"'Artifact ID' == {artifactId}"), It.IsAny<int>(), It.IsAny<int>()))
-                        .ReturnsAsync(new QueryResult { Objects = new List<RelativityObject> {new RelativityObject { ParentObject = new RelativityObjectRef { ArtifactID = parentArtifactId } } } });
+                        .ReturnsAsync(new QueryResult { Objects = new List<RelativityObject> { new RelativityObject { ParentObject = new RelativityObjectRef { ArtifactID = parentArtifactId } } } });
 
                     registered.Add(value.ArtifactID);
                 }

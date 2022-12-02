@@ -51,7 +51,7 @@ namespace Relativity.Sync.Tests.System
             PrepareSyncConfigurationAndAssignId(configuration);
 
             ISyncJob syncJob = SyncJobHelper.CreateWithMockedProgressAndContainerExceptProvidedType<IDestinationWorkspaceSavedSearchCreationConfiguration>(configuration);
-            
+
             // ACT
             await syncJob.ExecuteAsync(CompositeCancellationToken.None).ConfigureAwait(false);
 

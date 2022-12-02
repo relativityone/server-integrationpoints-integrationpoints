@@ -2,7 +2,7 @@
 
 namespace Relativity.Sync.Executors.SumReporting
 {
-    class EmptyJobEndMetricsService : IJobEndMetricsService
+    internal class EmptyJobEndMetricsService : IJobEndMetricsService
     {
         public Task<ExecutionResult> ExecuteAsync(ExecutionStatus jobExecutionStatus)
         {

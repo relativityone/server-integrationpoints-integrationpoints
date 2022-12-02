@@ -26,7 +26,7 @@ namespace Relativity.Sync.Tests.System.SyncConfiguration
             // Arrange
             int viewArtifactId = await GetDefaultViewAsync().ConfigureAwait(false);
             SyncConfigurationRdo expectedSyncConfiguration = CreateDefaultExpectedConfiguration(viewArtifactId);
-            
+
             ISyncContext syncContext = new SyncContext(SourceWorkspaceId, DestinationWorkspaceId, JobHistory.ArtifactID);
 
             NonDocumentSyncOptions options = new NonDocumentSyncOptions(viewArtifactId, RdoArtifactTypeId, DestinationRdoArtifactTypeId);

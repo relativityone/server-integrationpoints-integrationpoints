@@ -3,7 +3,6 @@ using Relativity.Sync.Configuration;
 using Relativity.Sync.Pipelines;
 using Relativity.Sync.Pipelines.Extensions;
 using Relativity.Sync.Toggles.Service;
-using Relativity.Sync.Transfer;
 
 namespace Relativity.Sync.Executors.Validation
 {
@@ -14,7 +13,7 @@ namespace Relativity.Sync.Executors.Validation
         }
 
         protected override string ValidatorKind => "images";
-        
+
         public override bool ShouldValidate(ISyncPipeline pipeline) => pipeline.IsImagePipeline();
 
         protected override bool ShouldNotValidateReferentialFileLinksRestriction(IValidationConfiguration configuration)

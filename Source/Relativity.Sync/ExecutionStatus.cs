@@ -21,7 +21,7 @@ namespace Relativity.Sync
 
         [Description("Failed")]
         Failed,
-        
+
         [Description("Paused")]
         Paused
     }

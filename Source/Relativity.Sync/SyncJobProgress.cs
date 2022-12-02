@@ -13,7 +13,8 @@ namespace Relativity.Sync
         private readonly IProgressStateCounter _counter;
         private readonly IAPILog _logger;
 
-        public SyncJobProgress(SyncJobParameters jobParameters,
+        public SyncJobProgress(
+            SyncJobParameters jobParameters,
             IProgressRepository progressRepository,
             IProgressStateCounter counter,
             IAPILog logger)

@@ -13,7 +13,7 @@ namespace Relativity.Sync.Executors
     {
         private readonly ISourceServiceFactoryForUser _serviceFactoryForUser;
         private readonly IAPILog _logger;
-        
+
         public JobHistoryNameQuery(ISourceServiceFactoryForUser serviceFactoryForUser, IAPILog logger)
         {
             _serviceFactoryForUser = serviceFactoryForUser;

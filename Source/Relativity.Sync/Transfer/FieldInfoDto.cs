@@ -24,6 +24,7 @@ namespace Relativity.Sync.Transfer
             {
                 throw new ArgumentException($"Source field ({nameof(sourceFieldName)}) name cannot be empty when creating document ({nameof(isDocumentField)}) field.", nameof(sourceFieldName));
             }
+
             SpecialFieldType = specialFieldType;
             SourceFieldName = sourceFieldName;
             DestinationFieldName = destinationFieldName;

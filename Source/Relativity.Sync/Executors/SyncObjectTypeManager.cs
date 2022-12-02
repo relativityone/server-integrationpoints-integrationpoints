@@ -36,7 +36,8 @@ namespace Relativity.Sync.Executors
                 else
                 {
                     int objectTypeArtifactId = await ReadOrCreateObjectTypeByNameAsync(workspaceArtifactId, objectTypeRequest).ConfigureAwait(false);
-                    _logger.LogVerbose("Assigning GUID {objectTypeGuid} to object type with Artifact ID {objectTypeArtifactId}",
+                    _logger.LogVerbose(
+                        "Assigning GUID {objectTypeGuid} to object type with Artifact ID {objectTypeArtifactId}",
                         objectTypeGuid, objectTypeArtifactId);
                     await artifactGuidManager.CreateSingleAsync(workspaceArtifactId, objectTypeArtifactId, new List<Guid>() { objectTypeGuid }).ConfigureAwait(false);
                     return objectTypeArtifactId;

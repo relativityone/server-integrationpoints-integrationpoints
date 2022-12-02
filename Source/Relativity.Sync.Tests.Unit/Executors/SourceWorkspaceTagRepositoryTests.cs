@@ -23,7 +23,7 @@ using Relativity.Sync.Utils;
 namespace Relativity.Sync.Tests.Unit.Executors
 {
     [TestFixture]
-    public  sealed class SourceWorkspaceTagRepositoryTests
+    public sealed class SourceWorkspaceTagRepositoryTests
     {
         private Mock<IFieldMappings> _fieldMappings;
         private Mock<IObjectManager> _objectManager;
@@ -61,7 +61,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
                     IsIdentifier = true
                 }
             };
-            _fieldMappings.Setup(x => x.GetFieldMappings()).Returns(new List<FieldMap>{ destinationIdentifier });
+            _fieldMappings.Setup(x => x.GetFieldMappings()).Returns(new List<FieldMap> { destinationIdentifier });
 
             _stopwatch = new Mock<IStopwatch>();
 
@@ -149,7 +149,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             _syncMetrics.Verify(x => x.Send(It.IsAny<IMetric>()), Times.Never);
 
-            _objectManager.Verify(x => x.UpdateAsync(
+            _objectManager.Verify(
+                x => x.UpdateAsync(
                 It.IsAny<int>(),
                 It.IsAny<MassUpdateByObjectIdentifiersRequest>(),
                 It.IsAny<MassUpdateOptions>(),
@@ -170,7 +171,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             const int maxBatchSize = 10000;
             const int expectedNumberOfBatches = 2;
             int firstBatchSize = maxBatchSize;
-            int secondBatchSize = maxBatchSize / expectedNumberOfBatches - 1;
+            int secondBatchSize = (maxBatchSize / expectedNumberOfBatches) - 1;
             int testBatchSize = firstBatchSize + secondBatchSize;
             string[] testIdentifiers = Enumerable.Repeat("CONTROL_NUMBER", testBatchSize).ToArray();
 
@@ -203,7 +204,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
             Assert.AreEqual(secondBatchSize, actualResult[1].TotalObjectsUpdated);
             CollectionAssert.IsEmpty(actualResult[1].FailedDocuments);
 
-            _objectManager.Verify(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<MassUpdateByCriteriaRequest>(), It.IsAny<MassUpdateOptions>(), It.IsAny<CancellationToken>()),
+            _objectManager.Verify(
+                x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<MassUpdateByCriteriaRequest>(), It.IsAny<MassUpdateOptions>(), It.IsAny<CancellationToken>()),
                 Times.Exactly(expectedNumberOfBatches));
 
             VerifySentMetric(m =>
@@ -257,14 +259,16 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 m.DestinationUpdateCount == testIdentifiers.Length &&
                 m.DestinationUpdateTime == expectedElapsedTime);
 
-            _objectManager.Verify(x => x.UpdateAsync(
+            _objectManager.Verify(
+                x => x.UpdateAsync(
                 It.Is<int>(w => w == testDestinationWorkspaceArtifactId),
                 It.Is<MassUpdateByCriteriaRequest>(m => VerifyTagUpdateRequest(m, testIdentifiers, testSourceWorkspaceTagArtifactId, testSourceJobHistoryTagArtifactId)),
                 It.Is<MassUpdateOptions>(u => u.UpdateBehavior == FieldUpdateBehavior.Merge),
                 It.IsAny<CancellationToken>()), Times.Once);
         }
 
-        private bool VerifyTagUpdateRequest(MassUpdateByCriteriaRequest actualUpdateRequest,
+        private bool VerifyTagUpdateRequest(
+            MassUpdateByCriteriaRequest actualUpdateRequest,
             string[] expectedIdentifiers, int expectedSourceWorkspaceTagArtifactId, int expectedSourceJobHistoryTagArtifactId)
         {
             const int expectedNumberOfFields = 2;

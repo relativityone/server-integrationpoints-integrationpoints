@@ -42,7 +42,7 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
         [Test]
         public async Task ItShouldExecuteWhenBatchesAreMissing()
         {
-            _batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>())).ReturnsAsync((IBatch) null);
+            _batchRepository.Setup(x => x.GetLastAsync(_WORKSPACE_ID, _SYNC_CONF_ID, It.IsAny<Guid>())).ReturnsAsync((IBatch)null);
 
             // ACT
             bool shouldExecute = await _instance.CanExecuteAsync(_configuration, CancellationToken.None).ConfigureAwait(false);

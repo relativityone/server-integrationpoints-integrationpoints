@@ -12,7 +12,7 @@ namespace Relativity.Sync
         private readonly IExecutionConstrains<T> _executionConstrains;
         private readonly IExecutor<T> _executor;
         private readonly IAPILog _logger;
-        
+
         public Command(T configuration, IExecutionConstrains<T> executionConstrains, IExecutor<T> executor, IAPILog logger)
         {
             _stepName = typeof(T).Name;

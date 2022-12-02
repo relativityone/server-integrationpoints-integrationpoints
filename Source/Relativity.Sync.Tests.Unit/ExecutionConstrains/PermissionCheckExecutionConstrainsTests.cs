@@ -22,13 +22,13 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
         [Test]
         public async Task ItShouldAlwaysCanExecute()
         {
-            //Arrange
+            // Arrange
             var configuration = new Mock<IPermissionsCheckConfiguration>();
 
-            //Act
+            // Act
             bool actualResult = await _instance.CanExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
 
-            //Assert
+            // Assert
             actualResult.Should().BeTrue();
         }
     }

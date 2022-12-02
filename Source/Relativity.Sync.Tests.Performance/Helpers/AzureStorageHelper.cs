@@ -28,7 +28,7 @@ namespace Relativity.Sync.Tests.Performance.Helpers
         public async Task<string> DownloadFileAsync(string filePath, string destinationPath)
         {
             CloudBlockBlob blob = _container.GetBlockBlobReference(filePath);
-            if(blob == null)
+            if (blob == null)
             {
                 throw new FileNotFoundException();
             }

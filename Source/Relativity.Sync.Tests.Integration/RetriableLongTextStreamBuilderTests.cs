@@ -31,7 +31,7 @@ namespace Relativity.Sync.Tests.Integration
             const int relativityObjectArtifactId = 234;
             const int workspaceArtifactId = 123;
             const string fieldName = "Field Name";
-            
+
             _keplerStream = new Mock<IKeplerStream>();
 
             var objectManager = new Mock<IObjectManager>();
@@ -66,7 +66,6 @@ namespace Relativity.Sync.Tests.Integration
             result.Should().Be(streamToReturn);
             streamToReturn.IsDisposed.Should().BeFalse();
             _syncMetrics.Verify(m => m.Send(It.IsAny<StreamRetryMetric>()), Times.Never);
-
         }
 
         [Test]
@@ -82,7 +81,6 @@ namespace Relativity.Sync.Tests.Integration
             _keplerStream.SetupSequence(ks => ks.GetStreamAsync()).ReturnsAsync(unreadableStream).ReturnsAsync(readableStream);
 
             // Act
-
             Stopwatch stopwatch = Stopwatch.StartNew();
             Stream result = await _instance.GetStreamAsync().ConfigureAwait(false);
             stopwatch.Stop();
@@ -92,7 +90,7 @@ namespace Relativity.Sync.Tests.Integration
             stopwatch.Elapsed.TotalSeconds.Should().BeGreaterOrEqualTo(_EXPECTED_WAIT_INTERVAL_BETWEEN_CALLS);
             readableStream.IsDisposed.Should().BeFalse();
             unreadableStream.IsDisposed.Should().BeTrue();
-            
+
             _syncMetrics.Verify(m => m.Send(It.Is<StreamRetryMetric>(x => x.RetryCounter != null)), Times.Once);
         }
 

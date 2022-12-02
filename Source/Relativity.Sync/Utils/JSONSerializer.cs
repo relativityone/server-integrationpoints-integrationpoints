@@ -17,7 +17,7 @@ namespace Relativity.Sync.Utils
 
         public T Deserialize<T>(string serializedString)
         {
-            return (T) Deserialize(typeof(T), serializedString);
+            return (T)Deserialize(typeof(T), serializedString);
         }
     }
 }

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Relativity.API;
-using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.Objects;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
@@ -20,8 +19,7 @@ namespace Relativity.Sync.Executors.Validation
         private readonly IAPILog _logger;
         private static readonly ValidationMessage SavedSearchNoAccess = new ValidationMessage(
             errorCode: $"20.004",
-            shortMessage: $"Saved search is not available or has been secured from this user. Contact your system administrator."
-        );
+            shortMessage: $"Saved search is not available or has been secured from this user. Contact your system administrator.");
 
         public SavedSearchValidator(ISourceServiceFactoryForUser serviceFactoryForUser, IAPILog logger)
         {
@@ -31,7 +29,8 @@ namespace Relativity.Sync.Executors.Validation
 
         public async Task<ValidationResult> ValidateAsync(IValidationConfiguration configuration, CancellationToken token)
         {
-            _logger.LogInformation("Validating saved search artifact ID: {savedSearchArtifactId} in source workspace artifact ID: {sourceWorkspaceArtifactId}",
+            _logger.LogInformation(
+                "Validating saved search artifact ID: {savedSearchArtifactId} in source workspace artifact ID: {sourceWorkspaceArtifactId}",
                 configuration.SavedSearchArtifactId, configuration.SourceWorkspaceArtifactId);
 
             ValidationResult validationResult = new ValidationResult();
@@ -51,7 +50,7 @@ namespace Relativity.Sync.Executors.Validation
                         Condition = $"(('ArtifactId' == {configuration.SavedSearchArtifactId}))",
                         Fields = new[]
                         {
-                            new FieldRef() {Name = owner}
+                            new FieldRef() { Name = owner }
                         }
                     };
 

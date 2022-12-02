@@ -15,7 +15,6 @@ namespace Relativity.Sync.Tests.Performance.PreConditions
             _workspaceId = workspaceArtifactId;
         }
 
-
         public bool Check()
         {
             using (SqlConnection connection = SqlHelper.CreateConnectionFromAppConfig(_workspaceId))

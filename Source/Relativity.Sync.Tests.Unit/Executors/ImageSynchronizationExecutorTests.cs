@@ -95,13 +95,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
             };
         }
 
-        private static async Task<TaggingExecutionResult> ReturnTaggingCompletedResultAsync(CancellationToken cancellationToken)
-        {
-            await Task.CompletedTask;
-            cancellationToken.ThrowIfCancellationRequested();
-            return new TaggingExecutionResult(ExecutionStatus.Completed, "Completed", new Exception());
-        }
-
         private static TaggingExecutionResult ReturnTaggingFailedResultAsync()
         {
             return new TaggingExecutionResult(ExecutionStatus.Failed, "Failed", new Exception());

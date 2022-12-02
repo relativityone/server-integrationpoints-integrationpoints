@@ -19,7 +19,7 @@ namespace Relativity.Sync
 
         /// <inheritdoc />
         public IAPM APM { get; }
-        
+
         /// <inheritdoc />
         public IHelper Helper { get; }
 
@@ -31,6 +31,5 @@ namespace Relativity.Sync
         {
             return Helper.GetDBContext(-1);
         }
-
     }
 }

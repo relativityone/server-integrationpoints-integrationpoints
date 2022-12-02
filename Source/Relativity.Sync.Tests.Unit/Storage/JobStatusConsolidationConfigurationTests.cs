@@ -6,7 +6,6 @@ using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Tests.Unit.Storage
 {
-    
     internal class JobStatusConsolidationConfigurationTests : ConfigurationTestBase
     {
         private const int _WORKSPACE_ARTIFACT_ID = 567765;
@@ -18,7 +17,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
             // Arrange
             const int expected = 567765;
 
-            JobStatusConsolidationConfiguration sut = PrepareSut( syncConfigurationArtifactId: 0);
+            JobStatusConsolidationConfiguration sut = PrepareSut(syncConfigurationArtifactId: 0);
 
             // Act
             int sourceWorkspaceArtifactId = sut.SourceWorkspaceArtifactId;
@@ -33,7 +32,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
             // Arrange
             const int syncConfigurationArtifactID = 123456;
 
-            JobStatusConsolidationConfiguration sut = PrepareSut( syncConfigurationArtifactId: syncConfigurationArtifactID);
+            JobStatusConsolidationConfiguration sut = PrepareSut(syncConfigurationArtifactId: syncConfigurationArtifactID);
 
             // Act
             int syncConfigurationArtifactId = sut.SyncConfigurationArtifactId;
@@ -49,7 +48,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
             const int jobHistoryArtifactID = 123456;
 
             _configurationRdo.JobHistoryId = jobHistoryArtifactID;
-            
+
             JobStatusConsolidationConfiguration sut = PrepareSut(0);
 
             // Act

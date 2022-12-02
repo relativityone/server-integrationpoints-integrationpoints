@@ -13,6 +13,5 @@
         string OiFileTypeColumnName { get; set; }
 
         string SupportedByViewerColumn { get; set; }
-
     }
 }

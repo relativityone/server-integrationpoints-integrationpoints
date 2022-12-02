@@ -68,9 +68,9 @@ namespace Relativity.Sync.Executors
                     IncludeNameInQueryResult = true,
                     Fields = new List<FieldRef>
                     {
-                        new FieldRef {Guid = CaseIdFieldGuid},
-                        new FieldRef {Guid = SourceWorkspaceNameFieldGuid},
-                        new FieldRef {Guid = InstanceNameFieldGuid}
+                        new FieldRef { Guid = CaseIdFieldGuid },
+                        new FieldRef { Guid = SourceWorkspaceNameFieldGuid },
+                        new FieldRef { Guid = InstanceNameFieldGuid }
                     }
                 };
 
@@ -145,7 +145,7 @@ namespace Relativity.Sync.Executors
             _logger.LogVerbose("Updating {tagName} in destination workspace artifact ID: {destinationWorkspaceArtifactId}", nameof(RelativitySourceCaseTag), destinationWorkspaceArtifactId);
             UpdateRequest request = new UpdateRequest
             {
-                Object = new RelativityObjectRef {ArtifactID = sourceCaseTag.ArtifactId},
+                Object = new RelativityObjectRef { ArtifactID = sourceCaseTag.ArtifactId },
                 FieldValues = CreateFieldValues(sourceCaseTag.Name, sourceCaseTag.SourceWorkspaceArtifactId, sourceCaseTag.SourceWorkspaceName, sourceCaseTag.SourceInstanceName)
             };
 
@@ -180,22 +180,22 @@ namespace Relativity.Sync.Executors
             {
                 new FieldRefValuePair
                 {
-                    Field = new FieldRef {Name = _NAME_FIELD_NAME},
+                    Field = new FieldRef { Name = _NAME_FIELD_NAME },
                     Value = sourceTagName
                 },
                 new FieldRefValuePair
                 {
-                    Field = new FieldRef {Guid = CaseIdFieldGuid},
+                    Field = new FieldRef { Guid = CaseIdFieldGuid },
                     Value = sourceWorkspaceArtifactId
                 },
                 new FieldRefValuePair
                 {
-                    Field = new FieldRef {Guid = SourceWorkspaceNameFieldGuid},
+                    Field = new FieldRef { Guid = SourceWorkspaceNameFieldGuid },
                     Value = sourceWorkspaceName
                 },
                 new FieldRefValuePair
                 {
-                    Field = new FieldRef {Guid = InstanceNameFieldGuid},
+                    Field = new FieldRef { Guid = InstanceNameFieldGuid },
                     Value = instanceName
                 }
             };

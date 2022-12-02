@@ -30,13 +30,13 @@ namespace Relativity.Sync.Tests.System
 
             _workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
 
-            var container = ContainerHelper.Create(new ConfigurationStub
-                {
-                    SourceWorkspaceArtifactId = _workspace.ArtifactID
-                },
+            var container = ContainerHelper.Create(
+                new ConfigurationStub
+            {
+                SourceWorkspaceArtifactId = _workspace.ArtifactID
+            },
                 toggleProvider: null,
-                cb => cb.RegisterInstance(Logger).As<IAPILog>()
-            );
+                cb => cb.RegisterInstance(Logger).As<IAPILog>());
 
             _sut = container.Resolve<IImageFileRepository>();
         }

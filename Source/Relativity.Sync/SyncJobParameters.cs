@@ -86,6 +86,5 @@ namespace Relativity.Sync
 
             return ver;
         }
-
     }
 }

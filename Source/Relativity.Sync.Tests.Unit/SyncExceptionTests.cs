@@ -88,7 +88,7 @@ namespace Relativity.Sync.Tests.Unit
             SyncException sut = new SyncException("message", "workflow id");
 
             // ACT
-            Action action = () => sut.GetObjectData(null, new StreamingContext());
+            Action action = () => sut.GetObjectData(null, default(StreamingContext));
 
             // ASSERT
             action.Should().Throw<ArgumentNullException>();

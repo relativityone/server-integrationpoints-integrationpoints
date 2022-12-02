@@ -14,10 +14,11 @@ namespace Relativity.Sync.Executors
         private readonly IFederatedInstance _federatedInstance;
         private readonly IDestinationServiceFactoryForUser _serviceFactory;
 
-        public SourceWorkspaceTagsCreationExecutor(IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository,
+        public SourceWorkspaceTagsCreationExecutor(
+            IDestinationWorkspaceTagRepository destinationWorkspaceTagRepository,
             IDestinationWorkspaceTagsLinker destinationWorkspaceTagsLinker,
             IWorkspaceNameQuery workspaceNameQuery,
-            IFederatedInstance federatedInstance, 
+            IFederatedInstance federatedInstance,
             IDestinationServiceFactoryForUser serviceFactory)
         {
             _destinationWorkspaceTagRepository = destinationWorkspaceTagRepository;

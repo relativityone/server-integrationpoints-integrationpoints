@@ -33,7 +33,8 @@ namespace Relativity.Sync.Tests.Unit.Extensions
                 .ConfigureAwait(false);
 
             // Assert
-            objectManagerMock.Verify(om => om.UpdateAsync(workspaceId,
+            objectManagerMock.Verify(om => om.UpdateAsync(
+                workspaceId,
                 It.Is<UpdateRequest>(r =>
                     r.Object.ArtifactID == configurationId && r.FieldValues.Count() == 1 && r.FieldValues.Any(f =>
                         f.Field.Guid.Value == Guid.Parse(SyncRdoGuids.ResumingGuid) && f.Value.Equals(true)))));

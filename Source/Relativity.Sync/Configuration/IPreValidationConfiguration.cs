@@ -1,6 +1,6 @@
 ﻿namespace Relativity.Sync.Configuration
 {
-    interface IPreValidationConfiguration : IConfiguration
+    internal interface IPreValidationConfiguration : IConfiguration
     {
         int DestinationWorkspaceArtifactId { get; }
     }

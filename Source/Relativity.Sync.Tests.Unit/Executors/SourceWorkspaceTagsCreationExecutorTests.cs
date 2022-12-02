@@ -44,7 +44,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             configuration.Setup(x => x.DestinationWorkspaceArtifactId).Returns(destinationWorkspaceArtifactId);
             _workspaceNameQuery.Setup(x => x.GetWorkspaceNameAsync(_serviceFactory.Object, destinationWorkspaceArtifactId, CancellationToken.None)).ReturnsAsync(destinationWorkspaceName);
             _destinationWorkspaceTagRepository.Setup(x => x.CreateAsync(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, destinationWorkspaceName)).ReturnsAsync(new DestinationWorkspaceTag());
-            
+
             // act
             await _sut.ExecuteAsync(configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
@@ -76,7 +76,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             await _sut.ExecuteAsync(configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
             // assert
-            _destinationWorkspaceTagRepository.Verify(x => x.UpdateAsync(sourceWorkspaceArtifactId, It.Is<DestinationWorkspaceTag>(tag => 
+            _destinationWorkspaceTagRepository.Verify(x => x.UpdateAsync(sourceWorkspaceArtifactId, It.Is<DestinationWorkspaceTag>(tag =>
                 tag.DestinationWorkspaceName.Equals(destinationWorkspaceNewName, StringComparison.InvariantCulture))));
             _destinationWorkspaceTagRepository.Verify(x => x.CreateAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()), Times.Never);
         }

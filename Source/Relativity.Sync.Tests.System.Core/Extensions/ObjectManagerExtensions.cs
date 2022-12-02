@@ -42,7 +42,8 @@ namespace Relativity.Sync.Tests.System.Core.Extensions
             const int batchSize = 1000;
 
             int currentIndex = startingIndex;
-            QueryResult initialResult = await objectManager.QueryAsync(workspaceId,
+            QueryResult initialResult = await objectManager.QueryAsync(
+                workspaceId,
                 request,
                 currentIndex,
                 batchSize).ConfigureAwait(false);
@@ -53,7 +54,8 @@ namespace Relativity.Sync.Tests.System.Core.Extensions
 
             while (readSoFar < totalCount)
             {
-                QueryResult result = await objectManager.QueryAsync(workspaceId,
+                QueryResult result = await objectManager.QueryAsync(
+                    workspaceId,
                     request,
                     currentIndex,
                     batchSize).ConfigureAwait(false);

@@ -72,7 +72,7 @@ namespace Relativity.Sync
         {
             return new ExecutionResult(ExecutionStatus.Skipped, string.Empty, null);
         }
-        
+
         /// <summary>
         /// Creates a <see cref="ExecutionResult"/> for a paused operation.
         /// </summary>

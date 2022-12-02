@@ -7,7 +7,9 @@ namespace Relativity.Sync
         private int _current;
         private readonly IDictionary<string, int> _orderDictionary = new Dictionary<string, int>();
 
-        public ProgressStateCounter() : this(0) { }
+        public ProgressStateCounter() : this(0)
+        {
+        }
 
         public ProgressStateCounter(int initial)
         {

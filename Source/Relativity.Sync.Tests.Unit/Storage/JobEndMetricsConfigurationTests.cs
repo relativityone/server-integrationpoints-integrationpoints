@@ -55,7 +55,7 @@ namespace Relativity.Sync.Tests.Unit.Storage
             jobHistoryToRetryId.Should().Be(_JOB_HISTORY_TO_RETRY_ARTIFACT_ID);
         }
 
-        [TestCase( ImportOverwriteMode.AppendOnly, ImportOverwriteMode.AppendOnly)]
+        [TestCase(ImportOverwriteMode.AppendOnly, ImportOverwriteMode.AppendOnly)]
         [TestCase(ImportOverwriteMode.OverlayOnly, ImportOverwriteMode.OverlayOnly)]
         [TestCase(ImportOverwriteMode.AppendOverlay, ImportOverwriteMode.AppendOverlay)]
         public void ImportOverwriteMode_ShouldReturnProperValue(ImportOverwriteMode valueInConfiguration, ImportOverwriteMode expectedValue)

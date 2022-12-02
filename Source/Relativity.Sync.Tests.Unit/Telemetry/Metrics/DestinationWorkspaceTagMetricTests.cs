@@ -28,9 +28,11 @@ namespace Relativity.Sync.Tests.Unit.Telemetry.Metrics
 
         protected override void VerifySumSink(Mock<IMetricsManager> metricsManagerMock)
         {
-            metricsManagerMock.Verify(x => x.LogTimerAsDoubleAsync(TelemetryConstants.MetricIdentifiers.TAG_DOCUMENTS_SOURCE_UPDATE_TIME, 
+            metricsManagerMock.Verify(x => x.LogTimerAsDoubleAsync(
+                TelemetryConstants.MetricIdentifiers.TAG_DOCUMENTS_SOURCE_UPDATE_TIME,
                 _EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.SourceUpdateTime.Value));
-            metricsManagerMock.Verify(x => x.LogGaugeAsync(TelemetryConstants.MetricIdentifiers.TAG_DOCUMENTS_SOURCE_UPDATE_COUNT,
+            metricsManagerMock.Verify(x => x.LogGaugeAsync(
+                TelemetryConstants.MetricIdentifiers.TAG_DOCUMENTS_SOURCE_UPDATE_COUNT,
                 _EXPECTED_WORKSPACE_GUID, _sut.CorrelationId, _sut.SourceUpdateCount.Value));
 
             metricsManagerMock.Verify(x => x.Dispose());

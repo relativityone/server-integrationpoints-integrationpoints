@@ -20,14 +20,14 @@ namespace Relativity.Sync.Tests.System
         private BatchRepository _sut;
         private int _syncConfigurationArtifactId;
         private int _workspaceId;
-        private Guid _exportRunId; 
+        private Guid _exportRunId;
 
         protected override async Task ChildSuiteSetup()
         {
             await base.ChildSuiteSetup().ConfigureAwait(false);
 
             _exportRunId = Guid.NewGuid();
-            _sut = new BatchRepository(new TestRdoManager(Logger),new ServiceFactoryStub(ServiceFactory), new DateTimeWrapper());
+            _sut = new BatchRepository(new TestRdoManager(Logger), new ServiceFactoryStub(ServiceFactory), new DateTimeWrapper());
 
             WorkspaceRef workspace = await Environment.CreateWorkspaceWithFieldsAsync().ConfigureAwait(false);
             _workspaceId = workspace.ArtifactID;

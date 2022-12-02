@@ -8,6 +8,7 @@ namespace Relativity.Sync.Storage
     internal interface IConfiguration : IDisposable
     {
         T GetFieldValue<T>(Func<SyncConfigurationRdo, T> valueGetter);
+
         Task UpdateFieldValueAsync<T>(Expression<Func<SyncConfigurationRdo, T>> memberExpression, T value);
     }
 }

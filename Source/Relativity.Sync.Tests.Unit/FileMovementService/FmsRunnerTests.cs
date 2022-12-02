@@ -30,7 +30,7 @@ namespace Relativity.Sync.Tests.Unit.FileMovementService
             _fmsClientMock.Setup(x => x.CopyListOfFilesAsync(It.IsAny<CopyListOfFilesRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new CopyListOfFilesResponse());
 
-            _sut = new FmsRunner(_fmsClientMock.Object, _fmsInstanceSettingsMock.Object,  new EmptyLogger());
+            _sut = new FmsRunner(_fmsClientMock.Object, _fmsInstanceSettingsMock.Object, new EmptyLogger());
         }
 
         [Test]

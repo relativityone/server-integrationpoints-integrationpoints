@@ -7,11 +7,11 @@ namespace Relativity.Sync.Telemetry
         string Name { get; }
 
         string CorrelationId { get; set; }
-        
-        string ExecutingApplication { get; set;  }
-        
+
+        string ExecutingApplication { get; set; }
+
         string ExecutingApplicationVersion { get; set; }
-        
+
         string SyncVersion { get; set; }
 
         string DataSourceType { get; set; }

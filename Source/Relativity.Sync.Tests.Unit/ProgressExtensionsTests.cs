@@ -43,7 +43,6 @@ namespace Relativity.Sync.Tests.Unit
 
             // ASSERT
             Assert.AreSame(expected, result);
-
         }
 
         [Test]

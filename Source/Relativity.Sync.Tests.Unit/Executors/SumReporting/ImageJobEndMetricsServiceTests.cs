@@ -71,7 +71,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             const long imagesSize = 12345;
             _jobStatisticsContainerFake.SetupGet(x => x.FilesBytesTransferred).Returns(imagesSize);
             _jobStatisticsContainerFake.SetupGet(x => x.TotalBytesTransferred).Returns(jobSize);
-            _jobStatisticsContainerFake.SetupGet(x => x.ImagesStatistics).Returns(Task.FromResult(new ImagesStatistics(2* totalItemsCountPerBatch, imagesSize)));
+            _jobStatisticsContainerFake.SetupGet(x => x.ImagesStatistics).Returns(Task.FromResult(new ImagesStatistics(2 * totalItemsCountPerBatch, imagesSize)));
 
             // Act
             ExecutionResult actualResult = await _sut.ExecuteAsync(expectedStatus).ConfigureAwait(false);
@@ -80,7 +80,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.SumReporting
             actualResult.Should().NotBeNull();
             actualResult.Status.Should().Be(ExecutionStatus.Completed);
 
-            _syncMetricsMock.Verify(x => x.Send(It.Is<ImageJobEndMetric>(m =>
+            _syncMetricsMock.Verify(
+                x => x.Send(It.Is<ImageJobEndMetric>(m =>
                 m.TotalRecordsTransferred == completedItemsPerBatch * testBatches.Count &&
                 m.TotalRecordsFailed == failedItemsPerBatch * testBatches.Count &&
                 m.TotalRecordsRequested == totalItemsCountPerBatch * testBatches.Count &&

@@ -8,14 +8,14 @@
         private int _itemsProcessed;
         private int _itemsFailed;
         private bool _completed;
-        
+
         private readonly object _itemProcessedLock = new object();
         private readonly object _itemFailedLock = new object();
         private readonly object _completedLock = new object();
-        
+
         /// <summary>
         /// Creates the instance for batch with given Id.
-        /// 
+        ///
         /// All public properties setters are thread-safe
         /// </summary>
         /// <param name="batchId">Id of monitored batch</param>
@@ -35,7 +35,7 @@
         public int ItemsProcessed
         {
             get => _itemsProcessed;
-            set 
+            set
             {
                 lock (_itemProcessedLock)
                 {

@@ -111,7 +111,6 @@ namespace Relativity.Sync.Tests.Unit.Transfer
 
 #pragma warning restore RG2009 // Hardcoded Numeric Value
 
-
         private static IEnumerable<TestCaseData> TransformResponsesCorrectlyCases()
         {
             yield return new TestCaseData(new DataSetWrapper(new DataSet()), Enumerable.Empty<INativeFile>())

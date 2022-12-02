@@ -50,7 +50,8 @@ namespace Relativity.Sync.Transfer
                 ? await RetrieveImagesByProductionsForDocuments(workspaceId, documentIds, options).ConfigureAwait(false)
                 : (await RetrieveOriginalImagesForDocuments(workspaceId, documentIds).ConfigureAwait(false)).Images;
 
-            _logger.LogInformation("Found {numberOfImages} image files for {numberOfDocuments} documents",
+            _logger.LogInformation(
+                "Found {numberOfImages} image files for {numberOfDocuments} documents",
                 imageFiles.Length,
                 imageFiles.Select(x => x.DocumentArtifactId).Distinct().Count());
 
@@ -74,7 +75,8 @@ namespace Relativity.Sync.Transfer
                 (originalImageFiles, documentsWithoutImages) = await RetrieveOriginalImagesForDocuments(workspaceId, documentsWithoutImages).ConfigureAwait(false);
             }
 
-            _logger.LogInformation("Image retrieve statistics: ProducedImages: {producedImagesCount}, OriginalImages: {originalImagesCount}, DocumentsWithoutImages: {noImagesCount}",
+            _logger.LogInformation(
+                "Image retrieve statistics: ProducedImages: {producedImagesCount}, OriginalImages: {originalImagesCount}, DocumentsWithoutImages: {noImagesCount}",
                 producedImageFiles.Length, originalImageFiles.Length, documentsWithoutImages.Length);
 
             return producedImageFiles.Concat(originalImageFiles).ToArray();
@@ -142,14 +144,16 @@ namespace Relativity.Sync.Transfer
             if (dataSet == null || dataSet.Unwrap().Tables.Count == 0)
             {
                 _logger.LogWarning("ISearchService.RetrieveImagesForSearchAsync returned null/empty data set.");
-                _logger.LogInformation("Image retrieve statistics: OriginalImages: {originalImagesCount}, DocumentsWithoutImages: {noImagesCount}",
+                _logger.LogInformation(
+                    "Image retrieve statistics: OriginalImages: {originalImagesCount}, DocumentsWithoutImages: {noImagesCount}",
                     0, documentIds.Length);
                 return (Array.Empty<ImageFile>(), documentIds.ToArray());
             }
 
             ImageFile[] imageFiles = dataSet.Unwrap().Tables[0].AsEnumerable().Select(GetImageFile).ToArray();
 
-            _logger.LogInformation("Image retrieve statistics: OriginalImages: {originalImagesCount}, DocumentsWithoutImages: {noImagesCount}",
+            _logger.LogInformation(
+                "Image retrieve statistics: OriginalImages: {originalImagesCount}, DocumentsWithoutImages: {noImagesCount}",
                 imageFiles.Length, documentIds.Length - imageFiles.Length);
 
             return (imageFiles, documentIds.Except(imageFiles.Select(x => x.DocumentArtifactId)).ToArray());
@@ -163,7 +167,6 @@ namespace Relativity.Sync.Transfer
             long size = GetValue<long>(dataRow, _SIZE_COLUMN_NAME);
 
             string identifier = GetValue<string>(dataRow, _IDENTIFIER);
-
 
             return new ImageFile(documentArtifactId, identifier, location, fileName, size);
         }
@@ -195,4 +198,3 @@ namespace Relativity.Sync.Transfer
         }
     }
 }
-

@@ -27,7 +27,7 @@ namespace Relativity.Sync.Tests.Unit.Executors.Validation
             _validatorMock.Setup(x => x.ShouldValidate(It.IsAny<ISyncPipeline>())).Returns(true);
             _pipelineSelectorMock.Setup(x => x.GetPipeline()).Returns(new SyncDocumentRunPipeline());
 
-            _sut = new ValidationExecutor(new[] {_validatorMock.Object}, _pipelineSelectorMock.Object, new EmptyLogger());
+            _sut = new ValidationExecutor(new[] { _validatorMock.Object }, _pipelineSelectorMock.Object, new EmptyLogger());
         }
 
         [Test]

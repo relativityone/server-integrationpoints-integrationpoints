@@ -82,7 +82,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             var completedProgress = new Mock<IProgress>();
             completedProgress.Setup(x => x.Status).Returns(expectedJobStatus);
-            _progressRepository.Setup(x => x.QueryAllAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(new []{completedProgress.Object});
+            _progressRepository.Setup(x => x.QueryAllAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(new[] { completedProgress.Object });
 
             DestinationWorkspaceTag destinationWorkspaceTag = GetDestinationWorkspaceTag();
             _destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(destinationWorkspaceTag);
@@ -101,13 +101,13 @@ namespace Relativity.Sync.Tests.Unit.Executors
         [Test]
         public async Task ExecuteAsyncSendFailedEmailTest()
         {
-            //Arrange
+            // Arrange
             IMock<INotificationConfiguration> configuration = GetNotificationConfiguration();
 
             var completedProgress = new Mock<IProgress>();
             completedProgress.Setup(x => x.Status).Returns(SyncJobStatus.Failed);
             _progressRepository.Setup(x => x.QueryAllAsync(It.IsAny<int>(), It.IsAny<int>()))
-                .ReturnsAsync(new[] {completedProgress.Object});
+                .ReturnsAsync(new[] { completedProgress.Object });
 
             DestinationWorkspaceTag destinationWorkspaceTag = GetDestinationWorkspaceTag();
             _destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(destinationWorkspaceTag);
@@ -116,11 +116,11 @@ namespace Relativity.Sync.Tests.Unit.Executors
             jobHistory.Setup(x => x.ErrorMessage).Returns(_ERROR_MESSAGE);
             _jobHistoryErrorRepository.Setup(x => x.GetLastJobErrorAsync(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(jobHistory.Object);
-            
-            //Act
+
+            // Act
             ExecutionResult actualResult = await _instance.ExecuteAsync(configuration.Object, CompositeCancellationToken.None).ConfigureAwait(false);
-             
-            //Assert
+
+            // Assert
             actualResult.Status.Should().Be(ExecutionStatus.Completed);
 
             string expectedBody = GetExpectedBodyWithError(_MESSAGE_FAILED, _destinationCaseTag);
@@ -166,7 +166,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             var failedProgress = new Mock<IProgress>();
             failedProgress.Setup(x => x.Status).Returns(SyncJobStatus.Failed);
 
-            _progressRepository.Setup(x => x.QueryAllAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(new[] { completedProgress.Object, failedProgress.Object,completedWithErrorsProgress.Object });
+            _progressRepository.Setup(x => x.QueryAllAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(new[] { completedProgress.Object, failedProgress.Object, completedWithErrorsProgress.Object });
 
             DestinationWorkspaceTag destinationWorkspaceTag = GetDestinationWorkspaceTag();
             _destinationWorkspaceTagRepository.Setup(x => x.ReadAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>())).ReturnsAsync(destinationWorkspaceTag);
@@ -206,7 +206,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Assert
             actualResult.Status.Should().Be(ExecutionStatus.Completed);
 
-            string expectedBody = GetExpectedBodyWithError(_MESSAGE_FAILED, String.Empty);
+            string expectedBody = GetExpectedBodyWithError(_MESSAGE_FAILED, string.Empty);
             _emailManager.Verify(x => x.SendEmailNotificationAsync(It.Is<EmailNotificationRequest>(y => VerifyEmailRequest(y, expectedBody, _subjectFailed))));
         }
 

@@ -26,7 +26,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
         {
             _serviceFactoryForUser = new Mock<ISourceServiceFactoryForUser>();
 
-            _sut = new DestinationWorkspaceTagLinker( new ConfigurationStub(), _serviceFactoryForUser.Object,new EmptyLogger());
+            _sut = new DestinationWorkspaceTagLinker(new ConfigurationStub(), _serviceFactoryForUser.Object, new EmptyLogger());
         }
 
         [Test]
