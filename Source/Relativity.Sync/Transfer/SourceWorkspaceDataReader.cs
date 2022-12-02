@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.Objects.DataContracts;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Logging;
 
 namespace Relativity.Sync.Transfer
 {
@@ -21,7 +20,6 @@ namespace Relativity.Sync.Transfer
         private readonly IAPILog _logger;
         private readonly ISynchronizationConfiguration _configuration;
         private readonly IBatchDataReaderBuilder _readerBuilder;
-        private readonly IItemLevelErrorLogAggregator _itemLevelErrorLogAggregator;
         private readonly CancellationToken _cancellationToken;
 
         private FieldInfoDto _identifierField;
@@ -34,7 +32,6 @@ namespace Relativity.Sync.Transfer
             ISynchronizationConfiguration configuration,
             IRelativityExportBatcher exportBatcher,
             IFieldManager fieldManager,
-            IItemLevelErrorLogAggregator itemLevelErrorLogAggregator,
             IItemStatusMonitor itemStatusMonitor,
             IAPILog logger,
             CancellationToken cancellationToken)
@@ -46,7 +43,6 @@ namespace Relativity.Sync.Transfer
             _exportBatcher = exportBatcher;
             _fieldManager = fieldManager;
             _logger = logger;
-            _itemLevelErrorLogAggregator = itemLevelErrorLogAggregator;
             _cancellationToken = cancellationToken;
 
             ItemStatusMonitor = itemStatusMonitor;
@@ -179,8 +175,6 @@ namespace Relativity.Sync.Transfer
             var itemLevelError = new ItemLevelError(itemIdentifier, message);
 
             ItemStatusMonitor.MarkItemAsFailed(itemLevelError.Identifier);
-
-            _itemLevelErrorLogAggregator.AddItemLevelError(itemLevelError, ItemStatusMonitor.GetArtifactId(itemLevelError.Identifier));
 
             // Logging and marking item as failed is happening in ImportJob.HandleItemLevelError
             OnItemReadError?.Invoke(_completedItem, itemLevelError);

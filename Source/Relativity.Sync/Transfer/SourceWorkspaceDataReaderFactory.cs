@@ -1,7 +1,6 @@
 using System.Threading;
 using Relativity.API;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 
 namespace Relativity.Sync.Transfer
@@ -58,7 +57,6 @@ namespace Relativity.Sync.Transfer
                 _configuration,
                 relativityExportBatcher,
                 _fieldManager,
-                new ItemLevelErrorLogAggregator(_logger),
                 new ItemStatusMonitor(),
                 _logger,
                 token);
