@@ -93,7 +93,7 @@ export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sou
 
         getCalculationStateInfo(convenienceApi, integrationPointArtifactId).then(data => {
 
-            if (data["Status"] == 2) {  //calculation completed - handle result from calculation state
+            if (data["Status"] == 2) {  //calculation completed
                 
                 if (destinationConfiguration["importNativeFile"] == 'true' && !importImageFiles(destinationConfiguration)) {
                     handleStatisticsForNatives(convenienceApi, data);

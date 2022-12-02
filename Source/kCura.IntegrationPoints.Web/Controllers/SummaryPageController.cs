@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
         }
 
         [HttpPost]
-        [LogApiExceptionFilter(Message = "Unable to get CalculationState info for IntegrationPoint")]
+        [LogApiExceptionFilter(Message = "Unable to get CalculationState info from IntegrationPoint")]
         public async Task<ActionResult> GetCalculationStateInfo(int integrationPointId)
         {
             CalculationState calculationState = await _calculationChecker.GetCalculationState(integrationPointId).ConfigureAwait(false);
