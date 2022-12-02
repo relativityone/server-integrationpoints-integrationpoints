@@ -86,16 +86,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 return new List<RelativityObjectSlim>();
             }
 
+            var results = new List<RelativityObjectSlim>(resultsBlockSize);
             try
             {
-                var results = new List<RelativityObjectSlim>(resultsBlockSize);
                 int remainingObjectsCount = resultsBlockSize;
 
                 RelativityObjectSlim[] partialResults;
                 do
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    
+
                     partialResults = await client
                         .RetrieveResultsBlockFromExportAsync(_workspaceArtifactId, _exportResult.RunID,
                             remainingObjectsCount, startIndex)
@@ -107,6 +107,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 }
                 while (remainingObjectsCount > 0 && startIndex < _exportResult.RecordCount && partialResults.Any());
 
+                return results;
+            }
+            catch (OperationCanceledException ex)
+            {
                 return results;
             }
             catch (Exception ex)

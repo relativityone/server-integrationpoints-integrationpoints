@@ -1,5 +1,5 @@
 ﻿import { IConvenienceApi } from "../types/convenienceApi";
-import { getImagesStatsForProduction, getImagesStatsForSavedSearch, getNativesStats, handleStatisticsForImages, handleStatisticsForNatives } from "../helpers/fieldValuesForRelativityExport";
+import { getImagesStatsForProduction, getImagesStatsForSavedSearch, getNativesStats, handleStatisticsForImages, handleStatisticsForNatives, abortCurrentAction } from "../helpers/fieldValuesForRelativityExport";
 
 export function postJobAPIRequest(convenienceApi: IConvenienceApi, workspaceId, integrationPointId, action = "") {
     var request = {
@@ -16,6 +16,11 @@ export function postJobAPIRequest(convenienceApi: IConvenienceApi, workspaceId, 
     };
 
     return convenienceApi.relativityHttpClient.post(request.url, request.payload, request.options)
+}
+
+export function abortCalculation() {
+    abortCurrentAction();
+    console.log("test abort method called...");
 }
 
 export function calculateStatsRequest(convenienceApi: IConvenienceApi, sourceConfiguration, destinationConfiguration, integrationPointId) {

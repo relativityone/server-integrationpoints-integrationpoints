@@ -1,5 +1,5 @@
 ﻿import { IConvenienceApi } from "../types/convenienceApi";
-import { postCreateIntegrationPointProfileRequest, postJobAPIRequest, prepareGetImportProviderDocumentAPIRequest, prepareGetViewErrorsPath, calculateStatsRequest } from "./buttonFunctionalities";
+import { postCreateIntegrationPointProfileRequest, postJobAPIRequest, prepareGetImportProviderDocumentAPIRequest, prepareGetViewErrorsPath, calculateStatsRequest, abortCalculation } from "./buttonFunctionalities";
 
 export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number, lqMessageContainer: Element) {
     return consoleApi.generate.button({
@@ -123,7 +123,7 @@ export function createStopButton(consoleApi, convenienceApi: IConvenienceApi, ct
 export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, integrationPointId: number, sourceConfiguration: Object, destinationConfiguration: Object) {
     return consoleApi.generate.button({
         innerText: "Calculate statistics",
-        disabled: !enabled,
+        disabled: !enabled,        
         onclick: function () {
             return convenienceApi.modalService.confirm({
                 title: "Calculate statistics",
@@ -151,6 +151,8 @@ export function createStopCalculationsButton(consoleApi, convenienceApi: IConven
                 cancelText: "No",
                 acceptAction: function () {
 
+                    abortCalculation();
+                    console.log("Abort calculation request sent...");
                     //var xhr = new XMLHttpRequest(),
                     //method = "POST",
                     //url = convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/SummaryPage/GetImagesStatisticsForSavedSearch";

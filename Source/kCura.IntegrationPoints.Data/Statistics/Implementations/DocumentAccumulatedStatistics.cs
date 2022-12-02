@@ -102,7 +102,13 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
             {
 
                 // TODO: REMOVE AFTER TESTS! IF YOU CAN SEE IT DURING REVIEW => SCREAM();
-                await Task.Delay(TimeSpan.FromSeconds(60)).ConfigureAwait(false);
+                await Task.Delay(TimeSpan.FromSeconds(30)).ConfigureAwait(false);
+                //if (token.IsCancellationRequested)
+                //{
+                //    return null;
+                //}
+
+
 
                 QueryRequest query = new DocumentQueryBuilder()
                     .AddSavedSearchCondition(savedSearchId)
@@ -181,6 +187,12 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
                 do
                 {
                     result = (await export.GetNextBlockAsync(startIndex, token).ConfigureAwait(false));
+                    if (token.IsCancellationRequested)
+                    {
+                        _logger.LogInformation("Calculation cancelled successfully");
+                        return statistics;
+                    }
+
                     if (result.Any())
                     {
                         statistics = function(statistics, result);

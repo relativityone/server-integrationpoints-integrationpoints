@@ -1,5 +1,15 @@
 ﻿import { IConvenienceApi } from "../types/convenienceApi";
 
+
+// controller and abortCurrentAction func to cancel ongoing call from SummaryPageController
+let controller;
+
+export function abortCurrentAction(): void {
+    if (controller) {
+        controller.abort();
+    }
+}
+
 export async function getFolderPathInformation(convenienceApi: IConvenienceApi, workspaceId: number,  destinationConfiguration: object) {
     if (convertToBool(destinationConfiguration["UseFolderPathInformation"])) {
         let request = {
@@ -30,7 +40,6 @@ export async function getFolderPathInformation(convenienceApi: IConvenienceApi, 
     }
 }
 
-
 export async function getCalculationStateInfo(convenienceApi: IConvenienceApi, integrationPointId: number) {
     let request = {
         options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
@@ -56,6 +65,8 @@ export async function getCalculationStateInfo(convenienceApi: IConvenienceApi, i
 }
 
 export async function getNativesStats(convenienceApi: IConvenienceApi, workspaceId: number, savedSearchId: number, integrationPointId: number) {
+    controller = new AbortController();
+    const signal = controller.signal;
     let request = {
         options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
             headers: {
@@ -70,7 +81,7 @@ export async function getNativesStats(convenienceApi: IConvenienceApi, workspace
         url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/SummaryPage/GetNativesStatisticsForSavedSearch"
     };
 
-    let resp = convenienceApi.relativityHttpClient.post(request.url, request.payload, request.options)
+    let resp = convenienceApi.relativityHttpClient.post(request.url, request.payload, request.options, { signal })
         .then(function (result) {
             if (!result.ok) {
                 console.log("error in get; ", result);
@@ -82,6 +93,8 @@ export async function getNativesStats(convenienceApi: IConvenienceApi, workspace
 }
 
 export async function getImagesStatsForSavedSearch(convenienceApi: IConvenienceApi, workspaceId: number, savedSearchId: number, importNatives: boolean, integrationPointId: number) {
+    controller = new AbortController();
+    const signal = controller.signal;
     let request = {
         options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
             headers: {
@@ -94,10 +107,10 @@ export async function getImagesStatsForSavedSearch(convenienceApi: IConvenienceA
             calculateSize: importNatives,
             integrationPointId: integrationPointId
         },
-        url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/SummaryPage/GetImagesStatisticsForSavedSearch"
-    };
+        url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/SummaryPage/GetImagesStatisticsForSavedSearch"       
+    }; 
 
-    let resp = convenienceApi.relativityHttpClient.post(request.url, request.payload, request.options)
+    let resp = convenienceApi.relativityHttpClient.post(request.url, request.payload, request.options, { signal })
         .then(function (result) {
             if (!result.ok) {
                 console.log("error in get; ", result);
@@ -109,6 +122,8 @@ export async function getImagesStatsForSavedSearch(convenienceApi: IConvenienceA
 }
 
 export async function getImagesStatsForProduction(convenienceApi: IConvenienceApi, workspaceId: number, productionId: number, integrationPointId: number) {
+    controller = new AbortController();
+    const signal = controller.signal;
     let request = {
         options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
             headers: {
@@ -123,7 +138,7 @@ export async function getImagesStatsForProduction(convenienceApi: IConvenienceAp
         url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/SummaryPage/GetImagesStatisticsForProduction"
     };
 
-    let resp = convenienceApi.relativityHttpClient.post(request.url, request.payload, request.options)
+    let resp = convenienceApi.relativityHttpClient.post(request.url, request.payload, request.options, { signal })
         .then(function (result) {
             if (!result.ok) {
                 console.log("error in get; ", result);
@@ -152,13 +167,16 @@ export function prepareStatsInfo(total, size) {
 }
 
 export function handleStatisticsForImages(convenienceApi, data) {    
-
-    if (data === 'undefined' || data["Status"] == 4) {
+    if (data["Status"] == 3) { //cancelled
+        convenienceApi.fieldHelper.setValue("Total of Documents", "Press 'Calculate statistics' button");
+        convenienceApi.fieldHelper.setValue("Total of Images", "Press 'Calculate statistics' button");
+        //convenienceApi.fieldHelper.setValue("Total of Natives", "Press 'Calculate statistics' button");
+    }
+    else if (data["Status"] == 4) {
         convenienceApi.fieldHelper.setValue("Total of Documents", "Error occurred");
         convenienceApi.fieldHelper.setValue("Total of Images", "Error occurred");
     }
-    else {       
-
+    else {
         var stats = data["DocumentStatistics"];
         var lastCalculationDate = "Calculated on: " + stats["CalculatedOn"] + " UTC";
         var valueToDisplay = `${stats["DocumentsCount"]}
@@ -172,7 +190,12 @@ ${lastCalculationDate}`;
 }
 
 export function handleStatisticsForNatives(convenienceApi, data) {
-    if (data === 'undefined' || data["Status"] == 4) {
+    if (data["Status"] == 3) { //cancelled
+        convenienceApi.fieldHelper.setValue("Total of Documents", "Press 'Calculate statistics' button");
+        //convenienceApi.fieldHelper.setValue("Total of Images", "Press 'Calculate statistics' button");
+        convenienceApi.fieldHelper.setValue("Total of Natives", "Press 'Calculate statistics' button");
+    }
+    else if (data["Status"] == 4) {
         convenienceApi.fieldHelper.setValue("Total of Documents", "Error occurred");
         convenienceApi.fieldHelper.setValue("Total of Natives", "Error occurred");
     }

@@ -70,14 +70,21 @@ namespace kCura.IntegrationPoints.Web.Controllers
 
         [HttpPost]
         [LogApiExceptionFilter(Message = "Unable to get natives statistics for saved search")]
-        public async Task<ActionResult> GetNativesStatisticsForSavedSearch(int workspaceId, int savedSearchId, int integrationPointId)
+        public async Task<ActionResult> GetNativesStatisticsForSavedSearch(int workspaceId, int savedSearchId, int integrationPointId, CancellationToken token)
         {
             CalculationState calculationState = await _calculationChecker.MarkAsCalculating(integrationPointId).ConfigureAwait(false);
             if (calculationState.Status != CalculationStatus.Error)
             {
                 DocumentsStatistics result = await
                _documentAccumulatedStatistics.GetNativesStatisticsForSavedSearchAsync(workspaceId, savedSearchId).ConfigureAwait(false);
-                calculationState = await _calculationChecker.MarkCalculationAsFinished(integrationPointId, result).ConfigureAwait(false);
+                if (token.IsCancellationRequested)
+                {
+                    calculationState = await _calculationChecker.MarkCalculationAsCancelled(integrationPointId).ConfigureAwait(false);
+                }
+                else
+                {
+                    calculationState = await _calculationChecker.MarkCalculationAsFinished(integrationPointId, result).ConfigureAwait(false);
+                }
             }
 
             return Json(calculationState);
@@ -90,30 +97,39 @@ namespace kCura.IntegrationPoints.Web.Controllers
             CalculationState calculationState = await _calculationChecker.MarkAsCalculating(integrationPointId).ConfigureAwait(false);
             if (calculationState.Status != CalculationStatus.Error)
             {
-                DocumentsStatistics result = await _documentAccumulatedStatistics.GetImagesStatisticsForSavedSearchAsync(workspaceId, savedSearchId, calculateSize)
+                DocumentsStatistics result = await _documentAccumulatedStatistics.GetImagesStatisticsForSavedSearchAsync(workspaceId, savedSearchId, calculateSize, token)
                .ConfigureAwait(false);
 
-                calculationState = await _calculationChecker.MarkCalculationAsFinished(integrationPointId, result).ConfigureAwait(false);
+                if (token.IsCancellationRequested)
+                {
+                    calculationState = await _calculationChecker.MarkCalculationAsCancelled(integrationPointId).ConfigureAwait(false);
+                }
+                else
+                {
+                    calculationState = await _calculationChecker.MarkCalculationAsFinished(integrationPointId, result).ConfigureAwait(false);
+                }
             }
-
-            //if (token.IsCancellationRequested)
-            //{
-            //    calculationState.Status = CalculationStatus.Canceled;
-            //}
 
             return Json(calculationState);
         }
 
         [HttpPost]
         [LogApiExceptionFilter(Message = "Unable to get images statistics for production")]
-        public async Task<ActionResult> GetImagesStatisticsForProduction(int workspaceId, int productionId, int integrationPointId)
+        public async Task<ActionResult> GetImagesStatisticsForProduction(int workspaceId, int productionId, int integrationPointId, CancellationToken token)
         {
             CalculationState calculationState = await _calculationChecker.MarkAsCalculating(integrationPointId).ConfigureAwait(false);
             if (calculationState.Status != CalculationStatus.Error)
             {
                 DocumentsStatistics result = await _documentAccumulatedStatistics.GetImagesStatisticsForProductionAsync(workspaceId, productionId)
                 .ConfigureAwait(false);
-                calculationState = await _calculationChecker.MarkCalculationAsFinished(integrationPointId, result).ConfigureAwait(false);
+                if (token.IsCancellationRequested)
+                {
+                    calculationState = await _calculationChecker.MarkCalculationAsCancelled(integrationPointId).ConfigureAwait(false);
+                }
+                else
+                {
+                    calculationState = await _calculationChecker.MarkCalculationAsFinished(integrationPointId, result).ConfigureAwait(false);
+                }
             }
 
             return Json(calculationState);
