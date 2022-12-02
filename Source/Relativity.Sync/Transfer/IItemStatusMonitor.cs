@@ -4,6 +4,12 @@ namespace Relativity.Sync.Transfer
 {
     internal interface IItemStatusMonitor
     {
+        int ProcessedItemsCount { get; }
+
+        int FailedItemsCount { get; }
+
+        int ReadItemsCount { get; }
+
         void AddItem(string itemIdentifier, int artifactId);
 
         void MarkItemAsRead(string itemIdentifier);
@@ -17,10 +23,6 @@ namespace Relativity.Sync.Transfer
         IEnumerable<int> GetSuccessfulItemArtifactIds();
 
         IEnumerable<string> GetSuccessfulItemIdentifiers();
-
-        int ProcessedItemsCount { get; }
-
-        int FailedItemsCount { get; }
 
         int GetArtifactId(string itemIdentifier);
     }

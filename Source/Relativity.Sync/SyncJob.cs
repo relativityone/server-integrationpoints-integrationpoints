@@ -21,8 +21,14 @@ namespace Relativity.Sync
         private readonly IJobProgressUpdaterFactory _jobProgressUpdaterFactory;
         private readonly IAPILog _logger;
 
-        public SyncJob(INode<SyncExecutionContext> pipeline, ISyncExecutionContextFactory executionContextFactory, SyncJobParameters syncJobParameters, IProgress<SyncJobState> syncProgress,
-            ISyncToggles syncToggles, IJobProgressUpdaterFactory jobProgressUpdaterFactory, IAPILog logger)
+        public SyncJob(
+            INode<SyncExecutionContext> pipeline,
+            ISyncExecutionContextFactory executionContextFactory,
+            SyncJobParameters syncJobParameters,
+            IProgress<SyncJobState> syncProgress,
+            ISyncToggles syncToggles,
+            IJobProgressUpdaterFactory jobProgressUpdaterFactory,
+            IAPILog logger)
         {
             _pipeline = pipeline;
             _executionContextFactory = executionContextFactory;
