@@ -15,11 +15,6 @@ namespace Relativity.Sync.Transfer
     /// </summary>
     internal sealed class SourceWorkspaceDataReader : ISourceWorkspaceDataReader
     {
-        private FieldInfoDto _identifierField;
-        private IBatchDataReader _currentReader;
-
-        private long _completedItem = 0;
-
         private readonly IRelativityExportBatcher _exportBatcher;
         private readonly IFieldManager _fieldManager;
         private readonly IAPILog _logger;
@@ -27,7 +22,10 @@ namespace Relativity.Sync.Transfer
         private readonly IBatchDataReaderBuilder _readerBuilder;
         private readonly CancellationToken _cancellationToken;
 
-        public event OnSourceWorkspaceDataItemReadErrorEventHandler OnItemReadError;
+        private FieldInfoDto _identifierField;
+        private IBatchDataReader _currentReader;
+
+        private long _completedItem = 0;
 
         public SourceWorkspaceDataReader(
             IBatchDataReaderBuilder readerBuilder,
@@ -52,6 +50,10 @@ namespace Relativity.Sync.Transfer
             _currentReader = EmptyDataReader();
         }
 
+        public event OnSourceWorkspaceDataItemReadErrorEventHandler OnItemReadError;
+
+        public IItemStatusMonitor ItemStatusMonitor { get; }
+
         private FieldInfoDto IdentifierField
         {
             get
@@ -64,8 +66,6 @@ namespace Relativity.Sync.Transfer
                 return _identifierField;
             }
         }
-
-        public IItemStatusMonitor ItemStatusMonitor { get; }
 
         public bool Read()
         {
@@ -172,11 +172,27 @@ namespace Relativity.Sync.Transfer
         {
             _completedItem++;
 
+            var itemLevelError = new ItemLevelError(itemIdentifier, message);
+
+            ItemStatusMonitor.MarkItemAsFailed(itemLevelError.Identifier);
+
             // Logging and marking item as failed is happening in ImportJob.HandleItemLevelError
-            OnItemReadError?.Invoke(_completedItem, new ItemLevelError(itemIdentifier, message));
+            OnItemReadError?.Invoke(_completedItem, itemLevelError);
         }
 
         #region Pass-thrus to _currentBatch
+
+        public int FieldCount => _currentReader.FieldCount;
+
+        public bool IsClosed => _currentReader.IsClosed;
+
+        public int Depth => _currentReader.Depth;
+
+        public int RecordsAffected => _currentReader.RecordsAffected;
+
+        public object this[int i] => _currentReader[i];
+
+        public object this[string name] => _currentReader[name];
 
         public string GetName(int i)
         {
@@ -288,14 +304,6 @@ namespace Relativity.Sync.Transfer
             return _currentReader.IsDBNull(i);
         }
 
-        public int FieldCount => _currentReader.FieldCount;
-
-        public object this[int i] => _currentReader[i];
-
-        public object this[string name] => _currentReader[name];
-
-        public bool IsClosed => _currentReader.IsClosed;
-
         public void Close()
         {
             _currentReader.Close();
@@ -310,10 +318,6 @@ namespace Relativity.Sync.Transfer
         {
             return _currentReader.NextResult();
         }
-
-        public int Depth => _currentReader.Depth;
-
-        public int RecordsAffected => _currentReader.RecordsAffected;
 
         #endregion
 

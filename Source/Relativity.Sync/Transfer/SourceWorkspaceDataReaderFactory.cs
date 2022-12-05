@@ -13,8 +13,12 @@ namespace Relativity.Sync.Transfer
         private readonly ISynchronizationConfiguration _configuration;
         private readonly IExportDataSanitizer _dataSanitizer;
 
-        public SourceWorkspaceDataReaderFactory(IRelativityExportBatcherFactory exportBatcherFactory, IFieldManager fieldManager, ISynchronizationConfiguration configuration,
-            IExportDataSanitizer dataSanitizer, IAPILog logger)
+        public SourceWorkspaceDataReaderFactory(
+            IRelativityExportBatcherFactory exportBatcherFactory,
+            IFieldManager fieldManager,
+            ISynchronizationConfiguration configuration,
+            IExportDataSanitizer dataSanitizer,
+            IAPILog logger)
         {
             _exportBatcherFactory = exportBatcherFactory;
             _fieldManager = fieldManager;
@@ -48,7 +52,14 @@ namespace Relativity.Sync.Transfer
         private ISourceWorkspaceDataReader CreateSourceWorkspaceDataReader(IBatch batch, IBatchDataReaderBuilder batchDataReaderBuilder, CancellationToken token)
         {
             IRelativityExportBatcher relativityExportBatcher = _exportBatcherFactory.CreateRelativityExportBatcher(batch);
-            return new SourceWorkspaceDataReader(batchDataReaderBuilder, _configuration, relativityExportBatcher, _fieldManager, new ItemStatusMonitor(), _logger, token);
+            return new SourceWorkspaceDataReader(
+                batchDataReaderBuilder,
+                _configuration,
+                relativityExportBatcher,
+                _fieldManager,
+                new ItemStatusMonitor(),
+                _logger,
+                token);
         }
     }
 }

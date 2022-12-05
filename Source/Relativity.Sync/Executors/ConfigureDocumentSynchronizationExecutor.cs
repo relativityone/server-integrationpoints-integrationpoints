@@ -5,6 +5,7 @@ using Relativity.Import.V1;
 using Relativity.Import.V1.Models.Settings;
 using Relativity.Import.V1.Services;
 using Relativity.Sync.Configuration;
+using Relativity.Sync.Extensions;
 using Relativity.Sync.KeplerFactory;
 using Relativity.Sync.Transfer.ImportAPI;
 
@@ -67,7 +68,7 @@ namespace Relativity.Sync.Executors
                         correlationID: _parameters.WorkflowId)
                     .ConfigureAwait(false);
 
-                ValidateResponse(response);
+                response.Validate();
             }
         }
 
@@ -82,7 +83,26 @@ namespace Relativity.Sync.Executors
                     context.ImportJobId,
                     importSettings).ConfigureAwait(false);
 
-                ValidateResponse(response);
+                response.Validate();
+            }
+        }
+
+        private async Task AttachAdvancedImportSettingsToImportJobAsync(ImportContext context, AdvancedImportSettings importSettings)
+        {
+            using (IAdvancedConfigurationController configurationController = await _serviceFactory.CreateProxyAsync<IAdvancedConfigurationController>().ConfigureAwait(false))
+            {
+                _logger.LogInformation(
+                    "Attaching AdvancedImportSettings to ImportJob {jobId}... - AdvancedImportSettings: {@importSettings}",
+                    context.ImportJobId,
+                    importSettings);
+
+                Response response = await configurationController.CreateAsync(
+                        context.DestinationWorkspaceId,
+                        context.ImportJobId,
+                        importSettings)
+                    .ConfigureAwait(false);
+
+                response.Validate();
             }
         }
 
@@ -97,16 +117,7 @@ namespace Relativity.Sync.Executors
                         context.ImportJobId)
                     .ConfigureAwait(false);
 
-                ValidateResponse(response);
-            }
-        }
-
-        private void ValidateResponse(Response response)
-        {
-            if (response.IsSuccess == false)
-            {
-                string message = $"ImportJobId: {response.ImportJobID}, Error code: {response.ErrorCode}, message: {response.ErrorMessage}";
-                throw new SyncException(message);
+                response.Validate();
             }
         }
 
