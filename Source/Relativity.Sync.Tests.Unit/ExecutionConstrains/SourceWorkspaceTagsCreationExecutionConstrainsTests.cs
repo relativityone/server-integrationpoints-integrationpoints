@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using Relativity.Sync.Configuration;
@@ -18,12 +19,20 @@ namespace Relativity.Sync.Tests.Unit.ExecutionConstrains
             _sut = new SourceWorkspaceTagsCreationExecutionConstrains();
         }
 
-        [Test]
-        public async Task ItShouldAlwaysCanExecute()
+        [TestCase(true)]
+        [TestCase(false)]
+        public async Task ItShouldAlwaysCanExecute(bool enableTagging)
         {
-            bool canExecute = await _sut.CanExecuteAsync(Mock.Of<ISourceWorkspaceTagsCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+            // Arrange
+            Mock<ISourceWorkspaceTagsCreationConfiguration> configuration =
+                new Mock<ISourceWorkspaceTagsCreationConfiguration>();
+            configuration.SetupGet(x => x.EnableTagging).Returns(enableTagging);
 
-            Assert.True(canExecute);
+            // Act
+            bool canExecute = await _sut.CanExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
+
+            // Assert
+            canExecute.Should().Be(enableTagging);
         }
     }
 }

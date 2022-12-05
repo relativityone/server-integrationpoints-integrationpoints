@@ -11,22 +11,28 @@ namespace Relativity.Sync.Tests.Unit.Executors
     [TestFixture]
     internal sealed class DestinationWorkspaceObjectTypesCreationExecutorConstrainsTests
     {
-        private DestinationWorkspaceObjectTypesCreationExecutorConstrains _instance;
+        private DestinationWorkspaceObjectTypesCreationExecutorConstrains _sut;
 
         [SetUp]
         public void SetUp()
         {
-            _instance = new DestinationWorkspaceObjectTypesCreationExecutorConstrains();
+            _sut = new DestinationWorkspaceObjectTypesCreationExecutorConstrains();
         }
 
-        [Test]
-        public async Task ItShouldAlwaysAllowExecution()
+        [TestCase(true)]
+        [TestCase(false)]
+        public async Task ItShouldAlwaysAllowExecution(bool enableTagging)
         {
-            // act
-            bool canExecute = await _instance.CanExecuteAsync(Mock.Of<IDestinationWorkspaceObjectTypesCreationConfiguration>(), CancellationToken.None).ConfigureAwait(false);
+            // Arrange
+            Mock<IDestinationWorkspaceObjectTypesCreationConfiguration> configuration =
+                new Mock<IDestinationWorkspaceObjectTypesCreationConfiguration>();
+            configuration.SetupGet(x => x.EnableTagging).Returns(enableTagging);
 
-            // assert
-            canExecute.Should().BeTrue();
+            // Act
+            bool canExecute = await _sut.CanExecuteAsync(configuration.Object, CancellationToken.None).ConfigureAwait(false);
+
+            // Assert
+            canExecute.Should().Be(enableTagging);
         }
     }
 }

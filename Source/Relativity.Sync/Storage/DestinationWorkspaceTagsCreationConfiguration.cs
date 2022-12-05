@@ -23,6 +23,8 @@ namespace Relativity.Sync.Storage
 
         public int JobHistoryArtifactId => _cache.GetFieldValue(x => x.JobHistoryId);
 
+        public bool EnableTagging => _cache.GetFieldValue(x => x.EnableTagging);
+
         public async Task SetSourceJobTagAsync(int artifactId, string name)
         {
             await _cache.UpdateFieldValueAsync(x => x.SourceJobTagArtifactId, artifactId).ConfigureAwait(false);

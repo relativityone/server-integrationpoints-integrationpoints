@@ -19,8 +19,9 @@ namespace Relativity.Sync.Tests.System.GoldFlows
     [TestFixture]
     internal sealed class DocumentGoldFlowTests : SystemTest
     {
-        private GoldFlowTestSuite _goldFlowTestSuite;
         private readonly Dataset _dataset;
+
+        private GoldFlowTestSuite _goldFlowTestSuite;
 
         public DocumentGoldFlowTests()
         {
@@ -35,10 +36,31 @@ namespace Relativity.Sync.Tests.System.GoldFlows
 
         [IdentifiedTest("25b723da-82fe-4f56-ae9f-4a8b2a4d60f4")]
         [TestType.MainFlow]
-        public async Task SyncJob_Should_SyncDocuments()
+        public async Task SyncJob_ShouldSyncDocuments()
         {
             // Arrange
             GoldFlowTestSuite.IGoldFlowTestRun goldFlowTestRun = await _goldFlowTestSuite.CreateTestRunAsync(ConfigureTestRunAsync).ConfigureAwait(false);
+
+            // Act
+            SyncJobState result = await goldFlowTestRun.RunAsync().ConfigureAwait(false);
+
+            // Assert
+            await goldFlowTestRun.AssertAsync(result, _dataset.TotalItemCount, _dataset.TotalDocumentCount).ConfigureAwait(false);
+        }
+
+        [Test]
+        [TestType.MainFlow]
+        public async Task SyncJob_ShouldSyncDocuments_WithoutTagging()
+        {
+            // Arrange
+            GoldFlowTestSuite.IGoldFlowTestRun goldFlowTestRun = await _goldFlowTestSuite.CreateTestRunAsync(
+                async (sourceWrokspace, destinationWorkspace, configuration) =>
+                {
+                    await ConfigureTestRunAsync(sourceWrokspace, destinationWorkspace, configuration)
+                        .ConfigureAwait(false);
+
+                    configuration.EnableTagging = false;
+                }).ConfigureAwait(false);
 
             // Act
             SyncJobState result = await goldFlowTestRun.RunAsync().ConfigureAwait(false);

@@ -273,6 +273,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
                     TotalReadTime = TimeSpan.FromSeconds(x)
                 }).ToList());
 
+            _configFake.SetupGet(x => x.EnableTagging).Returns(true);
+
             // Act
             await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
@@ -435,6 +437,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Arrange
             SetupBatchRepository(1);
             _configFake.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.None);
+            _configFake.SetupGet(x => x.EnableTagging).Returns(true);
 
             SetupImportJob();
 
@@ -455,6 +458,7 @@ namespace Relativity.Sync.Tests.Unit.Executors
             // Arrange
             SetupBatchRepository(1);
             _configFake.SetupGet(x => x.DestinationFolderStructureBehavior).Returns(DestinationFolderStructureBehavior.None);
+            _configFake.SetupGet(x => x.EnableTagging).Returns(true);
 
             SetupImportJob();
 
@@ -605,6 +609,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             SetUpDocumentsTagRepository(executionResult);
 
+            _configFake.SetupGet(x => x.EnableTagging).Returns(true);
+
             // Act
             await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
@@ -681,6 +687,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 .Setup(x => x.RunAsync(It.IsAny<CompositeCancellationToken>()))
                 .ReturnsAsync(new ImportJobResult(expectedExecutionResult, 1, 0, 1));
 
+            _configFake.SetupGet(x => x.EnableTagging).Returns(true);
+
             // Act
             ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
@@ -731,6 +739,8 @@ namespace Relativity.Sync.Tests.Unit.Executors
             const int numberOfBatches = 1;
             SetupBatchRepository(numberOfBatches);
             _importJobFake.Setup(x => x.RunAsync(It.IsAny<CompositeCancellationToken>())).ReturnsAsync(CreateJobResult());
+
+            _configFake.SetupGet(x => x.EnableTagging).Returns(true);
 
             TaggingExecutionResult executionResult = ReturnTaggingFailedResult();
             SetUpDocumentsTagRepository(executionResult);

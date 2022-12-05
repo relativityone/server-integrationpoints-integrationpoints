@@ -22,6 +22,8 @@ namespace Relativity.Sync.Storage
 
         public bool IsDestinationWorkspaceTagArtifactIdSet { get; private set; }
 
+        public bool EnableTagging => _cache.GetFieldValue(x => x.EnableTagging);
+
         public async Task SetDestinationWorkspaceTagArtifactIdAsync(int artifactId)
         {
             await _cache.UpdateFieldValueAsync(x => x.DestinationWorkspaceTagArtifactId, artifactId).ConfigureAwait(false);

@@ -21,5 +21,7 @@ namespace Relativity.Sync.Configuration
         int DestinationRdoArtifactTypeId { get; }
 
         ImportOverwriteMode ImportOverwriteMode { get; }
+
+        bool EnableTagging { get; }
     }
 }

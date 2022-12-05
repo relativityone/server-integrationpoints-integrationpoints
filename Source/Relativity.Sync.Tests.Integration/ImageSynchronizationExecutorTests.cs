@@ -87,6 +87,7 @@ namespace Relativity.Sync.Tests.Integration
             {
                 DestinationWorkspaceArtifactId = _DESTINATION_WORKSPACE_ARTIFACT_ID,
                 SourceWorkspaceArtifactId = _SOURCE_WORKSPACE_ARTIFACT_ID,
+                EnableTagging = true,
             };
             _config.SetFieldMappings(fieldMaps);
             containerBuilder.RegisterInstance(_config).AsImplementedInterfaces();
