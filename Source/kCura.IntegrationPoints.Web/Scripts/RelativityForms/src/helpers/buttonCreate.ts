@@ -139,35 +139,19 @@ export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenie
     });
 }
 
-export function createStopCalculationsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean) {
+export function createStopCalculationsButton(consoleApi, convenienceApi: IConvenienceApi, enabled: boolean) {
     return consoleApi.generate.button({
         innerText: "Stop calculations",
         disabled: !enabled,
         onclick: function () {
             return convenienceApi.modalService.confirm({
                 title: "Stop calculations",
-                message: "Statistics calculation process for this Integration Point is in progress. Do you want to cancel this process?",
+                message: "Statistics calculation process for this Integration Point is in progress. Do you want to cancel this operation?",
                 acceptText: "Yes",
                 cancelText: "No",
                 acceptAction: function () {
-
-                    abortCalculation();
-                    console.log("Abort calculation request sent...");
-                    //var xhr = new XMLHttpRequest(),
-                    //method = "POST",
-                    //url = convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/SummaryPage/GetImagesStatisticsForSavedSearch";
-
-                   
-
-                    //console.log(xhr);
-                        
-                    //xhr.open(method, url, true);
-
-                    //xhr.send();
-
-                    
-                    //xhr.abort();
-                    
+                    abortCalculation();   
+                    console.log("Abort signal sent");
                 }
             });
         }

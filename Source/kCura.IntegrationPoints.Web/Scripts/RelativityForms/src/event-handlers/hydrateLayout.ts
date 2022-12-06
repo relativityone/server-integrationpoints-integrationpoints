@@ -1,6 +1,6 @@
 import { getConnectionAuthenticationType, getFilter } from "../helpers/fieldValuesForImport";
 import { getDestinationDetails, getFilePath, getImageFileFormat, getImageFileType, getImagePrecedence, getImportType, getLoadFileFormat, getPrecedenceList, getSubdirectoryInfo, getTextAndNativeFileNames, getTextFileEncoding, getVolume } from "../helpers/fieldValuesForLoadFileExport";
-import { formatToYesOrNo, getExportType, getFolderPathInformation, getPrecenenceSummary, getSourceDetails, getCalculationStateInfo, handleStatisticsForImages, handleStatisticsForNatives } from "../helpers/fieldValuesForRelativityExport";
+import { formatToYesOrNo, getExportType, getFolderPathInformation, getPrecenenceSummary, getSourceDetails, getCalculationStateInfo, CalculationType, handleStatistics } from "../helpers/fieldValuesForRelativityExport";
 import { IConvenienceApi } from "../types/convenienceApi";
 
 export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sourceConfiguration: Object, destinationConfiguration: Object, integrationPointArtifactId) {
@@ -93,27 +93,31 @@ export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sou
 
         getCalculationStateInfo(convenienceApi, integrationPointArtifactId).then(data => {
 
-            if (data["Status"] == 2) {  //calculation completed
-                
+            if (data["Status"] == 2) {  
+                //calculation completed
                 if (destinationConfiguration["importNativeFile"] == 'true' && !importImageFiles(destinationConfiguration)) {
-                    handleStatisticsForNatives(convenienceApi, data);
+                    handleStatistics(convenienceApi, data, CalculationType.NativesStats);
                 }
                 else {
-                    handleStatisticsForImages(convenienceApi, data);
+                    // TODO: for now there is no difference in label naming, but we need to add separate condition for ImagesStatsForProduction enum in REL-786615
+                    handleStatistics(convenienceApi, data, CalculationType.ImagesStatsForSavedSearch);
                 }
             } else {
-
                 var info = "";
-                if (data["Status"] == 4) {      // calculation status = error (from any reason)
+                if (data["Status"] == 4) {  
+                    // calculation status = error (from any reason)
                     info = "Error occurred";
                 }
-                if (data["Status"] == 0 || data["Status"] == 3) {       // calculation status = new or canceled
+                if (data["Status"] == 0 || data["Status"] == 3) {
+                    // calculation status = new or canceled
                     info = "Press 'Calculate statistics' button";
                 }
-                if (data["Status"] == 1) {      // calculation status = in progress
+                if (data["Status"] == 1) {  
+                    // calculation status = in progress
                     info = "Calculating. This may take a few minutes...";
                 }
 
+                // TODO: for now there is no difference in label naming, but we need to add separate condition for ImagesStatsForProduction enum in REL-786615
                 convenienceApi.fieldHelper.setValue("Total of Documents", info);
                 convenienceApi.fieldHelper.setValue("Total of Images", info);
                 convenienceApi.fieldHelper.setValue("Total of Natives", info);

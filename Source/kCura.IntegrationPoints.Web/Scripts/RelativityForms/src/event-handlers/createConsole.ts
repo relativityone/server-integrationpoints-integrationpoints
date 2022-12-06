@@ -160,7 +160,7 @@ function generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPoi
         var calculateStatsButton = createCalculateStatsButton(consoleApi, convenienceApi, ctx, buttonState.calculateStatisticsButtonEnabled, integrationPointId, sourceConfiguration, destinationConfiguration);
         transferSection.push(calculateStatsButton);
 
-        var stopCalculationsButton = createStopCalculationsButton(consoleApi, convenienceApi, ctx, buttonState.stopCalculationsButtonEnabled);
+        var stopCalculationsButton = createStopCalculationsButton(consoleApi, convenienceApi, buttonState.stopCalculationsButtonEnabled);
         transferSection.push(stopCalculationsButton);
     }
 

@@ -3,14 +3,19 @@
 
 // controller and abortCurrentAction func to cancel ongoing call from SummaryPageController
 let controller;
-
 export function abortCurrentAction(): void {
     if (controller) {
-        controller.abort();
+        controller.abort("Cancelled");
     }
 }
 
-export async function getFolderPathInformation(convenienceApi: IConvenienceApi, workspaceId: number,  destinationConfiguration: object) {
+export const enum CalculationType {
+    ImagesStatsForProduction = 1,
+    NativesStats = 2,
+    ImagesStatsForSavedSearch = 3
+}
+
+export async function getFolderPathInformation(convenienceApi: IConvenienceApi, workspaceId: number, destinationConfiguration: object) {
     if (convertToBool(destinationConfiguration["UseFolderPathInformation"])) {
         let request = {
             options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
@@ -18,7 +23,7 @@ export async function getFolderPathInformation(convenienceApi: IConvenienceApi, 
                     "content-type": "application/json; charset=utf-8"
                 }
             }),
-            url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/" + workspaceId +  "/api/FolderPath/GetFields"
+            url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/" + workspaceId + "/api/FolderPath/GetFields"
         };
 
         return convenienceApi.relativityHttpClient.get(request.url, request.options)
@@ -47,7 +52,7 @@ export async function getCalculationStateInfo(convenienceApi: IConvenienceApi, i
                 "content-type": "application/json; charset=utf-8"
             }
         }),
-        payload: {            
+        payload: {
             integrationPointId: integrationPointId
         },
         url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/SummaryPage/GetCalculationStateInfo"
@@ -84,7 +89,11 @@ export async function getNativesStats(convenienceApi: IConvenienceApi, workspace
     let resp = convenienceApi.relativityHttpClient.post(request.url, request.payload, request.options, { signal })
         .then(function (result) {
             if (!result.ok) {
-                console.log("error in get; ", result);
+                if (signal["reason"] === "Cancelled") {
+                    return "Cancelled";
+                } else {
+                    console.log("error in get; ", result);
+                }
             } else if (result.ok) {
                 return result.json();
             }
@@ -107,13 +116,17 @@ export async function getImagesStatsForSavedSearch(convenienceApi: IConvenienceA
             calculateSize: importNatives,
             integrationPointId: integrationPointId
         },
-        url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/SummaryPage/GetImagesStatisticsForSavedSearch"       
-    }; 
+        url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/SummaryPage/GetImagesStatisticsForSavedSearch"
+    };
 
     let resp = convenienceApi.relativityHttpClient.post(request.url, request.payload, request.options, { signal })
         .then(function (result) {
             if (!result.ok) {
-                console.log("error in get; ", result);
+                if (signal["reason"] === "Cancelled") {
+                    return "Cancelled";
+                } else {
+                    console.log("error in get; ", result);
+                }
             } else if (result.ok) {
                 return result.json();
             }
@@ -141,7 +154,11 @@ export async function getImagesStatsForProduction(convenienceApi: IConvenienceAp
     let resp = convenienceApi.relativityHttpClient.post(request.url, request.payload, request.options, { signal })
         .then(function (result) {
             if (!result.ok) {
-                console.log("error in get; ", result);
+                if (signal["reason"] === "Cancelled") {
+                    return "Cancelled";
+                } else {
+                    console.log("error in get; ", result);
+                }
             } else if (result.ok) {
                 return result.json();
             }
@@ -166,51 +183,49 @@ export function prepareStatsInfo(total, size) {
     return result;
 }
 
-export function handleStatisticsForImages(convenienceApi, data) {    
-    if (data["Status"] == 3) { //cancelled
-        convenienceApi.fieldHelper.setValue("Total of Documents", "Press 'Calculate statistics' button");
-        convenienceApi.fieldHelper.setValue("Total of Images", "Press 'Calculate statistics' button");
-        //convenienceApi.fieldHelper.setValue("Total of Natives", "Press 'Calculate statistics' button");
+export function handleStatistics(convenienceApi, data, calculationType) {
+    var documentsLabelName = "";
+    var nativesOrImagesLabelName = "";
+    var totalCountFieldName = "";
+    var totalSizeFieldName = "";
+
+    if (calculationType == CalculationType.NativesStats) {
+        documentsLabelName = "Total of Documents";
+        nativesOrImagesLabelName = "Total of Natives";
+        totalCountFieldName = "TotalNativesCount";
+        totalSizeFieldName = "TotalNativesSizeBytes";
+    }
+
+    // TODO: for now there is no difference in label naming, but we need to split conditions for ImagesStatsForProduction and ImagesStatsForSavedSearch enum in REL-786615
+    if (calculationType == CalculationType.ImagesStatsForProduction || calculationType == CalculationType.ImagesStatsForSavedSearch) {
+        documentsLabelName = "Total of Documents";
+        nativesOrImagesLabelName = "Total of Images";
+        totalCountFieldName = "TotalImagesCount";
+        totalSizeFieldName = "TotalImagesSizeBytes";
+    }
+
+    if (data["Status"] == 3) {
+        // calculation was cancelled
+        convenienceApi.fieldHelper.setValue(documentsLabelName, "Press 'Calculate statistics' button");
+        convenienceApi.fieldHelper.setValue(nativesOrImagesLabelName, "Press 'Calculate statistics' button");
     }
     else if (data["Status"] == 4) {
-        convenienceApi.fieldHelper.setValue("Total of Documents", "Error occurred");
-        convenienceApi.fieldHelper.setValue("Total of Images", "Error occurred");
+        // calculation ended with errors
+        convenienceApi.fieldHelper.setValue(documentsLabelName, "Error occurred");
+        convenienceApi.fieldHelper.setValue(nativesOrImagesLabelName, "Error occurred");
     }
     else {
+        // calculation completed
         var stats = data["DocumentStatistics"];
         var lastCalculationDate = "Calculated on: " + stats["CalculatedOn"] + " UTC";
         var valueToDisplay = `${stats["DocumentsCount"]}
-${lastCalculationDate}`;        
+${lastCalculationDate}`;
 
-        convenienceApi.fieldHelper.setValue("Total of Documents", valueToDisplay);
+        convenienceApi.fieldHelper.setValue(documentsLabelName, valueToDisplay);
 
-        var total = prepareStatsInfo(stats["TotalImagesCount"], stats["TotalImagesSizeBytes"]);
-        convenienceApi.fieldHelper.setValue("Total of Images", total);
-    }    
-}
-
-export function handleStatisticsForNatives(convenienceApi, data) {
-    if (data["Status"] == 3) { //cancelled
-        convenienceApi.fieldHelper.setValue("Total of Documents", "Press 'Calculate statistics' button");
-        //convenienceApi.fieldHelper.setValue("Total of Images", "Press 'Calculate statistics' button");
-        convenienceApi.fieldHelper.setValue("Total of Natives", "Press 'Calculate statistics' button");
+        var total = prepareStatsInfo(stats[totalCountFieldName], stats[totalSizeFieldName]);
+        convenienceApi.fieldHelper.setValue(nativesOrImagesLabelName, total);
     }
-    else if (data["Status"] == 4) {
-        convenienceApi.fieldHelper.setValue("Total of Documents", "Error occurred");
-        convenienceApi.fieldHelper.setValue("Total of Natives", "Error occurred");
-    }
-    else {
-
-        var stats = data["DocumentStatistics"];
-        var lastCalculationDate = "Calculated on: " + stats["CalculatedOn"] + " UTC";
-        var valueToDisplay = `${stats["DocumentsCount"]}
-${lastCalculationDate}`;      
-
-        convenienceApi.fieldHelper.setValue("Total of Documents", valueToDisplay);
-
-        var total = prepareStatsInfo(stats["TotalNativesCount"], stats["TotalNativesSizeBytes"]);
-        convenienceApi.fieldHelper.setValue("Total of Natives", total);
-    }    
 }
 
 function formatBytes(bytes) {
@@ -261,7 +276,7 @@ export function getSourceDetails(sourceConfiguration: Object) {
 export function getPrecenenceSummary(destinationConfiguration: Object) {
     let productionPrecedence = (destinationConfiguration["ProductionPrecedence"] === 0 ? "Original" : "Produced");
     let imagePrecedence = destinationConfiguration["ImagePrecedence"];
-    if (imagePrecedence && imagePrecedence.length > 0 ) {
+    if (imagePrecedence && imagePrecedence.length > 0) {
         return (productionPrecedence + ": " + imagePrecedence.map(function (x) {
             return x.displayName;
         }).join("; "));

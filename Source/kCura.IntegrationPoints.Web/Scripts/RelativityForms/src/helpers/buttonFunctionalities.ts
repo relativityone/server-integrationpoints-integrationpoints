@@ -1,5 +1,5 @@
 ﻿import { IConvenienceApi } from "../types/convenienceApi";
-import { getImagesStatsForProduction, getImagesStatsForSavedSearch, getNativesStats, handleStatisticsForImages, handleStatisticsForNatives, abortCurrentAction } from "../helpers/fieldValuesForRelativityExport";
+import { getImagesStatsForProduction, getImagesStatsForSavedSearch, getNativesStats, abortCurrentAction, handleStatistics, CalculationType } from "../helpers/fieldValuesForRelativityExport";
 
 export function postJobAPIRequest(convenienceApi: IConvenienceApi, workspaceId, integrationPointId, action = "") {
     var request = {
@@ -19,37 +19,47 @@ export function postJobAPIRequest(convenienceApi: IConvenienceApi, workspaceId, 
 }
 
 export function abortCalculation() {
-    abortCurrentAction();
-    console.log("test abort method called...");
+    abortCurrentAction();    
 }
 
 export function calculateStatsRequest(convenienceApi: IConvenienceApi, sourceConfiguration, destinationConfiguration, integrationPointId) {
 
     convenienceApi.fieldHelper.setValue("Total of Documents", "Calculating. This may take a few minutes...");
-    convenienceApi.fieldHelper.setValue("Total of Images", "Calculating. This may take a few minutes...");    
+    convenienceApi.fieldHelper.setValue("Total of Images", "Calculating. This may take a few minutes...");
     convenienceApi.fieldHelper.setValue("Total of Natives", "Calculating. This may take a few minutes...");
 
     if (sourceConfiguration["SourceProductionId"]) {
         getImagesStatsForProduction(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], sourceConfiguration["SourceProductionId"], integrationPointId).then(data => {
-            handleStatisticsForImages(convenienceApi, data);
+            if (data === "Cancelled") {
+                convenienceApi.fieldHelper.setValue("Total of Documents", "Calculation cancelled");
+                convenienceApi.fieldHelper.setValue("Total of Images", "Calculation cancelled");
+            }
+            else {
+                handleStatistics(convenienceApi, data, CalculationType.ImagesStatsForSavedSearch);
+            }     
         })
     } else if (destinationConfiguration["importNativeFile"] == 'true' && !importImageFiles(destinationConfiguration)) {
         getNativesStats(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], sourceConfiguration["SavedSearchArtifactId"], integrationPointId).then(data => {
-            handleStatisticsForNatives(convenienceApi, data);
+            if (data === "Cancelled") {
+                convenienceApi.fieldHelper.setValue("Total of Documents", "Calculation cancelled");
+                convenienceApi.fieldHelper.setValue("Total of Natives", "Calculation cancelled");
+            }
+            else {
+                handleStatistics(convenienceApi, data, CalculationType.ImagesStatsForSavedSearch);
+            }     
         })
     } else {
         getImagesStatsForSavedSearch(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], sourceConfiguration["SavedSearchArtifactId"], (destinationConfiguration["getImagesStatsForProduction"] === 'true'), integrationPointId).then(data => {
             console.log(data);
-            console.log("Status: " + data["Status"]);
-            if (data["Status"] == 2) {
-                console.log("Reading numeric value in condition works!");
+            if (data === "Cancelled") {
+                convenienceApi.fieldHelper.setValue("Total of Documents", "Calculation cancelled");
+                convenienceApi.fieldHelper.setValue("Total of Images", "Calculation cancelled");
+            }
+            else {
+                handleStatistics(convenienceApi, data, CalculationType.ImagesStatsForSavedSearch);
             }            
-            var stats = data["DocumentStatistics"];
-            console.log("TotalDocuments: " + stats["DocumentsCount"]);
-
-            handleStatisticsForImages(convenienceApi, data);
         })
-    }  
+    }
 }
 
 export function postCreateIntegrationPointProfileRequest(convenienceApi: IConvenienceApi, workspaceId, integrationPointId, integrationPointProfileName) {
