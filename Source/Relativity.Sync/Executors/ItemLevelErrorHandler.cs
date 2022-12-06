@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.API;
+using Relativity.Import.V1.Models.Errors;
 using Relativity.Sync.Configuration;
-using Relativity.Sync.Logging;
 using Relativity.Sync.Storage;
 using Relativity.Sync.Transfer;
 
@@ -12,71 +12,73 @@ namespace Relativity.Sync.Executors
 {
     internal class ItemLevelErrorHandler : IItemLevelErrorHandler
     {
-        private const int _BATCH_ITEM_ERRORS_MAX_COUNT_FOR_RDO_CREATE = 1000;
+        private const int _ITEM_LEVEL_ERRORS_CREATE_BATCH_SIZE = 10000;
+        private const string _IDENTIFIER_NOT_FOUND = "[NOT_FOUND]";
+        private const string _IAPI_DOCUMENT_IDENTIFIER_COLUMN = "Identifier";
 
         private readonly IItemLevelErrorHandlerConfiguration _configuration;
-        private readonly IItemLevelErrorLogAggregator _itemLevelErrorLogAggregator;
         private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
+        private readonly IAPILog _log;
 
-        private ConcurrentQueue<CreateJobHistoryErrorDto> _batchItemErrors;
-        private IItemStatusMonitor _statusMonitor;
+        private ConcurrentQueue<CreateJobHistoryErrorDto> _itemErrors = new ConcurrentQueue<CreateJobHistoryErrorDto>();
 
-        public ItemLevelErrorHandler(IItemLevelErrorHandlerConfiguration configuration, IJobHistoryErrorRepository jobHistoryErrorRepository, IAPILog logger)
+        public ItemLevelErrorHandler(
+            IItemLevelErrorHandlerConfiguration configuration,
+            IJobHistoryErrorRepository jobHistoryErrorRepository,
+            IAPILog log)
         {
             _configuration = configuration;
             _jobHistoryErrorRepository = jobHistoryErrorRepository;
-            _itemLevelErrorLogAggregator = new ItemLevelErrorLogAggregator(logger);
-        }
-
-        public void Initialize(IItemStatusMonitor statusMonitor)
-        {
-            if (_batchItemErrors != null && _batchItemErrors.Any())
-            {
-                throw new SyncException("Unhandled item level errors from previous batch were found - error collection is not empty.");
-            }
-
-            _batchItemErrors = new ConcurrentQueue<CreateJobHistoryErrorDto>();
-            _statusMonitor = statusMonitor;
+            _log = log;
         }
 
         public void HandleItemLevelError(long completedItem, ItemLevelError itemLevelError)
         {
-            int itemArtifactId = _statusMonitor.GetArtifactId(itemLevelError.Identifier);
-            _itemLevelErrorLogAggregator.AddItemLevelError(itemLevelError, itemArtifactId);
-            _statusMonitor.MarkItemAsFailed(itemLevelError.Identifier);
+            HandleBatchItemErrorAsync(itemLevelError)
+                .GetAwaiter().GetResult();
+        }
 
+        public async Task HandleIAPIItemLevelErrorsAsync(ImportErrors errors)
+        {
+            foreach (var error in errors.Errors.SelectMany(x => x.ErrorDetails))
+            {
+                ItemLevelError itemLevelError = ToItemLevelError(error);
+                await HandleBatchItemErrorAsync(itemLevelError).ConfigureAwait(false);
+            }
+        }
+
+        public async Task HandleRemainingErrorsAsync()
+        {
+            if (_itemErrors.Any())
+            {
+                await CreateErrorsAsync().ConfigureAwait(false);
+            }
+        }
+
+        private async Task HandleBatchItemErrorAsync(ItemLevelError itemLevelError)
+        {
             CreateJobHistoryErrorDto itemError = new CreateJobHistoryErrorDto(ErrorType.Item)
             {
                 ErrorMessage = itemLevelError.Message,
                 SourceUniqueId = itemLevelError.Identifier
             };
 
-            _batchItemErrors.Enqueue(itemError);
+            _itemErrors.Enqueue(itemError);
+            _log.LogWarning("Item Level Error: {@itemLevelError}", itemLevelError);
 
-            if (_batchItemErrors.Count >= _BATCH_ITEM_ERRORS_MAX_COUNT_FOR_RDO_CREATE)
+            if (_itemErrors.Count >= _ITEM_LEVEL_ERRORS_CREATE_BATCH_SIZE)
             {
-                CreateJobHistoryErrors();
+                await CreateErrorsAsync().ConfigureAwait(false);
             }
         }
 
-        public async Task HandleDataSourceProcessingFinishedAsync(IBatch batch)
+        private async Task CreateErrorsAsync()
         {
-            if (_batchItemErrors.Any())
-            {
-                CreateJobHistoryErrors();
-            }
-
-            await batch.SetFailedDocumentsCountAsync(_statusMonitor.FailedItemsCount).ConfigureAwait(false);
-            await _itemLevelErrorLogAggregator.LogAllItemLevelErrorsAsync().ConfigureAwait(false);
-        }
-
-        private void CreateJobHistoryErrors()
-        {
-            int currentNumberOfItemLevelErrorsInQueue = _batchItemErrors.Count;
+            int currentNumberOfItemLevelErrorsInQueue = _itemErrors.Count;
             List<CreateJobHistoryErrorDto> itemLevelErrors = new List<CreateJobHistoryErrorDto>(currentNumberOfItemLevelErrorsInQueue);
             for (int i = 0; i < currentNumberOfItemLevelErrorsInQueue; i++)
             {
-                if (_batchItemErrors.TryDequeue(out CreateJobHistoryErrorDto dto))
+                if (_itemErrors.TryDequeue(out CreateJobHistoryErrorDto dto))
                 {
                     itemLevelErrors.Add(dto);
                 }
@@ -84,10 +86,21 @@ namespace Relativity.Sync.Executors
 
             if (itemLevelErrors.Any())
             {
-                _jobHistoryErrorRepository.MassCreateAsync(_configuration.SourceWorkspaceArtifactId, _configuration.JobHistoryArtifactId, itemLevelErrors)
-                    .GetAwaiter()
-                    .GetResult();
+                await _jobHistoryErrorRepository.MassCreateAsync(
+                        _configuration.SourceWorkspaceArtifactId,
+                        _configuration.JobHistoryArtifactId,
+                        itemLevelErrors)
+                    .ConfigureAwait(false);
             }
+        }
+
+        private ItemLevelError ToItemLevelError(ErrorDetail error)
+        {
+            return new ItemLevelError(
+                error.ErrorProperties.TryGetValue(_IAPI_DOCUMENT_IDENTIFIER_COLUMN, out string identifier)
+                    ? identifier
+                    : _IDENTIFIER_NOT_FOUND,
+                error.ErrorMessage);
         }
     }
 }

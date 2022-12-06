@@ -43,34 +43,39 @@ namespace Relativity.Sync.Executors
 
         private async Task GenerateLoadFileAsync(IBatch batch, string batchPath, DataSourceSettings settings, CompositeCancellationToken token)
         {
-            int readerLineNumber = 0;
-            try
+            using (ISourceWorkspaceDataReader reader = _dataReaderFactory.CreateNativeSourceWorkspaceDataReader(batch, token.AnyReasonCancellationToken))
             {
-                _logger.LogInformation("Generating LoadFile for Batch {batchId}", batch.ArtifactId);
-                using (ISourceWorkspaceDataReader reader = _dataReaderFactory.CreateNativeSourceWorkspaceDataReader(batch, token.AnyReasonCancellationToken))
-                using (StreamWriter writer = new StreamWriter(batchPath, append: true))
+                try
                 {
-                    _itemLevelErrorHandler.Initialize(reader.ItemStatusMonitor);
+                    _logger.LogInformation("Generating LoadFile for Batch {batchId}", batch.ArtifactId);
                     reader.OnItemReadError += _itemLevelErrorHandler.HandleItemLevelError;
-
-                    while (reader.Read())
+                    using (StreamWriter writer = new StreamWriter(batchPath, append: true))
                     {
-                        string line = GetLineContent(reader, settings);
-                        writer.WriteLine(line);
-                        readerLineNumber++;
+                        while (reader.Read())
+                        {
+                            string line = GetLineContent(reader, settings);
+                            writer.WriteLine(line);
+                        }
                     }
+
+                    await HandleBatchStatusOnReadFinish(token, batch, reader.ItemStatusMonitor).ConfigureAwait(false);
+                    await _itemLevelErrorHandler.HandleRemainingErrorsAsync()
+                        .ConfigureAwait(false);
+
+                    _logger.LogInformation(
+                        "LoadFile for batch {batchId} was written with {recordsCount} records - {path}",
+                        batch.ArtifactId,
+                        reader.ItemStatusMonitor.ProcessedItemsCount,
+                        batchPath);
                 }
-
-                await HandleBatchStatusOnProcessingStop(token, batch, readerLineNumber).ConfigureAwait(false);
-                await _itemLevelErrorHandler.HandleDataSourceProcessingFinishedAsync(batch).ConfigureAwait(false);
-
-                _logger.LogInformation("LoadFile for batch {batchId} was written with {recordsCount} records - {path}", batch.ArtifactId, readerLineNumber, batchPath);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Load file generator error occurred in line: {readerLineNumber}", readerLineNumber);
-                await _itemLevelErrorHandler.HandleDataSourceProcessingFinishedAsync(batch).ConfigureAwait(false);
-                throw;
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Load file generator error occurred in line: {readerLineNumber}", reader.ItemStatusMonitor.ReadItemsCount);
+                    await _itemLevelErrorHandler.HandleRemainingErrorsAsync()
+                            .ConfigureAwait(false);
+                    await batch.SetStatusAsync(BatchStatus.Failed).ConfigureAwait(false);
+                    throw;
+                }
             }
         }
 
@@ -104,7 +109,7 @@ namespace Relativity.Sync.Executors
         private async Task<string> CreateBatchFullPath(IBatch batch)
         {
             _logger.LogInformation("Preparing LoadFile path for Batch {batchId} - {batchGuid}...", batch.ArtifactId, batch.BatchGuid);
-            string batchFullPath = string.Empty;
+            string batchFullPath;
             try
             {
                 int workspaceId = _configuration.DestinationWorkspaceArtifactId;
@@ -137,19 +142,23 @@ namespace Relativity.Sync.Executors
             return batchFullPath;
         }
 
-        private async Task HandleBatchStatusOnProcessingStop(CompositeCancellationToken token, IBatch batch, int startIndexForProcessingAfterResume)
+        private async Task HandleBatchStatusOnReadFinish(CompositeCancellationToken token, IBatch batch, IItemStatusMonitor monitor)
         {
+            await batch.SetFailedDocumentsCountAsync(monitor.FailedItemsCount).ConfigureAwait(false);
+
             if (token.IsStopRequested)
             {
                 _logger.LogInformation("Cancellation requested for job ID: {jobId}, batch GUID: {batchId}", _configuration.ExportRunId, batch.BatchGuid);
                 await batch.SetStatusAsync(BatchStatus.Cancelled).ConfigureAwait(false);
+                return;
             }
 
             if (token.IsDrainStopRequested)
             {
                 _logger.LogInformation("Drain stop requested for job ID: {jobId}, batch GUID: {batchId}", _configuration.ExportRunId, batch.BatchGuid);
                 await batch.SetStatusAsync(BatchStatus.Paused).ConfigureAwait(false);
-                await batch.SetStartingIndexAsync(startIndexForProcessingAfterResume).ConfigureAwait(false);
+                await batch.SetStartingIndexAsync(monitor.ReadItemsCount).ConfigureAwait(false);
+                return;
             }
         }
     }
