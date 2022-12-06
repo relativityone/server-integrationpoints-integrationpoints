@@ -211,21 +211,12 @@ namespace Relativity.Sync.Transfer.ImportAPI
                         continue;
                     }
 
-                    switch (pair.RelativityDataType)
-                    {
-                        case RelativityDataType.LongText:
-                        case RelativityDataType.MultipleChoice:
-                        case RelativityDataType.MultipleObject:
-                            throw new NotSupportedException($"Mapping type {nameof(pair.RelativityDataType)} is not supported in IAPI 2.0");
-                        default:
-                            _logger.LogInformation(
-                                "Configure Field - Index: {fieldIndex}, SourceName: {fieldName}, DestinationName",
-                                pair.DocumentFieldIndex,
-                                pair.SourceFieldName,
-                                pair.DestinationFieldName);
-                            x = x.WithField(pair.DocumentFieldIndex, pair.DestinationFieldName);
-                            break;
-                    }
+                    _logger.LogInformation(
+                        "Configure Field - Index: {fieldIndex}, SourceName: {fieldName}, DestinationName",
+                        pair.DocumentFieldIndex,
+                        pair.SourceFieldName,
+                        pair.DestinationFieldName);
+                    x = x.WithField(pair.DocumentFieldIndex, pair.DestinationFieldName);
                 }
             });
         }

@@ -54,7 +54,12 @@ namespace Relativity.Sync.Pipelines
             bool isIApi2ShouldBeUsed = _iApiv2RunChecker.ShouldBeUsed();
             if (isIApi2ShouldBeUsed)
             {
+                _logger.LogInformation("Using Import API 2.0 to run the job");
                 return new IAPI2_SyncDocumentRunPipeline();
+            }
+            else
+            {
+                _logger.LogInformation("Using Import API 1.0 to run the job");
             }
 
             ISyncPipeline selectedPipeline;
