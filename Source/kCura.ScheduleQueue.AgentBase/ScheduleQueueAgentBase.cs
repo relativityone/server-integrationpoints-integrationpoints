@@ -6,6 +6,7 @@ using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core.Checkers;
+using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Monitoring.SystemReporter;
 using kCura.IntegrationPoints.Core.Monitoring.SystemReporter.DNS;
 using kCura.IntegrationPoints.Core.Services;
@@ -263,7 +264,9 @@ namespace kCura.ScheduleQueue.AgentBase
 
                 foreach (Job job in transientStateJobs)
                 {
-                    Logger.LogError("Job {jobId} failed at {time} because Kubernetes Agent container crashed and job was left in unknown status. Job details: {@job}", job.JobId, utcNow, job.RemoveSensitiveData());
+                    KubernetesException k8sException = new KubernetesException($"Job {job.JobId} failed because Job Agent stopped due to underlying system layer error and job was left in unknown state. Please try to run this job again.");
+
+                    Logger.LogError(k8sException, "Job {jobId} failed at {time} because Kubernetes Agent container crashed and job was left in unknown status. Job details: {@job}", job.JobId, utcNow, job.RemoveSensitiveData());
 
                     SendJobInTransientStateMetric(job);
 
@@ -274,10 +277,7 @@ namespace kCura.ScheduleQueue.AgentBase
                         continue;
                     }
 
-                    job.MarkJobAsFailed(
-                        new Exception($"Job {job.JobId} failed because Kubernetes Agent container crashed and job was left in unknown status. Please try to run this job again."),
-                         false,
-                         false);
+                    job.MarkJobAsFailed(k8sException, false, false);
                     Logger.LogInformation("Starting Job in Transient State {jobId} processing...", job.JobId);
 
                     TaskResult result = ProcessJob(job);
