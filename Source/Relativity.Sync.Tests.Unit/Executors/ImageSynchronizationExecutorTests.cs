@@ -130,7 +130,10 @@ namespace Relativity.Sync.Tests.Unit.Executors
             _jobStatisticsContainerFake = new Mock<IJobStatisticsContainer>();
             _fieldManagerFake = new Mock<IFieldManager>();
             _fakeFieldMappings = new Mock<IFieldMappings>();
+
             _configFake = new Mock<IImageSynchronizationConfiguration>();
+            _configFake.SetupGet(x => x.EnableTagging).Returns(true);
+
             _documentTaggerFake = new Mock<IDocumentTagger>();
             _documentTaggerFake
                 .Setup(x => x.TagObjectsAsync(It.IsAny<Sync.Executors.IImportJob>(), It.IsAny<ISynchronizationConfiguration>(), It.IsAny<CompositeCancellationToken>()))
@@ -237,8 +240,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             TaggingExecutionResult executionResult = ReturnTaggingCompletedResultAsync(totalRecordsTagged);
             SetUpDocumentsTagRepository(executionResult);
-
-            _configFake.SetupGet(x => x.EnableTagging).Returns(true);
 
             // Act
             await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -357,6 +358,34 @@ namespace Relativity.Sync.Tests.Unit.Executors
         }
 
         [Test]
+        public async Task Execute_ShouldNotRunTagging_WhenTaggingWasDisabled()
+        {
+            // Arrange
+            const int batchesCount = 1;
+
+            SetupBatchRepository(batchesCount);
+
+            SetupImportJob();
+
+            TaggingExecutionResult executionResult = ReturnTaggingCompletedResultAsync();
+
+            _configFake.SetupGet(x => x.EnableTagging).Returns(false);
+
+            // Act
+            ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
+
+            // Assert
+            _documentTaggerFake.Verify(
+                x => x.TagObjectsAsync(
+                    It.IsAny<Sync.Executors.IImportJob>(),
+                    It.IsAny<ISynchronizationConfiguration>(),
+                    It.IsAny<CompositeCancellationToken>()),
+                Times.Never);
+
+            result.Status.Should().Be(ExecutionStatus.Completed);
+        }
+
+        [Test]
         public async Task Execute_ShouldCancelTaggingResultTest()
         {
             string expectedMessage = "Executing synchronization was interrupted due to the job being canceled.";
@@ -371,8 +400,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 It.IsAny<ISynchronizationConfiguration>(),
                 It.IsAny<CompositeCancellationToken>())).
                 Throws<OperationCanceledException>();
-
-            _configFake.SetupGet(x => x.EnableTagging).Returns(true);
 
             // Act
             ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -394,8 +421,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
             TaggingExecutionResult executionResult = null;
 
             SetUpDocumentsTagRepository(executionResult);
-
-            _configFake.SetupGet(x => x.EnableTagging).Returns(true);
 
             // Act
             ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
@@ -531,8 +556,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
                 .Setup(x => x.RunAsync(It.IsAny<CompositeCancellationToken>()))
                 .ReturnsAsync(new ImportJobResult(expectedExecutionResult, 1, 0, 1));
 
-            _configFake.SetupGet(x => x.EnableTagging).Returns(true);
-
             // Act
             ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
 
@@ -587,8 +610,6 @@ namespace Relativity.Sync.Tests.Unit.Executors
 
             TaggingExecutionResult executionResult = ReturnTaggingFailedResultAsync();
             SetUpDocumentsTagRepository(executionResult);
-
-            _configFake.SetupGet(x => x.EnableTagging).Returns(true);
 
             // Act
             ExecutionResult result = await _sut.ExecuteAsync(_configFake.Object, CompositeCancellationToken.None).ConfigureAwait(false);
