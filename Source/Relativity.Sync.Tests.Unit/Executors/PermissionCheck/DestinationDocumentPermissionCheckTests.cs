@@ -19,10 +19,6 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
     [TestFixture]
     public class DestinationDocumentPermissionCheckTests
     {
-        private DestinationDocumentPermissionCheck _sut;
-        private Mock<ISyncObjectTypeManager> _syncObjectTypeManagerFake;
-        private Mock<IDestinationServiceFactoryForUser> _destinationServiceFactoryFake;
-
         private const string _SOURCE_WORKSPACE_OBJECT_TYPE_NAME = "Relativity Source Case";
         private const string _SOURCE_JOB_OBJECT_TYPE_NAME = "Relativity Source Job";
 
@@ -36,6 +32,10 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
         private const int _TEST_FOLDER_ARTIFACT_ID = 20476;
         private const int _SOURCE_CASE_OBJECT_TYPE_ARTIFACT_TYPE_ID = 222;
         private const int _SOURCE_JOB_OBJECT_TYPE_ARTIFACT_TYPE_ID = 444;
+
+        private DestinationDocumentPermissionCheck _sut;
+        private Mock<ISyncObjectTypeManager> _syncObjectTypeManagerFake;
+        private Mock<IDestinationServiceFactoryForUser> _destinationServiceFactoryFake;
 
         [SetUp]
         public void SetUp()
@@ -84,7 +84,8 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
             _destinationServiceFactoryFake = new Mock<IDestinationServiceFactoryForUser>();
             _sut = new DestinationDocumentPermissionCheck(
                 _destinationServiceFactoryFake.Object,
-                _syncObjectTypeManagerFake.Object, new EmptyLogger());
+                _syncObjectTypeManagerFake.Object,
+                new EmptyLogger());
         }
 
         [Test]
@@ -248,8 +249,12 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
 
             Mock<IPermissionManager> permissionManager = SetupPermissions();
 
-            permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.Is<List<PermissionRef>>(
-                y => y.Any(z => z.ArtifactType.ID == _ARTIFACT_TYPE_FOLDER)), It.IsAny<int>())).Throws<SyncException>();
+            permissionManager.Setup(x => x.GetPermissionSelectedAsync(
+                    It.IsAny<int>(),
+                    It.Is<List<PermissionRef>>(
+                        y => y.Any(z => z.ArtifactType.ID == _ARTIFACT_TYPE_FOLDER)),
+                    It.IsAny<int>()))
+                .Throws<SyncException>();
 
             // Act
             ValidationResult actualResult =
@@ -295,8 +300,12 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
             _destinationServiceFactoryFake.Setup(x => x.CreateProxyAsync<IPermissionManager>()).ReturnsAsync(permissionManager.Object);
 
             var permissionValuesDefault = new List<PermissionValue>();
-            permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.IsAny<List<PermissionRef>>(),
-                It.IsAny<int>())).ReturnsAsync(permissionValuesDefault);
+            permissionManager.Setup(
+                    x => x.GetPermissionSelectedAsync(
+                        It.IsAny<int>(),
+                        It.IsAny<List<PermissionRef>>(),
+                        It.IsAny<int>()))
+                .ReturnsAsync(permissionValuesDefault);
 
             permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.IsAny<List<PermissionRef>>())).ReturnsAsync(permissionValuesDefault);
 
@@ -342,6 +351,33 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
             AssertInsufficientPermissionsToCreateTagInDestination(actualResult);
         }
 
+        [Test]
+        public async Task Validate_ShouldNotCheckTagsPermission_WhenTaggingWasDisabled()
+        {
+            // Arrange
+            Mock<IPermissionsCheckConfiguration> configuration = SetupConfiguration();
+
+            Mock<IPermissionManager> permissionManager = SetupPermissions();
+
+            configuration.SetupGet(x => x.EnableTagging).Returns(false);
+
+            // Act
+            ValidationResult actualResult = await _sut.ValidateAsync(configuration.Object).ConfigureAwait(false);
+
+            // Assert
+            actualResult.IsValid.Should().BeTrue();
+            actualResult.Messages.Should().HaveCount(0);
+
+            permissionManager.Verify(
+                x => x.GetPermissionSelectedAsync(
+                    It.IsAny<int>(),
+                    It.Is<List<PermissionRef>>(permissionRefs =>
+                        permissionRefs.Any(permissionRef =>
+                            permissionRef.ArtifactType.ID == _SOURCE_CASE_OBJECT_TYPE_ARTIFACT_TYPE_ID ||
+                            permissionRef.ArtifactType.ID == _SOURCE_JOB_OBJECT_TYPE_ARTIFACT_TYPE_ID))),
+                Times.Never);
+        }
+
         private static void AssertInsufficientPermissionsToCreateTagInDestination(ValidationResult actualResult)
         {
             actualResult.IsValid.Should().BeFalse();
@@ -359,8 +395,12 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
                 .ReturnsAsync(permissionManager.Object);
 
             var permissionValueDefault = new List<PermissionValue> { new PermissionValue { Selected = true } };
-            permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.IsAny<List<PermissionRef>>(),
-                It.IsAny<int>())).ReturnsAsync(permissionValueDefault);
+            permissionManager.Setup(
+                    x => x.GetPermissionSelectedAsync(
+                        It.IsAny<int>(),
+                        It.IsAny<List<PermissionRef>>(),
+                        It.IsAny<int>()))
+                .ReturnsAsync(permissionValueDefault);
 
             permissionManager.Setup(x => x.GetPermissionSelectedAsync(It.IsAny<int>(), It.IsAny<List<PermissionRef>>())).ReturnsAsync(permissionValueDefault);
 
@@ -375,9 +415,10 @@ namespace Relativity.Sync.Tests.Unit.Executors.PermissionCheck
         private static Mock<IPermissionsCheckConfiguration> SetupConfiguration(bool createSavedSearchForTags = true)
         {
             Mock<IPermissionsCheckConfiguration> configuration = new Mock<IPermissionsCheckConfiguration>();
-            configuration.Setup(x => x.DestinationWorkspaceArtifactId).Returns(_TEST_WORKSPACE_ARTIFACT_ID);
-            configuration.Setup(x => x.DestinationFolderArtifactId).Returns(_TEST_FOLDER_ARTIFACT_ID);
-            configuration.Setup(x => x.CreateSavedSearchForTags).Returns(createSavedSearchForTags);
+            configuration.SetupGet(x => x.DestinationWorkspaceArtifactId).Returns(_TEST_WORKSPACE_ARTIFACT_ID);
+            configuration.SetupGet(x => x.DestinationFolderArtifactId).Returns(_TEST_FOLDER_ARTIFACT_ID);
+            configuration.SetupGet(x => x.CreateSavedSearchForTags).Returns(createSavedSearchForTags);
+            configuration.SetupGet(x => x.EnableTagging).Returns(true);
 
             return configuration;
         }
