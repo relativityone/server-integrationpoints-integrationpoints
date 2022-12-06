@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
         public async Task<ActionResult> GetNativesStatisticsForSavedSearch(int workspaceId, int savedSearchId, int integrationPointId, CancellationToken token)
         {
             CalculationState calculationState = await _calculationChecker.MarkAsCalculating(integrationPointId).ConfigureAwait(false);
-            if (calculationState.Status != CalculationStatus.Error)
+            if (calculationState.Status != CalculationStatus.Error && calculationState.Status != CalculationStatus.InProgress)
             {
                 DocumentsStatistics result = await
                _documentAccumulatedStatistics.GetNativesStatisticsForSavedSearchAsync(workspaceId, savedSearchId).ConfigureAwait(false);
@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
         public async Task<ActionResult> GetImagesStatisticsForSavedSearch(int workspaceId, int savedSearchId, bool calculateSize, int integrationPointId, CancellationToken token)
         {
             CalculationState calculationState = await _calculationChecker.MarkAsCalculating(integrationPointId).ConfigureAwait(false);
-            if (calculationState.Status != CalculationStatus.Error)
+            if (calculationState.Status != CalculationStatus.Error && calculationState.Status != CalculationStatus.InProgress)
             {
                 DocumentsStatistics result = await _documentAccumulatedStatistics.GetImagesStatisticsForSavedSearchAsync(workspaceId, savedSearchId, calculateSize, token)
                .ConfigureAwait(false);
@@ -117,7 +117,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
         public async Task<ActionResult> GetImagesStatisticsForProduction(int workspaceId, int productionId, int integrationPointId, CancellationToken token)
         {
             CalculationState calculationState = await _calculationChecker.MarkAsCalculating(integrationPointId).ConfigureAwait(false);
-            if (calculationState.Status != CalculationStatus.Error)
+            if (calculationState.Status != CalculationStatus.Error && calculationState.Status != CalculationStatus.InProgress)
             {
                 DocumentsStatistics result = await _documentAccumulatedStatistics.GetImagesStatisticsForProductionAsync(workspaceId, productionId)
                 .ConfigureAwait(false);

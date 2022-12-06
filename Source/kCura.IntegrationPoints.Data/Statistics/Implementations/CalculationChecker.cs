@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
             }
 
             calculationState.Status = CalculationStatus.Completed;
-            statistics.CalculatedOn = DateTime.UtcNow.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture);  // should we use 'UtcNow' here?
+            statistics.CalculatedOn = DateTime.UtcNow.ToString("MM/dd/yyyy HH:mm", CultureInfo.InvariantCulture);
             calculationState.DocumentStatistics = statistics;
 
             await UpdateCalculationStateValue(integrationPointId, calculationState).ConfigureAwait(false);
