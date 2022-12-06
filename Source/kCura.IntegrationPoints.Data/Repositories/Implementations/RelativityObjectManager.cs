@@ -13,9 +13,7 @@ using kCura.IntegrationPoints.Domain.Exceptions;
 using Relativity.API;
 using Relativity.Kepler.Transport;
 using Relativity.Services.DataContracts.DTOs.Results;
-using Relativity.Services.Exceptions;
 using Relativity.Services.Objects.DataContracts;
-using Relativity.Services.Objects.Exceptions;
 using FieldRef = Relativity.Services.Objects.DataContracts.FieldRef;
 using QueryResult = Relativity.Services.Objects.DataContracts.QueryResult;
 using RelativityObjectRef = Relativity.Services.Objects.DataContracts.RelativityObjectRef;
@@ -123,12 +121,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
         public T Read<T>(int artifactId, ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
             where T : BaseRdo, new()
         {
-            T def = new T();
-
-            return Read<T>(
-                artifactId,
-                def.ToFieldList(),
-                executionIdentity);
+            var request = new ReadRequest
+            {
+                Object = new RelativityObjectRef { ArtifactID = artifactId },
+                Fields = new T().ToFieldList()
+            };
+            return SendReadRequestAsync<T>(request, executionIdentity: executionIdentity).GetAwaiter().GetResult();
         }
 
         public T Read<T>(
@@ -137,45 +135,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
             where T : BaseRdo, new()
         {
-            IEnumerable<FieldRef> fields = fieldsGuids.Select(x => new FieldRef { Guid = x }).ToArray();
-
-            return Read<T>(
-                artifactId,
-                fields,
-                executionIdentity);
-        }
-
-        public T Read<T>(
-            int artifactId,
-            IEnumerable<FieldRef> fieldsGuids,
-            ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
-            where T : BaseRdo, new()
-        {
-            T def = new T();
-
-            ObjectTypeRef objectType = def.ToObjectType();
-
-            var request = new QueryRequest
+            var request = new ReadRequest
             {
-                ObjectType = objectType,
-                Fields = fieldsGuids,
-                Condition = $"'ArtifactID' == {artifactId}"
+                Object = new RelativityObjectRef { ArtifactID = artifactId },
+                Fields = fieldsGuids.Select(x => new FieldRef { Guid = x }).ToArray()
             };
-
-            List<T> result = Query<T>(request, executionIdentity);
-
-            if (result.Count == 1)
-            {
-                return result.Single();
-            }
-            else if (result.Count == 0)
-            {
-                throw new NotFoundException($"ObjectType: {objectType.Guid}, ArtifactId: {artifactId}.");
-            }
-            else
-            {
-                throw new DuplicateArtifactException($"Multiple objects of type {objectType.Guid} have been found with artifactID - {artifactId}");
-            }
+            return SendReadRequestAsync<T>(request, executionIdentity: executionIdentity).GetAwaiter().GetResult();
         }
 
         public bool Update(
@@ -786,6 +751,27 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             catch (Exception ex)
             {
                 HandleObjectManagerException(ex, message: GetQueryErrorMessage(q, GetRdoType(rdo)));
+                throw;
+            }
+        }
+
+        private async Task<T> SendReadRequestAsync<T>(
+            ReadRequest request,
+            ExecutionIdentity executionIdentity = ExecutionIdentity.CurrentUser)
+            where T : BaseRdo, new()
+        {
+            try
+            {
+                using (IObjectManagerFacade client = _objectManagerFacadeFactory.Create(executionIdentity))
+                {
+                    ReadResult result = await client.ReadAsync(_workspaceArtifactId, request).ConfigureAwait(false);
+                    return result.Object.ToRDO<T>();
+                }
+            }
+            catch (Exception ex)
+            {
+                string rdoType = GetRdoType(new T());
+                HandleObjectManagerException(ex, message: GetErrorMessage<ReadRequest>(rdoType));
                 throw;
             }
         }
