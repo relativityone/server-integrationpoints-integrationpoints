@@ -9,13 +9,13 @@ Proposed
 The biggest trouble we currently have with Other Providers in R1 is job failing on Kubernetes due to containers crash or lost connectivity to services. We're unable to recover from such failures and job is temporarily left in unknown status, then after certain period of time (30 minutes currently)marked as failed and user must manually run the job again. Second problem in my opinion is how Other Providers are designed - RIP creates child jobs for each 1000 items. So if user tries to run job for 1M records, we create 1k child jobs and each of those jobs has to be picked up and processed by the agent separately. This approach is problematic because of several reasons:
 
 - it adds unncecessary complexity and is error prone
-- it's hard to track job overall job progress (JobTracker tables were created for this purpose)
+- it's hard to track overall job progress (JobTracker tables were created for this purpose)
 - job is progressing slower (overhead is added for picking up the job by the agent, setting up each of the small jobs etc.)
 - it's very hard to make any changes to the code because of how it was designed (or rather lack of design)
 
 ## Solution
 
-There is only one good solution - rewrite "Other Providers" code using IAPI 2.0. This have huge advantages:
+There is only one good solution - rewrite "Other Providers" code using IAPI 2.0. This has huge advantages:
 
 - we will have full control over the load file building (until IAPI 2.0 implements streaming) so it will be container crash-resistant and drain stop will work as it should
 - actual import of the load file to the workspace is outside of our responsibility and we don't have to worry about it
@@ -73,7 +73,7 @@ High level overview of how custom providers work - we cannot introduce any break
 
 ### ID Files
 
-First stage is to store list of IDs in a file. This can be simple text file, where each line contains record identifier. Also, reasonable approach would be to build load files in batches, for example 10k records each because of performance reasons. So for each batch we would have one file with ID and one file with records, like below:
+First stage is to store list of IDs in a file. This can be simple text file, where each line contains record identifier. Also, reasonable approach would be to build load files in batches, for example 10k records each because of performance reasons. So for each batch we would have one file with IDs and one file with records, like below:
 
 ```
 9ecf9b4e-50b9-4cba-980f-3295a8c6363a.ID.001
