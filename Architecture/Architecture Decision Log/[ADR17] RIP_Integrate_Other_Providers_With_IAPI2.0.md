@@ -84,7 +84,7 @@ First stage is to store list of IDs in a file. This can be simple text file, whe
 
 GUID above can be a `BatchInstance` from `JobDetails` but that's only proposal. Anyway, names should be predictable so we can easily tell to which job they belong.
 
-File can simply contain identifiers, each in separate line:
+File with IDs can simply contain identifiers, each in separate line:
 
 ```
 ITEM_0001
@@ -119,7 +119,7 @@ Next we want to take each of the ID files (sequentially), read the IDs and use t
 }
 ```
 
-On resume, we read `NumberOfRecordsProcessed` from `JobDetails`, read ID file contents skipping number of lines equal to `NumberOfRecordsProcessed` and call `IDataSourceProvider.GetData` for the rest of them. When we finish writing of load file, we set `IsCompleted = true` so we can skip it next time.
+On resume, we read `NumberOfRecordsProcessed` from `JobDetails`, read ID file contents skipping number of lines equal to `NumberOfRecordsProcessed` and call `IDataSourceProvider.GetData` for the rest of them. When we finish writing of load file, we set `IsCompleted = true` so we can skip it next time. Also we should update `NumberOfRecordsProcessed` so it will be consistent with `IsCompleted` flag.
 
 Remaining question is, what if container crashes. We have two options:
 
@@ -134,7 +134,7 @@ After job completes, we must clean up load files and files containing IDs.
 
 ## Import API 2.0 job
 
-We already have experience with IAPI 2.0 from Relativity.Sync so there should be no surprise. We create and configure the job, add load files as data source, run the job and wait for results. When job is complete, we must gather and report item level errors.
+We already have experience with IAPI 2.0 from Relativity.Sync so there should be no surprise. We create and configure the job, add load files as data source, run the job and wait for results. When job is complete, we must gather and report item level errors. To improve performance, we might want to create and configure IAPI 2.0 job even before we start building load files. Then we can immediately add created load file to IAPI 2.0 data source, once it's ready.
 
 ## Entity import
 
