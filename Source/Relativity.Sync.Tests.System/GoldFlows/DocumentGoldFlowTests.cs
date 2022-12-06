@@ -49,7 +49,6 @@ namespace Relativity.Sync.Tests.System.GoldFlows
         }
 
         [Test]
-        [TestType.MainFlow]
         public async Task SyncJob_ShouldSyncDocuments_WithoutTagging()
         {
             // Arrange
