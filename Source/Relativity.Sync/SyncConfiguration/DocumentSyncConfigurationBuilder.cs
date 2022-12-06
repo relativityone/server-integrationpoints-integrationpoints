@@ -100,6 +100,8 @@ namespace Relativity.Sync.SyncConfiguration
         protected override Task ValidateAsync()
         {
             SetFieldsMapping();
+            ValidateSavedSearchCreation();
+
             return SetDestinationFolderStructureAsync();
         }
 
@@ -118,6 +120,14 @@ namespace Relativity.Sync.SyncConfiguration
 
             SyncConfiguration.FieldsMapping = Serializer.Serialize(
                 _fieldsMappingBuilder.FieldsMapping);
+        }
+
+        private void ValidateSavedSearchCreation()
+        {
+            if (SyncConfiguration.CreateSavedSearchInDestination && !SyncConfiguration.EnableTagging)
+            {
+                throw new InvalidSyncConfigurationException("Saved Search creation in destination workspace can't be configure when Tagging is disabled");
+            }
         }
 
         private async Task SetDestinationFolderStructureAsync()

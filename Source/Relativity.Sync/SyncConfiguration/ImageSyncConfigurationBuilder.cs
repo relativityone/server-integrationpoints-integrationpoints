@@ -87,8 +87,17 @@ namespace Relativity.Sync.SyncConfiguration
         protected override Task ValidateAsync()
         {
             SetFieldsMapping();
+            ValidateSavedSearchCreation();
 
             return Task.CompletedTask;
+        }
+
+        private void ValidateSavedSearchCreation()
+        {
+            if (SyncConfiguration.CreateSavedSearchInDestination && !SyncConfiguration.EnableTagging)
+            {
+                throw new InvalidSyncConfigurationException("Saved Search creation in destination workspace can't be configure when Tagging is disabled");
+            }
         }
 
         private void SetFieldsMapping()
