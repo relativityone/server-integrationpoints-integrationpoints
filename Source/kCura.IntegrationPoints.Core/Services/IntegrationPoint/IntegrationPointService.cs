@@ -128,7 +128,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
                 ReadFieldMapping,
                 exception =>
                 {
-                    _logger.LogWarning(
+                    _logger.LogError(
                         exception,
                         "Unable to deserialize field mapping for integration point: {integrationPointId}. Mapping value: {fieldMapping}. Operation will be retried.",
                         artifactId,
