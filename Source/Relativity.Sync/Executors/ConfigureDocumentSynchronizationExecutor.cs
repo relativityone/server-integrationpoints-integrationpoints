@@ -59,7 +59,7 @@ namespace Relativity.Sync.Executors
         {
             using (IImportJobController importJobController = await _serviceFactory.CreateProxyAsync<IImportJobController>().ConfigureAwait(false))
             {
-                _logger.LogInformation("Creating ImportJob with {importJobId} ID...", context.ImportJobId);
+                _logger.LogInformation("Creating ImportJob with ID: {importJobId}", context.ImportJobId);
 
                 Response response = await importJobController.CreateAsync(
                         workspaceID: context.DestinationWorkspaceId,
@@ -82,25 +82,6 @@ namespace Relativity.Sync.Executors
                     context.DestinationWorkspaceId,
                     context.ImportJobId,
                     importSettings).ConfigureAwait(false);
-
-                response.Validate();
-            }
-        }
-
-        private async Task AttachAdvancedImportSettingsToImportJobAsync(ImportContext context, AdvancedImportSettings importSettings)
-        {
-            using (IAdvancedConfigurationController configurationController = await _serviceFactory.CreateProxyAsync<IAdvancedConfigurationController>().ConfigureAwait(false))
-            {
-                _logger.LogInformation(
-                    "Attaching AdvancedImportSettings to ImportJob {jobId}... - AdvancedImportSettings: {@importSettings}",
-                    context.ImportJobId,
-                    importSettings);
-
-                Response response = await configurationController.CreateAsync(
-                        context.DestinationWorkspaceId,
-                        context.ImportJobId,
-                        importSettings)
-                    .ConfigureAwait(false);
 
                 response.Validate();
             }
