@@ -108,8 +108,8 @@ export function setFieldsValues(layoutData, convenienceApi: IConvenienceApi, sou
                     // calculation status = error (from any reason)
                     info = "Error occurred";
                 }
-                if (data["Status"] == 0 || data["Status"] == 3) {
-                    // calculation status = new or canceled
+                if (data["Status"] == 0) {
+                    // calculation status = new
                     info = "Press 'Calculate statistics' button";
                 }
                 if (data["Status"] == 1) {  

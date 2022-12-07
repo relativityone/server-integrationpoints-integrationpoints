@@ -69,17 +69,6 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
             return await GetCalculationStateValue(integrationPointId).ConfigureAwait(false);
         }
 
-        public async Task<CalculationState> MarkCalculationAsCancelled(int integrationPointId)
-        {
-            CalculationState state = new CalculationState
-            {
-                Status = CalculationStatus.Canceled
-            };
-
-            await UpdateCalculationStateValue(integrationPointId, state).ConfigureAwait(false);
-            return state;
-        }
-
         private async Task<CalculationState> GetCalculationStateValue(int integrationPointId)
         {
             CalculationState result;

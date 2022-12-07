@@ -114,10 +114,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
                 return results;
             }
-            catch (OperationCanceledException)
-            {
-                return results;
-            }
             catch (Exception ex)
             {
                 _exceptionHandler(ex, resultsBlockSize, startIndex);

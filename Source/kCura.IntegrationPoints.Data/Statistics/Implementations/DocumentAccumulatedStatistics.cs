@@ -108,10 +108,6 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
             try
             {
-
-                // TODO: REMOVE AFTER TESTS! IF YOU CAN SEE IT DURING REVIEW => SCREAM();
-                await Task.Delay(TimeSpan.FromSeconds(50)).ConfigureAwait(false);
-
                 QueryRequest query = new DocumentQueryBuilder()
                     .AddSavedSearchCondition(savedSearchId)
                     .AddField(DocumentFieldsConstants.HasImagesFieldName)
@@ -155,6 +151,7 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
 
                 return statistics;
             }
+
             try
             {
                 QueryRequest query = new ProductionInformationQueryBuilder()
@@ -203,12 +200,6 @@ namespace kCura.IntegrationPoints.Data.Statistics.Implementations
                 int startIndex = 0;
                 do
                 {
-                    if (token.IsCancellationRequested)
-                    {
-                        _logger.LogInformation("Calculation cancelled successfully");
-                        return statistics;
-                    }
-
                     result = await export.GetNextBlockAsync(startIndex, token).ConfigureAwait(false);
 
                     if (result.Any())

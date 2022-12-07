@@ -1,5 +1,5 @@
 ﻿import { IConvenienceApi } from "../types/convenienceApi";
-import { getImagesStatsForProduction, getImagesStatsForSavedSearch, getNativesStats, abortCurrentAction, handleStatistics, CalculationType } from "../helpers/fieldValuesForRelativityExport";
+import { getImagesStatsForProduction, getImagesStatsForSavedSearch, getNativesStats, handleStatistics, CalculationType } from "../helpers/fieldValuesForRelativityExport";
 
 export function postJobAPIRequest(convenienceApi: IConvenienceApi, workspaceId, integrationPointId, action = "") {
     var request = {
@@ -18,10 +18,6 @@ export function postJobAPIRequest(convenienceApi: IConvenienceApi, workspaceId, 
     return convenienceApi.relativityHttpClient.post(request.url, request.payload, request.options)
 }
 
-export function abortCalculation() {
-    abortCurrentAction();    
-}
-
 export function calculateStatsRequest(convenienceApi: IConvenienceApi, sourceConfiguration, destinationConfiguration, integrationPointId) {
 
     convenienceApi.fieldHelper.setValue("Total of Documents", "Calculating. This may take a few minutes...");
@@ -30,34 +26,15 @@ export function calculateStatsRequest(convenienceApi: IConvenienceApi, sourceCon
 
     if (sourceConfiguration["SourceProductionId"]) {
         getImagesStatsForProduction(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], sourceConfiguration["SourceProductionId"], integrationPointId).then(data => {
-            if (data === "Cancelled") {
-                convenienceApi.fieldHelper.setValue("Total of Documents", "Calculation cancelled");
-                convenienceApi.fieldHelper.setValue("Total of Images", "Calculation cancelled");
-            }
-            else {
-                handleStatistics(convenienceApi, data, CalculationType.ImagesStatsForSavedSearch);
-            }     
+            handleStatistics(convenienceApi, data, CalculationType.ImagesStatsForProduction);
         })
     } else if (destinationConfiguration["importNativeFile"] == 'true' && !importImageFiles(destinationConfiguration)) {
         getNativesStats(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], sourceConfiguration["SavedSearchArtifactId"], integrationPointId).then(data => {
-            if (data === "Cancelled") {
-                convenienceApi.fieldHelper.setValue("Total of Documents", "Calculation cancelled");
-                convenienceApi.fieldHelper.setValue("Total of Natives", "Calculation cancelled");
-            }
-            else {
-                handleStatistics(convenienceApi, data, CalculationType.ImagesStatsForSavedSearch);
-            }     
+            handleStatistics(convenienceApi, data, CalculationType.NativesStats);
         })
     } else {
         getImagesStatsForSavedSearch(convenienceApi, sourceConfiguration["SourceWorkspaceArtifactId"], sourceConfiguration["SavedSearchArtifactId"], (destinationConfiguration["getImagesStatsForProduction"] === 'true'), integrationPointId).then(data => {
-            console.log(data);
-            if (data === "Cancelled") {
-                convenienceApi.fieldHelper.setValue("Total of Documents", "Calculation cancelled");
-                convenienceApi.fieldHelper.setValue("Total of Images", "Calculation cancelled");
-            }
-            else {
-                handleStatistics(convenienceApi, data, CalculationType.ImagesStatsForSavedSearch);
-            }            
+            handleStatistics(convenienceApi, data, CalculationType.ImagesStatsForSavedSearch);
         })
     }
 }

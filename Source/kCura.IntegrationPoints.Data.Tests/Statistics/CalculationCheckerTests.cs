@@ -216,26 +216,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Statistics
             result.Status.Should().Be(expectedStatus);
         }
 
-        [Test]
-        public async Task MarkCalculationAsCancelled_ShouldCorrectlySetStatusToCancelled()
-        {
-            // Arrange
-            CalculationStatus expectedStatus = CalculationStatus.Canceled;
-            UpdateDataSetup();
-
-            // Act
-            CalculationState result = await _sut.MarkCalculationAsCancelled(_INTEGRATION_POINT_ID).ConfigureAwait(false);
-
-            // Assert
-            result.Should().NotBeNull();
-            _objectManagerMock.Verify(
-                x => x.UpdateAsync(
-                It.IsAny<int>(),
-                It.IsAny<IList<FieldRefValuePair>>(),
-                It.IsAny<ExecutionIdentity>()), Times.Once);
-            result.Status.Should().Be(expectedStatus);
-        }
-
         private void GetDataSetup(CalculationState state)
         {
             string input = state == null ? null : JsonConvert.SerializeObject(state);

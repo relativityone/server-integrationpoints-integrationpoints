@@ -1,5 +1,5 @@
 ﻿import { IConvenienceApi } from "../types/convenienceApi";
-import { postCreateIntegrationPointProfileRequest, postJobAPIRequest, prepareGetImportProviderDocumentAPIRequest, prepareGetViewErrorsPath, calculateStatsRequest, abortCalculation } from "./buttonFunctionalities";
+import { postCreateIntegrationPointProfileRequest, postJobAPIRequest, prepareGetImportProviderDocumentAPIRequest, prepareGetViewErrorsPath, calculateStatsRequest } from "./buttonFunctionalities";
 
 export function createRunButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, workspaceId: number, integrationPointId: number, lqMessageContainer: Element) {
     return consoleApi.generate.button({
@@ -133,25 +133,6 @@ export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenie
                 acceptAction: function () {                   
 
                     calculateStatsRequest(convenienceApi, sourceConfiguration, destinationConfiguration, integrationPointId);                
-                }
-            });
-        }
-    });
-}
-
-export function createStopCalculationsButton(consoleApi, convenienceApi: IConvenienceApi, enabled: boolean) {
-    return consoleApi.generate.button({
-        innerText: "Stop calculations",
-        disabled: !enabled,
-        onclick: function () {
-            return convenienceApi.modalService.confirm({
-                title: "Stop calculations",
-                message: "Statistics calculation process for this Integration Point is in progress. Do you want to cancel this operation?",
-                acceptText: "Yes",
-                cancelText: "No",
-                acceptAction: function () {
-                    abortCalculation();   
-                    console.log("Abort signal sent");
                 }
             });
         }

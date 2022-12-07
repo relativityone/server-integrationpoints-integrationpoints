@@ -21,7 +21,5 @@
         public bool DownloadErrorFileLinkVisible { get; set; }
 
         public bool CalculateStatisticsButtonEnabled { get; set; }
-
-        public bool StopCalculationsButtonEnabled { get; set; }
     }
 }

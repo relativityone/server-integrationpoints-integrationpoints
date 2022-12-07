@@ -1,7 +1,7 @@
 import { contextProvider } from "../helpers/contextProvider";
 import { IConvenienceApi } from "../types/convenienceApi";
 import { ButtonState } from "../types/buttonState";
-import { createDownloadErrorFileLink, createRetryErrorsButton, createRunButton, createSaveAsProfileButton, createStopButton, createCalculateStatsButton, createStopCalculationsButton, createViewErrorsLink, removeMessageContainers } from "../helpers/buttonCreate";
+import { createDownloadErrorFileLink, createRetryErrorsButton, createRunButton, createSaveAsProfileButton, createStopButton, createCalculateStatsButton, createViewErrorsLink, removeMessageContainers } from "../helpers/buttonCreate";
 
 export function createConsole(convenienceApi: IConvenienceApi): void {
     return contextProvider((ctx) => {
@@ -158,10 +158,7 @@ function generateConsoleContent(convenienceApi, ctx, workspaceId, integrationPoi
     if (destinationConfiguration["artifactTypeID"] == 10 && destinationConfiguration["Provider"] === "relativity") {
 
         var calculateStatsButton = createCalculateStatsButton(consoleApi, convenienceApi, ctx, buttonState.calculateStatisticsButtonEnabled, integrationPointId, sourceConfiguration, destinationConfiguration);
-        transferSection.push(calculateStatsButton);
-
-        var stopCalculationsButton = createStopCalculationsButton(consoleApi, convenienceApi, buttonState.stopCalculationsButtonEnabled);
-        transferSection.push(stopCalculationsButton);
+        transferSection.push(calculateStatsButton);       
     }
 
     if (buttonState.saveAsProfileButtonVisible) {

@@ -8,6 +8,5 @@
     stopButtonEnabled: boolean
     viewErrorsLinkEnabled: boolean
     viewErrorsLinkVisible: boolean
-    calculateStatisticsButtonEnabled: boolean
-    stopCalculationsButtonEnabled: boolean
+    calculateStatisticsButtonEnabled: boolean    
 }

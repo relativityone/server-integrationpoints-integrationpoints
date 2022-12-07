@@ -38,8 +38,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
                 SaveAsProfileButtonVisible = saveAsProfileButtonVisible,
                 DownloadErrorFileLinkEnabled = downloadErrorFileLinkEnabled,
                 DownloadErrorFileLinkVisible = downloadErrorFileLinkVisible,
-                CalculateStatisticsButtonEnabled = calculateStatsButtonEnabled,
-                StopCalculationsButtonEnabled = calculationInProgress
+                CalculateStatisticsButtonEnabled = calculateStatsButtonEnabled
             };
         }
 

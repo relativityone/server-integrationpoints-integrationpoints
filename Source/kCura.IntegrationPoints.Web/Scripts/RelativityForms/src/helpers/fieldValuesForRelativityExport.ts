@@ -1,14 +1,5 @@
 ﻿import { IConvenienceApi } from "../types/convenienceApi";
 
-
-// controller and abortCurrentAction func to cancel ongoing call from SummaryPageController
-let controller;
-export function abortCurrentAction(): void {
-    if (controller) {
-        controller.abort("Cancelled");
-    }
-}
-
 export const enum CalculationType {
     ImagesStatsForProduction = 1,
     NativesStats = 2,
@@ -70,8 +61,6 @@ export async function getCalculationStateInfo(convenienceApi: IConvenienceApi, i
 }
 
 export async function getNativesStats(convenienceApi: IConvenienceApi, workspaceId: number, savedSearchId: number, integrationPointId: number) {
-    controller = new AbortController();
-    const signal = controller.signal;
     let request = {
         options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
             headers: {
@@ -86,24 +75,10 @@ export async function getNativesStats(convenienceApi: IConvenienceApi, workspace
         url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/SummaryPage/GetNativesStatisticsForSavedSearch"
     };
 
-    let resp = convenienceApi.relativityHttpClient.post(request.url, request.payload, request.options, { signal })
-        .then(function (result) {
-            if (!result.ok) {
-                if (signal["reason"] === "Cancelled") {
-                    return "Cancelled";
-                } else {
-                    console.log("error in get; ", result);
-                }
-            } else if (result.ok) {
-                return result.json();
-            }
-        });
-    return resp;
+    return sendStatsRequestAndHandleResponse(convenienceApi, request);   
 }
 
 export async function getImagesStatsForSavedSearch(convenienceApi: IConvenienceApi, workspaceId: number, savedSearchId: number, importNatives: boolean, integrationPointId: number) {
-    controller = new AbortController();
-    const signal = controller.signal;
     let request = {
         options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
             headers: {
@@ -116,27 +91,13 @@ export async function getImagesStatsForSavedSearch(convenienceApi: IConvenienceA
             calculateSize: importNatives,
             integrationPointId: integrationPointId
         },
-        url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/SummaryPage/GetImagesStatisticsForSavedSearch"
-    };
+        url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/SummaryPage/GetImagesStatisticsForSavedSearch"        
+    };   
 
-    let resp = convenienceApi.relativityHttpClient.post(request.url, request.payload, request.options, { signal })
-        .then(function (result) {
-            if (!result.ok) {
-                if (signal["reason"] === "Cancelled") {
-                    return "Cancelled";
-                } else {
-                    console.log("error in get; ", result);
-                }
-            } else if (result.ok) {
-                return result.json();
-            }
-        });
-    return resp;
+    return sendStatsRequestAndHandleResponse(convenienceApi, request);   
 }
 
 export async function getImagesStatsForProduction(convenienceApi: IConvenienceApi, workspaceId: number, productionId: number, integrationPointId: number) {
-    controller = new AbortController();
-    const signal = controller.signal;
     let request = {
         options: convenienceApi.relativityHttpClient.makeRelativityBaseRequestOptions({
             headers: {
@@ -151,14 +112,14 @@ export async function getImagesStatsForProduction(convenienceApi: IConvenienceAp
         url: convenienceApi.applicationPaths.relativity + "CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/SummaryPage/GetImagesStatisticsForProduction"
     };
 
-    let resp = convenienceApi.relativityHttpClient.post(request.url, request.payload, request.options, { signal })
+    return sendStatsRequestAndHandleResponse(convenienceApi, request);   
+}
+
+function sendStatsRequestAndHandleResponse(convenienceApi, request) {
+    let resp = convenienceApi.relativityHttpClient.post(request.url, request.payload, request.options)
         .then(function (result) {
             if (!result.ok) {
-                if (signal["reason"] === "Cancelled") {
-                    return "Cancelled";
-                } else {
-                    console.log("error in get; ", result);
-                }
+                console.log("error in get; ", result);
             } else if (result.ok) {
                 return result.json();
             }
@@ -166,7 +127,7 @@ export async function getImagesStatsForProduction(convenienceApi: IConvenienceAp
     return resp;
 }
 
-export function prepareStatsInfo(total, size) {
+function prepareStatsInfo(total, size) {
     let result = "";
     if (total > -1) {
         result += total;
@@ -204,12 +165,7 @@ export function handleStatistics(convenienceApi, data, calculationType) {
         totalSizeFieldName = "TotalImagesSizeBytes";
     }
 
-    if (data["Status"] == 3) {
-        // calculation was cancelled
-        convenienceApi.fieldHelper.setValue(documentsLabelName, "Press 'Calculate statistics' button");
-        convenienceApi.fieldHelper.setValue(nativesOrImagesLabelName, "Press 'Calculate statistics' button");
-    }
-    else if (data["Status"] == 4) {
+   if (data === 'undefined' || data["Status"] == 4) {
         // calculation ended with errors
         convenienceApi.fieldHelper.setValue(documentsLabelName, "Error occurred");
         convenienceApi.fieldHelper.setValue(nativesOrImagesLabelName, "Error occurred");
@@ -226,7 +182,8 @@ ${lastCalculationDate}`;
         var total = prepareStatsInfo(stats[totalCountFieldName], stats[totalSizeFieldName]);
         convenienceApi.fieldHelper.setValue(nativesOrImagesLabelName, total);
     }
-}
+}        
+
 
 function formatBytes(bytes) {
     if (bytes === 0) return '0 Bytes';

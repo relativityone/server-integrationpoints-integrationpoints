@@ -9,7 +9,5 @@ namespace kCura.IntegrationPoints.Data.Statistics
         Task<CalculationState> MarkCalculationAsFinished(int integrationPointId, DocumentsStatistics statistics);
 
         Task<CalculationState> GetCalculationState(int integrationPointId);
-
-        Task<CalculationState> MarkCalculationAsCancelled(int integrationPointId);
     }
 }
