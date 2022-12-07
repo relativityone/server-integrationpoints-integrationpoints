@@ -37,8 +37,13 @@ namespace kCura.IntegrationPoints.RelativitySync
         private readonly IRelativityObjectManager _relativityObjectManager;
         private readonly IAPILog _logger;
 
-        public IntegrationPointToSyncConverter(ISerializer serializer, IJobHistoryService jobHistoryService,
-            IJobHistorySyncService jobHistorySyncService, ISyncOperationsWrapper syncOperations, IRelativityObjectManager relativityObjectManager, IAPILog logger)
+        public IntegrationPointToSyncConverter(
+            ISerializer serializer,
+            IJobHistoryService jobHistoryService,
+            IJobHistorySyncService jobHistorySyncService,
+            ISyncOperationsWrapper syncOperations,
+            IRelativityObjectManager relativityObjectManager,
+            IAPILog logger)
         {
             _serializer = serializer;
             _jobHistoryService = jobHistoryService;
@@ -79,8 +84,12 @@ namespace kCura.IntegrationPoints.RelativitySync
             ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(job.IntegrationPointModel.DestinationConfiguration);
             FolderConf folderConf = _serializer.Deserialize<FolderConf>(job.IntegrationPointModel.DestinationConfiguration);
 
-            ISyncContext syncContext = new SyncContext(job.WorkspaceId, sourceConfiguration.TargetWorkspaceArtifactId, job.JobHistoryId,
-                Core.Constants.IntegrationPoints.APPLICATION_NAME, GetVersion());
+            ISyncContext syncContext = new SyncContext(
+                job.WorkspaceId,
+                sourceConfiguration.TargetWorkspaceArtifactId,
+                job.JobHistoryId,
+                Core.Constants.IntegrationPoints.APPLICATION_NAME,
+                GetVersion());
 
             ISyncConfigurationBuilder builder = _syncOperations.GetSyncConfigurationBuilder(syncContext);
 
@@ -93,7 +102,9 @@ namespace kCura.IntegrationPoints.RelativitySync
                 JobHistory jobHistory = _jobHistoryService.GetJobHistory(new List<int> { job.JobHistoryId }).FirstOrDefault();
 
                 if (jobHistory != null)
+                {
                     importSettings.ImportOverwriteMode = NameToEnumConvert.GetEnumByModeName(jobHistory.Overwrite);
+                }
 
                 return importSettings.ImageImport ?
                     await CreateImageSyncConfigurationAsync(builder, job, sourceConfiguration, importSettings).ConfigureAwait(false)
@@ -101,8 +112,11 @@ namespace kCura.IntegrationPoints.RelativitySync
             }
         }
 
-        private async Task<int> CreateImageSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job,
-            SourceConfiguration sourceConfiguration, ImportSettings importSettings)
+        private async Task<int> CreateImageSyncConfigurationAsync(
+            ISyncConfigurationBuilder builder,
+            IExtendedJob job,
+            SourceConfiguration sourceConfiguration,
+            ImportSettings importSettings)
         {
             IEnumerable<int> productionImagePrecedenceIds = importSettings.ProductionPrecedence == "1" ?
                 importSettings.ImagePrecedence.Select(x => int.Parse(x.ArtifactID)) :
@@ -112,10 +126,13 @@ namespace kCura.IntegrationPoints.RelativitySync
                 .ConfigureRdos(RdoConfiguration.GetRdoOptions())
                 .ConfigureImageSync(
                     new ImageSyncOptions(
-                        DataSourceType.SavedSearch, sourceConfiguration.SavedSearchArtifactId,
-                        DestinationLocationType.Folder, importSettings.DestinationFolderArtifactId)
+                        DataSourceType.SavedSearch,
+                        sourceConfiguration.SavedSearchArtifactId,
+                        DestinationLocationType.Folder,
+                        importSettings.DestinationFolderArtifactId)
                     {
-                        CopyImagesMode = importSettings.ImportNativeFileCopyMode.ToSyncImageMode()
+                        CopyImagesMode = importSettings.ImportNativeFileCopyMode.ToSyncImageMode(),
+                        EnableTagging = importSettings.EnableTagging
                     })
                 .ProductionImagePrecedence(
                     new ProductionImagePrecedenceOptions(
@@ -148,8 +165,12 @@ namespace kCura.IntegrationPoints.RelativitySync
             return await syncConfigurationRoot.SaveAsync().ConfigureAwait(false);
         }
 
-        private async Task<int> CreateDocumentSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job,
-            SourceConfiguration sourceConfiguration, ImportSettings importSettings, FolderConf folderConf)
+        private async Task<int> CreateDocumentSyncConfigurationAsync(
+            ISyncConfigurationBuilder builder,
+            IExtendedJob job,
+            SourceConfiguration sourceConfiguration,
+            ImportSettings importSettings,
+            FolderConf folderConf)
         {
             IDocumentSyncConfigurationBuilder syncConfigurationRoot = builder
                 .ConfigureRdos(RdoConfiguration.GetRdoOptions())
@@ -158,7 +179,8 @@ namespace kCura.IntegrationPoints.RelativitySync
                         sourceConfiguration.SavedSearchArtifactId,
                         importSettings.DestinationFolderArtifactId)
                     {
-                        CopyNativesMode = importSettings.ImportNativeFileCopyMode.ToSyncNativeMode()
+                        CopyNativesMode = importSettings.ImportNativeFileCopyMode.ToSyncNativeMode(),
+                        EnableTagging = importSettings.EnableTagging
                     })
                 .WithFieldsMapping(mappingBuilder => PrepareFieldsMappingAction(
                     job.IntegrationPointModel.FieldMappings, mappingBuilder))
@@ -191,8 +213,11 @@ namespace kCura.IntegrationPoints.RelativitySync
             return await syncConfigurationRoot.SaveAsync().ConfigureAwait(false);
         }
 
-        private async Task<int> CreateNonDocumentSyncConfigurationAsync(ISyncConfigurationBuilder builder, IExtendedJob job,
-            SourceConfiguration sourceConfiguration, ImportSettings importSettings)
+        private async Task<int> CreateNonDocumentSyncConfigurationAsync(
+            ISyncConfigurationBuilder builder,
+            IExtendedJob job,
+            SourceConfiguration sourceConfiguration,
+            ImportSettings importSettings)
         {
             INonDocumentSyncConfigurationBuilder syncConfigurationRoot = builder
                 .ConfigureRdos(RdoConfiguration.GetRdoOptions())
@@ -287,7 +312,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
             if (jobHistory == null)
             {
-                // this means that job is scheduled, so it's not retrying errors 
+                // this means that job is scheduled, so it's not retrying errors
                 return false;
             }
 
@@ -305,6 +330,5 @@ namespace kCura.IntegrationPoints.RelativitySync
 
             return assemblyVersion;
         }
-
     }
 }
