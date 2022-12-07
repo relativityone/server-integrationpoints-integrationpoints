@@ -90,6 +90,16 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
                     SourceField = new FieldEntry { DisplayName = GlobalConst.AAD.Fields._FIRST_NAME, FieldIdentifier = GlobalConst.AAD.Fields._FIRST_NAME_ID, Type = GlobalConst.AAD.Fields._TEXT_FIELD_TYPE },
                     DestinationField = GetFieldEntry(entityFields.Single(x => x.Name == "First Name"), "Fixed-Length Text")
                 },
+                new FieldMap
+                {
+                    SourceField = new FieldEntry { DisplayName = GlobalConst.AAD.Fields._LAST_NAME, FieldIdentifier = GlobalConst.AAD.Fields._LAST_NAME_ID, Type = GlobalConst.AAD.Fields._TEXT_FIELD_TYPE },
+                    DestinationField = GetFieldEntry(entityFields.Single(x => x.Name == "Last Name"), "Fixed-Length Text")
+                },
+                new FieldMap
+                {
+                    SourceField = new FieldEntry { DisplayName = GlobalConst.AAD.Fields._MANAGER, FieldIdentifier = GlobalConst.AAD.Fields._MANAGER_ID, Type = GlobalConst.AAD.Fields._TEXT_FIELD_TYPE },
+                    DestinationField = GetFieldEntry(entityFields.Single(x => x.Name == "Manager"), "Single Object")
+                },
             };
         }
 

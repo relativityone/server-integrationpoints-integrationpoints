@@ -140,13 +140,94 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             integrationPoint.SecuredConfiguration = decryptedSecuredConfiguration;
         }
 
-        // This method is used by JobHistoryErrorService.
-        // It should be placed in IntegrationPointService but this will cause circular dependencies. We need to clean up dependencies hell first and then move this method to the right place.
-        public void UpdateHasErrors(int integrationPointArtifactId, bool hasErrors)
+        public void UpdateHasErrors(int artifactId, bool hasErrors)
         {
-            IntegrationPoint integrationPoint = _objectManager.Read<IntegrationPoint>(integrationPointArtifactId);
-            integrationPoint.HasErrors = hasErrors;
-            _objectManager.Update(integrationPoint);
+            List<FieldRefValuePair> fieldValues = new List<FieldRefValuePair>
+            {
+                new FieldRefValuePair
+                {
+                    Field = new FieldRef { Guid = IntegrationPointFieldGuids.HasErrorsGuid },
+                    Value = hasErrors,
+                },
+            };
+
+            _objectManager.Update(artifactId, fieldValues);
+        }
+
+        public void UpdateLastAndNextRunTime(int artifactId, DateTime? lastRuntime, DateTime? nextRuntime)
+        {
+            List<FieldRefValuePair> fieldValues = new List<FieldRefValuePair>
+            {
+                new FieldRefValuePair
+                {
+                    Field = new FieldRef { Guid = IntegrationPointFieldGuids.LastRuntimeUTCGuid },
+                    Value = lastRuntime,
+                },
+                new FieldRefValuePair
+                {
+                    Field = new FieldRef { Guid = IntegrationPointFieldGuids.NextScheduledRuntimeUTCGuid },
+                    Value = nextRuntime,
+                },
+            };
+
+            _objectManager.Update(artifactId, fieldValues);
+        }
+
+        public void DisableScheduler(int artifactId)
+        {
+            List<FieldRefValuePair> fieldValues = new List<FieldRefValuePair>
+            {
+                new FieldRefValuePair
+                {
+                    Field = new FieldRef { Guid = IntegrationPointFieldGuids.ScheduleRuleGuid },
+                    Value = null,
+                },
+                new FieldRefValuePair
+                {
+                    Field = new FieldRef { Guid = IntegrationPointFieldGuids.NextScheduledRuntimeUTCGuid },
+                    Value = null,
+                },
+                new FieldRefValuePair
+                {
+                    Field = new FieldRef { Guid = IntegrationPointFieldGuids.EnableSchedulerGuid },
+                    Value = false,
+                },
+            };
+
+            _objectManager.Update(artifactId, fieldValues);
+        }
+
+        public void UpdateJobHistory(int artifactId, List<int> jobHistory)
+        {
+            List<FieldRefValuePair> fieldValues = new List<FieldRefValuePair>
+            {
+                new FieldRefValuePair
+                {
+                    Field = new FieldRef { Guid = IntegrationPointFieldGuids.JobHistoryGuid },
+                    Value = jobHistory.ToArray(),
+                },
+            };
+
+            _objectManager.Update(artifactId, fieldValues);
+        }
+
+        public void UpdateConfiguration(int artifactId, string sourceConfiguration, string destinationConfiguration)
+        {
+            List<FieldRefValuePair> fieldValues = new List<FieldRefValuePair>
+            {
+                new FieldRefValuePair
+                {
+                    Field = new FieldRef { Guid = IntegrationPointFieldGuids.SourceConfigurationGuid },
+                    Value = sourceConfiguration,
+                },
+                new FieldRefValuePair
+                {
+                    Field = new FieldRef { Guid = IntegrationPointFieldGuids.DestinationConfigurationGuid },
+                    Value = destinationConfiguration,
+                },
+            };
+
+            _objectManager.Update(artifactId, fieldValues);
         }
 
         public void Delete(int integrationPointID)

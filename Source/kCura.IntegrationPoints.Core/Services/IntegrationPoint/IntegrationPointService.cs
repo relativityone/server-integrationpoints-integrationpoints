@@ -248,34 +248,22 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
         public void UpdateLastAndNextRunTime(int artifactId, DateTime? lastRuntime, DateTime? nextRuntime)
         {
-            Data.IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(artifactId).GetAwaiter().GetResult();
-            integrationPoint.LastRuntimeUTC = lastRuntime;
-            integrationPoint.NextScheduledRuntimeUTC = nextRuntime;
-            _integrationPointRepository.Update(integrationPoint);
+            _integrationPointRepository.UpdateLastAndNextRunTime(artifactId, lastRuntime, nextRuntime);
         }
 
         public void DisableScheduler(int artifactId)
         {
-            Data.IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(artifactId).GetAwaiter().GetResult();
-            integrationPoint.ScheduleRule = null;
-            integrationPoint.NextScheduledRuntimeUTC = null;
-            integrationPoint.EnableScheduler = false;
-            _integrationPointRepository.Update(integrationPoint);
+            _integrationPointRepository.DisableScheduler(artifactId);
         }
 
         public void UpdateJobHistory(int artifactId, List<int> jobHistory)
         {
-            Data.IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(artifactId).GetAwaiter().GetResult();
-            integrationPoint.JobHistory = jobHistory.ToArray();
-            _integrationPointRepository.Update(integrationPoint);
+            _integrationPointRepository.UpdateJobHistory(artifactId, jobHistory);
         }
 
         public void UpdateConfiguration(int artifactId, string sourceConfiguration, string destinationConfiguration)
         {
-            Data.IntegrationPoint integrationPoint = _integrationPointRepository.ReadAsync(artifactId).GetAwaiter().GetResult();
-            integrationPoint.SourceConfiguration = sourceConfiguration;
-            integrationPoint.DestinationConfiguration = destinationConfiguration;
-            _integrationPointRepository.Update(integrationPoint);
+            _integrationPointRepository.UpdateConfiguration(artifactId, sourceConfiguration, destinationConfiguration);
         }
 
         public void RunIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId)
