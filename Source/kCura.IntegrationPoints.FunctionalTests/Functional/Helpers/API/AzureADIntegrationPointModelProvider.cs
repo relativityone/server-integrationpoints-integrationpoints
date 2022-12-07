@@ -41,8 +41,8 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
                 FieldMappings = GetAzureADFieldsMapping(entityType.Fields),
                 Type = await _commonDataSvc.GetIntegrationPointTypeByAsync(IntegrationPointTypes.ImportName).ConfigureAwait(false),
                 OverwriteFieldsChoiceId = await _commonDataSvc.GetOverwriteFieldsChoiceIdAsync(ImportOverwriteModeEnum.AppendOnly).ConfigureAwait(false),
-                SecuredConfiguration = new 
-                { 
+                SecuredConfiguration = new
+                {
                     applicationID = GlobalConst.AAD._APPLICATION_ID,
                     password = GlobalConst.AAD._PASSWORD,
                     domain = GlobalConst.AAD._DOMAIN,
@@ -90,16 +90,6 @@ namespace Relativity.IntegrationPoints.Tests.Functional.Helpers.API
                     SourceField = new FieldEntry { DisplayName = GlobalConst.AAD.Fields._FIRST_NAME, FieldIdentifier = GlobalConst.AAD.Fields._FIRST_NAME_ID, Type = GlobalConst.AAD.Fields._TEXT_FIELD_TYPE },
                     DestinationField = GetFieldEntry(entityFields.Single(x => x.Name == "First Name"), "Fixed-Length Text")
                 },
-                new FieldMap
-                {
-                    SourceField = new FieldEntry { DisplayName = GlobalConst.AAD.Fields._LAST_NAME, FieldIdentifier = GlobalConst.AAD.Fields._LAST_NAME_ID, Type = GlobalConst.AAD.Fields._TEXT_FIELD_TYPE },
-                    DestinationField = GetFieldEntry(entityFields.Single(x => x.Name == "Last Name"), "Fixed-Length Text")
-                },
-                new FieldMap
-                {
-                    SourceField = new FieldEntry { DisplayName = GlobalConst.AAD.Fields._MANAGER, FieldIdentifier = GlobalConst.AAD.Fields._MANAGER_ID, Type = GlobalConst.AAD.Fields._TEXT_FIELD_TYPE },
-                    DestinationField = GetFieldEntry(entityFields.Single(x => x.Name == "Manager"), "Single Object")
-                }
             };
         }
 
