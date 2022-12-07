@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
             _permissionRepository = Substitute.For<IPermissionRepository>();
             _permissionValidator = Substitute.For<IIntegrationPointPermissionValidator>();
             _integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
-            _calculationChecker= Substitute.For<ICalculationChecker>();
+            _calculationChecker = Substitute.For<ICalculationChecker>();
             _serializer = new JSONSerializer();
 
             var activeArtifact = new Artifact(_ARTIFACT_ID, null, 0, "", false, new FieldCollection
@@ -114,13 +114,15 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
                 TypeOfExport = SourceConfiguration.ExportType.SavedSearch
             };
             var importSettings = new ImportSettings { ImageImport = false };
+            CalculationState state = new CalculationState { Status = CalculationStatus.New };
             var integrationPoint = new Data.IntegrationPoint
             {
                 HasErrors = true,
                 SourceProvider = 8392,
                 DestinationProvider = 437,
                 SourceConfiguration = _serializer.Serialize(sourceConfiguration),
-                DestinationConfiguration = _serializer.Serialize(importSettings)
+                DestinationConfiguration = _serializer.Serialize(importSettings),
+                CalculationState = _serializer.Serialize(state)
             };
 
             string[] viewErrorMessages = { Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_NO_VIEW };
@@ -185,7 +187,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
                     integrationPoint.HasErrors.Value,
                     hasViewErrorsPermissions,
                     hasStoppableJobs,
-                    hasProfileAddPermission, 
+                    hasProfileAddPermission,
                     false)
                 .Returns(buttonStates);
 
@@ -299,13 +301,15 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints
                 TypeOfExport = SourceConfiguration.ExportType.SavedSearch
             };
             var importSettings = new ImportSettings { ImageImport = false };
+            CalculationState state = new CalculationState { Status = CalculationStatus.New };
             var integrationPoint = new Data.IntegrationPoint
             {
                 HasErrors = true,
                 SourceProvider = 8392,
                 DestinationProvider = 243,
                 SourceConfiguration = _serializer.Serialize(sourceConfiguration),
-                DestinationConfiguration = _serializer.Serialize(importSettings)
+                DestinationConfiguration = _serializer.Serialize(importSettings),
+                CalculationState = _serializer.Serialize(state)
             };
 
             _managerFactory.CreateStateManager().Returns(_stateManager);
