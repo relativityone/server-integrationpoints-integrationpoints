@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.RelativitySync;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Utils;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.RelativitySync.Models;
 using kCura.IntegrationPoints.RelativitySync.Utils;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -25,6 +24,7 @@ using Relativity.Sync.SyncConfiguration;
 using Relativity.Sync.SyncConfiguration.FieldsMapping;
 using Relativity.Sync.SyncConfiguration.Options;
 using SyncFieldMap = Relativity.Sync.Storage.FieldMap;
+using FieldMap = Relativity.IntegrationPoints.FieldsMapping.Models.FieldMap;
 
 namespace kCura.IntegrationPoints.RelativitySync
 {
@@ -34,30 +34,30 @@ namespace kCura.IntegrationPoints.RelativitySync
         private readonly IJobHistoryService _jobHistoryService;
         private readonly IJobHistorySyncService _jobHistorySyncService;
         private readonly ISyncOperationsWrapper _syncOperations;
-        private readonly IRelativityObjectManager _relativityObjectManager;
         private readonly IAPILog _logger;
 
-        public IntegrationPointToSyncConverter(ISerializer serializer, IJobHistoryService jobHistoryService,
-            IJobHistorySyncService jobHistorySyncService, ISyncOperationsWrapper syncOperations, IRelativityObjectManager relativityObjectManager, IAPILog logger)
+        public IntegrationPointToSyncConverter(
+            ISerializer serializer,
+            IJobHistoryService jobHistoryService,
+            IJobHistorySyncService jobHistorySyncService,
+            ISyncOperationsWrapper syncOperations,
+            IAPILog logger)
         {
             _serializer = serializer;
             _jobHistoryService = jobHistoryService;
             _jobHistorySyncService = jobHistorySyncService;
             _syncOperations = syncOperations;
-            _relativityObjectManager = relativityObjectManager;
             _logger = logger;
         }
 
-        public async Task<int> CreateSyncConfigurationAsync(int workspaceId, int integrationPointId, int jobHistoryId, int userId)
+        public async Task<int> CreateSyncConfigurationAsync(int workspaceId, IntegrationPointDto integrationPointDto, int jobHistoryId, int userId)
         {
             try
             {
-                IntegrationPoint integrationPoint = _relativityObjectManager.Read<IntegrationPoint>(integrationPointId);
-
-                IExtendedJob extendedJob = new ExtendedJobForSyncApplication()
+                IExtendedJob extendedJob = new ExtendedJobForSyncApplication
                 {
-                    IntegrationPointId = integrationPointId,
-                    IntegrationPointModel = integrationPoint,
+                    IntegrationPointId = integrationPointDto.ArtifactId,
+                    IntegrationPointDto = integrationPointDto,
                     JobHistoryId = jobHistoryId,
                     WorkspaceId = workspaceId,
                     SubmittedById = userId
@@ -75,9 +75,9 @@ namespace kCura.IntegrationPoints.RelativitySync
 
         public async Task<int> CreateSyncConfigurationAsync(IExtendedJob job)
         {
-            SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(job.IntegrationPointModel.SourceConfiguration);
-            ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(job.IntegrationPointModel.DestinationConfiguration);
-            FolderConf folderConf = _serializer.Deserialize<FolderConf>(job.IntegrationPointModel.DestinationConfiguration);
+            SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(job.IntegrationPointDto.SourceConfiguration);
+            ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(job.IntegrationPointDto.DestinationConfiguration);
+            FolderConf folderConf = _serializer.Deserialize<FolderConf>(job.IntegrationPointDto.DestinationConfiguration);
 
             ISyncContext syncContext = new SyncContext(job.WorkspaceId, sourceConfiguration.TargetWorkspaceArtifactId, job.JobHistoryId,
                 Core.Constants.IntegrationPoints.APPLICATION_NAME, GetVersion());
@@ -140,7 +140,7 @@ namespace kCura.IntegrationPoints.RelativitySync
                 syncConfigurationRoot.IsRetry(new RetryOptions(jobToRetry.ArtifactID));
             }
 
-            if (job.IntegrationPointModel.LogErrors.HasValue && !job.IntegrationPointModel.LogErrors.Value)
+            if (job.IntegrationPointDto.LogErrors == false)
             {
                 syncConfigurationRoot.DisableItemLevelErrorLogging();
             }
@@ -161,7 +161,7 @@ namespace kCura.IntegrationPoints.RelativitySync
                         CopyNativesMode = importSettings.ImportNativeFileCopyMode.ToSyncNativeMode()
                     })
                 .WithFieldsMapping(mappingBuilder => PrepareFieldsMappingAction(
-                    job.IntegrationPointModel.FieldMappings, mappingBuilder))
+                    job.IntegrationPointDto.FieldMappings, mappingBuilder))
                 .DestinationFolderStructure(
                     GetFolderStructureOptions(folderConf, importSettings))
                 .EmailNotifications(
@@ -183,7 +183,7 @@ namespace kCura.IntegrationPoints.RelativitySync
                 syncConfigurationRoot.IsRetry(new RetryOptions(jobToRetry.ArtifactID));
             }
 
-            if (job.IntegrationPointModel.LogErrors.HasValue && !job.IntegrationPointModel.LogErrors.Value)
+            if (job.IntegrationPointDto.LogErrors == false)
             {
                 syncConfigurationRoot.DisableItemLevelErrorLogging();
             }
@@ -202,7 +202,7 @@ namespace kCura.IntegrationPoints.RelativitySync
                         importSettings.ArtifactTypeId,
                         importSettings.DestinationArtifactTypeId))
                 .WithFieldsMapping(mappingBuilder => PrepareFieldsMappingAction(
-                    job.IntegrationPointModel.FieldMappings, mappingBuilder))
+                    job.IntegrationPointDto.FieldMappings, mappingBuilder))
                 .EmailNotifications(
                     GetEmailOptions(job))
                 .OverwriteMode(
@@ -212,7 +212,7 @@ namespace kCura.IntegrationPoints.RelativitySync
                         FieldsOverlayBehavior = importSettings.ImportOverlayBehavior.ToSyncFieldOverlayBehavior()
                     });
 
-            if (job.IntegrationPointModel.LogErrors.HasValue && !job.IntegrationPointModel.LogErrors.Value)
+            if (job.IntegrationPointDto.LogErrors == false)
             {
                 syncConfigurationRoot.DisableItemLevelErrorLogging();
             }
@@ -220,9 +220,9 @@ namespace kCura.IntegrationPoints.RelativitySync
             return await syncConfigurationRoot.SaveAsync().ConfigureAwait(false);
         }
 
-        private void PrepareFieldsMappingAction(string integrationPointsFieldsMapping, IFieldsMappingBuilder mappingBuilder)
+        private void PrepareFieldsMappingAction(List<FieldMap> integrationPointsFieldsMapping, IFieldsMappingBuilder mappingBuilder)
         {
-            List<FieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(integrationPointsFieldsMapping, _serializer, _logger);
+            List<SyncFieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(integrationPointsFieldsMapping, _logger);
 
             SyncFieldMap identifier = fieldsMapping.FirstOrDefault(x => x.FieldMapType == FieldMapType.Identifier);
             if (identifier != null)
@@ -230,7 +230,7 @@ namespace kCura.IntegrationPoints.RelativitySync
                 mappingBuilder.WithIdentifier();
             }
 
-            foreach (FieldMap fieldsMap in fieldsMapping.Where(x => x.FieldMapType == FieldMapType.None))
+            foreach (SyncFieldMap fieldsMap in fieldsMapping.Where(x => x.FieldMapType == FieldMapType.None))
             {
                 mappingBuilder.WithField(fieldsMap.SourceField.FieldIdentifier, fieldsMap.DestinationField.FieldIdentifier);
             }
@@ -259,12 +259,12 @@ namespace kCura.IntegrationPoints.RelativitySync
 
         private EmailNotificationsOptions GetEmailOptions(IExtendedJob job)
         {
-            if (job.IntegrationPointModel.EmailNotificationRecipients == null)
+            if (job.IntegrationPointDto.EmailNotificationRecipients == null)
             {
                 return new EmailNotificationsOptions(new List<string>());
             }
 
-            List<string> emailsList = job.IntegrationPointModel
+            List<string> emailsList = job.IntegrationPointDto
                 .EmailNotificationRecipients
                 .Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(x => x.Trim())
@@ -287,7 +287,7 @@ namespace kCura.IntegrationPoints.RelativitySync
 
             if (jobHistory == null)
             {
-                // this means that job is scheduled, so it's not retrying errors 
+                // this means that job is scheduled, so it's not retrying errors
                 return false;
             }
 
@@ -305,6 +305,5 @@ namespace kCura.IntegrationPoints.RelativitySync
 
             return assemblyVersion;
         }
-
     }
 }

@@ -5,12 +5,13 @@ using kCura.IntegrationPoints.Core.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Logging;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
@@ -40,7 +41,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
         protected IJobManager _jobManager;
         protected IManagerFactory _managerFactory;
         protected IJobService _jobService;
-        protected IIntegrationPointRepository _integrationPointRepository;
+        protected IIntegrationPointService _integrationPointService;
 
 
         [SetUp]
@@ -53,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
             _serializer = Substitute.For<kCura.Apps.Common.Utils.Serializers.ISerializer>();
             _dataProviderFactory = Substitute.For<IDataProviderFactory>();
             _appDomainRdoSynchronizerFactoryFactory = Substitute.For<ISynchronizerFactory>();
-            _integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
+            _integrationPointService = Substitute.For<IIntegrationPointService>();
 
             // Stubs
             _testInstance = new TestClass(_caseServiceContext,
@@ -66,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
                 _jobManager,
                 _managerFactory,
                 _jobService,
-                _integrationPointRepository);
+                _integrationPointService);
         }
 
         [TestCase("")]
@@ -80,7 +81,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
         public void GetRecipientEmails_NoEmailTests(string testEmail)
         {
             // ARRANGE
-            var integrationPoint = new Data.IntegrationPoint
+            var integrationPoint = new IntegrationPointDto
             {
                 EmailNotificationRecipients = testEmail,
             };
@@ -102,7 +103,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
             // ARRANGE
             string email1 = "email1@relativity.com";
 
-            var integrationPoint = new Data.IntegrationPoint
+            var integrationPoint = new IntegrationPointDto
             {
                 EmailNotificationRecipients = email1,
             };
@@ -125,8 +126,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
             string email1 = "email1@relativity.com";
             string email2 = "email2@relativity.com";
 
-            var integrationPoint = new Data.IntegrationPoint
-            { 
+            var integrationPoint = new IntegrationPointDto
+            {
                 EmailNotificationRecipients = $"  {email1} ;   {email2}   ",
             };
 
@@ -150,7 +151,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
             string email2 = "email2@relativity.com";
             string email3 = "email3@relativity.com";
 
-            var integrationPoint = new Data.IntegrationPoint
+            var integrationPoint = new IntegrationPointDto
             {
                 EmailNotificationRecipients = $"  {email1} ;  ;;;  ;;;;  {email2}   ;  {email3} ;;;",
             };
@@ -236,7 +237,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
 
             Job job = JobHelper.GetJob(jobIdValue, null, null, 0, 0, 0, 0, TaskType.SyncWorker, DateTime.Now, null,
                 jobDetailsText, 0, DateTime.Now, 0, String.Empty, String.Empty);
-            
+
             _serializer.Deserialize<TaskParameters>(Arg.Is<string>(x => x.Equals(jobDetailsText))).Returns(taskParameters);
 
             _managerFactory.CreateJobStopManager(Arg.Is(_jobService), Arg.Is(_jobHistoryService),
@@ -268,7 +269,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
             IJobManager jobManager,
             IManagerFactory managerFactory,
             IJobService jobService,
-            IIntegrationPointRepository integrationPointRepository)
+            IIntegrationPointService integrationPointService)
             : base(
                 caseServiceContext,
                 helper,
@@ -280,14 +281,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Agent
                 jobManager,
                 managerFactory,
                 jobService,
-                integrationPointRepository,
+                integrationPointService,
                 new EmptyDiagnosticLog())
         {
         }
 
-        public void SetIntegrationPoint(Data.IntegrationPoint ip)
+        public void SetIntegrationPoint(IntegrationPointDto dto)
         {
-            base.IntegrationPoint = ip;
+            IntegrationPointDto = dto;
         }
 
         public new List<string> GetRecipientEmails()

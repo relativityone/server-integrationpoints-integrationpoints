@@ -10,9 +10,9 @@ namespace Relativity.IntegrationPoints.Services.Extensions
 {
     public static class IntegrationPointModelExtensions
     {
-        public static kCura.IntegrationPoints.Core.Models.IntegrationPointModel ToCoreModel(this IntegrationPointModel model, string overwriteFieldsName)
+        public static IntegrationPointDto ToCoreModel(this IntegrationPointModel model, string overwriteFieldsName)
         {
-            var result = new kCura.IntegrationPoints.Core.Models.IntegrationPointModel();
+            var result = new IntegrationPointDto();
             result.SetProperties(model, overwriteFieldsName);
             if (model.SecuredConfiguration != null)
             {
@@ -27,51 +27,53 @@ namespace Relativity.IntegrationPoints.Services.Extensions
             return result;
         }
 
-        public static IntegrationPointProfileModel ToCoreProfileModel(this IntegrationPointModel model, string overwriteFieldsName)
+        public static IntegrationPointProfileDto ToCoreProfileModel(this IntegrationPointModel model, string overwriteFieldsName)
         {
-            var result = new IntegrationPointProfileModel();
+            var result = new IntegrationPointProfileDto();
             result.SetProperties(model, overwriteFieldsName);
             return result;
         }
 
-        private static void SetProperties(this IntegrationPointModelBase modelBase, IntegrationPointModel model, string overwriteFieldsName)
+        private static void SetProperties(this IntegrationPointDtoBase dtoBase, IntegrationPointModel model, string overwriteFieldsName)
         {
-            Mapper.Map(model, modelBase);
-            modelBase.SourceConfiguration = JsonConvert.SerializeObject(model.SourceConfiguration);
-            modelBase.Destination = JsonConvert.SerializeObject(model.DestinationConfiguration);
-            modelBase.Map = JsonConvert.SerializeObject(model.FieldMappings);
-            modelBase.NotificationEmails = model.EmailNotificationRecipients;
-            modelBase.Scheduler = Mapper.Map<Scheduler>(model.ScheduleRule);
-            modelBase.SelectedOverwrite = overwriteFieldsName;
+            Mapper.Map(model, dtoBase);
+
+            // FieldMappings should be now properly mapped by AutoMapper
+            dtoBase.SourceConfiguration = JsonConvert.SerializeObject(model.SourceConfiguration);
+            dtoBase.DestinationConfiguration = JsonConvert.SerializeObject(model.DestinationConfiguration);
+            dtoBase.EmailNotificationRecipients = model.EmailNotificationRecipients;
+            dtoBase.Scheduler = Mapper.Map<Scheduler>(model.ScheduleRule);
+            dtoBase.SelectedOverwrite = overwriteFieldsName;
         }
 
-        private static void SetImportFileCopyMode(kCura.IntegrationPoints.Core.Models.IntegrationPointModel model, ImportFileCopyModeEnum? modelImportFileCopyMode)
+        private static void SetImportFileCopyMode(IntegrationPointDto dto, ImportFileCopyModeEnum? modelImportFileCopyMode)
         {
             switch (modelImportFileCopyMode)
             {
                 case ImportFileCopyModeEnum.DoNotImportNativeFiles:
                 {
-                    UpdateImportFileCopyModeConfiguration(model, ImportNativeFileCopyModeEnum.DoNotImportNativeFiles, false);
+                    UpdateImportFileCopyModeConfiguration(dto, ImportNativeFileCopyModeEnum.DoNotImportNativeFiles, false);
                     break;
                 }
                 case ImportFileCopyModeEnum.SetFileLinks:
                 {
-                    UpdateImportFileCopyModeConfiguration(model, ImportNativeFileCopyModeEnum.SetFileLinks, true);
+                    UpdateImportFileCopyModeConfiguration(dto, ImportNativeFileCopyModeEnum.SetFileLinks, true);
                     break;
                 }
                 case ImportFileCopyModeEnum.CopyFiles:
                 {
-                    UpdateImportFileCopyModeConfiguration(model, ImportNativeFileCopyModeEnum.CopyFiles, true);
+                    UpdateImportFileCopyModeConfiguration(dto, ImportNativeFileCopyModeEnum.CopyFiles, true);
                     break;
                 }
             }
         }
 
         private static void UpdateImportFileCopyModeConfiguration(
-            kCura.IntegrationPoints.Core.Models.IntegrationPointModel model,
-            ImportNativeFileCopyModeEnum fileCopyMode, bool importFile)
+            IntegrationPointDto dto,
+            ImportNativeFileCopyModeEnum fileCopyMode,
+            bool importFile)
         {
-            model.Destination = JsonUtils.AddOrUpdatePropertyValues(model.Destination,
+            dto.DestinationConfiguration = JsonUtils.AddOrUpdatePropertyValues(dto.DestinationConfiguration,
                 new Dictionary<string, object>
                 {
                     { nameof(ImportSettings.ImportNativeFileCopyMode), fileCopyMode.ToString() },

@@ -109,10 +109,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             {
                 jobDetails = Newtonsoft.Json.JsonConvert.SerializeObject(message);
             }
-            
+
 
             job.JobDetails = jobDetails;
-            
+
             return job;
         }
 
@@ -128,7 +128,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Agent
             fakeInstanceSettingsBundle.SmtpConfigurationSettings.Add("EmailFrom", _EMAIL_FROM_ADDRESS);
 
             Container.Register(Component.For<IInstanceSettingsBundle>().Instance(fakeInstanceSettingsBundle).LifestyleTransient().IsDefault());
-            
+
             SendEmailWorker sut = Container.Resolve<SendEmailWorker>();
 
             return sut;

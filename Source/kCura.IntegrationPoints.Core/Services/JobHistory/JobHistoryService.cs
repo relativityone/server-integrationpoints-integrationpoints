@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.QueryOptions;
@@ -24,14 +26,14 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         private readonly IFederatedInstanceManager _federatedInstanceManager;
         private readonly IWorkspaceManager _workspaceManager;
         private readonly IAPILog _logger;
-        private readonly IIntegrationPointSerializer _serializer;
+        private readonly ISerializer _serializer;
 
         public JobHistoryService(
             IRelativityObjectManager relativityObjectManager,
             IFederatedInstanceManager federatedInstanceManager,
             IWorkspaceManager workspaceManager,
             IAPILog logger,
-            IIntegrationPointSerializer serializer)
+            ISerializer serializer)
         {
             _relativityObjectManager = relativityObjectManager;
             _federatedInstanceManager = federatedInstanceManager;
@@ -62,7 +64,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             var request = new QueryRequest
             {
                 Condition = $"'{ArtifactQueryFieldNames.ArtifactID}' in [{string.Join(",", jobHistoryArtifactIds.ToList())}]",
-                Fields = RDOConverter.ConvertPropertiesToFields<Data.JobHistory>()
+                Fields = RDOConverter.GetFieldList<Data.JobHistory>()
             };
 
             IList<Data.JobHistory> jobHistories = _relativityObjectManager.Query<Data.JobHistory>(request);
@@ -70,8 +72,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         }
 
         public Data.JobHistory GetOrCreateScheduledRunHistoryRdo(
-            Data.IntegrationPoint integrationPoint, 
-            Guid batchInstance, 
+            IntegrationPointDto integrationPointDto,
+            Guid batchInstance,
             DateTime? startTimeUtc)
         {
             Data.JobHistory jobHistory = null;
@@ -82,16 +84,15 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             }
             catch (Exception e)
             {
-                LogHistoryNotFoundError(integrationPoint, e);
+                LogHistoryNotFoundError(integrationPointDto, e);
                 // ignored
             }
 
             if (jobHistory == null)
             {
                 _logger.LogInformation("JobHistory {batchInstance} doesn't exist. Create new...", batchInstance);
-                jobHistory = CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryScheduledRun, startTimeUtc);
-
-                integrationPoint.JobHistory = integrationPoint?.JobHistory.Concat(new[] { jobHistory.ArtifactId }).ToArray();
+                jobHistory = CreateRdo(integrationPointDto, batchInstance, JobTypeChoices.JobHistoryScheduledRun, startTimeUtc);
+                integrationPointDto.JobHistory.Add(jobHistory.ArtifactId);
             }
 
             _logger.LogInformation("Read JobHistory: {jobHistoryDetails}", jobHistory.Stringify());
@@ -100,9 +101,9 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         }
 
         public Data.JobHistory CreateRdo(
-            Data.IntegrationPoint integrationPoint, 
-            Guid batchInstance, 
-            ChoiceRef jobType, 
+            IntegrationPointDto integrationPointDto,
+            Guid batchInstance,
+            ChoiceRef jobType,
             DateTime? startTimeUtc)
         {
             Data.JobHistory jobHistory = null;
@@ -124,18 +125,18 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
             jobHistory = new Data.JobHistory
             {
-                Name = integrationPoint.Name,
-                IntegrationPoint = new[] { integrationPoint.ArtifactId },
+                Name = integrationPointDto.Name,
+                IntegrationPoint = new[] { integrationPointDto.ArtifactId },
                 BatchInstance = batchInstance.ToString(),
                 JobType = jobType,
                 JobStatus = JobStatusChoices.JobHistoryPending,
                 ItemsTransferred = 0,
                 ItemsWithErrors = 0,
-                Overwrite = integrationPoint.OverwriteFields.Name,
+                Overwrite = integrationPointDto.SelectedOverwrite,
                 JobID = null
             };
 
-            ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
+            ImportSettings importSettings = _serializer.Deserialize<ImportSettings>(integrationPointDto.DestinationConfiguration);
 
             try
             {
@@ -193,7 +194,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         {
             return _relativityObjectManager.Query<Data.JobHistory>(new QueryRequest()
             {
-                Fields = RDOConverter.ConvertPropertiesToFields<Data.JobHistory>()
+                Fields = RDOConverter.GetFieldList<Data.JobHistory>()
             });
         }
 
@@ -216,7 +217,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
         }
 
         private Data.JobHistory GetRdo(
-            Guid batchInstance, 
+            Guid batchInstance,
             JobHistoryQueryOptions queryOptions)
         {
             var request = new QueryRequest
@@ -240,14 +241,14 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
         private IEnumerable<FieldRef> MapToFieldRefs(Guid[] rdoFieldGuids)
         {
-            IEnumerable<FieldRef> fieldRefs = RDOConverter.ConvertPropertiesToFields<Data.JobHistory>();
+            IEnumerable<FieldRef> fieldRefs = RDOConverter.GetFieldList<Data.JobHistory>();
             return rdoFieldGuids == null
                 ? fieldRefs
                 : fieldRefs.Where(fr => rdoFieldGuids.Contains(fr.Guid.Value));
         }
 
         private IEnumerable<FieldRefValuePair> MapToFieldValues(
-            Guid[] rdoFieldGuids, 
+            Guid[] rdoFieldGuids,
             Data.JobHistory jobHistory)
         {
             IEnumerable<FieldRefValuePair> fieldValues = jobHistory.ToFieldValues();
@@ -268,9 +269,9 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
             _logger.LogWarning("More than one job history instance found for {BatchInstance}.", batchInstance.ToString());
         }
 
-        private void LogHistoryNotFoundError(Data.IntegrationPoint integrationPoint, Exception e)
+        private void LogHistoryNotFoundError(IntegrationPointDto integrationPointDto, Exception e)
         {
-            _logger.LogError(e, "Job history for Integration Point {IntegrationPointId} not found.", integrationPoint.ArtifactId);
+            _logger.LogError(e, "Job history for Integration Point {IntegrationPointId} not found.", integrationPointDto.ArtifactId);
         }
 
         private void LogCreatingHistoryRdoError(Exception e)

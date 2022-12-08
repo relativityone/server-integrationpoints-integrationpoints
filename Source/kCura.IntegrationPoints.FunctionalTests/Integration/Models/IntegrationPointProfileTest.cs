@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
@@ -9,6 +11,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 {
     public class IntegrationPointProfileTest : RdoTestBase
     {
+        private readonly ISerializer _serializer = IntegrationPointSerializer.CreateWithoutLogger();
+
         public static Guid FieldsMappingGuid { get; } = new Guid("8ae37734-29d1-4441-b5d8-483134f98818");
 
         public DateTime? NextScheduledRuntimeUTC { get; set; }
@@ -254,22 +258,22 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
             };
         }
 
-        public IntegrationPointProfileModel ToIntegrationPointProfileModel()
+        public IntegrationPointProfileDto ToIntegrationPointProfileDto()
         {
-            return new IntegrationPointProfileModel
+            return new IntegrationPointProfileDto
             {
-                ArtifactID = ArtifactId,
+                ArtifactId = ArtifactId,
                 Name = Name,
                 SelectedOverwrite = OverwriteFields == null ? string.Empty : OverwriteFields.Name,
                 SourceProvider = SourceProvider.GetValueOrDefault(0),
-                Destination = DestinationConfiguration,
+                DestinationConfiguration = DestinationConfiguration,
                 SourceConfiguration = SourceConfiguration,
                 DestinationProvider = DestinationProvider.GetValueOrDefault(0),
                 Type = Type,
                 Scheduler = new Scheduler(EnableScheduler.GetValueOrDefault(false), ScheduleRule),
-                NotificationEmails = EmailNotificationRecipients ?? string.Empty,
+                EmailNotificationRecipients = EmailNotificationRecipients ?? string.Empty,
                 LogErrors = LogErrors.GetValueOrDefault(false),
-                Map = FieldMappings,
+                FieldMappings = _serializer.Deserialize<List<FieldMap>>(FieldMappings),
                 NextRun = null,
                 PromoteEligible = false,
                 SecuredConfiguration = null

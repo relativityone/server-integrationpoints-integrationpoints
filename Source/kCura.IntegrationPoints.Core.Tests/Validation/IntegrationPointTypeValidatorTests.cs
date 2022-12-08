@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Core.Validation.Parts;
@@ -8,6 +9,7 @@ using kCura.IntegrationPoints.Domain.Models;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.Core.Tests.Validation
 {
@@ -25,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
             Import,
             Export
         }
-        
+
         [SetUp]
         public void SetUp()
         {
@@ -94,7 +96,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
         {
             return new IntegrationPointProviderValidationModel()
             {
-                FieldsMap = string.Empty,
+                FieldsMap = new List<FieldMap>(),
                 SourceProviderIdentifier = sourceProviderId,
                 Type = _INTEGRATION_POINT_TYPE
             };
@@ -111,8 +113,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Validation
 
         private string GetIpTypeId(IpType ipType)
         {
-            return ipType == IpType.Export ? 
-                Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString() : 
+            return ipType == IpType.Export ?
+                Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString() :
                 Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid.ToString();
         }
     }

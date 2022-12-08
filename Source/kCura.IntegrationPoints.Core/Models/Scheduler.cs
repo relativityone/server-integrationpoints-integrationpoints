@@ -23,7 +23,6 @@ namespace kCura.IntegrationPoints.Core.Models
             var rule = ScheduleRuleBase.Deserialize<PeriodicScheduleRule>(scheduleRule);
             if (rule != null)
             {
-
                 if (rule.EndDate.HasValue)
                 {
                     EndDate = rule.EndDate.Value.ToString(defaultDateFormat, CultureInfo.InvariantCulture);
@@ -46,8 +45,8 @@ namespace kCura.IntegrationPoints.Core.Models
                         SendOn =
                             JsonConvert.SerializeObject(new Weekly
                             {
-                                SelectedDays = rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday) == DaysOfWeek.Day ? 
-                                    new List<string> { DaysOfWeek.Day.ToString().ToLowerInvariant() } : 
+                                SelectedDays = rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday) == DaysOfWeek.Day ?
+                                    new List<string> { DaysOfWeek.Day.ToString().ToLowerInvariant() } :
                                     DaysOfWeekConverter.FromDaysOfWeek(rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday)).Select(x => x.ToString()).ToList()
 
                             }, Formatting.None, JSONHelper.GetDefaultSettings());
@@ -81,14 +80,41 @@ namespace kCura.IntegrationPoints.Core.Models
         }
 
         public bool EnableScheduler { get; set; }
+
         public string EndDate { get; set; }
+
         public int TimeZoneOffsetInMinute { get; set; }
+
         public string StartDate { get; set; }
+
         public string SelectedFrequency { get; set; }
+
         public int Reoccur { get; set; }
+
         public string ScheduledTime { get; set; }
+
         public string SendOn { get; set; }
+
         public string TimeZoneId { get; set; }
-        public int FailedScheduledJobsCount { get; set; } 
+
+        public int FailedScheduledJobsCount { get; set; }
+
+        public static Scheduler Clone(Scheduler template)
+        {
+            return template != null
+                ? new Scheduler
+                {
+                    EnableScheduler = template.EnableScheduler,
+                    EndDate = template.EndDate,
+                    TimeZoneOffsetInMinute = template.TimeZoneOffsetInMinute,
+                    StartDate = template.StartDate,
+                    SelectedFrequency = template.SelectedFrequency,
+                    Reoccur = template.Reoccur,
+                    ScheduledTime = template.ScheduledTime,
+                    SendOn = template.SendOn,
+                    TimeZoneId = template.TimeZoneId,
+                }
+                : null;
+        }
     }
 }

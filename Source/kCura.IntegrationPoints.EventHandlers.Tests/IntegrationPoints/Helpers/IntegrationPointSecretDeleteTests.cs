@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
         [TestCase(null)]
         public void ItShouldSkipForEmptySecret(string secret)
         {
-            _integrationPointRepository.GetSecuredConfiguration(_INTEGRATION_POINT_ID).Returns(secret);
+            _integrationPointRepository.GetEncryptedSecuredConfiguration(_INTEGRATION_POINT_ID).Returns(secret);
 
             _integrationPointSecretDelete.DeleteSecret(_INTEGRATION_POINT_ID);
 
@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
             string securedConfiguration = "655bb9b7-94fd-4e22-a361-026f970d5bc5";
 
             _integrationPointRepository
-                .GetSecuredConfiguration(_INTEGRATION_POINT_ID)
+                .GetEncryptedSecuredConfiguration(_INTEGRATION_POINT_ID)
                 .Returns(securedConfiguration);
 
             _integrationPointSecretDelete.DeleteSecret(_INTEGRATION_POINT_ID);
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Helpers
             string expectedSecret = "655bb9b7-94fd-4e22-a361-026f970d5bc5";
 
             _integrationPointRepository
-                .GetSecuredConfiguration(_INTEGRATION_POINT_ID)
+                .GetEncryptedSecuredConfiguration(_INTEGRATION_POINT_ID)
                 .Returns(expectedSecret);
 
             _integrationPointSecretDelete.DeleteSecret(_INTEGRATION_POINT_ID);

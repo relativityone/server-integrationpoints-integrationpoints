@@ -4,20 +4,15 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Models;
-using kCura.IntegrationPoints.Data.QueryOptions;
 using kCura.IntegrationPoints.Data.Transformers;
 using Relativity.API;
-using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Objects.DataContracts;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
     public class IntegrationPointRepository : IIntegrationPointRepository
     {
-        private const string _ERROR_DESERIALIZING_FIELD_MAPPING = "Failed to deserialize field mapping for Integration Point";
-
         private readonly IRelativityObjectManager _objectManager;
-        private readonly IIntegrationPointSerializer _serializer;
         private readonly ISecretsRepository _secretsRepository;
         private readonly IAPILog _logger;
 
@@ -27,12 +22,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
         public IntegrationPointRepository(
             IRelativityObjectManager objectManager,
-            IIntegrationPointSerializer serializer,
             ISecretsRepository secretsRepository,
             IAPILog apiLog)
         {
             _objectManager = objectManager;
-            _serializer = serializer;
             _secretsRepository = secretsRepository;
             _logger = apiLog.ForContext<IntegrationPointRepository>();
             _workspaceID = _objectManager.GetWorkspaceID_Deprecated();
@@ -40,59 +33,24 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
         public Task<IntegrationPoint> ReadAsync(int integrationPointArtifactID)
         {
-            return ReadAsync(
-                integrationPointArtifactID,
-                IntegrationPointQueryOptions.All().Decrypted().WithConfiguration());
-        }
-
-        public Task<IntegrationPoint> ReadWithFieldMappingAsync(int integrationPointArtifactID)
-        {
-            return ReadAsync(
-                integrationPointArtifactID,
-                IntegrationPointQueryOptions.All().Decrypted().WithFieldMapping().WithConfiguration());
+            return ReadAsync(integrationPointArtifactID, true);
         }
 
         public Task<IntegrationPoint> ReadEncryptedAsync(int integrationPointArtifactID)
         {
-            return ReadAsync(
-                integrationPointArtifactID,
-                IntegrationPointQueryOptions.All().WithConfiguration());
+            return ReadAsync(integrationPointArtifactID, false);
         }
 
-        public async Task<IEnumerable<FieldMap>> GetFieldMappingAsync(int integrationPointArtifactID)
+        public async Task<string> GetFieldMappingAsync(int integrationPointArtifactID)
         {
-            IEnumerable<FieldMap> fieldMapping = new List<FieldMap>();
-
-            if (integrationPointArtifactID <= 0)
-            {
-                return fieldMapping;
-            }
-
-            string fieldMappingJson = await GetFieldMappingsAsync(integrationPointArtifactID).ConfigureAwait(false);
-
-            if (string.IsNullOrEmpty(fieldMappingJson))
-            {
-                return fieldMapping;
-            }
-
-            try
-            {
-                fieldMapping = _serializer.Deserialize<IEnumerable<FieldMap>>(fieldMappingJson);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, _ERROR_DESERIALIZING_FIELD_MAPPING);
-                throw;
-            }
-
-            return fieldMapping;
+            return await GetUnicodeLongTextAsync(integrationPointArtifactID, new FieldRef { Guid = IntegrationPointFieldGuids.FieldMappingsGuid }).ConfigureAwait(false);
         }
 
-        public string GetSecuredConfiguration(int integrationPointArtifactID)
+        public string GetEncryptedSecuredConfiguration(int integrationPointArtifactID)
         {
             IntegrationPoint integrationPoint = ReadAsync(
                     integrationPointArtifactID,
-                    IntegrationPointQueryOptions.All())
+                    false)
                 .GetAwaiter()
                 .GetResult();
 
@@ -101,13 +59,65 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
         public string GetName(int integrationPointArtifactID)
         {
-            IntegrationPoint integrationPoint = ReadAsync(
-                    integrationPointArtifactID,
-                    IntegrationPointQueryOptions.All())
+            IntegrationPoint integrationPoint = ReadAsync(integrationPointArtifactID, false)
                 .GetAwaiter()
                 .GetResult();
 
             return integrationPoint.Name;
+        }
+
+        public List<IntegrationPoint> ReadAll()
+        {
+            var integrationPointsWithoutFields = _objectManager.Query<IntegrationPoint>(new QueryRequest()).ToList();
+
+            return integrationPointsWithoutFields
+                .Select(integrationPoint => ReadAsync(integrationPoint.ArtifactId, false).GetAwaiter().GetResult())
+                .ToList();
+        }
+
+        public List<IntegrationPoint> ReadAllByIds(List<int> integrationPointIDs)
+        {
+            var request = new QueryRequest
+            {
+                Condition = $"'ArtifactId' in [{string.Join(",", integrationPointIDs)}]"
+            };
+            return _objectManager.Query<IntegrationPoint>(request).ToList();
+        }
+
+        public async Task<List<IntegrationPoint>> ReadBySourceAndDestinationProviderAsync(int sourceProviderArtifactID, int destinationProviderArtifactID)
+        {
+            var query = new QueryRequest
+            {
+                Condition =
+                    $"'{IntegrationPointFields.SourceProvider}' == {sourceProviderArtifactID} " +
+                    $"AND " +
+                    $"'{IntegrationPointFields.DestinationProvider}' == {destinationProviderArtifactID}",
+                Fields = RDOConverter.GetFieldList<IntegrationPoint>().Where(field =>
+                    (field.Guid != IntegrationPointFieldGuids.SourceConfigurationGuid)
+                    && (field.Guid != IntegrationPointFieldGuids.DestinationConfigurationGuid)
+                    && (field.Guid != IntegrationPointFieldGuids.FieldMappingsGuid))
+            };
+            List<IntegrationPoint> integrationPoints = _objectManager.Query<IntegrationPoint>(query).ToList();
+
+            foreach (IntegrationPoint integrationPoint in integrationPoints)
+            {
+                integrationPoint.SourceConfiguration = await GetSourceConfigurationAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
+                integrationPoint.DestinationConfiguration = await GetDestinationConfigurationAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
+                integrationPoint.FieldMappings = await GetFieldMappingAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
+            }
+
+            return integrationPoints;
+        }
+
+        public List<IntegrationPoint> ReadBySourceProviders(List<int> sourceProviderIds)
+        {
+            QueryRequest sourceProviderQuery = GetBasicSourceProviderQuery(sourceProviderIds);
+            sourceProviderQuery.Fields = new List<FieldRef>
+            {
+                new FieldRef { Name = IntegrationPointFields.Name }
+            };
+
+            return _objectManager.Query<IntegrationPoint>(sourceProviderQuery).ToList();
         }
 
         public int CreateOrUpdate(IntegrationPoint integrationPoint)
@@ -130,87 +140,99 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             integrationPoint.SecuredConfiguration = decryptedSecuredConfiguration;
         }
 
+        public void UpdateHasErrors(int artifactId, bool hasErrors)
+        {
+            List<FieldRefValuePair> fieldValues = new List<FieldRefValuePair>
+            {
+                new FieldRefValuePair
+                {
+                    Field = new FieldRef { Guid = IntegrationPointFieldGuids.HasErrorsGuid },
+                    Value = hasErrors,
+                },
+            };
+
+            _objectManager.Update(artifactId, fieldValues);
+        }
+
+        public void UpdateLastAndNextRunTime(int artifactId, DateTime? lastRuntime, DateTime? nextRuntime)
+        {
+            List<FieldRefValuePair> fieldValues = new List<FieldRefValuePair>
+            {
+                new FieldRefValuePair
+                {
+                    Field = new FieldRef { Guid = IntegrationPointFieldGuids.LastRuntimeUTCGuid },
+                    Value = lastRuntime,
+                },
+                new FieldRefValuePair
+                {
+                    Field = new FieldRef { Guid = IntegrationPointFieldGuids.NextScheduledRuntimeUTCGuid },
+                    Value = nextRuntime,
+                },
+            };
+
+            _objectManager.Update(artifactId, fieldValues);
+        }
+
+        public void DisableScheduler(int artifactId)
+        {
+            List<FieldRefValuePair> fieldValues = new List<FieldRefValuePair>
+            {
+                new FieldRefValuePair
+                {
+                    Field = new FieldRef { Guid = IntegrationPointFieldGuids.ScheduleRuleGuid },
+                    Value = null,
+                },
+                new FieldRefValuePair
+                {
+                    Field = new FieldRef { Guid = IntegrationPointFieldGuids.NextScheduledRuntimeUTCGuid },
+                    Value = null,
+                },
+                new FieldRefValuePair
+                {
+                    Field = new FieldRef { Guid = IntegrationPointFieldGuids.EnableSchedulerGuid },
+                    Value = false,
+                },
+            };
+
+            _objectManager.Update(artifactId, fieldValues);
+        }
+
+        public void UpdateJobHistory(int artifactId, List<int> jobHistory)
+        {
+            List<FieldRefValuePair> fieldValues = new List<FieldRefValuePair>
+            {
+                new FieldRefValuePair
+                {
+                    Field = new FieldRef { Guid = IntegrationPointFieldGuids.JobHistoryGuid },
+                    Value = jobHistory.ToArray(),
+                },
+            };
+
+            _objectManager.Update(artifactId, fieldValues);
+        }
+
+        public void UpdateConfiguration(int artifactId, string sourceConfiguration, string destinationConfiguration)
+        {
+            List<FieldRefValuePair> fieldValues = new List<FieldRefValuePair>
+            {
+                new FieldRefValuePair
+                {
+                    Field = new FieldRef { Guid = IntegrationPointFieldGuids.SourceConfigurationGuid },
+                    Value = sourceConfiguration,
+                },
+                new FieldRefValuePair
+                {
+                    Field = new FieldRef { Guid = IntegrationPointFieldGuids.DestinationConfigurationGuid },
+                    Value = destinationConfiguration,
+                },
+            };
+
+            _objectManager.Update(artifactId, fieldValues);
+        }
+
         public void Delete(int integrationPointID)
         {
             _objectManager.Delete(integrationPointID);
-        }
-
-        public IList<IntegrationPoint> GetAll(List<int> integrationPointIDs)
-        {
-            var request = new QueryRequest
-            {
-                Condition = $"'ArtifactId' in [{string.Join(",", integrationPointIDs)}]"
-
-            };
-            return Query(_workspaceID, request);
-        }
-
-        public async Task<IList<IntegrationPoint>> GetAllBySourceAndDestinationProviderIDsAsync(int sourceProviderArtifactID, int destinationProviderArtifactID)
-        {
-            var query = new QueryRequest
-            {
-                Condition =
-                    $"'{IntegrationPointFields.SourceProvider}' == {sourceProviderArtifactID} " +
-                    $"AND " +
-                    $"'{IntegrationPointFields.DestinationProvider}' == {destinationProviderArtifactID}",
-                Fields = new IntegrationPoint().ToFieldList().Where(field => 
-                    (field.Guid != IntegrationPointFieldGuids.SourceConfigurationGuid)
-                    && (field.Guid != IntegrationPointFieldGuids.DestinationConfigurationGuid)
-                    && (field.Guid != IntegrationPointFieldGuids.FieldMappingsGuid))
-            };
-            IList<IntegrationPoint> integrationPoints = Query(_workspaceID, query);
-
-            foreach (IntegrationPoint integrationPoint in integrationPoints)
-            {
-                integrationPoint.SourceConfiguration = await GetSourceConfigurationAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
-                integrationPoint.DestinationConfiguration = await GetDestinationConfigurationAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
-                integrationPoint.FieldMappings = await GetFieldMappingsAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
-            }
-
-            return integrationPoints;
-        }
-
-        public IList<IntegrationPoint> GetIntegrationPoints(List<int> sourceProviderIds)
-        {
-            QueryRequest sourceProviderQuery = GetBasicSourceProviderQuery(sourceProviderIds);
-
-            sourceProviderQuery.Fields = new List<FieldRef>
-            {
-                new FieldRef {Name = IntegrationPointFields.Name}
-            };
-
-            return Query(_workspaceID, sourceProviderQuery);
-        }
-
-        public IList<IntegrationPoint> GetAllIntegrationPoints()
-        {
-            var query = new QueryRequest()
-            {
-                Fields = GetFields()
-            };
-
-            return Query(_workspaceID, query);
-        }
-
-        public IList<IntegrationPoint> GetIntegrationPointsWithAllFields()
-        {
-            IList<IntegrationPoint> integrationPointsWithoutFields = GetAllIntegrationPointsWithoutFields();
-
-            return integrationPointsWithoutFields
-                .Select(integrationPoint => ReadAsync(integrationPoint.ArtifactId).GetAwaiter().GetResult())
-                .ToList();
-        }
-
-        private IList<IntegrationPoint> GetAllIntegrationPointsWithoutFields()
-        {
-            var query = new QueryRequest();
-
-            return Query(_workspaceID, query);
-        }
-
-        private IEnumerable<FieldRef> GetFields()
-        {
-            return BaseRdo.GetFieldMetadata(typeof(IntegrationPoint)).Values.ToList().Select(field => new FieldRef { Guid = field.FieldGuid });
         }
 
         private QueryRequest GetBasicSourceProviderQuery(List<int> sourceProviderIds)
@@ -221,49 +243,25 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             };
         }
 
-        private async Task<IntegrationPoint> ReadAsync(int integrationPointArtifactID, IntegrationPointQueryOptions queryOptions)
+        private async Task<IntegrationPoint> ReadAsync(int integrationPointArtifactID, bool decryptSecuredConfiguration)
         {
             IntegrationPoint integrationPoint = _objectManager.Read<IntegrationPoint>(integrationPointArtifactID);
 
-            if (queryOptions.Configuration)
+            if (decryptSecuredConfiguration)
             {
-                integrationPoint.SourceConfiguration = await GetSourceConfigurationAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
-                integrationPoint.DestinationConfiguration = await GetDestinationConfigurationAsync(integrationPoint.ArtifactId).ConfigureAwait(false);
-            }
-
-            if (queryOptions.Decrypt)
-            {
-                SetDecryptedSecuredConfiguration(_workspaceID, integrationPoint);
-            }
-
-            if (queryOptions.FieldMapping)
-            {
-                integrationPoint.FieldMappings = await GetFieldMappingsAsync(integrationPointArtifactID)
-                    .ConfigureAwait(false);
+                string decryptedConfiguration = await DecryptSecuredConfigurationAsync(_workspaceID, integrationPoint);
+                integrationPoint.SecuredConfiguration = decryptedConfiguration ?? integrationPoint.SecuredConfiguration;
             }
 
             return integrationPoint;
         }
 
-        private IList<IntegrationPoint> Query(int workspaceID, QueryRequest queryRequest)
-        {
-            return _objectManager
-                .Query<IntegrationPoint>(queryRequest)
-                .Select(ip => SetDecryptedSecuredConfiguration(workspaceID, ip))
-                .ToList();
-        }
-
-        private Task<string> GetFieldMappingsAsync(int integrationPointArtifactID)
-        {
-            return GetUnicodeLongTextAsync(integrationPointArtifactID, new FieldRef {Guid = IntegrationPointFieldGuids.FieldMappingsGuid});
-        }
-
-        private Task<string> GetSourceConfigurationAsync(int integrationPointArtifactID)
+        public Task<string> GetSourceConfigurationAsync(int integrationPointArtifactID)
         {
             return GetUnicodeLongTextAsync(integrationPointArtifactID, new FieldRef { Guid = IntegrationPointFieldGuids.SourceConfigurationGuid });
         }
 
-        private Task<string> GetDestinationConfigurationAsync(int integrationPointArtifactID)
+        public Task<string> GetDestinationConfigurationAsync(int integrationPointArtifactID)
         {
             return GetUnicodeLongTextAsync(integrationPointArtifactID, new FieldRef { Guid = IntegrationPointFieldGuids.DestinationConfigurationGuid });
         }
@@ -288,7 +286,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 return;
             }
 
-            string secretID = GetSecuredConfiguration(integrationPoint.ArtifactId);
+            string secretID = GetEncryptedSecuredConfiguration(integrationPoint.ArtifactId);
 
             integrationPoint.SecuredConfiguration = EncryptSecuredConfigurationAsync(
                     secretID,
@@ -297,26 +295,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 )
                 .GetAwaiter()
                 .GetResult();
-        }
-
-        private IntegrationPoint SetDecryptedSecuredConfiguration(int workspaceID, IntegrationPoint rdo)
-        {
-            string secretID = rdo.GetField<string>(_securedConfigurationGuid);
-            if (string.IsNullOrWhiteSpace(secretID))
-            {
-                return rdo;
-            }
-
-            string decryptedSecret = DecryptSecuredConfigurationAsync(workspaceID, rdo)
-                .GetAwaiter()
-                .GetResult();
-            if (string.IsNullOrWhiteSpace(decryptedSecret))
-            {
-                return rdo;
-            }
-
-            rdo.SetField(_securedConfigurationGuid, decryptedSecret);
-            return rdo;
         }
 
         private async Task<string> EncryptSecuredConfigurationAsync(
@@ -331,8 +309,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             try
             {
                 SecretPath secretPath = GetSecretPathOrGenerateNewOne(
-                    workspaceID, 
-                    integrationPoint.ArtifactId, 
+                    workspaceID,
+                    integrationPoint.ArtifactId,
                     secretID
                 );
                 Dictionary<string, string> secretData = CreateSecuredConfigurationSecretData(

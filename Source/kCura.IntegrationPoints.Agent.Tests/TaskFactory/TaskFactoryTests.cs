@@ -8,6 +8,8 @@ using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
@@ -43,19 +45,19 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             helper.GetLoggerFactory().Returns(loggerFactory);
 
 
-            IIntegrationPointRepository integrationPointRepository = CreateIntegrationPointRepositoryMock();
+            IIntegrationPointService integrationPointService = CreateIntegrationPointServiceMock();
             ITaskExceptionMediator taskExceptionMediator = Substitute.For<ITaskExceptionMediator>();
 
 
             _jobSynchronizationChecker = Substitute.For<IJobSynchronizationChecker>();
             _jobHistoryService = Substitute.For<ITaskFactoryJobHistoryService>();
             ITaskFactoryJobHistoryServiceFactory jobHistoryServiceFactory = Substitute.For<ITaskFactoryJobHistoryServiceFactory>();
-            jobHistoryServiceFactory.CreateJobHistoryService(Arg.Any<Data.IntegrationPoint>()).Returns(_jobHistoryService);
+            jobHistoryServiceFactory.CreateJobHistoryService(Arg.Any<IntegrationPointDto>()).Returns(_jobHistoryService);
 
             IWindsorContainer container = Substitute.For<IWindsorContainer>();
 
             _instance = new IntegrationPoints.Agent.TaskFactory.TaskFactory(helper, taskExceptionMediator,
-                _jobSynchronizationChecker, jobHistoryServiceFactory, container, integrationPointRepository);
+                _jobSynchronizationChecker, jobHistoryServiceFactory, container, integrationPointService);
         }
 
         [Test]
@@ -87,7 +89,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
 
             _instance.CreateTask(job, agentBase);
 
-            _jobSynchronizationChecker.Received().CheckForSynchronization(typeof(SendEmailWorker), job, Arg.Any<Data.IntegrationPoint>(), agentBase);
+            _jobSynchronizationChecker.Received().CheckForSynchronization(typeof(SendEmailWorker), job, Arg.Any<IntegrationPointDto>(), agentBase);
         }
 
         [Test]
@@ -170,13 +172,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             }
         }
 
-        private IIntegrationPointRepository CreateIntegrationPointRepositoryMock()
+        private IIntegrationPointService CreateIntegrationPointServiceMock()
         {
-            var integrationPoint = new Data.IntegrationPoint();
+            var integrationPoint = new IntegrationPointDto();
 
-            IIntegrationPointRepository integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
-            integrationPointRepository.ReadWithFieldMappingAsync(Arg.Any<int>()).Returns(integrationPoint);
-            return integrationPointRepository;
+            IIntegrationPointService integrationPointService = Substitute.For<IIntegrationPointService>();
+            integrationPointService.Read(Arg.Any<int>()).Returns(integrationPoint);
+            return integrationPointService;
         }
 
         private static IEnumerable<TestCaseData> CreateTask_CaseData()

@@ -11,12 +11,12 @@ using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Logging;
@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IDataReaderFactory dataReaderFactory,
             IImportFileLocationService importFileLocationService,
             IAgentValidator agentValidator,
-            IIntegrationPointRepository integrationPointRepository,
+            IIntegrationPointService integrationPointService,
             IJobStatusUpdater jobStatusUpdater,
             IAutomatedWorkflowsManager automatedWorkflowsManager,
             IJobTracker jobTracker,
@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 statisticsService,
                 synchronizerFactory,
                 agentValidator,
-                integrationPointRepository,
+                integrationPointService,
                 diagnosticLog)
         {
             _helper = helper;
@@ -139,7 +139,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 int sourceRecordCount = UpdateSourceRecordCount(settings);
                 if (sourceRecordCount > 0)
                 {
-                    using (var context = new ImportTransferDataContext(_dataReaderFactory, providerSettings, MappedFields, JobStopManager))
+                    using (var context = new ImportTransferDataContext(_dataReaderFactory, providerSettings, IntegrationPointDto.FieldMappings, JobStopManager))
                     {
                         context.TransferredItemsCount = JobHistory.ItemsTransferred ?? 0;
                         context.FailedItemsCount = JobHistory.ItemsWithErrors ?? 0;
@@ -147,7 +147,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                         DiagnosticLog.LogDiagnostic("Context: {@context}", context);
 
                         DiagnosticLog.LogDiagnostic("Synchronizing...");
-                        synchronizer.SyncData(context, MappedFields, Serializer.Serialize(settings), JobStopManager, DiagnosticLog);
+                        synchronizer.SyncData(context, IntegrationPointDto.FieldMappings, Serializer.Serialize(settings), JobStopManager, DiagnosticLog);
                         DiagnosticLog.LogDiagnostic("Finished synchronizing.");
                     }
                 }
@@ -338,7 +338,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             importSettings.JobID = ImportSettings.JobID;
             importSettings.Provider = nameof(ProviderType.ImportLoadFile);
             importSettings.OnBehalfOfUserId = job.SubmittedBy;
-            importSettings.ErrorFilePath = _importFileLocationService.ErrorFilePath(IntegrationPointDto);
+            importSettings.ErrorFilePath = _importFileLocationService.ErrorFilePath(
+                IntegrationPointDto.ArtifactId,
+                IntegrationPointDto.Name,
+                IntegrationPointDto.SourceConfiguration,
+                IntegrationPointDto.DestinationConfiguration);
 
             // For LoadFile imports, correct an off-by-one error introduced by WinEDDS.LoadFileReader interacting with
             // ImportAPI process. This is introduced by the fact that the first record is the column header row.
@@ -369,7 +373,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             LogUpdateSourceRecordCountStart();
             // Cannot re-use the LoadFileDataReader once record count has been obtained (error file is not created properly due to an off-by-one error)
-            using (IDataReader sourceReader = _dataReaderFactory.GetDataReader(MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration, JobStopManager))
+            using (IDataReader sourceReader = _dataReaderFactory.GetDataReader(IntegrationPointDto.FieldMappings.ToArray(), IntegrationPointDto.SourceConfiguration, JobStopManager))
             {
                 int recordCount =
                     settings.ImageImport ?
@@ -393,14 +397,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private string UpdatedProviderSettingsLoadFile()
         {
             ImportProviderSettings providerSettings = Serializer.Deserialize<ImportProviderSettings>(IntegrationPointDto.SourceConfiguration);
-            providerSettings.LoadFile = _importFileLocationService.LoadFileInfo(IntegrationPointDto).FullPath;
+            providerSettings.LoadFile = _importFileLocationService.LoadFileInfo(IntegrationPointDto.SourceConfiguration, IntegrationPointDto.DestinationConfiguration).FullPath;
             return Serializer.Serialize(providerSettings);
         }
 
         private void ValidateLoadFile(Job job)
         {
             LoadFileTaskParameters storedLoadFileParameters = GetLoadFileTaskParameters(GetTaskParameters(job));
-            LoadFileInfo currentLoadFile = _importFileLocationService.LoadFileInfo(IntegrationPointDto);
+            LoadFileInfo currentLoadFile = _importFileLocationService.LoadFileInfo(IntegrationPointDto.SourceConfiguration, IntegrationPointDto.DestinationConfiguration);
 
             Logger.LogInformation("Validating LoadFile {@loadFile}, based on TaskParameters {@taskParameters}",
                 currentLoadFile, storedLoadFileParameters);

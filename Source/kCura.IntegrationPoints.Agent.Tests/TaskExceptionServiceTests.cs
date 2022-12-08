@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Agent.Tasks;
+﻿using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Exceptions;
@@ -25,11 +26,11 @@ namespace kCura.IntegrationPoints.Agent.Tests
             _jobHistoryErrorServiceMock = Substitute.For<IJobHistoryErrorService>();
             _jobHistoryServiceMock = Substitute.For<IJobHistoryService>();
             _jobServiceMock = Substitute.For<IJobService>();
-            IIntegrationPointSerializer serializer = Substitute.For<IIntegrationPointSerializer>();
+            ISerializer serializer = Substitute.For<ISerializer>();
             IAPILog logger = Substitute.For<IAPILog>();
             _jobHistoryDto = new JobHistory();
-            _subjectUnderTest = new TaskExceptionService(logger, 
-                _jobHistoryErrorServiceMock, 
+            _subjectUnderTest = new TaskExceptionService(logger,
+                _jobHistoryErrorServiceMock,
                 _jobHistoryServiceMock,
                 _jobServiceMock, serializer);
         }
@@ -49,7 +50,7 @@ namespace kCura.IntegrationPoints.Agent.Tests
             Assert.AreEqual(JobStatusChoices.JobHistoryErrorJobFailed.Name, _jobHistoryDto.JobStatus.Name);
             _jobHistoryErrorServiceMock.Received(1).AddError(ErrorTypeChoices.JobHistoryErrorJob, string.Empty, exception.Message, exception.StackTrace );
             _jobHistoryServiceMock.Received(1).UpdateRdo(_jobHistoryDto);
-            _jobServiceMock.Received(1).CleanupJobQueueTable(); 
+            _jobServiceMock.Received(1).CleanupJobQueueTable();
         }
     }
 }

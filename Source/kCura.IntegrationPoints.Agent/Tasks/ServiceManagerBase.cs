@@ -8,12 +8,13 @@ using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Validation;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Logging;
@@ -26,7 +27,6 @@ using kCura.ScheduleQueue.Core.Core;
 using kCura.ScheduleQueue.Core.Interfaces;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
-using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.Services.Choice;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
         protected ICaseServiceContext CaseServiceContext { get; }
 
-        protected IIntegrationPointRepository IntegrationPointRepository { get; }
+        protected IIntegrationPointService IntegrationPointService { get; }
 
         protected IDiagnosticLog DiagnosticLog { get; }
 
@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IJobStatisticsService statisticsService,
             ISynchronizerFactory synchronizerFactory,
             IAgentValidator agentValidator,
-            IIntegrationPointRepository integrationPointRepository,
+            IIntegrationPointService integrationPointService,
             IDiagnosticLog diagnosticLog)
         {
             _agentValidator = agentValidator;
@@ -98,18 +98,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             ManagerFactory = managerFactory;
             BatchStatus = statuses.ToList();
             CaseServiceContext = caseServiceContext;
-            IntegrationPointRepository = integrationPointRepository;
+            IntegrationPointService = integrationPointService;
             DiagnosticLog = diagnosticLog;
             StatisticsService = statisticsService;
             SynchronizerFactory = synchronizerFactory;
             Result = new TaskResult();
         }
 
-        public IntegrationPoint IntegrationPointDto { get; protected set; }
+        public IntegrationPointDto IntegrationPointDto { get; protected set; }
 
         public JobHistory JobHistory { get; protected set; }
-
-        public List<FieldMap> MappedFields { get; protected set; }
 
         public SourceProvider SourceProvider { get; protected set; }
 
@@ -244,7 +242,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             LogUpdateIntegrationPointRuntimesStart(job);
             try
             {
-                IntegrationPointDto.LastRuntimeUTC = DateTime.UtcNow;
+                IntegrationPointDto.LastRun = DateTime.UtcNow;
                 if (job.ScheduleRule != null)
                 {
                     if (Result.Status == TaskStatusEnum.None)
@@ -253,10 +251,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                     }
 
                     JobService.UpdateStopState(new List<long> { job.JobId }, StopState.None);
-                    IntegrationPointDto.NextScheduledRuntimeUTC = JobService.GetJobNextUtcRunDateTime(job, ScheduleRuleFactory, Result);
+                    IntegrationPointDto.NextRun = JobService.GetJobNextUtcRunDateTime(job, ScheduleRuleFactory, Result);
                 }
 
-                IntegrationPointRepository.Update(IntegrationPointDto);
+                IntegrationPointService.UpdateLastAndNextRunTime(
+                    IntegrationPointDto.ArtifactId,
+                    IntegrationPointDto.LastRun,
+                    IntegrationPointDto.NextRun);
                 LogUpdateIntegrationPointRuntimesSuccessfulEnd(job);
             }
             catch (Exception e)
@@ -305,23 +306,23 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IntegrationPointDto = LoadIntegrationPointDto(job);
             SourceConfiguration = Serializer.Deserialize<SourceConfiguration>(IntegrationPointDto.SourceConfiguration);
             ImportSettings = Serializer.Deserialize<ImportSettings>(IntegrationPointDto.DestinationConfiguration);
-            JobHistoryErrorService.IntegrationPoint = IntegrationPointDto;
+            JobHistoryErrorService.IntegrationPointDto = IntegrationPointDto;
         }
 
-        private IntegrationPoint LoadIntegrationPointDto(Job job)
+        private IntegrationPointDto LoadIntegrationPointDto(Job job)
         {
             LogLoadInformationPointDtoStart(job);
 
             int integrationPointId = job.RelatedObjectArtifactID;
-            IntegrationPoint integrationPoint =
-                IntegrationPointRepository.ReadWithFieldMappingAsync(integrationPointId).GetAwaiter().GetResult();
-            if (integrationPoint == null)
+            IntegrationPointDto dto = IntegrationPointService.Read(integrationPointId);
+            if (dto == null)
             {
                 LogLoadingIntegrationPointDtoError(job);
                 throw new ArgumentException("Failed to retrieve corresponding Integration Point.");
             }
+
             LogLoadIntegrationPointDtoSuccessfulEnd(job);
-            return integrationPoint;
+            return dto;
         }
 
         private void ConfigureBatchInstance(Job job)
@@ -355,14 +356,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private void LoadSourceProvider()
         {
             LogLoadSourceProviderStart();
-            SourceProvider = CaseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(IntegrationPointDto.SourceProvider.Value);
+            SourceProvider = CaseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(IntegrationPointDto.SourceProvider);
             LogLoadSourceProviderEnd();
         }
 
         private void SanitizeMappedFields()
         {
-            MappedFields = Serializer.Deserialize<List<FieldMap>>(IntegrationPointDto.FieldMappings);
-            MappedFields.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
+            IntegrationPointDto.FieldMappings?.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
         }
 
         private void ConfigureJobStopManager(Job job, bool supportsDrainStop)

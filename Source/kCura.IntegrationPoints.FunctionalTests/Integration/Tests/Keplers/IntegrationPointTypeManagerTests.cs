@@ -23,7 +23,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
         [IdentifiedTest("DE4B8F92-5BC8-4DAD-920F-AC120C9303A3")]
         public async Task GetIntegrationPointTypes_ShouldReturnCorrectValues()
         {
-            //Arrange           
+            //Arrange
             IList<IntegrationPointTypeTest> expectedIntegrationPointTypes = SourceWorkspace.IntegrationPointTypes;
 
             //Act
@@ -32,7 +32,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Tests.Keplers
             //Assert
             result.Should().NotBeNull();
             result.Count().Should().Be(expectedIntegrationPointTypes.Count());
-            result.ShouldAllBeEquivalentTo(expectedIntegrationPointTypes);            
+            result.ShouldAllBeEquivalentTo(expectedIntegrationPointTypes);
         }
     }
 }

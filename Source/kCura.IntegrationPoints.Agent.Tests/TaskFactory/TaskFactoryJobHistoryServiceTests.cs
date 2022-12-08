@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Agent.TaskFactory;
 using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Data.Repositories;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using NSubstitute;
 using NUnit.Framework;
@@ -24,12 +26,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
         private ITaskFactoryJobHistoryService _sut;
         private IJobHistoryService _jobHistoryService;
         private IJobHistoryErrorService _jobHistoryErrorService;
-        private IIntegrationPointRepository _integrationPointRepository;
+        private IIntegrationPointService _integrationPointService;
 
-        public void SetUp(Data.IntegrationPoint ip = null)
+        public void SetUp(IntegrationPointDto ip = null)
         {
             IAPILog logger = Substitute.For<IAPILog>();
-            IIntegrationPointSerializer serializer = Substitute.For<IIntegrationPointSerializer>();
+            ISerializer serializer = Substitute.For<ISerializer>();
             serializer.Deserialize<DestinationConfiguration>(Arg.Any<string>()).Returns(new DestinationConfiguration());
             serializer.Deserialize<TaskParameters>(Arg.Any<string>()).Returns(new TaskParameters());
 
@@ -38,7 +40,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             var serviceFactory = Substitute.For<IServiceFactory>();
             serviceFactory.CreateJobHistoryService(Arg.Any<IAPILog>()).Returns(_jobHistoryService);
             _jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
-            _integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
+            _integrationPointService = Substitute.For<IIntegrationPointService>();
 
             ip = ip ?? GetDefaultIntegrationPoint();
             _sut = new TaskFactoryJobHistoryService(
@@ -46,7 +48,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
                 serializer,
                 serviceFactory,
                 _jobHistoryErrorService,
-                _integrationPointRepository,
+                _integrationPointService,
                 ip
             );
         }
@@ -63,7 +65,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             {
                 JobID = null
             };
-            _jobHistoryService.CreateRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), Arg.Any<ChoiceRef>(), Arg.Any<DateTime?>()).Returns(jobHistory);
+            _jobHistoryService.CreateRdo(Arg.Any<IntegrationPointDto>(), Arg.Any<Guid>(), Arg.Any<ChoiceRef>(), Arg.Any<DateTime?>()).Returns(jobHistory);
 
             // Act
             _sut.SetJobIdOnJobHistory(job);
@@ -84,7 +86,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             {
                 JobID = jobId.ToString()
             };
-            _jobHistoryService.CreateRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), Arg.Any<ChoiceRef>(), Arg.Any<DateTime?>()).Returns(jobHistory);
+            _jobHistoryService.CreateRdo(Arg.Any<IntegrationPointDto>(), Arg.Any<Guid>(), Arg.Any<ChoiceRef>(), Arg.Any<DateTime?>()).Returns(jobHistory);
 
             // Act
             _sut.SetJobIdOnJobHistory(job);
@@ -99,7 +101,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             SetUp();
             // Arrange
             Job job = JobExtensions.CreateJob();
-            _jobHistoryService.CreateRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), Arg.Any<ChoiceRef>(), Arg.Any<DateTime?>()).Returns((JobHistory)null);
+            _jobHistoryService.CreateRdo(Arg.Any<IntegrationPointDto>(), Arg.Any<Guid>(), Arg.Any<ChoiceRef>(), Arg.Any<DateTime?>()).Returns((JobHistory)null);
 
             // Act
             _sut.SetJobIdOnJobHistory(job);
@@ -115,7 +117,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             SetUp();
             Job job = null;
             var jobHistory = new JobHistory();
-            _jobHistoryService.CreateRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), Arg.Any<ChoiceRef>(), Arg.Any<DateTime?>()).Returns(jobHistory);
+            _jobHistoryService.CreateRdo(Arg.Any<IntegrationPointDto>(), Arg.Any<Guid>(), Arg.Any<ChoiceRef>(), Arg.Any<DateTime?>()).Returns(jobHistory);
 
             // Act
             _sut.SetJobIdOnJobHistory(job);
@@ -130,9 +132,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
         [TestCase(new int[] { }, 3, new int[] { })]
         public void ItShouldUpdateIntegrationPointWhenRemovingJobHistoryFromIntegrationPoint(int[] ipJobHistoryIds, int jobHistoryId, int[] expectedIpJobHistoryIdsAfterUpdate)
         {
-            // Arrange 
-            Data.IntegrationPoint ip = GetDefaultIntegrationPoint();
-            ip.JobHistory = ipJobHistoryIds;
+            // Arrange
+            IntegrationPointDto ip = GetDefaultIntegrationPoint();
+            ip.JobHistory = ipJobHistoryIds.ToList();
             SetUp(ip);
 
             Job job = JobExtensions.CreateJob();
@@ -140,27 +142,27 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             {
                 ArtifactId = jobHistoryId
             };
-            _jobHistoryService.CreateRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), Arg.Any<ChoiceRef>(), Arg.Any<DateTime?>()).Returns(jobHistory);
+            _jobHistoryService.CreateRdo(Arg.Any<IntegrationPointDto>(), Arg.Any<Guid>(), Arg.Any<ChoiceRef>(), Arg.Any<DateTime?>()).Returns(jobHistory);
 
             // Act
             _sut.RemoveJobHistoryFromIntegrationPoint(job);
 
             // Assert
-            _integrationPointRepository.Received()
-                .Update(Arg.Is<Data.IntegrationPoint>(x => x.JobHistory.SequenceEqual(expectedIpJobHistoryIdsAfterUpdate)));
+            _integrationPointService.Received()
+                .UpdateJobHistory(Arg.Is<int>(x => true), Arg.Is<List<int>>(x => x.SequenceEqual(expectedIpJobHistoryIdsAfterUpdate)));
         }
 
         [Test]
         public void ItShouldUpdateJobHistoryStatusWhenRemovingJobHistoryFromIntegrationPoint()
         {
-            // Arrange 
-            Data.IntegrationPoint ip = GetDefaultIntegrationPoint();
-            ip.JobHistory = new int[] { };
+            // Arrange
+            IntegrationPointDto ip = GetDefaultIntegrationPoint();
+            ip.JobHistory = new List<int>();
             SetUp(ip);
 
             Job job = JobExtensions.CreateJob();
             var jobHistory = new JobHistory();
-            _jobHistoryService.CreateRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), Arg.Any<ChoiceRef>(), Arg.Any<DateTime?>()).Returns(jobHistory);
+            _jobHistoryService.CreateRdo(Arg.Any<IntegrationPointDto>(), Arg.Any<Guid>(), Arg.Any<ChoiceRef>(), Arg.Any<DateTime?>()).Returns(jobHistory);
 
             // Act
             _sut.RemoveJobHistoryFromIntegrationPoint(job);
@@ -172,9 +174,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
         [Test]
         public void ItShouldDeleteJobHistoryWhenRemovingJobHistoryFromIntegrationPoint()
         {
-            // Arrange 
-            Data.IntegrationPoint ip = GetDefaultIntegrationPoint();
-            ip.JobHistory = new int[] { };
+            // Arrange
+            IntegrationPointDto ip = GetDefaultIntegrationPoint();
+            ip.JobHistory = new List<int>();
             SetUp(ip);
 
             Job job = JobExtensions.CreateJob();
@@ -183,7 +185,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             {
                 ArtifactId = jobHistoryArtifactId
             };
-            _jobHistoryService.CreateRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), Arg.Any<ChoiceRef>(), Arg.Any<DateTime?>()).Returns(jobHistory);
+            _jobHistoryService.CreateRdo(Arg.Any<IntegrationPointDto>(), Arg.Any<Guid>(), Arg.Any<ChoiceRef>(), Arg.Any<DateTime?>()).Returns(jobHistory);
 
             // Act
             _sut.RemoveJobHistoryFromIntegrationPoint(job);
@@ -204,7 +206,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             {
                 ArtifactId = jobHistoryArtifactId
             };
-            _jobHistoryService.CreateRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), Arg.Any<ChoiceRef>(), Arg.Any<DateTime?>()).Returns(jobHistory);
+            _jobHistoryService.CreateRdo(Arg.Any<IntegrationPointDto>(), Arg.Any<Guid>(), Arg.Any<ChoiceRef>(), Arg.Any<DateTime?>()).Returns(jobHistory);
 
             // Act
             _sut.UpdateJobHistoryOnFailure(job, null);
@@ -228,7 +230,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             {
                 ArtifactId = jobHistoryArtifactId
             };
-            _jobHistoryService.CreateRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), Arg.Any<ChoiceRef>(), Arg.Any<DateTime?>()).Returns(jobHistory);
+            _jobHistoryService.CreateRdo(Arg.Any<IntegrationPointDto>(), Arg.Any<Guid>(), Arg.Any<ChoiceRef>(), Arg.Any<DateTime?>()).Returns(jobHistory);
 
             string expectedExceptionMessage = "Expected exception message";
             var exception = new Exception(expectedExceptionMessage);
@@ -237,14 +239,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.TaskFactory
             _sut.UpdateJobHistoryOnFailure(job, exception);
 
             // Assert
-            Assert.AreEqual(integrationPointArtifactId, _jobHistoryErrorService.IntegrationPoint.ArtifactId);
+            Assert.AreEqual(integrationPointArtifactId, _jobHistoryErrorService.IntegrationPointDto.ArtifactId);
             Assert.AreEqual(jobHistoryArtifactId, _jobHistoryErrorService.JobHistory.ArtifactId);
             _jobHistoryErrorService.Received().AddError(Arg.Is<ChoiceRef>(x => x.Name == ErrorTypeChoices.JobHistoryErrorJob.Name), exception);
         }
 
-        private Data.IntegrationPoint GetDefaultIntegrationPoint()
+        private IntegrationPointDto GetDefaultIntegrationPoint()
         {
-            return new Data.IntegrationPoint
+            return new IntegrationPointDto
             {
                 DestinationConfiguration = string.Empty,
                 SecuredConfiguration = string.Empty

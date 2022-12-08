@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
 
             SourceConfiguration sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(value.SourceConfiguration);
             IntegrationPointDestinationConfiguration destinationConfiguration = _serializer.Deserialize<IntegrationPointDestinationConfiguration>(value.DestinationConfiguration);
-            List<FieldMap> fieldsMap = _serializer.Deserialize<List<FieldMap>>(value.FieldsMap);
+            List<FieldMap> fieldsMap = value.FieldsMap;
 
             List<ArtifactDTO> sourceWorkpaceFields = RetrieveAllFields(_sourcefieldManager, sourceConfiguration.SourceWorkspaceArtifactId, destinationConfiguration.ArtifactTypeId);
             List<ArtifactDTO> destinationWorkpaceFields = RetrieveAllFields(_targetfieldManager, sourceConfiguration.TargetWorkspaceArtifactId, destinationConfiguration.DestinationArtifactTypeId);
@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
                     CheckIfMappedFieldExists(fieldMap.DestinationField, destinationWorkpaceFields, destinationFieldsMissing);
                 }
 
-                if ((fieldMap.FieldMapType == FieldMapTypeEnum.Identifier) && 
+                if ((fieldMap.FieldMapType == FieldMapTypeEnum.Identifier) &&
                     (fieldMap.SourceField != null) &&
                     (fieldMap.SourceField.IsIdentifier))
                 {
@@ -185,7 +185,7 @@ namespace kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator.Pa
         private ValidationResult ValidateSettingsFieldOverlayBehavior(IntegrationPointDestinationConfiguration destinationConfig)
         {
             var result = new ValidationResult();
-            
+
             if (destinationConfig.ImportOverwriteMode == ImportOverwriteModeEnum.AppendOnly)
             {
                 if (destinationConfig.FieldOverlayBehavior !=

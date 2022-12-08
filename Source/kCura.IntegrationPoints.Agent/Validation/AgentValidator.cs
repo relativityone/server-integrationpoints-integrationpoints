@@ -5,7 +5,6 @@ using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.Agent.Validation
 {
-
     public class AgentValidator : IAgentValidator
     {
         #region Fields
@@ -27,22 +26,20 @@ namespace kCura.IntegrationPoints.Agent.Validation
 
         #region Methods
 
-        public void Validate(IntegrationPoint integrationPoint, int submittedByUserId)
+        public void Validate(IntegrationPointDto dto, int submittedByUserId)
         {
-            var sourceProvider = _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(integrationPoint.SourceProvider.Value);
-            var destinationProvider = _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<DestinationProvider>(integrationPoint.DestinationProvider.Value);
-
-            IntegrationPointModelBase model = IntegrationPointModel.FromIntegrationPoint(integrationPoint);
+            var sourceProvider = _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(dto.SourceProvider);
+            var destinationProvider = _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<DestinationProvider>(dto.DestinationProvider);
 
             IntegrationPointType integrationPointType =
-                _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<IntegrationPointType>(integrationPoint.Type.Value);
+                _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<IntegrationPointType>(dto.Type);
 
             var context = new ValidationContext
             {
                 SourceProvider = sourceProvider,
                 DestinationProvider = destinationProvider,
                 IntegrationPointType = integrationPointType,
-                Model = model,
+                Model = dto,
                 ObjectTypeGuid = ObjectTypeGuids.IntegrationPointGuid,
                 UserId = submittedByUserId
             };
@@ -52,5 +49,4 @@ namespace kCura.IntegrationPoints.Agent.Validation
 
         #endregion //Methods
     }
-
 }

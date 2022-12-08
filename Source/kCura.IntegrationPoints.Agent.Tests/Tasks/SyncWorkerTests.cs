@@ -10,7 +10,9 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Logging;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -43,7 +45,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         private IBatchStatus _batchStatus;
         private SyncWorker _instance;
         private Job _job;
-        private Data.IntegrationPoint _integrationPoint;
+        private IntegrationPointDto _integrationPoint;
         private TaskParameters _taskParams;
         private JobHistory _jobHistory;
         private IJobStopManager _jobStopManager;
@@ -71,7 +73,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _dataSynchronizer = Substitute.For<IDataSynchronizer>();
             _jobHistoryManager = Substitute.For<IJobHistoryManager>();
             IProviderTypeService providerTypeService = Substitute.For<IProviderTypeService>();
-            IIntegrationPointRepository integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
+            IIntegrationPointService integrationPointService = Substitute.For<IIntegrationPointService>();
 
             _instance = new SyncWorker(
                 _caseServiceContext,
@@ -87,7 +89,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 managerFactory,
                 _jobService,
                 providerTypeService,
-                integrationPointRepository,
+                integrationPointService,
                 new EmptyDiagnosticLog());
 
 
@@ -95,14 +97,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 0, new DateTime(), 1, null, null);
 
 
-            _integrationPoint = new Data.IntegrationPoint()
+            _integrationPoint = new IntegrationPointDto()
             {
                 SourceProvider = 852,
                 DestinationProvider = 942,
-                FieldMappings = "fields",
                 SourceConfiguration = "source config",
                 DestinationConfiguration = "dest config",
-                SecuredConfiguration = "sec config"
+                SecuredConfiguration = "sec config",
+                FieldMappings = new List<FieldMap>(),
             };
             SourceProvider sourceProvider = new SourceProvider() { Identifier = Guid.NewGuid().ToString(), ApplicationIdentifier = Guid.NewGuid().ToString() };
             DestinationProvider destinationProvider = new DestinationProvider() { Identifier = Guid.NewGuid().ToString() };
@@ -116,11 +118,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 BatchParameters = recordIds
             };
             var associatedJobs = new List<Job>() { _job };
-            var fieldsMap = new List<FieldMap>();
-            integrationPointRepository.ReadWithFieldMappingAsync(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
-            integrationPointRepository.GetSecuredConfiguration(_job.RelatedObjectArtifactID).Returns(_integrationPoint.SecuredConfiguration);
-            _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(sourceProvider);
-            _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value).Returns(destinationProvider);
+            integrationPointService.Read(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
+            _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider).Returns(sourceProvider);
+            _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider).Returns(destinationProvider);
             serializer.Deserialize<TaskParameters>(_job.JobDetails).Returns(_taskParams);
             jobHistoryService.CreateRdo(_integrationPoint, _taskParams.BatchInstance,
                 JobTypeChoices.JobHistoryRun, Arg.Any<DateTime>()).Returns(_jobHistory);
@@ -129,7 +129,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
 
             managerFactory.CreateJobStopManager(_jobService, jobHistoryService, _taskParams.BatchInstance, _job.JobId, Arg.Any<bool>(), Arg.Any<IDiagnosticLog>())
                 .Returns(_jobStopManager);
-            serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(fieldsMap);
 
             serializer.Deserialize<List<string>>(Arg.Is<string>(_taskParams.BatchParameters.ToString())).Returns(recordIds);
 
@@ -300,7 +299,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         private void EnsureToSetJobHistroyErrorServiceProperties()
         {
             _jobHistoryErrorService.Received(1).JobHistory = _jobHistory;
-            _jobHistoryErrorService.Received(1).IntegrationPoint = _integrationPoint;
+            _jobHistoryErrorService.Received(1).IntegrationPointDto = _integrationPoint;
             _jobHistoryErrorService.Received(1).JobStopManager = _jobStopManager;
             _jobHistoryErrorService.Received(1).SubscribeToBatchReporterEvents((object)_dataSynchronizer);
         }

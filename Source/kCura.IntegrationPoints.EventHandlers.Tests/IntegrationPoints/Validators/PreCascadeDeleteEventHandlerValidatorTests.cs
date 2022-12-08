@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Validato
             _instance.Validate(_WORKSPACE_ID, _INTEGRATION_POINT_ID);
 
             // Assert
-            _integrationPointRepository.DidNotReceive().ReadWithFieldMappingAsync(_WORKSPACE_ID);
+            _integrationPointRepository.DidNotReceive().ReadAsync(_WORKSPACE_ID);
         }
 
         [Test]
@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.IntegrationPoints.Validato
             // Arrange
             _queueRepository.GetNumberOfJobsExecutingOrInQueue(_WORKSPACE_ID, _INTEGRATION_POINT_ID).Returns(numberOfJobs);
 
-            _integrationPointRepository.ReadWithFieldMappingAsync(_INTEGRATION_POINT_ID).Returns(new Data.IntegrationPoint
+            _integrationPointRepository.ReadAsync(_INTEGRATION_POINT_ID).Returns(new Data.IntegrationPoint
             {
                 Name = "integration_point_524"
             });

@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
+﻿using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
 
@@ -8,20 +9,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
     {
         private readonly IIntegrationPointRepository _integrationPointRepository;
         private readonly IIntegrationPointProfileService _integrationPointProfileService;
-        private readonly IRelativityObjectManager _objectManager;
         private readonly ISourceConfigurationTypeOfExportUpdater _sourceConfigurationTypeOfExpertUpdater;
-
-        public string SuccessMessage => "Type of Export field default value was set succesfully.";
-        public string FailureMessage => "Failed to set Type of Export field default value.";
 
         public SetTypeOfExportDefaultValueCommand(IIntegrationPointRepository integrationPointRepository,
             IIntegrationPointProfileService integrationPointProfileService,
-            IRelativityObjectManager objectManager,
             ISourceConfigurationTypeOfExportUpdater sourceConfigurationTypeOfExpertUpdater)
         {
             _integrationPointRepository = integrationPointRepository;
             _integrationPointProfileService = integrationPointProfileService;
-            _objectManager = objectManager;
             _sourceConfigurationTypeOfExpertUpdater = sourceConfigurationTypeOfExpertUpdater;
         }
 
@@ -33,7 +28,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 
         private void SetTypeOfExportForIntegrationPoints()
         {
-            foreach (IntegrationPoint point in _integrationPointRepository.GetIntegrationPointsWithAllFields())
+            foreach (IntegrationPoint point in _integrationPointRepository.ReadAll())
             {
                 string resultConf = _sourceConfigurationTypeOfExpertUpdater.GetCorrectedSourceConfiguration(point.SourceProvider,
                     point.DestinationProvider, point.SourceConfiguration);
@@ -47,14 +42,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 
         private void SetTypeOfExportForIntegrationPointProfiles()
         {
-            foreach (IntegrationPointProfile profile in _integrationPointProfileService.GetAllRDOsWithAllFields())
+            foreach (IntegrationPointProfileDto profile in _integrationPointProfileService.ReadAll())
             {
-                string resultConf = _sourceConfigurationTypeOfExpertUpdater.GetCorrectedSourceConfiguration(profile.SourceProvider,
+                string sourceConfiguration = _sourceConfigurationTypeOfExpertUpdater.GetCorrectedSourceConfiguration(profile.SourceProvider,
                     profile.DestinationProvider, profile.SourceConfiguration);
-                if (resultConf != null)
+                if (sourceConfiguration != null)
                 {
-                    profile.SourceConfiguration = resultConf;
-                    _objectManager.Update(profile);
+                    _integrationPointProfileService.UpdateConfiguration(profile.ArtifactId, sourceConfiguration, profile.DestinationConfiguration);
                 }
             }
         }

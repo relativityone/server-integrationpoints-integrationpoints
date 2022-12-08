@@ -30,7 +30,7 @@ namespace Rip.TestUtilities
         private int _destinationProvider;
         private string _sourceConfiguration;
         private string _destinationConfiguration;
-        private string _fieldMapping;
+        private List<FieldMap> _fieldMapping;
         private string _overwriteMode = _APPEND_ONLY;
 
         public IntegrationPointModelBuilder(ISerializer serializer, IRelativityObjectManager objectManager)
@@ -79,7 +79,7 @@ namespace Rip.TestUtilities
 
         public IntegrationPointModelBuilder WithFieldMapping(FieldMap[] fieldMapping)
         {
-            _fieldMapping = _serializer.Serialize(fieldMapping);
+            _fieldMapping = fieldMapping.ToList();
             return this;
         }
 
@@ -103,17 +103,17 @@ namespace Rip.TestUtilities
             return this;
         }
 
-        public IntegrationPointModel Build()
+        public IntegrationPointDto Build()
         {
-            var integrationPointModel = new IntegrationPointModel
+            var integrationPointModel = new IntegrationPointDto
             {
                 Type = _type,
                 Name = _name,
                 SourceProvider = _sourceProvider,
                 SourceConfiguration = _sourceConfiguration,
                 DestinationProvider = _destinationProvider,
-                Destination = _destinationConfiguration,
-                Map = _fieldMapping,
+                DestinationConfiguration = _destinationConfiguration,
+                FieldMappings = _fieldMapping,
                 SelectedOverwrite = _overwriteMode,
                 Scheduler = new Scheduler
                 {

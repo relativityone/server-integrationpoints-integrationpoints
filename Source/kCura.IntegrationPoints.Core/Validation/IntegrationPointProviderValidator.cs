@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
@@ -19,14 +20,14 @@ namespace kCura.IntegrationPoints.Core.Validation
     {
         private readonly IRelativityObjectManagerFactory _relativityObjectManagerFactory;
 
-        public IntegrationPointProviderValidator(IEnumerable<IValidator> validators, IIntegrationPointSerializer serializer, IRelativityObjectManagerFactory relativityObjectManagerFactory)
+        public IntegrationPointProviderValidator(IEnumerable<IValidator> validators, ISerializer serializer, IRelativityObjectManagerFactory relativityObjectManagerFactory)
             : base(validators, serializer)
         {
             _relativityObjectManagerFactory = relativityObjectManagerFactory;
         }
 
         public override ValidationResult Validate(
-            IntegrationPointModelBase model,
+            IntegrationPointDtoBase model,
             SourceProvider sourceProvider,
             DestinationProvider destinationProvider,
             IntegrationPointType integrationPointType,
@@ -45,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Validation
 
             foreach (IValidator validator in _validatorsMap[Constants.IntegrationPointProfiles.Validation.EMAIL])
             {
-                result.Add(validator.Validate(model.NotificationEmails));
+                result.Add(validator.Validate(model.EmailNotificationRecipients));
             }
 
             foreach (IValidator validator in _validatorsMap[Constants.IntegrationPointProfiles.Validation.NAME])
@@ -72,7 +73,7 @@ namespace kCura.IntegrationPoints.Core.Validation
                     result.Add(validator.Validate(validationModel));
                 }
             }
-            
+
             return result;
         }
 

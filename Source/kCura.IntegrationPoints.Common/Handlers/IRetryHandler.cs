@@ -13,5 +13,8 @@ namespace kCura.IntegrationPoints.Common.Handlers
         T ExecuteWithRetries<T>(Func<T> function, [CallerMemberName] string callerName = "");
 
         void ExecuteWithRetries(Action action, [CallerMemberName] string callerName = "");
+
+        T Execute<T, TException>(Func<T> function, Action<TException> onRetry)
+            where TException : Exception;
     }
 }

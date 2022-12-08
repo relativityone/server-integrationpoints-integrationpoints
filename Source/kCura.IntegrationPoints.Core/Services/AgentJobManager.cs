@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Properties;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -18,10 +19,10 @@ namespace kCura.IntegrationPoints.Core.Services
         private readonly IEddsServiceContext _context;
         private readonly IJobService _jobService;
         private readonly IAPILog _logger;
-        private readonly IIntegrationPointSerializer _serializer;
+        private readonly ISerializer _serializer;
         private readonly IJobTracker _tracker;
 
-        public AgentJobManager(IEddsServiceContext context, IJobService jobService, IHelper helper, IIntegrationPointSerializer serializer, IJobTracker tracker)
+        public AgentJobManager(IEddsServiceContext context, IJobService jobService, IHelper helper, ISerializer serializer, IJobTracker tracker)
         {
             _context = context;
             _jobService = jobService;

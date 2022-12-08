@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Data.Transformers
                     valueToSet = Convert.ToInt32(item.Value);
                 }
             }
-            else if (propeType == typeof(long) || propeType == typeof(long?)) 
+            else if (propeType == typeof(long) || propeType == typeof(long?))
             {
                 if (item?.Value != null)
                 {
@@ -111,7 +111,7 @@ namespace kCura.IntegrationPoints.Data.Transformers
                 Guid = choiceRef.Guids?.FirstOrDefault()
             };
         }
-        
+
         private static Dictionary<string, PropertyInfo> GetPropertiesDictionary(Type rdoType)
         {
             var output = new Dictionary<string, PropertyInfo>();
@@ -131,8 +131,9 @@ namespace kCura.IntegrationPoints.Data.Transformers
             return output;
         }
 
-        private static IEnumerable<FieldRefValuePair> ConvertPropertiesToFieldValuePairs(BaseRdo rdo, BindingFlags bindingAttr)
+        public static IEnumerable<FieldRefValuePair> ToFieldValues(this BaseRdo rdo)
         {
+            BindingFlags bindingAttr = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance;
             PropertyInfo[] properties = rdo.GetType().GetProperties(bindingAttr);
             foreach (PropertyInfo prop in properties)
             {
@@ -201,19 +202,19 @@ namespace kCura.IntegrationPoints.Data.Transformers
 
         }
 
-        private static IEnumerable<FieldRef> ConvertPropertiesToFields(BaseRdo rdo, BindingFlags bindingAttr)
+        public static IEnumerable<FieldRef> GetFieldList<T>() where T : BaseRdo
         {
-            return ConvertPropertiesToFields(rdo.GetType(), bindingAttr);
+            return ConvertPropertiesToFields(typeof(T));
         }
 
-        public static IEnumerable<FieldRef> ConvertPropertiesToFields<T>() where T : BaseRdo
+        public static IEnumerable<FieldRef> ToFieldList(this BaseRdo rdo)
+        {
+            return ConvertPropertiesToFields(rdo.GetType());
+        }
+
+        private static IEnumerable<FieldRef> ConvertPropertiesToFields(Type type)
         {
             BindingFlags bindingAttr = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance;
-            return ConvertPropertiesToFields(typeof(T), bindingAttr);
-        }
-
-        private static IEnumerable<FieldRef> ConvertPropertiesToFields(Type type, BindingFlags bindingAttr)
-        {
             foreach (var property in type.GetProperties(bindingAttr))
             {
                 DynamicFieldAttribute attribute = property.GetCustomAttribute<DynamicFieldAttribute>();
@@ -243,21 +244,5 @@ namespace kCura.IntegrationPoints.Data.Transformers
                 ArtifactID = rdo.ArtifactId
             };
         }
-
-        public static IEnumerable<FieldRefValuePair> ToFieldValues(this BaseRdo rdo, BindingFlags bindingAttr = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
-        {
-            IEnumerable<FieldRefValuePair> fields = ConvertPropertiesToFieldValuePairs(rdo, bindingAttr);
-
-            return fields;
-        }
-
-        public static IEnumerable<FieldRef> ToFieldList(this BaseRdo rdo, BindingFlags bindingAttr = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
-        {
-            IEnumerable<FieldRef> fields = ConvertPropertiesToFields(rdo, bindingAttr);
-
-            return fields;
-        }
-
-
     }
 }
