@@ -121,13 +121,20 @@ export function createStopButton(consoleApi, convenienceApi: IConvenienceApi, ct
 }
 
 export function createCalculateStatsButton(consoleApi, convenienceApi: IConvenienceApi, ctx, enabled: boolean, integrationPointId: number, sourceConfiguration: Object, destinationConfiguration: Object) {
+    var operationType = "";
+    if (sourceConfiguration["SourceProductionId"]) {
+        operationType = "Production";
+    } else {
+        operationType = "Saved Search";
+    }
+
     return consoleApi.generate.button({
         innerText: "Calculate statistics",
         disabled: !enabled,        
         onclick: function () {
             return convenienceApi.modalService.confirm({
                 title: "Calculate statistics",
-                message: "This action will launch the calculation of Saved Search content. The operation can be time consuming.",
+                message: "This action will launch the calculation of " + operationType + " content. The operation can be time consuming. Statistics calculation runs in the background so all other activities on this Integration Point will be enabled.",
                 acceptText: "Calculate",
                 cancelText: "Cancel",
                 acceptAction: function () {                   
