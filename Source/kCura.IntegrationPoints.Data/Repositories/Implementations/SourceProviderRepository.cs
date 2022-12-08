@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
                 {
                     Guid = Guid.Parse(ObjectTypeGuids.SourceProvider)
                 },
-                Fields = RDOConverter.ConvertPropertiesToFields<SourceProvider>(),
+                Fields = RDOConverter.GetFieldList<SourceProvider>(),
                 Condition = $"'{SourceProviderFields.ApplicationIdentifier}' == '{appGuid}'"
             };
 

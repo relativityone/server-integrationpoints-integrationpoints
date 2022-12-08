@@ -1,11 +1,9 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using FluentAssertions;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Models;
@@ -16,6 +14,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Controllers.API;
+using kCura.IntegrationPoints.Web.Extensions;
 using kCura.IntegrationPoints.Web.Helpers;
 using kCura.IntegrationPoints.Web.Models.Validation;
 using Moq;
@@ -39,10 +38,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         private IRelativityUrlHelper _relativityUrlHelper;
         private IRdoSynchronizerProvider _rdoSynchronizerProvider;
         private ICPHelper _cpHelper;
-        private IServicesMgr _svcMgr;        
+        private IServicesMgr _svcMgr;
 
         private const int _WORKSPACE_ID = 23432;
-        private const int _INTEGRATION_POINT_ID = 23432;
         private const string _CREDENTIALS = "{}";
 
         [SetUp]
@@ -53,7 +51,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _rdoSynchronizerProvider = Substitute.For<IRdoSynchronizerProvider>();
             _serviceFactory = Substitute.For<IServiceFactory>();
             _cpHelper = Substitute.For<ICPHelper>();
-            _svcMgr = Substitute.For<IServicesMgr>();            
+            _svcMgr = Substitute.For<IServicesMgr>();
 
             _cpHelper.GetServicesManager().Returns(_svcMgr);
             _svcMgr.CreateProxy<IMetricsManager>(Arg.Any<ExecutionIdentity>())
@@ -64,10 +62,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _sut = new IntegrationPointsAPIController(
                 _serviceFactory,
                 _relativityUrlHelper,
-                _rdoSynchronizerProvider,                
+                _rdoSynchronizerProvider,
                 _cpHelper,
-                _loggerFake.Object
-                )
+                _loggerFake.Object,
+                CamelCaseSerializer)
             {
                 Request = new HttpRequestMessage()
             };
@@ -75,89 +73,45 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             _sut.Request.SetConfiguration(new HttpConfiguration());
         }
 
-
-        [Test]
-        public async Task Get_WhenFederatedInstanceIsSetUp_ShouldReturnNullSourceConfiguration()
-        {
-            // Arrange
-            var model = new IntegrationPointModel()
-            {
-                ArtifactID = 123,
-                SourceConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = 12345 })
-            };
-
-            _serviceFactory.CreateIntegrationPointService(_cpHelper).Returns(_integrationPointService);
-
-            _integrationPointService.ReadIntegrationPointModel(Arg.Any<int>()).Returns(model);
-
-            // Act
-            HttpResponseMessage httpResponse = _sut.Get(_INTEGRATION_POINT_ID);
-
-            // Assert
-            IntegrationPointModel integrationPointModel = await GetIntegrationPointModelFromHttpResponse(httpResponse).ConfigureAwait(false);
-            integrationPointModel.SourceConfiguration.Should().BeNull();
-        }
-
-        [Test]
-        public async Task Get_WhenFederatedInstanceIsNotSetUp_ShouldReturnValidSourceConfiguration()
-        {
-            // Arrange
-            var model = new IntegrationPointModel()
-            {
-                ArtifactID = 123,
-                SourceConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = null })
-            };
-
-            _serviceFactory.CreateIntegrationPointService(_cpHelper).Returns(_integrationPointService);
-
-            _integrationPointService.ReadIntegrationPointModel(Arg.Any<int>()).Returns(model);
-
-            // Act
-            HttpResponseMessage httpResponse = _sut.Get(_INTEGRATION_POINT_ID);
-
-            // Assert
-            IntegrationPointModel integrationPointModel = await GetIntegrationPointModelFromHttpResponse(httpResponse).ConfigureAwait(false);
-            integrationPointModel.SourceConfiguration.Should().NotContain("FederatedInstanceArtifactId");
-        }
-
         [TestCase(null)]
         [TestCase(1000)]
         public void Update_StandardSourceProvider_NoJobsRun_GoldFlow(int? federatedInstanceArtifactId)
         {
             // Arrange
-            var model = new IntegrationPointModel()
+            var model = new IntegrationPointDto()
             {
-                ArtifactID = 123,
+                ArtifactId = 123,
                 SourceProvider = 9830,
-                Destination = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
+                DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
                 SecuredConfiguration = _CREDENTIALS
             };
 
             _serviceFactory.CreateIntegrationPointService(_cpHelper).Returns(_integrationPointService);
 
-            _integrationPointService.SaveIntegration(Arg.Is(model)).Returns(model.ArtifactID);
+            _integrationPointService.SaveIntegrationPoint(Arg.Any<IntegrationPointDto>()).Returns(model.ArtifactId);
 
             string url = "http://lolol.com";
             _relativityUrlHelper.GetRelativityViewUrl(
                     _WORKSPACE_ID,
-                    model.ArtifactID,
+                    model.ArtifactId,
                     ObjectTypes.IntegrationPoint)
                 .Returns(url);
 
             // Act
-            HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model);
+            HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model.ToWebModel(CamelCaseSerializer));
 
             // Assert
             Assert.IsNotNull(response, "Response should not be null");
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, "HttpStatusCode should be OK");
-            Assert.AreEqual(JsonConvert.SerializeObject(new { returnURL = url }), response.Content.ReadAsStringAsync().Result, "The HttpContent should be as expected");
+            var result = response.Content.ReadAsStringAsync().Result;
+            Assert.AreEqual(JsonConvert.SerializeObject(new { returnURL = url }), result, "The HttpContent should be as expected");
 
-            _integrationPointService.Received(1).SaveIntegration(model);
+            _integrationPointService.Received(1).SaveIntegrationPoint(Arg.Any<IntegrationPointDto>());
             _relativityUrlHelper
                 .Received(1)
                 .GetRelativityViewUrl(
                     _WORKSPACE_ID,
-                    model.ArtifactID,
+                    model.ArtifactId,
                     ObjectTypes.IntegrationPoint);
         }
 
@@ -165,9 +119,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
         [TestCase(1000)]
         public void UpdateIntegrationPointThrowsError_ReturnFailedResponse(int? federatedInstanceArtifactId)
         {
-            var model = new IntegrationPointModel()
+            var model = new IntegrationPointDto()
             {
-                Destination = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
+                DestinationConfiguration = JsonConvert.SerializeObject(new ImportSettings() { FederatedInstanceArtifactId = federatedInstanceArtifactId }),
                 SecuredConfiguration = _CREDENTIALS
             };
             var validationResult = new ValidationResult(false, "That's a damn shame.");
@@ -175,10 +129,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
 
             _serviceFactory.CreateIntegrationPointService(_cpHelper).Returns(_integrationPointService);
 
-            _integrationPointService.SaveIntegration(Arg.Any<IntegrationPointModel>()).Throws(expectException);
+            _integrationPointService.SaveIntegrationPoint(Arg.Any<IntegrationPointDto>()).Throws(expectException);
 
             // Act
-            HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model);
+            HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model.ToWebModel(CamelCaseSerializer));
 
             Assert.IsNotNull(response);
             String actual = response.Content.ReadAsStringAsync().Result;
@@ -190,40 +144,40 @@ namespace kCura.IntegrationPoints.Web.Tests.Controllers.API
             Assert.AreEqual(HttpStatusCode.NotAcceptable, response.StatusCode);
         }
 
-        private async Task<IntegrationPointModel> GetIntegrationPointModelFromHttpResponse(HttpResponseMessage httpResponse)
+        private async Task<IntegrationPointDto> GetIntegrationPointModelFromHttpResponse(HttpResponseMessage httpResponse)
         {
             string serializedModel = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<IntegrationPointModel>(serializedModel);
+            return JsonConvert.DeserializeObject<IntegrationPointDto>(serializedModel);
         }
 
         [Test]
         public void Update_ShouldLogMappingInfo()
         {
             // Arrange
-            var model = new IntegrationPointModel()
+            var model = new IntegrationPointDto()
             {
-                ArtifactID = 123,
+                ArtifactId = 123,
                 SourceProvider = 9830,
-                Destination = "",
+                DestinationConfiguration = "",
                 SecuredConfiguration = _CREDENTIALS
             };
 
             _serviceFactory.CreateIntegrationPointService(_cpHelper).Returns(_integrationPointService);
 
-            _integrationPointService.SaveIntegration(Arg.Is(model)).Returns(model.ArtifactID);
+            _integrationPointService.SaveIntegrationPoint(Arg.Is(model)).Returns(model.ArtifactId);
 
             string url = "http://lolol.com";
             _relativityUrlHelper.GetRelativityViewUrl(
                     _WORKSPACE_ID,
-                    model.ArtifactID,
+                    model.ArtifactId,
                     ObjectTypes.IntegrationPoint)
                 .Returns(url);
 
             // Act
-            HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model, true, true, true, IntegrationPointsAPIController.MappingType.SavedSearch);
+            HttpResponseMessage response = _sut.Update(_WORKSPACE_ID, model.ToWebModel(CamelCaseSerializer), true, true, true, IntegrationPointsAPIController.MappingType.SavedSearch);
 
             // Assert
-            _loggerFake.Verify(x => x.LogInformation("Saved IntegrationPoint with following options: {options}", 
+            _loggerFake.Verify(x => x.LogInformation("Saved IntegrationPoint with following options: {options}",
                 It.Is<object>(o => MappingInfoObjectIsCorrect(o))));
         }
 

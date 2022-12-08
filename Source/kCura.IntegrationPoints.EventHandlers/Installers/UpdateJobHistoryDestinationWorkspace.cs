@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
@@ -55,7 +56,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
         internal void ExecuteInternal()
         {
-            
+
             IList<Data.JobHistory> jobHistories = _jobHistoryService.GetAll();
 
             foreach (Data.JobHistory jobHistory in jobHistories)
@@ -82,14 +83,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
             IRepositoryFactory repositoryFactory = new RepositoryFactory(Helper, Helper.GetServicesManager());
             var federatedInstanceManager = new FederatedInstanceManager();
             IWorkspaceManager workspaceManager = new WorkspaceManager(repositoryFactory);
-            IIntegrationPointSerializer serializer = new IntegrationPointSerializer(Logger);
+            ISerializer serializer = new IntegrationPointSerializer(Logger);
             IProviderTypeService providerTypeService = new ProviderTypeService(CreateObjectManager(Helper, Helper.GetActiveCaseID()));
             IMessageService messageService = new MessageService();
             return new JobHistoryService(
-                caseContext.RelativityObjectManagerService.RelativityObjectManager, 
-                federatedInstanceManager, 
-                workspaceManager, 
-                Logger, 
+                caseContext.RelativityObjectManagerService.RelativityObjectManager,
+                federatedInstanceManager,
+                workspaceManager,
+                Logger,
                 serializer);
         }
 

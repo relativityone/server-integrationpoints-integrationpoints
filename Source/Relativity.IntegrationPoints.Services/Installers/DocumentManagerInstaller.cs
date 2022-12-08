@@ -25,8 +25,8 @@ namespace Relativity.IntegrationPoints.Services.Installers
             container.Register(Component.For<IRelativityObjectManagerFactory>()
                 .ImplementedBy<RelativityObjectManagerFactory>()
                 .LifestyleTransient());
-            container.Register(Component.For<Repositories.IDocumentRepository>()
-                .ImplementedBy<DocumentRepository>()
+            container.Register(Component.For<Repositories.IDocumentAccessor>()
+                .ImplementedBy<DocumentAccessor>()
                 .LifestyleTransient());
         }
     }

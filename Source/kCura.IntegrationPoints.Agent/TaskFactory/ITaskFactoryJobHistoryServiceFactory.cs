@@ -1,9 +1,9 @@
-﻿using kCura.IntegrationPoints.Data;
+﻿using kCura.IntegrationPoints.Core.Models;
 
 namespace kCura.IntegrationPoints.Agent.TaskFactory
 {
     public interface ITaskFactoryJobHistoryServiceFactory
     {
-        ITaskFactoryJobHistoryService CreateJobHistoryService(IntegrationPoint integrationPoint);
+        ITaskFactoryJobHistoryService CreateJobHistoryService(IntegrationPointDto integrationPoint);
     }
 }

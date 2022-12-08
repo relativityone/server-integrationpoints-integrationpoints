@@ -48,7 +48,7 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (IWindsorContainer container = GetDependenciesContainer(workspaceArtifactId))
                 {
-                    var providerRepository = container.Resolve<IProviderRepository>();
+                    var providerRepository = container.Resolve<IProviderAccessor>();
                     return await Task.Run(() => providerRepository.GetSourceProviderArtifactId(workspaceArtifactId, sourceProviderGuidIdentifier)).ConfigureAwait(false);
                 }
             }
@@ -67,7 +67,7 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (IWindsorContainer container = GetDependenciesContainer(workspaceArtifactId))
                 {
-                    var providerRepository = container.Resolve<IProviderRepository>();
+                    var providerRepository = container.Resolve<IProviderAccessor>();
                     return await Task.Run(() => providerRepository.GetDestinationProviderArtifactId(workspaceArtifactId, destinationProviderGuidIdentifier)).ConfigureAwait(false);
                 }
             }
@@ -86,7 +86,7 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (IWindsorContainer container = GetDependenciesContainer(workspaceArtifactId))
                 {
-                    var providerRepository = container.Resolve<IProviderRepository>();
+                    var providerRepository = container.Resolve<IProviderAccessor>();
                     return await Task.Run(() => providerRepository.GetSourceProviders(workspaceArtifactId)).ConfigureAwait(false);
                 }
             }
@@ -105,7 +105,7 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (IWindsorContainer container = GetDependenciesContainer(workspaceArtifactId))
                 {
-                    var providerRepository = container.Resolve<IProviderRepository>();
+                    var providerRepository = container.Resolve<IProviderAccessor>();
                     return await Task.Run(() => providerRepository.GetDesinationProviders(workspaceArtifactId)).ConfigureAwait(false);
                 }
             }

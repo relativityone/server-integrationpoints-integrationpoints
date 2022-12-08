@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using FluentAssertions;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
@@ -8,7 +7,9 @@ using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Logging;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Keywords;
 using kCura.IntegrationPoints.Core.Services.Provider;
@@ -34,7 +35,7 @@ namespace kCura.IntegrationPoints.Core.Tests
         private Mock<ICaseServiceContext> _caseServiceContextMock;
         private Mock<IEmailFormatter> _emailFormatterMock;
         private Mock<IHelper> _helperMock;
-        private Mock<IIntegrationPointRepository> _integrationPointRepositoryMock;
+        private Mock<IIntegrationPointService> _integrationPointServiceMock;
         private Mock<IJobManager> _jobManagerMock;
         private Mock<IJobService> _jobServiceMock;
         private Mock<IJobStatusUpdater> _jobStatusUpdaterMock;
@@ -68,7 +69,7 @@ namespace kCura.IntegrationPoints.Core.Tests
             _objectManagerMock = new Mock<IRelativityObjectManager>();
             _managerFactoryMock = new Mock<IManagerFactory>();
             _jobServiceMock = new Mock<IJobService>();
-            _integrationPointRepositoryMock = new Mock<IIntegrationPointRepository>();
+            _integrationPointServiceMock = new Mock<IIntegrationPointService>();
             _jobManagerMock = new Mock<IJobManager>();
             _objectManagerServiceMock.Setup(x => x.RelativityObjectManager).Returns(_objectManagerMock.Object);
             _caseServiceContextMock.Setup(x => x.RelativityObjectManagerService).Returns(_objectManagerServiceMock.Object);
@@ -86,7 +87,7 @@ namespace kCura.IntegrationPoints.Core.Tests
                 _emailFormatterMock.Object,
                 _managerFactoryMock.Object,
                 _jobServiceMock.Object,
-                _integrationPointRepositoryMock.Object,
+                _integrationPointServiceMock.Object,
                 new EmptyDiagnosticLog());
         }
 
@@ -96,12 +97,12 @@ namespace kCura.IntegrationPoints.Core.Tests
             // ARRANGE
             Job job = GetTestJob();
 
-            Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint
+            IntegrationPointDto integrationPoint = new IntegrationPointDto
             {
                 EmailNotificationRecipients = string.Empty,
             };
 
-            _integrationPointRepositoryMock.Setup(x => x.ReadWithFieldMappingAsync(_INTEGRATION_POINT_ID)).ReturnsAsync(integrationPoint);
+            _integrationPointServiceMock.Setup(x => x.Read(_INTEGRATION_POINT_ID)).Returns(integrationPoint);
 
             // ACT + ASSERT
             Assert.DoesNotThrow(() =>
@@ -116,7 +117,7 @@ namespace kCura.IntegrationPoints.Core.Tests
         {
             //ARRANGE
             string emailAddresses = "adr1@rip.com";
-            Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint
+            IntegrationPointDto integrationPoint = new IntegrationPointDto
             {
                 EmailNotificationRecipients = emailAddresses,
             };
@@ -134,7 +135,7 @@ namespace kCura.IntegrationPoints.Core.Tests
             string taskParametersSerialized = _jsonSerializer.Serialize(taskParameters);
             job.JobDetails = taskParametersSerialized;
 
-            _integrationPointRepositoryMock.Setup(x => x.ReadWithFieldMappingAsync(_INTEGRATION_POINT_ID)).ReturnsAsync(integrationPoint);
+            _integrationPointServiceMock.Setup(x => x.Read(_INTEGRATION_POINT_ID)).Returns(integrationPoint);
             Job emailJob = new JobBuilder().WithJobId(1338).Build();
             _jobManagerMock.Setup(x => x.CreateJob(job, It.IsAny<TaskParameters>(), TaskType.SendEmailWorker)).Returns(emailJob);
             //ACT
@@ -147,11 +148,11 @@ namespace kCura.IntegrationPoints.Core.Tests
         public void EmailJobParametersShouldHaveTheSameBatchInstanceAsParentJob()
         {
             //ARRANGE
-            Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint();
+            IntegrationPointDto integrationPoint = new IntegrationPointDto();
             integrationPoint.EmailNotificationRecipients = "email@email.com";
-            _integrationPointRepositoryMock
-                .Setup(x => x.ReadWithFieldMappingAsync(It.IsAny<int>()))
-                .ReturnsAsync(integrationPoint);
+            _integrationPointServiceMock
+                .Setup(x => x.Read(It.IsAny<int>()))
+                .Returns(integrationPoint);
 
             Guid batchInstanceGuid = Guid.NewGuid();
             string jobDetails = $"{{\"BatchInstance\":\"{batchInstanceGuid.ToString()}\"}}";
@@ -175,11 +176,11 @@ namespace kCura.IntegrationPoints.Core.Tests
         public void EmailJobShouldHaveStopStateResetToNoneAfterCreation()
         {
             //arrange
-            Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint();
+            IntegrationPointDto integrationPoint = new IntegrationPointDto();
             integrationPoint.EmailNotificationRecipients = "xyz@email.com";
-            _integrationPointRepositoryMock
-                .Setup(x => x.ReadWithFieldMappingAsync(It.IsAny<int>()))
-                .ReturnsAsync(integrationPoint);
+            _integrationPointServiceMock
+                .Setup(x => x.Read(It.IsAny<int>()))
+                .Returns(integrationPoint);
 
             Guid batchInstanceGuid = Guid.NewGuid();
             string jobDetails = $"{{\"BatchInstance\":\"{batchInstanceGuid.ToString()}\"}}";
@@ -190,13 +191,13 @@ namespace kCura.IntegrationPoints.Core.Tests
 
             Job emailJob = new JobBuilder().WithJobId(1338).Build();
             _jobManagerMock.Setup(x => x.CreateJob(job, It.IsAny<TaskParameters>(), TaskType.SendEmailWorker)).Returns(emailJob);
-            
+
             //act
             _sut.OnJobComplete(job);
 
-            //assert                    
+            //assert
             _jobServiceMock.Verify(x => x.UpdateStopState(It.Is<IList<long>>(j => j.Contains(emailJob.JobId)),
-                It.Is<StopState>(s => s == StopState.None)), Times.Once);            
+                It.Is<StopState>(s => s == StopState.None)), Times.Once);
         }
 
         [TestCaseSource(nameof(_generateEmailSource))]

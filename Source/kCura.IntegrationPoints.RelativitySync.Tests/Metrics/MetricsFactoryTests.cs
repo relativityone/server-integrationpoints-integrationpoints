@@ -15,6 +15,7 @@ using Relativity.Telemetry.Services.Metrics;
 using System;
 using System.IO.Packaging;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.RelativitySync.Tests.Metrics
@@ -33,7 +34,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Metrics
 
         private Mock<IScheduleRule> _scheduleRuleFake;
 
-        private readonly Data.IntegrationPoint _integrationPoint = new Data.IntegrationPoint
+        private readonly IntegrationPointDto _integrationPoint = new IntegrationPointDto
         {
             ArtifactId = 100,
             SourceConfiguration = string.Empty
@@ -50,7 +51,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests.Metrics
                 });
 
             _integrationPointServiceFake = new Mock<IIntegrationPointService>();
-            _integrationPointServiceFake.Setup(x => x.ReadIntegrationPoint(It.IsAny<int>()))
+            _integrationPointServiceFake.Setup(x => x.Read(It.IsAny<int>()))
                 .Returns(_integrationPoint);
 
             _scheduleRuleFactoryFake = new Mock<IScheduleRuleFactory>();

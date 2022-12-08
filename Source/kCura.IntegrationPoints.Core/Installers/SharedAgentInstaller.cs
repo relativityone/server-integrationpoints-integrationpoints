@@ -30,7 +30,6 @@ namespace kCura.IntegrationPoints.Core.Installers
             container.Register(Component.For<IJobServiceDataProvider>().ImplementedBy<JobServiceDataProvider>().LifestyleTransient());
             container.Register(Component.For<IJobRepository>().ImplementedBy<JobRepository>().LifestyleTransient());
             container.Register(Component.For<IUnfinishedJobService>().ImplementedBy<UnfinishedJobService>().LifestyleTransient());
-            container.Register(Component.For<IIntegrationPointSerializer>().ImplementedBy<IntegrationPointSerializer>().LifestyleSingleton());
         }
     }
 }

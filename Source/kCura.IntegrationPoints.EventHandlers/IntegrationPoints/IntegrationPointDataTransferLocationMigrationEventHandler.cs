@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
             {
                 if (_dataTransferLocationMigrationHelper == null)
                 {
-                    ISerializer serializer = new JSONSerializer();
+                    ISerializer serializer = new IntegrationPointSerializer(Helper.GetLoggerFactory().GetLogger());
                     _dataTransferLocationMigrationHelper = new DataTransferLocationMigrationHelper(serializer);
                 }
 
@@ -135,20 +135,19 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
                 if (_dataTransferLocationMigration == null)
                 {
                     _dataTransferLocationMigration = new DataTransferLocationMigration(
-                        Logger, 
+                        Logger,
                         DestinationProviderRepository,
-                        SourceProviderRepository, 
-                        DataTransferLocationMigrationHelper, 
+                        SourceProviderRepository,
+                        DataTransferLocationMigrationHelper,
                         new IntegrationPointRepository(
-                            ObjectManager, 
-                            new IntegrationPointSerializer(Logger), 
+                            ObjectManager,
                             new SecretsRepository(
-                                SecretStoreFacadeFactory_Deprecated.Create(Helper.GetSecretStore, Logger), 
+                                SecretStoreFacadeFactory_Deprecated.Create(Helper.GetSecretStore, Logger),
                                 Logger
-                            ), 
-                            Logger), 
-                        DataTransferLocationService, 
-                        ResourcePoolManager, 
+                            ),
+                            Logger),
+                        DataTransferLocationService,
+                        ResourcePoolManager,
                         Helper);
                 }
 

@@ -33,35 +33,35 @@ namespace kCura.IntegrationPoints.ImportProvider.Parser
             _fileInfoFactory = fileInfoFactory;
         }
 
-        public string ErrorFilePath(IntegrationPoint integrationPoint)
+        public string ErrorFilePath(int integrationPointArtifactId, string integrationPointName, string sourceConfiguration, string destinationConfiguration)
         {
-            ImportProviderSettings settings = _serializer.Deserialize<ImportProviderSettings>(integrationPoint.SourceConfiguration);
-            ImportSettings destinationConfig = _serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
+            ImportProviderSettings settings = _serializer.Deserialize<ImportProviderSettings>(sourceConfiguration);
+            ImportSettings destinationConfig = _serializer.Deserialize<ImportSettings>(destinationConfiguration);
             string loadFileBasePath = Path.GetDirectoryName(settings.LoadFile);
             string errorFileDirectory = Path.Combine(_locationService.GetWorkspaceFileLocationRootPath(destinationConfig.CaseArtifactId),
                 loadFileBasePath,
                 _ERROR_FILE_FOLDER_NAME);
-            
+
             if (! _directoryHelper.Exists(errorFileDirectory))
             {
                 _directoryHelper.CreateDirectory(errorFileDirectory);
             }
-            return Path.Combine(errorFileDirectory, GetErrorFileName(settings.LoadFile, integrationPoint.Name, integrationPoint.ArtifactId));
+            return Path.Combine(errorFileDirectory, GetErrorFileName(settings.LoadFile, integrationPointName, integrationPointArtifactId));
         }
 
-        public LoadFileInfo LoadFileInfo(IntegrationPoint integrationPoint)
+        public LoadFileInfo LoadFileInfo(string sourceConfiguration, string destinationConfiguration)
         {
-            ImportProviderSettings settings = _serializer.Deserialize<ImportProviderSettings>(integrationPoint.SourceConfiguration);
-            ImportSettings destinationConfig = _serializer.Deserialize<ImportSettings>(integrationPoint.DestinationConfiguration);
+            ImportProviderSettings settings = _serializer.Deserialize<ImportProviderSettings>(sourceConfiguration);
+            ImportSettings destinationConfig = _serializer.Deserialize<ImportSettings>(destinationConfiguration);
 
             // Retrieve the root path of the workspace file location as well as the relative path of the DataTransfer\Import folder
             // We will verify that the fullPath of the load File exists in this location
             string fileLocationRootPath = _locationService.GetWorkspaceFileLocationRootPath(destinationConfig.CaseArtifactId);
             string dataTransferImportPath = _locationService.GetDefaultRelativeLocationFor(Core.Constants.IntegrationPoints.IntegrationPointTypes.ImportGuid);
-            
+
             // Doing the GetFullPath make sure that if the LoadFile has "../../" in it we get the true path
             string loadFileFullPath = Path.GetFullPath(Path.Combine(fileLocationRootPath, settings.LoadFile));
-            
+
             //We need to do a security check here to ensure that we don't allow paths that are not in the DataTransfer/Import directory
             if (Path.IsPathRooted(settings.LoadFile) || !loadFileFullPath.StartsWith(Path.Combine(fileLocationRootPath, dataTransferImportPath)))
             {

@@ -19,8 +19,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
     public class SetTypeOfExportDefaultValueCommandTests : RelativityProviderTemplate
     {
         private IEHHelper _ehHelper;
-        private IntegrationPointModel _defaultIntegrationPointModel;
-        private IntegrationPointProfileModel _defaultIntegrationPointProfileModel;
+        private IntegrationPointDto _defaultIntegrationPointDto;
+        private IntegrationPointProfileDto _defaultIntegrationPointProfileDto;
         private SetTypeOfExportDefaultValueCommand _setTypeOfExportCommand;
 
         public SetTypeOfExportDefaultValueCommandTests() : base($"TypeOfExport_Source_{Utils.FormattedDateTimeNow}", $"TypeOfExport_Dest_{Utils.FormattedDateTimeNow}")
@@ -31,9 +31,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
         {
             base.SuiteSetup();
             _ehHelper = new EHHelper(Helper, WorkspaceArtifactId);
-            _defaultIntegrationPointModel = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly,
+            _defaultIntegrationPointDto = CreateDefaultIntegrationPointModel(ImportOverwriteModeEnum.AppendOnly,
                 "IntegrationPointWithSourceConfToBeCorrected", "Append Only");
-            _defaultIntegrationPointProfileModel = CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum.AppendOnly,
+            _defaultIntegrationPointProfileDto = CreateDefaultIntegrationPointProfileModel(ImportOverwriteModeEnum.AppendOnly,
                 "IntegrationPointWithSourceConfToBeCorrected", "Append Only");
             _setTypeOfExportCommand = SetTypeOfExportDefaultValueCommandFactory.Create(_ehHelper, WorkspaceArtifactId);
         }
@@ -43,8 +43,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
         {
             // Arrange
             IDBContext context = Helper.GetDBContext(WorkspaceArtifactId);
-            IntegrationPointModel dbIntegrationPoint = PrepareIntegrationPoint(context);
-            IntegrationPointProfileModel dbIntegrationPointProfile = PrepareIntegrationPointProfile(context);
+            IntegrationPointDto dbIntegrationPoint = PrepareIntegrationPoint(context);
+            IntegrationPointProfileDto dbIntegrationPointProfile = PrepareIntegrationPointProfile(context);
 
             // Act
             _setTypeOfExportCommand.Execute();
@@ -57,30 +57,30 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
         }
 
         private JToken TryGetTypeOfExportNodeFromDbSourceConfig(IDBContext context, string tableName,
-            IntegrationPointModelBase dbIntegrationPoint)
+            IntegrationPointDtoBase dbIntegrationPoint)
         {
             DataTable dataTable =
                 context.ExecuteSqlStatementAsDataTable(
-                    $"SELECT SourceConfiguration FROM {tableName} WHERE ArtifactID = '{dbIntegrationPoint.ArtifactID}'");
+                    $"SELECT SourceConfiguration FROM {tableName} WHERE ArtifactID = '{dbIntegrationPoint.ArtifactId}'");
             string sourceConfigFromDb = dataTable.Rows[0]["SourceConfiguration"].ToString();
             JObject jObject = JObject.Parse(sourceConfigFromDb);
             return jObject.SelectToken(SourceConfigurationTypeOfExportUpdater.TYPE_OF_EXPORT_NODE_NAME);
         }
 
-        private IntegrationPointModel PrepareIntegrationPoint(IDBContext context)
+        private IntegrationPointDto PrepareIntegrationPoint(IDBContext context)
         {
-            IntegrationPointModel createdModel = CreateOrUpdateIntegrationPoint(_defaultIntegrationPointModel);
-            SetSourceConfigurationWithoutTypeOfExport(context, "IntegrationPoint", createdModel);
-            return createdModel;
+            IntegrationPointDto createdDto = CreateOrUpdateIntegrationPoint(_defaultIntegrationPointDto);
+            SetSourceConfigurationWithoutTypeOfExport(context, "IntegrationPoint", createdDto);
+            return createdDto;
         }
-        private IntegrationPointProfileModel PrepareIntegrationPointProfile(IDBContext context)
+        private IntegrationPointProfileDto PrepareIntegrationPointProfile(IDBContext context)
         {
-            IntegrationPointProfileModel createdModel = CreateOrUpdateIntegrationPointProfile(_defaultIntegrationPointProfileModel);
-            SetSourceConfigurationWithoutTypeOfExport(context, "IntegrationPointProfile", createdModel);
-            return createdModel;
+            IntegrationPointProfileDto createdDto = CreateOrUpdateIntegrationPointProfile(_defaultIntegrationPointProfileDto);
+            SetSourceConfigurationWithoutTypeOfExport(context, "IntegrationPointProfile", createdDto);
+            return createdDto;
         }
 
-        private void SetSourceConfigurationWithoutTypeOfExport(IDBContext context, string tableName, IntegrationPointModelBase createdModel)
+        private void SetSourceConfigurationWithoutTypeOfExport(IDBContext context, string tableName, IntegrationPointDtoBase createdModel)
         {
             var sourceConfig = new SqlParameter("@SourceConfiguration", SqlDbType.NVarChar)
             {
@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
             };
 
             context.ExecuteNonQuerySQLStatement(
-                $"UPDATE {tableName} SET SourceConfiguration = @SourceConfiguration WHERE ArtifactId = '{createdModel.ArtifactID}'",
+                $"UPDATE {tableName} SET SourceConfiguration = @SourceConfiguration WHERE ArtifactId = '{createdModel.ArtifactId}'",
                 new[] {sourceConfig});
         }
 

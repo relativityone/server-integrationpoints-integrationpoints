@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Core.Provider.Internals
 
         public void DeleteIntegrationPointsBySourceProvider(List<int> sourceProvidersIDs)
         {
-            IList<IntegrationPoint> integrationPoints = _integrationPointRepository.GetIntegrationPoints(sourceProvidersIDs);
+            IList<IntegrationPoint> integrationPoints = _integrationPointRepository.ReadBySourceProviders(sourceProvidersIDs);
             List<int> integrationPointsArtifactIDs = integrationPoints.Select(x => x.ArtifactId).ToList();
             _deleteHistoryService.DeleteHistoriesAssociatedWithIPs(integrationPointsArtifactIDs);
             foreach (IntegrationPoint ip in integrationPoints)

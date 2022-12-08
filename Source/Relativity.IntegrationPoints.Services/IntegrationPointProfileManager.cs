@@ -39,7 +39,7 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
                 {
-                    var integrationPointProfileRepository = container.Resolve<IIntegrationPointProfileRepository>();
+                    var integrationPointProfileRepository = container.Resolve<IIntegrationPointProfileAccessor>();
                     return await Task.Run(() => integrationPointProfileRepository.CreateIntegrationPointProfile(request)).ConfigureAwait(false);
                 }
             }
@@ -60,7 +60,7 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (var container = GetDependenciesContainer(request.WorkspaceArtifactId))
                 {
-                    var integrationPointProfileRepository = container.Resolve<IIntegrationPointProfileRepository>();
+                    var integrationPointProfileRepository = container.Resolve<IIntegrationPointProfileAccessor>();
                     return await Task.Run(() => integrationPointProfileRepository.UpdateIntegrationPointProfile(request)).ConfigureAwait(false);
                 }
             }
@@ -79,7 +79,7 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (var container = GetDependenciesContainer(workspaceArtifactId))
                 {
-                    var integrationPointProfileRepository = container.Resolve<IIntegrationPointProfileRepository>();
+                    var integrationPointProfileRepository = container.Resolve<IIntegrationPointProfileAccessor>();
                     return await Task.Run(() => integrationPointProfileRepository.GetIntegrationPointProfile(integrationPointProfileArtifactId)).ConfigureAwait(false);
                 }
             }
@@ -98,7 +98,7 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (var container = GetDependenciesContainer(workspaceArtifactId))
                 {
-                    var integrationPointProfileRepository = container.Resolve<IIntegrationPointProfileRepository>();
+                    var integrationPointProfileRepository = container.Resolve<IIntegrationPointProfileAccessor>();
                     return await Task.Run(() => integrationPointProfileRepository.GetAllIntegrationPointProfiles()).ConfigureAwait(false);
                 }
             }
@@ -117,7 +117,7 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (var container = GetDependenciesContainer(workspaceArtifactId))
                 {
-                    var integrationPointProfileRepository = container.Resolve<IIntegrationPointProfileRepository>();
+                    var integrationPointProfileRepository = container.Resolve<IIntegrationPointProfileAccessor>();
                     return await Task.Run(() => integrationPointProfileRepository.GetOverwriteFieldChoices()).ConfigureAwait(false);
                 }
             }
@@ -143,7 +143,7 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (var container = GetDependenciesContainer(workspaceArtifactId))
                 {
-                    var integrationPointProfileRepository = container.Resolve<IIntegrationPointProfileRepository>();
+                    var integrationPointProfileRepository = container.Resolve<IIntegrationPointProfileAccessor>();
                     return
                         await
                             Task.Run(() => integrationPointProfileRepository.CreateIntegrationPointProfileFromIntegrationPoint(integrationPointArtifactId, profileName)).ConfigureAwait(false);

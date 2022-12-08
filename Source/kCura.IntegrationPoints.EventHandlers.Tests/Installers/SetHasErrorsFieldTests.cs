@@ -131,16 +131,16 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
             var pendingJob = new JobHistory { ArtifactId = 3, JobStatus = JobStatusChoices.JobHistoryPending, EndTimeUTC = null };
             var jobHistories = new[] { pendingJob };
             Data.IntegrationPoint integrationPoint = CreateIntegrationPoint(jobHistories.Select(x => x.ArtifactId).ToArray());
-            IList<Data.IntegrationPoint> integrationPoints = new[] { integrationPoint };
+            List<Data.IntegrationPoint> integrationPoints = new List<Data.IntegrationPoint> { integrationPoint };
 
-            _integrationPointRepository.GetIntegrationPointsWithAllFields().Returns(integrationPoints);
+            _integrationPointRepository.ReadAll().Returns(integrationPoints);
             _jobHistoryService.GetJobHistory(Arg.Is<int[]>(x => CompareLists(x, integrationPoint.JobHistory))).Returns(jobHistories);
 
             // Act
             _instance.ExecuteInstanced();
 
             // Assert
-            _integrationPointRepository.Received(1).GetIntegrationPointsWithAllFields();
+            _integrationPointRepository.Received(1).ReadAll();
             _jobHistoryService.Received(1).GetJobHistory(Arg.Is<int[]>(x => CompareLists(x, integrationPoint.JobHistory)));
             _integrationPointRepository.Received(1)
                 .Update(Arg.Is<Data.IntegrationPoint>(x => x.HasErrors.Value == false && x.ArtifactId == integrationPoint.ArtifactId));
@@ -151,14 +151,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Installers
         {
             // Arrange
             Exception e = new Exception("Query failed");
-            _integrationPointRepository.GetIntegrationPointsWithAllFields().Throws(e);
+            _integrationPointRepository.ReadAll().Throws(e);
 
             // Act
             Assert.Throws<Exception>(() => _instance.ExecuteInstanced());
 
             // Assert
 
-            _integrationPointRepository.Received(1).GetIntegrationPointsWithAllFields();
+            _integrationPointRepository.Received(1).ReadAll();
             _jobHistoryService.Received(0).GetJobHistory(null);
             _integrationPointRepository.Received(0).Update(null);
         }

@@ -18,6 +18,7 @@ using kCura.IntegrationPoints.Common.Helpers;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
 using kCura.IntegrationPoints.Common.RelativitySync;
 using kCura.IntegrationPoints.Config;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -25,7 +26,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.DbContext;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Logging;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.EnvironmentalVariables;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Extensions;
@@ -151,16 +151,15 @@ namespace kCura.IntegrationPoints.Agent
                 {
                     if (job.JobFailed != null)
                     {
-                        IIntegrationPointRepository integrationPointRepository = Container.Resolve<IIntegrationPointRepository>();
-                        IntegrationPoint integrationPoint = integrationPointRepository.ReadAsync(job.RelatedObjectArtifactID).GetAwaiter().GetResult();
-                        if (integrationPoint == null)
+                        IIntegrationPointService integrationPointService = Container.Resolve<IIntegrationPointService>();
+                        IntegrationPointDto integrationPointDto = integrationPointService.Read(job.RelatedObjectArtifactID);
+
+                        if (job.JobFailed.ShouldBreakSchedule)
                         {
-                            throw new NullReferenceException(
-                                $"Unable to retrieve the integration point for the following job: {job.JobId}");
+                            integrationPointService.DisableScheduler(integrationPointDto.ArtifactId);
                         }
 
-                        UpdateIntegrationPointOnScheduleBreak(integrationPointRepository, integrationPoint, job);
-                        MarkJobHistoryAsFailed(integrationPoint, job);
+                        MarkJobHistoryAsFailed(integrationPointDto, job);
                         return new TaskResult
                         {
                             Status = TaskStatusEnum.Fail,
@@ -221,21 +220,6 @@ namespace kCura.IntegrationPoints.Agent
             }
         }
 
-        private void UpdateIntegrationPointOnScheduleBreak(
-            IIntegrationPointRepository integrationPointRepository,
-            IntegrationPoint integrationPoint,
-            Job job)
-        {
-            if (job.JobFailed.ShouldBreakSchedule)
-            {
-                integrationPoint.ScheduleRule = null;
-                integrationPoint.NextScheduledRuntimeUTC = null;
-                integrationPoint.EnableScheduler = job.JobFailed.MaximumConsecutiveFailuresReached;
-
-                integrationPointRepository.Update(integrationPoint);
-            }
-        }
-
         private IDisposable StartMemoryUsageMetricReporting(IWindsorContainer container, Job job)
         {
             return container.Resolve<IMemoryUsageReporter>()
@@ -263,7 +247,7 @@ namespace kCura.IntegrationPoints.Agent
             return result;
         }
 
-        private void MarkJobHistoryAsFailed(IntegrationPoint integrationPoint, Job job)
+        private void MarkJobHistoryAsFailed(IntegrationPointDto integrationPoint, Job job)
         {
             ITaskFactoryJobHistoryService jobHistoryService =
                 Container.Resolve<ITaskFactoryJobHistoryServiceFactory>()
@@ -304,7 +288,7 @@ namespace kCura.IntegrationPoints.Agent
                 Logger.LogInformation("Job will be executed in case of BatchInstanceId: {batchInstanceId}", batchInstanceId);
                 if (!IsJobResumed(container, batchInstanceId))
                 {
-                    IntegrationPoint integrationPoint = integrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
+                    IntegrationPointSlimDto integrationPoint = integrationPointService.ReadSlim(job.RelatedObjectArtifactID);
                     var message = new JobStartedMessage
                     {
                         Provider = integrationPoint.GetProviderName(providerTypeService),

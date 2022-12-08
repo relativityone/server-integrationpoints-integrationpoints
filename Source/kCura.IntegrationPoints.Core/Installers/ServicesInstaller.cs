@@ -67,10 +67,10 @@ namespace kCura.IntegrationPoints.Core.Installers
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-            container.Register(Component.For<ISerializer>().ImplementedBy<JSONSerializer>().UsingFactoryMethod(x =>
+            container.Register(Component.For<ISerializer, ICamelCaseSerializer>().ImplementedBy<IntegrationPointSerializer>().UsingFactoryMethod(x =>
             {
                 IAPILog logger = container.Resolve<IHelper>().GetLoggerFactory().GetLogger();
-                return SerializerWithLogging.Create(logger);
+                return new IntegrationPointSerializer(logger);
             }).LifestyleSingleton());
 
             container.Register(Component.For<IObjectTypeRepository>().ImplementedBy<ObjectTypeRepository>().UsingFactoryMethod(x =>

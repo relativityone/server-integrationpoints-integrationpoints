@@ -30,10 +30,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Mocks.Kepler
                         .First(x => x.ArtifactId == objectRef.ArtifactID)
                         .ToRelativityObject();
 
+                    object fieldValue = obj.FieldValues.Single(x => x.Field.Guids.Single() == fieldRef.Guid.GetValueOrDefault()).Value;
                     return Task.FromResult<IKeplerStream>(new KeplerResponseStream(new HttpResponseMessage(HttpStatusCode.OK)
                     {
-                        Content = new StringContent(obj.FieldValues.Single(x =>
-                            x.Field.Guids.Single() == fieldRef.Guid.GetValueOrDefault()).Value.ToString())
+                        Content = new StringContent((fieldValue ?? String.Empty).ToString())
                     }));
                 });
         }

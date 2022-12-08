@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
 
         public IntegrationPointSecretDelete(
             int workspaceID,
-            ISecretsRepository secretsRepository, 
+            ISecretsRepository secretsRepository,
             IIntegrationPointRepository integrationPointRepository)
         {
             _workspaceID = workspaceID;
@@ -21,17 +21,16 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints.Helpers.Implem
         public void DeleteSecret(int integrationPointId)
         {
             string integrationPointSecret = _integrationPointRepository
-                .GetSecuredConfiguration(integrationPointId);
+                .GetEncryptedSecuredConfiguration(integrationPointId);
             //Old IntegrationPoints don't contain SecuredConfiguration
             if (!string.IsNullOrWhiteSpace(integrationPointSecret))
             {
                 _secretsRepository.DeleteAllRipSecretsFromIntegrationPointAsync(
-                        _workspaceID, 
+                        _workspaceID,
                         integrationPointId
                     ).GetAwaiter()
                     .GetResult();
             }
         }
-        
     }
 }

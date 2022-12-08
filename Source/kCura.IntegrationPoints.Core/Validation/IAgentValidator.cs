@@ -1,9 +1,9 @@
-﻿using kCura.IntegrationPoints.Data;
+﻿using kCura.IntegrationPoints.Core.Models;
 
 namespace kCura.IntegrationPoints.Core.Validation
 {
     public interface IAgentValidator
     {
-        void Validate(IntegrationPoint integrationPointDto, int submittedByUserId);
+        void Validate(IntegrationPointDto integrationPointDto, int submittedByUserId);
     }
 }

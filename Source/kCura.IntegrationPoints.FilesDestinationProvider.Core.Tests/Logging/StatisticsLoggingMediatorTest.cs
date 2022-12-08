@@ -1,6 +1,7 @@
 ﻿using System;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
@@ -24,7 +25,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
         public override void SetUp()
         {
             IJobHistoryErrorService jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
-            jobHistoryErrorService.IntegrationPoint = new Data.IntegrationPoint()
+            jobHistoryErrorService.IntegrationPointDto = new IntegrationPointDto()
             {
                 SourceProvider = 0,
                 DestinationProvider = 0

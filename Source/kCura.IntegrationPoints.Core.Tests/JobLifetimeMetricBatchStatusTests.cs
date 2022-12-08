@@ -5,6 +5,7 @@ using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Monitoring.JobLifetime;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
@@ -40,8 +41,8 @@ namespace kCura.IntegrationPoints.Core.Tests
             _messageServiceMock = new Mock<IMessageService>();
 
             Mock<IIntegrationPointService> integrationPointService = new Mock<IIntegrationPointService>();
-            integrationPointService.Setup(x => x.ReadIntegrationPoint(It.IsAny<int>()))
-                .Returns(new Data.IntegrationPoint
+            integrationPointService.Setup(x => x.ReadSlim(It.IsAny<int>()))
+                .Returns(new IntegrationPointSlimDto
                 {
                     SourceProvider = It.IsAny<int>(),
                     DestinationProvider = It.IsAny<int>()
@@ -65,7 +66,7 @@ namespace kCura.IntegrationPoints.Core.Tests
             Mock<IAPILog> log = new Mock<IAPILog>();
 
             _sut = new JobLifetimeMetricBatchStatus(_messageServiceMock.Object, integrationPointService.Object,
-                providerTypeService.Object, _jobStatusUpdaterFake.Object, _jobHistoryServiceFake.Object, 
+                providerTypeService.Object, _jobStatusUpdaterFake.Object, _jobHistoryServiceFake.Object,
                 serializer.Object, _dateTimeHelperFake.Object, log.Object);
         }
 
@@ -235,7 +236,7 @@ namespace kCura.IntegrationPoints.Core.Tests
                 .Returns(status);
         }
 
-        private void SetupJobHistory(DateTime? endTimeUtc = null, int totalItems = 0, 
+        private void SetupJobHistory(DateTime? endTimeUtc = null, int totalItems = 0,
             int itemsTransferred = 0, int itemsWithErrors = 0)
         {
             _jobHistoryServiceFake.Setup(x => x.GetRdo(It.IsAny<Guid>()))

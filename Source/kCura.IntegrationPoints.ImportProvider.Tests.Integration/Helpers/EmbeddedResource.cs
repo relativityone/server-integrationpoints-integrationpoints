@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Relativity.IntegrationPoints.FieldsMapping.Models;
@@ -16,14 +16,14 @@ namespace kCura.IntegrationPoints.ImportProvider.Tests.Integration.Helpers
         private const string _IMPORT_SETTINGS_RESOURCE = "ImportSettings";
         private const string _IMPORTPROVIDER_SETTINGS_RESOURCE = "ImportProviderSettings";
 
-        private static JSONSerializer _serializer = null;
-        private static JSONSerializer Serializer
+        private static ISerializer _serializer = null;
+        private static ISerializer Serializer
         {
             get
             {
                 if (_serializer == null)
                 {
-                    _serializer = new JSONSerializer();
+                    _serializer = IntegrationPointSerializer.CreateWithoutLogger();
                 }
                 return _serializer;
             }

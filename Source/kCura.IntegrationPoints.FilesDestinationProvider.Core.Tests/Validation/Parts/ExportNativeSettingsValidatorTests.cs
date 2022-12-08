@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
         [TestCase(ExportFile.ExportType.AncestorSearch, _RDO_ARTIFACT_TYPE_ID, false)]
         [TestCase(ExportFile.ExportType.AncestorSearch, ArtifactType.Document, true)]
         [TestCase(ExportFile.ExportType.ArtifactSearch, _RDO_ARTIFACT_TYPE_ID, true)]
-        [TestCase(ExportFile.ExportType.ArtifactSearch, ArtifactType.Document, true)] 
+        [TestCase(ExportFile.ExportType.ArtifactSearch, ArtifactType.Document, true)]
         [TestCase(ExportFile.ExportType.ParentSearch, _RDO_ARTIFACT_TYPE_ID, true)]
         [TestCase(ExportFile.ExportType.ParentSearch, ArtifactType.Document, true)]
         [TestCase(ExportFile.ExportType.Production, ArtifactType.Document, true)]
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Validation
             {
                 DestinationConfiguration = String.Empty,
                 SourceConfiguration = String.Empty,
-                FieldsMap = String.Empty
+                FieldsMap = new List<FieldMap>(),
             };
 
             _fileBuilder.Create(Arg.Any<ExportSettings>()).Returns(exportFile);

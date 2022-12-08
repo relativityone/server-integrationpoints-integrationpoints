@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Monitoring;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
 using Relativity.Services.Choice;
@@ -18,25 +18,25 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
     internal class TaskFactoryJobHistoryService : ITaskFactoryJobHistoryService
     {
         private readonly IAPILog _logger;
-        private readonly IIntegrationPointSerializer _serializer;
+        private readonly ISerializer _serializer;
         private readonly IJobHistoryService _jobHistoryService;
         private readonly IJobHistoryErrorService _jobHistoryErrorService;
-        private readonly IIntegrationPointRepository _integrationPointRepository;
+        private readonly IIntegrationPointService _integrationPointService;
 
-        private readonly IntegrationPoint _integrationPoint;
+        private readonly IntegrationPointDto _integrationPoint;
 
         public TaskFactoryJobHistoryService(
-            IAPILog logger, 
-            IIntegrationPointSerializer serializer, 
-            IServiceFactory serviceFactory, 
+            IAPILog logger,
+            ISerializer serializer,
+            IServiceFactory serviceFactory,
             IJobHistoryErrorService jobHistoryErrorService,
-            IIntegrationPointRepository integrationPointRepository,
-            IntegrationPoint integrationPoint)
+            IIntegrationPointService integrationPointService,
+            IntegrationPointDto integrationPoint)
         {
             _logger = logger.ForContext<TaskFactoryJobHistoryService>();
             _serializer = serializer;
             _jobHistoryErrorService = jobHistoryErrorService;
-            _integrationPointRepository = integrationPointRepository;
+            _integrationPointService = integrationPointService;
 
             _integrationPoint = integrationPoint;
             _jobHistoryService = serviceFactory.CreateJobHistoryService(_logger);
@@ -67,10 +67,8 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
                 return;
             }
 
-            List<int> jobHistoryIds = _integrationPoint.JobHistory.ToList();
-            jobHistoryIds.Remove(jobHistory.ArtifactId);
-            _integrationPoint.JobHistory = jobHistoryIds.ToArray();
-            _integrationPointRepository.Update(_integrationPoint);
+            _integrationPoint.JobHistory.Remove(jobHistory.ArtifactId);
+            _integrationPointService.UpdateJobHistory(_integrationPoint.ArtifactId, _integrationPoint.JobHistory);
 
             jobHistory.JobStatus = JobStatusChoices.JobHistoryStopped;
             _jobHistoryService.UpdateRdo(jobHistory);
@@ -103,7 +101,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
             LogUpdateJobHistoryOnFailureStart(job, e);
             JobHistory jobHistory = GetJobHistory(job);
 
-            _jobHistoryErrorService.IntegrationPoint = _integrationPoint;
+            _jobHistoryErrorService.IntegrationPointDto = _integrationPoint;
             _jobHistoryErrorService.JobHistory = jobHistory;
             _jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
             _jobHistoryErrorService.CommitErrors();

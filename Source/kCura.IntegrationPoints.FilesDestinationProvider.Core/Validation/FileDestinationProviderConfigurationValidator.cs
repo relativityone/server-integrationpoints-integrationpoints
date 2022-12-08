@@ -52,9 +52,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation
         {
             var result = new ValidationResult();
             ExportUsingSavedSearchSettings sourceConfiguration = _serializer.Deserialize<ExportUsingSavedSearchSettings>(model.SourceConfiguration);
-            IEnumerable<FieldMap> fieldMap = _serializer.Deserialize<IEnumerable<FieldMap>>(model.FieldsMap);
 
-            var exportSettings = _exportSettingsBuilder.Create(sourceConfiguration, fieldMap, model.ArtifactTypeId);
+            var exportSettings = _exportSettingsBuilder.Create(sourceConfiguration, model.FieldsMap, model.ArtifactTypeId);
 
             var workspaceValidator = _validatorsFactory.CreateWorkspaceValidator();
             result.Add(workspaceValidator.Validate(exportSettings.WorkspaceId));

@@ -101,8 +101,8 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
         {
             MockValidPermissions();
 
-            var jobHistoryRepository = Substitute.For<Services.Repositories.IJobHistoryRepository>();
-            _container.Resolve<Services.Repositories.IJobHistoryRepository>().Returns(jobHistoryRepository);
+            var jobHistoryRepository = Substitute.For<Services.Repositories.IJobHistoryAccessor>();
+            _container.Resolve<Services.Repositories.IJobHistoryAccessor>().Returns(jobHistoryRepository);
 
             var expectedResult = new JobHistorySummaryModel();
 
@@ -124,9 +124,9 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
         {
             MockValidPermissions();
 
-            var jobHistoryRepository = Substitute.For<Services.Repositories.IJobHistoryRepository>();
+            var jobHistoryRepository = Substitute.For<Services.Repositories.IJobHistoryAccessor>();
             jobHistoryRepository.GetJobHistory(Arg.Any<JobHistoryRequest>()).Throws(new ArgumentException());
-            _container.Resolve<Services.Repositories.IJobHistoryRepository>().Returns(jobHistoryRepository);
+            _container.Resolve<Services.Repositories.IJobHistoryAccessor>().Returns(jobHistoryRepository);
 
             JobHistoryRequest jobHistoryRequest = new JobHistoryRequest
             {
@@ -144,9 +144,9 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 
             var expectedException = new ArgumentException();
 
-            var jobHistoryRepository = Substitute.For<Services.Repositories.IJobHistoryRepository>();
+            var jobHistoryRepository = Substitute.For<Services.Repositories.IJobHistoryAccessor>();
             jobHistoryRepository.GetJobHistory(Arg.Any<JobHistoryRequest>()).Throws(expectedException);
-            _container.Resolve<Services.Repositories.IJobHistoryRepository>().Returns(jobHistoryRepository);
+            _container.Resolve<Services.Repositories.IJobHistoryAccessor>().Returns(jobHistoryRepository);
 
             JobHistoryRequest jobHistoryRequest = new JobHistoryRequest
             {

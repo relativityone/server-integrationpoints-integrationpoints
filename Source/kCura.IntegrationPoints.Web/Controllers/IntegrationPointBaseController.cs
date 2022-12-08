@@ -74,17 +74,17 @@ namespace kCura.IntegrationPoints.Web.Controllers
                                     permissionRepository.UserHasArtifactInstancePermission(integrationPointsObjectTypeGuid, artifactId.Value, ArtifactPermission.Edit);
             return canImport && canAddOrEdit && canEditExistingIp;
         }
-        
+
         public ActionResult Details(int id)
         {
-            IntegrationPointModelBase integrationViewModel = GetIntegrationPointBaseModel(id);
+            IntegrationPointWebModelBase webModel = GetIntegrationPoint(id);
 
-            var model = new IpDetailModel { DataModel = integrationViewModel };
+            var model = new IpDetailModel { DataModel = webModel };
 
             return View("~/Views/IntegrationPoints/Details.cshtml", model);
         }
 
-        protected abstract IntegrationPointModelBase GetIntegrationPointBaseModel(int id);
+        protected abstract IntegrationPointWebModelBase GetIntegrationPoint(int id);
 
         public ActionResult StepDetails()
         {

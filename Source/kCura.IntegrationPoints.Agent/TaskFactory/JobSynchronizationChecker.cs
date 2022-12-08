@@ -3,6 +3,7 @@ using kCura.IntegrationPoints.Agent.Attributes;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
@@ -20,8 +21,8 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
 
         public JobSynchronizationChecker(
             IAgentHelper helper,
-            IJobService jobService, 
-            IManagerFactory managerFactory, 
+            IJobService jobService,
+            IManagerFactory managerFactory,
             ITaskFactoryJobHistoryServiceFactory jobHistoryServicesFactory)
         {
             _jobService = jobService;
@@ -31,7 +32,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<JobSynchronizationChecker>();
         }
 
-        public void CheckForSynchronization(Type type, Job job, IntegrationPoint integrationPointDto, ScheduleQueueAgentBase agentBase)
+        public void CheckForSynchronization(Type type, Job job, IntegrationPointDto integrationPointDto, ScheduleQueueAgentBase agentBase)
         {
             object[] attributes = type.GetCustomAttributes(false);
             foreach (object attribute in attributes)
@@ -56,15 +57,15 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
             return hasOtherJobsExecuting;
         }
 
-        internal void DropJobAndThrowException(Job job, IntegrationPoint integrationPointDto, ScheduleQueueAgentBase agentBase)
+        internal void DropJobAndThrowException(Job job, IntegrationPointDto integrationPointDto, ScheduleQueueAgentBase agentBase)
         {
             string exceptionMessage = "Unable to execute Integration Point job: There is already a job currently running.";
 
             //check if it's a scheduled job
             if (!string.IsNullOrEmpty(job.ScheduleRuleType))
             {
-                integrationPointDto.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, agentBase.ScheduleRuleFactory, new TaskResult { Status = TaskStatusEnum.None });
-                exceptionMessage = $@"{exceptionMessage} Job is re-scheduled for {integrationPointDto.NextScheduledRuntimeUTC}.";
+                integrationPointDto.NextRun = _jobService.GetJobNextUtcRunDateTime(job, agentBase.ScheduleRuleFactory, new TaskResult { Status = TaskStatusEnum.None });
+                exceptionMessage = $@"{exceptionMessage} Job is re-scheduled for {integrationPointDto.NextRun}.";
             }
             else
             {
@@ -77,7 +78,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
             throw new AgentDropJobException(exceptionMessage);
         }
 
-        private void LogDroppingJob(Job job, IntegrationPoint integrationPointDto, string exceptionMessage)
+        private void LogDroppingJob(Job job, IntegrationPointDto integrationPointDto, string exceptionMessage)
         {
             _logger.LogError("{ExceptionMessage}. Job Id: {JobId}. Task type: {TaskType}. Integration Point Id: {IntegrationPointId}.", exceptionMessage, job.JobId, job.TaskType,
                 integrationPointDto.ArtifactId);

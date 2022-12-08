@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
@@ -15,7 +16,6 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.DataTransfer.MessageService;
 using Relativity.Services.Objects.DataContracts;
 using ChoiceRef = Relativity.Services.Choice.ChoiceRef;
 
@@ -30,8 +30,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
         private IAPILog _logger;
 
         private JobHistoryService _instance;
-        private IIntegrationPointSerializer _serializer;
-        private Data.IntegrationPoint _integrationPoint;
+        private ISerializer _serializer;
+        private IntegrationPointDto _integrationPoint;
         private ImportSettings _settings;
         private WorkspaceDTO _workspace;
         private int _jobHistoryArtifactId;
@@ -44,15 +44,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Services.JobHistory
             _workspaceManager = Substitute.For<IWorkspaceManager>();
             _federatedInstanceManager = Substitute.For<IFederatedInstanceManager>();
             _logger = Substitute.For<IAPILog>();
-            _serializer = Substitute.For<IIntegrationPointSerializer>();
+            _serializer = Substitute.For<ISerializer>();
 
-            _integrationPoint = new Data.IntegrationPoint()
+            _integrationPoint = new IntegrationPointDto
             {
                 ArtifactId = 98475,
                 Name = "RIP RIP",
                 DestinationConfiguration = "dest config",
-                OverwriteFields = OverwriteFieldsChoices.IntegrationPointAppendOnly,
-                JobHistory = new[] { 4543, 443 },
+                SelectedOverwrite = OverwriteFieldsChoices.IntegrationPointAppendOnly.ToString(),
+                JobHistory = new List<int> { 4543, 443 },
                 SourceProvider = 0,
                 DestinationProvider = 0
             };

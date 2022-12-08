@@ -12,31 +12,29 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
 {
     public class FirstAndLastNameMappedValidator : BasePartsValidator<IntegrationPointProviderValidationModel>
     {
-        private readonly ISerializer _serializer;
         private readonly IAPILog _logger;
         public override string Key => ObjectTypeGuids.Entity.ToString();
 
-        public FirstAndLastNameMappedValidator(ISerializer serializer, IAPILog logger)
+        public FirstAndLastNameMappedValidator(IAPILog logger)
         {
-            _serializer = serializer;
             _logger = logger.ForContext<FirstAndLastNameMappedValidator>();
         }
 
         public override ValidationResult Validate(IntegrationPointProviderValidationModel value)
         {
             var result = new ValidationResult();
-            List<FieldMap> fieldsMap = _serializer.Deserialize<List<FieldMap>>(value.FieldsMap);
-            
+            List<FieldMap> fieldsMap = value.FieldsMap;
+
             result.Add(ValidateFirstNameMapped(fieldsMap));
             result.Add(ValidateLastNameMapped(fieldsMap));
-            
+
             return result;
         }
 
         private ValidationResult ValidateFirstNameMapped(List<FieldMap> fieldMap)
         {
             var result = new ValidationResult();
-            
+
             bool isFieldIncluded = CheckIfFieldIsIncludedInDestinationFieldMap(fieldMap, EntityFieldNames.FirstName);
             if (!isFieldIncluded)
             {
@@ -45,12 +43,12 @@ namespace kCura.IntegrationPoints.Core.Validation.Parts
             }
             return result;
         }
-        
+
         private ValidationResult ValidateLastNameMapped(List<FieldMap> fieldMap)
         {
             var result = new ValidationResult();
-            
-            bool isFieldIncluded = CheckIfFieldIsIncludedInDestinationFieldMap(fieldMap, EntityFieldNames.LastName); 
+
+            bool isFieldIncluded = CheckIfFieldIsIncludedInDestinationFieldMap(fieldMap, EntityFieldNames.LastName);
             if (!isFieldIncluded)
             {
                 _logger.LogInformation("Field {fieldName} not found in destination FieldMap", EntityFieldNames.LastName);

@@ -3,8 +3,9 @@ using Castle.Windsor;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
@@ -18,21 +19,21 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
         private readonly IAPILog _logger;
         private readonly IJobSynchronizationChecker _jobSynchronizationChecker;
         private readonly ITaskFactoryJobHistoryServiceFactory _jobHistoryServiceFactory;
-        private readonly IIntegrationPointRepository _integrationPointRepository;
+        private readonly IIntegrationPointService _integrationPointService;
 
-        public TaskFactory(IAgentHelper helper, 
+        public TaskFactory(IAgentHelper helper,
             ITaskExceptionMediator taskExceptionMediator,
-            IJobSynchronizationChecker jobSynchronizationChecker, 
+            IJobSynchronizationChecker jobSynchronizationChecker,
             ITaskFactoryJobHistoryServiceFactory jobHistoryServiceFactory,
-            IWindsorContainer container, 
-            IIntegrationPointRepository integrationPointRepository)
+            IWindsorContainer container,
+            IIntegrationPointService integrationPointService)
         {
             _logger = helper.GetLoggerFactory().GetLogger().ForContext<TaskFactory>();
             _taskExceptionMediator = taskExceptionMediator;
             _jobSynchronizationChecker = jobSynchronizationChecker;
             _jobHistoryServiceFactory = jobHistoryServiceFactory;
             _container = container;
-            _integrationPointRepository = integrationPointRepository;
+            _integrationPointService = integrationPointService;
         }
 
         public ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase)
@@ -46,7 +47,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
                 throw new InvalidOperationException($"{nameof(TaskFactory)} wasn't properly initialized. Container cannot be null.");
             }
 
-            IntegrationPoint integrationPointDto = GetIntegrationPoint(job);
+            IntegrationPointDto integrationPointDto = GetIntegrationPoint(job);
             ITaskFactoryJobHistoryService jobHistoryServices = _jobHistoryServiceFactory.CreateJobHistoryService(integrationPointDto);
             try
             {
@@ -93,17 +94,16 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
             }
         }
 
-        private ITask CheckForSynchronizationAndResolve<T>(Job job, IntegrationPoint integrationPointDto, ScheduleQueueAgentBase agentBase) where T : ITask
+        private ITask CheckForSynchronizationAndResolve<T>(Job job, IntegrationPointDto integrationPointDto, ScheduleQueueAgentBase agentBase) where T : ITask
         {
             _jobSynchronizationChecker.CheckForSynchronization(typeof(T), job, integrationPointDto, agentBase);
             return _container.Resolve<T>();
         }
 
-        private IntegrationPoint GetIntegrationPoint(Job job)
+        private IntegrationPointDto GetIntegrationPoint(Job job)
         {
             LogGetIntegrationPointStart(job);
-            IntegrationPoint integrationPoint =
-                _integrationPointRepository.ReadWithFieldMappingAsync(job.RelatedObjectArtifactID).GetAwaiter().GetResult();
+            IntegrationPointDto integrationPoint =  _integrationPointService.Read(job.RelatedObjectArtifactID);
 
             if (integrationPoint == null)
             {
@@ -153,7 +153,7 @@ namespace kCura.IntegrationPoints.Agent.TaskFactory
             _logger.LogError("Unable to retrieve the integration point for the following job: {JobId}", job.JobId);
         }
 
-        private void LogGetIntegrationPointSuccesfullEnd(Job job, IntegrationPoint integrationPoint)
+        private void LogGetIntegrationPointSuccesfullEnd(Job job, IntegrationPointDto integrationPoint)
         {
             _logger.LogInformation("Read integration point record completed for job: {JobId}, IP ArtifactId: {ArtifactId}", job.JobId, integrationPoint.ArtifactId);
         }

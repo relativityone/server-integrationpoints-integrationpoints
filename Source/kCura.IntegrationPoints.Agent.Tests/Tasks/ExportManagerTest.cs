@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -89,7 +90,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         {
             // Arrange
             const int artifactTypeId = 1;
-            Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint
+            IntegrationPointDto integrationPoint = new IntegrationPointDto
             {
                 SourceConfiguration = "Source Configuration",
                 DestinationConfiguration = $"{{ArtifactTypeId: {artifactTypeId}}}"
@@ -99,7 +100,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 SavedSearchArtifactId = 1,
             };
 
-            _integrationPointService.ReadIntegrationPoint(_job.RelatedObjectArtifactID).Returns(integrationPoint);
+            _integrationPointService.Read(_job.RelatedObjectArtifactID).Returns(integrationPoint);
             _exportInitProcessService.CalculateDocumentCountToTransfer(sourceConfiguration, artifactTypeId).Returns(totalSavedSearchCount);
 
             _serializerMock.Deserialize<ExportUsingSavedSearchSettings>(integrationPoint.SourceConfiguration)

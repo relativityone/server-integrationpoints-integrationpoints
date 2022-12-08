@@ -2,12 +2,12 @@
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Common.Monitoring.Messages;
 using kCura.IntegrationPoints.Common.Monitoring.Messages.JobLifetime;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Core;
 using Relativity.API;
 using Relativity.DataTransfer.MessageService;
@@ -27,12 +27,12 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
         private readonly IAPILog _log;
 
         public JobLifetimeMetricBatchStatus(
-            IMessageService messageService, 
+            IMessageService messageService,
             IIntegrationPointService integrationPointService,
-            IProviderTypeService providerTypeService, 
-            IJobStatusUpdater updater, 
-            IJobHistoryService jobHistoryService, 
-            ISerializer serializer, 
+            IProviderTypeService providerTypeService,
+            IJobStatusUpdater updater,
+            IJobHistoryService jobHistoryService,
+            ISerializer serializer,
             IDateTimeHelper dateTimeHelper,
             IAPILog log)
         {
@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
         {
             int? completedRecords = jobHistory.ItemsTransferred;
             TimeSpan? duration = (jobHistory.EndTimeUTC ?? _dateTimeHelper.Now()) - jobHistory.StartTimeUTC;
-        
+
             if (completedRecords > 0 && duration.HasValue)
             {
                 double throughput = completedRecords.Value / duration.Value.TotalSeconds;
@@ -158,8 +158,8 @@ namespace kCura.IntegrationPoints.Core.Monitoring.JobLifetime
 
         private string GetProviderName(Job job)
         {
-            IntegrationPoint integrationPoint = _integrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
-            
+            IntegrationPointSlimDto integrationPoint = _integrationPointService.ReadSlim(job.RelatedObjectArtifactID);
+
             return integrationPoint.GetProviderName(_providerTypeService);
         }
     }

@@ -10,7 +10,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Commands
 {
     public class ImportNativeFileCopyModeUpdater
     {
-
         private readonly IProviderTypeService _providerTypeService;
 
         private static readonly Dictionary<ProviderType, UpdateValues> _updateConditions =

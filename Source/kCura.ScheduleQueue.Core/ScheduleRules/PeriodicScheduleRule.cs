@@ -87,16 +87,16 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
         {
             EndDateHelperBase endDateHelper;
 
-            TimeZoneInfo clientTimeZoneInfo = TimeZoneId != null ? 
-                TimeZoneInfo.GetSystemTimeZones().FirstOrDefault(x => x.Id == TimeZoneId)
-                : TimeZoneInfo.Local;            
+            TimeZoneInfo clientTimeZoneInfo = TimeZoneId != null
+                ? TimeZoneInfo.GetSystemTimeZones().FirstOrDefault(x => x.Id == TimeZoneId) ?? TimeZoneInfo.Local
+                : TimeZoneInfo.Local;
 
-            DateTime startDate = StartDate ?? StartDate.GetValueOrDefault(TimeService.UtcNow);            
+            DateTime startDate = StartDate ?? StartDate.GetValueOrDefault(TimeService.UtcNow);
 
-            //current client local date/time is required for correct calculation of DST change                     
+            //current client local date/time is required for correct calculation of DST change
             DateTime clientTimeLocal = TimeService.UtcNow.Date.AddMinutes(LocalTimeOfDay.GetValueOrDefault().TotalMinutes);
             TimeSpan clientUtcOffset = clientTimeZoneInfo.GetUtcOffset(clientTimeLocal);
-            DateTime clientTimeUtc = DateTime.SpecifyKind(clientTimeLocal.AddMinutes(-clientUtcOffset.TotalMinutes), DateTimeKind.Utc);            
+            DateTime clientTimeUtc = DateTime.SpecifyKind(clientTimeLocal.AddMinutes(-clientUtcOffset.TotalMinutes), DateTimeKind.Utc);
 
             //Old sheduler does not have TimeZoneOffSet value so use the local time to adjust the next runtime
             if (TimeZoneOffsetInMinute == null)
@@ -121,7 +121,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 
             DateTime? nextRunTimeUtc = GetNextRunTimeByInterval(Interval, endDateHelper,
                 daysToRunUtc, dayOfMonth, SetLastDayOfMonth, Reoccur, OccuranceInMonth);
-           
+
             return AdjustToDaylightSavingOrStandardTime(nextRunTimeUtc, clientTimeZoneInfo,
             clientUtcOffset);
         }
@@ -145,7 +145,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
         /// Adjust nextRunTime to Daylight Saving Time / Standard Time
         /// </summary>
         /// <returns>Adjusted nextRunTime to DST or Standard</returns>
-        private DateTime? AdjustToDaylightSavingOrStandardTime(DateTime? nextRunTimeUtc, TimeZoneInfo clientTimeZoneInfo, 
+        private DateTime? AdjustToDaylightSavingOrStandardTime(DateTime? nextRunTimeUtc, TimeZoneInfo clientTimeZoneInfo,
             TimeSpan clientUtcOffset)
         {
             if (nextRunTimeUtc == null || LocalTimeOfDay == null) { return nextRunTimeUtc; }

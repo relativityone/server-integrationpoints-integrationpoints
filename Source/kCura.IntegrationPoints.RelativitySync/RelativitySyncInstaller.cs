@@ -1,7 +1,7 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Common.RelativitySync;
+using kCura.IntegrationPoints.Core.RelativitySync;
 using kCura.IntegrationPoints.RelativitySync.Metrics;
 
 namespace kCura.IntegrationPoints.RelativitySync
