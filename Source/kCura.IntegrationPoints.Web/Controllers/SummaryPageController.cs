@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Helpers;
@@ -28,8 +29,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
             SummaryPageSelector summaryPageSelector,
             IDocumentAccumulatedStatistics documentAccumulatedStatistics,
             IIntegrationPointService integrationPointService,
-            IIntegrationPointProfileService integrationPointProfileService)
-            IDocumentAccumulatedStatistics documentAccumulatedStatistics,
+            IIntegrationPointProfileService integrationPointProfileService,
             ICalculationChecker calculationChecker)
         {
             _context = context;
