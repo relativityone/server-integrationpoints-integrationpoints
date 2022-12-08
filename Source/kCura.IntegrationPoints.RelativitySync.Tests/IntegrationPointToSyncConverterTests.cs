@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.TestHelpers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.RelativitySync.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -38,12 +38,11 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 
         private Mock<ISerializer> _serializerFake;
         private Mock<IJobHistoryService> _jobHistoryServiceFake;
-        private Mock<IRelativityObjectManager> _relativityObjectManager;
 
         private SourceConfiguration _sourceConfiguration;
         private ExtendedImportSettings _destinationConfiguration;
 
-        private Data.IntegrationPoint _integrationPointModel;
+        private IntegrationPointDto _integrationPointDto;
 
         private const int _JOB_HISTORY_ID = 30;
         private const int _JOB_HISTORY_TO_RETRY = 31;
@@ -66,8 +65,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
 
             _jobHistoryServiceFake = new Mock<IJobHistoryService>();
 
-            _relativityObjectManager = new Mock<IRelativityObjectManager>();
-
             Mock<IJobHistorySyncService> jobHistorySyncService = new Mock<IJobHistorySyncService>();
             jobHistorySyncService.Setup(x => x.GetLastJobHistoryWithErrorsAsync(_SOURCE_WORKSPACE_ID, _INTEGRATION_POINT_ID))
                 .ReturnsAsync(new RelativityObject { ArtifactID = _JOB_HISTORY_TO_RETRY });
@@ -84,7 +81,6 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
                 _jobHistoryServiceFake.Object,
                 jobHistorySyncService.Object,
                 syncOperations,
-                _relativityObjectManager.Object,
                 log.Object);
         }
 
@@ -154,7 +150,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             // Arrange
             IExtendedJob job = SetupExtendedJob(isRetry: true);
             SetupJobHistory(job, jobHistoryOverwrite);
-            // Act        
+            // Act
 
             await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
 
@@ -338,7 +334,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             _destinationConfiguration = CreateNonDocumentDestinationConfiguration();
             _sourceConfiguration = CreateNonDocumentSourceConfiguration();
             IExtendedJob job = SetupExtendedJob();
-            job.IntegrationPointModel.LogErrors = false;
+            job.IntegrationPointDto.LogErrors = false;
 
             // Act
             await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
@@ -347,19 +343,22 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             _nonDocumentSyncConfigurationBuilderMock.Verify(x => x.DisableItemLevelErrorLogging(), Times.Once);
         }
 
-        [TestCase(null)]
+        [TestCase(false)]
         [TestCase(true)]
-        public async Task CreateSyncConfigurationAsync_ShouldCreateSyncConfiguration_AndLogErrors(bool? logErrors)
+        public async Task CreateSyncConfigurationAsync_ShouldCreateSyncConfiguration_AndLogErrors(bool logErrors)
         {
             // Arrange
             IExtendedJob job = SetupExtendedJob();
-            job.IntegrationPointModel.LogErrors = logErrors;
+            job.IntegrationPointDto.LogErrors = logErrors;
             SetupJobHistory(job);
             // Act
             await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
 
             // Assert
-            _documentSyncConfigurationBuilderMock.Verify(x => x.DisableItemLevelErrorLogging(), Times.Never);
+            Times expectedTimes = logErrors
+                ? Times.Never()
+                : Times.Once();
+            _documentSyncConfigurationBuilderMock.Verify(x => x.DisableItemLevelErrorLogging(), expectedTimes);
         }
 
         [Test]
@@ -367,7 +366,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
         {
             // Arrange
             IExtendedJob job = SetupExtendedJob();
-            job.IntegrationPointModel.LogErrors = false;
+            job.IntegrationPointDto.LogErrors = false;
             SetupJobHistory(job);
             // Act
             await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
@@ -376,20 +375,23 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             _documentSyncConfigurationBuilderMock.Verify(x => x.DisableItemLevelErrorLogging(), Times.Once);
         }
 
-        [TestCase(null)]
+        [TestCase(false)]
         [TestCase(true)]
-        public async Task CreateSyncConfigurationAsync_ShouldCreateImageSyncConfiguration_AndLogErrors(bool? logErrors)
+        public async Task CreateSyncConfigurationAsync_ShouldCreateImageSyncConfiguration_AndLogErrors(bool logErrors)
         {
             // Arrange
             _destinationConfiguration = CreateImageDestinationConfiguration();
             IExtendedJob job = SetupExtendedJob();
-            job.IntegrationPointModel.LogErrors = logErrors;
+            job.IntegrationPointDto.LogErrors = logErrors;
             SetupJobHistory(job);
             // Act
             await _sut.CreateSyncConfigurationAsync(job).ConfigureAwait(false);
 
             // Assert
-            _imageSyncConfigurationBuilderMock.Verify(x => x.DisableItemLevelErrorLogging(), Times.Never);
+            Times expectedTimes = logErrors
+                ? Times.Never()
+                : Times.Once();
+            _imageSyncConfigurationBuilderMock.Verify(x => x.DisableItemLevelErrorLogging(), expectedTimes);
         }
 
         [Test]
@@ -398,7 +400,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             // Arrange
             _destinationConfiguration = CreateImageDestinationConfiguration();
             IExtendedJob job = SetupExtendedJob();
-            job.IntegrationPointModel.LogErrors = false;
+            job.IntegrationPointDto.LogErrors = false;
             SetupJobHistory(job);
 
             // Act
@@ -486,12 +488,12 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             bool isRetry = false,
             string emailNotifications = "")
         {
-            _integrationPointModel = new Data.IntegrationPoint
+            _integrationPointDto = new IntegrationPointDto
             {
                 EmailNotificationRecipients = emailNotifications,
                 SourceConfiguration = null,
                 DestinationConfiguration = null,
-                LogErrors = null
+                LogErrors = false
             };
 
             _serializerFake.Setup(x => x.Deserialize<SourceConfiguration>(It.IsAny<string>()))
@@ -522,7 +524,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
             extendedJob.SetupGet(x => x.WorkspaceId).Returns(_SOURCE_WORKSPACE_ID);
             extendedJob.SetupGet(x => x.JobHistoryId).Returns(_JOB_HISTORY_ID);
             extendedJob.SetupGet(x => x.IntegrationPointId).Returns(_INTEGRATION_POINT_ID);
-            extendedJob.SetupGet(x => x.IntegrationPointModel).Returns(_integrationPointModel);
+            extendedJob.SetupGet(x => x.IntegrationPointDto).Returns(_integrationPointDto);
             extendedJob.SetupGet(x => x.Job).Returns(job);
 
             return extendedJob.Object;

@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
         public void FixedSyncMapping_ShouldHandleEmptyMapping()
         {
             // Act
-            List<SyncFieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(string.Empty, _serializer, _loggerFake.Object);
+            List<SyncFieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(new List<FieldMap>(), _loggerFake.Object);
 
             // Assert
             fieldsMapping.Should().BeEmpty();
@@ -79,10 +79,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
                 }
             };
 
-            string fieldMapping = _serializer.Serialize(fieldMap);
-
             // Act
-            List<SyncFieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(fieldMapping, _serializer, _loggerFake.Object);
+            List<SyncFieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(fieldMap, _loggerFake.Object);
 
             // Assert
             fieldsMapping.ShouldBeEquivalentTo(expectedFieldsMapping);
@@ -128,10 +126,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
                 }
             };
 
-            string fieldMapping = _serializer.Serialize(fieldMap);
-
             // Act
-            List<SyncFieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(fieldMapping, _serializer, _loggerFake.Object);
+            List<SyncFieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(fieldMap, _loggerFake.Object);
 
             // Assert
             fieldsMapping.ShouldBeEquivalentTo(expectedFieldsMapping);
@@ -203,10 +199,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
                 }
             };
 
-            string fieldMapping = _serializer.Serialize(fieldMap);
-
             // Act
-            List<SyncFieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(fieldMapping, _serializer, _loggerFake.Object);
+            List<SyncFieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(fieldMap, _loggerFake.Object);
 
             // Assert
             fieldsMapping.ShouldBeEquivalentTo(expectedFieldsMapping);
@@ -292,10 +286,8 @@ namespace kCura.IntegrationPoints.RelativitySync.Tests
                 }
             };
 
-            string fieldMapping = _serializer.Serialize(fieldMap);
-
             // Act
-            List<SyncFieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(fieldMapping, _serializer, _loggerFake.Object);
+            List<SyncFieldMap> fieldsMapping = FieldMapHelper.FixedSyncMapping(fieldMap, _loggerFake.Object);
 
             // Assert
             fieldsMapping.ShouldBeEquivalentTo(expectedFieldsMapping);

@@ -21,7 +21,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
 
         public IList<IntegrationPointTypeTest> IntegrationPointTypes { get; } = new List<IntegrationPointTypeTest>();
 
-        public IList<JobHistoryTest> JobHistory { get; } = new List<JobHistoryTest>();
+        public IList<JobHistoryTest> JobHistory
+        {
+            get;
+        } = new List<JobHistoryTest>();
 
         public IList<JobHistoryErrorTest> JobHistoryErrors { get; } = new List<JobHistoryErrorTest>();
 
@@ -70,7 +73,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 .Concat(GetArtifacts(Productions))
                 .ToList();
         }
-        
+
         public IWorkspaceHelpers Helpers { get; }
 
         public WorkspaceTest(ISerializer serializer, int? workspaceArtifactId = null) : base("Workspace", workspaceArtifactId)
@@ -152,7 +155,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                 _workspace = workspace;
                 _serializer = serializer;
             }
-            
+
             public DestinationProviderHelper DestinationProviderHelper => _destinationProviderHelper ??
                                                                           (_destinationProviderHelper =
                                                                               new DestinationProviderHelper(
@@ -179,7 +182,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Models
                                                             new JobHistoryHelper(_workspace));
 
             public FieldsMappingHelper FieldsMappingHelper => _fieldsMappingHelper ??
-                                                              (_fieldsMappingHelper = 
+                                                              (_fieldsMappingHelper =
                                                                   new FieldsMappingHelper(_workspace));
 
             public DocumentHelper DocumentHelper => _documentHelper ??

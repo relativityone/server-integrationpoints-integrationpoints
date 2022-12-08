@@ -105,9 +105,9 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
             {
                 WorkspaceArtifactId = _WORKSPACE_ID
             };
-            var documentRepository = Substitute.For<Services.Repositories.IDocumentRepository>();
+            var documentRepository = Substitute.For<Services.Repositories.IDocumentAccessor>();
             documentRepository.GetPercentagePushedToReviewAsync(request).Returns(expectedResult);
-            _container.Resolve<Services.Repositories.IDocumentRepository>().Returns(documentRepository);
+            _container.Resolve<Services.Repositories.IDocumentAccessor>().Returns(documentRepository);
 
             var actualResult = _documentManager.GetPercentagePushedToReviewAsync(request).Result;
 
@@ -127,9 +127,9 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
             {
                 WorkspaceArtifactId = _WORKSPACE_ID
             };
-            var documentRepository = Substitute.For<Services.Repositories.IDocumentRepository>();
+            var documentRepository = Substitute.For<Services.Repositories.IDocumentAccessor>();
             documentRepository.GetCurrentPromotionStatusAsync(request).Returns(expectedResult);
-            _container.Resolve<Services.Repositories.IDocumentRepository>().Returns(documentRepository);
+            _container.Resolve<Services.Repositories.IDocumentAccessor>().Returns(documentRepository);
 
             var actualResult = _documentManager.GetCurrentPromotionStatusAsync(request).Result;
 
@@ -149,9 +149,9 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
             {
                 WorkspaceArtifactId = _WORKSPACE_ID
             };
-            var documentRepository = Substitute.For<Services.Repositories.IDocumentRepository>();
+            var documentRepository = Substitute.For<Services.Repositories.IDocumentAccessor>();
             documentRepository.GetHistoricalPromotionStatusAsync(request).Returns(expectedResult);
-            _container.Resolve<Services.Repositories.IDocumentRepository>().Returns(documentRepository);
+            _container.Resolve<Services.Repositories.IDocumentAccessor>().Returns(documentRepository);
 
             var actualResult = _documentManager.GetHistoricalPromotionStatusAsync(request).Result;
 
@@ -167,12 +167,12 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 
             var expectedException = new ArgumentException();
 
-            var documentRepository = Substitute.For<Services.Repositories.IDocumentRepository>();
+            var documentRepository = Substitute.For<Services.Repositories.IDocumentAccessor>();
             documentRepository.GetCurrentPromotionStatusAsync(Arg.Any<CurrentPromotionStatusRequest>()).Throws(expectedException);
             documentRepository.GetHistoricalPromotionStatusAsync(Arg.Any<HistoricalPromotionStatusRequest>()).Throws(expectedException);
             documentRepository.GetPercentagePushedToReviewAsync(Arg.Any<PercentagePushedToReviewRequest>()).Throws(expectedException);
 
-            _container.Resolve<Services.Repositories.IDocumentRepository>().Returns(documentRepository);
+            _container.Resolve<Services.Repositories.IDocumentAccessor>().Returns(documentRepository);
 
             var currentPromotionStatusRequest = new CurrentPromotionStatusRequest
             {

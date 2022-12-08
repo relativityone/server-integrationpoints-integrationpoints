@@ -9,8 +9,10 @@ using kCura.IntegrationPoint.Tests.Core.Queries;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.EntityManager;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -41,13 +43,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
     [TestFixture, Category("Unit")]
     public class SyncEntityManagerWorkerTests : TestBase
     {
-        private Data.IntegrationPoint _integrationPoint;
+        private IntegrationPointDto _integrationPoint;
         private IDataSynchronizer _dataSynchronizer;
         private IHelper _helper;
         private IJobHistoryErrorService _jobHistoryErrorService;
         private IJobService _jobService;
         private IJobStopManager _jobStopManager;
-        private IIntegrationPointRepository _integrationPointRepository;
+        private IIntegrationPointService _integrationPointService;
         private ISerializer _jsonSerializer;
         private IRelativityObjectManager _relativityObjectManager;
         private Job _job;
@@ -88,7 +90,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             IManagerFactory managerFactory = Substitute.For<IManagerFactory>();
             _jobService = Substitute.For<IJobService>();
             IProviderTypeService providerTypeService = Substitute.For<IProviderTypeService>();
-            _integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
+            _integrationPointService = Substitute.For<IIntegrationPointService>();
 
             _jobStopManager = Substitute.For<IJobStopManager>();
             _dataSynchronizer = Substitute.For<IDataSynchronizer>();
@@ -114,7 +116,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 repositoryFactory,
                 _relativityObjectManager,
                 providerTypeService,
-                _integrationPointRepository,
+                _integrationPointService,
                 null);
 
             _job = JobHelper.GetJob(
@@ -134,11 +136,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
                 1,
                 null,
                 null);
-            _integrationPoint = new Data.IntegrationPoint
+            _integrationPoint = new IntegrationPointDto
             {
                 SourceProvider = 654,
                 DestinationProvider = 942,
-                FieldMappings = "fields",
                 SourceConfiguration = "source config",
                 DestinationConfiguration = "{ \"artifactTypeID\": 1000036 }",
                 SecuredConfiguration = "sec conf"
@@ -212,18 +213,15 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             _jobService.GetJob(_job.JobId).Returns(_job);
 
             var associatedJobs = new List<Job> { _job };
-            var fieldsMap = new List<FieldMap>();
-            _integrationPointRepository.ReadWithFieldMappingAsync(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
-            _integrationPointRepository.GetSecuredConfiguration(_job.RelatedObjectArtifactID).Returns(_integrationPoint.SecuredConfiguration);
-            caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider.Value).Returns(sourceProvider);
-            caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider.Value).Returns(destinationProvider);
+            _integrationPointService.Read(_job.RelatedObjectArtifactID).Returns(_integrationPoint);
+            caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(_integrationPoint.SourceProvider).Returns(sourceProvider);
+            caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<DestinationProvider>(_integrationPoint.DestinationProvider).Returns(destinationProvider);
             serializer.Deserialize<TaskParameters>(_job.JobDetails).Returns(taskParams);
             jobHistoryService.CreateRdo(_integrationPoint, taskParams.BatchInstance,
                 JobTypeChoices.JobHistoryRun, Arg.Any<DateTime>()).Returns(_jobHistory);
             queueQueryManager.CheckAllSyncWorkerBatchesAreFinished(_job.JobId).Returns(new ValueReturnQuery<bool>(true));
             managerFactory.CreateJobStopManager(_jobService, jobHistoryService, taskParams.BatchInstance, _job.JobId, true, Arg.Any<IDiagnosticLog>())
                 .Returns(_jobStopManager);
-            serializer.Deserialize<List<FieldMap>>(_integrationPoint.FieldMappings).Returns(fieldsMap);
 
             _relativityObjectManager.Query(Arg.Any<QueryRequest>()).Returns(new List<RelativityObject>());
             repositoryFactory.GetFieldQueryRepository(workspaceArtifactId).Returns(fieldQueryRepository);
@@ -314,7 +312,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
             SyncEntityManagerWorker task =
                 new SyncEntityManagerWorker(null, null, _helper, _jsonSerializer, null, null, null, null, null, null, null, null, null, null, null, null, null);
             _integrationPoint.DestinationConfiguration = _jsonParam2;
-            task.GetType().GetProperty("IntegrationPoint", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).SetValue(task, _integrationPoint);
+            task.GetType().GetProperty("IntegrationPointDto", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).SetValue(task, _integrationPoint);
 
             //ACT
             MethodInfo dynMethod = task.GetType().GetMethod("ReconfigureImportAPISettings",
@@ -439,7 +437,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Tasks
         private void EnsureToSetJobHistoryErrorServiceProperties()
         {
             _jobHistoryErrorService.Received(1).JobHistory = _jobHistory;
-            _jobHistoryErrorService.Received(1).IntegrationPoint = _integrationPoint;
+            _jobHistoryErrorService.Received(1).IntegrationPointDto = _integrationPoint;
             _jobHistoryErrorService.Received(1).SubscribeToBatchReporterEvents(_dataSynchronizer);
         }
     }

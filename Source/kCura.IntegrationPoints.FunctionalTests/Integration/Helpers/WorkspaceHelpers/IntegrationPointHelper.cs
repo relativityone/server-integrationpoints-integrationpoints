@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation.RelativityProviderValidator;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using Relativity.IntegrationPoints.FieldsMapping.Models;
 using Relativity.IntegrationPoints.Tests.Common;
 using Relativity.IntegrationPoints.Tests.Integration.Models;
 using static Relativity.IntegrationPoints.Tests.Integration.Const;
-using FieldMap = Relativity.IntegrationPoints.FieldsMapping.Models.FieldMap;
+using ImportType = Relativity.IntegrationPoints.Tests.Integration.Models.ImportType;
 
 namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelpers
 {
@@ -48,7 +50,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
             SavedSearchTest sourceSavedSearch = Workspace.SavedSearches.First();
 
-            IntegrationPointTypeTest integrationPointType = Workspace.IntegrationPointTypes.First(x => 
+            IntegrationPointTypeTest integrationPointType = Workspace.IntegrationPointTypes.First(x =>
                 x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString());
 
             SourceProviderTest sourceProvider = Workspace.SourceProviders.First(x =>
@@ -75,7 +77,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
                 DestinationArtifactTypeId = (int) ArtifactType.Document,
                 DestinationFolderArtifactId = destinationFolder.ArtifactId,
                 CaseArtifactId = destinationWorkspace.ArtifactId,
-                WebServiceURL = @"//some/service/url/relativity"                
+                WebServiceURL = @"//some/service/url/relativity"
             });
             integrationPoint.LogErrors = false;
             integrationPoint.EmailNotificationRecipients = string.Empty;
@@ -95,10 +97,10 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             int artifactTypeId = GetArtifactTypeIdByName(Entity._ENTITY_OBJECT_NAME);
 
             IntegrationPointTest integrationPoint = CreateEmptyIntegrationPoint();
-            
+
             ViewTest sourceView = Workspace.Views.First();
 
-            IntegrationPointTypeTest integrationPointType = Workspace.IntegrationPointTypes.First(x => 
+            IntegrationPointTypeTest integrationPointType = Workspace.IntegrationPointTypes.First(x =>
                 x.Identifier == kCura.IntegrationPoints.Core.Constants.IntegrationPoints.IntegrationPointTypes.ExportGuid.ToString());
 
             SourceProviderTest sourceProvider = Workspace.SourceProviders.First(x =>
@@ -151,7 +153,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
             List<FieldMap> fieldsMapping = Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierAndFirstAndLastNameFieldsMappingForEntitySync();
             integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
-            
+
             return integrationPoint;
         }
 
@@ -267,8 +269,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
 
             integrationPoint.Name = $"Import Entity LDAP - {Guid.NewGuid()}";
 
-            List<FieldMap> fieldsMapping = isMappingIdentifierOnly 
-                ? Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierOnlyFieldsMappingForLDAPEntityImport() 
+            List<FieldMap> fieldsMapping = isMappingIdentifierOnly
+                ? Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierOnlyFieldsMappingForLDAPEntityImport()
                 : Workspace.Helpers.FieldsMappingHelper.PrepareIdentifierAndFirstAndLastNameFieldsMappingForLDAPEntityImport();
             integrationPoint.FieldMappings = _serializer.Serialize(fieldsMapping);
 
@@ -321,26 +323,11 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
             return integrationPoint;
         }
 
-        public kCura.IntegrationPoints.Core.Models.IntegrationPointModel CreateSavedSearchIntegrationPointModel(WorkspaceTest destinationWorkspace)
+        public IntegrationPointDto CreateSavedSearchIntegrationPointModel(WorkspaceTest destinationWorkspace)
         {
             IntegrationPointTest integrationPoint = CreateSavedSearchSyncIntegrationPoint(destinationWorkspace);
-            return new kCura.IntegrationPoints.Core.Models.IntegrationPointModel
-            {
-                Name = integrationPoint.Name,
-                ArtifactID = integrationPoint.ArtifactId,
-                SelectedOverwrite = integrationPoint.OverwriteFields == null ? string.Empty : integrationPoint.OverwriteFields.Name,
-                SourceProvider = integrationPoint.SourceProvider.GetValueOrDefault(0),
-                Destination = integrationPoint.DestinationConfiguration,
-                SourceConfiguration = integrationPoint.SourceConfiguration,
-                DestinationProvider = integrationPoint.DestinationProvider.GetValueOrDefault(0),
-                Type = integrationPoint.Type.GetValueOrDefault(0),
-                Scheduler = new kCura.IntegrationPoints.Core.Models.Scheduler(integrationPoint.EnableScheduler.GetValueOrDefault(false), integrationPoint.ScheduleRule),
-                NotificationEmails = integrationPoint.EmailNotificationRecipients ?? string.Empty,
-                LogErrors = integrationPoint.LogErrors.GetValueOrDefault(false),
-                NextRun = integrationPoint.NextScheduledRuntimeUTC,
-                Map = integrationPoint.FieldMappings
-            };
-        }        
+            return integrationPoint.ToDto();
+        }
 
         public void RemoveIntegrationPoint(int integrationPointId)
         {
@@ -349,7 +336,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration.Helpers.WorkspaceHelper
                 Workspace.IntegrationPoints.Remove(integrationPoint);
             }
         }
-        
+
         private int GetArtifactTypeIdByName(string name)
         {
             return Workspace.ObjectTypes.First(x => x.Name == name).ArtifactTypeId;

@@ -99,11 +99,11 @@
     <Compile Include="Factories\Implementations\RelativityObjectManagerServiceFactory.cs" />
     <Compile Include="Helpers\IMassUpdateHelper.cs" />
     <Compile Include="Helpers\MassUpdateHelper.cs" />
+    <Compile Include="ICamelCaseSerializer.cs" />
     <Compile Include="IChoiceQuery.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="IIntegrationPointBaseFieldGuidsConstants.cs" />
     <Compile Include="IIntegrationPointBaseFieldsConstants.cs" />
-    <Compile Include="IIntegrationPointSerializer.cs" />
     <Compile Include="IQuery.cs" />
     <Compile Include="IQueueQueryManager.cs" />
     <Compile Include="IsJobFailed.cs" />
@@ -135,7 +135,6 @@
     <Compile Include="QueryBuilders\Implementations\QueryBuilder.cs" />
     <Compile Include="QueryBuilders\Implementations\SourceProviderArtifactIdByGuidQueryBuilder.cs" />
     <Compile Include="QueryBuilders\ISourceProviderArtifactIdByGuidQueryBuilder.cs" />
-    <Compile Include="QueryOptions\IntegrationPointQueryOptions.cs" />
     <Compile Include="QueryOptions\JobHistoryQueryOptions.cs" />
     <Compile Include="Repositories\ApplicationRepository.cs" />
     <Compile Include="Repositories\DTO\ArtifactRef.cs" />
@@ -193,6 +192,7 @@
     <Compile Include="RetryHandlerFactory.cs" />
     <Compile Include="SerializerWithLogging.cs" />
     <Compile Include="Statistics\CalculationState.cs" />
+    <Compile Include="RipSerializationException.cs" />
     <Compile Include="Statistics\DocumentsStatistics.cs" />
     <Compile Include="Statistics\ICalculationChecker.cs" />
     <Compile Include="Statistics\IErrorFilesSizeStatistics.cs" />

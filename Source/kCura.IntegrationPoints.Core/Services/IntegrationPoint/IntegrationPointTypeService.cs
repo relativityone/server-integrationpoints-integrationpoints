@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.Services.IntegrationPoint
 
         private List<FieldRef> GetFields()
         {
-            return RDOConverter.ConvertPropertiesToFields<IntegrationPointType>().ToList();
+            return RDOConverter.GetFieldList<IntegrationPointType>().ToList();
         }
 
         #region Logging

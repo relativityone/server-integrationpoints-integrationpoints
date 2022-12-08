@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
             QueryRequest request = new QueryRequest
             {
                 Condition = $"'{ArtifactQueryFieldNames.ArtifactID}' in [{string.Join(",", stuckJobsIds)}]",
-                Fields = new JobHistory().ToFieldList()
+                Fields = RDOConverter.GetFieldList<JobHistory>()
             };
             return relativityObjectManager.Query<JobHistory>(request);
         }

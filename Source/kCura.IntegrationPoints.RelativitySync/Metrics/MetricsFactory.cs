@@ -1,8 +1,8 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Data;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using static kCura.IntegrationPoints.Core.Contracts.Configuration.SourceConfiguration;
@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Metrics
                 return new EmptyMetric();
             }
 
-            IntegrationPoint integrationPoint = _integrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
+            IntegrationPointDto integrationPoint = _integrationPointService.Read(job.RelatedObjectArtifactID);
             ExportType type = _serializer.Deserialize<SourceConfiguration>(integrationPoint.SourceConfiguration).TypeOfExport;
 
             return ScheduleMetric.CreateScheduleJobStarted(_servicesMgr, integrationPoint.ArtifactId, job.JobId, type, scheduleRule);
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Metrics
                 return new EmptyMetric();
             }
 
-            IntegrationPoint integrationPoint = _integrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
+            IntegrationPointDto integrationPoint = _integrationPointService.Read(job.RelatedObjectArtifactID);
             ExportType type = _serializer.Deserialize<SourceConfiguration>(integrationPoint.SourceConfiguration).TypeOfExport;
 
             return ScheduleMetric.CreateScheduleJobCompleted(_servicesMgr, integrationPoint.ArtifactId, job.JobId, type);
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.RelativitySync.Metrics
                 return new EmptyMetric();
             }
 
-            IntegrationPoint integrationPoint = _integrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
+            IntegrationPointDto integrationPoint = _integrationPointService.Read(job.RelatedObjectArtifactID);
             ExportType type = _serializer.Deserialize<SourceConfiguration>(integrationPoint.SourceConfiguration).TypeOfExport;
 
             return ScheduleMetric.CreateScheduleJobFailed(_servicesMgr, integrationPoint.ArtifactId, job.JobId, type);

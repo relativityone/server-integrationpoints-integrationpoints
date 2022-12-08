@@ -14,7 +14,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
     [TestFixture, Category("Unit")]
     public class ProviderRepositoryTests : TestBase
     {
-        private ProviderRepository _providerRepository;
+        private ProviderAccessor _providerAccessor;
         private IRepositoryFactory _repositoryFactory;
         private IRelativityObjectManagerService _relativityObjectManagerService;
 
@@ -23,7 +23,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
             _repositoryFactory = Substitute.For<IRepositoryFactory>();
             _relativityObjectManagerService = Substitute.For<IRelativityObjectManagerService>();
 
-            _providerRepository = new ProviderRepository(_repositoryFactory, _relativityObjectManagerService);
+            _providerAccessor = new ProviderAccessor(_repositoryFactory, _relativityObjectManagerService);
         }
 
         [Test]
@@ -39,7 +39,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 
             sourceProviderRepository.GetArtifactIdFromSourceProviderTypeGuidIdentifier(guid).Returns(expectedSourceProviderArtifactId);
 
-            var actualResult = _providerRepository.GetSourceProviderArtifactId(workspaceId, guid);
+            var actualResult = _providerAccessor.GetSourceProviderArtifactId(workspaceId, guid);
 
             Assert.That(actualResult, Is.EqualTo(expectedSourceProviderArtifactId));
         }
@@ -57,7 +57,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 
             destinationProviderRepository.GetArtifactIdFromDestinationProviderTypeGuidIdentifier(guid).Returns(expectedDestinationProviderArtifactId);
 
-            var actualResult = _providerRepository.GetDestinationProviderArtifactId(workspaceId, guid);
+            var actualResult = _providerAccessor.GetDestinationProviderArtifactId(workspaceId, guid);
 
             Assert.That(actualResult, Is.EqualTo(expectedDestinationProviderArtifactId));
         }
@@ -84,7 +84,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 
             objectManager.Query<SourceProvider>(Arg.Any<QueryRequest>()).Returns(expectedResult);
 
-            var actualResult = _providerRepository.GetSourceProviders(521);
+            var actualResult = _providerAccessor.GetSourceProviders(521);
 
             Assert.That(actualResult,
                 Is.EquivalentTo(expectedResult).Using(new Func<ProviderModel, SourceProvider, bool>((x, y) => (x.Name == y.Name) && (x.ArtifactId == y.ArtifactId))));
@@ -112,7 +112,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Repositories
 
             objectManager.Query<DestinationProvider>(Arg.Any<QueryRequest>()).Returns(expectedResult);
 
-            var actualResult = _providerRepository.GetDesinationProviders(521);
+            var actualResult = _providerAccessor.GetDesinationProviders(521);
 
             Assert.That(actualResult,
                 Is.EquivalentTo(expectedResult).Using(new Func<ProviderModel, DestinationProvider, bool>((x, y) => (x.Name == y.Name) && (x.ArtifactId == y.ArtifactId))));

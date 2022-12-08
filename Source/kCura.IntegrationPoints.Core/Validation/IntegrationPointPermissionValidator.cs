@@ -1,23 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Domain.Models;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Validation
 {
     public class IntegrationPointPermissionValidator : BaseIntegrationPointValidator<IPermissionValidator>, IIntegrationPointPermissionValidator
     {
-        public IntegrationPointPermissionValidator(IEnumerable<IPermissionValidator> validators, IIntegrationPointSerializer serializer)
+        public IntegrationPointPermissionValidator(IEnumerable<IPermissionValidator> validators, ISerializer serializer)
             : base(validators, serializer)
         {
         }
 
         public override ValidationResult Validate(
-            IntegrationPointModelBase model,
+            IntegrationPointDtoBase model,
             SourceProvider sourceProvider,
             DestinationProvider destinationProvider,
             IntegrationPointType integrationPointType,
@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Validation
         }
 
         public ValidationResult ValidateSave(
-            IntegrationPointModelBase model,
+            IntegrationPointDtoBase model,
             SourceProvider sourceProvider,
             DestinationProvider destinationProvider,
             IntegrationPointType integrationPointType,
@@ -65,7 +65,7 @@ namespace kCura.IntegrationPoints.Core.Validation
         }
 
         public ValidationResult ValidateStop(
-            IntegrationPointModelBase model,
+            IntegrationPointDtoBase model,
             SourceProvider sourceProvider,
             DestinationProvider destinationProvider,
             IntegrationPointType integrationPointType,
@@ -133,6 +133,5 @@ namespace kCura.IntegrationPoints.Core.Validation
 
             return result;
         }
-
     }
 }

@@ -241,7 +241,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
 
             var expectedException = new ArgumentException();
 
-            var integrationPointRepository = Substitute.For<Services.Repositories.IIntegrationPointRepository>();
+            var integrationPointRepository = Substitute.For<Services.Repositories.IIntegrationPointAccessor>();
             integrationPointRepository.CreateIntegrationPoint(Arg.Any<CreateIntegrationPointRequest>()).Throws(expectedException);
             integrationPointRepository.UpdateIntegrationPoint(Arg.Any<UpdateIntegrationPointRequest>()).Throws(expectedException);
             integrationPointRepository.GetIntegrationPoint(Arg.Any<int>()).Throws(expectedException);
@@ -251,7 +251,7 @@ namespace Relativity.IntegrationPoints.Services.Tests.Managers
             integrationPointRepository.CreateIntegrationPointFromProfile(Arg.Any<int>(), Arg.Any<string>()).Throws(expectedException);
             integrationPointRepository.GetIntegrationPointArtifactTypeId().Throws(expectedException);
 
-            _container.Resolve<Services.Repositories.IIntegrationPointRepository>().Returns(integrationPointRepository);
+            _container.Resolve<Services.Repositories.IIntegrationPointAccessor>().Returns(integrationPointRepository);
 
             Assert.That(() => _integrationPointManager.CreateIntegrationPointAsync(new CreateIntegrationPointRequest
                 {

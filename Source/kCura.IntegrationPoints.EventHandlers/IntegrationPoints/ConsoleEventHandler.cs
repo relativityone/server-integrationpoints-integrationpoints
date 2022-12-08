@@ -100,13 +100,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
                 {
                     IAPILog logger = Helper.GetLoggerFactory().GetLogger();
                     IRelativityObjectManager objectManager = CreateObjectManager(Helper, Helper.GetActiveCaseID());
-                    IIntegrationPointSerializer integrationPointSerializer = CreateIntegrationPointSerializer(logger);
                     ISecretsRepository secretsRepository = new SecretsRepository(
                         SecretStoreFacadeFactory_Deprecated.Create(Helper.GetSecretStore, logger),
                         logger
                     );
                     IIntegrationPointRepository integrationPointRepository =
-                        CreateIntegrationPointRepository(objectManager, integrationPointSerializer, secretsRepository, logger);
+                        CreateIntegrationPointRepository(objectManager, secretsRepository, logger);
 
                     IQueueManager queueManager = ManagerFactory.CreateQueueManager();
                     IJobHistoryManager jobHistoryManager = ManagerFactory.CreateJobHistoryManager();
@@ -131,18 +130,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
             return new RelativityObjectManagerFactory(helper).CreateRelativityObjectManager(workspaceId);
         }
 
-        private IIntegrationPointSerializer CreateIntegrationPointSerializer(IAPILog logger)
-        {
-            return new IntegrationPointSerializer(logger);
-        }
-
         private IIntegrationPointRepository CreateIntegrationPointRepository(
             IRelativityObjectManager objectManager,
-            IIntegrationPointSerializer serializer,
             ISecretsRepository secretsRepository,
             IAPILog logger)
         {
-            return new IntegrationPointRepository(objectManager, serializer, secretsRepository, logger);
+            return new IntegrationPointRepository(objectManager, secretsRepository, logger);
         }
 
         private IOnClickEventConstructor OnClickEventConstructor

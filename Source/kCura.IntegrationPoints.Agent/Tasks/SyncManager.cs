@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Extensions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -22,6 +23,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Domain.Exceptions;
 using kCura.IntegrationPoints.Domain.Logging;
 using kCura.IntegrationPoints.Domain.Managers;
+using kCura.IntegrationPoints.Domain.Models;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.BatchProcess;
 using kCura.ScheduleQueue.Core.Core;
@@ -92,7 +94,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             get { return _batchStatus ?? (_batchStatus = new List<IBatchStatus>()); }
         }
 
-        public IntegrationPoint IntegrationPoint { get; set; }
+        public IntegrationPointDto IntegrationPointDto { get; set; }
 
         public JobHistory JobHistory { get; set; }
 
@@ -131,7 +133,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
                 JobStopManager?.ThrowIfStopRequested();
 
-                SourceProvider sourceProviderRdo = _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(IntegrationPoint.SourceProvider.Value);
+                SourceProvider sourceProviderRdo = _caseServiceContext.RelativityObjectManagerService.RelativityObjectManager.Read<SourceProvider>(IntegrationPointDto.SourceProvider);
                 Guid applicationGuid = new Guid(sourceProviderRdo.ApplicationIdentifier);
                 Guid providerGuid = new Guid(sourceProviderRdo.Identifier);
                 IDataSourceProvider provider = _providerFactory.GetDataProvider(applicationGuid, providerGuid);
@@ -225,8 +227,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             {
                 try
                 {
-                    FieldEntry idField = IntegrationPointService.GetIdentifierFieldEntry(IntegrationPoint.FieldMappings);
-                    reader = provider.GetBatchableIds(idField, new DataSourceProviderConfiguration(IntegrationPoint.SourceConfiguration, IntegrationPoint.SecuredConfiguration));
+                    FieldEntry idField = IntegrationPointDto.FieldMappings.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.Identifier)?.SourceField;
+                    reader = provider.GetBatchableIds(idField, new DataSourceProviderConfiguration(IntegrationPointDto.SourceConfiguration, IntegrationPointDto.SecuredConfiguration));
                 }
                 catch (Exception ex)
                 {
@@ -325,16 +327,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 throw new ArgumentNullException("Job must have a Related Object ArtifactID");
             }
 
-            IntegrationPoint = IntegrationPointService.ReadIntegrationPoint(job.RelatedObjectArtifactID);
-            if (IntegrationPoint.SourceProvider == 0)
+            IntegrationPointDto = IntegrationPointService.Read(job.RelatedObjectArtifactID);
+            if (IntegrationPointDto.SourceProvider == 0)
             {
                 LogUnknownSourceProvider(job);
                 throw new Exception("Cannot import source provider with unknown id.");
             }
 
-            JobHistory = _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(IntegrationPoint, BatchInstance, DateTime.UtcNow);
+            JobHistory = _jobHistoryService.GetOrCreateScheduledRunHistoryRdo(IntegrationPointDto, BatchInstance, DateTime.UtcNow);
             _jobHistoryErrorService.JobHistory = JobHistory;
-            _jobHistoryErrorService.IntegrationPoint = IntegrationPoint;
+            _jobHistoryErrorService.IntegrationPointDto = IntegrationPointDto;
 
             JobStopManager = ManagerFactory.CreateJobStopManager(_jobService, _jobHistoryService, BatchInstance, job.JobId, supportsDrainStop: true, DiagnosticLog);
             JobStopManager.ThrowIfStopRequested();
@@ -350,7 +352,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             JobHistory.JobStatus = JobStatusChoices.JobHistoryValidating;
             _jobHistoryService.UpdateRdo(JobHistory);
-            _agentValidator.Validate(IntegrationPoint, job.SubmittedBy);
+            _agentValidator.Validate(IntegrationPointDto, job.SubmittedBy);
         }
 
         private void JobPostExecute(Job job, TaskResult taskResult, long items)
@@ -498,13 +500,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         private void UpdateLastRuntimeAndCalculateNextRuntime(Job job, TaskResult taskResult)
         {
             LogUpdateLastRuntimeAndCalculateNextRuntimeStart(job);
-            IntegrationPoint.LastRuntimeUTC = DateTime.UtcNow;
+            IntegrationPointDto.LastRun = DateTime.UtcNow;
             if (job.ScheduleRule != null)
             {
-                IntegrationPoint.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory, taskResult);
+                IntegrationPointDto.NextRun = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory, taskResult);
             }
 
-            IntegrationPointService.UpdateIntegrationPoint(IntegrationPoint);
+            IntegrationPointService.UpdateLastAndNextRunTime(
+                IntegrationPointDto.ArtifactId,
+                IntegrationPointDto.LastRun,
+                IntegrationPointDto.NextRun);
             LogUpdateLastRuntimeAndCalculateNextRuntimeSuccesfulEnd(job);
         }
 

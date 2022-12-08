@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Services
             }
 
             IList<Data.IntegrationPoint> integrationPoints = _integrationPointRepository
-                .GetAll(integrationPointsIDs);
+                .ReadAllByIds(integrationPointsIDs);
 
             // Since 9.4 release we're not deleting job history RDOs (they've being used by ECA Dashboard)
             // We're also not removing JobHistoryErrors as it was taking too long (SQL timeouts)

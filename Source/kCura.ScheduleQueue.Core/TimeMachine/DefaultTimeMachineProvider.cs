@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using kCura.Apps.Common.Config;
-using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core.Helpers;
 
 namespace kCura.ScheduleQueue.Core.TimeMachine
@@ -38,7 +38,7 @@ namespace kCura.ScheduleQueue.Core.TimeMachine
             string value = ConfigHelper.GetValue<string>(InstanceSettings[agentKey]);
             if (!string.IsNullOrEmpty(value))
             {
-                TimeMachineStruct tm = new JSONSerializer().Deserialize<TimeMachineStruct>(value);
+                TimeMachineStruct tm = IntegrationPointSerializer.CreateWithoutLogger().Deserialize<TimeMachineStruct>(value);
                 if (tm != null && tm.Date.HasValue)
                 {
                     _utcNow = tm.Date.Value;

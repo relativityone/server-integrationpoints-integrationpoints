@@ -4,9 +4,8 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.IntegrationPoint;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Statistics;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Web.Helpers;
@@ -17,24 +16,28 @@ namespace kCura.IntegrationPoints.Web.Controllers
     {
         private readonly ICaseServiceContext _context;
         private readonly IProviderTypeService _providerTypeService;
-        private readonly IIntegrationPointRepository _integrationPointRepository;
         private readonly SummaryPageSelector _summaryPageSelector;
         private readonly IDocumentAccumulatedStatistics _documentAccumulatedStatistics;
+        private readonly IIntegrationPointService _integrationPointService;
+        private readonly IIntegrationPointProfileService _integrationPointProfileService;
         private readonly ICalculationChecker _calculationChecker;
 
         public SummaryPageController(
             ICaseServiceContext context,
             IProviderTypeService providerTypeService,
-            IIntegrationPointRepository integrationPointRepository,
             SummaryPageSelector summaryPageSelector,
+            IDocumentAccumulatedStatistics documentAccumulatedStatistics,
+            IIntegrationPointService integrationPointService,
+            IIntegrationPointProfileService integrationPointProfileService)
             IDocumentAccumulatedStatistics documentAccumulatedStatistics,
             ICalculationChecker calculationChecker)
         {
             _context = context;
             _providerTypeService = providerTypeService;
-            _integrationPointRepository = integrationPointRepository;
             _summaryPageSelector = summaryPageSelector;
             _documentAccumulatedStatistics = documentAccumulatedStatistics;
+            _integrationPointService = integrationPointService;
+            _integrationPointProfileService = integrationPointProfileService;
             _calculationChecker = calculationChecker;
         }
 
@@ -42,8 +45,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
         [LogApiExceptionFilter(Message = "Unable to get SummaryPage for requested Integration Point")]
         public ActionResult GetSummaryPage(int id, string controllerType)
         {
-            Tuple<int, int> providerIds = GetSourceAndDestinationProviderIdsAsync(id, controllerType)
-                .GetAwaiter().GetResult();
+            Tuple<int, int> providerIds = GetSourceAndDestinationProviderIdsAsync(id, controllerType);
 
             ProviderType providerType = _providerTypeService.GetProviderType(providerIds.Item1, providerIds.Item2);
 
@@ -111,22 +113,19 @@ namespace kCura.IntegrationPoints.Web.Controllers
             return Json(calculationState);
         }
 
-        private async Task<Tuple<int, int>> GetSourceAndDestinationProviderIdsAsync(int integrationPointId, string controllerType)
+        private Tuple<int, int> GetSourceAndDestinationProviderIdsAsync(int integrationPointId, string controllerType)
         {
             if (controllerType == IntegrationPointApiControllerNames.IntegrationPointApiControllerName)
             {
-                IntegrationPoint integrationPoint = await _integrationPointRepository
-                    .ReadWithFieldMappingAsync(integrationPointId)
-                    .ConfigureAwait(false);
+                IntegrationPointSlimDto integrationPoint = _integrationPointService.ReadSlim(integrationPointId);
 
-                return new Tuple<int, int>(integrationPoint.SourceProvider.Value, integrationPoint.DestinationProvider.Value);
+                return new Tuple<int, int>(integrationPoint.SourceProvider, integrationPoint.DestinationProvider);
             }
             else
             {
-                IntegrationPointProfile integrationPointProfile =
-                    _context.RelativityObjectManagerService.RelativityObjectManager.Read<IntegrationPointProfile>(integrationPointId);
+                IntegrationPointProfileSlimDto integrationPointProfile = _integrationPointProfileService.ReadSlim(integrationPointId);
 
-                return new Tuple<int, int>(integrationPointProfile.SourceProvider.Value, integrationPointProfile.DestinationProvider.Value);
+                return new Tuple<int, int>(integrationPointProfile.SourceProvider, integrationPointProfile.DestinationProvider);
             }
         }
     }

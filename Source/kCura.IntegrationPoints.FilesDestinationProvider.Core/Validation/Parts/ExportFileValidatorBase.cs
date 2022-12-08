@@ -1,12 +1,10 @@
-﻿using System.Collections.Generic;
-using kCura.Apps.Common.Utils.Serializers;
+﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Validation.Abstract;
 using kCura.IntegrationPoints.Domain.Models;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.WinEDDS;
-using Relativity.IntegrationPoints.FieldsMapping.Models;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
 {
@@ -40,11 +38,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Validation.Parts
             ExportSettingsEx = _serializer.Deserialize<ExportUsingSavedSearchSettings>(value.SourceConfiguration);
             DestinationSettingsEx = _serializer.Deserialize<DestinationConfiguration>(value.DestinationConfiguration);
 
-            var fieldMap = _serializer.Deserialize<IEnumerable<FieldMap>>(value.FieldsMap);
-
-            var exportSettings = _exportSettingsBuilder.Create(ExportSettingsEx, fieldMap, DestinationSettingsEx.ArtifactTypeId);
+            var exportSettings = _exportSettingsBuilder.Create(ExportSettingsEx, value.FieldsMap, DestinationSettingsEx.ArtifactTypeId);
             var exportFile = _exportFileBuilder.Create(exportSettings);
-            // WinEDDS code expects this flag to be set for validation 
+            // WinEDDS code expects this flag to be set for validation
             exportFile.ExportFullText = exportFile.ExportFullTextAsFile;
 
             return exportFile;

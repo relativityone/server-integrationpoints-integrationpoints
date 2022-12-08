@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Services.SourceTypes
         {
             var request = new QueryRequest
             {
-                Fields = new Data.SourceProvider().ToFieldList()
+                Fields = RDOConverter.GetFieldList<Data.SourceProvider>()
             };
 
             IList<Data.SourceProvider> types = _objectManager.Query<Data.SourceProvider>(request);

@@ -3,6 +3,7 @@ using Castle.Core;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers;
 using Castle.Windsor;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.FluentAssertions;
 using kCura.IntegrationPoints.Common;
 using kCura.IntegrationPoints.Common.Monitoring.Instrumentation;
@@ -262,7 +263,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Installers
             IRegistration[] dependencies =
             {
                 CreateDummyObjectRegistration<IRelativityObjectManager>(),
-                CreateDummyObjectRegistration<IIntegrationPointSerializer>(),
+                CreateDummyObjectRegistration<ISerializer>(),
                 CreateDummyObjectRegistration<IExternalServiceInstrumentationProvider>(),
                 CreateDummyObjectRegistration<IRetryHandlerFactory>(),
                 CreateDummyObjectRegistration<IAPILog>()

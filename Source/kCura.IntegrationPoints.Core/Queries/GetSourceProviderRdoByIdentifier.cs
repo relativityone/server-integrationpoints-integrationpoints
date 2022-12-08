@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Queries
                 {
                     Guid = Guid.Parse(ObjectTypeGuids.SourceProvider)
                 },
-                Fields = RDOConverter.ConvertPropertiesToFields<SourceProvider>(),
+                Fields = RDOConverter.GetFieldList<SourceProvider>(),
                 Condition = $"'{SourceProviderFields.Identifier}' == '{providerGuid}'"
             };
             return _objectManager.Query<SourceProvider>(request).First();

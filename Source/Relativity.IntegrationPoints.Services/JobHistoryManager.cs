@@ -19,19 +19,23 @@ namespace Relativity.IntegrationPoints.Services
         /// <param name="logger"></param>
         /// <param name="permissionRepositoryFactory"></param>
         /// <param name="container"></param>
-        internal JobHistoryManager(ILog logger, IPermissionRepositoryFactory permissionRepositoryFactory, IWindsorContainer container)
+        internal JobHistoryManager(
+            ILog logger,
+            IPermissionRepositoryFactory permissionRepositoryFactory,
+            IWindsorContainer container)
             : base(logger, permissionRepositoryFactory, container)
         {
         }
 
-        public JobHistoryManager(ILog logger) : base(logger)
+        public JobHistoryManager(ILog logger)
+            : base(logger)
         {
         }
 
         public async Task<JobHistorySummaryModel> GetJobHistoryAsync(JobHistoryRequest request)
         {
             CheckPermissions(
-                nameof(GetJobHistoryAsync), 
+                nameof(GetJobHistoryAsync),
                 request.WorkspaceArtifactId,
                 new[]
                 {
@@ -41,7 +45,7 @@ namespace Relativity.IntegrationPoints.Services
             {
                 using (IWindsorContainer container = GetDependenciesContainer(request.WorkspaceArtifactId))
                 {
-                    var jobHistoryRepository = container.Resolve<IJobHistoryRepository>();
+                    var jobHistoryRepository = container.Resolve<IJobHistoryAccessor>();
                     return await Task.Run(() => jobHistoryRepository.GetJobHistory(request)).ConfigureAwait(false);
                 }
             }

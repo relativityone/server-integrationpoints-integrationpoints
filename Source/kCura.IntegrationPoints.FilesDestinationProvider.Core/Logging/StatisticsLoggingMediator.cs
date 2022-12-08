@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
         #region Methods
 
         public StatisticsLoggingMediator(
-            IMessageService messageService, 
+            IMessageService messageService,
             IJobHistoryErrorService historyErrorService,
             ICaseServiceContext caseServiceContext,
             IIntegrationPointProviderTypeService integrationPointProviderTypeService,
@@ -158,7 +158,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 
         private string GetProviderName()
         {
-            return _integrationPointProviderTypeService.GetProviderType(_historyErrorService.IntegrationPoint).ToString();    
+            return _integrationPointProviderTypeService.GetProviderType(_historyErrorService.IntegrationPointDto.ArtifactId).ToString();
         }
 
         private bool CanUpdateJobStatus(ExportEventArgs exportArgs)

@@ -81,6 +81,8 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
         public ISerializer Serializer { get; set; }
 
+        public ICamelCaseSerializer CamelCaseSerializer { get; set; }
+
         [SetUp]
         public virtual void SetUp()
         {
@@ -101,6 +103,7 @@ namespace Relativity.IntegrationPoints.Tests.Integration
 
             SetupContainer(sourceWorkspaceArtifactId);
             Serializer = Container.Resolve<ISerializer>();
+            CamelCaseSerializer = Container.Resolve<ICamelCaseSerializer>();
 
             FakeRelativityInstance = new RelativityInstanceTest(Proxy, Context, Serializer);
 
@@ -211,8 +214,6 @@ namespace Relativity.IntegrationPoints.Tests.Integration
                 new AgentService(c.Resolve<IHelper>(), c.Resolve<IQueueQueryManager>(), Const.Agent.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)));
 
             Container.Register(Component.For<IJobServiceDataProvider>().ImplementedBy<JobServiceDataProvider>());
-            Container.Register(Component.For<IIntegrationPointSerializer>().ImplementedBy<IntegrationPointSerializer>());
-
             Container.Register(Component.For<ISecretStore>().UsingFactoryMethod(c => c.Resolve<IHelper>().GetSecretStore()).Named(Guid.NewGuid().ToString()).IsDefault());
             Container.Register(Component.For<Lazy<ISecretStore>>().UsingFactoryMethod(c =>
                 new Lazy<ISecretStore>(() => c.Resolve<IHelper>().GetSecretStore())).Named(Guid.NewGuid().ToString()).IsDefault());
@@ -286,14 +287,14 @@ namespace Relativity.IntegrationPoints.Tests.Integration
                 Container.Resolve<IPermissionRepositoryFactory>(),
                 Container)));
 
-            Container.Register(Component.For<IDocumentRepository>().ImplementedBy<FakeDocumentRepository>().LifestyleTransient().IsDefault());
-            Container.Register(Component.For<IProviderRepository>().ImplementedBy<FakeProviderRepository>().LifestyleTransient().IsDefault());
+            Container.Register(Component.For<IDocumentAccessor>().ImplementedBy<FakeDocumentAccessor>().LifestyleTransient().IsDefault());
+            Container.Register(Component.For<IProviderAccessor>().ImplementedBy<FakeProviderAccessor>().LifestyleTransient().IsDefault());
             Container.Register(Component.For<IRipProviderInstaller>().ImplementedBy<FakeRipProviderInstaller>().LifestyleTransient().IsDefault());
             Container.Register(Component.For<IRipProviderUninstaller>().ImplementedBy<FakeRipProviderUninstaller>().LifestyleTransient().IsDefault());
-            Container.Register(Component.For<IIntegrationPointRepository>().ImplementedBy<FakeIntegrationPointRepository>().LifestyleTransient().IsDefault());
-            Container.Register(Component.For<IIntegrationPointProfileRepository>().ImplementedBy<FakeIntegrationPointProfileRepository>().LifestyleTransient().IsDefault());
-            Container.Register(Component.For<IIntegrationPointTypeRepository>().ImplementedBy<FakeIntegrationPointTypeRepository>().LifestyleTransient().IsDefault());
-            Container.Register(Component.For<IJobHistoryRepository>().ImplementedBy<FakeJobHistoryRepository>().LifestyleTransient().IsDefault());
+            Container.Register(Component.For<IIntegrationPointAccessor>().ImplementedBy<FakeIntegrationPointAccessor>().LifestyleTransient().IsDefault());
+            Container.Register(Component.For<IIntegrationPointProfileAccessor>().ImplementedBy<FakeIntegrationPointProfileAccessor>().LifestyleTransient().IsDefault());
+            Container.Register(Component.For<IIntegrationPointTypeAccessor>().ImplementedBy<FakeIntegrationPointTypeAccessor>().LifestyleTransient().IsDefault());
+            Container.Register(Component.For<IJobHistoryAccessor>().ImplementedBy<FakeJobHistoryAccessor>().LifestyleTransient().IsDefault());
             Container.Register(Component.For<IDocumentTotalStatistics>().ImplementedBy<FakeDocumentStatistics>().Named("IDocumentTotalStatistics").LifestyleTransient().IsDefault());
             Container.Register(Component.For<INativeTotalStatistics>().ImplementedBy<FakeDocumentStatistics>().Named("INativeTotalStatistics").LifestyleTransient().IsDefault());
             Container.Register(Component.For<IImageTotalStatistics>().ImplementedBy<FakeDocumentStatistics>().Named("IImageTotalStatistics").LifestyleTransient().IsDefault());
