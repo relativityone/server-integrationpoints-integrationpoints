@@ -1,4 +1,4 @@
-# Heap Analytics investiogation 
+# Heap Analytics investigation 
 
 ## Status
 
