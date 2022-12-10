@@ -249,7 +249,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
             if (decryptSecuredConfiguration)
             {
-                string decryptedConfiguration = await DecryptSecuredConfigurationAsync(_workspaceID, integrationPoint);
+                string decryptedConfiguration = await DecryptSecuredConfigurationAsync(_workspaceID, integrationPoint).ConfigureAwait(false);
                 integrationPoint.SecuredConfiguration = decryptedConfiguration ?? integrationPoint.SecuredConfiguration;
             }
 
