@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed
+Accepted
 
 ## Context
 
@@ -52,7 +52,7 @@ https://help.heap.io/definitions/properties/properties-overview/
 
 ### Heap Data Model
 
-Multiple users can belong to an account. When users visit an app, they conduct sessions during which they do pageviews and events. This results in a hierarchy of account > users > sessions > pageviews and events within Heap. These hierarchy is in fact Heap Data Model.
+Multiple users can belong to an account. When users visit an app, they conduct sessions during which they do pageviews and events. This results in a hierarchy of account > users > sessions > pageviews and events within Heap. This hierarchy is in fact Heap Data Model.
 
 Detailed information:
 https://help.heap.io/getting-started/how-heap-works/heaps-data-model/
@@ -61,7 +61,7 @@ https://help.heap.io/getting-started/how-heap-works/heaps-data-model/
 
 In heapanalytics.com, once events are autocaptured it is very handy to use them to create defined events whose are human readable and can be used to create charts for future analysis. There is a plenty of charts that can be created very easily starting from total value of events through Average per user to more sophisticated charts. There are also many template charts.
 
-Once charts are defined they can be used to create dashboard whose are actually final step to start user interraction analysis.
+Once charts are defined they can be used to create dashboards whose are actually final step to start user interraction analysis.
 
 Detailed information:
 https://help.heap.io/category/charts/
@@ -74,12 +74,12 @@ https://einstein.kcura.com/display/LPH/%5BREL-507123%5D+Heap+Spike+Findings
 
 ## Heap usage in Integration Points
 
-### Conifugration
+### Configuration
 
 Because `RelativityInternal.aspx` is not used while editing/creating Integration Point `click-tracking.min.js` should be added to `Source\kCura.IntegrationPoints.Web\Views\Shared\_Layout.cshtml` like below:
 `<script async type="text/javascript" src="/Relativity/Scripts/click-tracking.min.js"></script>`
 
-These is only thing to be added to autocapture user interactions with Integration Points. In order to test on TestVm please follow Getting Started section steps.
+This is the only thing to add to autocapture user interactions with Integration Points. In order to test it on TestVm please follow Getting Started section steps.
 
 ### Analysis results
  
@@ -114,7 +114,7 @@ General
 Setup step:
 	Sync:
 	1. Transferred objects, which types are mostly used - select type issue
-	2. Profile, how many profiles usually users have - these data should be available in view page event, but it for sure would need additional actions, Defined or Custom properties should help.
+	2. Profile, how many profiles usually users have - this data should be available in view page event, but for sure it would need additional actions, Defined or Custom properties should help.
 	3. Log Errors Radio buttons usage comparison - Autocapture -> Defined events for yes and no -> Chart
 	4. Enable Scheduler Radio buttons usage comparison - Autocapture -> Defined events for yes and no -> Chart
 	
@@ -149,11 +149,9 @@ Integration Point Profile
 
 ## Next Steps
 
-We need to decide if we are going to implement these tool.
-
-If we decide to use it:
-1. Solve issue with select type elements.
-2. Solve issue with Step 2.
-3. All Actions from `Actions list` need be implemented and grouped into dashboards. At these stage cooperation with UX team for sure will be required.
-4. Probably some new actions will be also useful to add - ask UX team.
-5. Create tickets for all points above.
+1. Create Epic for Heap Analytics implementation.
+2. Create tickets for all points below and link them to Epic from point 1.
+3. Solve issue with select type elements.
+4. Solve issue with Step 2.
+5. All Actions from `Actions list` need be implemented and grouped into dashboards. At this stage cooperation with UX team will be required.
+6. Probably some new actions will be also useful to add - ask UX team. 
