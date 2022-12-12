@@ -193,6 +193,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.isAppendOverlay = ko.observable(true);
 		self.SecuredConfiguration = model.SecuredConfiguration;
 		self.CreateSavedSearchForTagging = destinationModel.CreateSavedSearchForTagging;
+		self.EnableTagging = destinationModel.EnableTagging;
 
 		this.mappedWorkspace = ko.observableArray([]).extend({
 			uniqueIdIsMapped: {
@@ -435,6 +436,9 @@ ko.validation.insertValidationMessage = function (element) {
 
 		self.OverwriteOptions = this.OverwriteOptions;
 		self.FieldOverlayBehavior = this.FieldOverlayBehavior;
+
+		this.EnableTagging = ko.observable(model.EnableTagging || true);
+		self.EnableTagging = this.EnableTagging;
 
 		this.SelectedOverwrite = ko.observable(model.SelectedOverwrite || 'Append Only');
 		this.SelectedOverwrite.subscribe(function (newValue) {
@@ -1150,6 +1154,7 @@ ko.validation.insertValidationMessage = function (element) {
 				SelectedOverwrite: model.SelectedOverwrite,
 				FieldOverlayBehavior: model.FieldOverlayBehavior,
 				FolderPathSourceField: model.FolderPathSourceField,
+				EnableTagging: model.EnableTagging,
 				LongTextColumnThatContainsPathToFullText: model.LongTextColumnThatContainsPathToFullText,
 				ExtractedTextFieldContainsFilePath: model.ExtractedTextFieldContainsFilePath,
 				ExtractedTextFileEncoding: model.ExtractedTextFileEncoding
@@ -1373,6 +1378,8 @@ ko.validation.insertValidationMessage = function (element) {
 					_destination.ExtractedTextFileEncoding = this.model.ExtractedTextFileEncoding();
 					_destination.LongTextColumnThatContainsPathToFullText = this.model.LongTextColumnThatContainsPathToFullText();
 
+					_destination.EnableTagging = this.model.EnableTagging();
+
 				}
 
 				this.bus.subscribe('saveComplete', function (data) {
@@ -1406,6 +1413,7 @@ ko.validation.insertValidationMessage = function (element) {
 				this.returnModel.destination = JSON.stringify(_destination);
 				this.returnModel.SecuredConfiguration = this.model.SecuredConfiguration;
 				this.returnModel.CreateSavedSearchForTagging = this.model.CreateSavedSearchForTagging;
+				this.returnModel.EnableTagging = this.model.EnableTagging;
 
 				if (this.model.IsRelativityProvider()) {
 

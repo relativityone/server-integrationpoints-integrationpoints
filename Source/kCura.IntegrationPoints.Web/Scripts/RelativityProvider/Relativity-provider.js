@@ -126,6 +126,7 @@
 		var destinationJson = stepModel.destination;
 		var destination = JSON.parse(destinationJson);
 		destination.CreateSavedSearchForTagging = viewModel.CreateSavedSearchForTagging();
+		destination.EnableTagging = viewModel.EnableTagging();
 		destination.CaseArtifactId = viewModel.TargetWorkspaceArtifactId();
 		destination.DestinationFolderArtifactId = viewModel.FolderArtifactId();
 		destination.ProductionImport = viewModel.ProductionImport();

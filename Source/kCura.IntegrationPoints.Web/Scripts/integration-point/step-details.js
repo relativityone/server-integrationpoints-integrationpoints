@@ -161,6 +161,7 @@ var IP = IP || {};
 				self.importNativeFile = destinationSettings.importNativeFile;
 			    self.importNativeFileCopyMode = destinationSettings.importNativeFileCopyMode;
 				self.CreateSavedSearchForTagging = destinationSettings.CreateSavedSearchForTagging;
+				self.EnableTagging = destinationSettings.EnableTagging;
 				self.IPDestinationSettings = destinationSettings;
 				self.destinationProvider = settings.destinationProvider;
 				self.SecuredConfiguration = settings.securedConfiguration;
